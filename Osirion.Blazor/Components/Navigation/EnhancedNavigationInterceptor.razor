@@ -1,0 +1,47 @@
+﻿@((MarkupString)script)
+
+@functions {
+    private MarkupString script => (MarkupString)GetScript();
+}
+
+@code {
+    [Parameter]
+    public ScrollBehavior Behavior { get; set; } = ScrollBehavior.Auto;
+
+    private string GetBehaviorString()
+    {
+        return Behavior switch
+        {
+            ScrollBehavior.Smooth => "smooth",
+            ScrollBehavior.Instant => "instant",
+            ScrollBehavior.Auto => "auto",
+            _ => "instant"
+        };
+    }
+
+    private string GetScript()
+    {
+        var behavior = GetBehaviorString();
+        return $@"
+            <script>
+                (function() {{
+                    let currentUrl = window.location.href;
+                    Blazor.addEventListener('enhancedload', () => {{
+                        let newUrl = window.location.href;
+                        if (currentUrl != newUrl) {{
+                            window.scrollTo({{ top: 0, left: 0, behavior: '{behavior}' }});
+                        }}
+                        currentUrl = newUrl;
+                    }});
+                }})();
+            </script>
+        ";
+    }
+
+    public enum ScrollBehavior
+    {
+        Auto,
+        Instant,
+        Smooth
+    }
+}
