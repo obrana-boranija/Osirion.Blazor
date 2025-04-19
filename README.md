@@ -3,14 +3,15 @@
 ![NuGet](https://img.shields.io/nuget/v/Osirion.Blazor)
 ![License](https://img.shields.io/github/license/obrana-boranija/Osirion.Blazor)
 
-Modern, high-performance Blazor components and utilities designed to enhance web development productivity. Features include enhanced navigation, state management, and reusable UI components for building robust Blazor applications.
+Modern, high-performance Blazor components and utilities that work with SSR, Server, and WebAssembly hosting models.
 
 ## Features
 
-- **SSR Compatible**: All components work with Server-Side Rendering
-- **Zero-JavaScript Option**: Core functionality works without JavaScript
-- **Cross-Platform**: Supports all Blazor hosting models (Server, WebAssembly, Static)
-- **Future-Proof**: Supports .NET 8, .NET 9, and future versions
+- 🚀 SSR Compatible (works with Server-Side Rendering)
+- 🔒 Zero-JS Dependencies for core functionality
+- 🎯 Multi-Platform (.NET 8, .NET 9+)
+- 📊 Analytics Integration (Microsoft Clarity, Matomo)
+- 🧭 Enhanced Navigation Support
 
 ## Installation
 
@@ -18,52 +19,107 @@ Modern, high-performance Blazor components and utilities designed to enhance web
 dotnet add package Osirion.Blazor
 ```
 
-## Quick Start
+## Getting Started
 
-Add the following to your `_Imports.razor`:
-
+1. Add to your `_Imports.razor`:
 ```razor
-@using Osirion.Blazor.Components
 @using Osirion.Blazor.Components.Navigation
+@using Osirion.Blazor.Components.Analytics
+@using Osirion.Blazor.Components.Analytics.Options
 ```
 
-### Enhanced Navigation
+2. Configure services in `Program.cs`:
+```csharp
+using Osirion.Blazor.Extensions;
 
-Automatically scroll to the top on page navigation:
+// Basic setup
+builder.Services.AddOsirionBlazor();
 
+// Analytics (choose your preferred method)
+
+// Option 1: Configuration-based
+builder.Services.AddClarityTracker(builder.Configuration);
+builder.Services.AddMatomoTracker(builder.Configuration);
+
+// Option 2: Programmatic
+builder.Services.AddClarityTracker(options =>
+{
+    options.TrackerUrl = "https://www.clarity.ms/tag/";
+    options.SiteId = "your-site-id";
+    options.Track = true;
+});
+```
+
+3. Add configuration to `appsettings.json` (if using configuration-based):
+```json
+{
+  "Clarity": {
+    "TrackerUrl": "https://www.clarity.ms/tag/",
+    "SiteId": "your-site-id",
+    "Track": true
+  },
+  "Matomo": {
+    "TrackerUrl": "//analytics.example.com/",
+    "SiteId": "1",
+    "Track": true
+  }
+}
+```
+
+4. Add components to your layout (`MainLayout.razor` or `App.razor`):
 ```razor
+@inherits LayoutComponentBase
+@inject IOptions<ClarityOptions>? ClarityOptions
+@inject IOptions<MatomoOptions>? MatomoOptions
+
+<!-- Enhanced navigation with scroll behavior -->
 <EnhancedNavigationInterceptor Behavior="ScrollBehavior.Smooth" />
+
+<!-- Analytics tracking -->
+@if (ClarityOptions?.Value != null)
+{
+    <ClarityTracker Options="@ClarityOptions.Value" />
+}
+
+@if (MatomoOptions?.Value != null)
+{
+    <MatomoTracker Options="@MatomoOptions.Value" />
+}
+
+<div class="page">
+    @Body
+</div>
 ```
 
 ## Components
 
 ### Navigation
 
-#### EnhancedNavigationInterceptor
-
-Provides enhanced navigation capabilities such as automatic scroll-to-top on navigation.
-
+**EnhancedNavigationInterceptor** - Automatically scrolls to top after navigation:
 ```razor
-<EnhancedNavigationInterceptor 
-    Behavior="ScrollBehavior.Smooth"
-    Enabled="true" />
+<EnhancedNavigationInterceptor Behavior="ScrollBehavior.Smooth" />
 ```
 
-**Parameters:**
+Options: `ScrollBehavior.Auto`, `ScrollBehavior.Instant`, `ScrollBehavior.Smooth`
 
-- `Behavior` (ScrollBehavior): Defines the scrolling behavior (Auto, Instant, Smooth)
-- `Enabled` (bool): Enable/disable the component
+### Analytics
 
-## Browser Compatibility
+**ClarityTracker** - Microsoft Clarity integration:
+```razor
+<ClarityTracker Options="@clarityOptions" />
+```
 
-- Works in all modern browsers (Chrome, Firefox, Safari, Edge)
-- Gracefully degrades in older browsers
-- Progressive enhancement for better experiences where available
+**MatomoTracker** - Matomo analytics integration:
+```razor
+<MatomoTracker Options="@matomoOptions" />
+```
 
-## Contributing
+## Documentation
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+- [Navigation Components](./docs/NAVIGATION.md)
+- [Analytics Components](./docs/ANALYTICS.md)
+- [Examples](./examples/)
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT License - see [LICENSE](LICENSE.txt)
