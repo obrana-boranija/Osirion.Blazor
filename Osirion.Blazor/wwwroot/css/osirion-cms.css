@@ -35,6 +35,21 @@
     --osirion-content-width: 800px;
     --osirion-card-min-width: 300px;
     --osirion-image-height: 200px;
+    /* Scroll to Top Button */
+    /* Colors */
+    --osirion-scroll-background: rgba(0, 0, 0, 0.3);
+    --osirion-scroll-hover-background: rgba(0, 0, 0, 0.5);
+    --osirion-scroll-color: #ffffff;
+    --osirion-scroll-hover-color: #ffffff;
+    --osirion-scroll-border-color: transparent;
+    --osirion-scroll-hover-border-color: transparent;
+    /* Sizes and spacing */
+    --osirion-scroll-size: 40px;
+    --osirion-scroll-margin: 20px;
+    --osirion-scroll-border-radius: 4px;
+    --osirion-scroll-z-index: 1000;
+    /* Animation */
+    --osirion-scroll-transition: all 0.3s ease;
 }
 
 /* ContentList component */
@@ -379,6 +394,65 @@
         color: var(--osirion-active-text-color);
     }
 
+    /* Scroll to Top */
+.scroll-to-top {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    width: var(--osirion-scroll-size);
+    height: var(--osirion-scroll-size);
+    background-color: var(--osirion-scroll-background);
+    color: var(--osirion-scroll-color);
+    border: 1px solid var(--osirion-scroll-border-color);
+    border-radius: var(--osirion-scroll-border-radius);
+    text-decoration: none;
+    transition: var(--osirion-scroll-transition);
+    z-index: var(--osirion-scroll-z-index);
+}
+
+    .scroll-to-top:hover {
+        background-color: var(--osirion-scroll-hover-background);
+        color: var(--osirion-scroll-hover-color);
+        border-color: var(--osirion-scroll-hover-border-color);
+    }
+
+    .scroll-to-top svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    .scroll-to-top .scroll-text {
+        margin-left: 8px;
+    }
+
+    /* Position variants */
+    .scroll-to-top.bottom-right {
+        bottom: var(--osirion-scroll-margin);
+        right: var(--osirion-scroll-margin);
+    }
+
+    .scroll-to-top.bottom-left {
+        bottom: var(--osirion-scroll-margin);
+        left: var(--osirion-scroll-margin);
+    }
+
+    .scroll-to-top.top-right {
+        top: var(--osirion-scroll-margin);
+        right: var(--osirion-scroll-margin);
+    }
+
+    .scroll-to-top.top-left {
+        top: var(--osirion-scroll-margin);
+        left: var(--osirion-scroll-margin);
+    }
+
+    /* If text is present, adjust the width */
+    .scroll-to-top:has(.scroll-text) {
+        width: auto;
+        padding: 0 12px;
+    }
+
 /* Responsive styles */
 @media (max-width: 768px) {
     .content-list .content-grid {
@@ -396,4 +470,18 @@
     .search-box {
         flex-direction: column;
     }
+
+    .scroll-to-top {
+        --osirion-scroll-size: 36px;
+        --osirion-scroll-margin: 16px;
+    }
+
+        .scroll-to-top .scroll-text {
+            display: none;
+        }
+
+        .scroll-to-top:has(.scroll-text) {
+            width: var(--osirion-scroll-size);
+            padding: 0;
+        }
 }

@@ -6,15 +6,20 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorComponents();
 
-builder.Services.AddGitHubCms(options =>
-{
-    options.Owner = "obrana-boranija";
-    options.Repository = "Osirion.Blazor";
-    options.ContentPath = "examples/content"; // Root directory for content
-    options.Branch = "master";
-    options.ApiToken = ""; // Optional
-    options.CacheDurationMinutes = 30;
-});
+builder.Services.AddGitHubCms(builder.Configuration);
+
+//builder.Services.AddScrollToTop(builder.Configuration);
+
+//builder.Services.AddScrollToTop(options =>
+//{
+//    options.Position = ButtonPosition.BottomLeft;
+//    options.Title = "Back to Top";
+//    options.Text = "Top";
+//    options.Behavior = ScrollBehavior.Smooth;
+//    options.VisibilityThreshold = 400;
+//    options.UseStyles = true;
+//    options.CustomVariables = "--osirion-scroll-background: #007bff;";
+//});
 
 var app = builder.Build();
 
