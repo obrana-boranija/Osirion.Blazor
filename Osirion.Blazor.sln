@@ -35,7 +35,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "content", "content", "{81FA
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "blog", "blog", "{926AB9FA-2E20-42C4-A890-92A4D529A26F}"
 	ProjectSection(SolutionItems) = preProject
-		examples\content\blog\getting-started-with-osirion-blazor.md = examples\content\blog\getting-started-with-osirion-blazor.md
+		examples\content\blog\analytics-integration-in-blazor.md = examples\content\blog\analytics-integration-in-blazor.md
+		examples\content\blog\enhanced-navigation-interceptor.md = examples\content\blog\enhanced-navigation-interceptor.md
+		examples\content\blog\github-cms-components.md = examples\content\blog\github-cms-components.md
+		examples\content\blog\github-cms-with-blazor.md = examples\content\blog\github-cms-with-blazor.md
+		examples\content\blog\navigation-components.md = examples\content\blog\navigation-components.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{05C1A178-E91A-4900-8CEC-17550109C491}"
+	ProjectSection(SolutionItems) = preProject
+		examples\content\docs\getting-started-with-osirion-blazor.md = examples\content\docs\getting-started-with-osirion-blazor.md
+		examples\content\docs\github-cms-documentation.md = examples\content\docs\github-cms-documentation.md
 	EndProjectSection
 EndProject
 Global
@@ -66,6 +76,7 @@ Global
 		{AEECF21B-5C17-3801-E60A-5A76B1D89346} = {B0489088-7C87-4C92-B6D1-73B072183229}
 		{81FA36B2-1A35-4FD2-83BD-72E42C747375} = {B0489088-7C87-4C92-B6D1-73B072183229}
 		{926AB9FA-2E20-42C4-A890-92A4D529A26F} = {81FA36B2-1A35-4FD2-83BD-72E42C747375}
+		{05C1A178-E91A-4900-8CEC-17550109C491} = {81FA36B2-1A35-4FD2-83BD-72E42C747375}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {42605F7F-9786-49E4-AAB7-7D8A913C42D8}
