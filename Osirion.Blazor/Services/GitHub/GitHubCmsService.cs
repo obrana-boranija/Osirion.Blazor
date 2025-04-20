@@ -102,7 +102,7 @@ public class GitHubCmsService : IGitHubCmsService
     public async Task<ContentItem?> GetContentItemByPathAsync(string path)
     {
         var contentItems = await GetAllContentItemsAsync();
-        return contentItems.FirstOrDefault(c => c.GitHubFilePath.Equals(path, StringComparison.OrdinalIgnoreCase));
+        return contentItems.FirstOrDefault(c => c.GitHubFilePath.Equals(string.IsNullOrWhiteSpace(Options.ContentPath) ? path : $"{Options.ContentPath}/{path}", StringComparison.OrdinalIgnoreCase));
     }
 
     public async Task<List<ContentItem>> GetContentItemsByDirectoryAsync(string directory)

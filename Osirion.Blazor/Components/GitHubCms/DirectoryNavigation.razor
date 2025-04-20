@@ -17,7 +17,7 @@
             @foreach (var directory in Directories)
             {
                 <li>
-                    <a href="/content/@directory.Directory" class="@GetLinkClass(directory.Directory)">
+                    <a href="/@directory.Directory" class="@GetLinkClass(directory.Directory)">
                         @directory.Name
                         <span class="count">@directory.ItemCount</span>
                     </a>

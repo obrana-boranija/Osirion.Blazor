@@ -9,10 +9,10 @@ builder.Services.AddRazorComponents();
 builder.Services.AddGitHubCms(options =>
 {
     options.Owner = "obrana-boranija";
-    options.Repository = "hexavera-blog";
-    options.ContentPath = "content"; // Root directory for content
+    options.Repository = "Osirion.Blazor";
+    options.ContentPath = "examples/content"; // Root directory for content
     options.Branch = "master";
-    //options.ApiToken = ""; // Optional
+    options.ApiToken = ""; // Optional
     options.CacheDurationMinutes = 30;
 });
 
