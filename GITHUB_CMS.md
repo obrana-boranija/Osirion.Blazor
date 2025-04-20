@@ -1,6 +1,4 @@
-﻿# docs/GITHUB_CMS.md
-
-# GitHub CMS Components
+﻿# GitHub CMS Components
 
 Osirion.Blazor provides GitHub CMS components that allow you to create a content management system using markdown files in a GitHub repository. These components support features like categories, tags, search, and dynamic navigation.
 
@@ -13,6 +11,7 @@ Osirion.Blazor provides GitHub CMS components that allow you to create a content
 - **Search**: Full-text search across content
 - **Directory Navigation**: Automatic navigation based on directory structure
 - **SSR Compatible**: Works with Server-Side Rendering
+- **Customizable Styling**: Full control over component appearance via CSS variables
 
 ## Getting Started
 
@@ -50,6 +49,29 @@ builder.Services.AddGitHubCms(options =>
     "SupportedExtensions": [".md", ".markdown"]
   }
 }
+```
+
+3. Add the style sheet to your application:
+
+```html
+<!-- In App.razor or _Host.cshtml -->
+<link rel="stylesheet" href="_content/Osirion.Blazor/css/osirion-cms.css" />
+
+<!-- Optional: Override default variables -->
+<style>
+    :root {
+        --osirion-primary-color: #0077cc;
+        --osirion-border-radius: 0.25rem;
+    }
+</style>
+```
+
+Alternative: Use the OsirionStyles component:
+
+```razor
+<!-- In your layout -->
+@using Osirion.Blazor.Components.GitHubCms
+<OsirionStyles />
 ```
 
 ## Components
@@ -164,6 +186,34 @@ Your markdown content here...
 - `is_featured`: Whether the post is featured
 - `featured_image`: URL to featured image
 
+## Styling the Components
+
+Osirion.Blazor components use CSS variables for easy styling customization.
+
+### Basic CSS Integration
+
+Add the styles to your application:
+
+```html
+<link rel="stylesheet" href="_content/Osirion.Blazor/css/osirion-cms.css" />
+```
+
+### Customizing Appearance
+
+Override CSS variables to match your design:
+
+```html
+<style>
+    :root {
+        --osirion-primary-color: #0077cc;
+        --osirion-border-radius: 0.25rem;
+        --osirion-font-size: 1.1rem;
+    }
+</style>
+```
+
+See the [Styling Guide](./STYLING.md) for a complete reference of all available CSS variables and styling options.
+
 ## Advanced Usage
 
 ### Custom Routes
@@ -230,6 +280,7 @@ await CmsService.RefreshCacheAsync();
 3. **Optimized Images**: Host images on a CDN for better performance
 4. **API Rate Limits**: Use an API token for higher rate limits
 5. **Caching Strategy**: Adjust cache duration based on update frequency
+6. **Styling Consistency**: Override CSS variables at the application level for consistent styling
 
 ## Troubleshooting
 
@@ -237,158 +288,4 @@ await CmsService.RefreshCacheAsync();
 2. **Rate Limiting**: Use API token for public repos, required for private repos
 3. **Cache Issues**: Manually refresh cache if content appears outdated
 4. **Invalid Markdown**: Validate frontmatter syntax and markdown structure
-
-# CHANGELOG.md (update)
-
-## [1.3.0] - 2025-04-20
-
-### Added
-- GitHub CMS service and components for markdown-based content management
-- Support for frontmatter parsing in markdown files
-- Content caching with configurable duration
-- Category and tag management components
-- Full-text search functionality
-- Directory-based navigation
-- Comprehensive unit tests for GitHub CMS
-
-### Changed
-- Updated package metadata to include CMS capabilities
-- Enhanced documentation with GitHub CMS examples
-
-# QUICK_REFERENCE.md (update)
-
-## GitHub CMS
-
-### Basic Configuration
-```csharp
-builder.Services.AddGitHubCms(options =>
-{
-    options.Owner = "username";
-    options.Repository = "repo";
-    options.ContentPath = "content";
-});
-```
-
-### Display Content List
-```razor
-<ContentList Directory="blog" />
-```
-
-### View Single Item
-```razor
-<ContentView Path="blog/post.md" />
-```
-
-### Show Categories
-```razor
-<CategoriesList />
-```
-
-### Tag Cloud
-```razor
-<TagCloud MaxTags="20" />
-```
-
-### Search Box
-```razor
-<SearchBox Placeholder="Search..." />
-```
-
-### Directory Navigation
-```razor
-<DirectoryNavigation CurrentDirectory="@currentDir" />
-```
-
-### Example Frontmatter
-```yaml
----
-title: "Example Post"
-author: "Author Name"
-date: "2025-04-20"
-description: "A brief description"
-tags: [tag1, tag2]
-categories: [category1]
-slug: "example-post"
-is_featured: true
-featured_image: "image.jpg"
----
-```
-
-# README.md (update)
-
-## Features
-
-- 🚀 SSR Compatible (works with Server-Side Rendering)
-- 🔒 Zero-JS Dependencies for core functionality
-- 🎯 Multi-Platform (.NET 8, .NET 9+)
-- 📊 Analytics Integration (Microsoft Clarity, Matomo)
-- 🧭 Enhanced Navigation Support
-- 📝 GitHub CMS for markdown-based content management
-
-## Installation
-
-```bash
-dotnet add package Osirion.Blazor
-```
-
-## Getting Started
-
-1. Add to your `_Imports.razor`:
-```razor
-@using Osirion.Blazor.Components.Navigation
-@using Osirion.Blazor.Components.Analytics
-@using Osirion.Blazor.Components.GitHubCms
-@using Osirion.Blazor.Services.GitHub
-```
-
-2. Configure services in `Program.cs`:
-```csharp
-using Osirion.Blazor.Extensions;
-
-// Basic setup
-builder.Services.AddOsirionBlazor();
-
-// GitHub CMS
-builder.Services.AddGitHubCms(builder.Configuration);
-
-// Analytics (choose your preferred method)
-builder.Services.AddClarityTracker(builder.Configuration);
-builder.Services.AddMatomoTracker(builder.Configuration);
-```
-
-3. Add components to your layout or pages:
-```razor
-
-<!-- GitHub CMS -->
-<ContentList Directory="blog" />
-<CategoriesList />
-<TagCloud />
-<SearchBox />
-```
-
-## Documentation
-
-- [Navigation Components](./docs/NAVIGATION.md)
-- [Analytics Components](./docs/ANALYTICS.md)
-- [GitHub CMS Components](./docs/GITHUB_CMS.md)
-- [Examples](./examples/)
-
-# Osirion.Blazor/Osirion.Blazor.csproj (update sections)
-
-Update dependencies section:
-```xml
-<!-- Dependencies -->
-<ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.4" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.4" />
-    <PackageReference Include="Markdig" Version="0.34.0" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-</ItemGroup>
-```
-
-Update version and description:
-```xml
-<Version>1.3.0</Version>
-<Description>Modern, high-performance Blazor components and utilities. Features SSR-compatible components for navigation, analytics, and GitHub CMS integration for markdown-based content management.</Description>
-<PackageTags>blazor;components;utilities;dotnet;web;navigation;analytics;cms;github;markdown</PackageTags>
-```
+5. **Styling Issues**: Check CSS variable overrides and selector specificity

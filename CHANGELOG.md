@@ -14,11 +14,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Category and tag management components
 - Full-text search functionality
 - Directory-based navigation
+- Default styling with customizable CSS variables
+- OsirionStyles component for theme customization
 - Comprehensive unit tests for GitHub CMS
+- Detailed documentation and examples
 
 ### Changed
 - Updated package metadata to include CMS capabilities
 - Enhanced documentation with GitHub CMS examples
+- Added Markdig dependency for markdown processing
 
 ## [1.2.0] - 2025-04-20
 

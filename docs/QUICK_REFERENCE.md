@@ -2,12 +2,7 @@
 
 ## Navigation
 
-### Basic Usage
-```razor
-<EnhancedNavigationInterceptor />
-```
-
-### With Options
+### Enhanced Navigation Interceptor
 ```razor
 <EnhancedNavigationInterceptor Behavior="ScrollBehavior.Smooth" />
 ```
@@ -21,23 +16,6 @@
 
 ### Microsoft Clarity
 
-#### With DI
-```csharp
-// Program.cs
-builder.Services.AddClarityTracker(options =>
-{
-    options.TrackerUrl = "https://www.clarity.ms/tag/";
-    options.SiteId = "your-site-id";
-    options.Track = true;
-});
-```
-
-```razor
-@inject IOptions<ClarityOptions> ClarityOptions
-<ClarityTracker Options="@ClarityOptions.Value" />
-```
-
-#### Without DI
 ```razor
 <ClarityTracker Options="@(new ClarityOptions 
 { 
@@ -49,23 +27,6 @@ builder.Services.AddClarityTracker(options =>
 
 ### Matomo
 
-#### With DI
-```csharp
-// Program.cs
-builder.Services.AddMatomoTracker(options =>
-{
-    options.TrackerUrl = "//analytics.example.com/";
-    options.SiteId = "1";
-    options.Track = true;
-});
-```
-
-```razor
-@inject IOptions<MatomoOptions> MatomoOptions
-<MatomoTracker Options="@MatomoOptions.Value" />
-```
-
-#### Without DI
 ```razor
 <MatomoTracker Options="@(new MatomoOptions 
 { 
@@ -75,6 +36,89 @@ builder.Services.AddMatomoTracker(options =>
 })" />
 ```
 
+## GitHub CMS
+
+### Configuration
+```csharp
+builder.Services.AddGitHubCms(options =>
+{
+    options.Owner = "username";
+    options.Repository = "repo";
+    options.ContentPath = "content";
+});
+```
+
+### Basic Components
+```razor
+<!-- Content List -->
+<ContentList Directory="blog" />
+
+<!-- Content View -->
+<ContentView Path="blog/post.md" />
+
+<!-- Categories and Tags -->
+<CategoriesList />
+<TagCloud MaxTags="20" />
+<SearchBox Placeholder="Search..." />
+<DirectoryNavigation CurrentDirectory="blog" />
+```
+
+## Styling
+
+### Include Default Styles
+```html
+<!-- In App.razor or _Host.cshtml -->
+<link rel="stylesheet" href="_content/Osirion.Blazor/css/osirion-cms.css" />
+```
+
+### Using OsirionStyles Component
+```razor
+<!-- In your layout -->
+<OsirionStyles />
+
+<!-- With custom variables -->
+<OsirionStyles CustomVariables="
+    --osirion-primary-color: #0077cc;
+    --osirion-border-radius: 0.25rem;
+" />
+```
+
+### Override CSS Variables
+```css
+/* In your app.css or custom style block */
+:root {
+    --osirion-primary-color: #0077cc;
+    --osirion-text-color: #333333;
+    --osirion-border-radius: 0.25rem;
+    --osirion-font-size: 1.1rem;
+}
+```
+
+### Configuration-Based Styling
+```csharp
+// In Program.cs
+builder.Services.Configure<GitHubCmsOptions>(options => {
+    options.UseStyles = true;
+    options.CustomVariables = "--osirion-primary-color: #0077cc;";
+});
+```
+
+### Key CSS Variables
+```css
+/* Colors */
+--osirion-primary-color: #2563eb;
+--osirion-text-color: #374151;
+--osirion-background-color: #ffffff;
+
+/* Sizing */
+--osirion-border-radius: 0.5rem;
+--osirion-padding: 1.5rem;
+
+/* Typography */
+--osirion-font-size: 1rem;
+--osirion-title-font-size: 1.25rem;
+```
+
 ## Complete Layout Example
 
 ```razor
@@ -82,62 +126,44 @@ builder.Services.AddMatomoTracker(options =>
 @using Osirion.Blazor.Components.Navigation
 @using Osirion.Blazor.Components.Analytics
 @using Osirion.Blazor.Components.Analytics.Options
+@using Osirion.Blazor.Components.GitHubCms
 @inject IOptions<ClarityOptions>? ClarityOptions
 @inject IOptions<MatomoOptions>? MatomoOptions
 
-<EnhancedNavigationInterceptor Behavior="ScrollBehavior.Smooth" />
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="~/" />
+    
+    <!-- Include Osirion styles -->
+    <link rel="stylesheet" href="_content/Osirion.Blazor/css/osirion-cms.css" />
+    
+    <!-- App stylesheets -->
+    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/app.css" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+</head>
 
-@if (ClarityOptions?.Value != null)
-{
-    <ClarityTracker Options="@ClarityOptions.Value" />
-}
+<body>
+    <!-- Navigation -->
+    <EnhancedNavigationInterceptor Behavior="ScrollBehavior.Smooth" />
 
-@if (MatomoOptions?.Value != null)
-{
-    <MatomoTracker Options="@MatomoOptions.Value" />
-}
+    <!-- Analytics -->
+    @if (ClarityOptions?.Value != null)
+    {
+        <ClarityTracker Options="@ClarityOptions.Value" />
+    }
 
-<div class="page">
-    @Body
-</div>
+    @if (MatomoOptions?.Value != null)
+    {
+        <MatomoTracker Options="@MatomoOptions.Value" />
+    }
+
+    <!-- Main content -->
+    <div class="page">
+        @Body
+    </div>
+
+    <script src="_framework/blazor.web.js"></script>
+</body>
 ```
-
-## Configuration Example
-
-```json
-{
-  "Clarity": {
-    "TrackerUrl": "https://www.clarity.ms/tag/",
-    "SiteId": "your-site-id",
-    "Track": true
-  },
-  "Matomo": {
-    "TrackerUrl": "//analytics.example.com/",
-    "SiteId": "1",
-    "Track": true
-  }
-}
-```
-
-## Environment-Based Configuration
-
-```csharp
-if (builder.Environment.IsProduction())
-{
-    builder.Services.AddClarityTracker(builder.Configuration);
-    builder.Services.AddMatomoTracker(builder.Configuration);
-}
-else
-{
-    builder.Services.AddClarityTracker(options => options.Track = false);
-    builder.Services.AddMatomoTracker(options => options.Track = false);
-}
-```
-
-## Best Practices
-
-1. Place navigation and analytics components in your main layout
-2. Use configuration-based setup for production
-3. Disable tracking in development environments
-4. Use null checks when working with injected options
-5. Consider user privacy and consent requirements

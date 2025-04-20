@@ -1,4 +1,3 @@
-// README.md (update)
 # Osirion.Blazor
 
 ![NuGet](https://img.shields.io/nuget/v/Osirion.Blazor)
@@ -8,12 +7,13 @@ Modern, high-performance Blazor components and utilities that work with SSR, Ser
 
 ## Features
 
-- 🚀 SSR Compatible (works with Server-Side Rendering)
-- 🔒 Zero-JS Dependencies for core functionality
-- 🎯 Multi-Platform (.NET 8, .NET 9+)
-- 📊 Analytics Integration (Microsoft Clarity, Matomo)
-- 🧭 Enhanced Navigation Support
-- 📝 GitHub CMS for markdown-based content management
+- 🚀 **SSR Compatible**: Works with Server-Side Rendering
+- 🔒 **Zero-JS Dependencies**: Core functionality without JavaScript interop
+- 🎯 **Multi-Platform**: Supports .NET 8, .NET 9, and future versions
+- 📊 **Analytics Integration**: Microsoft Clarity, Matomo
+- 🧭 **Enhanced Navigation**: Improved scrolling behavior
+- 📝 **GitHub CMS**: Markdown-based content management
+- 🎨 **Customizable Styling**: CSS variables for easy theming
 
 ## Installation
 
@@ -37,9 +37,6 @@ dotnet add package Osirion.Blazor
 ```csharp
 using Osirion.Blazor.Extensions;
 
-// Basic setup
-builder.Services.AddOsirionBlazor(); // not needed in this moment
-
 // GitHub CMS
 builder.Services.AddGitHubCms(options =>
 {
@@ -54,22 +51,46 @@ builder.Services.AddClarityTracker(builder.Configuration);
 builder.Services.AddMatomoTracker(builder.Configuration);
 ```
 
-3. Add components to your `App.razor` just under `_framework/blazor.web.js`:
-```razor
-<script src="_framework/blazor.web.js"></script>
-
-<!-- Enhanced navigation -->
-<EnhancedNavigationInterceptor Behavior="ScrollBehavior.Smooth" />
+3. Add styles and components to your application:
+```html
+<!-- In App.razor or _Host.cshtml head section -->
+<link rel="stylesheet" href="_content/Osirion.Blazor/css/osirion-cms.css" />
 ```
 
-4. Add components to your layout (`MainLayout.razor` or `App.razor` or `YourPageName.razor`):
 ```razor
+<!-- In your layout -->
+<EnhancedNavigationInterceptor Behavior="ScrollBehavior.Smooth" />
 
-<!-- GitHub CMS components -->
+<!-- Add GitHub CMS components to your pages -->
 <ContentList Directory="blog" />
 <CategoriesList />
 <TagCloud />
 <SearchBox />
+```
+
+## Styling Components
+
+Osirion.Blazor components use CSS variables for easy styling customization:
+
+```html
+<!-- In App.razor or _Host.cshtml head section -->
+<link rel="stylesheet" href="_content/Osirion.Blazor/css/osirion-cms.css" />
+
+<!-- Override variables to match your design -->
+<style>
+    :root {
+        --osirion-primary-color: #0077cc;
+        --osirion-border-radius: 0.25rem;
+        --osirion-font-size: 1.1rem;
+    }
+</style>
+```
+
+Alternatively, use the OsirionStyles component:
+
+```razor
+@using Osirion.Blazor.Components.GitHubCms
+<OsirionStyles CustomVariables="--osirion-primary-color: #0077cc;" />
 ```
 
 ## Documentation
@@ -77,75 +98,14 @@ builder.Services.AddMatomoTracker(builder.Configuration);
 - [Navigation Components](./docs/NAVIGATION.md)
 - [Analytics Components](./docs/ANALYTICS.md)
 - [GitHub CMS Components](./docs/GITHUB_CMS.md)
-- [Examples](./examples/)
+- [Styling Guide](./docs/STYLING.md)
+- [Quick Reference](./docs/QUICK_REFERENCE.md)
+- [Migration Guide](./docs/MIGRATION.md)
 
 ## License
 
 MIT License - see [LICENSE](LICENSE.txt)
 
-// QUICK_REFERENCE.md (update)
-# Quick Reference
+## Contributing
 
-## Navigation
-
-### Basic Usage
-```razor
-<EnhancedNavigationInterceptor Behavior="ScrollBehavior.Smooth" />
-```
-
-## Analytics
-
-### Microsoft Clarity
-```razor
-<ClarityTracker Options="@clarityOptions" />
-```
-
-### Matomo
-```razor
-<MatomoTracker Options="@matomoOptions" />
-```
-
-## GitHub CMS
-
-### Configuration
-```csharp
-builder.Services.AddGitHubCms(options =>
-{
-    options.Owner = "username";
-    options.Repository = "repo";
-    options.ContentPath = "content";
-});
-```
-
-### Content List
-```razor
-<!-- All content -->
-<ContentList />
-
-<!-- Filtered content -->
-<ContentList Directory="blog" />
-<ContentList Category="tutorials" />
-<ContentList Tag="blazor" />
-<ContentList FeaturedCount="3" />
-```
-
-### Content View
-```razor
-<ContentView Path="blog/my-post.md" />
-```
-
-### Categories and Tags
-```razor
-<CategoriesList />
-<TagCloud MaxTags="20" />
-```
-
-### Search
-```razor
-<SearchBox Placeholder="Search..." />
-```
-
-### Directory Navigation
-```razor
-<DirectoryNavigation CurrentDirectory="@currentDir" />
-```
+We welcome contributions! Please see our [contributing guidelines](CONTRIBUTING.md) for details.
