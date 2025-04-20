@@ -1,0 +1,118 @@
+﻿@inject IGitHubCmsService CmsService
+@using Osirion.Blazor.Services.GitHub
+@using Osirion.Blazor.Models.Cms
+
+<div class="content-list">
+    @if (IsLoading)
+    {
+        <div class="loading">Loading content...</div>
+    }
+    else if (ContentItems is null || ContentItems.Any() == false)
+    {
+        <div class="no-content">No content available.</div>
+    }
+    else
+    {
+        <div class="content-grid">
+            @foreach (var item in ContentItems)
+            {
+                <div class="content-card">
+                    @if (!string.IsNullOrEmpty(item.FeaturedImageUrl))
+                    {
+                        <img src="@item.FeaturedImageUrl" alt="@item.Title" class="featured-image" />
+                    }
+                    <div class="content-body">
+                        <h2>@item.Title</h2>
+                        <div class="content-meta">
+                            <span class="author">@item.Author</span>
+                            <span class="date">@item.Date.ToString("MMM d, yyyy")</span>
+                            <span class="read-time">@item.ReadTimeMinutes min read</span>
+                        </div>
+                        <p>@item.Description</p>
+                        <div class="tags">
+                            @foreach (var tag in item.Tags)
+                            {
+                                <span class="tag">@tag</span>
+                            }
+                        </div>
+                        <a href="@GetContentUrl(item)" class="read-more">Read more</a>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public string? Directory { get; set; }
+
+    [Parameter]
+    public string? Category { get; set; }
+
+    [Parameter]
+    public string? Tag { get; set; }
+
+    [Parameter]
+    public int? FeaturedCount { get; set; }
+
+    [Parameter]
+    public List<ContentItem>? ContentItems { get; set; } = new();
+
+    private bool IsLoading { get; set; } = true;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (ContentItems?.Any() != true)
+        {
+            await LoadContentAsync();
+        }
+        else
+        {
+            IsLoading = false;
+        }
+    }
+
+    private async Task LoadContentAsync()
+    {
+        IsLoading = true;
+        try
+        {
+            if (FeaturedCount.HasValue)
+            {
+                ContentItems = await CmsService.GetFeaturedContentItemsAsync(FeaturedCount.Value);
+            }
+            else if (!string.IsNullOrEmpty(Directory))
+            {
+                ContentItems = await CmsService.GetContentItemsByDirectoryAsync(Directory);
+            }
+            else if (!string.IsNullOrEmpty(Category))
+            {
+                ContentItems = await CmsService.GetContentItemsByCategoryAsync(Category);
+            }
+            else if (!string.IsNullOrEmpty(Tag))
+            {
+                ContentItems = await CmsService.GetContentItemsByTagAsync(Tag);
+            }
+            else
+            {
+                ContentItems = await CmsService.GetAllContentItemsAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            // Log error
+            Console.Error.WriteLine($"Error loading content: {ex.Message}");
+            ContentItems = new List<ContentItem>();
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private string GetContentUrl(ContentItem item)
+    {
+        return $"{item.Directory}/{item.Slug}";
+    }
+}

@@ -1,0 +1,93 @@
+﻿@inject IGitHubCmsService CmsService
+@using Osirion.Blazor.Services.GitHub
+@using Osirion.Blazor.Models.Cms
+
+<nav class="directory-navigation">
+    @if (IsLoading)
+    {
+        <div class="loading">Loading navigation...</div>
+    }
+    else if (Directories.Count == 0)
+    {
+        <div class="no-directories">No directories available.</div>
+    }
+    else
+    {
+        <ul>
+            @foreach (var directory in Directories)
+            {
+                <li>
+                    <a href="/content/@directory.Directory" class="@GetLinkClass(directory.Directory)">
+                        @directory.Name
+                        <span class="count">@directory.ItemCount</span>
+                    </a>
+                </li>
+            }
+        </ul>
+    }
+</nav>
+
+@code {
+    [Parameter]
+    public string CurrentDirectory { get; set; } = string.Empty;
+
+    private bool IsLoading { get; set; } = true;
+    protected List<DirectoryInfo> Directories { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDirectoriesAsync();
+    }
+
+    protected async Task LoadDirectoriesAsync()
+    {
+        IsLoading = true;
+        try
+        {
+            var allContent = await CmsService.GetAllContentItemsAsync();
+
+            // Group by directory and create directory info
+            Directories = allContent
+                .GroupBy(c => c.Directory)
+                .Select(g => new DirectoryInfo
+                    {
+                        Directory = g.Key,
+                        Name = FormatDirectoryName(g.Key),
+                        ItemCount = g.Count()
+                    })
+                .OrderBy(d => d.Name)
+                .ToList();
+        }
+        catch (Exception ex)
+        {
+            // Log error
+            Console.Error.WriteLine($"Error loading directories: {ex.Message}");
+            Directories = new List<DirectoryInfo>();
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private string FormatDirectoryName(string directory)
+    {
+        if (string.IsNullOrEmpty(directory))
+            return "Root";
+
+        // Convert directory path to display name
+        return directory.Replace('-', ' ').Replace('_', ' ');
+    }
+
+    protected string GetLinkClass(string directory)
+    {
+        return directory == CurrentDirectory ? "directory-link active" : "directory-link";
+    }
+
+    protected class DirectoryInfo
+    {
+        public string Directory { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public int ItemCount { get; set; }
+    }
+}

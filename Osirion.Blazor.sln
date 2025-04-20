@@ -20,10 +20,22 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{A0B979F7-918D-4A47-ABD1-A564E98807F7}"
 	ProjectSection(SolutionItems) = preProject
-		ANALYTICS.md = ANALYTICS.md
-		MIGRATION.md = MIGRATION.md
-		NAVIGATION.md = NAVIGATION.md
-		QUICK_REFERENCE.md = QUICK_REFERENCE.md
+		docs\ANALYTICS.md = docs\ANALYTICS.md
+		GITHUB_CMS.md = GITHUB_CMS.md
+		docs\MIGRATION.md = docs\MIGRATION.md
+		docs\NAVIGATION.md = docs\NAVIGATION.md
+		docs\QUICK_REFERENCE.md = docs\QUICK_REFERENCE.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{B0489088-7C87-4C92-B6D1-73B072183229}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Osirion.Blazor.Example", "examples\Osirion.Blazor.Example\Osirion.Blazor.Example.csproj", "{AEECF21B-5C17-3801-E60A-5A76B1D89346}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "content", "content", "{81FA36B2-1A35-4FD2-83BD-72E42C747375}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "blog", "blog", "{926AB9FA-2E20-42C4-A890-92A4D529A26F}"
+	ProjectSection(SolutionItems) = preProject
+		examples\content\blog\getting-started-with-osirion-blazor.md = examples\content\blog\getting-started-with-osirion-blazor.md
 	EndProjectSection
 EndProject
 Global
@@ -40,6 +52,10 @@ Global
 		{334F427A-70DD-4AFB-AFAA-65F42A42D1AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{334F427A-70DD-4AFB-AFAA-65F42A42D1AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{334F427A-70DD-4AFB-AFAA-65F42A42D1AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AEECF21B-5C17-3801-E60A-5A76B1D89346}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AEECF21B-5C17-3801-E60A-5A76B1D89346}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AEECF21B-5C17-3801-E60A-5A76B1D89346}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AEECF21B-5C17-3801-E60A-5A76B1D89346}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -47,6 +63,9 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{85FBCF8F-D816-459B-AA50-E309A8DB6D16} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{334F427A-70DD-4AFB-AFAA-65F42A42D1AB} = {C9DD34FD-6269-4DDD-AA04-BB497494FE13}
+		{AEECF21B-5C17-3801-E60A-5A76B1D89346} = {B0489088-7C87-4C92-B6D1-73B072183229}
+		{81FA36B2-1A35-4FD2-83BD-72E42C747375} = {B0489088-7C87-4C92-B6D1-73B072183229}
+		{926AB9FA-2E20-42C4-A890-92A4D529A26F} = {81FA36B2-1A35-4FD2-83BD-72E42C747375}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {42605F7F-9786-49E4-AAB7-7D8A913C42D8}

@@ -37,7 +37,6 @@
 
 	<ItemGroup>
 		<!-- Include README -->
-		<None Include="..\README.md" Pack="true" PackagePath="\" />
 
 		<!-- Include icon -->
 		<None Include="assets\icon.png" Pack="true" PackagePath="\" />
@@ -58,12 +57,11 @@
 
 	<!-- Development dependencies -->
 	<ItemGroup>
+		<PackageReference Include="Markdig" Version="0.41.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.4" />
+		<PackageReference Include="Microsoft.Extensions.Http" Version="9.0.4" />
 		<PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.4" />
 		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-	</ItemGroup>
-	<ItemGroup>
-	  <Folder Include="Options\" />
 	</ItemGroup>
 
 </Project>

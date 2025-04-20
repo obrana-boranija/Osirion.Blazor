@@ -1,0 +1,122 @@
+﻿.content-article {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.loading, .not-found {
+    text-align: center;
+    padding: 2rem;
+    color: #666;
+}
+
+header {
+    margin-bottom: 2rem;
+}
+
+    header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: #1f2937;
+    }
+
+.content-meta {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin-bottom: 1rem;
+}
+
+.featured-image {
+    width: 100%;
+    height: auto;
+    border-radius: 0.5rem;
+    margin-top: 1rem;
+}
+
+.content-body {
+    line-height: 1.7;
+    color: #374151;
+}
+
+    .content-body h1,
+    .content-body h2,
+    .content-body h3,
+    .content-body h4,
+    .content-body h5,
+    .content-body h6 {
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+        color: #1f2937;
+    }
+
+    .content-body p {
+        margin-bottom: 1rem;
+    }
+
+    .content-body ul,
+    .content-body ol {
+        margin-bottom: 1rem;
+        padding-left: 2rem;
+    }
+
+    .content-body code {
+        background-color: #f3f4f6;
+        padding: 0.2rem 0.4rem;
+        border-radius: 0.25rem;
+        font-family: monospace;
+    }
+
+    .content-body pre {
+        background-color: #f3f4f6;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        overflow-x: auto;
+        margin-bottom: 1rem;
+    }
+
+footer {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e5e7eb;
+}
+
+.categories, .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.category, .tag {
+    text-decoration: none;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.875rem;
+}
+
+.category {
+    background-color: #e0f2fe;
+    color: #0369a1;
+}
+
+.tag {
+    background-color: #f3f4f6;
+    color: #4b5563;
+}
+
+    .category:hover, .tag:hover {
+        opacity: 0.8;
+    }
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 2rem;
+    }
+
+    .content-article {
+        padding: 1rem;
+    }
+}

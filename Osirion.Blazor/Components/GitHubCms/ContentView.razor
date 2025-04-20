@@ -1,0 +1,44 @@
+﻿@if (IsLoading)
+{
+    <div class="loading">Loading content...</div>
+}
+else if (ContentItem == null)
+{
+    <div class="not-found">Content not found.</div>
+}
+else
+{
+    <article class="content-article">
+        <header>
+            <h1>@ContentItem.Title</h1>
+            <div class="content-meta">
+                <span class="author">By @ContentItem.Author</span>
+                <span class="date">@ContentItem.Date.ToString("MMMM d, yyyy")</span>
+                <span class="read-time">@ContentItem.ReadTimeMinutes min read</span>
+            </div>
+            @if (!string.IsNullOrEmpty(ContentItem.FeaturedImageUrl))
+            {
+                <img src="@ContentItem.FeaturedImageUrl" alt="@ContentItem.Title" class="featured-image" />
+            }
+        </header>
+
+        <div class="content-body">
+            @((MarkupString)ContentItem.Content)
+        </div>
+
+        <footer>
+            <div class="categories">
+                @foreach (var category in ContentItem.Categories)
+                {
+                    <a href="/category/@category.ToLower().Replace(' ', '-')" class="category">@category</a>
+                }
+            </div>
+            <div class="tags">
+                @foreach (var tag in ContentItem.Tags)
+                {
+                    <a href="/tag/@tag.ToLower().Replace(' ', '-')" class="tag">@tag</a>
+                }
+            </div>
+        </footer>
+    </article>
+}

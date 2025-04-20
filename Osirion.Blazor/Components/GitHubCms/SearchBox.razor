@@ -1,0 +1,34 @@
+﻿@inject NavigationManager NavigationManager
+@using Osirion.Blazor.Services.GitHub
+
+<div class="search-box">
+    <input @bind="SearchQuery"
+           @onkeyup="HandleKeyPress"
+           type="text"
+           placeholder="@Placeholder"
+           class="search-input" />
+    <button @onclick="PerformSearch" class="search-button">Search</button>
+</div>
+
+@code {
+    [Parameter]
+    public string Placeholder { get; set; } = "Search content...";
+
+    protected string SearchQuery { get; set; } = string.Empty;
+
+    protected void HandleKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            PerformSearch();
+        }
+    }
+
+    protected void PerformSearch()
+    {
+        if (!string.IsNullOrWhiteSpace(SearchQuery))
+        {
+            NavigationManager.NavigateTo($"/search?q={Uri.EscapeDataString(SearchQuery)}");
+        }
+    }
+}

@@ -1,0 +1,13 @@
+﻿@page "/blog/{Slug}"
+
+
+<PageTitle>@(ContentItem?.Title ?? "Blog Post") - Osirion Blog</PageTitle>
+
+<ContentView Path="@($"blog/{Slug}.md")" />
+
+@code {
+    [Parameter]
+    public string Slug { get; set; } = string.Empty;
+
+    private ContentItem? ContentItem { get; set; }
+}

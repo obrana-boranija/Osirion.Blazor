@@ -1,0 +1,57 @@
+﻿@inject IGitHubCmsService CmsService
+@using Osirion.Blazor.Services.GitHub
+@using Osirion.Blazor.Models.Cms
+
+<div class="categories-list">
+    @if (IsLoading)
+    {
+        <div class="loading">Loading categories...</div>
+    }
+    else if (Categories.Count == 0)
+    {
+        <div class="no-categories">No categories available.</div>
+    }
+    else
+    {
+        <ul>
+            @foreach (var category in Categories)
+            {
+                <li>
+                    <a href="/category/@category.SlugUrl" class="category-link">
+                        @category.Name
+                        <span class="count">@category.ContentCount</span>
+                    </a>
+                </li>
+            }
+        </ul>
+    }
+</div>
+
+@code {
+    private bool IsLoading { get; set; } = true;
+    private List<ContentCategory> Categories { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCategoriesAsync();
+    }
+
+    private async Task LoadCategoriesAsync()
+    {
+        IsLoading = true;
+        try
+        {
+            Categories = await CmsService.GetCategoriesAsync();
+        }
+        catch (Exception ex)
+        {
+            // Log error
+            Console.Error.WriteLine($"Error loading categories: {ex.Message}");
+            Categories = new List<ContentCategory>();
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+}

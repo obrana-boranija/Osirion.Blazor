@@ -1,0 +1,84 @@
+﻿@page "/search"
+@inject IGitHubCmsService CmsService
+@using Osirion.Blazor.Components.GitHubCms
+@using Osirion.Blazor.Services.GitHub
+@using Osirion.Blazor.Models.Cms
+
+<PageTitle>Search Results - Osirion Blog</PageTitle>
+
+<div class="search-container">
+    <div class="search-header">
+        <h1>Search Results</h1>
+
+        <div class="search-box-container">
+            <SearchBox Placeholder="Search again..." />
+        </div>
+
+        @if (!string.IsNullOrEmpty(Query))
+        {
+            <div class="search-info">
+                @if (Results.Count == 0)
+                {
+                    <p>No results found for <strong>"@Query"</strong></p>
+                }
+                else
+                {
+                    <p>Found <strong>@Results.Count</strong> results for <strong>"@Query"</strong></p>
+                }
+            </div>
+        }
+    </div>
+
+    <div class="search-results">
+        @if (IsLoading)
+        {
+            <div class="loading">Searching...</div>
+        }
+        else if (string.IsNullOrEmpty(Query))
+        {
+            <div class="search-empty">
+                <p>Enter a search term to find content.</p>
+            </div>
+        }
+        else if (Results.Count == 0)
+        {
+            <div class="search-no-results">
+                <p>No results found for <strong>"@Query"</strong>. Try different keywords.</p>
+            </div>
+        }
+        else
+        {
+            <ContentList ContentItems="@Results" />
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string Query { get; set; } = string.Empty;
+
+    private bool IsLoading { get; set; } = true;
+    private List<ContentItem> Results { get; set; } = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (!string.IsNullOrEmpty(Query))
+        {
+            IsLoading = true;
+            try
+            {
+                Results = await CmsService.SearchContentItemsAsync(Query);
+            }
+            finally
+            {
+                IsLoading = false;
+            }
+        }
+        else
+        {
+            Results = new List<ContentItem>();
+            IsLoading = false;
+        }
+    }
+}

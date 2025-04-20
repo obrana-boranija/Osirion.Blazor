@@ -1,0 +1,90 @@
+﻿@page "/blog"
+@page "/category/{Category}"
+@page "/tag/{Tag}"
+@using Osirion.Blazor.Components.GitHubCms
+
+<PageTitle>@PageTitle</PageTitle>
+
+<div class="blog-container">
+    <div class="blog-header">
+        <h1>@HeaderTitle</h1>
+        <p>@HeaderDescription</p>
+
+        @if (!string.IsNullOrEmpty(Category) || !string.IsNullOrEmpty(Tag))
+        {
+            <div class="filter-badge">
+                <span>@FilterLabel</span>
+                <button @onclick="ClearFilter" class="clear-filter">✕</button>
+            </div>
+        }
+    </div>
+
+    <div class="blog-content">
+        <div class="main-content">
+            @if (!string.IsNullOrEmpty(Category))
+            {
+                <ContentList Category="@Category" />
+            }
+            else if (!string.IsNullOrEmpty(Tag))
+            {
+                <ContentList Tag="@Tag" />
+            }
+            else
+            {
+                <ContentList />
+            }
+        </div>
+
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <h3>Featured Posts</h3>
+                <ContentList FeaturedCount="3" />
+            </div>
+
+            <div class="sidebar-section">
+                <h3>Tags</h3>
+                <TagCloud MaxTags="15" />
+            </div>
+        </aside>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string? Category { get; set; }
+
+    [Parameter]
+    public string? Tag { get; set; }
+
+    [Inject]
+    private NavigationManager NavigationManager { get; set; } = default!;
+
+    private string PageTitle => !string.IsNullOrEmpty(Category)
+        ? $"Category: {Category} - Blog"
+        : !string.IsNullOrEmpty(Tag)
+            ? $"Tag: {Tag} - Blog"
+            : "Blog";
+
+    private string HeaderTitle => !string.IsNullOrEmpty(Category)
+        ? $"Category: {Category}"
+        : !string.IsNullOrEmpty(Tag)
+            ? $"Tag: {Tag}"
+            : "Blog";
+
+    private string HeaderDescription => !string.IsNullOrEmpty(Category)
+        ? $"Posts related to {Category}"
+        : !string.IsNullOrEmpty(Tag)
+            ? $"Posts tagged with {Tag}"
+            : "Latest articles and insights";
+
+    private string FilterLabel => !string.IsNullOrEmpty(Category)
+        ? $"Category: {Category}"
+        : !string.IsNullOrEmpty(Tag)
+            ? $"Tag: {Tag}"
+            : "";
+
+    private void ClearFilter()
+    {
+        NavigationManager.NavigateTo("/blog");
+    }
+}
