@@ -1,0 +1,13 @@
+﻿@if (ShouldUseStyles)
+{
+    <link rel="stylesheet" href="_content/Osirion.Blazor/css/osirion-cms.css" />
+}
+
+@if (!string.IsNullOrEmpty(EffectiveCustomVariables))
+{
+    <style>
+        :root {
+        @((MarkupString)EffectiveCustomVariables)
+        }
+    </style>
+}

@@ -44,4 +44,14 @@ public class GitHubCmsOptions
     /// Gets or sets the supported file extensions
     /// </summary>
     public List<string> SupportedExtensions { get; set; } = new() { ".md", ".markdown" };
+
+    /// <summary>
+    /// Gets or sets whether to use the default styles
+    /// </summary>
+    public bool? UseStyles { get; set; }
+
+    /// <summary>
+    /// Gets or sets custom CSS variables to override the default values
+    /// </summary>
+    public string? CustomVariables { get; set; }
 }

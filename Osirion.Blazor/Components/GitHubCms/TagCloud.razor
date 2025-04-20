@@ -16,7 +16,7 @@
         <div class="tags-container">
             @foreach (var tag in Tags)
             {
-                <a href="/tag/@tag.SlugUrl" class="tag-link">
+                <a href="/tag/@tag.SlugUrl" class="tag-link" rel="nofollow">
                     @tag.Name
                     <span class="count">@tag.ContentCount</span>
                 </a>

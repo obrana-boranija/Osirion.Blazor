@@ -17,7 +17,7 @@
             @foreach (var category in Categories)
             {
                 <li>
-                    <a href="/category/@category.SlugUrl" class="category-link">
+                    <a href="/category/@category.SlugUrl" class="category-link" rel="nofollow">
                         @category.Name
                         <span class="count">@category.ContentCount</span>
                     </a>
@@ -43,10 +43,8 @@
         {
             Categories = await CmsService.GetCategoriesAsync();
         }
-        catch (Exception ex)
+        catch
         {
-            // Log error
-            Console.Error.WriteLine($"Error loading categories: {ex.Message}");
             Categories = new List<ContentCategory>();
         }
         finally

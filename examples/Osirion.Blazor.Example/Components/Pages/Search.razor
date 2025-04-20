@@ -1,83 +1,75 @@
 ﻿@page "/search"
 @inject IGitHubCmsService CmsService
-@using Osirion.Blazor.Components.GitHubCms
-@using Osirion.Blazor.Services.GitHub
+@inject NavigationManager NavigationManager
 @using Osirion.Blazor.Models.Cms
+@using Osirion.Blazor.Services.GitHub
 
-<PageTitle>Search Results - Osirion Blog</PageTitle>
+<h1>Search Results</h1>
 
-<div class="search-container">
-    <div class="search-header">
-        <h1>Search Results</h1>
+@if (IsLoading)
+{
+    <div class="loading">Searching...</div>
+}
+else
+{
+    @if (!string.IsNullOrEmpty(Query))
+    {
+        <h2>Results for "@Query"</h2>
 
-        <div class="search-box-container">
-            <SearchBox Placeholder="Search again..." />
-        </div>
-
-        @if (!string.IsNullOrEmpty(Query))
-        {
-            <div class="search-info">
-                @if (Results.Count == 0)
-                {
-                    <p>No results found for <strong>"@Query"</strong></p>
-                }
-                else
-                {
-                    <p>Found <strong>@Results.Count</strong> results for <strong>"@Query"</strong></p>
-                }
-            </div>
-        }
-    </div>
-
-    <div class="search-results">
-        @if (IsLoading)
-        {
-            <div class="loading">Searching...</div>
-        }
-        else if (string.IsNullOrEmpty(Query))
-        {
-            <div class="search-empty">
-                <p>Enter a search term to find content.</p>
-            </div>
-        }
-        else if (Results.Count == 0)
-        {
-            <div class="search-no-results">
-                <p>No results found for <strong>"@Query"</strong>. Try different keywords.</p>
-            </div>
-        }
-        else
+        @if (Results.Count > 0)
         {
             <ContentList ContentItems="@Results" />
         }
-    </div>
-</div>
-
-@code {
-    [Parameter]
-    [SupplyParameterFromQuery]
-    public string Query { get; set; } = string.Empty;
-
-    private bool IsLoading { get; set; } = true;
-    private List<ContentItem> Results { get; set; } = new();
-
-    protected override async Task OnParametersSetAsync()
-    {
-        if (!string.IsNullOrEmpty(Query))
-        {
-            IsLoading = true;
-            try
-            {
-                Results = await CmsService.SearchContentItemsAsync(Query);
-            }
-            finally
-            {
-                IsLoading = false;
-            }
-        }
         else
         {
+            <div class="no-results">No results found for "@Query".</div>
+        }
+    }
+    else
+    {
+        <p>Please enter a search term</p>
+    }
+
+    <SearchBox Placeholder="Search again..." />
+}
+
+@code {
+    private string Query { get; set; } = string.Empty;
+    private List<ContentItem> Results { get; set; } = new();
+    private bool IsLoading { get; set; } = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        if (uri.Query.Length > 0)
+        {
+            var queryParams = System.Web.HttpUtility.ParseQueryString(uri.Query);
+            Query = queryParams["q"] ?? string.Empty;
+
+            if (!string.IsNullOrEmpty(Query))
+            {
+                await PerformSearch();
+            }
+        }
+
+        IsLoading = false;
+    }
+
+    private async Task PerformSearch()
+    {
+        IsLoading = true;
+
+        try
+        {
+            Results = await CmsService.SearchContentItemsAsync(Query);
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error searching: {ex.Message}");
             Results = new List<ContentItem>();
+        }
+        finally
+        {
             IsLoading = false;
         }
     }

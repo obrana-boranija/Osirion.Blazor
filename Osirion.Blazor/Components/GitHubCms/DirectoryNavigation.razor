@@ -17,7 +17,7 @@
             @foreach (var directory in Directories)
             {
                 <li>
-                    <a href="/@directory.Directory" class="@GetLinkClass(directory.Directory)">
+                    <a href="/@directory.Directory" class="@GetLinkClass(directory.Directory)" rel="nofollow">
                         @directory.Name
                         <span class="count">@directory.ItemCount</span>
                     </a>
@@ -31,11 +31,21 @@
     [Parameter]
     public string CurrentDirectory { get; set; } = string.Empty;
 
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "dir")]
+    public string QueryDirectory { get; set; } = string.Empty;
+
     private bool IsLoading { get; set; } = true;
     protected List<DirectoryInfo> Directories { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
+        // If CurrentDirectory is not provided via parameter, use the query string value
+        if (string.IsNullOrEmpty(CurrentDirectory) && !string.IsNullOrEmpty(QueryDirectory))
+        {
+            CurrentDirectory = QueryDirectory;
+        }
+
         await LoadDirectoriesAsync();
     }
 
@@ -58,10 +68,8 @@
                 .OrderBy(d => d.Name)
                 .ToList();
         }
-        catch (Exception ex)
+        catch
         {
-            // Log error
-            Console.Error.WriteLine($"Error loading directories: {ex.Message}");
             Directories = new List<DirectoryInfo>();
         }
         finally

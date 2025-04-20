@@ -5,41 +5,41 @@
 <div class="content-list">
     @if (IsLoading)
     {
-        <div class="loading">Loading content...</div>
+            <div class="loading">Loading content...</div>
     }
     else if (ContentItems is null || ContentItems.Any() == false)
     {
-        <div class="no-content">No content available.</div>
+            <div class="no-content">No content available.</div>
     }
     else
     {
-        <div class="content-grid">
+            <div class="content-grid">
             @foreach (var item in ContentItems)
             {
-                <div class="content-card">
+                        <div class="content-card">
                     @if (!string.IsNullOrEmpty(item.FeaturedImageUrl))
                     {
-                        <img src="@item.FeaturedImageUrl" alt="@item.Title" class="featured-image" />
+                                    <img src="@item.FeaturedImageUrl" alt="@item.Title" class="featured-image" />
                     }
-                    <div class="content-body">
-                        <h2>@item.Title</h2>
-                        <div class="content-meta">
-                            <span class="author">@item.Author</span>
-                            <span class="date">@item.Date.ToString("MMM d, yyyy")</span>
-                            <span class="read-time">@item.ReadTimeMinutes min read</span>
-                        </div>
-                        <p>@item.Description</p>
-                        <div class="tags">
+                            <div class="content-body">
+                                <h2>@item.Title</h2>
+                                <div class="content-meta">
+                                    <span class="author">@item.Author</span>
+                                    <span class="date">@item.Date.ToString("MMM d, yyyy")</span>
+                                    <span class="read-time">@item.ReadTimeMinutes min read</span>
+                                </div>
+                                <p>@item.Description</p>
+                                <div class="tags">
                             @foreach (var tag in item.Tags)
                             {
-                                <span class="tag">@tag</span>
+                                            <span class="tag">@tag</span>
                             }
+                                </div>
+                                <a href="@GetContentUrl(item)" class="read-more" rel="nofollow">Read more</a>
+                            </div>
                         </div>
-                        <a href="@GetContentUrl(item)" class="read-more">Read more</a>
-                    </div>
-                </div>
             }
-        </div>
+            </div>
     }
 </div>
 
@@ -59,10 +59,38 @@
     [Parameter]
     public List<ContentItem>? ContentItems { get; set; } = new();
 
-    private bool IsLoading { get; set; } = true;
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "dir")]
+    public string QueryDirectory { get; set; } = string.Empty;
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "category")]
+    public string QueryCategory { get; set; } = string.Empty;
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "tag")]
+    public string QueryTag { get; set; } = string.Empty;
+
+    public bool IsLoading { get; set; } = true;
 
     protected override async Task OnParametersSetAsync()
     {
+        // If parameters are not provided via component parameters, use query string values
+        if (string.IsNullOrEmpty(Directory) && !string.IsNullOrEmpty(QueryDirectory))
+        {
+            Directory = QueryDirectory;
+        }
+
+        if (string.IsNullOrEmpty(Category) && !string.IsNullOrEmpty(QueryCategory))
+        {
+            Category = QueryCategory;
+        }
+
+        if (string.IsNullOrEmpty(Tag) && !string.IsNullOrEmpty(QueryTag))
+        {
+            Tag = QueryTag;
+        }
+
         if (ContentItems?.Any() != true)
         {
             await LoadContentAsync();
@@ -73,7 +101,7 @@
         }
     }
 
-    private async Task LoadContentAsync()
+    public async Task LoadContentAsync()
     {
         IsLoading = true;
         try
@@ -99,10 +127,8 @@
                 ContentItems = await CmsService.GetAllContentItemsAsync();
             }
         }
-        catch (Exception ex)
+        catch
         {
-            // Log error
-            Console.Error.WriteLine($"Error loading content: {ex.Message}");
             ContentItems = new List<ContentItem>();
         }
         finally
@@ -113,6 +139,6 @@
 
     private string GetContentUrl(ContentItem item)
     {
-        return $"{item.Directory}/{item.Slug}";
+        return $"/{item.Directory}/{item.Slug}";
     }
 }
