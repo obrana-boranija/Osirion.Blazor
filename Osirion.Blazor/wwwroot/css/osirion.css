@@ -57,9 +57,9 @@
 }
 
     /*
- * Bootstrap Framework Integration
- * This section maps Bootstrap variables to Osirion variables
- */
+     * Bootstrap Framework Integration
+     * This section maps Bootstrap variables to Osirion variables
+     */
     :root.osirion-bootstrap-integration {
         /* Bootstrap 5 color mappings */
         --osirion-primary-color: var(--bs-primary, #0d6efd);
@@ -95,9 +95,9 @@
     }
 
     /*
- * Tailwind CSS Integration
- * This section provides compatibility with Tailwind CSS
- */
+     * Tailwind CSS Integration
+     * This section provides compatibility with Tailwind CSS
+     */
     :root.osirion-tailwind-integration {
         /* Tailwind color mappings (using default color palette) */
         --osirion-primary-color: var(--tw-colors-blue-600, #2563eb);
@@ -136,45 +136,55 @@
     }
 
     /*
- * Fluent UI for Blazor Integration
- */
+     * Fluent UI for Blazor Integration
+     */
     :root.osirion-fluent-integration {
-        /* Fluent UI color mappings */
-        --osirion-primary-color: var(--accent-fill-rest, #0078d4);
-        --osirion-primary-hover-color: var(--accent-fill-hover, #006dc7);
-        --osirion-text-color: var(--fluentui-text-color, #242424);
-        --osirion-light-text-color: var(--fluentui-text-secondary-color, #5f5f5f);
-        --osirion-border-color: var(--fluentui-border-color, #d1d1d1);
-        --osirion-background-color: var(--fluentui-background-color, #ffffff);
-        --osirion-light-background-color: var(--fluentui-background-light-color, #f3f2f1);
-        --osirion-tag-background-color: var(--fluentui-background-light-color, #f3f2f1);
-        --osirion-tag-text-color: var(--fluentui-text-color, #323130);
-        --osirion-category-background-color: var(--fluentui-info-background, #f0f8ff);
-        --osirion-category-text-color: var(--fluentui-info-text, #0078d4);
-        --osirion-active-background-color: var(--fluentui-selected-background, #e1effa);
-        --osirion-active-text-color: var(--fluentui-selected-text, #0078d4);
+        /* Fluent UI color mappings based on FluentUI CSS custom properties */
+        --osirion-primary-color: var(--accent-fill-rest, #197834);
+        --osirion-primary-hover-color: var(--accent-fill-hover, #1c833a);
+        --osirion-text-color: var(--neutral-foreground-rest, #1a1a1a);
+        --osirion-light-text-color: var(--neutral-foreground-hint, #717171);
+        --osirion-border-color: var(--neutral-stroke-rest, #d6d6d6);
+        --osirion-background-color: var(--neutral-fill-layer-rest, #ffffff);
+        --osirion-light-background-color: var(--neutral-layer-4, #e0e0e0);
+        --osirion-tag-background-color: var(--neutral-fill-stealth-rest, #fbfbfb);
+        --osirion-tag-text-color: var(--neutral-foreground-rest, #1a1a1a);
+        --osirion-category-background-color: var(--neutral-fill-secondary-rest, #efefef);
+        --osirion-category-text-color: var(--neutral-foreground-rest, #1a1a1a);
+        --osirion-active-background-color: var(--neutral-fill-stealth-active, #f3f3f3);
+        --osirion-active-text-color: var(--accent-foreground-rest, #0d4c1c);
         /* Fluent UI sizing */
-        --osirion-border-radius: var(--fluentui-border-radius-medium, 4px);
-        --osirion-small-border-radius: var(--fluentui-border-radius-small, 2px);
-        --osirion-padding: var(--fluentui-spacing-l, 16px);
-        --osirion-small-padding: var(--fluentui-spacing-s, 8px);
+        --osirion-border-radius: var(--control-corner-radius, 4px);
+        --osirion-small-border-radius: calc(var(--control-corner-radius, 4px) * 0.75);
+        --osirion-padding: calc(var(--design-unit, 4px) * 4);
+        --osirion-small-padding: calc(var(--design-unit, 4px) * 2);
+        --osirion-gap: calc(var(--design-unit, 4px) * 3);
+        --osirion-small-gap: var(--design-unit, 4px);
         /* Fluent UI typography */
-        --osirion-font-size: var(--fluentui-font-size-medium, 14px);
-        --osirion-small-font-size: var(--fluentui-font-size-small, 12px);
-        --osirion-title-font-size: var(--fluentui-font-size-large, 18px);
-        --osirion-line-height: var(--fluentui-line-height, 1.5);
+        --osirion-font-size: var(--type-ramp-base-font-size, 14px);
+        --osirion-small-font-size: var(--type-ramp-minus-1-font-size, 12px);
+        --osirion-tiny-font-size: var(--type-ramp-minus-2-font-size, 10px);
+        --osirion-title-font-size: var(--type-ramp-plus-2-font-size, 20px);
+        --osirion-large-title-font-size: var(--type-ramp-plus-5-font-size, 32px);
+        --osirion-line-height: var(--type-ramp-base-line-height, 20px);
         /* Fluent UI effects */
-        --osirion-box-shadow: var(--fluentui-shadow-medium, 0 2px 4px rgba(0, 0, 0, 0.1));
+        --osirion-box-shadow: var(--elevation-shadow-card-rest, 0 0 2px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.14));
+        --osirion-transition-speed: 0.2s;
         /* ScrollToTop Fluent-specific styling */
-        --osirion-scroll-background: var(--accent-fill-rest, #0078d4);
-        --osirion-scroll-hover-background: var(--accent-fill-hover, #006dc7);
-        --osirion-scroll-color: var(--fluentui-text-on-accent, #ffffff);
-        --osirion-scroll-border-radius: var(--fluentui-border-radius-medium, 4px);
+        --osirion-scroll-background: var(--accent-fill-rest, #197834);
+        --osirion-scroll-hover-background: var(--accent-fill-hover, #1c833a);
+        --osirion-scroll-color: var(--foreground-on-accent-rest, #ffffff);
+        --osirion-scroll-hover-color: var(--foreground-on-accent-hover, #ffffff);
+        --osirion-scroll-border-color: transparent;
+        --osirion-scroll-hover-border-color: transparent;
+        --osirion-scroll-border-radius: var(--control-corner-radius, 4px);
+        --osirion-scroll-box-shadow: var(--elevation-shadow-card-rest, 0 0 2px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.14));
+        --osirion-scroll-hover-box-shadow: var(--elevation-shadow-card-hover, 0 0 2px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.14));
     }
 
     /*
- * MudBlazor Integration
- */
+     * MudBlazor Integration
+     */
     :root.osirion-mudblazor-integration {
         /* MudBlazor color mappings */
         --osirion-primary-color: var(--mud-palette-primary, #594ae2);
@@ -211,8 +221,8 @@
     }
 
     /*
- * Radzen Blazor Integration
- */
+     * Radzen Blazor Integration
+     */
     :root.osirion-radzen-integration {
         /* Radzen color mappings */
         --osirion-primary-color: var(--rz-primary, #479cc8);
@@ -589,7 +599,7 @@
         color: var(--osirion-active-text-color);
     }
 
-    /* Scroll to Top */
+/* Scroll to Top */
 .scroll-to-top {
     display: none; /* Hidden by default, shown by JavaScript */
     align-items: center;
