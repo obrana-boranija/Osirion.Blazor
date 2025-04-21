@@ -363,3 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 /examples/Osirion.Blazor.Example/appsettings.Development.json
 /examples/Osirion.Blazor.Example/appsettings.Development.json
+/examples/Osirion.Blazor.FluentUI.Example/Osirion.Blazor.FluentUI.Example/appsettings.Development.json
