@@ -1,0 +1,73 @@
+﻿@page "/osirion-debug"
+@using Microsoft.Extensions.Options
+@using Osirion.Blazor.Options
+@using Osirion.Blazor.Services
+@rendermode InteractiveAuto
+
+<PageTitle>Osirion Debug</PageTitle>
+
+<h1>Osirion Integration Debug</h1>
+
+<FluentCard>
+    <h2>Framework Integration</h2>
+    <p><strong>Configured Framework:</strong> @(StyleOptions?.Value?.FrameworkIntegration ?? CssFramework.None)</p>
+    <p><strong>Use Styles:</strong> @(StyleOptions?.Value?.UseStyles ?? true)</p>
+    <p><strong>Custom Variables:</strong> @(StyleOptions?.Value?.CustomVariables ?? "None")</p>
+</FluentCard>
+
+<FluentCard>
+    <h2>ScrollToTop Configuration</h2>
+    <p><strong>Manager Enabled:</strong> @(ScrollManager?.IsEnabled ?? false)</p>
+    <p><strong>Position:</strong> @(ScrollManager?.Position.ToString() ?? "Not configured")</p>
+    <p><strong>Behavior:</strong> @(ScrollManager?.Behavior.ToString() ?? "Not configured")</p>
+    <p><strong>Visibility Threshold:</strong> @(ScrollManager?.VisibilityThreshold ?? 0)</p>
+</FluentCard>
+
+<FluentCard>
+    <h2>Test ScrollToTop</h2>
+    <div style="height: 800px; background-color: #f0f0f0; padding: 1rem; margin-bottom: 1rem;">
+        <p>Scroll down to see ScrollToTop button</p>
+    </div>
+</FluentCard>
+
+<FluentCard>
+    <h2>CSS Classes Test</h2>
+    <p>Root Element Classes: <span id="root-classes">Loading...</span></p>
+
+    <button class="fluent-button" @onclick="ToggleTheme">Toggle Theme Integration</button>
+</FluentCard>
+
+@code {
+    [Inject]
+    private IOptions<OsirionStyleOptions>? StyleOptions { get; set; }
+
+    [Inject]
+    private ScrollToTopManager? ScrollManager { get; set; }
+
+    [Inject]
+    private IJSRuntime JSRuntime { get; set; } = default!;
+
+    private async Task ToggleTheme()
+    {
+        await JSRuntime.InvokeVoidAsync("eval", @"
+            const htmlEl = document.documentElement;
+            if (htmlEl.classList.contains('osirion-fluent-integration')) {
+                htmlEl.classList.remove('osirion-fluent-integration');
+            } else {
+                htmlEl.classList.add('osirion-fluent-integration');
+            }
+            document.getElementById('root-classes').innerText = htmlEl.className;
+        ");
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("eval", @"
+                const htmlEl = document.documentElement;
+                document.getElementById('root-classes').innerText = htmlEl.className;
+            ");
+        }
+    }
+}
