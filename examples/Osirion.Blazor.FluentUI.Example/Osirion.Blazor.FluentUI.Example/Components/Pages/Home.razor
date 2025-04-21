@@ -1,0 +1,19 @@
+﻿@page "/"
+@using Osirion.Blazor.Components.GitHubCms
+
+<PageTitle>Home</PageTitle>
+
+<div class="hero">
+    <h1>Welcome to Osirion Blog</h1>
+    <p>A blog powered by Osirion.Blazor and GitHub CMS</p>
+</div>
+
+<div class="featured-section">
+    <h2>Featured Articles</h2>
+    <ContentList FeaturedCount="10" />
+</div>
+
+<div class="categories-section">
+    <h2>Browse by Category</h2>
+    <CategoriesList />
+</div>

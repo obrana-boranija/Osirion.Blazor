@@ -1,5 +1,113 @@
 # Migration Guide
 
+## Upgrading to v1.5.0
+
+### Breaking Changes
+
+Three breaking changes:
+
+1. `osirion-cms.css` has been renamed to `osirion.css` to better reflect its broader purpose as it now includes styles for all components, not just CMS components.
+
+2. Styling options have been moved from `GitHubCmsOptions` to a new dedicated `OsirionStyleOptions` class. If you previously used `GitHubCmsOptions` for styling configuration, you'll need to update your code to use the new class.
+
+3. Service registration extensions have been refactored for better organization and maintainability. The previous extension methods still work but using the new fluent API is recommended.
+
+### New Features
+
+This version introduces CSS framework integration and an improved service registration API:
+
+1. **Framework Integration**: Seamless integration with Bootstrap, Tailwind CSS, Fluent UI, MudBlazor, and Radzen
+2. **CssFramework enum**: For specifying which framework to integrate with
+3. **Framework-specific CSS variable mappings**: Automatic mapping of Osirion variables to framework variables
+4. **Enhanced OsirionStyles component**: Now supports framework integration parameter
+5. **New OsirionStyleOptions class**: Dedicated class for styling configuration
+6. **Fluent API for service registration**: New `AddOsirionBlazor` method for fluent configuration
+7. **Configuration-based registration**: Easily register all services from appsettings.json
+
+### Migration Steps
+
+1. Update your package reference:
+   ```bash
+   dotnet add package Osirion.Blazor --version 1.5.0
+   ```
+
+2. Update CSS reference in your `_Host.cshtml` or `App.razor`:
+   ```html
+   <!-- Before -->
+   <link rel="stylesheet" href="_content/Osirion.Blazor/css/osirion-cms.css" />
+   
+   <!-- After -->
+   <link rel="stylesheet" href="_content/Osirion.Blazor/css/osirion.css" />
+   ```
+
+3. If you previously configured styling in `GitHubCmsOptions`, update to the new `OsirionStyleOptions`:
+   ```csharp
+   // Before
+   builder.Services.Configure<GitHubCmsOptions>(options => {
+       options.UseStyles = true;
+       options.CustomVariables = "--osirion-primary-color: #0077cc;";
+       options.FrameworkIntegration = CssFramework.Bootstrap;
+   });
+   
+   // After
+   builder.Services.AddOsirionStyle(options => {
+       options.UseStyles = true;
+       options.CustomVariables = "--osirion-primary-color: #0077cc;";
+       options.FrameworkIntegration = CssFramework.Bootstrap;
+   });
+   
+   // Or even simpler for framework integration
+   builder.Services.AddOsirionStyle(CssFramework.Bootstrap);
+   ```
+
+4. Consider updating to the new fluent API for service registration:
+   ```csharp
+   // Before - individual service registration
+   builder.Services.AddGitHubCms(options => { ... });
+   builder.Services.AddScrollToTop(options => { ... });
+   builder.Services.AddClarityTracker(options => { ... });
+   
+   // After - fluent API
+   builder.Services.AddOsirionBlazor(osirion => {
+       osirion
+           .AddGitHubCms(options => { ... })
+           .AddScrollToTop(options => { ... })
+           .AddOsirionStyle(CssFramework.Bootstrap)
+           .AddClarityTracker(options => { ... });
+   });
+   
+   // Or from configuration
+   builder.Services.AddOsirionBlazor(builder.Configuration);
+   ```
+
+5. (Optional) Update appsettings.json if used:
+   ```json
+   // Before
+   {
+     "GitHubCms": {
+       "UseStyles": true,
+       "CustomVariables": "...",
+       "FrameworkIntegration": "Bootstrap"
+     }
+   }
+   
+   // After
+   {
+     "OsirionStyle": {
+       "UseStyles": true,
+       "CustomVariables": "...",
+       "FrameworkIntegration": "Bootstrap"
+     }
+   }
+   ```
+
+6. (Optional) Apply framework integration via HTML class:
+   ```html
+   <html class="osirion-bootstrap-integration">
+       <!-- Your app content -->
+   </html>
+   ```
+
 ## Upgrading to v1.4.0
 
 ### Breaking Changes

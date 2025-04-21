@@ -6,22 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorComponents();
 
-builder.Services.AddOsirionBlazor(osirion => {
-    osirion.AddAllServices(builder.Configuration);
-});
-
-//builder.Services.AddScrollToTop(builder.Configuration);
-
-//builder.Services.AddScrollToTop(options =>
-//{
-//    options.Position = ButtonPosition.BottomLeft;
-//    options.Title = "Back to Top";
-//    options.Text = "Top";
-//    options.Behavior = ScrollBehavior.Smooth;
-//    options.VisibilityThreshold = 400;
-//    options.UseStyles = true;
-//    options.CustomVariables = "--osirion-scroll-background: #007bff;";
-//});
+builder.Services.AddOsirionBlazor(builder.Configuration);
 
 var app = builder.Build();
 

@@ -1,13 +1,49 @@
 ﻿@if (ShouldUseStyles)
 {
-    <link rel="stylesheet" href="_content/Osirion.Blazor/css/osirion-cms.css" />
+        <link rel="stylesheet" href="_content/Osirion.Blazor/css/osirion.css" />
 }
 
 @if (!string.IsNullOrEmpty(EffectiveCustomVariables))
 {
-    <style>
-        :root {
+        <style>
+            :root {
         @((MarkupString)EffectiveCustomVariables)
-        }
-    </style>
+            }
+        </style>
+}
+
+@if (EffectiveFrameworkIntegration != CssFramework.None)
+{
+    @((MarkupString)GetFrameworkIntegrationScript())
+}
+
+@code {
+    private string GetFrameworkIntegrationScript()
+    {
+        var className = GetFrameworkIntegrationClass();
+        if (string.IsNullOrEmpty(className))
+            return string.Empty;
+
+        return $@"
+            <script>
+                (function() {{
+                    // Execute immediately and after DOM is fully loaded to ensure it works in all cases
+                    function applyFrameworkIntegration() {{
+                        const htmlElement = document.documentElement || document.querySelector('html');
+                        if (htmlElement && !htmlElement.classList.contains('{className}')) {{
+                            htmlElement.classList.add('{className}');
+                        }}
+                    }}
+
+                    // Run immediately
+                    applyFrameworkIntegration();
+
+                    // Also run when DOM is loaded (for SSR scenarios)
+                    if (document.readyState === 'loading') {{
+                        document.addEventListener('DOMContentLoaded', applyFrameworkIntegration);
+                    }}
+                }})();
+            </script>
+        ";
+    }
 }

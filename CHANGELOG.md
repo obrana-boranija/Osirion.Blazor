@@ -5,7 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.4.0] - 2025-04-25
+## [1.5.0] - 2025-04-21
+
+### Added
+- Improved service registration with fluent API through `AddOsirionBlazor` method
+- New `IOsirionBlazorBuilder` interface for better extensibility
+- `OsirionStyleOptions` class separated from `GitHubCmsOptions` for better separation of concerns
+- CSS framework integration support for Bootstrap, Tailwind, FluentUI, MudBlazor, and Radzen
+- CssFramework enum for specifying framework integration options
+- Integration classes for mapping Osirion variables to CSS framework variables
+- Updated OsirionStyles component with FrameworkIntegration parameter
+- Framework integration documentation with examples for each supported framework
+- Comprehensive unit tests for framework integration
+
+### Changed
+- Refactored service collection extensions for better organization
+- Renamed `osirion-cms.css` to `osirion.css` for better clarity on its broader purpose
+- Enhanced the styling documentation to include framework integration examples
+- Updated the README.md and Quick Reference with CSS framework integration examples and fluent API usage
+- Styling options moved from `GitHubCmsOptions` to dedicated `OsirionStyleOptions` class
+
+## [1.4.0] - 2025-04-20
 
 ### Added
 - ScrollToTop component for easy navigation back to the top of the page

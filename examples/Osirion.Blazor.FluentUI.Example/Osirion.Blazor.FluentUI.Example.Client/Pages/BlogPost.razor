@@ -1,0 +1,20 @@
+﻿@page "/blog/{Slug}"
+@page "/docs/{Slug}"
+@using Osirion.Blazor.Components.GitHubCms
+@using Osirion.Blazor.Models.Cms
+@inject NavigationManager NavigationManager
+@rendermode InteractiveAuto
+
+
+<PageTitle>@(ContentItem?.Title ?? "Blog Post") - Osirion Blog</PageTitle>
+
+<ContentView Path="@Path" />
+
+@code {
+    [Parameter]
+    public string Slug { get; set; } = string.Empty;
+
+    private ContentItem? ContentItem { get; set; }
+
+    private string Path => $"{NavigationManager.ToBaseRelativePath(NavigationManager.Uri)}.md";
+}

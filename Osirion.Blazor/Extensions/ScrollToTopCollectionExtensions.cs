@@ -7,24 +7,28 @@ using Osirion.Blazor.Services;
 namespace Osirion.Blazor.Extensions;
 
 /// <summary>
-/// Extension methods for the ScrollToTop component
+/// Extension methods for configuring ScrollToTop services in the DI container.
 /// </summary>
-public static class ScrollToTopCollectionExtensions
+public static class ScrollToTopServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds and configures the global ScrollToTop functionality with options from configuration
+    /// Adds ScrollToTop service to the service collection with configuration from settings.
     /// </summary>
-    /// <param name="services">The service collection</param>
-    /// <param name="configuration">The configuration containing ScrollToTop settings</param>
-    /// <returns>The service collection for chaining</returns>
-    /// <exception cref="ArgumentNullException">Thrown when services or configuration is null</exception>
-    public static IServiceCollection AddScrollToTop(this IServiceCollection services,
-        IConfiguration configuration)
+    /// <param name="services">The service collection.</param>
+    /// <param name="configuration">The configuration containing ScrollToTop settings.</param>
+    /// <returns>The service collection for chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when services is null.</exception>
+    public static IServiceCollection AddScrollToTop(this IServiceCollection services, IConfiguration configuration)
     {
         if (services == null)
+        {
             throw new ArgumentNullException(nameof(services));
+        }
+
         if (configuration == null)
+        {
             return services;
+        }
 
         // Get options from configuration
         var options = new ScrollToTopOptions();
@@ -54,15 +58,15 @@ public static class ScrollToTopCollectionExtensions
     }
 
     /// <summary>
-    /// Adds and configures the global ScrollToTop functionality with customized options
+    /// Adds ScrollToTop service to the service collection with common parameters.
     /// </summary>
-    /// <param name="services">The service collection</param>
-    /// <param name="position">Position of the ScrollToTop button</param>
-    /// <param name="behavior">Scroll behavior</param>
-    /// <param name="visibilityThreshold">Visibility threshold in pixels</param>
-    /// <param name="text">Optional text to display</param>
-    /// <returns>The service collection for chaining</returns>
-    /// <exception cref="ArgumentNullException">Thrown when services is null</exception>
+    /// <param name="services">The service collection.</param>
+    /// <param name="position">Position of the ScrollToTop button.</param>
+    /// <param name="behavior">Scroll behavior.</param>
+    /// <param name="visibilityThreshold">Visibility threshold in pixels.</param>
+    /// <param name="text">Optional text to display.</param>
+    /// <returns>The service collection for chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when services is null.</exception>
     public static IServiceCollection AddScrollToTop(
         this IServiceCollection services,
         ButtonPosition position = ButtonPosition.BottomRight,
@@ -71,7 +75,9 @@ public static class ScrollToTopCollectionExtensions
         string? text = null)
     {
         if (services == null)
+        {
             throw new ArgumentNullException(nameof(services));
+        }
 
         // Register the ScrollToTopManager as a singleton
         services.AddSingleton(new ScrollToTopManager
@@ -83,76 +89,87 @@ public static class ScrollToTopCollectionExtensions
             Text = text
         });
 
+        // Also register the corresponding options
+        services.Configure<ScrollToTopOptions>(options =>
+        {
+            options.Position = position;
+            options.Behavior = behavior;
+            options.VisibilityThreshold = visibilityThreshold;
+            options.Text = text;
+        });
+
         return services;
     }
 
     /// <summary>
-    /// Adds and configures the global ScrollToTop functionality with detailed customization
+    /// Adds ScrollToTop service to the service collection with detailed configuration.
     /// </summary>
-    /// <param name="services">The service collection</param>
-    /// <param name="configureAction">Action to configure the ScrollToTop manager</param>
-    /// <returns>The service collection for chaining</returns>
-    /// <exception cref="ArgumentNullException">Thrown when services or configureAction is null</exception>
+    /// <param name="services">The service collection.</param>
+    /// <param name="configure">Action to configure the ScrollToTop manager.</param>
+    /// <returns>The service collection for chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when services is null.</exception>
     public static IServiceCollection AddScrollToTop(
         this IServiceCollection services,
-        Action<ScrollToTopManager> configureAction)
+        Action<ScrollToTopManager> configure)
     {
         if (services == null)
+        {
             throw new ArgumentNullException(nameof(services));
-        if (configureAction == null)
+        }
+
+        if (configure == null)
+        {
             return services;
+        }
 
         // Create a new manager instance with default settings
         var manager = new ScrollToTopManager { IsEnabled = true };
 
         // Apply custom configuration
-        configureAction.Invoke(manager);
+        configure.Invoke(manager);
 
         // Register as singleton
         services.AddSingleton(manager);
 
+        // Also register corresponding options
+        services.Configure<ScrollToTopOptions>(options =>
+        {
+            options.Position = manager.Position;
+            options.Behavior = manager.Behavior;
+            options.VisibilityThreshold = manager.VisibilityThreshold;
+            options.Text = manager.Text;
+            options.Title = manager.Title;
+            options.CssClass = manager.CssClass;
+            options.CustomIcon = manager.CustomIcon;
+        });
+
         return services;
     }
 
     /// <summary>
-    /// Registers ScrollToTopOptions from configuration without enabling the global ScrollToTop
+    /// Adds ScrollToTop options without enabling the global ScrollToTop service.
     /// </summary>
-    /// <param name="services">The service collection</param>
-    /// <param name="configuration">The configuration containing ScrollToTop settings</param>
-    /// <returns>The service collection for chaining</returns>
-    /// <exception cref="ArgumentNullException">Thrown when services or configuration is null</exception>
-    public static IServiceCollection AddScrollToTopOptions(this IServiceCollection services,
+    /// <param name="services">The service collection.</param>
+    /// <param name="configuration">The configuration containing ScrollToTop settings.</param>
+    /// <returns>The service collection for chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when services is null.</exception>
+    public static IServiceCollection AddScrollToTopOptions(
+        this IServiceCollection services,
         IConfiguration configuration)
     {
         if (services == null)
+        {
             throw new ArgumentNullException(nameof(services));
-        if (configuration == null)
-            return services;
+        }
 
-        // Configure options from the "ScrollToTop" section of appsettings.json
+        if (configuration == null)
+        {
+            return services;
+        }
+
+        // Configure options from the settings
         services.Configure<ScrollToTopOptions>(
             configuration.GetSection(ScrollToTopOptions.Section));
-
-        return services;
-    }
-
-    /// <summary>
-    /// Registers ScrollToTopOptions with programmatic configuration without enabling the global ScrollToTop
-    /// </summary>
-    /// <param name="services">The service collection</param>
-    /// <param name="configureOptions">Action to configure the ScrollToTop options</param>
-    /// <returns>The service collection for chaining</returns>
-    /// <exception cref="ArgumentNullException">Thrown when services or configureOptions is null</exception>
-    public static IServiceCollection AddScrollToTopOptions(this IServiceCollection services,
-        Action<ScrollToTopOptions> configureOptions)
-    {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
-        if (configureOptions == null)
-            return services;
-
-        // Configure options using the provided action
-        services.Configure(configureOptions);
 
         return services;
     }

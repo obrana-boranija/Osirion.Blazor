@@ -1,4 +1,91 @@
-# Quick Reference
+# Quick Reference for Osirion.Blazor
+
+## Service Registration
+
+### Option 1: Fluent API (Recommended)
+
+```csharp
+// Configure all services using the fluent API
+builder.Services.AddOsirionBlazor(osirion => {
+    osirion
+        .AddGitHubCms(options => {
+            options.Owner = "username";
+            options.Repository = "repo";
+        })
+        .AddScrollToTop(ButtonPosition.BottomRight)
+        .AddOsirionStyle(CssFramework.Bootstrap)
+        .AddClarityTracker(options => {
+            options.SiteId = "clarity-id";
+        })
+        .AddMatomoTracker(options => {
+            options.SiteId = "matomo-id";
+        });
+});
+```
+
+### Option 2: Individual Service Registration
+
+```csharp
+// Add services individually
+builder.Services.AddGitHubCms(options => {
+    options.Owner = "username";
+    options.Repository = "repo";
+});
+
+builder.Services.AddScrollToTop(options => {
+    options.Position = ButtonPosition.BottomRight;
+    options.Behavior = ScrollBehavior.Smooth;
+});
+
+builder.Services.AddOsirionStyle(CssFramework.Bootstrap);
+
+builder.Services.AddClarityTracker(options => {
+    options.SiteId = "clarity-id";
+});
+
+builder.Services.AddMatomoTracker(options => {
+    options.SiteId = "matomo-id";
+});
+```
+
+### Option 3: Configuration-Based Registration
+
+```csharp
+// Register all services from appsettings.json sections
+builder.Services.AddOsirionBlazor(builder.Configuration);
+```
+
+With corresponding appsettings.json:
+
+```json
+{
+  "GitHubCms": {
+    "Owner": "username",
+    "Repository": "repo",
+    "ContentPath": "content",
+    "Branch": "main"
+  },
+  "ScrollToTop": {
+    "Position": "BottomRight",
+    "Behavior": "Smooth",
+    "VisibilityThreshold": 300,
+    "Text": "Top"
+  },
+  "OsirionStyle": {
+    "UseStyles": true,
+    "FrameworkIntegration": "Bootstrap",
+    "CustomVariables": "--osirion-primary-color: #0077cc;"
+  },
+  "Clarity": {
+    "SiteId": "clarity-id",
+    "Track": true
+  },
+  "Matomo": {
+    "SiteId": "matomo-id",
+    "Track": true
+  }
+}
+```
 
 ## Navigation
 

@@ -9,11 +9,11 @@
 
 		<!-- NuGet package properties -->
 		<PackageId>Osirion.Blazor</PackageId>
-		<Version>1.4.0</Version>
+		<Version>1.5.0</Version>
 		<Authors>Dejan Demonjić</Authors>
 		<Company>Tridesetri</Company>
-		<Description>Modern, high-performance Blazor components and utilities. Features SSR-compatible components for navigation, analytics, and GitHub CMS integration for markdown-based content management.</Description>
-		<PackageTags>blazor;components;utilities;dotnet;web;navigation;analytics;cms;github;markdown;ssr;static-rendering</PackageTags>
+		<Description>Modern, high-performance Blazor components and utilities. Features SSR-compatible components for navigation, analytics, and GitHub CMS integration with seamless CSS framework integration (Bootstrap, Tailwind, FluentUI, MudBlazor, Radzen).</Description>
+		<PackageTags>blazor;components;utilities;dotnet;web;navigation;analytics;cms;github;markdown;ssr;bootstrap;tailwind;fluentui;mudblazor;radzen;static-rendering</PackageTags>
 		<PackageProjectUrl>https://github.com/obrana-boranija/Osirion.Blazor</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/obrana-boranija/Osirion.Blazor</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>

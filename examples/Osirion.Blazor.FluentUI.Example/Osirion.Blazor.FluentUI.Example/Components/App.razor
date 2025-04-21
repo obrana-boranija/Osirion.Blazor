@@ -1,27 +1,28 @@
-﻿<!DOCTYPE html>
+﻿@using Osirion.Blazor.Components.Navigation
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
+    <FluentDesignTheme Mode="DesignThemeModes.Light" OfficeColor="OfficeColor.Excel" />
+    
+
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <base href="/" />
-
-    
-
-    <link rel="stylesheet" href="@Assets["lib/bootstrap/dist/css/bootstrap.min.css"]" />
     <link rel="stylesheet" href="@Assets["app.css"]" />
-    <link rel="stylesheet" href="@Assets["Osirion.Blazor.Example.styles.css"]" />
+    <link rel="stylesheet" href="@Assets["Osirion.Blazor.FluentUI.Example.styles.css"]" />
 
     <!-- Reference the Osirion CSS directly from the package -->
     <link rel="stylesheet" href="@Assets["_content/Osirion.Blazor/css/osirion.css"]" />
 
     <ImportMap />
-    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <HeadOutlet />
 </head>
 
 <body>
     <Routes />
+    <ScrollToTopProvider />
     <script src="_framework/blazor.web.js"></script>
 
     <EnhancedNavigationInterceptor Behavior="ScrollBehavior.Smooth" />

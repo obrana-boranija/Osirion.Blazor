@@ -7,13 +7,13 @@ Modern, high-performance Blazor components and utilities that work with SSR, Ser
 
 ## Features
 
-- 🚀 **SSR Compatible**: Works with Server-Side Rendering
-- 🔒 **Zero-JS Dependencies**: Core functionality without JavaScript interop
-- 🎯 **Multi-Platform**: Supports .NET 8, .NET 9, and future versions
-- 📊 **Analytics Integration**: Microsoft Clarity, Matomo
-- 🧭 **Enhanced Navigation**: Improved scrolling behavior with ScrollToTop
-- 📝 **GitHub CMS**: Markdown-based content management
-- 🎨 **Customizable Styling**: CSS variables for easy theming
+- **SSR Compatible**: Works with Server-Side Rendering
+- **Zero-JS Dependencies**: Core functionality without JavaScript interop
+- **Multi-Platform**: Supports .NET 8, .NET 9, and future versions
+- **Analytics Integration**: Microsoft Clarity, Matomo
+- **Enhanced Navigation**: Improved scrolling behavior with ScrollToTop
+- **GitHub CMS**: Markdown-based content management
+- **Customizable Styling**: CSS variables for easy theming
 
 ## Installation
 
@@ -37,25 +37,54 @@ dotnet add package Osirion.Blazor
 ```csharp
 using Osirion.Blazor.Extensions;
 
-// GitHub CMS
-builder.Services.AddGitHubCms(options =>
-{
+// Option 1: Configure all services using fluent API
+builder.Services.AddOsirionBlazor(osirion => {
+    osirion
+        // Add GitHub CMS with configuration
+        .AddGitHubCms(options => {
+            options.Owner = "your-github-username";
+            options.Repository = "your-content-repo";
+            options.ContentPath = "content";
+            options.Branch = "main";
+        })
+        
+        // Add ScrollToTop with detailed configuration
+        .AddScrollToTop(options => {
+            options.Position = ButtonPosition.BottomRight;
+            options.Behavior = ScrollBehavior.Smooth;
+            options.VisibilityThreshold = 300;
+            options.Text = "Top";
+        })
+        
+        // Add CSS framework integration
+        .AddOsirionStyle(CssFramework.Bootstrap)
+        
+        // Add analytics trackers
+        .AddClarityTracker(options => {
+            options.SiteId = "your-clarity-id";
+            options.Track = true;
+        })
+        .AddMatomoTracker(options => {
+            options.SiteId = "your-matomo-id";
+            options.Track = true;
+        });
+});
+
+// Option 2: Configure each service individually
+builder.Services.AddGitHubCms(options => {
     options.Owner = "your-github-username";
     options.Repository = "your-content-repo";
-    options.ContentPath = "content";
-    options.Branch = "main";
 });
 
-// Navigation (optional)
-builder.Services.AddScrollToTop(options => 
-{
-    options.Position = ButtonPosition.BottomRight;
-    options.Behavior = ScrollBehavior.Smooth;
-});
+builder.Services.AddScrollToTop(ButtonPosition.BottomRight, ScrollBehavior.Smooth);
 
-// Analytics (optional)
+builder.Services.AddOsirionStyle(CssFramework.Bootstrap);
+
 builder.Services.AddClarityTracker(builder.Configuration);
 builder.Services.AddMatomoTracker(builder.Configuration);
+
+// Option 3: Configure from appsettings.json
+builder.Services.AddOsirionBlazor(builder.Configuration);
 ```
 
 3. Add styles and components to your application:

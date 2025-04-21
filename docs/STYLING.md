@@ -10,7 +10,7 @@ Add the styles directly in your `App.razor` or `_Host.cshtml` file:
 
 ```html
 <!-- Reference the default styles -->
-<link rel="stylesheet" href="_content/Osirion.Blazor/css/osirion-cms.css" />
+<link rel="stylesheet" href="_content/Osirion.Blazor/css/osirion.css" />
 
 <!-- Optionally override variables -->
 <style>
@@ -33,6 +33,9 @@ Include the component in your layout:
 
 <!-- With custom variables -->
 <OsirionStyles CustomVariables="--osirion-primary-color: #0077cc;" />
+
+<!-- With framework integration -->
+<OsirionStyles FrameworkIntegration="CssFramework.Bootstrap" />
 ```
 
 ### 3. Configuration-Based
@@ -44,6 +47,7 @@ Configure styling options in `Program.cs`:
 builder.Services.Configure<GitHubCmsOptions>(options => {
     options.UseStyles = true;
     options.CustomVariables = "--osirion-primary-color: #0077cc;";
+    options.FrameworkIntegration = CssFramework.Bootstrap;
 });
 ```
 
@@ -51,6 +55,48 @@ Then simply include the component without parameters:
 
 ```razor
 <OsirionStyles />
+```
+
+## CSS Framework Integration
+
+Osirion.Blazor is designed to work seamlessly with popular CSS frameworks used in Blazor applications. You can integrate with these frameworks in three ways:
+
+### 1. Using the FrameworkIntegration Parameter
+
+```razor
+<OsirionStyles FrameworkIntegration="CssFramework.Bootstrap" />
+```
+
+Supported frameworks:
+- `CssFramework.Bootstrap` - Bootstrap 5+
+- `CssFramework.Tailwind` - Tailwind CSS
+- `CssFramework.FluentUI` - Fluent UI for Blazor
+- `CssFramework.MudBlazor` - MudBlazor
+- `CssFramework.Radzen` - Radzen Blazor
+
+### 2. Adding the Integration Class
+
+Add the corresponding integration class to your root HTML element:
+
+```html
+<html class="osirion-bootstrap-integration">
+  <!-- Your content -->
+</html>
+```
+
+Available classes:
+- `osirion-bootstrap-integration`
+- `osirion-tailwind-integration`
+- `osirion-fluent-integration`
+- `osirion-mudblazor-integration`
+- `osirion-radzen-integration`
+
+### 3. Via Configuration
+
+```csharp
+builder.Services.Configure<GitHubCmsOptions>(options => {
+    options.FrameworkIntegration = CssFramework.Bootstrap;
+});
 ```
 
 ## CSS Variables Reference
@@ -106,6 +152,18 @@ Osirion.Blazor uses a comprehensive set of CSS variables that you can customize:
 --osirion-content-width: 800px;
 --osirion-card-min-width: 300px;
 --osirion-image-height: 200px;
+```
+
+### ScrollToTop Component
+```css
+--osirion-scroll-background: rgba(37, 99, 235, 0.8);
+--osirion-scroll-hover-background: rgba(29, 78, 216, 0.9);
+--osirion-scroll-color: #ffffff;
+--osirion-scroll-hover-color: #ffffff;
+--osirion-scroll-size: 45px;
+--osirion-scroll-margin: 25px;
+--osirion-scroll-border-radius: 50%;
+--osirion-scroll-z-index: 1000;
 ```
 
 ## Theming Examples
@@ -177,6 +235,56 @@ Then in your Blazor app:
 }
 ```
 
+## Framework-Specific Styling Examples
+
+### Bootstrap Integration
+
+When using Bootstrap integration, Osirion components will automatically adapt to your Bootstrap theme:
+
+```razor
+<OsirionStyles FrameworkIntegration="CssFramework.Bootstrap" />
+
+<!-- Your Bootstrap themed Osirion components -->
+<ContentList />
+<ScrollToTop />
+```
+
+You can also use Bootstrap utility classes alongside Osirion components:
+
+```razor
+<div class="card shadow-sm">
+    <ContentList />
+</div>
+```
+
+### Tailwind Integration
+
+With Tailwind integration, Osirion components will use Tailwind's color palette and design tokens:
+
+```razor
+<OsirionStyles FrameworkIntegration="CssFramework.Tailwind" />
+
+<!-- Combine with Tailwind utility classes -->
+<div class="p-4 bg-gray-50 rounded-lg">
+    <ContentList />
+</div>
+```
+
+### MudBlazor Integration
+
+MudBlazor integration ensures Osirion components match your MudBlazor theme:
+
+```razor
+<MudThemeProvider />
+<OsirionStyles FrameworkIntegration="CssFramework.MudBlazor" />
+
+<MudContainer>
+    <MudPaper Elevation="3" Class="pa-4 my-4">
+        <ContentList />
+    </MudPaper>
+</MudContainer>
+```
+
 ## Best Practices
 
 1. **Override Only What You Need**: Only override the variables you want to change to minimize maintenance.
@@ -188,3 +296,7 @@ Then in your Blazor app:
 4. **Consider Accessibility**: Maintain sufficient contrast when changing colors.
 
 5. **Apply Themes Consistently**: Apply theme classes at the highest possible level in your component hierarchy.
+
+6. **Framework Integration**: When using CSS framework integration, add the framework's CSS before Osirion's CSS.
+
+7. **Custom Overrides**: You can still override specific variables even when using framework integration.
