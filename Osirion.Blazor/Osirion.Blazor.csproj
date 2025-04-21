@@ -9,7 +9,7 @@
 
 		<!-- NuGet package properties -->
 		<PackageId>Osirion.Blazor</PackageId>
-		<Version>1.5.0</Version>
+		<Version>1.5.1</Version>
 		<Authors>Dejan Demonjić</Authors>
 		<Company>Tridesetri</Company>
 		<Description>Modern, high-performance Blazor components and utilities. Features SSR-compatible components for navigation, analytics, and GitHub CMS integration with seamless CSS framework integration (Bootstrap, Tailwind, FluentUI, MudBlazor, Radzen).</Description>

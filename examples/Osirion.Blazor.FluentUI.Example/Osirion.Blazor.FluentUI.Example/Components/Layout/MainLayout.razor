@@ -23,37 +23,10 @@
     </FluentFooter>
 </FluentLayout>
 
+<ScrollToTopProvider />
+
 <div id="blazor-error-ui" data-nosnippet>
     An unhandled error has occurred.
     <a href="." class="reload">Reload</a>
     <span class="dismiss">🗙</span>
 </div>
-
-<!-- Direct scroll-to-top button implementation -->
-<button id="manual-scroll-top"
-        style="position: fixed; bottom: 80px; right: 20px; width: 45px; height: 45px;
-               background-color: #0078d4; color: white; border-radius: 4px;
-               display: flex; align-items: center; justify-content: center;
-               cursor: pointer; z-index: 9999; border: none;">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 19V5M5 12l7-7 7 7" />
-    </svg>
-</button>
-
-<script>
-    // Wait for DOM to be fully loaded
-    window.addEventListener('load', function() {
-        var manualBtn = document.getElementById('manual-scroll-top');
-        if (manualBtn) {
-            manualBtn.addEventListener('click', function() {
-                console.log('Manual scroll-to-top clicked');
-                window.scrollTo({
-                    top: 0,
-                    left: 0,
-                    behavior: 'smooth'
-                });
-            });
-        }
-    });
-</script>

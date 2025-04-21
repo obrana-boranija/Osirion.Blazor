@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Osirion.Blazor.Components.Navigation;
 using Osirion.Blazor.Options;
 using Osirion.Blazor.Services;
@@ -30,29 +31,32 @@ public static class ScrollToTopServiceCollectionExtensions
             return services;
         }
 
-        // Get options from configuration
-        var options = new ScrollToTopOptions();
-        configuration.GetSection(ScrollToTopOptions.Section).Bind(options);
-
-        // Create and configure manager from options
-        var manager = new ScrollToTopManager
+        // Ensure backward compatibility with v1.4.0
+        var section = configuration.GetSection(ScrollToTopOptions.Section);
+        if (!section.Exists())
         {
-            IsEnabled = true,
-            Position = options.Position,
-            Behavior = options.Behavior,
-            VisibilityThreshold = options.VisibilityThreshold,
-            Text = options.Text,
-            Title = options.Title,
-            CssClass = options.CssClass,
-            CustomIcon = options.CustomIcon
-        };
+            return services;
+        }
 
-        // Register the manager as singleton
-        services.AddSingleton(manager);
+        // First register options directly
+        services.Configure<ScrollToTopOptions>(section);
 
-        // Also register the options for components that need it
-        services.Configure<ScrollToTopOptions>(
-            configuration.GetSection(ScrollToTopOptions.Section));
+        // Then register the manager factory that depends on the options
+        services.AddSingleton(provider =>
+        {
+            var options = provider.GetRequiredService<IOptions<ScrollToTopOptions>>().Value;
+            return new ScrollToTopManager
+            {
+                IsEnabled = true,
+                Position = options.Position,
+                Behavior = options.Behavior,
+                VisibilityThreshold = options.VisibilityThreshold,
+                Text = options.Text,
+                Title = options.Title,
+                CssClass = options.CssClass,
+                CustomIcon = options.CustomIcon
+            };
+        });
 
         return services;
     }
@@ -79,7 +83,16 @@ public static class ScrollToTopServiceCollectionExtensions
             throw new ArgumentNullException(nameof(services));
         }
 
-        // Register the ScrollToTopManager as a singleton
+        // First configure the options
+        services.Configure<ScrollToTopOptions>(options =>
+        {
+            options.Position = position;
+            options.Behavior = behavior;
+            options.VisibilityThreshold = visibilityThreshold;
+            options.Text = text;
+        });
+
+        // Then register the manager that depends on the options
         services.AddSingleton(new ScrollToTopManager
         {
             IsEnabled = true,
@@ -87,15 +100,6 @@ public static class ScrollToTopServiceCollectionExtensions
             Behavior = behavior,
             VisibilityThreshold = visibilityThreshold,
             Text = text
-        });
-
-        // Also register the corresponding options
-        services.Configure<ScrollToTopOptions>(options =>
-        {
-            options.Position = position;
-            options.Behavior = behavior;
-            options.VisibilityThreshold = visibilityThreshold;
-            options.Text = text;
         });
 
         return services;
@@ -128,10 +132,7 @@ public static class ScrollToTopServiceCollectionExtensions
         // Apply custom configuration
         configure.Invoke(manager);
 
-        // Register as singleton
-        services.AddSingleton(manager);
-
-        // Also register corresponding options
+        // Register options first
         services.Configure<ScrollToTopOptions>(options =>
         {
             options.Position = manager.Position;
@@ -142,6 +143,9 @@ public static class ScrollToTopServiceCollectionExtensions
             options.CssClass = manager.CssClass;
             options.CustomIcon = manager.CustomIcon;
         });
+
+        // Then register the already configured manager
+        services.AddSingleton(manager);
 
         return services;
     }

@@ -140,8 +140,8 @@
  */
     :root.osirion-fluent-integration {
         /* Fluent UI color mappings */
-        --osirion-primary-color: var(--fluentui-brand-color, #0078d4);
-        --osirion-primary-hover-color: var(--fluentui-brand-hover-color, #006dc7);
+        --osirion-primary-color: var(--accent-fill-rest, #0078d4);
+        --osirion-primary-hover-color: var(--accent-fill-hover, #006dc7);
         --osirion-text-color: var(--fluentui-text-color, #242424);
         --osirion-light-text-color: var(--fluentui-text-secondary-color, #5f5f5f);
         --osirion-border-color: var(--fluentui-border-color, #d1d1d1);
@@ -166,8 +166,8 @@
         /* Fluent UI effects */
         --osirion-box-shadow: var(--fluentui-shadow-medium, 0 2px 4px rgba(0, 0, 0, 0.1));
         /* ScrollToTop Fluent-specific styling */
-        --osirion-scroll-background: var(--fluentui-brand-color, #0078d4);
-        --osirion-scroll-hover-background: var(--fluentui-brand-hover-color, #006dc7);
+        --osirion-scroll-background: var(--accent-fill-rest, #0078d4);
+        --osirion-scroll-hover-background: var(--accent-fill-hover, #006dc7);
         --osirion-scroll-color: var(--fluentui-text-on-accent, #ffffff);
         --osirion-scroll-border-radius: var(--fluentui-border-radius-medium, 4px);
     }
