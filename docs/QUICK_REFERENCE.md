@@ -7,10 +7,29 @@
 <EnhancedNavigationInterceptor Behavior="ScrollBehavior.Smooth" />
 ```
 
+### Scroll To Top Button
+```razor
+<!-- Basic usage -->
+<ScrollToTop />
+
+<!-- Customized -->
+<ScrollToTop 
+    Position="ButtonPosition.BottomRight" 
+    Behavior="ScrollBehavior.Smooth"
+    VisibilityThreshold="300" 
+    Text="Top" />
+```
+
 ### Scroll Behavior Options
 - `ScrollBehavior.Auto` - Browser default
 - `ScrollBehavior.Instant` - Immediate scroll
 - `ScrollBehavior.Smooth` - Animated scroll
+
+### Button Position Options
+- `ButtonPosition.BottomRight` - Bottom right corner
+- `ButtonPosition.BottomLeft` - Bottom left corner
+- `ButtonPosition.TopRight` - Top right corner
+- `ButtonPosition.TopLeft` - Top left corner
 
 ## Analytics
 
@@ -87,10 +106,17 @@ builder.Services.AddGitHubCms(options =>
 ```css
 /* In your app.css or custom style block */
 :root {
+    /* General styles */
     --osirion-primary-color: #0077cc;
     --osirion-text-color: #333333;
     --osirion-border-radius: 0.25rem;
     --osirion-font-size: 1.1rem;
+    
+    /* ScrollToTop specific styles */
+    --osirion-scroll-background: rgba(0, 0, 0, 0.3);
+    --osirion-scroll-color: #ffffff;
+    --osirion-scroll-size: 40px;
+    --osirion-scroll-margin: 20px;
 }
 ```
 
@@ -100,6 +126,11 @@ builder.Services.AddGitHubCms(options =>
 builder.Services.Configure<GitHubCmsOptions>(options => {
     options.UseStyles = true;
     options.CustomVariables = "--osirion-primary-color: #0077cc;";
+});
+
+// For ScrollToTop
+builder.Services.AddScrollToTop(options => {
+    options.CustomVariables = "--osirion-scroll-background: #0077cc;";
 });
 ```
 
@@ -117,6 +148,18 @@ builder.Services.Configure<GitHubCmsOptions>(options => {
 /* Typography */
 --osirion-font-size: 1rem;
 --osirion-title-font-size: 1.25rem;
+
+/* ScrollToTop Colors */
+--osirion-scroll-background: rgba(0, 0, 0, 0.3);
+--osirion-scroll-hover-background: rgba(0, 0, 0, 0.5);
+--osirion-scroll-color: #ffffff;
+--osirion-scroll-hover-color: #ffffff;
+
+/* ScrollToTop Sizes */
+--osirion-scroll-size: 40px;
+--osirion-scroll-margin: 20px;
+--osirion-scroll-border-radius: 4px;
+--osirion-scroll-z-index: 1000;
 ```
 
 ## Complete Layout Example
@@ -147,6 +190,7 @@ builder.Services.Configure<GitHubCmsOptions>(options => {
 <body>
     <!-- Navigation -->
     <EnhancedNavigationInterceptor Behavior="ScrollBehavior.Smooth" />
+    <ScrollToTop />
 
     <!-- Analytics -->
     @if (ClarityOptions?.Value != null)

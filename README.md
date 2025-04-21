@@ -11,7 +11,7 @@ Modern, high-performance Blazor components and utilities that work with SSR, Ser
 - 🔒 **Zero-JS Dependencies**: Core functionality without JavaScript interop
 - 🎯 **Multi-Platform**: Supports .NET 8, .NET 9, and future versions
 - 📊 **Analytics Integration**: Microsoft Clarity, Matomo
-- 🧭 **Enhanced Navigation**: Improved scrolling behavior
+- 🧭 **Enhanced Navigation**: Improved scrolling behavior with ScrollToTop
 - 📝 **GitHub CMS**: Markdown-based content management
 - 🎨 **Customizable Styling**: CSS variables for easy theming
 
@@ -46,6 +46,13 @@ builder.Services.AddGitHubCms(options =>
     options.Branch = "main";
 });
 
+// Navigation (optional)
+builder.Services.AddScrollToTop(options => 
+{
+    options.Position = ButtonPosition.BottomRight;
+    options.Behavior = ScrollBehavior.Smooth;
+});
+
 // Analytics (optional)
 builder.Services.AddClarityTracker(builder.Configuration);
 builder.Services.AddMatomoTracker(builder.Configuration);
@@ -60,6 +67,7 @@ builder.Services.AddMatomoTracker(builder.Configuration);
 ```razor
 <!-- In your layout -->
 <EnhancedNavigationInterceptor Behavior="ScrollBehavior.Smooth" />
+<ScrollToTop />
 
 <!-- Add GitHub CMS components to your pages -->
 <ContentList Directory="blog" />
@@ -82,6 +90,10 @@ Osirion.Blazor components use CSS variables for easy styling customization:
         --osirion-primary-color: #0077cc;
         --osirion-border-radius: 0.25rem;
         --osirion-font-size: 1.1rem;
+        
+        /* ScrollToTop component variables */
+        --osirion-scroll-background: #0077cc;
+        --osirion-scroll-color: white;
     }
 </style>
 ```

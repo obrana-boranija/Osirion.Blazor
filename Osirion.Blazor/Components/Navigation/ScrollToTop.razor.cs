@@ -108,7 +108,7 @@ public partial class ScrollToTop
     /// <summary>
     /// Gets the inline JavaScript for the scroll-to-top functionality
     /// </summary>
-    private string GetScript()
+    protected string GetScript()
     {
         var threshold = VisibilityThreshold;
         var behavior = BehaviorString;

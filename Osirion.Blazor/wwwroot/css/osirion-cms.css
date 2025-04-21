@@ -37,17 +37,19 @@
     --osirion-image-height: 200px;
     /* Scroll to Top Button */
     /* Colors */
-    --osirion-scroll-background: rgba(0, 0, 0, 0.3);
-    --osirion-scroll-hover-background: rgba(0, 0, 0, 0.5);
+    --osirion-scroll-background: rgba(37, 99, 235, 0.8);
+    --osirion-scroll-hover-background: rgba(29, 78, 216, 0.9);
     --osirion-scroll-color: #ffffff;
     --osirion-scroll-hover-color: #ffffff;
     --osirion-scroll-border-color: transparent;
     --osirion-scroll-hover-border-color: transparent;
     /* Sizes and spacing */
-    --osirion-scroll-size: 40px;
-    --osirion-scroll-margin: 20px;
-    --osirion-scroll-border-radius: 4px;
+    --osirion-scroll-size: 45px;
+    --osirion-scroll-margin: 25px;
+    --osirion-scroll-border-radius: 50%;
     --osirion-scroll-z-index: 1000;
+    --osirion-scroll-box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    --osirion-scroll-hover-box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
     /* Animation */
     --osirion-scroll-transition: all 0.3s ease;
 }
@@ -396,7 +398,7 @@
 
     /* Scroll to Top */
 .scroll-to-top {
-    display: flex;
+    display: none; /* Hidden by default, shown by JavaScript */
     align-items: center;
     justify-content: center;
     position: fixed;
@@ -406,27 +408,39 @@
     color: var(--osirion-scroll-color);
     border: 1px solid var(--osirion-scroll-border-color);
     border-radius: var(--osirion-scroll-border-radius);
+    box-shadow: var(--osirion-scroll-box-shadow);
+    cursor: pointer;
     text-decoration: none;
     transition: var(--osirion-scroll-transition);
     z-index: var(--osirion-scroll-z-index);
 }
 
-    .scroll-to-top:hover {
+    .scroll-to-top:hover, .scroll-to-top:focus {
         background-color: var(--osirion-scroll-hover-background);
         color: var(--osirion-scroll-hover-color);
         border-color: var(--osirion-scroll-hover-border-color);
+        box-shadow: var(--osirion-scroll-hover-box-shadow);
+        transform: translateY(-2px);
+    }
+
+    .scroll-to-top:active {
+        transform: translateY(0);
+        box-shadow: var(--osirion-scroll-box-shadow);
     }
 
     .scroll-to-top svg {
         width: 24px;
         height: 24px;
+        stroke-width: 2.5;
     }
 
     .scroll-to-top .scroll-text {
         margin-left: 8px;
+        font-size: 14px;
+        font-weight: 500;
     }
 
-    /* Position variants */
+    /* Update position variants - keep these as they are */
     .scroll-to-top.bottom-right {
         bottom: var(--osirion-scroll-margin);
         right: var(--osirion-scroll-margin);
@@ -447,10 +461,11 @@
         left: var(--osirion-scroll-margin);
     }
 
-    /* If text is present, adjust the width */
+    /* If text is present, adjust to pill shape */
     .scroll-to-top:has(.scroll-text) {
         width: auto;
-        padding: 0 12px;
+        padding: 0 16px;
+        border-radius: 25px;
     }
 
 /* Responsive styles */
@@ -472,8 +487,8 @@
     }
 
     .scroll-to-top {
-        --osirion-scroll-size: 36px;
-        --osirion-scroll-margin: 16px;
+        --osirion-scroll-size: 40px;
+        --osirion-scroll-margin: 20px;
     }
 
         .scroll-to-top .scroll-text {
@@ -483,5 +498,6 @@
         .scroll-to-top:has(.scroll-text) {
             width: var(--osirion-scroll-size);
             padding: 0;
+            border-radius: var(--osirion-scroll-border-radius);
         }
 }

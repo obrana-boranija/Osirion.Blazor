@@ -1,5 +1,98 @@
 # Migration Guide
 
+## Upgrading to v1.4.0
+
+### Breaking Changes
+
+None. Version 1.4.0 is fully backward compatible with v1.3.0.
+
+### New Features
+
+This version introduces the ScrollToTop component:
+
+1. **ScrollToTop**: A customizable button component that allows users to quickly scroll back to the top of the page
+2. **ButtonPosition enum**: For positioning UI elements (BottomRight, BottomLeft, TopRight, TopLeft)
+3. **ScrollToTopOptions**: Configuration options for DI-based setup
+
+### Migration Steps
+
+1. Update your package reference:
+   ```bash
+   dotnet add package Osirion.Blazor --version 1.4.0
+   ```
+
+2. Add the ScrollToTop component to your layout:
+   ```razor
+   @using Osirion.Blazor.Components.Navigation
+   
+   <ScrollToTop />
+   ```
+
+3. (Optional) Configure ScrollToTop via DI in Program.cs:
+   ```csharp
+   using Osirion.Blazor.Extensions;
+   
+   builder.Services.AddScrollToTop(options =>
+   {
+       options.Position = ButtonPosition.BottomRight;
+       options.Behavior = ScrollBehavior.Smooth;
+       options.VisibilityThreshold = 300;
+       options.Text = "Top"; // Optional text label
+   });
+   ```
+
+4. (Optional) Configure via appsettings.json:
+   ```json
+   {
+     "ScrollToTop": {
+       "Position": "BottomRight",
+       "Behavior": "Smooth",
+       "VisibilityThreshold": 300,
+       "Text": "Top",
+       "UseStyles": true
+     }
+   }
+   ```
+
+### Configuration Options
+
+The `ScrollToTopOptions` class provides the following configuration options:
+
+```csharp
+public class ScrollToTopOptions
+{
+    public ScrollBehavior Behavior { get; set; } = ScrollBehavior.Smooth;
+    public int VisibilityThreshold { get; set; } = 300;
+    public ButtonPosition Position { get; set; } = ButtonPosition.BottomRight;
+    public string Title { get; set; } = "Scroll to top";
+    public string? Text { get; set; }
+    public string? CssClass { get; set; }
+    public string? CustomIcon { get; set; }
+    public bool UseStyles { get; set; } = true;
+    public string? CustomVariables { get; set; }
+}
+```
+
+### CSS Styling
+
+The ScrollToTop component can be styled using CSS variables:
+
+```css
+:root {
+  /* Colors */
+  --osirion-scroll-background: rgba(0, 0, 0, 0.3);
+  --osirion-scroll-hover-background: rgba(0, 0, 0, 0.5);
+  --osirion-scroll-color: #ffffff;
+  --osirion-scroll-hover-color: #ffffff;
+  
+  /* Sizes */
+  --osirion-scroll-size: 40px;
+  --osirion-scroll-margin: 20px;
+  --osirion-scroll-border-radius: 4px;
+  --osirion-scroll-z-index: 1000;
+}
+```
+
 ## Upgrading to v1.3.0
 
 ### Breaking Changes
@@ -10,14 +103,12 @@ None. Version 1.3.0 is fully backward compatible with v1.2.0.
 
 This version introduces GitHub CMS components for markdown-based content management:
 
-1. **GitHubCmsService**: Service for fetching and caching content from GitHub repositories
-2. **ContentList**: Display lists of content with filtering options
-3. **ContentView**: Display a single content item
-4. **CategoriesList**: List content categories
-5. **TagCloud**: Show content tags
-6. **SearchBox**: Provide search functionality
-7. **DirectoryNavigation**: Create navigation based on repository structure
-8. **OsirionStyles**: Default styling for GitHub CMS components
+1. **ContentList**: Display lists of content with filtering options
+2. **ContentView**: Display a single content item
+3. **CategoriesList**: List content categories
+4. **TagCloud**: Show content tags
+5. **SearchBox**: Provide search functionality
+6. **DirectoryNavigation**: Create navigation based on repository structure
 
 ### Migration Steps
 
@@ -46,73 +137,13 @@ This version introduces GitHub CMS components for markdown-based content managem
 
 4. Add GitHub CMS components to your pages:
    ```razor
-   <!-- Add default styling -->
-   <OsirionStyles />
-   
-   <!-- Content list -->
    <ContentList Directory="blog" />
-   
-   <!-- Content view -->
    <ContentView Path="blog/my-post.md" />
-   
-   <!-- Categories and tags -->
    <CategoriesList />
-   <TagCloud MaxTags="20" />
-   
-   <!-- Search -->
-   <SearchBox Placeholder="Search..." />
-   
-   <!-- Directory navigation -->
-   <DirectoryNavigation CurrentDirectory="blog" />
+   <TagCloud />
+   <SearchBox />
+   <DirectoryNavigation />
    ```
-
-### Configuration Options
-
-The `GitHubCmsOptions` class provides the following configuration options:
-
-```csharp
-public class GitHubCmsOptions
-{
-    // Required properties
-    public string Owner { get; set; } = string.Empty;
-    public string Repository { get; set; } = string.Empty;
-    
-    // Optional properties with defaults
-    public string ContentPath { get; set; } = string.Empty;
-    public string Branch { get; set; } = "main";
-    public string? ApiToken { get; set; }
-    public int CacheDurationMinutes { get; set; } = 30;
-    public List<string> SupportedExtensions { get; set; } = new() { ".md", ".markdown" };
-    public bool? UseStyles { get; set; }
-    public string? CustomVariables { get; set; }
-}
-```
-
-You can configure these options through `appsettings.json`:
-
-```json
-{
-  "GitHubCms": {
-    "Owner": "your-github-username",
-    "Repository": "your-content-repo",
-    "ContentPath": "content",
-    "Branch": "main",
-    "ApiToken": "",
-    "CacheDurationMinutes": 30,
-    "SupportedExtensions": [".md", ".markdown"],
-    "UseStyles": true,
-    "CustomVariables": "--osirion-primary-color: #3b82f6;"
-  }
-}
-```
-
-### Markdig Package Dependency
-
-The GitHub CMS functionality requires the Markdig package. This dependency is automatically included when you install Osirion.Blazor 1.3.0, but if you're encountering issues, you can manually add the package:
-
-```bash
-dotnet add package Markdig --version 0.41.0
-```
 
 ## Upgrading to v1.2.0
 
@@ -163,36 +194,6 @@ This version introduces analytics components:
    }
    ```
 
-### Configuration Options
-
-For analytics, you can now use either configuration-based or programmatic setup:
-
-#### Configuration-based (appsettings.json)
-```json
-{
-  "Clarity": {
-    "TrackerUrl": "https://www.clarity.ms/tag/",
-    "SiteId": "your-site-id",
-    "Track": true
-  },
-  "Matomo": {
-    "TrackerUrl": "//analytics.example.com/",
-    "SiteId": "1",
-    "Track": true
-  }
-}
-```
-
-#### Programmatic
-```csharp
-builder.Services.AddClarityTracker(options =>
-{
-    options.TrackerUrl = "https://www.clarity.ms/tag/";
-    options.SiteId = "your-site-id";
-    options.Track = true;
-});
-```
-
 ## Upgrading from v1.0.0 to v1.1.0
 
 ### Breaking Changes
@@ -214,30 +215,3 @@ This version introduces the EnhancedNavigationInterceptor component.
    ```razor
    <EnhancedNavigationInterceptor Behavior="ScrollBehavior.Smooth" />
    ```
-
-## Common Issues
-
-### Analytics Components Not Rendering
-
-Ensure that:
-1. Configuration is properly set up in appsettings.json or Program.cs
-2. All required properties (TrackerUrl, SiteId) are provided
-3. Track property is set to true
-4. Components are properly injected in your layout
-
-### EnhancedNavigationInterceptor Not Working
-
-Verify that:
-1. You're using Blazor with enhanced navigation enabled
-2. The component is placed in your main layout
-3. Only one instance of the component exists in your application
-
-### GitHub CMS Not Loading Content
-
-Check that:
-1. The GitHub repository exists and is accessible
-2. The Owner and Repository properties are correctly configured
-3. The content path exists in the repository
-4. You've provided an API token for private repositories
-5. The markdown files have valid frontmatter
-6. You're not exceeding GitHub API rate limits

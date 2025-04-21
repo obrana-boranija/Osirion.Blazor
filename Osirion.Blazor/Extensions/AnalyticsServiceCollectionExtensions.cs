@@ -24,7 +24,7 @@ public static class AnalyticsServiceCollectionExtensions
 
         if (configuration == null)
         {
-            throw new ArgumentNullException(nameof(configuration));
+            return services;
         }
 
         services.Configure<ClarityOptions>(configuration.GetSection(ClarityOptions.Section));
@@ -46,7 +46,7 @@ public static class AnalyticsServiceCollectionExtensions
 
         if (configureOptions == null)
         {
-            throw new ArgumentNullException(nameof(configureOptions));
+            return services;
         }
 
         services.Configure(configureOptions);
@@ -68,7 +68,7 @@ public static class AnalyticsServiceCollectionExtensions
 
         if (configuration == null)
         {
-            throw new ArgumentNullException(nameof(configuration));
+            return services;
         }
 
         services.Configure<MatomoOptions>(configuration.GetSection(MatomoOptions.Section));
@@ -90,7 +90,7 @@ public static class AnalyticsServiceCollectionExtensions
 
         if (configureOptions == null)
         {
-            throw new ArgumentNullException(nameof(configureOptions));
+            return services;
         }
 
         services.Configure(configureOptions);

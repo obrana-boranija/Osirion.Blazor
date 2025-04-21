@@ -6,7 +6,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorComponents();
 
-builder.Services.AddGitHubCms(builder.Configuration);
+builder.Services.AddOsirionBlazor(osirion => {
+    osirion.AddAllServices(builder.Configuration);
+});
 
 //builder.Services.AddScrollToTop(builder.Configuration);
 

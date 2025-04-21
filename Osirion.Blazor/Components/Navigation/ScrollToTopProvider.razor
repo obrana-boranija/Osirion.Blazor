@@ -1,0 +1,13 @@
+﻿@namespace Osirion.Blazor.Components.Navigation
+@inject Osirion.Blazor.Services.ScrollToTopManager ScrollToTopManager
+
+@if (ScrollToTopManager.IsEnabled)
+{
+    <ScrollToTop Position="@ScrollToTopManager.Position"
+                 Behavior="@ScrollToTopManager.Behavior"
+                 VisibilityThreshold="@ScrollToTopManager.VisibilityThreshold"
+                 Text="@ScrollToTopManager.Text"
+                 Title="@ScrollToTopManager.Title"
+                 CssClass="@ScrollToTopManager.CssClass"
+                 CustomIcon="@ScrollToTopManager.CustomIcon" />
+}

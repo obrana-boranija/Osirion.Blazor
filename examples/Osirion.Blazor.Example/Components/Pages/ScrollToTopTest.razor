@@ -1,0 +1,161 @@
+﻿@page "/scrolltotop-example"
+@using Osirion.Blazor.Components.Navigation
+@using Microsoft.Extensions.Options
+@using Osirion.Blazor.Options
+
+<h1>ScrollToTop Component Example</h1>
+
+<div class="example-container">
+    <h2>ScrollToTop Positions</h2>
+    <div class="demo-section">
+        <div class="controls">
+            <select @bind="selectedPosition" class="form-control">
+                <option value="@ButtonPosition.BottomRight">Bottom Right (Default)</option>
+                <option value="@ButtonPosition.BottomLeft">Bottom Left</option>
+                <option value="@ButtonPosition.TopRight">Top Right</option>
+                <option value="@ButtonPosition.TopLeft">Top Left</option>
+            </select>
+        </div>
+        <ScrollToTop Position="selectedPosition" />
+    </div>
+
+    <h2>With Text Label</h2>
+    <div class="demo-section">
+        <div class="controls">
+            <input @bind="customText" class="form-control" placeholder="Enter button text" />
+        </div>
+        <ScrollToTop Text="@customText" />
+    </div>
+
+    <h2>Custom Visibility Threshold</h2>
+    <div class="demo-section">
+        <div class="controls">
+            <label>Visibility Threshold: @visibilityThreshold px</label>
+            <input @bind="visibilityThreshold" type="range" min="100" max="1000" step="100" class="form-control" />
+        </div>
+        <ScrollToTop VisibilityThreshold="visibilityThreshold" />
+    </div>
+
+    <h2>Custom Styling</h2>
+    <div class="demo-section">
+        <div class="controls">
+            <select @bind="selectedBehavior" class="form-control">
+                <option value="@ScrollBehavior.Smooth">Smooth (Default)</option>
+                <option value="@ScrollBehavior.Instant">Instant</option>
+                <option value="@ScrollBehavior.Auto">Auto</option>
+            </select>
+        </div>
+        <ScrollToTop Behavior="selectedBehavior"
+                     CssClass="custom-scroll-button" />
+    </div>
+
+    <h2>Using Configuration</h2>
+    <div class="demo-section">
+        <div class="explanation">
+            <p>This example uses configuration from DI:</p>
+            <pre>services.AddScrollToTop(options => {
+    options.Position = ButtonPosition.BottomLeft;
+    options.Text = "Top";
+    options.CustomVariables = "--osirion-scroll-background: #0077cc;";
+});</pre>
+        </div>
+
+        @if (configuredOptions != null)
+        {
+            <ScrollToTop Options="configuredOptions" />
+        }
+        else
+        {
+            <div class="alert alert-info">No configured options found.</div>
+        }
+    </div>
+
+    <!-- Filler content to enable scrolling -->
+    <div class="filler-content">
+        @for (int i = 0; i < 20; i++)
+        {
+            <div class="filler-block">
+                <h3>Section @(i + 1)</h3>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam pulvinar risus non risus hendrerit venenatis. Pellentesque sit amet hendrerit risus, sed porttitor quam.</p>
+                <p>Magna nulla pariatur qui ea ut esse do elit magna ipsum nulla magna excepteur. Dolor dolore aliqua incididunt laborum sunt quis labore irure excepteur. Qui laborum do id cupidatat adipisicing sint cillum proident aliqua amet est ad.</p>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .example-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .demo-section {
+        margin-bottom: 30px;
+        padding: 20px;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+    }
+
+    .controls {
+        margin-bottom: 20px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 10px;
+        border: 1px solid #d1d5db;
+        border-radius: 4px;
+    }
+
+    .filler-content {
+        margin-top: 50px;
+    }
+
+    .filler-block {
+        margin-bottom: 30px;
+        padding: 20px;
+        background-color: #f9fafb;
+        border-radius: 8px;
+    }
+
+    .custom-scroll-button {
+        background-color: #3b82f6 !important;
+        border-radius: 50% !important;
+    }
+
+    .explanation {
+        background-color: #f9fafb;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+
+    pre {
+        background-color: #f1f5f9;
+        padding: 10px;
+        border-radius: 4px;
+        overflow-x: auto;
+        font-size: 14px;
+    }
+
+    .alert {
+        padding: 15px;
+        border-radius: 4px;
+        background-color: #e0f2fe;
+        color: #0369a1;
+    }
+</style>
+
+@code {
+    private ButtonPosition selectedPosition = ButtonPosition.BottomLeft;
+    private ScrollBehavior selectedBehavior = ScrollBehavior.Smooth;
+    private string customText = "Back to top";
+    private int visibilityThreshold = 300;
+
+    [Inject]
+    private IOptions<ScrollToTopOptions>? Options { get; set; }
+
+    private ScrollToTopOptions? configuredOptions => Options?.Value;
+}

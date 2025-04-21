@@ -25,7 +25,7 @@ public static class GitHubCmsServiceCollectionExtensions
 
         if (configuration == null)
         {
-            throw new ArgumentNullException(nameof(configuration));
+            return services;
         }
 
         services.Configure<GitHubCmsOptions>(configuration.GetSection(GitHubCmsOptions.Section));
@@ -65,7 +65,7 @@ public static class GitHubCmsServiceCollectionExtensions
 
         if (configureOptions == null)
         {
-            throw new ArgumentNullException(nameof(configureOptions));
+            return services;
         }
 
         services.Configure(configureOptions);
