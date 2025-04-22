@@ -29,23 +29,37 @@ jobs:
 
       - name: Update version in project files
         run: |
+          # Track if any files were changed
+          changed=0
+
           # Update version in all Osirion.Blazor module projects
-          find ./src -name "*.csproj" -type f -exec sed -i "s/<Version>[0-9]\+\.[0-9]\+\.[0-9]\+<\/Version>/<Version>${{ github.event.inputs.version }}<\/Version>/g" {} \;
+          for file in $(find ./src -name "*.csproj"); do
+            # Use grep to check the current version
+            current_version=$(grep -oP '(?<=<Version>).*?(?=</Version>)' "$file")
+            
+            if [ "$current_version" != "${{ github.event.inputs.version }}" ]; then
+              sed -i "s/<Version>.*<\/Version>/<Version>${{ github.event.inputs.version }}<\/Version>/" "$file"
+              echo "Updated version in $file"
+              changed=$((changed + 1))
+            fi
+          done
 
-      - name: Update Solution Reference Versions
-        run: |
-          # Update project references in solution to ensure compatibility
-          find ./src -name "*.csproj" -type f -exec sed -i 's/<ProjectReference Include="\(.*\)" Version="[0-9]\+\.[0-9]\+\.[0-9]\+"\/>/<ProjectReference Include="\1" Version="${{ github.event.inputs.version }}"\/>}/g' {} \;
-
-      - name: Update CHANGELOG.md
-        run: |
+          # Update CHANGELOG.md
           TODAY=$(date +%Y-%m-%d)
           sed -i "0,/## \[Unreleased\]/s/## \[Unreleased\]/## [Unreleased]\n\n## [${{ github.event.inputs.version }}] - $TODAY/" CHANGELOG.md
+          
+          # Check if CHANGELOG was modified
+          if git diff --quiet CHANGELOG.md; then
+            echo "CHANGELOG.md was not modified"
+          else
+            changed=$((changed + 1))
+          fi
 
-      - name: Update Documentation
-        run: |
-          # Update version in README.md and other markdown files
-          find . -name "*.md" -type f -exec sed -i "s/Osirion\.Blazor v[0-9]\+\.[0-9]\+\.[0-9]\+/Osirion.Blazor v${{ github.event.inputs.version }}/g" {} \;
+          # Exit with an error if no changes were made
+          if [ $changed -eq 0 ]; then
+            echo "No changes were detected. Ensure the version is different from the current one."
+            exit 1
+          fi
 
       - name: Ensure Labels Exist
         run: |
@@ -73,7 +87,6 @@ jobs:
             ## Changes
             - Updated version numbers to ${{ github.event.inputs.version }}
             - Updated CHANGELOG.md
-            - Updated documentation references
             
             Please review the changes and merge if everything looks correct.
           labels: |
