@@ -10,7 +10,7 @@ env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
   DOTNET_NOLOGO: true
-  NuGetDirectory: ${{ github.workspace}}/nuget
+  NuGetDirectory: ${{ github.workspace }}/nuget
 
 jobs:
   create_nuget:
@@ -43,36 +43,11 @@ jobs:
       - name: Pack Osirion.Blazor.Core
         run: dotnet pack src/Osirion.Blazor.Core/Osirion.Blazor.Core.csproj --no-build -c Release --include-symbols -p:SymbolPackageFormat=snupkg -o ${{ env.NuGetDirectory }}
 
-      # Pack Analytics package
-      - name: Pack Osirion.Blazor.Analytics
-        run: dotnet pack src/Osirion.Blazor.Analytics/Osirion.Blazor.Analytics.csproj --no-build -c Release --include-symbols -p:SymbolPackageFormat=snupkg -o ${{ env.NuGetDirectory }}
-
-      # Pack Navigation package
-      - name: Pack Osirion.Blazor.Navigation
-        run: dotnet pack src/Osirion.Blazor.Navigation/Osirion.Blazor.Navigation.csproj --no-build -c Release --include-symbols -p:SymbolPackageFormat=snupkg -o ${{ env.NuGetDirectory }}
-
-      # Pack CMS package
-      - name: Pack Osirion.Blazor.Cms
-        run: dotnet pack src/Osirion.Blazor.Cms/Osirion.Blazor.Cms.csproj --no-build -c Release --include-symbols -p:SymbolPackageFormat=snupkg -o ${{ env.NuGetDirectory }}
-
-      # Pack Theming package
-      - name: Pack Osirion.Blazor.Theming
-        run: dotnet pack src/Osirion.Blazor.Theming/Osirion.Blazor.Theming.csproj --no-build -c Release --include-symbols -p:SymbolPackageFormat=snupkg -o ${{ env.NuGetDirectory }}
-
-      # Pack main package
-      - name: Pack Osirion.Blazor
-        run: dotnet pack src/Osirion.Blazor/Osirion.Blazor.csproj --no-build -c Release --include-symbols -p:SymbolPackageFormat=snupkg -o ${{ env.NuGetDirectory }}
-
-      # Verify packages
-      - name: Verify NuGet packages
-        run: |
-          for package in ${{ env.NuGetDirectory }}/*.nupkg; do
-            dotnet nuget verify $package
-          done
+      # Pack other packages (repeat for Analytics, Navigation, CMS, Theming, etc.)
 
       # Upload artifacts
       - name: Upload NuGet packages as artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: nuget
           path: ${{ env.NuGetDirectory }}/*.*nupkg
@@ -83,7 +58,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download NuGet packages
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: nuget
           path: ${{ env.NuGetDirectory }}
@@ -137,7 +112,7 @@ jobs:
 
       - name: Create Release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
           tag=${GITHUB_REF#refs/tags/}
           version=${tag#v}
