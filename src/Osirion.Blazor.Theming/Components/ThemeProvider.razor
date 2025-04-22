@@ -1,0 +1,166 @@
+@namespace Osirion.Blazor.Theming.Components
+@using Microsoft.Extensions.Options
+@using Osirion.Blazor.Theming.Options
+@using Osirion.Blazor.Theming.Services
+@inherits Osirion.Blazor.Components.OsirionComponentBase
+@inject IOptions<ThemingOptions> Options
+@inject IThemeService ThemeService
+
+@if (ShowStyles && !IsServerSide)
+{
+    @if (EffectiveOptions.UseDefaultStyles)
+    {
+        <link rel="stylesheet" href="_content/Osirion.Blazor.Theming/css/osirion-theming.css" />
+    }
+
+    @if (!string.IsNullOrEmpty(GeneratedVariables))
+    {
+        <style>
+            :root {
+            @((MarkupString)GeneratedVariables)
+            }
+        </style>
+    }
+
+    @if (EffectiveOptions.Framework != CssFramework.None)
+    {
+        @((MarkupString)GetFrameworkIntegrationScript())
+    }
+}
+
+@ChildContent
+
+@code {
+    /// <summary>
+    /// Gets or sets the CSS framework to integrate with
+    /// </summary>
+    [Parameter]
+    public CssFramework Framework { get; set; } = CssFramework.None;
+
+    /// <summary>
+    /// Gets or sets the theme mode
+    /// </summary>
+    [Parameter]
+    public ThemeMode Mode { get; set; } = ThemeMode.Light;
+
+    /// <summary>
+    /// Gets or sets whether dark mode is enabled
+    /// </summary>
+    [Parameter]
+    public bool EnableDarkMode { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets whether to follow system preference
+    /// </summary>
+    [Parameter]
+    public bool FollowSystemPreference { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets custom CSS variables
+    /// </summary>
+    [Parameter]
+    public string? CustomVariables { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether to show styles
+    /// </summary>
+    [Parameter]
+    public bool ShowStyles { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets the child content
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Gets or sets the event callback for theme changes
+    /// </summary>
+    [Parameter]
+    public EventCallback<ThemeChangedEventArgs> OnThemeChanged { get; set; }
+
+    private ThemingOptions EffectiveOptions => new()
+        {
+            Framework = Framework != CssFramework.None ? Framework : Options.Value.Framework,
+            DefaultMode = Mode != ThemeMode.Light ? Mode : Options.Value.DefaultMode,
+            EnableDarkMode = EnableDarkMode,
+            FollowSystemPreference = FollowSystemPreference,
+            CustomVariables = CustomVariables ?? Options.Value.CustomVariables,
+            UseDefaultStyles = Options.Value.UseDefaultStyles
+        };
+
+    private string GeneratedVariables => ThemeService.GenerateThemeVariables();
+
+    protected override void OnInitialized()
+    {
+        ThemeService.ThemeChanged += HandleThemeChanged;
+    }
+
+    private async void HandleThemeChanged(object? sender, ThemeChangedEventArgs e)
+    {
+        await OnThemeChanged.InvokeAsync(e);
+        StateHasChanged();
+    }
+
+    private string GetFrameworkIntegrationScript()
+    {
+        var integrationClass = EffectiveOptions.Framework switch
+        {
+            CssFramework.Bootstrap => "osirion-bootstrap-integration",
+            CssFramework.Tailwind => "osirion-tailwind-integration",
+            CssFramework.FluentUI => "osirion-fluent-integration",
+            CssFramework.MudBlazor => "osirion-mudblazor-integration",
+            CssFramework.Radzen => "osirion-radzen-integration",
+            _ => ""
+        };
+
+        if (string.IsNullOrEmpty(integrationClass))
+            return string.Empty;
+
+        return $@"
+            <script>
+                (function() {{
+                    function applyFrameworkIntegration() {{
+                        const htmlElement = document.documentElement || document.querySelector('html');
+                        if (htmlElement && !htmlElement.classList.contains('{integrationClass}')) {{
+                            htmlElement.classList.add('{integrationClass}');
+                        }}
+                    }}
+
+                    applyFrameworkIntegration();
+
+                    if (document.readyState === 'loading') {{
+                        document.addEventListener('DOMContentLoaded', applyFrameworkIntegration);
+                    }}
+
+                {(EffectiveOptions.FollowSystemPreference ? GetSystemPreferenceScript() : "")}
+                }})();
+            </script>
+        ";
+    }
+
+    private string GetSystemPreferenceScript()
+    {
+        return @"
+            if (window.matchMedia) {
+                const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+                function updateThemeFromSystem() {
+                    if (darkModeQuery.matches) {
+                        document.documentElement.classList.add('dark-theme');
+                    } else {
+                        document.documentElement.classList.remove('dark-theme');
+                    }
+                }
+
+                updateThemeFromSystem();
+                darkModeQuery.addEventListener('change', updateThemeFromSystem);
+            }
+        ";
+    }
+
+    public void Dispose()
+    {
+        ThemeService.ThemeChanged -= HandleThemeChanged;
+    }
+}

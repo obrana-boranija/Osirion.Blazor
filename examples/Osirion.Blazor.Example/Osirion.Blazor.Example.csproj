@@ -7,7 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Osirion.Blazor\Osirion.Blazor.csproj" />
+    <ProjectReference Include="..\..\src\Osirion.Blazor.Analytics\Osirion.Blazor.Analytics.csproj" />
+    <ProjectReference Include="..\..\src\Osirion.Blazor.Content\Osirion.Blazor.Content.csproj" />
   </ItemGroup>
 
 </Project>

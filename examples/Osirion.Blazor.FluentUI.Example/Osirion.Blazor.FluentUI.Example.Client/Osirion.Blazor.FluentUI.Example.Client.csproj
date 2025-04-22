@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Osirion.Blazor\Osirion.Blazor.csproj" />
+    <ProjectReference Include="..\..\..\Osirion.Blazor\Osirion.Blazor.v1.csproj" />
   </ItemGroup>
 
 </Project>

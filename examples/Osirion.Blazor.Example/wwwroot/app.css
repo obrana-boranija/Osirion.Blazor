@@ -1,3 +1,7 @@
+:root {
+    --bs-primary: #007b31; /* Your custom primary color */
+}
+
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }

@@ -1,0 +1,88 @@
+﻿/* Osirion.Blazor Theming - Core Variables */
+:root {
+    /* Core colors */
+    --osirion-primary-color: #2563eb;
+    --osirion-primary-hover-color: #1d4ed8;
+    --osirion-text-color: #374151;
+    --osirion-light-text-color: #6b7280;
+    --osirion-border-color: #e5e7eb;
+    --osirion-background-color: #ffffff;
+    --osirion-light-background-color: #f3f4f6;
+    /* Sizes */
+    --osirion-border-radius: 0.5rem;
+    --osirion-small-border-radius: 0.375rem;
+    --osirion-gap: 1.5rem;
+    --osirion-small-gap: 0.5rem;
+    --osirion-padding: 1.5rem;
+    --osirion-small-padding: 0.5rem;
+    /* Typography */
+    --osirion-font-size: 1rem;
+    --osirion-small-font-size: 0.875rem;
+    --osirion-title-font-size: 1.25rem;
+    --osirion-line-height: 1.7;
+    /* Effects */
+    --osirion-transition-speed: 0.2s;
+    --osirion-box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Dark theme */
+.dark-theme {
+    --osirion-primary-color: #60a5fa;
+    --osirion-primary-hover-color: #93c5fd;
+    --osirion-text-color: #e5e7eb;
+    --osirion-light-text-color: #9ca3af;
+    --osirion-border-color: #4b5563;
+    --osirion-background-color: #1f2937;
+    --osirion-light-background-color: #374151;
+    --osirion-box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Theme toggle */
+.theme-toggle {
+    display: flex;
+    gap: var(--osirion-small-gap);
+}
+
+    .theme-toggle button {
+        padding: var(--osirion-small-padding);
+        border: 1px solid var(--osirion-border-color);
+        border-radius: var(--osirion-small-border-radius);
+        background-color: var(--osirion-background-color);
+        color: var(--osirion-text-color);
+        cursor: pointer;
+        transition: all var(--osirion-transition-speed) ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+        .theme-toggle button:hover {
+            background-color: var(--osirion-light-background-color);
+        }
+
+        .theme-toggle button.active {
+            background-color: var(--osirion-primary-color);
+            color: white;
+            border-color: var(--osirion-primary-color);
+        }
+
+/* Framework integrations */
+.osirion-bootstrap-integration {
+    /* Variables mapped to Bootstrap */
+}
+
+.osirion-tailwind-integration {
+    /* Variables mapped to Tailwind */
+}
+
+.osirion-fluent-integration {
+    /* Variables mapped to Fluent UI */
+}
+
+.osirion-mudblazor-integration {
+    /* Variables mapped to MudBlazor */
+}
+
+.osirion-radzen-integration {
+    /* Variables mapped to Radzen */
+}

@@ -1,0 +1,61 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+	<PropertyGroup>
+		<TargetFrameworks>net8.0;net9.0</TargetFrameworks>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<LangVersion>latest</LangVersion>
+		<IsPackable>true</IsPackable>
+
+		<!-- NuGet package properties -->
+		<PackageId>Osirion.Blazor</PackageId>
+		<Version>2.0.0</Version>
+		<Authors>Dejan Demonjić</Authors>
+		<Company>Tridesetri</Company>
+		<Description>Modern, high-performance Blazor components and utilities. Features SSR-compatible components for navigation, analytics, content management, and theming with seamless CSS framework integration.</Description>
+		<PackageTags>blazor;components;utilities;dotnet;web;navigation;analytics;cms;github;markdown;ssr;bootstrap;tailwind;fluentui;mudblazor;radzen;static-rendering;content;theming</PackageTags>
+		<PackageProjectUrl>https://github.com/obrana-boranija/Osirion.Blazor</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/obrana-boranija/Osirion.Blazor</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageIcon>icon.png</PackageIcon>
+
+		<!-- Generate XML documentation -->
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<NoWarn>$(NoWarn);CS1591</NoWarn>
+
+		<!-- Source Link config -->
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<EmbedUntrackedSources>true</EmbedUntrackedSources>
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+	</PropertyGroup>
+
+
+  <ItemGroup>
+    <SupportedPlatform Include="browser" />
+  </ItemGroup>
+
+	<ItemGroup>
+		<!-- Include module packages -->
+		<ProjectReference Include="..\Osirion.Blazor.Core\Osirion.Blazor.Core.csproj" />
+		<ProjectReference Include="..\Osirion.Blazor.Content\Osirion.Blazor.Content.csproj" />
+		<ProjectReference Include="..\Osirion.Blazor.Analytics\Osirion.Blazor.Analytics.csproj" />
+		<ProjectReference Include="..\Osirion.Blazor.Navigation\Osirion.Blazor.Navigation.csproj" />
+		<ProjectReference Include="..\Osirion.Blazor.Theming\Osirion.Blazor.Theming.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<!-- Include NuGet package files -->
+		<None Include="..\README.md" Pack="true" PackagePath="\" />
+		<None Include="..\LICENSE.txt" Pack="true" PackagePath="\" />
+		<None Include="assets\icon.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<!-- Source Link package -->
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+	</ItemGroup>
+
+</Project>
