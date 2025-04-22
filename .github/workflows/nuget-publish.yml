@@ -1,17 +1,14 @@
 name: NuGet Package Publish
-
 on:
   push:
     tags:
       - 'v*' # Trigger on version tags
   workflow_dispatch: # Allow manual trigger
-
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
   DOTNET_NOLOGO: true
   NuGetDirectory: ${{ github.workspace }}/nuget
-
 jobs:
   create_nuget:
     runs-on: ubuntu-latest
@@ -19,41 +16,50 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0 # Get all history for versioning
-
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: |
             8.0.x
             9.0.x
-
       - name: Create NuGet Directory
         run: mkdir -p ${{ env.NuGetDirectory }}
-
       - name: Restore dependencies
         run: dotnet restore
-
       - name: Build solution
         run: dotnet build -c Release --no-restore
-
       - name: Run tests
         run: dotnet test -c Release --no-build --verbosity normal
-
-      # Pack Core package
+      # Pack all packages
+      - name: Pack Osirion.Blazor
+        run: dotnet pack src/Osirion.Blazor/Osirion.Blazor.csproj --no-build -c Release --include-symbols -p:SymbolPackageFormat=snupkg -o ${{ env.NuGetDirectory }}
       - name: Pack Osirion.Blazor.Core
         run: dotnet pack src/Osirion.Blazor.Core/Osirion.Blazor.Core.csproj --no-build -c Release --include-symbols -p:SymbolPackageFormat=snupkg -o ${{ env.NuGetDirectory }}
-
-      # Pack other packages (repeat for Analytics, Navigation, CMS, Theming, etc.)
-
+      - name: Pack Osirion.Blazor.Analytics
+        run: dotnet pack src/Osirion.Blazor.Analytics/Osirion.Blazor.Analytics.csproj --no-build -c Release --include-symbols -p:SymbolPackageFormat=snupkg -o ${{ env.NuGetDirectory }}
+      - name: Pack Osirion.Blazor.Navigation
+        run: dotnet pack src/Osirion.Blazor.Navigation/Osirion.Blazor.Navigation.csproj --no-build -c Release --include-symbols -p:SymbolPackageFormat=snupkg -o ${{ env.NuGetDirectory }}
+      - name: Pack Osirion.Blazor.Cms
+        run: dotnet pack src/Osirion.Blazor.Cms/Osirion.Blazor.Cms.csproj --no-build -c Release --include-symbols -p:SymbolPackageFormat=snupkg -o ${{ env.NuGetDirectory }}
+      - name: Pack Osirion.Blazor.Theming
+        run: dotnet pack src/Osirion.Blazor.Theming/Osirion.Blazor.Theming.csproj --no-build -c Release --include-symbols -p:SymbolPackageFormat=snupkg -o ${{ env.NuGetDirectory }}
+      # Check if NuGet packages were created
+      - name: Check for NuGet packages
+        id: check_packages
+        run: |
+          if [ "$(find ${{ env.NuGetDirectory }} -name '*.nupkg' | wc -l)" -gt 0 ]; then
+            echo "files_exist=true" >> $GITHUB_OUTPUT
+          else
+            echo "files_exist=false" >> $GITHUB_OUTPUT
+          fi
       # Upload artifacts
       - name: Upload NuGet packages as artifacts
-        if: ${{ always() && steps.pack_step.outputs.files_exist == 'true' }} # Ensure files exist
+        if: steps.check_packages.outputs.files_exist == 'true'
         uses: actions/upload-artifact@v3
         with:
           name: nuget
           path: ${{ env.NuGetDirectory }}/*.nupkg
           if-no-files-found: error
-
   validate_version:
     needs: create_nuget
     runs-on: ubuntu-latest
@@ -63,24 +69,22 @@ jobs:
         with:
           name: nuget
           path: ${{ env.NuGetDirectory }}
-
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
-
       # Check if version exists
       - name: Check if version exists
         run: |
           for package in ${{ env.NuGetDirectory }}/*.nupkg; do
-            packageName=$(basename $package .nupkg)
-            version=$(echo $packageName | rev | cut -d'.' -f1 | rev)
-            if curl -s "https://api.nuget.org/v3-flatcontainer/${packageName%%.$version}/index.json" | grep -q "$version"; then
-              echo "Version $version of package $packageName already exists on NuGet"
+            packageId=$(basename $package .nupkg | sed -E 's/([^.]+\.[^.]+\.[^.]+)\..*/\1/')
+            version=$(basename $package .nupkg | sed -E 's/.*\.([0-9]+\.[0-9]+\.[0-9]+.*)/\1/')
+            echo "Checking package: $packageId, version: $version"
+            if curl -s "https://api.nuget.org/v3-flatcontainer/$packageId/index.json" | grep -q "$version"; then
+              echo "Version $version of package $packageId already exists on NuGet"
               exit 1
             fi
           done
-
   publish_nuget:
     needs: validate_version
     runs-on: ubuntu-latest
@@ -90,19 +94,16 @@ jobs:
         with:
           name: nuget
           path: ${{ env.NuGetDirectory }}
-
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
-
       # Publish to NuGet
       - name: Publish NuGet package
         run: |
           for package in ${{ env.NuGetDirectory }}/*.nupkg; do
             dotnet nuget push $package --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
           done
-
   create_release:
     needs: publish_nuget
     runs-on: ubuntu-latest
@@ -110,7 +111,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: Create Release
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
