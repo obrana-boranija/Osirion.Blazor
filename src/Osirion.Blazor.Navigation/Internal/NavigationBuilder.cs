@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Osirion.Blazor.Navigation.Options;
+using Osirion.Blazor.Navigation.Services;
 
 namespace Osirion.Blazor.Navigation.Internal;
 
@@ -51,6 +52,21 @@ internal class NavigationBuilder : INavigationBuilder
             opt.CssClass = options.CssClass;
             opt.CustomIcon = options.CustomIcon;
         });
+
+        // Create and register the ScrollToTopManager
+        var manager = new ScrollToTopManager
+        {
+            IsEnabled = true,
+            Position = options.Position,
+            Behavior = options.Behavior,
+            VisibilityThreshold = options.VisibilityThreshold,
+            Text = options.Text,
+            Title = options.Title,
+            CssClass = options.CssClass,
+            CustomIcon = options.CustomIcon
+        };
+
+        Services.AddSingleton(manager);
 
         return this;
     }

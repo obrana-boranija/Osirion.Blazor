@@ -1,0 +1,61 @@
+﻿@page "/content/{*path}"
+@using Osirion.Blazor.Cms.Models
+@inject Osirion.Blazor.Cms.IContentProvider ContentProvider
+
+<PageTitle>@(Item?.Title ?? "Content")</PageTitle>
+
+@if (Item != null)
+{
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item"><a href="/cms-demo">CMS</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Item.Title</li>
+        </ol>
+    </nav>
+
+    <ContentView Item="@Item" />
+}
+else if (IsLoading)
+{
+    <div class="text-center my-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-warning">
+        <h4 class="alert-heading">Content Not Found</h4>
+        <p>The requested content could not be found.</p>
+        <hr>
+        <p class="mb-0">
+            <a href="/cms-demo" class="btn btn-primary">Back to CMS Demo</a>
+        </p>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string? Path { get; set; }
+
+    private ContentItem? Item { get; set; }
+    private bool IsLoading { get; set; } = true;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        IsLoading = true;
+        try
+        {
+            if (!string.IsNullOrEmpty(Path))
+            {
+                Item = await ContentProvider.GetItemByPathAsync(Path);
+            }
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+}

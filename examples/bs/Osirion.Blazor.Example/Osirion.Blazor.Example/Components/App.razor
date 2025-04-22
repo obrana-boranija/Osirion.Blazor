@@ -1,0 +1,33 @@
+﻿@using Osirion.Blazor.Theming
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <link rel="stylesheet" href="@Assets["lib/bootstrap/dist/css/bootstrap.min.css"]" />
+    <link rel="stylesheet" href="@Assets["app.css"]" />
+    <link rel="stylesheet" href="@Assets["Osirion.Blazor.Example.styles.css"]" />
+    <ImportMap />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <HeadOutlet />
+</head>
+
+<body>
+    @* Include Osirion styles *@
+    <Osirion.Blazor.Theming.Components.OsirionStyles Framework="CssFramework.Bootstrap" />
+
+    @* Analytics tracking *@
+    <Osirion.Blazor.Analytics.Components.ClarityTracker />
+    <Osirion.Blazor.Analytics.Components.MatomoTracker />
+
+    <Routes />
+    <script src="_framework/blazor.web.js"></script>
+
+    @* Navigation components *@
+    <Osirion.Blazor.Navigation.Components.EnhancedNavigation />
+    <Osirion.Blazor.Navigation.Components.ScrollToTopProvider />
+</body>
+
+</html>

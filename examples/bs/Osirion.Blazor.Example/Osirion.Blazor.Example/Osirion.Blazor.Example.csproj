@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Osirion.Blazor.Bootstrap.Example.Client\Osirion.Blazor.Bootstrap.Example.Client.csproj" />
+    <ProjectReference Include="..\Osirion.Blazor.Example.Client\Osirion.Blazor.Example.Client.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.3" />
   </ItemGroup>
 

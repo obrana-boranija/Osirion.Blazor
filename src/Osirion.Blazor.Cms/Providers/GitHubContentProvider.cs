@@ -25,11 +25,11 @@ public class GitHubContentProvider : ContentProviderBase
     /// Initializes a new instance of the <see cref="GitHubContentProvider"/> class.
     /// </summary>
     public GitHubContentProvider(
-        HttpClient httpClient,
-        IOptions<GitHubContentOptions> options,
-        ILogger<GitHubContentProvider> logger,
-        IMemoryCache memoryCache)
-        : base(logger, memoryCache)
+       HttpClient httpClient,
+       IOptions<GitHubContentOptions> options,
+       ILogger<GitHubContentProvider> logger,
+       IMemoryCache memoryCache)
+       : base(logger, memoryCache)
     {
         _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
         _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
@@ -38,6 +38,13 @@ public class GitHubContentProvider : ContentProviderBase
             .UseAdvancedExtensions()
             .UseYamlFrontMatter()
             .Build();
+    }
+
+    /// <inheritdoc/>
+    public override Task InitializeAsync(CancellationToken cancellationToken = default)
+    {
+        // No initialization needed
+        return Task.CompletedTask;
     }
 
     /// <inheritdoc/>
@@ -53,42 +60,16 @@ public class GitHubContentProvider : ContentProviderBase
     protected override TimeSpan CacheDuration => TimeSpan.FromMinutes(_options.CacheDurationMinutes);
 
     /// <inheritdoc/>
-    public override async Task InitializeAsync(CancellationToken cancellationToken = default)
-    {
-        if (_httpClient.BaseAddress == null)
-        {
-            _httpClient.BaseAddress = new Uri("https://api.github.com/");
-        }
-
-        _httpClient.DefaultRequestHeaders.Accept.Clear();
-        _httpClient.DefaultRequestHeaders.Accept.Add(
-            new MediaTypeWithQualityHeaderValue("application/json"));
-        _httpClient.DefaultRequestHeaders.UserAgent.Add(
-            new ProductInfoHeaderValue("OsirionBlazor", "2.0"));
-
-        if (!string.IsNullOrEmpty(_options.ApiToken))
-        {
-            _httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", _options.ApiToken);
-        }
-    }
-
-    /// <inheritdoc/>
     public override async Task<IReadOnlyList<ContentItem>> GetAllItemsAsync(CancellationToken cancellationToken = default)
     {
         var cacheKey = GetCacheKey("content:all");
-
-        //return await GetOrCreateCachedAsync(cacheKey, async ct =>
-        //{
-        //    var contents = await GetRepositoryContentsAsync(_options.ContentPath, ct);
-        //    var contentItems = new List<ContentItem>();
-
-        //    await ProcessContentsRecursivelyAsync(contents, contentItems, null, ct);
-
-        //    return contentItems.AsReadOnly();
-        //}, cancellationToken) ?? Array.Empty<ContentItem>();
-
-        return null;
+        return await GetOrCreateCachedAsync(cacheKey, async ct =>
+        {
+            var contents = await GetRepositoryContentsAsync(_options.ContentPath, ct);
+            var contentItems = new List<ContentItem>();
+            await ProcessContentsRecursivelyAsync(contents, contentItems, null, ct);
+            return contentItems.AsReadOnly();
+        }, cancellationToken) ?? Array.Empty<ContentItem>().ToList().AsReadOnly();
     }
 
     /// <inheritdoc/>
@@ -96,7 +77,7 @@ public class GitHubContentProvider : ContentProviderBase
     {
         var items = await GetAllItemsAsync(cancellationToken);
         return items.FirstOrDefault(item =>
-            item.Path.Equals(path, StringComparison.OrdinalIgnoreCase));
+            item.Path.Contains(path, StringComparison.OrdinalIgnoreCase));
     }
 
     /// <inheritdoc/>
@@ -114,13 +95,13 @@ public class GitHubContentProvider : ContentProviderBase
         if (!string.IsNullOrEmpty(query.Category))
         {
             filteredItems = filteredItems.Where(item =>
-                item.Categories.Any(c => c.Equals(query.Category, StringComparison.OrdinalIgnoreCase)));
+                item.Categories.Any(c => c.Contains(query.Category, StringComparison.OrdinalIgnoreCase)));
         }
 
         if (!string.IsNullOrEmpty(query.Tag))
         {
             filteredItems = filteredItems.Where(item =>
-                item.Tags.Any(t => t.Equals(query.Tag, StringComparison.OrdinalIgnoreCase)));
+                item.Tags.Any(t => t.Contains(query.Tag, StringComparison.OrdinalIgnoreCase)));
         }
 
         if (query.IsFeatured.HasValue)

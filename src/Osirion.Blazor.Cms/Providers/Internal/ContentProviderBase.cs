@@ -19,10 +19,11 @@ public abstract class ContentProviderBase : IContentProvider
     /// </summary>
     protected readonly IMemoryCache _memoryCache;
 
+    // Replace the existing _cacheLock field with the following:
     /// <summary>
-    /// Lock object for thread safety
+    /// SemaphoreSlim for thread safety
     /// </summary>
-    protected readonly object _cacheLock = new();
+    protected readonly SemaphoreSlim _cacheLock = new(1, 1);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ContentProviderBase"/> class.
@@ -140,20 +141,36 @@ public abstract class ContentProviderBase : IContentProvider
         return $"{ProviderId}:{key}";
     }
 
-    /// <summary>
-    /// Gets or creates cached data
-    /// </summary>
-    protected async Task<T?> GetOrCreateCachedAsync<T>(
-        string cacheKey,
-        Func<CancellationToken, Task<T>> factory,
-        CancellationToken cancellationToken = default)
+    // Update the GetOrCreateCachedAsync method to use SemaphoreSlim correctly:
+    protected async Task<T> GetOrCreateCachedAsync<T>(
+    string cacheKey,
+    Func<CancellationToken, Task<T>> factory,
+    CancellationToken cancellationToken = default)
     {
-        return await _memoryCache.GetOrCreateAsync(
-            cacheKey,
-            async entry =>
+        if (_memoryCache.TryGetValue(cacheKey, out T? cachedValue))
+        {
+            return cachedValue!;
+        }
+
+        await _cacheLock.WaitAsync(cancellationToken);
+        try
+        {
+            // Double-check pattern
+            if (_memoryCache.TryGetValue(cacheKey, out cachedValue))
             {
-                entry.AbsoluteExpirationRelativeToNow = CacheDuration;
-                return await factory(cancellationToken);
-            });
+                return cachedValue!;
+            }
+
+            var value = await factory(cancellationToken);
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(CacheDuration);
+
+            _memoryCache.Set(cacheKey, value, cacheEntryOptions);
+            return value;
+        }
+        finally
+        {
+            _cacheLock.Release();
+        }
     }
 }

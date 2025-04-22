@@ -1,6 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Options;
 using Osirion.Blazor.Cms.Providers;
+using System.Net.Http.Headers;
+using System.Runtime.InteropServices;
 
 namespace Osirion.Blazor.Cms.Internal;
 
@@ -39,10 +42,38 @@ internal class ContentBuilder : IContentBuilder
             opt.SupportedExtensions = options.SupportedExtensions;
         });
 
-        Services.AddHttpClient<GitHubContentProvider>();
-        Services.AddSingleton<IContentProvider, GitHubContentProvider>();
+        // Configure HttpClient properly during registration
+        Services.AddHttpClient<GitHubContentProvider>()
+            .ConfigureHttpClient((serviceProvider, client) =>
+            {
+                client.BaseAddress = new Uri("https://api.github.com/");
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("OsirionBlazor", "2.0"));
+
+                var gitHubOptions = serviceProvider.GetRequiredService<IOptions<GitHubContentOptions>>().Value;
+                if (!string.IsNullOrEmpty(gitHubOptions.ApiToken))
+                {
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", gitHubOptions.ApiToken);
+                }
+            })
+            .ConfigurePrimaryHttpMessageHandler(() =>
+            {
+                if (OperatingSystem.IsBrowser())
+                {
+                    return new HttpClientHandler(); // Use a compatible handler for browser environments
+                }
+                return new SocketsHttpHandler
+                {
+                    PooledConnectionLifetime = TimeSpan.FromMinutes(15)
+                };
+            });
+
+        // Register as singleton
+        Services.AddSingleton<IContentProvider>(sp =>
+        sp.GetRequiredService<GitHubContentProvider>());
 
         return this;
+        
     }
 
     /// <inheritdoc/>

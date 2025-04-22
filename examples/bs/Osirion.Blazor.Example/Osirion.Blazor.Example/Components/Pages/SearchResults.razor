@@ -1,0 +1,60 @@
+﻿@page "/search"
+@using Osirion.Blazor.Cms.Models
+@inject Osirion.Blazor.Cms.IContentProvider ContentProvider
+
+<PageTitle>Search Results</PageTitle>
+
+<h1>Search Results</h1>
+
+<div class="mb-4">
+    <SearchBox SearchQuery="@Query" />
+</div>
+
+@if (Results != null)
+{
+    @if (Results.Any())
+    {
+        <p class="text-muted">Found @Results.Count() result(s) for "@Query"</p>
+        <ContentList Items="@Results" />
+    }
+    else
+    {
+        <div class="alert alert-info">
+            <p class="mb-0">No results found for "@Query"</p>
+        </div>
+    }
+}
+else if (IsLoading)
+{
+    <div class="text-center my-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Searching...</span>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "q")]
+    public string? Query { get; set; }
+
+    private IReadOnlyList<ContentItem>? Results { get; set; }
+    private bool IsLoading { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (!string.IsNullOrEmpty(Query))
+        {
+            IsLoading = true;
+            try
+            {
+                var query = new ContentQuery { SearchQuery = Query };
+                Results = await ContentProvider.GetItemsByQueryAsync(query);
+            }
+            finally
+            {
+                IsLoading = false;
+            }
+        }
+    }
+}

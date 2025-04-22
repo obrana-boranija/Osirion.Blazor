@@ -1,0 +1,66 @@
+﻿@page "/debug"
+@inject IEnumerable<Osirion.Blazor.Cms.IContentProvider> ContentProviders
+@inject Osirion.Blazor.Navigation.Services.ScrollToTopManager ScrollManager
+
+<PageTitle>Debug Info</PageTitle>
+
+<h1>Debug Information</h1>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">Content Providers</h5>
+        <ul>
+            @foreach (var provider in ContentProviders)
+            {
+                <li>
+                    <strong>@provider.ProviderId</strong> - @provider.DisplayName<br />
+                    IsReadOnly: @provider.IsReadOnly
+                </li>
+            }
+        </ul>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">ScrollToTop Configuration</h5>
+        <ul>
+            <li>Enabled: @ScrollManager.IsEnabled</li>
+            <li>Position: @ScrollManager.Position</li>
+            <li>Behavior: @ScrollManager.Behavior</li>
+            <li>Visibility Threshold: @ScrollManager.VisibilityThreshold</li>
+        </ul>
+    </div>
+</div>
+
+<button class="btn btn-primary" @onclick="RefreshContent">Refresh Content</button>
+
+@if (RefreshStatus != null)
+{
+    <div class="alert @(RefreshSuccess ? "alert-success" : "alert-danger") mt-3">
+        @RefreshStatus
+    </div>
+}
+
+@code {
+    private string? RefreshStatus;
+    private bool RefreshSuccess;
+
+    private async Task RefreshContent()
+    {
+        try
+        {
+            foreach (var provider in ContentProviders)
+            {
+                await provider.RefreshCacheAsync();
+            }
+            RefreshStatus = "Content cache refreshed successfully!";
+            RefreshSuccess = true;
+        }
+        catch (Exception ex)
+        {
+            RefreshStatus = $"Error refreshing content: {ex.Message}";
+            RefreshSuccess = false;
+        }
+    }
+}

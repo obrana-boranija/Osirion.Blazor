@@ -58,3 +58,129 @@ h1:focus {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
     text-align: start;
 }
+
+.theme-toggle {
+    display: flex;
+    gap: 0.5rem;
+}
+
+    .theme-toggle button {
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: rgba(255, 255, 255, 0.7);
+        transition: all 0.2s;
+    }
+
+        .theme-toggle button:hover,
+        .theme-toggle button.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+/* Dark theme support */
+.dark-theme {
+    background-color: #1a1a1a;
+    color: #f0f0f0;
+}
+
+    .dark-theme .navbar-toggler,
+    .dark-theme .navbar-brand {
+        color: #f0f0f0;
+    }
+
+    .dark-theme .top-row {
+        background-color: #2d2d2d;
+        border-bottom-color: #444;
+    }
+
+    .dark-theme .sidebar {
+        background-image: linear-gradient(180deg, #2d2d2d 0%, #1a1a1a 70%);
+    }
+
+    .dark-theme .card {
+        background-color: #2d2d2d;
+        border-color: #444;
+    }
+
+    .dark-theme .form-control,
+    .dark-theme .form-select {
+        background-color: #333;
+        border-color: #444;
+        color: #f0f0f0;
+    }
+
+    .dark-theme .btn-primary {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
+
+        .dark-theme .btn-primary:hover {
+            background-color: #0b5ed7;
+            border-color: #0a58ca;
+        }
+
+    .dark-theme .btn-secondary {
+        background-color: #495057;
+        border-color: #495057;
+    }
+
+        .dark-theme .btn-secondary:hover {
+            background-color: #3d4246;
+            border-color: #373b3f;
+        }
+
+/* Tags and Categories */
+.osirion-tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.osirion-tag-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.75rem;
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 20px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.2s;
+}
+
+    .osirion-tag-link:hover {
+        background-color: rgba(0, 0, 0, 0.1);
+        text-decoration: none;
+        color: inherit;
+    }
+
+.osirion-category-link {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    text-decoration: none;
+    color: inherit;
+    border-radius: 0.25rem;
+    transition: all 0.2s;
+}
+
+    .osirion-category-link:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+        text-decoration: none;
+        color: inherit;
+    }
+
+.dark-theme .osirion-tag-link {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+    .dark-theme .osirion-tag-link:hover {
+        background-color: rgba(255, 255, 255, 0.15);
+    }
+
+.dark-theme .osirion-category-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
