@@ -1,0 +1,89 @@
+﻿@inherits OsirionComponentBase
+
+<div class="@GetContentViewClass()">
+    @if (IsLoading)
+    {
+        <div class="osirion-loading">@LoadingText</div>
+    }
+    else if (Item == null)
+    {
+        <div class="osirion-not-found">@NotFoundText</div>
+    }
+    else
+    {
+        <article class="osirion-content-article">
+            <header class="osirion-content-header">
+                <h1>@Item.Title</h1>
+                <div class="osirion-content-meta">
+                    <span class="osirion-content-author">By @Item.Author</span>
+                    <span class="osirion-content-date">@Item.Date.ToString("MMMM d, yyyy")</span>
+                    <span class="osirion-content-read-time">@Item.ReadTimeMinutes min read</span>
+                </div>
+                @if (!string.IsNullOrEmpty(Item.FeaturedImageUrl))
+                {
+                    <img src="@Item.FeaturedImageUrl" alt="@Item.Title" class="osirion-content-featured-image" />
+                }
+            </header>
+
+            <div class="osirion-content-body">
+                @((MarkupString)Item.Content)
+            </div>
+
+            <footer class="osirion-content-footer">
+                @if (Item.Categories.Any())
+                {
+                    <div class="osirion-content-categories">
+                        @foreach (var category in Item.Categories)
+                        {
+                            <a href="@GetCategoryUrl(category)" class="osirion-content-category">@category</a>
+                        }
+                    </div>
+                }
+                @if (Item.Tags.Any())
+                {
+                    <div class="osirion-content-tags">
+                        @foreach (var tag in Item.Tags)
+                        {
+                            <a href="@GetTagUrl(tag)" class="osirion-content-tag">@tag</a>
+                        }
+                    </div>
+                }
+            </footer>
+        </article>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public ContentItem? Item { get; set; }
+
+    [Parameter]
+    public bool IsLoading { get; set; }
+
+    [Parameter]
+    public string LoadingText { get; set; } = "Loading content...";
+
+    [Parameter]
+    public string NotFoundText { get; set; } = "Content not found.";
+
+    [Parameter]
+    public Func<string, string>? CategoryUrlFormatter { get; set; }
+
+    [Parameter]
+    public Func<string, string>? TagUrlFormatter { get; set; }
+
+    private string GetContentViewClass()
+    {
+        return $"osirion-content-view {CssClass}".Trim();
+    }
+
+    private string GetCategoryUrl(string category)
+    {
+        return CategoryUrlFormatter?.Invoke(category) ?? $"/category/{category.ToLower().Replace(' ', '-')}";
+    }
+
+    private string GetTagUrl(string tag)
+    {
+        return TagUrlFormatter?.Invoke(tag) ?? $"/tag/{tag.ToLower().Replace(' ', '-')}";
+    }
+}

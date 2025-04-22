@@ -1,0 +1,82 @@
+﻿@inherits OsirionComponentBase
+@inject IOptions<ThemingOptions>? Options
+
+@if (ShouldUseStyles && !IsServerSide)
+{
+    @if (EffectiveOptions.UseDefaultStyles)
+    {
+        <link rel="stylesheet" href="_content/Osirion.Blazor.Theming/css/osirion.css" />
+        <link rel="stylesheet" href="_content/Osirion.Blazor.Content/css/osirion-content.css" />
+        <link rel="stylesheet" href="_content/Osirion.Blazor.Navigation/css/osirion-navigation.css" />
+        <link rel="stylesheet" href="_content/Osirion.Blazor.Theming/css/osirion-theming.css" />
+    }
+
+    @if (!string.IsNullOrEmpty(CustomVariables))
+    {
+        <style>
+            :root {
+            @((MarkupString)CustomVariables)
+            }
+        </style>
+    }
+
+    @if (EffectiveOptions.Framework != CssFramework.None)
+    {
+        @((MarkupString)GetFrameworkIntegrationScript())
+    }
+}
+
+@code {
+    [Parameter]
+    public bool? UseStyles { get; set; }
+
+    [Parameter]
+    public string? CustomVariables { get; set; }
+
+    [Parameter]
+    public CssFramework? Framework { get; set; }
+
+    private ThemingOptions EffectiveOptions => new()
+        {
+            UseDefaultStyles = UseStyles ?? Options?.Value.UseDefaultStyles ?? true,
+            CustomVariables = CustomVariables ?? Options?.Value.CustomVariables,
+            Framework = Framework ?? Options?.Value.Framework ?? CssFramework.None
+        };
+
+    private bool ShouldUseStyles => EffectiveOptions.UseDefaultStyles;
+
+    private string GetFrameworkIntegrationScript()
+    {
+        var integrationClass = EffectiveOptions.Framework switch
+        {
+            CssFramework.Bootstrap => "osirion-bootstrap-integration",
+            CssFramework.Tailwind => "osirion-tailwind-integration",
+            CssFramework.FluentUI => "osirion-fluent-integration",
+            CssFramework.MudBlazor => "osirion-mudblazor-integration",
+            CssFramework.Radzen => "osirion-radzen-integration",
+            _ => ""
+        };
+
+        if (string.IsNullOrEmpty(integrationClass))
+            return string.Empty;
+
+        return $@"
+            <script>
+                (function() {{
+                    function applyFrameworkIntegration() {{
+                        const htmlElement = document.documentElement || document.querySelector('html');
+                        if (htmlElement && !htmlElement.classList.contains('{integrationClass}')) {{
+                            htmlElement.classList.add('{integrationClass}');
+                        }}
+                    }}
+
+                    applyFrameworkIntegration();
+
+                    if (document.readyState === 'loading') {{
+                        document.addEventListener('DOMContentLoaded', applyFrameworkIntegration);
+                    }}
+                }})();
+            </script>
+        ";
+    }
+}

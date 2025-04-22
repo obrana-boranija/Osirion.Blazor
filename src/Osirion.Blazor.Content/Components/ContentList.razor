@@ -1,0 +1,72 @@
+﻿@inherits OsirionComponentBase
+
+<div class="@GetContentListClass()">
+    @if (IsLoading)
+    {
+            <div class="osirion-loading">@LoadingText</div>
+    }
+    else if (Items == null || !Items.Any())
+    {
+            <div class="osirion-no-content">@NoContentText</div>
+    }
+    else
+    {
+            <div class="osirion-content-grid">
+            @foreach (var item in Items)
+            {
+                        <div class="osirion-content-card">
+                    @if (!string.IsNullOrEmpty(item.FeaturedImageUrl))
+                    {
+                                    <img src="@item.FeaturedImageUrl" alt="@item.Title" class="osirion-content-featured-image" />
+                    }
+                            <div class="osirion-content-body">
+                                <h2 class="osirion-content-title">@item.Title</h2>
+                                <div class="osirion-content-meta">
+                                    <span class="osirion-content-author">@item.Author</span>
+                                    <span class="osirion-content-date">@item.Date.ToString("MMM d, yyyy")</span>
+                                    <span class="osirion-content-read-time">@item.ReadTimeMinutes min read</span>
+                                </div>
+                                <p class="osirion-content-description">@item.Description</p>
+                                <div class="osirion-content-tags">
+                            @foreach (var tag in item.Tags)
+                            {
+                                            <span class="osirion-content-tag">@tag</span>
+                            }
+                                </div>
+                                <a href="@GetContentUrl(item)" class="osirion-content-read-more" rel="nofollow">@ReadMoreText</a>
+                            </div>
+                        </div>
+            }
+            </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public IReadOnlyList<ContentItem>? Items { get; set; }
+
+    [Parameter]
+    public bool IsLoading { get; set; }
+
+    [Parameter]
+    public string LoadingText { get; set; } = "Loading content...";
+
+    [Parameter]
+    public string NoContentText { get; set; } = "No content available.";
+
+    [Parameter]
+    public string ReadMoreText { get; set; } = "Read more";
+
+    [Parameter]
+    public Func<ContentItem, string>? ContentUrlFormatter { get; set; }
+
+    private string GetContentListClass()
+    {
+        return $"osirion-content-list {CssClass}".Trim();
+    }
+
+    private string GetContentUrl(ContentItem item)
+    {
+        return ContentUrlFormatter?.Invoke(item) ?? $"/{item.Path}";
+    }
+}

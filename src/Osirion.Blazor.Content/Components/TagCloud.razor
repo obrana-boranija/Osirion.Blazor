@@ -1,0 +1,51 @@
+﻿@inherits OsirionComponentBase
+
+<div class="@GetTagCloudClass()">
+    @if (IsLoading)
+    {
+        <div class="osirion-loading">@LoadingText</div>
+    }
+    else if (Tags == null || !Tags.Any())
+    {
+        <div class="osirion-no-tags">@NoContentText</div>
+    }
+    else
+    {
+        <div class="osirion-tags-container">
+        @foreach (var tag in Tags)
+        {
+            <a href="@GetTagUrl(tag)" class="osirion-tag-link" rel="nofollow">
+                @tag.Name
+                <span class="osirion-tag-count">@tag.Count</span>
+            </a>
+        }
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public IReadOnlyList<ContentTag>? Tags { get; set; }
+
+    [Parameter]
+    public bool IsLoading { get; set; }
+
+    [Parameter]
+    public string LoadingText { get; set; } = "Loading tags...";
+
+    [Parameter]
+    public string NoContentText { get; set; } = "No tags available.";
+
+    [Parameter]
+    public Func<ContentTag, string>? TagUrlFormatter { get; set; }
+
+    private string GetTagCloudClass()
+    {
+        return $"osirion-tag-cloud {CssClass}".Trim();
+    }
+
+    private string GetTagUrl(ContentTag tag)
+    {
+        return TagUrlFormatter?.Invoke(tag) ?? $"/tag/{tag.Slug}";
+    }
+}

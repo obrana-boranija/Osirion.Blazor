@@ -1,0 +1,31 @@
+﻿@inherits OsirionComponentBase
+@implements IDisposable
+@inject ScrollToTopManager Manager
+
+@if (Manager.IsEnabled)
+{
+    <ScrollToTop Position="@Manager.Position"
+                 Behavior="@Manager.Behavior"
+                 VisibilityThreshold="@Manager.VisibilityThreshold"
+                 Text="@Manager.Text"
+                 Title="@Manager.Title"
+                 CssClass="@Manager.CssClass"
+                 CustomIcon="@Manager.CustomIcon" />
+}
+
+@code {
+    protected override void OnInitialized()
+    {
+        Manager.ConfigurationChanged += OnConfigurationChanged;
+    }
+
+    private void OnConfigurationChanged(object? sender, EventArgs e)
+    {
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        Manager.ConfigurationChanged -= OnConfigurationChanged;
+    }
+}
