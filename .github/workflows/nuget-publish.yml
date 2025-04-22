@@ -1,0 +1,152 @@
+name: NuGet Package Publish
+
+on:
+  push:
+    tags:
+      - 'v*' # Trigger on version tags
+  workflow_dispatch: # Allow manual trigger
+
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  DOTNET_NOLOGO: true
+  NuGetDirectory: ${{ github.workspace}}/nuget
+
+jobs:
+  create_nuget:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Get all history for versioning
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            9.0.x
+
+      - name: Create NuGet Directory
+        run: mkdir -p ${{ env.NuGetDirectory }}
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build solution
+        run: dotnet build -c Release --no-restore
+
+      - name: Run tests
+        run: dotnet test -c Release --no-build --verbosity normal
+
+      # Pack Core package
+      - name: Pack Osirion.Blazor.Core
+        run: dotnet pack src/Osirion.Blazor.Core/Osirion.Blazor.Core.csproj --no-build -c Release --include-symbols -p:SymbolPackageFormat=snupkg -o ${{ env.NuGetDirectory }}
+
+      # Pack Analytics package
+      - name: Pack Osirion.Blazor.Analytics
+        run: dotnet pack src/Osirion.Blazor.Analytics/Osirion.Blazor.Analytics.csproj --no-build -c Release --include-symbols -p:SymbolPackageFormat=snupkg -o ${{ env.NuGetDirectory }}
+
+      # Pack Navigation package
+      - name: Pack Osirion.Blazor.Navigation
+        run: dotnet pack src/Osirion.Blazor.Navigation/Osirion.Blazor.Navigation.csproj --no-build -c Release --include-symbols -p:SymbolPackageFormat=snupkg -o ${{ env.NuGetDirectory }}
+
+      # Pack CMS package
+      - name: Pack Osirion.Blazor.Cms
+        run: dotnet pack src/Osirion.Blazor.Cms/Osirion.Blazor.Cms.csproj --no-build -c Release --include-symbols -p:SymbolPackageFormat=snupkg -o ${{ env.NuGetDirectory }}
+
+      # Pack Theming package
+      - name: Pack Osirion.Blazor.Theming
+        run: dotnet pack src/Osirion.Blazor.Theming/Osirion.Blazor.Theming.csproj --no-build -c Release --include-symbols -p:SymbolPackageFormat=snupkg -o ${{ env.NuGetDirectory }}
+
+      # Pack main package
+      - name: Pack Osirion.Blazor
+        run: dotnet pack src/Osirion.Blazor/Osirion.Blazor.csproj --no-build -c Release --include-symbols -p:SymbolPackageFormat=snupkg -o ${{ env.NuGetDirectory }}
+
+      # Verify packages
+      - name: Verify NuGet packages
+        run: |
+          for package in ${{ env.NuGetDirectory }}/*.nupkg; do
+            dotnet nuget verify $package
+          done
+
+      # Upload artifacts
+      - name: Upload NuGet packages as artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: nuget
+          path: ${{ env.NuGetDirectory }}/*.*nupkg
+          if-no-files-found: error
+
+  validate_version:
+    needs: create_nuget
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download NuGet packages
+        uses: actions/download-artifact@v3
+        with:
+          name: nuget
+          path: ${{ env.NuGetDirectory }}
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      # Check if version exists
+      - name: Check if version exists
+        run: |
+          for package in ${{ env.NuGetDirectory }}/*.nupkg; do
+            packageName=$(basename $package .nupkg)
+            version=$(echo $packageName | rev | cut -d'.' -f1 | rev)
+            if curl -s "https://api.nuget.org/v3-flatcontainer/${packageName%%.$version}/index.json" | grep -q "$version"; then
+              echo "Version $version of package $packageName already exists on NuGet"
+              exit 1
+            fi
+          done
+
+  publish_nuget:
+    needs: validate_version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download NuGet packages
+        uses: actions/download-artifact@v3
+        with:
+          name: nuget
+          path: ${{ env.NuGetDirectory }}
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      # Publish to NuGet
+      - name: Publish NuGet package
+        run: |
+          for package in ${{ env.NuGetDirectory }}/*.nupkg; do
+            dotnet nuget push $package --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+          done
+
+  create_release:
+    needs: publish_nuget
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          tag=${GITHUB_REF#refs/tags/}
+          version=${tag#v}
+          
+          # Extract changelog section for this version
+          changelog_section=$(awk "/## \[$version\]/{p=1;print;next} /## \[/{p=0} p" CHANGELOG.md)
+          
+          gh release create $tag \
+            --title "Release $tag" \
+            --notes "$changelog_section" \
+            --draft=false \
+            --prerelease=false
