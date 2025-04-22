@@ -47,10 +47,11 @@ jobs:
 
       # Upload artifacts
       - name: Upload NuGet packages as artifacts
+        if: ${{ always() && steps.pack_step.outputs.files_exist == 'true' }} # Ensure files exist
         uses: actions/upload-artifact@v3
         with:
           name: nuget
-          path: ${{ env.NuGetDirectory }}/*.*nupkg
+          path: ${{ env.NuGetDirectory }}/*.nupkg
           if-no-files-found: error
 
   validate_version:
