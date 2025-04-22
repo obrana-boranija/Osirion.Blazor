@@ -29,44 +29,23 @@ jobs:
 
       - name: Update version in project files
         run: |
-          FILES=(
-            "src/Osirion.Blazor/Osirion.Blazor.csproj"
-            "src/Osirion.Blazor.Core/Osirion.Blazor.Core.csproj"
-            "src/Osirion.Blazor.Analytics/Osirion.Blazor.Analytics.csproj"
-            "src/Osirion.Blazor.Navigation/Osirion.Blazor.Navigation.csproj"
-            "src/Osirion.Blazor.Cms/Osirion.Blazor.Cms.csproj"
-            "src/Osirion.Blazor.Theming/Osirion.Blazor.Theming.csproj"
-          )
-          
-          for file in "${FILES[@]}"; do
-            if [ -f "$file" ]; then
-              echo "Processing $file"
-              # Print file content before
-              echo "Before:"
-              cat "$file"
-              
-              # Update version
-              sed -i 's/<Version>[0-9]\+\.[0-9]\+\.[0-9]\+<\/Version>/<Version>${{ github.event.inputs.version }}<\/Version>/g' "$file"
-              
-              # Print file content after
-              echo "After:"
-              cat "$file"
-              echo "-------------------"
-            else
-              echo "Warning: $file not found"
-            fi
-          done
+          # Update version in all Osirion.Blazor module projects
+          find ./src -name "*.csproj" -type f -exec sed -i "s/<Version>[0-9]\+\.[0-9]\+\.[0-9]\+<\/Version>/<Version>${{ github.event.inputs.version }}<\/Version>/g" {} \;
+
+      - name: Update Solution Reference Versions
+        run: |
+          # Update project references in solution to ensure compatibility
+          find ./src -name "*.csproj" -type f -exec sed -i 's/<ProjectReference Include="\(.*\)" Version="[0-9]\+\.[0-9]\+\.[0-9]\+"\/>/<ProjectReference Include="\1" Version="${{ github.event.inputs.version }}"\/>}/g' {} \;
 
       - name: Update CHANGELOG.md
         run: |
           TODAY=$(date +%Y-%m-%d)
-          NEW_VERSION="## [${{ github.event.inputs.version }}] - $TODAY"
-          
-          awk -v new_version="$NEW_VERSION" '
-            /## \[Unreleased\]/ { print $0; print ""; print new_version; next }
-            { print }
-          ' CHANGELOG.md > temp.md
-          mv temp.md CHANGELOG.md
+          sed -i "0,/## \[Unreleased\]/s/## \[Unreleased\]/## [Unreleased]\n\n## [${{ github.event.inputs.version }}] - $TODAY/" CHANGELOG.md
+
+      - name: Update Documentation
+        run: |
+          # Update version in README.md and other markdown files
+          find . -name "*.md" -type f -exec sed -i "s/Osirion\.Blazor v[0-9]\+\.[0-9]\+\.[0-9]\+/Osirion.Blazor v${{ github.event.inputs.version }}/g" {} \;
 
       - name: Ensure Labels Exist
         run: |
@@ -74,6 +53,7 @@ jobs:
           -H "Accept: application/vnd.github.v3+json" \
           https://api.github.com/repos/${{ github.repository }}/labels \
           -d '{"name": "release", "color": "f29513"}' || echo "Label 'release' already exists."
+          
           curl -X POST -H "Authorization: token ${{ secrets.PAT_TOKEN }}" \
           -H "Accept: application/vnd.github.v3+json" \
           https://api.github.com/repos/${{ github.repository }}/labels \
@@ -91,8 +71,9 @@ jobs:
             Automated PR to prepare release ${{ github.event.inputs.version }}
             
             ## Changes
-            - Updated version numbers to ${{ github.event.inputs.version }} in all src projects
+            - Updated version numbers to ${{ github.event.inputs.version }}
             - Updated CHANGELOG.md
+            - Updated documentation references
             
             Please review the changes and merge if everything looks correct.
           labels: |
