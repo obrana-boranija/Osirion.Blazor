@@ -1,15 +1,14 @@
 ﻿@page "/search"
-@inject IGitHubCmsService CmsService
+@* @inject IContentProvider CmsService *@
 @inject NavigationManager NavigationManager
-@using Osirion.Blazor.Models.Cms
-@using Osirion.Blazor.Services.GitHub
 
 <h1>Search Results</h1>
 
-@if (IsLoading)
+@* @if (IsLoading)
 {
     <div class="loading">Searching...</div>
-}
+} *@
+@* 
 else
 {
     @if (!string.IsNullOrEmpty(Query))
@@ -74,3 +73,4 @@ else
         }
     }
 }
+*@

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Osirion.Blazor.Analytics;
-using Osirion.Blazor.Content;
+using Osirion.Blazor.Cms;
 using Osirion.Blazor.Navigation;
 using Osirion.Blazor.Theming;
 

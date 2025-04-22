@@ -3,7 +3,7 @@
 @inject NavigationManager NavigationManager
 
 
-<PageTitle>@(ContentItem?.Title ?? "Blog Post") - Osirion Blog</PageTitle>
+@* <PageTitle>@(ContentItem?.Title ?? "Blog Post") - Osirion Blog</PageTitle>
 
 <ContentView Path="@Path" />
 
@@ -14,4 +14,4 @@
     private ContentItem? ContentItem { get; set; }
 
     private string Path => $"{NavigationManager.ToBaseRelativePath(NavigationManager.Uri)}.md";
-}
+} *@

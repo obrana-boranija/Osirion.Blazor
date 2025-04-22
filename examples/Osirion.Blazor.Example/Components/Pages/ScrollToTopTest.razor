@@ -1,7 +1,7 @@
 ﻿@page "/scrolltotop-example"
-@using Osirion.Blazor.Components.Navigation
 @using Microsoft.Extensions.Options
-@using Osirion.Blazor.Options
+@using Osirion.Blazor.Navigation.Components
+@using Osirion.Blazor.Navigation.Options
 
 <h1>ScrollToTop Component Example</h1>
 
@@ -10,10 +10,10 @@
     <div class="demo-section">
         <div class="controls">
             <select @bind="selectedPosition" class="form-control">
-                <option value="@ButtonPosition.BottomRight">Bottom Right (Default)</option>
-                <option value="@ButtonPosition.BottomLeft">Bottom Left</option>
-                <option value="@ButtonPosition.TopRight">Top Right</option>
-                <option value="@ButtonPosition.TopLeft">Top Left</option>
+                <option value="@Position.BottomRight">Bottom Right (Default)</option>
+                <option value="@Position.BottomLeft">Bottom Left</option>
+                <option value="@Position.TopRight">Top Right</option>
+                <option value="@Position.TopLeft">Top Left</option>
             </select>
         </div>
         <ScrollToTop Position="selectedPosition" />
@@ -149,7 +149,7 @@
 </style>
 
 @code {
-    private ButtonPosition selectedPosition = ButtonPosition.BottomLeft;
+    private Position selectedPosition = Position.BottomLeft;
     private ScrollBehavior selectedBehavior = ScrollBehavior.Smooth;
     private string customText = "Back to top";
     private int visibilityThreshold = 300;

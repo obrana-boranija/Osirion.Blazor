@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Osirion.Blazor.Analytics.Options;
-using Osirion.Blazor.Content.Options;
+using Osirion.Blazor.Cms.Options;
 using Osirion.Blazor.Extensions;
 using Osirion.Blazor.Navigation.Options;
 using Osirion.Blazor.Theming;

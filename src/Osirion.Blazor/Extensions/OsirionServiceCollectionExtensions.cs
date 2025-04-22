@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Osirion.Blazor.Internal;
 using Osirion.Blazor.Theming;
+using Osirion.Blazor.Cms;
 
 namespace Osirion.Blazor.Extensions;
 

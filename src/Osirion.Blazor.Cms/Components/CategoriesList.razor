@@ -1,0 +1,30 @@
+﻿@inherits OsirionComponentBase
+
+<div class="@GetCategoriesListClass()">
+    @if (IsLoading)
+    {
+        <div class="osirion-loading">@LoadingText</div>
+    }
+    else if (Categories == null || !Categories.Any())
+    {
+        <div class="osirion-no-categories">@NoContentText</div>
+    }
+    else
+    {
+        <ul class="osirion-categories-list">
+        @foreach (var category in Categories)
+        {
+            <li class="osirion-category-item">
+                <a href="@GetCategoryUrl(category)" class="osirion-category-link" rel="nofollow">
+                    @category.Name
+                    <span class="osirion-category-count">@category.Count</span>
+                </a>
+            </li>
+        }
+        </ul>
+    }
+</div>
+
+@code {
+    
+}

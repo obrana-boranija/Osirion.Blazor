@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorComponents();
 
-builder.Services.AddOsirionBlazor(builder.Configuration);
+builder.Services.AddOsirion(builder.Configuration);
 
 var app = builder.Build();
 

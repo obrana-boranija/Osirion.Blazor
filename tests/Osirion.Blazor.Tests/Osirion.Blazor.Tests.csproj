@@ -19,11 +19,6 @@
 		</ItemGroup>
 
 	<ItemGroup>
-		    <ProjectReference Include="..\..\src\Osirion.Blazor.Analytics\Osirion.Blazor.Analytics.csproj" />
-		    <ProjectReference Include="..\..\src\Osirion.Blazor.Content\Osirion.Blazor.Content.csproj" />
-		    <ProjectReference Include="..\..\src\Osirion.Blazor.Core\Osirion.Blazor.Core.csproj" />
-		    <ProjectReference Include="..\..\src\Osirion.Blazor.Navigation\Osirion.Blazor.Navigation.csproj" />
-		    <ProjectReference Include="..\..\src\Osirion.Blazor.Theming\Osirion.Blazor.Theming.csproj" />
 		    <ProjectReference Include="..\..\src\Osirion.Blazor\Osirion.Blazor.csproj" />
   </ItemGroup>
 
