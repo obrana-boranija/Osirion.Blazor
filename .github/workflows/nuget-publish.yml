@@ -72,7 +72,7 @@ jobs:
 
       # Upload artifacts
       - name: Upload NuGet packages as artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v2
         with:
           name: nuget
           path: ${{ env.NuGetDirectory }}/*.*nupkg
