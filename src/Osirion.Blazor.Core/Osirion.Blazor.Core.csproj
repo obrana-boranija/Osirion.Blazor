@@ -9,7 +9,7 @@
 
 		<!-- NuGet package properties -->
 		<PackageId>Osirion.Blazor.Content</PackageId>
-		<Version>2.0.0</Version>
+		<Version>2.0.1</Version>
 		<Authors>Dejan Demonjić</Authors>
 		<Company>Tridesetri</Company>
 		<Description>Content module for Osirion.Blazor - Provides content management with provider pattern.</Description>
