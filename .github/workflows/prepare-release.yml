@@ -28,11 +28,28 @@ jobs:
             9.0.x
 
       - name: Update version in project files
+        shell: bash
         run: |
-          # Update version in all src directory projects
-          for project in src/*/*.csproj; do
-            echo "Updating version in $project"
-            sed -i "s/<Version>[0-9]\+\.[0-9]\+\.[0-9]\+<\/Version>/<Version>${{ github.event.inputs.version }}<\/Version>/g" "$project"
+          # Debug: List all project files that will be processed
+          echo "Found project files:"
+          find src -name "*.csproj" -type f -print
+          
+          # Update versions and print changes
+          for project in $(find src -name "*.csproj" -type f); do
+            echo "Processing $project"
+            
+            # Make backup of original file
+            cp "$project" "$project.bak"
+            
+            # Update version using perl (more reliable than sed for XML)
+            perl -pi -e 's|<Version>[0-9]+\.[0-9]+\.[0-9]+</Version>|<Version>${{ github.event.inputs.version }}</Version>|g' "$project"
+            
+            # Show diff
+            echo "Changes in $project:"
+            diff "$project.bak" "$project" || true
+            
+            # Remove backup
+            rm "$project.bak"
           done
 
       - name: Update CHANGELOG.md
