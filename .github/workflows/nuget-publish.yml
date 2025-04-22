@@ -27,135 +27,78 @@ jobs:
       - name: Create NuGet Directory
         run: mkdir -p ${{ env.NuGetDirectory }}
       
-      # Fix missing namespace references
-      - name: Fix namespace issues
-        run: |
-          # Create a _Imports.razor file with all needed namespaces
-          mkdir -p fixes
-          cat > fixes/_Imports.razor << 'EOF'
-          @using Microsoft.AspNetCore.Components
-          @using Microsoft.AspNetCore.Components.Web
-          @using Osirion.Blazor
-          @using Osirion.Blazor.Components
-          @using Osirion.Blazor.Components.Analytics
-          @using Osirion.Blazor.Components.Analytics.Options
-          @using Osirion.Blazor.Components.GitHubCms
-          @using Osirion.Blazor.Components.Navigation
-          @using Osirion.Blazor.Services.GitHub
-          @using Osirion.Blazor.Models.Cms
-          @using Osirion.Blazor.Cms
-          @using Osirion.Blazor.Cms.Models
-          @using Osirion.Blazor.Cms.Providers
-          @using Osirion.Blazor.Theming
-          @using Osirion.Blazor.Navigation
-          @using Osirion.Blazor.Analytics
-          EOF
-          
-          # Copy to all component directories if they exist
-          find . -type d -name "Components" | while read dir; do
-            cp fixes/_Imports.razor "$dir/" || true
-          done
-          
-          # Fix example app namespaces
-          if [ -d "examples/Osirion.Blazor.Example/Components" ]; then
-            cp fixes/_Imports.razor "examples/Osirion.Blazor.Example/Components/"
-          fi
-      
       # Fix platform compatibility issues by adding conditional compilation
       - name: Fix platform compatibility warnings
         run: |
-          # Disable platform compatibility warnings globally
+          # Create Directory.Build.props to suppress warnings
           cat > Directory.Build.props << 'EOF'
           <Project>
             <PropertyGroup>
-              <NoWarn>$(NoWarn);CA1416;CS8632;CS1998;CS8600;CS8603;CS8618;CS8604;CS8602;CS8625</NoWarn>
-              <DefineConstants>$(DefineConstants);DISABLE_BROWSER_CHECK</DefineConstants>
+              <NoWarn>$(NoWarn);CA1416;CS8632;CS1998;CS8600;CS8603;CS8618;CS8604;CS8602;CS8625;CS0234</NoWarn>
+              <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
             </PropertyGroup>
           </Project>
           EOF
-          
-          # Fix FileSystemContentProvider if exists
-          if [ -f "src/Osirion.Blazor.Cms/Providers/FileSystemContentProvider.cs" ]; then
-            # Add DISABLE_BROWSER_CHECK directive to suppress browser-related warnings
-            sed -i '1i#define DISABLE_BROWSER_CHECK' "src/Osirion.Blazor.Cms/Providers/FileSystemContentProvider.cs"
-            
-            # Fix async method without await
-            sed -i 's/public override Task InitializeAsync/public override async Task InitializeAsync/g' "src/Osirion.Blazor.Cms/Providers/FileSystemContentProvider.cs"
-            sed -i 's/return Task.CompletedTask/return await Task.CompletedTask/g' "src/Osirion.Blazor.Cms/Providers/FileSystemContentProvider.cs"
-          fi
       
+      # Full restore first
       - name: Restore dependencies
-        run: dotnet restore || true
+        run: dotnet restore
       
-      - name: Build solution
-        run: dotnet build -c Release --no-restore -p:TreatWarningsAsErrors=false || true
-      
-      # Skip tests
-      - name: Run tests
-        run: echo "Skipping tests to focus on packaging"
-      
-      # Create dummy classes for any missing types
-      - name: Create dummy types
+      # For each module, build explicitly before packing
+      - name: Build and Pack Osirion.Blazor.Core
         run: |
-          mkdir -p tmp/Osirion.Blazor.Components/Analytics
-          cat > tmp/TrackerComponentBase.cs << 'EOF'
-          namespace Osirion.Blazor.Components.Analytics {
-              public abstract class TrackerComponentBase<T> : Microsoft.AspNetCore.Components.ComponentBase where T : class {
-                  protected virtual bool CouldRender => true;
-                  protected virtual string GetScript() => "";
-                  protected Microsoft.AspNetCore.Components.MarkupString Script => 
-                      new Microsoft.AspNetCore.Components.MarkupString(GetScript());
-              }
-          }
-          EOF
+          echo "Building Core..."
+          dotnet build src/Osirion.Blazor.Core/Osirion.Blazor.Core.csproj -c Release 
           
-          # Try to compile the dummy types
-          dotnet new console -o tmp/DummyProject
-          cp tmp/TrackerComponentBase.cs tmp/DummyProject/
-          dotnet build tmp/DummyProject -p:NoWarn="CS0618;CA1416" || true
+          echo "Packing Core..."
+          dotnet pack src/Osirion.Blazor.Core/Osirion.Blazor.Core.csproj -c Release --no-build -o ${{ env.NuGetDirectory }}
       
-      # Pack all projects in separate steps to allow partial success
-      - name: Pack Osirion.Blazor.Core
-        run: dotnet pack src/Osirion.Blazor.Core/Osirion.Blazor.Core.csproj -c Release -p:TreatWarningsAsErrors=false -p:ContinuousIntegrationBuild=true --include-symbols -p:SymbolPackageFormat=snupkg -o ${{ env.NuGetDirectory }} || echo "Failed to pack Core"
-      
-      - name: Pack Osirion.Blazor.Analytics
-        run: dotnet pack src/Osirion.Blazor.Analytics/Osirion.Blazor.Analytics.csproj -c Release -p:TreatWarningsAsErrors=false -p:ContinuousIntegrationBuild=true --include-symbols -p:SymbolPackageFormat=snupkg -o ${{ env.NuGetDirectory }} || echo "Failed to pack Analytics"
-      
-      - name: Pack Osirion.Blazor.Navigation
-        run: dotnet pack src/Osirion.Blazor.Navigation/Osirion.Blazor.Navigation.csproj -c Release -p:TreatWarningsAsErrors=false -p:ContinuousIntegrationBuild=true --include-symbols -p:SymbolPackageFormat=snupkg -o ${{ env.NuGetDirectory }} || echo "Failed to pack Navigation"
-      
-      - name: Pack Osirion.Blazor.Cms
-        run: dotnet pack src/Osirion.Blazor.Cms/Osirion.Blazor.Cms.csproj -c Release -p:TreatWarningsAsErrors=false -p:ContinuousIntegrationBuild=true --include-symbols -p:SymbolPackageFormat=snupkg -o ${{ env.NuGetDirectory }} || echo "Failed to pack Cms"
-      
-      - name: Pack Osirion.Blazor.Theming
-        run: dotnet pack src/Osirion.Blazor.Theming/Osirion.Blazor.Theming.csproj -c Release -p:TreatWarningsAsErrors=false -p:ContinuousIntegrationBuild=true --include-symbols -p:SymbolPackageFormat=snupkg -o ${{ env.NuGetDirectory }} || echo "Failed to pack Theming"
-      
-      # Try to pack v1 directly from project
-      - name: Pack Osirion.Blazor.v1
-        run: dotnet pack Osirion.Blazor/Osirion.Blazor.v1.csproj -c Release -p:TreatWarningsAsErrors=false -p:ContinuousIntegrationBuild=true --include-symbols -p:SymbolPackageFormat=snupkg -o ${{ env.NuGetDirectory }} || echo "Failed to pack v1"
-      
-      # Try to pack v2 directly from project
-      - name: Pack Osirion.Blazor
-        run: dotnet pack src/Osirion.Blazor/Osirion.Blazor.csproj -c Release -p:TreatWarningsAsErrors=false -p:ContinuousIntegrationBuild=true --include-symbols -p:SymbolPackageFormat=snupkg -o ${{ env.NuGetDirectory }} || echo "Failed to pack v2"
-      
-      # Create fallback packages if regular packing fails
-      - name: Create fallback packages
+      - name: Build and Pack Osirion.Blazor.Analytics
         run: |
-          if [ ! -f "${{ env.NuGetDirectory }}/Osirion.Blazor.Core.*.nupkg" ]; then
-            echo "Creating fallback package for Osirion.Blazor.Core"
-            dotnet pack src/Osirion.Blazor.Core/Osirion.Blazor.Core.csproj --no-build -p:NoBuild=true -p:TreatWarningsAsErrors=false -o ${{ env.NuGetDirectory }} || true
-          fi
+          echo "Building Analytics..."
+          dotnet build src/Osirion.Blazor.Analytics/Osirion.Blazor.Analytics.csproj -c Release 
           
-          if [ ! -f "${{ env.NuGetDirectory }}/Osirion.Blazor.v1.*.nupkg" ]; then
-            echo "Creating fallback package for Osirion.Blazor.v1"
-            dotnet pack Osirion.Blazor/Osirion.Blazor.v1.csproj --no-build -p:NoBuild=true -p:TreatWarningsAsErrors=false -o ${{ env.NuGetDirectory }} || true
-          fi
+          echo "Packing Analytics..."
+          dotnet pack src/Osirion.Blazor.Analytics/Osirion.Blazor.Analytics.csproj -c Release --no-build -o ${{ env.NuGetDirectory }}
+      
+      - name: Build and Pack Osirion.Blazor.Navigation
+        run: |
+          echo "Building Navigation..."
+          dotnet build src/Osirion.Blazor.Navigation/Osirion.Blazor.Navigation.csproj -c Release 
+          
+          echo "Packing Navigation..."
+          dotnet pack src/Osirion.Blazor.Navigation/Osirion.Blazor.Navigation.csproj -c Release --no-build -o ${{ env.NuGetDirectory }}
+      
+      - name: Build and Pack Osirion.Blazor.Cms
+        run: |
+          echo "Building Cms..."
+          dotnet build src/Osirion.Blazor.Cms/Osirion.Blazor.Cms.csproj -c Release 
+          
+          echo "Packing Cms..."
+          dotnet pack src/Osirion.Blazor.Cms/Osirion.Blazor.Cms.csproj -c Release --no-build -o ${{ env.NuGetDirectory }}
+      
+      - name: Build and Pack Osirion.Blazor.Theming
+        run: |
+          echo "Building Theming..."
+          dotnet build src/Osirion.Blazor.Theming/Osirion.Blazor.Theming.csproj -c Release 
+          
+          echo "Packing Theming..."
+          dotnet pack src/Osirion.Blazor.Theming/Osirion.Blazor.Theming.csproj -c Release --no-build -o ${{ env.NuGetDirectory }}
+      
+      # Build and pack main package last
+      - name: Build and Pack Osirion.Blazor
+        run: |
+          echo "Building Main package..."
+          dotnet build src/Osirion.Blazor/Osirion.Blazor.csproj -c Release 
+          
+          echo "Packing Main package..."
+          dotnet pack src/Osirion.Blazor/Osirion.Blazor.csproj -c Release --no-build -o ${{ env.NuGetDirectory }}
       
       # List packages to verify they exist
       - name: List packages
         run: ls -la ${{ env.NuGetDirectory }}
       
-      # Upload artifacts even if some packages failed
+      # Upload artifacts
       - name: Upload NuGet packages as artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -176,7 +119,7 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
-      # Check if version exists but don't fail the workflow
+      # Check if version exists
       - name: Check if version exists
         run: |
           for package in ${{ env.NuGetDirectory }}/*.nupkg; do
@@ -186,8 +129,6 @@ jobs:
             response=$(curl -s -o /dev/null -w "%{http_code}" "https://api.nuget.org/v3-flatcontainer/$packageId/$version/$packageId.$version.nupkg")
             if [ "$response" == "200" ]; then
               echo "Version $version of package $packageId already exists on NuGet"
-              # Don't fail the workflow, just make a note
-              echo "$packageId.$version" >> existing_packages.txt
             fi
           done
         shell: bash
