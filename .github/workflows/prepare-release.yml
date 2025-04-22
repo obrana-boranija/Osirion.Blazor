@@ -29,12 +29,26 @@ jobs:
 
       - name: Update version in project files
         run: |
-          find . -name "*.csproj" -type f -exec sed -i "s/<Version>[0-9]\+\.[0-9]\+\.[0-9]\+<\/Version>/<Version>${{ github.event.inputs.version }}<\/Version>/g" {} \;
+          # Update version in all src directory projects
+          for project in src/*/*.csproj; do
+            echo "Updating version in $project"
+            sed -i "s/<Version>[0-9]\+\.[0-9]\+\.[0-9]\+<\/Version>/<Version>${{ github.event.inputs.version }}<\/Version>/g" "$project"
+          done
 
       - name: Update CHANGELOG.md
         run: |
+          # Ensure there's a newline before adding new version
           TODAY=$(date +%Y-%m-%d)
-          sed -i "0,/## \[Unreleased\]/s/## \[Unreleased\]/## [Unreleased]\n\n## [${{ github.event.inputs.version }}] - $TODAY/" CHANGELOG.md
+          NEW_VERSION="## [${{ github.event.inputs.version }}] - $TODAY"
+          
+          # Create temporary file with new content
+          awk -v new_version="$NEW_VERSION" '
+            /## \[Unreleased\]/ { print $0; print ""; print new_version; next }
+            { print }
+          ' CHANGELOG.md > temp.md
+          
+          # Replace original file
+          mv temp.md CHANGELOG.md
 
       - name: Ensure Labels Exist
         run: |
@@ -59,7 +73,7 @@ jobs:
             Automated PR to prepare release ${{ github.event.inputs.version }}
             
             ## Changes
-            - Updated version numbers to ${{ github.event.inputs.version }}
+            - Updated version numbers to ${{ github.event.inputs.version }} in all src projects
             - Updated CHANGELOG.md
             
             Please review the changes and merge if everything looks correct.
