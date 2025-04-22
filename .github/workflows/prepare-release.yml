@@ -28,43 +28,44 @@ jobs:
             9.0.x
 
       - name: Update version in project files
-        shell: bash
         run: |
-          # Debug: List all project files that will be processed
-          echo "Found project files:"
-          find src -name "*.csproj" -type f -print
+          FILES=(
+            "src/Osirion.Blazor/Osirion.Blazor.csproj"
+            "src/Osirion.Blazor.Core/Osirion.Blazor.Core.csproj"
+            "src/Osirion.Blazor.Analytics/Osirion.Blazor.Analytics.csproj"
+            "src/Osirion.Blazor.Navigation/Osirion.Blazor.Navigation.csproj"
+            "src/Osirion.Blazor.Cms/Osirion.Blazor.Cms.csproj"
+            "src/Osirion.Blazor.Theming/Osirion.Blazor.Theming.csproj"
+          )
           
-          # Update versions and print changes
-          for project in $(find src -name "*.csproj" -type f); do
-            echo "Processing $project"
-            
-            # Make backup of original file
-            cp "$project" "$project.bak"
-            
-            # Update version using perl (more reliable than sed for XML)
-            perl -pi -e 's|<Version>[0-9]+\.[0-9]+\.[0-9]+</Version>|<Version>${{ github.event.inputs.version }}</Version>|g' "$project"
-            
-            # Show diff
-            echo "Changes in $project:"
-            diff "$project.bak" "$project" || true
-            
-            # Remove backup
-            rm "$project.bak"
+          for file in "${FILES[@]}"; do
+            if [ -f "$file" ]; then
+              echo "Processing $file"
+              # Print file content before
+              echo "Before:"
+              cat "$file"
+              
+              # Update version
+              sed -i 's/<Version>[0-9]\+\.[0-9]\+\.[0-9]\+<\/Version>/<Version>${{ github.event.inputs.version }}<\/Version>/g' "$file"
+              
+              # Print file content after
+              echo "After:"
+              cat "$file"
+              echo "-------------------"
+            else
+              echo "Warning: $file not found"
+            fi
           done
 
       - name: Update CHANGELOG.md
         run: |
-          # Ensure there's a newline before adding new version
           TODAY=$(date +%Y-%m-%d)
           NEW_VERSION="## [${{ github.event.inputs.version }}] - $TODAY"
           
-          # Create temporary file with new content
           awk -v new_version="$NEW_VERSION" '
             /## \[Unreleased\]/ { print $0; print ""; print new_version; next }
             { print }
           ' CHANGELOG.md > temp.md
-          
-          # Replace original file
           mv temp.md CHANGELOG.md
 
       - name: Ensure Labels Exist
