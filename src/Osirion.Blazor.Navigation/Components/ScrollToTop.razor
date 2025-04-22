@@ -4,31 +4,32 @@
 @inherits Osirion.Blazor.Components.OsirionComponentBase
 @inject IOptions<ScrollToTopOptions>? Options
 
-@if (!IsServerSide)
-{
-    @((MarkupString)GetScript())
+@((MarkupString)script)
 
-        <button type="button" 
-                class="@GetButtonClass()" 
-                aria-label="@EffectiveOptions.Title" 
-                id="osirion-scroll-to-top"
-                style="display: none;">
-        @if (!string.IsNullOrEmpty(EffectiveOptions.CustomIcon))
-        {
-            @((MarkupString)EffectiveOptions.CustomIcon)
-        }
-        else
-        {
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 19V5M5 12l7-7 7 7"/>
-                    </svg>
-        }
+<button type="button"
+        class="@CssClass @GetButtonClass()"
+        aria-label="@EffectiveOptions.Title"
+        id="osirion-scroll-to-top"
+        style="display: none;">
+    @if (!string.IsNullOrEmpty(EffectiveOptions.CustomIcon))
+    {
+        @((MarkupString)EffectiveOptions.CustomIcon)
+    }
+    else
+    {
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 19V5M5 12l7-7 7 7" />
+        </svg>
+    }
 
-        @if (!string.IsNullOrEmpty(EffectiveOptions.Text))
-        {
-                    <span class="scroll-text">@EffectiveOptions.Text</span>
-        }
-        </button>
+    @if (!string.IsNullOrEmpty(EffectiveOptions.Text))
+    {
+        <span class="scroll-text">@EffectiveOptions.Text</span>
+    }
+</button>
+
+@functions {
+    private MarkupString script => (MarkupString)GetScript();
 }
 
 @code {
@@ -96,6 +97,7 @@
             Position.TopLeft => "top-left",
             Position.TopRight => "top-right",
             Position.BottomLeft => "bottom-left",
+            Position.BottomRight => "bottom-right",
             _ => "bottom-right"
         };
 
@@ -104,12 +106,15 @@
 
     private string GetScript()
     {
-        var behaviorString = EffectiveOptions.Behavior switch
+        var behavior = EffectiveOptions.Behavior switch
         {
             ScrollBehavior.Smooth => "smooth",
             ScrollBehavior.Instant => "instant",
+            ScrollBehavior.Auto => "auto",
             _ => "auto"
         };
+
+        var threshold = VisibilityThreshold != 300 ? VisibilityThreshold : EffectiveOptions.VisibilityThreshold;
 
         return $@"
             <script>
@@ -119,7 +124,7 @@
                         if (!scrollButton) return;
 
                         function updateButtonVisibility() {{
-                            scrollButton.style.display = window.scrollY > {EffectiveOptions.VisibilityThreshold} ? 'flex' : 'none';
+                            scrollButton.style.display = window.scrollY > {threshold} ? 'flex' : 'none';
                         }}
 
                         updateButtonVisibility();
@@ -130,7 +135,7 @@
                             scrollButton.setAttribute('data-initialized', 'true');
                             scrollButton.addEventListener('click', function(e) {{
                                 e.preventDefault();
-                                window.scrollTo({{ top: 0, left: 0, behavior: '{behaviorString}' }});
+                                window.scrollTo({{ top: 0, left: 0, behavior: '{behavior}' }});
                             }});
                         }}
                     }}

@@ -1,11 +1,8 @@
-﻿@inherits OsirionComponentBase
+﻿@inject IContentProviderManager ContentProviderManager
+@inherits OsirionComponentBase
 
 <div class="@GetContentViewClass()">
-    @if (IsLoading)
-    {
-        <div class="osirion-loading">@LoadingText</div>
-    }
-    else if (Item == null)
+    @if (Item is null)
     {
         <div class="osirion-not-found">@NotFoundText</div>
     }
@@ -55,10 +52,7 @@
 
 @code {
     [Parameter]
-    public ContentItem? Item { get; set; }
-
-    [Parameter]
-    public bool IsLoading { get; set; }
+    public string Path { get; set; } = string.Empty;
 
     [Parameter]
     public string LoadingText { get; set; } = "Loading content...";
@@ -71,6 +65,41 @@
 
     [Parameter]
     public Func<string, string>? TagUrlFormatter { get; set; }
+
+    [Parameter]
+    public ContentItem? Item { get; set; }
+
+    private bool IsLoading { get; set; } = true;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if(Item is null)
+        {
+            await LoadContentAsync();
+        }
+    }
+
+    private async Task LoadContentAsync()
+    {
+        IsLoading = true;
+        try
+        {
+            var provider = ContentProviderManager.GetDefaultProvider();
+            if (provider != null && !string.IsNullOrEmpty(Path))
+            {
+                Item = await provider.GetItemByPathAsync(Path);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error loading content: {ex.Message}");
+            Item = null;
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
 
     private string GetContentViewClass()
     {

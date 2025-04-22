@@ -1,4 +1,5 @@
-﻿@inherits OsirionComponentBase
+﻿@inject IContentProviderManager ContentProviderManager
+@inherits OsirionComponentBase
 
 <div class="@GetCategoriesListClass()">
     @if (IsLoading)
@@ -12,19 +13,66 @@
     else
     {
         <ul class="osirion-categories-list">
-        @foreach (var category in Categories)
-        {
-            <li class="osirion-category-item">
-                <a href="@GetCategoryUrl(category)" class="osirion-category-link" rel="nofollow">
-                    @category.Name
-                    <span class="osirion-category-count">@category.Count</span>
-                </a>
-            </li>
-        }
+            @foreach (var category in Categories)
+            {
+                <li class="osirion-category-item">
+                    <a href="@GetCategoryUrl(category)" class="osirion-category-link" rel="nofollow">
+                        @category.Name
+                        <span class="osirion-category-count">@category.Count</span>
+                    </a>
+                </li>
+            }
         </ul>
     }
 </div>
 
 @code {
-    
+    [Parameter]
+    public string LoadingText { get; set; } = "Loading categories...";
+
+    [Parameter]
+    public string NoContentText { get; set; } = "No categories available.";
+
+    [Parameter]
+    public Func<ContentCategory, string>? CategoryUrlFormatter { get; set; }
+
+    private IReadOnlyList<ContentCategory>? Categories { get; set; }
+    private bool IsLoading { get; set; } = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCategoriesAsync();
+    }
+
+    private async Task LoadCategoriesAsync()
+    {
+        IsLoading = true;
+        try
+        {
+            var provider = ContentProviderManager.GetDefaultProvider();
+            if (provider != null)
+            {
+                Categories = await provider.GetCategoriesAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error loading categories: {ex.Message}");
+            Categories = new List<ContentCategory>();
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private string GetCategoriesListClass()
+    {
+        return $"osirion-categories-list-container {CssClass}".Trim();
+    }
+
+    private string GetCategoryUrl(ContentCategory category)
+    {
+        return CategoryUrlFormatter?.Invoke(category) ?? $"/category/{category.Slug}";
+    }
 }

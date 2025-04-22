@@ -1,52 +1,59 @@
-﻿@inherits OsirionComponentBase
+﻿@inject IContentProviderManager ContentProviderManager
+@inherits OsirionComponentBase
 
 <div class="@GetContentListClass()">
     @if (IsLoading)
     {
-            <div class="osirion-loading">@LoadingText</div>
+        <div class="osirion-loading">@LoadingText</div>
     }
-    else if (Items == null || !Items.Any())
+    else if (ContentItems == null || !ContentItems.Any())
     {
-            <div class="osirion-no-content">@NoContentText</div>
+        <div class="osirion-no-content">@NoContentText</div>
     }
     else
     {
-            <div class="osirion-content-grid">
-            @foreach (var item in Items)
+        <div class="osirion-content-grid">
+            @foreach (var item in ContentItems)
             {
-                        <div class="osirion-content-card">
+                <div class="osirion-content-card">
                     @if (!string.IsNullOrEmpty(item.FeaturedImageUrl))
                     {
-                                    <img src="@item.FeaturedImageUrl" alt="@item.Title" class="osirion-content-featured-image" />
+                        <img src="@item.FeaturedImageUrl" alt="@item.Title" class="osirion-content-featured-image" />
                     }
-                            <div class="osirion-content-body">
-                                <h2 class="osirion-content-title">@item.Title</h2>
-                                <div class="osirion-content-meta">
-                                    <span class="osirion-content-author">@item.Author</span>
-                                    <span class="osirion-content-date">@item.Date.ToString("MMM d, yyyy")</span>
-                                    <span class="osirion-content-read-time">@item.ReadTimeMinutes min read</span>
-                                </div>
-                                <p class="osirion-content-description">@item.Description</p>
-                                <div class="osirion-content-tags">
+                    <div class="osirion-content-body">
+                        <h2 class="osirion-content-title">@item.Title</h2>
+                        <div class="osirion-content-meta">
+                            <span class="osirion-content-author">@item.Author</span>
+                            <span class="osirion-content-date">@item.Date.ToString("MMM d, yyyy")</span>
+                            <span class="osirion-content-read-time">@item.ReadTimeMinutes min read</span>
+                        </div>
+                        <p class="osirion-content-description">@item.Description</p>
+                        <div class="osirion-content-tags">
                             @foreach (var tag in item.Tags)
                             {
-                                            <span class="osirion-content-tag">@tag</span>
+                                <span class="osirion-content-tag">@tag</span>
                             }
-                                </div>
-                                <a href="@GetContentUrl(item)" class="osirion-content-read-more" rel="nofollow">@ReadMoreText</a>
-                            </div>
                         </div>
+                        <a href="@GetContentUrl(item)" class="osirion-content-read-more" rel="nofollow">@ReadMoreText</a>
+                    </div>
+                </div>
             }
-            </div>
+        </div>
     }
 </div>
 
 @code {
     [Parameter]
-    public IReadOnlyList<ContentItem>? Items { get; set; }
+    public string? Directory { get; set; }
 
     [Parameter]
-    public bool IsLoading { get; set; }
+    public string? Category { get; set; }
+
+    [Parameter]
+    public string? Tag { get; set; }
+
+    [Parameter]
+    public int? FeaturedCount { get; set; }
 
     [Parameter]
     public string LoadingText { get; set; } = "Loading content...";
@@ -59,6 +66,58 @@
 
     [Parameter]
     public Func<ContentItem, string>? ContentUrlFormatter { get; set; }
+
+    private IReadOnlyList<ContentItem>? ContentItems { get; set; }
+    private bool IsLoading { get; set; } = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadContentAsync();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadContentAsync();
+    }
+
+    private async Task LoadContentAsync()
+    {
+        IsLoading = true;
+        try
+        {
+            var provider = ContentProviderManager.GetDefaultProvider();
+            if (provider != null)
+            {
+                var query = new ContentQuery();
+
+                if (!string.IsNullOrEmpty(Directory))
+                    query.Directory = Directory;
+
+                if (!string.IsNullOrEmpty(Category))
+                    query.Category = Category;
+
+                if (!string.IsNullOrEmpty(Tag))
+                    query.Tag = Tag;
+
+                if (FeaturedCount.HasValue)
+                {
+                    query.IsFeatured = true;
+                    query.Take = FeaturedCount.Value;
+                }
+
+                ContentItems = await provider.GetItemsByQueryAsync(query);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error loading content: {ex.Message}");
+            ContentItems = new List<ContentItem>();
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
 
     private string GetContentListClass()
     {

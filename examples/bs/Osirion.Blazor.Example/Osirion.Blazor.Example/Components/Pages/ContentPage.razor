@@ -1,6 +1,7 @@
-﻿@page "/content/{*path}"
+﻿@page "/{*path}"
 @using Osirion.Blazor.Cms.Models
 @inject Osirion.Blazor.Cms.IContentProvider ContentProvider
+@attribute [StreamRendering]
 
 <PageTitle>@(Item?.Title ?? "Content")</PageTitle>
 
@@ -16,14 +17,14 @@
 
     <ContentView Item="@Item" />
 }
-else if (IsLoading)
+@* else if (IsLoading)
 {
     <div class="text-center my-5">
         <div class="spinner-border text-primary" role="status">
             <span class="visually-hidden">Loading...</span>
         </div>
     </div>
-}
+} *@
 else
 {
     <div class="alert alert-warning">

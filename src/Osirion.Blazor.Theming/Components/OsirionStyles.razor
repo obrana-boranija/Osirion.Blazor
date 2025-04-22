@@ -1,12 +1,12 @@
 ﻿@inherits OsirionComponentBase
 @inject IOptions<ThemingOptions>? Options
 
-@if (ShouldUseStyles && !IsServerSide)
+@if (ShouldUseStyles@*  && !IsServerSide *@)
 {
     @if (EffectiveOptions.UseDefaultStyles)
     {
         <link rel="stylesheet" href="_content/Osirion.Blazor.Theming/css/osirion.css" />
-        <link rel="stylesheet" href="_content/Osirion.Blazor.Content/css/osirion-content.css" />
+        <link rel="stylesheet" href="_content/Osirion.Blazor.Cms/css/osirion-content.css" />
         <link rel="stylesheet" href="_content/Osirion.Blazor.Navigation/css/osirion-navigation.css" />
         <link rel="stylesheet" href="_content/Osirion.Blazor.Theming/css/osirion-theming.css" />
     }

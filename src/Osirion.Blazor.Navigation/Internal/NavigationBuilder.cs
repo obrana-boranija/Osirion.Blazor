@@ -33,6 +33,8 @@ internal class NavigationBuilder : INavigationBuilder
             opt.PreserveScrollForSamePageNavigation = options.PreserveScrollForSamePageNavigation;
         });
 
+        AddManagerService();
+
         return this;
     }
 
@@ -54,20 +56,25 @@ internal class NavigationBuilder : INavigationBuilder
         });
 
         // Create and register the ScrollToTopManager
+        AddManagerService(options);
+
+        return this;
+    }
+
+    private void AddManagerService(ScrollToTopOptions? options = null)
+    {
         var manager = new ScrollToTopManager
         {
             IsEnabled = true,
-            Position = options.Position,
-            Behavior = options.Behavior,
-            VisibilityThreshold = options.VisibilityThreshold,
-            Text = options.Text,
-            Title = options.Title,
-            CssClass = options.CssClass,
-            CustomIcon = options.CustomIcon
+            Position = options?.Position ?? Position.BottomRight,
+            Behavior = options?.Behavior ?? ScrollBehavior.Smooth,
+            VisibilityThreshold = options?.VisibilityThreshold ?? 300,
+            Text = options?.Text ?? null,
+            Title = options?.Title ?? "Scroll to top",
+            CssClass = options?.CssClass ?? null,
+            CustomIcon = options?.CustomIcon ?? null
         };
 
         Services.AddSingleton(manager);
-
-        return this;
     }
 }

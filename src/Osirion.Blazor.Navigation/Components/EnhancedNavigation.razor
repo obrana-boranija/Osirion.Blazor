@@ -4,9 +4,10 @@
 @inherits Osirion.Blazor.Components.OsirionComponentBase
 @inject IOptions<EnhancedNavigationOptions>? Options
 
-@if (!IsServerSide)
-{
-    @((MarkupString)GetScript())
+@((MarkupString)script)
+
+@functions {
+    private MarkupString script => (MarkupString)GetScript();
 }
 
 @code {
@@ -51,6 +52,7 @@
         {
             ScrollBehavior.Smooth => "smooth",
             ScrollBehavior.Instant => "instant",
+            ScrollBehavior.Auto => "auto",
             _ => "auto"
         };
 

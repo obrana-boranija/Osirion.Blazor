@@ -1,4 +1,5 @@
-﻿@inherits OsirionComponentBase
+﻿@inject IContentProviderManager ContentProviderManager
+@inherits OsirionComponentBase
 
 <div class="@GetTagCloudClass()">
     @if (IsLoading)
@@ -12,23 +13,20 @@
     else
     {
         <div class="osirion-tags-container">
-        @foreach (var tag in Tags)
-        {
-            <a href="@GetTagUrl(tag)" class="osirion-tag-link" rel="nofollow">
-                @tag.Name
-                <span class="osirion-tag-count">@tag.Count</span>
-            </a>
-        }
+            @foreach (var tag in Tags)
+            {
+                <a href="@GetTagUrl(tag)" class="osirion-tag-link" rel="nofollow">
+                    @tag.Name
+                    <span class="osirion-tag-count">@tag.Count</span>
+                </a>
+            }
         </div>
     }
 </div>
 
 @code {
     [Parameter]
-    public IReadOnlyList<ContentTag>? Tags { get; set; }
-
-    [Parameter]
-    public bool IsLoading { get; set; }
+    public int? MaxTags { get; set; }
 
     [Parameter]
     public string LoadingText { get; set; } = "Loading tags...";
@@ -38,6 +36,39 @@
 
     [Parameter]
     public Func<ContentTag, string>? TagUrlFormatter { get; set; }
+
+    private IReadOnlyList<ContentTag>? Tags { get; set; }
+    private bool IsLoading { get; set; } = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadTagsAsync();
+    }
+
+    private async Task LoadTagsAsync()
+    {
+        IsLoading = true;
+        try
+        {
+            var provider = ContentProviderManager.GetDefaultProvider();
+            if (provider != null)
+            {
+                var allTags = await provider.GetTagsAsync();
+                Tags = MaxTags.HasValue
+                    ? allTags.OrderByDescending(t => t.Count).Take(MaxTags.Value).ToList()
+                    : allTags;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error loading tags: {ex.Message}");
+            Tags = new List<ContentTag>();
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
 
     private string GetTagCloudClass()
     {

@@ -16,9 +16,9 @@ builder.Services.AddOsirion(osirion => {
         // Add content services with GitHub provider
         .UseContent(content => content.AddGitHub(options => {
             options.Owner = "obrana-boranija";
-            options.Repository = "Osirion.Blazor";
-            options.ContentPath = "examples/content";
-            options.Branch = "master";
+            options.Repository = "hexavera-blog";
+            options.ContentPath = "";
+            options.Branch = "main";
             options.ApiToken = "";
             options.CacheDurationMinutes = 30;
         }))
@@ -26,11 +26,13 @@ builder.Services.AddOsirion(osirion => {
         .UseNavigation(navigation => {
             navigation.UseEnhancedNavigation(options => {
                 options.Behavior = Osirion.Blazor.ScrollBehavior.Smooth;
+                options.PreserveScrollForSamePageNavigation = false;
             });
             navigation.AddScrollToTop(options => {
                 options.Position = Osirion.Blazor.Position.BottomRight;
                 options.Behavior = Osirion.Blazor.ScrollBehavior.Smooth;
-                options.VisibilityThreshold = 300;
+                options.VisibilityThreshold = 100;
+                options.CssClass = "btn btn-danger";
             });
         })
         // Add analytics services
