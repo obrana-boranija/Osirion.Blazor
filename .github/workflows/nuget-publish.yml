@@ -43,29 +43,22 @@ jobs:
         run: dotnet pack src/Osirion.Blazor.Cms/Osirion.Blazor.Cms.csproj --no-build -c Release --include-symbols -p:SymbolPackageFormat=snupkg -o ${{ env.NuGetDirectory }}
       - name: Pack Osirion.Blazor.Theming
         run: dotnet pack src/Osirion.Blazor.Theming/Osirion.Blazor.Theming.csproj --no-build -c Release --include-symbols -p:SymbolPackageFormat=snupkg -o ${{ env.NuGetDirectory }}
-      # Check if NuGet packages were created
-      - name: Check for NuGet packages
-        id: check_packages
-        run: |
-          if [ "$(find ${{ env.NuGetDirectory }} -name '*.nupkg' | wc -l)" -gt 0 ]; then
-            echo "files_exist=true" >> $GITHUB_OUTPUT
-          else
-            echo "files_exist=false" >> $GITHUB_OUTPUT
-          fi
-      # Upload artifacts
+      # List packages to verify they exist
+      - name: List packages
+        run: ls -la ${{ env.NuGetDirectory }}
+      # Upload artifacts - using v4 (latest version)
       - name: Upload NuGet packages as artifacts
-        if: steps.check_packages.outputs.files_exist == 'true'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: nuget
-          path: ${{ env.NuGetDirectory }}/*.nupkg
+          path: ${{ env.NuGetDirectory }}
           if-no-files-found: error
   validate_version:
     needs: create_nuget
     runs-on: ubuntu-latest
     steps:
       - name: Download NuGet packages
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: nuget
           path: ${{ env.NuGetDirectory }}
@@ -90,7 +83,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download NuGet packages
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: nuget
           path: ${{ env.NuGetDirectory }}
