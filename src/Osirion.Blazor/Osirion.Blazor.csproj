@@ -47,10 +47,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<!-- Include NuGet package files -->
-		<None Include="..\README.md" Pack="true" PackagePath="\" />
-		<None Include="..\LICENSE.txt" Pack="true" PackagePath="\" />
-		<None Include="assets\icon.png" />
+		<None Include="..\..\LICENSE.txt" Pack="true" PackagePath="\" />
+		<None Include="..\..\README.md" Pack="true" PackagePath="\" />
+		<None Include="..\..\icon.png" Pack="true" PackagePath="\"/>
 	</ItemGroup>
 
 	<ItemGroup>

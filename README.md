@@ -1,137 +1,172 @@
 # Osirion.Blazor
 
-![NuGet](https://img.shields.io/nuget/v/Osirion.Blazor)
-![License](https://img.shields.io/github/license/obrana-boranija/Osirion.Blazor)
+[![NuGet](https://img.shields.io/nuget/v/Osirion.Blazor)](https://www.nuget.org/packages/Osirion.Blazor)
+[![License](https://img.shields.io/github/license/obrana-boranija/Osirion.Blazor)](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/LICENSE.txt)
 
-Modern, high-performance Blazor components and utilities that work with SSR, Server, and WebAssembly hosting models.
+Modern, high-performance Blazor components and utilities with SSR compatibility, modular design, and framework integration.
 
 ## Features
 
-- **SSR Compatible**: Works with Server-Side Rendering
+- **Modular Architecture**: Use only what you need with dedicated packages
+- **SSR Compatible**: Works with Server-Side Rendering, Static SSG, Interactive Server, and WebAssembly
 - **Zero-JS Dependencies**: Core functionality without JavaScript interop
 - **Multi-Platform**: Supports .NET 8, .NET 9, and future versions
-- **Analytics Integration**: Microsoft Clarity, Matomo
-- **Enhanced Navigation**: Improved scrolling behavior with ScrollToTop
-- **GitHub CMS**: Markdown-based content management
-- **Customizable Styling**: CSS variables for easy theming
+- **Framework Integration**: Works with Bootstrap, Tailwind, FluentUI, MudBlazor, and Radzen
+
+### Modules
+
+- **[Core](https://www.nuget.org/packages/Osirion.Blazor.Core)**: Foundation components and utilities
+- **[Analytics](https://www.nuget.org/packages/Osirion.Blazor.Analytics)**: Clarity and Matomo integration
+- **[Navigation](https://www.nuget.org/packages/Osirion.Blazor.Navigation)**: Enhanced navigation and scroll components
+- **[Theming](https://www.nuget.org/packages/Osirion.Blazor.Theming)**: Theme management with framework integration
+- **[CMS](https://www.nuget.org/packages/Osirion.Blazor.Cms)**: Content management with GitHub and FileSystem providers
 
 ## Installation
+
+**Main Package (includes all modules)**
 
 ```bash
 dotnet add package Osirion.Blazor
 ```
 
-## Getting Started
+**Individual Modules**
 
-1. Add to your `_Imports.razor`:
-```razor
-@using Osirion.Blazor.Components.Navigation
-@using Osirion.Blazor.Components.Analytics
-@using Osirion.Blazor.Components.Analytics.Options
-@using Osirion.Blazor.Components.GitHubCms
-@using Osirion.Blazor.Services.GitHub
-@using Osirion.Blazor.Models.Cms
+```bash
+dotnet add package Osirion.Blazor.Core
+dotnet add package Osirion.Blazor.Analytics
+dotnet add package Osirion.Blazor.Navigation
+dotnet add package Osirion.Blazor.Theming
+dotnet add package Osirion.Blazor.Cms
 ```
 
-2. Configure services in `Program.cs`:
+## Quick Start
+
+### Using the Fluent API
+
 ```csharp
+// In Program.cs
 using Osirion.Blazor.Extensions;
 
-// Option 1: Configure all services using fluent API
-builder.Services.AddOsirionBlazor(osirion => {
+builder.Services.AddOsirion(osirion => {
     osirion
-        // Add GitHub CMS with configuration
-        .AddGitHubCms(options => {
-            options.Owner = "your-github-username";
-            options.Repository = "your-content-repo";
-            options.ContentPath = "content";
-            options.Branch = "main";
+        // Configure content providers
+        .UseContent(content => {
+            content.AddGitHub(options => {
+                options.Owner = "username";
+                options.Repository = "content-repo";
+            });
         })
         
-        // Add ScrollToTop with detailed configuration
-        .AddScrollToTop(options => {
-            options.Position = ButtonPosition.BottomRight;
-            options.Behavior = ScrollBehavior.Smooth;
-            options.VisibilityThreshold = 300;
-            options.Text = "Top";
+        // Configure analytics
+        .UseAnalytics(analytics => {
+            analytics.AddClarity(options => {
+                options.SiteId = "your-clarity-id";
+            });
         })
         
-        // Add CSS framework integration
-        .AddOsirionStyle(CssFramework.Bootstrap)
-        
-        // Add analytics trackers
-        .AddClarityTracker(options => {
-            options.SiteId = "your-clarity-id";
-            options.Track = true;
+        // Configure navigation
+        .UseNavigation(navigation => {
+            navigation
+                .UseEnhancedNavigation()
+                .AddScrollToTop();
         })
-        .AddMatomoTracker(options => {
-            options.SiteId = "your-matomo-id";
-            options.Track = true;
+        
+        // Configure theming
+        .UseTheming(theming => {
+            theming
+                .UseFramework(CssFramework.Bootstrap)
+                .EnableDarkMode();
         });
 });
-
-// Option 2: Configure each service individually
-builder.Services.AddGitHubCms(options => {
-    options.Owner = "your-github-username";
-    options.Repository = "your-content-repo";
-});
-
-builder.Services.AddScrollToTop(ButtonPosition.BottomRight, ScrollBehavior.Smooth);
-
-builder.Services.AddOsirionStyle(CssFramework.Bootstrap);
-
-builder.Services.AddClarityTracker(builder.Configuration);
-builder.Services.AddMatomoTracker(builder.Configuration);
-
-// Option 3: Configure from appsettings.json
-builder.Services.AddOsirionBlazor(builder.Configuration);
 ```
 
-3. Add styles and components to your application:
-```html
-<!-- In App.razor or _Host.cshtml head section -->
-<link rel="stylesheet" href="_content/Osirion.Blazor/css/osirion-cms.css" />
-```
+### Layout Setup
 
 ```razor
-<!-- In your layout -->
-<EnhancedNavigationInterceptor Behavior="ScrollBehavior.Smooth" />
-<ScrollToTop />
+@using Osirion.Blazor.Navigation.Components
+@using Osirion.Blazor.Analytics.Components
+@using Osirion.Blazor.Theming.Components
 
-<!-- Add GitHub CMS components to your pages -->
-<ContentList Directory="blog" />
-<CategoriesList />
-<TagCloud />
-<SearchBox />
+<head>
+    <!-- Other head elements -->
+    <ThemeProvider>
+        <!-- Your styles -->
+    </ThemeProvider>
+</head>
+
+<body>
+    <ClarityTracker />
+    <MatomoTracker />
+    <EnhancedNavigation />
+    <ScrollToTop />
+    
+    <ThemeToggle />
+    
+    <main>
+        @Body
+    </main>
+</body>
 ```
 
-## Styling Components
+### Content Pages
 
-Osirion.Blazor components use CSS variables for easy styling customization:
+```razor
+@page "/blog"
+@using Osirion.Blazor.Cms.Components
 
-```html
-<!-- In App.razor or _Host.cshtml head section -->
-<link rel="stylesheet" href="_content/Osirion.Blazor/css/osirion-cms.css" />
+<h1>Blog Posts</h1>
 
-<!-- Override variables to match your design -->
-<style>
-    :root {
-        --osirion-primary-color: #0077cc;
-        --osirion-border-radius: 0.25rem;
-        --osirion-font-size: 1.1rem;
-        
-        /* ScrollToTop component variables */
-        --osirion-scroll-background: #0077cc;
-        --osirion-scroll-color: white;
+<div class="sidebar">
+    <CategoriesList />
+    <TagCloud />
+    <SearchBox />
+</div>
+
+<div class="content">
+    <ContentList Directory="blog" />
+</div>
+```
+
+## Configuration from appsettings.json
+
+```json
+{
+  "Osirion": {
+    "Content": {
+      "GitHub": {
+        "Owner": "username",
+        "Repository": "content-repo",
+        "ContentPath": "content",
+        "Branch": "main"
+      }
+    },
+    "Analytics": {
+      "Clarity": {
+        "SiteId": "your-clarity-id"
+      },
+      "Matomo": {
+        "SiteId": "1",
+        "TrackerUrl": "//analytics.example.com/"
+      }
+    },
+    "Navigation": {
+      "ScrollToTop": {
+        "Position": "BottomRight",
+        "Behavior": "Smooth"
+      }
+    },
+    "Theming": {
+      "Framework": "Bootstrap",
+      "EnableDarkMode": true,
+      "FollowSystemPreference": true
     }
-</style>
+  }
+}
 ```
 
-Alternatively, use the OsirionStyles component:
-
-```razor
-@using Osirion.Blazor.Components.GitHubCms
-<OsirionStyles CustomVariables="--osirion-primary-color: #0077cc;" />
+```csharp
+// In Program.cs
+builder.Services.AddOsirion(builder.Configuration);
 ```
 
 ## Documentation
@@ -145,7 +180,7 @@ Alternatively, use the OsirionStyles component:
 
 ## License
 
-MIT License - see [LICENSE](LICENSE.txt)
+This project is licensed under the MIT License - see the [LICENSE](LICENSE.txt) file for details.
 
 ## Contributing
 
