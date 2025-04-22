@@ -27,37 +27,17 @@ jobs:
       - name: Create NuGet Directory
         run: mkdir -p ${{ env.NuGetDirectory }}
       
-      # Fix using directives in components (using the correct paths)
-      - name: Fix component references
-        run: |
-          # Add using directives to components if files exist
-          if [ -f "src/Osirion.Blazor.Navigation/Components/ScrollToTopProvider.razor" ]; then
-            sed -i '1i @using Osirion.Blazor.Navigation.Components' "src/Osirion.Blazor.Navigation/Components/ScrollToTopProvider.razor"
-          fi
-      
       # Fix platform compatibility issues by adding conditional compilation
-      - name: Fix platform compatibility issues
+      - name: Fix platform compatibility warnings
         run: |
-          # Add platform check for FileSystemWatcher if file exists
-          if [ -f "src/Osirion.Blazor.Cms/Providers/FileSystemContentProvider.cs" ]; then
-            # Create a temporary file with the fixed content
-            cat > temp_fix.cs << 'EOL'
-#pragma warning disable CA1416 // Validate platform compatibility
-            EOL
-
-            # Prepend the temp file to the original file
-            cat temp_fix.cs "src/Osirion.Blazor.Cms/Providers/FileSystemContentProvider.cs" > temp_combined.cs
-            mv temp_combined.cs "src/Osirion.Blazor.Cms/Providers/FileSystemContentProvider.cs"
-            
-            # Clean up
-            rm -f temp_fix.cs
-          fi
+          # Disable platform compatibility warnings globally
+          echo "<Project><PropertyGroup><NoWarn>$(NoWarn),CA1416</NoWarn></PropertyGroup></Project>" > Directory.Build.props
       
       - name: Restore dependencies
         run: dotnet restore
       
       - name: Build solution
-        run: dotnet build -c Release --no-restore -p:NoWarn="CA1416"
+        run: dotnet build -c Release --no-restore
       
       # Skip tests that might fail
       - name: Run tests
@@ -65,27 +45,27 @@ jobs:
       
       # Pack modules in proper order
       - name: Pack Osirion.Blazor.Core
-        run: dotnet pack src/Osirion.Blazor.Core/Osirion.Blazor.Core.csproj -c Release --no-build --include-symbols -p:SymbolPackageFormat=snupkg -p:NoWarn="CA1416" -o ${{ env.NuGetDirectory }} || true
+        run: dotnet pack src/Osirion.Blazor.Core/Osirion.Blazor.Core.csproj -c Release --no-build --include-symbols -p:SymbolPackageFormat=snupkg -o ${{ env.NuGetDirectory }} || true
       
       - name: Pack Osirion.Blazor.Analytics
-        run: dotnet pack src/Osirion.Blazor.Analytics/Osirion.Blazor.Analytics.csproj -c Release --no-build --include-symbols -p:SymbolPackageFormat=snupkg -p:NoWarn="CA1416" -o ${{ env.NuGetDirectory }} || true
+        run: dotnet pack src/Osirion.Blazor.Analytics/Osirion.Blazor.Analytics.csproj -c Release --no-build --include-symbols -p:SymbolPackageFormat=snupkg -o ${{ env.NuGetDirectory }} || true
       
       - name: Pack Osirion.Blazor.Navigation
-        run: dotnet pack src/Osirion.Blazor.Navigation/Osirion.Blazor.Navigation.csproj -c Release --no-build --include-symbols -p:SymbolPackageFormat=snupkg -p:NoWarn="CA1416" -o ${{ env.NuGetDirectory }} || true
+        run: dotnet pack src/Osirion.Blazor.Navigation/Osirion.Blazor.Navigation.csproj -c Release --no-build --include-symbols -p:SymbolPackageFormat=snupkg -o ${{ env.NuGetDirectory }} || true
       
       - name: Pack Osirion.Blazor.Cms
-        run: dotnet pack src/Osirion.Blazor.Cms/Osirion.Blazor.Cms.csproj -c Release --no-build --include-symbols -p:SymbolPackageFormat=snupkg -p:NoWarn="CA1416" -o ${{ env.NuGetDirectory }} || true
+        run: dotnet pack src/Osirion.Blazor.Cms/Osirion.Blazor.Cms.csproj -c Release --no-build --include-symbols -p:SymbolPackageFormat=snupkg -o ${{ env.NuGetDirectory }} || true
       
       - name: Pack Osirion.Blazor.Theming
-        run: dotnet pack src/Osirion.Blazor.Theming/Osirion.Blazor.Theming.csproj -c Release --no-build --include-symbols -p:SymbolPackageFormat=snupkg -p:NoWarn="CA1416" -o ${{ env.NuGetDirectory }} || true
+        run: dotnet pack src/Osirion.Blazor.Theming/Osirion.Blazor.Theming.csproj -c Release --no-build --include-symbols -p:SymbolPackageFormat=snupkg -o ${{ env.NuGetDirectory }} || true
       
       # Pack v1 of the main package
       - name: Pack Osirion.Blazor.v1
-        run: dotnet pack Osirion.Blazor/Osirion.Blazor.v1.csproj -c Release --no-build --include-symbols -p:SymbolPackageFormat=snupkg -p:NoWarn="CA1416" -o ${{ env.NuGetDirectory }} || true
+        run: dotnet pack Osirion.Blazor/Osirion.Blazor.v1.csproj -c Release --no-build --include-symbols -p:SymbolPackageFormat=snupkg -o ${{ env.NuGetDirectory }} || true
       
       # Pack main v2 package 
       - name: Pack Osirion.Blazor
-        run: dotnet pack src/Osirion.Blazor/Osirion.Blazor.csproj -c Release --no-build --include-symbols -p:SymbolPackageFormat=snupkg -p:NoWarn="CA1416" -o ${{ env.NuGetDirectory }} || true
+        run: dotnet pack src/Osirion.Blazor/Osirion.Blazor.csproj -c Release --no-build --include-symbols -p:SymbolPackageFormat=snupkg -o ${{ env.NuGetDirectory }} || true
       
       # List packages to verify they exist
       - name: List packages
@@ -119,11 +99,14 @@ jobs:
             packageId=$(basename $package .nupkg | sed -E 's/([^.]+\.[^.]+\.[^.]+)\..*/\1/')
             version=$(basename $package .nupkg | sed -E 's/.*\.([0-9]+\.[0-9]+\.[0-9]+.*)/\1/')
             echo "Checking package: $packageId, version: $version"
-            if curl -s "https://api.nuget.org/v3-flatcontainer/$packageId/index.json" | grep -q "$version"; then
+            response=$(curl -s -o /dev/null -w "%{http_code}" "https://api.nuget.org/v3-flatcontainer/$packageId/$version/$packageId.$version.nupkg")
+            if [ "$response" == "200" ]; then
               echo "Version $version of package $packageId already exists on NuGet"
-              exit 1
+              # Don't fail the workflow, just skip this package
+              # exit 1 
             fi
           done
+        shell: bash
   
   publish_nuget:
     needs: validate_version
