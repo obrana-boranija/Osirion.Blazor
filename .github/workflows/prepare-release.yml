@@ -10,8 +10,7 @@ on:
 
 permissions:
   contents: write
-  pull-requests: write # Add this permission
-  issues: write  # Add this line to grant permission for label management
+  pull-requests: write
 
 jobs:
   prepare_release:
@@ -37,10 +36,21 @@ jobs:
           TODAY=$(date +%Y-%m-%d)
           sed -i "0,/## \[Unreleased\]/s/## \[Unreleased\]/## [Unreleased]\n\n## [${{ github.event.inputs.version }}] - $TODAY/" CHANGELOG.md
 
+      - name: Ensure Labels Exist
+        run: |
+          curl -X POST -H "Authorization: token ${{ secrets.PAT_TOKEN }}" \
+          -H "Accept: application/vnd.github.v3+json" \
+          https://api.github.com/repos/${{ github.repository }}/labels \
+          -d '{"name": "release", "color": "f29513"}' || echo "Label 'release' already exists."
+          curl -X POST -H "Authorization: token ${{ secrets.PAT_TOKEN }}" \
+          -H "Accept: application/vnd.github.v3+json" \
+          https://api.github.com/repos/${{ github.repository }}/labels \
+          -d '{"name": "automated pr", "color": "0e8a16"}' || echo "Label 'automated pr' already exists."
+
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
-          token: ${{ secrets.PAT_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "Prepare release ${{ github.event.inputs.version }}"
           branch: "release/${{ github.event.inputs.version }}"
           delete-branch: true
