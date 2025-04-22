@@ -8,11 +8,13 @@ on:
         required: true
         type: string
 
+permissions:
+  contents: write
+  pull-requests: write # Add this permission
+
 jobs:
   prepare_release:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -35,22 +37,21 @@ jobs:
           sed -i "0,/## \[Unreleased\]/s/## \[Unreleased\]/## [Unreleased]\n\n## [${{ github.event.inputs.version }}] - $TODAY/" CHANGELOG.md
 
       - name: Create Pull Request
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
-          
-          BRANCH="release/${{ github.event.inputs.version }}"
-          git checkout -b $BRANCH
-          
-          git add -A
-          git commit -m "Prepare release ${{ github.event.inputs.version }}"
-          
-          git push origin $BRANCH
-          
-          gh pr create \
-            --title "Release ${{ github.event.inputs.version }}" \
-            --body "Automated PR to prepare release ${{ github.event.inputs.version }}" \
-            --base master \
-            --head $BRANCH
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Prepare release ${{ github.event.inputs.version }}"
+          branch: "release/${{ github.event.inputs.version }}"
+          delete-branch: true
+          title: "Release ${{ github.event.inputs.version }}"
+          body: |
+            Automated PR to prepare release ${{ github.event.inputs.version }}
+            
+            ## Changes
+            - Updated version numbers to ${{ github.event.inputs.version }}
+            - Updated CHANGELOG.md
+            
+            Please review the changes and merge if everything looks correct.
+          labels: |
+            release
+            automated pr
