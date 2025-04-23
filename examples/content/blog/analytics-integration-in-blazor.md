@@ -1,14 +1,19 @@
 ---
 title: "Analytics Integration for Blazor Applications"
-author: "Dejan Demonjić"
-date: "2025-04-12"
 description: "How to integrate analytics tools like Microsoft Clarity and Matomo into your Blazor applications using Osirion.Blazor components."
-tags: [Analytics, Tracking, Blazor, Privacy]
-categories: [Analytics, Integration]
+author: "Dejan Demonjić"
+date: 2025-04-12
+featuredImage: "https://images.pexels.com/photos/97080/pexels-photo-97080.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+featured: true
 slug: "analytics-integration-in-blazor"
+tags: "[Analytics, Tracking, Blazor, Privacy]"
+categories: "[Analytics, Integration]"
 is_featured: false
 featured_image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
 ---
+[![NuGet](https://img.shields.io/nuget/v/Osirion.Blazor)](https://www.nuget.org/packages/Osirion.Blazor)
+[![NuGet Downloads](https://img.shields.io/nuget/dt/Osirion.Blazor.svg)](https://www.nuget.org/packages/Osirion.Blazor)
+[![License](https://img.shields.io/github/license/obrana-boranija/Osirion.Blazor)](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/LICENSE.txt)
 
 # Analytics Integration for Blazor Applications
 
