@@ -1,4 +1,5 @@
-﻿@using Osirion.Blazor.Cms.Admin.Models
+﻿@namespace Osirion.Blazor.Cms.Admin.Components.Repository
+@using Osirion.Blazor.Cms.Admin.Models
 @using Osirion.Blazor.Cms.Admin.Services
 @inherits Osirion.Blazor.Components.OsirionComponentBase
 @inject IGitHubAdminService GitHubService
@@ -11,17 +12,17 @@
         <div class="osirion-admin-actions">
             @if (AllowCreateBranch && AdminState.SelectedRepository != null)
             {
-                <button type="button"
-                        class="osirion-admin-button osirion-admin-button-create"
-                        title="Create new branch"
-                        @onclick="() => SetCreatingNewBranch(true)">
-                    <span class="osirion-admin-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="12" y1="5" x2="12" y2="19" />
-                            <line x1="5" y1="12" x2="19" y2="12" />
-                        </svg>
-                    </span>
-                </button>
+                    <button type="button"
+                            class="osirion-admin-button osirion-admin-button-create"
+                            title="Create new branch"
+                            @onclick="() => SetCreatingNewBranch(true)">
+                        <span class="osirion-admin-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="5" x2="12" y2="19" />
+                                <line x1="5" y1="12" x2="19" y2="12" />
+                            </svg>
+                        </span>
+                    </button>
             }
 
             <button type="button"
@@ -39,115 +40,115 @@
 
     @if (IsCreatingNewBranch)
     {
-        <div class="osirion-admin-new-branch">
-            <div class="osirion-admin-form-group">
-                <label class="osirion-admin-label" for="newBranchName">Branch name</label>
-                <input type="text"
-                       class="osirion-admin-input"
-                       id="newBranchName"
-                       @bind="NewBranchName"
-                       placeholder="Enter branch name" />
-            </div>
+            <div class="osirion-admin-new-branch">
+                <div class="osirion-admin-form-group">
+                    <label class="osirion-admin-label" for="newBranchName">Branch name</label>
+                    <input type="text"
+                           class="osirion-admin-input"
+                           id="newBranchName"
+                           @bind="NewBranchName"
+                           placeholder="Enter branch name" />
+                </div>
 
-            <div class="osirion-admin-form-group">
-                <label class="osirion-admin-label" for="baseBranch">Base branch</label>
-                <select class="osirion-admin-select"
-                        id="baseBranch"
-                        @bind="BaseBranchName">
+                <div class="osirion-admin-form-group">
+                    <label class="osirion-admin-label" for="baseBranch">Base branch</label>
+                    <select class="osirion-admin-select"
+                            id="baseBranch"
+                            @bind="BaseBranchName">
                     @foreach (var branch in Branches)
                     {
-                        <option value="@branch.Name">@branch.Name</option>
+                                <option value="@branch.Name">@branch.Name</option>
                     }
-                </select>
-            </div>
+                    </select>
+                </div>
 
-            <div class="osirion-admin-form-actions">
-                <button type="button"
-                        class="osirion-admin-button osirion-admin-button-secondary"
-                        @onclick="() => SetCreatingNewBranch(false)">
-                    Cancel
-                </button>
-                <button type="button"
-                        class="osirion-admin-button osirion-admin-button-primary"
-                        @onclick="CreateBranch"
-                        disabled="@(string.IsNullOrEmpty(NewBranchName) || IsCreatingBranch)">
+                <div class="osirion-admin-form-actions">
+                    <button type="button"
+                            class="osirion-admin-button osirion-admin-button-secondary"
+                            @onclick="() => SetCreatingNewBranch(false)">
+                        Cancel
+                    </button>
+                    <button type="button"
+                            class="osirion-admin-button osirion-admin-button-primary"
+                            @onclick="CreateBranch"
+                            disabled="@(string.IsNullOrEmpty(NewBranchName) || IsCreatingBranch)">
                     @if (IsCreatingBranch)
                     {
-                        <span class="osirion-admin-loading-spinner"></span>
-                        <span>Creating...</span>
+                                <span class="osirion-admin-loading-spinner"></span>
+                                <span>Creating...</span>
                     }
                     else
                     {
-                        <span>Create Branch</span>
+                                <span>Create Branch</span>
                     }
-                </button>
+                    </button>
+                </div>
             </div>
-        </div>
     }
     else if (AdminState.SelectedRepository == null)
     {
-        <div class="osirion-admin-empty">
-            <span>Please select a repository first.</span>
-        </div>
+            <div class="osirion-admin-empty">
+                <span>Please select a repository first.</span>
+            </div>
     }
     else if (IsLoading)
     {
-        <div class="osirion-admin-loading">
-            <span class="osirion-admin-loading-spinner"></span>
-            <span>Loading branches...</span>
-        </div>
+            <div class="osirion-admin-loading">
+                <span class="osirion-admin-loading-spinner"></span>
+                <span>Loading branches...</span>
+            </div>
     }
     else if (ErrorMessage != null)
     {
-        <div class="osirion-admin-error">
-            <span class="osirion-admin-error-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10" />
-                    <line x1="12" y1="8" x2="12" y2="12" />
-                    <line x1="12" y1="16" x2="12.01" y2="16" />
-                </svg>
-            </span>
-            <span>@ErrorMessage</span>
-            <button type="button" class="osirion-admin-button osirion-admin-button-small" @onclick="RefreshBranches">
-                Retry
-            </button>
-        </div>
+            <div class="osirion-admin-error">
+                <span class="osirion-admin-error-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" y1="8" x2="12" y2="12" />
+                        <line x1="12" y1="16" x2="12.01" y2="16" />
+                    </svg>
+                </span>
+                <span>@ErrorMessage</span>
+                <button type="button" class="osirion-admin-button osirion-admin-button-small" @onclick="RefreshBranches">
+                    Retry
+                </button>
+            </div>
     }
     else if (Branches.Count == 0)
     {
-        <div class="osirion-admin-empty">
-            <span>No branches found.</span>
-            <button type="button" class="osirion-admin-button osirion-admin-button-small" @onclick="RefreshBranches">
-                Refresh
-            </button>
-        </div>
+            <div class="osirion-admin-empty">
+                <span>No branches found.</span>
+                <button type="button" class="osirion-admin-button osirion-admin-button-small" @onclick="RefreshBranches">
+                    Refresh
+                </button>
+            </div>
     }
     else
     {
-        <div class="osirion-admin-select-container">
-            <select class="osirion-admin-select"
-                    value="@SelectedBranchName"
-                    @onchange="OnBranchSelected">
-                <option value="">@SelectPrompt</option>
+            <div class="osirion-admin-select-container">
+                <select class="osirion-admin-select"
+                        value="@SelectedBranchName"
+                        @onchange="OnBranchSelected">
+                    <option value="">@SelectPrompt</option>
                 @foreach (var branch in Branches)
                 {
-                    <option value="@branch.Name">@branch.Name</option>
+                            <option value="@branch.Name">@branch.Name</option>
                 }
-            </select>
-        </div>
+                </select>
+            </div>
 
         @if (SelectedBranch != null)
         {
-            <div class="osirion-admin-branch-details">
-                <div class="osirion-admin-branch-info">
-                    <span class="osirion-admin-branch-name">@SelectedBranch.Name</span>
-                    <span class="osirion-admin-branch-commit">@SelectedBranch.Commit.Sha.Substring(0, 7)</span>
+                    <div class="osirion-admin-branch-details">
+                        <div class="osirion-admin-branch-info">
+                            <span class="osirion-admin-branch-name">@SelectedBranch.Name</span>
+                            <span class="osirion-admin-branch-commit">@SelectedBranch.Commit.Sha.Substring(0, 7)</span>
                     @if (SelectedBranch.Protected)
                     {
-                        <span class="osirion-admin-branch-protected">Protected</span>
+                                    <span class="osirion-admin-branch-protected">Protected</span>
                     }
-                </div>
-            </div>
+                        </div>
+                    </div>
         }
     }
 </div>
@@ -249,6 +250,22 @@
             AdminState.SelectBranch(branch);
             GitHubService.SetBranch(branch.Name);
 
+            // Automatically load content after selecting a branch
+            try
+            {
+                IsLoading = true;
+                var contents = await GitHubService.GetRepositoryContentsAsync();
+                AdminState.SetCurrentPath("", contents);
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Failed to load content: {ex.Message}";
+            }
+            finally
+            {
+                IsLoading = false;
+            }
+
             if (OnBranchChange.HasDelegate)
             {
                 await OnBranchChange.InvokeAsync(branch);
@@ -292,6 +309,17 @@
             // Select the new branch
             AdminState.SelectBranch(newBranch);
             GitHubService.SetBranch(newBranch.Name);
+
+            // Load contents for the new branch
+            try
+            {
+                var contents = await GitHubService.GetRepositoryContentsAsync();
+                AdminState.SetCurrentPath("", contents);
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Failed to load content: {ex.Message}";
+            }
 
             if (OnBranchChange.HasDelegate)
             {

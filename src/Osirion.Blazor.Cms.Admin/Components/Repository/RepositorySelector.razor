@@ -1,4 +1,5 @@
-﻿@using Osirion.Blazor.Cms.Admin.Models
+﻿@namespace Osirion.Blazor.Cms.Admin.Components.Repository
+@using Osirion.Blazor.Cms.Admin.Models
 @using Osirion.Blazor.Cms.Admin.Services
 @inherits Osirion.Blazor.Components.OsirionComponentBase
 @inject IGitHubAdminService GitHubService
@@ -24,85 +25,85 @@
 
     @if (IsLoading)
     {
-        <div class="osirion-admin-loading">
-            <span class="osirion-admin-loading-spinner"></span>
-            <span>Loading repositories...</span>
-        </div>
+            <div class="osirion-admin-loading">
+                <span class="osirion-admin-loading-spinner"></span>
+                <span>Loading repositories...</span>
+            </div>
     }
     else if (ErrorMessage != null)
     {
-        <div class="osirion-admin-error">
-            <span class="osirion-admin-error-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10" />
-                    <line x1="12" y1="8" x2="12" y2="12" />
-                    <line x1="12" y1="16" x2="12.01" y2="16" />
-                </svg>
-            </span>
-            <span>@ErrorMessage</span>
-            <button type="button" class="osirion-admin-button osirion-admin-button-small" @onclick="RefreshRepositories">
-                Retry
-            </button>
-        </div>
+            <div class="osirion-admin-error">
+                <span class="osirion-admin-error-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" y1="8" x2="12" y2="12" />
+                        <line x1="12" y1="16" x2="12.01" y2="16" />
+                    </svg>
+                </span>
+                <span>@ErrorMessage</span>
+                <button type="button" class="osirion-admin-button osirion-admin-button-small" @onclick="RefreshRepositories">
+                    Retry
+                </button>
+            </div>
     }
     else if (Repositories.Count == 0)
     {
-        <div class="osirion-admin-empty">
-            <span>No repositories found.</span>
-            <button type="button" class="osirion-admin-button osirion-admin-button-small" @onclick="RefreshRepositories">
-                Refresh
-            </button>
-        </div>
+            <div class="osirion-admin-empty">
+                <span>No repositories found.</span>
+                <button type="button" class="osirion-admin-button osirion-admin-button-small" @onclick="RefreshRepositories">
+                    Refresh
+                </button>
+            </div>
     }
     else
     {
-        <div class="osirion-admin-select-container">
-            <select class="osirion-admin-select"
-                    value="@SelectedRepositoryName"
-                    @onchange="OnRepositorySelected">
-                <option value="">@SelectPrompt</option>
+            <div class="osirion-admin-select-container">
+                <select class="osirion-admin-select"
+                        value="@SelectedRepositoryName"
+                        @onchange="OnRepositorySelected">
+                    <option value="">@SelectPrompt</option>
                 @foreach (var repo in Repositories)
                 {
-                    <option value="@repo.Name">@repo.Name</option>
+                            <option value="@repo.Name">@repo.Name</option>
                 }
-            </select>
-        </div>
+                </select>
+            </div>
 
         @if (SelectedRepository != null)
         {
-            <div class="osirion-admin-repo-details">
-                <div class="osirion-admin-repo-info">
-                    <span class="osirion-admin-repo-name">@SelectedRepository.Name</span>
+                    <div class="osirion-admin-repo-details">
+                        <div class="osirion-admin-repo-info">
+                            <span class="osirion-admin-repo-name">@SelectedRepository.Name</span>
                     @if (!string.IsNullOrEmpty(SelectedRepository.Description))
                     {
-                        <span class="osirion-admin-repo-description">@SelectedRepository.Description</span>
+                                    <span class="osirion-admin-repo-description">@SelectedRepository.Description</span>
                     }
-                    <span class="osirion-admin-repo-visibility">
+                            <span class="osirion-admin-repo-visibility">
                         @if (SelectedRepository.Private)
                         {
-                            <span class="osirion-admin-repo-private">Private</span>
+                                        <span class="osirion-admin-repo-private">Private</span>
                         }
                         else
                         {
-                            <span class="osirion-admin-repo-public">Public</span>
+                                        <span class="osirion-admin-repo-public">Public</span>
                         }
-                    </span>
-                </div>
+                            </span>
+                        </div>
 
-                <button type="button"
-                        class="osirion-admin-button osirion-admin-button-link"
-                        @onclick="OpenRepositoryLink"
-                        title="Open repository in GitHub">
-                    <span class="osirion-admin-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                            <polyline points="15 3 21 3 21 9" />
-                            <line x1="10" y1="14" x2="21" y2="3" />
-                        </svg>
-                    </span>
-                    View on GitHub
-                </button>
-            </div>
+                        <button type="button"
+                                class="osirion-admin-button osirion-admin-button-link"
+                                @onclick="OpenRepositoryLink"
+                                title="Open repository in GitHub">
+                            <span class="osirion-admin-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                                    <polyline points="15 3 21 3 21 9" />
+                                    <line x1="10" y1="14" x2="21" y2="3" />
+                                </svg>
+                            </span>
+                            View on GitHub
+                        </button>
+                    </div>
         }
     }
 </div>
@@ -170,6 +171,30 @@
             AdminState.SelectRepository(repository);
             GitHubService.SetRepository(repository.Name);
 
+            // Automatically load branches for the selected repository
+            try
+            {
+                IsLoading = true;
+                var branches = await GitHubService.GetBranchesAsync(repository.Name);
+                AdminState.SetBranches(branches);
+
+                // If default branch exists, select it
+                var defaultBranch = branches.FirstOrDefault(b => b.Name == repository.DefaultBranch);
+                if (defaultBranch != null)
+                {
+                    AdminState.SelectBranch(defaultBranch);
+                    GitHubService.SetBranch(defaultBranch.Name);
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Failed to load branches: {ex.Message}";
+            }
+            finally
+            {
+                IsLoading = false;
+            }
+
             if (OnRepositoryChange.HasDelegate)
             {
                 await OnRepositoryChange.InvokeAsync(repository);
@@ -179,11 +204,12 @@
 
     private void OpenRepositoryLink()
     {
-        if (SelectedRepository != null)
+        if (SelectedRepository != null && !string.IsNullOrEmpty(SelectedRepository.HtmlUrl))
         {
-            // Use JSInterop to open link in a new tab
-            // Since we want to avoid JSInterop as much as possible, we'll use a regular link
-            // in the actual implementation or provide a callback
+            // Since this is a server-side component, we can't directly use JSRuntime.
+            // We would typically call a JS interop method here.
+
+            // Instead, we'll notify the parent component that the user wants to open the link
             if (OnRepositoryChange.HasDelegate)
             {
                 OnRepositoryChange.InvokeAsync(SelectedRepository);

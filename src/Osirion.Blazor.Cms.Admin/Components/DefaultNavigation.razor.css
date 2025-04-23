@@ -1,0 +1,73 @@
+﻿/* Enhanced styles for the DefaultNavigation component */
+
+.osirion-admin-nav-list-container {
+    width: 100%;
+}
+
+.osirion-admin-nav-section {
+    margin-bottom: 1.5rem;
+}
+
+.osirion-admin-nav-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--osirion-admin-text-muted);
+    margin-bottom: 0.5rem;
+    padding: 0 0.5rem;
+}
+
+.osirion-admin-nav-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.osirion-admin-nav-item {
+    margin-bottom: 0.25rem;
+}
+
+.osirion-admin-nav-link {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    color: var(--osirion-admin-text);
+    text-decoration: none;
+    border-radius: 0.25rem;
+    transition: background-color 0.2s, color 0.2s;
+    font-size: 0.875rem;
+}
+
+    .osirion-admin-nav-link:hover {
+        background-color: var(--osirion-admin-light);
+        color: var(--osirion-admin-text);
+    }
+
+    .osirion-admin-nav-link.active {
+        background-color: var(--osirion-admin-primary);
+        color: white;
+    }
+
+    .osirion-admin-nav-link .osirion-admin-icon {
+        margin-right: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 18px;
+        height: 18px;
+        opacity: 0.8;
+    }
+
+    .osirion-admin-nav-link:hover .osirion-admin-icon {
+        opacity: 1;
+    }
+
+    .osirion-admin-nav-link.active .osirion-admin-icon {
+        opacity: 1;
+    }
+
+/* Dark theme adjustments */
+:global(.osirion-admin-theme-dark) .osirion-admin-nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}

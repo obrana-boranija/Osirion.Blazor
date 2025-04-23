@@ -22,10 +22,10 @@ public partial class ContentEditor
     public EventCallback OnDiscard { get; set; }
 
     [Inject]
-    public CmsAdminState AdminState { get; set; }
+    public CmsAdminState AdminState { get; set; } = default!;
 
     [Inject]
-    public IGitHubAdminService GitHubService { get; set; }
+    public IGitHubAdminService GitHubService { get; set; } = default!;
 
     private bool IsSaving { get; set; }
     private string? ErrorMessage { get; set; }
@@ -75,7 +75,7 @@ public partial class ContentEditor
         else if (AdminState.EditingPost != null && !AdminState.IsCreatingNewFile)
         {
             // Set default commit message for existing file
-            CommitMessage = "Update content";
+            CommitMessage = $"Update {AdminState.EditingPost.FilePath}";
         }
     }
 
@@ -113,7 +113,13 @@ public partial class ContentEditor
             if (AdminState.IsCreatingNewFile)
             {
                 // Construct full path for new file
-                var filename = $"{FileName.Trim()}.md";
+                // Ensure the filename has .md extension
+                string filename = FileName.Trim();
+                if (!filename.EndsWith(".md", StringComparison.OrdinalIgnoreCase))
+                {
+                    filename += ".md";
+                }
+
                 filePath = string.IsNullOrEmpty(AdminState.CurrentPath) ?
                     filename :
                     $"{AdminState.CurrentPath}/{filename}";
@@ -130,8 +136,13 @@ public partial class ContentEditor
 
             // Commit message
             var message = string.IsNullOrEmpty(CommitMessage) ?
-                (AdminState.IsCreatingNewFile ? "Create new file" : "Update content") :
+                (AdminState.IsCreatingNewFile ? $"Create {filePath}" : $"Update {filePath}") :
                 CommitMessage;
+
+            // Log for debugging
+            Console.WriteLine($"Saving file: {filePath}");
+            Console.WriteLine($"SHA: {existingSha ?? "none"}");
+            Console.WriteLine($"Message: {message}");
 
             // Save the file
             var response = await GitHubService.CreateOrUpdateFileAsync(
@@ -212,20 +223,25 @@ public partial class ContentEditor
 
     private string RenderMarkdown(string markdown)
     {
-        // Use the Markdig library to render markdown to HTML
-        // For simplicity in this sample, we'll use a basic replacement
+        try
+        {
+            // Use the Markdig library to render markdown to HTML
+            return Markdig.Markdown.ToHtml(markdown);
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error rendering markdown: {ex.Message}");
 
-        // In a real implementation, you would use a proper markdown parser
-        return markdown
-            .Replace("# ", "<h1>").Replace("\n# ", "<h1>")
-            .Replace("## ", "<h2>").Replace("\n## ", "<h2>")
-            .Replace("### ", "<h3>").Replace("\n### ", "<h3>")
-            .Replace("#### ", "<h4>").Replace("\n#### ", "<h4>")
-            .Replace("##### ", "<h5>").Replace("\n##### ", "<h5>")
-            .Replace("###### ", "<h6>").Replace("\n###### ", "<h6>")
-            .Replace("**", "<strong>").Replace("**", "</strong>")
-            .Replace("*", "<em>").Replace("*", "</em>")
-            .Replace("\n", "<br />");
+            // Fallback to basic formatting if Markdig fails
+            return markdown
+                .Replace("# ", "<h1>").Replace("\n# ", "\n<h1>").Replace("</h1>", "</h1>\n")
+                .Replace("## ", "<h2>").Replace("\n## ", "\n<h2>").Replace("</h2>", "</h2>\n")
+                .Replace("### ", "<h3>").Replace("\n### ", "\n<h3>").Replace("</h3>", "</h3>\n")
+                .Replace("#### ", "<h4>").Replace("\n#### ", "\n<h4>").Replace("</h4>", "</h4>\n")
+                .Replace("**", "<strong>").Replace("**", "</strong>")
+                .Replace("*", "<em>").Replace("*", "</em>")
+                .Replace("\n", "<br />");
+        }
     }
 
     private void InsertHeading()

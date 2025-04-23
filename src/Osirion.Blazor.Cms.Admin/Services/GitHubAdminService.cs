@@ -314,20 +314,41 @@ public class GitHubAdminService : IGitHubAdminService
         {
             var endpoint = $"repos/{_owner}/{_repo}/contents/{path}";
 
-            var requestData = GitHubFileCommitRequest.Create(
-                content,
-                commitMessage,
-                _branch,
-                existingSha,
-                _committerName,
-                _committerEmail
-            );
+            // Fix: Properly handle content encoding to avoid 422 errors
+            // Convert content to Base64 using UTF-8 encoding first
+            var contentBytes = Encoding.UTF8.GetBytes(content);
+            var base64Content = Convert.ToBase64String(contentBytes);
 
-            var requestJson = JsonSerializer.Serialize(requestData);
+            var requestData = new
+            {
+                message = commitMessage,
+                content = base64Content,
+                branch = _branch,
+                sha = existingSha,
+                committer = !string.IsNullOrEmpty(_committerName) && !string.IsNullOrEmpty(_committerEmail) ? new
+                {
+                    name = _committerName,
+                    email = _committerEmail
+                } : null
+            };
+
+            var requestJson = JsonSerializer.Serialize(requestData, new JsonSerializerOptions
+            {
+                DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
+            });
+
+            _logger.LogInformation("Request payload for file operation: {RequestJson}", requestJson);
+
             var requestContent = new StringContent(requestJson, Encoding.UTF8);
             requestContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
             var response = await _httpClient.PutAsync(endpoint, requestContent);
+
+            // Log the full response for debugging
+            var responseContent = await response.Content.ReadAsStringAsync();
+            _logger.LogInformation("Response from GitHub: Status: {StatusCode}, Content: {ResponseContent}",
+                                  response.StatusCode, responseContent);
+
             response.EnsureSuccessStatusCode();
 
             var result = await response.Content.ReadFromJsonAsync<GitHubFileCommitResponse>();
@@ -352,23 +373,23 @@ public class GitHubAdminService : IGitHubAdminService
         {
             var endpoint = $"repos/{_owner}/{_repo}/contents/{path}";
 
-            var requestData = new GitHubFileDeleteRequest
+            var requestData = new
             {
-                Message = commitMessage,
-                Sha = sha,
-                Branch = _branch
+                message = commitMessage,
+                sha = sha,
+                branch = _branch,
+                committer = !string.IsNullOrEmpty(_committerName) && !string.IsNullOrEmpty(_committerEmail) ? new
+                {
+                    name = _committerName,
+                    email = _committerEmail
+                } : null
             };
 
-            if (!string.IsNullOrEmpty(_committerName) && !string.IsNullOrEmpty(_committerEmail))
+            var requestJson = JsonSerializer.Serialize(requestData, new JsonSerializerOptions
             {
-                requestData.Committer = new GitHubCommitter
-                {
-                    Name = _committerName,
-                    Email = _committerEmail
-                };
-            }
+                DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
+            });
 
-            var requestJson = JsonSerializer.Serialize(requestData);
             var request = new HttpRequestMessage(HttpMethod.Delete, endpoint)
             {
                 Content = new StringContent(requestJson, Encoding.UTF8)

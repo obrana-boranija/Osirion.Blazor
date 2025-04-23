@@ -2,11 +2,14 @@
 @using Osirion.Blazor.Cms.Admin.Services
 @inherits Osirion.Blazor.Components.OsirionComponentBase
 @inject IAuthenticationService AuthService
+@inject NavigationManager NavigationManager
 
 <div class="@GetAdminLayoutClass()">
     <div class="osirion-admin-sidebar">
         <div class="osirion-admin-logo">
-            <h1 class="osirion-admin-brand">@Title</h1>
+            <a href="/admin" class="osirion-admin-brand-link">
+                <h1 class="osirion-admin-brand">@Title</h1>
+            </a>
             @if (!string.IsNullOrEmpty(Subtitle))
             {
                 <p class="osirion-admin-subtitle">@Subtitle</p>
@@ -49,26 +52,23 @@
             {
                 @HeaderTemplate
             }
-            else if (BreadcrumbItems.Any())
+            else
             {
                 <div class="osirion-admin-breadcrumb">
-                    @for (var i = 0; i < BreadcrumbItems.Count; i++)
+                    <a href="/admin" class="osirion-admin-breadcrumb-home">
+                        <span class="osirion-admin-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                                <polyline points="9 22 9 12 15 12 15 22" />
+                            </svg>
+                        </span>
+                        Dashboard
+                    </a>
+
+                    @if (!string.IsNullOrEmpty(CurrentPage))
                     {
-                        var item = BreadcrumbItems[i];
-                        
-                        @if (i > 0)
-                        {
-                            <span class="osirion-admin-breadcrumb-separator">/</span>
-                        }
-                        
-                        @if (i == BreadcrumbItems.Count - 1 || string.IsNullOrEmpty(item.Url))
-                        {
-                            <span class="osirion-admin-breadcrumb-current">@item.Text</span>
-                        }
-                        else
-                        {
-                            <a href="@item.Url" class="osirion-admin-breadcrumb-item">@item.Text</a>
-                        }
+                        <span class="osirion-admin-breadcrumb-separator">/</span>
+                        <span class="osirion-admin-breadcrumb-current">@CurrentPage</span>
                     }
                 </div>
             }
@@ -170,10 +170,10 @@
     public EventCallback<string?> ErrorMessageChanged { get; set; }
     
     /// <summary>
-    /// Gets or sets the breadcrumb items
+    /// Gets or sets the current page name for breadcrumb
     /// </summary>
     [Parameter]
-    public List<BreadcrumbItem> BreadcrumbItems { get; set; } = new();
+    public string? CurrentPage { get; set; }
     
     /// <summary>
     /// Gets or sets the child content
@@ -236,30 +236,5 @@
     private string GetAdminLayoutClass()
     {
         return $"osirion-admin-dashboard osirion-admin-theme-{Theme} {CssClass}".Trim();
-    }
-    
-    /// <summary>
-    /// Represents a breadcrumb item
-    /// </summary>
-    public class BreadcrumbItem
-    {
-        /// <summary>
-        /// Gets or sets the text of the breadcrumb item
-        /// </summary>
-        public string Text { get; set; } = string.Empty;
-        
-        /// <summary>
-        /// Gets or sets the URL of the breadcrumb item
-        /// </summary>
-        public string? Url { get; set; }
-        
-        /// <summary>
-        /// Creates a new breadcrumb item
-        /// </summary>
-        public BreadcrumbItem(string text, string? url = null)
-        {
-            Text = text;
-            Url = url;
-        }
     }
 }

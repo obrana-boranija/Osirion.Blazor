@@ -1,0 +1,219 @@
+﻿/* Styles for the Content Editor component */
+
+.osirion-admin-content-editor {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    border: 1px solid var(--osirion-admin-border);
+    border-radius: var(--osirion-admin-border-radius);
+    overflow: hidden;
+}
+
+/* Editor container with various layouts */
+.osirion-admin-editor-container {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+    /* Three panel layout: editor, preview, metadata (positioned as editor | preview | metadata) */
+    .osirion-admin-editor-container.three-panel {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 300px;
+    }
+
+    /* Two panel layout with metadata: editor | metadata */
+    .osirion-admin-editor-container.with-metadata {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 300px;
+    }
+
+    /* Two panel layout with preview: editor | preview */
+    .osirion-admin-editor-container.with-preview {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+
+/* Editor content area */
+.osirion-admin-editor-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    border-right: 1px solid var(--osirion-admin-border);
+    background-color: var(--osirion-admin-bg-editor);
+    overflow: hidden;
+}
+
+/* Editor textarea - expand to fill available space */
+.osirion-admin-editor-textarea {
+    flex: 1;
+    padding: var(--osirion-admin-spacer);
+    border: none;
+    resize: none;
+    font-family: monospace;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    background-color: var(--osirion-admin-bg-editor);
+    color: var(--osirion-admin-text-editor);
+    overflow: auto;
+}
+
+    .osirion-admin-editor-textarea:focus {
+        outline: none;
+    }
+
+/* Metadata panel - now positioned on the right */
+.osirion-admin-editor-metadata {
+    border-left: 1px solid var(--osirion-admin-border);
+    background-color: var(--osirion-admin-bg-editor-sidebar);
+    overflow-y: auto;
+    width: 300px;
+}
+
+/* Preview panel */
+.osirion-admin-editor-preview {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--osirion-admin-bg);
+    overflow: hidden;
+}
+
+.osirion-admin-preview-header {
+    padding: var(--osirion-admin-spacer-sm);
+    border-bottom: 1px solid var(--osirion-admin-border);
+    background-color: var(--osirion-admin-bg-header);
+}
+
+.osirion-admin-preview-title {
+    margin: 0;
+    font-size: 0.875rem;
+    font-weight: var(--osirion-admin-font-weight-medium);
+    color: var(--osirion-admin-text-muted);
+}
+
+.osirion-admin-preview-content {
+    flex: 1;
+    padding: var(--osirion-admin-spacer);
+    overflow-y: auto;
+}
+
+    /* Styles for the preview content rendered from markdown */
+    .osirion-admin-preview-content h1,
+    .osirion-admin-preview-content h2,
+    .osirion-admin-preview-content h3,
+    .osirion-admin-preview-content h4,
+    .osirion-admin-preview-content h5,
+    .osirion-admin-preview-content h6 {
+        margin-top: 1.5em;
+        margin-bottom: 0.5em;
+        font-weight: 600;
+        line-height: 1.25;
+        color: var(--osirion-admin-text);
+    }
+
+        .osirion-admin-preview-content h1:first-child,
+        .osirion-admin-preview-content h2:first-child,
+        .osirion-admin-preview-content h3:first-child,
+        .osirion-admin-preview-content h4:first-child,
+        .osirion-admin-preview-content h5:first-child,
+        .osirion-admin-preview-content h6:first-child {
+            margin-top: 0;
+        }
+
+    .osirion-admin-preview-content h1 {
+        font-size: 2rem;
+    }
+
+    .osirion-admin-preview-content h2 {
+        font-size: 1.5rem;
+    }
+
+    .osirion-admin-preview-content h3 {
+        font-size: 1.25rem;
+    }
+
+    .osirion-admin-preview-content h4 {
+        font-size: 1rem;
+    }
+
+    .osirion-admin-preview-content h5 {
+        font-size: 0.875rem;
+    }
+
+    .osirion-admin-preview-content h6 {
+        font-size: 0.85rem;
+    }
+
+    .osirion-admin-preview-content p {
+        margin-bottom: 1rem;
+        line-height: 1.6;
+    }
+
+    .osirion-admin-preview-content ul,
+    .osirion-admin-preview-content ol {
+        margin-bottom: 1rem;
+        padding-left: 2rem;
+    }
+
+    .osirion-admin-preview-content li {
+        margin-bottom: 0.25rem;
+    }
+
+    .osirion-admin-preview-content blockquote {
+        border-left: 4px solid var(--osirion-admin-border);
+        padding-left: 1rem;
+        margin-left: 0;
+        margin-right: 0;
+        font-style: italic;
+        color: var(--osirion-admin-text-muted);
+    }
+
+    .osirion-admin-preview-content pre {
+        background-color: var(--osirion-admin-bg-editor);
+        border-radius: var(--osirion-admin-border-radius);
+        padding: 1rem;
+        overflow-x: auto;
+        margin-bottom: 1rem;
+        font-family: monospace;
+        font-size: 0.875rem;
+    }
+
+    .osirion-admin-preview-content code {
+        font-family: monospace;
+        background-color: var(--osirion-admin-bg-editor);
+        border-radius: var(--osirion-admin-border-radius);
+        padding: 0.2rem 0.4rem;
+        font-size: 0.875em;
+    }
+
+    .osirion-admin-preview-content img {
+        max-width: 100%;
+        border-radius: var(--osirion-admin-border-radius);
+    }
+
+    .osirion-admin-preview-content a {
+        color: var(--osirion-admin-primary);
+        text-decoration: none;
+    }
+
+        .osirion-admin-preview-content a:hover {
+            text-decoration: underline;
+        }
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+    .osirion-admin-editor-container.three-panel,
+    .osirion-admin-editor-container.with-metadata,
+    .osirion-admin-editor-container.with-preview {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .osirion-admin-editor-metadata,
+    .osirion-admin-editor-preview {
+        border-left: none;
+        border-top: 1px solid var(--osirion-admin-border);
+        width: 100%;
+        height: 300px;
+    }
+}
