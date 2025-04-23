@@ -74,6 +74,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Osirion.Blazor.Example", "e
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Osirion.Blazor.Example.Client", "examples\bs\Osirion.Blazor.Example\Osirion.Blazor.Example.Client\Osirion.Blazor.Example.Client.csproj", "{867A582F-D8A8-4A50-A946-6961C737BD8F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Osirion.Blazor.Cms.Admin", "src\Osirion.Blazor.Cms.Admin\Osirion.Blazor.Cms.Admin.csproj", "{4F624822-0028-4DE5-8C55-A51ECAB01812}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -136,6 +138,10 @@ Global
 		{867A582F-D8A8-4A50-A946-6961C737BD8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{867A582F-D8A8-4A50-A946-6961C737BD8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{867A582F-D8A8-4A50-A946-6961C737BD8F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F624822-0028-4DE5-8C55-A51ECAB01812}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F624822-0028-4DE5-8C55-A51ECAB01812}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F624822-0028-4DE5-8C55-A51ECAB01812}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F624822-0028-4DE5-8C55-A51ECAB01812}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -159,6 +165,7 @@ Global
 		{9B689209-0C24-4A75-AEA0-30BAD3D064E8} = {B0489088-7C87-4C92-B6D1-73B072183229}
 		{1EFD445B-4840-43B8-9AA6-F82B4293C326} = {9B689209-0C24-4A75-AEA0-30BAD3D064E8}
 		{867A582F-D8A8-4A50-A946-6961C737BD8F} = {9B689209-0C24-4A75-AEA0-30BAD3D064E8}
+		{4F624822-0028-4DE5-8C55-A51ECAB01812} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {42605F7F-9786-49E4-AAB7-7D8A913C42D8}

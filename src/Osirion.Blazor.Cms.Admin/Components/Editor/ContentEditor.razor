@@ -1,0 +1,518 @@
+﻿@using Osirion.Blazor.Cms.Admin.Services
+@using Osirion.Blazor.Cms.Models
+@inherits Osirion.Blazor.Components.OsirionComponentBase
+@inject CmsAdminState AdminState
+@inject IGitHubAdminService GitHubService
+
+<div class="@GetContentEditorClass()">
+    @if (!AdminState.IsEditing || AdminState.EditingPost == null)
+    {
+        <div class="osirion-admin-empty">
+            <span>Select a file to edit or create a new file.</span>
+        </div>
+    }
+    else
+    {
+        <div class="osirion-admin-editor">
+            <div class="osirion-admin-editor-header">
+                <h2 class="osirion-admin-editor-title">
+                    @(AdminState.IsCreatingNewFile ? "New File" : AdminState.EditingPost.FilePath)
+                </h2>
+
+                <div class="osirion-admin-editor-actions">
+                    <button type="button"
+                            class="osirion-admin-button @(IsMetadataPanelVisible ? "osirion-admin-button-active" : "")"
+                            @onclick="ToggleMetadataPanel"
+                            title="@(IsMetadataPanelVisible ? "Hide Metadata" : "Show Metadata")">
+                        <span class="osirion-admin-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="21" y1="10" x2="3" y2="10" />
+                                <line x1="21" y1="6" x2="3" y2="6" />
+                                <line x1="21" y1="14" x2="3" y2="14" />
+                                <line x1="21" y1="18" x2="3" y2="18" />
+                            </svg>
+                        </span>
+                        @(IsMetadataPanelVisible ? "Hide Metadata" : "Show Metadata")
+                    </button>
+
+                    <button type="button"
+                            class="osirion-admin-button @(IsPreviewVisible ? "osirion-admin-button-active" : "")"
+                            @onclick="TogglePreview"
+                            title="@(IsPreviewVisible ? "Hide Preview" : "Show Preview")">
+                        <span class="osirion-admin-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                <circle cx="12" cy="12" r="3" />
+                            </svg>
+                        </span>
+                        @(IsPreviewVisible ? "Hide Preview" : "Show Preview")
+                    </button>
+                </div>
+            </div>
+
+            <div class="osirion-admin-editor-container @GetEditorLayoutClass()">
+                <div class="osirion-admin-editor-content">
+                    <div class="osirion-admin-editor-toolbar">
+                        <button type="button" class="osirion-admin-button osirion-admin-button-toolbar" @onclick="InsertHeading" title="Heading">
+                            <span class="osirion-admin-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M6 12h12" />
+                                    <path d="M6 20V4" />
+                                    <path d="M18 20V4" />
+                                </svg>
+                            </span>
+                        </button>
+
+                        <button type="button" class="osirion-admin-button osirion-admin-button-toolbar" @onclick="InsertBold" title="Bold">
+                            <span class="osirion-admin-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z" />
+                                    <path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z" />
+                                </svg>
+                            </span>
+                        </button>
+
+                        <button type="button" class="osirion-admin-button osirion-admin-button-toolbar" @onclick="InsertItalic" title="Italic">
+                            <span class="osirion-admin-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="19" y1="4" x2="10" y2="4" />
+                                    <line x1="14" y1="20" x2="5" y2="20" />
+                                    <line x1="15" y1="4" x2="9" y2="20" />
+                                </svg>
+                            </span>
+                        </button>
+
+                        <button type="button" class="osirion-admin-button osirion-admin-button-toolbar" @onclick="InsertLink" title="Link">
+                            <span class="osirion-admin-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                                </svg>
+                            </span>
+                        </button>
+
+                        <button type="button" class="osirion-admin-button osirion-admin-button-toolbar" @onclick="InsertImage" title="Image">
+                            <span class="osirion-admin-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                                    <circle cx="8.5" cy="8.5" r="1.5" />
+                                    <polyline points="21 15 16 10 5 21" />
+                                </svg>
+                            </span>
+                        </button>
+
+                        <button type="button" class="osirion-admin-button osirion-admin-button-toolbar" @onclick="InsertList" title="List">
+                            <span class="osirion-admin-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="8" y1="6" x2="21" y2="6" />
+                                    <line x1="8" y1="12" x2="21" y2="12" />
+                                    <line x1="8" y1="18" x2="21" y2="18" />
+                                    <line x1="3" y1="6" x2="3.01" y2="6" />
+                                    <line x1="3" y1="12" x2="3.01" y2="12" />
+                                    <line x1="3" y1="18" x2="3.01" y2="18" />
+                                </svg>
+                            </span>
+                        </button>
+
+                        <button type="button" class="osirion-admin-button osirion-admin-button-toolbar" @onclick="InsertCodeBlock" title="Code Block">
+                            <span class="osirion-admin-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="16 18 22 12 16 6" />
+                                    <polyline points="8 6 2 12 8 18" />
+                                </svg>
+                            </span>
+                        </button>
+                    </div>
+
+                    <textarea @bind="AdminState.EditingPost.Content"
+                              @bind:event="oninput"
+                              class="osirion-admin-editor-textarea"
+                              placeholder="Enter markdown content here..."></textarea>
+                </div>
+
+                @if (IsMetadataPanelVisible)
+                {
+                    <div class="osirion-admin-editor-metadata">
+                        <MetadataEditor Metadata="@AdminState.EditingPost.Metadata" />
+                    </div>
+                }
+
+                @if (IsPreviewVisible)
+                {
+                    <div class="osirion-admin-editor-preview">
+                        <div class="osirion-admin-preview-header">
+                            <h3 class="osirion-admin-preview-title">Preview</h3>
+                        </div>
+
+                        <div class="osirion-admin-preview-content">
+                            @((MarkupString)RenderMarkdown(AdminState.EditingPost.Content))
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="osirion-admin-editor-footer">
+                <button type="button"
+                        class="osirion-admin-button osirion-admin-button-secondary"
+                        @onclick="DiscardChanges">
+                    Discard Changes
+                </button>
+
+                <div class="osirion-admin-editor-main-actions">
+                    @if (IsFileName)
+                    {
+                        <div class="osirion-admin-form-group osirion-admin-form-group-inline">
+                            <label class="osirion-admin-label" for="fileName">File Name:</label>
+                            <input type="text"
+                                   class="osirion-admin-input"
+                                   id="fileName"
+                                   @bind="FileName"
+                                   placeholder="Enter file name" />
+                            <span class="osirion-admin-input-suffix">.md</span>
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrEmpty(CommitMessage))
+                    {
+                        <div class="osirion-admin-form-group osirion-admin-form-group-inline">
+                            <label class="osirion-admin-label" for="commitMessage">Commit Message:</label>
+                            <input type="text"
+                                   class="osirion-admin-input"
+                                   id="commitMessage"
+                                   @bind="CommitMessage"
+                                   placeholder="Enter commit message" />
+                        </div>
+                    }
+
+                    <button type="button"
+                            class="osirion-admin-button osirion-admin-button-primary"
+                            @onclick="SaveChanges"
+                            disabled="@(IsSaving || (IsFileName && string.IsNullOrWhiteSpace(FileName)))">
+                        @if (IsSaving)
+                        {
+                            <span class="osirion-admin-loading-spinner"></span>
+                            <span>Saving...</span>
+                        }
+                        else
+                        {
+                            <span>Save Changes</span>
+                        }
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public bool IsMetadataPanelVisible { get; set; } = true;
+
+    [Parameter]
+    public bool IsPreviewVisible { get; set; } = true;
+
+    [Parameter]
+    public bool AskForCommitMessage { get; set; } = true;
+
+    [Parameter]
+    public EventCallback<BlogPost> OnSaveComplete { get; set; }
+
+    [Parameter]
+    public EventCallback OnDiscard { get; set; }
+
+    private bool IsSaving { get; set; }
+    private string? ErrorMessage { get; set; }
+
+    private string FileName { get; set; } = string.Empty;
+    private string CommitMessage
+    {
+        get
+        {
+            if (!AskForCommitMessage)
+            {
+                return string.Empty;
+            }
+
+            return _commitMessage;
+        }
+        set => _commitMessage = value;
+    }
+    private string _commitMessage = "Update content";
+
+    private bool IsFileName => AdminState.IsCreatingNewFile || string.IsNullOrEmpty(AdminState.EditingPost?.FilePath);
+
+    protected override void OnInitialized()
+    {
+        AdminState.StateChanged += StateHasChanged;
+
+        if (AdminState.EditingPost != null && AdminState.IsCreatingNewFile)
+        {
+            // Generate filename from post title
+            FileName = GenerateFileName(AdminState.EditingPost.Metadata.Title);
+        }
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (AdminState.EditingPost != null && AdminState.IsCreatingNewFile)
+        {
+            // Generate filename from post title if not set
+            if (string.IsNullOrEmpty(FileName))
+            {
+                FileName = GenerateFileName(AdminState.EditingPost.Metadata.Title);
+            }
+
+            // Set default commit message
+            CommitMessage = "Create new file";
+        }
+        else if (AdminState.EditingPost != null && !AdminState.IsCreatingNewFile)
+        {
+            // Set default commit message for existing file
+            CommitMessage = "Update content";
+        }
+    }
+
+    public void Dispose()
+    {
+        AdminState.StateChanged -= StateHasChanged;
+    }
+
+    private void ToggleMetadataPanel()
+    {
+        IsMetadataPanelVisible = !IsMetadataPanelVisible;
+    }
+
+    private void TogglePreview()
+    {
+        IsPreviewVisible = !IsPreviewVisible;
+    }
+
+    private async Task SaveChanges()
+    {
+        if (AdminState.EditingPost == null)
+        {
+            return;
+        }
+
+        IsSaving = true;
+        AdminState.SetSaving(true);
+        ErrorMessage = null;
+
+        try
+        {
+            string filePath;
+            string? existingSha = null;
+
+            if (AdminState.IsCreatingNewFile)
+            {
+                // Construct full path for new file
+                var filename = $"{FileName.Trim()}.md";
+                filePath = string.IsNullOrEmpty(AdminState.CurrentPath) ?
+                    filename :
+                    $"{AdminState.CurrentPath}/{filename}";
+            }
+            else
+            {
+                // Use existing file path
+                filePath = AdminState.EditingPost.FilePath;
+                existingSha = AdminState.EditingPost.Sha;
+            }
+
+            // Get full content with frontmatter
+            var fullContent = AdminState.EditingPost.ToMarkdown();
+
+            // Commit message
+            var message = string.IsNullOrEmpty(CommitMessage) ?
+                (AdminState.IsCreatingNewFile ? "Create new file" : "Update content") :
+                CommitMessage;
+
+            // Save the file
+            var response = await GitHubService.CreateOrUpdateFileAsync(
+                filePath,
+                fullContent,
+                message,
+                existingSha);
+
+            // Update the blog post with new information
+            AdminState.EditingPost.FilePath = response.Content.Path;
+            AdminState.EditingPost.Sha = response.Content.Sha;
+
+            // Reset state
+            if (OnSaveComplete.HasDelegate)
+            {
+                await OnSaveComplete.InvokeAsync(AdminState.EditingPost);
+            }
+
+            // Show success message
+            AdminState.SetStatusMessage($"File saved successfully: {filePath}");
+
+            // Reset file name for new files
+            if (AdminState.IsCreatingNewFile)
+            {
+                FileName = string.Empty;
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Failed to save file: {ex.Message}";
+            AdminState.SetErrorMessage(ErrorMessage);
+        }
+        finally
+        {
+            IsSaving = false;
+            AdminState.SetSaving(false);
+        }
+    }
+
+    private async Task DiscardChanges()
+    {
+        if (OnDiscard.HasDelegate)
+        {
+            await OnDiscard.InvokeAsync();
+        }
+
+        AdminState.ClearEditing();
+        FileName = string.Empty;
+        CommitMessage = string.Empty;
+    }
+
+    private string GenerateFileName(string title)
+    {
+        if (string.IsNullOrEmpty(title))
+        {
+            return "new-post";
+        }
+
+        // Generate a slug from the title
+        return title.ToLowerInvariant()
+            .Replace(" ", "-")
+            .Replace("&", "and")
+            .Replace("?", "")
+            .Replace("!", "")
+            .Replace(".", "")
+            .Replace(",", "")
+            .Replace(":", "")
+            .Replace(";", "")
+            .Replace("'", "")
+            .Replace("\"", "")
+            .Replace("(", "")
+            .Replace(")", "")
+            .Replace("[", "")
+            .Replace("]", "")
+            .Replace("/", "-")
+            .Replace("\\", "-");
+    }
+
+    private string RenderMarkdown(string markdown)
+    {
+        // Use the Markdig library to render markdown to HTML
+        // For simplicity in this sample, we'll use a basic replacement
+
+        // In a real implementation, you would use a proper markdown parser
+        return markdown
+            .Replace("# ", "<h1>").Replace("\n# ", "<h1>")
+            .Replace("## ", "<h2>").Replace("\n## ", "<h2>")
+            .Replace("### ", "<h3>").Replace("\n### ", "<h3>")
+            .Replace("#### ", "<h4>").Replace("\n#### ", "<h4>")
+            .Replace("##### ", "<h5>").Replace("\n##### ", "<h5>")
+            .Replace("###### ", "<h6>").Replace("\n###### ", "<h6>")
+            .Replace("**", "<strong>").Replace("**", "</strong>")
+            .Replace("*", "<em>").Replace("*", "</em>")
+            .Replace("\n", "<br />");
+    }
+
+    private void InsertHeading()
+    {
+        if (AdminState.EditingPost == null)
+        {
+            return;
+        }
+
+        AdminState.EditingPost.Content += "\n## New Heading";
+    }
+
+    private void InsertBold()
+    {
+        if (AdminState.EditingPost == null)
+        {
+            return;
+        }
+
+        AdminState.EditingPost.Content += "**bold text**";
+    }
+
+    private void InsertItalic()
+    {
+        if (AdminState.EditingPost == null)
+        {
+            return;
+        }
+
+        AdminState.EditingPost.Content += "*italic text*";
+    }
+
+    private void InsertLink()
+    {
+        if (AdminState.EditingPost == null)
+        {
+            return;
+        }
+
+        AdminState.EditingPost.Content += "[link text](https://example.com)";
+    }
+
+    private void InsertImage()
+    {
+        if (AdminState.EditingPost == null)
+        {
+            return;
+        }
+
+        AdminState.EditingPost.Content += "![alt text](https://example.com/image.jpg)";
+    }
+
+    private void InsertList()
+    {
+        if (AdminState.EditingPost == null)
+        {
+            return;
+        }
+
+        AdminState.EditingPost.Content += "\n- Item 1\n- Item 2\n- Item 3";
+    }
+
+    private void InsertCodeBlock()
+    {
+        if (AdminState.EditingPost == null)
+        {
+            return;
+        }
+
+        AdminState.EditingPost.Content += "\n```\ncode goes here\n```";
+    }
+
+    private string GetEditorLayoutClass()
+    {
+        string layoutClass = "";
+
+        if (IsMetadataPanelVisible && IsPreviewVisible)
+        {
+            layoutClass = "three-panel";
+        }
+        else if (IsMetadataPanelVisible)
+        {
+            layoutClass = "with-metadata";
+        }
+        else if (IsPreviewVisible)
+        {
+            layoutClass = "with-preview";
+        }
+
+        return layoutClass;
+    }
+
+    private string GetContentEditorClass()
+    {
+        return $"osirion-admin-content-editor {CssClass}".Trim();
+    }
+}
