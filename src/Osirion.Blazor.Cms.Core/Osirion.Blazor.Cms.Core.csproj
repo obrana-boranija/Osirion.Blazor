@@ -8,11 +8,11 @@
 		<IsPackable>true</IsPackable>
 
 		<!-- NuGet package properties -->
-		<PackageId>Osirion.Blazor.Cms.Admin</PackageId>
+		<PackageId>Osirion.Blazor.Cms.Core</PackageId>
 		<Version>2.0.2</Version>
 		<Authors>Dejan Demonjić</Authors>
 		<Company>Tridesetri</Company>
-		<Description>Content Management System (CMS) Administration module for Osirion.Blazor, providing a robust, flexible admin interface for managing content across different providers.</Description>
+		<Description>Core CMS module for Osirion.Blazor - Provides cms management with provider pattern.</Description>
 		<PackageTags>blazor;components;content;cms;markdown;github;osirion</PackageTags>
 		<PackageProjectUrl>https://github.com/obrana-boranija/Osirion.Blazor</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/obrana-boranija/Osirion.Blazor</RepositoryUrl>
@@ -40,19 +40,13 @@
 		<PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.4" />
 	</ItemGroup>
 
-	<Target Name="DowngradePackages" BeforeTargets="Build" Condition="'$(TargetFramework)' == 'net8.0'">
-		<ItemGroup>
-			<_DowngradePackages Include="Microsoft.Net.Http.Headers" Version="8.0.1" />
-		</ItemGroup>
-	</Target>
-
 	<ItemGroup>
-		<None Include="README.md" Pack="true" PackagePath="\" />
-		<None Include="..\..\icon.png" Pack="true" PackagePath="\" />
+		<ProjectReference Include="..\Osirion.Blazor.Core\Osirion.Blazor.Core.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Osirion.Blazor.Cms.Core\Osirion.Blazor.Cms.Core.csproj" />
+		<None Include="README.md" Pack="true" PackagePath="\" />
+		<None Include="..\..\icon.png" Pack="true" PackagePath="\"/>
 	</ItemGroup>
 
 </Project>
