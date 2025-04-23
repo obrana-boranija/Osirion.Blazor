@@ -1,0 +1,274 @@
+/* Styles for the Markdown Preview component */
+
+.osirion-markdown-preview {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--osirion-admin-border, #e1e4e8);
+    border-radius: var(--osirion-admin-border-radius, 6px);
+    background-color: var(--osirion-admin-bg, #ffffff);
+    overflow: hidden;
+    height: 100%;
+}
+
+.osirion-markdown-preview-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    height: 100%;
+    overflow: hidden;
+}
+
+.osirion-markdown-preview-header {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--osirion-admin-border, #e1e4e8);
+    background-color: var(--osirion-admin-bg-header, #f6f8fa);
+}
+
+.osirion-markdown-preview-title {
+    margin: 0;
+    font-size: 0.875rem;
+    font-weight: var(--osirion-admin-font-weight-medium, 500);
+    color: var(--osirion-admin-text-muted, #6a737d);
+}
+
+.osirion-markdown-preview-content {
+    flex: 1;
+    padding: var(--osirion-admin-spacer, 1rem);
+    overflow-y: auto;
+    word-break: break-word;
+}
+
+    /* Markdown content styling */
+    .osirion-markdown-preview-content h1,
+    .osirion-markdown-preview-content h2,
+    .osirion-markdown-preview-content h3,
+    .osirion-markdown-preview-content h4,
+    .osirion-markdown-preview-content h5,
+    .osirion-markdown-preview-content h6 {
+        margin-top: 1.5em;
+        margin-bottom: 0.5em;
+        font-weight: 600;
+        line-height: 1.25;
+        color: var(--osirion-admin-text, #24292e);
+    }
+
+        .osirion-markdown-preview-content h1:first-child,
+        .osirion-markdown-preview-content h2:first-child,
+        .osirion-markdown-preview-content h3:first-child,
+        .osirion-markdown-preview-content h4:first-child,
+        .osirion-markdown-preview-content h5:first-child,
+        .osirion-markdown-preview-content h6:first-child {
+            margin-top: 0;
+        }
+
+    .osirion-markdown-preview-content h1 {
+        font-size: 2rem;
+        border-bottom: 1px solid var(--osirion-admin-border, #e1e4e8);
+        padding-bottom: 0.3em;
+    }
+
+    .osirion-markdown-preview-content h2 {
+        font-size: 1.5rem;
+        border-bottom: 1px solid var(--osirion-admin-border, #e1e4e8);
+        padding-bottom: 0.3em;
+    }
+
+    .osirion-markdown-preview-content h3 {
+        font-size: 1.25rem;
+    }
+
+    .osirion-markdown-preview-content h4 {
+        font-size: 1rem;
+    }
+
+    .osirion-markdown-preview-content h5 {
+        font-size: 0.875rem;
+    }
+
+    .osirion-markdown-preview-content h6 {
+        font-size: 0.85rem;
+        color: var(--osirion-admin-text-muted, #6a737d);
+    }
+
+    .osirion-markdown-preview-content p {
+        margin-top: 0;
+        margin-bottom: 1rem;
+        line-height: 1.6;
+    }
+
+    .osirion-markdown-preview-content a {
+        color: var(--osirion-admin-primary, #0366d6);
+        text-decoration: none;
+    }
+
+        .osirion-markdown-preview-content a:hover {
+            text-decoration: underline;
+        }
+
+    .osirion-markdown-preview-content ul,
+    .osirion-markdown-preview-content ol {
+        margin-top: 0;
+        margin-bottom: 1rem;
+        padding-left: 2rem;
+    }
+
+    .osirion-markdown-preview-content li {
+        margin-bottom: 0.25rem;
+    }
+
+        .osirion-markdown-preview-content li > ul,
+        .osirion-markdown-preview-content li > ol {
+            margin-top: 0.25rem;
+            margin-bottom: 0;
+        }
+
+    .osirion-markdown-preview-content blockquote {
+        margin: 0 0 1rem;
+        padding: 0 1rem;
+        color: var(--osirion-admin-text-muted, #6a737d);
+        border-left: 0.25rem solid var(--osirion-admin-border, #e1e4e8);
+    }
+
+        .osirion-markdown-preview-content blockquote > :first-child {
+            margin-top: 0;
+        }
+
+        .osirion-markdown-preview-content blockquote > :last-child {
+            margin-bottom: 0;
+        }
+
+    .osirion-markdown-preview-content pre {
+        margin-top: 0;
+        margin-bottom: 1rem;
+        padding: 1rem;
+        overflow: auto;
+        font-family: monospace;
+        font-size: 0.85rem;
+        line-height: 1.45;
+        background-color: var(--osirion-admin-light, #f6f8fa);
+        border-radius: var(--osirion-admin-border-radius, 6px);
+    }
+
+    .osirion-markdown-preview-content code {
+        padding: 0.2em 0.4em;
+        margin: 0;
+        font-family: monospace;
+        font-size: 0.85em;
+        background-color: var(--osirion-admin-light, #f6f8fa);
+        border-radius: 3px;
+    }
+
+    .osirion-markdown-preview-content pre code {
+        padding: 0;
+        margin: 0;
+        font-size: 100%;
+        background-color: transparent;
+        border: 0;
+    }
+
+    .osirion-markdown-preview-content table {
+        display: block;
+        width: 100%;
+        overflow: auto;
+        margin-top: 0;
+        margin-bottom: 1rem;
+        border-spacing: 0;
+        border-collapse: collapse;
+    }
+
+        .osirion-markdown-preview-content table th {
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--osirion-admin-border, #e1e4e8);
+        }
+
+        .osirion-markdown-preview-content table td {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--osirion-admin-border, #e1e4e8);
+        }
+
+        .osirion-markdown-preview-content table tr {
+            background-color: var(--osirion-admin-bg, #ffffff);
+            border-top: 1px solid var(--osirion-admin-border, #e1e4e8);
+        }
+
+            .osirion-markdown-preview-content table tr:nth-child(2n) {
+                background-color: var(--osirion-admin-light, #f6f8fa);
+            }
+
+    .osirion-markdown-preview-content img {
+        max-width: 100%;
+        box-sizing: content-box;
+        background-color: var(--osirion-admin-bg, #ffffff);
+        border-radius: var(--osirion-admin-border-radius, 6px);
+    }
+
+    .osirion-markdown-preview-content hr {
+        height: 0.25em;
+        padding: 0;
+        margin: 1.5rem 0;
+        background-color: var(--osirion-admin-border, #e1e4e8);
+        border: 0;
+    }
+
+    /* Error display */
+    .osirion-markdown-preview-content .markdown-error {
+        color: var(--osirion-admin-danger, #cb2431);
+        padding: 0.5rem;
+        border: 1px solid var(--osirion-admin-danger, #cb2431);
+        border-radius: var(--osirion-admin-border-radius, 6px);
+        background-color: rgba(203, 36, 49, 0.1);
+        font-family: monospace;
+    }
+
+/* Dark theme adjustments */
+:global(.osirion-admin-theme-dark) .osirion-markdown-preview {
+    border-color: var(--osirion-admin-border, #30363d);
+    background-color: var(--osirion-admin-bg, #0d1117);
+}
+
+:global(.osirion-admin-theme-dark) .osirion-markdown-preview-header {
+    background-color: var(--osirion-admin-bg-header, #161b22);
+    border-color: var(--osirion-admin-border, #30363d);
+}
+
+:global(.osirion-admin-theme-dark) .osirion-markdown-preview-content {
+    color: var(--osirion-admin-text, #c9d1d9);
+}
+
+    :global(.osirion-admin-theme-dark) .osirion-markdown-preview-content a {
+        color: var(--osirion-admin-primary, #58a6ff);
+    }
+
+    :global(.osirion-admin-theme-dark) .osirion-markdown-preview-content blockquote {
+        color: var(--osirion-admin-text-muted, #8b949e);
+        border-left-color: var(--osirion-admin-border, #30363d);
+    }
+
+    :global(.osirion-admin-theme-dark) .osirion-markdown-preview-content pre,
+    :global(.osirion-admin-theme-dark) .osirion-markdown-preview-content code {
+        background-color: var(--osirion-admin-light, #1f2937);
+    }
+
+    :global(.osirion-admin-theme-dark) .osirion-markdown-preview-content h1,
+    :global(.osirion-admin-theme-dark) .osirion-markdown-preview-content h2 {
+        border-bottom-color: var(--osirion-admin-border, #30363d);
+    }
+
+    :global(.osirion-admin-theme-dark) .osirion-markdown-preview-content table tr {
+        background-color: var(--osirion-admin-bg, #0d1117);
+        border-color: var(--osirion-admin-border, #30363d);
+    }
+
+        :global(.osirion-admin-theme-dark) .osirion-markdown-preview-content table tr:nth-child(2n) {
+            background-color: var(--osirion-admin-light, #1f2937);
+        }
+
+    :global(.osirion-admin-theme-dark) .osirion-markdown-preview-content table th,
+    :global(.osirion-admin-theme-dark) .osirion-markdown-preview-content table td {
+        border-color: var(--osirion-admin-border, #30363d);
+    }
+
+    :global(.osirion-admin-theme-dark) .osirion-markdown-preview-content hr {
+        background-color: var(--osirion-admin-border, #30363d);
+    }

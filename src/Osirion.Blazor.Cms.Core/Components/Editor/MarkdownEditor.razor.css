@@ -1,0 +1,103 @@
+﻿/* Styles for the Markdown Editor component */
+
+.osirion-markdown-editor {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--osirion-admin-border, #e1e4e8);
+    border-radius: var(--osirion-admin-border-radius, 6px);
+    background-color: var(--osirion-admin-bg-editor, #ffffff);
+    overflow: hidden;
+    height: 100%;
+}
+
+.osirion-markdown-editor-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* Toolbar styles */
+.osirion-markdown-editor-toolbar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--osirion-admin-spacer-sm, 0.5rem);
+    padding: var(--osirion-admin-spacer-sm, 0.5rem);
+    border-bottom: 1px solid var(--osirion-admin-border, #e1e4e8);
+    background-color: var(--osirion-admin-bg-header, #f6f8fa);
+}
+
+/* Editor textarea - expand to fill available space */
+.osirion-markdown-editor-textarea {
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    min-height: 100px;
+    padding: var(--osirion-admin-spacer, 1rem);
+    border: none;
+    resize: none;
+    font-family: monospace;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    background-color: var(--osirion-admin-bg-editor, #ffffff);
+    color: var(--osirion-admin-text-editor, var(--osirion-admin-text, #24292e));
+    outline: none;
+}
+
+    .osirion-markdown-editor-textarea::placeholder {
+        color: var(--osirion-admin-text-muted, #6a737d);
+        opacity: 0.6;
+    }
+
+/* Button styling - inherit from admin styles */
+:global(.osirion-admin-button-toolbar) {
+    padding: 0.25rem;
+    min-height: auto;
+    background-color: transparent;
+    border-color: transparent;
+    transition: background-color 0.2s ease;
+}
+
+:global(.osirion-admin-button-toolbar:hover) {
+    background-color: var(--osirion-admin-light, #f6f8fa);
+}
+
+:global(.osirion-admin-button-toolbar:active) {
+    background-color: var(--osirion-admin-border, #e1e4e8);
+}
+
+:global(.osirion-admin-icon) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+}
+
+/* Dark theme adjustments */
+:global(.osirion-admin-theme-dark) .osirion-markdown-editor {
+    border-color: var(--osirion-admin-border, #30363d);
+}
+
+:global(.osirion-admin-theme-dark) .osirion-markdown-editor-toolbar {
+    background-color: var(--osirion-admin-bg-header, #161b22);
+    border-color: var(--osirion-admin-border, #30363d);
+}
+
+:global(.osirion-admin-theme-dark) .osirion-markdown-editor-textarea {
+    background-color: var(--osirion-admin-bg-editor, #1e293b);
+    color: var(--osirion-admin-text-editor, #e5e7eb);
+}
+
+    :global(.osirion-admin-theme-dark) .osirion-markdown-editor-textarea::placeholder {
+        color: var(--osirion-admin-text-editor-muted, #9ca3af);
+    }
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .osirion-markdown-editor-toolbar {
+        flex-wrap: wrap;
+    }
+}

@@ -52,7 +52,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Osirion.Blazor.Cms.Core\Osirion.Blazor.Cms.Core.csproj" />
+	  <ProjectReference Include="..\Osirion.Blazor.Cms.Core\Osirion.Blazor.Cms.Core.csproj" />
 	</ItemGroup>
 
 </Project>

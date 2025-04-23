@@ -4,6 +4,7 @@ using Osirion.Blazor.Cms.Admin.Interfaces;
 using Osirion.Blazor.Cms.Admin.Internal;
 using Osirion.Blazor.Cms.Admin.Options;
 using Osirion.Blazor.Cms.Admin.Services;
+using Osirion.Blazor.Cms.Core.Extensions;
 
 namespace Osirion.Blazor.Cms.Admin.Extensions;
 
@@ -35,6 +36,9 @@ public static class CmsAdminServiceCollectionExtensions
         services.TryAddScoped<IAuthenticationService, AuthenticationService>();
         services.TryAddScoped<IStateStorageService, LocalStorageService>();
         services.TryAddScoped<CmsAdminState, CmsAdminStatePersistent>();
+
+        // Register markdown editor components and services
+        services.AddOsirionMarkdownEditor();
 
         return services;
     }
