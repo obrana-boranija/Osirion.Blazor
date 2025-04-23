@@ -39,6 +39,29 @@
     --osirion-scroll-margin: 25px;
     --osirion-scroll-z-index: var(--bs-zindex-fixed, 1030);
     --osirion-scroll-transition: all 0.3s ease;
+    /* Enhanced Typography */
+    --osirion-font-family: var(--bs-font-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif);
+    --osirion-font-weight-normal: var(--bs-font-weight-normal, 400);
+    --osirion-font-weight-bold: var(--bs-font-weight-bold, 700);
+    --osirion-font-weight-light: var(--bs-font-weight-light, 300);
+    --osirion-font-weight-semibold: var(--bs-font-weight-semibold, 600);
+    /* Heading Typography */
+    --osirion-h1-font-size: var(--bs-h1-font-size, 2.5rem);
+    --osirion-h2-font-size: var(--bs-h2-font-size, 2rem);
+    --osirion-h3-font-size: var(--bs-h3-font-size, 1.75rem);
+    --osirion-h4-font-size: var(--bs-h4-font-size, 1.5rem);
+    --osirion-h5-font-size: var(--bs-h5-font-size, 1.25rem);
+    --osirion-h6-font-size: var(--bs-h6-font-size, 1rem);
+    /* Line Heights */
+    --osirion-line-height-tight: var(--bs-line-height-sm, 1.25);
+    --osirion-line-height-normal: var(--bs-line-height-base, 1.5);
+    --osirion-line-height-relaxed: var(--bs-line-height-lg, 1.8);
+    /* Content Specific */
+    --osirion-content-title-font-weight: var(--bs-font-weight-bold, 700);
+    --osirion-content-description-font-weight: var(--bs-font-weight-normal, 400);
+    --osirion-content-meta-font-weight: var(--bs-font-weight-light, 300);
+    --osirion-content-header-margin: 1.5rem;
+    --osirion-content-paragraph-margin: 1rem;
 }
 
 /* Tailwind Integration */
@@ -80,6 +103,29 @@
     --osirion-scroll-margin: 25px;
     --osirion-scroll-z-index: 50; /* z-50 */
     --osirion-scroll-transition: all 0.3s ease;
+    /* Enhanced Typography */
+    --osirion-font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --osirion-font-weight-normal: 400;
+    --osirion-font-weight-bold: 700;
+    --osirion-font-weight-light: 300;
+    --osirion-font-weight-semibold: 600;
+    /* Heading Typography */
+    --osirion-h1-font-size: 2.25rem; /* text-4xl */
+    --osirion-h2-font-size: 1.875rem; /* text-3xl */
+    --osirion-h3-font-size: 1.5rem; /* text-2xl */
+    --osirion-h4-font-size: 1.25rem; /* text-xl */
+    --osirion-h5-font-size: 1.125rem; /* text-lg */
+    --osirion-h6-font-size: 1rem; /* text-base */
+    /* Line Heights */
+    --osirion-line-height-tight: 1.25; /* leading-tight */
+    --osirion-line-height-normal: 1.5; /* leading-normal */
+    --osirion-line-height-relaxed: 1.75; /* leading-relaxed */
+    /* Content Specific */
+    --osirion-content-title-font-weight: 700;
+    --osirion-content-description-font-weight: 400;
+    --osirion-content-meta-font-weight: 300;
+    --osirion-content-header-margin: 1.5rem;
+    --osirion-content-paragraph-margin: 1rem;
 }
 
 /* FluentUI Integration */
@@ -121,6 +167,29 @@
     --osirion-scroll-margin: 20px;
     --osirion-scroll-z-index: 1000;
     --osirion-scroll-transition: all 0.1s ease;
+    /* Enhanced Typography */
+    --osirion-font-family: var(--body-font, "Segoe UI", "Segoe UI Web (West European)", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif);
+    --osirion-font-weight-normal: 400;
+    --osirion-font-weight-bold: 700;
+    --osirion-font-weight-light: 300;
+    --osirion-font-weight-semibold: 600;
+    /* Heading Typography */
+    --osirion-h1-font-size: var(--type-ramp-plus5-font-size, 32px);
+    --osirion-h2-font-size: var(--type-ramp-plus4-font-size, 28px);
+    --osirion-h3-font-size: var(--type-ramp-plus3-font-size, 24px);
+    --osirion-h4-font-size: var(--type-ramp-plus2-font-size, 20px);
+    --osirion-h5-font-size: var(--type-ramp-plus1-font-size, 16px);
+    --osirion-h6-font-size: var(--type-ramp-base-font-size, 14px);
+    /* Line Heights */
+    --osirion-line-height-tight: var(--type-ramp-plus2-line-height, 24px);
+    --osirion-line-height-normal: var(--type-ramp-base-line-height, 20px);
+    --osirion-line-height-relaxed: var(--type-ramp-plus1-line-height, 22px);
+    /* Content Specific */
+    --osirion-content-title-font-weight: 600;
+    --osirion-content-description-font-weight: 400;
+    --osirion-content-meta-font-weight: 300;
+    --osirion-content-header-margin: 16px;
+    --osirion-content-paragraph-margin: 12px;
 }
 
 /* MudBlazor Integration */
@@ -162,6 +231,29 @@
     --osirion-scroll-margin: 16px;
     --osirion-scroll-z-index: var(--mud-zindex-fab, 1050);
     --osirion-scroll-transition: all 0.2s ease-in-out;
+    /* Enhanced Typography */
+    --osirion-font-family: var(--mud-typography-default-family, "Roboto", "Helvetica", "Arial", sans-serif);
+    --osirion-font-weight-normal: var(--mud-typography-default-weight, 400);
+    --osirion-font-weight-bold: var(--mud-typography-button-weight, 500);
+    --osirion-font-weight-light: var(--mud-typography-h6-weight, 300);
+    --osirion-font-weight-semibold: var(--mud-typography-subtitle1-weight, 400);
+    /* Heading Typography */
+    --osirion-h1-font-size: var(--mud-typography-h4-size, 2.125rem);
+    --osirion-h2-font-size: var(--mud-typography-h5-size, 1.5rem);
+    --osirion-h3-font-size: var(--mud-typography-h6-size, 1.25rem);
+    --osirion-h4-font-size: var(--mud-typography-subtitle1-size, 1rem);
+    --osirion-h5-font-size: var(--mud-typography-subtitle2-size, 0.875rem);
+    --osirion-h6-font-size: var(--mud-typography-body1-size, 1rem);
+    /* Line Heights */
+    --osirion-line-height-tight: var(--mud-typography-h4-lineheight, 1.17);
+    --osirion-line-height-normal: var(--mud-typography-body1-lineheight, 1.5);
+    --osirion-line-height-relaxed: var(--mud-typography-body2-lineheight, 1.75);
+    /* Content Specific */
+    --osirion-content-title-font-weight: var(--mud-typography-h6-weight, 500);
+    --osirion-content-description-font-weight: var(--mud-typography-body1-weight, 400);
+    --osirion-content-meta-font-weight: var(--mud-typography-body2-weight, 400);
+    --osirion-content-header-margin: 1.5rem;
+    --osirion-content-paragraph-margin: 1rem;
 }
 
 /* Radzen Integration */
@@ -203,6 +295,29 @@
     --osirion-scroll-margin: 20px;
     --osirion-scroll-z-index: 1000;
     --osirion-scroll-transition: all 0.2s ease;
+    /* Enhanced Typography */
+    --osirion-font-family: var(--rz-text-font-family, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif);
+    --osirion-font-weight-normal: var(--rz-text-font-weight, 400);
+    --osirion-font-weight-bold: var(--rz-text-font-weight-bold, 700);
+    --osirion-font-weight-light: var(--rz-text-font-weight-light, 300);
+    --osirion-font-weight-semibold: var(--rz-text-font-weight-semibold, 600);
+    /* Heading Typography */
+    --osirion-h1-font-size: var(--rz-h1-font-size, 2.5rem);
+    --osirion-h2-font-size: var(--rz-h2-font-size, 2rem);
+    --osirion-h3-font-size: var(--rz-h3-font-size, 1.75rem);
+    --osirion-h4-font-size: var(--rz-h4-font-size, 1.5rem);
+    --osirion-h5-font-size: var(--rz-h5-font-size, 1.25rem);
+    --osirion-h6-font-size: var(--rz-h6-font-size, 1rem);
+    /* Line Heights */
+    --osirion-line-height-tight: var(--rz-line-height-sm, 1.25);
+    --osirion-line-height-normal: var(--rz-line-height, 1.5);
+    --osirion-line-height-relaxed: var(--rz-line-height-lg, 1.75);
+    /* Content Specific */
+    --osirion-content-title-font-weight: var(--rz-text-font-weight-bold, 700);
+    --osirion-content-description-font-weight: var(--rz-text-font-weight, 400);
+    --osirion-content-meta-font-weight: var(--rz-text-font-weight-light, 300);
+    --osirion-content-header-margin: 1.5rem;
+    --osirion-content-paragraph-margin: 1rem;
 }
 
 /* Dark theme */

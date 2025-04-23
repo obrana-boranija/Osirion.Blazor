@@ -2,6 +2,11 @@
 @inherits OsirionComponentBase
 
 <div class="@GetTagCloudClass()">
+    @if (Title != null)
+    {
+        <h3 class="osirion-tag-cloud-title">@Title</h3>
+    }
+
     @if (IsLoading)
     {
         <div class="osirion-loading">@LoadingText</div>
@@ -17,7 +22,10 @@
             {
                 <a href="@GetTagUrl(tag)" class="osirion-tag-link" rel="nofollow">
                     @tag.Name
-                    <span class="osirion-tag-count">@tag.Count</span>
+                    @if (ShowCount)
+                    {
+                        <span class="osirion-tag-count">@tag.Count</span>
+                    }
                 </a>
             }
         </div>
@@ -29,6 +37,9 @@
     public int? MaxTags { get; set; }
 
     [Parameter]
+    public string? Title { get; set; }
+
+    [Parameter]
     public string LoadingText { get; set; } = "Loading tags...";
 
     [Parameter]
@@ -37,10 +48,21 @@
     [Parameter]
     public Func<ContentTag, string>? TagUrlFormatter { get; set; }
 
+    [Parameter]
+    public bool ShowCount { get; set; } = true;
+
+    [Parameter]
+    public bool SortByCount { get; set; } = true;
+
     private IReadOnlyList<ContentTag>? Tags { get; set; }
     private bool IsLoading { get; set; } = true;
 
     protected override async Task OnInitializedAsync()
+    {
+        await LoadTagsAsync();
+    }
+
+    protected override async Task OnParametersSetAsync()
     {
         await LoadTagsAsync();
     }
@@ -54,15 +76,27 @@
             if (provider != null)
             {
                 var allTags = await provider.GetTagsAsync();
+
+                // Apply sorting
+                if (SortByCount)
+                {
+                    allTags = allTags.OrderByDescending(t => t.Count).ToList();
+                }
+                else
+                {
+                    allTags = allTags.OrderBy(t => t.Name).ToList();
+                }
+
+                // Apply limit if specified
                 Tags = MaxTags.HasValue
-                    ? allTags.OrderByDescending(t => t.Count).Take(MaxTags.Value).ToList()
+                    ? allTags.Take(MaxTags.Value).ToList()
                     : allTags;
             }
         }
         catch (Exception ex)
         {
             Console.Error.WriteLine($"Error loading tags: {ex.Message}");
-            Tags = new List<ContentTag>();
+            Tags = Array.Empty<ContentTag>();
         }
         finally
         {

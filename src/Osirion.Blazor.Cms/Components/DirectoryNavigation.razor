@@ -1,6 +1,11 @@
 ﻿@inherits OsirionComponentBase
 
 <nav class="@GetDirectoryNavClass()">
+    @if (Title != null)
+    {
+        <h3 class="osirion-directory-title">@Title</h3>
+    }
+
     @if (IsLoading)
     {
         <div class="osirion-loading">@LoadingText</div>
@@ -17,13 +22,36 @@
                 <li class="osirion-directory-item">
                     <a href="@GetDirectoryUrl(directory)"
                        class="@GetLinkClass(directory)"
-                       rel="nofollow">
+                       @onclick="() => OnDirectoryClick(directory)"
+                       @onclick:preventDefault="DirectoryClicked.HasDelegate">
                         @directory.Name
                         @if (ShowItemCount)
                         {
                             <span class="osirion-directory-count">@directory.ItemCount</span>
                         }
                     </a>
+
+                    @if (ShowSubdirectories && directory.Subdirectories != null && directory.Subdirectories.Any()
+                   && (ExpandedDirectory == directory.Path || ExpandAllSubdirectories))
+                    {
+                        <ul class="osirion-subdirectory-list">
+                            @foreach (var subdirectory in directory.Subdirectories)
+                            {
+                                <li class="osirion-directory-item">
+                                    <a href="@GetDirectoryUrl(subdirectory)"
+                                       class="@GetLinkClass(subdirectory)"
+                                       @onclick="() => OnDirectoryClick(subdirectory)"
+                                       @onclick:preventDefault="DirectoryClicked.HasDelegate">
+                                        @subdirectory.Name
+                                        @if (ShowItemCount)
+                                        {
+                                            <span class="osirion-directory-count">@subdirectory.ItemCount</span>
+                                        }
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    }
                 </li>
             }
         </ul>
@@ -38,10 +66,19 @@
     public string? CurrentDirectory { get; set; }
 
     [Parameter]
+    public string? ExpandedDirectory { get; set; }
+
+    [Parameter]
+    public bool ExpandAllSubdirectories { get; set; } = false;
+
+    [Parameter]
     public bool IsLoading { get; set; }
 
     [Parameter]
     public bool ShowItemCount { get; set; } = true;
+
+    [Parameter]
+    public bool ShowSubdirectories { get; set; } = true;
 
     [Parameter]
     public string LoadingText { get; set; } = "Loading navigation...";
@@ -51,6 +88,12 @@
 
     [Parameter]
     public Func<DirectoryInfo, string>? DirectoryUrlFormatter { get; set; }
+
+    [Parameter]
+    public string? Title { get; set; }
+
+    [Parameter]
+    public EventCallback<DirectoryInfo> DirectoryClicked { get; set; }
 
     private string GetDirectoryNavClass()
     {
@@ -68,10 +111,19 @@
         return $"osirion-directory-link {(isActive ? "osirion-active" : "")}".Trim();
     }
 
+    private async Task OnDirectoryClick(DirectoryInfo directory)
+    {
+        if (DirectoryClicked.HasDelegate)
+        {
+            await DirectoryClicked.InvokeAsync(directory);
+        }
+    }
+
     public class DirectoryInfo
     {
         public string Path { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
         public int ItemCount { get; set; }
+        public IReadOnlyList<DirectoryInfo>? Subdirectories { get; set; }
     }
 }

@@ -1,4 +1,3 @@
-using Osirion.Blazor.Example.Client.Pages;
 using Osirion.Blazor.Example.Components;
 using Osirion.Blazor.Extensions;
 using Osirion.Blazor.Theming;

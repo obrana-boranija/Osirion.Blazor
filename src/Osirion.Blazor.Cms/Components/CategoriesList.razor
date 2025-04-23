@@ -2,6 +2,11 @@
 @inherits OsirionComponentBase
 
 <div class="@GetCategoriesListClass()">
+    @if (Title != null)
+    {
+        <h3 class="osirion-categories-title">@Title</h3>
+    }
+
     @if (IsLoading)
     {
         <div class="osirion-loading">@LoadingText</div>
@@ -18,7 +23,10 @@
                 <li class="osirion-category-item">
                     <a href="@GetCategoryUrl(category)" class="osirion-category-link" rel="nofollow">
                         @category.Name
-                        <span class="osirion-category-count">@category.Count</span>
+                        @if (ShowCount)
+                        {
+                            <span class="osirion-category-count">@category.Count</span>
+                        }
                     </a>
                 </li>
             }
@@ -28,6 +36,9 @@
 
 @code {
     [Parameter]
+    public string? Title { get; set; }
+
+    [Parameter]
     public string LoadingText { get; set; } = "Loading categories...";
 
     [Parameter]
@@ -36,10 +47,27 @@
     [Parameter]
     public Func<ContentCategory, string>? CategoryUrlFormatter { get; set; }
 
+    [Parameter]
+    public bool ShowCount { get; set; } = true;
+
+    [Parameter]
+    public bool SortByCount { get; set; } = true;
+
+    [Parameter]
+    public int? MaxCategories { get; set; }
+
+    [Parameter]
+    public string? ActiveCategory { get; set; }
+
     private IReadOnlyList<ContentCategory>? Categories { get; set; }
     private bool IsLoading { get; set; } = true;
 
     protected override async Task OnInitializedAsync()
+    {
+        await LoadCategoriesAsync();
+    }
+
+    protected override async Task OnParametersSetAsync()
     {
         await LoadCategoriesAsync();
     }
@@ -52,13 +80,28 @@
             var provider = ContentProviderManager.GetDefaultProvider();
             if (provider != null)
             {
-                Categories = await provider.GetCategoriesAsync();
+                var allCategories = await provider.GetCategoriesAsync();
+
+                // Apply sorting
+                if (SortByCount)
+                {
+                    allCategories = allCategories.OrderByDescending(c => c.Count).ToList();
+                }
+                else
+                {
+                    allCategories = allCategories.OrderBy(c => c.Name).ToList();
+                }
+
+                // Apply limit if specified
+                Categories = MaxCategories.HasValue
+                    ? allCategories.Take(MaxCategories.Value).ToList()
+                    : allCategories;
             }
         }
         catch (Exception ex)
         {
             Console.Error.WriteLine($"Error loading categories: {ex.Message}");
-            Categories = new List<ContentCategory>();
+            Categories = Array.Empty<ContentCategory>();
         }
         finally
         {
@@ -74,5 +117,14 @@
     private string GetCategoryUrl(ContentCategory category)
     {
         return CategoryUrlFormatter?.Invoke(category) ?? $"/category/{category.Slug}";
+    }
+
+    private string GetCategoryLinkClass(ContentCategory category)
+    {
+        var isActive = !string.IsNullOrEmpty(ActiveCategory) &&
+                      (category.Slug.Equals(ActiveCategory, StringComparison.OrdinalIgnoreCase) ||
+                       category.Name.Equals(ActiveCategory, StringComparison.OrdinalIgnoreCase));
+
+        return $"osirion-category-link {(isActive ? "osirion-active" : "")}".Trim();
     }
 }
