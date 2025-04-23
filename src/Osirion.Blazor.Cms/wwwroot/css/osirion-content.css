@@ -1,46 +1,54 @@
-﻿/* Osirion.Blazor Content - Core Variables */
+﻿/* For src/Osirion.Blazor.Cms/wwwroot/css/osirion-content.css */
+
+/* Base variables (these will be overridden by framework-specific ones when a framework is active) */
 :root {
-    /* General */
-    --osirion-content-gap: 1.5rem;
-    --osirion-content-small-gap: 0.5rem;
-    --osirion-content-padding: 1.5rem;
-    --osirion-content-small-padding: 0.5rem;
-    --osirion-content-border-radius: 0.5rem;
-    --osirion-content-small-border-radius: 0.375rem;
-    --osirion-content-transition-speed: 0.2s;
     /* Colors */
-    --osirion-content-text-color: #374151;
-    --osirion-content-light-text-color: #6b7280;
-    --osirion-content-border-color: #e5e7eb;
-    --osirion-content-background-color: #ffffff;
-    --osirion-content-light-background-color: #f3f4f6;
-    --osirion-content-active-background: #e0f2fe;
-    --osirion-content-active-text: #0369a1;
-    /* Typography */
-    --osirion-content-font-size: 1rem;
-    --osirion-content-small-font-size: 0.875rem;
-    --osirion-content-tiny-font-size: 0.75rem;
-    --osirion-content-title-font-size: 1.25rem;
-    --osirion-content-large-title-font-size: 2.5rem;
-    --osirion-content-line-height: 1.7;
+    --osirion-content-text-color: var(--osirion-text-color, #374151);
+    --osirion-content-light-text-color: var(--osirion-light-text-color, #6b7280);
+    --osirion-content-border-color: var(--osirion-border-color, #e5e7eb);
+    --osirion-content-background-color: var(--osirion-background-color, #ffffff);
+    --osirion-content-light-background-color: var(--osirion-light-background-color, #f3f4f6);
+    --osirion-content-active-background: var(--osirion-active-background-color, #e0f2fe);
+    --osirion-content-active-text: var(--osirion-active-text-color, #0369a1);
     /* Layout */
-    --osirion-content-card-min-width: 300px;
-    --osirion-content-image-height: 200px;
-    --osirion-content-box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    --osirion-content-max-width: 800px;
+    --osirion-content-gap: var(--osirion-gap, 1.5rem);
+    --osirion-content-small-gap: var(--osirion-small-gap, 0.5rem);
+    --osirion-content-padding: var(--osirion-padding, 1.5rem);
+    --osirion-content-small-padding: var(--osirion-small-padding, 0.5rem);
+    --osirion-content-border-radius: var(--osirion-border-radius, 0.5rem);
+    --osirion-content-small-border-radius: var(--osirion-small-border-radius, 0.375rem);
+    --osirion-content-transition-speed: var(--osirion-transition-speed, 0.2s);
+    --osirion-content-box-shadow: var(--osirion-box-shadow, 0 4px 12px rgba(0, 0, 0, 0.1));
+    --osirion-content-max-width: var(--osirion-content-width, 800px);
+    --osirion-content-card-min-width: var(--osirion-card-min-width, 300px);
+    --osirion-content-image-height: var(--osirion-image-height, 200px);
+    /* Typography */
+    --osirion-content-font-family: var(--osirion-font-family, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif);
+    --osirion-content-font-size: var(--osirion-font-size, 1rem);
+    --osirion-content-small-font-size: var(--osirion-small-font-size, 0.875rem);
+    --osirion-content-tiny-font-size: var(--osirion-tiny-font-size, 0.75rem);
+    --osirion-content-title-font-size: var(--osirion-h5-font-size, 1.25rem);
+    --osirion-content-large-title-font-size: var(--osirion-h1-font-size, 2.5rem);
+    --osirion-content-line-height: var(--osirion-line-height-normal, 1.5);
+    --osirion-content-title-font-weight: var(--osirion-content-title-font-weight, 700);
+    --osirion-content-description-font-weight: var(--osirion-content-description-font-weight, 400);
+    --osirion-content-meta-font-weight: var(--osirion-content-meta-font-weight, 300);
 }
 
 /* ContentList component */
 .osirion-content-list {
     padding: 2rem 0;
+    font-family: var(--osirion-content-font-family);
 }
 
-    .osirion-content-list .osirion-loading,
-    .osirion-content-list .osirion-no-content {
-        text-align: center;
-        padding: var(--osirion-content-padding);
-        color: var(--osirion-content-light-text-color);
-    }
+.osirion-loading,
+.osirion-no-content {
+    text-align: center;
+    padding: var(--osirion-content-padding);
+    color: var(--osirion-content-light-text-color);
+    font-family: var(--osirion-content-font-family);
+    font-size: var(--osirion-content-font-size);
+}
 
 .osirion-content-grid {
     display: grid;
@@ -68,12 +76,16 @@
 
 .osirion-content-body {
     padding: var(--osirion-content-padding);
+    line-height: var(--osirion-content-line-height);
+    color: var(--osirion-content-text-color);
 }
 
 .osirion-content-title {
     margin: 0 0 0.5rem;
     font-size: var(--osirion-content-title-font-size);
+    font-weight: var(--osirion-content-title-font-weight);
     color: var(--osirion-content-text-color);
+    line-height: var(--osirion-line-height-tight, 1.25);
 }
 
 .osirion-content-meta {
@@ -81,6 +93,7 @@
     flex-wrap: wrap;
     gap: var(--osirion-content-small-gap);
     font-size: var(--osirion-content-small-font-size);
+    font-weight: var(--osirion-content-meta-font-weight);
     color: var(--osirion-content-light-text-color);
     margin-bottom: 1rem;
 }
@@ -88,6 +101,8 @@
 .osirion-content-description {
     margin: 0 0 1rem;
     color: var(--osirion-content-text-color);
+    font-weight: var(--osirion-content-description-font-weight);
+    line-height: var(--osirion-content-line-height);
 }
 
 .osirion-content-tags {
@@ -98,10 +113,10 @@
 }
 
 .osirion-content-tag {
-    background-color: var(--osirion-content-light-background-color);
-    color: var(--osirion-content-text-color);
+    background-color: var(--osirion-tag-background-color, #f3f4f6);
+    color: var(--osirion-tag-text-color, #4b5563);
     padding: 0.25rem 0.75rem;
-    border-radius: 999px;
+    border-radius: var(--osirion-tag-border-radius, 999px);
     font-size: var(--osirion-content-tiny-font-size);
     text-decoration: none;
 }
@@ -109,7 +124,7 @@
 .osirion-content-read-more {
     color: var(--osirion-content-active-text);
     text-decoration: none;
-    font-weight: 500;
+    font-weight: var(--osirion-font-weight-semibold, 600);
 }
 
     .osirion-content-read-more:hover {
@@ -119,6 +134,15 @@
 /* ContentView component */
 .osirion-content-view {
     padding: var(--osirion-content-padding);
+    font-family: var(--osirion-content-font-family);
+}
+
+.osirion-not-found {
+    text-align: center;
+    padding: var(--osirion-content-padding);
+    color: var(--osirion-content-light-text-color);
+    font-family: var(--osirion-content-font-family);
+    font-size: var(--osirion-content-font-size);
 }
 
 .osirion-content-article {
@@ -128,14 +152,56 @@
 
     .osirion-content-article h1 {
         font-size: var(--osirion-content-large-title-font-size);
-        margin-bottom: 1rem;
+        margin-bottom: var(--osirion-content-header-margin, 1.5rem);
         color: var(--osirion-content-text-color);
+        font-weight: var(--osirion-content-title-font-weight);
+        line-height: var(--osirion-line-height-tight, 1.25);
     }
 
-.osirion-content-body {
-    line-height: var(--osirion-content-line-height);
-    color: var(--osirion-content-text-color);
-}
+    .osirion-content-article h2 {
+        font-size: var(--osirion-h2-font-size, 2rem);
+        margin-top: var(--osirion-content-header-margin, 1.5rem);
+        margin-bottom: var(--osirion-content-paragraph-margin, 1rem);
+        color: var(--osirion-content-text-color);
+        font-weight: var(--osirion-content-title-font-weight);
+    }
+
+    .osirion-content-article h3 {
+        font-size: var(--osirion-h3-font-size, 1.75rem);
+        margin-top: var(--osirion-content-header-margin, 1.5rem);
+        margin-bottom: var(--osirion-content-paragraph-margin, 1rem);
+        color: var(--osirion-content-text-color);
+        font-weight: var(--osirion-content-title-font-weight);
+    }
+
+    .osirion-content-article h4 {
+        font-size: var(--osirion-h4-font-size, 1.5rem);
+        margin-top: var(--osirion-content-header-margin, 1.5rem);
+        margin-bottom: var(--osirion-content-paragraph-margin, 1rem);
+        color: var(--osirion-content-text-color);
+        font-weight: var(--osirion-content-title-font-weight);
+    }
+
+    .osirion-content-article h5 {
+        font-size: var(--osirion-h5-font-size, 1.25rem);
+        margin-top: var(--osirion-content-header-margin, 1.5rem);
+        margin-bottom: var(--osirion-content-paragraph-margin, 1rem);
+        color: var(--osirion-content-text-color);
+        font-weight: var(--osirion-content-title-font-weight);
+    }
+
+    .osirion-content-article h6 {
+        font-size: var(--osirion-h6-font-size, 1rem);
+        margin-top: var(--osirion-content-header-margin, 1.5rem);
+        margin-bottom: var(--osirion-content-paragraph-margin, 1rem);
+        color: var(--osirion-content-text-color);
+        font-weight: var(--osirion-content-title-font-weight);
+    }
+
+    .osirion-content-article p {
+        margin-bottom: var(--osirion-content-paragraph-margin, 1rem);
+        line-height: var(--osirion-content-line-height);
+    }
 
 .osirion-content-footer {
     margin-top: 3rem;
@@ -155,13 +221,18 @@
 .osirion-content-tag {
     text-decoration: none;
     padding: 0.25rem 0.75rem;
-    border-radius: 999px;
+    border-radius: var(--osirion-tag-border-radius, 999px);
     font-size: var(--osirion-content-small-font-size);
 }
 
 .osirion-content-category {
-    background-color: var(--osirion-content-active-background);
-    color: var(--osirion-content-active-text);
+    background-color: var(--osirion-category-background-color, #e0f2fe);
+    color: var(--osirion-category-text-color, #0369a1);
+}
+
+.osirion-content-tag {
+    background-color: var(--osirion-tag-background-color, #f3f4f6);
+    color: var(--osirion-tag-text-color, #4b5563);
 }
 
     .osirion-content-category:hover,
@@ -172,6 +243,7 @@
 /* Categories List component */
 .osirion-categories-list-container {
     padding: var(--osirion-content-small-padding);
+    font-family: var(--osirion-content-font-family);
 }
 
 .osirion-categories-list {
@@ -193,6 +265,7 @@
     color: var(--osirion-content-text-color);
     border-radius: var(--osirion-content-small-border-radius);
     transition: background-color var(--osirion-content-transition-speed);
+    font-size: var(--osirion-content-font-size);
 }
 
     .osirion-category-link:hover {
@@ -210,6 +283,7 @@
 /* TagCloud component */
 .osirion-tag-cloud {
     padding: var(--osirion-content-small-padding);
+    font-family: var(--osirion-content-font-family);
 }
 
 .osirion-tags-container {
@@ -223,10 +297,10 @@
     align-items: center;
     gap: 0.25rem;
     padding: 0.375rem 0.75rem;
-    background-color: var(--osirion-content-light-background-color);
-    color: var(--osirion-content-text-color);
+    background-color: var(--osirion-tag-background-color, #f3f4f6);
+    color: var(--osirion-tag-text-color, #4b5563);
     text-decoration: none;
-    border-radius: 999px;
+    border-radius: var(--osirion-tag-border-radius, 999px);
     font-size: var(--osirion-content-small-font-size);
     transition: background-color var(--osirion-content-transition-speed);
 }
@@ -244,6 +318,7 @@
 .osirion-search-box {
     display: flex;
     gap: var(--osirion-content-small-gap);
+    font-family: var(--osirion-content-font-family);
 }
 
 .osirion-search-input {
@@ -254,6 +329,7 @@
     font-size: var(--osirion-content-font-size);
     outline: none;
     color: var(--osirion-content-text-color);
+    font-family: var(--osirion-content-font-family);
 }
 
     .osirion-search-input:focus {
@@ -270,6 +346,7 @@
     font-size: var(--osirion-content-font-size);
     cursor: pointer;
     transition: background-color var(--osirion-content-transition-speed);
+    font-family: var(--osirion-content-font-family);
 }
 
     .osirion-search-button:hover {
@@ -279,6 +356,7 @@
 /* DirectoryNavigation component */
 .osirion-directory-navigation {
     padding: var(--osirion-content-small-padding);
+    font-family: var(--osirion-content-font-family);
 }
 
 .osirion-directory-list {
@@ -300,6 +378,7 @@
     color: var(--osirion-content-text-color);
     border-radius: var(--osirion-content-small-border-radius);
     transition: background-color var(--osirion-content-transition-speed);
+    font-size: var(--osirion-content-font-size);
 }
 
     .osirion-directory-link:hover {

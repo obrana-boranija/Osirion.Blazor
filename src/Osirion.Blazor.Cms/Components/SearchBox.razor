@@ -1,13 +1,19 @@
 ﻿@inherits OsirionComponentBase
 
-<form class="@GetSearchBoxClass()" method="get" action="@ActionUrl">
-    <input name="@QueryParameterName"
-           value="@SearchQuery"
-           type="text"
-           placeholder="@Placeholder"
-           class="osirion-search-input" />
-    <button type="submit" class="osirion-search-button">@SearchButtonText</button>
-</form>
+<div class="@GetWrapperClass()">
+    @if (Title != null)
+    {
+        <h2 class="osirion-search-title">@Title</h2>
+    }
+    <form class="@GetSearchBoxClass()" method="get" action="@ActionUrl">
+        <input name="@QueryParameterName"
+               value="@SearchQuery"
+               type="text"
+               placeholder="@Placeholder"
+               class="osirion-search-input" />
+        <button type="submit" class="osirion-search-button">@SearchButtonText</button>
+    </form>
+</div>
 
 @code {
     [Parameter]
@@ -25,8 +31,16 @@
     [Parameter]
     public string SearchButtonText { get; set; } = "Search";
 
+    [Parameter]
+    public string? Title { get; set; }
+
+    private string GetWrapperClass()
+    {
+        return $"osirion-search-container {CssClass}".Trim();
+    }
+
     private string GetSearchBoxClass()
     {
-        return $"osirion-search-box {CssClass}".Trim();
+        return "osirion-search-box";
     }
 }

@@ -2,7 +2,11 @@
 @inherits OsirionComponentBase
 
 <div class="@GetContentViewClass()">
-    @if (Item is null)
+    @if (IsLoading)
+    {
+        <div class="osirion-loading">@LoadingText</div>
+    }
+    else if (Item is null)
     {
         <div class="osirion-not-found">@NotFoundText</div>
     }
@@ -12,13 +16,16 @@
             <header class="osirion-content-header">
                 <h1>@Item.Title</h1>
                 <div class="osirion-content-meta">
-                    <span class="osirion-content-author">By @Item.Author</span>
+                    @if (!string.IsNullOrEmpty(Item.Author))
+                    {
+                        <span class="osirion-content-author">By @Item.Author</span>
+                    }
                     <span class="osirion-content-date">@Item.Date.ToString("MMMM d, yyyy")</span>
                     <span class="osirion-content-read-time">@Item.ReadTimeMinutes min read</span>
                 </div>
                 @if (!string.IsNullOrEmpty(Item.FeaturedImageUrl))
                 {
-                    <img src="@Item.FeaturedImageUrl" alt="@Item.Title" class="osirion-content-featured-image" />
+                    <img src="@Item.FeaturedImageUrl" alt="@Item.Title" class="osirion-content-featured-image" loading="lazy" />
                 }
             </header>
 
@@ -30,6 +37,7 @@
                 @if (Item.Categories.Any())
                 {
                     <div class="osirion-content-categories">
+                        <strong class="osirion-content-section-title">Categories: </strong>
                         @foreach (var category in Item.Categories)
                         {
                             <a href="@GetCategoryUrl(category)" class="osirion-content-category">@category</a>
@@ -39,9 +47,30 @@
                 @if (Item.Tags.Any())
                 {
                     <div class="osirion-content-tags">
+                        <strong class="osirion-content-section-title">Tags: </strong>
                         @foreach (var tag in Item.Tags)
                         {
                             <a href="@GetTagUrl(tag)" class="osirion-content-tag">@tag</a>
+                        }
+                    </div>
+                }
+
+                @if (ShowNavigationLinks && (PreviousItem != null || NextItem != null))
+                {
+                    <div class="osirion-content-navigation">
+                        @if (PreviousItem != null)
+                        {
+                            <a href="@GetContentUrl(PreviousItem)" class="osirion-content-previous">
+                                <span class="osirion-content-navigation-label">Previous</span>
+                                <span class="osirion-content-navigation-title">@PreviousItem.Title</span>
+                            </a>
+                        }
+                        @if (NextItem != null)
+                        {
+                            <a href="@GetContentUrl(NextItem)" class="osirion-content-next">
+                                <span class="osirion-content-navigation-label">Next</span>
+                                <span class="osirion-content-navigation-title">@NextItem.Title</span>
+                            </a>
                         }
                     </div>
                 }
@@ -67,15 +96,31 @@
     public Func<string, string>? TagUrlFormatter { get; set; }
 
     [Parameter]
+    public Func<ContentItem, string>? ContentUrlFormatter { get; set; }
+
+    [Parameter]
     public ContentItem? Item { get; set; }
+
+    [Parameter]
+    public ContentItem? PreviousItem { get; set; }
+
+    [Parameter]
+    public ContentItem? NextItem { get; set; }
+
+    [Parameter]
+    public bool ShowNavigationLinks { get; set; } = false;
 
     private bool IsLoading { get; set; } = true;
 
     protected override async Task OnParametersSetAsync()
     {
-        if(Item is null)
+        if (Item is null && !string.IsNullOrEmpty(Path))
         {
             await LoadContentAsync();
+        }
+        else
+        {
+            IsLoading = false;
         }
     }
 
@@ -85,9 +130,41 @@
         try
         {
             var provider = ContentProviderManager.GetDefaultProvider();
-            if (provider != null && !string.IsNullOrEmpty(Path))
+            if (provider != null)
             {
                 Item = await provider.GetItemByPathAsync(Path);
+
+                if (Item != null && ShowNavigationLinks)
+                {
+                    // If we need previous and next items, load them
+                    var allItems = await provider.GetItemsByQueryAsync(new ContentQuery
+                        {
+                            Directory = System.IO.Path.GetDirectoryName(Path)?.Replace('\\', '/'),
+                            SortBy = SortField.Date,
+                            SortDirection = SortDirection.Descending
+                        });
+
+                    // Find the index manually
+                    int currentIndex = -1;
+                    for (int i = 0; i < allItems.Count; i++)
+                    {
+                        if (allItems[i].Path == Item.Path)
+                        {
+                            currentIndex = i;
+                            break;
+                        }
+                    }
+
+                    if (currentIndex > 0)
+                    {
+                        PreviousItem = allItems[currentIndex - 1];
+                    }
+
+                    if (currentIndex >= 0 && currentIndex < allItems.Count - 1)
+                    {
+                        NextItem = allItems[currentIndex + 1];
+                    }
+                }
             }
         }
         catch (Exception ex)
@@ -114,5 +191,10 @@
     private string GetTagUrl(string tag)
     {
         return TagUrlFormatter?.Invoke(tag) ?? $"/tag/{tag.ToLower().Replace(' ', '-')}";
+    }
+
+    private string GetContentUrl(ContentItem item)
+    {
+        return ContentUrlFormatter?.Invoke(item) ?? $"/{item.Path}";
     }
 }
