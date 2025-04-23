@@ -3,13 +3,13 @@
 namespace Osirion.Blazor.Cms.Admin.Models;
 
 /// <summary>
-/// Represents a commit reference in a GitHub branch
+/// Information about a commit
 /// </summary>
-public class GitHubCommitRef
+public class GitHubCommitInfo
 {
     [JsonPropertyName("sha")]
     public string Sha { get; set; } = string.Empty;
 
-    [JsonPropertyName("url")]
-    public string Url { get; set; } = string.Empty;
+    [JsonPropertyName("html_url")]
+    public string HtmlUrl { get; set; } = string.Empty;
 }

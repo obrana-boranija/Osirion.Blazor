@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+namespace Osirion.Blazor.Cms.Admin.Models;
 
 /// <summary>
 /// Represents a branch in a GitHub repository

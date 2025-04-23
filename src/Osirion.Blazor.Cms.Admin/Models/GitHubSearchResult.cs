@@ -1,5 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 
+namespace Osirion.Blazor.Cms.Admin.Models;
+
 /// <summary>
 /// Response model for GitHub file search operations
 /// </summary>

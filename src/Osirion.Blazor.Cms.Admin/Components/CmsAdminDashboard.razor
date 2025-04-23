@@ -1,0 +1,220 @@
+﻿@using Osirion.Blazor.Cms.Admin.Components.Browser
+@using Osirion.Blazor.Cms.Admin.Components.Editor
+@using Osirion.Blazor.Cms.Admin.Components.Repository
+@using Osirion.Blazor.Cms.Admin.Models
+@using Osirion.Blazor.Cms.Admin.Services
+@using Osirion.Blazor.Cms.Models
+@inherits Osirion.Blazor.Components.OsirionComponentBase
+@inject CmsAdminState AdminState
+@inject IGitHubAdminService GitHubService
+
+<div class="@GetAdminDashboardClass()">
+    <div class="osirion-admin-sidebar">
+        <div class="osirion-admin-logo">
+            <h1 class="osirion-admin-brand">Osirion CMS</h1>
+        </div>
+        
+        <div class="osirion-admin-navigation">
+            <div class="osirion-admin-nav-section">
+                <h2 class="osirion-admin-nav-title">Repository</h2>
+                <RepositorySelector OnRepositoryChange="HandleRepositoryChange" />
+                <BranchSelector OnBranchChange="HandleBranchChange" />
+            </div>
+            
+            <div class="osirion-admin-nav-section">
+                <h2 class="osirion-admin-nav-title">Content</h2>
+                <FileExplorer OnFileSelected="HandleFileSelected" 
+                             OnCreateFile="HandleCreateFile" />
+            </div>
+        </div>
+    </div>
+    
+    <div class="osirion-admin-main">
+        <div class="osirion-admin-header">
+            <div class="osirion-admin-breadcrumb">
+                <span class="osirion-admin-breadcrumb-item">Dashboard</span>
+                @if (AdminState.SelectedRepository != null)
+                {
+                    <span class="osirion-admin-breadcrumb-separator">/</span>
+                    <span class="osirion-admin-breadcrumb-item">@AdminState.SelectedRepository.Name</span>
+                    
+                    @if (AdminState.SelectedBranch != null)
+                    {
+                        <span class="osirion-admin-breadcrumb-separator">/</span>
+                        <span class="osirion-admin-breadcrumb-item">@AdminState.SelectedBranch.Name</span>
+                        
+                        @if (!string.IsNullOrEmpty(AdminState.CurrentPath))
+                        {
+                            <span class="osirion-admin-breadcrumb-separator">/</span>
+                            <span class="osirion-admin-breadcrumb-item">@AdminState.CurrentPath</span>
+                        }
+                    }
+                }
+            </div>
+            
+            <div class="osirion-admin-actions">
+                @if (IsViewingContent)
+                {
+                    <button type="button" 
+                            class="osirion-admin-button osirion-admin-button-primary" 
+                            @onclick="HandleCreateFile">
+                        <span class="osirion-admin-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                <polyline points="14 2 14 8 20 8" />
+                                <line x1="12" y1="18" x2="12" y2="12" />
+                                <line x1="9" y1="15" x2="15" y2="15" />
+                            </svg>
+                        </span>
+                        New File
+                    </button>
+                }
+            </div>
+        </div>
+        
+        <div class="osirion-admin-content">
+            @if (AdminState.StatusMessage != null)
+            {
+                <div class="osirion-admin-alert osirion-admin-alert-success">
+                    <span class="osirion-admin-alert-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                            <polyline points="22 4 12 14.01 9 11.01" />
+                        </svg>
+                    </span>
+                    <span>@AdminState.StatusMessage</span>
+                    <button type="button" 
+                            class="osirion-admin-alert-close" 
+                            @onclick="ClearMessages"
+                            aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            }
+            
+            @if (AdminState.ErrorMessage != null)
+            {
+                <div class="osirion-admin-alert osirion-admin-alert-error">
+                    <span class="osirion-admin-alert-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="12" y1="8" x2="12" y2="12" />
+                            <line x1="12" y1="16" x2="12.01" y2="16" />
+                        </svg>
+                    </span>
+                    <span>@AdminState.ErrorMessage</span>
+                    <button type="button" 
+                            class="osirion-admin-alert-close" 
+                            @onclick="ClearMessages"
+                            aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            }
+            
+            @if (IsEditing)
+            {
+                <ContentEditor OnSaveComplete="HandleSaveComplete" 
+                              OnDiscard="HandleDiscardChanges" />
+            }
+            else
+            {
+                @ChildContent
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+    
+    [Parameter]
+    public string Theme { get; set; } = "light";
+    
+    private bool IsEditing => AdminState.IsEditing;
+    private bool IsViewingContent => AdminState.SelectedRepository != null && AdminState.SelectedBranch != null;
+    
+    protected override void OnInitialized()
+    {
+        AdminState.StateChanged += StateHasChanged;
+    }
+    
+    public void Dispose()
+    {
+        AdminState.StateChanged -= StateHasChanged;
+    }
+    
+    private async Task HandleRepositoryChange(GitHubRepository repository)
+    {
+        // Nothing additional to do here, AdminState already updated
+    }
+    
+    private async Task HandleBranchChange(GitHubBranch branch)
+    {
+        // Nothing additional to do here, AdminState already updated
+    }
+    
+    private void HandleFileSelected(GitHubItem item)
+    {
+        // File already selected in AdminState
+    }
+    
+    private void HandleCreateFile()
+    {
+        // Create new blog post with empty content
+        var newPost = new BlogPost
+        {
+            Metadata = new FrontMatter
+            {
+                Title = "New Post",
+                Description = "Enter description here",
+                Author = string.Empty,
+                Date = DateTime.Now.ToString("yyyy-MM-dd"),
+                Categories = new List<string>(),
+                Tags = new List<string>()
+            },
+            Content = "## New Post\n\nStart writing your content here...",
+            FilePath = string.IsNullOrEmpty(AdminState.CurrentPath) ? 
+                "new-post.md" : 
+                $"{AdminState.CurrentPath}/new-post.md"
+        };
+        
+        AdminState.SetEditingPost(newPost, true);
+    }
+    
+    private async Task HandleSaveComplete(BlogPost post)
+    {
+        // Reload the directory contents
+        if (AdminState.SelectedRepository != null && AdminState.SelectedBranch != null)
+        {
+            try
+            {
+                var contents = await GitHubService.GetRepositoryContentsAsync(AdminState.CurrentPath);
+                AdminState.SetCurrentPath(AdminState.CurrentPath, contents);
+            }
+            catch (Exception ex)
+            {
+                AdminState.SetErrorMessage($"Failed to refresh directory: {ex.Message}");
+            }
+        }
+        
+        // Clear editing state
+        AdminState.ClearEditing();
+    }
+    
+    private void HandleDiscardChanges()
+    {
+        AdminState.ClearEditing();
+    }
+    
+    private void ClearMessages()
+    {
+        AdminState.ClearMessages();
+    }
+    
+    private string GetAdminDashboardClass()
+    {
+        return $"osirion-admin-dashboard osirion-admin-theme-{Theme} {CssClass}".Trim();
+    }
+}

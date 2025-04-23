@@ -49,8 +49,4 @@
 	  <ProjectReference Include="..\Osirion.Blazor.Cms\Osirion.Blazor.Cms.csproj" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="wwwroot\" />
-	</ItemGroup>
-
 </Project>

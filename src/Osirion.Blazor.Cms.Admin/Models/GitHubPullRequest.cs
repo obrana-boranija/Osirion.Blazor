@@ -1,5 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 
+namespace Osirion.Blazor.Cms.Admin.Models;
+
 /// <summary>
 /// Represents a GitHub pull request
 /// </summary>
