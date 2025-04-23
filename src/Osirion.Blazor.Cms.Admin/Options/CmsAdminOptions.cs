@@ -59,4 +59,9 @@ public class CmsAdminOptions
     /// Gets or sets the allowed file extensions (empty means all extensions are allowed)
     /// </summary>
     public List<string> AllowedFileExtensions { get; set; } = new() { ".md", ".markdown" };
+
+    /// <summary>
+    /// Gets or sets the GitHub API token (optional, for private repos or higher rate limits)
+    /// </summary>
+    public string? ApiToken { get; set; }
 }

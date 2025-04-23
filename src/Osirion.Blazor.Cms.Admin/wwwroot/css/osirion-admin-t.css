@@ -1,0 +1,256 @@
+﻿/* Base Theme Variables */
+:root {
+    --osirion-primary-color: #0366d6;
+    --osirion-secondary-color: #586069;
+    --osirion-success-color: #28a745;
+    --osirion-error-color: #cb2431;
+    --osirion-text-color: #24292e;
+    --osirion-border-color: #e1e4e8;
+    --osirion-bg-color: #ffffff;
+    --osirion-sidebar-width: 280px;
+}
+
+/* Dark Theme Variables */
+.osirion-admin-theme-dark {
+    --osirion-primary-color: #58a6ff;
+    --osirion-secondary-color: #8b949e;
+    --osirion-text-color: #c9d1d9;
+    --osirion-border-color: #30363d;
+    --osirion-bg-color: #0d1117;
+}
+
+/* Layout Styles */
+.osirion-admin-dashboard {
+    display: flex;
+    min-height: 100vh;
+    background-color: var(--osirion-bg-color);
+    color: var(--osirion-text-color);
+}
+
+.osirion-admin-sidebar {
+    width: var(--osirion-sidebar-width);
+    background-color: var(--osirion-bg-color);
+    border-right: 1px solid var(--osirion-border-color);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.osirion-admin-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header Styles */
+.osirion-admin-header {
+    padding: 1rem;
+    border-bottom: 1px solid var(--osirion-border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Logo and Branding */
+.osirion-admin-logo {
+    padding: 1rem 0;
+    margin-bottom: 2rem;
+}
+
+.osirion-admin-brand {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.osirion-admin-subtitle {
+    color: var(--osirion-secondary-color);
+    margin: 0.5rem 0 0;
+}
+
+/* Navigation Styles */
+.osirion-admin-navigation {
+    flex: 1;
+}
+
+.osirion-admin-nav-section {
+    margin-bottom: 2rem;
+}
+
+.osirion-admin-nav-title {
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    color: var(--osirion-secondary-color);
+    margin-bottom: 0.5rem;
+}
+
+.osirion-admin-nav-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.osirion-admin-nav-item {
+    margin-bottom: 0.25rem;
+}
+
+.osirion-admin-nav-link {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem;
+    color: var(--osirion-text-color);
+    text-decoration: none;
+    border-radius: 4px;
+}
+
+    .osirion-admin-nav-link:hover {
+        background-color: var(--osirion-border-color);
+    }
+
+    .osirion-admin-nav-link.active {
+        background-color: var(--osirion-primary-color);
+        color: white;
+    }
+
+/* Button Styles */
+.osirion-admin-button {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--osirion-border-color);
+    border-radius: 4px;
+    background: none;
+    color: var(--osirion-text-color);
+    cursor: pointer;
+}
+
+.osirion-admin-button-primary {
+    background-color: var(--osirion-primary-color);
+    border-color: var(--osirion-primary-color);
+    color: white;
+}
+
+.osirion-admin-button-small {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+/* Alert Styles */
+.osirion-admin-alert {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+}
+
+.osirion-admin-alert-success {
+    background-color: rgba(40, 167, 69, 0.1);
+    border: 1px solid var(--osirion-success-color);
+}
+
+.osirion-admin-alert-error {
+    background-color: rgba(203, 36, 49, 0.1);
+    border: 1px solid var(--osirion-error-color);
+}
+
+/* Form Controls */
+.osirion-admin-input,
+.osirion-admin-select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid var(--osirion-border-color);
+    border-radius: 4px;
+    background-color: var(--osirion-bg-color);
+    color: var(--osirion-text-color);
+}
+
+/* Loading States */
+.osirion-admin-loading {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    color: var(--osirion-secondary-color);
+}
+
+.osirion-admin-loading-spinner {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid var(--osirion-border-color);
+    border-top-color: var(--osirion-primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 0.5rem;
+}
+
+/* Content Editor Styles */
+.osirion-admin-content-editor {
+    display: grid;
+    gap: 1rem;
+    padding: 1rem;
+}
+
+    .osirion-admin-content-editor.three-panel {
+        grid-template-columns: 250px 1fr 1fr;
+    }
+
+    .osirion-admin-content-editor.with-metadata {
+        grid-template-columns: 250px 1fr;
+    }
+
+    .osirion-admin-content-editor.with-preview {
+        grid-template-columns: 1fr 1fr;
+    }
+
+/* Breadcrumb Styles */
+.osirion-admin-breadcrumb {
+    display: flex;
+    align-items: center;
+    font-size: 0.875rem;
+}
+
+.osirion-admin-breadcrumb-separator {
+    margin: 0 0.5rem;
+    color: var(--osirion-secondary-color);
+}
+
+.osirion-admin-breadcrumb-current {
+    color: var(--osirion-secondary-color);
+}
+
+/* Icons */
+.osirion-admin-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1rem;
+    height: 1rem;
+    margin-right: 0.5rem;
+}
+
+/* Animations */
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .osirion-admin-dashboard {
+        flex-direction: column;
+    }
+
+    .osirion-admin-sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--osirion-border-color);
+    }
+
+    .osirion-admin-content-editor.three-panel,
+    .osirion-admin-content-editor.with-metadata,
+    .osirion-admin-content-editor.with-preview {
+        grid-template-columns: 1fr;
+    }
+}

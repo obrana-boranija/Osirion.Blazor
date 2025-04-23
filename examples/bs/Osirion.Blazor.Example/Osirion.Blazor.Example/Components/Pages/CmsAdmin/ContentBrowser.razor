@@ -1,0 +1,121 @@
+﻿@page "/admin/content"
+@rendermode InteractiveServer
+
+@using Osirion.Blazor.Cms.Admin.Components
+@using Osirion.Blazor.Cms.Admin.Components.Browser
+@using Osirion.Blazor.Cms.Admin.Components.Repository
+@using Osirion.Blazor.Cms.Admin.Models
+@using Osirion.Blazor.Cms.Admin.Services
+@using Osirion.Blazor.Cms.Models
+@inherits Osirion.Blazor.Components.OsirionComponentBase
+@inject IGitHubAdminService GitHubService
+@inject CmsAdminState AdminState
+@inject NavigationManager NavigationManager
+
+<AdminPage Title="Content Browser" Subtitle="Manage Your Content">
+@*     <BreadcrumbItems>
+        @(new AdminLayout.BreadcrumbItem("Dashboard", "/admin"))
+        @(new AdminLayout.BreadcrumbItem("Content"))
+    </BreadcrumbItems> *@
+    
+    <ActionsTemplate>
+        <button type="button"
+                class="osirion-admin-button osirion-admin-button-primary"
+                @onclick="CreateNewPost">
+            <span class="osirion-admin-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                    <line x1="12" y1="18" x2="12" y2="12" />
+                    <line x1="9" y1="15" x2="15" y2="15" />
+                </svg>
+            </span>
+            New Post
+        </button>
+    </ActionsTemplate>
+    
+    <ChildContent>
+        <div class="osirion-admin-content-browser-page">
+            <div class="osirion-admin-content-browser-header">
+                <h2 class="osirion-admin-page-title">Content Browser</h2>
+                <p class="osirion-admin-page-description">Browse and manage your content files.</p>
+            </div>
+
+            <div class="osirion-admin-content-browser-container">
+                <div class="osirion-admin-browser-sidebar">
+                    <div class="osirion-admin-card">
+                        <div class="osirion-admin-card-header">
+                            <h3 class="osirion-admin-card-title">Repository</h3>
+                        </div>
+                        <div class="osirion-admin-card-body">
+                            <RepositorySelector />
+                        </div>
+                    </div>
+
+                    <div class="osirion-admin-card">
+                        <div class="osirion-admin-card-header">
+                            <h3 class="osirion-admin-card-title">Branch</h3>
+                        </div>
+                        <div class="osirion-admin-card-body">
+                            <BranchSelector AllowCreateBranch="true" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="osirion-admin-browser-main">
+                    <FileExplorer Title="Content Files"
+                                  CanCreateFile="true"
+                                  CanDeleteFile="true"
+                                  OnFileSelected="HandleFileSelected"
+                                  OnCreateFile="CreateNewPost" />
+                </div>
+            </div>
+        </div>
+    </ChildContent>
+    
+</AdminPage>
+
+@code {
+    private void CreateNewPost()
+    {
+        // Create new blog post with empty content
+        var newPost = new BlogPost
+        {
+            Metadata = new FrontMatter
+            {
+                Title = "New Post",
+                Description = "Enter description here",
+                Author = string.Empty,
+                Date = DateTime.Now.ToString("yyyy-MM-dd"),
+                Categories = new List<string>(),
+                Tags = new List<string>()
+            },
+            Content = "## New Post\n\nStart writing your content here...",
+            FilePath = string.IsNullOrEmpty(AdminState.CurrentPath) ? 
+                "new-post.md" : 
+                $"{AdminState.CurrentPath}/new-post.md"
+        };
+        
+        AdminState.SetEditingPost(newPost, true);
+        NavigationManager.NavigateTo("/admin/content/edit");
+    }
+    
+    private async Task HandleFileSelected(GitHubItem item)
+    {
+        if (item.IsMarkdownFile)
+        {
+            try
+            {
+                // Load the blog post
+                var blogPost = await GitHubService.GetBlogPostAsync(item.Path);
+                
+                // Navigate to edit page
+                NavigationManager.NavigateTo($"/admin/content/edit/{item.Path}");
+            }
+            catch (Exception ex)
+            {
+                AdminState.SetErrorMessage($"Failed to load file: {ex.Message}");
+            }
+        }
+    }
+}

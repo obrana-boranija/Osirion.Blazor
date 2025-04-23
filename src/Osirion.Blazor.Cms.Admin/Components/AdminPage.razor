@@ -1,0 +1,85 @@
+﻿@namespace Osirion.Blazor.Cms.Admin.Components
+@using Osirion.Blazor.Cms.Admin.Services
+@inherits Osirion.Blazor.Components.OsirionComponentBase
+@inject CmsAdminState AdminState
+
+<AuthGuard ShowLoginForm="@ShowLoginForm">
+    <AdminLayout 
+        Title="@Title"
+        Subtitle="@Subtitle"
+        Theme="@Theme"
+        StatusMessage="@AdminState.StatusMessage"
+        ErrorMessage="@AdminState.ErrorMessage"
+        BreadcrumbItems="@BreadcrumbItems"
+        OnSignOut="HandleSignOut">
+        
+        <HeaderTemplate>
+            @HeaderTemplate
+        </HeaderTemplate>
+        
+        <NavigationTemplate>
+            @if (NavigationTemplate != null)
+            {
+                @NavigationTemplate
+            }
+        </NavigationTemplate>
+        
+        <ActionsTemplate>
+            @ActionsTemplate
+        </ActionsTemplate>
+        
+        <SidebarFooterTemplate>
+            @SidebarFooterTemplate
+        </SidebarFooterTemplate>
+        
+        <ChildContent>
+            @ChildContent
+        </ChildContent>
+        
+    </AdminLayout>
+</AuthGuard>
+
+@code {
+    [Parameter]
+    public string Title { get; set; } = "Osirion CMS";
+    
+    [Parameter]
+    public string? Subtitle { get; set; }
+    
+    [Parameter]
+    public string Theme { get; set; } = "light";
+    
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+    
+    [Parameter]
+    public RenderFragment? HeaderTemplate { get; set; }
+    
+    [Parameter]
+    public RenderFragment? NavigationTemplate { get; set; }
+    
+    [Parameter]
+    public RenderFragment? ActionsTemplate { get; set; }
+    
+    [Parameter]
+    public RenderFragment? SidebarFooterTemplate { get; set; }
+    
+    [Parameter]
+    public bool ShowLoginForm { get; set; } = false;
+    
+    [Parameter]
+    public List<AdminLayout.BreadcrumbItem> BreadcrumbItems { get; set; } = new();
+    
+    [Parameter]
+    public EventCallback OnSignOut { get; set; }
+    
+    private Task HandleSignOut()
+    {
+        if (OnSignOut.HasDelegate)
+        {
+            return OnSignOut.InvokeAsync();
+        }
+        
+        return Task.CompletedTask;
+    }
+}

@@ -1,5 +1,265 @@
-﻿<h3>AdminLayout</h3>
+﻿@namespace Osirion.Blazor.Cms.Admin.Components
+@using Osirion.Blazor.Cms.Admin.Services
+@inherits Osirion.Blazor.Components.OsirionComponentBase
+@inject IAuthenticationService AuthService
+
+<div class="@GetAdminLayoutClass()">
+    <div class="osirion-admin-sidebar">
+        <div class="osirion-admin-logo">
+            <h1 class="osirion-admin-brand">@Title</h1>
+            @if (!string.IsNullOrEmpty(Subtitle))
+            {
+                <p class="osirion-admin-subtitle">@Subtitle</p>
+            }
+        </div>
+        
+        <div class="osirion-admin-navigation">
+            @if (NavigationTemplate != null)
+            {
+                @NavigationTemplate
+            }
+            else
+            {
+                <DefaultNavigation />
+            }
+        </div>
+        
+        <div class="osirion-admin-sidebar-footer">
+            @if (SidebarFooterTemplate != null)
+            {
+                @SidebarFooterTemplate
+            }
+            else if (AuthService.IsAuthenticated)
+            {
+                <div class="osirion-admin-user">
+                    <span class="osirion-admin-username">@AuthService.Username</span>
+                    <button type="button" 
+                            class="osirion-admin-button osirion-admin-button-small"
+                            @onclick="SignOut">
+                        Sign Out
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+    
+    <div class="osirion-admin-main">
+        <div class="osirion-admin-header">
+            @if (HeaderTemplate != null)
+            {
+                @HeaderTemplate
+            }
+            else if (BreadcrumbItems.Any())
+            {
+                <div class="osirion-admin-breadcrumb">
+                    @for (var i = 0; i < BreadcrumbItems.Count; i++)
+                    {
+                        var item = BreadcrumbItems[i];
+                        
+                        @if (i > 0)
+                        {
+                            <span class="osirion-admin-breadcrumb-separator">/</span>
+                        }
+                        
+                        @if (i == BreadcrumbItems.Count - 1 || string.IsNullOrEmpty(item.Url))
+                        {
+                            <span class="osirion-admin-breadcrumb-current">@item.Text</span>
+                        }
+                        else
+                        {
+                            <a href="@item.Url" class="osirion-admin-breadcrumb-item">@item.Text</a>
+                        }
+                    }
+                </div>
+            }
+            
+            <div class="osirion-admin-actions">
+                @if (ActionsTemplate != null)
+                {
+                    @ActionsTemplate
+                }
+            </div>
+        </div>
+        
+        <div class="osirion-admin-content">
+            @if (StatusMessage != null)
+            {
+                <div class="osirion-admin-alert osirion-admin-alert-success">
+                    <span class="osirion-admin-alert-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                            <polyline points="22 4 12 14.01 9 11.01" />
+                        </svg>
+                    </span>
+                    <span>@StatusMessage</span>
+                    <button type="button" 
+                            class="osirion-admin-alert-close" 
+                            @onclick="ClearStatusMessage"
+                            aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            }
+            
+            @if (ErrorMessage != null)
+            {
+                <div class="osirion-admin-alert osirion-admin-alert-error">
+                    <span class="osirion-admin-alert-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="12" y1="8" x2="12" y2="12" />
+                            <line x1="12" y1="16" x2="12.01" y2="16" />
+                        </svg>
+                    </span>
+                    <span>@ErrorMessage</span>
+                    <button type="button" 
+                            class="osirion-admin-alert-close" 
+                            @onclick="ClearErrorMessage"
+                            aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            }
+            
+            @ChildContent
+        </div>
+    </div>
+</div>
 
 @code {
-
+    /// <summary>
+    /// Gets or sets the page title
+    /// </summary>
+    [Parameter]
+    public string Title { get; set; } = "Osirion CMS";
+    
+    /// <summary>
+    /// Gets or sets the page subtitle
+    /// </summary>
+    [Parameter]
+    public string? Subtitle { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the current theme (light or dark)
+    /// </summary>
+    [Parameter]
+    public string Theme { get; set; } = "light";
+    
+    /// <summary>
+    /// Gets or sets the status message
+    /// </summary>
+    [Parameter]
+    public string? StatusMessage { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the event callback for status message changes
+    /// </summary>
+    [Parameter]
+    public EventCallback<string?> StatusMessageChanged { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the error message
+    /// </summary>
+    [Parameter]
+    public string? ErrorMessage { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the event callback for error message changes
+    /// </summary>
+    [Parameter]
+    public EventCallback<string?> ErrorMessageChanged { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the breadcrumb items
+    /// </summary>
+    [Parameter]
+    public List<BreadcrumbItem> BreadcrumbItems { get; set; } = new();
+    
+    /// <summary>
+    /// Gets or sets the child content
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the header template
+    /// </summary>
+    [Parameter]
+    public RenderFragment? HeaderTemplate { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the navigation template
+    /// </summary>
+    [Parameter]
+    public RenderFragment? NavigationTemplate { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the actions template
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ActionsTemplate { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the sidebar footer template
+    /// </summary>
+    [Parameter]
+    public RenderFragment? SidebarFooterTemplate { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the event callback for sign out
+    /// </summary>
+    [Parameter]
+    public EventCallback OnSignOut { get; set; }
+    
+    private async Task SignOut()
+    {
+        await AuthService.SignOutAsync();
+        
+        if (OnSignOut.HasDelegate)
+        {
+            await OnSignOut.InvokeAsync();
+        }
+    }
+    
+    private async Task ClearStatusMessage()
+    {
+        StatusMessage = null;
+        await StatusMessageChanged.InvokeAsync(null);
+    }
+    
+    private async Task ClearErrorMessage()
+    {
+        ErrorMessage = null;
+        await ErrorMessageChanged.InvokeAsync(null);
+    }
+    
+    private string GetAdminLayoutClass()
+    {
+        return $"osirion-admin-dashboard osirion-admin-theme-{Theme} {CssClass}".Trim();
+    }
+    
+    /// <summary>
+    /// Represents a breadcrumb item
+    /// </summary>
+    public class BreadcrumbItem
+    {
+        /// <summary>
+        /// Gets or sets the text of the breadcrumb item
+        /// </summary>
+        public string Text { get; set; } = string.Empty;
+        
+        /// <summary>
+        /// Gets or sets the URL of the breadcrumb item
+        /// </summary>
+        public string? Url { get; set; }
+        
+        /// <summary>
+        /// Creates a new breadcrumb item
+        /// </summary>
+        public BreadcrumbItem(string text, string? url = null)
+        {
+            Text = text;
+            Url = url;
+        }
+    }
 }

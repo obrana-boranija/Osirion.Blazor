@@ -40,13 +40,19 @@
 		<PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.4" />
 	</ItemGroup>
 
+	<Target Name="DowngradePackages" BeforeTargets="Build" Condition="'$(TargetFramework)' == 'net8.0'">
+		<ItemGroup>
+			<_DowngradePackages Include="Microsoft.Net.Http.Headers" Version="8.0.1" />
+		</ItemGroup>
+	</Target>
+
 	<ItemGroup>
 		<None Include="README.md" Pack="true" PackagePath="\" />
 		<None Include="..\..\icon.png" Pack="true" PackagePath="\" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Osirion.Blazor.Cms\Osirion.Blazor.Cms.csproj" />
+		<ProjectReference Include="..\Osirion.Blazor.Core\Osirion.Blazor.Core.csproj" />
 	</ItemGroup>
 
 </Project>

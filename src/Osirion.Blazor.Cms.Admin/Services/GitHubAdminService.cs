@@ -200,7 +200,8 @@ public class GitHubAdminService : IGitHubAdminService
             };
 
             var requestJson = JsonSerializer.Serialize(requestData);
-            var requestContent = new StringContent(requestJson, Encoding.UTF8, "application/json");
+            var requestContent = new StringContent(requestJson, Encoding.UTF8);
+            requestContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
             response = await _httpClient.PostAsync(endpoint, requestContent);
             response.EnsureSuccessStatusCode();
@@ -323,7 +324,8 @@ public class GitHubAdminService : IGitHubAdminService
             );
 
             var requestJson = JsonSerializer.Serialize(requestData);
-            var requestContent = new StringContent(requestJson, Encoding.UTF8, "application/json");
+            var requestContent = new StringContent(requestJson, Encoding.UTF8);
+            requestContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
             var response = await _httpClient.PutAsync(endpoint, requestContent);
             response.EnsureSuccessStatusCode();
@@ -369,8 +371,9 @@ public class GitHubAdminService : IGitHubAdminService
             var requestJson = JsonSerializer.Serialize(requestData);
             var request = new HttpRequestMessage(HttpMethod.Delete, endpoint)
             {
-                Content = new StringContent(requestJson, Encoding.UTF8, "application/json")
+                Content = new StringContent(requestJson, Encoding.UTF8)
             };
+            request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
             var response = await _httpClient.SendAsync(request);
             response.EnsureSuccessStatusCode();
@@ -464,7 +467,8 @@ public class GitHubAdminService : IGitHubAdminService
             };
 
             var requestJson = JsonSerializer.Serialize(requestData);
-            var requestContent = new StringContent(requestJson, Encoding.UTF8, "application/json");
+            var requestContent = new StringContent(requestJson, Encoding.UTF8);
+            requestContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
             var response = await _httpClient.PostAsync(endpoint, requestContent);
             response.EnsureSuccessStatusCode();

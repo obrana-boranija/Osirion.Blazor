@@ -39,6 +39,7 @@
 
 	<ItemGroup>
 		<!-- Include module packages -->
+		<ProjectReference Include="..\Osirion.Blazor.Cms.Admin\Osirion.Blazor.Cms.Admin.csproj" />
 		<ProjectReference Include="..\Osirion.Blazor.Cms\Osirion.Blazor.Cms.csproj" />
 		<ProjectReference Include="..\Osirion.Blazor.Core\Osirion.Blazor.Core.csproj" />
 		<ProjectReference Include="..\Osirion.Blazor.Analytics\Osirion.Blazor.Analytics.csproj" />
@@ -49,7 +50,7 @@
 	<ItemGroup>
 		<None Include="..\..\LICENSE.txt" Pack="true" PackagePath="\" />
 		<None Include="..\..\README.md" Pack="true" PackagePath="\" />
-		<None Include="..\..\icon.png" Pack="true" PackagePath="\"/>
+		<None Include="..\..\icon.png" Pack="true" PackagePath="\" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -1,49 +1,33 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Osirion.Blazor.Cms.Admin.Interfaces;
+using Osirion.Blazor.Cms.Admin.Internal;
+using Osirion.Blazor.Cms.Admin.Options;
 using Osirion.Blazor.Cms.Admin.Services;
 
 namespace Osirion.Blazor.Cms.Admin.Extensions;
 
 /// <summary>
-/// Extension methods for adding CMS Admin services to the dependency injection container
+/// Extension methods for adding Osirion.Blazor.Cms.Admin services
 /// </summary>
-public static class AdminServiceCollectionExtensions
+public static class CmsAdminServiceCollectionExtensions
 {
     /// <summary>
     /// Adds Osirion.Blazor.Cms.Admin services to the service collection
     /// </summary>
     /// <param name="services">The service collection</param>
-    /// <returns>The service collection for chaining</returns>
-    public static IServiceCollection AddOsirionCmsAdmin(this IServiceCollection services)
-    {
-        if (services == null) throw new ArgumentNullException(nameof(services));
-
-        // Register GitHub admin service
-        services.AddHttpClient<IGitHubAdminService, GitHubAdminService>();
-
-        // Register state services
-        services.AddScoped<CmsAdminState>();
-
-        return services;
-    }
-
-    /// <summary>
-    /// Adds Osirion.Blazor.Cms.Admin services to the service collection with options
-    /// </summary>
-    /// <param name="services">The service collection</param>
-    /// <param name="configure">Action to configure CMS admin options</param>
+    /// <param name="configure">Action to configure CMS admin services</param>
     /// <returns>The service collection for chaining</returns>
     public static IServiceCollection AddOsirionCmsAdmin(
         this IServiceCollection services,
-        Action<CmsAdminOptions> configure)
+        Action<ICmsAdminBuilder> configure)
     {
         if (services == null) throw new ArgumentNullException(nameof(services));
         if (configure == null) throw new ArgumentNullException(nameof(configure));
 
-        // Configure options
-        services.Configure(configure);
-
-        // Add core services
-        services.AddOsirionCmsAdmin();
+        // Create builder and apply configuration
+        var builder = new CmsAdminBuilder(services);
+        configure(builder);
 
         return services;
     }
