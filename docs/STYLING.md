@@ -1,3 +1,6 @@
+---
+date: 2025-04-23
+---
 # Styling Guide for Osirion.Blazor
 
 Osirion.Blazor provides a flexible styling system using CSS variables (custom properties) to easily customize the appearance of all components.
