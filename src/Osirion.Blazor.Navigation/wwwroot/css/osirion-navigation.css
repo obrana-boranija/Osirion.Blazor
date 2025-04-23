@@ -1,5 +1,8 @@
-﻿/* Scroll to Top Button */
-.scroll-to-top {
+﻿/* For src/Osirion.Blazor.Navigation/wwwroot/css/osirion-navigation.css */
+
+/* Base styles for both class naming conventions */
+.scroll-to-top,
+.osirion-scroll-to-top {
     position: fixed;
     width: var(--osirion-scroll-size, 45px);
     height: var(--osirion-scroll-size, 45px);
@@ -17,7 +20,9 @@
     z-index: var(--osirion-scroll-z-index, 1000);
 }
 
-    .scroll-to-top:hover {
+    /* Hover state */
+    .scroll-to-top:hover,
+    .osirion-scroll-to-top:hover {
         background-color: var(--osirion-scroll-hover-background, rgba(29, 78, 216, 0.9));
         color: var(--osirion-scroll-hover-color, #ffffff);
         border-color: var(--osirion-scroll-hover-border-color, transparent);
@@ -25,45 +30,57 @@
         transform: translateY(-2px);
     }
 
-    .scroll-to-top:active {
+    /* Active/pressed state */
+    .scroll-to-top:active,
+    .osirion-scroll-to-top:active {
         transform: translateY(0);
-    }
-
-    .scroll-to-top svg {
-        width: 24px;
-        height: 24px;
-        stroke-width: 2.5;
-    }
-
-    .scroll-to-top .scroll-text {
-        margin-left: 8px;
-        font-size: 14px;
-        font-weight: 500;
+        box-shadow: var(--osirion-scroll-box-shadow, 0 4px 10px rgba(0, 0, 0, 0.2));
     }
 
     /* Position variants */
-    .scroll-to-top.bottom-right {
+    .scroll-to-top.bottom-right,
+    .osirion-scroll-to-top.bottom-right {
         bottom: var(--osirion-scroll-margin, 25px);
         right: var(--osirion-scroll-margin, 25px);
     }
 
-    .scroll-to-top.bottom-left {
+    .scroll-to-top.bottom-left,
+    .osirion-scroll-to-top.bottom-left {
         bottom: var(--osirion-scroll-margin, 25px);
         left: var(--osirion-scroll-margin, 25px);
     }
 
-    .scroll-to-top.top-right {
+    .scroll-to-top.top-right,
+    .osirion-scroll-to-top.top-right {
         top: var(--osirion-scroll-margin, 25px);
         right: var(--osirion-scroll-margin, 25px);
     }
 
-    .scroll-to-top.top-left {
+    .scroll-to-top.top-left,
+    .osirion-scroll-to-top.top-left {
         top: var(--osirion-scroll-margin, 25px);
         left: var(--osirion-scroll-margin, 25px);
     }
 
-    /* If text is present, adjust to pill shape */
-    .scroll-to-top:has(.scroll-text) {
+    /* Icon sizing */
+    .scroll-to-top svg,
+    .osirion-scroll-to-top svg {
+        width: calc(var(--osirion-scroll-size, 45px) * 0.5);
+        height: calc(var(--osirion-scroll-size, 45px) * 0.5);
+        stroke-width: 3;
+    }
+
+    /* Text styling when present */
+    .scroll-to-top .scroll-text,
+    .osirion-scroll-to-top .scroll-text {
+        margin-left: 8px;
+        font-size: var(--osirion-small-font-size, 0.875rem);
+        font-weight: 500;
+    }
+
+    /* When text is present, adjust to pill shape */
+    .scroll-to-top:has(.scroll-text),
+    .osirion-scroll-to-top:has(.scroll-text) {
         width: auto;
         padding: 0 16px;
         border-radius: 25px;
@@ -71,18 +88,21 @@
 
 /* Responsive styles */
 @media (max-width: 768px) {
-    .scroll-to-top {
+    .scroll-to-top,
+    .osirion-scroll-to-top {
         --osirion-scroll-size: 40px;
         --osirion-scroll-margin: 20px;
     }
 
-        .scroll-to-top .scroll-text {
+        .scroll-to-top .scroll-text,
+        .osirion-scroll-to-top .scroll-text {
             display: none;
         }
 
-        .scroll-to-top:has(.scroll-text) {
-            width: var(--osirion-scroll-size);
+        .scroll-to-top:has(.scroll-text),
+        .osirion-scroll-to-top:has(.scroll-text) {
+            width: var(--osirion-scroll-size, 40px);
             padding: 0;
-            border-radius: var(--osirion-scroll-border-radius);
+            border-radius: var(--osirion-scroll-border-radius, 50%);
         }
 }

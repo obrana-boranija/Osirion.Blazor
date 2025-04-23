@@ -32,7 +32,7 @@ builder.Services.AddOsirion(osirion => {
                 options.Position = Osirion.Blazor.Position.BottomRight;
                 options.Behavior = Osirion.Blazor.ScrollBehavior.Smooth;
                 options.VisibilityThreshold = 100;
-                options.CssClass = "btn btn-danger";
+                //options.CssClass = "btn btn-danger";
             });
         })
         // Add analytics services

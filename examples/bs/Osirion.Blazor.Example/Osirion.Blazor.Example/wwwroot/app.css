@@ -1,5 +1,6 @@
 :root {
     --bs-primary: #e50000; /* Your custom primary color */
+    --bs-primary-dark: #1a1a1a; /* Your custom primary color */
 }
 
 html, body {
