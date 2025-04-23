@@ -1,4 +1,4 @@
-﻿/* Styles for the Content Editor component */
+﻿/* Updated styles for the Content Editor component */
 
 .osirion-admin-content-editor {
     display: flex;
@@ -9,14 +9,14 @@
     overflow: hidden;
 }
 
-/* Editor container with various layouts */
+/* Editor container with improved layouts */
 .osirion-admin-editor-container {
     display: flex;
     flex: 1;
     overflow: hidden;
 }
 
-    /* Three panel layout: editor, preview, metadata (positioned as editor | preview | metadata) */
+    /* Three panel layout: editor | preview | metadata (rearranged to put metadata at right) */
     .osirion-admin-editor-container.three-panel {
         display: grid;
         grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 300px;
@@ -54,7 +54,7 @@
     font-size: 0.875rem;
     line-height: 1.6;
     background-color: var(--osirion-admin-bg-editor);
-    color: var(--osirion-admin-text-editor);
+    color: var(--osirion-admin-text-editor, var(--osirion-admin-text));
     overflow: auto;
 }
 
@@ -64,8 +64,7 @@
 
 /* Metadata panel - now positioned on the right */
 .osirion-admin-editor-metadata {
-    border-left: 1px solid var(--osirion-admin-border);
-    background-color: var(--osirion-admin-bg-editor-sidebar);
+    background-color: var(--osirion-admin-bg-editor-sidebar, var(--osirion-admin-bg-sidebar));
     overflow-y: auto;
     width: 300px;
 }
@@ -97,108 +96,158 @@
     overflow-y: auto;
 }
 
-    /* Styles for the preview content rendered from markdown */
-    .osirion-admin-preview-content h1,
-    .osirion-admin-preview-content h2,
-    .osirion-admin-preview-content h3,
-    .osirion-admin-preview-content h4,
-    .osirion-admin-preview-content h5,
-    .osirion-admin-preview-content h6 {
-        margin-top: 1.5em;
-        margin-bottom: 0.5em;
-        font-weight: 600;
-        line-height: 1.25;
-        color: var(--osirion-admin-text);
+/* Editor header styles */
+.osirion-admin-editor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--osirion-admin-spacer);
+    border-bottom: 1px solid var(--osirion-admin-border);
+    background-color: var(--osirion-admin-bg-header);
+}
+
+.osirion-admin-editor-title {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: var(--osirion-admin-font-weight-bold);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.osirion-admin-editor-actions {
+    display: flex;
+    gap: var(--osirion-admin-spacer-sm);
+}
+
+/* Editor footer styles */
+.osirion-admin-editor-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--osirion-admin-spacer);
+    border-top: 1px solid var(--osirion-admin-border);
+    background-color: var(--osirion-admin-bg-header);
+}
+
+.osirion-admin-editor-main-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--osirion-admin-spacer);
+}
+
+/* Toolbar styles */
+.osirion-admin-editor-toolbar {
+    display: flex;
+    align-items: center;
+    gap: var(--osirion-admin-spacer-sm);
+    padding: var(--osirion-admin-spacer-sm);
+    border-bottom: 1px solid var(--osirion-admin-border);
+    background-color: var(--osirion-admin-bg-header);
+}
+
+/* Styles for the preview content rendered from markdown */
+.osirion-admin-preview-content h1,
+.osirion-admin-preview-content h2,
+.osirion-admin-preview-content h3,
+.osirion-admin-preview-content h4,
+.osirion-admin-preview-content h5,
+.osirion-admin-preview-content h6 {
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--osirion-admin-text);
+}
+
+    .osirion-admin-preview-content h1:first-child,
+    .osirion-admin-preview-content h2:first-child,
+    .osirion-admin-preview-content h3:first-child,
+    .osirion-admin-preview-content h4:first-child,
+    .osirion-admin-preview-content h5:first-child,
+    .osirion-admin-preview-content h6:first-child {
+        margin-top: 0;
     }
 
-        .osirion-admin-preview-content h1:first-child,
-        .osirion-admin-preview-content h2:first-child,
-        .osirion-admin-preview-content h3:first-child,
-        .osirion-admin-preview-content h4:first-child,
-        .osirion-admin-preview-content h5:first-child,
-        .osirion-admin-preview-content h6:first-child {
-            margin-top: 0;
-        }
+.osirion-admin-preview-content h1 {
+    font-size: 2rem;
+}
 
-    .osirion-admin-preview-content h1 {
-        font-size: 2rem;
+.osirion-admin-preview-content h2 {
+    font-size: 1.5rem;
+}
+
+.osirion-admin-preview-content h3 {
+    font-size: 1.25rem;
+}
+
+.osirion-admin-preview-content h4 {
+    font-size: 1rem;
+}
+
+.osirion-admin-preview-content h5 {
+    font-size: 0.875rem;
+}
+
+.osirion-admin-preview-content h6 {
+    font-size: 0.85rem;
+}
+
+.osirion-admin-preview-content p {
+    margin-bottom: 1rem;
+    line-height: 1.6;
+}
+
+.osirion-admin-preview-content ul,
+.osirion-admin-preview-content ol {
+    margin-bottom: 1rem;
+    padding-left: 2rem;
+}
+
+.osirion-admin-preview-content li {
+    margin-bottom: 0.25rem;
+}
+
+.osirion-admin-preview-content blockquote {
+    border-left: 4px solid var(--osirion-admin-border);
+    padding-left: 1rem;
+    margin-left: 0;
+    margin-right: 0;
+    font-style: italic;
+    color: var(--osirion-admin-text-muted);
+}
+
+.osirion-admin-preview-content pre {
+    background-color: var(--osirion-admin-bg-editor);
+    border-radius: var(--osirion-admin-border-radius);
+    padding: 1rem;
+    overflow-x: auto;
+    margin-bottom: 1rem;
+    font-family: monospace;
+    font-size: 0.875rem;
+}
+
+.osirion-admin-preview-content code {
+    font-family: monospace;
+    background-color: var(--osirion-admin-bg-editor);
+    border-radius: var(--osirion-admin-border-radius);
+    padding: 0.2rem 0.4rem;
+    font-size: 0.875em;
+}
+
+.osirion-admin-preview-content img {
+    max-width: 100%;
+    border-radius: var(--osirion-admin-border-radius);
+}
+
+.osirion-admin-preview-content a {
+    color: var(--osirion-admin-primary);
+    text-decoration: none;
+}
+
+    .osirion-admin-preview-content a:hover {
+        text-decoration: underline;
     }
-
-    .osirion-admin-preview-content h2 {
-        font-size: 1.5rem;
-    }
-
-    .osirion-admin-preview-content h3 {
-        font-size: 1.25rem;
-    }
-
-    .osirion-admin-preview-content h4 {
-        font-size: 1rem;
-    }
-
-    .osirion-admin-preview-content h5 {
-        font-size: 0.875rem;
-    }
-
-    .osirion-admin-preview-content h6 {
-        font-size: 0.85rem;
-    }
-
-    .osirion-admin-preview-content p {
-        margin-bottom: 1rem;
-        line-height: 1.6;
-    }
-
-    .osirion-admin-preview-content ul,
-    .osirion-admin-preview-content ol {
-        margin-bottom: 1rem;
-        padding-left: 2rem;
-    }
-
-    .osirion-admin-preview-content li {
-        margin-bottom: 0.25rem;
-    }
-
-    .osirion-admin-preview-content blockquote {
-        border-left: 4px solid var(--osirion-admin-border);
-        padding-left: 1rem;
-        margin-left: 0;
-        margin-right: 0;
-        font-style: italic;
-        color: var(--osirion-admin-text-muted);
-    }
-
-    .osirion-admin-preview-content pre {
-        background-color: var(--osirion-admin-bg-editor);
-        border-radius: var(--osirion-admin-border-radius);
-        padding: 1rem;
-        overflow-x: auto;
-        margin-bottom: 1rem;
-        font-family: monospace;
-        font-size: 0.875rem;
-    }
-
-    .osirion-admin-preview-content code {
-        font-family: monospace;
-        background-color: var(--osirion-admin-bg-editor);
-        border-radius: var(--osirion-admin-border-radius);
-        padding: 0.2rem 0.4rem;
-        font-size: 0.875em;
-    }
-
-    .osirion-admin-preview-content img {
-        max-width: 100%;
-        border-radius: var(--osirion-admin-border-radius);
-    }
-
-    .osirion-admin-preview-content a {
-        color: var(--osirion-admin-primary);
-        text-decoration: none;
-    }
-
-        .osirion-admin-preview-content a:hover {
-            text-decoration: underline;
-        }
 
 /* Responsive adjustments */
 @media (max-width: 992px) {
@@ -211,9 +260,23 @@
 
     .osirion-admin-editor-metadata,
     .osirion-admin-editor-preview {
-        border-left: none;
-        border-top: 1px solid var(--osirion-admin-border);
         width: 100%;
         height: 300px;
+        border-top: 1px solid var(--osirion-admin-border);
+        border-left: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .osirion-admin-editor-footer {
+        flex-direction: column;
+        gap: var(--osirion-admin-spacer);
+        height: auto;
+    }
+
+    .osirion-admin-editor-main-actions {
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
     }
 }

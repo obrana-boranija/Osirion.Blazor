@@ -9,15 +9,15 @@ namespace Osirion.Blazor.Cms.Admin.Services;
 public class CmsAdminState
 {
     // Current selections
-    public GitHubRepository? SelectedRepository { get; private set; }
-    public GitHubBranch? SelectedBranch { get; private set; }
+    public GitHubRepository? SelectedRepository { get; protected set; }
+    public GitHubBranch? SelectedBranch { get; protected set; }
     public GitHubItem? SelectedItem { get; private set; }
-    public string CurrentPath { get; private set; } = string.Empty;
+    public string CurrentPath { get; protected set; } = string.Empty;
+    public List<GitHubItem> CurrentItems { get; private set; } = new();
 
     // Available options
     public List<GitHubRepository> AvailableRepositories { get; private set; } = new();
     public List<GitHubBranch> AvailableBranches { get; private set; } = new();
-    public List<GitHubItem> CurrentItems { get; private set; } = new();
 
     // Editing state
     public BlogPost? EditingPost { get; private set; }
@@ -29,8 +29,15 @@ public class CmsAdminState
     public string? StatusMessage { get; private set; }
     public string? ErrorMessage { get; private set; }
 
-    // State change events
-    public event Action? StateChanged;
+    // State change events - make it protected so derived classes can access it
+    protected Action? _stateChanged;
+
+    // Public event accessor
+    public event Action StateChanged
+    {
+        add => _stateChanged += value;
+        remove => _stateChanged -= value;
+    }
 
     /// <summary>
     /// Sets the available repositories
@@ -44,7 +51,7 @@ public class CmsAdminState
     /// <summary>
     /// Sets the selected repository
     /// </summary>
-    public void SelectRepository(GitHubRepository repository)
+    public virtual void SelectRepository(GitHubRepository repository)
     {
         SelectedRepository = repository;
         SelectedBranch = null;
@@ -66,7 +73,7 @@ public class CmsAdminState
     /// <summary>
     /// Sets the selected branch
     /// </summary>
-    public void SelectBranch(GitHubBranch branch)
+    public virtual void SelectBranch(GitHubBranch branch)
     {
         SelectedBranch = branch;
         CurrentItems.Clear();
@@ -77,7 +84,7 @@ public class CmsAdminState
     /// <summary>
     /// Sets the current path and items
     /// </summary>
-    public void SetCurrentPath(string path, List<GitHubItem> items)
+    public virtual void SetCurrentPath(string path, List<GitHubItem> items)
     {
         CurrentPath = path;
         CurrentItems = items;
@@ -157,7 +164,7 @@ public class CmsAdminState
     /// <summary>
     /// Reset the entire state
     /// </summary>
-    public void Reset()
+    public virtual void Reset()
     {
         SelectedRepository = null;
         SelectedBranch = null;
@@ -175,5 +182,8 @@ public class CmsAdminState
         NotifyStateChanged();
     }
 
-    private void NotifyStateChanged() => StateChanged?.Invoke();
+    protected void NotifyStateChanged()
+    {
+        _stateChanged?.Invoke();
+    }
 }

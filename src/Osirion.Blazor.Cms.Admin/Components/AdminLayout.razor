@@ -12,10 +12,11 @@
             </a>
             @if (!string.IsNullOrEmpty(Subtitle))
             {
-                <p class="osirion-admin-subtitle">@Subtitle</p>
+                        <p class="osirion-admin-subtitle">@Subtitle</p>
             }
+
         </div>
-        
+
         <div class="osirion-admin-navigation">
             @if (NavigationTemplate != null)
             {
@@ -23,10 +24,11 @@
             }
             else
             {
-                <DefaultNavigation />
+                        <DefaultNavigation />
             }
+
         </div>
-        
+
         <div class="osirion-admin-sidebar-footer">
             @if (SidebarFooterTemplate != null)
             {
@@ -34,18 +36,19 @@
             }
             else if (AuthService.IsAuthenticated)
             {
-                <div class="osirion-admin-user">
-                    <span class="osirion-admin-username">@AuthService.Username</span>
-                    <button type="button" 
-                            class="osirion-admin-button osirion-admin-button-small"
-                            @onclick="SignOut">
-                        Sign Out
-                    </button>
-                </div>
+                        <div class="osirion-admin-user">
+                            <span class="osirion-admin-username">@AuthService.Username</span>
+                            <button type="button" 
+                                    class="osirion-admin-button osirion-admin-button-small"
+                                    @onclick="SignOut">
+                                Sign Out
+                            </button>
+                        </div>
             }
+        
         </div>
     </div>
-    
+
     <div class="osirion-admin-main">
         <div class="osirion-admin-header">
             @if (HeaderTemplate != null)
@@ -54,187 +57,91 @@
             }
             else
             {
-                <div class="osirion-admin-breadcrumb">
-                    <a href="/admin" class="osirion-admin-breadcrumb-home">
-                        <span class="osirion-admin-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-                                <polyline points="9 22 9 12 15 12 15 22" />
-                            </svg>
-                        </span>
-                        Dashboard
-                    </a>
+                        <div class="osirion-admin-breadcrumb">
+                            <a href="/admin" class="osirion-admin-breadcrumb-home">
+                                <span class="osirion-admin-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                                        <polyline points="9 22 9 12 15 12 15 22" />
+                                    </svg>
+                                </span>
+                                Dashboard
+                            </a>
 
-                    @if (!string.IsNullOrEmpty(CurrentPage))
+                    @if (BreadcrumbItems != null && BreadcrumbItems.Count > 0)
                     {
-                        <span class="osirion-admin-breadcrumb-separator">/</span>
-                        <span class="osirion-admin-breadcrumb-current">@CurrentPage</span>
+                        foreach (var item in BreadcrumbItems)
+                        {
+                                                    <span class="osirion-admin-breadcrumb-separator">/</span>
+
+                            @if (string.IsNullOrEmpty(item.Url) || item == BreadcrumbItems.Last())
+                            {
+                                                                <span class="osirion-admin-breadcrumb-current">@item.Text</span>
+                            }
+                            else
+                            {
+                                                                <a href="@item.Url" class="osirion-admin-breadcrumb-item">@item.Text</a>
+                            }
+                        }
                     }
-                </div>
+                    else if (!string.IsNullOrEmpty(CurrentPage))
+                    {
+                                        <span class="osirion-admin-breadcrumb-separator">/</span>
+                                        <span class="osirion-admin-breadcrumb-current">@CurrentPage</span>
+                    }
+                        </div>
             }
-            
+
             <div class="osirion-admin-actions">
                 @if (ActionsTemplate != null)
                 {
                     @ActionsTemplate
                 }
+            
             </div>
         </div>
-        
+
         <div class="osirion-admin-content">
             @if (StatusMessage != null)
             {
-                <div class="osirion-admin-alert osirion-admin-alert-success">
-                    <span class="osirion-admin-alert-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                            <polyline points="22 4 12 14.01 9 11.01" />
-                        </svg>
-                    </span>
-                    <span>@StatusMessage</span>
-                    <button type="button" 
-                            class="osirion-admin-alert-close" 
-                            @onclick="ClearStatusMessage"
-                            aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
+                        <div class="osirion-admin-alert osirion-admin-alert-success">
+                            <span class="osirion-admin-alert-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                                    <polyline points="22 4 12 14.01 9 11.01" />
+                                </svg>
+                            </span>
+                            <span>@StatusMessage</span>
+                            <button type="button" 
+                                    class="osirion-admin-alert-close" 
+                                    @onclick="ClearStatusMessage"
+                                    aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
             }
-            
+
             @if (ErrorMessage != null)
             {
-                <div class="osirion-admin-alert osirion-admin-alert-error">
-                    <span class="osirion-admin-alert-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10" />
-                            <line x1="12" y1="8" x2="12" y2="12" />
-                            <line x1="12" y1="16" x2="12.01" y2="16" />
-                        </svg>
-                    </span>
-                    <span>@ErrorMessage</span>
-                    <button type="button" 
-                            class="osirion-admin-alert-close" 
-                            @onclick="ClearErrorMessage"
-                            aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
+                        <div class="osirion-admin-alert osirion-admin-alert-error">
+                            <span class="osirion-admin-alert-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <line x1="12" y1="8" x2="12" y2="12" />
+                                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                                </svg>
+                            </span>
+                            <span>@ErrorMessage</span>
+                            <button type="button" 
+                                    class="osirion-admin-alert-close" 
+                                    @onclick="ClearErrorMessage"
+                                    aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
             }
-            
+
             @ChildContent
         </div>
     </div>
 </div>
-
-@code {
-    /// <summary>
-    /// Gets or sets the page title
-    /// </summary>
-    [Parameter]
-    public string Title { get; set; } = "Osirion CMS";
-    
-    /// <summary>
-    /// Gets or sets the page subtitle
-    /// </summary>
-    [Parameter]
-    public string? Subtitle { get; set; }
-    
-    /// <summary>
-    /// Gets or sets the current theme (light or dark)
-    /// </summary>
-    [Parameter]
-    public string Theme { get; set; } = "light";
-    
-    /// <summary>
-    /// Gets or sets the status message
-    /// </summary>
-    [Parameter]
-    public string? StatusMessage { get; set; }
-    
-    /// <summary>
-    /// Gets or sets the event callback for status message changes
-    /// </summary>
-    [Parameter]
-    public EventCallback<string?> StatusMessageChanged { get; set; }
-    
-    /// <summary>
-    /// Gets or sets the error message
-    /// </summary>
-    [Parameter]
-    public string? ErrorMessage { get; set; }
-    
-    /// <summary>
-    /// Gets or sets the event callback for error message changes
-    /// </summary>
-    [Parameter]
-    public EventCallback<string?> ErrorMessageChanged { get; set; }
-    
-    /// <summary>
-    /// Gets or sets the current page name for breadcrumb
-    /// </summary>
-    [Parameter]
-    public string? CurrentPage { get; set; }
-    
-    /// <summary>
-    /// Gets or sets the child content
-    /// </summary>
-    [Parameter]
-    public RenderFragment? ChildContent { get; set; }
-    
-    /// <summary>
-    /// Gets or sets the header template
-    /// </summary>
-    [Parameter]
-    public RenderFragment? HeaderTemplate { get; set; }
-    
-    /// <summary>
-    /// Gets or sets the navigation template
-    /// </summary>
-    [Parameter]
-    public RenderFragment? NavigationTemplate { get; set; }
-    
-    /// <summary>
-    /// Gets or sets the actions template
-    /// </summary>
-    [Parameter]
-    public RenderFragment? ActionsTemplate { get; set; }
-    
-    /// <summary>
-    /// Gets or sets the sidebar footer template
-    /// </summary>
-    [Parameter]
-    public RenderFragment? SidebarFooterTemplate { get; set; }
-    
-    /// <summary>
-    /// Gets or sets the event callback for sign out
-    /// </summary>
-    [Parameter]
-    public EventCallback OnSignOut { get; set; }
-    
-    private async Task SignOut()
-    {
-        await AuthService.SignOutAsync();
-        
-        if (OnSignOut.HasDelegate)
-        {
-            await OnSignOut.InvokeAsync();
-        }
-    }
-    
-    private async Task ClearStatusMessage()
-    {
-        StatusMessage = null;
-        await StatusMessageChanged.InvokeAsync(null);
-    }
-    
-    private async Task ClearErrorMessage()
-    {
-        ErrorMessage = null;
-        await ErrorMessageChanged.InvokeAsync(null);
-    }
-    
-    private string GetAdminLayoutClass()
-    {
-        return $"osirion-admin-dashboard osirion-admin-theme-{Theme} {CssClass}".Trim();
-    }
-}

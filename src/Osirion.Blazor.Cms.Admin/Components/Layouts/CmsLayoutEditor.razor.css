@@ -1,0 +1,126 @@
+﻿/* Styles for the CMS Editor Layout - a simplified layout for content editing */
+
+.osirion-editor-layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: var(--osirion-admin-bg);
+    color: var(--osirion-admin-text);
+    font-family: var(--osirion-admin-font-family);
+    font-size: var(--osirion-admin-font-size);
+    line-height: var(--osirion-admin-line-height);
+}
+
+/* Header styles */
+.osirion-editor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--osirion-admin-bg-header);
+    border-bottom: 1px solid var(--osirion-admin-border);
+    height: 60px;
+}
+
+.osirion-editor-header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.osirion-editor-header-right {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.osirion-editor-home-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--osirion-admin-text);
+    transition: color 0.2s;
+}
+
+    .osirion-editor-home-link:hover {
+        color: var(--osirion-admin-primary);
+    }
+
+/* Breadcrumb styles */
+.osirion-editor-breadcrumb {
+    display: flex;
+    align-items: center;
+    font-size: 0.875rem;
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: none; /* For Firefox */
+    -ms-overflow-style: none; /* For IE and Edge */
+    max-width: 50vw;
+}
+
+    .osirion-editor-breadcrumb::-webkit-scrollbar {
+        display: none; /* For Chrome, Safari, and Opera */
+    }
+
+.osirion-editor-breadcrumb-separator {
+    margin: 0 0.5rem;
+    color: var(--osirion-admin-text-muted);
+}
+
+.osirion-editor-breadcrumb-item {
+    color: var(--osirion-admin-text-muted);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+    .osirion-editor-breadcrumb-item:hover {
+        color: var(--osirion-admin-primary);
+        text-decoration: underline;
+    }
+
+.osirion-editor-breadcrumb-current {
+    color: var(--osirion-admin-text);
+    font-weight: 500;
+}
+
+/* Main content area */
+.osirion-editor-main {
+    flex: 1;
+    padding: 0;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Dark theme adjustments */
+:global(.osirion-admin-theme-dark) .osirion-editor-home-link {
+    color: var(--osirion-admin-text);
+}
+
+    :global(.osirion-admin-theme-dark) .osirion-editor-home-link:hover {
+        color: var(--osirion-admin-primary);
+    }
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .osirion-editor-header {
+        flex-direction: column;
+        align-items: flex-start;
+        height: auto;
+        padding: 0.75rem;
+        gap: 0.75rem;
+    }
+
+    .osirion-editor-breadcrumb {
+        max-width: 100%;
+    }
+
+    .osirion-editor-header-left,
+    .osirion-editor-header-right {
+        width: 100%;
+    }
+
+    .osirion-editor-header-right {
+        justify-content: flex-end;
+    }
+}

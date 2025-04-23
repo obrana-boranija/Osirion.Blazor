@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿// src/Osirion.Blazor.Cms.Admin/Components/Editor/ContentEditor.razor.cs
+
+using Microsoft.AspNetCore.Components;
 using Osirion.Blazor.Cms.Admin.Services;
 using Osirion.Blazor.Cms.Models;
+using Markdig;
 
 namespace Osirion.Blazor.Cms.Admin.Components.Editor;
 
@@ -27,6 +30,9 @@ public partial class ContentEditor
     [Inject]
     public IGitHubAdminService GitHubService { get; set; } = default!;
 
+    [Inject]
+    public NavigationManager NavigationManager { get; set; } = default!;
+
     private bool IsSaving { get; set; }
     private string? ErrorMessage { get; set; }
 
@@ -47,6 +53,17 @@ public partial class ContentEditor
     private string _commitMessage = "Update content";
 
     private bool IsFileName => AdminState.IsCreatingNewFile || string.IsNullOrEmpty(AdminState.EditingPost?.FilePath);
+
+    // Use Markdig for better markdown rendering
+    private readonly MarkdownPipeline _markdownPipeline;
+
+    public ContentEditor()
+    {
+        _markdownPipeline = new MarkdownPipelineBuilder()
+            .UseAdvancedExtensions()
+            .UseYamlFrontMatter()
+            .Build();
+    }
 
     protected override void OnInitialized()
     {
@@ -139,11 +156,6 @@ public partial class ContentEditor
                 (AdminState.IsCreatingNewFile ? $"Create {filePath}" : $"Update {filePath}") :
                 CommitMessage;
 
-            // Log for debugging
-            Console.WriteLine($"Saving file: {filePath}");
-            Console.WriteLine($"SHA: {existingSha ?? "none"}");
-            Console.WriteLine($"Message: {message}");
-
             // Save the file
             var response = await GitHubService.CreateOrUpdateFileAsync(
                 filePath,
@@ -225,8 +237,8 @@ public partial class ContentEditor
     {
         try
         {
-            // Use the Markdig library to render markdown to HTML
-            return Markdig.Markdown.ToHtml(markdown);
+            // Use Markdig properly with the pipeline to render markdown to HTML
+            return Markdown.ToHtml(markdown, _markdownPipeline);
         }
         catch (Exception ex)
         {

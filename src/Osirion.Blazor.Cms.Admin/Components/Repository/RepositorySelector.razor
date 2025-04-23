@@ -4,6 +4,7 @@
 @inherits Osirion.Blazor.Components.OsirionComponentBase
 @inject IGitHubAdminService GitHubService
 @inject CmsAdminState AdminState
+@inject NavigationManager NavigationManager
 
 <div class="@GetRepositorySelectorClass()">
     <div class="osirion-admin-header">
@@ -13,7 +14,7 @@
             <button type="button"
                     class="osirion-admin-button osirion-admin-button-refresh"
                     title="Refresh repositories"
-                    @onclick="RefreshRepositories">
+                    @onclick="() => RefreshRepositories()">
                 <span class="osirion-admin-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M21 12a9 9 0 0 1-9 9c-4.97 0-9-4.03-9-9s4.03-9 9-9c2.39 0 4.68.94 6.4 2.6L12 12" />
@@ -41,7 +42,7 @@
                     </svg>
                 </span>
                 <span>@ErrorMessage</span>
-                <button type="button" class="osirion-admin-button osirion-admin-button-small" @onclick="RefreshRepositories">
+                <button type="button" class="osirion-admin-button osirion-admin-button-small" @onclick="() => RefreshRepositories()">
                     Retry
                 </button>
             </div>
@@ -50,7 +51,7 @@
     {
             <div class="osirion-admin-empty">
                 <span>No repositories found.</span>
-                <button type="button" class="osirion-admin-button osirion-admin-button-small" @onclick="RefreshRepositories">
+                <button type="button" class="osirion-admin-button osirion-admin-button-small" @onclick="() => RefreshRepositories()">
                     Refresh
                 </button>
             </div>
@@ -124,10 +125,30 @@
     private bool IsLoading { get; set; }
     private string? ErrorMessage { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        AdminState.StateChanged += StateHasChanged;
-        await RefreshRepositories();
+        if (firstRender)
+        {
+            // Initialize state persistence if available
+            if (AdminState is CmsAdminStatePersistent persistentState)
+            {
+                await persistentState.InitializeAsync();
+
+                // If we have a selected repository, refresh repositories
+                if (AdminState.SelectedRepository != null)
+                {
+                    GitHubService.SetRepository(AdminState.SelectedRepository.Name);
+
+                    // Refresh repositories to get the complete list
+                    await RefreshRepositories(false);
+
+                    // Force a re-render to reflect the updated state
+                    StateHasChanged();
+                }
+            }
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
     }
 
     public void Dispose()
@@ -135,7 +156,7 @@
         AdminState.StateChanged -= StateHasChanged;
     }
 
-    private async Task RefreshRepositories()
+    private async Task RefreshRepositories(bool resetSelection = true)
     {
         IsLoading = true;
         ErrorMessage = null;
@@ -143,7 +164,11 @@
         try
         {
             Repositories = await GitHubService.GetRepositoriesAsync();
-            AdminState.SetRepositories(Repositories);
+
+            if (resetSelection)
+            {
+                AdminState.SetRepositories(Repositories);
+            }
         }
         catch (Exception ex)
         {
@@ -168,13 +193,13 @@
         var repository = Repositories.FirstOrDefault(r => r.Name == repositoryName);
         if (repository != null)
         {
+            IsLoading = true;
             AdminState.SelectRepository(repository);
             GitHubService.SetRepository(repository.Name);
 
-            // Automatically load branches for the selected repository
             try
             {
-                IsLoading = true;
+                // Automatically load branches for the selected repository
                 var branches = await GitHubService.GetBranchesAsync(repository.Name);
                 AdminState.SetBranches(branches);
 
@@ -184,6 +209,10 @@
                 {
                     AdminState.SelectBranch(defaultBranch);
                     GitHubService.SetBranch(defaultBranch.Name);
+
+                    // Automatically load content for the default branch
+                    var contents = await GitHubService.GetRepositoryContentsAsync();
+                    AdminState.SetCurrentPath("", contents);
                 }
             }
             catch (Exception ex)
@@ -206,14 +235,7 @@
     {
         if (SelectedRepository != null && !string.IsNullOrEmpty(SelectedRepository.HtmlUrl))
         {
-            // Since this is a server-side component, we can't directly use JSRuntime.
-            // We would typically call a JS interop method here.
-
-            // Instead, we'll notify the parent component that the user wants to open the link
-            if (OnRepositoryChange.HasDelegate)
-            {
-                OnRepositoryChange.InvokeAsync(SelectedRepository);
-            }
+            NavigationManager.NavigateTo(SelectedRepository.HtmlUrl, true);
         }
     }
 

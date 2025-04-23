@@ -17,9 +17,6 @@ internal class CmsAdminBuilder : ICmsAdminBuilder
     public CmsAdminBuilder(IServiceCollection services)
     {
         Services = services ?? throw new ArgumentNullException(nameof(services));
-        services.TryAddScoped<CmsAdminState>();
-        services.TryAddScoped<IGitHubAdminService, GitHubAdminService>();
-        services.TryAddScoped<IAuthenticationService, AuthenticationService>();
     }
 
     /// <inheritdoc/>

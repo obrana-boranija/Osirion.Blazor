@@ -184,7 +184,21 @@
 
         if (AdminState.SelectedRepository != null)
         {
+            // Refresh branches if we have a repository selected
+            // This handles both fresh loads and persistence scenarios
             await RefreshBranches();
+
+            // If we have a branch selected (from persistence), load its content
+            if (AdminState.SelectedBranch != null)
+            {
+                GitHubService.SetBranch(AdminState.SelectedBranch.Name);
+
+                // Only reload content if we don't already have it
+                if (!AdminState.CurrentItems.Any())
+                {
+                    await LoadContent();
+                }
+            }
         }
     }
 
@@ -247,15 +261,22 @@
         var branch = Branches.FirstOrDefault(b => b.Name == branchName);
         if (branch != null)
         {
-            AdminState.SelectBranch(branch);
-            GitHubService.SetBranch(branch.Name);
+            IsLoading = true;
+            ErrorMessage = null;
 
-            // Automatically load content after selecting a branch
             try
             {
-                IsLoading = true;
+                AdminState.SelectBranch(branch);
+                GitHubService.SetBranch(branch.Name);
+
+                // Automatically load content after selecting a branch
                 var contents = await GitHubService.GetRepositoryContentsAsync();
                 AdminState.SetCurrentPath("", contents);
+
+                if (OnBranchChange.HasDelegate)
+                {
+                    await OnBranchChange.InvokeAsync(branch);
+                }
             }
             catch (Exception ex)
             {
@@ -265,11 +286,31 @@
             {
                 IsLoading = false;
             }
+        }
+    }
 
-            if (OnBranchChange.HasDelegate)
-            {
-                await OnBranchChange.InvokeAsync(branch);
-            }
+    private async Task LoadContent()
+    {
+        if (AdminState.SelectedRepository == null || AdminState.SelectedBranch == null)
+        {
+            return;
+        }
+
+        IsLoading = true;
+        ErrorMessage = null;
+
+        try
+        {
+            var contents = await GitHubService.GetRepositoryContentsAsync(AdminState.CurrentPath);
+            AdminState.SetCurrentPath(AdminState.CurrentPath, contents);
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Failed to load content: {ex.Message}";
+        }
+        finally
+        {
+            IsLoading = false;
         }
     }
 

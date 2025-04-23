@@ -17,9 +17,9 @@ builder.Services.AddOsirion(osirion =>
         .UseContent(content => content.AddGitHub(options =>
         {
             options.Owner = "obrana-boranija";
-            options.Repository = "Osirion.Blazor";
-            options.ContentPath = "examples/content";
-            options.Branch = "master";
+            options.Repository = "hexavera-blog";
+            options.ContentPath = "";
+            options.Branch = "main";
             options.ApiToken = "";
             options.CacheDurationMinutes = 30;
         }))

@@ -66,8 +66,8 @@
                     <FileExplorer Title="Content Files"
                                   CanCreateFile="true"
                                   CanDeleteFile="true"
-                                  OnFileSelected="HandleFileSelected"
-                                  OnCreateFile="CreateNewPost" />
+                                  OnFileSelected="@(EventCallback.Factory.Create<GitHubItem>(this, HandleFileSelected))"
+                                  OnCreateFile="@(EventCallback.Factory.Create(this, CreateNewPost))" />
                 </div>
             </div>
         </div>
@@ -76,6 +76,23 @@
 </AdminPage>
 
 @code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Initialize state persistence if available
+            if (AdminState is CmsAdminStatePersistent persistentState)
+            {
+                await persistentState.InitializeAsync();
+
+                // Force a re-render to reflect the updated state
+                StateHasChanged();
+            }
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
     private void CreateNewPost()
     {
         // Create new blog post with empty content

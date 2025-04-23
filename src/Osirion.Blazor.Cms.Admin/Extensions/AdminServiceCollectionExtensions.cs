@@ -29,6 +29,13 @@ public static class CmsAdminServiceCollectionExtensions
         var builder = new CmsAdminBuilder(services);
         configure(builder);
 
+        services.TryAddScoped<IStateStorageService, SSRFriendlyStorageService>();
+        services.TryAddScoped<CmsAdminState>();
+        services.TryAddScoped<IGitHubAdminService, GitHubAdminService>();
+        services.TryAddScoped<IAuthenticationService, AuthenticationService>();
+        services.TryAddScoped<IStateStorageService, LocalStorageService>();
+        services.TryAddScoped<CmsAdminState, CmsAdminStatePersistent>();
+
         return services;
     }
 }
