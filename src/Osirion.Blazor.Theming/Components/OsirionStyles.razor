@@ -1,41 +1,113 @@
 ﻿@inherits OsirionComponentBase
 @inject IOptions<ThemingOptions>? Options
+@implements IDisposable
 
-@if (ShouldUseStyles@*  && !IsServerSide *@)
+<link rel="stylesheet" href="_content/Osirion.Blazor/css/osirion.css" />
+@if (!EffectiveOptions.UseDefaultStyles)
 {
-    @if (EffectiveOptions.UseDefaultStyles)
-    {
-        <link rel="stylesheet" href="_content/Osirion.Blazor.Theming/css/osirion.css" />
-        <link rel="stylesheet" href="_content/Osirion.Blazor.Cms/css/osirion-content.css" />
-        <link rel="stylesheet" href="_content/Osirion.Blazor.Navigation/css/osirion-navigation.css" />
         <link rel="stylesheet" href="_content/Osirion.Blazor.Theming/css/osirion-theming.css" />
-    }
+}
+<link rel="stylesheet" href="_content/Osirion.Blazor.Navigation/css/osirion-navigation.css" />
+<link rel="stylesheet" href="_content/Osirion.Blazor.Cms/css/osirion-content.css" />
 
-    @if (!string.IsNullOrEmpty(CustomVariables))
-    {
+@if (!string.IsNullOrEmpty(CustomVariables))
+{
         <style>
             :root {
-            @((MarkupString)CustomVariables)
+        @((MarkupString)CustomVariables)
             }
         </style>
-    }
+}
 
-    @if (EffectiveOptions.Framework != CssFramework.None)
-    {
-        @((MarkupString)GetFrameworkIntegrationScript())
-    }
+@if (EffectiveOptions.Framework != CssFramework.None)
+{
+        <style id="osirion-framework-style">
+            html {
+        @(GetFrameworkClassDeclaration())
+            }
+        </style>
+
+    @* This script is crucial - it handles both initial load AND navigation events *@
+        <script id="osirion-framework-script">
+            (function() {
+                // Store framework class in a global variable for persistence
+                window.osirionFrameworkClass = "@GetFrameworkClass()";
+
+                function applyFrameworkIntegration() {
+                    const htmlElement = document.documentElement || document.querySelector('html');
+                    const frameworkClass = window.osirionFrameworkClass;
+
+                    if (htmlElement && frameworkClass && !htmlElement.classList.contains(frameworkClass)) {
+                        // Remove any other framework classes first
+                        htmlElement.classList.remove(
+                            "osirion-bootstrap-integration", 
+                            "osirion-tailwind-integration",
+                            "osirion-fluent-integration",
+                            "osirion-mudblazor-integration",
+                            "osirion-radzen-integration"
+                        );
+
+                        // Apply the correct framework class
+                        htmlElement.classList.add(frameworkClass);
+                    }
+                }
+
+                // Apply immediately
+                applyFrameworkIntegration();
+
+                // Apply on DOMContentLoaded
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', applyFrameworkIntegration);
+                }
+
+                // IMPORTANT: Listen for Blazor navigation events
+                if (typeof Blazor !== 'undefined' && Blazor.addEventListener) {
+                    Blazor.addEventListener('enhancedload', function() {
+                        // Re-apply framework class after navigation
+                        setTimeout(applyFrameworkIntegration, 0);
+                    });
+                }
+
+                // Create a MutationObserver as a fallback to ensure class stays applied
+                const observer = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        if (mutation.attributeName === 'class') {
+                            // If class attribute changes, reapply our framework class
+                            setTimeout(applyFrameworkIntegration, 0);
+                        }
+                    });
+                });
+
+                // Start observing the html element for class changes
+                if (observer && document.documentElement) {
+                    observer.observe(document.documentElement, { attributes: true });
+                }
+            })();
+        </script>
 }
 
 @code {
+    /// <summary>
+    /// Gets or sets whether to use default styles
+    /// </summary>
     [Parameter]
     public bool? UseStyles { get; set; }
 
+    /// <summary>
+    /// Gets or sets custom CSS variables
+    /// </summary>
     [Parameter]
     public string? CustomVariables { get; set; }
 
+    /// <summary>
+    /// Gets or sets the CSS framework to integrate with
+    /// </summary>
     [Parameter]
     public CssFramework? Framework { get; set; }
 
+    /// <summary>
+    /// Gets the effective options, merging parameters with configured options
+    /// </summary>
     private ThemingOptions EffectiveOptions => new()
         {
             UseDefaultStyles = UseStyles ?? Options?.Value.UseDefaultStyles ?? true,
@@ -43,11 +115,12 @@
             Framework = Framework ?? Options?.Value.Framework ?? CssFramework.None
         };
 
-    private bool ShouldUseStyles => EffectiveOptions.UseDefaultStyles;
-
-    private string GetFrameworkIntegrationScript()
+    /// <summary>
+    /// Gets the framework class based on the selected framework
+    /// </summary>
+    private string GetFrameworkClass()
     {
-        var integrationClass = EffectiveOptions.Framework switch
+        return EffectiveOptions.Framework switch
         {
             CssFramework.Bootstrap => "osirion-bootstrap-integration",
             CssFramework.Tailwind => "osirion-tailwind-integration",
@@ -56,27 +129,30 @@
             CssFramework.Radzen => "osirion-radzen-integration",
             _ => ""
         };
+    }
 
-        if (string.IsNullOrEmpty(integrationClass))
-            return string.Empty;
+    /// <summary>
+    /// Gets the CSS declaration for the framework class
+    /// </summary>
+    private string GetFrameworkClassDeclaration()
+    {
+        var frameworkClass = GetFrameworkClass();
+        return !string.IsNullOrEmpty(frameworkClass) ? $"class: \"{frameworkClass}\"" : "";
+    }
 
-        return $@"
-            <script>
-                (function() {{
-                    function applyFrameworkIntegration() {{
-                        const htmlElement = document.documentElement || document.querySelector('html');
-                        if (htmlElement && !htmlElement.classList.contains('{integrationClass}')) {{
-                            htmlElement.classList.add('{integrationClass}');
-                        }}
-                    }}
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
 
-                    applyFrameworkIntegration();
+        if (firstRender && IsInteractive)
+        {
+            // Register this component with the navigation manager to handle navigation events
+            // This would be an ideal place to add navigation event handling if needed
+        }
+    }
 
-                    if (document.readyState === 'loading') {{
-                        document.addEventListener('DOMContentLoaded', applyFrameworkIntegration);
-                    }}
-                }})();
-            </script>
-        ";
+    public void Dispose()
+    {
+        // Cleanup code if needed
     }
 }

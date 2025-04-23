@@ -1,7 +1,8 @@
 ﻿/* Osirion.Blazor CSS Framework - Consolidated Styles */
+
 /* Core Variables */
 :root {
-    /* Colors */
+    /* Base Colors */
     --osirion-primary-color: #2563eb;
     --osirion-primary-hover-color: #1d4ed8;
     --osirion-text-color: #374151;
@@ -37,15 +38,20 @@
     --osirion-content-width: 800px;
     --osirion-card-min-width: 300px;
     --osirion-image-height: 200px;
-    /* ScrollToTop specific */
+    /* ScrollToTop specific variables */
     --osirion-scroll-background: rgba(37, 99, 235, 0.8);
     --osirion-scroll-hover-background: rgba(29, 78, 216, 0.9);
     --osirion-scroll-color: #ffffff;
     --osirion-scroll-hover-color: #ffffff;
+    --osirion-scroll-border-color: transparent;
+    --osirion-scroll-hover-border-color: transparent;
     --osirion-scroll-size: 45px;
     --osirion-scroll-margin: 25px;
     --osirion-scroll-border-radius: 50%;
     --osirion-scroll-z-index: 1000;
+    --osirion-scroll-transition: all 0.3s ease;
+    --osirion-scroll-box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    --osirion-scroll-hover-box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
 }
 
 /* ContentList component */

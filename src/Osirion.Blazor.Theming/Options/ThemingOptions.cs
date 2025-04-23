@@ -13,7 +13,7 @@ public class ThemingOptions
     /// <summary>
     /// Gets or sets whether to use default styles
     /// </summary>
-    public bool UseDefaultStyles { get; set; } = true;
+    public bool UseDefaultStyles { get; set; } = false;
 
     /// <summary>
     /// Gets or sets the CSS framework to integrate with
