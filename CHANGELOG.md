@@ -1,3 +1,8 @@
+---
+title: "Changelog"
+author: "Dejan Demonjić"
+date: 2025-04-23
+---
 # Changelog
 
 All notable changes to this project will be documented in this file.
