@@ -1,0 +1,102 @@
+﻿/* Styles for Repository Selector component */
+
+.osirion-admin-repository-selector {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--osirion-admin-border);
+    border-radius: var(--osirion-admin-border-radius);
+    overflow: hidden;
+    margin-bottom: var(--osirion-admin-spacer);
+}
+
+.osirion-admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background-color: var(--osirion-admin-bg-header);
+    border-bottom: 1px solid var(--osirion-admin-border);
+}
+
+.osirion-admin-title {
+    margin: 0;
+    font-size: 0.875rem;
+    font-weight: var(--osirion-admin-font-weight-medium);
+}
+
+.osirion-admin-actions {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.osirion-admin-select-container {
+    padding: 0.5rem 0.75rem;
+}
+
+.osirion-admin-select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid var(--osirion-admin-border);
+    border-radius: var(--osirion-admin-border-radius);
+    background-color: var(--osirion-admin-bg);
+    color: var(--osirion-admin-text);
+    font-family: var(--osirion-admin-font-family);
+    font-size: var(--osirion-admin-font-size);
+}
+
+.osirion-admin-repo-details {
+    padding: 0.75rem;
+    background-color: var(--osirion-admin-bg-sidebar);
+    border-top: 1px solid var(--osirion-admin-border);
+}
+
+.osirion-admin-repo-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.osirion-admin-repo-name {
+    font-weight: var(--osirion-admin-font-weight-medium);
+    color: var(--osirion-admin-text);
+}
+
+.osirion-admin-repo-description {
+    font-size: 0.875rem;
+    color: var(--osirion-admin-text-muted);
+}
+
+.osirion-admin-repo-visibility {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.25rem;
+}
+
+.osirion-admin-repo-private,
+.osirion-admin-repo-public {
+    display: inline-block;
+    padding: 0.125rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.osirion-admin-repo-private {
+    background-color: var(--osirion-admin-warning-light, #fbbf24);
+    color: var(--osirion-admin-warning-dark, #d97706);
+}
+
+.osirion-admin-repo-public {
+    background-color: var(--osirion-admin-success-light, #34d399);
+    color: var(--osirion-admin-success-dark, #059669);
+}
+
+.osirion-admin-loading,
+.osirion-admin-error,
+.osirion-admin-empty {
+    padding: 0.75rem;
+    text-align: center;
+    color: var(--osirion-admin-text-muted);
+}

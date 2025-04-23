@@ -1,0 +1,86 @@
+﻿/* Styles for Metadata Editor component */
+
+.osirion-admin-metadata-editor {
+    height: 100%;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--osirion-admin-bg-editor-sidebar, var(--osirion-admin-bg-sidebar));
+}
+
+.osirion-admin-metadata-header {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--osirion-admin-border);
+    background-color: var(--osirion-admin-bg-header);
+}
+
+.osirion-admin-metadata-title {
+    margin: 0;
+    font-size: 0.875rem;
+    font-weight: var(--osirion-admin-font-weight-medium);
+    color: var(--osirion-admin-text-muted);
+}
+
+.osirion-admin-metadata-content {
+    flex: 1;
+    padding: var(--osirion-admin-spacer);
+    overflow-y: auto;
+}
+
+.osirion-admin-form-group {
+    margin-bottom: var(--osirion-admin-spacer);
+}
+
+.osirion-admin-label {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-weight: var(--osirion-admin-font-weight-medium);
+    color: var(--osirion-admin-text);
+    font-size: 0.875rem;
+}
+
+.osirion-admin-input,
+.osirion-admin-textarea {
+    display: block;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--osirion-admin-border);
+    border-radius: var(--osirion-admin-border-radius);
+    background-color: var(--osirion-admin-bg);
+    color: var(--osirion-admin-text);
+    font-family: var(--osirion-admin-font-family);
+    font-size: var(--osirion-admin-font-size);
+    transition: border-color var(--osirion-admin-transition, 0.2s ease);
+}
+
+    .osirion-admin-input:focus,
+    .osirion-admin-textarea:focus {
+        outline: none;
+        border-color: var(--osirion-admin-primary);
+        box-shadow: 0 0 0 3px rgba(3, 102, 214, 0.1);
+    }
+
+.osirion-admin-textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.osirion-admin-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.osirion-admin-code-preview {
+    padding: var(--osirion-admin-spacer);
+    background-color: var(--osirion-admin-bg-editor);
+    border-radius: var(--osirion-admin-border-radius);
+    font-family: monospace;
+    font-size: 0.75rem;
+    line-height: 1.6;
+    color: var(--osirion-admin-text-editor, var(--osirion-admin-text));
+    overflow-x: auto;
+    white-space: pre-wrap;
+    border: 1px solid var(--osirion-admin-border);
+}

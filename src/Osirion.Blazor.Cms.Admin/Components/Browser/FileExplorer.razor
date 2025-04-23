@@ -489,7 +489,7 @@
             CancelDelete();
 
             // Show success message
-            AdminState.SetStatusMessage($"File {FileToDelete.Name} deleted successfully");
+            AdminState.SetStatusMessage($"File {FileToDelete.Name ?? string.Empty} deleted successfully");
         }
         catch (Exception ex)
         {

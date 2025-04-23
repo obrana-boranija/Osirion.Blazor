@@ -1,0 +1,151 @@
+﻿/* Styles for Login component */
+
+.osirion-admin-login {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    width: 100%;
+    padding: var(--osirion-admin-spacer);
+    background-color: var(--osirion-admin-bg);
+}
+
+.osirion-admin-login-container {
+    background-color: var(--osirion-admin-bg);
+    border-radius: var(--osirion-admin-border-radius);
+    box-shadow: var(--osirion-admin-shadow-lg, 0 10px 25px rgba(0,0,0,0.1));
+    padding: var(--osirion-admin-spacer-lg, 2rem);
+    width: 100%;
+    max-width: 480px;
+}
+
+.osirion-admin-login-header {
+    text-align: center;
+    margin-bottom: var(--osirion-admin-spacer-lg, 2rem);
+}
+
+.osirion-admin-login-title {
+    font-size: 1.75rem;
+    margin-bottom: 0.5rem;
+    color: var(--osirion-admin-text);
+}
+
+.osirion-admin-login-description {
+    color: var(--osirion-admin-text-muted);
+    margin-bottom: var(--osirion-admin-spacer);
+}
+
+.osirion-admin-login-options {
+    display: flex;
+    flex-direction: column;
+    gap: var(--osirion-admin-spacer);
+}
+
+.osirion-admin-login-form {
+    margin-top: var(--osirion-admin-spacer);
+}
+
+.osirion-admin-form-group {
+    margin-bottom: var(--osirion-admin-spacer);
+}
+
+.osirion-admin-label {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-weight: var(--osirion-admin-font-weight-medium);
+    color: var(--osirion-admin-text);
+}
+
+.osirion-admin-input {
+    display: block;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--osirion-admin-border);
+    border-radius: var(--osirion-admin-border-radius);
+    background-color: var(--osirion-admin-bg);
+    color: var(--osirion-admin-text);
+    font-family: var(--osirion-admin-font-family);
+    font-size: var(--osirion-admin-font-size);
+}
+
+.osirion-admin-form-help {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.75rem;
+    color: var(--osirion-admin-text-muted);
+}
+
+.osirion-admin-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--osirion-admin-spacer-sm);
+    margin-top: var(--osirion-admin-spacer);
+}
+
+.osirion-admin-button-github {
+    background-color: #24292e;
+    border-color: #24292e;
+    color: white;
+}
+
+    .osirion-admin-button-github:hover:not(:disabled) {
+        background-color: #0f1114;
+        border-color: #0f1114;
+    }
+
+/* Alert styles for displaying errors */
+.osirion-admin-alert {
+    padding: var(--osirion-admin-spacer);
+    margin-bottom: var(--osirion-admin-spacer);
+    border-radius: var(--osirion-admin-border-radius);
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.osirion-admin-alert-error {
+    background-color: rgba(203, 36, 49, 0.1);
+    border: 1px solid var(--osirion-admin-danger, #cb2431);
+    color: var(--osirion-admin-danger, #cb2431);
+}
+
+.osirion-admin-alert-icon {
+    display: flex;
+    margin-right: var(--osirion-admin-spacer-sm);
+}
+
+.osirion-admin-alert-close {
+    position: absolute;
+    top: var(--osirion-admin-spacer-sm);
+    right: var(--osirion-admin-spacer-sm);
+    background: transparent;
+    border: none;
+    color: currentColor;
+    font-size: 1.25rem;
+    cursor: pointer;
+    padding: 0;
+}
+
+/* Loading spinner */
+.osirion-admin-loading-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--osirion-admin-border);
+    border-top-color: var(--osirion-admin-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: var(--osirion-admin-spacer-sm);
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Dark theme adjustments */
+:global(.osirion-admin-theme-dark) .osirion-admin-login-container {
+    background-color: var(--osirion-admin-bg);
+    border: 1px solid var(--osirion-admin-border);
+}

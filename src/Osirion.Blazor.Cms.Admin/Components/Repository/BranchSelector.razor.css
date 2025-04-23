@@ -1,0 +1,103 @@
+﻿/* Styles for Branch Selector component */
+
+.osirion-admin-branch-selector {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--osirion-admin-border);
+    border-radius: var(--osirion-admin-border-radius);
+    overflow: hidden;
+    margin-bottom: var(--osirion-admin-spacer);
+}
+
+/* Reusing header styles from other components */
+.osirion-admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background-color: var(--osirion-admin-bg-header);
+    border-bottom: 1px solid var(--osirion-admin-border);
+}
+
+.osirion-admin-title {
+    margin: 0;
+    font-size: 0.875rem;
+    font-weight: var(--osirion-admin-font-weight-medium);
+}
+
+.osirion-admin-actions {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.osirion-admin-button-create,
+.osirion-admin-button-refresh {
+    padding: 0.25rem;
+    min-height: auto;
+    background: transparent;
+    border: 1px solid var(--osirion-admin-border);
+}
+
+.osirion-admin-select-container {
+    padding: 0.5rem 0.75rem;
+}
+
+.osirion-admin-branch-details {
+    padding: 0.75rem;
+    background-color: var(--osirion-admin-bg-sidebar);
+    border-top: 1px solid var(--osirion-admin-border);
+}
+
+.osirion-admin-branch-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.osirion-admin-branch-name {
+    font-weight: var(--osirion-admin-font-weight-medium);
+    color: var(--osirion-admin-text);
+}
+
+.osirion-admin-branch-commit {
+    font-family: monospace;
+    font-size: 0.75rem;
+    color: var(--osirion-admin-text-muted);
+}
+
+.osirion-admin-branch-protected {
+    display: inline-block;
+    padding: 0.125rem 0.5rem;
+    border-radius: 9999px;
+    background-color: var(--osirion-admin-warning-light, #fbbf24);
+    color: var(--osirion-admin-warning-dark, #d97706);
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin-left: 0.5rem;
+}
+
+.osirion-admin-new-branch {
+    padding: var(--osirion-admin-spacer);
+    background-color: var(--osirion-admin-bg-sidebar);
+    border-bottom: 1px solid var(--osirion-admin-border);
+}
+
+.osirion-admin-form-group {
+    margin-bottom: var(--osirion-admin-spacer-sm);
+}
+
+.osirion-admin-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--osirion-admin-spacer-sm);
+    margin-top: var(--osirion-admin-spacer);
+}
+
+.osirion-admin-loading,
+.osirion-admin-error,
+.osirion-admin-empty {
+    padding: 0.75rem;
+    text-align: center;
+    color: var(--osirion-admin-text-muted);
+}

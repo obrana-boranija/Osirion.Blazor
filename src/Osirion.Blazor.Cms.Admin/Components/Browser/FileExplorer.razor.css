@@ -1,0 +1,186 @@
+﻿/* Styles for File Explorer component */
+
+.osirion-admin-file-explorer {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    border: 1px solid var(--osirion-admin-border);
+    border-radius: var(--osirion-admin-border-radius);
+    overflow: hidden;
+}
+
+.osirion-admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background-color: var(--osirion-admin-bg-header);
+    border-bottom: 1px solid var(--osirion-admin-border);
+}
+
+.osirion-admin-title {
+    margin: 0;
+    font-size: 0.875rem;
+    font-weight: var(--osirion-admin-font-weight-medium);
+}
+
+.osirion-admin-actions {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.osirion-admin-file-list {
+    overflow-y: auto;
+    flex: 1;
+}
+
+.osirion-admin-file-item {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--osirion-admin-border);
+    cursor: pointer;
+    transition: background-color var(--osirion-admin-transition, 0.2s ease);
+}
+
+    .osirion-admin-file-item:hover {
+        background-color: var(--osirion-admin-light);
+    }
+
+    .osirion-admin-file-item.selected {
+        background-color: var(--osirion-admin-active-background, rgba(3, 102, 214, 0.1));
+    }
+
+.osirion-admin-file-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0.5rem;
+    color: var(--osirion-admin-text-muted);
+}
+
+.osirion-admin-file-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.osirion-admin-file-actions {
+    display: flex;
+    align-items: center;
+    visibility: hidden;
+}
+
+.osirion-admin-file-item:hover .osirion-admin-file-actions {
+    visibility: visible;
+}
+
+.osirion-admin-breadcrumb {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    background-color: var(--osirion-admin-bg-sidebar);
+    border-bottom: 1px solid var(--osirion-admin-border);
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.osirion-admin-breadcrumb-home,
+.osirion-admin-breadcrumb-item {
+    display: inline-flex;
+    align-items: center;
+    color: var(--osirion-admin-text-muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    font-size: 0.875rem;
+    text-decoration: none;
+}
+
+    .osirion-admin-breadcrumb-home:hover,
+    .osirion-admin-breadcrumb-item:hover {
+        color: var(--osirion-admin-primary);
+    }
+
+.osirion-admin-breadcrumb-separator {
+    margin: 0 0.25rem;
+    color: var(--osirion-admin-text-muted);
+}
+
+.osirion-admin-breadcrumb-current {
+    color: var(--osirion-admin-text);
+    font-weight: var(--osirion-admin-font-weight-medium);
+}
+
+.osirion-admin-loading,
+.osirion-admin-error,
+.osirion-admin-empty {
+    padding: 2rem;
+    text-align: center;
+    color: var(--osirion-admin-text-muted);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+/* Modal for delete confirmation */
+.osirion-admin-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.osirion-admin-modal-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.osirion-admin-modal-content {
+    position: relative;
+    background-color: var(--osirion-admin-bg);
+    border-radius: var(--osirion-admin-border-radius);
+    max-width: 500px;
+    width: 100%;
+    z-index: 1001;
+    box-shadow: var(--osirion-admin-shadow-lg, 0 10px 25px rgba(0,0,0,0.1));
+}
+
+.osirion-admin-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--osirion-admin-spacer);
+    border-bottom: 1px solid var(--osirion-admin-border);
+}
+
+.osirion-admin-modal-title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: var(--osirion-admin-font-weight-medium);
+}
+
+.osirion-admin-modal-body {
+    padding: var(--osirion-admin-spacer);
+}
+
+.osirion-admin-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: var(--osirion-admin-spacer);
+    border-top: 1px solid var(--osirion-admin-border);
+    gap: var(--osirion-admin-spacer-sm);
+}

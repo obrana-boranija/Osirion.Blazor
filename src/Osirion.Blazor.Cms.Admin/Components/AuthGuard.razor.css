@@ -1,0 +1,37 @@
+﻿/* Styles for Auth Guard component */
+
+.osirion-admin-unauthorized {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--osirion-admin-spacer-lg, 2rem);
+    text-align: center;
+    min-height: 50vh;
+    background-color: var(--osirion-admin-bg);
+}
+
+.osirion-admin-unauthorized-content {
+    background-color: var(--osirion-admin-bg);
+    border-radius: var(--osirion-admin-border-radius);
+    box-shadow: var(--osirion-admin-shadow, 0 1px 3px rgba(0,0,0,0.12));
+    padding: var(--osirion-admin-spacer-lg, 2rem);
+    max-width: 500px;
+    width: 100%;
+}
+
+.osirion-admin-unauthorized-title {
+    font-size: 1.5rem;
+    margin-bottom: var(--osirion-admin-spacer);
+    color: var(--osirion-admin-text);
+}
+
+.osirion-admin-unauthorized-message {
+    color: var(--osirion-admin-text-muted);
+    margin-bottom: var(--osirion-admin-spacer-lg, 2rem);
+}
+
+/* Dark theme adjustments */
+:global(.osirion-admin-theme-dark) .osirion-admin-unauthorized-content {
+    border: 1px solid var(--osirion-admin-border);
+}
