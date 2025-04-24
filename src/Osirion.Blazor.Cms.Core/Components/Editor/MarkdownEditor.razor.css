@@ -8,6 +8,7 @@
     background-color: var(--osirion-admin-bg-editor, #ffffff);
     overflow: hidden;
     height: 100%;
+    min-height: 300px; /* Ensure a minimum height */
 }
 
 .osirion-markdown-editor-container {
@@ -34,22 +35,42 @@
     flex: 1;
     width: 100%;
     height: 100%;
-    min-height: 100px;
+    min-height: 200px;
     padding: var(--osirion-admin-spacer, 1rem);
     border: none;
     resize: none;
-    font-family: monospace;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
     font-size: 0.875rem;
     line-height: 1.6;
     background-color: var(--osirion-admin-bg-editor, #ffffff);
     color: var(--osirion-admin-text-editor, var(--osirion-admin-text, #24292e));
     outline: none;
+    overflow: auto; /* Ensure scrollbars appear when needed */
 }
 
     .osirion-markdown-editor-textarea::placeholder {
         color: var(--osirion-admin-text-muted, #6a737d);
         opacity: 0.6;
     }
+
+    /* Custom scrollbar styles for modern browsers */
+    .osirion-markdown-editor-textarea::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+
+    .osirion-markdown-editor-textarea::-webkit-scrollbar-track {
+        background: var(--osirion-admin-bg-editor, #f1f1f1);
+    }
+
+    .osirion-markdown-editor-textarea::-webkit-scrollbar-thumb {
+        background: var(--osirion-admin-border, #c1c1c1);
+        border-radius: 4px;
+    }
+
+        .osirion-markdown-editor-textarea::-webkit-scrollbar-thumb:hover {
+            background: var(--osirion-admin-text-muted, #a8a8a8);
+        }
 
 /* Button styling - inherit from admin styles */
 :global(.osirion-admin-button-toolbar) {
@@ -94,6 +115,19 @@
     :global(.osirion-admin-theme-dark) .osirion-markdown-editor-textarea::placeholder {
         color: var(--osirion-admin-text-editor-muted, #9ca3af);
     }
+
+    /* Dark theme scrollbars */
+    :global(.osirion-admin-theme-dark) .osirion-markdown-editor-textarea::-webkit-scrollbar-track {
+        background: var(--osirion-admin-bg-editor, #1e293b);
+    }
+
+    :global(.osirion-admin-theme-dark) .osirion-markdown-editor-textarea::-webkit-scrollbar-thumb {
+        background: var(--osirion-admin-border, #4b5563);
+    }
+
+        :global(.osirion-admin-theme-dark) .osirion-markdown-editor-textarea::-webkit-scrollbar-thumb:hover {
+            background: var(--osirion-admin-text-muted, #6b7280);
+        }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {

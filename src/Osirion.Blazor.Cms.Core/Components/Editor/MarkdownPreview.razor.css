@@ -8,6 +8,7 @@
     background-color: var(--osirion-admin-bg, #ffffff);
     overflow: hidden;
     height: 100%;
+    min-height: 300px; /* Ensure a minimum height */
 }
 
 .osirion-markdown-preview-container {
@@ -34,9 +35,29 @@
 .osirion-markdown-preview-content {
     flex: 1;
     padding: var(--osirion-admin-spacer, 1rem);
-    overflow-y: auto;
+    overflow-y: auto; /* Ensure scrollbars appear when needed */
     word-break: break-word;
+    min-height: 200px;
 }
+
+    /* Custom scrollbar styles for modern browsers */
+    .osirion-markdown-preview-content::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+
+    .osirion-markdown-preview-content::-webkit-scrollbar-track {
+        background: var(--osirion-admin-bg, #f1f1f1);
+    }
+
+    .osirion-markdown-preview-content::-webkit-scrollbar-thumb {
+        background: var(--osirion-admin-border, #c1c1c1);
+        border-radius: 4px;
+    }
+
+        .osirion-markdown-preview-content::-webkit-scrollbar-thumb:hover {
+            background: var(--osirion-admin-text-muted, #a8a8a8);
+        }
 
     /* Markdown content styling */
     .osirion-markdown-preview-content h1,

@@ -12,7 +12,9 @@
     }
     else
     {
-        <MarkdownEditorPreview Content="@AdminState.EditingPost.Content"
+
+        <MarkdownEditorPreview @ref="EditorPreviewRef"
+                               Content="@AdminState.EditingPost.Content"
                                ContentChanged="@((content) => AdminState.EditingPost.Content = content)"
                                ShowToolbar="true"
                                EditorTitle="Markdown"

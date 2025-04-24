@@ -1,6 +1,7 @@
 ﻿using Markdig;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;
+using Osirion.Blazor.Cms.Core.Services;
 
 namespace Osirion.Blazor.Cms.Core.Extensions;
 
@@ -28,6 +29,9 @@ public static class MarkdownEditorExtensions
             .UsePipeTables()
             .Build());
 
+        // Register the JavaScript loader
+        services.AddScoped<IMarkdownJsLoader, MarkdownJsLoader>();
+
         return services;
     }
 
@@ -52,6 +56,9 @@ public static class MarkdownEditorExtensions
             return builder.Build();
         });
 
+        // Register the JavaScript loader
+        services.AddScoped<IMarkdownJsLoader, MarkdownJsLoader>();
+
         return services;
     }
 
@@ -65,8 +72,8 @@ public static class MarkdownEditorExtensions
         if (jsRuntime == null) throw new ArgumentNullException(nameof(jsRuntime));
 
         // Only register in browser context
-        if (OperatingSystem.IsBrowser())
-        {
+        //if (OperatingSystem.IsBrowser())
+        //{
             try
             {
                 // This registers all the JavaScript functions for the editor components
@@ -76,6 +83,6 @@ public static class MarkdownEditorExtensions
             {
                 Console.Error.WriteLine($"Failed to register markdown editor module: {ex.Message}");
             }
-        }
+        //}
     }
 }

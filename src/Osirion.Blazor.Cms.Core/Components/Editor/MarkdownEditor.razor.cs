@@ -1,11 +1,15 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
+using Osirion.Blazor.Cms.Core.Services;
 
 namespace Osirion.Blazor.Cms.Core.Components.Editor;
 
-public partial class MarkdownEditor(IJSRuntime JSRuntime)
+public partial class MarkdownEditor : IDisposable
 {
+    [Inject]
+    private IJSRuntime JSRuntime { get; set; } = default!;
+
     [Parameter]
     public string Content { get; set; } = string.Empty;
 
@@ -42,7 +46,7 @@ public partial class MarkdownEditor(IJSRuntime JSRuntime)
         {
             _isScrolling = true;
 
-            if (OperatingSystem.IsBrowser() && TextAreaRef != null)
+            if (TextAreaRef.HasValue)
             {
                 await JSRuntime.InvokeVoidAsync("setScrollPosition", TextAreaRef, position);
             }
@@ -58,7 +62,7 @@ public partial class MarkdownEditor(IJSRuntime JSRuntime)
     /// </summary>
     public async Task FocusAsync()
     {
-        if (OperatingSystem.IsBrowser() && TextAreaRef is not null)
+        if (TextAreaRef.HasValue)
         {
             await JSRuntime.InvokeVoidAsync("focusElement", TextAreaRef);
         }
@@ -69,7 +73,7 @@ public partial class MarkdownEditor(IJSRuntime JSRuntime)
     /// </summary>
     public async Task<(string text, int start, int end)> GetSelectionAsync()
     {
-        if (OperatingSystem.IsBrowser() && TextAreaRef is not null)
+        if (TextAreaRef.HasValue)
         {
             var selection = await JSRuntime.InvokeAsync<TextSelection>("getTextAreaSelection", TextAreaRef);
             return (selection.Text, selection.Start, selection.End);
@@ -84,7 +88,7 @@ public partial class MarkdownEditor(IJSRuntime JSRuntime)
     /// <param name="text">Text to insert</param>
     public async Task InsertTextAsync(string text)
     {
-        if (OperatingSystem.IsBrowser() && TextAreaRef is not null)
+        if (TextAreaRef.HasValue)
         {
             await JSRuntime.InvokeVoidAsync("insertTextAtCursor", TextAreaRef, text);
 
@@ -106,7 +110,7 @@ public partial class MarkdownEditor(IJSRuntime JSRuntime)
     /// <param name="defaultText">Text to use if no selection</param>
     public async Task WrapTextAsync(string prefix, string suffix, string defaultText = "")
     {
-        if (OperatingSystem.IsBrowser() && TextAreaRef != null)
+        if (TextAreaRef.HasValue)
         {
             await JSRuntime.InvokeVoidAsync("wrapTextSelection", TextAreaRef, prefix, suffix, defaultText);
 
@@ -127,7 +131,7 @@ public partial class MarkdownEditor(IJSRuntime JSRuntime)
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender && OperatingSystem.IsBrowser())
+        if (firstRender)
         {
             // Initialize JS functionality
             _dotNetRef = DotNetObjectReference.Create(this);
@@ -142,9 +146,24 @@ public partial class MarkdownEditor(IJSRuntime JSRuntime)
         }
     }
 
-    protected override void OnInitialized()
+    private async Task HandleContentChanged(string newContent)
     {
-        base.OnInitialized();
+        if (Content != newContent)
+        {
+            Content = newContent;
+            if (ContentChanged.HasDelegate)
+            {
+                await ContentChanged.InvokeAsync(Content);
+            }
+        }
+    }
+
+    private async Task HandleSelectionChange()
+    {
+        if (TextAreaRef is not null)
+        {
+            await JSRuntime.InvokeVoidAsync("handleSelectionChange", TextAreaRef);
+        }
     }
 
     public void Dispose()
@@ -160,7 +179,7 @@ public partial class MarkdownEditor(IJSRuntime JSRuntime)
         {
             _isScrolling = true;
 
-            if (OperatingSystem.IsBrowser() && TextAreaRef != null)
+            if (TextAreaRef.HasValue)
             {
                 // Calculate scroll position as percentage
                 var scrollInfo = await JSRuntime.InvokeAsync<ScrollInfo>("getScrollInfo", TextAreaRef);
@@ -184,7 +203,7 @@ public partial class MarkdownEditor(IJSRuntime JSRuntime)
         // Handle tab key for indentation
         if (e.Key == "Tab")
         {
-            if (OperatingSystem.IsBrowser() && TextAreaRef != null)
+            if (TextAreaRef.HasValue)
             {
                 await JSRuntime.InvokeVoidAsync("handleTabKey", TextAreaRef, e.ShiftKey);
 
@@ -197,11 +216,6 @@ public partial class MarkdownEditor(IJSRuntime JSRuntime)
                 }
             }
         }
-    }
-
-    private void OnEditorClick()
-    {
-        // Reset any special states or handlers on click if needed
     }
 
     // Toolbar button handlers
@@ -261,8 +275,15 @@ public partial class MarkdownEditor(IJSRuntime JSRuntime)
     }
 
     [JSInvokable]
-    public void UpdateScrollPosition(double position)
+    public async Task UpdateScrollPosition(double position)
     {
         _scrollPosition = position;
+    }
+
+    [JSInvokable]
+    public async Task HandleSelectionChange(TextSelection selection)
+    {
+        // This can be used later to sync selection between editor and preview
+        Console.WriteLine($"Selection changed: {selection.Start}-{selection.End}: '{selection.Text}'");
     }
 }

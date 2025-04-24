@@ -1,4 +1,5 @@
-﻿@inherits OsirionComponentBase
+﻿@using Microsoft.JSInterop
+@inherits OsirionComponentBase
 
 <div class="@GetEditorClass()">
     <div class="osirion-markdown-editor-container">
@@ -95,11 +96,11 @@
         </div>
 
         <textarea @ref="TextAreaRef"
-                  @bind="Content"
-                  @bind:event="oninput"
+                  @bind-value="Content"
+                  @bind-value:event="oninput"
                   @onscroll="OnEditorScroll"
                   @onkeydown="OnKeyDown"
-                  @onclick="OnEditorClick"
+                  @onselect="HandleSelectionChange"
                   class="osirion-markdown-editor-textarea"
                   placeholder="@Placeholder"></textarea>
     </div>

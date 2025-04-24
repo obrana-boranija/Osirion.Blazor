@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Components;
 using Osirion.Blazor.Cms.Admin.Services;
 using Osirion.Blazor.Cms.Models;
 using Markdig;
+using Osirion.Blazor.Cms.Core.Components.Editor;
+using Microsoft.JSInterop;
 
 namespace Osirion.Blazor.Cms.Admin.Components.Editor;
 
@@ -35,6 +37,8 @@ public partial class ContentEditor
 
     private bool IsSaving { get; set; }
     private string? ErrorMessage { get; set; }
+
+    private MarkdownEditorPreview EditorPreviewRef;
 
     private string FileName { get; set; } = string.Empty;
     private string CommitMessage

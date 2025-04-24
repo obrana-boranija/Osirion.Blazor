@@ -56,7 +56,7 @@ public partial class MarkdownPreview(IJSRuntime JSRuntime)
         {
             _isScrolling = true;
 
-            if (OperatingSystem.IsBrowser() && PreviewContentRef is not null)
+            if (PreviewContentRef is not null)
             {
                 await JSRuntime.InvokeVoidAsync("setScrollPosition", PreviewContentRef, position);
             }
@@ -81,14 +81,6 @@ public partial class MarkdownPreview(IJSRuntime JSRuntime)
         {
             _cachedMarkdown = Markdown;
             _cachedHtml = RenderMarkdown(Markdown);
-
-            // After markdown changes, we need to re-apply synced scrolling
-            await Task.Delay(50); // Short delay to ensure rendering is complete
-
-            if (SyncScroll && !_isScrolling && OperatingSystem.IsBrowser())
-            {
-                await SetScrollPositionAsync(_scrollPosition);
-            }
         }
 
         await base.OnParametersSetAsync();
@@ -96,11 +88,16 @@ public partial class MarkdownPreview(IJSRuntime JSRuntime)
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender && OperatingSystem.IsBrowser())
+        if (firstRender)
         {
             // Initialize JS functionality
             _dotNetRef = DotNetObjectReference.Create(this);
             await JSRuntime.InvokeVoidAsync("initializeMarkdownPreview", PreviewContentRef, _dotNetRef);
+
+            if (SyncScroll && !_isScrolling)
+            {
+                await SetScrollPositionAsync(_scrollPosition);
+            }
         }
 
         await base.OnAfterRenderAsync(firstRender);
@@ -119,7 +116,7 @@ public partial class MarkdownPreview(IJSRuntime JSRuntime)
         {
             _isScrolling = true;
 
-            if (OperatingSystem.IsBrowser() && PreviewContentRef is not null)
+            if (PreviewContentRef is not null)
             {
                 // Calculate scroll position as percentage
                 var scrollInfo = await JSRuntime.InvokeAsync<ScrollInfo>("getScrollInfo", PreviewContentRef);
