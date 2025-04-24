@@ -1,12 +1,14 @@
-﻿/* Updated styles for the Content Editor component */
+﻿/* Enhanced Content Editor Styles */
 
 .osirion-admin-content-editor {
     display: flex;
     flex-direction: column;
     height: 100%;
-    border: 1px solid var(--osirion-admin-border);
-    border-radius: var(--osirion-admin-border-radius);
+    border-radius: var(--osirion-admin-border-radius, 6px);
     overflow: hidden;
+    background-color: var(--osirion-admin-bg, #ffffff);
+    border: 1px solid var(--osirion-admin-border, #e1e4e8);
+    box-shadow: var(--osirion-admin-shadow, 0 1px 3px rgba(0,0,0,0.12));
 }
 
 /* Editor container with improved layouts */
@@ -14,9 +16,10 @@
     display: flex;
     flex: 1;
     overflow: hidden;
+    min-height: 0; /* Important for flex children to respect parent height */
 }
 
-    /* Three panel layout: editor | preview | metadata (rearranged to put metadata at right) */
+    /* Three panel layout: editor | preview | metadata */
     .osirion-admin-editor-container.three-panel {
         display: grid;
         grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 300px;
@@ -39,22 +42,23 @@
     display: flex;
     flex-direction: column;
     flex: 1;
-    border-right: 1px solid var(--osirion-admin-border);
-    background-color: var(--osirion-admin-bg-editor);
+    min-height: 0; /* Important for flex children */
+    border-right: 1px solid var(--osirion-admin-border, #e1e4e8);
+    background-color: var(--osirion-admin-bg-editor, #ffffff);
     overflow: hidden;
 }
 
 /* Editor textarea - expand to fill available space */
 .osirion-admin-editor-textarea {
     flex: 1;
-    padding: var(--osirion-admin-spacer);
+    padding: var(--osirion-admin-spacer, 1rem);
     border: none;
     resize: none;
-    font-family: monospace;
+    font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, monospace;
     font-size: 0.875rem;
     line-height: 1.6;
-    background-color: var(--osirion-admin-bg-editor);
-    color: var(--osirion-admin-text-editor, var(--osirion-admin-text));
+    background-color: var(--osirion-admin-bg-editor, #ffffff);
+    color: var(--osirion-admin-text-editor, var(--osirion-admin-text, #24292e));
     overflow: auto;
 }
 
@@ -62,37 +66,39 @@
         outline: none;
     }
 
-/* Metadata panel - now positioned on the right */
+/* Metadata panel */
 .osirion-admin-editor-metadata {
-    background-color: var(--osirion-admin-bg-editor-sidebar, var(--osirion-admin-bg-sidebar));
+    background-color: var(--osirion-admin-bg-editor-sidebar, var(--osirion-admin-bg-sidebar, #f6f8fa));
     overflow-y: auto;
     width: 300px;
+    border-left: 1px solid var(--osirion-admin-border, #e1e4e8);
 }
 
 /* Preview panel */
 .osirion-admin-editor-preview {
     display: flex;
     flex-direction: column;
-    background-color: var(--osirion-admin-bg);
+    background-color: var(--osirion-admin-bg, #ffffff);
     overflow-y: auto;
+    border-left: 1px solid var(--osirion-admin-border, #e1e4e8);
 }
 
 .osirion-admin-preview-header {
-    padding: var(--osirion-admin-spacer-sm);
-    border-bottom: 1px solid var(--osirion-admin-border);
-    background-color: var(--osirion-admin-bg-header);
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--osirion-admin-border, #e1e4e8);
+    background-color: var(--osirion-admin-bg-header, #f6f8fa);
 }
 
 .osirion-admin-preview-title {
     margin: 0;
     font-size: 0.875rem;
-    font-weight: var(--osirion-admin-font-weight-medium);
-    color: var(--osirion-admin-text-muted);
+    font-weight: var(--osirion-admin-font-weight-medium, 500);
+    color: var(--osirion-admin-text-muted, #6a737d);
 }
 
 .osirion-admin-preview-content {
     flex: 1;
-    padding: var(--osirion-admin-spacer);
+    padding: var(--osirion-admin-spacer, 1rem);
     overflow-y: auto;
 }
 
@@ -101,23 +107,24 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: var(--osirion-admin-spacer);
-    border-bottom: 1px solid var(--osirion-admin-border);
-    background-color: var(--osirion-admin-bg-header);
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--osirion-admin-border, #e1e4e8);
+    background-color: var(--osirion-admin-bg-header, #f6f8fa);
 }
 
 .osirion-admin-editor-title {
     margin: 0;
     font-size: 1.125rem;
-    font-weight: var(--osirion-admin-font-weight-bold);
+    font-weight: var(--osirion-admin-font-weight-bold, 600);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    color: var(--osirion-admin-text, #24292e);
 }
 
 .osirion-admin-editor-actions {
     display: flex;
-    gap: var(--osirion-admin-spacer-sm);
+    gap: 0.5rem;
 }
 
 /* Editor footer styles */
@@ -125,129 +132,224 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: var(--osirion-admin-spacer);
-    border-top: 1px solid var(--osirion-admin-border);
-    background-color: var(--osirion-admin-bg-header);
+    padding: 0.75rem 1rem;
+    border-top: 1px solid var(--osirion-admin-border, #e1e4e8);
+    background-color: var(--osirion-admin-bg-header, #f6f8fa);
 }
 
 .osirion-admin-editor-main-actions {
     display: flex;
     align-items: center;
-    gap: var(--osirion-admin-spacer);
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+/* Form group styles */
+.osirion-admin-form-group {
+    margin-bottom: 1rem;
+}
+
+.osirion-admin-form-group-inline {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.osirion-admin-label {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-weight: var(--osirion-admin-font-weight-medium, 500);
+    color: var(--osirion-admin-text, #24292e);
+}
+
+.osirion-admin-form-group-inline .osirion-admin-label {
+    margin-bottom: 0;
+    white-space: nowrap;
+}
+
+.osirion-admin-input {
+    display: block;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--osirion-admin-border, #e1e4e8);
+    border-radius: var(--osirion-admin-border-radius, 6px);
+    background-color: var(--osirion-admin-bg, #ffffff);
+    color: var(--osirion-admin-text, #24292e);
+    font-family: var(--osirion-admin-font-family, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif);
+    font-size: var(--osirion-admin-font-size, 14px);
+}
+
+    .osirion-admin-input:focus {
+        outline: none;
+        border-color: var(--osirion-admin-primary, #0366d6);
+        box-shadow: 0 0 0 3px rgba(3, 102, 214, 0.1);
+    }
+
+.osirion-admin-input-suffix {
+    color: var(--osirion-admin-text-muted, #6a737d);
+    font-size: 0.875rem;
 }
 
 /* Toolbar styles */
 .osirion-admin-editor-toolbar {
     display: flex;
     align-items: center;
-    gap: var(--osirion-admin-spacer-sm);
-    padding: var(--osirion-admin-spacer-sm);
-    border-bottom: 1px solid var(--osirion-admin-border);
-    background-color: var(--osirion-admin-bg-header);
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--osirion-admin-border, #e1e4e8);
+    background-color: var(--osirion-admin-bg-header, #f6f8fa);
+    flex-wrap: wrap;
 }
 
-/* Styles for the preview content rendered from markdown */
-.osirion-admin-preview-content h1,
-.osirion-admin-preview-content h2,
-.osirion-admin-preview-content h3,
-.osirion-admin-preview-content h4,
-.osirion-admin-preview-content h5,
-.osirion-admin-preview-content h6 {
-    margin-top: 1.5em;
-    margin-bottom: 0.5em;
-    font-weight: 600;
-    line-height: 1.25;
-    color: var(--osirion-admin-text);
+.osirion-admin-toolbar-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2rem;
+    height: 2rem;
+    padding: 0 0.5rem;
+    background-color: var(--osirion-admin-bg, #ffffff);
+    border: 1px solid var(--osirion-admin-border, #e1e4e8);
+    border-radius: var(--osirion-admin-border-radius, 6px);
+    color: var(--osirion-admin-text, #24292e);
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
 }
 
-    .osirion-admin-preview-content h1:first-child,
-    .osirion-admin-preview-content h2:first-child,
-    .osirion-admin-preview-content h3:first-child,
-    .osirion-admin-preview-content h4:first-child,
-    .osirion-admin-preview-content h5:first-child,
-    .osirion-admin-preview-content h6:first-child {
-        margin-top: 0;
+    .osirion-admin-toolbar-button:hover {
+        background-color: var(--osirion-admin-light, #f6f8fa);
     }
 
-.osirion-admin-preview-content h1 {
-    font-size: 2rem;
-}
-
-.osirion-admin-preview-content h2 {
-    font-size: 1.5rem;
-}
-
-.osirion-admin-preview-content h3 {
-    font-size: 1.25rem;
-}
-
-.osirion-admin-preview-content h4 {
-    font-size: 1rem;
-}
-
-.osirion-admin-preview-content h5 {
-    font-size: 0.875rem;
-}
-
-.osirion-admin-preview-content h6 {
-    font-size: 0.85rem;
-}
-
-.osirion-admin-preview-content p {
-    margin-bottom: 1rem;
-    line-height: 1.6;
-}
-
-.osirion-admin-preview-content ul,
-.osirion-admin-preview-content ol {
-    margin-bottom: 1rem;
-    padding-left: 2rem;
-}
-
-.osirion-admin-preview-content li {
-    margin-bottom: 0.25rem;
-}
-
-.osirion-admin-preview-content blockquote {
-    border-left: 4px solid var(--osirion-admin-border);
-    padding-left: 1rem;
-    margin-left: 0;
-    margin-right: 0;
-    font-style: italic;
-    color: var(--osirion-admin-text-muted);
-}
-
-.osirion-admin-preview-content pre {
-    background-color: var(--osirion-admin-bg-editor);
-    border-radius: var(--osirion-admin-border-radius);
-    padding: 1rem;
-    overflow-x: auto;
-    margin-bottom: 1rem;
-    font-family: monospace;
-    font-size: 0.875rem;
-}
-
-.osirion-admin-preview-content code {
-    font-family: monospace;
-    background-color: var(--osirion-admin-bg-editor);
-    border-radius: var(--osirion-admin-border-radius);
-    padding: 0.2rem 0.4rem;
-    font-size: 0.875em;
-}
-
-.osirion-admin-preview-content img {
-    max-width: 100%;
-    border-radius: var(--osirion-admin-border-radius);
-}
-
-.osirion-admin-preview-content a {
-    color: var(--osirion-admin-primary);
-    text-decoration: none;
-}
-
-    .osirion-admin-preview-content a:hover {
-        text-decoration: underline;
+    .osirion-admin-toolbar-button:active {
+        background-color: var(--osirion-admin-border, #e1e4e8);
     }
+
+    .osirion-admin-toolbar-button svg {
+        width: 1rem;
+        height: 1rem;
+    }
+
+.osirion-admin-toolbar-divider {
+    width: 1px;
+    height: 1.5rem;
+    background-color: var(--osirion-admin-border, #e1e4e8);
+    margin: 0 0.25rem;
+}
+
+/* Empty state */
+.osirion-admin-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1rem;
+    text-align: center;
+    color: var(--osirion-admin-text-muted, #6a737d);
+    background-color: var(--osirion-admin-bg, #ffffff);
+    height: 100%;
+    gap: 1rem;
+}
+
+    .osirion-admin-empty svg {
+        width: 3rem;
+        height: 3rem;
+        opacity: 0.5;
+        margin-bottom: 1rem;
+    }
+
+/* Dark theme support using theme classes */
+[data-theme="dark"] .osirion-admin-content-editor,
+.osirion-admin-theme-dark .osirion-admin-content-editor {
+    background-color: var(--osirion-admin-bg-dark, #0d1117);
+    border-color: var(--osirion-admin-border-dark, #30363d);
+}
+
+[data-theme="dark"] .osirion-admin-editor-content,
+.osirion-admin-theme-dark .osirion-admin-editor-content {
+    background-color: var(--osirion-admin-bg-editor-dark, #1e293b);
+    border-color: var(--osirion-admin-border-dark, #30363d);
+}
+
+[data-theme="dark"] .osirion-admin-editor-textarea,
+.osirion-admin-theme-dark .osirion-admin-editor-textarea {
+    background-color: var(--osirion-admin-bg-editor-dark, #1e293b);
+    color: var(--osirion-admin-text-editor-dark, #e5e7eb);
+}
+
+[data-theme="dark"] .osirion-admin-editor-metadata,
+.osirion-admin-theme-dark .osirion-admin-editor-metadata {
+    background-color: var(--osirion-admin-bg-editor-sidebar-dark, #111827);
+    border-color: var(--osirion-admin-border-dark, #30363d);
+}
+
+[data-theme="dark"] .osirion-admin-editor-preview,
+.osirion-admin-theme-dark .osirion-admin-editor-preview {
+    background-color: var(--osirion-admin-bg-dark, #0d1117);
+    border-color: var(--osirion-admin-border-dark, #30363d);
+}
+
+[data-theme="dark"] .osirion-admin-preview-header,
+[data-theme="dark"] .osirion-admin-editor-header,
+[data-theme="dark"] .osirion-admin-editor-footer,
+[data-theme="dark"] .osirion-admin-editor-toolbar,
+.osirion-admin-theme-dark .osirion-admin-preview-header,
+.osirion-admin-theme-dark .osirion-admin-editor-header,
+.osirion-admin-theme-dark .osirion-admin-editor-footer,
+.osirion-admin-theme-dark .osirion-admin-editor-toolbar {
+    background-color: var(--osirion-admin-bg-header-dark, #161b22);
+    border-color: var(--osirion-admin-border-dark, #30363d);
+}
+
+[data-theme="dark"] .osirion-admin-editor-title,
+[data-theme="dark"] .osirion-admin-label,
+.osirion-admin-theme-dark .osirion-admin-editor-title,
+.osirion-admin-theme-dark .osirion-admin-label {
+    color: var(--osirion-admin-text-dark, #c9d1d9);
+}
+
+[data-theme="dark"] .osirion-admin-preview-title,
+[data-theme="dark"] .osirion-admin-input-suffix,
+.osirion-admin-theme-dark .osirion-admin-preview-title,
+.osirion-admin-theme-dark .osirion-admin-input-suffix {
+    color: var(--osirion-admin-text-muted-dark, #8b949e);
+}
+
+[data-theme="dark"] .osirion-admin-input,
+.osirion-admin-theme-dark .osirion-admin-input {
+    background-color: var(--osirion-admin-bg-dark, #0d1117);
+    border-color: var(--osirion-admin-border-dark, #30363d);
+    color: var(--osirion-admin-text-dark, #c9d1d9);
+}
+
+    [data-theme="dark"] .osirion-admin-input:focus,
+    .osirion-admin-theme-dark .osirion-admin-input:focus {
+        border-color: var(--osirion-admin-primary-dark, #58a6ff);
+        box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.1);
+    }
+
+[data-theme="dark"] .osirion-admin-toolbar-button,
+.osirion-admin-theme-dark .osirion-admin-toolbar-button {
+    background-color: var(--osirion-admin-bg-dark, #0d1117);
+    border-color: var(--osirion-admin-border-dark, #30363d);
+    color: var(--osirion-admin-text-dark, #c9d1d9);
+}
+
+    [data-theme="dark"] .osirion-admin-toolbar-button:hover,
+    .osirion-admin-theme-dark .osirion-admin-toolbar-button:hover {
+        background-color: var(--osirion-admin-light-dark, #1f2937);
+    }
+
+[data-theme="dark"] .osirion-admin-toolbar-divider,
+.osirion-admin-theme-dark .osirion-admin-toolbar-divider {
+    background-color: var(--osirion-admin-border-dark, #30363d);
+}
+
+[data-theme="dark"] .osirion-admin-empty,
+.osirion-admin-theme-dark .osirion-admin-empty {
+    color: var(--osirion-admin-text-muted-dark, #8b949e);
+    background-color: var(--osirion-admin-bg-dark, #0d1117);
+}
 
 /* Responsive adjustments */
 @media (max-width: 992px) {
@@ -262,15 +364,13 @@
     .osirion-admin-editor-preview {
         width: 100%;
         height: 300px;
-        border-top: 1px solid var(--osirion-admin-border);
+        border-top: 1px solid var(--osirion-admin-border, #e1e4e8);
         border-left: none;
     }
-}
 
-@media (max-width: 768px) {
     .osirion-admin-editor-footer {
         flex-direction: column;
-        gap: var(--osirion-admin-spacer);
+        gap: 0.75rem;
         height: auto;
     }
 
@@ -278,5 +378,28 @@
         flex-direction: column;
         align-items: stretch;
         width: 100%;
+    }
+
+    .osirion-admin-form-group-inline {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+        .osirion-admin-form-group-inline .osirion-admin-label {
+            margin-bottom: 0.25rem;
+        }
+}
+
+@media (max-width: 768px) {
+    .osirion-admin-editor-toolbar {
+        overflow-x: auto;
+        padding: 0.5rem;
+    }
+
+    .osirion-admin-toolbar-button {
+        min-width: 1.75rem;
+        height: 1.75rem;
+        padding: 0 0.375rem;
+        font-size: 0.75rem;
     }
 }

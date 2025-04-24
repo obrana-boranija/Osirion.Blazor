@@ -1,77 +1,104 @@
+/* Enhanced Markdown Preview Styles */
+
 .osirion-markdown-preview {
     display: flex;
     flex-direction: column;
     border: 1px solid var(--osirion-border-color, #e1e4e8);
     border-radius: var(--osirion-border-radius, 4px);
-    background-color: var(--osirion-bg-light, #ffffff);
+    background-color: var(--osirion-background-light, #ffffff);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     height: 100%;
 }
 
 .osirion-markdown-preview-header {
-    padding: 0.5rem 1rem;
-    background-color: var(--osirion-bg-header, #f6f8fa);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0.75rem;
+    background-color: var(--osirion-background-light, #f6f8fa);
     border-bottom: 1px solid var(--osirion-border-color, #e1e4e8);
+    border-top-left-radius: calc(var(--osirion-border-radius, 4px) - 1px);
+    border-top-right-radius: calc(var(--osirion-border-radius, 4px) - 1px);
 }
 
-.osirion-markdown-preview-title {
-    margin: 0;
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--osirion-text-muted, #6a737d);
-}
+    .osirion-markdown-preview-header h3 {
+        margin: 0;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--osirion-text-muted, #6a737d);
+    }
 
 .osirion-markdown-preview-content {
     flex: 1;
     padding: 1rem;
-    overflow: auto;
+    overflow-y: auto;
     color: var(--osirion-text-color, #24292e);
-    background-color: var(--osirion-bg-light, #ffffff);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 1rem;
+    line-height: 1.6;
 }
 
 .osirion-markdown-preview-placeholder {
     color: var(--osirion-text-muted, #6a737d);
     font-style: italic;
+    padding: 1rem 0;
 }
 
 /* Markdown content styling */
+.osirion-markdown-preview-content h1,
+.osirion-markdown-preview-content h2,
+.osirion-markdown-preview-content h3,
+.osirion-markdown-preview-content h4,
+.osirion-markdown-preview-content h5,
+.osirion-markdown-preview-content h6 {
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--osirion-heading-color, #24292e);
+}
+
+    .osirion-markdown-preview-content h1:first-child,
+    .osirion-markdown-preview-content h2:first-child,
+    .osirion-markdown-preview-content h3:first-child,
+    .osirion-markdown-preview-content h4:first-child,
+    .osirion-markdown-preview-content h5:first-child,
+    .osirion-markdown-preview-content h6:first-child {
+        margin-top: 0;
+    }
+
 .osirion-markdown-preview-content h1 {
-    margin-top: 1.5rem;
-    margin-bottom: 1rem;
-    padding-bottom: 0.3rem;
-    font-size: 2rem;
+    font-size: 2em;
     border-bottom: 1px solid var(--osirion-border-color, #e1e4e8);
+    padding-bottom: 0.3em;
 }
 
 .osirion-markdown-preview-content h2 {
-    margin-top: 1.5rem;
-    margin-bottom: 1rem;
-    padding-bottom: 0.3rem;
-    font-size: 1.5rem;
+    font-size: 1.5em;
     border-bottom: 1px solid var(--osirion-border-color, #e1e4e8);
+    padding-bottom: 0.3em;
 }
 
 .osirion-markdown-preview-content h3 {
-    margin-top: 1.5rem;
-    margin-bottom: 1rem;
-    font-size: 1.25rem;
+    font-size: 1.25em;
 }
 
 .osirion-markdown-preview-content h4 {
-    margin-top: 1.5rem;
-    margin-bottom: 1rem;
-    font-size: 1rem;
+    font-size: 1em;
 }
 
-.osirion-markdown-preview-content h5,
+.osirion-markdown-preview-content h5 {
+    font-size: 0.875em;
+}
+
 .osirion-markdown-preview-content h6 {
-    margin-top: 1.5rem;
-    margin-bottom: 1rem;
-    font-size: 0.875rem;
+    font-size: 0.85em;
+    color: var(--osirion-text-muted, #6a737d);
 }
 
 .osirion-markdown-preview-content p {
-    margin-bottom: 1rem;
-    line-height: 1.6;
+    margin-top: 0;
+    margin-bottom: 1em;
 }
 
 .osirion-markdown-preview-content a {
@@ -83,110 +110,199 @@
         text-decoration: underline;
     }
 
-.osirion-markdown-preview-content ul,
-.osirion-markdown-preview-content ol {
-    margin-bottom: 1rem;
-    padding-left: 2rem;
-}
-
-.osirion-markdown-preview-content li {
-    margin-bottom: 0.25rem;
-}
-
-.osirion-markdown-preview-content blockquote {
-    margin: 1rem 0;
-    padding: 0 1rem;
-    color: var(--osirion-text-muted, #6a737d);
-    border-left: 0.25rem solid var(--osirion-border-color, #e1e4e8);
-}
-
-.osirion-markdown-preview-content code {
-    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
-    padding: 0.2rem 0.4rem;
-    margin: 0;
-    font-size: 85%;
-    background-color: var(--osirion-bg-header, #f6f8fa);
+.osirion-markdown-preview-content img {
+    max-width: 100%;
+    border-style: none;
+    box-sizing: content-box;
+    background-color: var(--osirion-background-light, #ffffff);
     border-radius: 3px;
 }
 
-.osirion-markdown-preview-content pre {
-    margin-bottom: 1rem;
-    padding: 1rem;
-    overflow: auto;
-    font-size: 85%;
-    line-height: 1.45;
-    background-color: var(--osirion-bg-header, #f6f8fa);
-    border-radius: var(--osirion-border-radius, 4px);
-}
-
-    .osirion-markdown-preview-content pre code {
-        display: inline;
-        padding: 0;
-        margin: 0;
-        overflow: visible;
-        word-wrap: normal;
-        background-color: transparent;
-        border: 0;
-    }
-
-.osirion-markdown-preview-content img {
-    max-width: 100%;
-    box-sizing: content-box;
-    background-color: var(--osirion-bg-light, #ffffff);
-}
-
 .osirion-markdown-preview-content hr {
-    height: 0.25rem;
+    height: 0.25em;
     padding: 0;
-    margin: 1.5rem 0;
+    margin: 24px 0;
     background-color: var(--osirion-border-color, #e1e4e8);
     border: 0;
 }
 
+.osirion-markdown-preview-content blockquote {
+    padding: 0 1em;
+    color: var(--osirion-text-muted, #6a737d);
+    border-left: 0.25em solid var(--osirion-border-color, #e1e4e8);
+    margin: 0 0 1em 0;
+}
+
+.osirion-markdown-preview-content ul,
+.osirion-markdown-preview-content ol {
+    padding-left: 2em;
+    margin-top: 0;
+    margin-bottom: 1em;
+}
+
+.osirion-markdown-preview-content code {
+    background-color: var(--osirion-background-inline-code, rgba(27, 31, 35, 0.05));
+    padding: 0.2em 0.4em;
+    margin: 0;
+    font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
+    font-size: 85%;
+    border-radius: 3px;
+}
+
+.osirion-markdown-preview-content pre {
+    background-color: var(--osirion-background-code-block, #f6f8fa);
+    padding: 1em;
+    margin-bottom: 1em;
+    border-radius: 3px;
+    overflow: auto;
+    font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
+    font-size: 85%;
+    line-height: 1.45;
+}
+
+    .osirion-markdown-preview-content pre code {
+        background-color: transparent;
+        padding: 0;
+        margin: 0;
+        font-size: 100%;
+        word-break: normal;
+        white-space: pre;
+    }
+
 .osirion-markdown-preview-content table {
+    border-spacing: 0;
+    border-collapse: collapse;
+    margin-top: 0;
+    margin-bottom: 1em;
     display: block;
     width: 100%;
     overflow: auto;
-    margin-bottom: 1rem;
-    border-spacing: 0;
-    border-collapse: collapse;
 }
-
-    .osirion-markdown-preview-content table th {
-        font-weight: 600;
-    }
 
     .osirion-markdown-preview-content table th,
     .osirion-markdown-preview-content table td {
-        padding: 0.5rem 1rem;
+        padding: 6px 13px;
         border: 1px solid var(--osirion-border-color, #e1e4e8);
     }
 
     .osirion-markdown-preview-content table tr {
-        background-color: var(--osirion-bg-light, #ffffff);
+        background-color: var(--osirion-background-light, #ffffff);
         border-top: 1px solid var(--osirion-border-color, #e1e4e8);
     }
 
         .osirion-markdown-preview-content table tr:nth-child(2n) {
-            background-color: var(--osirion-bg-header, #f6f8fa);
+            background-color: var(--osirion-background-table-alt, #f6f8fa);
         }
 
-/* Error message */
 .markdown-error {
-    padding: 1rem;
     color: var(--osirion-danger-color, #cb2431);
-    background-color: var(--osirion-danger-bg, #ffeef0);
-    border-radius: var(--osirion-border-radius, 4px);
+    background-color: var(--osirion-danger-background, #ffeef0);
+    padding: 1rem;
+    border-radius: 3px;
+    margin-bottom: 1rem;
 }
 
-/* Dark theme adjustments */
-:global(.dark-theme) .osirion-markdown-preview {
-    --osirion-border-color: #30363d;
-    --osirion-bg-light: #1e293b;
-    --osirion-bg-header: #161b22;
-    --osirion-text-color: #e5e7eb;
-    --osirion-text-muted: #8b949e;
-    --osirion-primary-color: #58a6ff;
-    --osirion-danger-color: #f85149;
-    --osirion-danger-bg: #3d1313;
+/* Dark theme support using class-based theming */
+:root[data-theme="dark"] .osirion-markdown-preview,
+.theme-dark .osirion-markdown-preview {
+    background-color: var(--osirion-background-dark, #0d1117);
+    border-color: var(--osirion-border-color-dark, #30363d);
+}
+
+:root[data-theme="dark"] .osirion-markdown-preview-header,
+.theme-dark .osirion-markdown-preview-header {
+    background-color: var(--osirion-background-header-dark, #161b22);
+    border-color: var(--osirion-border-color-dark, #30363d);
+}
+
+    :root[data-theme="dark"] .osirion-markdown-preview-header h3,
+    .theme-dark .osirion-markdown-preview-header h3 {
+        color: var(--osirion-text-muted-dark, #8b949e);
+    }
+
+:root[data-theme="dark"] .osirion-markdown-preview-content,
+.theme-dark .osirion-markdown-preview-content {
+    color: var(--osirion-text-color-dark, #c9d1d9);
+}
+
+    :root[data-theme="dark"] .osirion-markdown-preview-content h1,
+    :root[data-theme="dark"] .osirion-markdown-preview-content h2,
+    :root[data-theme="dark"] .osirion-markdown-preview-content h3,
+    :root[data-theme="dark"] .osirion-markdown-preview-content h4,
+    :root[data-theme="dark"] .osirion-markdown-preview-content h5,
+    .theme-dark .osirion-markdown-preview-content h1,
+    .theme-dark .osirion-markdown-preview-content h2,
+    .theme-dark .osirion-markdown-preview-content h3,
+    .theme-dark .osirion-markdown-preview-content h4,
+    .theme-dark .osirion-markdown-preview-content h5 {
+        color: var(--osirion-heading-color-dark, #c9d1d9);
+        border-color: var(--osirion-border-color-dark, #30363d);
+    }
+
+    :root[data-theme="dark"] .osirion-markdown-preview-content a,
+    .theme-dark .osirion-markdown-preview-content a {
+        color: var(--osirion-primary-color-dark, #58a6ff);
+    }
+
+    :root[data-theme="dark"] .osirion-markdown-preview-content code,
+    .theme-dark .osirion-markdown-preview-content code {
+        background-color: var(--osirion-background-inline-code-dark, rgba(240, 246, 252, 0.1));
+    }
+
+    :root[data-theme="dark"] .osirion-markdown-preview-content pre,
+    .theme-dark .osirion-markdown-preview-content pre {
+        background-color: var(--osirion-background-code-block-dark, #161b22);
+    }
+
+    :root[data-theme="dark"] .osirion-markdown-preview-content blockquote,
+    .theme-dark .osirion-markdown-preview-content blockquote {
+        color: var(--osirion-text-muted-dark, #8b949e);
+        border-color: var(--osirion-border-color-dark, #30363d);
+    }
+
+    :root[data-theme="dark"] .osirion-markdown-preview-content hr,
+    .theme-dark .osirion-markdown-preview-content hr {
+        background-color: var(--osirion-border-color-dark, #30363d);
+    }
+
+    :root[data-theme="dark"] .osirion-markdown-preview-content table tr,
+    .theme-dark .osirion-markdown-preview-content table tr {
+        background-color: var(--osirion-background-dark, #0d1117);
+        border-color: var(--osirion-border-color-dark, #30363d);
+    }
+
+        :root[data-theme="dark"] .osirion-markdown-preview-content table tr:nth-child(2n),
+        .theme-dark .osirion-markdown-preview-content table tr:nth-child(2n) {
+            background-color: var(--osirion-background-table-alt-dark, #161b22);
+        }
+
+    :root[data-theme="dark"] .osirion-markdown-preview-content table th,
+    :root[data-theme="dark"] .osirion-markdown-preview-content table td,
+    .theme-dark .osirion-markdown-preview-content table th,
+    .theme-dark .osirion-markdown-preview-content table td {
+        border-color: var(--osirion-border-color-dark, #30363d);
+    }
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .osirion-markdown-preview-header {
+        padding: 0.25rem 0.5rem;
+    }
+
+    .osirion-markdown-preview-content {
+        padding: 0.75rem;
+        font-size: 0.9375rem;
+    }
+
+        .osirion-markdown-preview-content h1 {
+            font-size: 1.75em;
+        }
+
+        .osirion-markdown-preview-content h2 {
+            font-size: 1.375em;
+        }
+
+        .osirion-markdown-preview-content h3 {
+            font-size: 1.125em;
+        }
 }
