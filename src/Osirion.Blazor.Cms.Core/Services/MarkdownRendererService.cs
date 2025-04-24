@@ -1,10 +1,8 @@
 ﻿using Markdig;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
-namespace Osirion.Blazor.Cms.Core.Services;
+namespace Osirion.Blazor.Cms.Services;
 /// <summary>
 /// Markdown renderer service for Blazor applications
 /// </summary>

@@ -1,216 +1,214 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
-using Osirion.Blazor.Cms.Core.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using Osirion.Blazor.Cms.Extensions;
+using Osirion.Blazor.Cms.Models;
 
-namespace Osirion.Blazor.Cms.Core.Components.Editor
+namespace Osirion.Blazor.Cms;
+
+public partial class MarkdownEditor : IAsyncDisposable
 {
-    public partial class MarkdownEditor : IAsyncDisposable
+    [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
+
+    [Parameter] public string Content { get; set; } = string.Empty;
+    [Parameter] public EventCallback<string> ContentChanged { get; set; }
+    [Parameter] public string Placeholder { get; set; } = "Enter markdown here...";
+    [Parameter] public bool ShowToolbar { get; set; } = true;
+    [Parameter] public bool ShowHeader { get; set; } = true;
+    [Parameter] public string Title { get; set; } = "Editor";
+    [Parameter] public bool AutoFocus { get; set; } = false;
+    [Parameter] public bool SyncScroll { get; set; } = true;
+    [Parameter] public EventCallback<double> OnScroll { get; set; }
+    [Parameter] public List<ToolbarAction>? ToolbarActions { get; set; }
+
+    private ElementReference TextAreaRef;
+    private ElementReference EditorContainer;
+    private string _currentContent = string.Empty;
+    private bool _preventScrollEvent = false;
+    private DotNetObjectReference<MarkdownEditor>? _dotNetReference;
+    private List<ToolbarAction> _defaultToolbarActions;
+
+    public MarkdownEditor()
     {
-        [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
-
-        [Parameter] public string Content { get; set; } = string.Empty;
-        [Parameter] public EventCallback<string> ContentChanged { get; set; }
-        [Parameter] public string Placeholder { get; set; } = "Enter markdown here...";
-        [Parameter] public bool ShowToolbar { get; set; } = true;
-        [Parameter] public bool ShowHeader { get; set; } = true;
-        [Parameter] public string Title { get; set; } = "Editor";
-        [Parameter] public bool AutoFocus { get; set; } = false;
-        [Parameter] public bool SyncScroll { get; set; } = true;
-        [Parameter] public EventCallback<double> OnScroll { get; set; }
-        [Parameter] public List<ToolbarAction>? ToolbarActions { get; set; }
-
-        private ElementReference TextAreaRef;
-        private ElementReference EditorContainer;
-        private string _currentContent = string.Empty;
-        private bool _preventScrollEvent = false;
-        private DotNetObjectReference<MarkdownEditor>? _dotNetReference;
-        private List<ToolbarAction> _defaultToolbarActions;
-
-        public MarkdownEditor()
+        // Initialize default toolbar actions in constructor
+        _defaultToolbarActions = new List<ToolbarAction>
         {
-            // Initialize default toolbar actions in constructor
-            _defaultToolbarActions = new List<ToolbarAction>
-            {
-                new ToolbarAction("H", ToolbarActionType.Wrap, "## ||Heading", "Heading",
-                    "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 12h16\"/><path d=\"M4 18h12\"/><path d=\"M4 6h16\"/></svg>"),
+            new ToolbarAction("H", ToolbarActionType.Wrap, "## ||Heading", "Heading",
+                "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 12h16\"/><path d=\"M4 18h12\"/><path d=\"M4 6h16\"/></svg>"),
 
-                new ToolbarAction("B", ToolbarActionType.Wrap, "**|**|bold text", "Bold",
-                    "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z\"/><path d=\"M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z\"/></svg>"),
+            new ToolbarAction("B", ToolbarActionType.Wrap, "**|**|bold text", "Bold",
+                "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z\"/><path d=\"M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z\"/></svg>"),
 
-                new ToolbarAction("I", ToolbarActionType.Wrap, "*|*|italic text", "Italic",
-                    "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><line x1=\"19\" y1=\"4\" x2=\"10\" y2=\"4\"/><line x1=\"14\" y1=\"20\" x2=\"5\" y2=\"20\"/><line x1=\"15\" y1=\"4\" x2=\"9\" y2=\"20\"/></svg>"),
+            new ToolbarAction("I", ToolbarActionType.Wrap, "*|*|italic text", "Italic",
+                "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><line x1=\"19\" y1=\"4\" x2=\"10\" y2=\"4\"/><line x1=\"14\" y1=\"20\" x2=\"5\" y2=\"20\"/><line x1=\"15\" y1=\"4\" x2=\"9\" y2=\"20\"/></svg>"),
 
-                new ToolbarAction("Link", ToolbarActionType.Wrap, "[|](url)|link text", "Link",
-                    "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71\"/><path d=\"M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71\"/></svg>"),
+            new ToolbarAction("Link", ToolbarActionType.Wrap, "[|](url)|link text", "Link",
+                "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71\"/><path d=\"M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71\"/></svg>"),
 
-                new ToolbarAction("List", ToolbarActionType.Insert, "\n- Item 1\n- Item 2\n- Item 3", "Bullet List",
-                    "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><line x1=\"8\" y1=\"6\" x2=\"21\" y2=\"6\"/><line x1=\"8\" y1=\"12\" x2=\"21\" y2=\"12\"/><line x1=\"8\" y1=\"18\" x2=\"21\" y2=\"18\"/><line x1=\"3\" y1=\"6\" x2=\"3.01\" y2=\"6\"/><line x1=\"3\" y1=\"12\" x2=\"3.01\" y2=\"12\"/><line x1=\"3\" y1=\"18\" x2=\"3.01\" y2=\"18\"/></svg>"),
+            new ToolbarAction("List", ToolbarActionType.Insert, "\n- Item 1\n- Item 2\n- Item 3", "Bullet List",
+                "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><line x1=\"8\" y1=\"6\" x2=\"21\" y2=\"6\"/><line x1=\"8\" y1=\"12\" x2=\"21\" y2=\"12\"/><line x1=\"8\" y1=\"18\" x2=\"21\" y2=\"18\"/><line x1=\"3\" y1=\"6\" x2=\"3.01\" y2=\"6\"/><line x1=\"3\" y1=\"12\" x2=\"3.01\" y2=\"12\"/><line x1=\"3\" y1=\"18\" x2=\"3.01\" y2=\"18\"/></svg>"),
 
-                new ToolbarAction("Code", ToolbarActionType.Wrap, "```\n|\n```|code goes here", "Code Block",
-                    "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"16 18 22 12 16 6\"/><polyline points=\"8 6 2 12 8 18\"/></svg>")
-            };
-        }
+            new ToolbarAction("Code", ToolbarActionType.Wrap, "```\n|\n```|code goes here", "Code Block",
+                "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"16 18 22 12 16 6\"/><polyline points=\"8 6 2 12 8 18\"/></svg>")
+        };
+    }
 
-        /// <summary>
-        /// Gets or sets the current content with two-way binding to update the parent
-        /// </summary>
-        private string CurrentContent
+    /// <summary>
+    /// Gets or sets the current content with two-way binding to update the parent
+    /// </summary>
+    private string CurrentContent
+    {
+        get => _currentContent;
+        set
         {
-            get => _currentContent;
-            set
+            if (_currentContent != value)
             {
-                if (_currentContent != value)
-                {
-                    _currentContent = value;
-                    _ = NotifyContentChangedAsync(value);
-                }
+                _currentContent = value;
+                _ = NotifyContentChangedAsync(value);
             }
         }
+    }
 
-        protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
+    {
+        _currentContent = Content;
+
+        // Use default toolbar actions if none provided
+        if (ToolbarActions == null)
+        {
+            ToolbarActions = _defaultToolbarActions;
+        }
+
+        await base.OnInitializedAsync();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        // Update local content if external content changes
+        if (Content != _currentContent)
         {
             _currentContent = Content;
-
-            // Use default toolbar actions if none provided
-            if (ToolbarActions == null)
-            {
-                ToolbarActions = _defaultToolbarActions;
-            }
-
-            await base.OnInitializedAsync();
         }
 
-        protected override async Task OnParametersSetAsync()
+        // Ensure ToolbarActions is never null
+        ToolbarActions ??= _defaultToolbarActions;
+
+        await base.OnParametersSetAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
         {
-            // Update local content if external content changes
-            if (Content != _currentContent)
+            // Create reference for JS interop
+            _dotNetReference = DotNetObjectReference.Create(this);
+
+            // Auto focus if configured
+            if (AutoFocus)
             {
-                _currentContent = Content;
-            }
-
-            // Ensure ToolbarActions is never null
-            ToolbarActions ??= _defaultToolbarActions;
-
-            await base.OnParametersSetAsync();
-        }
-
-        protected override async Task OnAfterRenderAsync(bool firstRender)
-        {
-            if (firstRender)
-            {
-                // Create reference for JS interop
-                _dotNetReference = DotNetObjectReference.Create(this);
-
-                // Auto focus if configured
-                if (AutoFocus)
-                {
-                    await FocusAsync();
-                }
-            }
-
-            await base.OnAfterRenderAsync(firstRender);
-        }
-
-        /// <summary>
-        /// Handle key down events, especially tab key
-        /// </summary>
-        private async Task HandleKeyDown(KeyboardEventArgs e)
-        {
-            // Handle tab key to insert indentation instead of changing focus
-            if (e.Key == "Tab")
-            {
-                await HandleTabKeyAsync(e.ShiftKey);
+                await FocusAsync();
             }
         }
 
-        /// <summary>
-        /// Handle scroll events and notify parent for sync
-        /// </summary>
-        private async Task HandleScroll()
-        {
-            if (_preventScrollEvent || !SyncScroll || !OnScroll.HasDelegate)
-                return;
+        await base.OnAfterRenderAsync(firstRender);
+    }
 
-            // Use minimal inline JS to get scroll position
-            var position = await GetScrollPositionAsync();
-            await OnScroll.InvokeAsync(position);
+    /// <summary>
+    /// Handle key down events, especially tab key
+    /// </summary>
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        // Handle tab key to insert indentation instead of changing focus
+        if (e.Key == "Tab")
+        {
+            await HandleTabKeyAsync(e.ShiftKey);
         }
+    }
 
-        /// <summary>
-        /// Execute toolbar action
-        /// </summary>
-        private async Task ExecuteToolbarAction(ToolbarAction action)
+    /// <summary>
+    /// Handle scroll events and notify parent for sync
+    /// </summary>
+    private async Task HandleScroll()
+    {
+        if (_preventScrollEvent || !SyncScroll || !OnScroll.HasDelegate)
+            return;
+
+        // Use minimal inline JS to get scroll position
+        var position = await GetScrollPositionAsync();
+        await OnScroll.InvokeAsync(position);
+    }
+
+    /// <summary>
+    /// Execute toolbar action
+    /// </summary>
+    private async Task ExecuteToolbarAction(ToolbarAction action)
+    {
+        if (action.Action != null)
         {
-            if (action.Action != null)
+            switch (action.ActionType)
             {
-                switch (action.ActionType)
-                {
-                    case ToolbarActionType.Insert:
-                        await InsertTextAsync(action.Action);
-                        break;
-                    case ToolbarActionType.Wrap:
-                        var parameters = action.Action.Split('|');
-                        if (parameters.Length >= 3)
-                        {
-                            await WrapTextAsync(parameters[0], parameters[1], parameters[2]);
-                        }
-                        break;
-                    default:
-                        break;
-                }
+                case ToolbarActionType.Insert:
+                    await InsertTextAsync(action.Action);
+                    break;
+                case ToolbarActionType.Wrap:
+                    var parameters = action.Action.Split('|');
+                    if (parameters.Length >= 3)
+                    {
+                        await WrapTextAsync(parameters[0], parameters[1], parameters[2]);
+                    }
+                    break;
+                default:
+                    break;
             }
         }
+    }
 
-        /// <summary>
-        /// Notifies the parent component when content changes
-        /// </summary>
-        private async Task NotifyContentChangedAsync(string value)
+    /// <summary>
+    /// Notifies the parent component when content changes
+    /// </summary>
+    private async Task NotifyContentChangedAsync(string value)
+    {
+        if (ContentChanged.HasDelegate && value != Content)
         {
-            if (ContentChanged.HasDelegate && value != Content)
-            {
-                await ContentChanged.InvokeAsync(value);
-            }
+            await ContentChanged.InvokeAsync(value);
         }
+    }
 
-        /// <summary>
-        /// Gets the CSS class for the component
-        /// </summary>
-        private string GetCssClass()
+    /// <summary>
+    /// Gets the CSS class for the component
+    /// </summary>
+    private string GetCssClass()
+    {
+        return $"osirion-markdown-editor {CssClass}".Trim();
+    }
+
+    #region JavaScript Interop Methods
+
+    /// <summary>
+    /// Focuses the editor
+    /// </summary>
+    public async Task FocusAsync()
+    {
+        try
         {
-            return $"osirion-markdown-editor {CssClass}".Trim();
+            await JSRuntime.InvokeVoidAsync("eval",
+                $"document.querySelector('[_bl_{TextAreaRef.Id}]')?.focus()");
         }
-
-        #region JavaScript Interop Methods
-
-        /// <summary>
-        /// Focuses the editor
-        /// </summary>
-        public async Task FocusAsync()
+        catch (Exception)
         {
-            try
-            {
-                await JSRuntime.InvokeVoidAsync("eval",
-                    $"document.querySelector('[_bl_{TextAreaRef.Id}]')?.focus()");
-            }
-            catch (Exception)
-            {
-                // Ignore focus errors in SSR
-            }
+            // Ignore focus errors in SSR
         }
+    }
 
-        /// <summary>
-        /// Gets the current selection in the editor
-        /// </summary>
-        public async Task<TextSelection> GetSelectionAsync()
+    /// <summary>
+    /// Gets the current selection in the editor
+    /// </summary>
+    public async Task<TextSelection> GetSelectionAsync()
+    {
+        try
         {
-            try
-            {
-                // Use inline JS to get selection without requiring a separate JS file
-                return await JSRuntime.InvokeAsync<TextSelection>("eval", $@"
+            // Use inline JS to get selection without requiring a separate JS file
+            return await JSRuntime.InvokeAsync<TextSelection>("eval", $@"
                 (function() {{
                     const textarea = document.querySelector('[_bl_{TextAreaRef.Id}]');
                     if (!textarea) return {{ text: '', start: 0, end: 0 }};
@@ -221,22 +219,22 @@ namespace Osirion.Blazor.Cms.Core.Components.Editor
                     
                     return {{ text, start, end }};
                 }})()");
-            }
-            catch
-            {
-                // Return empty selection if JS interop fails (e.g., in SSR)
-                return new TextSelection { Text = string.Empty, Start = 0, End = 0 };
-            }
         }
-
-        /// <summary>
-        /// Inserts text at the current cursor position
-        /// </summary>
-        public async Task InsertTextAsync(string text)
+        catch
         {
-            try
-            {
-                await JSRuntime.InvokeVoidAsync("eval", $@"
+            // Return empty selection if JS interop fails (e.g., in SSR)
+            return new TextSelection { Text = string.Empty, Start = 0, End = 0 };
+        }
+    }
+
+    /// <summary>
+    /// Inserts text at the current cursor position
+    /// </summary>
+    public async Task InsertTextAsync(string text)
+    {
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("eval", $@"
                 (function() {{
                     const textarea = document.querySelector('[_bl_{TextAreaRef.Id}]');
                     if (!textarea) return;
@@ -260,22 +258,22 @@ namespace Osirion.Blazor.Cms.Core.Components.Editor
                     // Trigger input event to update Blazor binding
                     textarea.dispatchEvent(new Event('input'));
                 }})()");
-            }
-            catch
-            {
-                // Fallback if JS interop fails
-                CurrentContent += text;
-            }
         }
-
-        /// <summary>
-        /// Wraps selected text with prefix and suffix
-        /// </summary>
-        public async Task WrapTextAsync(string prefix, string suffix, string defaultText)
+        catch
         {
-            try
-            {
-                await JSRuntime.InvokeVoidAsync("eval", $@"
+            // Fallback if JS interop fails
+            CurrentContent += text;
+        }
+    }
+
+    /// <summary>
+    /// Wraps selected text with prefix and suffix
+    /// </summary>
+    public async Task WrapTextAsync(string prefix, string suffix, string defaultText)
+    {
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("eval", $@"
                 (function() {{
                     const textarea = document.querySelector('[_bl_{TextAreaRef.Id}]');
                     if (!textarea) return;
@@ -310,22 +308,22 @@ namespace Osirion.Blazor.Cms.Core.Components.Editor
                     // Trigger input event to update Blazor binding
                     textarea.dispatchEvent(new Event('input'));
                 }})()");
-            }
-            catch
-            {
-                // Fallback if JS interop fails
-                CurrentContent += $"{prefix}{defaultText}{suffix}";
-            }
         }
-
-        /// <summary>
-        /// Handles tab key in textarea for indentation
-        /// </summary>
-        private async Task HandleTabKeyAsync(bool isShiftKey)
+        catch
         {
-            try
-            {
-                await JSRuntime.InvokeVoidAsync("eval", $@"
+            // Fallback if JS interop fails
+            CurrentContent += $"{prefix}{defaultText}{suffix}";
+        }
+    }
+
+    /// <summary>
+    /// Handles tab key in textarea for indentation
+    /// </summary>
+    private async Task HandleTabKeyAsync(bool isShiftKey)
+    {
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("eval", $@"
                 (function() {{
                     const textarea = document.querySelector('[_bl_{TextAreaRef.Id}]');
                     if (!textarea) return;
@@ -375,22 +373,22 @@ namespace Osirion.Blazor.Cms.Core.Components.Editor
                     // Prevent default tab behavior
                     event.preventDefault();
                 }})()");
-            }
-            catch
-            {
-                // Fallback - just add a tab
-                CurrentContent += "\t";
-            }
         }
-
-        /// <summary>
-        /// Gets the scroll position of the editor
-        /// </summary>
-        private async Task<double> GetScrollPositionAsync()
+        catch
         {
-            try
-            {
-                return await JSRuntime.InvokeAsync<double>("eval", $@"
+            // Fallback - just add a tab
+            CurrentContent += "\t";
+        }
+    }
+
+    /// <summary>
+    /// Gets the scroll position of the editor
+    /// </summary>
+    private async Task<double> GetScrollPositionAsync()
+    {
+        try
+        {
+            return await JSRuntime.InvokeAsync<double>("eval", $@"
                 (function() {{
                     const element = document.querySelector('[_bl_{EditorContainer.Id}]');
                     if (!element) return 0;
@@ -407,25 +405,25 @@ namespace Osirion.Blazor.Cms.Core.Components.Editor
                     
                     return position;
                 }})()");
-            }
-            catch
-            {
-                return 0;
-            }
         }
-
-        /// <summary>
-        /// Sets the scroll position of the editor
-        /// </summary>
-        public async Task SetScrollPositionAsync(double position)
+        catch
         {
-            if (!SyncScroll) return;
+            return 0;
+        }
+    }
 
-            try
-            {
-                _preventScrollEvent = true;
+    /// <summary>
+    /// Sets the scroll position of the editor
+    /// </summary>
+    public async Task SetScrollPositionAsync(double position)
+    {
+        if (!SyncScroll) return;
 
-                await JSRuntime.InvokeVoidAsync("eval", $@"
+        try
+        {
+            _preventScrollEvent = true;
+
+            await JSRuntime.InvokeVoidAsync("eval", $@"
                 (function() {{
                     const element = document.querySelector('[_bl_{EditorContainer.Id}]');
                     if (!element) return;
@@ -441,94 +439,93 @@ namespace Osirion.Blazor.Cms.Core.Components.Editor
                     // Set the scroll position
                     element.scrollTop = targetScrollTop;
                 }})()");
-            }
-            catch
-            {
-                // Ignore scroll errors in SSR
-            }
-            finally
-            {
-                _preventScrollEvent = false;
-            }
         }
-
-        #endregion
-
-        /// <summary>
-        /// Clean up resources
-        /// </summary>
-        public async ValueTask DisposeAsync()
+        catch
         {
-            try
-            {
-                _dotNetReference?.Dispose();
-            }
-            catch
-            {
-                // Ignore disposal errors
-            }
+            // Ignore scroll errors in SSR
+        }
+        finally
+        {
+            _preventScrollEvent = false;
         }
     }
+
+    #endregion
 
     /// <summary>
-    /// Represents a button in the Markdown editor toolbar
+    /// Clean up resources
     /// </summary>
-    public class ToolbarAction
+    public async ValueTask DisposeAsync()
     {
-        /// <summary>
-        /// Text label for the button
-        /// </summary>
-        public string Label { get; set; }
-
-        /// <summary>
-        /// Type of action to perform
-        /// </summary>
-        public ToolbarActionType ActionType { get; set; }
-
-        /// <summary>
-        /// Action data - interpretation depends on ActionType
-        /// </summary>
-        public string? Action { get; set; }
-
-        /// <summary>
-        /// Title/tooltip for the button
-        /// </summary>
-        public string Title { get; set; }
-
-        /// <summary>
-        /// Optional icon HTML
-        /// </summary>
-        public string? Icon { get; set; }
-
-        public ToolbarAction(string label, ToolbarActionType actionType, string? action, string title, string? icon = null)
+        try
         {
-            Label = label;
-            ActionType = actionType;
-            Action = action;
-            Title = title;
-            Icon = icon;
+            _dotNetReference?.Dispose();
+        }
+        catch
+        {
+            // Ignore disposal errors
         }
     }
+}
+
+/// <summary>
+/// Represents a button in the Markdown editor toolbar
+/// </summary>
+public class ToolbarAction
+{
+    /// <summary>
+    /// Text label for the button
+    /// </summary>
+    public string Label { get; set; }
 
     /// <summary>
-    /// Types of toolbar actions
+    /// Type of action to perform
     /// </summary>
-    public enum ToolbarActionType
+    public ToolbarActionType ActionType { get; set; }
+
+    /// <summary>
+    /// Action data - interpretation depends on ActionType
+    /// </summary>
+    public string? Action { get; set; }
+
+    /// <summary>
+    /// Title/tooltip for the button
+    /// </summary>
+    public string Title { get; set; }
+
+    /// <summary>
+    /// Optional icon HTML
+    /// </summary>
+    public string? Icon { get; set; }
+
+    public ToolbarAction(string label, ToolbarActionType actionType, string? action, string title, string? icon = null)
     {
-        /// <summary>
-        /// Insert text at cursor position
-        /// </summary>
-        Insert,
-
-        /// <summary>
-        /// Wrap selected text with prefix and suffix
-        /// Format: "prefix|suffix|defaultText"
-        /// </summary>
-        Wrap,
-
-        /// <summary>
-        /// Custom action to be handled by the consumer
-        /// </summary>
-        Custom
+        Label = label;
+        ActionType = actionType;
+        Action = action;
+        Title = title;
+        Icon = icon;
     }
+}
+
+/// <summary>
+/// Types of toolbar actions
+/// </summary>
+public enum ToolbarActionType
+{
+    /// <summary>
+    /// Insert text at cursor position
+    /// </summary>
+    Insert,
+
+    /// <summary>
+    /// Wrap selected text with prefix and suffix
+    /// Format: "prefix|suffix|defaultText"
+    /// </summary>
+    Wrap,
+
+    /// <summary>
+    /// Custom action to be handled by the consumer
+    /// </summary>
+    Custom
 }

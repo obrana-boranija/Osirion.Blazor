@@ -1,4 +1,4 @@
-﻿namespace Osirion.Blazor.Cms.Core;
+﻿namespace Osirion.Blazor.Cms.Models;
 
 public class ScrollInfo
 {

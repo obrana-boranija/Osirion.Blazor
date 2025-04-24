@@ -1,10 +1,8 @@
 ﻿using Markdig;
-using Markdig.Renderers;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.JSInterop;
-using Osirion.Blazor.Cms.Core.Services;
+using Osirion.Blazor.Cms.Services;
 
-namespace Osirion.Blazor.Cms.Core.Extensions;
+namespace Osirion.Blazor.Cms.Extensions;
 
 /// <summary>
 /// Extension methods for registering and configuring markdown editor components

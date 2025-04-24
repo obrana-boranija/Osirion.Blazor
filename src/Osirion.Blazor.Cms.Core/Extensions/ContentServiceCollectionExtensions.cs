@@ -1,8 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Osirion.Blazor.Cms.Interfaces;
 using Osirion.Blazor.Cms.Internal;
 using Osirion.Blazor.Cms.Services;
 
-namespace Osirion.Blazor.Cms.Extensions;
+namespace Osirion.Blazor.Cms;
 
 /// <summary>
 /// Extension methods for configuring content services

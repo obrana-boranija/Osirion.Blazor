@@ -268,9 +268,16 @@
     font-size: var(--osirion-content-font-size);
 }
 
-    .osirion-category-link:hover {
-        background-color: var(--osirion-content-light-background-color);
+    .osirion-category-link.osirion-active {
+        background-color: var(--osirion-active-background-color);
+        color: var(--osirion-active-text-color);
+        font-weight: var(--osirion-font-weight-medium);
     }
+
+        .osirion-category-link.osirion-active .osirion-category-count {
+            background-color: rgba(var(--osirion-active-text-color-rgb, 255, 255, 255), 0.2);
+            color: var(--osirion-active-text-color);
+        }
 
 .osirion-category-count {
     background-color: var(--osirion-content-border-color);
@@ -303,10 +310,18 @@
     border-radius: var(--osirion-tag-border-radius, 999px);
     font-size: var(--osirion-content-small-font-size);
     transition: background-color var(--osirion-content-transition-speed);
+    margin:.1rem;
 }
 
     .osirion-tag-link:hover {
-        background-color: var(--osirion-content-border-color);
+        background-color: var(--osirion-active-background-color, var(--osirion-primary-color));
+        color: var(--osirion-active-text-color, white);
+        font-weight: var(--osirion-font-weight, 500);
+    }
+    .osirion-tag-link.osirion-tag-active {
+        background-color: var(--osirion-active-background-color, var(--osirion-primary-color));
+        color: var(--osirion-active-text-color, white);
+        font-weight: var(--osirion-font-weight, 500);
     }
 
 .osirion-tag-count {

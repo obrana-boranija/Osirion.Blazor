@@ -1,11 +1,7 @@
-﻿// src/Osirion.Blazor.Cms.Admin/Components/Editor/ContentEditor.razor.cs
-
+﻿using Markdig;
 using Microsoft.AspNetCore.Components;
 using Osirion.Blazor.Cms.Admin.Services;
 using Osirion.Blazor.Cms.Models;
-using Markdig;
-using Osirion.Blazor.Cms.Core.Components.Editor;
-using Microsoft.JSInterop;
 
 namespace Osirion.Blazor.Cms.Admin.Components.Editor;
 

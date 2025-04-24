@@ -2,9 +2,8 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Osirion.Blazor.Cms.Admin.Interfaces;
 using Osirion.Blazor.Cms.Admin.Internal;
-using Osirion.Blazor.Cms.Admin.Options;
 using Osirion.Blazor.Cms.Admin.Services;
-using Osirion.Blazor.Cms.Core.Extensions;
+using Osirion.Blazor.Cms.Extensions;
 
 namespace Osirion.Blazor.Cms.Admin.Extensions;
 

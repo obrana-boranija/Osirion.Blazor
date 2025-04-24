@@ -1,21 +1,9 @@
-﻿@inherits OsirionComponentBase
+using Microsoft.AspNetCore.Components;
 
-<div class="@GetWrapperClass()">
-    @if (Title != null)
-    {
-        <h2 class="osirion-search-title">@Title</h2>
-    }
-    <form class="@GetSearchBoxClass()" method="get" action="@ActionUrl">
-        <input name="@QueryParameterName"
-               value="@SearchQuery"
-               type="text"
-               placeholder="@Placeholder"
-               class="osirion-search-input" />
-        <button type="submit" class="osirion-search-button">@SearchButtonText</button>
-    </form>
-</div>
+namespace Osirion.Blazor.Cms.Components;
 
-@code {
+public partial class SearchBox
+{
     [Parameter]
     public string ActionUrl { get; set; } = "/search";
 

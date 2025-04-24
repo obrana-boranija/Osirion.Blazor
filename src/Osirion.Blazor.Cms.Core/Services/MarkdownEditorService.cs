@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using System.Text.RegularExpressions;
 
-namespace Osirion.Blazor.Cms.Core.Services;
+namespace Osirion.Blazor.Cms.Services;
 
 /// <summary>
 /// Advanced Markdown editing service with comprehensive features

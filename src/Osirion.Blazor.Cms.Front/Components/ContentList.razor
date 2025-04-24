@@ -1,0 +1,70 @@
+﻿@namespace Osirion.Blazor.Cms.Components
+
+@inject IContentProviderManager ContentProviderManager
+@inherits OsirionComponentBase
+
+<div class="@GetContentListClass()">
+    @if (IsLoading)
+    {
+        <div class="osirion-loading">@LoadingText</div>
+    }
+    else if (ContentItems == null || !ContentItems.Any())
+    {
+        <div class="osirion-no-content">@NoContentText</div>
+    }
+    else
+    {
+        <div class="osirion-content-grid">
+            @foreach (var item in ContentItems)
+            {
+                <div class="osirion-content-card">
+                    @if (!string.IsNullOrEmpty(item.FeaturedImageUrl))
+                    {
+                        <img src="@item.FeaturedImageUrl" alt="@item.Title" class="osirion-content-featured-image" loading="lazy" />
+                    }
+                    <div class="osirion-content-body">
+                        <h2 class="osirion-content-title">@item.Title</h2>
+                        <div class="osirion-content-meta">
+                            @if (!string.IsNullOrEmpty(item.Author))
+                            {
+                                <span class="osirion-content-author">By @item.Author</span>
+                            }
+                            <span class="osirion-content-date">@item.Date.ToString("MMM d, yyyy")</span>
+                            <span class="osirion-content-read-time">@item.ReadTimeMinutes min read</span>
+                        </div>
+                        <p class="osirion-content-description">@item.Description</p>
+                        @if (item.Tags.Any())
+                        {
+                            <div class="osirion-content-tags">
+                                @foreach (var tag in item.Tags.Take(3))
+                                {
+                                    <span class="osirion-content-tag">@tag</span>
+                                }
+                                @if (item.Tags.Count > 3)
+                                {
+                                    <span class="osirion-content-tag">+@(item.Tags.Count - 3)</span>
+                                }
+                            </div>
+                        }
+                        <a href="@GetContentUrl(item)" class="osirion-content-read-more" rel="nofollow">@ReadMoreText</a>
+                    </div>
+                </div>
+            }
+        </div>
+
+        @if (ShowPagination && TotalPages > 1)
+        {
+            <div class="osirion-content-pagination">
+                @for (int i = 1; i <= TotalPages; i++)
+                {
+                    <a href="@GetPaginationUrl(i)"
+                       class="osirion-pagination-link @(i == CurrentPage ? "osirion-active" : "")"
+                        @onclick="() => OnPageChanged(i)"
+                        @onclick:preventDefault>
+                        @i
+                    </a>
+                }
+            </div>
+        }
+    }
+</div>

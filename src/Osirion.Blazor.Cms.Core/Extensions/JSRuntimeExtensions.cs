@@ -1,7 +1,7 @@
 ﻿using Microsoft.JSInterop;
 using System.Text.Json;
 
-namespace Osirion.Blazor.Cms.Core.Extensions
+namespace Osirion.Blazor.Cms.Extensions
 {
     /// <summary>
     /// Extension methods for IJSRuntime

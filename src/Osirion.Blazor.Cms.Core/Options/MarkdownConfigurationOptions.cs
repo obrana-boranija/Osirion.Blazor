@@ -1,6 +1,6 @@
 ﻿using Markdig;
 
-namespace Osirion.Blazor.Cms.Core.Options;
+namespace Osirion.Blazor.Cms.Options;
 
 /// <summary>
 /// Configuration options for Markdown editor

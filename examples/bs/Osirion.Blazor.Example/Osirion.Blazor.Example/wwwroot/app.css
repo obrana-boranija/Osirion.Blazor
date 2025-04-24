@@ -1,7 +1,7 @@
-:root {
-    --bs-primary: #e50000; /* Your custom primary color */
-    --bs-primary-dark: #1a1a1a; /* Your custom primary color */
-}
+/*:root {
+    --bs-primary: #e50000;*/ /* Your custom primary color */
+    /*--bs-primary-dark: #1a1a1a;*/ /* Your custom primary color */
+/*}*/
 
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -136,30 +136,6 @@ h1:focus {
             border-color: #373b3f;
         }
 
-/* Tags and Categories */
-.osirion-tags-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-}
-
-.osirion-tag-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-    padding: 0.25rem 0.75rem;
-    background-color: rgba(0, 0, 0, 0.05);
-    border-radius: 20px;
-    text-decoration: none;
-    color: inherit;
-    transition: all 0.2s;
-}
-
-    .osirion-tag-link:hover {
-        background-color: rgba(0, 0, 0, 0.1);
-        text-decoration: none;
-        color: inherit;
-    }
 
 .osirion-category-link {
     display: flex;

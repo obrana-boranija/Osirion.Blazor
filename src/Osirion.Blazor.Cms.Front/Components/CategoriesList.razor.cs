@@ -1,40 +1,11 @@
-﻿@inject IContentProviderManager ContentProviderManager
-@inherits OsirionComponentBase
+using Microsoft.AspNetCore.Components;
+using Osirion.Blazor.Cms.Interfaces;
+using Osirion.Blazor.Cms.Models;
 
-<div class="@GetCategoriesListClass()">
-    @if (Title != null)
-    {
-        <h3 class="osirion-categories-title">@Title</h3>
-    }
+namespace Osirion.Blazor.Cms.Components;
 
-    @if (IsLoading)
-    {
-        <div class="osirion-loading">@LoadingText</div>
-    }
-    else if (Categories == null || !Categories.Any())
-    {
-        <div class="osirion-no-categories">@NoContentText</div>
-    }
-    else
-    {
-        <ul class="osirion-categories-list">
-            @foreach (var category in Categories)
-            {
-                <li class="osirion-category-item">
-                    <a href="@GetCategoryUrl(category)" class="osirion-category-link" rel="nofollow">
-                        @category.Name
-                        @if (ShowCount)
-                        {
-                            <span class="osirion-category-count">@category.Count</span>
-                        }
-                    </a>
-                </li>
-            }
-        </ul>
-    }
-</div>
-
-@code {
+public partial class CategoriesList(IContentProviderManager contentProviderManager)
+{
     [Parameter]
     public string? Title { get; set; }
 
@@ -48,6 +19,9 @@
     public Func<ContentCategory, string>? CategoryUrlFormatter { get; set; }
 
     [Parameter]
+    public string? ActiveCategory { get; set; }
+
+    [Parameter]
     public bool ShowCount { get; set; } = true;
 
     [Parameter]
@@ -55,9 +29,6 @@
 
     [Parameter]
     public int? MaxCategories { get; set; }
-
-    [Parameter]
-    public string? ActiveCategory { get; set; }
 
     private IReadOnlyList<ContentCategory>? Categories { get; set; }
     private bool IsLoading { get; set; } = true;
@@ -77,7 +48,7 @@
         IsLoading = true;
         try
         {
-            var provider = ContentProviderManager.GetDefaultProvider();
+            var provider = contentProviderManager.GetDefaultProvider();
             if (provider != null)
             {
                 var allCategories = await provider.GetCategoriesAsync();
@@ -122,9 +93,9 @@
     private string GetCategoryLinkClass(ContentCategory category)
     {
         var isActive = !string.IsNullOrEmpty(ActiveCategory) &&
-                      (category.Slug.Equals(ActiveCategory, StringComparison.OrdinalIgnoreCase) ||
-                       category.Name.Equals(ActiveCategory, StringComparison.OrdinalIgnoreCase));
+                     (category.Slug.Equals(ActiveCategory, StringComparison.OrdinalIgnoreCase) ||
+                      category.Name.Equals(ActiveCategory, StringComparison.OrdinalIgnoreCase));
 
-        return $"osirion-category-link {(isActive ? "osirion-active" : "")}".Trim();
+        return isActive ? "osirion-category-link osirion-active" : "osirion-category-link";
     }
 }

@@ -1,38 +1,11 @@
-﻿@inject IContentProviderManager ContentProviderManager
-@inherits OsirionComponentBase
+using Microsoft.AspNetCore.Components;
+using Osirion.Blazor.Cms.Interfaces;
+using Osirion.Blazor.Cms.Models;
 
-<div class="@GetTagCloudClass()">
-    @if (Title != null)
-    {
-        <h3 class="osirion-tag-cloud-title">@Title</h3>
-    }
+namespace Osirion.Blazor.Cms.Components;
 
-    @if (IsLoading)
-    {
-        <div class="osirion-loading">@LoadingText</div>
-    }
-    else if (Tags == null || !Tags.Any())
-    {
-        <div class="osirion-no-tags">@NoContentText</div>
-    }
-    else
-    {
-        <div class="osirion-tags-container">
-            @foreach (var tag in Tags)
-            {
-                <a href="@GetTagUrl(tag)" class="osirion-tag-link" rel="nofollow">
-                    @tag.Name
-                    @if (ShowCount)
-                    {
-                        <span class="osirion-tag-count">@tag.Count</span>
-                    }
-                </a>
-            }
-        </div>
-    }
-</div>
-
-@code {
+public partial class TagCloud(IContentProviderManager contentProviderManager)
+{
     [Parameter]
     public int? MaxTags { get; set; }
 
@@ -44,6 +17,9 @@
 
     [Parameter]
     public string NoContentText { get; set; } = "No tags available.";
+
+    [Parameter]
+    public string? ActiveTag { get; set; }
 
     [Parameter]
     public Func<ContentTag, string>? TagUrlFormatter { get; set; }
@@ -72,12 +48,11 @@
         IsLoading = true;
         try
         {
-            var provider = ContentProviderManager.GetDefaultProvider();
+            var provider = contentProviderManager.GetDefaultProvider();
             if (provider != null)
             {
                 var allTags = await provider.GetTagsAsync();
 
-                // Apply sorting
                 if (SortByCount)
                 {
                     allTags = allTags.OrderByDescending(t => t.Count).ToList();
@@ -87,15 +62,13 @@
                     allTags = allTags.OrderBy(t => t.Name).ToList();
                 }
 
-                // Apply limit if specified
                 Tags = MaxTags.HasValue
                     ? allTags.Take(MaxTags.Value).ToList()
                     : allTags;
             }
         }
-        catch (Exception ex)
+        catch
         {
-            Console.Error.WriteLine($"Error loading tags: {ex.Message}");
             Tags = Array.Empty<ContentTag>();
         }
         finally
@@ -106,7 +79,16 @@
 
     private string GetTagCloudClass()
     {
-        return $"osirion-tag-cloud {CssClass}".Trim();
+        return $"osirion-tags-container osirion-tag-cloud {CssClass}".Trim();
+    }
+
+    private string GetTagLinkClass(ContentTag tag)
+    {
+        bool isActive = !string.IsNullOrEmpty(ActiveTag) &&
+                       (tag.Slug.Equals(ActiveTag, StringComparison.OrdinalIgnoreCase) ||
+                        tag.Name.Equals(ActiveTag, StringComparison.OrdinalIgnoreCase));
+
+        return isActive ? "osirion-tag-link osirion-tag-active" : "osirion-tag-link";
     }
 
     private string GetTagUrl(ContentTag tag)

@@ -1,4 +1,6 @@
 ﻿@page "/cms-demo"
+@page "/cms-demo/tag/{TagSlug}"
+@page "/cms-demo/category/{CategorySlug}"
 @inject Osirion.Blazor.Cms.IContentProvider ContentProvider
 
 <PageTitle>CMS Demo</PageTitle>
@@ -20,11 +22,11 @@
         <div class="tab-content" id="nav-tabContent">
             <div class="tab-pane fade show active" id="blog-content" role="tabpanel">
                 <h2>Latest Blog Posts</h2>
-                <ContentList Directory="blog" />
+                <ContentList Directory="blog" Tag="@TagSlug" Category="@CategorySlug" />
             </div>
             <div class="tab-pane fade" id="docs-content" role="tabpanel">
                 <h2>Documentation</h2>
-                <ContentList Directory="docs" />
+                <ContentList Directory="docs" Tag="@TagSlug" Category="@CategorySlug" />
             </div>
             <div class="tab-pane fade" id="all-content" role="tabpanel">
                 <h2>All Content</h2>
@@ -52,14 +54,17 @@
         <div class="card mb-4">
             <div class="card-body">
                 <h5 class="card-title">Categories</h5>
-                <CategoriesList />
+                <CategoriesList ActiveCategory="@CategorySlug"
+                                CategoryUrlFormatter="@(category => $"/cms-demo/category/{category.Slug}")" />
             </div>
         </div>
 
         <div class="card mb-4">
             <div class="card-body">
                 <h5 class="card-title">Popular Tags</h5>
-                <TagCloud MaxTags="20" />
+                <TagCloud MaxTags="20"
+                          ActiveTag="@TagSlug"
+                          TagUrlFormatter="@(tag => $"/cms-demo/tag/{tag.Slug}")" />
             </div>
         </div>
 
@@ -71,3 +76,8 @@
         </div>
     </div>
 </div>
+
+@code {
+    [Parameter] public string? CategorySlug { get; set; }
+    [Parameter] public string? TagSlug { get; set; }
+}

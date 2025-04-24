@@ -1,4 +1,6 @@
-﻿namespace Osirion.Blazor.Cms.Services;
+﻿using Osirion.Blazor.Cms.Interfaces;
+
+namespace Osirion.Blazor.Cms.Services;
 
 public class ContentProviderManager : IContentProviderManager
 {
