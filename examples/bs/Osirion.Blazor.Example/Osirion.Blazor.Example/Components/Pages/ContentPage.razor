@@ -1,9 +1,11 @@
-﻿@page "/{locale}/{*path}"
+﻿@page "/{locale}/blog/{*path}"
+@page "/blog/{*path}"
 @using Osirion.Blazor.Cms.Components
 @using Osirion.Blazor.Cms.Interfaces
 @using Osirion.Blazor.Cms.Models
 @inject IContentProviderManager ContentProviderManager
 @inject NavigationManager NavigationManager
+@attribute [StreamRendering]
 
 @if (Content != null)
 {
@@ -112,7 +114,7 @@
 
         // Try to load content first
         string fullPath = $"{Locale}/{Path}";
-        Content = await provider.GetItemByPathAsync(fullPath);
+        Content = await provider.GetItemByUrlAsync(NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
 
         if (Content != null)
         {
@@ -121,7 +123,7 @@
         }
 
         // If not a content item, try as a directory
-        CurrentDirectory = await provider.GetDirectoryByPathAsync(fullPath);
+        CurrentDirectory = await provider.GetDirectoryByPathAsync(Path);
 
         if (CurrentDirectory == null)
         {
@@ -130,23 +132,19 @@
         }
     }
 
-    private async Task HandleLocaleChanged(string locale)
+    private void HandleLocaleChanged(string locale)
     {
-        if (locale != Locale)
-        {
-            // Navigate to the same path but with new locale
-            NavigationManager.NavigateTo($"/{locale}/{Path}");
-        }
+        NavigationManager.NavigateTo(Path ?? "/");
     }
 
     private void HandleDirectorySelected(DirectoryItem directory)
     {
-        NavigationManager.NavigateTo($"/{Locale}/{directory.Path}");
+        NavigationManager.NavigateTo($"/{directory.Path}");
     }
 
     private void HandleContentSelected(ContentItem item)
     {
-        NavigationManager.NavigateTo($"/{Locale}/{item.Path}");
+        NavigationManager.NavigateTo($"/{item.Url}");
     }
 
     private string FormatDirectoryUrl(DirectoryItem directory)
@@ -156,7 +154,7 @@
 
     private string FormatContentUrl(ContentItem item)
     {
-        return $"/{Locale}/{item.Path}";
+        return $"/{item.Url}";
     }
 
     private string FormatCategoryUrl(string category)
@@ -171,11 +169,10 @@
 
     private string FormatTranslationUrl(string localizationId, string locale)
     {
-        if (Content != null)
+        if (Content is not null)
         {
-            // For the current content, keep the path structure but change locale
-            var pathWithoutLocale = Content.Path.Substring(Content.Locale.Length + 1);
-            return $"/{locale}/{pathWithoutLocale}";
+            var item = ContentProviderManager.GetLocalizedContentAsync(localizationId, locale).Result;
+            return item?.Url ?? "/";
         }
 
         return $"/{locale}";

@@ -33,6 +33,11 @@ public interface IContentProvider
     Task<ContentItem?> GetItemByPathAsync(string path, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Gets a specific content item by its url
+    /// </summary>
+    Task<ContentItem?> GetItemByUrlAsync(string url, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Gets content items based on a query
     /// </summary>
     Task<IReadOnlyList<ContentItem>> GetItemsByQueryAsync(ContentQuery query, CancellationToken cancellationToken = default);
@@ -66,6 +71,11 @@ public interface IContentProvider
     /// Gets a specific directory by its path
     /// </summary>
     Task<DirectoryItem?> GetDirectoryByPathAsync(string path, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets a specific directory by its url
+    /// </summary>
+    Task<DirectoryItem?> GetDirectoryByUrlAsync(string url, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets a specific directory by its ID

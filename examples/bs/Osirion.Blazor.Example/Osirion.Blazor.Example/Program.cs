@@ -18,10 +18,12 @@ builder.Services.AddOsirion(osirion =>
         {
             options.Owner = "obrana-boranija";
             options.Repository = "hexavera-blog";
-            options.ContentPath = "";
+            options.ContentPath = "localized";
             options.Branch = "main";
             options.ApiToken = "";
             options.CacheDurationMinutes = 30;
+            options.EnableLocalization = true;
+            options.DefaultLocale = "en";
         }))
         // Configure CMS Admin
         .UseCmsAdmin(admin =>

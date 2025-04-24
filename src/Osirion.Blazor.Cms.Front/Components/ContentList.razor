@@ -1,38 +1,69 @@
 ﻿@namespace Osirion.Blazor.Cms.Components
-
-@inject IContentProviderManager ContentProviderManager
 @inherits OsirionComponentBase
 
 <div class="@GetContentListClass()">
-    @if (IsLoading)
+    @if (ContentItems == null || !ContentItems.Any())
     {
-        <div class="osirion-loading">@LoadingText</div>
-    }
-    else if (ContentItems == null || !ContentItems.Any())
-    {
-        <div class="osirion-no-content">@NoContentText</div>
+        <div class="osirion-no-content">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <path d="M9 15h6"></path>
+                <path d="M9 11h6"></path>
+            </svg>
+            <p>@NoContentText</p>
+        </div>
     }
     else
     {
         <div class="osirion-content-grid">
             @foreach (var item in ContentItems)
             {
-                <div class="osirion-content-card">
+                <article class="osirion-content-card">
                     @if (!string.IsNullOrEmpty(item.FeaturedImageUrl))
                     {
-                        <img src="@item.FeaturedImageUrl" alt="@item.Title" class="osirion-content-featured-image" loading="lazy" />
+                        <div class="osirion-content-image-container">
+                            <img src="@item.FeaturedImageUrl" alt="@item.Title" class="osirion-content-featured-image" loading="lazy" />
+                        </div>
                     }
                     <div class="osirion-content-body">
-                        <h2 class="osirion-content-title">@item.Title</h2>
+                        <h2 class="osirion-content-title">
+                            <a href="@GetContentUrl(item)" class="osirion-content-title-link">@item.Title</a>
+                        </h2>
+
                         <div class="osirion-content-meta">
                             @if (!string.IsNullOrEmpty(item.Author))
                             {
-                                <span class="osirion-content-author">By @item.Author</span>
+                                <span class="osirion-content-meta-item osirion-content-author">
+                                    <svg class="osirion-content-meta-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                        <circle cx="12" cy="7" r="4"></circle>
+                                    </svg>
+                                    @item.Author
+                                </span>
                             }
-                            <span class="osirion-content-date">@item.Date.ToString("MMM d, yyyy")</span>
-                            <span class="osirion-content-read-time">@item.ReadTimeMinutes min read</span>
+
+                            <span class="osirion-content-meta-item osirion-content-date">
+                                <svg class="osirion-content-meta-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                                @item.DateCreated.ToString("MMM d, yyyy")
+                            </span>
+
+                            <span class="osirion-content-meta-item osirion-content-read-time">
+                                <svg class="osirion-content-meta-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polyline points="12 6 12 12 16 14"></polyline>
+                                </svg>
+                                @item.ReadTimeMinutes min read
+                            </span>
                         </div>
+
                         <p class="osirion-content-description">@item.Description</p>
+
                         @if (item.Tags.Any())
                         {
                             <div class="osirion-content-tags">
@@ -46,22 +77,80 @@
                                 }
                             </div>
                         }
-                        <a href="@GetContentUrl(item)" class="osirion-content-read-more" rel="nofollow">@ReadMoreText</a>
+
+                        <div class="osirion-content-footer">
+                            <a href="@GetContentUrl(item)" class="osirion-content-read-more">
+                                @ReadMoreText
+                                <svg class="osirion-content-read-more-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    <polyline points="12 5 19 12 12 19"></polyline>
+                                </svg>
+                            </a>
+                        </div>
                     </div>
-                </div>
+                </article>
             }
         </div>
 
         @if (ShowPagination && TotalPages > 1)
         {
             <div class="osirion-content-pagination">
-                @for (int i = 1; i <= TotalPages; i++)
+                @if (CurrentPage > 1)
                 {
-                    <a href="@GetPaginationUrl(i)"
-                       class="osirion-pagination-link @(i == CurrentPage ? "osirion-active" : "")"
-                        @onclick="() => OnPageChanged(i)"
-                        @onclick:preventDefault>
-                        @i
+                    <a href="@GetPaginationUrl(CurrentPage - 1)" class="osirion-pagination-link" @onclick="() => OnPageChanged(CurrentPage - 1)" @onclick:preventDefault>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="15 18 9 12 15 6"></polyline>
+                        </svg>
+                    </a>
+                }
+
+                @{
+                    int startPage = Math.Max(1, CurrentPage - 2);
+                    int endPage = Math.Min(TotalPages, startPage + 4);
+
+                    if (endPage - startPage < 4 && TotalPages > 4)
+                    {
+                        startPage = Math.Max(1, endPage - 4);
+                    }
+                }
+
+                @if (startPage > 1)
+                {
+                    <a href="@GetPaginationUrl(1)" class="osirion-pagination-link" @onclick="() => OnPageChanged(1)" @onclick:preventDefault>1</a>
+
+                    if (startPage > 2)
+                    {
+                        <span class="osirion-pagination-ellipsis">...</span>
+                    }
+                }
+
+                @for (int i = startPage; i <= endPage; i++)
+                {
+                    int pageNumber = i;
+                    <a href="@GetPaginationUrl(pageNumber)"
+                       class="osirion-pagination-link @(pageNumber == CurrentPage ? "osirion-active" : "")"
+                       @onclick="() => OnPageChanged(pageNumber)"
+                    @onclick:preventDefault>
+                        @pageNumber
+                    </a>
+                }
+
+                @if (endPage < TotalPages)
+                {
+                    if (endPage < TotalPages - 1)
+                    {
+                        <span class="osirion-pagination-ellipsis">...</span>
+                    }
+
+                    <a href="@GetPaginationUrl(TotalPages)" class="osirion-pagination-link" @onclick="() => OnPageChanged(TotalPages)" @onclick:preventDefault>@TotalPages</a>
+                }
+
+                @if (CurrentPage < TotalPages)
+                {
+                    <a href="@GetPaginationUrl(CurrentPage + 1)" class="osirion-pagination-link" @onclick="() => OnPageChanged(CurrentPage + 1)" @onclick:preventDefault>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
                     </a>
                 }
             </div>

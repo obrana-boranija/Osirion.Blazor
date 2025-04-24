@@ -71,7 +71,6 @@ public partial class CategoriesList(IContentProviderManager contentProviderManag
         }
         catch (Exception ex)
         {
-            Console.Error.WriteLine($"Error loading categories: {ex.Message}");
             Categories = Array.Empty<ContentCategory>();
         }
         finally

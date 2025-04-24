@@ -90,6 +90,13 @@ public class FileSystemContentProvider : ContentProviderBase
     }
 
     /// <inheritdoc/>
+    public override async Task<ContentItem?> GetItemByUrlAsync(string url, CancellationToken cancellationToken = default)
+    {
+        var items = await GetAllItemsAsync(cancellationToken);
+        return items.FirstOrDefault(item => item.Url.Equals(url, StringComparison.OrdinalIgnoreCase));
+    }
+
+    /// <inheritdoc/>
     public override async Task<IReadOnlyList<ContentItem>> GetItemsByQueryAsync(ContentQuery query, CancellationToken cancellationToken = default)
     {
         var items = await GetAllItemsAsync(cancellationToken);
@@ -121,12 +128,12 @@ public class FileSystemContentProvider : ContentProviderBase
 
         if (query.DateFrom.HasValue)
         {
-            filteredItems = filteredItems.Where(item => item.Date >= query.DateFrom.Value);
+            filteredItems = filteredItems.Where(item => item.DateCreated >= query.DateFrom.Value);
         }
 
         if (query.DateTo.HasValue)
         {
-            filteredItems = filteredItems.Where(item => item.Date <= query.DateTo.Value);
+            filteredItems = filteredItems.Where(item => item.DateCreated <= query.DateTo.Value);
         }
 
         if (!string.IsNullOrEmpty(query.SearchQuery))
@@ -153,11 +160,11 @@ public class FileSystemContentProvider : ContentProviderBase
                 filteredItems.OrderBy(item => item.Author) :
                 filteredItems.OrderByDescending(item => item.Author),
             SortField.LastModified => query.SortDirection == SortDirection.Ascending ?
-                filteredItems.OrderBy(item => item.LastModified ?? item.Date) :
-                filteredItems.OrderByDescending(item => item.LastModified ?? item.Date),
+                filteredItems.OrderBy(item => item.LastModified ?? item.DateCreated) :
+                filteredItems.OrderByDescending(item => item.LastModified ?? item.DateCreated),
             _ => query.SortDirection == SortDirection.Ascending ?
-                filteredItems.OrderBy(item => item.Date) :
-                filteredItems.OrderByDescending(item => item.Date)
+                filteredItems.OrderBy(item => item.DateCreated) :
+                filteredItems.OrderByDescending(item => item.DateCreated)
         };
 
         if (query.Skip.HasValue)
@@ -214,7 +221,7 @@ public class FileSystemContentProvider : ContentProviderBase
                 Path = NormalizePath(relativePath),
                 ProviderId = ProviderId,
                 ProviderSpecificId = filePath,
-                Date = fileInfo.CreationTimeUtc,
+                DateCreated = fileInfo.CreationTimeUtc,
                 LastModified = fileInfo.LastWriteTimeUtc
             };
 
@@ -226,11 +233,11 @@ public class FileSystemContentProvider : ContentProviderBase
                 ParseFrontMatter(frontMatter, contentItem);
 
                 var markdownContent = content.Substring(frontMatterEndIndex + 3).Trim();
-                contentItem.Content = Markdig.Markdown.ToHtml(markdownContent, _markdownPipeline);
+                contentItem.Content = Markdown.ToHtml(markdownContent, _markdownPipeline);
             }
             else
             {
-                contentItem.Content = Markdig.Markdown.ToHtml(content, _markdownPipeline);
+                contentItem.Content = Markdown.ToHtml(content, _markdownPipeline);
             }
 
             // Set defaults if not provided
@@ -243,6 +250,8 @@ public class FileSystemContentProvider : ContentProviderBase
             {
                 contentItem.Slug = GenerateSlug(contentItem.Title);
             }
+
+            contentItem.Url = GenerateUrl(contentItem.Path, contentItem.Slug, _options.BasePath);
 
             return contentItem;
         }
@@ -315,7 +324,7 @@ public class FileSystemContentProvider : ContentProviderBase
                     break;
                 case "date":
                     if (DateTime.TryParse(value, out var date))
-                        contentItem.Date = date;
+                        contentItem.DateCreated = date;
                     break;
                 case "description":
                     contentItem.Description = value;

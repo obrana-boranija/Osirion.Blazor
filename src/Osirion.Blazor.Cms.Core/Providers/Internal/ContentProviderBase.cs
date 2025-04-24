@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Caching.Memory;
 using Osirion.Blazor.Cms.Models;
 using Osirion.Blazor.Cms.Interfaces;
+using System.Text.RegularExpressions;
 
 namespace Osirion.Blazor.Cms.Providers.Internal;
 
@@ -57,6 +58,9 @@ public abstract class ContentProviderBase : IContentProvider
     public abstract Task<ContentItem?> GetItemByPathAsync(string path, CancellationToken cancellationToken = default);
 
     /// <inheritdoc/>
+    public abstract Task<ContentItem?> GetItemByUrlAsync(string url, CancellationToken cancellationToken = default);
+
+    /// <inheritdoc/>
     public abstract Task<IReadOnlyList<ContentItem>> GetItemsByQueryAsync(ContentQuery query, CancellationToken cancellationToken = default);
 
     /// <inheritdoc/>
@@ -70,7 +74,7 @@ public abstract class ContentProviderBase : IContentProvider
             .Select(group => new ContentCategory
             {
                 Name = group.First(),
-                Slug = GenerateSlug(group.Key),
+                Slug = GenerateSlug(group.Key, 0),
                 Count = group.Count()
             })
             .OrderBy(c => c.Name)
@@ -88,7 +92,7 @@ public abstract class ContentProviderBase : IContentProvider
             .Select(group => new ContentTag
             {
                 Name = group.First(),
-                Slug = GenerateSlug(group.Key),
+                Slug = GenerateSlug(group.Key, 0),
                 Count = group.Count()
             })
             .OrderBy(t => t.Name)
@@ -187,12 +191,87 @@ public abstract class ContentProviderBase : IContentProvider
     /// <summary>
     /// Generates a URL-friendly slug from text
     /// </summary>
-    protected string GenerateSlug(string text)
+    protected string GenerateSlug(string text, int suffix = 4)
     {
-        return text.Trim()
-            .ToLowerInvariant()
-            .Replace(" ", "-")
-            .Replace("_", "-");
+        if (string.IsNullOrWhiteSpace(text))
+            return "untitled-" + GenerateRandomLetters(suffix);
+
+        string slug = text.ToLowerInvariant();
+
+        // Replace spaces and special characters with hyphens
+        slug = Regex.Replace(slug, @"[^a-z0-9\s-]", "");
+
+        // Replace multiple spaces with single hyphen
+        slug = Regex.Replace(slug, @"\s+", "-");
+
+        // Replace multiple hyphens with single hyphen
+        slug = Regex.Replace(slug, @"-+", "-");
+
+        slug = slug.Trim('-');
+
+        if (slug.Length > 0 && !char.IsLetter(slug[0]))
+        {
+            slug = "a-" + slug;
+        }
+
+        string randomSuffix = GenerateRandomLetters(suffix);
+        slug = slug + "-" + randomSuffix;
+
+        if (string.IsNullOrEmpty(slug))
+            return "untitled-" + randomSuffix;
+
+        return slug;
+    }
+
+    private static string GenerateRandomLetters(int length)
+    {
+        Random random = new Random();
+        const string chars = "abcdefghijklmnopqrstuvwxyz";
+        return new string(Enumerable.Repeat(chars, length)
+            .Select(s => s[random.Next(s.Length)]).ToArray());
+    }
+
+    /// <summary>
+    /// Generates an item URL
+    /// </summary>
+    protected string GenerateUrl(string path, string slug, string? skipSegment = null)
+    {
+        // Check if pathToTrim is null, whitespace, or just "/"
+        bool skipPrefixRemoval = string.IsNullOrWhiteSpace(skipSegment) || skipSegment == "/";
+
+        // Step 1: Remove string a from the beginning of string b
+        if (!skipPrefixRemoval && path.StartsWith(skipSegment!))
+        {
+            // Only remove 'a' if it's followed by a slash or is the entire string
+            if (path.Length == skipSegment!.Length || path[skipSegment.Length] == '/')
+            {
+                // If a is followed by a slash, remove both a and the slash
+                // If a is the entire string, this will result in an empty string
+                path = path.Length > skipSegment.Length ? path.Substring(skipSegment.Length + 1) : "";
+            }
+        }
+
+        // Step 2: Remove the last slash-delimited segment from string b
+        int lastSlashIndex = path.LastIndexOf('/');
+        if (lastSlashIndex >= 0)
+        {
+            path = path.Substring(0, lastSlashIndex);
+        }
+        else
+        {
+            // If there's no slash, b is a single segment, so clear it
+            path = "";
+        }
+
+        // Step 3: Append string c, with a slash if b is not empty
+        if (!string.IsNullOrEmpty(path))
+        {
+            return path + "/" + slug;
+        }
+        else
+        {
+            return slug;
+        }
     }
 
     /// <summary>
@@ -207,34 +286,29 @@ public abstract class ContentProviderBase : IContentProvider
     /// Gets or creates a cached value using async factory method
     /// </summary>
     protected async Task<T> GetOrCreateCachedAsync<T>(
-        string cacheKey,
-        Func<CancellationToken, Task<T>> factory,
-        CancellationToken cancellationToken = default)
+    string cacheKey,
+    Func<CancellationToken, Task<T>> factory,
+    CancellationToken cancellationToken = default)
     {
+        // Try to get from cache first
         if (_memoryCache.TryGetValue(cacheKey, out T? cachedValue))
         {
             return cachedValue!;
         }
 
-        await _cacheLock.WaitAsync(cancellationToken);
-        try
-        {
-            // Double-check pattern
-            if (_memoryCache.TryGetValue(cacheKey, out cachedValue))
-            {
-                return cachedValue!;
-            }
+        // Compute the value - we accept that multiple threads might do this simultaneously
+        var value = await factory(cancellationToken);
 
-            var value = await factory(cancellationToken);
-            var cacheEntryOptions = new MemoryCacheEntryOptions()
-                .SetAbsoluteExpiration(CacheDuration);
+        // Store in cache with absolute expiration
+        var cacheEntryOptions = new MemoryCacheEntryOptions()
+            .SetAbsoluteExpiration(CacheDuration);
 
-            _memoryCache.Set(cacheKey, value, cacheEntryOptions);
-            return value;
-        }
-        finally
-        {
-            _cacheLock.Release();
-        }
+        _memoryCache.Set(cacheKey, value, cacheEntryOptions);
+        return value;
+    }
+
+    public Task<DirectoryItem?> GetDirectoryByUrlAsync(string url, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
     }
 }

@@ -81,6 +81,14 @@ public class GitHubContentProvider : ContentProviderBase
     }
 
     /// <inheritdoc/>
+    public override async Task<ContentItem?> GetItemByUrlAsync(string url, CancellationToken cancellationToken = default)
+    {
+        var items = await GetAllItemsAsync(cancellationToken);
+        return items.FirstOrDefault(item =>
+            item.Url == url);
+    }
+
+    /// <inheritdoc/>
     public override async Task<IReadOnlyList<ContentItem>> GetItemsByQueryAsync(ContentQuery query, CancellationToken cancellationToken = default)
     {
         var items = await GetAllItemsAsync(cancellationToken);
@@ -89,7 +97,7 @@ public class GitHubContentProvider : ContentProviderBase
         if (!string.IsNullOrEmpty(query.Directory))
         {
             filteredItems = filteredItems.Where(item =>
-                item.Path.StartsWith(query.Directory, StringComparison.OrdinalIgnoreCase));
+                item.Directory.Name.StartsWith(query.Directory, StringComparison.OrdinalIgnoreCase));
         }
 
         if (!string.IsNullOrEmpty(query.Category))
@@ -111,12 +119,12 @@ public class GitHubContentProvider : ContentProviderBase
 
         if (query.DateFrom.HasValue)
         {
-            filteredItems = filteredItems.Where(item => item.Date >= query.DateFrom.Value);
+            filteredItems = filteredItems.Where(item => item.DateCreated >= query.DateFrom.Value);
         }
 
         if (query.DateTo.HasValue)
         {
-            filteredItems = filteredItems.Where(item => item.Date <= query.DateTo.Value);
+            filteredItems = filteredItems.Where(item => item.DateCreated <= query.DateTo.Value);
         }
 
         if (!string.IsNullOrEmpty(query.SearchQuery))
@@ -144,7 +152,7 @@ public class GitHubContentProvider : ContentProviderBase
         if (!string.IsNullOrEmpty(query.LocalizationId))
         {
             filteredItems = filteredItems.Where(item =>
-                item.LocalizationId.Equals(query.LocalizationId, StringComparison.OrdinalIgnoreCase));
+                item.ContentId.Equals(query.LocalizationId, StringComparison.OrdinalIgnoreCase));
         }
 
         // Filter by directory ID
@@ -164,11 +172,11 @@ public class GitHubContentProvider : ContentProviderBase
                 filteredItems.OrderBy(item => item.Author) :
                 filteredItems.OrderByDescending(item => item.Author),
             SortField.LastModified => query.SortDirection == SortDirection.Ascending ?
-                filteredItems.OrderBy(item => item.LastModified ?? item.Date) :
-                filteredItems.OrderByDescending(item => item.LastModified ?? item.Date),
+                filteredItems.OrderBy(item => item.LastModified ?? item.DateCreated) :
+                filteredItems.OrderByDescending(item => item.LastModified ?? item.DateCreated),
             _ => query.SortDirection == SortDirection.Ascending ?
-                filteredItems.OrderBy(item => item.Date) :
-                filteredItems.OrderByDescending(item => item.Date)
+                filteredItems.OrderBy(item => item.DateCreated) :
+                filteredItems.OrderByDescending(item => item.DateCreated)
         };
 
         if (query.Skip.HasValue)
@@ -260,7 +268,7 @@ public class GitHubContentProvider : ContentProviderBase
         };
 
         var fileInfo = await GetFileInfoAsync(item.Path, cancellationToken);
-        contentItem.Date = fileInfo.CreatedDate;
+        contentItem.DateCreated = fileInfo.CreatedDate;
         contentItem.LastModified = fileInfo.LastModifiedDate;
 
         // Extract locale from path (if directory structure follows localization pattern)
@@ -291,6 +299,8 @@ public class GitHubContentProvider : ContentProviderBase
         {
             contentItem.Slug = GenerateSlug(contentItem.Title);
         }
+
+        contentItem.Url = GenerateUrl(contentItem.Path, contentItem.Slug, _options.ContentPath);
 
         // Set parent directory reference
         var directoryStructure = await BuildDirectoryStructureAsync(cancellationToken);
@@ -408,15 +418,22 @@ public class GitHubContentProvider : ContentProviderBase
             switch (key.ToLower())
             {
                 // Basic metadata
+                case "content_id":
+                    contentItem.ContentId = value;
+                    break;
                 case "title":
                     contentItem.Title = value;
                     break;
                 case "author":
                     contentItem.Author = value;
                     break;
-                case "date":
-                    if (DateTime.TryParse(value, out var date))
-                        contentItem.Date = date;
+                case "date_created":
+                    if (DateTime.TryParse(value, out var date_created))
+                        contentItem.DateCreated = date_created;
+                    break;
+                case "date_modified":
+                    if (DateTime.TryParse(value, out var date_modified))
+                        contentItem.LastModified = date_modified;
                     break;
                 case "description":
                     contentItem.Description = value;
@@ -445,7 +462,7 @@ public class GitHubContentProvider : ContentProviderBase
                     contentItem.Locale = value;
                     break;
                 case "localization_id":
-                    contentItem.LocalizationId = value;
+                    contentItem.ContentId = value;
                     break;
 
                 // SEO metadata
@@ -797,8 +814,8 @@ public class GitHubContentProvider : ContentProviderBase
 
                     // Group by localization ID and build translations map
                     var itemsByLocalizationId = allItems
-                        .Where(item => !string.IsNullOrEmpty(item.LocalizationId))
-                        .GroupBy(item => item.LocalizationId);
+                        .Where(item => !string.IsNullOrEmpty(item.ContentId))
+                        .GroupBy(item => item.ContentId);
 
                     foreach (var group in itemsByLocalizationId)
                     {
@@ -854,7 +871,7 @@ public class GitHubContentProvider : ContentProviderBase
         var allItems = await GetAllItemsAsync(cancellationToken);
 
         return allItems
-            .Where(item => item.LocalizationId == localizationId)
+            .Where(item => item.ContentId == localizationId)
             .ToList()
             .AsReadOnly();
     }

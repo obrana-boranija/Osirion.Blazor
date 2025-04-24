@@ -69,7 +69,7 @@ public partial class LocalizedContentView
         }
         else if (Item != null)
         {
-            LocalizationId = Item.LocalizationId;
+            LocalizationId = Item.ContentId;
             await LoadTranslationsAsync();
         }
     }
@@ -80,9 +80,9 @@ public partial class LocalizedContentView
         {
             await LoadContentAsync();
         }
-        else if (Item != null && LocalizationId != Item.LocalizationId)
+        else if (Item != null && LocalizationId != Item.ContentId)
         {
-            LocalizationId = Item.LocalizationId;
+            LocalizationId = Item.ContentId;
             await LoadTranslationsAsync();
         }
     }
@@ -99,7 +99,7 @@ public partial class LocalizedContentView
 
                 if (Item != null)
                 {
-                    LocalizationId = Item.LocalizationId;
+                    LocalizationId = Item.ContentId;
                     await LoadTranslationsAsync();
 
                     if (ShowNavigationLinks)

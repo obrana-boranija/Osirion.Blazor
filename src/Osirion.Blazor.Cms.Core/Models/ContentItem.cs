@@ -23,7 +23,7 @@ public class ContentItem
     /// <summary>
     /// Gets or sets the publication date of the content item
     /// </summary>
-    public DateTime Date { get; set; }
+    public DateTime DateCreated { get; set; }
 
     /// <summary>
     /// Gets or sets the last modified date of the content item
@@ -36,6 +36,16 @@ public class ContentItem
     public string Content { get; set; } = string.Empty;
 
     /// <summary>
+    /// Gets or sets the locale/language code (e.g., "en", "de-DE", "sr-Latn-RS")
+    /// </summary>
+    public string Locale { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the content ID that is shared across all localizations
+    /// </summary>
+    public string ContentId { get; set; } = string.Empty;
+
+    /// <summary>
     /// Gets or sets the description or summary of the content item
     /// </summary>
     public string Description { get; set; } = string.Empty;
@@ -44,6 +54,11 @@ public class ContentItem
     /// Gets or sets the URL-friendly slug
     /// </summary>
     public string Slug { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the full url to the content item
+    /// </summary>
+    public string Url { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets the full path to the content item
@@ -90,12 +105,6 @@ public class ContentItem
     /// </summary>
     public int ReadTimeMinutes => CalculateReadTime();
 
-    // Add these properties to ContentItem
-    /// <summary>
-    /// Gets or sets the locale/language code (e.g., "en", "es", "de")
-    /// </summary>
-    public string Locale { get; set; } = string.Empty;
-
     /// <summary>
     /// Gets or sets the parent directory of this content item
     /// </summary>
@@ -105,11 +114,6 @@ public class ContentItem
     /// Gets or sets the SEO metadata for this content item
     /// </summary>
     public SeoMetadata Seo { get; set; } = new SeoMetadata();
-
-    /// <summary>
-    /// Gets or sets the content ID that is shared across all localizations
-    /// </summary>
-    public string LocalizationId { get; set; } = string.Empty;
 
     private int CalculateReadTime()
     {

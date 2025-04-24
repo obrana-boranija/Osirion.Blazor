@@ -41,7 +41,7 @@ public partial class SeoMetadataRenderer
         if (!string.IsNullOrEmpty(Content.Author))
             json.Append($"  \"author\": {{ \"@type\": \"Person\", \"name\": \"{JsonEscape(Content.Author)}\" }},\n");
 
-        json.Append($"  \"datePublished\": \"{Content.Date:yyyy-MM-dd}\",\n");
+        json.Append($"  \"datePublished\": \"{Content.DateCreated:yyyy-MM-dd}\",\n");
 
         if (Content.LastModified.HasValue)
             json.Append($"  \"dateModified\": \"{Content.LastModified.Value:yyyy-MM-dd}\",\n");

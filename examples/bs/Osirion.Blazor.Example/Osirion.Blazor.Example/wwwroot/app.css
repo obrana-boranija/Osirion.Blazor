@@ -1,7 +1,7 @@
-/*:root {
-    --bs-primary: #e50000;*/ /* Your custom primary color */
-    /*--bs-primary-dark: #1a1a1a;*/ /* Your custom primary color */
-/*}*/
+:root {
+    --bs-primary: #e50000;
+    --bs-primary-dark: #1a1a1a;
+}
 
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;

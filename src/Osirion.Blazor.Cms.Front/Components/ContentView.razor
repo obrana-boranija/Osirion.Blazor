@@ -20,7 +20,7 @@
                     {
                         <span class="osirion-content-author">By @Item.Author</span>
                     }
-                    <span class="osirion-content-date">@Item.Date.ToString("MMMM d, yyyy")</span>
+                    <span class="osirion-content-date">@Item.DateCreated.ToString("MMMM d, yyyy")</span>
                     <span class="osirion-content-read-time">@Item.ReadTimeMinutes min read</span>
                 </div>
                 @if (!string.IsNullOrEmpty(Item.FeaturedImageUrl))

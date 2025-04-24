@@ -1,0 +1,230 @@
+﻿@namespace Osirion.Blazor.Cms.Components
+@inherits OsirionComponentBase
+
+<div class="@GetContentPageClass()">
+    @if (IsLoading)
+    {
+        <div class="osirion-content-loading">
+            <div class="osirion-loading-spinner"></div>
+            <p>@LoadingText</p>
+        </div>
+    }
+    else if (ContentItem == null)
+    {
+        <div class="osirion-content-not-found">
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <h2>@NotFoundTitle</h2>
+            <p>@NotFoundText</p>
+            @if (ShowBackLink && !string.IsNullOrEmpty(BackLinkUrl))
+            {
+                <a href="@BackLinkUrl" class="osirion-content-back-link">@BackLinkText</a>
+            }
+        </div>
+    }
+    else
+    {
+        <article class="osirion-content-page" itemscope itemtype="https://schema.org/@SchemaType">
+            @if (ShowBreadcrumbs)
+            {
+                <nav class="osirion-content-breadcrumbs" aria-label="Breadcrumb">
+                    <ol>
+                        @if (ShowBreadcrumbHome)
+                        {
+                            <li><a href="@BreadcrumbHomeUrl">@BreadcrumbHomeText</a></li>
+                        }
+
+                        @if (ContentItem.Directory != null)
+                        {
+                            <li><a href="@GetDirectoryUrl(ContentItem.Directory)">@ContentItem.Directory.Name</a></li>
+                        }
+
+                        <li aria-current="page">@ContentItem.Title</li>
+                    </ol>
+                </nav>
+            }
+
+            <header class="osirion-content-header">
+                @if (ShowMetadata)
+                {
+                    <div class="osirion-content-meta">
+                        @if (!string.IsNullOrEmpty(ContentItem.Author))
+                        {
+                            <span class="osirion-content-meta-item osirion-content-author" itemprop="author" itemscope itemtype="https://schema.org/Person">
+                                <svg class="osirion-content-meta-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                                <span itemprop="name">@ContentItem.Author</span>
+                            </span>
+                        }
+
+                        <span class="osirion-content-meta-item osirion-content-date">
+                            <svg class="osirion-content-meta-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                            </svg>
+                            <time itemprop="datePublished" datetime="@ContentItem.DateCreated.ToString("yyyy-MM-dd")">
+                                @ContentItem.DateCreated.ToString("MMMM d, yyyy")
+                            </time>
+                        </span>
+
+                        @if (ContentItem.LastModified.HasValue && ContentItem.LastModified.Value != ContentItem.DateCreated)
+                        {
+                            <span class="osirion-content-meta-item osirion-content-updated">
+                                <svg class="osirion-content-meta-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 2v6h-6"></path>
+                                    <path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path>
+                                    <path d="M3 12a9 9 0 0 0 6.7 15L13 21"></path>
+                                    <path d="M13 21h6v-6"></path>
+                                </svg>
+                                <time itemprop="dateModified" datetime="@ContentItem.LastModified.Value.ToString("yyyy-MM-dd")">
+                                    Updated @ContentItem.LastModified.Value.ToString("MMM d, yyyy")
+                                </time>
+                            </span>
+                        }
+
+                        <span class="osirion-content-meta-item osirion-content-read-time">
+                            <svg class="osirion-content-meta-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                            <span>@ContentItem.ReadTimeMinutes min read</span>
+                        </span>
+                    </div>
+                }
+
+                <h1 class="osirion-content-title" itemprop="headline">@ContentItem.Title</h1>
+
+                @if (!string.IsNullOrEmpty(ContentItem.Description))
+                {
+                    <p class="osirion-content-summary" itemprop="description">@ContentItem.Description</p>
+                }
+
+                @if (!string.IsNullOrEmpty(ContentItem.FeaturedImageUrl))
+                {
+                    <figure class="osirion-content-featured-image-container">
+                        <img src="@ContentItem.FeaturedImageUrl" alt="@ContentItem.Title" class="osirion-content-featured-image" loading="lazy" itemprop="image" />
+                        @if (!string.IsNullOrEmpty(FeaturedImageCaption))
+                        {
+                            <figcaption class="osirion-content-image-caption">@FeaturedImageCaption</figcaption>
+                        }
+                    </figure>
+                }
+            </header>
+
+            <div class="osirion-content-body" itemprop="articleBody">
+                @((MarkupString)ContentItem.Content)
+            </div>
+
+            @if (ShowFooter)
+            {
+                <footer class="osirion-content-footer">
+                    @if (ContentItem.Categories.Any() && ShowCategories)
+                    {
+                        <div class="osirion-content-categories-container">
+                            <strong class="osirion-content-section-title">@CategoriesTitle</strong>
+                            <div class="osirion-content-categories">
+                                @foreach (var category in ContentItem.Categories)
+                                {
+                                    <a href="@GetCategoryUrl(category)" class="osirion-content-category" rel="category">@category</a>
+                                }
+                            </div>
+                        </div>
+                    }
+
+                    @if (ContentItem.Tags.Any() && ShowTags)
+                    {
+                        <div class="osirion-content-tags-container">
+                            <strong class="osirion-content-section-title">@TagsTitle</strong>
+                            <div class="osirion-content-tags">
+                                @foreach (var tag in ContentItem.Tags)
+                                {
+                                    <a href="@GetTagUrl(tag)" class="osirion-content-tag" rel="tag">@tag</a>
+                                }
+                            </div>
+                        </div>
+                    }
+
+                    @if (ShowNavigationLinks && (PreviousItem != null || NextItem != null))
+                    {
+                        <nav class="osirion-content-navigation" aria-label="Post navigation">
+                            @if (PreviousItem != null)
+                            {
+                                <a href="@GetContentUrl(PreviousItem)" class="osirion-content-previous" rel="prev">
+                                    <span class="osirion-content-navigation-label">@PreviousItemLabel</span>
+                                    <span class="osirion-content-navigation-title">@PreviousItem.Title</span>
+                                </a>
+                            }
+
+                            @if (NextItem != null)
+                            {
+                                <a href="@GetContentUrl(NextItem)" class="osirion-content-next" rel="next">
+                                    <span class="osirion-content-navigation-label">@NextItemLabel</span>
+                                    <span class="osirion-content-navigation-title">@NextItem.Title</span>
+                                </a>
+                            }
+                        </nav>
+                    }
+
+                    @if (ShowShareLinks)
+                    {
+                        <div class="osirion-content-share">
+                            <strong class="osirion-content-section-title">@ShareLinksTitle</strong>
+                            <div class="osirion-content-share-links">
+                                @foreach (var shareLink in ShareLinks)
+                                {
+                                    <a href="@shareLink.Url" class="osirion-content-share-link osirion-content-share-@shareLink.Name.ToLowerInvariant()"
+                                       target="_blank" rel="noopener noreferrer" title="@shareLink.Label">
+                                        @((MarkupString)shareLink.Icon)
+                                        <span class="osirion-share-text">@shareLink.Label</span>
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrEmpty(FooterContent))
+                    {
+                        <div class="osirion-content-custom-footer">
+                            @((MarkupString)FooterContent)
+                        </div>
+                    }
+                </footer>
+            }
+
+            @if (ShowRelatedContent && RelatedItems != null && RelatedItems.Any())
+            {
+                <div class="osirion-content-related">
+                    <h2 class="osirion-content-related-title">@RelatedContentTitle</h2>
+                    <div class="osirion-content-related-grid">
+                        @foreach (var item in RelatedItems)
+                        {
+                            <article class="osirion-content-related-item">
+                                @if (!string.IsNullOrEmpty(item.FeaturedImageUrl))
+                                {
+                                    <div class="osirion-content-related-image-container">
+                                        <img src="@item.FeaturedImageUrl" alt="@item.Title" class="osirion-content-related-image" loading="lazy" />
+                                    </div>
+                                }
+                                <div class="osirion-content-related-body">
+                                    <h3 class="osirion-content-related-item-title">
+                                        <a href="@GetContentUrl(item)">@item.Title</a>
+                                    </h3>
+                                    <time class="osirion-content-related-date" datetime="@item.DateCreated.ToString("yyyy-MM-dd")">
+                                        @item.DateCreated.ToString("MMM d, yyyy")
+                                    </time>
+                                </div>
+                            </article>
+                        }
+                    </div>
+                </div>
+            }
+        </article>
+    }
+</div>
