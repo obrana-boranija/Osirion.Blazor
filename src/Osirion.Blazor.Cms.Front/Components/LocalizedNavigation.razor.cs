@@ -5,8 +5,10 @@ using Osirion.Blazor.Cms.Models;
 
 namespace Osirion.Blazor.Cms.Components;
 
-public partial class LocalizedNavigation(IContentProviderManager contentProviderManager)
+public partial class LocalizedNavigation
 {
+    [Inject] private IContentProviderManager ContentProviderManager { get; set; } = default!;
+
     [Parameter]
     public string? Title { get; set; }
 
@@ -46,9 +48,14 @@ public partial class LocalizedNavigation(IContentProviderManager contentProvider
     [Parameter]
     public Func<string, string>? LocaleNameFormatter { get; set; }
 
+    [Parameter]
+    public bool EnableLocalization { get; set; } = true;
+
     private IReadOnlyList<DirectoryItem>? Directories { get; set; }
     private List<string> AvailableLocales { get; set; } = new();
     private bool IsLoading { get; set; } = true;
+    private bool HasMultipleLocales => AvailableLocales.Count > 1;
+    private bool ShowLocaleSelector => EnableLocalization && HasMultipleLocales;
 
     protected override async Task OnInitializedAsync()
     {
@@ -70,20 +77,22 @@ public partial class LocalizedNavigation(IContentProviderManager contentProvider
         IsLoading = true;
         try
         {
-            var provider = contentProviderManager.GetDefaultProvider();
+            var provider = ContentProviderManager.GetDefaultProvider();
             if (provider != null)
             {
                 // Get available locales
                 var localizationInfo = await provider.GetLocalizationInfoAsync();
-                AvailableLocales = localizationInfo.AvailableLocales;
+                AvailableLocales = EnableLocalization ? localizationInfo.AvailableLocales : new List<string> { localizationInfo.DefaultLocale };
 
                 if (string.IsNullOrEmpty(CurrentLocale) && AvailableLocales.Any())
                 {
                     CurrentLocale = localizationInfo.DefaultLocale;
                 }
 
-                // Get directories for the current locale
-                Directories = await provider.GetDirectoriesAsync(CurrentLocale);
+                // Get directories for the current locale or all directories if localization is disabled
+                Directories = EnableLocalization
+                    ? await provider.GetDirectoriesAsync(CurrentLocale)
+                    : await provider.GetDirectoriesAsync();
             }
         }
         catch (Exception ex)

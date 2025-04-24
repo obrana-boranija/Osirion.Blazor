@@ -4,8 +4,10 @@ using Osirion.Blazor.Cms.Models;
 
 namespace Osirion.Blazor.Cms.Components;
 
-public partial class LocalizedContentView(IContentProviderManager contentProviderManager)
+public partial class LocalizedContentView
 {
+    [Inject] private IContentProviderManager ContentProviderManager { get; set; } = default!;
+
     [Parameter]
     public string? LocalizationId { get; set; }
 
@@ -51,8 +53,13 @@ public partial class LocalizedContentView(IContentProviderManager contentProvide
     [Parameter]
     public bool ShowNavigationLinks { get; set; } = false;
 
+    [Parameter]
+    public bool EnableLocalization { get; set; } = true;
+
     private Dictionary<string, string> AvailableTranslations { get; set; } = new();
     private bool IsLoading { get; set; } = true;
+    private bool HasMultipleTranslations => AvailableTranslations.Count > 1;
+    private bool ShowTranslations => EnableLocalization && HasMultipleTranslations;
 
     protected override async Task OnInitializedAsync()
     {
@@ -85,7 +92,7 @@ public partial class LocalizedContentView(IContentProviderManager contentProvide
         IsLoading = true;
         try
         {
-            var provider = contentProviderManager.GetDefaultProvider();
+            var provider = ContentProviderManager.GetDefaultProvider();
             if (provider != null)
             {
                 Item = await provider.GetItemByPathAsync(Path);
@@ -143,12 +150,15 @@ public partial class LocalizedContentView(IContentProviderManager contentProvide
 
     private async Task LoadTranslationsAsync()
     {
-        if (string.IsNullOrEmpty(LocalizationId))
+        if (string.IsNullOrEmpty(LocalizationId) || !EnableLocalization)
+        {
+            AvailableTranslations.Clear();
             return;
+        }
 
         try
         {
-            var provider = contentProviderManager.GetDefaultProvider();
+            var provider = ContentProviderManager.GetDefaultProvider();
             if (provider != null)
             {
                 var translations = await provider.GetContentTranslationsAsync(LocalizationId);

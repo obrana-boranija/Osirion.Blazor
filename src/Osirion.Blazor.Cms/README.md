@@ -3,12 +3,15 @@
 [![NuGet](https://img.shields.io/nuget/v/Osirion.Blazor.Cms)](https://www.nuget.org/packages/Osirion.Blazor.Cms)
 [![License](https://img.shields.io/github/license/obrana-boranija/Osirion.Blazor)](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/LICENSE.txt)
 
-Content management components for Blazor applications with multiple provider support.
+Content management components for Blazor applications with multiple provider support, localization, and SEO optimization.
 
 ## Features
 
 - **Multiple Content Providers**: GitHub and FileSystem implementations included
 - **Provider Pattern**: Easily extend with custom providers
+- **Localization**: Full support for multi-language content with translations
+- **SEO Optimization**: Rich snippets, structured data, and comprehensive metadata
+- **Directory Navigation**: Hierarchical content browsing with metadata
 - **Markdown Support**: Built-in Markdown rendering with frontmatter
 - **SSR Compatible**: Works with Server-Side Rendering and Static SSG
 - **Caching**: Efficient content delivery with built-in caching
@@ -57,6 +60,13 @@ builder.Services.AddOsirionContent(content => {
 
 <!-- Add directory navigation -->
 <DirectoryNavigation />
+
+<!-- For localized content -->
+<LocalizedNavigation CurrentLocale="en" />
+<LocalizedContentView Path="blog/my-post.md" CurrentLocale="en" />
+
+<!-- Add SEO metadata to your layout -->
+<SeoMetadataRenderer Content="@CurrentContent" SiteName="My Website" BaseUrl="https://mysite.com" />
 ```
 
 ### File System Provider
@@ -68,6 +78,48 @@ builder.Services.AddOsirionContent(content => {
         options.WatchForChanges = true;
     });
 });
+```
+
+### Localization Support
+
+The CMS module has built-in support for multi-language content. You can enable or disable localization as needed:
+
+```csharp
+// With localization enabled (default)
+builder.Services.AddOsirionContent(content => {
+    content.AddGitHub(options => {
+        options.Owner = "username";
+        options.Repository = "content-repo";
+        options.EnableLocalization = true; // Default is true
+        options.DefaultLocale = "en"; // Default locale
+    });
+});
+
+// Disable localization
+builder.Services.AddOsirionContent(content => {
+    content.AddGitHub(options => {
+        options.Owner = "username";
+        options.Repository = "content-repo";
+        options.EnableLocalization = false; // Disable localization
+    });
+});
+```
+
+When localization is enabled:
+- Content is organized by locale in directories (e.g., "en/blog", "fr/blog")
+- Translations are linked using `localization_id` in frontmatter
+- The `LocalizedNavigation` and `LocalizedContentView` components show language selectors
+
+```razor
+<LocalizedNavigation 
+    CurrentLocale="@CurrentLocale" 
+    OnLocaleChanged="@HandleLocaleChanged" 
+    EnableLocalization="true" /> <!-- Can be set to false to hide language selector -->
+
+<LocalizedContentView 
+    Path="@ContentPath" 
+    CurrentLocale="@CurrentLocale" 
+    EnableLocalization="true" /> <!-- Can be set to false to hide translations -->
 ```
 
 ### Content Queries

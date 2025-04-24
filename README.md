@@ -1,4 +1,4 @@
-# Osirion.Blazor
+﻿# Osirion.Blazor
 
 [![NuGet](https://img.shields.io/nuget/v/Osirion.Blazor)](https://www.nuget.org/packages/Osirion.Blazor)
 [![License](https://img.shields.io/github/license/obrana-boranija/Osirion.Blazor)](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/LICENSE.txt)
@@ -167,6 +167,106 @@ builder.Services.AddOsirion(osirion => {
 ```csharp
 // In Program.cs
 builder.Services.AddOsirion(builder.Configuration);
+```
+
+### Directory Structure with _index.md
+
+The CMS module supports directory metadata using `_index.md` files:
+
+```
+content/
+├── en/
+│   ├── _index.md
+│   ├── blog/
+│   │   ├── _index.md
+│   │   ├── post1.md
+│   │   └── post2.md
+│   └── docs/
+│       ├── _index.md
+│       └── guide.md
+└── es/
+    ├── _index.md
+    └── blog/
+        ├── _index.md
+        └── post1.md
+```
+
+The `_index.md` file can include metadata for the directory:
+
+```markdown
+---
+id: "blog"               # Unique ID for the directory (same across locales)
+title: "Blog Posts"      # Display name (localized)
+description: "Our latest articles about Blazor development"
+order: 1                 # Controls ordering in navigation
+---
+```
+
+### Markdown Frontmatter with SEO and Localization
+
+```markdown
+---
+# Basic metadata
+title: "My Blog Post"
+author: "John Doe"
+date: "2025-04-20"
+description: "A brief description of my post"
+tags: [blazor, webassembly, dotnet]
+categories: [tutorials, web]
+slug: "my-blog-post"
+is_featured: true
+featured_image: "https://example.com/image.jpg"
+
+# Localization
+locale: "en"                       # Content locale (e.g., en, es, fr)
+localization_id: "my-blog-post"    # Shared ID across all translations
+
+# SEO metadata
+meta_title: "Optimized Title for SEO | My Site"    # <title> tag (if different from title)
+meta_description: "Longer description optimized for search engines with key phrases..."
+canonical_url: "https://mysite.com/blog/my-blog-post"
+robots: "index, follow"
+
+# Open Graph metadata
+og_title: "My Blog Post - Perfect for Sharing"
+og_description: "Description optimized for social sharing..."
+og_image: "https://example.com/image-for-social.jpg"
+og_type: "article"
+
+# Twitter Card metadata
+twitter_card: "summary_large_image"
+twitter_title: "My Blog Post - Twitter Title"
+twitter_description: "Description optimized for Twitter..."
+twitter_image: "https://example.com/twitter-image.jpg"
+
+# Structured Data / Rich Snippets
+schema_type: "Article"       # or BlogPosting, TechArticle, etc.
+json_ld: |                  # Optional custom JSON-LD
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "My Blog Post",
+    "author": {
+      "@type": "Person",
+      "name": "John Doe"
+    },
+    "datePublished": "2025-04-20",
+    "image": "https://example.com/image.jpg",
+    "publisher": {
+      "@type": "Organization",
+      "name": "My Company",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://example.com/logo.png"
+      }
+    }
+  }
+---
+
+# My Blog Post Content
+
+Your markdown content here...
+
 ```
 
 ## Documentation

@@ -1,14 +1,13 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Markdig;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Text.Json;
-using Markdig;
+using Osirion.Blazor.Cms.Exceptions;
 using Osirion.Blazor.Cms.Models;
 using Osirion.Blazor.Cms.Options;
 using Osirion.Blazor.Cms.Providers.Internal;
-using Osirion.Blazor.Cms.Exceptions;
+using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 
 namespace Osirion.Blazor.Cms.Providers;
@@ -134,6 +133,27 @@ public class GitHubContentProvider : ContentProviderBase
             );
         }
 
+        // Apply locale filtering if specified
+        if (!string.IsNullOrEmpty(query.Locale))
+        {
+            filteredItems = filteredItems.Where(item =>
+                item.Locale.Equals(query.Locale, StringComparison.OrdinalIgnoreCase));
+        }
+
+        // Filter by localization ID (for translations)
+        if (!string.IsNullOrEmpty(query.LocalizationId))
+        {
+            filteredItems = filteredItems.Where(item =>
+                item.LocalizationId.Equals(query.LocalizationId, StringComparison.OrdinalIgnoreCase));
+        }
+
+        // Filter by directory ID
+        if (!string.IsNullOrEmpty(query.DirectoryId))
+        {
+            filteredItems = filteredItems.Where(item =>
+                item.Directory != null && item.Directory.Id.Equals(query.DirectoryId, StringComparison.OrdinalIgnoreCase));
+        }
+
         // Apply sorting
         filteredItems = query.SortBy switch
         {
@@ -243,7 +263,7 @@ public class GitHubContentProvider : ContentProviderBase
         contentItem.Date = fileInfo.CreatedDate;
         contentItem.LastModified = fileInfo.LastModifiedDate;
 
-        // Extract locale from path
+        // Extract locale from path (if directory structure follows localization pattern)
         contentItem.Locale = ExtractLocaleFromPath(item.Path);
 
         // Parse markdown and extract front matter
@@ -548,7 +568,7 @@ public class GitHubContentProvider : ContentProviderBase
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            // Extract locale from path if present
+            // Extract locale from path if present (or use default)
             string locale = ExtractLocaleFromPath(dir.Path);
 
             var directory = new DirectoryItem
@@ -556,7 +576,8 @@ public class GitHubContentProvider : ContentProviderBase
                 Path = dir.Path,
                 Name = dir.Name,
                 Locale = locale,
-                Parent = parentDirectory
+                Parent = parentDirectory,
+                Id = dir.Path.GetHashCode().ToString("x") // Default ID until we process _index.md
             };
 
             // Add to collections
@@ -586,20 +607,15 @@ public class GitHubContentProvider : ContentProviderBase
             try
             {
                 var indexFilePath = $"{path}/_index.md";
-                var indexContents = await GetRepositoryContentsAsync(indexFilePath, cancellationToken);
-                var indexFile = indexContents.FirstOrDefault(c => c.Name == "_index.md");
+                var indexContent = await GetFileContentAsync($"repos/{_options.Owner}/{_options.Repository}/contents/{indexFilePath}?ref={_options.Branch}", cancellationToken);
 
-                if (indexFile != null)
+                if (!string.IsNullOrEmpty(indexContent))
                 {
-                    var indexContent = await GetFileContentAsync(indexFile.Url, cancellationToken);
-                    if (!string.IsNullOrEmpty(indexContent))
+                    // Parse front matter
+                    var frontMatter = ExtractFrontMatter(indexContent);
+                    if (frontMatter != null && frontMatter.Count > 0)
                     {
-                        // Parse front matter
-                        var frontMatter = ExtractFrontMatter(indexContent);
-                        if (frontMatter != null)
-                        {
-                            ApplyDirectoryMetadata(directory, frontMatter);
-                        }
+                        ApplyDirectoryMetadata(directory, frontMatter);
                     }
                 }
             }
@@ -616,7 +632,7 @@ public class GitHubContentProvider : ContentProviderBase
         {
             directory.Id = id;
         }
-        else
+        else if (string.IsNullOrEmpty(directory.Id))
         {
             // Generate an ID if not provided
             directory.Id = directory.Path.GetHashCode().ToString("x");
@@ -637,10 +653,16 @@ public class GitHubContentProvider : ContentProviderBase
             directory.Order = order;
         }
 
+        // Process locale if specified
+        if (frontMatter.TryGetValue("locale", out var locale))
+        {
+            directory.Locale = locale;
+        }
+
         // Process other metadata
         foreach (var (key, value) in frontMatter)
         {
-            if (!new[] { "id", "title", "description", "order" }.Contains(key))
+            if (!new[] { "id", "title", "description", "order", "locale" }.Contains(key))
             {
                 directory.Metadata[key] = value;
             }
@@ -649,18 +671,26 @@ public class GitHubContentProvider : ContentProviderBase
 
     private string ExtractLocaleFromPath(string path)
     {
-        // Extract locale from path format like "en/blog" or "es/articles"
+        // If localization is disabled, always return the default locale
+        if (!_options.EnableLocalization)
+        {
+            return _options.DefaultLocale;
+        }
+
+        // Try to extract locale from path format like "en/blog" or "es/articles"
         var segments = path.Split('/');
         if (segments.Length >= 2 && IsValidLocale(segments[0]))
         {
             return segments[0];
         }
-        return "en"; // Default locale
+
+        // If there's no valid locale in the path, return default
+        return _options.DefaultLocale;
     }
 
     private bool IsValidLocale(string locale)
     {
-        // Simple validation for common locale codes
+        // Simple validation for common locale codes (can be expanded)
         return locale.Length == 2 && locale.All(char.IsLetter);
     }
 
@@ -733,48 +763,94 @@ public class GitHubContentProvider : ContentProviderBase
         var cacheKey = GetCacheKey("localization:info");
         return await GetOrCreateCachedAsync(cacheKey, async ct =>
         {
-            var localizationInfo = new LocalizationInfo
+            try
             {
-                DefaultLocale = "en" // Default locale
-            };
-
-            // Get all content items to analyze translations
-            var allItems = await GetAllItemsAsync(ct);
-
-            // Group by localization ID and build translations map
-            var itemsByLocalizationId = allItems
-                .Where(item => !string.IsNullOrEmpty(item.LocalizationId))
-                .GroupBy(item => item.LocalizationId);
-
-            foreach (var group in itemsByLocalizationId)
-            {
-                var translations = new Dictionary<string, string>();
-
-                foreach (var item in group)
+                // If localization is disabled, return minimal info with just the default locale
+                if (!_options.EnableLocalization)
                 {
-                    if (!string.IsNullOrEmpty(item.Locale))
+                    return new LocalizationInfo
                     {
-                        translations[item.Locale] = item.Path;
+                        DefaultLocale = _options.DefaultLocale,
+                        AvailableLocales = new List<string> { _options.DefaultLocale }
+                    };
+                }
 
-                        if (!localizationInfo.AvailableLocales.Contains(item.Locale))
+                var localizationInfo = new LocalizationInfo
+                {
+                    DefaultLocale = _options.DefaultLocale
+                };
+
+                // Get all content items to analyze translations
+                var allItems = await GetAllItemsAsync(ct);
+
+                // First, collect all the available locales
+                var locales = allItems
+                    .Select(item => item.Locale)
+                    .Where(l => !string.IsNullOrEmpty(l))
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .ToList();
+
+                // If we have multiple locales, process them
+                if (locales.Count > 1)
+                {
+                    localizationInfo.AvailableLocales.AddRange(locales);
+
+                    // Group by localization ID and build translations map
+                    var itemsByLocalizationId = allItems
+                        .Where(item => !string.IsNullOrEmpty(item.LocalizationId))
+                        .GroupBy(item => item.LocalizationId);
+
+                    foreach (var group in itemsByLocalizationId)
+                    {
+                        var translations = new Dictionary<string, string>();
+
+                        foreach (var item in group)
                         {
-                            localizationInfo.AvailableLocales.Add(item.Locale);
+                            if (!string.IsNullOrEmpty(item.Locale))
+                            {
+                                translations[item.Locale] = item.Path;
+                            }
+                        }
+
+                        if (translations.Count > 0)
+                        {
+                            localizationInfo.Translations[group.Key] = translations;
                         }
                     }
                 }
-
-                if (translations.Count > 0)
+                else if (locales.Count == 1)
                 {
-                    localizationInfo.Translations[group.Key] = translations;
+                    // Only one locale available, use it as default
+                    localizationInfo.DefaultLocale = locales[0];
+                    localizationInfo.AvailableLocales.Add(locales[0]);
                 }
-            }
+                else
+                {
+                    // No locales found, use default
+                    localizationInfo.AvailableLocales.Add(_options.DefaultLocale);
+                }
 
-            return localizationInfo;
+                return localizationInfo;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error building localization info");
+
+                // Return minimal localization info on error
+                return new LocalizationInfo
+                {
+                    DefaultLocale = _options.DefaultLocale,
+                    AvailableLocales = new List<string> { _options.DefaultLocale }
+                };
+            }
         }, cancellationToken);
     }
 
     public override async Task<IReadOnlyList<ContentItem>> GetContentTranslationsAsync(string localizationId, CancellationToken cancellationToken = default)
     {
+        if (string.IsNullOrEmpty(localizationId))
+            return new List<ContentItem>().AsReadOnly();
+
         var allItems = await GetAllItemsAsync(cancellationToken);
 
         return allItems

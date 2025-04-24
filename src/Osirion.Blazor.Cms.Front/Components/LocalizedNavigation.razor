@@ -17,14 +17,17 @@
     }
     else
     {
-        <div class="osirion-locale-selector">
-            @foreach (var locale in AvailableLocales)
-            {
-                <button class="@GetLocaleButtonClass(locale)" @onclick="() => SwitchLocale(locale)">
-                    @GetLocaleName(locale)
-                </button>
-            }
-        </div>
+        @if (ShowLocaleSelector)
+        {
+            <div class="osirion-locale-selector">
+                @foreach (var locale in AvailableLocales)
+                {
+                    <button class="@GetLocaleButtonClass(locale)" @onclick="() => SwitchLocale(locale)">
+                        @GetLocaleName(locale)
+                    </button>
+                }
+            </div>
+        }
 
         <ul class="osirion-nav-list">
             @RenderDirectories(Directories)
