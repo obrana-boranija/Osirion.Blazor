@@ -1,0 +1,33 @@
+﻿@namespace Osirion.Blazor.Cms.Components
+@inherits OsirionComponentBase
+
+<nav class="@GetNavClass()">
+    @if (Title != null)
+    {
+        <h3 class="osirion-nav-title">@Title</h3>
+    }
+
+    @if (IsLoading)
+    {
+        <div class="osirion-loading">@LoadingText</div>
+    }
+    else if (Directories == null || !Directories.Any())
+    {
+        <div class="osirion-no-directories">@NoContentText</div>
+    }
+    else
+    {
+        <div class="osirion-locale-selector">
+            @foreach (var locale in AvailableLocales)
+            {
+                <button class="@GetLocaleButtonClass(locale)" @onclick="() => SwitchLocale(locale)">
+                    @GetLocaleName(locale)
+                </button>
+            }
+        </div>
+
+        <ul class="osirion-nav-list">
+            @RenderDirectories(Directories)
+        </ul>
+    }
+</nav>

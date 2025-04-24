@@ -1,0 +1,95 @@
+﻿@namespace Osirion.Blazor.Cms.Components
+@inherits OsirionComponentBase
+
+<div class="@GetContentViewClass()">
+    @if (IsLoading)
+    {
+        <div class="osirion-loading">@LoadingText</div>
+    }
+    else if (Item is null)
+    {
+        <div class="osirion-not-found">@NotFoundText</div>
+    }
+    else
+    {
+        <article class="osirion-content-article">
+            @if (AvailableTranslations.Count > 1)
+            {
+                <div class="osirion-translations">
+                    @foreach (var locale in AvailableTranslations.Keys)
+                    {
+                        <a href="@GetTranslationUrl(locale)" 
+                           class="@GetTranslationClass(locale)"
+                           @onclick="() => SwitchTranslation(locale)"
+                           @onclick:preventDefault>
+                            @GetLocaleName(locale)
+                        </a>
+                    }
+                </div>
+            }
+
+            <header class="osirion-content-header">
+                <h1>@Item.Title</h1>
+                <div class="osirion-content-meta">
+                    @if (!string.IsNullOrEmpty(Item.Author))
+                    {
+                        <span class="osirion-content-author">By @Item.Author</span>
+                    }
+                    <span class="osirion-content-date">@Item.Date.ToString("MMMM d, yyyy")</span>
+                    <span class="osirion-content-read-time">@Item.ReadTimeMinutes min read</span>
+                </div>
+                @if (!string.IsNullOrEmpty(Item.FeaturedImageUrl))
+                {
+                    <img src="@Item.FeaturedImageUrl" alt="@Item.Title" class="osirion-content-featured-image" loading="lazy" />
+                }
+            </header>
+
+            <div class="osirion-content-body">
+                @((MarkupString)Item.Content)
+            </div>
+
+            <footer class="osirion-content-footer">
+                @if (Item.Categories.Any())
+                {
+                    <div class="osirion-content-categories">
+                        <strong class="osirion-content-section-title">Categories: </strong>
+                        @foreach (var category in Item.Categories)
+                        {
+                            <a href="@GetCategoryUrl(category)" class="osirion-content-category">@category</a>
+                        }
+                    </div>
+                }
+                @if (Item.Tags.Any())
+                {
+                    <div class="osirion-content-tags">
+                        <strong class="osirion-content-section-title">Tags: </strong>
+                        @foreach (var tag in Item.Tags)
+                        {
+                            <a href="@GetTagUrl(tag)" class="osirion-content-tag">@tag</a>
+                        }
+                    </div>
+                }
+
+                @if (ShowNavigationLinks && (PreviousItem != null || NextItem != null))
+                {
+                    <div class="osirion-content-navigation">
+                        @if (PreviousItem != null)
+                        {
+                            <a href="@GetContentUrl(PreviousItem)" class="osirion-content-previous">
+                                <span class="osirion-content-navigation-label">Previous</span>
+                                <span class="osirion-content-navigation-title">@PreviousItem.Title</span>
+                            </a>
+                        }
+                        @if (NextItem != null)
+                        {
+                            <a href="@GetContentUrl(NextItem)" class="osirion-content-next">
+                                <span class="osirion-content-navigation-label">Next</span>
+                                <span class="osirion-content-navigation-title">@NextItem.Title</span>
+                            </a>
+                        }
+                    </div>
+                }
+            </footer>
+        </article>
+    }
+</div>

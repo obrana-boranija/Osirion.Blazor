@@ -44,6 +44,12 @@ public partial class ContentList(IContentProviderManager contentProviderManager)
     [Parameter]
     public Func<int, string>? PaginationUrlFormatter { get; set; }
 
+    [Parameter]
+    public string? Locale { get; set; }
+
+    [Parameter]
+    public string? DirectoryId { get; set; }
+
     private IReadOnlyList<ContentItem>? ContentItems { get; set; }
     private bool IsLoading { get; set; } = true;
     private int TotalPages => ContentItems != null ? (int)Math.Ceiling(ContentItems.Count / (double)ItemsPerPage) : 0;
@@ -76,6 +82,12 @@ public partial class ContentList(IContentProviderManager contentProviderManager)
 
                 if (!string.IsNullOrEmpty(Tag))
                     query.Tag = Tag;
+
+                if (!string.IsNullOrEmpty(Locale))
+                    query.Locale = Locale;
+
+                if (!string.IsNullOrEmpty(DirectoryId))
+                    query.DirectoryId = DirectoryId;
 
                 if (FeaturedCount.HasValue)
                 {

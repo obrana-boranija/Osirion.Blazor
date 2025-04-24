@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Caching.Memory;
 using Osirion.Blazor.Cms.Models;
+using Osirion.Blazor.Cms.Interfaces;
 
 namespace Osirion.Blazor.Cms.Providers.Internal;
 
@@ -19,7 +20,6 @@ public abstract class ContentProviderBase : IContentProvider
     /// </summary>
     protected readonly IMemoryCache _memoryCache;
 
-    // Replace the existing _cacheLock field with the following:
     /// <summary>
     /// SemaphoreSlim for thread safety
     /// </summary>
@@ -104,7 +104,9 @@ public abstract class ContentProviderBase : IContentProvider
             {
                 GetCacheKey("content:all"),
                 GetCacheKey("categories"),
-                GetCacheKey("tags")
+                GetCacheKey("tags"),
+                GetCacheKey("directories"),
+                GetCacheKey("localization")
             };
 
             foreach (var key in cacheKeys)
@@ -120,6 +122,66 @@ public abstract class ContentProviderBase : IContentProvider
     public virtual Task InitializeAsync(CancellationToken cancellationToken = default)
     {
         return Task.CompletedTask;
+    }
+
+    /// <inheritdoc/>
+    public virtual async Task<IReadOnlyList<DirectoryItem>> GetDirectoriesAsync(string? locale = null, CancellationToken cancellationToken = default)
+    {
+        var cacheKey = GetCacheKey($"directories:{locale ?? "all"}");
+
+        return await GetOrCreateCachedAsync(cacheKey, async token =>
+        {
+            // Default implementation returns an empty list
+            // Derived classes should override this method to provide actual directories
+            return await Task.FromResult(new List<DirectoryItem>().AsReadOnly());
+        }, cancellationToken);
+    }
+
+    /// <inheritdoc/>
+    public virtual async Task<DirectoryItem?> GetDirectoryByPathAsync(string path, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrEmpty(path))
+            return null;
+
+        var directories = await GetDirectoriesAsync(null, cancellationToken);
+        return directories.FirstOrDefault(d => string.Equals(d.Path, path, StringComparison.OrdinalIgnoreCase));
+    }
+
+    /// <inheritdoc/>
+    public virtual async Task<DirectoryItem?> GetDirectoryByIdAsync(string id, string? locale = null, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrEmpty(id))
+            return null;
+
+        var directories = await GetDirectoriesAsync(locale, cancellationToken);
+        return directories.FirstOrDefault(d => string.Equals(d.Id, id, StringComparison.OrdinalIgnoreCase));
+    }
+
+    /// <inheritdoc/>
+    public virtual async Task<LocalizationInfo> GetLocalizationInfoAsync(CancellationToken cancellationToken = default)
+    {
+        var cacheKey = GetCacheKey("localization");
+
+        return await GetOrCreateCachedAsync(cacheKey, async token =>
+        {
+            // Default implementation returns a basic localization info
+            // Derived classes should override this method to provide actual localization information
+            return await Task.FromResult(new LocalizationInfo
+            {
+                DefaultLocale = "en",
+                //SupportedLocales = new List<string> { "en" }
+            });
+        }, cancellationToken);
+    }
+
+    /// <inheritdoc/>
+    public virtual async Task<IReadOnlyList<ContentItem>> GetContentTranslationsAsync(string localizationId, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrEmpty(localizationId))
+            return new List<ContentItem>().AsReadOnly();
+
+        var query = new ContentQuery { LocalizationId = localizationId };
+        return await GetItemsByQueryAsync(query, cancellationToken);
     }
 
     /// <summary>
@@ -141,11 +203,13 @@ public abstract class ContentProviderBase : IContentProvider
         return $"{ProviderId}:{key}";
     }
 
-    // Update the GetOrCreateCachedAsync method to use SemaphoreSlim correctly:
+    /// <summary>
+    /// Gets or creates a cached value using async factory method
+    /// </summary>
     protected async Task<T> GetOrCreateCachedAsync<T>(
-    string cacheKey,
-    Func<CancellationToken, Task<T>> factory,
-    CancellationToken cancellationToken = default)
+        string cacheKey,
+        Func<CancellationToken, Task<T>> factory,
+        CancellationToken cancellationToken = default)
     {
         if (_memoryCache.TryGetValue(cacheKey, out T? cachedValue))
         {

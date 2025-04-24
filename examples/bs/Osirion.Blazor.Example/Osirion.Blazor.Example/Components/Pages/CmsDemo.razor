@@ -1,7 +1,8 @@
 ﻿@page "/cms-demo"
 @page "/cms-demo/tag/{TagSlug}"
 @page "/cms-demo/category/{CategorySlug}"
-@inject Osirion.Blazor.Cms.IContentProvider ContentProvider
+@using Osirion.Blazor.Cms.Interfaces
+@inject IContentProvider ContentProvider
 
 <PageTitle>CMS Demo</PageTitle>
 

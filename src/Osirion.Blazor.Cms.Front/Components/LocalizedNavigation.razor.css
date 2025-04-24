@@ -1,0 +1,98 @@
+.osirion-localized-navigation {
+    padding: var(--osirion-content-small-padding);
+    font-family: var(--osirion-content-font-family);
+}
+
+.osirion-nav-title {
+    font-size: var(--osirion-content-title-font-size);
+    margin-bottom: 1rem;
+    color: var(--osirion-content-text-color);
+}
+
+.osirion-locale-selector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.osirion-locale-button {
+    padding: 0.25rem 0.75rem;
+    background-color: var(--osirion-content-light-background-color);
+    border: 1px solid var(--osirion-content-border-color);
+    border-radius: var(--osirion-content-small-border-radius);
+    color: var(--osirion-content-text-color);
+    font-size: var(--osirion-content-small-font-size);
+    cursor: pointer;
+    transition: all var(--osirion-content-transition-speed) ease;
+}
+
+    .osirion-locale-button:hover {
+        background-color: var(--osirion-content-border-color);
+    }
+
+    .osirion-locale-button.osirion-active {
+        background-color: var(--osirion-content-active-background);
+        color: var(--osirion-content-active-text);
+        border-color: var(--osirion-content-active-text);
+    }
+
+.osirion-nav-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.osirion-nav-item {
+    margin-bottom: var(--osirion-content-small-gap);
+}
+
+.osirion-nav-link {
+    display: block;
+    padding: var(--osirion-content-small-padding);
+    text-decoration: none;
+    color: var(--osirion-content-text-color);
+    border-radius: var(--osirion-content-small-border-radius);
+    font-weight: bold;
+    transition: background-color var(--osirion-content-transition-speed);
+}
+
+    .osirion-nav-link:hover {
+        background-color: var(--osirion-content-light-background-color);
+    }
+
+.osirion-nav-sublist {
+    list-style: none;
+    padding-left: 1.5rem;
+    margin: 0.5rem 0;
+}
+
+.osirion-nav-content-item {
+    margin-bottom: 0.25rem;
+}
+
+.osirion-nav-content-link {
+    display: block;
+    padding: 0.25rem 0.5rem;
+    text-decoration: none;
+    color: var(--osirion-content-text-color);
+    border-radius: var(--osirion-content-small-border-radius);
+    transition: background-color var(--osirion-content-transition-speed);
+}
+
+    .osirion-nav-content-link:hover {
+        background-color: var(--osirion-content-light-background-color);
+    }
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .osirion-locale-selector {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding-bottom: 0.5rem;
+    }
+
+    .osirion-locale-button {
+        flex: 0 0 auto;
+    }
+}

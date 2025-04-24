@@ -90,6 +90,27 @@ public class ContentItem
     /// </summary>
     public int ReadTimeMinutes => CalculateReadTime();
 
+    // Add these properties to ContentItem
+    /// <summary>
+    /// Gets or sets the locale/language code (e.g., "en", "es", "de")
+    /// </summary>
+    public string Locale { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the parent directory of this content item
+    /// </summary>
+    public DirectoryItem? Directory { get; set; }
+
+    /// <summary>
+    /// Gets or sets the SEO metadata for this content item
+    /// </summary>
+    public SeoMetadata Seo { get; set; } = new SeoMetadata();
+
+    /// <summary>
+    /// Gets or sets the content ID that is shared across all localizations
+    /// </summary>
+    public string LocalizationId { get; set; } = string.Empty;
+
     private int CalculateReadTime()
     {
         const int wordsPerMinute = 200;

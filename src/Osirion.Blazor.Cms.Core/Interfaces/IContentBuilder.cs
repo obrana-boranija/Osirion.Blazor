@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Osirion.Blazor.Cms.Interfaces;
 using Osirion.Blazor.Cms.Options;
 
 namespace Osirion.Blazor.Cms;

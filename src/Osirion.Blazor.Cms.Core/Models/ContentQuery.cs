@@ -59,4 +59,19 @@ public class ContentQuery
     /// Gets or sets the sort direction
     /// </summary>
     public SortDirection SortDirection { get; set; } = SortDirection.Descending;
+
+    /// <summary>
+    /// Gets or sets the locale to filter by
+    /// </summary>
+    public string? Locale { get; set; }
+
+    /// <summary>
+    /// Gets or sets the directory ID to filter by
+    /// </summary>
+    public string? DirectoryId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the localization ID to filter by (to get all translations of the same content)
+    /// </summary>
+    public string? LocalizationId { get; set; }
 }

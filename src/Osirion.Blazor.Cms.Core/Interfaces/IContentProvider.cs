@@ -1,6 +1,6 @@
 ﻿using Osirion.Blazor.Cms.Models;
 
-namespace Osirion.Blazor.Cms;
+namespace Osirion.Blazor.Cms.Interfaces;
 
 /// <summary>
 /// Interface for content providers
@@ -56,4 +56,29 @@ public interface IContentProvider
     /// Initializes the provider
     /// </summary>
     Task InitializeAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets the directory structure from the provider
+    /// </summary>
+    Task<IReadOnlyList<DirectoryItem>> GetDirectoriesAsync(string? locale = null, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets a specific directory by its path
+    /// </summary>
+    Task<DirectoryItem?> GetDirectoryByPathAsync(string path, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets a specific directory by its ID
+    /// </summary>
+    Task<DirectoryItem?> GetDirectoryByIdAsync(string id, string? locale = null, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets available localizations for the provider
+    /// </summary>
+    Task<LocalizationInfo> GetLocalizationInfoAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets all translations of a specific content item
+    /// </summary>
+    Task<IReadOnlyList<ContentItem>> GetContentTranslationsAsync(string localizationId, CancellationToken cancellationToken = default);
 }
