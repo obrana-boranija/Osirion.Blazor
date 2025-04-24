@@ -1,6 +1,5 @@
 ﻿@inherits OsirionComponentBase
 
-
 <div class="@GetCssClass()">
     @if (ShowHeader)
     {
@@ -9,14 +8,21 @@
         </div>
     }
 
-    <div class="osirion-markdown-preview-content">
+    <div id="@_previewRef.Id" @ref="_previewRef" class="osirion-markdown-preview-content @ContentCssClass">
         @if (string.IsNullOrWhiteSpace(Markdown))
         {
             <p class="osirion-markdown-preview-placeholder">@Placeholder</p>
         }
         else
         {
-            @((MarkupString)RenderedHtml)
+            @((MarkupString)GetRenderedHtml())
         }
     </div>
 </div>
+
+@code {
+    private string GetCssClass()
+    {
+        return $"osirion-markdown-preview {CssClass}".Trim();
+    }
+}

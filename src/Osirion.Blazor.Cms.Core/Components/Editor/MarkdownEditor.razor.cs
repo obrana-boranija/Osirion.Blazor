@@ -1,120 +1,351 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
+using Osirion.Blazor.Components;
 
 namespace Osirion.Blazor.Cms.Core.Components.Editor;
 
-public partial class MarkdownEditor(IJSRuntime jSRuntime)
+/// <summary>
+/// A markdown editor component with toolbar and advanced text manipulation
+/// </summary>
+public partial class MarkdownEditor : OsirionComponentBase, IAsyncDisposable
 {
+    /// <summary>
+    /// Gets or sets the markdown content
+    /// </summary>
     [Parameter]
     public string Content { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Event callback when content changes
+    /// </summary>
     [Parameter]
     public EventCallback<string> ContentChanged { get; set; }
 
+    /// <summary>
+    /// Placeholder text when editor is empty
+    /// </summary>
     [Parameter]
     public string Placeholder { get; set; } = "Enter markdown here...";
 
+    /// <summary>
+    /// Whether to auto-focus the editor when initialized
+    /// </summary>
     [Parameter]
-    public List<MarkdownToolbarAction> ToolbarActions { get; set; } = DefaultToolbarActions();
+    public bool AutoFocus { get; set; } = false;
 
-    private ElementReference _textAreaRef;
+    /// <summary>
+    /// Whether to enable scroll position synchronization
+    /// </summary>
+    [Parameter]
+    public bool SyncScroll { get; set; } = true;
 
-    private async Task HandleKeyDown(KeyboardEventArgs e)
+    /// <summary>
+    /// Event callback when the editor is scrolled (position from 0-1)
+    /// </summary>
+    [Parameter]
+    public EventCallback<double> OnScroll { get; set; }
+
+    /// <summary>
+    /// Whether to show the markdown toolbar
+    /// </summary>
+    [Parameter]
+    public bool ShowToolbar { get; set; } = true;
+
+    [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
+
+    // References to DOM elements
+    private ElementReference _editorRef;
+
+    // Track if component has been initialized to avoid JS calls during SSR
+    private bool _isInitialized = false;
+
+    // DotNetObjectReference for JS callbacks
+    private DotNetObjectReference<MarkdownEditor>? _dotNetRef;
+
+    /// <summary>
+    /// Called when the component is initialized
+    /// </summary>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (e.Key == "Tab")
+        if (firstRender && IsInteractive)
         {
-            await HandleTabKey(e.ShiftKey);
+            _dotNetRef = DotNetObjectReference.Create(this);
+
+            // Only run client-side initialization when in browser
+            if (OperatingSystem.IsBrowser())
+            {
+                // Minimal inline JS - necessary for editor initialization
+                await JSRuntime.InvokeVoidAsync("eval", @"
+                    const editor = document.getElementById('" + _editorRef.Id + @"');
+                    if (editor) {
+                        editor.addEventListener('scroll', () => {
+                            const scrollTop = editor.scrollTop;
+                            const scrollHeight = editor.scrollHeight;
+                            const clientHeight = editor.clientHeight;
+                            const position = scrollHeight > clientHeight ? 
+                                scrollTop / (scrollHeight - clientHeight) : 0;
+                            " + _dotNetRef.Value + @".invokeMethodAsync('UpdateScrollPosition', position);
+                        });
+                    }
+                ");
+
+                // Set focus if auto-focus is enabled
+                if (AutoFocus)
+                {
+                    await FocusAsync();
+                }
+            }
+
+            _isInitialized = true;
         }
     }
 
-    private async Task HandleTabKey(bool isShiftKey)
+    /// <summary>
+    /// Updates the scroll position of the editor
+    /// </summary>
+    [JSInvokable]
+    public async Task UpdateScrollPosition(double position)
     {
-        await jSRuntime.InvokeVoidAsync("eval", $@"
-                (function() {{
-                    const textarea = document.querySelector('[_bl_{_textAreaRef.Id}]');
-                    const start = textarea.selectionStart;
-                    const end = textarea.selectionEnd;
+        if (SyncScroll && OnScroll.HasDelegate)
+        {
+            await OnScroll.InvokeAsync(position);
+        }
+    }
 
-                    if (start !== end) {{
-                        const selectedText = textarea.value.substring(start, end);
+    /// <summary>
+    /// Sets the editor's scroll position
+    /// </summary>
+    public async Task SetScrollPositionAsync(double position)
+    {
+        if (!_isInitialized || !IsInteractive) return;
+
+        await JSRuntime.InvokeVoidAsync("eval", @"
+            const editor = document.getElementById('" + _editorRef.Id + @"');
+            if (editor) {
+                const scrollHeight = editor.scrollHeight;
+                const clientHeight = editor.clientHeight;
+                if (scrollHeight > clientHeight) {
+                    editor.scrollTop = position * (scrollHeight - clientHeight);
+                }
+            }
+        ");
+    }
+
+    /// <summary>
+    /// Focuses the editor
+    /// </summary>
+    public async Task FocusAsync()
+    {
+        if (!_isInitialized || !IsInteractive) return;
+
+        await JSRuntime.InvokeVoidAsync("eval", @"
+            const editor = document.getElementById('" + _editorRef.Id + @"');
+            if (editor) {
+                editor.focus();
+            }
+        ");
+    }
+
+    /// <summary>
+    /// Inserts text at the current cursor position
+    /// </summary>
+    public async Task InsertTextAsync(string text)
+    {
+        if (!_isInitialized || !IsInteractive) return;
+
+        await JSRuntime.InvokeVoidAsync("eval", @"
+            const editor = document.getElementById('" + _editorRef.Id + @"');
+            if (editor) {
+                const start = editor.selectionStart;
+                const end = editor.selectionEnd;
+                const before = editor.value.substring(0, start);
+                const after = editor.value.substring(end);
+                
+                editor.value = before + " + JsonEncodedText(text) + @" + after;
+                const newCursorPos = start + " + text.Length + @";
+                editor.selectionStart = newCursorPos;
+                editor.selectionEnd = newCursorPos;
+                editor.focus();
+                
+                // Trigger change event to update binding
+                const event = new Event('input', { bubbles: true });
+                editor.dispatchEvent(event);
+            }
+        ");
+    }
+
+    /// <summary>
+    /// Wraps selected text with prefix and suffix, or inserts default text if no selection
+    /// </summary>
+    public async Task WrapTextAsync(string prefix, string suffix, string defaultText)
+    {
+        if (!_isInitialized || !IsInteractive) return;
+
+        await JSRuntime.InvokeVoidAsync("eval", @"
+            const editor = document.getElementById('" + _editorRef.Id + @"');
+            if (editor) {
+                const start = editor.selectionStart;
+                const end = editor.selectionEnd;
+                const selectedText = editor.value.substring(start, end);
+                const before = editor.value.substring(0, start);
+                const after = editor.value.substring(end);
+                
+                // Use selected text or default text if no selection
+                const textToWrap = selectedText.length > 0 ? selectedText : " + JsonEncodedText(defaultText) + @";
+                
+                editor.value = before + " + JsonEncodedText(prefix) + @" + textToWrap + " + JsonEncodedText(suffix) + @" + after;
+                
+                // Set cursor position appropriately
+                if (selectedText.length > 0) {
+                    // Select the wrapped text
+                    editor.selectionStart = start + " + prefix.Length + @";
+                    editor.selectionEnd = start + " + prefix.Length + @" + textToWrap.length;
+                } else {
+                    // Place cursor after default text
+                    const newPosition = start + " + (prefix.Length + defaultText.Length) + @";
+                    editor.selectionStart = newPosition;
+                    editor.selectionEnd = newPosition;
+                }
+                
+                editor.focus();
+                
+                // Trigger change event to update binding
+                const event = new Event('input', { bubbles: true });
+                editor.dispatchEvent(event);
+            }
+        ");
+    }
+
+    /// <summary>
+    /// Returns information about the current selection in the editor
+    /// </summary>
+    public async Task<TextSelection> GetSelectionAsync()
+    {
+        if (!_isInitialized || !IsInteractive)
+            return new TextSelection { Text = string.Empty, Start = 0, End = 0 };
+
+        return await JSRuntime.InvokeAsync<TextSelection>("eval", @"
+            const editor = document.getElementById('" + _editorRef.Id + @"');
+            if (editor) {
+                const start = editor.selectionStart;
+                const end = editor.selectionEnd;
+                const text = editor.value.substring(start, end);
+                return { text, start, end };
+            }
+            return { text: '', start: 0, end: 0 };
+        ");
+    }
+
+    /// <summary>
+    /// Handles special key press events
+    /// </summary>
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        // Handle tab key for indentation
+        if (e.Key == "Tab" && IsInteractive)
+        {
+            await JSRuntime.InvokeVoidAsync("eval", @"
+                const editor = document.getElementById('" + _editorRef.Id + @"');
+                if (editor) {
+                    const start = editor.selectionStart;
+                    const end = editor.selectionEnd;
+                    
+                    // If selection spans multiple lines
+                    if (start !== end) {
+                        const selectedText = editor.value.substring(start, end);
                         
-                        if (selectedText.includes('\n')) {{
-                            const before = textarea.value.substring(0, start);
-                            const after = textarea.value.substring(end);
+                        // Check if selection contains newlines
+                        if (selectedText.indexOf('\n') !== -1) {
+                            const before = editor.value.substring(0, start);
+                            const after = editor.value.substring(end);
                             
-                            const newText = {(isShiftKey ?
-                            "selectedText.replace(/^(\\t|  )/gm, '')" :
-                            "selectedText.replace(/^/gm, '\\t')")};
+                            let newText;
+                            if (" + e.ShiftKey.ToString().ToLowerInvariant() + @") {
+                                // Remove tab or 2 spaces from beginning of each line
+                                newText = selectedText.replace(/^(\t|  )/gm, '');
+                            } else {
+                                // Add tab to beginning of each line
+                                newText = selectedText.replace(/^/gm, '\t');
+                            }
                             
-                            textarea.value = before + newText + after;
-                            textarea.selectionStart = start;
-                            textarea.selectionEnd = start + newText.length;
-                        }}
-                    }} else if (!{isShiftKey.ToString().ToLowerInvariant()}) {{
-                        const before = textarea.value.substring(0, start);
-                        const after = textarea.value.substring(end);
+                            editor.value = before + newText + after;
+                            
+                            // Update selection to cover new text
+                            editor.selectionStart = start;
+                            editor.selectionEnd = start + newText.length;
+                        }
+                    } else if (!" + e.ShiftKey.ToString().ToLowerInvariant() + @") {
+                        // Insert tab character
+                        const before = editor.value.substring(0, start);
+                        const after = editor.value.substring(end);
                         
-                        textarea.value = before + '\\t' + after;
-                        textarea.selectionStart = textarea.selectionEnd = start + 1;
-                    }}
+                        editor.value = before + '\t' + after;
+                        
+                        // Move cursor position
+                        editor.selectionStart = editor.selectionEnd = start + 1;
+                    }
+                    
+                    // Trigger change event to update binding
+                    const event = new Event('input', { bubbles: true });
+                    editor.dispatchEvent(event);
                     
                     // Prevent default tab behavior
                     event.preventDefault();
-                    
-                    // Trigger input event to update Blazor binding
-                    textarea.dispatchEvent(new Event('input'));
-                }})();
+                }
             ");
+        }
     }
 
-    private string GetCssClass()
+    /// <summary>
+    /// Handles content changes from the textarea
+    /// </summary>
+    private async Task HandleContentChanged(ChangeEventArgs e)
     {
-        return $"osirion-markdown-editor {CssClass}".Trim();
-    }
+        var newValue = e.Value?.ToString() ?? string.Empty;
 
-    private static List<MarkdownToolbarAction> DefaultToolbarActions()
-    {
-        return new List<MarkdownToolbarAction>
+        if (Content != newValue)
         {
-            new MarkdownToolbarAction("B", content => WrapText(content, "**", "**", "bold text")),
-            new MarkdownToolbarAction("I", content => WrapText(content, "*", "*", "italic text")),
-            new MarkdownToolbarAction("H", content => WrapText(content, "## ", "", "Heading")),
-            new MarkdownToolbarAction("Link", content => WrapText(content, "[", "](url)", "link text"))
-        };
+            Content = newValue;
+
+            if (ContentChanged.HasDelegate)
+            {
+                await ContentChanged.InvokeAsync(Content);
+            }
+        }
     }
 
-    private static string WrapText(string content, string prefix, string suffix, string defaultText)
+    /// <summary>
+    /// Encodes text for use in JavaScript
+    /// </summary>
+    private string JsonEncodedText(string text)
     {
-        // In-memory text wrapping logic
-        // Note: Actual cursor positioning requires JavaScript
-        return string.IsNullOrEmpty(content.Trim())
-            ? $"{prefix}{defaultText}{suffix}"
-            : content;
+        return System.Text.Json.JsonSerializer.Serialize(text);
     }
-}
-
-/// <summary>
-/// Represents a toolbar action in the Markdown editor
-/// </summary>
-public class MarkdownToolbarAction
-{
-    /// <summary>
-    /// Label for the toolbar button
-    /// </summary>
-    public string Label { get; }
 
     /// <summary>
-    /// Action to perform when the button is clicked
+    /// Clean up resources
     /// </summary>
-    public Func<string, string> Action { get; }
-
-    /// <summary>
-    /// Creates a new Markdown toolbar action
-    /// </summary>
-    public MarkdownToolbarAction(string label, Func<string, string> action)
+    public async ValueTask DisposeAsync()
     {
-        Label = label;
-        Action = action;
+        _dotNetRef?.Dispose();
+
+        // Clean up event listeners
+        if (_isInitialized && IsInteractive)
+        {
+            try
+            {
+                await JSRuntime.InvokeVoidAsync("eval", @"
+                    const editor = document.getElementById('" + _editorRef.Id + @"');
+                    if (editor) {
+                        editor.replaceWith(editor.cloneNode(true));
+                    }
+                ");
+            }
+            catch
+            {
+                // Ignore errors during disposal
+            }
+        }
     }
 }

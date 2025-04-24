@@ -1,21 +1,81 @@
 ﻿@inherits OsirionComponentBase
 
 <div class="@GetCssClass()">
-    <div class="osirion-markdown-editor-toolbar">
-        @foreach (var action in ToolbarActions)
-        {
-            <button type="button"
-                    class="osirion-markdown-toolbar-button"
-                    @onclick="() => action.Action(Content)">
-                @action.Label
+    @if (ShowToolbar)
+    {
+        <div class="osirion-markdown-editor-toolbar">
+            <button type="button" class="osirion-markdown-toolbar-button" @onclick="() => InsertHeading()">
+                <span class="osirion-markdown-toolbar-icon">H</span>
             </button>
-        }
-    </div>
+            <button type="button" class="osirion-markdown-toolbar-button" @onclick="() => InsertBold()">
+                <span class="osirion-markdown-toolbar-icon">B</span>
+            </button>
+            <button type="button" class="osirion-markdown-toolbar-button" @onclick="() => InsertItalic()">
+                <span class="osirion-markdown-toolbar-icon">I</span>
+            </button>
+            <button type="button" class="osirion-markdown-toolbar-button" @onclick="() => InsertLink()">
+                <span class="osirion-markdown-toolbar-icon">Link</span>
+            </button>
+            <button type="button" class="osirion-markdown-toolbar-button" @onclick="() => InsertImage()">
+                <span class="osirion-markdown-toolbar-icon">Image</span>
+            </button>
+            <button type="button" class="osirion-markdown-toolbar-button" @onclick="() => InsertList()">
+                <span class="osirion-markdown-toolbar-icon">List</span>
+            </button>
+            <button type="button" class="osirion-markdown-toolbar-button" @onclick="() => InsertCodeBlock()">
+                <span class="osirion-markdown-toolbar-icon">Code</span>
+            </button>
+        </div>
+    }
 
-    <textarea @ref="_textAreaRef"
-              @bind="Content"
-              @bind:event="oninput"
+    <textarea id="@_editorRef.Id"
+              @ref="_editorRef"
+              value="@Content"
+              @oninput="HandleContentChanged"
               class="osirion-markdown-editor-textarea"
               placeholder="@Placeholder"
-              @onkeydown="HandleKeyDown"></textarea>
+              @onkeydown="HandleKeyDown"
+              @onkeydown:preventDefault="false">@Content</textarea>
 </div>
+
+@code {
+    private string GetCssClass()
+    {
+        return $"osirion-markdown-editor {CssClass}".Trim();
+    }
+
+    private async Task InsertHeading()
+    {
+        await WrapTextAsync("## ", "", "Heading");
+    }
+
+    private async Task InsertBold()
+    {
+        await WrapTextAsync("**", "**", "bold text");
+    }
+
+    private async Task InsertItalic()
+    {
+        await WrapTextAsync("*", "*", "italic text");
+    }
+
+    private async Task InsertLink()
+    {
+        await WrapTextAsync("[", "](https://example.com)", "link text");
+    }
+
+    private async Task InsertImage()
+    {
+        await InsertTextAsync("![alt text](https://example.com/image.jpg)");
+    }
+
+    private async Task InsertList()
+    {
+        await InsertTextAsync("\n- Item 1\n- Item 2\n- Item 3");
+    }
+
+    private async Task InsertCodeBlock()
+    {
+        await WrapTextAsync("```\n", "\n```", "code goes here");
+    }
+}

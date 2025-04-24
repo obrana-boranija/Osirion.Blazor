@@ -1,59 +1,191 @@
-using Markdig;
 using Microsoft.AspNetCore.Components;
-using Osirion.Blazor.Cms.Core.Services;
+using Microsoft.JSInterop;
+using Markdig;
+using System.Threading.Tasks;
+using Osirion.Blazor.Components;
 
 namespace Osirion.Blazor.Cms.Core.Components.Editor;
 
-public partial class MarkdownPreview
+/// <summary>
+/// A component that renders markdown content as HTML with synchronized scrolling
+/// </summary>
+public partial class MarkdownPreview : OsirionComponentBase, IAsyncDisposable
 {
+    /// <summary>
+    /// Gets or sets the markdown content to preview
+    /// </summary>
     [Parameter]
     public string Markdown { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Gets or sets the title displayed in the preview header
+    /// </summary>
     [Parameter]
     public string Title { get; set; } = "Preview";
 
+    /// <summary>
+    /// Gets or sets whether to show the preview header
+    /// </summary>
     [Parameter]
     public bool ShowHeader { get; set; } = true;
 
+    /// <summary>
+    /// Gets or sets whether to enable scroll position synchronization
+    /// </summary>
+    [Parameter]
+    public bool SyncScroll { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets the Markdig pipeline for rendering markdown
+    /// </summary>
+    [Parameter]
+    public MarkdownPipeline? Pipeline { get; set; }
+
+    /// <summary>
+    /// Gets or sets the placeholder text when no content is available
+    /// </summary>
     [Parameter]
     public string Placeholder { get; set; } = "No content to preview";
 
+    /// <summary>
+    /// Gets or sets the CSS class for the content container
+    /// </summary>
     [Parameter]
-    public MarkdownPipeline Pipeline { get; set; } = new MarkdownPipelineBuilder()
-        .UseAdvancedExtensions()
-        .UseYamlFrontMatter()
-        .Build();
-
-    [Inject] 
-    IMarkdownRendererService MarkdownRenderer { get; set; } = default!;
+    public string ContentCssClass { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets the rendered HTML
+    /// Event callback when the preview is scrolled (position from 0-1)
     /// </summary>
-    public string RenderedHtml => RenderMarkdown(Markdown);
+    [Parameter]
+    public EventCallback<double> OnScroll { get; set; }
 
-    private string GetCssClass()
+    [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
+
+    // Element reference for the preview container
+    private ElementReference _previewRef;
+
+    // DotNetObjectReference for JS callbacks
+    private DotNetObjectReference<MarkdownPreview>? _dotNetRef;
+
+    // Track initialization state
+    private bool _isInitialized = false;
+
+    /// <summary>
+    /// Called after the component has been rendered
+    /// </summary>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        return $"osirion-markdown-preview {CssClass}".Trim();
+        if (firstRender && IsInteractive)
+        {
+            _dotNetRef = DotNetObjectReference.Create(this);
+
+            // Initialize scroll tracking if we're in the browser
+            if (OperatingSystem.IsBrowser())
+            {
+                await JSRuntime.InvokeVoidAsync("eval", @"
+                    const preview = document.getElementById('" + _previewRef.Id + @"');
+                    if (preview) {
+                        preview.addEventListener('scroll', () => {
+                            const scrollTop = preview.scrollTop;
+                            const scrollHeight = preview.scrollHeight;
+                            const clientHeight = preview.clientHeight;
+                            const position = scrollHeight > clientHeight ? 
+                                scrollTop / (scrollHeight - clientHeight) : 0;
+                            " + _dotNetRef.Value + @".invokeMethodAsync('UpdateScrollPosition', position);
+                        });
+                    }
+                ");
+            }
+
+            _isInitialized = true;
+        }
     }
 
     /// <summary>
-    /// Renders markdown to HTML
+    /// Updates the scroll position of the preview
     /// </summary>
-    private string RenderMarkdown(string markdown)
+    [JSInvokable]
+    public async Task UpdateScrollPosition(double position)
     {
-        if (string.IsNullOrWhiteSpace(markdown))
+        if (SyncScroll && OnScroll.HasDelegate)
+        {
+            await OnScroll.InvokeAsync(position);
+        }
+    }
+
+    /// <summary>
+    /// Sets the preview's scroll position
+    /// </summary>
+    public async Task SetScrollPositionAsync(double position)
+    {
+        if (!_isInitialized || !IsInteractive) return;
+
+        await JSRuntime.InvokeVoidAsync("eval", @"
+            const preview = document.getElementById('" + _previewRef.Id + @"');
+            if (preview) {
+                const scrollHeight = preview.scrollHeight;
+                const clientHeight = preview.clientHeight;
+                if (scrollHeight > clientHeight) {
+                    preview.scrollTop = position * (scrollHeight - clientHeight);
+                }
+            }
+        ");
+    }
+
+    /// <summary>
+    /// Gets the rendered HTML from the markdown content
+    /// </summary>
+    protected string GetRenderedHtml()
+    {
+        if (string.IsNullOrWhiteSpace(Markdown))
             return string.Empty;
 
         try
         {
-            return MarkdownRenderer.RenderToHtml(markdown);
+            if (Pipeline != null)
+            {
+                return Markdig.Markdown.ToHtml(Markdown, Pipeline);
+            }
+            else
+            {
+                // Use default pipeline with basic security
+                var pipeline = new MarkdownPipelineBuilder()
+                    .UseAdvancedExtensions()
+                    .DisableHtml() // Prevent raw HTML injection
+                    .Build();
 
+                return Markdig.Markdown.ToHtml(Markdown, pipeline);
+            }
         }
         catch (Exception ex)
         {
-            // Return error message for debugging
             return $"<div class=\"markdown-error\">Error rendering markdown: {ex.Message}</div>";
+        }
+    }
+
+    /// <summary>
+    /// Clean up resources
+    /// </summary>
+    public async ValueTask DisposeAsync()
+    {
+        _dotNetRef?.Dispose();
+
+        // Clean up scroll event listener
+        if (_isInitialized && IsInteractive)
+        {
+            try
+            {
+                await JSRuntime.InvokeVoidAsync("eval", @"
+                    const preview = document.getElementById('" + _previewRef.Id + @"');
+                    if (preview) {
+                        preview.replaceWith(preview.cloneNode(true));
+                    }
+                ");
+            }
+            catch
+            {
+                // Ignore errors during disposal
+            }
         }
     }
 }
