@@ -1,81 +1,44 @@
-﻿@inherits OsirionComponentBase
+﻿@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.JSInterop
+@inherits Osirion.Blazor.Components.OsirionComponentBase
 
 <div class="@GetCssClass()">
     @if (ShowToolbar)
     {
         <div class="osirion-markdown-editor-toolbar">
-            <button type="button" class="osirion-markdown-toolbar-button" @onclick="() => InsertHeading()">
-                <span class="osirion-markdown-toolbar-icon">H</span>
-            </button>
-            <button type="button" class="osirion-markdown-toolbar-button" @onclick="() => InsertBold()">
-                <span class="osirion-markdown-toolbar-icon">B</span>
-            </button>
-            <button type="button" class="osirion-markdown-toolbar-button" @onclick="() => InsertItalic()">
-                <span class="osirion-markdown-toolbar-icon">I</span>
-            </button>
-            <button type="button" class="osirion-markdown-toolbar-button" @onclick="() => InsertLink()">
-                <span class="osirion-markdown-toolbar-icon">Link</span>
-            </button>
-            <button type="button" class="osirion-markdown-toolbar-button" @onclick="() => InsertImage()">
-                <span class="osirion-markdown-toolbar-icon">Image</span>
-            </button>
-            <button type="button" class="osirion-markdown-toolbar-button" @onclick="() => InsertList()">
-                <span class="osirion-markdown-toolbar-icon">List</span>
-            </button>
-            <button type="button" class="osirion-markdown-toolbar-button" @onclick="() => InsertCodeBlock()">
-                <span class="osirion-markdown-toolbar-icon">Code</span>
-            </button>
+            @foreach (var action in ToolbarActions)
+            {
+                <button type="button"
+                        class="osirion-markdown-toolbar-button"
+                        @onclick="() => ExecuteToolbarAction(action)"
+                        title="@action.Title">
+                    @if (!string.IsNullOrEmpty(action.Icon))
+                    {
+                        <span class="osirion-markdown-toolbar-icon">@((MarkupString)action.Icon)</span>
+                    }
+                    else
+                    {
+                        <span>@action.Label</span>
+                    }
+                </button>
+            }
         </div>
     }
 
-    <textarea id="@_editorRef.Id"
-              @ref="_editorRef"
-              value="@Content"
-              @oninput="HandleContentChanged"
-              class="osirion-markdown-editor-textarea"
-              placeholder="@Placeholder"
-              @onkeydown="HandleKeyDown"
-              @onkeydown:preventDefault="false">@Content</textarea>
+    @if (ShowHeader)
+    {
+        <div class="osirion-markdown-editor-header">
+            <h3 class="osirion-markdown-editor-title">@Title</h3>
+        </div>
+    }
+
+    <div class="osirion-markdown-editor-content" @ref="EditorContainer">
+        <textarea @ref="TextAreaRef"
+                  @bind="CurrentContent"
+                  @bind:event="oninput"
+                  @onkeydown="HandleKeyDown"
+                  @onscroll="HandleScroll"
+                  class="osirion-markdown-editor-textarea"
+                  placeholder="@Placeholder"></textarea>
+    </div>
 </div>
-
-@code {
-    private string GetCssClass()
-    {
-        return $"osirion-markdown-editor {CssClass}".Trim();
-    }
-
-    private async Task InsertHeading()
-    {
-        await WrapTextAsync("## ", "", "Heading");
-    }
-
-    private async Task InsertBold()
-    {
-        await WrapTextAsync("**", "**", "bold text");
-    }
-
-    private async Task InsertItalic()
-    {
-        await WrapTextAsync("*", "*", "italic text");
-    }
-
-    private async Task InsertLink()
-    {
-        await WrapTextAsync("[", "](https://example.com)", "link text");
-    }
-
-    private async Task InsertImage()
-    {
-        await InsertTextAsync("![alt text](https://example.com/image.jpg)");
-    }
-
-    private async Task InsertList()
-    {
-        await InsertTextAsync("\n- Item 1\n- Item 2\n- Item 3");
-    }
-
-    private async Task InsertCodeBlock()
-    {
-        await WrapTextAsync("```\n", "\n```", "code goes here");
-    }
-}

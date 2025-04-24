@@ -1,208 +1,149 @@
+using Markdig;
 using Microsoft.AspNetCore.Components;
-using Osirion.Blazor.Components;
 
-namespace Osirion.Blazor.Cms.Core.Components.Editor;
-
-/// <summary>
-/// A combined markdown editor and preview component with synchronized scrolling
-/// </summary>
-public partial class MarkdownEditorPreview : OsirionComponentBase
+namespace Osirion.Blazor.Cms.Core.Components.Editor
 {
-    /// <summary>
-    /// Gets or sets the markdown content
-    /// </summary>
-    [Parameter]
-    public string Content { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Event callback when content changes
-    /// </summary>
-    [Parameter]
-    public EventCallback<string> ContentChanged { get; set; }
-
-    /// <summary>
-    /// Placeholder text when editor is empty
-    /// </summary>
-    [Parameter]
-    public string Placeholder { get; set; } = "Enter markdown here...";
-
-    /// <summary>
-    /// The title displayed in the editor header
-    /// </summary>
-    [Parameter]
-    public string EditorTitle { get; set; } = "Editor";
-
-    /// <summary>
-    /// The title displayed in the preview header
-    /// </summary>
-    [Parameter]
-    public string PreviewTitle { get; set; } = "Preview";
-
-    /// <summary>
-    /// Whether to auto-focus the editor
-    /// </summary>
-    [Parameter]
-    public bool AutoFocus { get; set; } = false;
-
-    /// <summary>
-    /// Whether to synchronize scrolling between editor and preview
-    /// </summary>
-    [Parameter]
-    public bool SyncScroll { get; set; } = true;
-
-    /// <summary>
-    /// Whether to show the preview panel
-    /// </summary>
-    [Parameter]
-    public bool ShowPreview { get; set; } = true;
-
-    /// <summary>
-    /// Event callback when preview visibility changes
-    /// </summary>
-    [Parameter]
-    public EventCallback<bool> ShowPreviewChanged { get; set; }
-
-    /// <summary>
-    /// Whether to show the markdown toolbar
-    /// </summary>
-    [Parameter]
-    public bool ShowToolbar { get; set; } = true;
-
-    /// <summary>
-    /// Whether to show the preview header
-    /// </summary>
-    [Parameter]
-    public bool ShowPreviewHeader { get; set; } = true;
-
-    /// <summary>
-    /// CSS class to apply to the editor
-    /// </summary>
-    [Parameter]
-    public string EditorCssClass { get; set; } = string.Empty;
-
-    /// <summary>
-    /// CSS class to apply to the preview
-    /// </summary>
-    [Parameter]
-    public string PreviewCssClass { get; set; } = string.Empty;
-
-    /// <summary>
-    /// CSS class to apply to the preview content
-    /// </summary>
-    [Parameter]
-    public string PreviewContentCssClass { get; set; } = string.Empty;
-
-    // References to child components
-    private MarkdownEditor? _editorRef;
-    private MarkdownPreview? _previewRef;
-
-    // Flag to prevent infinite scroll sync loop
-    private bool _isScrolling = false;
-
-    /// <summary>
-    /// Toggles the preview panel
-    /// </summary>
-    public async Task TogglePreviewAsync()
+    public partial class MarkdownEditorPreview
     {
-        ShowPreview = !ShowPreview;
+        [Parameter] public string Content { get; set; } = string.Empty;
+        [Parameter] public EventCallback<string> ContentChanged { get; set; }
+        [Parameter] public string Placeholder { get; set; } = "Enter markdown here...";
+        [Parameter] public string EditorTitle { get; set; } = "Editor";
+        [Parameter] public string PreviewTitle { get; set; } = "Preview";
+        [Parameter] public string PreviewPlaceholder { get; set; } = "Preview will appear here";
+        [Parameter] public bool AutoFocus { get; set; } = false;
+        [Parameter] public bool SyncScroll { get; set; } = true;
+        [Parameter] public bool ShowPreview { get; set; } = true;
+        [Parameter] public EventCallback<bool> ShowPreviewChanged { get; set; }
+        [Parameter] public bool ShowToolbar { get; set; } = true;
+        [Parameter] public bool ShowEditorHeader { get; set; } = true;
+        [Parameter] public bool ShowPreviewHeader { get; set; } = true;
+        [Parameter] public bool ShowActionsBar { get; set; } = true;
+        [Parameter] public string EditorCssClass { get; set; } = string.Empty;
+        [Parameter] public string PreviewCssClass { get; set; } = string.Empty;
+        [Parameter] public string PreviewContentCssClass { get; set; } = string.Empty;
+        [Parameter] public MarkdownPipeline? Pipeline { get; set; }
+        [Parameter] public List<ToolbarAction>? ToolbarActions { get; set; }
 
-        if (ShowPreviewChanged.HasDelegate)
+        private MarkdownEditor? EditorRef;
+        private MarkdownPreview? PreviewRef;
+        private bool _isSyncing = false;
+
+        protected override async Task OnInitializedAsync()
         {
-            await ShowPreviewChanged.InvokeAsync(ShowPreview);
+            await base.OnInitializedAsync();
         }
-    }
 
-    /// <summary>
-    /// Focuses the editor
-    /// </summary>
-    public async Task FocusEditorAsync()
-    {
-        if (_editorRef != null)
+        /// <summary>
+        /// Gets the CSS class for the component
+        /// </summary>
+        private string GetCssClass()
         {
-            await _editorRef.FocusAsync();
+            var classes = new List<string>
+            {
+                "osirion-markdown-editor-preview",
+                ShowPreview ? "preview-visible" : "preview-hidden",
+                CssClass ?? string.Empty
+            };
+
+            return string.Join(" ", classes).Trim();
         }
-    }
 
-    /// <summary>
-    /// Inserts text at the current cursor position
-    /// </summary>
-    public async Task InsertTextAsync(string text)
-    {
-        if (_editorRef != null)
+        /// <summary>
+        /// Handles content changes from the editor
+        /// </summary>
+        private async Task HandleContentChanged(string value)
         {
-            await _editorRef.InsertTextAsync(text);
+            Content = value;
+
+            if (ContentChanged.HasDelegate)
+            {
+                await ContentChanged.InvokeAsync(value);
+            }
         }
-    }
 
-    /// <summary>
-    /// Wraps selected text with prefix and suffix
-    /// </summary>
-    public async Task WrapTextAsync(string prefix, string suffix, string defaultText)
-    {
-        if (_editorRef != null)
+        /// <summary>
+        /// Handles scroll events from the editor
+        /// </summary>
+        private async Task HandleEditorScroll(double position)
         {
-            await _editorRef.WrapTextAsync(prefix, suffix, defaultText);
-        }
-    }
+            if (!SyncScroll || _isSyncing || PreviewRef == null || !ShowPreview)
+                return;
 
-    /// <summary>
-    /// Handles changes to the markdown content
-    /// </summary>
-    private async Task HandleContentChanged(string newContent)
-    {
-        Content = newContent;
-
-        if (ContentChanged.HasDelegate)
-        {
-            await ContentChanged.InvokeAsync(newContent);
-        }
-    }
-
-    /// <summary>
-    /// Handles scroll events from the editor
-    /// </summary>
-    private async Task SyncPreviewScroll(double position)
-    {
-        // Prevent infinite loop of scroll events
-        if (!_isScrolling && SyncScroll && ShowPreview && _previewRef != null)
-        {
             try
             {
-                _isScrolling = true;
-                await _previewRef.SetScrollPositionAsync(position);
+                _isSyncing = true;
+                await PreviewRef.SetScrollPositionAsync(position);
             }
             finally
             {
-                _isScrolling = false;
+                _isSyncing = false;
             }
         }
-    }
 
-    /// <summary>
-    /// Handles scroll events from the preview
-    /// </summary>
-    private async Task SyncEditorScroll(double position)
-    {
-        // Prevent infinite loop of scroll events
-        if (!_isScrolling && SyncScroll && _editorRef != null)
+        /// <summary>
+        /// Handles scroll events from the preview
+        /// </summary>
+        private async Task HandlePreviewScroll(double position)
         {
+            if (!SyncScroll || _isSyncing || EditorRef == null || !ShowPreview)
+                return;
+
             try
             {
-                _isScrolling = true;
-                await _editorRef.SetScrollPositionAsync(position);
+                _isSyncing = true;
+                await EditorRef.SetScrollPositionAsync(position);
             }
             finally
             {
-                _isScrolling = false;
+                _isSyncing = false;
             }
         }
-    }
 
-    /// <summary>
-    /// Builds the CSS class for the component
-    /// </summary>
-    private string GetCssClass()
-    {
-        return $"osirion-markdown-editor-preview {(ShowPreview ? "preview-visible" : "preview-hidden")} {CssClass}".Trim();
+        /// <summary>
+        /// Toggles the preview visibility
+        /// </summary>
+        private async Task TogglePreview()
+        {
+            ShowPreview = !ShowPreview;
+
+            if (ShowPreviewChanged.HasDelegate)
+            {
+                await ShowPreviewChanged.InvokeAsync(ShowPreview);
+            }
+        }
+
+        /// <summary>
+        /// Focuses the editor
+        /// </summary>
+        public async Task FocusEditorAsync()
+        {
+            if (EditorRef != null)
+            {
+                await EditorRef.FocusAsync();
+            }
+        }
+
+        /// <summary>
+        /// Inserts text at the cursor position
+        /// </summary>
+        public async Task InsertTextAsync(string text)
+        {
+            if (EditorRef != null)
+            {
+                await EditorRef.InsertTextAsync(text);
+            }
+        }
+
+        /// <summary>
+        /// Wraps selected text with prefix and suffix
+        /// </summary>
+        public async Task WrapTextAsync(string prefix, string suffix, string defaultText)
+        {
+            if (EditorRef != null)
+            {
+                await EditorRef.WrapTextAsync(prefix, suffix, defaultText);
+            }
+        }
     }
 }

@@ -1,28 +1,25 @@
-﻿@inherits OsirionComponentBase
+﻿@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.JSInterop
+@inherits Osirion.Blazor.Components.OsirionComponentBase
 
 <div class="@GetCssClass()">
     @if (ShowHeader)
     {
         <div class="osirion-markdown-preview-header">
-            <h3>@Title</h3>
+            <h3 class="osirion-markdown-preview-title">@Title</h3>
         </div>
     }
 
-    <div id="@_previewRef.Id" @ref="_previewRef" class="osirion-markdown-preview-content @ContentCssClass">
+    <div class="osirion-markdown-preview-content" @ref="PreviewContainer" @onscroll="HandleScroll">
         @if (string.IsNullOrWhiteSpace(Markdown))
         {
             <p class="osirion-markdown-preview-placeholder">@Placeholder</p>
         }
         else
         {
-            @((MarkupString)GetRenderedHtml())
+            <div class="@ContentCssClass">
+                @((MarkupString)RenderedHtml)
+            </div>
         }
     </div>
 </div>
-
-@code {
-    private string GetCssClass()
-    {
-        return $"osirion-markdown-preview {CssClass}".Trim();
-    }
-}
