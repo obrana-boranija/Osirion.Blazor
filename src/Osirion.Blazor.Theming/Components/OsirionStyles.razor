@@ -1,5 +1,7 @@
-﻿@inherits OsirionComponentBase
+﻿@using Osirion.Blazor.Theming.Services
+@inherits OsirionComponentBase
 @inject IOptions<ThemingOptions>? Options
+@inject IThemeService ThemeService
 @implements IDisposable
 
 <link rel="stylesheet" href="_content/Osirion.Blazor/css/osirion.css" />
@@ -20,6 +22,15 @@
         </style>
 }
 
+@if (!string.IsNullOrEmpty(GeneratedVariables))
+{
+        <style>
+            :root {
+        @((MarkupString)GeneratedVariables)
+            }
+        </style>
+}
+
 @if (EffectiveOptions.Framework != CssFramework.None)
 {
         <style id="osirion-framework-style">
@@ -28,26 +39,14 @@
             }
         </style>
 
-    @* This script is crucial - it handles both initial load AND navigation events *@
+    @* This script is essential for SSR pages that don't have ThemeProvider *@
         <script id="osirion-framework-script">
             (function() {
-                // Store framework class in a global variable for persistence
-                window.osirionFrameworkClass = "@GetFrameworkClass()";
-
                 function applyFrameworkIntegration() {
                     const htmlElement = document.documentElement || document.querySelector('html');
-                    const frameworkClass = window.osirionFrameworkClass;
+                    const frameworkClass = "@GetFrameworkClass()";
 
                     if (htmlElement && frameworkClass && !htmlElement.classList.contains(frameworkClass)) {
-                        // Remove any other framework classes first
-                        htmlElement.classList.remove(
-                            "osirion-bootstrap-integration", 
-                            "osirion-tailwind-integration",
-                            "osirion-fluent-integration",
-                            "osirion-mudblazor-integration",
-                            "osirion-radzen-integration"
-                        );
-
                         // Apply the correct framework class
                         htmlElement.classList.add(frameworkClass);
                     }
@@ -59,29 +58,6 @@
                 // Apply on DOMContentLoaded
                 if (document.readyState === 'loading') {
                     document.addEventListener('DOMContentLoaded', applyFrameworkIntegration);
-                }
-
-                // IMPORTANT: Listen for Blazor navigation events
-                if (typeof Blazor !== 'undefined' && Blazor.addEventListener) {
-                    Blazor.addEventListener('enhancedload', function() {
-                        // Re-apply framework class after navigation
-                        setTimeout(applyFrameworkIntegration, 0);
-                    });
-                }
-
-                // Create a MutationObserver as a fallback to ensure class stays applied
-                const observer = new MutationObserver(function(mutations) {
-                    mutations.forEach(function(mutation) {
-                        if (mutation.attributeName === 'class') {
-                            // If class attribute changes, reapply our framework class
-                            setTimeout(applyFrameworkIntegration, 0);
-                        }
-                    });
-                });
-
-                // Start observing the html element for class changes
-                if (observer && document.documentElement) {
-                    observer.observe(document.documentElement, { attributes: true });
                 }
             })();
         </script>
@@ -107,14 +83,26 @@
     public CssFramework? Framework { get; set; }
 
     /// <summary>
+    /// Gets or sets the theme mode
+    /// </summary>
+    [Parameter]
+    public ThemeMode? Mode { get; set; }
+
+    /// <summary>
     /// Gets the effective options, merging parameters with configured options
     /// </summary>
     private ThemingOptions EffectiveOptions => new()
         {
             UseDefaultStyles = UseStyles ?? Options?.Value.UseDefaultStyles ?? true,
             CustomVariables = CustomVariables ?? Options?.Value.CustomVariables,
-            Framework = Framework ?? Options?.Value.Framework ?? CssFramework.None
+            Framework = Framework ?? Options?.Value.Framework ?? CssFramework.None,
+            DefaultMode = Mode ?? Options?.Value.DefaultMode ?? ThemeMode.Light
         };
+
+    /// <summary>
+    /// Gets the generated CSS variables for the current theme
+    /// </summary>
+    private string GeneratedVariables => ThemeService.GenerateThemeVariables();
 
     /// <summary>
     /// Gets the framework class based on the selected framework
@@ -141,19 +129,8 @@
         return !string.IsNullOrEmpty(frameworkClass) ? $"class: \"{frameworkClass}\"" : "";
     }
 
-    protected override void OnAfterRender(bool firstRender)
-    {
-        base.OnAfterRender(firstRender);
-
-        if (firstRender && IsInteractive)
-        {
-            // Register this component with the navigation manager to handle navigation events
-            // This would be an ideal place to add navigation event handling if needed
-        }
-    }
-
     public void Dispose()
     {
-        // Cleanup code if needed
+        // Cleanup if needed
     }
 }

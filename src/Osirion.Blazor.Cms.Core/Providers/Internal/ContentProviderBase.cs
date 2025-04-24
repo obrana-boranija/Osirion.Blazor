@@ -3,6 +3,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Osirion.Blazor.Cms.Models;
 using Osirion.Blazor.Cms.Interfaces;
 using System.Text.RegularExpressions;
+using Osirion.Blazor.Core.Extensions;
 
 namespace Osirion.Blazor.Cms.Providers.Internal;
 
@@ -74,7 +75,7 @@ public abstract class ContentProviderBase : IContentProvider
             .Select(group => new ContentCategory
             {
                 Name = group.First(),
-                Slug = GenerateSlug(group.Key, 0),
+                Slug = group.Key.ToUrlSlug(),
                 Count = group.Count()
             })
             .OrderBy(c => c.Name)
@@ -92,7 +93,7 @@ public abstract class ContentProviderBase : IContentProvider
             .Select(group => new ContentTag
             {
                 Name = group.First(),
-                Slug = GenerateSlug(group.Key, 0),
+                Slug = group.Key.ToUrlSlug(),
                 Count = group.Count()
             })
             .OrderBy(t => t.Name)
@@ -186,41 +187,6 @@ public abstract class ContentProviderBase : IContentProvider
 
         var query = new ContentQuery { LocalizationId = localizationId };
         return await GetItemsByQueryAsync(query, cancellationToken);
-    }
-
-    /// <summary>
-    /// Generates a URL-friendly slug from text
-    /// </summary>
-    protected string GenerateSlug(string text, int suffix = 4)
-    {
-        if (string.IsNullOrWhiteSpace(text))
-            return "untitled-" + GenerateRandomLetters(suffix);
-
-        string slug = text.ToLowerInvariant();
-
-        // Replace spaces and special characters with hyphens
-        slug = Regex.Replace(slug, @"[^a-z0-9\s-]", "");
-
-        // Replace multiple spaces with single hyphen
-        slug = Regex.Replace(slug, @"\s+", "-");
-
-        // Replace multiple hyphens with single hyphen
-        slug = Regex.Replace(slug, @"-+", "-");
-
-        slug = slug.Trim('-');
-
-        if (slug.Length > 0 && !char.IsLetter(slug[0]))
-        {
-            slug = "a-" + slug;
-        }
-
-        string randomSuffix = GenerateRandomLetters(suffix);
-        slug = slug + "-" + randomSuffix;
-
-        if (string.IsNullOrEmpty(slug))
-            return "untitled-" + randomSuffix;
-
-        return slug;
     }
 
     private static string GenerateRandomLetters(int length)

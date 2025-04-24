@@ -10,16 +10,16 @@
 {
     @if (EffectiveOptions.UseDefaultStyles)
     {
-        <link rel="stylesheet" href="_content/Osirion.Blazor.Theming/css/osirion-theming.css" />
+                <link rel="stylesheet" href="_content/Osirion.Blazor.Theming/css/osirion-theming.css" />
     }
 
     @if (!string.IsNullOrEmpty(GeneratedVariables))
     {
-        <style>
-            :root {
+                <style>
+                    :root {
             @((MarkupString)GeneratedVariables)
-            }
-        </style>
+                    }
+                </style>
     }
 
     @if (EffectiveOptions.Framework != CssFramework.None)
@@ -133,7 +133,7 @@
                         document.addEventListener('DOMContentLoaded', applyFrameworkIntegration);
                     }}
 
-                {(EffectiveOptions.FollowSystemPreference ? GetSystemPreferenceScript() : "")}
+            {(EffectiveOptions.FollowSystemPreference ? GetSystemPreferenceScript() : "")}
                 }})();
             </script>
         ";

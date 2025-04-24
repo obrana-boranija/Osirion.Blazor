@@ -1,6 +1,5 @@
-﻿/* Base styles for ScrollToTop component 
-   Supporting both legacy and namespaced class patterns */
-.scroll-to-top,
+/* Enhanced ScrollToTop CSS with improved theme variables */
+
 .osirion-scroll-to-top {
     position: fixed;
     width: var(--osirion-scroll-size, 45px);
@@ -17,10 +16,17 @@
     text-decoration: none;
     transition: var(--osirion-scroll-transition, all 0.3s ease);
     z-index: var(--osirion-scroll-z-index, 1000);
+    opacity: 1;
+    visibility: visible;
 }
 
+    .osirion-scroll-to-top.hidden {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+    }
+
     /* Hover state */
-    .scroll-to-top:hover,
     .osirion-scroll-to-top:hover {
         background-color: var(--osirion-scroll-hover-background, rgba(29, 78, 216, 0.9));
         color: var(--osirion-scroll-hover-color, #ffffff);
@@ -30,47 +36,40 @@
     }
 
     /* Active/pressed state */
-    .scroll-to-top:active,
     .osirion-scroll-to-top:active {
         transform: translateY(0);
         box-shadow: var(--osirion-scroll-box-shadow, 0 4px 10px rgba(0, 0, 0, 0.2));
     }
 
     /* Position variants */
-    .scroll-to-top.bottom-right,
     .osirion-scroll-to-top.bottom-right {
         bottom: var(--osirion-scroll-margin, 25px);
         right: var(--osirion-scroll-margin, 25px);
     }
 
-    .scroll-to-top.bottom-left,
     .osirion-scroll-to-top.bottom-left {
         bottom: var(--osirion-scroll-margin, 25px);
         left: var(--osirion-scroll-margin, 25px);
     }
 
-    .scroll-to-top.top-right,
     .osirion-scroll-to-top.top-right {
         top: var(--osirion-scroll-margin, 25px);
         right: var(--osirion-scroll-margin, 25px);
     }
 
-    .scroll-to-top.top-left,
     .osirion-scroll-to-top.top-left {
         top: var(--osirion-scroll-margin, 25px);
         left: var(--osirion-scroll-margin, 25px);
     }
 
     /* Icon sizing */
-    .scroll-to-top svg,
     .osirion-scroll-to-top svg {
         width: calc(var(--osirion-scroll-size, 45px) * 0.5);
         height: calc(var(--osirion-scroll-size, 45px) * 0.5);
-        stroke-width: 3;
+        stroke-width: 2.5;
     }
 
     /* Text styling when present */
-    .scroll-to-top .scroll-text,
     .osirion-scroll-to-top .scroll-text {
         margin-left: 8px;
         font-size: var(--osirion-small-font-size, 0.875rem);
@@ -78,27 +77,40 @@
     }
 
     /* When text is present, adjust to pill shape */
-    .scroll-to-top:has(.scroll-text),
     .osirion-scroll-to-top:has(.scroll-text) {
         width: auto;
         padding: 0 16px;
-        border-radius: 25px;
+        border-radius: 999px;
     }
+
+/* Enhanced visibility animation */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.osirion-scroll-to-top:not(.hidden) {
+    animation: fadeInUp 0.3s ease-out;
+}
 
 /* Responsive styles */
 @media (max-width: 768px) {
-    .scroll-to-top,
     .osirion-scroll-to-top {
         --osirion-scroll-size: 40px;
         --osirion-scroll-margin: 20px;
     }
 
-        .scroll-to-top .scroll-text,
         .osirion-scroll-to-top .scroll-text {
             display: none;
         }
 
-        .scroll-to-top:has(.scroll-text),
         .osirion-scroll-to-top:has(.scroll-text) {
             width: var(--osirion-scroll-size, 40px);
             padding: 0;
@@ -106,15 +118,46 @@
         }
 }
 
-/* Accessibility - show only on hover/focus when reduced motion is preferred */
-@media (prefers-reduced-motion) {
-    .scroll-to-top,
-    .osirion-scroll-to-top {
-        transition: none;
+/* SSR-compatible non-JS implementation */
+.osirion-scroll-to-top {
+    opacity: 0;
+    visibility: hidden;
+}
+
+    /* The visible class will be added by a small script */
+    .osirion-scroll-to-top.visible {
+        opacity: 1;
+        visibility: visible;
     }
 
-        .scroll-to-top:hover,
-        .osirion-scroll-to-top:hover {
-            transform: none;
+/* Add this small script to your page to enable ScrollToTop functionality */
+/*
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const scrollButton = document.querySelector('.osirion-scroll-to-top');
+        if (scrollButton) {
+            // Hide button initially
+            scrollButton.classList.add('hidden');
+            
+            // Show/hide button based on scroll position
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 300) {
+                    scrollButton.classList.remove('hidden');
+                    scrollButton.classList.add('visible');
+                } else {
+                    scrollButton.classList.add('hidden');
+                    scrollButton.classList.remove('visible');
+                }
+            });
+            
+            // Scroll to top when clicked
+            scrollButton.addEventListener('click', function() {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
         }
-}
+    });
+</script>
+*/

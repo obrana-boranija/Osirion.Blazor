@@ -6,6 +6,7 @@ using Osirion.Blazor.Cms.Exceptions;
 using Osirion.Blazor.Cms.Models;
 using Osirion.Blazor.Cms.Options;
 using Osirion.Blazor.Cms.Providers.Internal;
+using Osirion.Blazor.Core.Extensions;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -297,7 +298,7 @@ public class GitHubContentProvider : ContentProviderBase
 
         if (string.IsNullOrEmpty(contentItem.Slug))
         {
-            contentItem.Slug = GenerateSlug(contentItem.Title);
+            contentItem.Slug = contentItem.Title.ToUrlSlug();
         }
 
         contentItem.Url = GenerateUrl(contentItem.Path, contentItem.Slug, _options.ContentPath);

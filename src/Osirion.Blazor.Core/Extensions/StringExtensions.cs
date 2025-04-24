@@ -10,14 +10,14 @@ public static class StringExtensions
     /// <param name="input">The string to convert.</param>
     /// <param name="suffixLength">Length of random letter suffix (0 for no suffix).</param>
     /// <returns>URL-friendly slug starting with '/' and proper formatting.</returns>
-    public static string ToUrlSlug(this string input, int suffixLength = 4)
+    public static string ToUrlSlug(this string input, uint suffixLength = 0)
     {
         if (string.IsNullOrWhiteSpace(input))
             return "/" + (suffixLength > 0 ? "untitled-" + GenerateRandomLetters(suffixLength) : "untitled");
 
         // Use StringBuilder for better performance with multiple string operations
         var slugBuilder = new StringBuilder(input.Length + 10);
-        slugBuilder.Append('/');
+        //slugBuilder.Append('/');
 
         bool previousWasHyphen = false;
         bool hasValidChars = false;
@@ -83,7 +83,7 @@ public static class StringExtensions
     [ThreadStatic]
     private static Random _random = default!;
 
-    private static string GenerateRandomLetters(int length)
+    private static string GenerateRandomLetters(uint length)
     {
         // Use ThreadStatic Random for better performance in multithreaded environments
         if (_random == null)

@@ -5,6 +5,7 @@ using Markdig;
 using Osirion.Blazor.Cms.Models;
 using Osirion.Blazor.Cms.Options;
 using Osirion.Blazor.Cms.Providers.Internal;
+using Osirion.Blazor.Core.Extensions;
 
 namespace Osirion.Blazor.Cms.Providers;
 
@@ -248,7 +249,7 @@ public class FileSystemContentProvider : ContentProviderBase
 
             if (string.IsNullOrEmpty(contentItem.Slug))
             {
-                contentItem.Slug = GenerateSlug(contentItem.Title);
+                contentItem.Slug = contentItem.Title.ToUrlSlug();
             }
 
             contentItem.Url = GenerateUrl(contentItem.Path, contentItem.Slug, _options.BasePath);
