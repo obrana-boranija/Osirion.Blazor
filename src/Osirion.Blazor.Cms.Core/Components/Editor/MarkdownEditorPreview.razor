@@ -1,52 +1,19 @@
 @inherits OsirionComponentBase
 
-<div class="@GetEditorPreviewClass()">
-    <div class="osirion-markdown-editor-preview-container @GetLayoutClass()">
-        <div class="osirion-editor-section">
-            @if (ShowToolbar)
-            {
-                <div class="osirion-editor-preview-toolbar">
-                    <div class="osirion-editor-preview-title">@EditorTitle</div>
-                    
-                    <div class="osirion-editor-preview-actions">
-                        <button type="button" 
-                                class="osirion-admin-button @(ShowPreview ? "osirion-admin-button-active" : "")"
-                                @onclick="TogglePreview" 
-                                title="@(ShowPreview ? "Hide Preview" : "Show Preview")">
-                            <span class="osirion-admin-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                                    <circle cx="12" cy="12" r="3" />
-                                </svg>
-                            </span>
-                            @(ShowPreview ? "Hide Preview" : "Show Preview")
-                        </button>
-                    </div>
-                </div>
-            }
-            
-            <MarkdownEditor @ref="EditorRef"
-                           Content="@Content"
-                           ContentChanged="HandleContentChanged"
-                           Placeholder="@Placeholder"
-                           AutoFocus="@AutoFocus"
-                           SyncScroll="@SyncScroll"
-                           OnScroll="HandleEditorScroll"
-                           CssClass="@EditorCssClass" />
+<div class="@GetCssClass()">
+    <div class="osirion-markdown-editor-preview-container">
+        <div class="osirion-markdown-editor-section">
+            <MarkdownEditor Content="@Content"
+                            ContentChanged="HandleContentChanged"
+                            CssClass="@EditorCssClass" />
         </div>
-        
+
         @if (ShowPreview)
         {
-            <div class="osirion-preview-section">
-                <MarkdownPreview @ref="PreviewRef"
-                               Markdown="@Content"
-                               Title="@PreviewTitle"
-                               ShowHeader="@ShowPreviewHeader"
-                               SyncScroll="@SyncScroll"
-                               OnScroll="HandlePreviewScroll"
-                               ContentCssClass="@PreviewContentCssClass"
-                               CssClass="@PreviewCssClass"
-                               Pipeline="@Pipeline" />
+            <div class="osirion-markdown-preview-section">
+                <MarkdownPreview Markdown="@Content"
+                                 Title="@PreviewTitle"
+                                 CssClass="@PreviewCssClass" />
             </div>
         }
     </div>

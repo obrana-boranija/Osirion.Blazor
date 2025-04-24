@@ -1,105 +1,26 @@
-/* Styles for the combined MarkdownEditorPreview component */
-
 .osirion-markdown-editor-preview {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    overflow: hidden;
+    border: 1px solid var(--osirion-border-color, #e1e4e8);
+    border-radius: var(--osirion-border-radius, 4px);
 }
 
 .osirion-markdown-editor-preview-container {
-    display: flex;
-    flex: 1;
-    overflow: hidden;
-}
-
-/* Split layout for editor and preview side by side */
-.osirion-split-layout {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: var(--osirion-admin-spacer, 1rem);
-    height: 100%;
+    gap: 1rem;
 }
 
-/* Editor-only layout when preview is hidden */
-.osirion-editor-only-layout {
-    height: 100%;
+.preview-hidden .osirion-markdown-editor-preview-container {
+    grid-template-columns: 1fr;
 }
 
-.osirion-editor-section,
-.osirion-preview-section {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    overflow: hidden;
-    height: 100%;
+.osirion-markdown-editor-section,
+.osirion-markdown-preview-section {
+    overflow: auto;
+    max-height: 600px;
 }
 
-/* Toolbar styles */
-.osirion-editor-preview-toolbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.75rem;
-    background-color: var(--osirion-admin-bg-header, #f6f8fa);
-    border: 1px solid var(--osirion-admin-border, #e1e4e8);
-    border-bottom: none;
-    border-top-left-radius: var(--osirion-admin-border-radius, 6px);
-    border-top-right-radius: var(--osirion-admin-border-radius, 6px);
-}
-
-.osirion-editor-preview-title {
-    font-weight: var(--osirion-admin-font-weight-medium, 500);
-    font-size: 0.875rem;
-}
-
-.osirion-editor-preview-actions {
-    display: flex;
-    gap: var(--osirion-admin-spacer-sm, 0.5rem);
-}
-
-/* Make the editor and preview fill the container */
-:global(.osirion-markdown-editor),
-:global(.osirion-markdown-preview) {
-    height: 100%;
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-}
-
-/* When toolbar is shown, adjust the editor/preview styling */
-.osirion-editor-preview-toolbar + :global(.osirion-markdown-editor),
-.osirion-editor-preview-toolbar ~ div :global(.osirion-markdown-preview) {
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-}
-
-/* When toolbar is hidden */
-:global(.osirion-markdown-editor) {
-    border-radius: var(--osirion-admin-border-radius, 6px);
-}
-
-/* Button styling adjustment for active state */
-:global(.osirion-admin-button-active) {
-    background-color: var(--osirion-admin-primary, #0366d6);
-    border-color: var(--osirion-admin-primary, #0366d6);
-    color: white;
-}
-
-/* Dark theme adjustments */
-:global(.osirion-admin-theme-dark) .osirion-editor-preview-toolbar {
-    background-color: var(--osirion-admin-bg-header, #161b22);
-    border-color: var(--osirion-admin-border, #30363d);
-}
-
-:global(.osirion-admin-theme-dark) :global(.osirion-admin-button-active) {
-    background-color: var(--osirion-admin-primary, #58a6ff);
-    border-color: var(--osirion-admin-primary, #58a6ff);
-}
-
-/* Responsive adjustments */
-@media (max-width: 992px) {
-    .osirion-split-layout {
+@media (max-width: 768px) {
+    .osirion-markdown-editor-preview-container {
         grid-template-columns: 1fr;
-        grid-template-rows: 1fr 1fr;
     }
 }

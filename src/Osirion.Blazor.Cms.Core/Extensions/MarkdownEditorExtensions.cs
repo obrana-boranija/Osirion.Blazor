@@ -1,4 +1,5 @@
 ﻿using Markdig;
+using Markdig.Renderers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;
 using Osirion.Blazor.Cms.Core.Services;
@@ -23,14 +24,14 @@ public static class MarkdownEditorExtensions
         services.AddSingleton(_ => new MarkdownPipelineBuilder()
             .UseAdvancedExtensions()
             .UseYamlFrontMatter()
+            .DisableHtml()  // Prevents raw HTML injection
             .UseEmojiAndSmiley()
             .UseAutoLinks()
             .UseTaskLists()
             .UsePipeTables()
             .Build());
 
-        // Register the JavaScript loader
-        services.AddScoped<IMarkdownJsLoader, MarkdownJsLoader>();
+        AddMarkdownEditorDependencies(services);
 
         return services;
     }
@@ -56,33 +57,13 @@ public static class MarkdownEditorExtensions
             return builder.Build();
         });
 
-        // Register the JavaScript loader
-        services.AddScoped<IMarkdownJsLoader, MarkdownJsLoader>();
+        AddMarkdownEditorDependencies(services);
 
         return services;
     }
 
-    /// <summary>
-    /// Registers the markdown editor JavaScript module during application startup
-    /// </summary>
-    /// <param name="jsRuntime">The JavaScript runtime</param>
-    /// <returns>Task representing the operation</returns>
-    public static async Task RegisterMarkdownEditorModuleAsync(this IJSRuntime jsRuntime)
+    private static void AddMarkdownEditorDependencies(IServiceCollection services)
     {
-        if (jsRuntime == null) throw new ArgumentNullException(nameof(jsRuntime));
-
-        // Only register in browser context
-        //if (OperatingSystem.IsBrowser())
-        //{
-            try
-            {
-                // This registers all the JavaScript functions for the editor components
-                await jsRuntime.InvokeVoidAsync("import", "./_content/Osirion.Blazor.Cms.Core/js/markdownEditorInterop.js");
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine($"Failed to register markdown editor module: {ex.Message}");
-            }
-        //}
+        services.AddScoped<IMarkdownRendererService, MarkdownRendererService>();
     }
 }
