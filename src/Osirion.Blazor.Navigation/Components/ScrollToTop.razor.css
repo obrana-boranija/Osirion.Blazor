@@ -1,4 +1,4 @@
-/* Enhanced ScrollToTop CSS with improved theme variables */
+/* Enhanced ScrollToTop Component Styles with Framework Integration */
 
 .osirion-scroll-to-top {
     position: fixed;
@@ -18,6 +18,7 @@
     z-index: var(--osirion-scroll-z-index, 1000);
     opacity: 1;
     visibility: visible;
+    font-family: var(--osirion-font-family, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif);
 }
 
     .osirion-scroll-to-top.hidden {
@@ -73,7 +74,7 @@
     .osirion-scroll-to-top .scroll-text {
         margin-left: 8px;
         font-size: var(--osirion-small-font-size, 0.875rem);
-        font-weight: 500;
+        font-weight: var(--osirion-font-weight-medium, 500);
     }
 
     /* When text is present, adjust to pill shape */
@@ -81,6 +82,153 @@
         width: auto;
         padding: 0 16px;
         border-radius: 999px;
+    }
+
+/* Framework-specific integrations */
+
+/* Bootstrap Integration */
+html.osirion-bootstrap-integration .osirion-scroll-to-top {
+    background-color: var(--bs-primary, #0d6efd);
+    color: var(--bs-white, #ffffff);
+    box-shadow: var(--bs-box-shadow-sm, 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075));
+    border-radius: var(--bs-border-radius-pill, 50rem);
+    font-family: var(--bs-font-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif);
+}
+
+    html.osirion-bootstrap-integration .osirion-scroll-to-top:hover {
+        background-color: var(--bs-primary-darker, #0a58ca);
+        color: var(--bs-white, #ffffff);
+        box-shadow: var(--bs-box-shadow, 0 0.5rem 1rem rgba(0, 0, 0, 0.15));
+    }
+
+/* Tailwind Integration */
+html.osirion-tailwind-integration .osirion-scroll-to-top {
+    background-color: theme('colors.blue.600', #2563eb);
+    color: theme('colors.white', #ffffff);
+    box-shadow: theme('boxShadow.md', '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)');
+    font-family: theme('fontFamily.sans', 'ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif');
+}
+
+    html.osirion-tailwind-integration .osirion-scroll-to-top:hover {
+        background-color: theme('colors.blue.700', #1d4ed8);
+        color: theme('colors.white', #ffffff);
+        box-shadow: theme('boxShadow.lg', '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)');
+    }
+
+/* FluentUI Integration */
+html.osirion-fluent-integration .osirion-scroll-to-top {
+    background-color: var(--accent-fill-rest, #0078d4);
+    color: var(--neutral-foreground-on-accent-rest, #ffffff);
+    box-shadow: var(--elevation-shadow-card-rest, 0 0 2px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.14));
+    border-radius: var(--control-corner-radius, 4px);
+    font-family: var(--body-font, 'Segoe UI', 'Segoe UI Web (West European)', 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', sans-serif);
+}
+
+    html.osirion-fluent-integration .osirion-scroll-to-top:hover {
+        background-color: var(--accent-fill-hover, #106ebe);
+        color: var(--neutral-foreground-on-accent-hover, #ffffff);
+    }
+
+/* MudBlazor Integration */
+html.osirion-mudblazor-integration .osirion-scroll-to-top {
+    background-color: var(--mud-palette-primary, #594ae2);
+    color: var(--mud-palette-primary-text, #ffffff);
+    box-shadow: var(--mud-elevation-4, 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12));
+    border-radius: 50%;
+    font-family: var(--mud-typography-default-family, 'Roboto', 'Helvetica', 'Arial', sans-serif);
+}
+
+    html.osirion-mudblazor-integration .osirion-scroll-to-top:hover {
+        background-color: var(--mud-palette-primary-darken, #4538ca);
+        color: var(--mud-palette-primary-text, #ffffff);
+        box-shadow: var(--mud-elevation-8, 0px 5px 5px -3px rgba(0, 0, 0, 0.2), 0px 8px 10px 1px rgba(0, 0, 0, 0.14), 0px 3px 14px 2px rgba(0, 0, 0, 0.12));
+    }
+
+/* Radzen Integration */
+html.osirion-radzen-integration .osirion-scroll-to-top {
+    background-color: var(--rz-primary, #479cc8);
+    color: var(--rz-white, #ffffff);
+    box-shadow: var(--rz-shadow-2, 0 3px 1px -2px rgba(0, 0, 0, .2), 0 2px 2px 0 rgba(0, 0, 0, .14), 0 1px 5px 0 rgba(0, 0, 0, .12));
+    border-radius: var(--rz-border-radius, 4px);
+    font-family: var(--rz-text-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+}
+
+    html.osirion-radzen-integration .osirion-scroll-to-top:hover {
+        background-color: var(--rz-primary-dark, #3d8bb1);
+        color: var(--rz-white, #ffffff);
+        box-shadow: var(--rz-shadow-3, 0 3px 3px -2px rgba(0, 0, 0, .2), 0 3px 4px 0 rgba(0, 0, 0, .14), 0 1px 8px 0 rgba(0, 0, 0, .12));
+    }
+
+/* Dark Theme Support */
+
+/* Base Dark Theme */
+:root[data-theme="dark"] .osirion-scroll-to-top,
+.dark-theme .osirion-scroll-to-top,
+.theme-dark .osirion-scroll-to-top {
+    background-color: var(--osirion-scroll-background, rgba(59, 130, 246, 0.8));
+    color: var(--osirion-scroll-color, #ffffff);
+    box-shadow: var(--osirion-scroll-box-shadow, 0 4px 10px rgba(0, 0, 0, 0.35));
+}
+
+    :root[data-theme="dark"] .osirion-scroll-to-top:hover,
+    .dark-theme .osirion-scroll-to-top:hover,
+    .theme-dark .osirion-scroll-to-top:hover {
+        background-color: var(--osirion-scroll-hover-background, rgba(96, 165, 250, 0.9));
+        box-shadow: var(--osirion-scroll-hover-box-shadow, 0 6px 15px rgba(0, 0, 0, 0.45));
+    }
+
+/* Bootstrap Dark Theme */
+html.osirion-bootstrap-integration[data-bs-theme="dark"] .osirion-scroll-to-top {
+    background-color: var(--bs-primary, #0d6efd);
+    box-shadow: var(--bs-box-shadow-sm, 0 0.125rem 0.25rem rgba(0, 0, 0, 0.35));
+}
+
+    html.osirion-bootstrap-integration[data-bs-theme="dark"] .osirion-scroll-to-top:hover {
+        background-color: var(--bs-primary-dark, #0a58ca);
+        box-shadow: var(--bs-box-shadow, 0 0.5rem 1rem rgba(0, 0, 0, 0.45));
+    }
+
+/* Tailwind Dark Theme */
+html.osirion-tailwind-integration.dark .osirion-scroll-to-top {
+    background-color: theme('colors.blue.500', #3b82f6);
+    box-shadow: theme('boxShadow.md', '0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -2px rgba(0, 0, 0, 0.2)');
+}
+
+    html.osirion-tailwind-integration.dark .osirion-scroll-to-top:hover {
+        background-color: theme('colors.blue.600', #2563eb);
+        box-shadow: theme('boxShadow.lg', '0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -4px rgba(0, 0, 0, 0.3)');
+    }
+
+/* FluentUI Dark Theme */
+html.osirion-fluent-integration.fluent-dark-theme .osirion-scroll-to-top {
+    background-color: var(--accent-fill-rest, #2899f5);
+    box-shadow: var(--elevation-shadow-card-rest, 0 0 2px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.4));
+}
+
+    html.osirion-fluent-integration.fluent-dark-theme .osirion-scroll-to-top:hover {
+        background-color: var(--accent-fill-hover, #1890f1);
+    }
+
+/* MudBlazor Dark Theme */
+html.osirion-mudblazor-integration.mud-theme-dark .osirion-scroll-to-top {
+    background-color: var(--mud-palette-primary, #776be7);
+    box-shadow: var(--mud-elevation-4, 0px 2px 4px -1px rgba(0, 0, 0, 0.4), 0px 4px 5px 0px rgba(0, 0, 0, 0.3), 0px 1px 10px 0px rgba(0, 0, 0, 0.3));
+}
+
+    html.osirion-mudblazor-integration.mud-theme-dark .osirion-scroll-to-top:hover {
+        background-color: var(--mud-palette-primary-darken, #594ae2);
+        box-shadow: var(--mud-elevation-8, 0px 5px 5px -3px rgba(0, 0, 0, 0.4), 0px 8px 10px 1px rgba(0, 0, 0, 0.3), 0px 3px 14px 2px rgba(0, 0, 0, 0.3));
+    }
+
+/* Radzen Dark Theme */
+html.osirion-radzen-integration.rz-dark-theme .osirion-scroll-to-top {
+    background-color: var(--rz-primary, #6ba6d6);
+    box-shadow: var(--rz-shadow-2, 0 3px 1px -2px rgba(0, 0, 0, .4), 0 2px 2px 0 rgba(0, 0, 0, .3), 0 1px 5px 0 rgba(0, 0, 0, .3));
+}
+
+    html.osirion-radzen-integration.rz-dark-theme .osirion-scroll-to-top:hover {
+        background-color: var(--rz-primary-dark, #4994ce);
+        box-shadow: var(--rz-shadow-3, 0 3px 3px -2px rgba(0, 0, 0, .4), 0 3px 4px 0 rgba(0, 0, 0, .3), 0 1px 8px 0 rgba(0, 0, 0, .3));
     }
 
 /* Enhanced visibility animation */
@@ -118,46 +266,17 @@
         }
 }
 
-/* SSR-compatible non-JS implementation */
-.osirion-scroll-to-top {
-    opacity: 0;
-    visibility: hidden;
-}
-
-    /* The visible class will be added by a small script */
-    .osirion-scroll-to-top.visible {
-        opacity: 1;
-        visibility: visible;
+/* Accessibility - reduce motion preference */
+@media (prefers-reduced-motion) {
+    .osirion-scroll-to-top {
+        transition: opacity 0.2s ease;
     }
 
-/* Add this small script to your page to enable ScrollToTop functionality */
-/*
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const scrollButton = document.querySelector('.osirion-scroll-to-top');
-        if (scrollButton) {
-            // Hide button initially
-            scrollButton.classList.add('hidden');
-            
-            // Show/hide button based on scroll position
-            window.addEventListener('scroll', function() {
-                if (window.scrollY > 300) {
-                    scrollButton.classList.remove('hidden');
-                    scrollButton.classList.add('visible');
-                } else {
-                    scrollButton.classList.add('hidden');
-                    scrollButton.classList.remove('visible');
-                }
-            });
-            
-            // Scroll to top when clicked
-            scrollButton.addEventListener('click', function() {
-                window.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
-                });
-            });
+        .osirion-scroll-to-top:hover {
+            transform: none;
         }
-    });
-</script>
-*/
+
+        .osirion-scroll-to-top:not(.hidden) {
+            animation: none;
+        }
+}
