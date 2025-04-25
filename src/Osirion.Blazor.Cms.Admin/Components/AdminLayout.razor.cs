@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Osirion.Blazor.Cms.Admin.Services;
 
 namespace Osirion.Blazor.Cms.Admin.Components;
 
-public partial class AdminLayout
+public partial class AdminLayout(IAuthenticationService authService)
 {
     /// <summary>
     /// Gets or sets the page title
@@ -96,7 +97,7 @@ public partial class AdminLayout
 
     private async Task SignOut()
     {
-        await AuthService.SignOutAsync();
+        await authService.SignOutAsync();
 
         if (OnSignOut.HasDelegate)
         {

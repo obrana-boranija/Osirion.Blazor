@@ -5,10 +5,3 @@
 {
     @((MarkupString)Provider.GetScript())
 }
-
-@code {
-    protected override IAnalyticsProvider? Provider => _provider;
-
-    [Inject]
-    private IAnalyticsProvider? _provider { get; set; }
-}

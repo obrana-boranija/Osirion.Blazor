@@ -1,7 +1,5 @@
-﻿@inherits OsirionComponentBase
-
-<div class="@GetContentEditorClass()">
-    @if (!AdminState.IsEditing || AdminState.EditingPost == null)
+﻿<div class="@GetContentEditorClass()">
+    @if (!adminState.IsEditing || adminState.EditingPost == null)
     {
         <div class="osirion-admin-empty">
             <span>Select a file to edit or create a new file.</span>
@@ -11,8 +9,8 @@
     {
 
         <MarkdownEditorPreview @ref="EditorPreviewRef"
-                               Content="@AdminState.EditingPost.Content"
-                               ContentChanged="@((content) => AdminState.EditingPost.Content = content)"
+                               Content="@adminState.EditingPost.Content"
+                               ContentChanged="@((content) => adminState.EditingPost.Content = content)"
                                ShowToolbar="true"
                                EditorTitle="Markdown"
                                PreviewTitle="Preview"

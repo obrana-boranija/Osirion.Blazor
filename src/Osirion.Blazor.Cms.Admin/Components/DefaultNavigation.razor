@@ -1,9 +1,4 @@
-﻿@namespace Osirion.Blazor.Cms.Admin.Components
-@using Osirion.Blazor.Cms.Admin.Services
-@inherits Osirion.Blazor.Components.OsirionComponentBase
-@inject NavigationManager NavigationManager
-
-<div class="osirion-admin-nav-list-container">
+﻿<div class="osirion-admin-nav-list-container">
     <div class="osirion-admin-nav-section">
         <h2 class="osirion-admin-nav-title">Dashboard</h2>
         <ul class="osirion-admin-nav-list">
@@ -156,14 +151,3 @@
         </ul>
     </div>
 </div>
-
-@code {
-    [Parameter]
-    public bool Expanded { get; set; } = true;
-
-    private string GetActiveClass(string path)
-    {
-        var currentPath = NavigationManager.Uri.ToLower();
-        return currentPath.Contains(path.ToLower()) ? "active" : "";
-    }
-}

@@ -1,12 +1,6 @@
 ﻿@using Osirion.Blazor.Cms.Admin.Components.Browser
 @using Osirion.Blazor.Cms.Admin.Components.Editor
 @using Osirion.Blazor.Cms.Admin.Components.Repository
-@using Osirion.Blazor.Cms.Admin.Models
-@using Osirion.Blazor.Cms.Admin.Services
-@using Osirion.Blazor.Cms.Models
-@inherits Osirion.Blazor.Components.OsirionComponentBase
-@inject CmsAdminState AdminState
-@inject IGitHubAdminService GitHubService
 
 <div class="@GetAdminDashboardClass()">
     <div class="osirion-admin-sidebar">
@@ -33,20 +27,20 @@
         <div class="osirion-admin-header">
             <div class="osirion-admin-breadcrumb">
                 <span class="osirion-admin-breadcrumb-item">Dashboard</span>
-                @if (AdminState.SelectedRepository != null)
+                @if (adminState.SelectedRepository != null)
                 {
                     <span class="osirion-admin-breadcrumb-separator">/</span>
-                    <span class="osirion-admin-breadcrumb-item">@AdminState.SelectedRepository.Name</span>
+                    <span class="osirion-admin-breadcrumb-item">@adminState.SelectedRepository.Name</span>
                     
-                    @if (AdminState.SelectedBranch != null)
+                    @if (adminState.SelectedBranch != null)
                     {
                         <span class="osirion-admin-breadcrumb-separator">/</span>
-                        <span class="osirion-admin-breadcrumb-item">@AdminState.SelectedBranch.Name</span>
+                        <span class="osirion-admin-breadcrumb-item">@adminState.SelectedBranch.Name</span>
                         
-                        @if (!string.IsNullOrEmpty(AdminState.CurrentPath))
+                        @if (!string.IsNullOrEmpty(adminState.CurrentPath))
                         {
                             <span class="osirion-admin-breadcrumb-separator">/</span>
-                            <span class="osirion-admin-breadcrumb-item">@AdminState.CurrentPath</span>
+                            <span class="osirion-admin-breadcrumb-item">@adminState.CurrentPath</span>
                         }
                     }
                 }
@@ -73,7 +67,7 @@
         </div>
         
         <div class="osirion-admin-content">
-            @if (AdminState.StatusMessage != null)
+            @if (adminState.StatusMessage != null)
             {
                 <div class="osirion-admin-alert osirion-admin-alert-success">
                     <span class="osirion-admin-alert-icon">
@@ -82,7 +76,7 @@
                             <polyline points="22 4 12 14.01 9 11.01" />
                         </svg>
                     </span>
-                    <span>@AdminState.StatusMessage</span>
+                        <span>@adminState.StatusMessage</span>
                     <button type="button" 
                             class="osirion-admin-alert-close" 
                             @onclick="ClearMessages"
@@ -92,7 +86,7 @@
                 </div>
             }
             
-            @if (AdminState.ErrorMessage != null)
+            @if (adminState.ErrorMessage != null)
             {
                 <div class="osirion-admin-alert osirion-admin-alert-error">
                     <span class="osirion-admin-alert-icon">
@@ -102,7 +96,7 @@
                             <line x1="12" y1="16" x2="12.01" y2="16" />
                         </svg>
                     </span>
-                    <span>@AdminState.ErrorMessage</span>
+                    <span>@adminState.ErrorMessage</span>
                     <button type="button" 
                             class="osirion-admin-alert-close" 
                             @onclick="ClearMessages"
@@ -124,97 +118,3 @@
         </div>
     </div>
 </div>
-
-@code {
-    [Parameter]
-    public RenderFragment? ChildContent { get; set; }
-    
-    [Parameter]
-    public string Theme { get; set; } = "light";
-    
-    private bool IsEditing => AdminState.IsEditing;
-    private bool IsViewingContent => AdminState.SelectedRepository != null && AdminState.SelectedBranch != null;
-    
-    protected override void OnInitialized()
-    {
-        AdminState.StateChanged += StateHasChanged;
-    }
-    
-    public void Dispose()
-    {
-        AdminState.StateChanged -= StateHasChanged;
-    }
-    
-    private async Task HandleRepositoryChange(GitHubRepository repository)
-    {
-        // Nothing additional to do here, AdminState already updated
-    }
-    
-    private async Task HandleBranchChange(GitHubBranch branch)
-    {
-        // Nothing additional to do here, AdminState already updated
-    }
-    
-    private void HandleFileSelected(GitHubItem item)
-    {
-        // File already selected in AdminState
-    }
-    
-    private void HandleCreateFile()
-    {
-        // Create new blog post with empty content
-        var newPost = new BlogPost
-        {
-            Metadata = new FrontMatter
-            {
-                Title = "New Post",
-                Description = "Enter description here",
-                Author = string.Empty,
-                Date = DateTime.Now.ToString("yyyy-MM-dd"),
-                Categories = new List<string>(),
-                Tags = new List<string>()
-            },
-            Content = "## New Post\n\nStart writing your content here...",
-            FilePath = string.IsNullOrEmpty(AdminState.CurrentPath) ? 
-                "new-post.md" : 
-                $"{AdminState.CurrentPath}/new-post.md"
-        };
-        
-        AdminState.SetEditingPost(newPost, true);
-    }
-    
-    private async Task HandleSaveComplete(BlogPost post)
-    {
-        // Reload the directory contents
-        if (AdminState.SelectedRepository != null && AdminState.SelectedBranch != null)
-        {
-            try
-            {
-                var contents = await GitHubService.GetRepositoryContentsAsync(AdminState.CurrentPath);
-                AdminState.SetCurrentPath(AdminState.CurrentPath, contents);
-            }
-            catch (Exception ex)
-            {
-                AdminState.SetErrorMessage($"Failed to refresh directory: {ex.Message}");
-            }
-        }
-        
-        // Clear editing state
-        AdminState.ClearEditing();
-    }
-    
-    private void HandleDiscardChanges()
-    {
-        AdminState.ClearEditing();
-    }
-    
-    private void ClearMessages()
-    {
-        AdminState.ClearMessages();
-    }
-    
-    private string GetAdminDashboardClass()
-    {
-        return $"osirion-admin-dashboard osirion-admin-theme-{Theme} {CssClass}".Trim();
-    }
-}

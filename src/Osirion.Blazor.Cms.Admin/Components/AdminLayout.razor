@@ -1,10 +1,4 @@
-﻿@namespace Osirion.Blazor.Cms.Admin.Components
-@using Osirion.Blazor.Cms.Admin.Services
-@inherits Osirion.Blazor.Components.OsirionComponentBase
-@inject IAuthenticationService AuthService
-@inject NavigationManager NavigationManager
-
-<div class="@GetAdminLayoutClass()">
+﻿<div class="@GetAdminLayoutClass()">
     <div class="osirion-admin-sidebar">
         <div class="osirion-admin-logo">
             <a href="/admin" class="osirion-admin-brand-link">
@@ -34,10 +28,10 @@
             {
                 @SidebarFooterTemplate
             }
-            else if (AuthService.IsAuthenticated)
+            else if (authService.IsAuthenticated)
             {
                         <div class="osirion-admin-user">
-                            <span class="osirion-admin-username">@AuthService.Username</span>
+                            <span class="osirion-admin-username">@authService.Username</span>
                             <button type="button" 
                                     class="osirion-admin-button osirion-admin-button-small"
                                     @onclick="SignOut">

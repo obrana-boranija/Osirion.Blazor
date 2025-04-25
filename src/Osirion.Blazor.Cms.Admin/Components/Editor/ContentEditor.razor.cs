@@ -5,7 +5,7 @@ using Osirion.Blazor.Cms.Models;
 
 namespace Osirion.Blazor.Cms.Admin.Components.Editor;
 
-public partial class ContentEditor
+public partial class ContentEditor(CmsAdminState adminState, IGitHubAdminService gitHubService)
 {
     [Parameter]
     public bool IsMetadataPanelVisible { get; set; } = true;
@@ -22,19 +22,10 @@ public partial class ContentEditor
     [Parameter]
     public EventCallback OnDiscard { get; set; }
 
-    [Inject]
-    public CmsAdminState AdminState { get; set; } = default!;
-
-    [Inject]
-    public IGitHubAdminService GitHubService { get; set; } = default!;
-
-    [Inject]
-    public NavigationManager NavigationManager { get; set; } = default!;
-
     private bool IsSaving { get; set; }
     private string? ErrorMessage { get; set; }
 
-    private MarkdownEditorPreview EditorPreviewRef;
+    private MarkdownEditorPreview? EditorPreviewRef;
 
     private string FileName { get; set; } = string.Empty;
     private string CommitMessage
@@ -52,53 +43,50 @@ public partial class ContentEditor
     }
     private string _commitMessage = "Update content";
 
-    private bool IsFileName => AdminState.IsCreatingNewFile || string.IsNullOrEmpty(AdminState.EditingPost?.FilePath);
+    private bool IsFileName => adminState.IsCreatingNewFile || string.IsNullOrEmpty(adminState.EditingPost?.FilePath);
 
     // Use Markdig for better markdown rendering
-    private readonly MarkdownPipeline _markdownPipeline;
+    private MarkdownPipeline _markdownPipeline = default!;
 
-    public ContentEditor()
+    protected override void OnInitialized()
     {
+        adminState.StateChanged += StateHasChanged;
+
         _markdownPipeline = new MarkdownPipelineBuilder()
             .UseAdvancedExtensions()
             .UseYamlFrontMatter()
             .Build();
-    }
 
-    protected override void OnInitialized()
-    {
-        AdminState.StateChanged += StateHasChanged;
-
-        if (AdminState.EditingPost != null && AdminState.IsCreatingNewFile)
+        if (adminState.EditingPost != null && adminState.IsCreatingNewFile)
         {
             // Generate filename from post title
-            FileName = GenerateFileName(AdminState.EditingPost.Metadata.Title);
+            FileName = GenerateFileName(adminState.EditingPost.Metadata.Title);
         }
     }
 
     protected override void OnParametersSet()
     {
-        if (AdminState.EditingPost != null && AdminState.IsCreatingNewFile)
+        if (adminState.EditingPost != null && adminState.IsCreatingNewFile)
         {
             // Generate filename from post title if not set
             if (string.IsNullOrEmpty(FileName))
             {
-                FileName = GenerateFileName(AdminState.EditingPost.Metadata.Title);
+                FileName = GenerateFileName(adminState.EditingPost.Metadata.Title);
             }
 
             // Set default commit message
             CommitMessage = "Create new file";
         }
-        else if (AdminState.EditingPost != null && !AdminState.IsCreatingNewFile)
+        else if (adminState.EditingPost != null && !adminState.IsCreatingNewFile)
         {
             // Set default commit message for existing file
-            CommitMessage = $"Update {AdminState.EditingPost.FilePath}";
+            CommitMessage = $"Update {adminState.EditingPost.FilePath}";
         }
     }
 
     public void Dispose()
     {
-        AdminState.StateChanged -= StateHasChanged;
+        adminState.StateChanged -= StateHasChanged;
     }
 
     private void ToggleMetadataPanel()
@@ -113,13 +101,13 @@ public partial class ContentEditor
 
     private async Task SaveChanges()
     {
-        if (AdminState.EditingPost == null)
+        if (adminState.EditingPost == null)
         {
             return;
         }
 
         IsSaving = true;
-        AdminState.SetSaving(true);
+        adminState.SetSaving(true);
         ErrorMessage = null;
 
         try
@@ -127,7 +115,7 @@ public partial class ContentEditor
             string filePath;
             string? existingSha = null;
 
-            if (AdminState.IsCreatingNewFile)
+            if (adminState.IsCreatingNewFile)
             {
                 // Construct full path for new file
                 // Ensure the filename has .md extension
@@ -137,47 +125,47 @@ public partial class ContentEditor
                     filename += ".md";
                 }
 
-                filePath = string.IsNullOrEmpty(AdminState.CurrentPath) ?
+                filePath = string.IsNullOrEmpty(adminState.CurrentPath) ?
                     filename :
-                    $"{AdminState.CurrentPath}/{filename}";
+                    $"{adminState.CurrentPath}/{filename}";
             }
             else
             {
                 // Use existing file path
-                filePath = AdminState.EditingPost.FilePath;
-                existingSha = AdminState.EditingPost.Sha;
+                filePath = adminState.EditingPost.FilePath;
+                existingSha = adminState.EditingPost.Sha;
             }
 
             // Get full content with frontmatter
-            var fullContent = AdminState.EditingPost.ToMarkdown();
+            var fullContent = adminState.EditingPost.ToMarkdown();
 
             // Commit message
             var message = string.IsNullOrEmpty(CommitMessage) ?
-                (AdminState.IsCreatingNewFile ? $"Create {filePath}" : $"Update {filePath}") :
+                (adminState.IsCreatingNewFile ? $"Create {filePath}" : $"Update {filePath}") :
                 CommitMessage;
 
             // Save the file
-            var response = await GitHubService.CreateOrUpdateFileAsync(
+            var response = await gitHubService.CreateOrUpdateFileAsync(
                 filePath,
                 fullContent,
                 message,
                 existingSha);
 
             // Update the blog post with new information
-            AdminState.EditingPost.FilePath = response.Content.Path;
-            AdminState.EditingPost.Sha = response.Content.Sha;
+            adminState.EditingPost.FilePath = response.Content.Path;
+            adminState.EditingPost.Sha = response.Content.Sha;
 
             // Reset state
             if (OnSaveComplete.HasDelegate)
             {
-                await OnSaveComplete.InvokeAsync(AdminState.EditingPost);
+                await OnSaveComplete.InvokeAsync(adminState.EditingPost);
             }
 
             // Show success message
-            AdminState.SetStatusMessage($"File saved successfully: {filePath}");
+            adminState.SetStatusMessage($"File saved successfully: {filePath}");
 
             // Reset file name for new files
-            if (AdminState.IsCreatingNewFile)
+            if (adminState.IsCreatingNewFile)
             {
                 FileName = string.Empty;
             }
@@ -185,12 +173,12 @@ public partial class ContentEditor
         catch (Exception ex)
         {
             ErrorMessage = $"Failed to save file: {ex.Message}";
-            AdminState.SetErrorMessage(ErrorMessage);
+            adminState.SetErrorMessage(ErrorMessage);
         }
         finally
         {
             IsSaving = false;
-            AdminState.SetSaving(false);
+            adminState.SetSaving(false);
         }
     }
 
@@ -201,7 +189,7 @@ public partial class ContentEditor
             await OnDiscard.InvokeAsync();
         }
 
-        AdminState.ClearEditing();
+        adminState.ClearEditing();
         FileName = string.Empty;
         CommitMessage = string.Empty;
     }
@@ -258,72 +246,72 @@ public partial class ContentEditor
 
     private void InsertHeading()
     {
-        if (AdminState.EditingPost == null)
+        if (adminState.EditingPost == null)
         {
             return;
         }
 
-        AdminState.EditingPost.Content += "\n## New Heading";
+        adminState.EditingPost.Content += "\n## New Heading";
     }
 
     private void InsertBold()
     {
-        if (AdminState.EditingPost == null)
+        if (adminState.EditingPost == null)
         {
             return;
         }
 
-        AdminState.EditingPost.Content += "**bold text**";
+        adminState.EditingPost.Content += "**bold text**";
     }
 
     private void InsertItalic()
     {
-        if (AdminState.EditingPost == null)
+        if (adminState.EditingPost == null)
         {
             return;
         }
 
-        AdminState.EditingPost.Content += "*italic text*";
+        adminState.EditingPost.Content += "*italic text*";
     }
 
     private void InsertLink()
     {
-        if (AdminState.EditingPost == null)
+        if (adminState.EditingPost == null)
         {
             return;
         }
 
-        AdminState.EditingPost.Content += "[link text](https://example.com)";
+        adminState.EditingPost.Content += "[link text](https://example.com)";
     }
 
     private void InsertImage()
     {
-        if (AdminState.EditingPost == null)
+        if (adminState.EditingPost == null)
         {
             return;
         }
 
-        AdminState.EditingPost.Content += "![alt text](https://example.com/image.jpg)";
+        adminState.EditingPost.Content += "![alt text](https://example.com/image.jpg)";
     }
 
     private void InsertList()
     {
-        if (AdminState.EditingPost == null)
+        if (adminState.EditingPost == null)
         {
             return;
         }
 
-        AdminState.EditingPost.Content += "\n- Item 1\n- Item 2\n- Item 3";
+        adminState.EditingPost.Content += "\n- Item 1\n- Item 2\n- Item 3";
     }
 
     private void InsertCodeBlock()
     {
-        if (AdminState.EditingPost == null)
+        if (adminState.EditingPost == null)
         {
             return;
         }
 
-        AdminState.EditingPost.Content += "\n```\ncode goes here\n```";
+        adminState.EditingPost.Content += "\n```\ncode goes here\n```";
     }
 
     private string GetEditorLayoutClass()

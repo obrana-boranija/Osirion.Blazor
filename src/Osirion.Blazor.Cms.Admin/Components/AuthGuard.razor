@@ -1,10 +1,4 @@
-﻿@namespace Osirion.Blazor.Cms.Admin.Components
-@using Osirion.Blazor.Cms.Admin.Services
-@inherits Osirion.Blazor.Components.OsirionComponentBase
-@inject IAuthenticationService AuthService
-@inject NavigationManager NavigationManager
-
-@if (AuthService.IsAuthenticated)
+﻿@if (authService.IsAuthenticated)
 {
     @ChildContent
 }
@@ -27,35 +21,5 @@ else
                 </button>
             </div>
         </div>
-    }
-}
-
-@code {
-    [Parameter]
-    public RenderFragment? ChildContent { get; set; }
-
-    [Parameter]
-    public string LoginPath { get; set; } = "/admin/login";
-
-    [Parameter]
-    public bool ShowLoginForm { get; set; } = false;
-
-    [Parameter]
-    public EventCallback<bool> OnAuthResult { get; set; }
-
-    private string ReturnUrl => NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
-
-    private void RedirectToLogin()
-    {
-        var returnUrl = Uri.EscapeDataString(ReturnUrl);
-        NavigationManager.NavigateTo($"{LoginPath}?returnUrl={returnUrl}");
-    }
-
-    private async Task HandleLoginResult(bool success)
-    {
-        if (OnAuthResult.HasDelegate)
-        {
-            await OnAuthResult.InvokeAsync(success);
-        }
     }
 }
