@@ -119,7 +119,7 @@
     --osirion-spacing-20: 5rem; /* 80px */
     --osirion-spacing-24: 6rem; /* 96px */
     /* Core layout values */
-    --osirion-width-content: 65ch; /* Optimal reading width */
+    --osirion-width-content: 80ch; /* Optimal reading width */
     --osirion-width-xs: 20rem; /* 320px */
     --osirion-width-sm: 24rem; /* 384px */
     --osirion-width-md: 28rem; /* 448px */

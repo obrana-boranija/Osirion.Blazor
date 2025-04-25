@@ -1,0 +1,44 @@
+.osirion-blog-article {
+    margin-bottom: var(--osirion-spacing-16, 4rem);
+}
+
+.osirion-blog-featured-image-container {
+    margin: var(--osirion-spacing-6, 1.5rem) 0 var(--osirion-spacing-8, 2rem);
+    border-radius: var(--osirion-radius-lg, 0.5rem);
+    overflow: hidden;
+}
+
+.osirion-blog-featured-image {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.osirion-blog-image-caption {
+    text-align: center;
+    padding: var(--osirion-spacing-3, 0.75rem);
+    font-size: var(--osirion-font-size-sm, 0.875rem);
+    color: var(--osirion-text-secondary, #6b7280);
+    background-color: var(--osirion-background-secondary, #f3f4f6);
+}
+
+.osirion-blog-content {
+    font-size: var(--osirion-font-size-base, 1rem);
+    line-height: var(--osirion-line-height-relaxed, 1.7);
+    color: var(--osirion-text-primary, #374151);
+}
+
+.osirion-blog-footer {
+    margin-top: var(--osirion-spacing-10, 2.5rem);
+    padding-top: var(--osirion-spacing-6, 1.5rem);
+    border-top: 1px solid var(--osirion-border-color, #e5e7eb);
+}
+
+/* Dark mode adjustments */
+:root[data-theme="dark"] .osirion-blog-image-caption,
+.dark-theme .osirion-blog-image-caption,
+.theme-dark .osirion-blog-image-caption,
+.osirion-theme-dark .osirion-blog-image-caption {
+    background-color: var(--osirion-background-secondary, #374151);
+    color: var(--osirion-text-secondary, #9ca3af);
+}

@@ -4,8 +4,12 @@
  */
 
 :root[data-theme="dark"],
+[data-theme="dark"],
 .dark-theme,
-.theme-dark {
+.theme-dark,
+.osirion-theme-dark,
+:root[data-bs-theme="dark"],
+[data-bs-theme="dark"] {
     /* Text Colors */
     --osirion-text-primary: var(--osirion-neutral-100);
     --osirion-text-secondary: var(--osirion-neutral-300);

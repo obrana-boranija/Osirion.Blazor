@@ -4,9 +4,12 @@
  */
 
 :root[data-theme="dark"],
+[data-theme="dark"],
 .dark-theme,
 .theme-dark,
-:root[data-bs-theme="dark"] {
+.osirion-theme-dark,
+:root[data-bs-theme="dark"],
+[data-bs-theme="dark"] {
     /* Invert the component tokens from light to dark */
     /* Background colors */
     --osirion-background-primary: var(--osirion-color-neutral-900);

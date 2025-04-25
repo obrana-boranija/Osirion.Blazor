@@ -4,10 +4,13 @@
  */
 
 :root,
+:root[data-theme="light"],
+[data-theme="light"],
 .light-theme,
 .theme-light,
-:root[data-theme="light"],
-:root[data-bs-theme="light"] {
+.osirion-theme-light,
+:root[data-bs-theme="light"],
+[data-bs-theme="light"] {
     /* ========== COMPONENT TOKENS - LIGHT THEME ========== */
     /* Default light theme values that components will use */
     /* Background colors */

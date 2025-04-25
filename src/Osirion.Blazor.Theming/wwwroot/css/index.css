@@ -21,28 +21,39 @@
 }
 
 /* Theme class assignments */
+:root[data-theme="light"],
+[data-theme="light"],
+.light-theme,
+.theme-light,
 .osirion-theme-light {
     color-scheme: light;
     --osirion-theme-mode: light;
 }
 
+:root[data-theme="dark"],
+[data-theme="dark"],
+.dark-theme,
+.theme-dark,
 .osirion-theme-dark {
     color-scheme: dark;
     --osirion-theme-mode: dark;
 }
 
+.theme-system,
 .osirion-theme-system {
     --osirion-theme-mode: system;
 }
 
 /* System preference handling without JavaScript */
 @media (prefers-color-scheme: dark) {
+    .theme-system,
     .osirion-theme-system {
         color-scheme: dark;
     }
 }
 
 @media (prefers-color-scheme: light) {
+    .theme-system,
     .osirion-theme-system {
         color-scheme: light;
     }
