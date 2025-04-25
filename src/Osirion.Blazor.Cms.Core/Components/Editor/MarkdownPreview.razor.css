@@ -3,9 +3,9 @@
 .osirion-markdown-preview {
     display: flex;
     flex-direction: column;
-    border: 1px solid var(--osirion-border-color, #e5e7eb);
+    border: 1px solid var(--osirion-color-border, #e5e7eb);
     border-radius: var(--osirion-border-radius, 4px);
-    background-color: var(--osirion-background-color, #ffffff);
+    background-color: var(--osirion-color-background, #ffffff);
     box-shadow: var(--osirion-box-shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.05));
     height: 100%;
     font-family: var(--osirion-font-family, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif);
@@ -17,8 +17,8 @@
     align-items: center;
     justify-content: space-between;
     padding: 0.5rem 0.75rem;
-    background-color: var(--osirion-light-background-color, #f3f4f6);
-    border-bottom: 1px solid var(--osirion-border-color, #e5e7eb);
+    background-color: var(--osirion-color-background-light, #f3f4f6);
+    border-bottom: 1px solid var(--osirion-color-border, #e5e7eb);
     border-top-left-radius: calc(var(--osirion-border-radius, 4px) - 1px);
     border-top-right-radius: calc(var(--osirion-border-radius, 4px) - 1px);
 }
@@ -27,7 +27,7 @@
         margin: 0;
         font-size: 0.875rem;
         font-weight: 500;
-        color: var(--osirion-text-color, #374151);
+        color: var(--osirion-color, #374151);
     }
 
 /* Preview content container */
@@ -35,12 +35,12 @@
     flex: 1;
     padding: 1rem;
     overflow-y: auto;
-    color: var(--osirion-text-color, #374151);
+    color: var(--osirion-color, #374151);
     line-height: 1.6;
 }
 
 .osirion-markdown-preview-placeholder {
-    color: var(--osirion-light-text-color, #6b7280);
+    color: var(--osirion-color-light, #6b7280);
     font-style: italic;
     padding: 1rem 0;
 }
@@ -56,7 +56,7 @@
     margin-bottom: 0.5em;
     font-weight: 600;
     line-height: 1.25;
-    color: var(--osirion-text-color, #374151);
+    color: var(--osirion-color, #374151);
 }
 
     .osirion-markdown-preview-content h1:first-child,
@@ -70,13 +70,13 @@
 
 .osirion-markdown-preview-content h1 {
     font-size: 2em;
-    border-bottom: 1px solid var(--osirion-border-color, #e5e7eb);
+    border-bottom: 1px solid var(--osirion-color-border, #e5e7eb);
     padding-bottom: 0.3em;
 }
 
 .osirion-markdown-preview-content h2 {
     font-size: 1.5em;
-    border-bottom: 1px solid var(--osirion-border-color, #e5e7eb);
+    border-bottom: 1px solid var(--osirion-color-border, #e5e7eb);
     padding-bottom: 0.3em;
 }
 
@@ -94,7 +94,7 @@
 
 .osirion-markdown-preview-content h6 {
     font-size: 0.85em;
-    color: var(--osirion-light-text-color, #6b7280);
+    color: var(--osirion-color-light, #6b7280);
 }
 
 .osirion-markdown-preview-content p {
@@ -115,7 +115,7 @@
     max-width: 100%;
     border-style: none;
     box-sizing: content-box;
-    background-color: var(--osirion-background-color, #ffffff);
+    background-color: var(--osirion-color-background, #ffffff);
     border-radius: 3px;
 }
 
@@ -123,14 +123,14 @@
     height: 0.25em;
     padding: 0;
     margin: 24px 0;
-    background-color: var(--osirion-border-color, #e5e7eb);
+    background-color: var(--osirion-color-border, #e5e7eb);
     border: 0;
 }
 
 .osirion-markdown-preview-content blockquote {
     padding: 0 1em;
-    color: var(--osirion-light-text-color, #6b7280);
-    border-left: 0.25em solid var(--osirion-border-color, #e5e7eb);
+    color: var(--osirion-color-light, #6b7280);
+    border-left: 0.25em solid var(--osirion-color-border, #e5e7eb);
     margin: 0 0 1em 0;
 }
 
@@ -142,7 +142,7 @@
 }
 
 .osirion-markdown-preview-content code {
-    background-color: var(--osirion-light-background-color, #f3f4f6);
+    background-color: var(--osirion-color-background-light, #f3f4f6);
     padding: 0.2em 0.4em;
     margin: 0;
     font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
@@ -151,7 +151,7 @@
 }
 
 .osirion-markdown-preview-content pre {
-    background-color: var(--osirion-light-background-color, #f3f4f6);
+    background-color: var(--osirion-color-background-light, #f3f4f6);
     padding: 1em;
     margin-bottom: 1em;
     border-radius: 3px;
@@ -183,21 +183,21 @@
     .osirion-markdown-preview-content table th,
     .osirion-markdown-preview-content table td {
         padding: 6px 13px;
-        border: 1px solid var(--osirion-border-color, #e5e7eb);
+        border: 1px solid var(--osirion-color-border, #e5e7eb);
     }
 
     .osirion-markdown-preview-content table tr {
-        background-color: var(--osirion-background-color, #ffffff);
-        border-top: 1px solid var(--osirion-border-color, #e5e7eb);
+        background-color: var(--osirion-color-background, #ffffff);
+        border-top: 1px solid var(--osirion-color-border, #e5e7eb);
     }
 
         .osirion-markdown-preview-content table tr:nth-child(2n) {
-            background-color: var(--osirion-light-background-color, #f3f4f6);
+            background-color: var(--osirion-color-background-light, #f3f4f6);
         }
 
 .markdown-error {
-    color: var(--osirion-danger-color, #ef4444);
-    background-color: var(--osirion-danger-light-color, #fee2e2);
+    color: var(--osirion-color-danger-text, #ef4444);
+    background-color: var(--osirion-color-danger-light, #fee2e2);
     padding: 1rem;
     border-radius: 3px;
     margin-bottom: 1rem;
@@ -306,37 +306,37 @@ html.osirion-radzen-integration .osirion-markdown-preview-content {
 :root[data-bs-theme="dark"] .osirion-markdown-preview,
 .dark-theme .osirion-markdown-preview,
 .theme-dark .osirion-markdown-preview {
-    background-color: var(--osirion-background-color, #1f2937);
-    border-color: var(--osirion-border-color, #4b5563);
+    background-color: var(--osirion-color-background, #1f2937);
+    border-color: var(--osirion-color-border, #4b5563);
 }
 
 :root[data-theme="dark"] .osirion-markdown-preview-header,
 :root[data-bs-theme="dark"] .osirion-markdown-preview-header,
 .dark-theme .osirion-markdown-preview-header,
 .theme-dark .osirion-markdown-preview-header {
-    background-color: var(--osirion-light-background-color, #374151);
-    border-color: var(--osirion-border-color, #4b5563);
+    background-color: var(--osirion-color-background-light, #374151);
+    border-color: var(--osirion-color-border, #4b5563);
 }
 
     :root[data-theme="dark"] .osirion-markdown-preview-header h3,
     :root[data-bs-theme="dark"] .osirion-markdown-preview-header h3,
     .dark-theme .osirion-markdown-preview-header h3,
     .theme-dark .osirion-markdown-preview-header h3 {
-        color: var(--osirion-light-text-color, #9ca3af);
+        color: var(--osirion-color-light, #9ca3af);
     }
 
 :root[data-theme="dark"] .osirion-markdown-preview-content,
 :root[data-bs-theme="dark"] .osirion-markdown-preview-content,
 .dark-theme .osirion-markdown-preview-content,
 .theme-dark .osirion-markdown-preview-content {
-    color: var(--osirion-text-color, #e5e7eb);
+    color: var(--osirion-color, #e5e7eb);
 }
 
 :root[data-theme="dark"] .osirion-markdown-preview-placeholder,
 :root[data-bs-theme="dark"] .osirion-markdown-preview-placeholder,
 .dark-theme .osirion-markdown-preview-placeholder,
 .theme-dark .osirion-markdown-preview-placeholder {
-    color: var(--osirion-light-text-color, #9ca3af);
+    color: var(--osirion-color-light, #9ca3af);
 }
 
 :root[data-theme="dark"] .osirion-markdown-preview-content h1,
@@ -359,15 +359,15 @@ html.osirion-radzen-integration .osirion-markdown-preview-content {
 .theme-dark .osirion-markdown-preview-content h3,
 .theme-dark .osirion-markdown-preview-content h4,
 .theme-dark .osirion-markdown-preview-content h5 {
-    color: var(--osirion-text-color, #e5e7eb);
-    border-color: var(--osirion-border-color, #4b5563);
+    color: var(--osirion-color, #e5e7eb);
+    border-color: var(--osirion-color-border, #4b5563);
 }
 
 :root[data-theme="dark"] .osirion-markdown-preview-content h6,
 :root[data-bs-theme="dark"] .osirion-markdown-preview-content h6,
 .dark-theme .osirion-markdown-preview-content h6,
 .theme-dark .osirion-markdown-preview-content h6 {
-    color: var(--osirion-light-text-color, #9ca3af);
+    color: var(--osirion-color-light, #9ca3af);
 }
 
 :root[data-theme="dark"] .osirion-markdown-preview-content a,
@@ -381,44 +381,44 @@ html.osirion-radzen-integration .osirion-markdown-preview-content {
 :root[data-bs-theme="dark"] .osirion-markdown-preview-content blockquote,
 .dark-theme .osirion-markdown-preview-content blockquote,
 .theme-dark .osirion-markdown-preview-content blockquote {
-    color: var(--osirion-light-text-color, #9ca3af);
-    border-color: var(--osirion-border-color, #4b5563);
+    color: var(--osirion-color-light, #9ca3af);
+    border-color: var(--osirion-color-border, #4b5563);
 }
 
 :root[data-theme="dark"] .osirion-markdown-preview-content hr,
 :root[data-bs-theme="dark"] .osirion-markdown-preview-content hr,
 .dark-theme .osirion-markdown-preview-content hr,
 .theme-dark .osirion-markdown-preview-content hr {
-    background-color: var(--osirion-border-color, #4b5563);
+    background-color: var(--osirion-color-border, #4b5563);
 }
 
 :root[data-theme="dark"] .osirion-markdown-preview-content code,
 :root[data-bs-theme="dark"] .osirion-markdown-preview-content code,
 .dark-theme .osirion-markdown-preview-content code,
 .theme-dark .osirion-markdown-preview-content code {
-    background-color: var(--osirion-light-background-color, #374151);
+    background-color: var(--osirion-color-background-light, #374151);
 }
 
 :root[data-theme="dark"] .osirion-markdown-preview-content pre,
 :root[data-bs-theme="dark"] .osirion-markdown-preview-content pre,
 .dark-theme .osirion-markdown-preview-content pre,
 .theme-dark .osirion-markdown-preview-content pre {
-    background-color: var(--osirion-light-background-color, #374151);
+    background-color: var(--osirion-color-background-light, #374151);
 }
 
 :root[data-theme="dark"] .osirion-markdown-preview-content table tr,
 :root[data-bs-theme="dark"] .osirion-markdown-preview-content table tr,
 .dark-theme .osirion-markdown-preview-content table tr,
 .theme-dark .osirion-markdown-preview-content table tr {
-    background-color: var(--osirion-background-color, #1f2937);
-    border-color: var(--osirion-border-color, #4b5563);
+    background-color: var(--osirion-color-background, #1f2937);
+    border-color: var(--osirion-color-border, #4b5563);
 }
 
     :root[data-theme="dark"] .osirion-markdown-preview-content table tr:nth-child(2n),
     :root[data-bs-theme="dark"] .osirion-markdown-preview-content table tr:nth-child(2n),
     .dark-theme .osirion-markdown-preview-content table tr:nth-child(2n),
     .theme-dark .osirion-markdown-preview-content table tr:nth-child(2n) {
-        background-color: var(--osirion-light-background-color, #374151);
+        background-color: var(--osirion-color-background-light, #374151);
     }
 
 :root[data-theme="dark"] .osirion-markdown-preview-content table th,
@@ -429,15 +429,15 @@ html.osirion-radzen-integration .osirion-markdown-preview-content {
 .dark-theme .osirion-markdown-preview-content table td,
 .theme-dark .osirion-markdown-preview-content table th,
 .theme-dark .osirion-markdown-preview-content table td {
-    border-color: var(--osirion-border-color, #4b5563);
+    border-color: var(--osirion-color-border, #4b5563);
 }
 
 :root[data-theme="dark"] .markdown-error,
 :root[data-bs-theme="dark"] .markdown-error,
 .dark-theme .markdown-error,
 .theme-dark .markdown-error {
-    color: var(--osirion-danger-color, #f87171);
-    background-color: var(--osirion-danger-light-color, #7f1d1d);
+    color: var(--osirion-color-danger-text, #f87171);
+    background-color: var(--osirion-color-danger-light, #7f1d1d);
 }
 
 /* Framework-specific dark theme integrations */

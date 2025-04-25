@@ -14,10 +14,10 @@
         gap: 0.5rem;
         padding: 0.5rem 0.75rem;
         background-color: transparent;
-        color: var(--osirion-text-color, #374151);
-        border: 1px solid var(--osirion-border-color, #e5e7eb);
+        color: var(--osirion-color, #374151);
+        border: 1px solid var(--osirion-color-border, #e5e7eb);
         border-radius: var(--osirion-small-border-radius, 0.375rem);
-        font-size: var(--osirion-small-font-size, 0.875rem);
+        font-size: var(--osirion-font-size-small, 0.875rem);
         font-weight: var(--osirion-font-weight-medium, 500);
         cursor: pointer;
         transition: all var(--osirion-transition-speed, 0.2s) var(--osirion-transition-timing, ease);
@@ -25,7 +25,7 @@
 
         /* Button hover state */
         .theme-toggle button:hover {
-            background-color: var(--osirion-light-background-color, #f3f4f6);
+            background-color: var(--osirion-color-background-light, #f3f4f6);
         }
 
         /* Active button state */
@@ -51,16 +51,16 @@
     justify-content: center;
     padding: 0.5rem;
     background-color: transparent;
-    color: var(--osirion-text-color, #374151);
-    border: 1px solid var(--osirion-border-color, #e5e7eb);
+    color: var(--osirion-color, #374151);
+    border: 1px solid var(--osirion-color-border, #e5e7eb);
     border-radius: var(--osirion-small-border-radius, 0.375rem);
-    font-size: var(--osirion-small-font-size, 0.875rem);
+    font-size: var(--osirion-font-size-small, 0.875rem);
     cursor: pointer;
     transition: all var(--osirion-transition-speed, 0.2s) var(--osirion-transition-timing, ease);
 }
 
     .theme-toggle-button:hover {
-        background-color: var(--osirion-light-background-color, #f3f4f6);
+        background-color: var(--osirion-color-background-light, #f3f4f6);
     }
 
 /* Bootstrap Framework Integration */
@@ -115,15 +115,15 @@ html.osirion-radzen-integration .theme-toggle button {
 :root[data-bs-theme="dark"] .theme-toggle button,
 .dark-theme .theme-toggle button,
 .theme-dark .theme-toggle button {
-    color: var(--osirion-text-color, #e5e7eb);
-    border-color: var(--osirion-border-color, #4b5563);
+    color: var(--osirion-color, #e5e7eb);
+    border-color: var(--osirion-color-border, #4b5563);
 }
 
     :root[data-theme="dark"] .theme-toggle button:hover,
     :root[data-bs-theme="dark"] .theme-toggle button:hover,
     .dark-theme .theme-toggle button:hover,
     .theme-dark .theme-toggle button:hover {
-        background-color: var(--osirion-light-background-color, #374151);
+        background-color: var(--osirion-color-background-light, #374151);
     }
 
     :root[data-theme="dark"] .theme-toggle button.active,
@@ -131,7 +131,7 @@ html.osirion-radzen-integration .theme-toggle button {
     .dark-theme .theme-toggle button.active,
     .theme-dark .theme-toggle button.active {
         background-color: var(--osirion-primary-color, #60a5fa);
-        color: var(--osirion-background-color, #1f2937);
+        color: var(--osirion-color-background, #1f2937);
         border-color: var(--osirion-primary-color, #60a5fa);
     }
 
@@ -139,15 +139,15 @@ html.osirion-radzen-integration .theme-toggle button {
 :root[data-bs-theme="dark"] .theme-toggle-button,
 .dark-theme .theme-toggle-button,
 .theme-dark .theme-toggle-button {
-    color: var(--osirion-text-color, #e5e7eb);
-    border-color: var(--osirion-border-color, #4b5563);
+    color: var(--osirion-color, #e5e7eb);
+    border-color: var(--osirion-color-border, #4b5563);
 }
 
     :root[data-theme="dark"] .theme-toggle-button:hover,
     :root[data-bs-theme="dark"] .theme-toggle-button:hover,
     .dark-theme .theme-toggle-button:hover,
     .theme-dark .theme-toggle-button:hover {
-        background-color: var(--osirion-light-background-color, #374151);
+        background-color: var(--osirion-color-background-light, #374151);
     }
 
 /* Responsive adjustments */

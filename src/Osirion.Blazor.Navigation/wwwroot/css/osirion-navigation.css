@@ -73,7 +73,7 @@
     .scroll-to-top .scroll-text,
     .osirion-scroll-to-top .scroll-text {
         margin-left: 8px;
-        font-size: var(--osirion-small-font-size, 0.875rem);
+        font-size: var(--osirion-font-size-small, 0.875rem);
         font-weight: 500;
     }
 

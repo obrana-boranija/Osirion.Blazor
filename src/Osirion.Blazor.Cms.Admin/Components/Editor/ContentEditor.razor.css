@@ -259,7 +259,7 @@
     }
 
 /* Dark theme support using theme classes */
-[data-theme="dark"] .osirion-admin-content-editor,
+/*[data-theme="dark"] .osirion-admin-content-editor,
 .osirion-admin-theme-dark .osirion-admin-content-editor {
     background-color: var(--osirion-admin-bg-dark, #0d1117);
     border-color: var(--osirion-admin-border-dark, #30363d);
@@ -349,7 +349,7 @@
 .osirion-admin-theme-dark .osirion-admin-empty {
     color: var(--osirion-admin-text-muted-dark, #8b949e);
     background-color: var(--osirion-admin-bg-dark, #0d1117);
-}
+}*/
 
 /* Responsive adjustments */
 @media (max-width: 992px) {

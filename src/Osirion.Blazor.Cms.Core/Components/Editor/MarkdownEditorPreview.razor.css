@@ -3,7 +3,7 @@
 .osirion-markdown-editor-preview {
     display: flex;
     flex-direction: column;
-    border: 1px solid var(--osirion-border-color, #e1e4e8);
+    border: 1px solid var(--osirion-color-border, #e1e4e8);
     border-radius: var(--osirion-border-radius, 4px);
     background-color: var(--osirion-background-light, #ffffff);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
@@ -16,7 +16,7 @@
     grid-template-columns: 1fr 1fr;
     gap: 1px;
     flex: 1;
-    background-color: var(--osirion-border-color, #e1e4e8);
+    background-color: var(--osirion-color-border, #e1e4e8);
     border-radius: calc(var(--osirion-border-radius, 4px) - 1px);
     overflow: hidden;
     height: 100%;
@@ -41,7 +41,7 @@
     gap: 0.5rem;
     padding: 0.5rem;
     background-color: var(--osirion-background-header, #f6f8fa);
-    border-bottom: 1px solid var(--osirion-border-color, #e1e4e8);
+    border-bottom: 1px solid var(--osirion-color-border, #e1e4e8);
 }
 
 .osirion-markdown-editor-toolbar-button {
@@ -52,9 +52,9 @@
     min-width: 2rem;
     padding: 0 0.5rem;
     background-color: var(--osirion-background-light, #ffffff);
-    border: 1px solid var(--osirion-border-color, #e1e4e8);
+    border: 1px solid var(--osirion-color-border, #e1e4e8);
     border-radius: 3px;
-    color: var(--osirion-text-color, #24292e);
+    color: var(--osirion-color, #24292e);
     font-size: 0.875rem;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -72,7 +72,7 @@
 .osirion-markdown-editor-toolbar-divider {
     height: 1.5rem;
     width: 1px;
-    background-color: var(--osirion-border-color, #e1e4e8);
+    background-color: var(--osirion-color-border, #e1e4e8);
     margin: 0 0.25rem;
 }
 
@@ -82,7 +82,7 @@
     align-items: center;
     padding: 0.5rem 0.75rem;
     background-color: var(--osirion-background-header, #f6f8fa);
-    border-top: 1px solid var(--osirion-border-color, #e1e4e8);
+    border-top: 1px solid var(--osirion-color-border, #e1e4e8);
 }
 
 .osirion-markdown-footer-actions {
@@ -106,7 +106,7 @@
 
     .osirion-markdown-toggle-button:hover {
         background-color: var(--osirion-background-hover, #f0f2f4);
-        color: var(--osirion-text-color, #24292e);
+        color: var(--osirion-color, #24292e);
     }
 
     .osirion-markdown-toggle-button svg {
@@ -123,12 +123,12 @@
 :root[data-theme="dark"] .osirion-markdown-editor-preview,
 .theme-dark .osirion-markdown-editor-preview {
     background-color: var(--osirion-background-dark, #0d1117);
-    border-color: var(--osirion-border-color-dark, #30363d);
+    border-color: var(--osirion-color-border-dark, #30363d);
 }
 
 :root[data-theme="dark"] .osirion-markdown-editor-preview-container,
 .theme-dark .osirion-markdown-editor-preview-container {
-    background-color: var(--osirion-border-color-dark, #30363d);
+    background-color: var(--osirion-color-border-dark, #30363d);
 }
 
 :root[data-theme="dark"] .osirion-markdown-editor-section,
@@ -143,14 +143,14 @@
 .theme-dark .osirion-markdown-editor-toolbar,
 .theme-dark .osirion-markdown-footer {
     background-color: var(--osirion-background-header-dark, #161b22);
-    border-color: var(--osirion-border-color-dark, #30363d);
+    border-color: var(--osirion-color-border-dark, #30363d);
 }
 
 :root[data-theme="dark"] .osirion-markdown-editor-toolbar-button,
 .theme-dark .osirion-markdown-editor-toolbar-button {
     background-color: var(--osirion-background-dark, #0d1117);
-    border-color: var(--osirion-border-color-dark, #30363d);
-    color: var(--osirion-text-color-dark, #c9d1d9);
+    border-color: var(--osirion-color-border-dark, #30363d);
+    color: var(--osirion-color-dark, #c9d1d9);
 }
 
     :root[data-theme="dark"] .osirion-markdown-editor-toolbar-button:hover,
@@ -165,7 +165,7 @@
 
 :root[data-theme="dark"] .osirion-markdown-editor-toolbar-divider,
 .theme-dark .osirion-markdown-editor-toolbar-divider {
-    background-color: var(--osirion-border-color-dark, #30363d);
+    background-color: var(--osirion-color-border-dark, #30363d);
 }
 
 :root[data-theme="dark"] .osirion-markdown-toggle-button,
@@ -176,7 +176,7 @@
     :root[data-theme="dark"] .osirion-markdown-toggle-button:hover,
     .theme-dark .osirion-markdown-toggle-button:hover {
         background-color: var(--osirion-background-hover-dark, #1f2937);
-        color: var(--osirion-text-color-dark, #c9d1d9);
+        color: var(--osirion-color-dark, #c9d1d9);
     }
 
 :root[data-theme="dark"] .osirion-markdown-word-count,

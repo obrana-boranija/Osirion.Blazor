@@ -2,10 +2,10 @@
 :root {
     --osirion-primary-color: #0366d6;
     --osirion-secondary-color: #586069;
-    --osirion-success-color: #28a745;
+    --osirion-color-success: #28a745;
     --osirion-error-color: #cb2431;
-    --osirion-text-color: #24292e;
-    --osirion-border-color: #e1e4e8;
+    --osirion-color: #24292e;
+    --osirion-color-border: #e1e4e8;
     --osirion-bg-color: #ffffff;
     --osirion-sidebar-width: 280px;
 }
@@ -14,8 +14,8 @@
 .osirion-admin-theme-dark {
     --osirion-primary-color: #58a6ff;
     --osirion-secondary-color: #8b949e;
-    --osirion-text-color: #c9d1d9;
-    --osirion-border-color: #30363d;
+    --osirion-color: #c9d1d9;
+    --osirion-color-border: #30363d;
     --osirion-bg-color: #0d1117;
 }
 
@@ -24,13 +24,13 @@
     display: flex;
     min-height: 100vh;
     background-color: var(--osirion-bg-color);
-    color: var(--osirion-text-color);
+    color: var(--osirion-color);
 }
 
 .osirion-admin-sidebar {
     width: var(--osirion-sidebar-width);
     background-color: var(--osirion-bg-color);
-    border-right: 1px solid var(--osirion-border-color);
+    border-right: 1px solid var(--osirion-color-border);
     padding: 1rem;
     display: flex;
     flex-direction: column;
@@ -45,7 +45,7 @@
 /* Header Styles */
 .osirion-admin-header {
     padding: 1rem;
-    border-bottom: 1px solid var(--osirion-border-color);
+    border-bottom: 1px solid var(--osirion-color-border);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -98,13 +98,13 @@
     display: flex;
     align-items: center;
     padding: 0.5rem;
-    color: var(--osirion-text-color);
+    color: var(--osirion-color);
     text-decoration: none;
     border-radius: 4px;
 }
 
     .osirion-admin-nav-link:hover {
-        background-color: var(--osirion-border-color);
+        background-color: var(--osirion-color-border);
     }
 
     .osirion-admin-nav-link.active {
@@ -117,10 +117,10 @@
     display: inline-flex;
     align-items: center;
     padding: 0.5rem 1rem;
-    border: 1px solid var(--osirion-border-color);
+    border: 1px solid var(--osirion-color-border);
     border-radius: 4px;
     background: none;
-    color: var(--osirion-text-color);
+    color: var(--osirion-color);
     cursor: pointer;
 }
 
@@ -146,7 +146,7 @@
 
 .osirion-admin-alert-success {
     background-color: rgba(40, 167, 69, 0.1);
-    border: 1px solid var(--osirion-success-color);
+    border: 1px solid var(--osirion-color-success);
 }
 
 .osirion-admin-alert-error {
@@ -159,10 +159,10 @@
 .osirion-admin-select {
     width: 100%;
     padding: 0.5rem;
-    border: 1px solid var(--osirion-border-color);
+    border: 1px solid var(--osirion-color-border);
     border-radius: 4px;
     background-color: var(--osirion-bg-color);
-    color: var(--osirion-text-color);
+    color: var(--osirion-color);
 }
 
 /* Loading States */
@@ -177,7 +177,7 @@
     display: inline-block;
     width: 1rem;
     height: 1rem;
-    border: 2px solid var(--osirion-border-color);
+    border: 2px solid var(--osirion-color-border);
     border-top-color: var(--osirion-primary-color);
     border-radius: 50%;
     animation: spin 1s linear infinite;
@@ -245,7 +245,7 @@
     .osirion-admin-sidebar {
         width: 100%;
         border-right: none;
-        border-bottom: 1px solid var(--osirion-border-color);
+        border-bottom: 1px solid var(--osirion-color-border);
     }
 
     .osirion-admin-content-editor.three-panel,

@@ -104,18 +104,18 @@ Osirion.Blazor uses a comprehensive set of CSS variables that you can customize:
 ### Colors
 ```css
 --osirion-primary-color: #2563eb;
---osirion-primary-hover-color: #1d4ed8;
---osirion-text-color: #374151;
---osirion-light-text-color: #6b7280;
---osirion-border-color: #e5e7eb;
---osirion-background-color: #ffffff;
---osirion-light-background-color: #f3f4f6;
+--osirion-primary-color-hover: #1d4ed8;
+--osirion-color: #374151;
+--osirion-color-light: #6b7280;
+--osirion-color-border: #e5e7eb;
+--osirion-color-background: #ffffff;
+--osirion-color-background-light: #f3f4f6;
 --osirion-tag-background-color: #f3f4f6;
 --osirion-tag-text-color: #4b5563;
 --osirion-category-background-color: #e0f2fe;
 --osirion-category-text-color: #0369a1;
---osirion-active-background-color: #e0f2fe;
---osirion-active-text-color: #0369a1;
+--osirion-color-background-active: #e0f2fe;
+--osirion-color-active: #0369a1;
 ```
 
 ### Sizes
@@ -126,16 +126,16 @@ Osirion.Blazor uses a comprehensive set of CSS variables that you can customize:
 --osirion-gap: 1.5rem;
 --osirion-small-gap: 0.5rem;
 --osirion-padding: 1.5rem;
---osirion-small-padding: 0.5rem;
+--osirion-padding-small: 0.5rem;
 ```
 
 ### Typography
 ```css
 --osirion-font-size: 1rem;
---osirion-small-font-size: 0.875rem;
---osirion-tiny-font-size: 0.75rem;
---osirion-title-font-size: 1.25rem;
---osirion-large-title-font-size: 2.5rem;
+--osirion-font-size-small: 0.875rem;
+--osirion-font-size-tiny: 0.75rem;
+--osirion-font-size-title: 1.25rem;
+--osirion-font-size-large-title: 2.5rem;
 --osirion-line-height: 1.7;
 ```
 
@@ -181,18 +181,18 @@ Osirion.Blazor uses a comprehensive set of CSS variables that you can customize:
 ```css
 :root {
   --osirion-primary-color: #60a5fa;
-  --osirion-primary-hover-color: #93c5fd;
-  --osirion-text-color: #e5e7eb;
-  --osirion-light-text-color: #9ca3af;
-  --osirion-border-color: #4b5563;
-  --osirion-background-color: #1f2937;
-  --osirion-light-background-color: #374151;
+  --osirion-primary-color-hover: #93c5fd;
+  --osirion-color: #e5e7eb;
+  --osirion-color-light: #9ca3af;
+  --osirion-color-border: #4b5563;
+  --osirion-color-background: #1f2937;
+  --osirion-color-background-light: #374151;
   --osirion-tag-background-color: #374151;
   --osirion-tag-text-color: #e5e7eb;
   --osirion-category-background-color: #1e40af;
   --osirion-category-text-color: #e5e7eb;
-  --osirion-active-background-color: #1e40af;
-  --osirion-active-text-color: #e5e7eb;
+  --osirion-color-background-active: #1e40af;
+  --osirion-color-active: #e5e7eb;
 }
 ```
 
@@ -204,14 +204,14 @@ You can implement theme switching by toggling CSS classes:
 /* Base theme */
 :root {
   --osirion-primary-color: #2563eb;
-  --osirion-background-color: #ffffff;
+  --osirion-color-background: #ffffff;
   /* Other variables... */
 }
 
 /* Dark theme */
 .dark-theme {
   --osirion-primary-color: #60a5fa;
-  --osirion-background-color: #1f2937;
+  --osirion-color-background: #1f2937;
   /* Override other variables... */
 }
 ```

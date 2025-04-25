@@ -1,12 +1,12 @@
 .osirion-localized-navigation {
-    padding: var(--osirion-content-small-padding);
-    font-family: var(--osirion-content-font-family);
+    padding: var(--osirion-padding-small);
+    font-family: var(--osirion-font-family);
 }
 
 .osirion-nav-title {
-    font-size: var(--osirion-content-title-font-size);
+    font-size: var(--osirion-font-size-title);
     margin-bottom: 1rem;
-    color: var(--osirion-content-text-color);
+    color: var(--osirion-color);
 }
 
 .osirion-locale-selector {
@@ -18,23 +18,23 @@
 
 .osirion-locale-button {
     padding: 0.25rem 0.75rem;
-    background-color: var(--osirion-content-light-background-color);
-    border: 1px solid var(--osirion-content-border-color);
-    border-radius: var(--osirion-content-small-border-radius);
-    color: var(--osirion-content-text-color);
-    font-size: var(--osirion-content-small-font-size);
+    background-color: var(--osirion-color-background);
+    border: 1px solid var(--osirion-color-border);
+    border-radius: var(--osirion-small-border-radius);
+    color: var(--osirion-color);
+    font-size: var(--osirion-font-size-small);
     cursor: pointer;
-    transition: all var(--osirion-content-transition-speed) ease;
+    transition: all var(--osirion-transition-speed) ease;
 }
 
     .osirion-locale-button:hover {
-        background-color: var(--osirion-content-border-color);
+        background-color: var(--osirion-color-border);
     }
 
     .osirion-locale-button.osirion-active {
-        background-color: var(--osirion-content-active-background);
-        color: var(--osirion-content-active-text);
-        border-color: var(--osirion-content-active-text);
+        background-color: var(--osirion-active-background);
+        color: var(--osirion-active-text);
+        border-color: var(--osirion-active-text);
     }
 
 .osirion-nav-list {
@@ -44,21 +44,21 @@
 }
 
 .osirion-nav-item {
-    margin-bottom: var(--osirion-content-small-gap);
+    margin-bottom: var(--osirion-small-gap);
 }
 
 .osirion-nav-link {
     display: block;
-    padding: var(--osirion-content-small-padding);
+    padding: var(--osirion-padding-small);
     text-decoration: none;
-    color: var(--osirion-content-text-color);
-    border-radius: var(--osirion-content-small-border-radius);
+    color: var(--osirion-color);
+    border-radius: var(--osirion-small-border-radius);
     font-weight: bold;
-    transition: background-color var(--osirion-content-transition-speed);
+    transition: background-color var(--osirion-transition-speed);
 }
 
     .osirion-nav-link:hover {
-        background-color: var(--osirion-content-light-background-color);
+        background-color: var(--osirion-color-background);
     }
 
 .osirion-nav-sublist {
@@ -75,13 +75,13 @@
     display: block;
     padding: 0.25rem 0.5rem;
     text-decoration: none;
-    color: var(--osirion-content-text-color);
-    border-radius: var(--osirion-content-small-border-radius);
-    transition: background-color var(--osirion-content-transition-speed);
+    color: var(--osirion-color);
+    border-radius: var(--osirion-small-border-radius);
+    transition: background-color var(--osirion-transition-speed);
 }
 
     .osirion-nav-content-link:hover {
-        background-color: var(--osirion-content-light-background-color);
+        background-color: var(--osirion-color-background);
     }
 
 /* Responsive styles */

@@ -3,7 +3,7 @@
 .osirion-markdown-editor {
     display: flex;
     flex-direction: column;
-    border: 1px solid var(--osirion-border-color, #e5e7eb);
+    border: 1px solid var(--osirion-color-border, #e5e7eb);
     border-radius: var(--osirion-border-radius, 4px);
     background-color: var(--osirion-bg-editor, #ffffff);
     box-shadow: var(--osirion-box-shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.05));
@@ -23,8 +23,8 @@
     flex-wrap: wrap;
     gap: 0.25rem;
     padding: 0.5rem;
-    background-color: var(--osirion-light-background-color, #f3f4f6);
-    border-bottom: 1px solid var(--osirion-border-color, #e5e7eb);
+    background-color: var(--osirion-color-background-light, #f3f4f6);
+    border-bottom: 1px solid var(--osirion-color-border, #e5e7eb);
     border-top-left-radius: calc(var(--osirion-border-radius, 4px) - 1px);
     border-top-right-radius: calc(var(--osirion-border-radius, 4px) - 1px);
 }
@@ -34,12 +34,12 @@
     align-items: center;
     justify-content: center;
     background: none;
-    border: 1px solid var(--osirion-border-color, #e5e7eb);
+    border: 1px solid var(--osirion-color-border, #e5e7eb);
     border-radius: 3px;
     padding: 0.25rem 0.5rem;
     font-size: 0.875rem;
     font-weight: 500;
-    color: var(--osirion-text-color, #374151);
+    color: var(--osirion-color, #374151);
     cursor: pointer;
     transition: all 0.2s ease;
     min-width: 2rem;
@@ -47,12 +47,12 @@
 }
 
     .osirion-markdown-toolbar-button:hover {
-        background-color: var(--osirion-background-color, #ffffff);
-        border-color: var(--osirion-border-color, #d1d5da);
+        background-color: var(--osirion-color-background, #ffffff);
+        border-color: var(--osirion-color-border, #d1d5da);
     }
 
     .osirion-markdown-toolbar-button:active {
-        background-color: var(--osirion-light-background-color, #e1e4e8);
+        background-color: var(--osirion-color-background-light, #e1e4e8);
         transform: translateY(1px);
     }
 
@@ -65,10 +65,10 @@
 /* Editor header styling */
 .osirion-markdown-editor-header {
     padding: 0.5rem 0.75rem;
-    background-color: var(--osirion-light-background-color, #f3f4f6);
-    border-bottom: 1px solid var(--osirion-border-color, #e5e7eb);
+    background-color: var(--osirion-color-background-light, #f3f4f6);
+    border-bottom: 1px solid var(--osirion-color-border, #e5e7eb);
     font-weight: var(--osirion-font-weight-medium, 500);
-    color: var(--osirion-text-color, #374151);
+    color: var(--osirion-color, #374151);
     font-size: 0.875rem;
 }
 
@@ -96,8 +96,8 @@
     font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
     font-size: 0.875rem;
     line-height: 1.6;
-    color: var(--osirion-text-color, #374151);
-    background-color: var(--osirion-background-color, #ffffff);
+    color: var(--osirion-color, #374151);
+    background-color: var(--osirion-color-background, #ffffff);
     overflow-y: auto;
     tab-size: 4;
 }
@@ -107,7 +107,7 @@
     }
 
     .osirion-markdown-editor-textarea::placeholder {
-        color: var(--osirion-light-text-color, #9ca3af);
+        color: var(--osirion-color-light, #9ca3af);
         opacity: 0.7;
     }
 
@@ -228,8 +228,8 @@ html.osirion-radzen-integration .osirion-markdown-editor-textarea {
 :root[data-bs-theme="dark"] .osirion-markdown-editor,
 .dark-theme .osirion-markdown-editor,
 .theme-dark .osirion-markdown-editor {
-    border-color: var(--osirion-border-color, #4b5563);
-    background-color: var(--osirion-background-color, #1f2937);
+    border-color: var(--osirion-color-border, #4b5563);
+    background-color: var(--osirion-color-background, #1f2937);
 }
 
     :root[data-theme="dark"] .osirion-markdown-editor:focus-within,
@@ -244,39 +244,39 @@ html.osirion-radzen-integration .osirion-markdown-editor-textarea {
 :root[data-bs-theme="dark"] .osirion-markdown-editor-toolbar,
 .dark-theme .osirion-markdown-editor-toolbar,
 .theme-dark .osirion-markdown-editor-toolbar {
-    background-color: var(--osirion-light-background-color, #374151);
-    border-color: var(--osirion-border-color, #4b5563);
+    background-color: var(--osirion-color-background-light, #374151);
+    border-color: var(--osirion-color-border, #4b5563);
 }
 
 :root[data-theme="dark"] .osirion-markdown-toolbar-button,
 :root[data-bs-theme="dark"] .osirion-markdown-toolbar-button,
 .dark-theme .osirion-markdown-toolbar-button,
 .theme-dark .osirion-markdown-toolbar-button {
-    color: var(--osirion-text-color, #e5e7eb);
-    border-color: var(--osirion-border-color, #4b5563);
+    color: var(--osirion-color, #e5e7eb);
+    border-color: var(--osirion-color-border, #4b5563);
 }
 
     :root[data-theme="dark"] .osirion-markdown-toolbar-button:hover,
     :root[data-bs-theme="dark"] .osirion-markdown-toolbar-button:hover,
     .dark-theme .osirion-markdown-toolbar-button:hover,
     .theme-dark .osirion-markdown-toolbar-button:hover {
-        background-color: var(--osirion-background-color, #1f2937);
-        border-color: var(--osirion-light-text-color, #9ca3af);
+        background-color: var(--osirion-color-background, #1f2937);
+        border-color: var(--osirion-color-light, #9ca3af);
     }
 
 :root[data-theme="dark"] .osirion-markdown-editor-textarea,
 :root[data-bs-theme="dark"] .osirion-markdown-editor-textarea,
 .dark-theme .osirion-markdown-editor-textarea,
 .theme-dark .osirion-markdown-editor-textarea {
-    color: var(--osirion-text-color, #e5e7eb);
-    background-color: var(--osirion-background-color, #1f2937);
+    color: var(--osirion-color, #e5e7eb);
+    background-color: var(--osirion-color-background, #1f2937);
 }
 
     :root[data-theme="dark"] .osirion-markdown-editor-textarea::placeholder,
     :root[data-bs-theme="dark"] .osirion-markdown-editor-textarea::placeholder,
     .dark-theme .osirion-markdown-editor-textarea::placeholder,
     .theme-dark .osirion-markdown-editor-textarea::placeholder {
-        color: var(--osirion-light-text-color, #9ca3af);
+        color: var(--osirion-color-light, #9ca3af);
     }
 
 /* Framework-specific dark theme integrations */
