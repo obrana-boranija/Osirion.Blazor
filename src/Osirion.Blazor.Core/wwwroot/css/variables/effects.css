@@ -1,0 +1,17 @@
+﻿/* 
+ * Osirion CSS Variables
+ * Core variables that define the foundation of Osirion's design system
+ * These variables are framework-agnostic and focused on providing 
+ * consistent design tokens across all components.
+ */
+
+:root {
+    --osirion-transition-speed: 0.2s;
+    --osirion-transition-timing: ease;
+    --osirion-transition-property: color, background-color, border-color, outline-color, fill, stroke, opacity, box-shadow, transform;
+    --osirion-box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    --osirion-box-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --osirion-box-shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
+    --osirion-box-shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+    --osirion-focus-ring: 0 0 0 3px rgba(37, 99, 235, 0.3); /* For focus outlines - WCAG compliant */
+}

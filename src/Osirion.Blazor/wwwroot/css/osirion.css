@@ -14,82 +14,87 @@
     --osirion-secondary-color-dark: #374151;
     --osirion-secondary-color-contrast: #ffffff;
     /* Base Text and Background Colors */
-    --osirion-color: #374151;
-    --osirion-color-light: #6b7280;
-    --osirion-color-muted: #9ca3af; /* Added: for less important text */
+    --osirion-color: #374151; /* WCAG AAA compliant against white bg */
+    --osirion-color-light: #6b7280; /* WCAG AA compliant against white bg */
+    --osirion-color-muted: #9ca3af; /* For less important text */
+    --osirion-text-muted: #6b7280; /* Consistent with color-light for muted text */
     --osirion-color-border: #e5e7eb;
     --osirion-color-background: #ffffff;
     --osirion-color-background-light: #f3f4f6;
-    --osirion-color-background-dark: #1f2937; /* Added: for contrasting backgrounds */
+    --osirion-color-background-dark: #1f2937; /* For contrasting backgrounds */
+    --osirion-background-light: #f8f9fa; /* Similar to color-background-light but slightly different tone */
+    --osirion-background-header: #f3f4f6; /* For header backgrounds */
+    --osirion-background-hover: #f0f2f4; /* For hover states */
+    --osirion-background-active: #e5e7eb; /* For active states */
     /* Action/State Colors */
-    --osirion-color-background-active: #e0f2fe;
-    --osirion-color-active: #0369a1;
-    --osirion-color-background-hover: #f0f9ff; /* Added: for hover states */
-    --osirion-color-border-focus: #3b82f6; /* Added: for focused elements */
-    --osirion-color-background-disabled: #f3f4f6; /* Added: for disabled elements */
-    --osirion-color-text-disabled: #9ca3af; /* Added: for disabled text */
+    --osirion-active-text: #0369a1; /* WCAG AA compliant blue against white or light bg */
+    --osirion-active-background: #e0f2fe; /* Light blue background for active states */
+    --osirion-color-background-active: #e0f2fe; /* Consistent with active-background */
+    --osirion-color-active: #0369a1; /* Consistent with active-text */
+    --osirion-color-background-hover: #f0f9ff; /* For hover states */
+    --osirion-color-border-focus: #3b82f6; /* For focused elements */
+    --osirion-color-background-disabled: #f3f4f6; /* For disabled elements */
+    --osirion-color-text-disabled: #9ca3af; /* For disabled text */
     /* State/Status Colors */
     --osirion-color-success: #10b981;
     --osirion-color-success-hover: #059669;
     --osirion-color-success-light: #d1fae5;
-    --osirion-color-success-text: #065f46; /* Added: for text on success backgrounds */
+    --osirion-color-success-text: #065f46; /* WCAG AA+ compliant against light bg */
 
     --osirion-color-danger: #ef4444;
     --osirion-color-danger-hover: #dc2626;
     --osirion-color-danger-light: #fee2e2;
-    --osirion-color-danger-text: #b91c1c; /* Added: for text on danger backgrounds */
+    --osirion-color-danger-text: #b91c1c; /* WCAG AA+ compliant against light bg */
 
     --osirion-color-warning: #f59e0b;
     --osirion-color-warning-hover: #d97706;
     --osirion-color-warning-light: #fef3c7;
-    --osirion-color-warning-text: #92400e; /* Added: for text on warning backgrounds */
+    --osirion-color-warning-text: #92400e; /* WCAG AA+ compliant against light bg */
 
     --osirion-color-info: #3b82f6;
     --osirion-color-info-hover: #2563eb;
     --osirion-color-info-light: #dbeafe;
-    --osirion-color-info-text: #1e40af; /* Added: for text on info backgrounds */
+    --osirion-color-info-text: #1e40af; /* WCAG AA+ compliant against light bg */
     /* Component-Specific Colors */
     --osirion-tag-background-color: #f3f4f6;
     --osirion-tag-text-color: #4b5563;
-    --osirion-tag-hover-background-color: #e5e7eb; /* Added: for tag hover state */
+    --osirion-tag-hover-background-color: #e5e7eb; /* Added for tag hover state */
     --osirion-tag-border-radius: 999px;
     --osirion-category-background-color: #e0f2fe;
     --osirion-category-text-color: #0369a1;
-    --osirion-category-hover-background-color: #bae6fd; /* Added: for category hover state */
-
-    --osirion-card-background-color: var(--osirion-color-background);
-    --osirion-card-text-color: var(--osirion-color);
-    --osirion-card-border-color: var(--osirion-color-border);
-    --osirion-card-hover-shadow: var(--osirion-box-shadow);
+    --osirion-category-hover-background-color: #bae6fd; /* Added for category hover state */
     /* ========== LAYOUT ========== */
+    --osirion-width: 800px; /* Standard content width */
     --osirion-border-radius: 0.5rem;
     --osirion-small-border-radius: 0.375rem;
-    --osirion-large-border-radius: 0.75rem; /* Added: for larger elements */
-    --osirion-button-border-radius: 0.375rem; /* Added: specifically for buttons */
+    --osirion-large-border-radius: 0.75rem; /* Added for larger elements */
+    --osirion-button-border-radius: 0.375rem; /* Added specifically for buttons */
 
     --osirion-gap: 1.5rem;
     --osirion-small-gap: 0.5rem;
-    --osirion-large-gap: 2rem; /* Added: for larger spacing needs */
+    --osirion-large-gap: 2rem; /* Added for larger spacing needs */
 
     --osirion-padding: 1.5rem;
     --osirion-padding-small: 0.5rem;
-    --osirion-padding-large: 2rem; /* Added: for more spacious layouts */
+    --osirion-padding-large: 2rem; /* Added for more spacious layouts */
 
-    --osirion-margin: 1.5rem; /* Added: consistent margins */
-    --osirion-margin-small: 0.5rem; /* Added: smaller margins */
-    --osirion-margin-large: 2rem; /* Added: larger margins */
+    --osirion-margin: 1.5rem; /* Added consistent margins */
+    --osirion-margin-small: 0.5rem; /* Added smaller margins */
+    --osirion-margin-large: 2rem; /* Added larger margins */
+    --osirion-header-margin: 1.5rem; /* Standard header margin */
+    --osirion-paragraph-margin: 1rem; /* Standard paragraph margin */
 
     --osirion-content-max-width: 800px;
     --osirion-card-min-width: 300px;
     --osirion-image-height: 200px;
-    --osirion-header-height: 60px; /* Added: standard header height */
-    --osirion-footer-height: 60px; /* Added: standard footer height */
-    --osirion-sidebar-width: 280px; /* Added: standard sidebar width */
+    --osirion-header-height: 60px; /* Standard header height */
+    --osirion-footer-height: 60px; /* Standard footer height */
+    --osirion-sidebar-width: 280px; /* Standard sidebar width */
     /* Grid Layout */
-    --osirion-grid-columns: 12; /* Added: for grid layouts */
+    --osirion-grid-columns: 12; /* For grid layouts */
     --osirion-grid-gap: var(--osirion-gap);
     /* Z-index Layers */
-    --osirion-z-index-dropdown: 1000; /* Added: standardized z-index values */
+    --osirion-z-index-dropdown: 1000; /* Standardized z-index values */
     --osirion-z-index-sticky: 1020;
     --osirion-z-index-fixed: 1030;
     --osirion-z-index-modal-backdrop: 1040;
@@ -98,7 +103,7 @@
     --osirion-z-index-tooltip: 1070;
     /* ========== TYPOGRAPHY ========== */
     --osirion-font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    --osirion-font-family-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace; /* Added: for code and monospace text */
+    --osirion-font-family-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace; /* For code and monospace text */
 
     --osirion-font-size: 1rem;
     --osirion-font-size-small: 0.875rem;
@@ -120,18 +125,18 @@
     --osirion-line-height-tight: 1.25;
     --osirion-line-height-normal: 1.5;
     --osirion-line-height-relaxed: 1.7;
-    --osirion-line-height-loose: 2; /* Added: for more spaced text */
+    --osirion-line-height-loose: 2; /* For more spaced text */
     /* ========== ANIMATIONS & EFFECTS ========== */
     --osirion-transition-speed: 0.2s;
-    --osirion-transition-timing: ease;
-    --osirion-transition-property: color, background-color, border-color, outline-color, fill, stroke, opacity, box-shadow, transform; /* Added: standard transition properties */
+    --osirion-transition-timing: ease; /* Standard transition timing function */
+    --osirion-transition-property: color, background-color, border-color, outline-color, fill, stroke, opacity, box-shadow, transform; /* Standard transition properties */
 
     --osirion-box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     --osirion-box-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
     --osirion-box-shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
-    --osirion-box-shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.06); /* Added: for inset shadows */
+    --osirion-box-shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.06); /* For inset shadows */
 
-    --osirion-focus-ring: 0 0 0 3px rgba(37, 99, 235, 0.3); /* Added: for focus outlines */
+    --osirion-focus-ring: 0 0 0 3px rgba(37, 99, 235, 0.3); /* For focus outlines - WCAG compliant */
     /* ========== COMPONENT-SPECIFIC VARIABLES ========== */
     /* ScrollToTop Component */
     --osirion-scroll-background: rgba(37, 99, 235, 0.8);
@@ -201,7 +206,7 @@
     --osirion-alert-info-text: var(--osirion-color-info);
     --osirion-alert-info-border: var(--osirion-color-info);
     /* Content-Specific Variables */
-    /*--osirion-content-background-color: var(--osirion-color-background);
+    --osirion-content-background-color: var(--osirion-color-background);
     --osirion-content-text-color: var(--osirion-color);
     --osirion-content-heading-color: var(--osirion-color);
     --osirion-content-light-text-color: var(--osirion-color-light);
@@ -236,7 +241,9 @@
     --osirion-content-title-font-size: var(--osirion-font-size-title);
     --osirion-content-large-title-font-size: var(--osirion-font-size-large-title);
     --osirion-content-transition-speed: var(--osirion-transition-speed);
-    --osirion-content-meta-color: var(--osirion-color-light);*/
+    --osirion-content-meta-color: var(--osirion-color-light);
+    /* Editor-Specific Variables */
+    --osirion-bg-editor: var(--osirion-color-background, #ffffff);
     /* Navigation-Specific Variables */
     --osirion-nav-background: var(--osirion-color-background);
     --osirion-nav-text-color: var(--osirion-color);
@@ -245,6 +252,14 @@
     --osirion-nav-active-text-color: var(--osirion-color-active);
     --osirion-nav-hover-background: var(--osirion-color-background-light);
     --osirion-nav-hover-text-color: var(--osirion-color);
+    /* Dark Mode Specific Variables */
+    --osirion-background-dark: #0d1117; /* Base dark background */
+    --osirion-background-header-dark: #161b22; /* Darker header background */
+    --osirion-background-hover-dark: #1f2937; /* Slightly lighter for hover */
+    --osirion-background-active-dark: #374151; /* More visible active state */
+    --osirion-color-dark: #e5e7eb; /* Light text for dark mode */
+    --osirion-color-border-dark: #30363d; /* Border color for dark mode */
+    --osirion-text-muted-dark: #8b949e; /* Muted text for dark mode */
     /* Admin-Specific Variables */
     --osirion-admin-primary: #0366d6;
     --osirion-admin-primary-light: #60a5fa;
@@ -283,7 +298,7 @@
     .theme-dark {
         /* ========== COLORS - DARK THEME ========== */
         /* Primary Brand Colors */
-        --osirion-primary-color: #60a5fa;
+        --osirion-primary-color: #60a5fa; /* Lighter blue for dark background */
         --osirion-primary-color-hover: #93c5fd;
         --osirion-primary-color-light: #93c5fd;
         --osirion-primary-color-dark: #3b82f6;
@@ -295,14 +310,29 @@
         --osirion-secondary-color-dark: #6b7280;
         --osirion-secondary-color-contrast: #1f2937;
         /* Base Text and Background Colors */
-        --osirion-color: #e5e7eb;
-        --osirion-color-light: #9ca3af;
+        --osirion-color: #e5e7eb; /* WCAG AAA compliant against dark bg */
+        --osirion-color-light: #9ca3af; /* WCAG AA compliant against dark bg */
         --osirion-color-muted: #6b7280;
+        --osirion-text-muted: #9ca3af; /* Matches color-light for consistency */
         --osirion-color-border: #4b5563;
         --osirion-color-background: #1f2937;
         --osirion-color-background-light: #374151;
         --osirion-color-background-dark: #111827;
+        --osirion-background-light: #374151; /* Dark mode version of background-light */
+        --osirion-background-header: #1f2937; /* Dark mode header background */
+        --osirion-background-hover: #374151; /* Dark mode hover state */
+        --osirion-background-active: #4b5563; /* Dark mode active state */
+        /* Dark Mode Specific Variables */
+        --osirion-background-dark: #0d1117; /* Base dark background */
+        --osirion-background-header-dark: #161b22; /* Darker header background */
+        --osirion-background-hover-dark: #1f2937; /* Slightly lighter for hover */
+        --osirion-background-active-dark: #374151; /* More visible active state */
+        --osirion-color-dark: #e5e7eb; /* Light text for dark mode */
+        --osirion-color-border-dark: #30363d; /* Border color for dark mode */
+        --osirion-text-muted-dark: #8b949e; /* Muted text for dark mode */
         /* Action/State Colors */
+        --osirion-active-text: #93c5fd; /* Lighter blue that meets WCAG AA against dark bg */
+        --osirion-active-background: #1e3a8a; /* Darker blue background for contrast */
         --osirion-color-background-active: #1e40af;
         --osirion-color-active: #93c5fd;
         --osirion-color-background-hover: #374151;
@@ -411,6 +441,8 @@
         --osirion-content-card-border-color: #374151;
         --osirion-content-card-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
         --osirion-content-card-hover-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        /* Editor-Specific Variables */
+        --osirion-bg-editor: var(--osirion-color-background, #1f2937);
         /* Navigation-Specific Variables */
         --osirion-nav-background: #1f2937;
         --osirion-nav-text-color: #e5e7eb;

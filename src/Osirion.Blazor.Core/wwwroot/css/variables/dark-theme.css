@@ -1,0 +1,66 @@
+﻿/* 
+ * Osirion CSS Variables
+ * Core variables that define the foundation of Osirion's design system
+ * These variables are framework-agnostic and focused on providing 
+ * consistent design tokens across all components.
+ */
+
+:root[data-theme="dark"],
+:root[data-bs-theme="dark"],
+.dark-theme,
+.theme-dark {
+    /* ========== COLORS - DARK THEME ========== */
+    /* Primary Brand Colors */
+    --osirion-primary-color: #60a5fa; /* Lighter blue for dark background */
+    --osirion-primary-color-hover: #93c5fd;
+    --osirion-primary-color-light: #93c5fd;
+    --osirion-primary-color-dark: #3b82f6;
+    --osirion-primary-color-contrast: #1f2937;
+    /* Secondary Brand Colors */
+    --osirion-secondary-color: #9ca3af;
+    --osirion-secondary-color-hover: #d1d5db;
+    --osirion-secondary-color-light: #d1d5db;
+    --osirion-secondary-color-dark: #6b7280;
+    --osirion-secondary-color-contrast: #1f2937;
+    /* Base Text and Background Colors */
+    --osirion-color: #e5e7eb; /* WCAG AAA compliant against dark bg */
+    --osirion-color-light: #9ca3af; /* WCAG AA compliant against dark bg */
+    --osirion-color-muted: #6b7280;
+    --osirion-text-muted: #9ca3af; /* Matches color-light for consistency */
+    --osirion-color-border: #4b5563;
+    --osirion-color-background: #1f2937;
+    --osirion-color-background-light: #374151;
+    --osirion-color-background-dark: #111827;
+    /* Action/State Colors */
+    --osirion-active-text: #93c5fd; /* Lighter blue that meets WCAG AA against dark bg */
+    --osirion-active-background: #1e3a8a; /* Darker blue background for contrast */
+    --osirion-color-background-active: #1e40af;
+    --osirion-color-active: #93c5fd;
+    --osirion-color-background-hover: #374151;
+    --osirion-color-border-focus: #60a5fa;
+    --osirion-color-background-disabled: #374151;
+    --osirion-color-text-disabled: #6b7280;
+    /* State/Status Colors */
+    --osirion-color-success: #34d399;
+    --osirion-color-success-hover: #6ee7b7;
+    --osirion-color-success-light: #064e3b;
+    --osirion-color-success-text: #10b981;
+    --osirion-color-danger: #f87171;
+    --osirion-color-danger-hover: #fca5a5;
+    --osirion-color-danger-light: #7f1d1d;
+    --osirion-color-danger-text: #ef4444;
+    --osirion-color-warning: #fbbf24;
+    --osirion-color-warning-hover: #fcd34d;
+    --osirion-color-warning-light: #78350f;
+    --osirion-color-warning-text: #f59e0b;
+    --osirion-color-info: #60a5fa;
+    --osirion-color-info-hover: #93c5fd;
+    --osirion-color-info-light: #1e3a8a;
+    --osirion-color-info-text: #3b82f6;
+    /* Effects */
+    --osirion-box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    --osirion-box-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.25);
+    --osirion-box-shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.4);
+    --osirion-box-shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.25);
+    --osirion-focus-ring: 0 0 0 3px rgba(96, 165, 250, 0.4);
+}

@@ -62,7 +62,7 @@
     margin: 0 0 0.5rem;
     font-size: var(--osirion-font-size-title, 1.25rem);
     font-weight: var(--osirion-title-font-weight, 700);
-    color: var(--osirion-heading-color, var(--osirion-color, #111827));
+    color: var(--osirion-color, var(--osirion-color, #111827));
     line-height: var(--osirion-line-height-tight, 1.25);
 }
 

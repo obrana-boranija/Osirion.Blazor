@@ -1,7 +1,4 @@
-﻿@namespace Osirion.Blazor.Cms.Components
-@inherits OsirionComponentBase
-
-<div class="@GetContentListClass()">
+﻿<div class="@GetContentListClass()">
     @if (ContentItems == null || !ContentItems.Any())
     {
         <div class="osirion-no-content">
