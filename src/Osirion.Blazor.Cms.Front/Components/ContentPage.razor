@@ -27,152 +27,46 @@
         <article class="osirion-content-page" itemscope itemtype="https://schema.org/@SchemaType">
             @if (ShowBreadcrumbs)
             {
-                <nav class="osirion-content-breadcrumbs" aria-label="Breadcrumb">
-                    <ol>
-                        @if (ShowBreadcrumbHome)
-                        {
-                            <li><a href="@BreadcrumbHomeUrl">@BreadcrumbHomeText</a></li>
-                        }
-
-                        @if (ContentItem.Directory != null)
-                        {
-                            <li><a href="@GetDirectoryUrl(ContentItem.Directory)">@ContentItem.Directory.Name</a></li>
-                        }
-
-                        <li aria-current="page">@ContentItem.Title</li>
-                    </ol>
-                </nav>
+                <ContentBreadcrumbs Content="@ContentItem"
+                                    Directory="@ContentItem.Directory"
+                                    ShowHome="@ShowBreadcrumbHome"
+                                    HomeUrl="@BreadcrumbHomeUrl"
+                                    HomeText="@BreadcrumbHomeText" />
             }
 
-            <header class="osirion-content-header">
-                @if (ShowMetadata)
-                {
-                    <div class="osirion-content-meta">
-                        @if (!string.IsNullOrEmpty(ContentItem.Author))
-                        {
-                            <span class="osirion-content-meta-item osirion-content-author" itemprop="author" itemscope itemtype="https://schema.org/Person">
-                                <svg class="osirion-content-meta-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                    <circle cx="12" cy="7" r="4"></circle>
-                                </svg>
-                                <span itemprop="name">@ContentItem.Author</span>
-                            </span>
-                        }
-
-                        <span class="osirion-content-meta-item osirion-content-date">
-                            <svg class="osirion-content-meta-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                                <line x1="16" y1="2" x2="16" y2="6"></line>
-                                <line x1="8" y1="2" x2="8" y2="6"></line>
-                                <line x1="3" y1="10" x2="21" y2="10"></line>
-                            </svg>
-                            <time itemprop="datePublished" datetime="@ContentItem.DateCreated.ToString("yyyy-MM-dd")">
-                                @ContentItem.DateCreated.ToString("MMMM d, yyyy")
-                            </time>
-                        </span>
-
-                        @if (ContentItem.LastModified.HasValue && ContentItem.LastModified.Value != ContentItem.DateCreated)
-                        {
-                            <span class="osirion-content-meta-item osirion-content-updated">
-                                <svg class="osirion-content-meta-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M21 2v6h-6"></path>
-                                    <path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path>
-                                    <path d="M3 12a9 9 0 0 0 6.7 15L13 21"></path>
-                                    <path d="M13 21h6v-6"></path>
-                                </svg>
-                                <time itemprop="dateModified" datetime="@ContentItem.LastModified.Value.ToString("yyyy-MM-dd")">
-                                    Updated @ContentItem.LastModified.Value.ToString("MMM d, yyyy")
-                                </time>
-                            </span>
-                        }
-
-                        <span class="osirion-content-meta-item osirion-content-read-time">
-                            <svg class="osirion-content-meta-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <polyline points="12 6 12 12 16 14"></polyline>
-                            </svg>
-                            <span>@ContentItem.ReadTimeMinutes min read</span>
-                        </span>
-                    </div>
-                }
-
-                <h1 class="osirion-content-title" itemprop="headline">@ContentItem.Title</h1>
-
-                @if (!string.IsNullOrEmpty(ContentItem.Description))
-                {
-                    <p class="osirion-content-summary" itemprop="description">@ContentItem.Description</p>
-                }
-
-                @if (!string.IsNullOrEmpty(ContentItem.FeaturedImageUrl))
-                {
-                    <figure class="osirion-content-featured-image-container">
-                        <img src="@ContentItem.FeaturedImageUrl" alt="@ContentItem.Title" class="osirion-content-featured-image" loading="lazy" itemprop="image" />
-                        @if (!string.IsNullOrEmpty(FeaturedImageCaption))
-                        {
-                            <figcaption class="osirion-content-image-caption">@FeaturedImageCaption</figcaption>
-                        }
-                    </figure>
-                }
-            </header>
-
-            <div class="osirion-content-body" itemprop="articleBody">
-                @((MarkupString)ContentItem.Content)
-            </div>
-
-            @if (ShowFooter)
-            {
-                <footer class="osirion-content-footer">
-                    @if (ContentItem.Categories.Any() && ShowCategories)
+            <div class="osirion-content-main">
+                <div class="osirion-content-primary">
+                    @*                     @if (UseLocalizedView && AvailableTranslations != null && AvailableTranslations.Any())
                     {
-                        <div class="osirion-content-categories-container">
-                            <strong class="osirion-content-section-title">@CategoriesTitle</strong>
-                            <div class="osirion-content-categories">
-                                @foreach (var category in ContentItem.Categories)
-                                {
-                                    <a href="@GetCategoryUrl(category)" class="osirion-content-category" rel="category">@category</a>
-                                }
-                            </div>
-                        </div>
+                        <LocalizedContentView 
+                            Item="@ContentItem"
+                            PreviousItem="@PreviousItem"
+                            NextItem="@NextItem"
+                            ShowNavigationLinks="@ShowNavigationLinks"
+                            AvailableTranslations="@AvailableTranslations"
+                            ShowTranslations="true"
+                            GetCategoryUrl="@GetCategoryUrl"
+                            GetTagUrl="@GetTagUrl"
+                            GetContentUrl="@GetContentUrl"
+                            GetTranslationUrl="@GetTranslationUrl" />
                     }
+                    else
+                    { *@
+                    <ContentView Item="@ContentItem"
+                                 LoadingText="@LoadingText"
+                                 NotFoundText="@NotFoundText"
+                                 CategoryUrlFormatter="@CategoryUrlFormatter"
+                                 TagUrlFormatter="@TagUrlFormatter"
+                                 ContentUrlFormatter="@ContentUrlFormatter"
+                                 PreviousItem="@PreviousItem"
+                                 NextItem="@NextItem"
+                                 ShowNavigationLinks="@ShowNavigationLinks" />
+                    @* } *@
 
-                    @if (ContentItem.Tags.Any() && ShowTags)
-                    {
-                        <div class="osirion-content-tags-container">
-                            <strong class="osirion-content-section-title">@TagsTitle</strong>
-                            <div class="osirion-content-tags">
-                                @foreach (var tag in ContentItem.Tags)
-                                {
-                                    <a href="@GetTagUrl(tag)" class="osirion-content-tag" rel="tag">@tag</a>
-                                }
-                            </div>
-                        </div>
-                    }
-
-                    @if (ShowNavigationLinks && (PreviousItem != null || NextItem != null))
-                    {
-                        <nav class="osirion-content-navigation" aria-label="Post navigation">
-                            @if (PreviousItem != null)
-                            {
-                                <a href="@GetContentUrl(PreviousItem)" class="osirion-content-previous" rel="prev">
-                                    <span class="osirion-content-navigation-label">@PreviousItemLabel</span>
-                                    <span class="osirion-content-navigation-title">@PreviousItem.Title</span>
-                                </a>
-                            }
-
-                            @if (NextItem != null)
-                            {
-                                <a href="@GetContentUrl(NextItem)" class="osirion-content-next" rel="next">
-                                    <span class="osirion-content-navigation-label">@NextItemLabel</span>
-                                    <span class="osirion-content-navigation-title">@NextItem.Title</span>
-                                </a>
-                            }
-                        </nav>
-                    }
-
-                    @if (ShowShareLinks)
+                    @if (ShowShareLinks && ShareLinks != null && ShareLinks.Any())
                     {
                         <div class="osirion-content-share">
-                            <strong class="osirion-content-section-title">@ShareLinksTitle</strong>
+                            <h3 class="osirion-content-section-title">@ShareLinksTitle</h3>
                             <div class="osirion-content-share-links">
                                 @foreach (var shareLink in ShareLinks)
                                 {
@@ -192,8 +86,24 @@
                             @((MarkupString)FooterContent)
                         </div>
                     }
-                </footer>
-            }
+                </div>
+
+                <div class="osirion-content-sidebar">
+                    @if (ContentItem.Categories.Any() && ShowCategories)
+                    {
+                        <CategoriesList Title="@CategoriesTitle"
+                                        ShowCount="false" />
+                    }
+
+                    @if (ContentItem.Tags.Any() && ShowTags)
+                    {
+                        <TagCloud Title="@TagsTitle"
+                                  ShowCount="false"/>
+                    }
+
+                    @* @SidebarContent *@
+                </div>
+            </div>
 
             @if (ShowRelatedContent && RelatedItems != null && RelatedItems.Any())
             {

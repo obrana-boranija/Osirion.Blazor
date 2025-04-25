@@ -1,4 +1,5 @@
-﻿.osirion-admin-nav-list-container {
+﻿/* DefaultNavigation Component Styles */
+.osirion-admin-nav-list-container {
     width: 100%;
 }
 
@@ -64,3 +65,10 @@
     .osirion-admin-nav-link.active .osirion-admin-icon {
         opacity: 1;
     }
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .osirion-admin-nav-link {
+        transition: none;
+    }
+}

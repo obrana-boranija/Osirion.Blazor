@@ -324,7 +324,7 @@ public partial class ContentPage
                     }
                 }
 
-                ContentItem = await provider.GetItemByPathAsync(searchPath);
+                ContentItem = await provider.GetItemByUrlAsync(searchPath);
 
                 if (ContentItem != null && ShowNavigationLinks && (PreviousItem == null || NextItem == null))
                 {
