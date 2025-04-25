@@ -1,0 +1,82 @@
+﻿/* 
+ * Osirion Theme: Dark
+ * WCAG 2.2 compliant dark theme
+ */
+
+:root[data-theme="dark"],
+.dark-theme,
+.theme-dark {
+    /* Text Colors */
+    --osirion-text-primary: var(--osirion-neutral-100);
+    --osirion-text-secondary: var(--osirion-neutral-300);
+    --osirion-text-tertiary: var(--osirion-neutral-400);
+    --osirion-text-disabled: var(--osirion-neutral-500);
+    --osirion-text-inverse: var(--osirion-neutral-900);
+    --osirion-text-on-primary: white;
+    --osirion-text-on-secondary: white;
+    /* Background Colors */
+    --osirion-background-primary: var(--osirion-neutral-900);
+    --osirion-background-secondary: var(--osirion-neutral-800);
+    --osirion-background-tertiary: var(--osirion-neutral-700);
+    --osirion-background-active: var(--osirion-primary-900);
+    --osirion-background-hover: var(--osirion-neutral-700);
+    --osirion-background-disabled: var(--osirion-neutral-700);
+    /* Border Colors */
+    --osirion-border-primary: var(--osirion-neutral-700);
+    --osirion-border-secondary: var(--osirion-neutral-600);
+    --osirion-border-focus: var(--osirion-primary-400);
+    --osirion-border-active: var(--osirion-primary-300);
+    /* Link Colors */
+    --osirion-link-color: var(--osirion-primary-400);
+    --osirion-link-hover-color: var(--osirion-primary-300);
+    --osirion-link-active-color: var(--osirion-primary-200);
+    --osirion-link-visited-color: var(--osirion-primary-400);
+    /* Component-Specific Colors */
+    --osirion-card-background: var(--osirion-neutral-800);
+    --osirion-card-border: var(--osirion-neutral-700);
+    --osirion-card-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    --osirion-button-background: var(--osirion-neutral-800);
+    --osirion-button-text: var(--osirion-neutral-100);
+    --osirion-button-border: var(--osirion-neutral-600);
+    --osirion-button-hover-background: var(--osirion-neutral-700);
+    --osirion-button-hover-border: var(--osirion-neutral-500);
+    --osirion-button-active-background: var(--osirion-neutral-600);
+    --osirion-button-primary-background: var(--osirion-primary-500);
+    --osirion-button-primary-text: white;
+    --osirion-button-primary-border: var(--osirion-primary-500);
+    --osirion-button-primary-hover-background: var(--osirion-primary-600);
+    --osirion-button-primary-hover-border: var(--osirion-primary-600);
+    --osirion-button-primary-active-background: var(--osirion-primary-700);
+    --osirion-input-background: var(--osirion-neutral-800);
+    --osirion-input-border: var(--osirion-neutral-600);
+    --osirion-input-text: var(--osirion-neutral-100);
+    --osirion-input-placeholder: var(--osirion-neutral-500);
+    --osirion-input-focus-border: var(--osirion-primary-400);
+    --osirion-input-hover-border: var(--osirion-neutral-500);
+    /* Navigation */
+    --osirion-nav-background: var(--osirion-background-secondary);
+    --osirion-nav-text: var(--osirion-text-secondary);
+    --osirion-nav-active-background: var(--osirion-background-active);
+    --osirion-nav-active-text: var(--osirion-primary-400);
+    --osirion-nav-hover-background: var(--osirion-background-hover);
+    /* Status Colors - Dark Theme */
+    --osirion-status-success-bg: rgba(16, 185, 129, 0.2);
+    --osirion-status-success-text: var(--osirion-success-300);
+    --osirion-status-success-border: var(--osirion-success-600);
+    --osirion-status-error-bg: rgba(239, 68, 68, 0.2);
+    --osirion-status-error-text: var(--osirion-error-300);
+    --osirion-status-error-border: var(--osirion-error-600);
+    --osirion-status-warning-bg: rgba(245, 158, 11, 0.2);
+    --osirion-status-warning-text: var(--osirion-warning-300);
+    --osirion-status-warning-border: var(--osirion-warning-600);
+    --osirion-status-info-bg: rgba(59, 130, 246, 0.2);
+    --osirion-status-info-text: var(--osirion-info-300);
+    --osirion-status-info-border: var(--osirion-info-600);
+    /* Component-specific theme colors */
+    --osirion-tag-background: var(--osirion-neutral-700);
+    --osirion-tag-text: var(--osirion-neutral-200);
+    --osirion-tag-hover-background: var(--osirion-neutral-600);
+    --osirion-category-background: var(--osirion-primary-900);
+    --osirion-category-text: var(--osirion-primary-300);
+    --osirion-category-hover-background: var(--osirion-primary-800);
+}

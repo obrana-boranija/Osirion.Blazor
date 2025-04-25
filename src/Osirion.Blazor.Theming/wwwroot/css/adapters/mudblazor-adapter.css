@@ -1,0 +1,131 @@
+﻿/* 
+ * MudBlazor Adapter for Osirion 
+ * Maps MudBlazor variables to Osirion variables
+ */
+
+html.osirion-mudblazor-integration {
+    /* Map MudBlazor's design tokens to our semantic tokens */
+    /* Background and text colors */
+    --osirion-background-primary: var(--mud-palette-background, #ffffff);
+    --osirion-background-secondary: var(--mud-palette-background-grey, #f5f5f5);
+    --osirion-background-tertiary: var(--mud-palette-surface, #ffffff);
+    --osirion-background-muted: var(--mud-palette-table-striped, #f5f5f5);
+    --osirion-text-primary: var(--mud-palette-text-primary, rgba(0, 0, 0, 0.87));
+    --osirion-text-secondary: var(--mud-palette-text-secondary, rgba(0, 0, 0, 0.6));
+    --osirion-text-tertiary: var(--mud-palette-text-disabled, rgba(0, 0, 0, 0.38));
+    --osirion-text-inverted: var(--mud-palette-white, #ffffff);
+    /* Border colors */
+    --osirion-border-color: var(--mud-palette-divider, rgba(0, 0, 0, 0.12));
+    --osirion-border-color-hover: var(--mud-palette-gray-light, #bdbdbd);
+    --osirion-border-width: 1px;
+    /* Border radius */
+    --osirion-radius-base: var(--mud-default-borderradius, 4px);
+    --osirion-radius-sm: var(--mud-default-borderradius-sm, 3px);
+    --osirion-radius-lg: var(--mud-default-borderradius-lg, 8px);
+    --osirion-radius-xl: var(--mud-default-borderradius-lg, 8px);
+    --osirion-radius-2xl: calc(var(--mud-default-borderradius-lg, 8px) * 1.5);
+    /* Action colors */
+    --osirion-action-primary: var(--mud-palette-primary, #594ae2);
+    --osirion-action-primary-hover: var(--mud-palette-primary-darken, #4538ca);
+    --osirion-action-primary-active: var(--mud-palette-primary-darken, #4538ca);
+    --osirion-action-primary-text: var(--mud-palette-primary-text, #ffffff);
+    --osirion-action-secondary: var(--mud-palette-secondary, #FF4081);
+    --osirion-action-secondary-hover: var(--mud-palette-secondary-darken, #f02872);
+    --osirion-action-secondary-active: var(--mud-palette-secondary-darken, #f02872);
+    --osirion-action-secondary-text: var(--mud-palette-secondary-text, #ffffff);
+    /* Status colors */
+    --osirion-status-success: var(--mud-palette-success, #4caf50);
+    --osirion-status-success-bg: var(--mud-palette-success-lighten, #a5d6a7);
+    --osirion-status-success-border: var(--mud-palette-success, #4caf50);
+    --osirion-status-warning: var(--mud-palette-warning, #ff9800);
+    --osirion-status-warning-bg: var(--mud-palette-warning-lighten, #ffcc80);
+    --osirion-status-warning-border: var(--mud-palette-warning, #ff9800);
+    --osirion-status-danger: var(--mud-palette-error, #f44336);
+    --osirion-status-danger-bg: var(--mud-palette-error-lighten, #ef9a9a);
+    --osirion-status-danger-border: var(--mud-palette-error, #f44336);
+    /* Typography */
+    --osirion-font-family-base: var(--mud-typography-default-family, 'Roboto', 'Helvetica', 'Arial', sans-serif);
+    --osirion-font-family-mono: var(--mud-typography-code-family, 'Consolas', 'Monaco', monospace);
+    --osirion-font-size-base: var(--mud-typography-default-size, 1rem);
+    --osirion-font-weight-normal: var(--mud-typography-default-weight, 400);
+    --osirion-font-weight-medium: var(--mud-typography-subtitle1-weight, 500);
+    --osirion-font-weight-bold: var(--mud-typography-h6-weight, 600);
+    --osirion-line-height-normal: var(--mud-typography-default-lineheight, 1.5);
+    /* Shadow */
+    --osirion-shadow-sm: var(--mud-elevation-2, 0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12));
+    --osirion-shadow-base: var(--mud-elevation-4, 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12));
+    --osirion-shadow-lg: var(--mud-elevation-8, 0px 5px 5px -3px rgba(0, 0, 0, 0.2), 0px 8px 10px 1px rgba(0, 0, 0, 0.14), 0px 3px 14px 2px rgba(0, 0, 0, 0.12));
+    --osirion-shadow-xl: var(--mud-elevation-16, 0px 8px 10px -5px rgba(0, 0, 0, 0.2), 0px 16px 24px 2px rgba(0, 0, 0, 0.14), 0px 6px 30px 5px rgba(0, 0, 0, 0.12));
+    /* Component specific */
+    --osirion-button-radius: var(--mud-default-borderradius, 4px);
+    --osirion-input-radius: var(--mud-default-borderradius, 4px);
+    /* Focus states */
+    --osirion-focus-ring-color: rgba(89, 74, 226, 0.3);
+    /* ScrollToTop specific */
+    --osirion-scroll-background: var(--mud-palette-primary, #594ae2);
+    --osirion-scroll-hover-background: var(--mud-palette-primary-darken, #4538ca);
+    --osirion-scroll-color: var(--mud-palette-primary-text, #ffffff);
+    --osirion-scroll-hover-color: var(--mud-palette-primary-text, #ffffff);
+    --osirion-scroll-box-shadow: var(--mud-elevation-4, 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12));
+    --osirion-scroll-hover-box-shadow: var(--mud-elevation-8, 0px 5px 5px -3px rgba(0, 0, 0, 0.2), 0px 8px 10px 1px rgba(0, 0, 0, 0.14), 0px 3px 14px 2px rgba(0, 0, 0, 0.12));
+    /* Legacy compatibility */
+    --osirion-color: var(--osirion-text-primary);
+    --osirion-color-light: var(--osirion-text-secondary);
+    --osirion-color-background: var(--osirion-background-primary);
+    --osirion-color-background-light: var(--osirion-background-secondary);
+    --osirion-color-border: var(--osirion-border-color);
+    --osirion-active-text: var(--osirion-action-primary);
+    --osirion-active-background: var(--mud-palette-primary-lighten, #c5c2f6);
+    --osirion-color-active: var(--osirion-action-primary);
+}
+
+    /* MudBlazor Dark Mode Integration */
+    html.osirion-mudblazor-integration.mud-theme-dark {
+        /* Dark mode mappings from MudBlazor's dark theme */
+        --osirion-background-primary: var(--mud-palette-background, #121212);
+        --osirion-background-secondary: var(--mud-palette-background-grey, #1e1e1e);
+        --osirion-background-tertiary: var(--mud-palette-surface, #1e1e1e);
+        --osirion-text-primary: var(--mud-palette-text-primary, rgba(255, 255, 255, 0.87));
+        --osirion-text-secondary: var(--mud-palette-text-secondary, rgba(255, 255, 255, 0.6));
+        --osirion-text-tertiary: var(--mud-palette-text-disabled, rgba(255, 255, 255, 0.38));
+        --osirion-border-color: var(--mud-palette-divider, rgba(255, 255, 255, 0.12));
+        /* Action colors - adjusted for dark mode */
+        --osirion-action-primary: var(--mud-palette-primary, #776be7);
+        --osirion-action-primary-hover: var(--mud-palette-primary-darken, #5a4ae2);
+        /* Status colors for dark themes */
+        --osirion-status-success-bg: rgba(76, 175, 80, 0.2);
+        --osirion-status-warning-bg: rgba(255, 152, 0, 0.2);
+        --osirion-status-danger-bg: rgba(244, 67, 54, 0.2);
+        /* Shadow adjustments for dark mode */
+        --osirion-shadow-sm: var(--mud-elevation-2, 0px 3px 1px -2px rgba(0, 0, 0, 0.4), 0px 2px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 5px 0px rgba(0, 0, 0, 0.3));
+        --osirion-shadow-base: var(--mud-elevation-4, 0px 2px 4px -1px rgba(0, 0, 0, 0.4), 0px 4px 5px 0px rgba(0, 0, 0, 0.3), 0px 1px 10px 0px rgba(0, 0, 0, 0.3));
+        --osirion-shadow-lg: var(--mud-elevation-8, 0px 5px 5px -3px rgba(0, 0, 0, 0.4), 0px 8px 10px 1px rgba(0, 0, 0, 0.3), 0px 3px 14px 2px rgba(0, 0, 0, 0.3));
+        /* Focus ring - more visible in dark mode */
+        --osirion-focus-ring-color: rgba(119, 107, 231, 0.5);
+        /* Legacy compatibility */
+        --osirion-color-background: var(--mud-palette-background, #121212);
+        --osirion-color-background-light: var(--mud-palette-background-grey, #1e1e1e);
+        --osirion-color: var(--mud-palette-text-primary, rgba(255, 255, 255, 0.87));
+        --osirion-color-light: var(--mud-palette-text-secondary, rgba(255, 255, 255, 0.6));
+        --osirion-active-background: rgba(119, 107, 231, 0.2);
+    }
+
+    /* MudBlazor-specific component styling */
+    html.osirion-mudblazor-integration .osirion-button {
+        min-height: 36px;
+        padding: 0 16px;
+        border-radius: var(--mud-default-borderradius, 4px);
+        text-transform: uppercase;
+        font-family: var(--mud-typography-default-family, 'Roboto', 'Helvetica', 'Arial', sans-serif);
+        font-size: 0.875rem;
+        font-weight: 500;
+        letter-spacing: 0.0892857143em;
+    }
+
+    html.osirion-mudblazor-integration .osirion-input {
+        height: 56px;
+        padding: 0 16px;
+        font-family: var(--mud-typography-default-family, 'Roboto', 'Helvetica', 'Arial', sans-serif);
+        font-size: 1rem;
+        border-radius: var(--mud-default-borderradius, 4px);
+    }

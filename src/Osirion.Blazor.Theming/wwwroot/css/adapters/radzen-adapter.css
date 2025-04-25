@@ -1,0 +1,133 @@
+﻿/* 
+ * Radzen Adapter for Osirion 
+ * Maps Radzen variables to Osirion variables
+ */
+
+html.osirion-radzen-integration {
+    /* Map Radzen's design tokens to our semantic tokens */
+    /* Background and text colors */
+    --osirion-background-primary: var(--rz-base-background-color, #ffffff);
+    --osirion-background-secondary: var(--rz-base-100, #f8f9fa);
+    --osirion-background-tertiary: var(--rz-base-200, #e9ecef);
+    --osirion-background-muted: var(--rz-base-300, #dee2e6);
+    --osirion-text-primary: var(--rz-text-color, #212529);
+    --osirion-text-secondary: var(--rz-text-secondary-color, #6c757d);
+    --osirion-text-tertiary: var(--rz-text-tertiary-color, #6c757d);
+    --osirion-text-inverted: var(--rz-white, #ffffff);
+    /* Border colors */
+    --osirion-border-color: var(--rz-border, #e9ecef);
+    --osirion-border-color-hover: var(--rz-border-darker, #ced4da);
+    --osirion-border-width: var(--rz-border-width, 1px);
+    /* Border radius */
+    --osirion-radius-base: var(--rz-border-radius, 4px);
+    --osirion-radius-sm: var(--rz-border-radius-sm, 2px);
+    --osirion-radius-lg: var(--rz-border-radius-lg, 6px);
+    --osirion-radius-xl: calc(var(--rz-border-radius-lg, 6px) * 1.5);
+    --osirion-radius-2xl: calc(var(--rz-border-radius-lg, 6px) * 2);
+    --osirion-radius-full: 9999px;
+    /* Action colors */
+    --osirion-action-primary: var(--rz-primary, #479cc8);
+    --osirion-action-primary-hover: var(--rz-primary-dark, #3d8bb1);
+    --osirion-action-primary-active: var(--rz-primary-darker, #2d667f);
+    --osirion-action-primary-text: var(--rz-white, #ffffff);
+    --osirion-action-secondary: var(--rz-secondary, #6c757d);
+    --osirion-action-secondary-hover: var(--rz-secondary-dark, #5a6268);
+    --osirion-action-secondary-active: var(--rz-secondary-darker, #343a40);
+    --osirion-action-secondary-text: var(--rz-white, #ffffff);
+    /* Status colors */
+    --osirion-status-success: var(--rz-success, #28a745);
+    --osirion-status-success-bg: var(--rz-success-light, #d4edda);
+    --osirion-status-success-border: var(--rz-success-lighter, #c3e6cb);
+    --osirion-status-warning: var(--rz-warning, #ffc107);
+    --osirion-status-warning-bg: var(--rz-warning-light, #fff3cd);
+    --osirion-status-warning-border: var(--rz-warning-lighter, #ffeeba);
+    --osirion-status-danger: var(--rz-danger, #dc3545);
+    --osirion-status-danger-bg: var(--rz-danger-light, #f8d7da);
+    --osirion-status-danger-border: var(--rz-danger-lighter, #f5c6cb);
+    /* Typography */
+    --osirion-font-family-base: var(--rz-text-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+    --osirion-font-family-mono: var(--rz-code-font-family, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace);
+    --osirion-font-size-base: var(--rz-body-font-size, 0.875rem);
+    --osirion-font-weight-normal: var(--rz-text-font-weight, 400);
+    --osirion-font-weight-medium: 500;
+    --osirion-font-weight-bold: var(--rz-text-font-weight-bold, 700);
+    --osirion-line-height-normal: var(--rz-body-line-height, 1.5);
+    /* Spacing */
+    --osirion-spacing-4: var(--rz-spacing, 1rem);
+    /* Shadow */
+    --osirion-shadow-sm: var(--rz-shadow-1, 0 1px 3px 0 rgba(0, 0, 0, .07), 0 1px 2px 0 rgba(0, 0, 0, .05));
+    --osirion-shadow-base: var(--rz-shadow-2, 0 3px 1px -2px rgba(0, 0, 0, .2), 0 2px 2px 0 rgba(0, 0, 0, .14), 0 1px 5px 0 rgba(0, 0, 0, .12));
+    --osirion-shadow-lg: var(--rz-shadow-3, 0 3px 3px -2px rgba(0, 0, 0, .2), 0 3px 4px 0 rgba(0, 0, 0, .14), 0 1px 8px 0 rgba(0, 0, 0, .12));
+    --osirion-shadow-xl: var(--rz-shadow-4, 0 4px 5px -2px rgba(0, 0, 0, .2), 0 7px 10px 1px rgba(0, 0, 0, .14), 0 2px 16px 1px rgba(0, 0, 0, .12));
+    /* Component specific */
+    --osirion-button-radius: var(--rz-border-radius, 4px);
+    --osirion-input-radius: var(--rz-border-radius, 4px);
+    /* ScrollToTop specific */
+    --osirion-scroll-background: var(--rz-primary, #479cc8);
+    --osirion-scroll-hover-background: var(--rz-primary-dark, #3d8bb1);
+    --osirion-scroll-color: var(--rz-white, #ffffff);
+    --osirion-scroll-hover-color: var(--rz-white, #ffffff);
+    --osirion-scroll-box-shadow: var(--rz-shadow-2, 0 3px 1px -2px rgba(0, 0, 0, .2), 0 2px 2px 0 rgba(0, 0, 0, .14), 0 1px 5px 0 rgba(0, 0, 0, .12));
+    --osirion-scroll-hover-box-shadow: var(--rz-shadow-3, 0 3px 3px -2px rgba(0, 0, 0, .2), 0 3px 4px 0 rgba(0, 0, 0, .14), 0 1px 8px 0 rgba(0, 0, 0, .12));
+    /* Legacy compatibility */
+    --osirion-color: var(--osirion-text-primary);
+    --osirion-color-light: var(--osirion-text-secondary);
+    --osirion-color-background: var(--osirion-background-primary);
+    --osirion-color-background-light: var(--osirion-background-secondary);
+    --osirion-color-border: var(--osirion-border-color);
+    --osirion-active-text: var(--osirion-action-primary);
+    --osirion-active-background: var(--rz-primary-lighter, #daecf6);
+    --osirion-color-active: var(--osirion-action-primary);
+    --osirion-color-background-active: var(--rz-primary-lighter, #daecf6);
+}
+
+    /* Radzen Dark Mode Integration */
+    html.osirion-radzen-integration.rz-dark-theme {
+        /* Dark mode mappings from Radzen's dark theme */
+        --osirion-background-primary: var(--rz-base-900, #1a1a1a);
+        --osirion-background-secondary: var(--rz-base-800, #323232);
+        --osirion-background-tertiary: var(--rz-base-700, #484848);
+        --osirion-background-muted: var(--rz-base-600, #555555);
+        --osirion-text-primary: var(--rz-text-color, #ffffff);
+        --osirion-text-secondary: var(--rz-text-secondary-color, #aaaaaa);
+        --osirion-text-tertiary: var(--rz-text-tertiary-color, #8a8a8a);
+        --osirion-border-color: var(--rz-border, #525252);
+        --osirion-border-color-hover: var(--rz-border-darker, #767676);
+        /* Action colors - adjusted for dark mode */
+        --osirion-action-primary: var(--rz-primary, #6ba6d6);
+        --osirion-action-primary-hover: var(--rz-primary-light, #8fbeeb);
+        --osirion-action-primary-active: var(--rz-primary-lighter, #b3d7f5);
+        /* Status colors for dark themes */
+        --osirion-status-success-bg: rgba(40, 167, 69, 0.2);
+        --osirion-status-warning-bg: rgba(255, 193, 7, 0.2);
+        --osirion-status-danger-bg: rgba(220, 53, 69, 0.2);
+        /* Shadow adjustments for dark mode */
+        --osirion-shadow-sm: var(--rz-shadow-1, 0 1px 3px 0 rgba(0, 0, 0, .4), 0 1px 2px 0 rgba(0, 0, 0, .3));
+        --osirion-shadow-base: var(--rz-shadow-2, 0 3px 1px -2px rgba(0, 0, 0, .4), 0 2px 2px 0 rgba(0, 0, 0, .3), 0 1px 5px 0 rgba(0, 0, 0, .3));
+        --osirion-shadow-lg: var(--rz-shadow-3, 0 3px 3px -2px rgba(0, 0, 0, .4), 0 3px 4px 0 rgba(0, 0, 0, .3), 0 1px 8px 0 rgba(0, 0, 0, .3));
+        /* Legacy compatibility */
+        --osirion-color-background: var(--rz-base-900, #1a1a1a);
+        --osirion-color-background-light: var(--rz-base-800, #323232);
+        --osirion-color: var(--rz-text-color, #ffffff);
+        --osirion-color-light: var(--rz-text-secondary-color, #aaaaaa);
+        --osirion-active-background: rgba(107, 166, 214, 0.2);
+    }
+
+    /* Radzen-specific component styling */
+    html.osirion-radzen-integration .osirion-button {
+        min-height: 2.25rem;
+        padding: 0.375rem 0.75rem;
+        font-family: var(--rz-text-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+        font-size: var(--rz-button-font-size, 1rem);
+        font-weight: var(--rz-button-font-weight, 400);
+        border-radius: var(--rz-border-radius, 4px);
+    }
+
+    html.osirion-radzen-integration .osirion-input {
+        height: 2.25rem;
+        padding: 0.375rem 0.75rem;
+        font-family: var(--rz-text-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+        font-size: var(--rz-body-font-size, 0.875rem);
+        border-radius: var(--rz-border-radius, 4px);
+        border: var(--rz-border-width, 1px) solid var(--rz-border, #e9ecef);
+    }

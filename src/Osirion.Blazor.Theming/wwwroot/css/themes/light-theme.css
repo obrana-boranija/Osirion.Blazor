@@ -1,0 +1,103 @@
+﻿/* 
+ * Osirion Light Theme (Default)
+ * WCAG 2.2 compliant light theme with appropriate contrast ratios
+ */
+
+:root,
+.light-theme,
+.theme-light,
+:root[data-theme="light"],
+:root[data-bs-theme="light"] {
+    /* ========== COMPONENT TOKENS - LIGHT THEME ========== */
+    /* Default light theme values that components will use */
+    /* Background colors */
+    --osirion-background-primary: var(--osirion-color-white);
+    --osirion-background-secondary: var(--osirion-color-neutral-50);
+    --osirion-background-tertiary: var(--osirion-color-neutral-100);
+    --osirion-background-muted: var(--osirion-color-neutral-200);
+    --osirion-background-inverted: var(--osirion-color-neutral-900);
+    /* Text colors */
+    --osirion-text-primary: var(--osirion-color-neutral-900);
+    --osirion-text-secondary: var(--osirion-color-neutral-700);
+    --osirion-text-tertiary: var(--osirion-color-neutral-500);
+    --osirion-text-inverted: var(--osirion-color-white);
+    /* Border colors */
+    --osirion-border-color: var(--osirion-color-neutral-200);
+    --osirion-border-color-hover: var(--osirion-color-neutral-300);
+    /* Action colors */
+    --osirion-action-primary: var(--osirion-color-primary-600);
+    --osirion-action-primary-hover: var(--osirion-color-primary-700);
+    --osirion-action-primary-active: var(--osirion-color-primary-800);
+    --osirion-action-primary-text: var(--osirion-color-white);
+    --osirion-action-secondary: var(--osirion-color-neutral-100);
+    --osirion-action-secondary-hover: var(--osirion-color-neutral-200);
+    --osirion-action-secondary-active: var(--osirion-color-neutral-300);
+    --osirion-action-secondary-text: var(--osirion-color-neutral-900);
+    /* Status colors */
+    --osirion-status-success: var(--osirion-color-success-600);
+    --osirion-status-success-bg: var(--osirion-color-success-50);
+    --osirion-status-success-border: var(--osirion-color-success-200);
+    --osirion-status-warning: var(--osirion-color-warning-600);
+    --osirion-status-warning-bg: var(--osirion-color-warning-50);
+    --osirion-status-warning-border: var(--osirion-color-warning-200);
+    --osirion-status-danger: var(--osirion-color-danger-600);
+    --osirion-status-danger-bg: var(--osirion-color-danger-50);
+    --osirion-status-danger-border: var(--osirion-color-danger-200);
+    /* Component specific */
+    --osirion-card-background: var(--osirion-background-primary);
+    --osirion-card-border-color: var(--osirion-border-color);
+    --osirion-card-border-radius: var(--osirion-radius-lg);
+    --osirion-card-padding: var(--osirion-spacing-6);
+    --osirion-card-shadow: var(--osirion-shadow-md);
+    --osirion-button-radius: var(--osirion-radius-md);
+    --osirion-input-radius: var(--osirion-radius-md);
+    --osirion-tag-radius: var(--osirion-radius-full);
+    /* Backward compatibility with older variable names */
+    --osirion-admin-bg: var(--osirion-background-primary);
+    --osirion-admin-bg-sidebar: var(--osirion-background-secondary);
+    --osirion-admin-bg-header: var(--osirion-background-secondary);
+    --osirion-admin-text: var(--osirion-text-primary);
+    --osirion-admin-text-muted: var(--osirion-text-tertiary);
+    --osirion-admin-border: var(--osirion-border-color);
+    --osirion-admin-light: var(--osirion-background-secondary);
+    --osirion-admin-primary: var(--osirion-action-primary);
+    --osirion-admin-primary-light: var(--osirion-color-primary-400);
+    --osirion-admin-primary-dark: var(--osirion-color-primary-800);
+    --osirion-admin-secondary: var(--osirion-color-neutral-600);
+    /* Legacy content variables */
+    --osirion-color: var(--osirion-text-primary);
+    --osirion-color-light: var(--osirion-text-secondary);
+    --osirion-color-background: var(--osirion-background-primary);
+    --osirion-color-background-light: var(--osirion-background-secondary);
+    --osirion-color-border: var(--osirion-border-color);
+    --osirion-active-text: var(--osirion-action-primary);
+    --osirion-active-background: var(--osirion-status-success-bg);
+    --osirion-color-active: var(--osirion-action-primary);
+    --osirion-color-background-active: var(--osirion-status-success-bg);
+    --osirion-tag-background-color: var(--osirion-background-tertiary);
+    --osirion-tag-text-color: var(--osirion-text-secondary);
+    --osirion-category-background-color: var(--osirion-color-primary-100);
+    --osirion-category-text-color: var(--osirion-color-primary-800);
+}
+
+/* Contrast mode adjustments for light theme */
+@media (prefers-contrast: more) {
+    :root,
+    .light-theme,
+    .theme-light,
+    :root[data-theme="light"],
+    :root[data-bs-theme="light"] {
+        /* Increase contrast for important elements */
+        --osirion-text-primary: var(--osirion-color-black);
+        --osirion-text-secondary: var(--osirion-color-neutral-800);
+        --osirion-border-color: var(--osirion-color-neutral-400);
+        /* Ensure action colors meet 4.5:1 contrast ratio */
+        --osirion-action-primary: var(--osirion-color-primary-800);
+        --osirion-action-secondary: var(--osirion-color-neutral-200);
+        --osirion-action-secondary-text: var(--osirion-color-black);
+        /* Stronger status colors */
+        --osirion-status-success: var(--osirion-color-success-800);
+        --osirion-status-warning: var(--osirion-color-warning-800);
+        --osirion-status-danger: var(--osirion-color-danger-800);
+    }
+}

@@ -1,0 +1,22 @@
+﻿/* 
+ * Osirion CSS Core
+ * Main entry point for Osirion's CSS system
+ * Imports all necessary base styles and utilities
+ */
+
+/* Base styles */
+@import './base/reset.css';
+@import './base/root-variables.css';
+
+/* Utilities */
+@import './utilities/a11y.css';
+@import './utilities/layout.css';
+@import './utilities/motion.css';
+
+/*
+ * This minimalist import approach ensures:
+ * 1. Only the core styles are loaded by default
+ * 2. CSS is loaded in the correct order
+ * 3. Component styles remain isolated as Blazor intended
+ * 4. Theming is handled separately in Osirion.Blazor.Theming
+ */

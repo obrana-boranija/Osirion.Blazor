@@ -1,0 +1,137 @@
+﻿/* 
+ * Bootstrap Adapter for Osirion 
+ * Maps Bootstrap variables to Osirion variables (not vice versa)
+ */
+
+html.osirion-bootstrap-integration {
+    /* Map Bootstrap's design tokens to our semantic tokens */
+    /* Background and text colors */
+    --osirion-background-primary: var(--bs-body-bg, #ffffff);
+    --osirion-background-secondary: var(--bs-tertiary-bg, #f8f9fa);
+    --osirion-background-tertiary: var(--bs-secondary-bg, #e9ecef);
+    --osirion-background-muted: var(--bs-border-color-subtle, #dee2e6);
+    --osirion-text-primary: var(--bs-body-color, #212529);
+    --osirion-text-secondary: var(--bs-secondary-color, #6c757d);
+    --osirion-text-tertiary: var(--bs-tertiary-color, #6c757d);
+    --osirion-text-inverted: var(--bs-white, #ffffff);
+    /* Border colors */
+    --osirion-border-color: var(--bs-border-color, #dee2e6);
+    --osirion-border-color-hover: var(--bs-border-color-translucent, rgba(0, 0, 0, 0.175));
+    --osirion-border-width: var(--bs-border-width, 1px);
+    /* Border radius */
+    --osirion-radius-base: var(--bs-border-radius, 0.375rem);
+    --osirion-radius-sm: var(--bs-border-radius-sm, 0.25rem);
+    --osirion-radius-lg: var(--bs-border-radius-lg, 0.5rem);
+    --osirion-radius-xl: var(--bs-border-radius-xl, 0.75rem);
+    --osirion-radius-2xl: var(--bs-border-radius-2xl, 1rem);
+    --osirion-radius-pill: var(--bs-border-radius-pill, 50rem);
+    /* Action colors (map Bootstrap's buttons) */
+    --osirion-action-primary: var(--bs-primary, #0d6efd);
+    --osirion-action-primary-hover: var(--bs-primary-dark, #0a58ca);
+    --osirion-action-primary-active: var(--bs-primary-text-emphasis, #052c65);
+    --osirion-action-primary-text: var(--bs-white, #ffffff);
+    --osirion-action-secondary: var(--bs-secondary, #6c757d);
+    --osirion-action-secondary-hover: var(--bs-secondary-dark, #5c636a);
+    --osirion-action-secondary-active: var(--bs-secondary-text-emphasis, #2b2f32);
+    --osirion-action-secondary-text: var(--bs-white, #ffffff);
+    /* Status colors */
+    --osirion-status-success: var(--bs-success, #198754);
+    --osirion-status-success-bg: var(--bs-success-bg-subtle, #d1e7dd);
+    --osirion-status-success-border: var(--bs-success-border-subtle, #a3cfbb);
+    --osirion-status-warning: var(--bs-warning, #ffc107);
+    --osirion-status-warning-bg: var(--bs-warning-bg-subtle, #fff3cd);
+    --osirion-status-warning-border: var(--bs-warning-border-subtle, #ffe69c);
+    --osirion-status-danger: var(--bs-danger, #dc3545);
+    --osirion-status-danger-bg: var(--bs-danger-bg-subtle, #f8d7da);
+    --osirion-status-danger-border: var(--bs-danger-border-subtle, #f1aeb5);
+    /* Typography */
+    --osirion-font-family-base: var(--bs-font-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif);
+    --osirion-font-family-mono: var(--bs-font-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace);
+    --osirion-font-size-base: var(--bs-body-font-size, 1rem);
+    --osirion-font-weight-normal: var(--bs-font-weight-normal, 400);
+    --osirion-font-weight-medium: var(--bs-font-weight-medium, 500);
+    --osirion-font-weight-bold: var(--bs-font-weight-bold, 700);
+    --osirion-line-height-normal: var(--bs-body-line-height, 1.5);
+    /* Spacing */
+    --osirion-spacing-4: var(--bs-spacer, 1rem);
+    /* Shadow */
+    --osirion-shadow-sm: var(--bs-box-shadow-sm, 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075));
+    --osirion-shadow-base: var(--bs-box-shadow, 0 0.5rem 1rem rgba(0, 0, 0, 0.15));
+    --osirion-shadow-lg: var(--bs-box-shadow-lg, 0 1rem 3rem rgba(0, 0, 0, 0.175));
+    /* Component specific mappings */
+    --osirion-button-radius: var(--bs-btn-border-radius, 0.375rem);
+    --osirion-input-radius: var(--bs-border-radius, 0.375rem);
+    /* Focus states - using Bootstrap's focus ring styles */
+    --osirion-focus-ring-width: var(--bs-focus-ring-width, 0.25rem);
+    --osirion-focus-ring-color: var(--bs-focus-ring-color, rgba(13, 110, 253, 0.25));
+    --osirion-focus-ring-offset: var(--bs-focus-ring-width, 0);
+    /* ScrollToTop specific mappings */
+    --osirion-scroll-background: var(--bs-primary, #0d6efd);
+    --osirion-scroll-hover-background: var(--bs-primary-dark, #0a58ca);
+    --osirion-scroll-color: var(--bs-white, #ffffff);
+    --osirion-scroll-hover-color: var(--bs-white, #ffffff);
+    --osirion-scroll-box-shadow: var(--bs-box-shadow-sm, 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075));
+    --osirion-scroll-hover-box-shadow: var(--bs-box-shadow, 0 0.5rem 1rem rgba(0, 0, 0, 0.15));
+    /* Backward compatibility support */
+    --osirion-content-max-width: 800px;
+    --osirion-color-border: var(--osirion-border-color);
+    --osirion-color-active: var(--osirion-action-primary);
+    --osirion-content-text-color: var(--osirion-text-primary);
+    --osirion-content-light-text-color: var(--osirion-text-secondary);
+    --osirion-color-background: var(--osirion-background-primary);
+    --osirion-color-background-light: var(--osirion-background-secondary);
+    --osirion-active-text: var(--osirion-action-primary);
+    --osirion-active-background: var(--osirion-status-primary-bg);
+}
+
+    /* Bootstrap Dark Mode Integration */
+    html.osirion-bootstrap-integration[data-bs-theme="dark"],
+    [data-bs-theme="dark"] html.osirion-bootstrap-integration {
+        /* Dark mode mappings from Bootstrap's dark theme */
+        --osirion-background-primary: var(--bs-body-bg, #212529);
+        --osirion-background-secondary: var(--bs-tertiary-bg, #2b3035);
+        --osirion-background-tertiary: var(--bs-secondary-bg, #343a40);
+        --osirion-text-primary: var(--bs-body-color, #dee2e6);
+        --osirion-text-secondary: var(--bs-secondary-color, #adb5bd);
+        --osirion-border-color: var(--bs-border-color, #495057);
+        /* Action colors - brighter for dark mode */
+        --osirion-action-primary: var(--bs-primary, #0d6efd);
+        --osirion-action-primary-hover: var(--bs-primary-text-emphasis, #6ea8fe);
+        /* Status colors for dark themes */
+        --osirion-status-success-bg: var(--bs-success-bg-subtle, #051b11);
+        --osirion-status-warning-bg: var(--bs-warning-bg-subtle, #332701);
+        --osirion-status-danger-bg: var(--bs-danger-bg-subtle, #2c0b0e);
+        /* Backward compatibility */
+        --osirion-color-background: var(--bs-body-bg, #212529);
+        --osirion-color-background-light: var(--bs-tertiary-bg, #2b3035);
+        --osirion-color: var(--bs-body-color, #dee2e6);
+        --osirion-color-light: var(--bs-secondary-color, #adb5bd);
+    }
+
+    /* Bootstrap Integration Helper Classes */
+    html.osirion-bootstrap-integration .osirion-button {
+        padding: var(--bs-btn-padding-y, 0.375rem) var(--bs-btn-padding-x, 0.75rem);
+        font-size: var(--bs-btn-font-size, 1rem);
+        font-weight: var(--bs-btn-font-weight, 400);
+        line-height: var(--bs-btn-line-height, 1.5);
+        border-radius: var(--bs-btn-border-radius, 0.375rem);
+    }
+
+    html.osirion-bootstrap-integration .osirion-card {
+        border-radius: var(--bs-border-radius, 0.375rem);
+        border: var(--bs-border-width, 1px) solid var(--bs-border-color, #dee2e6);
+        background-color: var(--bs-body-bg, #ffffff);
+    }
+
+    html.osirion-bootstrap-integration .osirion-input {
+        display: block;
+        width: 100%;
+        padding: var(--bs-input-padding-y, 0.375rem) var(--bs-input-padding-x, 0.75rem);
+        font-size: var(--bs-input-font-size, 1rem);
+        font-weight: var(--bs-input-font-weight, 400);
+        line-height: var(--bs-input-line-height, 1.5);
+        border: var(--bs-input-border-width, 1px) solid var(--bs-input-border-color, #dee2e6);
+        border-radius: var(--bs-input-border-radius, 0.375rem);
+        background-color: var(--bs-input-bg, #ffffff);
+        color: var(--bs-input-color, #212529);
+    }
