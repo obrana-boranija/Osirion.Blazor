@@ -7,7 +7,7 @@ Theming and styling system for Blazor applications with CSS framework integratio
 
 ## Features
 
-- **CSS Framework Integration**: Seamless integration with Bootstrap, Tailwind, FluentUI, MudBlazor, and Radzen
+- **CSS Framework Integration**: Seamless integration with Bootstrap, FluentUI, MudBlazor, and Radzen
 - **Dark Mode Support**: Built-in light/dark theme toggle with system preference detection
 - **CSS Variables**: Consistent theming across components
 - **SSR Compatible**: Works with Server-Side Rendering and Static SSG
@@ -50,7 +50,7 @@ builder.Services.AddOsirionTheming(theming => {
 ```csharp
 builder.Services.AddOsirionTheming(theming => {
     theming
-        .UseFramework(CssFramework.Tailwind)
+        .UseFramework(CssFramework.Bootstrap)
         .WithCustomVariables("--osirion-primary-color: #0077cc;");
 });
 ```

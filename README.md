@@ -11,7 +11,7 @@ Modern, high-performance Blazor components and utilities with SSR compatibility,
 - **SSR Compatible**: Works with Server-Side Rendering, Static SSG, Interactive Server, and WebAssembly
 - **Zero-JS Dependencies**: Core functionality without JavaScript interop
 - **Multi-Platform**: Supports .NET 8, .NET 9, and future versions
-- **Framework Integration**: Works with Bootstrap, Tailwind, FluentUI, MudBlazor, and Radzen
+- **Framework Integration**: Works with Bootstrap, FluentUI, MudBlazor, and Radzen
 
 ### Modules
 

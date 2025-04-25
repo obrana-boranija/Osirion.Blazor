@@ -101,34 +101,6 @@ html.osirion-bootstrap-integration .osirion-scroll-to-top {
         box-shadow: var(--bs-box-shadow, 0 0.5rem 1rem rgba(0, 0, 0, 0.15));
     }
 
-/* Tailwind Integration */
-html.osirion-tailwind-integration .osirion-scroll-to-top {
-    background-color: theme('colors.blue.600', #2563eb);
-    color: theme('colors.white', #ffffff);
-    box-shadow: theme('boxShadow.md', '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)');
-    font-family: theme('fontFamily.sans', 'ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif');
-}
-
-    html.osirion-tailwind-integration .osirion-scroll-to-top:hover {
-        background-color: theme('colors.blue.700', #1d4ed8);
-        color: theme('colors.white', #ffffff);
-        box-shadow: theme('boxShadow.lg', '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)');
-    }
-
-/* FluentUI Integration */
-html.osirion-fluent-integration .osirion-scroll-to-top {
-    background-color: var(--accent-fill-rest, #0078d4);
-    color: var(--neutral-foreground-on-accent-rest, #ffffff);
-    box-shadow: var(--elevation-shadow-card-rest, 0 0 2px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.14));
-    border-radius: var(--control-corner-radius, 4px);
-    font-family: var(--body-font, 'Segoe UI', 'Segoe UI Web (West European)', 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', sans-serif);
-}
-
-    html.osirion-fluent-integration .osirion-scroll-to-top:hover {
-        background-color: var(--accent-fill-hover, #106ebe);
-        color: var(--neutral-foreground-on-accent-hover, #ffffff);
-    }
-
 /* MudBlazor Integration */
 html.osirion-mudblazor-integration .osirion-scroll-to-top {
     background-color: var(--mud-palette-primary, #594ae2);
@@ -186,17 +158,6 @@ html.osirion-bootstrap-integration[data-bs-theme="dark"] .osirion-scroll-to-top 
     html.osirion-bootstrap-integration[data-bs-theme="dark"] .osirion-scroll-to-top:hover {
         background-color: var(--bs-primary-dark, #0a58ca);
         box-shadow: var(--bs-box-shadow, 0 0.5rem 1rem rgba(0, 0, 0, 0.45));
-    }
-
-/* Tailwind Dark Theme */
-html.osirion-tailwind-integration.dark .osirion-scroll-to-top {
-    background-color: theme('colors.blue.500', #3b82f6);
-    box-shadow: theme('boxShadow.md', '0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -2px rgba(0, 0, 0, 0.2)');
-}
-
-    html.osirion-tailwind-integration.dark .osirion-scroll-to-top:hover {
-        background-color: theme('colors.blue.600', #2563eb);
-        box-shadow: theme('boxShadow.lg', '0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -4px rgba(0, 0, 0, 0.3)');
     }
 
 /* FluentUI Dark Theme */

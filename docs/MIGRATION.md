@@ -16,7 +16,7 @@ Three breaking changes:
 
 This version introduces CSS framework integration and an improved service registration API:
 
-1. **Framework Integration**: Seamless integration with Bootstrap, Tailwind CSS, Fluent UI, MudBlazor, and Radzen
+1. **Framework Integration**: Seamless integration with Bootstrap, Fluent UI, MudBlazor, and Radzen
 2. **CssFramework enum**: For specifying which framework to integrate with
 3. **Framework-specific CSS variable mappings**: Automatic mapping of Osirion variables to framework variables
 4. **Enhanced OsirionStyles component**: Now supports framework integration parameter

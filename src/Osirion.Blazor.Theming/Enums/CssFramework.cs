@@ -16,22 +16,17 @@ public enum CssFramework
     Bootstrap = 1,
 
     /// <summary>
-    /// Tailwind CSS framework integration
-    /// </summary>
-    Tailwind = 2,
-
-    /// <summary>
     /// Fluent UI for Blazor framework integration
     /// </summary>
-    FluentUI = 3,
+    FluentUI = 2,
 
     /// <summary>
     /// MudBlazor framework integration
     /// </summary>
-    MudBlazor = 4,
+    MudBlazor = 3,
 
     /// <summary>
     /// Radzen Blazor framework integration
     /// </summary>
-    Radzen = 5
+    Radzen = 4
 }

@@ -69,7 +69,6 @@ Osirion.Blazor is designed to work seamlessly with popular CSS frameworks used i
 
 Supported frameworks:
 - `CssFramework.Bootstrap` - Bootstrap 5+
-- `CssFramework.Tailwind` - Tailwind CSS
 - `CssFramework.FluentUI` - Fluent UI for Blazor
 - `CssFramework.MudBlazor` - MudBlazor
 - `CssFramework.Radzen` - Radzen Blazor
@@ -86,7 +85,6 @@ Add the corresponding integration class to your root HTML element:
 
 Available classes:
 - `osirion-bootstrap-integration`
-- `osirion-tailwind-integration`
 - `osirion-fluent-integration`
 - `osirion-mudblazor-integration`
 - `osirion-radzen-integration`
@@ -253,19 +251,6 @@ You can also use Bootstrap utility classes alongside Osirion components:
 
 ```razor
 <div class="card shadow-sm">
-    <ContentList />
-</div>
-```
-
-### Tailwind Integration
-
-With Tailwind integration, Osirion components will use Tailwind's color palette and design tokens:
-
-```razor
-<OsirionStyles FrameworkIntegration="CssFramework.Tailwind" />
-
-<!-- Combine with Tailwind utility classes -->
-<div class="p-4 bg-gray-50 rounded-lg">
     <ContentList />
 </div>
 ```

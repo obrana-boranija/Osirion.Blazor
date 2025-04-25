@@ -6,12 +6,12 @@
 html.osirion-bootstrap-integration {
     /* Primary colors */
     --osirion-primary-color: var(--bs-primary, #0d6efd);
-    --osirion-primary-hover-color: var(--bs-primary-bg-subtle, #cfe2ff);
+    --osirion-primary-hover-color: var(--bs-primary-dark, #0a58ca);
     --osirion-primary-light-color: var(--bs-primary-bg-subtle, #cfe2ff);
     --osirion-primary-dark-color: var(--bs-primary-text-emphasis, #052c65);
     /* Secondary colors */
     --osirion-secondary-color: var(--bs-secondary, #6c757d);
-    --osirion-secondary-hover-color: var(--bs-secondary-bg-subtle, #e2e3e5);
+    --osirion-secondary-hover-color: var(--bs-secondary-dark, #5a6268);
     --osirion-secondary-light-color: var(--bs-secondary-bg-subtle, #e2e3e5);
     --osirion-secondary-dark-color: var(--bs-secondary-text-emphasis, #2b2f32);
     /* Text and background colors */
@@ -22,16 +22,16 @@ html.osirion-bootstrap-integration {
     --osirion-light-background-color: var(--bs-tertiary-bg, #f8f9fa);
     /* State colors */
     --osirion-success-color: var(--bs-success, #198754);
-    --osirion-success-hover-color: var(--bs-success-bg-subtle, #d1e7dd);
+    --osirion-success-hover-color: var(--bs-success-dark, #146c43);
     --osirion-success-light-color: var(--bs-success-bg-subtle, #d1e7dd);
     --osirion-danger-color: var(--bs-danger, #dc3545);
-    --osirion-danger-hover-color: var(--bs-danger-bg-subtle, #f8d7da);
+    --osirion-danger-hover-color: var(--bs-danger-dark, #b02a37);
     --osirion-danger-light-color: var(--bs-danger-bg-subtle, #f8d7da);
     --osirion-warning-color: var(--bs-warning, #ffc107);
-    --osirion-warning-hover-color: var(--bs-warning-bg-subtle, #fff3cd);
+    --osirion-warning-hover-color: var(--bs-warning-dark, #cc9a06);
     --osirion-warning-light-color: var(--bs-warning-bg-subtle, #fff3cd);
     --osirion-info-color: var(--bs-info, #0dcaf0);
-    --osirion-info-hover-color: var(--bs-info-bg-subtle, #cff4fc);
+    --osirion-info-hover-color: var(--bs-info-dark, #0aa2c0);
     --osirion-info-light-color: var(--bs-info-bg-subtle, #cff4fc);
     /* Layout variables */
     --osirion-border-radius: var(--bs-border-radius, 0.375rem);
@@ -81,8 +81,7 @@ html.osirion-bootstrap-integration {
 }
 
     /* Bootstrap Dark Mode Integration */
-    html.osirion-bootstrap-integration[data-bs-theme="dark"],
-    html.osirion-bootstrap-integration .dark-theme {
+    html.osirion-bootstrap-integration[data-bs-theme="dark"] {
         /* Primary colors */
         --osirion-primary-color: var(--bs-primary, #0d6efd);
         --osirion-primary-hover-color: var(--bs-primary-bg-subtle, #031633);
@@ -137,147 +136,8 @@ html.osirion-bootstrap-integration {
         --osirion-admin-light: var(--bs-tertiary-bg, #2b3035);
         --osirion-admin-bg-editor: var(--bs-body-bg, #212529);
         --osirion-admin-bg-editor-sidebar: var(--bs-tertiary-bg, #2b3035);
-    }
-
-/* Tailwind CSS Integration */
-html.osirion-tailwind-integration {
-    /* Primary colors */
-    --osirion-primary-color: theme('colors.blue.600', #2563eb);
-    --osirion-primary-hover-color: theme('colors.blue.700', #1d4ed8);
-    --osirion-primary-light-color: theme('colors.blue.400', #60a5fa);
-    --osirion-primary-dark-color: theme('colors.blue.800', #1e40af);
-    /* Secondary colors */
-    --osirion-secondary-color: theme('colors.gray.500', #6b7280);
-    --osirion-secondary-hover-color: theme('colors.gray.600', #4b5563);
-    --osirion-secondary-light-color: theme('colors.gray.400', #9ca3af);
-    --osirion-secondary-dark-color: theme('colors.gray.700', #374151);
-    /* Text and background colors */
-    --osirion-text-color: theme('colors.gray.700', #374151);
-    --osirion-light-text-color: theme('colors.gray.500', #6b7280);
-    --osirion-border-color: theme('colors.gray.200', #e5e7eb);
-    --osirion-background-color: theme('colors.white', #ffffff);
-    --osirion-light-background-color: theme('colors.gray.100', #f3f4f6);
-    /* State colors */
-    --osirion-success-color: theme('colors.green.500', #10b981);
-    --osirion-success-hover-color: theme('colors.green.600', #059669);
-    --osirion-success-light-color: theme('colors.green.100', #d1fae5);
-    --osirion-danger-color: theme('colors.red.500', #ef4444);
-    --osirion-danger-hover-color: theme('colors.red.600', #dc2626);
-    --osirion-danger-light-color: theme('colors.red.100', #fee2e2);
-    --osirion-warning-color: theme('colors.amber.500', #f59e0b);
-    --osirion-warning-hover-color: theme('colors.amber.600', #d97706);
-    --osirion-warning-light-color: theme('colors.amber.100', #fef3c7);
-    --osirion-info-color: theme('colors.blue.500', #3b82f6);
-    --osirion-info-hover-color: theme('colors.blue.600', #2563eb);
-    --osirion-info-light-color: theme('colors.blue.100', #dbeafe);
-    /* Layout variables */
-    --osirion-border-radius: theme('borderRadius.lg', 0.5rem);
-    --osirion-small-border-radius: theme('borderRadius.md', 0.375rem);
-    --osirion-tag-border-radius: theme('borderRadius.full', 9999px);
-    --osirion-box-shadow: theme('boxShadow.md', '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)');
-    --osirion-box-shadow-sm: theme('boxShadow.sm', '0 1px 2px 0 rgba(0, 0, 0, 0.05)');
-    --osirion-box-shadow-lg: theme('boxShadow.lg', '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)');
-    /* Typography */
-    --osirion-font-family: theme('fontFamily.sans', 'system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif');
-    --osirion-font-size: theme('fontSize.base', '1rem');
-    --osirion-small-font-size: theme('fontSize.sm', '0.875rem');
-    --osirion-tiny-font-size: theme('fontSize.xs', '0.75rem');
-    --osirion-large-font-size: theme('fontSize.lg', '1.125rem');
-    --osirion-title-font-size: theme('fontSize.xl', '1.25rem');
-    --osirion-h1-font-size: theme('fontSize.4xl', '2.25rem');
-    --osirion-h2-font-size: theme('fontSize.3xl', '1.875rem');
-    --osirion-h3-font-size: theme('fontSize.2xl', '1.5rem');
-    --osirion-h4-font-size: theme('fontSize.xl', '1.25rem');
-    --osirion-h5-font-size: theme('fontSize.lg', '1.125rem');
-    --osirion-h6-font-size: theme('fontSize.base', '1rem');
-    --osirion-font-weight-light: theme('fontWeight.light', 300);
-    --osirion-font-weight-normal: theme('fontWeight.normal', 400);
-    --osirion-font-weight-medium: theme('fontWeight.medium', 500);
-    --osirion-font-weight-semibold: theme('fontWeight.semibold', 600);
-    --osirion-font-weight-bold: theme('fontWeight.bold', 700);
-    --osirion-line-height: theme('lineHeight.normal', 1.5);
-    --osirion-line-height-tight: theme('lineHeight.tight', 1.25);
-    --osirion-line-height-relaxed: theme('lineHeight.relaxed', 1.625);
-    /* Component-specific variables */
-    --osirion-tag-background-color: theme('colors.gray.100', #f3f4f6);
-    --osirion-tag-text-color: theme('colors.gray.600', #4b5563);
-    --osirion-category-background-color: theme('colors.blue.100', #dbeafe);
-    --osirion-category-text-color: theme('colors.blue.600', #2563eb);
-    --osirion-active-background-color: theme('colors.blue.100', #dbeafe);
-    --osirion-active-text-color: theme('colors.blue.600', #2563eb);
-    /* ScrollToTop component integration */
-    --osirion-scroll-background: theme('colors.blue.600', #2563eb);
-    --osirion-scroll-hover-background: theme('colors.blue.700', #1d4ed8);
-    --osirion-scroll-color: theme('colors.white', #ffffff);
-    --osirion-scroll-hover-color: theme('colors.white', #ffffff);
-    /* Admin-specific variables */
-    --osirion-admin-primary: theme('colors.blue.600', #2563eb);
-    --osirion-admin-primary-light: theme('colors.blue.400', #60a5fa);
-    --osirion-admin-primary-dark: theme('colors.blue.700', #1d4ed8);
-    --osirion-admin-text: theme('colors.gray.700', #374151);
-    --osirion-admin-text-muted: theme('colors.gray.500', #6b7280);
-    --osirion-admin-bg: theme('colors.white', #ffffff);
-    --osirion-admin-bg-sidebar: theme('colors.gray.100', #f3f4f6);
-    --osirion-admin-bg-header: theme('colors.gray.100', #f3f4f6);
-    --osirion-admin-border: theme('colors.gray.200', #e5e7eb);
-    --osirion-admin-light: theme('colors.gray.100', #f3f4f6);
-    --osirion-admin-bg-editor: theme('colors.white', #ffffff);
-    --osirion-admin-bg-editor-sidebar: theme('colors.gray.100', #f3f4f6);
-    --osirion-admin-border-radius: theme('borderRadius.md', 0.375rem);
-}
-
-    /* Tailwind CSS Dark Mode Integration */
-    html.osirion-tailwind-integration.dark,
-    html.osirion-tailwind-integration .dark {
-        /* Primary colors */
-        --osirion-primary-color: theme('colors.blue.400', #60a5fa);
-        --osirion-primary-hover-color: theme('colors.blue.500', #3b82f6);
-        --osirion-primary-light-color: theme('colors.blue.300', #93c5fd);
-        --osirion-primary-dark-color: theme('colors.blue.600', #2563eb);
-        /* Secondary colors */
-        --osirion-secondary-color: theme('colors.gray.400', #9ca3af);
-        --osirion-secondary-hover-color: theme('colors.gray.300', #d1d5db);
-        --osirion-secondary-light-color: theme('colors.gray.300', #d1d5db);
-        --osirion-secondary-dark-color: theme('colors.gray.500', #6b7280);
-        /* Text and background colors */
-        --osirion-text-color: theme('colors.gray.200', #e5e7eb);
-        --osirion-light-text-color: theme('colors.gray.400', #9ca3af);
-        --osirion-border-color: theme('colors.gray.700', #374151);
-        --osirion-background-color: theme('colors.gray.900', #111827);
-        --osirion-light-background-color: theme('colors.gray.800', #1f2937);
-        /* State colors */
-        --osirion-success-color: theme('colors.green.400', #34d399);
-        --osirion-success-hover-color: theme('colors.green.500', #10b981);
-        --osirion-success-light-color: theme('colors.green.900', #064e3b);
-        --osirion-danger-color: theme('colors.red.400', #f87171);
-        --osirion-danger-hover-color: theme('colors.red.500', #ef4444);
-        --osirion-danger-light-color: theme('colors.red.900', #7f1d1d);
-        --osirion-warning-color: theme('colors.amber.400', #fbbf24);
-        --osirion-warning-hover-color: theme('colors.amber.500', #f59e0b);
-        --osirion-warning-light-color: theme('colors.amber.900', #78350f);
-        --osirion-info-color: theme('colors.blue.400', #60a5fa);
-        --osirion-info-hover-color: theme('colors.blue.500', #3b82f6);
-        --osirion-info-light-color: theme('colors.blue.900', #1e3a8a);
-        /* Component-specific variables */
-        --osirion-tag-background-color: theme('colors.gray.700', #374151);
-        --osirion-tag-text-color: theme('colors.gray.300', #d1d5db);
-        --osirion-category-background-color: theme('colors.blue.900', #1e3a8a);
-        --osirion-category-text-color: theme('colors.blue.300', #93c5fd);
-        --osirion-active-background-color: theme('colors.blue.900', #1e3a8a);
-        --osirion-active-text-color: theme('colors.blue.300', #93c5fd);
-        /* Admin-specific variables */
-        --osirion-admin-primary: theme('colors.blue.400', #60a5fa);
-        --osirion-admin-primary-light: theme('colors.blue.300', #93c5fd);
-        --osirion-admin-primary-dark: theme('colors.blue.500', #3b82f6);
-        --osirion-admin-text: theme('colors.gray.200', #e5e7eb);
-        --osirion-admin-text-muted: theme('colors.gray.400', #9ca3af);
-        --osirion-admin-bg: theme('colors.gray.900', #111827);
-        --osirion-admin-bg-sidebar: theme('colors.gray.800', #1f2937);
-        --osirion-admin-bg-header: theme('colors.gray.800', #1f2937);
-        --osirion-admin-border: theme('colors.gray.700', #374151);
-        --osirion-admin-light: theme('colors.gray.800', #1f2937);
-        --osirion-admin-bg-editor: theme('colors.gray.800', #1f2937);
-        --osirion-admin-bg-editor-sidebar: theme('colors.gray.900', #111827);
+        --osirion-admin-text-editor: var(--bs-body-color, #dee2e6);
+        --osirion-admin-text-editor-muted: var(--bs-secondary-color, #6c757d);
     }
 
 /* FluentUI Integration */
@@ -381,6 +241,8 @@ html.osirion-fluent-integration {
         --osirion-admin-light: var(--neutral-fill-stealth-rest, #1b1b1b);
         --osirion-admin-bg-editor: var(--neutral-fill-layer-rest, #1b1b1b);
         --osirion-admin-bg-editor-sidebar: var(--neutral-fill-stealth-rest, #1b1b1b);
+        --osirion-admin-text-editor: var(--neutral-foreground-rest, #ffffff);
+        --osirion-admin-text-editor-muted: var(--neutral-foreground-hint, #8a8a8a);
     }
 
 /* MudBlazor Integration */
@@ -486,6 +348,8 @@ html.osirion-mudblazor-integration {
         --osirion-admin-light: var(--mud-palette-background-grey, #1e1e1e);
         --osirion-admin-bg-editor: var(--mud-palette-background, #121212);
         --osirion-admin-bg-editor-sidebar: var(--mud-palette-background-grey, #1e1e1e);
+        --osirion-admin-text-editor: var(--mud-palette-text-primary, rgba(255, 255, 255, 0.87));
+        --osirion-admin-text-editor-muted: var(--mud-palette-text-secondary, rgba(255, 255, 255, 0.6));
     }
 
 /* Radzen Integration */
@@ -589,6 +453,8 @@ html.osirion-radzen-integration {
         --osirion-admin-light: var(--rz-base-800, #323232);
         --osirion-admin-bg-editor: var(--rz-base-900, #1a1a1a);
         --osirion-admin-bg-editor-sidebar: var(--rz-base-800, #323232);
+        --osirion-admin-text-editor: var(--rz-text-color, #ffffff);
+        --osirion-admin-text-editor-muted: var(--rz-text-secondary-color, #aaaaaa);
     }
 
 /* System preference detection for dark mode */

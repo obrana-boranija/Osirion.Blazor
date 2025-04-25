@@ -203,5 +203,96 @@
         --osirion-admin-light: #1f2937;
         --osirion-admin-bg-editor: #1e293b;
         --osirion-admin-bg-editor-sidebar: #111827;
+        --osirion-admin-border-editor: #374151;
         --osirion-admin-text-editor: #e5e7eb;
+        --osirion-admin-text-editor-muted: #9ca3af;
+        /* Button and control colors for dark mode */
+        --osirion-button-background-color: #374151;
+        --osirion-button-hover-background-color: #4b5563;
+        --osirion-button-text-color: #e5e7eb;
+        --osirion-button-border-color: #4b5563;
+        /* Input and form colors for dark mode */
+        --osirion-input-background-color: #111827;
+        --osirion-input-text-color: #e5e7eb;
+        --osirion-input-border-color: #4b5563;
+        --osirion-input-focus-border-color: #60a5fa;
+        /* Additional component variables for dark mode */
+        --osirion-card-background-color: #1f2937;
+        --osirion-card-border-color: #4b5563;
+        --osirion-header-background-color: #111827;
+        --osirion-sidebar-background-color: #111827;
+        --osirion-footer-background-color: #111827;
+        /* Content-specific dark mode variables */
+        --osirion-content-background-color: #1f2937;
+        --osirion-content-text-color: #e5e7eb;
+        --osirion-content-heading-color: #f3f4f6;
+        --osirion-content-link-color: #60a5fa;
+        --osirion-content-code-background-color: #111827;
+        --osirion-content-code-text-color: #e5e7eb;
+        --osirion-content-blockquote-background-color: #111827;
+        --osirion-content-blockquote-border-color: #4b5563;
+        --osirion-content-table-background-color: #1f2937;
+        --osirion-content-table-border-color: #4b5563;
+        --osirion-content-table-header-background-color: #111827;
+        /* Blog listing and content variables */
+        --osirion-blog-card-background: #1e293b;
+        --osirion-blog-card-border-color: #374151;
+        --osirion-blog-card-hover-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+        --osirion-blog-title-color: #f3f4f6;
+        --osirion-blog-meta-color: #9ca3af;
+        --osirion-blog-text-color: #e5e7eb;
+        --osirion-blog-link-color: #60a5fa;
+        --osirion-blog-link-hover-color: #93c5fd;
+        --osirion-blog-tag-background: #374151;
+        --osirion-blog-tag-text-color: #d1d5db;
+        --osirion-blog-category-background: #1e40af;
+        --osirion-blog-category-text-color: #bfdbfe;
+        /* Navigation and sidebar variables */
+        --osirion-nav-background: #1f2937;
+        --osirion-nav-border-color: #374151;
+        --osirion-nav-text-color: #e5e7eb;
+        --osirion-nav-active-background: #2563eb;
+        --osirion-nav-active-text-color: #ffffff;
+        --osirion-sidebar-background: #111827;
+        --osirion-sidebar-title-color: #f3f4f6;
+        --osirion-sidebar-text-color: #e5e7eb;
+        --osirion-sidebar-border-color: #374151;
+        /* Search component variables */
+        --osirion-search-background: #111827;
+        --osirion-search-text-color: #e5e7eb;
+        --osirion-search-border-color: #4b5563;
+        --osirion-search-focus-border-color: #60a5fa;
+        --osirion-search-button-background: #2563eb;
+        --osirion-search-button-hover-background: #1d4ed8;
+        /* ScrollToTop variables */
+        --osirion-scroll-background: rgba(37, 99, 235, 0.9);
+        --osirion-scroll-hover-background: rgba(29, 78, 216, 1);
+        --osirion-scroll-color: #ffffff;
+        --osirion-scroll-hover-color: #ffffff;
+        --osirion-scroll-border-color: rgba(37, 99, 235, 0.9);
+        --osirion-scroll-hover-border-color: rgba(29, 78, 216, 1);
+        --osirion-scroll-box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        --osirion-scroll-hover-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+        /* Button variables */
+        --osirion-button-primary-background: #2563eb;
+        --osirion-button-primary-text-color: #ffffff;
+        --osirion-button-primary-hover-background: #1d4ed8;
+        --osirion-button-primary-border-color: #2563eb;
+        --osirion-button-secondary-background: #4b5563;
+        --osirion-button-secondary-text-color: #ffffff;
+        --osirion-button-secondary-hover-background: #374151;
+        --osirion-button-secondary-border-color: #4b5563;
+        --osirion-button-disabled-background: #374151;
+        --osirion-button-disabled-text-color: #9ca3af;
+        /* Cards grid layout variables */
+        --osirion-grid-gap: 1.5rem;
+        --osirion-card-padding: 1.5rem;
+        --osirion-card-border-radius: 0.5rem;
+        --osirion-card-background: #1e293b;
+        --osirion-card-border-color: #374151;
+        --osirion-card-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        --osirion-card-hover-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        --osirion-card-title-color: #f3f4f6;
+        --osirion-card-text-color: #e5e7eb;
+        --osirion-card-meta-color: #9ca3af;
     }
