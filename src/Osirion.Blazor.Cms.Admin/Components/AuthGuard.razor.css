@@ -5,33 +5,63 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: var(--osirion-admin-spacer-lg, 2rem);
+    padding: var(--osirion-spacing-8);
     text-align: center;
     min-height: 50vh;
-    background-color: var(--osirion-admin-bg);
+    background-color: var(--osirion-background-primary);
 }
 
 .osirion-admin-unauthorized-content {
-    background-color: var(--osirion-admin-bg);
-    border-radius: var(--osirion-admin-border-radius);
-    box-shadow: var(--osirion-admin-shadow, 0 1px 3px rgba(0,0,0,0.12));
-    padding: var(--osirion-admin-spacer-lg, 2rem);
+    background-color: var(--osirion-background-primary);
+    border-radius: var(--osirion-radius-lg);
+    box-shadow: var(--osirion-shadow-base);
+    padding: var(--osirion-spacing-8);
     max-width: 500px;
     width: 100%;
+    border: 1px solid var(--osirion-border-color);
 }
 
 .osirion-admin-unauthorized-title {
-    font-size: 1.5rem;
-    margin-bottom: var(--osirion-admin-spacer);
-    color: var(--osirion-admin-text);
+    font-size: var(--osirion-font-size-xl);
+    margin-bottom: var(--osirion-spacing-4);
+    color: var(--osirion-text-primary);
+    font-weight: var(--osirion-font-weight-semibold);
 }
 
 .osirion-admin-unauthorized-message {
-    color: var(--osirion-admin-text-muted);
-    margin-bottom: var(--osirion-admin-spacer-lg, 2rem);
+    color: var(--osirion-text-secondary);
+    margin-bottom: var(--osirion-spacing-8);
+    line-height: var(--osirion-line-height-normal);
 }
 
-/* Dark theme adjustments */
-:global(.osirion-admin-theme-dark) .osirion-admin-unauthorized-content {
-    border: 1px solid var(--osirion-admin-border);
+/* Button styles added for this component */
+.osirion-admin-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+    padding: var(--osirion-spacing-2) var(--osirion-spacing-4);
+    border: 1px solid var(--osirion-border-color);
+    border-radius: var(--osirion-button-radius);
+    background-color: var(--osirion-background-primary);
+    color: var(--osirion-text-primary);
+    font-size: var(--osirion-font-size-sm);
+    font-weight: var(--osirion-font-weight-medium);
+    cursor: pointer;
+    transition: all var(--osirion-transition-duration-200) var(--osirion-transition-timing-default);
 }
+
+    .osirion-admin-button:hover:not(:disabled) {
+        background-color: var(--osirion-background-secondary);
+    }
+
+.osirion-admin-button-primary {
+    background-color: var(--osirion-action-primary);
+    border-color: var(--osirion-action-primary);
+    color: var(--osirion-action-primary-text);
+}
+
+    .osirion-admin-button-primary:hover:not(:disabled) {
+        background-color: var(--osirion-action-primary-hover);
+        border-color: var(--osirion-action-primary-hover);
+    }

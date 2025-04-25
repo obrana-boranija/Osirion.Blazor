@@ -1,0 +1,75 @@
+/* TagCloud Component - Osirion.Blazor.Cms.Front */
+
+.osirion-tag-cloud {
+    padding: var(--osirion-spacing-2, 0.5rem);
+    font-family: var(--osirion-font-family-base, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif);
+    color: var(--osirion-text-primary, #374151);
+}
+
+.osirion-tag-cloud-title {
+    margin-bottom: 1rem;
+    font-size: var(--osirion-font-size-lg, 1.125rem);
+    font-weight: var(--osirion-font-weight-medium, 500);
+    color: var(--osirion-text-primary, #374151);
+}
+
+.osirion-tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--osirion-spacing-2, 0.5rem);
+}
+
+.osirion-tag-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.375rem 0.75rem;
+    background-color: var(--osirion-tag-background-color, var(--osirion-background-tertiary, #f3f4f6));
+    color: var(--osirion-tag-text-color, var(--osirion-text-secondary, #4b5563));
+    text-decoration: none;
+    border-radius: var(--osirion-radius-full, 9999px);
+    font-size: var(--osirion-font-size-sm, 0.875rem);
+    transition: all var(--osirion-transition-duration-200, 0.2s) var(--osirion-transition-timing-default, ease);
+    margin: 0.1rem;
+}
+
+    .osirion-tag-link:hover {
+        background-color: var(--osirion-tag-hover-background-color, var(--osirion-background-hover, #e5e7eb));
+        transform: translateY(-1px);
+    }
+
+    .osirion-tag-link.osirion-tag-active {
+        background-color: var(--osirion-background-active, var(--osirion-action-primary, #2563eb));
+        color: var(--osirion-action-primary-text, white);
+        font-weight: var(--osirion-font-weight-medium, 500);
+    }
+
+.osirion-tag-count {
+    font-size: var(--osirion-font-size-xs, 0.75rem);
+    opacity: 0.75;
+}
+
+.osirion-loading,
+.osirion-no-tags {
+    text-align: center;
+    padding: var(--osirion-spacing-4, 1rem);
+    color: var(--osirion-text-secondary, #6b7280);
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .osirion-tags-container {
+        justify-content: center;
+    }
+}
+
+/* Accessibility - reduce motion */
+@media (prefers-reduced-motion: reduce) {
+    .osirion-tag-link {
+        transition: none;
+    }
+
+        .osirion-tag-link:hover {
+            transform: none;
+        }
+}

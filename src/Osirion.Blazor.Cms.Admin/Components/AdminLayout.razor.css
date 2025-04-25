@@ -3,51 +3,51 @@
 .osirion-admin-dashboard {
     display: flex;
     min-height: 100vh;
-    background-color: var(--osirion-admin-bg);
-    color: var(--osirion-admin-text);
-    font-family: var(--osirion-admin-font-family);
-    font-size: var(--osirion-admin-font-size);
-    line-height: var(--osirion-admin-line-height);
+    background-color: var(--osirion-background-primary);
+    color: var(--osirion-text-primary);
+    font-family: var(--osirion-font-family-base);
+    font-size: var(--osirion-font-size-base);
+    line-height: var(--osirion-line-height-normal);
 }
 
 /* Sidebar styles */
 .osirion-admin-sidebar {
-    width: var(--osirion-admin-sidebar-width);
-    background-color: var(--osirion-admin-bg-sidebar);
-    border-right: 1px solid var(--osirion-admin-border);
-    padding: var(--osirion-admin-spacer);
+    width: var(--osirion-sidebar-width, 280px);
+    background-color: var(--osirion-background-secondary);
+    border-right: 1px solid var(--osirion-border-color);
+    padding: var(--osirion-spacing-4);
     display: flex;
     flex-direction: column;
     overflow-y: auto;
     position: sticky;
     top: 0;
     height: 100vh;
-    z-index: 10;
+    z-index: var(--osirion-z-index-20);
 }
 
 .osirion-admin-logo {
-    padding: var(--osirion-admin-spacer) 0;
-    margin-bottom: var(--osirion-admin-spacer-lg);
-    border-bottom: 1px solid var(--osirion-admin-border);
+    padding: var(--osirion-spacing-4) 0;
+    margin-bottom: var(--osirion-spacing-6);
+    border-bottom: 1px solid var(--osirion-border-color);
 }
 
 .osirion-admin-brand-link {
     text-decoration: none;
-    color: var(--osirion-admin-text);
+    color: var(--osirion-text-primary);
     display: block;
 }
 
 .osirion-admin-brand {
-    font-size: 1.5rem;
-    font-weight: var(--osirion-admin-font-weight-bold);
+    font-size: var(--osirion-font-size-xl);
+    font-weight: var(--osirion-font-weight-bold);
     margin: 0;
-    color: var(--osirion-admin-text);
+    color: var(--osirion-text-primary);
 }
 
 .osirion-admin-subtitle {
-    color: var(--osirion-admin-text-muted);
+    color: var(--osirion-text-tertiary);
     margin: 0.5rem 0 0;
-    font-size: 0.875rem;
+    font-size: var(--osirion-font-size-sm);
 }
 
 .osirion-admin-navigation {
@@ -56,9 +56,9 @@
 }
 
 .osirion-admin-sidebar-footer {
-    border-top: 1px solid var(--osirion-admin-border);
-    padding-top: var(--osirion-admin-spacer);
-    margin-top: var(--osirion-admin-spacer);
+    border-top: 1px solid var(--osirion-border-color);
+    padding-top: var(--osirion-spacing-4);
+    margin-top: var(--osirion-spacing-4);
 }
 
 /* Main content area */
@@ -71,22 +71,22 @@
 
 /* Header styles */
 .osirion-admin-header {
-    height: var(--osirion-admin-header-height);
-    padding: 0 var(--osirion-admin-spacer);
+    height: var(--osirion-header-height, 60px);
+    padding: 0 var(--osirion-spacing-4);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid var(--osirion-admin-border);
-    background-color: var(--osirion-admin-bg-header);
+    border-bottom: 1px solid var(--osirion-border-color);
+    background-color: var(--osirion-background-secondary);
     position: sticky;
     top: 0;
-    z-index: 5;
+    z-index: var(--osirion-z-index-10);
 }
 
 /* Content styles */
 .osirion-admin-content {
     flex: 1;
-    padding: var(--osirion-admin-spacer);
+    padding: var(--osirion-spacing-4);
     overflow-y: auto;
 }
 
@@ -94,7 +94,7 @@
 .osirion-admin-breadcrumb {
     display: flex;
     align-items: center;
-    font-size: 0.875rem;
+    font-size: var(--osirion-font-size-sm);
     overflow-x: auto;
     white-space: nowrap;
     scrollbar-width: none; /* For Firefox */
@@ -107,25 +107,25 @@
 
 .osirion-admin-breadcrumb-separator {
     margin: 0 0.5rem;
-    color: var(--osirion-admin-text-muted);
+    color: var(--osirion-text-tertiary);
 }
 
 .osirion-admin-breadcrumb-home {
     display: inline-flex;
     align-items: center;
-    color: var(--osirion-admin-text-muted);
+    color: var(--osirion-text-tertiary);
     text-decoration: none;
     cursor: pointer;
-    transition: color var(--osirion-admin-transition);
+    transition: color var(--osirion-transition-duration-200) var(--osirion-transition-timing-default);
 }
 
     .osirion-admin-breadcrumb-home:hover {
-        color: var(--osirion-admin-primary);
+        color: var(--osirion-action-primary);
     }
 
 .osirion-admin-breadcrumb-current {
-    color: var(--osirion-admin-text);
-    font-weight: var(--osirion-admin-font-weight-medium);
+    color: var(--osirion-text-primary);
+    font-weight: var(--osirion-font-weight-medium);
 }
 
 /* User info in sidebar footer */
@@ -137,41 +137,41 @@
 }
 
 .osirion-admin-username {
-    font-weight: var(--osirion-admin-font-weight-medium);
-    color: var(--osirion-admin-text);
+    font-weight: var(--osirion-font-weight-medium);
+    color: var(--osirion-text-primary);
 }
 
 /* Alert styles */
 .osirion-admin-alert {
-    padding: var(--osirion-admin-spacer);
-    margin-bottom: var(--osirion-admin-spacer);
-    border-radius: var(--osirion-admin-border-radius);
+    padding: var(--osirion-spacing-4);
+    margin-bottom: var(--osirion-spacing-4);
+    border-radius: var(--osirion-radius-base);
     display: flex;
     align-items: center;
     position: relative;
 }
 
 .osirion-admin-alert-success {
-    background-color: rgba(40, 167, 69, 0.1);
-    border: 1px solid var(--osirion-admin-success);
-    color: var(--osirion-admin-success);
+    background-color: var(--osirion-status-success-bg);
+    border: 1px solid var(--osirion-status-success-border);
+    color: var(--osirion-status-success);
 }
 
 .osirion-admin-alert-error {
-    background-color: rgba(203, 36, 49, 0.1);
-    border: 1px solid var(--osirion-admin-danger);
-    color: var(--osirion-admin-danger);
+    background-color: var(--osirion-status-danger-bg);
+    border: 1px solid var(--osirion-status-danger-border);
+    color: var(--osirion-status-danger);
 }
 
 .osirion-admin-alert-icon {
     display: flex;
-    margin-right: var(--osirion-admin-spacer-sm);
+    margin-right: var(--osirion-spacing-2);
 }
 
 .osirion-admin-alert-close {
     position: absolute;
-    top: var(--osirion-admin-spacer-sm);
-    right: var(--osirion-admin-spacer-sm);
+    top: var(--osirion-spacing-2);
+    right: var(--osirion-spacing-2);
     background: transparent;
     border: none;
     color: currentColor;
@@ -184,7 +184,7 @@
 .osirion-admin-actions {
     display: flex;
     align-items: center;
-    gap: var(--osirion-admin-spacer-sm);
+    gap: var(--osirion-spacing-2);
 }
 
 /* Responsive styles */
@@ -198,7 +198,7 @@
         height: auto;
         position: static;
         border-right: none;
-        border-bottom: 1px solid var(--osirion-admin-border);
+        border-bottom: 1px solid var(--osirion-border-color);
     }
 
     .osirion-admin-header {
@@ -210,14 +210,14 @@
     .osirion-admin-header {
         flex-direction: column;
         align-items: flex-start;
-        gap: var(--osirion-admin-spacer-sm);
+        gap: var(--osirion-spacing-2);
         height: auto;
-        padding: var(--osirion-admin-spacer);
+        padding: var(--osirion-spacing-4);
     }
 
     .osirion-admin-breadcrumb {
         width: 100%;
-        margin-bottom: var(--osirion-admin-spacer-sm);
+        margin-bottom: var(--osirion-spacing-2);
     }
 
     .osirion-admin-actions {

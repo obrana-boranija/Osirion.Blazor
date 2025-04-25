@@ -1,37 +1,36 @@
-/* ContentView Component Isolated Styles */
-
+/* ContentView Component Styles */
 .osirion-content-view {
-    padding: var(--osirion-padding, 1.5rem);
-    font-family: var(--osirion-font-family, var(--osirion-font-family, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif));
-    color: var(--osirion-color, #374151);
-    background-color: var(--osirion-color-background, transparent);
+    padding: var(--osirion-spacing-6);
+    font-family: var(--osirion-font-family-base);
+    color: var(--osirion-text-primary);
+    background-color: var(--osirion-background-primary);
 }
 
 .osirion-content-article {
-    max-width: var(--osirion-content-max-width, 800px);
+    max-width: var(--osirion-width-content);
     margin: 0 auto;
 }
 
+/* Header styling */
 .osirion-content-header {
-    margin-bottom: 2rem;
+    margin-bottom: var(--osirion-spacing-8);
 }
 
 .osirion-content-article h1 {
-    font-size: var(--osirion-font-size-large-title, 2.5rem);
-    margin-top: 0;
-    margin-bottom: 1rem;
-    color: var(--osirion-heading-color, var(--osirion-color, #111827));
-    font-weight: var(--osirion-title-font-weight, 700);
-    line-height: var(--osirion-line-height-tight, 1.25);
+    font-size: var(--osirion-font-size-4xl);
+    margin-bottom: var(--osirion-spacing-4);
+    color: var(--osirion-text-primary);
+    font-weight: var(--osirion-font-weight-bold);
+    line-height: var(--osirion-line-height-tight);
 }
 
 .osirion-content-meta {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--osirion-small-gap, 0.5rem);
-    font-size: var(--osirion-font-size-small, 0.875rem);
-    color: var(--osirion-meta-color, var(--osirion-color, #6b7280));
-    margin-bottom: 1.5rem;
+    gap: var(--osirion-spacing-2);
+    font-size: var(--osirion-font-size-sm);
+    color: var(--osirion-text-secondary);
+    margin-bottom: var(--osirion-spacing-6);
 }
 
 .osirion-content-author,
@@ -39,7 +38,7 @@
 .osirion-content-read-time {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: var(--osirion-spacing-2);
 }
 
 .osirion-content-featured-image {
@@ -47,15 +46,15 @@
     height: auto;
     max-height: 500px;
     object-fit: cover;
-    border-radius: var(--osirion-border-radius, 0.5rem);
-    margin-bottom: 1.5rem;
+    border-radius: var(--osirion-radius-lg);
+    margin-bottom: var(--osirion-spacing-6);
 }
 
 /* Content Body Styling */
 .osirion-content-body {
-    line-height: var(--osirion-line-height, 1.7);
-    color: var(--osirion-color, #374151);
-    margin-bottom: 2rem;
+    line-height: var(--osirion-line-height-relaxed);
+    color: var(--osirion-text-primary);
+    margin-bottom: var(--osirion-spacing-8);
 }
 
     .osirion-content-body h2,
@@ -65,79 +64,79 @@
     .osirion-content-body h6 {
         margin-top: 1.5em;
         margin-bottom: 0.5em;
-        color: var(--osirion-heading-color, var(--osirion-color, #111827));
-        font-weight: var(--osirion-title-font-weight, 700);
+        color: var(--osirion-text-primary);
+        font-weight: var(--osirion-font-weight-bold);
     }
 
     .osirion-content-body h2 {
-        font-size: var(--osirion-font-size-h2, 2rem);
-        border-bottom: 1px solid var(--osirion-color-border, #e5e7eb);
-        padding-bottom: 0.5rem;
+        font-size: var(--osirion-font-size-3xl);
+        border-bottom: var(--osirion-border-width) solid var(--osirion-border-color);
+        padding-bottom: var(--osirion-spacing-2);
     }
 
     .osirion-content-body h3 {
-        font-size: var(--osirion-font-size-h3, 1.75rem);
+        font-size: var(--osirion-font-size-2xl);
     }
 
     .osirion-content-body h4 {
-        font-size: var(--osirion-font-size-h4, 1.5rem);
+        font-size: var(--osirion-font-size-xl);
     }
 
     .osirion-content-body h5 {
-        font-size: var(--osirion-font-size-h5, 1.25rem);
+        font-size: var(--osirion-font-size-lg);
     }
 
     .osirion-content-body h6 {
-        font-size: var(--osirion-font-size-h6, 1rem);
+        font-size: var(--osirion-font-size-base);
     }
 
     .osirion-content-body p {
-        margin-bottom: var(--osirion-paragraph-margin, 1rem);
+        margin-bottom: var(--osirion-spacing-4);
         margin-top: 0;
     }
 
     .osirion-content-body a {
-        color: var(--osirion-link-color, var(--osirion-primary-color, #2563eb));
+        color: var(--osirion-action-primary);
         text-decoration: none;
-        transition: color var(--osirion-transition-speed, 0.2s) ease;
+        transition: color var(--osirion-transition-duration-200) var(--osirion-transition-timing-default);
     }
 
         .osirion-content-body a:hover {
             text-decoration: underline;
-            color: var(--osirion-link-hover-color, var(--osirion-primary-color-hover, #1d4ed8));
+            color: var(--osirion-action-primary-hover);
         }
 
     .osirion-content-body img {
         max-width: 100%;
         height: auto;
         display: block;
-        margin: 2rem auto;
-        border-radius: var(--osirion-small-border-radius, 0.375rem);
+        margin: var(--osirion-spacing-8) auto;
+        border-radius: var(--osirion-radius-md);
     }
 
     .osirion-content-body blockquote {
-        border-left: 4px solid var(--osirion-color-border, #e5e7eb);
-        padding-left: 1.5rem;
+        border-left: 4px solid var(--osirion-border-color);
+        padding-left: var(--osirion-spacing-6);
         font-style: italic;
-        color: var(--osirion-color, #6b7280);
-        margin: 2rem 0;
+        color: var(--osirion-text-secondary);
+        margin: var(--osirion-spacing-8) 0;
     }
 
     .osirion-content-body pre {
-        background-color: var(--osirion-color-background, #f3f4f6);
-        padding: 1.5rem;
-        border-radius: var(--osirion-small-border-radius, 0.375rem);
+        background-color: var(--osirion-background-secondary);
+        padding: var(--osirion-spacing-6);
+        border-radius: var(--osirion-radius-md);
         overflow-x: auto;
-        margin: 1.5rem 0;
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        margin: var(--osirion-spacing-6) 0;
+        font-family: var(--osirion-font-family-mono);
         font-size: 0.9em;
     }
 
     .osirion-content-body code {
-        background-color: var(--osirion-color-background, #f3f4f6);
+        background-color: var(--osirion-background-secondary);
         padding: 0.2em 0.4em;
-        border-radius: 0.25rem;
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        border-radius: var(--osirion-radius-sm);
+        font-family: var(--osirion-font-family-mono);
         font-size: 0.9em;
     }
 
@@ -146,103 +145,66 @@
         padding: 0;
     }
 
-    .osirion-content-body ul,
-    .osirion-content-body ol {
-        margin: 1.5rem 0;
-        padding-left: 1.5rem;
-    }
-
-        .osirion-content-body ul li,
-        .osirion-content-body ol li {
-            margin-bottom: 0.5rem;
-        }
-
-    .osirion-content-body hr {
-        border: 0;
-        border-top: 1px solid var(--osirion-color-border, #e5e7eb);
-        margin: 2rem 0;
-    }
-
-    .osirion-content-body table {
-        width: 100%;
-        border-collapse: collapse;
-        margin: 2rem 0;
-        font-size: var(--osirion-font-size-small, 0.875rem);
-    }
-
-    .osirion-content-body th,
-    .osirion-content-body td {
-        padding: 0.75rem;
-        border: 1px solid var(--osirion-color-border, #e5e7eb);
-        text-align: left;
-    }
-
-    .osirion-content-body th {
-        background-color: var(--osirion-color-background, #f3f4f6);
-        font-weight: 600;
-    }
-
-    .osirion-content-body tr:nth-child(even) {
-        background-color: var(--osirion-color-background, #f9fafb);
-    }
-
 /* Footer Styling */
 .osirion-content-footer {
-    margin-top: 3rem;
-    padding-top: 2rem;
-    border-top: 1px solid var(--osirion-color-border, #e5e7eb);
+    margin-top: var(--osirion-spacing-12);
+    padding-top: var(--osirion-spacing-8);
+    border-top: var(--osirion-border-width) solid var(--osirion-border-color);
 }
 
 .osirion-content-section-title {
-    font-weight: 600;
-    margin-right: 0.75rem;
-    color: var(--osirion-color, #374151);
+    font-weight: var(--osirion-font-weight-semibold);
+    margin-right: var(--osirion-spacing-3);
+    color: var(--osirion-text-primary);
 }
 
 .osirion-content-categories,
 .osirion-content-tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 1.5rem;
+    gap: var(--osirion-spacing-2);
+    margin-bottom: var(--osirion-spacing-6);
     align-items: center;
 }
 
 .osirion-content-category,
 .osirion-content-tag {
     text-decoration: none;
-    padding: 0.25rem 0.75rem;
-    border-radius: var(--osirion-tag-border-radius, 999px);
-    font-size: var(--osirion-font-size-small, 0.875rem);
-    transition: all var(--osirion-transition-speed, 0.2s) ease;
+    padding: var(--osirion-spacing-1) var(--osirion-spacing-3);
+    border-radius: var(--osirion-radius-full);
+    font-size: var(--osirion-font-size-sm);
+    transition: all var(--osirion-transition-duration-200) var(--osirion-transition-timing-default);
 }
 
 .osirion-content-category {
-    background-color: var(--osirion-category-background-color, #e0f2fe);
-    color: var(--osirion-category-text-color, #0369a1);
+    background-color: var(--osirion-category-background-color);
+    color: var(--osirion-category-text-color);
 }
 
 .osirion-content-tag {
-    background-color: var(--osirion-tag-background-color, #f3f4f6);
-    color: var(--osirion-tag-text-color, #4b5563);
+    background-color: var(--osirion-tag-background-color);
+    color: var(--osirion-tag-text-color);
 }
 
+    .osirion-content-category:hover,
+    .osirion-content-tag:hover {
+        transform: translateY(-1px);
+    }
+
 .osirion-content-category:hover {
-    background-color: var(--osirion-category-hover-background-color, var(--osirion-color-background-active, #bae6fd));
-    transform: translateY(-1px);
+    background-color: var(--osirion-category-hover-background-color);
 }
 
 .osirion-content-tag:hover {
-    background-color: var(--osirion-tag-hover-background-color, #e5e7eb);
-    transform: translateY(-1px);
+    background-color: var(--osirion-tag-hover-background-color);
 }
 
 /* Navigation Links */
 .osirion-content-navigation {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    margin-top: 2rem;
+    gap: var(--osirion-spacing-4);
+    margin-top: var(--osirion-spacing-8);
 }
 
 .osirion-content-previous,
@@ -250,10 +212,10 @@
     display: flex;
     flex-direction: column;
     text-decoration: none;
-    padding: 1rem;
-    border-radius: var(--osirion-border-radius, 0.5rem);
-    background-color: var(--osirion-color-background, #f3f4f6);
-    transition: all var(--osirion-transition-speed, 0.2s) ease;
+    padding: var(--osirion-spacing-4);
+    border-radius: var(--osirion-radius-lg);
+    background-color: var(--osirion-background-secondary);
+    transition: all var(--osirion-transition-duration-200) var(--osirion-transition-timing-default);
 }
 
 .osirion-content-previous {
@@ -266,29 +228,29 @@
 
     .osirion-content-previous:hover,
     .osirion-content-next:hover {
-        background-color: var(--osirion-color-border, #e5e7eb);
+        background-color: var(--osirion-border-color);
     }
 
 .osirion-content-navigation-label {
-    font-size: var(--osirion-font-size-tiny, 0.75rem);
+    font-size: var(--osirion-font-size-xs);
     text-transform: uppercase;
-    color: var(--osirion-color, #6b7280);
-    margin-bottom: 0.25rem;
+    color: var(--osirion-text-secondary);
+    margin-bottom: var(--osirion-spacing-1);
 }
 
 .osirion-content-navigation-title {
-    font-weight: 600;
-    color: var(--osirion-color, #374151);
+    font-weight: var(--osirion-font-weight-semibold);
+    color: var(--osirion-text-primary);
 }
 
 /* Loading and Not Found States */
 .osirion-loading,
 .osirion-not-found {
     text-align: center;
-    padding: var(--osirion-padding, 1.5rem);
-    color: var(--osirion-color, #6b7280);
-    background-color: var(--osirion-color-background, transparent);
-    border-radius: var(--osirion-border-radius, 0.5rem);
+    padding: var(--osirion-spacing-6);
+    color: var(--osirion-text-secondary);
+    background-color: var(--osirion-background-primary);
+    border-radius: var(--osirion-radius-lg);
     min-height: 200px;
     display: flex;
     flex-direction: column;
@@ -296,133 +258,31 @@
     justify-content: center;
 }
 
-/* Dark Theme Adjustments */
-/*:root[data-theme="dark"] .osirion-content-article h1,
-:root[data-theme="dark"] .osirion-content-body h2,
-:root[data-theme="dark"] .osirion-content-body h3,
-:root[data-theme="dark"] .osirion-content-body h4,
-:root[data-theme="dark"] .osirion-content-body h5,
-:root[data-theme="dark"] .osirion-content-body h6,
-.dark-theme .osirion-content-article h1,
-.dark-theme .osirion-content-body h2,
-.dark-theme .osirion-content-body h3,
-.dark-theme .osirion-content-body h4,
-.dark-theme .osirion-content-body h5,
-.dark-theme .osirion-content-body h6,
-.theme-dark .osirion-content-article h1,
-.theme-dark .osirion-content-body h2,
-.theme-dark .osirion-content-body h3,
-.theme-dark .osirion-content-body h4,
-.theme-dark .osirion-content-body h5,
-.theme-dark .osirion-content-body h6 {
-    color: var(--osirion-heading-color, #f3f4f6);
-    border-color: var(--osirion-color-border, #4b5563);
-}
-
-:root[data-theme="dark"] .osirion-content-body,
-:root[data-theme="dark"] .osirion-content-body p,
-.dark-theme .osirion-content-body,
-.dark-theme .osirion-content-body p,
-.theme-dark .osirion-content-body,
-.theme-dark .osirion-content-body p {
-    color: var(--osirion-color, #e5e7eb);
-}
-
-:root[data-theme="dark"] .osirion-content-meta,
-.dark-theme .osirion-content-meta,
-.theme-dark .osirion-content-meta {
-    color: var(--osirion-meta-color, #9ca3af);
-}
-
-:root[data-theme="dark"] .osirion-content-body a,
-.dark-theme .osirion-content-body a,
-.theme-dark .osirion-content-body a {
-    color: var(--osirion-link-color, #60a5fa);
-}
-
-    :root[data-theme="dark"] .osirion-content-body a:hover,
-    .dark-theme .osirion-content-body a:hover,
-    .theme-dark .osirion-content-body a:hover {
-        color: var(--osirion-link-hover-color, #93c5fd);
-    }
-
-:root[data-theme="dark"] .osirion-content-body blockquote,
-.dark-theme .osirion-content-body blockquote,
-.theme-dark .osirion-content-body blockquote {
-    color: var(--osirion-color, #9ca3af);
-    border-color: var(--osirion-color-border, #4b5563);
-}
-
-:root[data-theme="dark"] .osirion-content-body pre,
-:root[data-theme="dark"] .osirion-content-body code,
-.dark-theme .osirion-content-body pre,
-.dark-theme .osirion-content-body code,
-.theme-dark .osirion-content-body pre,
-.theme-dark .osirion-content-body code {
-    background-color: var(--osirion-color-background, #374151);
-}
-
-:root[data-theme="dark"] .osirion-content-previous,
-:root[data-theme="dark"] .osirion-content-next,
-.dark-theme .osirion-content-previous,
-.dark-theme .osirion-content-next,
-.theme-dark .osirion-content-previous,
-.theme-dark .osirion-content-next {
-    background-color: var(--osirion-color-background, #374151);
-}
-
-    :root[data-theme="dark"] .osirion-content-previous:hover,
-    :root[data-theme="dark"] .osirion-content-next:hover,
-    .dark-theme .osirion-content-previous:hover,
-    .dark-theme .osirion-content-next:hover,
-    .theme-dark .osirion-content-previous:hover,
-    .theme-dark .osirion-content-next:hover {
-        background-color: var(--osirion-content-border-color, #4b5563);
-    }
-
-:root[data-theme="dark"] .osirion-content-navigation-title,
-.dark-theme .osirion-content-navigation-title,
-.theme-dark .osirion-content-navigation-title {
-    color: var(--osirion-content-text-color, #e5e7eb);
-}
-
-:root[data-theme="dark"] .osirion-content-navigation-label,
-.dark-theme .osirion-content-navigation-label,
-.theme-dark .osirion-content-navigation-label {
-    color: var(--osirion-content-text-color, #9ca3af);
-}
-
-:root[data-theme="dark"] .osirion-content-section-title,
-.dark-theme .osirion-content-section-title,
-.theme-dark .osirion-content-section-title {
-    color: var(--osirion-content-text-color, #e5e7eb);
-}*/
-
 /* Responsive Adjustments */
 @media (max-width: 1024px) {
     .osirion-content-article h1 {
-        font-size: calc(var(--osirion-font-size-large-title, 2.5rem) * 0.8);
+        font-size: var(--osirion-font-size-3xl);
     }
 
     .osirion-content-body h2 {
-        font-size: calc(var(--osirion-font-size-h2, 2rem) * 0.9);
+        font-size: var(--osirion-font-size-2xl);
     }
 }
 
 @media (max-width: 768px) {
     .osirion-content-article h1 {
-        font-size: calc(var(--osirion-font-size-large-title, 2.5rem) * 0.7);
+        font-size: var(--osirion-font-size-2xl);
     }
 
     .osirion-content-meta {
         flex-direction: column;
-        gap: 0.25rem;
+        gap: var(--osirion-spacing-1);
         align-items: flex-start;
     }
 
     .osirion-content-navigation {
         grid-template-columns: 1fr;
-        gap: 1rem;
+        gap: var(--osirion-spacing-4);
     }
 
     .osirion-content-next {
@@ -432,11 +292,11 @@
 
 @media (max-width: 480px) {
     .osirion-content-view {
-        padding: 1rem;
+        padding: var(--osirion-spacing-4);
     }
 
     .osirion-content-article h1 {
-        font-size: calc(var(--osirion-font-size-large-title, 2.5rem) * 0.6);
+        font-size: var(--osirion-font-size-xl);
     }
 
     .osirion-content-categories,

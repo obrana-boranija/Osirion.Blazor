@@ -1,21 +1,19 @@
-﻿/* Enhanced styles for the DefaultNavigation component */
-
-.osirion-admin-nav-list-container {
+﻿.osirion-admin-nav-list-container {
     width: 100%;
 }
 
 .osirion-admin-nav-section {
-    margin-bottom: 1.5rem;
+    margin-bottom: var(--osirion-spacing-6, 1.5rem);
 }
 
 .osirion-admin-nav-title {
-    font-size: 0.75rem;
-    font-weight: 600;
+    font-size: var(--osirion-font-size-xs, 0.75rem);
+    font-weight: var(--osirion-font-weight-semibold, 600);
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: var(--osirion-admin-text-muted);
-    margin-bottom: 0.5rem;
-    padding: 0 0.5rem;
+    color: var(--osirion-text-tertiary);
+    margin-bottom: var(--osirion-spacing-2, 0.5rem);
+    padding: 0 var(--osirion-spacing-2, 0.5rem);
 }
 
 .osirion-admin-nav-list {
@@ -25,32 +23,32 @@
 }
 
 .osirion-admin-nav-item {
-    margin-bottom: 0.25rem;
+    margin-bottom: var(--osirion-spacing-1, 0.25rem);
 }
 
 .osirion-admin-nav-link {
     display: flex;
     align-items: center;
-    padding: 0.5rem 0.75rem;
-    color: var(--osirion-admin-text);
+    padding: var(--osirion-spacing-2, 0.5rem) var(--osirion-spacing-3, 0.75rem);
+    color: var(--osirion-text-primary);
     text-decoration: none;
-    border-radius: 0.25rem;
-    transition: background-color 0.2s, color 0.2s;
-    font-size: 0.875rem;
+    border-radius: var(--osirion-radius-base, 0.25rem);
+    transition: background-color var(--osirion-transition-duration-200, 0.2s), color var(--osirion-transition-duration-200, 0.2s);
+    font-size: var(--osirion-font-size-sm, 0.875rem);
 }
 
     .osirion-admin-nav-link:hover {
-        background-color: var(--osirion-admin-light);
-        color: var(--osirion-admin-text);
+        background-color: var(--osirion-background-hover);
+        color: var(--osirion-text-primary);
     }
 
     .osirion-admin-nav-link.active {
-        background-color: var(--osirion-admin-primary);
-        color: white;
+        background-color: var(--osirion-action-primary);
+        color: var(--osirion-action-primary-text, white);
     }
 
     .osirion-admin-nav-link .osirion-admin-icon {
-        margin-right: 0.5rem;
+        margin-right: var(--osirion-spacing-2, 0.5rem);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -66,8 +64,3 @@
     .osirion-admin-nav-link.active .osirion-admin-icon {
         opacity: 1;
     }
-
-/* Dark theme adjustments */
-:global(.osirion-admin-theme-dark) .osirion-admin-nav-link:hover {
-    background-color: rgba(255, 255, 255, 0.05);
-}

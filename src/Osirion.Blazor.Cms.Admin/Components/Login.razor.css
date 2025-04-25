@@ -6,81 +6,135 @@
     align-items: center;
     min-height: 100vh;
     width: 100%;
-    padding: var(--osirion-admin-spacer);
-    background-color: var(--osirion-admin-bg);
+    padding: var(--osirion-spacing-4);
+    background-color: var(--osirion-background-primary);
 }
 
 .osirion-admin-login-container {
-    background-color: var(--osirion-admin-bg);
-    border-radius: var(--osirion-admin-border-radius);
-    box-shadow: var(--osirion-admin-shadow-lg, 0 10px 25px rgba(0,0,0,0.1));
-    padding: var(--osirion-admin-spacer-lg, 2rem);
+    background-color: var(--osirion-background-primary);
+    border-radius: var(--osirion-radius-lg);
+    box-shadow: var(--osirion-shadow-lg);
+    padding: var(--osirion-spacing-8);
     width: 100%;
     max-width: 480px;
 }
 
 .osirion-admin-login-header {
     text-align: center;
-    margin-bottom: var(--osirion-admin-spacer-lg, 2rem);
+    margin-bottom: var(--osirion-spacing-8);
 }
 
 .osirion-admin-login-title {
-    font-size: 1.75rem;
-    margin-bottom: 0.5rem;
-    color: var(--osirion-admin-text);
+    font-size: var(--osirion-font-size-2xl);
+    margin-bottom: var(--osirion-spacing-2);
+    color: var(--osirion-text-primary);
 }
 
 .osirion-admin-login-description {
-    color: var(--osirion-admin-text-muted);
-    margin-bottom: var(--osirion-admin-spacer);
+    color: var(--osirion-text-secondary);
+    margin-bottom: var(--osirion-spacing-4);
 }
 
 .osirion-admin-login-options {
     display: flex;
     flex-direction: column;
-    gap: var(--osirion-admin-spacer);
+    gap: var(--osirion-spacing-4);
 }
 
 .osirion-admin-login-form {
-    margin-top: var(--osirion-admin-spacer);
+    margin-top: var(--osirion-spacing-4);
 }
 
 .osirion-admin-form-group {
-    margin-bottom: var(--osirion-admin-spacer);
+    margin-bottom: var(--osirion-spacing-4);
 }
 
 .osirion-admin-label {
     display: block;
-    margin-bottom: 0.25rem;
-    font-weight: var(--osirion-admin-font-weight-medium);
-    color: var(--osirion-admin-text);
+    margin-bottom: var(--osirion-spacing-1);
+    font-weight: var(--osirion-font-weight-medium);
+    color: var(--osirion-text-primary);
 }
 
 .osirion-admin-input {
     display: block;
     width: 100%;
-    padding: 0.5rem 0.75rem;
-    border: 1px solid var(--osirion-admin-border);
-    border-radius: var(--osirion-admin-border-radius);
-    background-color: var(--osirion-admin-bg);
-    color: var(--osirion-admin-text);
-    font-family: var(--osirion-admin-font-family);
-    font-size: var(--osirion-admin-font-size);
+    padding: var(--osirion-spacing-2) var(--osirion-spacing-3);
+    border: 1px solid var(--osirion-border-color);
+    border-radius: var(--osirion-radius-base);
+    background-color: var(--osirion-background-primary);
+    color: var(--osirion-text-primary);
+    font-family: var(--osirion-font-family-base);
+    font-size: var(--osirion-font-size-base);
+    transition: border-color var(--osirion-transition-duration-200) var(--osirion-transition-timing-default);
 }
+
+    .osirion-admin-input:focus {
+        outline: none;
+        border-color: var(--osirion-action-primary);
+        box-shadow: 0 0 0 3px var(--osirion-focus-ring-color);
+    }
 
 .osirion-admin-form-help {
     display: block;
-    margin-top: 0.25rem;
-    font-size: 0.75rem;
-    color: var(--osirion-admin-text-muted);
+    margin-top: var(--osirion-spacing-1);
+    font-size: var(--osirion-font-size-xs);
+    color: var(--osirion-text-tertiary);
 }
 
 .osirion-admin-form-actions {
     display: flex;
     justify-content: flex-end;
-    gap: var(--osirion-admin-spacer-sm);
-    margin-top: var(--osirion-admin-spacer);
+    gap: var(--osirion-spacing-2);
+    margin-top: var(--osirion-spacing-4);
 }
+
+/* Button styles moved from global to component */
+.osirion-admin-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+    padding: var(--osirion-spacing-2) var(--osirion-spacing-4);
+    border: 1px solid var(--osirion-border-color);
+    border-radius: var(--osirion-button-radius);
+    background-color: var(--osirion-background-primary);
+    color: var(--osirion-text-primary);
+    font-size: var(--osirion-font-size-sm);
+    font-weight: var(--osirion-font-weight-medium);
+    cursor: pointer;
+    transition: all var(--osirion-transition-duration-200) var(--osirion-transition-timing-default);
+}
+
+    .osirion-admin-button:hover:not(:disabled) {
+        background-color: var(--osirion-background-secondary);
+    }
+
+    .osirion-admin-button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+.osirion-admin-button-primary {
+    background-color: var(--osirion-action-primary);
+    border-color: var(--osirion-action-primary);
+    color: var(--osirion-action-primary-text);
+}
+
+    .osirion-admin-button-primary:hover:not(:disabled) {
+        background-color: var(--osirion-action-primary-hover);
+        border-color: var(--osirion-action-primary-hover);
+    }
+
+.osirion-admin-button-outline {
+    background-color: transparent;
+    border-color: var(--osirion-border-color);
+    color: var(--osirion-text-primary);
+}
+
+    .osirion-admin-button-outline:hover:not(:disabled) {
+        background-color: var(--osirion-background-secondary);
+    }
 
 .osirion-admin-button-github {
     background-color: #24292e;
@@ -95,29 +149,29 @@
 
 /* Alert styles for displaying errors */
 .osirion-admin-alert {
-    padding: var(--osirion-admin-spacer);
-    margin-bottom: var(--osirion-admin-spacer);
-    border-radius: var(--osirion-admin-border-radius);
+    padding: var(--osirion-spacing-4);
+    margin-bottom: var(--osirion-spacing-4);
+    border-radius: var(--osirion-radius-base);
     display: flex;
     align-items: center;
     position: relative;
 }
 
 .osirion-admin-alert-error {
-    background-color: rgba(203, 36, 49, 0.1);
-    border: 1px solid var(--osirion-admin-danger, #cb2431);
-    color: var(--osirion-admin-danger, #cb2431);
+    background-color: var(--osirion-status-danger-bg);
+    border: 1px solid var(--osirion-status-danger-border);
+    color: var(--osirion-status-danger);
 }
 
 .osirion-admin-alert-icon {
     display: flex;
-    margin-right: var(--osirion-admin-spacer-sm);
+    margin-right: var(--osirion-spacing-2);
 }
 
 .osirion-admin-alert-close {
     position: absolute;
-    top: var(--osirion-admin-spacer-sm);
-    right: var(--osirion-admin-spacer-sm);
+    top: var(--osirion-spacing-2);
+    right: var(--osirion-spacing-2);
     background: transparent;
     border: none;
     color: currentColor;
@@ -131,21 +185,15 @@
     display: inline-block;
     width: 16px;
     height: 16px;
-    border: 2px solid var(--osirion-admin-border);
-    border-top-color: var(--osirion-admin-primary);
+    border: 2px solid var(--osirion-border-color);
+    border-top-color: var(--osirion-action-primary);
     border-radius: 50%;
     animation: spin 1s linear infinite;
-    margin-right: var(--osirion-admin-spacer-sm);
+    margin-right: var(--osirion-spacing-2);
 }
 
 @keyframes spin {
     to {
         transform: rotate(360deg);
     }
-}
-
-/* Dark theme adjustments */
-:global(.osirion-admin-theme-dark) .osirion-admin-login-container {
-    background-color: var(--osirion-admin-bg);
-    border: 1px solid var(--osirion-admin-border);
 }

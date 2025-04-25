@@ -1,24 +1,23 @@
-/* Enhanced ScrollToTop Component Styles with Framework Integration */
-
+/* ScrollToTop Component Styles */
 .osirion-scroll-to-top {
     position: fixed;
     width: var(--osirion-scroll-size, 45px);
     height: var(--osirion-scroll-size, 45px);
-    background-color: var(--osirion-scroll-background, rgba(37, 99, 235, 0.8));
-    color: var(--osirion-scroll-color, #ffffff);
-    border: 1px solid var(--osirion-scroll-border-color, transparent);
-    border-radius: var(--osirion-scroll-border-radius, 50%);
-    box-shadow: var(--osirion-scroll-box-shadow, 0 4px 10px rgba(0, 0, 0, 0.2));
+    background-color: var(--osirion-action-primary);
+    color: var(--osirion-action-primary-text);
+    border: var(--osirion-border-width) solid transparent;
+    border-radius: var(--osirion-radius-full);
+    box-shadow: var(--osirion-shadow-md);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     text-decoration: none;
-    transition: var(--osirion-scroll-transition, all 0.3s ease);
-    z-index: var(--osirion-scroll-z-index, 1000);
+    transition: all var(--osirion-transition-duration-300) var(--osirion-transition-timing-default);
+    z-index: var(--osirion-z-index-fixed);
     opacity: 1;
     visibility: visible;
-    font-family: var(--osirion-font-family, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif);
+    font-family: var(--osirion-font-family-base);
 }
 
     .osirion-scroll-to-top.hidden {
@@ -29,38 +28,37 @@
 
     /* Hover state */
     .osirion-scroll-to-top:hover {
-        background-color: var(--osirion-scroll-hover-background, rgba(29, 78, 216, 0.9));
-        color: var(--osirion-scroll-hover-color, #ffffff);
-        border-color: var(--osirion-scroll-hover-border-color, transparent);
-        box-shadow: var(--osirion-scroll-hover-box-shadow, 0 6px 15px rgba(0, 0, 0, 0.25));
+        background-color: var(--osirion-action-primary-hover);
+        color: var(--osirion-action-primary-text);
         transform: translateY(-2px);
+        box-shadow: var(--osirion-shadow-lg);
     }
 
     /* Active/pressed state */
     .osirion-scroll-to-top:active {
         transform: translateY(0);
-        box-shadow: var(--osirion-scroll-box-shadow, 0 4px 10px rgba(0, 0, 0, 0.2));
+        box-shadow: var(--osirion-shadow-md);
     }
 
     /* Position variants */
     .osirion-scroll-to-top.bottom-right {
-        bottom: var(--osirion-scroll-margin, 25px);
-        right: var(--osirion-scroll-margin, 25px);
+        bottom: var(--osirion-spacing-6);
+        right: var(--osirion-spacing-6);
     }
 
     .osirion-scroll-to-top.bottom-left {
-        bottom: var(--osirion-scroll-margin, 25px);
-        left: var(--osirion-scroll-margin, 25px);
+        bottom: var(--osirion-spacing-6);
+        left: var(--osirion-spacing-6);
     }
 
     .osirion-scroll-to-top.top-right {
-        top: var(--osirion-scroll-margin, 25px);
-        right: var(--osirion-scroll-margin, 25px);
+        top: var(--osirion-spacing-6);
+        right: var(--osirion-spacing-6);
     }
 
     .osirion-scroll-to-top.top-left {
-        top: var(--osirion-scroll-margin, 25px);
-        left: var(--osirion-scroll-margin, 25px);
+        top: var(--osirion-spacing-6);
+        left: var(--osirion-spacing-6);
     }
 
     /* Icon sizing */
@@ -72,124 +70,16 @@
 
     /* Text styling when present */
     .osirion-scroll-to-top .scroll-text {
-        margin-left: 8px;
-        font-size: var(--osirion-font-size-small, 0.875rem);
-        font-weight: var(--osirion-font-weight-medium, 500);
+        margin-left: var(--osirion-spacing-3);
+        font-size: var(--osirion-font-size-sm);
+        font-weight: var(--osirion-font-weight-medium);
     }
 
     /* When text is present, adjust to pill shape */
     .osirion-scroll-to-top:has(.scroll-text) {
         width: auto;
-        padding: 0 16px;
-        border-radius: 999px;
-    }
-
-/* Framework-specific integrations */
-
-/* Bootstrap Integration */
-html.osirion-bootstrap-integration .osirion-scroll-to-top {
-    background-color: var(--bs-primary, #0d6efd);
-    color: var(--bs-white, #ffffff);
-    box-shadow: var(--bs-box-shadow-sm, 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075));
-    border-radius: var(--bs-border-radius-pill, 50rem);
-    font-family: var(--bs-font-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif);
-}
-
-    html.osirion-bootstrap-integration .osirion-scroll-to-top:hover {
-        background-color: var(--bs-primary-darker, #0a58ca);
-        color: var(--bs-white, #ffffff);
-        box-shadow: var(--bs-box-shadow, 0 0.5rem 1rem rgba(0, 0, 0, 0.15));
-    }
-
-/* MudBlazor Integration */
-html.osirion-mudblazor-integration .osirion-scroll-to-top {
-    background-color: var(--mud-palette-primary, #594ae2);
-    color: var(--mud-palette-primary-text, #ffffff);
-    box-shadow: var(--mud-elevation-4, 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12));
-    border-radius: 50%;
-    font-family: var(--mud-typography-default-family, 'Roboto', 'Helvetica', 'Arial', sans-serif);
-}
-
-    html.osirion-mudblazor-integration .osirion-scroll-to-top:hover {
-        background-color: var(--mud-palette-primary-darken, #4538ca);
-        color: var(--mud-palette-primary-text, #ffffff);
-        box-shadow: var(--mud-elevation-8, 0px 5px 5px -3px rgba(0, 0, 0, 0.2), 0px 8px 10px 1px rgba(0, 0, 0, 0.14), 0px 3px 14px 2px rgba(0, 0, 0, 0.12));
-    }
-
-/* Radzen Integration */
-html.osirion-radzen-integration .osirion-scroll-to-top {
-    background-color: var(--rz-primary, #479cc8);
-    color: var(--rz-white, #ffffff);
-    box-shadow: var(--rz-shadow-2, 0 3px 1px -2px rgba(0, 0, 0, .2), 0 2px 2px 0 rgba(0, 0, 0, .14), 0 1px 5px 0 rgba(0, 0, 0, .12));
-    border-radius: var(--rz-border-radius, 4px);
-    font-family: var(--rz-text-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
-}
-
-    html.osirion-radzen-integration .osirion-scroll-to-top:hover {
-        background-color: var(--rz-primary-dark, #3d8bb1);
-        color: var(--rz-white, #ffffff);
-        box-shadow: var(--rz-shadow-3, 0 3px 3px -2px rgba(0, 0, 0, .2), 0 3px 4px 0 rgba(0, 0, 0, .14), 0 1px 8px 0 rgba(0, 0, 0, .12));
-    }
-
-/* Dark Theme Support */
-
-/* Base Dark Theme */
-:root[data-theme="dark"] .osirion-scroll-to-top,
-.dark-theme .osirion-scroll-to-top,
-.theme-dark .osirion-scroll-to-top {
-    background-color: var(--osirion-scroll-background, rgba(59, 130, 246, 0.8));
-    color: var(--osirion-scroll-color, #ffffff);
-    box-shadow: var(--osirion-scroll-box-shadow, 0 4px 10px rgba(0, 0, 0, 0.35));
-}
-
-    :root[data-theme="dark"] .osirion-scroll-to-top:hover,
-    .dark-theme .osirion-scroll-to-top:hover,
-    .theme-dark .osirion-scroll-to-top:hover {
-        background-color: var(--osirion-scroll-hover-background, rgba(96, 165, 250, 0.9));
-        box-shadow: var(--osirion-scroll-hover-box-shadow, 0 6px 15px rgba(0, 0, 0, 0.45));
-    }
-
-/* Bootstrap Dark Theme */
-html.osirion-bootstrap-integration[data-bs-theme="dark"] .osirion-scroll-to-top {
-    background-color: var(--bs-primary, #0d6efd);
-    box-shadow: var(--bs-box-shadow-sm, 0 0.125rem 0.25rem rgba(0, 0, 0, 0.35));
-}
-
-    html.osirion-bootstrap-integration[data-bs-theme="dark"] .osirion-scroll-to-top:hover {
-        background-color: var(--bs-primary-dark, #0a58ca);
-        box-shadow: var(--bs-box-shadow, 0 0.5rem 1rem rgba(0, 0, 0, 0.45));
-    }
-
-/* FluentUI Dark Theme */
-html.osirion-fluent-integration.fluent-dark-theme .osirion-scroll-to-top {
-    background-color: var(--accent-fill-rest, #2899f5);
-    box-shadow: var(--elevation-shadow-card-rest, 0 0 2px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.4));
-}
-
-    html.osirion-fluent-integration.fluent-dark-theme .osirion-scroll-to-top:hover {
-        background-color: var(--accent-fill-hover, #1890f1);
-    }
-
-/* MudBlazor Dark Theme */
-html.osirion-mudblazor-integration.mud-theme-dark .osirion-scroll-to-top {
-    background-color: var(--mud-palette-primary, #776be7);
-    box-shadow: var(--mud-elevation-4, 0px 2px 4px -1px rgba(0, 0, 0, 0.4), 0px 4px 5px 0px rgba(0, 0, 0, 0.3), 0px 1px 10px 0px rgba(0, 0, 0, 0.3));
-}
-
-    html.osirion-mudblazor-integration.mud-theme-dark .osirion-scroll-to-top:hover {
-        background-color: var(--mud-palette-primary-darken, #594ae2);
-        box-shadow: var(--mud-elevation-8, 0px 5px 5px -3px rgba(0, 0, 0, 0.4), 0px 8px 10px 1px rgba(0, 0, 0, 0.3), 0px 3px 14px 2px rgba(0, 0, 0, 0.3));
-    }
-
-/* Radzen Dark Theme */
-html.osirion-radzen-integration.rz-dark-theme .osirion-scroll-to-top {
-    background-color: var(--rz-primary, #6ba6d6);
-    box-shadow: var(--rz-shadow-2, 0 3px 1px -2px rgba(0, 0, 0, .4), 0 2px 2px 0 rgba(0, 0, 0, .3), 0 1px 5px 0 rgba(0, 0, 0, .3));
-}
-
-    html.osirion-radzen-integration.rz-dark-theme .osirion-scroll-to-top:hover {
-        background-color: var(--rz-primary-dark, #4994ce);
-        box-shadow: var(--rz-shadow-3, 0 3px 3px -2px rgba(0, 0, 0, .4), 0 3px 4px 0 rgba(0, 0, 0, .3), 0 1px 8px 0 rgba(0, 0, 0, .3));
+        padding: 0 var(--osirion-spacing-4);
+        border-radius: var(--osirion-radius-full);
     }
 
 /* Enhanced visibility animation */
@@ -209,7 +99,7 @@ html.osirion-radzen-integration.rz-dark-theme .osirion-scroll-to-top {
     animation: fadeInUp 0.3s ease-out;
 }
 
-/* Responsive styles */
+/* Responsive adjustments */
 @media (max-width: 768px) {
     .osirion-scroll-to-top {
         --osirion-scroll-size: 40px;
@@ -223,7 +113,7 @@ html.osirion-radzen-integration.rz-dark-theme .osirion-scroll-to-top {
         .osirion-scroll-to-top:has(.scroll-text) {
             width: var(--osirion-scroll-size, 40px);
             padding: 0;
-            border-radius: var(--osirion-scroll-border-radius, 50%);
+            border-radius: var(--osirion-radius-full);
         }
 }
 
