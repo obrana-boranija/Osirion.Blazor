@@ -41,12 +41,17 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Osirion.Blazor.Core\Osirion.Blazor.Core.csproj" />
+	  <ProjectReference Include="..\Osirion.Blazor.Cms.Admin\Osirion.Blazor.Cms.Admin.csproj" />
+		<ProjectReference Include="..\Osirion.Blazor.Cms.Front\Osirion.Blazor.Cms.Front.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<None Include="README.md" Pack="true" PackagePath="\" />
-		<None Include="..\..\icon.png" Pack="true" PackagePath="\"/>
+		<None Include="..\..\icon.png" Pack="true" PackagePath="\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Extensions\" />
 	</ItemGroup>
 
 </Project>

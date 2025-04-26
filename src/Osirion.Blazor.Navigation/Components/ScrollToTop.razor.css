@@ -1,0 +1,133 @@
+/* ScrollToTop Component Styles */
+.osirion-scroll-to-top {
+    position: fixed;
+    width: var(--osirion-scroll-size, 45px);
+    height: var(--osirion-scroll-size, 45px);
+    background-color: var(--osirion-action-primary);
+    color: var(--osirion-action-primary-text);
+    border: var(--osirion-border-width) solid transparent;
+    border-radius: var(--osirion-radius-full);
+    box-shadow: var(--osirion-shadow-md);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: all var(--osirion-transition-duration-300) var(--osirion-transition-timing-default);
+    z-index: var(--osirion-z-index-fixed);
+    opacity: 1;
+    visibility: visible;
+    font-family: var(--osirion-font-family-base);
+}
+
+    .osirion-scroll-to-top.hidden {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+    }
+
+    /* Hover state */
+    .osirion-scroll-to-top:hover {
+        background-color: var(--osirion-action-primary-hover);
+        color: var(--osirion-action-primary-text);
+        transform: translateY(-2px);
+        box-shadow: var(--osirion-shadow-lg);
+    }
+
+    /* Active/pressed state */
+    .osirion-scroll-to-top:active {
+        transform: translateY(0);
+        box-shadow: var(--osirion-shadow-md);
+    }
+
+    /* Position variants */
+    .osirion-scroll-to-top.bottom-right {
+        bottom: var(--osirion-spacing-6);
+        right: var(--osirion-spacing-6);
+    }
+
+    .osirion-scroll-to-top.bottom-left {
+        bottom: var(--osirion-spacing-6);
+        left: var(--osirion-spacing-6);
+    }
+
+    .osirion-scroll-to-top.top-right {
+        top: var(--osirion-spacing-6);
+        right: var(--osirion-spacing-6);
+    }
+
+    .osirion-scroll-to-top.top-left {
+        top: var(--osirion-spacing-6);
+        left: var(--osirion-spacing-6);
+    }
+
+    /* Icon sizing */
+    .osirion-scroll-to-top svg {
+        width: calc(var(--osirion-scroll-size, 45px) * 0.5);
+        height: calc(var(--osirion-scroll-size, 45px) * 0.5);
+        stroke-width: 2.5;
+    }
+
+    /* Text styling when present */
+    .osirion-scroll-to-top .scroll-text {
+        margin-left: var(--osirion-spacing-3);
+        font-size: var(--osirion-font-size-sm);
+        font-weight: var(--osirion-font-weight-medium);
+    }
+
+    /* When text is present, adjust to pill shape */
+    .osirion-scroll-to-top:has(.scroll-text) {
+        width: auto;
+        padding: 0 var(--osirion-spacing-4);
+        border-radius: var(--osirion-radius-full);
+    }
+
+/* Enhanced visibility animation */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.osirion-scroll-to-top:not(.hidden) {
+    animation: fadeInUp 0.3s ease-out;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .osirion-scroll-to-top {
+        --osirion-scroll-size: 40px;
+        --osirion-scroll-margin: 20px;
+    }
+
+        .osirion-scroll-to-top .scroll-text {
+            display: none;
+        }
+
+        .osirion-scroll-to-top:has(.scroll-text) {
+            width: var(--osirion-scroll-size, 40px);
+            padding: 0;
+            border-radius: var(--osirion-radius-full);
+        }
+}
+
+/* Accessibility - reduce motion preference */
+@media (prefers-reduced-motion) {
+    .osirion-scroll-to-top {
+        transition: opacity 0.2s ease;
+    }
+
+        .osirion-scroll-to-top:hover {
+            transform: none;
+        }
+
+        .osirion-scroll-to-top:not(.hidden) {
+            animation: none;
+        }
+}

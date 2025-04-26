@@ -1,0 +1,46 @@
+﻿@if (Content != null)
+{
+    <PageTitle>@GetMetaTitle()</PageTitle>
+
+    <meta name="description" content="@Content.Seo.MetaDescription" />
+
+    @if (!string.IsNullOrEmpty(Content.Seo.CanonicalUrl))
+    {
+        <link rel="canonical" href="@Content.Seo.CanonicalUrl" />
+    }
+
+    <meta name="robots" content="@Content.Seo.Robots" />
+
+    <!-- Open Graph tags -->
+    <meta property="og:title" content="@Content.Seo.OgTitle" />
+    <meta property="og:description" content="@Content.Seo.OgDescription" />
+    <meta property="og:type" content="@Content.Seo.OgType" />
+
+    @if (!string.IsNullOrEmpty(Content.Seo.OgImageUrl))
+    {
+        <meta property="og:image" content="@Content.Seo.OgImageUrl" />
+    }
+
+    <!-- Twitter Card tags -->
+    <meta name="twitter:card" content="@Content.Seo.TwitterCard" />
+    <meta name="twitter:title" content="@Content.Seo.TwitterTitle" />
+    <meta name="twitter:description" content="@Content.Seo.TwitterDescription" />
+
+    @if (!string.IsNullOrEmpty(Content.Seo.TwitterImageUrl))
+    {
+        <meta name="twitter:image" content="@Content.Seo.TwitterImageUrl" />
+    }
+
+    @if (!string.IsNullOrEmpty(Content.Seo.JsonLd))
+    {
+        <script type="application/ld+json">
+            @((MarkupString)Content.Seo.JsonLd)
+        </script>
+    }
+    else if (!string.IsNullOrEmpty(Content.Seo.SchemaType))
+    {
+        <script type="application/ld+json">
+            @((MarkupString)GenerateJsonLd())
+        </script>
+    }
+}

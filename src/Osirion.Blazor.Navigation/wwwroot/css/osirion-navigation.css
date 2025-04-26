@@ -1,6 +1,5 @@
-﻿/* For src/Osirion.Blazor.Navigation/wwwroot/css/osirion-navigation.css */
-
-/* Base styles for both class naming conventions */
+﻿/* Base styles for ScrollToTop component 
+   Supporting both legacy and namespaced class patterns */
 .scroll-to-top,
 .osirion-scroll-to-top {
     position: fixed;
@@ -74,7 +73,7 @@
     .scroll-to-top .scroll-text,
     .osirion-scroll-to-top .scroll-text {
         margin-left: 8px;
-        font-size: var(--osirion-small-font-size, 0.875rem);
+        font-size: var(--osirion-font-size-small, 0.875rem);
         font-weight: 500;
     }
 
@@ -104,5 +103,18 @@
             width: var(--osirion-scroll-size, 40px);
             padding: 0;
             border-radius: var(--osirion-scroll-border-radius, 50%);
+        }
+}
+
+/* Accessibility - show only on hover/focus when reduced motion is preferred */
+@media (prefers-reduced-motion) {
+    .scroll-to-top,
+    .osirion-scroll-to-top {
+        transition: none;
+    }
+
+        .scroll-to-top:hover,
+        .osirion-scroll-to-top:hover {
+            transform: none;
         }
 }

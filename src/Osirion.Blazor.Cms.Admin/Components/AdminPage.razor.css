@@ -1,0 +1,99 @@
+/* AdminPage Component - Osirion.Blazor.Cms.Admin */
+
+.osirion-admin-page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: var(--osirion-background-primary);
+    color: var(--osirion-text-primary);
+    font-family: var(--osirion-font-family-base);
+}
+
+.osirion-admin-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.osirion-admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--osirion-spacing-4) var(--osirion-spacing-6);
+    background-color: var(--osirion-background-secondary);
+    border-bottom: var(--osirion-border-width) solid var(--osirion-border-color);
+}
+
+.osirion-admin-title {
+    font-size: var(--osirion-font-size-xl);
+    font-weight: var(--osirion-font-weight-bold);
+    color: var(--osirion-text-primary);
+    margin: 0;
+}
+
+.osirion-admin-content {
+    flex: 1;
+    padding: var(--osirion-spacing-6);
+}
+
+.osirion-admin-footer {
+    padding: var(--osirion-spacing-4) var(--osirion-spacing-6);
+    background-color: var(--osirion-background-secondary);
+    border-top: var(--osirion-border-width) solid var(--osirion-border-color);
+    text-align: center;
+    font-size: var(--osirion-font-size-sm);
+    color: var(--osirion-text-secondary);
+}
+
+.osirion-admin-alert {
+    margin-bottom: var(--osirion-spacing-4);
+    padding: var(--osirion-spacing-4);
+    border-radius: var(--osirion-radius-base);
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.osirion-admin-alert-success {
+    background-color: var(--osirion-status-success-bg);
+    border: var(--osirion-border-width) solid var(--osirion-status-success-border);
+    color: var(--osirion-status-success);
+}
+
+.osirion-admin-alert-error {
+    background-color: var(--osirion-status-danger-bg);
+    border: var(--osirion-border-width) solid var(--osirion-status-danger-border);
+    color: var(--osirion-status-danger);
+}
+
+.osirion-admin-alert-icon {
+    margin-right: var(--osirion-spacing-2);
+}
+
+.osirion-admin-alert-close {
+    position: absolute;
+    top: var(--osirion-spacing-2);
+    right: var(--osirion-spacing-2);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: currentColor;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .osirion-admin-header {
+        flex-direction: column;
+        padding: var(--osirion-spacing-4);
+    }
+
+    .osirion-admin-content {
+        padding: var(--osirion-spacing-4);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .osirion-admin-alert {
+        transition: none;
+    }
+}

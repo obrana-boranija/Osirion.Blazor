@@ -2,6 +2,8 @@
 using Osirion.Blazor.Analytics;
 using Osirion.Blazor.Analytics.Extensions;
 using Osirion.Blazor.Cms;
+using Osirion.Blazor.Cms.Admin.Extensions;
+using Osirion.Blazor.Cms.Admin.Interfaces;
 using Osirion.Blazor.Cms.Extensions;
 using Osirion.Blazor.Navigation;
 using Osirion.Blazor.Navigation.Extensions;
@@ -22,6 +24,12 @@ internal class OsirionBuilder : IOsirionBuilder
     public IOsirionBuilder UseContent(Action<IContentBuilder> configure)
     {
         Services.AddOsirionContent(configure);
+        return this;
+    }
+
+    public IOsirionBuilder UseCmsAdmin(Action<ICmsAdminBuilder> configure)
+    {
+        Services.AddOsirionCmsAdmin(configure);
         return this;
     }
 

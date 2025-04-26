@@ -1,0 +1,137 @@
+﻿<div class="@GetContentPageClass()">
+    @if (IsLoading)
+    {
+        <div class="osirion-content-loading">
+            <div class="osirion-loading-spinner"></div>
+            <p>@LoadingText</p>
+        </div>
+    }
+    else if (ContentItem == null)
+    {
+        <div class="osirion-content-not-found">
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <h2>@NotFoundTitle</h2>
+            <p>@NotFoundText</p>
+            @if (ShowBackLink && !string.IsNullOrEmpty(BackLinkUrl))
+            {
+                <a href="@BackLinkUrl" class="osirion-content-back-link">@BackLinkText</a>
+            }
+        </div>
+    }
+    else
+    {
+        <article class="osirion-content-page" itemscope itemtype="https://schema.org/@SchemaType">
+            @if (ShowBreadcrumbs)
+            {
+                <ContentBreadcrumbs Content="@ContentItem"
+                                    Directory="@ContentItem.Directory"
+                                    ShowHome="@ShowBreadcrumbHome"
+                                    HomeUrl="@BreadcrumbHomeUrl"
+                                    HomeText="@BreadcrumbHomeText" />
+            }
+
+            <div class="osirion-content-main">
+                <div class="osirion-content-primary">
+                    @*                     @if (UseLocalizedView && AvailableTranslations != null && AvailableTranslations.Any())
+                    {
+                        <LocalizedContentView 
+                            Item="@ContentItem"
+                            PreviousItem="@PreviousItem"
+                            NextItem="@NextItem"
+                            ShowNavigationLinks="@ShowNavigationLinks"
+                            AvailableTranslations="@AvailableTranslations"
+                            ShowTranslations="true"
+                            GetCategoryUrl="@GetCategoryUrl"
+                            GetTagUrl="@GetTagUrl"
+                            GetContentUrl="@GetContentUrl"
+                            GetTranslationUrl="@GetTranslationUrl" />
+                    }
+                    else
+                    { *@
+                    <ContentView Item="@ContentItem"
+                                 LoadingText="@LoadingText"
+                                 NotFoundText="@NotFoundText"
+                                 CategoryUrlFormatter="@CategoryUrlFormatter"
+                                 TagUrlFormatter="@TagUrlFormatter"
+                                 ContentUrlFormatter="@ContentUrlFormatter"
+                                 PreviousItem="@PreviousItem"
+                                 NextItem="@NextItem"
+                                 ShowNavigationLinks="@ShowNavigationLinks" />
+                    @* } *@
+
+                    @if (ShowShareLinks && ShareLinks != null && ShareLinks.Any())
+                    {
+                        <div class="osirion-content-share">
+                            <h3 class="osirion-content-section-title">@ShareLinksTitle</h3>
+                            <div class="osirion-content-share-links">
+                                @foreach (var shareLink in ShareLinks)
+                                {
+                                    <a href="@shareLink.Url" class="osirion-content-share-link osirion-content-share-@shareLink.Name.ToLowerInvariant()"
+                                       target="_blank" rel="noopener noreferrer" title="@shareLink.Label">
+                                        @((MarkupString)shareLink.Icon)
+                                        <span class="osirion-share-text">@shareLink.Label</span>
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrEmpty(FooterContent))
+                    {
+                        <div class="osirion-content-custom-footer">
+                            @((MarkupString)FooterContent)
+                        </div>
+                    }
+                </div>
+
+                <div class="osirion-content-sidebar">
+                    @if (ContentItem.Categories.Any() && ShowCategories)
+                    {
+                        <CategoriesList Title="@CategoriesTitle"
+                                        ShowCount="false" />
+                    }
+
+                    @if (ContentItem.Tags.Any() && ShowTags)
+                    {
+                        <TagCloud Title="@TagsTitle"
+                                  ShowCount="false"/>
+                    }
+
+                    @* @SidebarContent *@
+                </div>
+            </div>
+
+            @if (ShowRelatedContent && RelatedItems != null && RelatedItems.Any())
+            {
+                <div class="osirion-content-related">
+                    <h2 class="osirion-content-related-title">@RelatedContentTitle</h2>
+                    <div class="osirion-content-related-grid">
+                        @foreach (var item in RelatedItems)
+                        {
+                            <article class="osirion-content-related-item">
+                                @if (!string.IsNullOrEmpty(item.FeaturedImageUrl))
+                                {
+                                    <div class="osirion-content-related-image-container">
+                                        <img src="@item.FeaturedImageUrl" alt="@item.Title" class="osirion-content-related-image" loading="lazy" />
+                                    </div>
+                                }
+                                <div class="osirion-content-related-body">
+                                    <h3 class="osirion-content-related-item-title">
+                                        <a href="@GetContentUrl(item)">@item.Title</a>
+                                    </h3>
+                                    <time class="osirion-content-related-date" datetime="@item.DateCreated.ToString("yyyy-MM-dd")">
+                                        @item.DateCreated.ToString("MMM d, yyyy")
+                                    </time>
+                                </div>
+                            </article>
+                        }
+                    </div>
+                </div>
+            }
+        </article>
+    }
+</div>

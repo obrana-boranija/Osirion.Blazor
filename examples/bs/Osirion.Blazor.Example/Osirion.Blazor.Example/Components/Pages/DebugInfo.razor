@@ -1,5 +1,6 @@
 ﻿@page "/debug"
-@inject IEnumerable<Osirion.Blazor.Cms.IContentProvider> ContentProviders
+@using Osirion.Blazor.Cms.Interfaces
+@inject IEnumerable<IContentProvider> ContentProviders
 @inject Osirion.Blazor.Navigation.Services.ScrollToTopManager ScrollManager
 
 <PageTitle>Debug Info</PageTitle>

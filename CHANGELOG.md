@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved service registration with fluent API through `AddOsirionBlazor` method
 - New `IOsirionBlazorBuilder` interface for better extensibility
 - `OsirionStyleOptions` class separated from `GitHubCmsOptions` for better separation of concerns
-- CSS framework integration support for Bootstrap, Tailwind, FluentUI, MudBlazor, and Radzen
+- CSS framework integration support for Bootstrap, FluentUI, MudBlazor, and Radzen
 - CssFramework enum for specifying framework integration options
 - Integration classes for mapping Osirion variables to CSS framework variables
 - Updated OsirionStyles component with FrameworkIntegration parameter

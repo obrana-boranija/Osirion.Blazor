@@ -1,0 +1,45 @@
+﻿@namespace Osirion.Blazor.Cms.Core.Components
+@inherits Osirion.Blazor.Components.OsirionComponentBase
+
+<PageLayout Size="PageLayout.ContainerSize.Small"
+            Title="@Title"
+            Description="@Description"
+            ShowHeader="@ShowHeader"
+            HeaderTemplate="@HeaderTemplate">
+
+    <article class="osirion-blog-article">
+        @if (!string.IsNullOrEmpty(ImageUrl))
+        {
+            <figure class="osirion-blog-featured-image-container">
+                <img src="@ImageUrl" alt="@ImageAlt" class="osirion-blog-featured-image" />
+                @if (!string.IsNullOrEmpty(ImageCaption))
+                {
+                    <figcaption class="osirion-blog-image-caption">@ImageCaption</figcaption>
+                }
+            </figure>
+        }
+
+        <div class="osirion-blog-content">
+            @ChildContent
+        </div>
+
+        @if (FooterContent != null)
+        {
+            <footer class="osirion-blog-footer">
+                @FooterContent
+            </footer>
+        }
+    </article>
+</PageLayout>
+
+@code {
+    [Parameter] public string Title { get; set; }
+    [Parameter] public string Description { get; set; }
+    [Parameter] public string ImageUrl { get; set; }
+    [Parameter] public string ImageAlt { get; set; }
+    [Parameter] public string ImageCaption { get; set; }
+    [Parameter] public bool ShowHeader { get; set; } = true;
+    [Parameter] public RenderFragment HeaderTemplate { get; set; }
+    [Parameter] public RenderFragment ChildContent { get; set; }
+    [Parameter] public RenderFragment FooterContent { get; set; }
+}

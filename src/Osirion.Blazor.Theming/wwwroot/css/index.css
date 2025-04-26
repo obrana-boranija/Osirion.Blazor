@@ -1,0 +1,74 @@
+﻿/* 
+ * Osirion Theming System
+ * Main entry point for Osirion's theming
+ */
+
+/* Base themes */
+@import './themes/light-theme.css'; /* Light theme is default */
+@import './themes/dark-theme.css'; /* Applied via selectors */
+
+/* Framework Adapters */
+@import './adapters/bootstrap-adapter.css';
+@import './adapters/fluentui-adapter.css';
+@import './adapters/mudblazor-adapter.css';
+@import './adapters/radzen-adapter.css';
+
+/* Core theme-toggle mechanism - applies to all frameworks */
+.osirion-theme-provider {
+    height: 100%;
+    width: 100%;
+    display: contents;
+}
+
+/* Theme class assignments */
+:root[data-theme="light"],
+[data-theme="light"],
+.light-theme,
+.theme-light,
+.osirion-theme-light {
+    color-scheme: light;
+    --osirion-theme-mode: light;
+}
+
+:root[data-theme="dark"],
+[data-theme="dark"],
+.dark-theme,
+.theme-dark,
+.osirion-theme-dark {
+    color-scheme: dark;
+    --osirion-theme-mode: dark;
+}
+
+.theme-system,
+.osirion-theme-system {
+    --osirion-theme-mode: system;
+}
+
+/* System preference handling without JavaScript */
+@media (prefers-color-scheme: dark) {
+    .theme-system,
+    .osirion-theme-system {
+        color-scheme: dark;
+    }
+}
+
+@media (prefers-color-scheme: light) {
+    .theme-system,
+    .osirion-theme-system {
+        color-scheme: light;
+    }
+}
+
+/* Smooth transitions between themes */
+.osirion-theme-transitions-enabled * {
+    transition-property: color, background-color, border-color, outline-color, fill, stroke, opacity, box-shadow, transform;
+    transition-duration: 0.3s;
+    transition-timing-function: ease;
+}
+
+/* Respect user preferences for reduced motion */
+@media (prefers-reduced-motion) {
+    .osirion-theme-transitions-enabled * {
+        transition: none !important;
+    }
+}

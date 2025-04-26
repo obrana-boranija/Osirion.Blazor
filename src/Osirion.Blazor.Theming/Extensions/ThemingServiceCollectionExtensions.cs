@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Osirion.Blazor.Theming.Internal;
 using Osirion.Blazor.Theming.Services;
+using Osirion.Blazor.Theming.Options;
 
 namespace Osirion.Blazor.Theming.Extensions;
 
@@ -22,9 +23,45 @@ public static class ThemingServiceCollectionExtensions
         if (services == null) throw new ArgumentNullException(nameof(services));
         if (configure == null) throw new ArgumentNullException(nameof(configure));
 
+        // Register default options
+        services.Configure<ThemingOptions>(options =>
+        {
+            // Default options ensure everything works without specific configuration
+            options.UseDefaultStyles = true;
+            options.Framework = CssFramework.None;
+            options.DefaultMode = ThemeMode.Light;
+            options.EnableDarkMode = true;
+            options.FollowSystemPreference = false;
+        });
+
         // Create builder and apply configuration
         var builder = new ThemingBuilder(services);
         configure(builder);
+
+        // Register theme service (singleton to maintain state across components)
+        services.AddSingleton<IThemeService, ThemeService>();
+
+        return services;
+    }
+
+    /// <summary>
+    /// Adds minimal theming services with default options
+    /// </summary>
+    /// <param name="services">The service collection</param>
+    /// <returns>The service collection for chaining</returns>
+    public static IServiceCollection AddOsirionTheming(this IServiceCollection services)
+    {
+        if (services == null) throw new ArgumentNullException(nameof(services));
+
+        // Register default options
+        services.Configure<ThemingOptions>(options =>
+        {
+            options.UseDefaultStyles = true;
+            options.Framework = CssFramework.None;
+            options.DefaultMode = ThemeMode.Light;
+            options.EnableDarkMode = true;
+            options.FollowSystemPreference = false;
+        });
 
         // Register theme service
         services.AddSingleton<IThemeService, ThemeService>();

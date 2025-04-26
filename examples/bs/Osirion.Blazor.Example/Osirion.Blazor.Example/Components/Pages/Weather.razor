@@ -1,64 +1,31 @@
 ﻿@page "/weather"
+@using Osirion.Blazor.Cms
+@using Osirion.Blazor.Cms.Core.Components
 @attribute [StreamRendering]
 
 <PageTitle>Weather</PageTitle>
 
-<h1>Weather</h1>
+<BlogLayout Title="Test post"
+            Description="Test description"
+            ImageUrl="https://images.pexels.com/photos/31090535/pexels-photo-31090535/free-photo-of-rustic-western-style-wooden-saloon-front.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+            ImageAlt="Post.Title">
 
-<p>This component demonstrates showing data.</p>
+    <ChildContent>
+        <Osirion.Blazor.Cms.Components.ContentPage Path="en/blog/from-time-tracking-to-productivity-insights-hexavera-bi-integrations" ShowRelatedContent ShowShareLinks />
 
-@if (forecasts == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th aria-label="Temperature in Celsius">Temp. (C)</th>
-                <th aria-label="Temperature in Farenheit">Temp. (F)</th>
-                <th>Summary</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var forecast in forecasts)
+    </ChildContent>
+
+    <FooterContent>
+        <div class="osirion-blog-meta">
+            <div class="osirion-blog-author">Written by Dejan</div>
+            <div class="osirion-blog-date">Published on @DateTime.Today.ToLongDateString()</div>
+        </div>
+
+@*         <div class="osirion-blog-tags">
+            @foreach (var tag in Post.Tags)
             {
-                <tr>
-                    <td>@forecast.Date.ToShortDateString()</td>
-                    <td>@forecast.TemperatureC</td>
-                    <td>@forecast.TemperatureF</td>
-                    <td>@forecast.Summary</td>
-                </tr>
+                <a href="/blog/tag/@tag" class="osirion-blog-tag">@tag</a>
             }
-        </tbody>
-    </table>
-}
-
-@code {
-    private WeatherForecast[]? forecasts;
-
-    protected override async Task OnInitializedAsync()
-    {
-        // Simulate asynchronous loading to demonstrate streaming rendering
-        await Task.Delay(500);
-
-        var startDate = DateOnly.FromDateTime(DateTime.Now);
-        var summaries = new[] { "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching" };
-        forecasts = Enumerable.Range(1, 5).Select(index => new WeatherForecast
-        {
-            Date = startDate.AddDays(index),
-            TemperatureC = Random.Shared.Next(-20, 55),
-            Summary = summaries[Random.Shared.Next(summaries.Length)]
-        }).ToArray();
-    }
-
-    private class WeatherForecast
-    {
-        public DateOnly Date { get; set; }
-        public int TemperatureC { get; set; }
-        public string? Summary { get; set; }
-        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-    }
-}
+        </div> *@
+    </FooterContent>
+</BlogLayout>

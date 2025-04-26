@@ -10,16 +10,16 @@
 {
     @if (EffectiveOptions.UseDefaultStyles)
     {
-        <link rel="stylesheet" href="_content/Osirion.Blazor.Theming/css/osirion-theming.css" />
+                <link rel="stylesheet" href="_content/Osirion.Blazor.Theming/css/osirion-theming.css" />
     }
 
     @if (!string.IsNullOrEmpty(GeneratedVariables))
     {
-        <style>
-            :root {
+                <style>
+                    :root {
             @((MarkupString)GeneratedVariables)
-            }
-        </style>
+                    }
+                </style>
     }
 
     @if (EffectiveOptions.Framework != CssFramework.None)
@@ -107,7 +107,6 @@
         var integrationClass = EffectiveOptions.Framework switch
         {
             CssFramework.Bootstrap => "osirion-bootstrap-integration",
-            CssFramework.Tailwind => "osirion-tailwind-integration",
             CssFramework.FluentUI => "osirion-fluent-integration",
             CssFramework.MudBlazor => "osirion-mudblazor-integration",
             CssFramework.Radzen => "osirion-radzen-integration",
@@ -133,7 +132,7 @@
                         document.addEventListener('DOMContentLoaded', applyFrameworkIntegration);
                     }}
 
-                {(EffectiveOptions.FollowSystemPreference ? GetSystemPreferenceScript() : "")}
+            {(EffectiveOptions.FollowSystemPreference ? GetSystemPreferenceScript() : "")}
                 }})();
             </script>
         ";

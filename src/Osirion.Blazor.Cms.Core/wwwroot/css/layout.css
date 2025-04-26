@@ -1,0 +1,159 @@
+﻿/* 
+ * Osirion CMS Core Layout System
+ * Reusable layout classes for various content types
+ */
+
+/* Container widths */
+.osirion-container {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--osirion-spacing-4, 1rem);
+    padding-right: var(--osirion-spacing-4, 1rem);
+}
+
+.osirion-container-sm {
+    max-width: 680px; /* Optimal reading width */
+}
+
+.osirion-container-md {
+    max-width: 960px; /* Blog lists, general content */
+}
+
+.osirion-container-lg {
+    max-width: 1200px; /* Homepage, wide layouts */
+}
+
+.osirion-container-xl {
+    max-width: 1400px; /* Extra wide for docs with sidebar */
+}
+
+/* Layout types */
+.osirion-layout {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--osirion-spacing-4, 1rem);
+}
+
+.osirion-layout-with-sidebar {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: var(--osirion-spacing-8, 2rem);
+}
+
+@media (max-width: 1024px) {
+    .osirion-layout-with-sidebar {
+        grid-template-columns: 240px 1fr;
+        gap: var(--osirion-spacing-4, 1rem);
+    }
+}
+
+@media (max-width: 768px) {
+    .osirion-layout-with-sidebar {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Content sections */
+.osirion-content-section {
+    margin-bottom: var(--osirion-spacing-10, 2.5rem);
+}
+
+.osirion-content-section-sm {
+    margin-bottom: var(--osirion-spacing-6, 1.5rem);
+}
+
+.osirion-content-section-lg {
+    margin-bottom: var(--osirion-spacing-16, 4rem);
+}
+
+/* Grid systems */
+.osirion-grid {
+    display: grid;
+    gap: var(--osirion-spacing-6, 1.5rem);
+}
+
+.osirion-grid-cols-1 {
+    grid-template-columns: repeat(1, 1fr);
+}
+
+.osirion-grid-cols-2 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.osirion-grid-cols-3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.osirion-grid-cols-4 {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+@media (max-width: 1024px) {
+    .osirion-grid-cols-lg-1 {
+        grid-template-columns: repeat(1, 1fr);
+    }
+
+    .osirion-grid-cols-lg-2 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .osirion-grid-cols-lg-3 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .osirion-grid-cols-md-1 {
+        grid-template-columns: repeat(1, 1fr);
+    }
+
+    .osirion-grid-cols-md-2 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .osirion-grid-cols-sm-1 {
+        grid-template-columns: repeat(1, 1fr);
+    }
+}
+
+/* Sidebar specific */
+.osirion-sidebar {
+    position: sticky;
+    top: var(--osirion-spacing-4, 1rem);
+    height: calc(100vh - var(--osirion-spacing-8, 2rem));
+    overflow-y: auto;
+    padding-right: var(--osirion-spacing-4, 1rem);
+    scrollbar-width: thin;
+}
+
+    /* Hide scrollbar in Webkit browsers */
+    .osirion-sidebar::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .osirion-sidebar::-webkit-scrollbar-thumb {
+        background-color: var(--osirion-border-color);
+        border-radius: 4px;
+    }
+
+/* Page components */
+.osirion-page-header {
+    margin-bottom: var(--osirion-spacing-8, 2rem);
+}
+
+.osirion-page-title {
+    font-size: var(--osirion-font-size-3xl, 1.875rem);
+    font-weight: var(--osirion-font-weight-bold, 700);
+    color: var(--osirion-text-primary);
+    margin-bottom: var(--osirion-spacing-4, 1rem);
+    line-height: var(--osirion-line-height-tight, 1.2);
+}
+
+.osirion-page-description {
+    font-size: var(--osirion-font-size-lg, 1.125rem);
+    color: var(--osirion-text-secondary);
+    line-height: var(--osirion-line-height-normal, 1.5);
+}

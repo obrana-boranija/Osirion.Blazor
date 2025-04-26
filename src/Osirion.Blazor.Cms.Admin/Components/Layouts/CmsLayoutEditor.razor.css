@@ -1,0 +1,44 @@
+﻿.osirion-editor-layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: var(--osirion-background-primary);
+    color: var(--osirion-text-primary);
+    font-family: var(--osirion-font-family-base);
+    font-size: var(--osirion-font-size-base);
+    line-height: var(--osirion-line-height-normal);
+}
+
+.osirion-editor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--osirion-spacing-3, 0.75rem) var(--osirion-spacing-6, 1.5rem);
+    background-color: var(--osirion-background-secondary);
+    border-bottom: var(--osirion-border-width, 1px) solid var(--osirion-border-color);
+    height: 60px;
+}
+
+.osirion-editor-header-left {
+    display: flex;
+    align-items: center;
+    gap: var(--osirion-spacing-4, 1rem);
+}
+
+.osirion-editor-header-right {
+    display: flex;
+    align-items: center;
+    gap: var(--osirion-spacing-3, 0.75rem);
+}
+
+.osirion-editor-home-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--osirion-text-primary);
+    transition: color var(--osirion-transition-duration-200, 0.2s);
+}
+
+    .osirion-editor-home-link:hover {
+        color: var(--osirion-action-primary);
+    }

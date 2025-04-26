@@ -1,0 +1,36 @@
+@namespace Osirion.Blazor.Cms.Core.Components
+@inherits Osirion.Blazor.Components.OsirionComponentBase
+
+<PageLayout Size="PageLayout.ContainerSize.ExtraLarge" 
+            Title="@Title"
+            Description="@Description"
+            ShowHeader="@ShowHeader"
+            HeaderTemplate="@HeaderTemplate">
+    <TwoColumnLayout SidebarOnRight="@SidebarOnRight">
+        <SidebarContent>
+            <div class="osirion-doc-tree-container">
+                @if (DocTreeTitle != null)
+                {
+                        <h3 class="osirion-doc-tree-title">@DocTreeTitle</h3>
+                }
+                @SidebarContent
+            </div>
+        </SidebarContent>
+        <MainContent>
+            <div class="osirion-doc-content-container">
+                @MainContent
+            </div>
+        </MainContent>
+    </TwoColumnLayout>
+</PageLayout>
+
+@code {
+    [Parameter] public string Title { get; set; }
+    [Parameter] public string Description { get; set; }
+    [Parameter] public bool ShowHeader { get; set; } = true;
+    [Parameter] public RenderFragment HeaderTemplate { get; set; }
+    [Parameter] public RenderFragment SidebarContent { get; set; }
+    [Parameter] public RenderFragment MainContent { get; set; }
+    [Parameter] public string DocTreeTitle { get; set; } = "Documentation";
+    [Parameter] public bool SidebarOnRight { get; set; } = false;
+}

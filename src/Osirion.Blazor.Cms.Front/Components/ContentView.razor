@@ -1,0 +1,150 @@
+﻿<div class="@GetContentViewClass()">
+    @if (IsLoading)
+    {
+        <div class="osirion-content-loading">
+            <div class="osirion-spinner"></div>
+            <p>@LoadingText</p>
+        </div>
+    }
+    else if (Item is null)
+    {
+        <div class="osirion-content-not-found">
+            <svg class="osirion-content-not-found-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <h2 class="osirion-content-not-found-title">Content Not Found</h2>
+            <p class="osirion-content-not-found-message">@NotFoundText</p>
+            <a href="/" class="osirion-content-back-link">Back to home</a>
+        </div>
+    }
+    else
+    {
+        <article class="osirion-content-article">
+            <header class="osirion-content-header">
+                <!-- Title and metadata row -->
+                <div class="osirion-content-title-container">
+                    <h1 class="osirion-content-title">@Item.Title</h1>
+                    <div class="osirion-content-meta">
+                        @if (!string.IsNullOrEmpty(Item.Author))
+                        {
+                            <span class="osirion-content-meta-item osirion-content-author">
+                                <svg class="osirion-content-meta-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                                @Item.Author
+                            </span>
+                        }
+                        <span class="osirion-content-meta-item osirion-content-date">
+                            <svg class="osirion-content-meta-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                            </svg>
+                            @Item.DateCreated.ToString("MMM d, yyyy")
+                        </span>
+                        <span class="osirion-content-meta-item osirion-content-read-time">
+                            <svg class="osirion-content-meta-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                            @Item.ReadTimeMinutes min read
+                        </span>
+
+                        <!-- Tags row inline at tablet sizes and above -->
+                        @if (Item.Tags.Any())
+                        {
+                            <div class="osirion-content-tags osirion-content-tags-inline">
+                                @foreach (var tag in Item.Tags)
+                                {
+                                    <a href="@GetTagUrl(tag)" class="osirion-content-tag">@tag</a>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Featured image if present -->
+                @if (!string.IsNullOrEmpty(Item.FeaturedImageUrl))
+                {
+                    <figure class="osirion-content-featured-image-container">
+                        <img src="@Item.FeaturedImageUrl" alt="@Item.Title" class="osirion-content-featured-image" loading="lazy" />
+                    </figure>
+                }
+            </header>
+
+            <!-- Main content body -->
+            <div class="osirion-content-body">
+                @((MarkupString)Item.Content)
+            </div>
+
+            <!-- Footer section -->
+            <footer class="osirion-content-footer">
+                <!-- Categories and Tags (mobile) -->
+                <div class="osirion-content-metadata">
+                    @if (Item.Categories.Any())
+                    {
+                        <div class="osirion-content-categories">
+                            <span class="osirion-content-section-title">Categories:</span>
+                            <div class="osirion-content-category-list">
+                                @foreach (var category in Item.Categories)
+                                {
+                                    <a href="@GetCategoryUrl(category)" class="osirion-content-category">@category</a>
+                                }
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Tags for mobile view -->
+                    @if (Item.Tags.Any())
+                    {
+                        <div class="osirion-content-tags osirion-content-tags-mobile">
+                            <span class="osirion-content-section-title">Tags:</span>
+                            <div class="osirion-content-tag-list">
+                                @foreach (var tag in Item.Tags)
+                                {
+                                    <a href="@GetTagUrl(tag)" class="osirion-content-tag">@tag</a>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <!-- Navigation between content items -->
+                @if (ShowNavigationLinks && (PreviousItem != null || NextItem != null))
+                {
+                    <nav class="osirion-content-navigation" aria-label="Content navigation">
+                        @if (PreviousItem != null)
+                        {
+                            <a href="@GetContentUrl(PreviousItem)" class="osirion-content-previous">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="15 18 9 12 15 6"></polyline>
+                                </svg>
+                                <div class="osirion-content-navigation-text">
+                                    <span class="osirion-content-navigation-label">Previous</span>
+                                    <span class="osirion-content-navigation-title">@PreviousItem.Title</span>
+                                </div>
+                            </a>
+                        }
+
+                        @if (NextItem != null)
+                        {
+                            <a href="@GetContentUrl(NextItem)" class="osirion-content-next">
+                                <div class="osirion-content-navigation-text">
+                                    <span class="osirion-content-navigation-label">Next</span>
+                                    <span class="osirion-content-navigation-title">@NextItem.Title</span>
+                                </div>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="9 18 15 12 9 6"></polyline>
+                                </svg>
+                            </a>
+                        }
+                    </nav>
+                }
+            </footer>
+        </article>
+    }
+</div>

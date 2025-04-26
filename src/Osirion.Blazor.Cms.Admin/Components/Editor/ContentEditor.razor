@@ -1,0 +1,70 @@
+﻿<div class="@GetContentEditorClass()">
+    @if (!adminState.IsEditing || adminState.EditingPost == null)
+    {
+        <div class="osirion-admin-empty">
+            <span>Select a file to edit or create a new file.</span>
+        </div>
+    }
+    else
+    {
+
+        <MarkdownEditorPreview @ref="EditorPreviewRef"
+                               Content="@adminState.EditingPost.Content"
+                               ContentChanged="@((content) => adminState.EditingPost.Content = content)"
+                               ShowToolbar="true"
+                               EditorTitle="Markdown"
+                               PreviewTitle="Preview"
+                               AutoFocus="true"
+                               SyncScroll="true" />
+
+        <div class="osirion-admin-editor-footer">
+            <button type="button"
+                    class="osirion-admin-button osirion-admin-button-secondary"
+                    @onclick="DiscardChanges">
+                Discard Changes
+            </button>
+
+            <div class="osirion-admin-editor-main-actions">
+                @if (IsFileName)
+                {
+                    <div class="osirion-admin-form-group osirion-admin-form-group-inline">
+                        <label class="osirion-admin-label" for="fileName">File Name:</label>
+                        <input type="text"
+                               class="osirion-admin-input"
+                               id="fileName"
+                               @bind="FileName"
+                               placeholder="Enter file name" />
+                        <span class="osirion-admin-input-suffix">.md</span>
+                    </div>
+                }
+
+                @if (AskForCommitMessage)
+                {
+                    <div class="osirion-admin-form-group osirion-admin-form-group-inline">
+                        <label class="osirion-admin-label" for="commitMessage">Commit Message:</label>
+                        <input type="text"
+                               class="osirion-admin-input"
+                               id="commitMessage"
+                               @bind="CommitMessage"
+                               placeholder="Enter commit message" />
+                    </div>
+                }
+
+                <button type="button"
+                        class="osirion-admin-button osirion-admin-button-primary"
+                        @onclick="SaveChanges"
+                        disabled="@(IsSaving || (IsFileName && string.IsNullOrWhiteSpace(FileName)))">
+                    @if (IsSaving)
+                    {
+                        <span class="osirion-admin-loading-spinner"></span>
+                        <span>Saving...</span>
+                    }
+                    else
+                    {
+                        <span>Save Changes</span>
+                    }
+                </button>
+            </div>
+        </div>
+    }
+</div>

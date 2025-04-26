@@ -1,0 +1,32 @@
+﻿<div class="@GetCategoriesListClass()">
+    @if (Title != null)
+    {
+        <h3 class="osirion-categories-title">@Title</h3>
+    }
+
+    @if (IsLoading)
+    {
+        <div class="osirion-loading">@LoadingText</div>
+    }
+    else if (Categories == null || !Categories.Any())
+    {
+        <div class="osirion-no-categories">@NoContentText</div>
+    }
+    else
+    {
+        <ul class="osirion-categories-list">
+            @foreach (var category in Categories)
+            {
+                <li class="osirion-category-item">
+                    <a href="@GetCategoryUrl(category)" class="@GetCategoryLinkClass(category)" rel="nofollow">
+                        @category.Name
+                        @if (ShowCount)
+                        {
+                            <span class="osirion-category-count">@category.Count</span>
+                        }
+                    </a>
+                </li>
+            }
+        </ul>
+    }
+</div>

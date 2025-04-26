@@ -1,0 +1,91 @@
+﻿@namespace Osirion.Blazor.Cms.Admin.Components
+@inherits Osirion.Blazor.Components.OsirionComponentBase
+
+<div class="@GetEditorLayoutClass()">
+    <header class="osirion-editor-header">
+        <div class="osirion-editor-header-left">
+            <a href="/admin" class="osirion-editor-home-link" title="Return to Dashboard">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                    <polyline points="9 22 9 12 15 12 15 22" />
+                </svg>
+            </a>
+
+            <div class="osirion-editor-breadcrumb">
+                @if (BreadcrumbItems != null && BreadcrumbItems.Count > 0)
+                {
+                    foreach (var item in BreadcrumbItems)
+                    {
+                        if (item != BreadcrumbItems.First())
+                        {
+                                                    <span class="osirion-editor-breadcrumb-separator">/</span>
+                        }
+
+                        @if (string.IsNullOrEmpty(item.Url) || item == BreadcrumbItems.Last())
+                        {
+                                                    <span class="osirion-editor-breadcrumb-current">@item.Text</span>
+                        }
+                        else
+                        {
+                                                    <a href="@item.Url" class="osirion-editor-breadcrumb-item">@item.Text</a>
+                        }
+                    }
+                }
+                else
+                {
+                            <span class="osirion-editor-breadcrumb-current">@Title</span>
+                }
+            </div>
+        </div>
+
+        <div class="osirion-editor-header-right">
+            @if (ActionsTemplate != null)
+            {
+                @ActionsTemplate
+            }
+        </div>
+    </header>
+
+    <main class="osirion-editor-main">
+        @if (StatusMessage != null)
+        {
+                    <div class="osirion-admin-alert osirion-admin-alert-success">
+                        <span class="osirion-admin-alert-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                                <polyline points="22 4 12 14.01 9 11.01" />
+                            </svg>
+                        </span>
+                        <span>@StatusMessage</span>
+                        <button type="button"
+                                class="osirion-admin-alert-close"
+                                @onclick="ClearStatusMessage"
+                                aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+        }
+
+        @if (ErrorMessage != null)
+        {
+                    <div class="osirion-admin-alert osirion-admin-alert-error">
+                        <span class="osirion-admin-alert-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10" />
+                                <line x1="12" y1="8" x2="12" y2="12" />
+                                <line x1="12" y1="16" x2="12.01" y2="16" />
+                            </svg>
+                        </span>
+                        <span>@ErrorMessage</span>
+                        <button type="button"
+                                class="osirion-admin-alert-close"
+                                @onclick="ClearErrorMessage"
+                                aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+        }
+
+        @ChildContent
+    </main>
+</div>

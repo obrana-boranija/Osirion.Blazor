@@ -1,0 +1,199 @@
+﻿/* Styles for Login component */
+
+.osirion-admin-login {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    width: 100%;
+    padding: var(--osirion-spacing-4);
+    background-color: var(--osirion-background-primary);
+}
+
+.osirion-admin-login-container {
+    background-color: var(--osirion-background-primary);
+    border-radius: var(--osirion-radius-lg);
+    box-shadow: var(--osirion-shadow-lg);
+    padding: var(--osirion-spacing-8);
+    width: 100%;
+    max-width: 480px;
+}
+
+.osirion-admin-login-header {
+    text-align: center;
+    margin-bottom: var(--osirion-spacing-8);
+}
+
+.osirion-admin-login-title {
+    font-size: var(--osirion-font-size-2xl);
+    margin-bottom: var(--osirion-spacing-2);
+    color: var(--osirion-text-primary);
+}
+
+.osirion-admin-login-description {
+    color: var(--osirion-text-secondary);
+    margin-bottom: var(--osirion-spacing-4);
+}
+
+.osirion-admin-login-options {
+    display: flex;
+    flex-direction: column;
+    gap: var(--osirion-spacing-4);
+}
+
+.osirion-admin-login-form {
+    margin-top: var(--osirion-spacing-4);
+}
+
+.osirion-admin-form-group {
+    margin-bottom: var(--osirion-spacing-4);
+}
+
+.osirion-admin-label {
+    display: block;
+    margin-bottom: var(--osirion-spacing-1);
+    font-weight: var(--osirion-font-weight-medium);
+    color: var(--osirion-text-primary);
+}
+
+.osirion-admin-input {
+    display: block;
+    width: 100%;
+    padding: var(--osirion-spacing-2) var(--osirion-spacing-3);
+    border: 1px solid var(--osirion-border-color);
+    border-radius: var(--osirion-radius-base);
+    background-color: var(--osirion-background-primary);
+    color: var(--osirion-text-primary);
+    font-family: var(--osirion-font-family-base);
+    font-size: var(--osirion-font-size-base);
+    transition: border-color var(--osirion-transition-duration-200) var(--osirion-transition-timing-default);
+}
+
+    .osirion-admin-input:focus {
+        outline: none;
+        border-color: var(--osirion-action-primary);
+        box-shadow: 0 0 0 3px var(--osirion-focus-ring-color);
+    }
+
+.osirion-admin-form-help {
+    display: block;
+    margin-top: var(--osirion-spacing-1);
+    font-size: var(--osirion-font-size-xs);
+    color: var(--osirion-text-tertiary);
+}
+
+.osirion-admin-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--osirion-spacing-2);
+    margin-top: var(--osirion-spacing-4);
+}
+
+/* Button styles moved from global to component */
+.osirion-admin-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+    padding: var(--osirion-spacing-2) var(--osirion-spacing-4);
+    border: 1px solid var(--osirion-border-color);
+    border-radius: var(--osirion-button-radius);
+    background-color: var(--osirion-background-primary);
+    color: var(--osirion-text-primary);
+    font-size: var(--osirion-font-size-sm);
+    font-weight: var(--osirion-font-weight-medium);
+    cursor: pointer;
+    transition: all var(--osirion-transition-duration-200) var(--osirion-transition-timing-default);
+}
+
+    .osirion-admin-button:hover:not(:disabled) {
+        background-color: var(--osirion-background-secondary);
+    }
+
+    .osirion-admin-button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+.osirion-admin-button-primary {
+    background-color: var(--osirion-action-primary);
+    border-color: var(--osirion-action-primary);
+    color: var(--osirion-action-primary-text);
+}
+
+    .osirion-admin-button-primary:hover:not(:disabled) {
+        background-color: var(--osirion-action-primary-hover);
+        border-color: var(--osirion-action-primary-hover);
+    }
+
+.osirion-admin-button-outline {
+    background-color: transparent;
+    border-color: var(--osirion-border-color);
+    color: var(--osirion-text-primary);
+}
+
+    .osirion-admin-button-outline:hover:not(:disabled) {
+        background-color: var(--osirion-background-secondary);
+    }
+
+.osirion-admin-button-github {
+    background-color: #24292e;
+    border-color: #24292e;
+    color: white;
+}
+
+    .osirion-admin-button-github:hover:not(:disabled) {
+        background-color: #0f1114;
+        border-color: #0f1114;
+    }
+
+/* Alert styles for displaying errors */
+.osirion-admin-alert {
+    padding: var(--osirion-spacing-4);
+    margin-bottom: var(--osirion-spacing-4);
+    border-radius: var(--osirion-radius-base);
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.osirion-admin-alert-error {
+    background-color: var(--osirion-status-danger-bg);
+    border: 1px solid var(--osirion-status-danger-border);
+    color: var(--osirion-status-danger);
+}
+
+.osirion-admin-alert-icon {
+    display: flex;
+    margin-right: var(--osirion-spacing-2);
+}
+
+.osirion-admin-alert-close {
+    position: absolute;
+    top: var(--osirion-spacing-2);
+    right: var(--osirion-spacing-2);
+    background: transparent;
+    border: none;
+    color: currentColor;
+    font-size: 1.25rem;
+    cursor: pointer;
+    padding: 0;
+}
+
+/* Loading spinner */
+.osirion-admin-loading-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--osirion-border-color);
+    border-top-color: var(--osirion-action-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: var(--osirion-spacing-2);
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

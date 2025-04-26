@@ -1,0 +1,40 @@
+﻿@namespace Osirion.Blazor.Cms.Core.Components
+@inherits Osirion.Blazor.Components.OsirionComponentBase
+
+<nav class="@GetDocTreeClass()">
+    <ul class="osirion-doc-tree">
+        @foreach (var sect in Sections)
+        {
+            <li class="osirion-doc-tree-section">
+                @if (!string.IsNullOrEmpty(sect.Title))
+                {
+                    <div class="osirion-doc-tree-section-title">@sect.Title</div>
+                }
+                <ul class="osirion-doc-tree-items">
+                    @foreach (var item in sect.Items)
+                    {
+                        <li class="osirion-doc-tree-item @(item.IsActive ? "active" : "")">
+                            <a href="@item.Url" class="osirion-doc-tree-link">
+                                @item.Title
+                            </a>
+
+                            @if (item.Children != null && item.Children.Any())
+                            {
+                                <ul class="osirion-doc-tree-children">
+                                    @foreach (var child in item.Children)
+                                    {
+                                        <li class="osirion-doc-tree-child @(child.IsActive ? "active" : "")">
+                                            <a href="@child.Url" class="osirion-doc-tree-child-link">
+                                                @child.Title
+                                            </a>
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                        </li>
+                    }
+                </ul>
+            </li>
+        }
+    </ul>
+</nav>

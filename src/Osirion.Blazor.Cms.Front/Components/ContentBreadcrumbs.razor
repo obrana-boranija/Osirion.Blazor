@@ -1,0 +1,22 @@
+﻿<nav aria-label="breadcrumb" class="@GetBreadcrumbsClass()">
+    <ol class="osirion-breadcrumbs-list">
+        @if (ShowHome)
+        {
+            <li class="osirion-breadcrumbs-item">
+                <a href="@HomeUrl" class="osirion-breadcrumbs-link">@HomeText</a>
+            </li>
+        }
+
+        @if (Directory != null)
+        {
+            @RenderDirectoryPath(Directory)
+        }
+
+        @if (Content != null && !HideCurrentItem)
+        {
+            <li class="osirion-breadcrumbs-item osirion-breadcrumbs-current">
+                <span class="osirion-breadcrumbs-text">@Content.Title</span>
+            </li>
+        }
+    </ol>
+</nav>

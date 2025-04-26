@@ -115,7 +115,7 @@ Create a new layout for your blog in `Components/Layout/BlogLayout.razor`:
 <!-- Add default Osirion styling -->
 <OsirionStyles CustomVariables="
     --osirion-primary-color: #3b82f6;
-    --osirion-background-color: #f8fafc;
+    --osirion-color-background: #f8fafc;
 " />
 ```
 
@@ -304,7 +304,7 @@ Add some CSS to `wwwroot/app.css`:
 header {
     margin-bottom: 2rem;
     padding-bottom: 1rem;
-    border-bottom: 1px solid var(--osirion-border-color);
+    border-bottom: 1px solid var(--osirion-color-border);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -312,14 +312,14 @@ header {
 
 aside {
     padding: 1rem;
-    background-color: var(--osirion-light-background-color);
+    background-color: var(--osirion-color-background-light);
     border-radius: var(--osirion-border-radius);
 }
 
 footer {
     margin-top: 2rem;
     padding-top: 1rem;
-    border-top: 1px solid var(--osirion-border-color);
+    border-top: 1px solid var(--osirion-color-border);
     text-align: center;
 }
 

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Osirion.Blazor.Analytics;
 using Osirion.Blazor.Cms;
+using Osirion.Blazor.Cms.Admin.Interfaces;
 using Osirion.Blazor.Navigation;
 using Osirion.Blazor.Theming;
 
@@ -22,6 +23,13 @@ public interface IOsirionBuilder
     /// <param name="configure">Action to configure content providers</param>
     /// <returns>The builder for chaining</returns>
     IOsirionBuilder UseContent(Action<IContentBuilder> configure);
+
+    /// <summary>
+    /// Configures CMS admin services
+    /// </summary>
+    /// <param name="configure">Action to configure CMS admin services</param>
+    /// <returns>The builder for chaining</returns>
+    IOsirionBuilder UseCmsAdmin(Action<ICmsAdminBuilder> configure);
 
     /// <summary>
     /// Configures analytics services

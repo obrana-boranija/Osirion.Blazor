@@ -1,0 +1,246 @@
+﻿/* Osirion.Blazor.Cms.Admin - Global CSS Variables and Base Styles
+   This file provides core variables, utilities, and minimal global styles.
+   Component-specific styles are in their respective .razor.css files. */
+
+/* Base Theme Variables - Light Mode */
+:root {
+    /* Main colors */
+    --osirion-admin-primary: #0366d6;
+    --osirion-admin-primary-light: #60a5fa;
+    --osirion-admin-primary-dark: #1d4ed8;
+    --osirion-admin-secondary: #586069;
+    --osirion-admin-secondary-light: #9ca3af;
+    --osirion-admin-secondary-dark: #4b5563;
+    --osirion-admin-success: #28a745;
+    --osirion-admin-success-light: #34d399;
+    --osirion-admin-success-dark: #059669;
+    --osirion-admin-danger: #cb2431;
+    --osirion-admin-danger-light: #f87171;
+    --osirion-admin-danger-dark: #dc2626;
+    --osirion-admin-warning-light: #fbbf24;
+    --osirion-admin-warning-dark: #d97706;
+    --osirion-admin-info-light: #60a5fa;
+    --osirion-admin-info-dark: #2563eb;
+    /* Text and background */
+    --osirion-admin-text: #24292e;
+    --osirion-admin-text-muted: #6a737d;
+    --osirion-admin-bg: #ffffff;
+    --osirion-admin-bg-sidebar: #f6f8fa;
+    --osirion-admin-bg-header: #f6f8fa;
+    --osirion-admin-bg-editor: #ffffff;
+    --osirion-admin-bg-editor-sidebar: #f6f8fa;
+    --osirion-admin-border: #e1e4e8;
+    --osirion-admin-light: #f6f8fa;
+    /* Layout */
+    --osirion-admin-sidebar-width: 280px;
+    --osirion-admin-header-height: 60px;
+    --osirion-admin-border-radius: 6px;
+    --osirion-admin-transition: 0.2s ease;
+    --osirion-admin-spacer: 1rem;
+    --osirion-admin-spacer-sm: 0.5rem;
+    --osirion-admin-spacer-lg: 2rem;
+    --osirion-admin-shadow: 0 1px 3px rgba(0,0,0,0.12);
+    --osirion-admin-shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+    /* Typography */
+    --osirion-admin-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    --osirion-admin-font-size: 14px;
+    --osirion-admin-line-height: 1.5;
+    --osirion-admin-font-weight-normal: 400;
+    --osirion-admin-font-weight-medium: 500;
+    --osirion-admin-font-weight-bold: 600;
+}
+
+/* Dark Theme Variables */
+.osirion-admin-theme-dark {
+    --osirion-admin-primary: #58a6ff;
+    --osirion-admin-primary-light: #93c5fd;
+    --osirion-admin-primary-dark: #3b82f6;
+    --osirion-admin-secondary: #8b949e;
+    --osirion-admin-text: #c9d1d9;
+    --osirion-admin-text-muted: #8b949e;
+    --osirion-admin-bg: #0d1117;
+    --osirion-admin-bg-sidebar: #161b22;
+    --osirion-admin-bg-header: #161b22;
+    --osirion-admin-border: #30363d;
+    --osirion-admin-light: #1f2937;
+    --osirion-admin-bg-editor: #1e293b;
+    --osirion-admin-bg-editor-sidebar: #111827;
+    --osirion-admin-border-editor: #374151;
+    --osirion-admin-text-editor: #e5e7eb;
+    --osirion-admin-text-editor-muted: #9ca3af;
+}
+
+/* ============== GLOBAL BUTTON STYLES ============== */
+
+.osirion-admin-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+    padding: var(--osirion-admin-spacer-sm) var(--osirion-admin-spacer);
+    border: 1px solid var(--osirion-admin-border);
+    border-radius: var(--osirion-admin-border-radius);
+    background-color: var(--osirion-admin-bg);
+    color: var(--osirion-admin-text);
+    font-size: 0.875rem;
+    font-weight: var(--osirion-admin-font-weight-medium);
+    cursor: pointer;
+    transition: all var(--osirion-admin-transition);
+}
+
+    .osirion-admin-button:hover:not(:disabled) {
+        background-color: var(--osirion-admin-light);
+    }
+
+    .osirion-admin-button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+.osirion-admin-button-primary {
+    background-color: var(--osirion-admin-primary);
+    border-color: var(--osirion-admin-primary);
+    color: white;
+}
+
+    .osirion-admin-button-primary:hover:not(:disabled) {
+        background-color: var(--osirion-admin-primary-dark);
+        border-color: var(--osirion-admin-primary-dark);
+    }
+
+.osirion-admin-button-secondary {
+    background-color: var(--osirion-admin-light);
+    border-color: var(--osirion-admin-border);
+}
+
+.osirion-admin-button-danger {
+    background-color: var(--osirion-admin-danger);
+    border-color: var(--osirion-admin-danger);
+    color: white;
+}
+
+    .osirion-admin-button-danger:hover:not(:disabled) {
+        background-color: var(--osirion-admin-danger-dark);
+        border-color: var(--osirion-admin-danger-dark);
+    }
+
+.osirion-admin-button-small {
+    padding: 0.25rem 0.5rem;
+    min-height: 28px;
+    font-size: 0.75rem;
+}
+
+.osirion-admin-button-active,
+.osirion-admin-button-theme.active {
+    background-color: var(--osirion-admin-primary);
+    border-color: var(--osirion-admin-primary);
+    color: white;
+}
+
+.osirion-admin-button-toolbar {
+    padding: 0.25rem;
+    min-height: auto;
+    border-color: transparent;
+    background-color: transparent;
+}
+
+    .osirion-admin-button-toolbar:hover {
+        background-color: var(--osirion-admin-light);
+    }
+
+.osirion-admin-button-icon {
+    padding: 0.25rem;
+    border: none;
+    background: transparent;
+    min-height: auto;
+}
+
+.osirion-admin-button-link {
+    border: none;
+    background: transparent;
+    color: var(--osirion-admin-primary);
+    padding: 0;
+    font-weight: normal;
+    min-height: auto;
+}
+
+    .osirion-admin-button-link:hover {
+        text-decoration: underline;
+        background: transparent;
+    }
+
+/* ============== GLOBAL FORM STYLES ============== */
+
+.osirion-admin-label {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-weight: var(--osirion-admin-font-weight-medium);
+    color: var(--osirion-admin-text);
+}
+
+.osirion-admin-input,
+.osirion-admin-select,
+.osirion-admin-textarea {
+    display: block;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--osirion-admin-border);
+    border-radius: var(--osirion-admin-border-radius);
+    background-color: var(--osirion-admin-bg);
+    color: var(--osirion-admin-text);
+    font-family: var(--osirion-admin-font-family);
+    font-size: var(--osirion-admin-font-size);
+    transition: border-color var(--osirion-admin-transition);
+}
+
+    .osirion-admin-input:focus,
+    .osirion-admin-select:focus,
+    .osirion-admin-textarea:focus {
+        outline: none;
+        border-color: var(--osirion-admin-primary);
+        box-shadow: 0 0 0 3px rgba(3, 102, 214, 0.1);
+    }
+
+/* ============== COMMON UTILITY CLASSES ============== */
+
+/* Icons */
+.osirion-admin-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    margin-right: 0.5rem;
+}
+
+/* Loading spinner */
+.osirion-admin-loading-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--osirion-admin-border);
+    border-top-color: var(--osirion-admin-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: var(--osirion-admin-spacer-sm);
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ============== RESPONSIVE UTILITIES ============== */
+
+@media (max-width: 992px) {
+    /* Tablet breakpoint styles */
+}
+
+@media (max-width: 768px) {
+    /* Mobile landscape breakpoint styles */
+}
+
+@media (max-width: 576px) {
+    /* Mobile portrait breakpoint styles */
+}

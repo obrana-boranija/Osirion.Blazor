@@ -1,0 +1,127 @@
+﻿/* 
+ * FluentUI Adapter for Osirion 
+ * Maps FluentUI variables to Osirion variables
+ */
+
+html.osirion-fluent-integration {
+    /* Map FluentUI's design tokens to our semantic tokens */
+    /* Background and text colors */
+    --osirion-background-primary: var(--fill-color, #ffffff);
+    --osirion-background-secondary: var(--neutral-fill-stealth-rest, #f3f2f1);
+    --osirion-background-tertiary: var(--neutral-fill-input-rest, #ffffff);
+    --osirion-background-muted: var(--neutral-fill-stealth-hover, #f5f5f5);
+    --osirion-text-primary: var(--neutral-foreground-rest, #1a1a1a);
+    --osirion-text-secondary: var(--neutral-foreground-hint, #717171);
+    --osirion-text-tertiary: var(--neutral-foreground-hint, #717171);
+    --osirion-text-inverted: var(--neutral-foreground-on-accent-rest, #ffffff);
+    /* Border colors */
+    --osirion-border-color: var(--neutral-stroke-rest, #d6d6d6);
+    --osirion-border-color-hover: var(--neutral-stroke-hover, #c8c8c8);
+    --osirion-border-width: 1px;
+    /* Border radius */
+    --osirion-radius-base: var(--control-corner-radius, 4px);
+    --osirion-radius-sm: calc(var(--control-corner-radius, 4px) - 1px);
+    --osirion-radius-lg: calc(var(--control-corner-radius, 4px) + 2px);
+    --osirion-radius-xl: calc(var(--control-corner-radius, 4px) + 4px);
+    /* Action colors */
+    --osirion-action-primary: var(--accent-fill-rest, #0078d4);
+    --osirion-action-primary-hover: var(--accent-fill-hover, #106ebe);
+    --osirion-action-primary-active: var(--accent-fill-active, #005a9e);
+    --osirion-action-primary-text: var(--neutral-foreground-on-accent-rest, #ffffff);
+    --osirion-action-secondary: var(--neutral-fill-rest, #ededed);
+    --osirion-action-secondary-hover: var(--neutral-fill-hover, #f5f5f5);
+    --osirion-action-secondary-active: var(--neutral-fill-active, #e0e0e0);
+    --osirion-action-secondary-text: var(--neutral-foreground-rest, #1a1a1a);
+    /* Status colors */
+    --osirion-status-success: var(--accent-foreground-rest, #107c10);
+    --osirion-status-success-bg: var(--success-fill, #dff6dd);
+    --osirion-status-success-border: var(--success-stroke, #107c10);
+    --osirion-status-warning: var(--warning-foreground, #d83b01);
+    --osirion-status-warning-bg: var(--warning-fill, #fed9cc);
+    --osirion-status-warning-border: var(--warning-stroke, #d83b01);
+    --osirion-status-danger: var(--error-foreground, #d13438);
+    --osirion-status-danger-bg: var(--error-fill, #fde7e9);
+    --osirion-status-danger-border: var(--error-stroke, #d13438);
+    /* Typography */
+    --osirion-font-family-base: var(--body-font, 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', sans-serif);
+    --osirion-font-family-mono: var(--monospace-font, 'Cascadia Code', Consolas, 'Courier New', monospace);
+    --osirion-font-size-base: var(--type-ramp-base-font-size, 14px);
+    --osirion-line-height-normal: var(--type-ramp-base-line-height, 20px);
+    /* Shadow */
+    --osirion-shadow-sm: var(--elevation-shadow-card-rest, 0 0 2px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.14));
+    --osirion-shadow-base: var(--elevation-shadow-dialog-rest, 0 0 2px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.14));
+    --osirion-shadow-lg: var(--elevation-shadow-flyout-rest, 0 0 8px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.14));
+    /* Focus states */
+    --osirion-focus-ring-width: 2px;
+    --osirion-focus-ring-color: var(--accent-stroke-focus, #0078d4);
+    --osirion-focus-ring-offset: 1px;
+    /* Component specific */
+    --osirion-button-radius: var(--control-corner-radius, 4px);
+    --osirion-input-radius: var(--control-corner-radius, 4px);
+    /* ScrollToTop specific */
+    --osirion-scroll-background: var(--accent-fill-rest, #0078d4);
+    --osirion-scroll-hover-background: var(--accent-fill-hover, #106ebe);
+    --osirion-scroll-color: var(--neutral-foreground-on-accent-rest, #ffffff);
+    --osirion-scroll-hover-color: var(--neutral-foreground-on-accent-hover, #ffffff);
+    --osirion-scroll-box-shadow: var(--elevation-shadow-card-rest, 0 0 2px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.14));
+    /* Legacy compatibility */
+    --osirion-color: var(--osirion-text-primary);
+    --osirion-color-light: var(--osirion-text-secondary);
+    --osirion-color-background: var(--osirion-background-primary);
+    --osirion-color-background-light: var(--osirion-background-secondary);
+    --osirion-color-border: var(--osirion-border-color);
+    --osirion-active-text: var(--osirion-action-primary);
+    --osirion-active-background: var(--osirion-background-secondary);
+    --osirion-color-active: var(--osirion-action-primary);
+    --osirion-color-background-active: var(--osirion-background-secondary);
+}
+
+    /* FluentUI Dark Mode Integration */
+    html.osirion-fluent-integration.fluent-dark-theme {
+        /* Dark mode mappings from FluentUI's dark theme */
+        --osirion-background-primary: var(--neutral-fill-layer-rest, #1b1b1b);
+        --osirion-background-secondary: var(--neutral-fill-stealth-rest, #1b1b1b);
+        --osirion-background-tertiary: var(--neutral-fill-input-rest, #333333);
+        --osirion-text-primary: var(--neutral-foreground-rest, #ffffff);
+        --osirion-text-secondary: var(--neutral-foreground-hint, #ababab);
+        --osirion-border-color: var(--neutral-stroke-rest, #4c4c4c);
+        --osirion-border-color-hover: var(--neutral-stroke-hover, #6c6c6c);
+        /* Action colors - brighter for dark mode */
+        --osirion-action-primary: var(--accent-fill-rest, #2899f5);
+        --osirion-action-primary-hover: var(--accent-fill-hover, #1890f1);
+        --osirion-action-primary-active: var(--accent-fill-active, #3aa0f3);
+        /* Status colors for dark themes */
+        --osirion-status-success-bg: rgba(16, 124, 16, 0.2);
+        --osirion-status-warning-bg: rgba(216, 59, 1, 0.2);
+        --osirion-status-danger-bg: rgba(209, 52, 56, 0.2);
+        /* Shadow adjustments for dark mode */
+        --osirion-shadow-sm: var(--elevation-shadow-card-rest, 0 0 2px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.4));
+        --osirion-shadow-base: var(--elevation-shadow-dialog-rest, 0 0 2px rgba(0, 0, 0, 0.4), 0 4px 8px rgba(0, 0, 0, 0.4));
+        --osirion-shadow-lg: var(--elevation-shadow-flyout-rest, 0 0 8px rgba(0, 0, 0, 0.4), 0 8px 16px rgba(0, 0, 0, 0.4));
+        /* Legacy compatibility */
+        --osirion-color-background: var(--neutral-fill-layer-rest, #1b1b1b);
+        --osirion-color-background-light: var(--neutral-fill-stealth-rest, #1b1b1b);
+        --osirion-color: var(--neutral-foreground-rest, #ffffff);
+        --osirion-color-light: var(--neutral-foreground-hint, #ababab);
+    }
+
+    /* FluentUI-specific component styling */
+    html.osirion-fluent-integration .osirion-button {
+        min-height: 32px;
+        min-width: 32px;
+        padding: 0 12px;
+        border-radius: var(--control-corner-radius, 4px);
+        font-family: var(--body-font, 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', sans-serif);
+        font-size: var(--type-ramp-base-font-size, 14px);
+        font-weight: 400;
+        line-height: var(--type-ramp-base-line-height, 20px);
+    }
+
+    html.osirion-fluent-integration .osirion-input {
+        height: 32px;
+        padding: 0 12px;
+        border: 1px solid var(--neutral-stroke-rest, #d6d6d6);
+        border-radius: var(--control-corner-radius, 4px);
+        background-color: var(--neutral-fill-input-rest, #ffffff);
+        color: var(--neutral-foreground-rest, #1a1a1a);
+    }

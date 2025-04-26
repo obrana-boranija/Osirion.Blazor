@@ -195,7 +195,7 @@ builder.Services.AddGitHubCms(options =>
 :root {
     /* General styles */
     --osirion-primary-color: #0077cc;
-    --osirion-text-color: #333333;
+    --osirion-color: #333333;
     --osirion-border-radius: 0.25rem;
     --osirion-font-size: 1.1rem;
     
@@ -225,8 +225,8 @@ builder.Services.AddScrollToTop(options => {
 ```css
 /* Colors */
 --osirion-primary-color: #2563eb;
---osirion-text-color: #374151;
---osirion-background-color: #ffffff;
+--osirion-color: #374151;
+--osirion-color-background: #ffffff;
 
 /* Sizing */
 --osirion-border-radius: 0.5rem;
@@ -234,7 +234,7 @@ builder.Services.AddScrollToTop(options => {
 
 /* Typography */
 --osirion-font-size: 1rem;
---osirion-title-font-size: 1.25rem;
+--osirion-font-size-title: 1.25rem;
 
 /* ScrollToTop Colors */
 --osirion-scroll-background: rgba(0, 0, 0, 0.3);

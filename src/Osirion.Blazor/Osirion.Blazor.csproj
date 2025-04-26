@@ -13,7 +13,7 @@
 		<Authors>Dejan Demonjić</Authors>
 		<Company>Tridesetri</Company>
 		<Description>Modern, high-performance Blazor components and utilities. Features SSR-compatible components for navigation, analytics, content management, and theming with seamless CSS framework integration.</Description>
-		<PackageTags>blazor;components;utilities;dotnet;web;navigation;analytics;cms;github;markdown;ssr;bootstrap;tailwind;fluentui;mudblazor;radzen;static-rendering;content;theming</PackageTags>
+		<PackageTags>blazor;components;utilities;dotnet;web;navigation;analytics;cms;github;markdown;ssr;bootstrap;fluentui;mudblazor;radzen;static-rendering;content;theming</PackageTags>
 		<PackageProjectUrl>https://github.com/obrana-boranija/Osirion.Blazor</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/obrana-boranija/Osirion.Blazor</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
@@ -49,12 +49,16 @@
 	<ItemGroup>
 		<None Include="..\..\LICENSE.txt" Pack="true" PackagePath="\" />
 		<None Include="..\..\README.md" Pack="true" PackagePath="\" />
-		<None Include="..\..\icon.png" Pack="true" PackagePath="\"/>
+		<None Include="..\..\icon.png" Pack="true" PackagePath="\" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<!-- Source Link package -->
 		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="wwwroot\css\" />
 	</ItemGroup>
 
 </Project>

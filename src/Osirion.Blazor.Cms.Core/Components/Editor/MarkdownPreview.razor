@@ -1,0 +1,23 @@
+﻿@namespace Osirion.Blazor.Cms
+
+<div class="@GetCssClass()">
+    @if (ShowHeader)
+    {
+        <div class="osirion-markdown-preview-header">
+            <h3 class="osirion-markdown-preview-title">@Title</h3>
+        </div>
+    }
+
+    <div class="osirion-markdown-preview-content" @ref="PreviewContainer" @onscroll="HandleScroll">
+        @if (string.IsNullOrWhiteSpace(Markdown))
+        {
+            <p class="osirion-markdown-preview-placeholder">@Placeholder</p>
+        }
+        else
+        {
+            <div class="@ContentCssClass">
+                @((MarkupString)RenderedHtml)
+            </div>
+        }
+    </div>
+</div>

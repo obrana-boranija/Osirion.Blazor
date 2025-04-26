@@ -1,0 +1,55 @@
+﻿@namespace Osirion.Blazor.Cms.Core.Components
+@inherits Osirion.Blazor.Components.OsirionComponentBase
+
+<div class="@GetContainerClass()">
+    @if (ShowHeader)
+    {
+            <header class="osirion-page-header">
+            @if (HeaderTemplate != null)
+            {
+                @HeaderTemplate
+            }
+            else
+            {
+                        <h1 class="osirion-page-title">@Title</h1>
+                @if (!string.IsNullOrEmpty(Description))
+                {
+                                <p class="osirion-page-description">@Description</p>
+                }
+            }
+            </header>
+    }
+
+    @ChildContent
+</div>
+
+@code {
+    [Parameter] public string Title { get; set; }
+    [Parameter] public string Description { get; set; }
+    [Parameter] public bool ShowHeader { get; set; } = true;
+    [Parameter] public RenderFragment ChildContent { get; set; }
+    [Parameter] public RenderFragment HeaderTemplate { get; set; }
+    [Parameter] public ContainerSize Size { get; set; } = ContainerSize.Medium;
+
+    private string GetContainerClass()
+    {
+        var containerClass = Size switch
+        {
+            ContainerSize.Small => "osirion-container osirion-container-sm",
+            ContainerSize.Medium => "osirion-container osirion-container-md",
+            ContainerSize.Large => "osirion-container osirion-container-lg",
+            ContainerSize.ExtraLarge => "osirion-container osirion-container-xl",
+            _ => "osirion-container osirion-container-md"
+        };
+
+        return $"{containerClass} {CssClass}".Trim();
+    }
+
+    public enum ContainerSize
+    {
+        Small,
+        Medium,
+        Large,
+        ExtraLarge
+    }
+}

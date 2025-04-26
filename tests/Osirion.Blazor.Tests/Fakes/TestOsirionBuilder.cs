@@ -2,7 +2,8 @@
 using Osirion.Blazor.Analytics;
 using Osirion.Blazor.Analytics.Extensions;
 using Osirion.Blazor.Cms;
-using Osirion.Blazor.Cms.Extensions;
+using Osirion.Blazor.Cms.Admin.Interfaces;
+using Osirion.Blazor.Cms.Core.Extensions;
 using Osirion.Blazor.Navigation;
 using Osirion.Blazor.Navigation.Extensions;
 using Osirion.Blazor.Theming;
@@ -84,5 +85,10 @@ public class TestOsirionBuilder : IOsirionBuilder
         UseThemingCalled = true;
         Services.AddOsirionTheming(configure);
         return this;
+    }
+
+    public IOsirionBuilder UseCmsAdmin(Action<ICmsAdminBuilder> configure)
+    {
+        throw new NotImplementedException();
     }
 }

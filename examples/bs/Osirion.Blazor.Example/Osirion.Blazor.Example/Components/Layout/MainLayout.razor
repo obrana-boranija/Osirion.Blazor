@@ -1,16 +1,20 @@
 ﻿@inherits LayoutComponentBase
 
+
 <div class="page">
-    <div class="sidebar">
+@*     <div class="sidebar">
         <NavMenu />
-    </div>
+    </div> *@
 
     <main>
         <div class="top-row px-4">
             <div class="d-flex justify-content-between w-100">
-@*                 <div>
-                    <ThemeToggle ShowSystemOption @rendermode="InteractiveServer"/>
-                </div> *@
+                <div>
+
+                    <ThemeToggle />
+                    <!-- Your application content -->
+
+                </div>
                 <div>
                     <a href="https://github.com/obrana-boranija/Osirion.Blazor" target="_blank">GitHub</a>
                 </div>
@@ -22,6 +26,8 @@
         </article>
     </main>
 </div>
+
+<OsirionStyles />
 
 <div id="blazor-error-ui" data-nosnippet>
     An unhandled error has occurred.

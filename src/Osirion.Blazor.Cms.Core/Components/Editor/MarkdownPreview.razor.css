@@ -1,0 +1,352 @@
+/* MarkdownPreview Component Styles */
+.osirion-markdown-preview {
+    display: flex;
+    flex-direction: column;
+    border: var(--osirion-border-width, 1px) solid var(--osirion-border-color, #e5e7eb);
+    border-radius: var(--osirion-radius-base, 4px);
+    background-color: var(--osirion-background-primary, #ffffff);
+    box-shadow: var(--osirion-shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.05));
+    height: 100%;
+    font-family: var(--osirion-font-family-base, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif);
+}
+
+/* Preview header */
+.osirion-markdown-preview-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--osirion-spacing-2, 0.5rem) var(--osirion-spacing-3, 0.75rem);
+    background-color: var(--osirion-background-secondary, #f3f4f6);
+    border-bottom: var(--osirion-border-width, 1px) solid var(--osirion-border-color, #e5e7eb);
+    border-top-left-radius: calc(var(--osirion-radius-base, 4px) - 1px);
+    border-top-right-radius: calc(var(--osirion-radius-base, 4px) - 1px);
+}
+
+    .osirion-markdown-preview-header h3 {
+        margin: 0;
+        font-size: var(--osirion-font-size-sm, 0.875rem);
+        font-weight: var(--osirion-font-weight-medium, 500);
+        color: var(--osirion-text-primary, #374151);
+    }
+
+/* Preview content container */
+.osirion-markdown-preview-content {
+    flex: 1;
+    padding: var(--osirion-spacing-4, 1rem);
+    overflow-y: auto;
+    color: var(--osirion-text-primary, #374151);
+    line-height: var(--osirion-line-height-normal, 1.6);
+}
+
+.osirion-markdown-preview-placeholder {
+    color: var(--osirion-text-tertiary, #9ca3af);
+    font-style: italic;
+    padding: var(--osirion-spacing-4, 1rem) 0;
+}
+
+/* Markdown content styling */
+.osirion-markdown-preview-content h1,
+.osirion-markdown-preview-content h2,
+.osirion-markdown-preview-content h3,
+.osirion-markdown-preview-content h4,
+.osirion-markdown-preview-content h5,
+.osirion-markdown-preview-content h6 {
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+    font-weight: var(--osirion-font-weight-semibold, 600);
+    line-height: var(--osirion-line-height-tight, 1.25);
+    color: var(--osirion-text-primary, #374151);
+}
+
+    .osirion-markdown-preview-content h1:first-child,
+    .osirion-markdown-preview-content h2:first-child,
+    .osirion-markdown-preview-content h3:first-child,
+    .osirion-markdown-preview-content h4:first-child,
+    .osirion-markdown-preview-content h5:first-child,
+    .osirion-markdown-preview-content h6:first-child {
+        margin-top: 0;
+    }
+
+.osirion-markdown-preview-content h1 {
+    font-size: var(--osirion-font-size-2xl, 1.5rem);
+    border-bottom: var(--osirion-border-width, 1px) solid var(--osirion-border-color, #e5e7eb);
+    padding-bottom: 0.3em;
+}
+
+.osirion-markdown-preview-content h2 {
+    font-size: var(--osirion-font-size-xl, 1.25rem);
+    border-bottom: var(--osirion-border-width, 1px) solid var(--osirion-border-color, #e5e7eb);
+    padding-bottom: 0.3em;
+}
+
+.osirion-markdown-preview-content h3 {
+    font-size: var(--osirion-font-size-lg, 1.125rem);
+}
+
+.osirion-markdown-preview-content h4 {
+    font-size: var(--osirion-font-size-base, 1rem);
+}
+
+.osirion-markdown-preview-content h5 {
+    font-size: var(--osirion-font-size-sm, 0.875rem);
+}
+
+.osirion-markdown-preview-content h6 {
+    font-size: var(--osirion-font-size-xs, 0.75rem);
+    color: var(--osirion-text-secondary, #6b7280);
+}
+
+.osirion-markdown-preview-content p {
+    margin-top: 0;
+    margin-bottom: var(--osirion-spacing-4, 1rem);
+}
+
+.osirion-markdown-preview-content a {
+    color: var(--osirion-action-primary, #2563eb);
+    text-decoration: none;
+}
+
+    .osirion-markdown-preview-content a:hover {
+        text-decoration: underline;
+    }
+
+.osirion-markdown-preview-content img {
+    max-width: 100%;
+    border-style: none;
+    box-sizing: content-box;
+    background-color: var(--osirion-background-primary, #ffffff);
+    border-radius: var(--osirion-radius-sm, 3px);
+}
+
+.osirion-markdown-preview-content hr {
+    height: 0.25em;
+    padding: 0;
+    margin: var(--osirion-spacing-6, 1.5rem) 0;
+    background-color: var(--osirion-border-color, #e5e7eb);
+    border: 0;
+}
+
+.osirion-markdown-preview-content blockquote {
+    padding: 0 var(--osirion-spacing-4, 1rem);
+    color: var(--osirion-text-secondary, #6b7280);
+    border-left: 0.25em solid var(--osirion-border-color, #e5e7eb);
+    margin: 0 0 var(--osirion-spacing-4, 1rem) 0;
+}
+
+.osirion-markdown-preview-content ul,
+.osirion-markdown-preview-content ol {
+    padding-left: var(--osirion-spacing-8, 2rem);
+    margin-top: 0;
+    margin-bottom: var(--osirion-spacing-4, 1rem);
+}
+
+.osirion-markdown-preview-content code {
+    background-color: var(--osirion-background-secondary, #f3f4f6);
+    padding: 0.2em 0.4em;
+    margin: 0;
+    font-family: var(--osirion-font-family-mono, ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, "Liberation Mono", monospace);
+    font-size: 85%;
+    border-radius: var(--osirion-radius-sm, 3px);
+}
+
+.osirion-markdown-preview-content pre {
+    background-color: var(--osirion-background-secondary, #f3f4f6);
+    padding: var(--osirion-spacing-4, 1rem);
+    margin-bottom: var(--osirion-spacing-4, 1rem);
+    border-radius: var(--osirion-radius-sm, 3px);
+    overflow: auto;
+    font-family: var(--osirion-font-family-mono, ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, "Liberation Mono", monospace);
+    font-size: 85%;
+    line-height: 1.45;
+}
+
+    .osirion-markdown-preview-content pre code {
+        background-color: transparent;
+        padding: 0;
+        margin: 0;
+        font-size: 100%;
+        word-break: normal;
+        white-space: pre;
+    }
+
+.osirion-markdown-preview-content table {
+    border-spacing: 0;
+    border-collapse: collapse;
+    margin-top: 0;
+    margin-bottom: var(--osirion-spacing-4, 1rem);
+    display: block;
+    width: 100%;
+    overflow: auto;
+}
+
+    .osirion-markdown-preview-content table th,
+    .osirion-markdown-preview-content table td {
+        padding: 6px 13px;
+        border: var(--osirion-border-width, 1px) solid var(--osirion-border-color, #e5e7eb);
+    }
+
+    .osirion-markdown-preview-content table tr {
+        background-color: var(--osirion-background-primary, #ffffff);
+        border-top: var(--osirion-border-width, 1px) solid var(--osirion-border-color, #e5e7eb);
+    }
+
+        .osirion-markdown-preview-content table tr:nth-child(2n) {
+            background-color: var(--osirion-background-secondary, #f3f4f6);
+        }
+
+.markdown-error {
+    color: var(--osirion-status-danger, #ef4444);
+    background-color: var(--osirion-status-danger-bg, #fee2e2);
+    padding: var(--osirion-spacing-4, 1rem);
+    border-radius: var(--osirion-radius-sm, 3px);
+    margin-bottom: var(--osirion-spacing-4, 1rem);
+}
+
+/* Dark theme adjustments */
+:root[data-theme="dark"] .osirion-markdown-preview,
+.dark-theme .osirion-markdown-preview,
+.theme-dark .osirion-markdown-preview {
+    background-color: var(--osirion-background-primary, #1f2937);
+    border-color: var(--osirion-border-color, #4b5563);
+}
+
+:root[data-theme="dark"] .osirion-markdown-preview-header,
+.dark-theme .osirion-markdown-preview-header,
+.theme-dark .osirion-markdown-preview-header {
+    background-color: var(--osirion-background-secondary, #374151);
+    border-color: var(--osirion-border-color, #4b5563);
+}
+
+    :root[data-theme="dark"] .osirion-markdown-preview-header h3,
+    .dark-theme .osirion-markdown-preview-header h3,
+    .theme-dark .osirion-markdown-preview-header h3 {
+        color: var(--osirion-text-secondary, #9ca3af);
+    }
+
+:root[data-theme="dark"] .osirion-markdown-preview-content,
+.dark-theme .osirion-markdown-preview-content,
+.theme-dark .osirion-markdown-preview-content {
+    color: var(--osirion-text-primary, #e5e7eb);
+}
+
+:root[data-theme="dark"] .osirion-markdown-preview-placeholder,
+.dark-theme .osirion-markdown-preview-placeholder,
+.theme-dark .osirion-markdown-preview-placeholder {
+    color: var(--osirion-text-tertiary, #9ca3af);
+}
+
+:root[data-theme="dark"] .osirion-markdown-preview-content h1,
+:root[data-theme="dark"] .osirion-markdown-preview-content h2,
+:root[data-theme="dark"] .osirion-markdown-preview-content h3,
+:root[data-theme="dark"] .osirion-markdown-preview-content h4,
+:root[data-theme="dark"] .osirion-markdown-preview-content h5,
+.dark-theme .osirion-markdown-preview-content h1,
+.dark-theme .osirion-markdown-preview-content h2,
+.dark-theme .osirion-markdown-preview-content h3,
+.dark-theme .osirion-markdown-preview-content h4,
+.dark-theme .osirion-markdown-preview-content h5,
+.theme-dark .osirion-markdown-preview-content h1,
+.theme-dark .osirion-markdown-preview-content h2,
+.theme-dark .osirion-markdown-preview-content h3,
+.theme-dark .osirion-markdown-preview-content h4,
+.theme-dark .osirion-markdown-preview-content h5 {
+    color: var(--osirion-text-primary, #e5e7eb);
+    border-color: var(--osirion-border-color, #4b5563);
+}
+
+:root[data-theme="dark"] .osirion-markdown-preview-content h6,
+.dark-theme .osirion-markdown-preview-content h6,
+.theme-dark .osirion-markdown-preview-content h6 {
+    color: var(--osirion-text-secondary, #9ca3af);
+}
+
+:root[data-theme="dark"] .osirion-markdown-preview-content a,
+.dark-theme .osirion-markdown-preview-content a,
+.theme-dark .osirion-markdown-preview-content a {
+    color: var(--osirion-action-primary, #60a5fa);
+}
+
+:root[data-theme="dark"] .osirion-markdown-preview-content blockquote,
+.dark-theme .osirion-markdown-preview-content blockquote,
+.theme-dark .osirion-markdown-preview-content blockquote {
+    color: var(--osirion-text-secondary, #9ca3af);
+    border-color: var(--osirion-border-color, #4b5563);
+}
+
+:root[data-theme="dark"] .osirion-markdown-preview-content hr,
+.dark-theme .osirion-markdown-preview-content hr,
+.theme-dark .osirion-markdown-preview-content hr {
+    background-color: var(--osirion-border-color, #4b5563);
+}
+
+:root[data-theme="dark"] .osirion-markdown-preview-content code,
+.dark-theme .osirion-markdown-preview-content code,
+.theme-dark .osirion-markdown-preview-content code {
+    background-color: var(--osirion-background-secondary, #374151);
+}
+
+:root[data-theme="dark"] .osirion-markdown-preview-content pre,
+.dark-theme .osirion-markdown-preview-content pre,
+.theme-dark .osirion-markdown-preview-content pre {
+    background-color: var(--osirion-background-secondary, #374151);
+}
+
+:root[data-theme="dark"] .osirion-markdown-preview-content table tr,
+.dark-theme .osirion-markdown-preview-content table tr,
+.theme-dark .osirion-markdown-preview-content table tr {
+    background-color: var(--osirion-background-primary, #1f2937);
+    border-color: var(--osirion-border-color, #4b5563);
+}
+
+    :root[data-theme="dark"] .osirion-markdown-preview-content table tr:nth-child(2n),
+    .dark-theme .osirion-markdown-preview-content table tr:nth-child(2n),
+    .theme-dark .osirion-markdown-preview-content table tr:nth-child(2n) {
+        background-color: var(--osirion-background-secondary, #374151);
+    }
+
+:root[data-theme="dark"] .osirion-markdown-preview-content table th,
+:root[data-theme="dark"] .osirion-markdown-preview-content table td,
+.dark-theme .osirion-markdown-preview-content table th,
+.dark-theme .osirion-markdown-preview-content table td,
+.theme-dark .osirion-markdown-preview-content table th,
+.theme-dark .osirion-markdown-preview-content table td {
+    border-color: var(--osirion-border-color, #4b5563);
+}
+
+:root[data-theme="dark"] .markdown-error,
+.dark-theme .markdown-error,
+.theme-dark .markdown-error {
+    color: var(--osirion-status-danger, #f87171);
+    background-color: var(--osirion-status-danger-bg, #7f1d1d);
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .osirion-markdown-preview-header {
+        padding: var(--osirion-spacing-1, 0.25rem) var(--osirion-spacing-2, 0.5rem);
+    }
+
+    .osirion-markdown-preview-content {
+        padding: var(--osirion-spacing-3, 0.75rem);
+        font-size: 0.9375rem;
+    }
+
+        .osirion-markdown-preview-content h1 {
+            font-size: 1.75em;
+        }
+
+        .osirion-markdown-preview-content h2 {
+            font-size: 1.375em;
+        }
+
+        .osirion-markdown-preview-content h3 {
+            font-size: 1.125em;
+        }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+    .osirion-markdown-preview * {
+        transition: none !important;
+    }
+}

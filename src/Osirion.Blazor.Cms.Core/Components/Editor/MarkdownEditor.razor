@@ -1,0 +1,45 @@
+﻿@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.JSInterop
+@inherits Osirion.Blazor.Components.OsirionComponentBase
+@namespace Osirion.Blazor.Cms
+
+<div class="@GetCssClass()">
+    @if (ShowToolbar)
+    {
+        <div class="osirion-markdown-editor-toolbar">
+            @foreach (var action in ToolbarActions)
+            {
+                <button type="button"
+                        class="osirion-markdown-toolbar-button"
+                        @onclick="() => ExecuteToolbarAction(action)"
+                        title="@action.Title">
+                    @if (!string.IsNullOrEmpty(action.Icon))
+                    {
+                        <span class="osirion-markdown-toolbar-icon">@((MarkupString)action.Icon)</span>
+                    }
+                    else
+                    {
+                        <span>@action.Label</span>
+                    }
+                </button>
+            }
+        </div>
+    }
+
+    @if (ShowHeader)
+    {
+        <div class="osirion-markdown-editor-header">
+            <h3 class="osirion-markdown-editor-title">@Title</h3>
+        </div>
+    }
+
+    <div class="osirion-markdown-editor-content" @ref="EditorContainer">
+        <textarea @ref="TextAreaRef"
+                  @bind="CurrentContent"
+                  @bind:event="oninput"
+                  @onkeydown="HandleKeyDown"
+                  @onscroll="HandleScroll"
+                  class="osirion-markdown-editor-textarea"
+                  placeholder="@Placeholder"></textarea>
+    </div>
+</div>
