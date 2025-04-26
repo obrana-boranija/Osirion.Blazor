@@ -1,9 +1,8 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Osirion.Blazor.Cms.Configuration;
-using Osirion.Blazor.Cms.Core.Configuration;
 using Osirion.Blazor.Cms.Caching;
+using Osirion.Blazor.Cms.Configuration;
 
 namespace Osirion.Blazor.Cms.Core.Caching;
 
