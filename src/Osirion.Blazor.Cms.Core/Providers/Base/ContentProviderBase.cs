@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Caching;
 using Osirion.Blazor.Cms.Exceptions;
 using Osirion.Blazor.Cms.Interfaces;
@@ -14,6 +15,7 @@ public abstract class ContentProviderBase : IContentProvider, IDisposable
     private readonly IContentCacheService _cacheService;
     private readonly ILogger _logger;
     private bool _disposed;
+    private Microsoft.Extensions.Caching.Memory.IMemoryCache _memoryCache;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ContentProviderBase"/> class.
@@ -24,6 +26,12 @@ public abstract class ContentProviderBase : IContentProvider, IDisposable
     {
         _cacheService = cacheService ?? throw new ArgumentNullException(nameof(cacheService));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
+
+    protected ContentProviderBase(ILogger<FileSystemContentProvider> logger, Microsoft.Extensions.Caching.Memory.IMemoryCache memoryCache)
+    {
+        _logger = logger;
+        _memoryCache = memoryCache;
     }
 
     /// <inheritdoc/>
@@ -386,5 +394,30 @@ public abstract class ContentProviderBase : IContentProvider, IDisposable
         }
 
         _disposed = true;
+    }
+
+    /// <summary>
+    /// Gets or creates a cached value using async factory method
+    /// </summary>
+    protected async Task<T> GetOrCreateCachedAsync<T>(
+    string cacheKey,
+    Func<CancellationToken, Task<T>> factory,
+    CancellationToken cancellationToken = default)
+    {
+        // Try to get from cache first
+        if (_memoryCache.TryGetValue(cacheKey, out T? cachedValue))
+        {
+            return cachedValue!;
+        }
+
+        // Compute the value - we accept that multiple threads might do this simultaneously
+        var value = await factory(cancellationToken);
+
+        // Store in cache with absolute expiration
+        var cacheEntryOptions = new MemoryCacheEntryOptions()
+            .SetAbsoluteExpiration(CacheDuration);
+
+        _memoryCache.Set(cacheKey, value, cacheEntryOptions);
+        return value;
     }
 }

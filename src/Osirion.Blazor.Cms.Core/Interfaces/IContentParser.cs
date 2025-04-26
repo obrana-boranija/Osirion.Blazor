@@ -1,5 +1,5 @@
-﻿using Osirion.Blazor.Cms.Models;
-using System.ComponentModel.DataAnnotations;
+﻿using Osirion.Blazor.Cms.Core.Models;
+using Osirion.Blazor.Cms.Models;
 
 namespace Osirion.Blazor.Cms.Interfaces;
 
@@ -42,7 +42,7 @@ public interface IContentParser
     /// </summary>
     /// <param name="content">The content to validate</param>
     /// <returns>Validation result containing any errors</returns>
-    ValidationResult ValidateContent(ContentItem content);
+    Models.ValidationResult ValidateContent(ContentItem content);
 
     /// <summary>
     /// Renders markdown to HTML

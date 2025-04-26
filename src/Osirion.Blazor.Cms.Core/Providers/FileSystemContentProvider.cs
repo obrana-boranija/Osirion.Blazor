@@ -1,12 +1,11 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Markdig;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Markdig;
 using Osirion.Blazor.Cms.Models;
 using Osirion.Blazor.Cms.Options;
-using Osirion.Blazor.Cms.Providers.Internal;
+using Osirion.Blazor.Cms.Providers.Base;
 using Osirion.Blazor.Core.Extensions;
-using Osirion.Blazor.Cms.Core.Providers.Base;
 
 namespace Osirion.Blazor.Cms.Providers;
 
@@ -37,10 +36,10 @@ public class FileSystemContentProvider : ContentProviderBase
     }
 
     /// <inheritdoc/>
-    public override string ProviderId => _options.ProviderId ?? $"filesystem-{_options.BasePath.GetHashCode():x}";
+    public override string ProviderId => _options.ProviderId ?? "filesystem-{_options.BasePath.GetHashCode():x}";
 
     /// <inheritdoc/>
-    public override string DisplayName => $"FileSystem: {_options.BasePath}";
+    public override string DisplayName => "FileSystem: {_options.BasePath}";
 
     /// <inheritdoc/>
     public override bool IsReadOnly => true;
@@ -51,15 +50,15 @@ public class FileSystemContentProvider : ContentProviderBase
     /// <inheritdoc/>
     public override Task InitializeAsync(CancellationToken cancellationToken = default)
     {
-        if (!Directory.Exists(_options.BasePath))
-        {
-            throw new DirectoryNotFoundException($"Content directory not found: {_options.BasePath}");
-        }
+        //if (!Directory.Exists(_options.BasePath))
+        //{
+        //    throw new DirectoryNotFoundException($"Content directory not found: {_options.BasePath}");
+        //}
 
-        if (_options.WatchForChanges)
-        {
-            SetupFileWatcher();
-        }
+        //if (_options.WatchForChanges)
+        //{
+        //    SetupFileWatcher();
+        //}
 
         return Task.CompletedTask;
     }
@@ -200,7 +199,7 @@ public class FileSystemContentProvider : ContentProviderBase
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Error processing file: {FileName}", file);
+                    //_logger.LogError(ex, "Error processing file: {FileName}", file);
                 }
             }
         }
@@ -214,13 +213,13 @@ public class FileSystemContentProvider : ContentProviderBase
             if (string.IsNullOrEmpty(content))
                 return null;
 
-            var relativePath = Path.GetRelativePath(_options.BasePath, filePath);
+            //var relativePath = Path.GetRelativePath(_options.BasePath, filePath);
             var fileInfo = new FileInfo(filePath);
 
             var contentItem = new ContentItem
             {
-                Id = relativePath.GetHashCode().ToString("x"),
-                Path = NormalizePath(relativePath),
+                //Id = relativePath.GetHashCode().ToString("x"),
+                //Path = NormalizePath(relativePath),
                 ProviderId = ProviderId,
                 ProviderSpecificId = filePath,
                 DateCreated = fileInfo.CreationTimeUtc,
@@ -253,41 +252,41 @@ public class FileSystemContentProvider : ContentProviderBase
                 contentItem.Slug = contentItem.Title.ToUrlSlug();
             }
 
-            contentItem.Url = GenerateUrl(contentItem.Path, contentItem.Slug, _options.BasePath);
+            //contentItem.Url = GenerateUrl(contentItem.Path, contentItem.Slug, _options.BasePath);
 
             return contentItem;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to process markdown file: {FilePath}", filePath);
+            //_logger.LogError(ex, "Failed to process markdown file: {FilePath}", filePath);
             return null;
         }
     }
 
     private void SetupFileWatcher()
     {
-        _fileWatcher = new FileSystemWatcher(_options.BasePath)
-        {
-            IncludeSubdirectories = true,
-            NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite
-        };
+        //_fileWatcher = new FileSystemWatcher(_options.BasePath)
+        //{
+        //    IncludeSubdirectories = true,
+        //    NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite
+        //};
 
-        foreach (var extension in _options.SupportedExtensions)
-        {
-            _fileWatcher.Filters.Add($"*{extension}");
-        }
+        //foreach (var extension in _options.SupportedExtensions)
+        //{
+        //    _fileWatcher.Filters.Add($"*{extension}");
+        //}
 
-        _fileWatcher.Changed += OnFileChanged;
-        _fileWatcher.Created += OnFileChanged;
-        _fileWatcher.Deleted += OnFileChanged;
-        _fileWatcher.Renamed += OnFileChanged;
+        //_fileWatcher.Changed += OnFileChanged;
+        //_fileWatcher.Created += OnFileChanged;
+        //_fileWatcher.Deleted += OnFileChanged;
+        //_fileWatcher.Renamed += OnFileChanged;
 
-        _fileWatcher.EnableRaisingEvents = true;
+        //_fileWatcher.EnableRaisingEvents = true;
     }
 
     private void OnFileChanged(object sender, FileSystemEventArgs e)
     {
-        _logger.LogInformation("File system change detected: {ChangeType} - {Path}", e.ChangeType, e.FullPath);
+        //_logger.LogInformation("File system change detected: {ChangeType} - {Path}", e.ChangeType, e.FullPath);
 
         // Invalidate cache
         RefreshCacheAsync().GetAwaiter().GetResult();
@@ -332,11 +331,11 @@ public class FileSystemContentProvider : ContentProviderBase
                     contentItem.Description = value;
                     break;
                 case "tags":
-                    contentItem.Tags = ParseList(value);
+                    //contentItem.Tags = ParseList(value);
                     break;
                 case "categories":
                 case "category":
-                    contentItem.Categories = ParseList(value);
+                    //contentItem.Categories = ParseList(value);
                     break;
                 case "slug":
                     contentItem.Slug = value;
@@ -377,5 +376,10 @@ public class FileSystemContentProvider : ContentProviderBase
     public void Dispose()
     {
         _fileWatcher?.Dispose();
+    }
+
+    public override Task<IReadOnlyList<DirectoryItem>> GetDirectoriesAsync(string? locale = null, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
     }
 }

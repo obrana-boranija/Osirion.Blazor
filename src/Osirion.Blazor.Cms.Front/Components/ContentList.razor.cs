@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Components;
-using Osirion.Blazor.Cms.Interfaces;
+using Osirion.Blazor.Cms.Core.Interfaces;
 using Osirion.Blazor.Cms.Models;
-using System.Text.RegularExpressions;
 
 namespace Osirion.Blazor.Cms.Components;
 

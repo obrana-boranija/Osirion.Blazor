@@ -1,9 +1,5 @@
-﻿using Osirion.Blazor.Cms.Admin.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Osirion.Blazor.Cms.Core.Interfaces;
+using Osirion.Blazor.Cms.Core.Providers.GitHub.Models;
 
 namespace Osirion.Blazor.Cms.Admin.Services;
 

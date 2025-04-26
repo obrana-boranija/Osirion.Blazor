@@ -42,11 +42,11 @@ public class GitHubApiClient : IGitHubApiClient
         _owner = optionsValue.Owner;
         _repo = optionsValue.Repository;
         _branch = optionsValue.Branch;
-        _committerName = null;
-        _committerEmail = null;
+        _committerName = optionsValue.CommitterName;
+        _committerEmail = optionsValue.CommitterEmail;
 
         // Configure HTTP client
-        _httpClient.BaseAddress = new Uri("https://api.github.com/");
+        _httpClient.BaseAddress = new Uri(optionsValue.ApiUrl ?? "https://api.github.com/");
         _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         _httpClient.DefaultRequestHeaders.Add("User-Agent", "OsirionBlogCMS");
 

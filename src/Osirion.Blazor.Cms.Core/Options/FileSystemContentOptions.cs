@@ -3,7 +3,7 @@
 /// <summary>
 /// Configuration options for GitHub content provider
 /// </summary>
-public class GitHubContentOptions : ContentProviderOptions
+public class FileSystemContentOptions : ContentProviderOptions
 {
     /// <summary>
     /// Gets or sets the GitHub owner (user or organization)

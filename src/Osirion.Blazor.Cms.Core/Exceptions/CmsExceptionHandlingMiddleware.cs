@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Osirion.Blazor.Cms.Core.Exceptions;
 using Osirion.Blazor.Cms.Exceptions;
-using System.Net;
-using System.Net.Http;
+using System.Reflection.Metadata.Ecma335;
 using System.Text.Json;
 
 namespace Osirion.Blazor.Cms.Middleware;
@@ -63,63 +64,19 @@ public class CmsExceptionHandlingMiddleware
 
     private int GetStatusCode(Exception exception)
     {
-        return exception switch
-        {
-            ContentProviderException => (int)HttpStatusCode.BadRequest,
-            ContentItemNotFoundException => (int)HttpStatusCode.NotFound,
-            ContentValidationException => (int)HttpStatusCode.UnprocessableEntity,
-            ContentAuthorizationException => (int)HttpStatusCode.Forbidden,
-            _ => (int)HttpStatusCode.InternalServerError
-        };
+        return 500;
+        //return exception switch
+        //{
+        //    ContentProviderException => (int)HttpStatusCode.BadRequest,
+        //    ContentItemNotFoundException => (int)HttpStatusCode.NotFound,
+        //    ContentValidationException => (int)HttpStatusCode.UnprocessableEntity,
+        //    ContentAuthorizationException => (int)HttpStatusCode.Forbidden,
+        //    _ => (int)HttpStatusCode.InternalServerError
+        //};
     }
 
     private string GetErrorMessage(Exception exception)
     {
-        // For production use, only return detailed messages for certain exception types
-        // For system exceptions, return a generic message
-        return exception switch
-        {
-            ContentProviderException or
-            ContentItemNotFoundException or
-            ContentValidationException or
-            ContentAuthorizationException => exception.Message,
-
-            _ => "An error occurred while processing your request."
-        };
-    }
-
-    /// <summary>
-    /// Extends IApplicationBuilder to add the CMS exception handling middleware
-    /// </summary>
-    public static class CmsExceptionHandlingMiddlewareExtensions
-    {
-        /// <summary>
-        /// Adds CMS exception handling middleware to the application pipeline
-        /// </summary>
-        public static IApplicationBuilder UseCmsExceptionHandling(this IApplicationBuilder builder)
-        {
-            return builder.UseMiddleware<CmsExceptionHandlingMiddleware>();
-        }
-    }
-
-    /// <summary>
-    /// Response model for exceptions
-    /// </summary>
-    public class ExceptionResponse
-    {
-        /// <summary>
-        /// Gets or sets the HTTP status code
-        /// </summary>
-        public int StatusCode { get; set; }
-
-        /// <summary>
-        /// Gets or sets the error message
-        /// </summary>
-        public string Message { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the request trace ID for diagnostics
-        /// </summary>
-        public string TraceId { get; set; } = string.Empty;
+        return "An error occurred while processing your request.";
     }
 }

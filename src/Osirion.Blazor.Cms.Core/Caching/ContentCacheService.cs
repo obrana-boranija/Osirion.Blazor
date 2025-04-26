@@ -2,11 +2,13 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Configuration;
+using Osirion.Blazor.Cms.Core.Configuration;
+using Osirion.Blazor.Cms.Caching;
 
-namespace Osirion.Blazor.Cms.Caching;
+namespace Osirion.Blazor.Cms.Core.Caching;
 
 /// <summary>
-/// Default implementation of IContentCacheService using IMemoryCache
+/// Implementation of the IContentCacheService interface using IMemoryCache
 /// </summary>
 public class ContentCacheService : IContentCacheService
 {

@@ -2,7 +2,7 @@
 using Osirion.Blazor.Cms.Interfaces;
 using Osirion.Blazor.Cms.Models;
 
-namespace Osirion.Blazor.Cms.Services;
+namespace Osirion.Blazor.Cms.Core.Services;
 
 /// <summary>
 /// Implementation of IContentProviderManager that manages access to content providers
@@ -10,21 +10,48 @@ namespace Osirion.Blazor.Cms.Services;
 public class ContentProviderManager : IContentProviderManager
 {
     private readonly IEnumerable<IContentProvider> _providers;
+    private readonly IContentProviderFactory? _providerFactory;
 
     /// <summary>
     /// Initializes a new instance of the ContentProviderManager class
     /// </summary>
-    public ContentProviderManager(IEnumerable<IContentProvider> providers)
+    public ContentProviderManager(
+        IEnumerable<IContentProvider> providers,
+        IContentProviderFactory? providerFactory = null)
     {
         _providers = providers ?? throw new ArgumentNullException(nameof(providers));
+        _providerFactory = providerFactory;
     }
 
     /// <inheritdoc/>
-    public IContentProvider? GetDefaultProvider() => _providers.FirstOrDefault();
+    public IContentProvider? GetDefaultProvider()
+    {
+        // If we have a factory, try to get the default provider from it
+        if (_providerFactory != null)
+        {
+            var defaultProviderId = _providerFactory.GetDefaultProviderId();
+            if (!string.IsNullOrEmpty(defaultProviderId))
+            {
+                var defaultProvider = _providers.FirstOrDefault(p => p.ProviderId == defaultProviderId);
+                if (defaultProvider != null)
+                {
+                    return defaultProvider;
+                }
+            }
+        }
+
+        // Fall back to first registered provider
+        return _providers.FirstOrDefault();
+    }
 
     /// <inheritdoc/>
-    public IContentProvider? GetProvider(string providerId) =>
-        _providers.FirstOrDefault(p => p.ProviderId == providerId);
+    public IContentProvider? GetProvider(string providerId)
+    {
+        if (string.IsNullOrEmpty(providerId))
+            throw new ArgumentException("Provider ID cannot be null or empty", nameof(providerId));
+
+        return _providers.FirstOrDefault(p => p.ProviderId == providerId);
+    }
 
     /// <inheritdoc/>
     public IEnumerable<IContentProvider> GetAllProviders() => _providers;

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.JSInterop;
 using System.Text.Json;
 
-namespace Osirion.Blazor.Cms.Admin.Services;
+namespace Osirion.Blazor.Cms.Core.Interfaces;
 
 /// <summary>
 /// Service for persisting admin state across page navigations

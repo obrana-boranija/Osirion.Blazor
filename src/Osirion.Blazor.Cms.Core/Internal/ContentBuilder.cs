@@ -1,10 +1,12 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
+using Osirion.Blazor.Cms.Core.Interfaces;
 using Osirion.Blazor.Cms.Core.Providers.GitHub;
-using Osirion.Blazor.Cms.Core.Providers.Interfaces;
 using Osirion.Blazor.Cms.Interfaces;
 using Osirion.Blazor.Cms.Options;
 using Osirion.Blazor.Cms.Providers;
+using System.Net.Http.Headers;
 
 namespace Osirion.Blazor.Cms.Internal;
 
@@ -41,39 +43,61 @@ internal class ContentBuilder : IContentBuilder
             opt.EnableCaching = options.EnableCaching;
             opt.CacheDurationMinutes = options.CacheDurationMinutes;
             opt.SupportedExtensions = options.SupportedExtensions;
-            opt.EnableLocalization = options.EnableLocalization;
-            opt.DefaultLocale = options.DefaultLocale;
         });
 
-        // Add HttpClient for GitHub API
-        Services.AddHttpClient<IGitHubApiClient, GitHubApiClient>();
+        // Configure HttpClient properly during registration
+        Services.AddHttpClient<GitHubContentProvider>()
+            .ConfigureHttpClient((serviceProvider, client) =>
+            {
+                client.BaseAddress = new Uri("https://api.github.com/");
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("OsirionBlazor", "2.0"));
 
-        // Register GitHub provider
-        Services.TryAddScoped<GitHubContentProvider>();
-        Services.TryAddScoped<IContentProvider>(sp => sp.GetRequiredService<GitHubContentProvider>());
+                var gitHubOptions = serviceProvider.GetRequiredService<IOptions<GitHubContentOptions>>().Value;
+                if (!string.IsNullOrEmpty(gitHubOptions.ApiToken))
+                {
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", gitHubOptions.ApiToken);
+                }
+            })
+            .ConfigurePrimaryHttpMessageHandler(() =>
+            {
+                if (OperatingSystem.IsBrowser())
+                {
+                    return new HttpClientHandler(); // Use a compatible handler for browser environments
+                }
+                return new SocketsHttpHandler
+                {
+                    PooledConnectionLifetime = TimeSpan.FromMinutes(15)
+                };
+            });
+
+        // Register as singleton
+        Services.AddSingleton<IContentProvider>(sp =>
+        (IContentProvider)sp.GetRequiredService<GitHubContentProvider>());
 
         return this;
+
     }
 
     /// <inheritdoc/>
     public IContentBuilder AddFileSystem(Action<FileSystemContentOptions>? configure = null)
     {
-        var options = new FileSystemContentOptions();
-        configure?.Invoke(options);
+        //var options = new FileSystemContentOptions();
+        //configure?.Invoke(options);
 
-        Services.Configure<FileSystemContentOptions>(opt =>
-        {
-            opt.BasePath = options.BasePath;
-            opt.WatchForChanges = options.WatchForChanges;
-            opt.ProviderId = options.ProviderId;
-            opt.EnableCaching = options.EnableCaching;
-            opt.CacheDurationMinutes = options.CacheDurationMinutes;
-            opt.SupportedExtensions = options.SupportedExtensions;
-        });
+        //Services.Configure<FileSystemContentOptions>(opt =>
+        //{
+        //    opt.BasePath = options.BasePath;
+        //    opt.WatchForChanges = options.WatchForChanges;
+        //    opt.ProviderId = options.ProviderId;
+        //    opt.EnableCaching = options.EnableCaching;
+        //    opt.CacheDurationMinutes = options.CacheDurationMinutes;
+        //    opt.SupportedExtensions = options.SupportedExtensions;
+        //});
 
-        // Register file system provider
-        Services.TryAddScoped<FileSystemContentProvider>();
-        Services.TryAddScoped<IContentProvider>(sp => sp.GetRequiredService<FileSystemContentProvider>());
+        //// Register file system provider
+        //Services.TryAddScoped<FileSystemContentProvider>();
+        //Services.TryAddScoped<IContentProvider>(sp => sp.GetRequiredService<FileSystemContentProvider>());
 
         return this;
     }

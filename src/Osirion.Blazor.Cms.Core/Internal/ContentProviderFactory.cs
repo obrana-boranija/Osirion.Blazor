@@ -7,7 +7,7 @@ namespace Osirion.Blazor.Cms.Internal;
 /// <summary>
 /// Factory for creating content providers
 /// </summary>
-internal class ContentProviderFactory : IContentProviderFactory
+public class ContentProviderFactory : IContentProviderFactory
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<ContentProviderFactory> _logger;
@@ -19,10 +19,11 @@ internal class ContentProviderFactory : IContentProviderFactory
     /// </summary>
     public ContentProviderFactory(
         IServiceProvider serviceProvider,
-        ILogger<ContentProviderFactory> logger)
+        ILogger<ContentProviderFactory>? logger = null)
     {
         _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _logger = logger ?? (_serviceProvider.GetService(typeof(ILogger<ContentProviderFactory>)) as ILogger<ContentProviderFactory>)
+            ?? throw new ArgumentNullException(nameof(logger));
     }
 
     /// <inheritdoc/>

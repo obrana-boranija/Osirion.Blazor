@@ -2,12 +2,12 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Caching;
+using Osirion.Blazor.Cms.Configuration;
 using Osirion.Blazor.Cms.Core.Caching;
 using Osirion.Blazor.Cms.Core.Interfaces;
-using Osirion.Blazor.Cms.Core.Options;
 using Osirion.Blazor.Cms.Core.Providers.GitHub;
 using Osirion.Blazor.Cms.Core.Providers.Interfaces;
-using Osirion.Blazor.Cms.Extensions;
+using Osirion.Blazor.Cms.Core.Services;
 using Osirion.Blazor.Cms.Interfaces;
 using Osirion.Blazor.Cms.Internal;
 using Osirion.Blazor.Cms.Options;
@@ -86,7 +86,7 @@ public static class ContentServiceCollectionExtensions
 
         // Register GitHub provider
         services.TryAddScoped<GitHubContentProvider>();
-        services.TryAddScoped<IContentProvider>(sp => sp.GetRequiredService<GitHubContentProvider>());
+        services.TryAddScoped<IContentProvider>(sp => (IContentProvider)sp.GetRequiredService<GitHubContentProvider>());
 
         return services;
     }
@@ -109,7 +109,7 @@ public static class ContentServiceCollectionExtensions
 
         // Register file system provider
         services.TryAddScoped<FileSystemContentProvider>();
-        services.TryAddScoped<IContentProvider>(sp => sp.GetRequiredService<FileSystemContentProvider>());
+        services.TryAddScoped<IContentProvider>(sp => (IContentProvider)sp.GetRequiredService<FileSystemContentProvider>());
 
         return services;
     }

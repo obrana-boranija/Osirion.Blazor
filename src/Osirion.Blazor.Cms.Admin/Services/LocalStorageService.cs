@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
+using Osirion.Blazor.Cms.Core.Interfaces;
 using System.Text.Json;
 
 namespace Osirion.Blazor.Cms.Admin.Services;

@@ -1,86 +1,47 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Osirion.Blazor.Cms.Core.Interfaces;
 using System.Net.Http.Headers;
-using System.Text.Json;
-using System.Text;
 using System.Net.Http.Json;
+using System.Text;
+using System.Text.Json;
 using System.Text.Json.Serialization;
-
-<<<<<<< TODO: Unmerged change from project 'Osirion.Blazor.Cms.Core (net9.0)', Before:
-=======
-using Osirion;
-using Osirion.Blazor;
-using Osirion.Blazor.Cms;
-using Osirion.Blazor.Cms.Admin;
-using Osirion.Blazor.Cms.Admin.Services;
-using Osirion.Blazor.Cms.Core.Services;
->>>>>>> After
 
 namespace Osirion.Blazor.Cms.Core.Services;
 
 /// <summary>
 /// Service for GitHub authentication
 /// </summary>
-public interface IAuthenticationService
-{
-    /// <summary>
-    /// Gets whether the user is authenticated
-    /// </summary>
-    bool IsAuthenticated { get; }
-
-    /// <summary>
-    /// Gets the current access token if authenticated
-    /// </summary>
-    string? AccessToken { get; }
-
-    /// <summary>
-    /// Gets the username of the authenticated user
-    /// </summary>
-    string? Username { get; }
-
-    /// <summary>
-    /// Authenticates with GitHub using OAuth flow
-    /// </summary>
-    Task<bool> AuthenticateWithGitHubAsync(string code);
-
-    /// <summary>
-    /// Sets an access token directly
-    /// </summary>
-    Task<bool> SetAccessTokenAsync(string token);
-
-    /// <summary>
-    /// Signs out
-    /// </summary>
-    Task SignOutAsync();
-}
-
-/// <summary>
-/// Implementation of IAuthenticationService for GitHub authentication
-/// </summary>
-public class ContentAuthenticationService : IAuthenticationService
+public class AuthenticationService : IAuthenticationService
 {
     private readonly HttpClient _httpClient;
-    private readonly ILogger<ContentAuthenticationService> _logger;
+    private readonly ILogger<AuthenticationService> _logger;
     private readonly string? _clientId;
     private readonly string? _clientSecret;
     private string? _accessToken;
     private string? _username;
+    private readonly IStateStorageService _stateStorage;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ContentAuthenticationService"/> class.
+    /// Initializes a new instance of the <see cref="AuthenticationService"/> class.
     /// </summary>
-    public ContentAuthenticationService(
+    public AuthenticationService(
         HttpClient httpClient,
         IConfiguration configuration,
-        ILogger<ContentAuthenticationService> logger)
+        ILogger<AuthenticationService> logger,
+        IStateStorageService stateStorage)
     {
         _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _stateStorage = stateStorage ?? throw new ArgumentNullException(nameof(stateStorage));
 
         // Read GitHub configuration
         _clientId = configuration["GitHub:ClientId"];
         _clientSecret = configuration["GitHub:ClientSecret"];
         _accessToken = configuration["GitHub:ApiToken"];
+
+        // Try to restore auth state
+        RestoreAuthStateAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -114,12 +75,15 @@ public class ContentAuthenticationService : IAuthenticationService
 
             var content = new StringContent(
                 JsonSerializer.Serialize(tokenRequest),
-                Encoding.UTF8
+                Encoding.UTF8,
+                "application/json"
             );
-            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
             // GitHub's token endpoint
-            var response = await _httpClient.PostAsync(
+            var httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            var response = await httpClient.PostAsync(
                 "https://github.com/login/oauth/access_token",
                 content
             );
@@ -150,8 +114,15 @@ public class ContentAuthenticationService : IAuthenticationService
             }
 
             // Get user information
-            await GetUserInfoAsync();
-            return true;
+            var success = await GetUserInfoAsync();
+
+            // Save state if successful
+            if (success)
+            {
+                await PersistAuthStateAsync();
+            }
+
+            return success;
         }
         catch (Exception ex)
         {
@@ -166,22 +137,35 @@ public class ContentAuthenticationService : IAuthenticationService
         try
         {
             _accessToken = token;
-            return await GetUserInfoAsync();
+            var success = await GetUserInfoAsync();
+
+            // Save state if successful
+            if (success)
+            {
+                await PersistAuthStateAsync();
+            }
+            else
+            {
+                await RemoveAuthStateAsync();
+            }
+
+            return success;
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error validating access token");
             _accessToken = null;
+            await RemoveAuthStateAsync();
             return false;
         }
     }
 
     /// <inheritdoc/>
-    public Task SignOutAsync()
+    public async Task SignOutAsync()
     {
         _accessToken = null;
         _username = null;
-        return Task.CompletedTask;
+        await RemoveAuthStateAsync();
     }
 
     private async Task<bool> GetUserInfoAsync()
@@ -211,6 +195,42 @@ public class ContentAuthenticationService : IAuthenticationService
             _accessToken = null;
             _username = null;
             return false;
+        }
+    }
+
+    private async Task PersistAuthStateAsync()
+    {
+        if (_stateStorage.IsInitialized)
+        {
+            await _stateStorage.SaveStateAsync("github_auth_token", _accessToken);
+            await _stateStorage.SaveStateAsync("github_username", _username);
+        }
+    }
+
+    private async Task RestoreAuthStateAsync()
+    {
+        if (_stateStorage.IsInitialized)
+        {
+            _accessToken = await _stateStorage.GetStateAsync<string>("github_auth_token");
+            _username = await _stateStorage.GetStateAsync<string>("github_username");
+
+            // Validate restored token
+            if (!string.IsNullOrEmpty(_accessToken))
+            {
+                if (!await GetUserInfoAsync())
+                {
+                    await RemoveAuthStateAsync();
+                }
+            }
+        }
+    }
+
+    private async Task RemoveAuthStateAsync()
+    {
+        if (_stateStorage.IsInitialized)
+        {
+            await _stateStorage.RemoveStateAsync("github_auth_token");
+            await _stateStorage.RemoveStateAsync("github_username");
         }
     }
 

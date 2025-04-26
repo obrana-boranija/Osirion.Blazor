@@ -1,44 +1,15 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Osirion.Blazor.Cms.Admin.Models;
+using Osirion.Blazor.Cms.Core.Interfaces;
 using Osirion.Blazor.Cms.Core.Models;
+using Osirion.Blazor.Cms.Core.Providers.GitHub.Models;
+using Osirion.Blazor.Cms.Core.Providers.Interfaces;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 
-namespace Osirion.Blazor.Cms.Admin.Services;
-
-/// <summary>
-/// Service for interacting with GitHub APIs to manage content
-/// </summary>
-public interface IGitHubAdminService
-{
-    // Repository and branch operations
-    Task<List<GitHubRepository>> GetRepositoriesAsync();
-    Task<List<GitHubBranch>> GetBranchesAsync(string repository);
-    Task<GitHubBranch> CreateBranchAsync(string branchName, string fromBranch);
-
-    // File operations
-    Task<List<GitHubItem>> GetRepositoryContentsAsync(string path = "");
-    Task<GitHubFileContent> GetFileContentAsync(string path);
-    Task<GitHubFileCommitResponse> CreateOrUpdateFileAsync(string path, string content, string commitMessage, string? existingSha = null);
-    Task<GitHubFileCommitResponse> DeleteFileAsync(string path, string commitMessage, string sha);
-
-    // Content operations
-    Task<BlogPost> GetBlogPostAsync(string path);
-    Task<List<GitHubItem>> SearchFilesAsync(string query);
-
-    // Pull request operations
-    Task<GitHubPullRequest> CreatePullRequestAsync(string title, string body, string head, string baseBranch);
-
-    // Configuration
-    string CurrentRepository { get; }
-    string CurrentBranch { get; }
-    void SetRepository(string repository);
-    void SetBranch(string branch);
-    Task SetAuthTokenAsync(string token);
-}
+namespace Osirion.Blazor.Cms.Core.Providers.GitHub;
 
 /// <summary>
 /// Implementation of IGitHubAdminService for managing GitHub repositories
@@ -52,6 +23,7 @@ public class GitHubAdminService : IGitHubAdminService
     private string _branch = "main";
     private readonly string? _committerName;
     private readonly string? _committerEmail;
+    private readonly IAuthenticationService _authService;
 
     public string CurrentRepository => _repo;
     public string CurrentBranch => _branch;
@@ -59,10 +31,12 @@ public class GitHubAdminService : IGitHubAdminService
     public GitHubAdminService(
         HttpClient httpClient,
         IConfiguration configuration,
-        ILogger<GitHubAdminService> logger)
+        ILogger<GitHubAdminService> logger,
+        IAuthenticationService authService)
     {
         _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _authService = authService ?? throw new ArgumentNullException(nameof(authService));
 
         // Read GitHub configuration
         _owner = configuration["GitHub:Owner"] ?? throw new ArgumentNullException("GitHub:Owner configuration is missing");
@@ -71,17 +45,15 @@ public class GitHubAdminService : IGitHubAdminService
         _committerName = configuration["GitHub:CommitterName"];
         _committerEmail = configuration["GitHub:CommitterEmail"];
 
-        var token = configuration["GitHub:ApiToken"];
-
         // Set up HTTP client
         _httpClient.BaseAddress = new Uri("https://api.github.com/");
         _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         _httpClient.DefaultRequestHeaders.Add("User-Agent", "OsirionBlogCMS");
 
-        // Add authorization if token provided
-        if (!string.IsNullOrEmpty(token))
+        // Add authorization if user is authenticated
+        if (_authService.IsAuthenticated && !string.IsNullOrEmpty(_authService.AccessToken))
         {
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("token", token);
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("token", _authService.AccessToken);
         }
     }
 
@@ -144,7 +116,6 @@ public class GitHubAdminService : IGitHubAdminService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error getting repositories for owner: {Owner}", _owner);
             throw;
         }
     }
@@ -166,7 +137,6 @@ public class GitHubAdminService : IGitHubAdminService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error getting branches for repository: {Repository}", repository);
             throw;
         }
     }
@@ -217,7 +187,6 @@ public class GitHubAdminService : IGitHubAdminService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error creating branch: {BranchName}", branchName);
             throw;
         }
     }
@@ -261,7 +230,6 @@ public class GitHubAdminService : IGitHubAdminService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error getting repository contents for path: {Path}", path);
             throw;
         }
     }
@@ -287,7 +255,6 @@ public class GitHubAdminService : IGitHubAdminService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error getting file content for path: {Path}", path);
             throw;
         }
     }
@@ -356,7 +323,6 @@ public class GitHubAdminService : IGitHubAdminService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error creating/updating file: {Path}", path);
             throw;
         }
     }
@@ -376,7 +342,7 @@ public class GitHubAdminService : IGitHubAdminService
             var requestData = new
             {
                 message = commitMessage,
-                sha = sha,
+                sha,
                 branch = _branch,
                 committer = !string.IsNullOrEmpty(_committerName) && !string.IsNullOrEmpty(_committerEmail) ? new
                 {
@@ -404,7 +370,6 @@ public class GitHubAdminService : IGitHubAdminService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error deleting file: {Path}", path);
             throw;
         }
     }
@@ -465,7 +430,6 @@ public class GitHubAdminService : IGitHubAdminService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error searching for files with query: {Query}", query);
             return new List<GitHubItem>();
         }
     }
@@ -499,7 +463,6 @@ public class GitHubAdminService : IGitHubAdminService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error creating pull request from {Head} to {Base}", head, baseBranch);
             throw;
         }
     }

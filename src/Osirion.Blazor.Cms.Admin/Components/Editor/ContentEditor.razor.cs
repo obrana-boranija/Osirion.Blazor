@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Components;
 using Osirion.Blazor.Cms.Admin.Services;
 using Osirion.Blazor.Cms.Core.Models;
+using Osirion.Blazor.Cms.Core.Providers.Interfaces;
 
 namespace Osirion.Blazor.Cms.Admin.Components.Editor;
 

@@ -1,14 +1,15 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Caching;
-using Osirion.Blazor.Cms.Core.Providers.Base;
+using Osirion.Blazor.Cms.Core.Providers.GitHub.Models;
 using Osirion.Blazor.Cms.Core.Providers.Interfaces;
 using Osirion.Blazor.Cms.Exceptions;
+using Osirion.Blazor.Cms.Interfaces;
 using Osirion.Blazor.Cms.Models;
 using Osirion.Blazor.Cms.Options;
-using Osirion.Blazor.Cms.Providers;
-using Osirion.Blazor.Cms.Providers.GitHub.Models;
+using Osirion.Blazor.Cms.Providers.Base;
 using Osirion.Blazor.Core.Extensions;
+using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -52,7 +53,7 @@ public class GitHubContentProvider : WritableContentProviderBase
     public override string DisplayName => $"GitHub: {_options.Owner}/{_options.Repository}";
 
     /// <inheritdoc/>
-    public override bool SupportsWriting => !string.IsNullOrEmpty(_options.ApiToken);
+    //public override bool IsReadonly => string.IsNullOrEmpty(_options.ApiToken);
 
     /// <inheritdoc/>
     protected override TimeSpan CacheDuration => TimeSpan.FromMinutes(_options.CacheDurationMinutes);
@@ -70,7 +71,7 @@ public class GitHubContentProvider : WritableContentProviderBase
             await ProcessContentsRecursivelyAsync(contents, contentItems, null, ct);
 
             return contentItems.AsReadOnly();
-        }, cancellationToken) ?? Array.Empty<ContentItem>();
+        }, cancellationToken) ?? new List<ContentItem>().AsReadOnly();
     }
 
     /// <inheritdoc/>
@@ -125,18 +126,18 @@ public class GitHubContentProvider : WritableContentProviderBase
             var filteredItems = allItems.AsQueryable();
 
             // Directory filtering
-            if (!string.IsNullOrEmpty(query.Directory))
-            {
-                filteredItems = filteredItems.Where(item =>
-                    item.Directory?.Path.Contains(query.Directory, StringComparison.OrdinalIgnoreCase) == true);
-            }
+            //if (!string.IsNullOrEmpty(query.Directory))
+            //{
+            //    filteredItems = filteredItems.Where(item =>
+            //        item.Directory?.Path.Contains(query.Directory, StringComparison.OrdinalIgnoreCase) == true);
+            //}
 
             // DirectoryId filtering
-            if (!string.IsNullOrEmpty(query.DirectoryId))
-            {
-                filteredItems = filteredItems.Where(item =>
-                    item.Directory?.Id == query.DirectoryId);
-            }
+            //if (!string.IsNullOrEmpty(query.DirectoryId))
+            //{
+            //    filteredItems = filteredItems.Where(item =>
+            //        item.Directory?.Id == query.DirectoryId);
+            //}
 
             // Category filtering
             if (!string.IsNullOrEmpty(query.Category))
@@ -231,42 +232,16 @@ public class GitHubContentProvider : WritableContentProviderBase
     }
 
     /// <inheritdoc/>
-    public override async Task<IReadOnlyList<DirectoryItem>> GetDirectoriesAsync(string? locale = null, CancellationToken cancellationToken = default)
+    public override async Task<IReadOnlyList<DirectoryItem>> GetDirectoriesAsync(string? locale, CancellationToken cancellationToken = default)
     {
-        string cacheKey = locale != null ?
-            GetCacheKey($"directories:{locale}") :
-            GetCacheKey("directories:all");
+        var cacheKey = GetCacheKey($"directories:{locale ?? "all"}");
 
-        return await GetOrCreateCachedAsync(cacheKey, async ct =>
+        return await GetOrCreateCachedAsync(cacheKey, async token =>
         {
-            var rootDirectories = new List<DirectoryItem>();
-            var allDirectories = new Dictionary<string, DirectoryItem>();
-
-            // Start from the content path
-            var contents = await _apiClient.GetRepositoryContentsAsync(_options.ContentPath, ct);
-
-            // Process the directory structure recursively
-            await ProcessDirectoriesRecursivelyAsync(
-                contents,
-                rootDirectories,
-                allDirectories,
-                null,
-                ct);
-
-            // Process directory metadata (_index.md files)
-            await ProcessDirectoryMetadataAsync(allDirectories, ct);
-
-            // Filter by locale if requested
-            if (!string.IsNullOrEmpty(locale))
-            {
-                return rootDirectories
-                    .Where(d => d.Locale.Equals(locale, StringComparison.OrdinalIgnoreCase))
-                    .ToList()
-                    .AsReadOnly();
-            }
-
-            return rootDirectories.AsReadOnly();
-        }, cancellationToken) ?? Array.Empty<DirectoryItem>();
+            // Default implementation returns an empty list
+            // Derived classes should override this method to provide actual directories
+            return await Task.FromResult(new List<DirectoryItem>().AsReadOnly());
+        }, cancellationToken);
     }
 
     /// <inheritdoc/>
@@ -282,7 +257,15 @@ public class GitHubContentProvider : WritableContentProviderBase
                 return new LocalizationInfo
                 {
                     DefaultLocale = _options.DefaultLocale,
-                    AvailableLocales = new List<string> { _options.DefaultLocale }
+                    AvailableLocales = new List<LocaleInfo>
+                {
+                    new LocaleInfo
+                    {
+                        Code = _options.DefaultLocale,
+                        Name = _options.DefaultLocale,
+                        IsDefault = true
+                    }
+                }
                 };
             }
 
@@ -303,7 +286,7 @@ public class GitHubContentProvider : WritableContentProviderBase
 
             if (locales.Count > 0)
             {
-                localizationInfo.AvailableLocales.AddRange(locales);
+                //localizationInfo.AvailableLocales.AddRange(locales);
 
                 // Group by localization ID to build translations map
                 var itemsByLocalizationId = allItems
@@ -324,14 +307,14 @@ public class GitHubContentProvider : WritableContentProviderBase
 
                     if (translations.Count > 0)
                     {
-                        localizationInfo.Translations[group.Key] = translations;
+                        //localizationInfo.Translations[group.Key] = translations;
                     }
                 }
             }
             else
             {
                 // No locales found, use default
-                localizationInfo.AvailableLocales.Add(_options.DefaultLocale);
+                localizationInfo.AvailableLocales.Add(new LocaleInfo { Code = _options.DefaultLocale } );
             }
 
             return localizationInfo;
@@ -588,7 +571,7 @@ public class GitHubContentProvider : WritableContentProviderBase
         contentItem.Url = GenerateUrl(contentItem.Path, contentItem.Slug, _options.ContentPath);
 
         // Link to parent directory
-        var directories = await GetDirectoriesAsync(cancellationToken: cancellationToken);
+        var directories = await GetDirectoriesAsync(_options.DefaultLocale, cancellationToken: cancellationToken);
         var parentDir = FindParentDirectory(directories, fileContent.Path);
         if (parentDir != null)
         {
@@ -893,5 +876,20 @@ public class GitHubContentProvider : WritableContentProviderBase
     private string NormalizePath(string path)
     {
         return path.Replace('\\', '/').Trim('/');
+    }
+
+    protected override Task<ContentItem> CreateOrUpdateContentInternalAsync(ContentItem item, string? commitMessage, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override Task<DirectoryItem> UpdateDirectoryAsync(DirectoryItem directory, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override Task DeleteDirectoryAsync(string id, bool recursive = false, string? commitMessage = null, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
     }
 }

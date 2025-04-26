@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
-using Osirion.Blazor.Cms.Interfaces;
+using Osirion.Blazor.Cms.Core.Interfaces;
 using Osirion.Blazor.Cms.Models;
 
 namespace Osirion.Blazor.Cms.Components;
@@ -82,7 +82,9 @@ public partial class LocalizedNavigation
             {
                 // Get available locales
                 var localizationInfo = await provider.GetLocalizationInfoAsync();
-                AvailableLocales = EnableLocalization ? localizationInfo.AvailableLocales : new List<string> { localizationInfo.DefaultLocale };
+                AvailableLocales = EnableLocalization
+                    ? localizationInfo.AvailableLocales.Select(locale => locale.Code).ToList()
+                    : new List<string> { localizationInfo.DefaultLocale };
 
                 if (string.IsNullOrEmpty(CurrentLocale) && AvailableLocales.Any())
                 {

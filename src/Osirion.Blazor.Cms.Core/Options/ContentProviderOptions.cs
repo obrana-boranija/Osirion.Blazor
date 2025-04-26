@@ -33,10 +33,15 @@ public abstract class ContentProviderOptions
     /// <summary>
     /// Gets or sets whether localization is enabled
     /// </summary>
-    public bool EnableLocalization { get; set; } = true;
+    /// <remarks>
+    /// When enabled, the provider will extract locale information from directory paths 
+    /// and group content by localization ID. When disabled, all content is treated as
+    /// if it belonged to the default locale.
+    /// </remarks>
+    public bool EnableLocalization { get; set; } = false;
 
     /// <summary>
-    /// Gets or sets the default locale
+    /// Gets or sets the default locale to use when localization is disabled
     /// </summary>
     public string DefaultLocale { get; set; } = "en";
 

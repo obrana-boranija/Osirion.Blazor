@@ -1,385 +1,149 @@
-﻿using System.Text;
-using System.Text.Json.Serialization;
+﻿using Osirion.Blazor.Cms.Core.Providers.GitHub.Models;
+using System.Text;
+using System.Text.RegularExpressions;
 
-namespace Osirion.Blazor.Cms.Models;
+namespace Osirion.Blazor.Cms.Core.Models;
 
 /// <summary>
-/// Represents the frontmatter metadata for a blog post or page
+/// Represents a blog post with content and metadata
 /// </summary>
-public class FrontMatter
+public class BlogPost
 {
     /// <summary>
-    /// Gets or sets the title of the post
+    /// Gets or sets the frontmatter metadata for the post
     /// </summary>
-    public string Title { get; set; } = string.Empty;
+    public FrontMatter Metadata { get; set; } = new();
 
     /// <summary>
-    /// Gets or sets the description of the post
+    /// Gets or sets the markdown content of the post
     /// </summary>
-    public string Description { get; set; } = string.Empty;
+    public string Content { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the author of the post
+    /// Gets or sets the file path relative to the repository root
     /// </summary>
-    public string Author { get; set; } = string.Empty;
+    public string FilePath { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the date of the post in ISO format (yyyy-MM-dd)
+    /// Gets or sets the SHA hash of the file in the repository
     /// </summary>
-    public string Date { get; set; } = DateTime.Now.ToString("yyyy-MM-dd");
+    public string Sha { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the URL for the featured image
+    /// Gets the filename portion of the file path
     /// </summary>
-    public string? FeaturedImage { get; set; }
+    public string FileName => Path.GetFileName(FilePath);
 
     /// <summary>
-    /// Gets or sets the categories of the post
+    /// Gets the directory portion of the file path
     /// </summary>
-    public List<string> Categories { get; set; } = new();
+    public string Directory => Path.GetDirectoryName(FilePath) ?? string.Empty;
 
     /// <summary>
-    /// Gets or sets the tags of the post
+    /// Gets the extension of the file
     /// </summary>
-    public List<string> Tags { get; set; } = new();
+    public string Extension => Path.GetExtension(FilePath);
 
     /// <summary>
-    /// Gets or sets whether the post is featured
+    /// Creates a new blog post
     /// </summary>
-    public bool IsFeatured { get; set; }
-
-    /// <summary>
-    /// Gets or sets whether the post is published
-    /// </summary>
-    public bool Published { get; set; } = true;
-
-    /// <summary>
-    /// Gets or sets the layout template to use for the post
-    /// </summary>
-    public string? Layout { get; set; }
-
-    /// <summary>
-    /// Gets or sets the URL slug for the post
-    /// </summary>
-    public string? Slug { get; set; }
-
-    /// <summary>
-    /// Gets or sets custom fields for the post
-    /// </summary>
-    [JsonExtensionData]
-    public Dictionary<string, object> CustomFields { get; set; } = new();
-
-    /// <summary>
-    /// Creates a YAML representation of the frontmatter
-    /// </summary>
-    public string ToYaml()
+    public BlogPost()
     {
-        var yaml = new StringBuilder();
-        yaml.AppendLine("---");
-
-        // Add title if not empty
-        if (!string.IsNullOrWhiteSpace(Title))
-            yaml.AppendLine($"title: \"{EscapeYamlString(Title)}\"");
-
-        // Add description if not empty
-        if (!string.IsNullOrWhiteSpace(Description))
-            yaml.AppendLine($"description: \"{EscapeYamlString(Description)}\"");
-
-        // Add author if not empty
-        if (!string.IsNullOrWhiteSpace(Author))
-            yaml.AppendLine($"author: \"{EscapeYamlString(Author)}\"");
-
-        // Add date if not empty
-        if (!string.IsNullOrWhiteSpace(Date))
-            yaml.AppendLine($"date: {Date}");
-
-        // Add featured image if not empty
-        if (!string.IsNullOrWhiteSpace(FeaturedImage))
-            yaml.AppendLine($"featured_image: \"{FeaturedImage}\"");
-
-        // Add categories if any
-        if (Categories.Count > 0)
-        {
-            yaml.AppendLine("categories:");
-            foreach (var category in Categories)
-            {
-                yaml.AppendLine($"  - \"{EscapeYamlString(category)}\"");
-            }
-        }
-
-        // Add tags if any
-        if (Tags.Count > 0)
-        {
-            yaml.AppendLine("tags:");
-            foreach (var tag in Tags)
-            {
-                yaml.AppendLine($"  - \"{EscapeYamlString(tag)}\"");
-            }
-        }
-
-        // Add featured flag if true
-        if (IsFeatured)
-            yaml.AppendLine("featured: true");
-
-        // Add published flag if not true (defaults to true)
-        if (!Published)
-            yaml.AppendLine("published: false");
-
-        // Add layout if specified
-        if (!string.IsNullOrWhiteSpace(Layout))
-            yaml.AppendLine($"layout: \"{Layout}\"");
-
-        // Add slug if specified
-        if (!string.IsNullOrWhiteSpace(Slug))
-            yaml.AppendLine($"slug: \"{Slug}\"");
-
-        // Add custom fields if any
-        foreach (var field in CustomFields)
-        {
-            if (field.Value is string strValue)
-            {
-                yaml.AppendLine($"{field.Key}: \"{EscapeYamlString(strValue)}\"");
-            }
-            else if (field.Value is bool boolValue)
-            {
-                yaml.AppendLine($"{field.Key}: {boolValue.ToString().ToLowerInvariant()}");
-            }
-            else if (field.Value is int intValue)
-            {
-                yaml.AppendLine($"{field.Key}: {intValue}");
-            }
-            else if (field.Value is double doubleValue)
-            {
-                yaml.AppendLine($"{field.Key}: {doubleValue}");
-            }
-            else if (field.Value is DateTime dateValue)
-            {
-                yaml.AppendLine($"{field.Key}: {dateValue:yyyy-MM-dd}");
-            }
-            else if (field.Value is List<string> listValue)
-            {
-                yaml.AppendLine($"{field.Key}:");
-                foreach (var item in listValue)
-                {
-                    yaml.AppendLine($"  - \"{EscapeYamlString(item)}\"");
-                }
-            }
-            else
-            {
-                // For other types, serialize as string representation
-                yaml.AppendLine($"{field.Key}: \"{field.Value}\"");
-            }
-        }
-
-        yaml.AppendLine("---");
-        return yaml.ToString();
     }
 
     /// <summary>
-    /// Parses frontmatter from YAML
+    /// Creates a new blog post with specified metadata and content
     /// </summary>
-    public static FrontMatter FromYaml(string yaml)
+    /// <param name="metadata">The frontmatter metadata</param>
+    /// <param name="content">The markdown content</param>
+    public BlogPost(FrontMatter metadata, string content)
     {
-        var frontMatter = new FrontMatter();
-
-        if (string.IsNullOrWhiteSpace(yaml))
-            return frontMatter;
-
-        // Simple line-by-line parsing for common properties
-        var lines = yaml.Split('\n');
-
-        string? currentList = null;
-        List<string> currentItems = new();
-
-        foreach (var line in lines)
-        {
-            var trimmedLine = line.Trim();
-            if (string.IsNullOrEmpty(trimmedLine))
-                continue;
-
-            // Check if this is a new list
-            if (trimmedLine.EndsWith(':'))
-            {
-                // Save any previous list
-                if (currentList != null && currentItems.Count > 0)
-                {
-                    AssignList(frontMatter, currentList, currentItems);
-                }
-
-                // Start a new list
-                currentList = trimmedLine.TrimEnd(':');
-                currentItems = new List<string>();
-                continue;
-            }
-
-            // Check if this is a list item
-            if (trimmedLine.StartsWith("  - ") || trimmedLine.StartsWith("- "))
-            {
-                var item = trimmedLine.TrimStart(' ', '-').Trim();
-                // Remove quotes if present
-                if ((item.StartsWith("\"") && item.EndsWith("\"")) ||
-                    (item.StartsWith("'") && item.EndsWith("'")))
-                {
-                    item = item.Substring(1, item.Length - 2);
-                }
-
-                currentItems.Add(item);
-                continue;
-            }
-
-            // Process key-value pair
-            var separatorIndex = trimmedLine.IndexOf(':');
-            if (separatorIndex > 0)
-            {
-                // Save any previous list
-                if (currentList != null && currentItems.Count > 0)
-                {
-                    AssignList(frontMatter, currentList, currentItems);
-                    currentList = null;
-                    currentItems.Clear();
-                }
-
-                var key = trimmedLine.Substring(0, separatorIndex).Trim();
-                var value = trimmedLine.Substring(separatorIndex + 1).Trim();
-
-                // Remove quotes if present
-                if ((value.StartsWith("\"") && value.EndsWith("\"")) ||
-                    (value.StartsWith("'") && value.EndsWith("'")))
-                {
-                    value = value.Substring(1, value.Length - 2);
-                }
-
-                AssignProperty(frontMatter, key, value);
-            }
-        }
-
-        // Save any final list
-        if (currentList != null && currentItems.Count > 0)
-        {
-            AssignList(frontMatter, currentList, currentItems);
-        }
-
-        return frontMatter;
-    }
-
-    private static void AssignList(FrontMatter frontMatter, string listName, List<string> items)
-    {
-        switch (listName.ToLowerInvariant())
-        {
-            case "categories":
-                frontMatter.Categories = new List<string>(items);
-                break;
-            case "tags":
-                frontMatter.Tags = new List<string>(items);
-                break;
-            default:
-                // For custom list properties, add as a custom field
-                frontMatter.CustomFields[listName] = items;
-                break;
-        }
-    }
-
-    private static void AssignProperty(FrontMatter frontMatter, string key, string value)
-    {
-        switch (key.ToLowerInvariant())
-        {
-            case "title":
-                frontMatter.Title = value;
-                break;
-            case "description":
-                frontMatter.Description = value;
-                break;
-            case "author":
-                frontMatter.Author = value;
-                break;
-            case "date":
-                frontMatter.Date = value;
-                break;
-            case "featured_image":
-                frontMatter.FeaturedImage = value;
-                break;
-            case "featured":
-                frontMatter.IsFeatured = bool.TryParse(value, out var featured) && featured;
-                break;
-            case "published":
-                frontMatter.Published = !bool.TryParse(value, out var published) || published;
-                break;
-            case "layout":
-                frontMatter.Layout = value;
-                break;
-            case "slug":
-                frontMatter.Slug = value;
-                break;
-            default:
-                // For any other properties, add as custom fields
-                if (bool.TryParse(value, out var boolValue))
-                {
-                    frontMatter.CustomFields[key] = boolValue;
-                }
-                else if (int.TryParse(value, out var intValue))
-                {
-                    frontMatter.CustomFields[key] = intValue;
-                }
-                else if (double.TryParse(value, out var doubleValue))
-                {
-                    frontMatter.CustomFields[key] = doubleValue;
-                }
-                else
-                {
-                    frontMatter.CustomFields[key] = value;
-                }
-                break;
-        }
-    }
-
-    private static string EscapeYamlString(string value)
-    {
-        // Replace any double quotes with escaped double quotes
-        return value.Replace("\"", "\\\"");
+        Metadata = metadata;
+        Content = content;
     }
 
     /// <summary>
-    /// Creates a deep clone of this front matter
+    /// Converts the blog post to markdown with frontmatter
     /// </summary>
-    public FrontMatter Clone()
+    /// <returns>The full markdown content with frontmatter</returns>
+    public string ToMarkdown()
     {
-        var clone = new FrontMatter
-        {
-            Title = Title,
-            Description = Description,
-            Author = Author,
-            Date = Date,
-            FeaturedImage = FeaturedImage,
-            IsFeatured = IsFeatured,
-            Published = Published,
-            Layout = Layout,
-            Slug = Slug
-        };
+        var markdown = new StringBuilder();
 
-        // Clone lists
-        foreach (var category in Categories)
+        // Add frontmatter
+        markdown.Append(Metadata.ToYaml());
+
+        // Add content
+        markdown.AppendLine(Content);
+
+        return markdown.ToString();
+    }
+
+    /// <summary>
+    /// Creates a blog post from markdown with frontmatter
+    /// </summary>
+    /// <param name="markdown">The full markdown content with frontmatter</param>
+    /// <returns>A blog post object</returns>
+    public static BlogPost FromMarkdown(string markdown)
+    {
+        var blogPost = new BlogPost();
+
+        if (string.IsNullOrWhiteSpace(markdown))
         {
-            clone.Categories.Add(category);
+            return blogPost;
         }
 
-        foreach (var tag in Tags)
+        // Regular expression to extract frontmatter
+        var frontMatterRegex = new Regex(@"^---\s*\n(.*?)\n---\s*\n", RegexOptions.Singleline);
+        var match = frontMatterRegex.Match(markdown);
+
+        if (match.Success)
         {
-            clone.Tags.Add(tag);
+            // Extract and parse frontmatter
+            var frontMatterYaml = match.Groups[1].Value;
+            blogPost.Metadata = FrontMatter.FromYaml(frontMatterYaml);
+
+            // Extract content (everything after frontmatter)
+            var contentStartIndex = match.Index + match.Length;
+            blogPost.Content = markdown.Substring(contentStartIndex).Trim();
+        }
+        else
+        {
+            // No frontmatter found, treat entire content as markdown
+            blogPost.Content = markdown.Trim();
         }
 
-        // Clone custom fields
-        foreach (var field in CustomFields)
+        return blogPost;
+    }
+
+    /// <summary>
+    /// Creates a blog post from a GitHub file content object
+    /// </summary>
+    /// <param name="fileContent">The GitHub file content</param>
+    /// <returns>A blog post object</returns>
+    public static BlogPost FromGitHubFile(GitHubFileContent fileContent)
+    {
+        var blogPost = new BlogPost();
+
+        if (fileContent == null)
         {
-            if (field.Value is List<string> listValue)
-            {
-                clone.CustomFields[field.Key] = new List<string>(listValue);
-            }
-            else
-            {
-                clone.CustomFields[field.Key] = field.Value;
-            }
+            return blogPost;
         }
 
-        return clone;
+        // Set file information
+        blogPost.FilePath = fileContent.Path;
+        blogPost.Sha = fileContent.Sha;
+
+        if (fileContent.IsMarkdownFile())
+        {
+            // If it's a markdown file, decode and parse the content
+            var content = fileContent.GetDecodedContent();
+            var parsedPost = FromMarkdown(content);
+
+            blogPost.Metadata = parsedPost.Metadata;
+            blogPost.Content = parsedPost.Content;
+        }
+
+        return blogPost;
     }
 }
