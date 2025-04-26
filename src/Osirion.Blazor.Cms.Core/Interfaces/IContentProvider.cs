@@ -1,9 +1,10 @@
-﻿using Osirion.Blazor.Cms.Models;
+﻿// Refactored IContentProvider interface with clearer separation of concerns
+using Osirion.Blazor.Cms.Models;
 
 namespace Osirion.Blazor.Cms.Interfaces;
 
 /// <summary>
-/// Interface for content providers
+/// Core interface for content providers with read capabilities
 /// </summary>
 public interface IContentProvider
 {
@@ -20,12 +21,17 @@ public interface IContentProvider
     /// <summary>
     /// Gets whether the provider supports write operations
     /// </summary>
-    bool IsReadOnly { get; }
+    bool SupportsWriting { get; }
 
     /// <summary>
-    /// Gets all content items from the provider
+    /// Gets a content writer if supported by this provider
     /// </summary>
-    Task<IReadOnlyList<ContentItem>> GetAllItemsAsync(CancellationToken cancellationToken = default);
+    IContentWriter? GetContentWriter();
+
+    /// <summary>
+    /// Gets a specific content item by its ID
+    /// </summary>
+    Task<ContentItem?> GetItemByIdAsync(string id, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets a specific content item by its path
@@ -68,27 +74,54 @@ public interface IContentProvider
     Task<IReadOnlyList<DirectoryItem>> GetDirectoriesAsync(string? locale = null, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Gets a specific directory by its path
-    /// </summary>
-    Task<DirectoryItem?> GetDirectoryByPathAsync(string path, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Gets a specific directory by its url
-    /// </summary>
-    Task<DirectoryItem?> GetDirectoryByUrlAsync(string url, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Gets a specific directory by its ID
-    /// </summary>
-    Task<DirectoryItem?> GetDirectoryByIdAsync(string id, string? locale = null, CancellationToken cancellationToken = default);
-
-    /// <summary>
     /// Gets available localizations for the provider
     /// </summary>
     Task<LocalizationInfo> GetLocalizationInfoAsync(CancellationToken cancellationToken = default);
+}
+
+/// <summary>
+/// Interface for content providers that support write operations
+/// </summary>
+public interface IContentWriter
+{
+    /// <summary>
+    /// Creates a new content item
+    /// </summary>
+    Task<ContentItem> CreateContentAsync(ContentItem item, string? commitMessage = null, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Gets all translations of a specific content item
+    /// Updates an existing content item
     /// </summary>
-    Task<IReadOnlyList<ContentItem>> GetContentTranslationsAsync(string localizationId, CancellationToken cancellationToken = default);
+    Task<ContentItem> UpdateContentAsync(ContentItem item, string? commitMessage = null, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Deletes a content item
+    /// </summary>
+    Task DeleteContentAsync(string id, string? commitMessage = null, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Creates a new directory
+    /// </summary>
+    Task<DirectoryItem> CreateDirectoryAsync(DirectoryItem directory, CancellationToken cancellationToken = default);
+}
+
+/// <summary>
+/// Factory interface for creating content providers
+/// </summary>
+public interface IContentProviderFactory
+{
+    /// <summary>
+    /// Creates a provider instance by ID
+    /// </summary>
+    IContentProvider CreateProvider(string providerId);
+
+    /// <summary>
+    /// Gets all available provider types
+    /// </summary>
+    IEnumerable<string> GetAvailableProviderTypes();
+
+    /// <summary>
+    /// Registers a provider factory function
+    /// </summary>
+    void RegisterProvider<T>(Func<IServiceProvider, T> factory) where T : class, IContentProvider;
 }

@@ -1,51 +1,45 @@
-﻿using Markdig;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Osirion.Blazor.Cms.Caching;
 using Osirion.Blazor.Cms.Exceptions;
 using Osirion.Blazor.Cms.Models;
 using Osirion.Blazor.Cms.Options;
-using Osirion.Blazor.Cms.Providers.Internal;
+using Osirion.Blazor.Cms.Providers.GitHub.Models;
 using Osirion.Blazor.Core.Extensions;
 using System.Text;
-using System.Text.Json;
 using System.Text.RegularExpressions;
 
-namespace Osirion.Blazor.Cms.Providers;
+namespace Osirion.Blazor.Cms.Providers.GitHub;
 
 /// <summary>
-/// Content provider for GitHub repositories
+/// Content provider for GitHub repositories with enhanced caching and error handling
 /// </summary>
-public class GitHubContentProvider : ContentProviderBase
+public class GitHubContentProvider : WritableContentProviderBase
 {
-    private readonly HttpClient _httpClient;
     private readonly GitHubContentOptions _options;
-    private readonly MarkdownPipeline _markdownPipeline;
+    private readonly IGitHubApiClient _apiClient;
+    private readonly IContentParser _contentParser;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="GitHubContentProvider"/> class.
+    /// Initializes a new instance of the GitHubContentProvider
     /// </summary>
     public GitHubContentProvider(
-       HttpClient httpClient,
-       IOptions<GitHubContentOptions> options,
-       ILogger<GitHubContentProvider> logger,
-       IMemoryCache memoryCache)
-       : base(logger, memoryCache)
+        IGitHubApiClient apiClient,
+        IContentParser contentParser,
+        IContentCacheService cacheService,
+        IOptions<GitHubContentOptions> options,
+        ILogger<GitHubContentProvider> logger)
+        : base(cacheService, logger)
     {
-        _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+        _apiClient = apiClient ?? throw new ArgumentNullException(nameof(apiClient));
+        _contentParser = contentParser ?? throw new ArgumentNullException(nameof(contentParser));
         _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
 
-        _markdownPipeline = new MarkdownPipelineBuilder()
-            .UseAdvancedExtensions()
-            .UseYamlFrontMatter()
-            .Build();
-    }
+        if (string.IsNullOrEmpty(_options.Owner))
+            throw new ArgumentException("GitHub owner is required", nameof(options));
 
-    /// <inheritdoc/>
-    public override Task InitializeAsync(CancellationToken cancellationToken = default)
-    {
-        // No initialization needed
-        return Task.CompletedTask;
+        if (string.IsNullOrEmpty(_options.Repository))
+            throw new ArgumentException("GitHub repository is required", nameof(options));
     }
 
     /// <inheritdoc/>
@@ -55,7 +49,7 @@ public class GitHubContentProvider : ContentProviderBase
     public override string DisplayName => $"GitHub: {_options.Owner}/{_options.Repository}";
 
     /// <inheritdoc/>
-    public override bool IsReadOnly => string.IsNullOrEmpty(_options.ApiToken);
+    public override bool SupportsWriting => !string.IsNullOrEmpty(_options.ApiToken);
 
     /// <inheritdoc/>
     protected override TimeSpan CacheDuration => TimeSpan.FromMinutes(_options.CacheDurationMinutes);
@@ -64,158 +58,440 @@ public class GitHubContentProvider : ContentProviderBase
     public override async Task<IReadOnlyList<ContentItem>> GetAllItemsAsync(CancellationToken cancellationToken = default)
     {
         var cacheKey = GetCacheKey("content:all");
+
         return await GetOrCreateCachedAsync(cacheKey, async ct =>
         {
-            var contents = await GetRepositoryContentsAsync(_options.ContentPath, ct);
+            var contents = await _apiClient.GetRepositoryContentsAsync(_options.ContentPath, ct);
             var contentItems = new List<ContentItem>();
+
             await ProcessContentsRecursivelyAsync(contents, contentItems, null, ct);
+
             return contentItems.AsReadOnly();
-        }, cancellationToken) ?? Array.Empty<ContentItem>().ToList().AsReadOnly();
+        }, cancellationToken) ?? Array.Empty<ContentItem>();
     }
 
     /// <inheritdoc/>
     public override async Task<ContentItem?> GetItemByPathAsync(string path, CancellationToken cancellationToken = default)
     {
-        var items = await GetAllItemsAsync(cancellationToken);
-        return items.FirstOrDefault(item =>
-            item.Path.Contains(path, StringComparison.OrdinalIgnoreCase));
+        // Normalize path for consistency
+        path = NormalizePath(path);
+
+        var cacheKey = GetCacheKey($"content:path:{path}");
+
+        return await GetOrCreateCachedAsync(cacheKey, async ct =>
+        {
+            try
+            {
+                // First try direct fetch by path for performance
+                var fileContent = await _apiClient.GetFileContentAsync(path, ct);
+                return await ProcessMarkdownFileAsync(fileContent, ct);
+            }
+            catch (ContentProviderException)
+            {
+                // Fall back to searching in all items
+                var allItems = await GetAllItemsAsync(ct);
+                return allItems.FirstOrDefault(item =>
+                    NormalizePath(item.Path) == path);
+            }
+        }, cancellationToken);
     }
 
     /// <inheritdoc/>
     public override async Task<ContentItem?> GetItemByUrlAsync(string url, CancellationToken cancellationToken = default)
     {
-        var items = await GetAllItemsAsync(cancellationToken);
-        return items.FirstOrDefault(item =>
-            item.Url == url);
+        // URLs are unique and case-sensitive
+        var cacheKey = GetCacheKey($"content:url:{url}");
+
+        return await GetOrCreateCachedAsync(cacheKey, async ct =>
+        {
+            var items = await GetAllItemsAsync(ct);
+            return items.FirstOrDefault(item => item.Url == url);
+        }, cancellationToken);
     }
 
     /// <inheritdoc/>
     public override async Task<IReadOnlyList<ContentItem>> GetItemsByQueryAsync(ContentQuery query, CancellationToken cancellationToken = default)
     {
-        var items = await GetAllItemsAsync(cancellationToken);
-        var filteredItems = items.AsQueryable();
+        // Generate a cache key based on query parameters
+        var queryCacheKey = GenerateQueryCacheKey(query);
+        var cacheKey = GetCacheKey($"content:query:{queryCacheKey}");
 
-        if (!string.IsNullOrEmpty(query.Directory))
+        return await GetOrCreateCachedAsync(cacheKey, async ct =>
         {
-            filteredItems = filteredItems.Where(item =>
-                item.Directory.Name.StartsWith(query.Directory, StringComparison.OrdinalIgnoreCase));
-        }
+            var allItems = await GetAllItemsAsync(ct);
+            var filteredItems = allItems.AsQueryable();
 
-        if (!string.IsNullOrEmpty(query.Category))
-        {
-            filteredItems = filteredItems.Where(item =>
-                item.Categories.Any(c => c.Contains(query.Category, StringComparison.OrdinalIgnoreCase)));
-        }
+            // Directory filtering
+            if (!string.IsNullOrEmpty(query.Directory))
+            {
+                filteredItems = filteredItems.Where(item =>
+                    item.Directory?.Path.Contains(query.Directory, StringComparison.OrdinalIgnoreCase) == true);
+            }
 
-        if (!string.IsNullOrEmpty(query.Tag))
-        {
-            filteredItems = filteredItems.Where(item =>
-                item.Tags.Any(t => t.Contains(query.Tag, StringComparison.OrdinalIgnoreCase)));
-        }
+            // DirectoryId filtering
+            if (!string.IsNullOrEmpty(query.DirectoryId))
+            {
+                filteredItems = filteredItems.Where(item =>
+                    item.Directory?.Id == query.DirectoryId);
+            }
 
-        if (query.IsFeatured.HasValue)
-        {
-            filteredItems = filteredItems.Where(item => item.IsFeatured == query.IsFeatured.Value);
-        }
+            // Category filtering
+            if (!string.IsNullOrEmpty(query.Category))
+            {
+                filteredItems = filteredItems.Where(item =>
+                    item.Categories.Any(c => c.Contains(query.Category, StringComparison.OrdinalIgnoreCase)));
+            }
 
-        if (query.DateFrom.HasValue)
-        {
-            filteredItems = filteredItems.Where(item => item.DateCreated >= query.DateFrom.Value);
-        }
+            // Tag filtering
+            if (!string.IsNullOrEmpty(query.Tag))
+            {
+                filteredItems = filteredItems.Where(item =>
+                    item.Tags.Any(t => t.Contains(query.Tag, StringComparison.OrdinalIgnoreCase)));
+            }
 
-        if (query.DateTo.HasValue)
-        {
-            filteredItems = filteredItems.Where(item => item.DateCreated <= query.DateTo.Value);
-        }
+            // Featured items filtering
+            if (query.IsFeatured.HasValue)
+            {
+                filteredItems = filteredItems.Where(item => item.IsFeatured == query.IsFeatured.Value);
+            }
 
-        if (!string.IsNullOrEmpty(query.SearchQuery))
-        {
-            var searchTerms = query.SearchQuery.ToLower().Split(' ', StringSplitOptions.RemoveEmptyEntries);
-            filteredItems = filteredItems.Where(item =>
-                searchTerms.Any(term =>
-                    item.Title.ToLower().Contains(term) ||
-                    item.Description.ToLower().Contains(term) ||
-                    item.Content.ToLower().Contains(term) ||
-                    item.Categories.Any(c => c.ToLower().Contains(term)) ||
-                    item.Tags.Any(t => t.ToLower().Contains(term))
-                )
-            );
-        }
+            // Date filtering
+            if (query.DateFrom.HasValue)
+            {
+                filteredItems = filteredItems.Where(item => item.DateCreated >= query.DateFrom.Value);
+            }
 
-        // Apply locale filtering if specified
-        if (!string.IsNullOrEmpty(query.Locale))
-        {
-            filteredItems = filteredItems.Where(item =>
-                item.Locale.Equals(query.Locale, StringComparison.OrdinalIgnoreCase));
-        }
+            if (query.DateTo.HasValue)
+            {
+                filteredItems = filteredItems.Where(item => item.DateCreated <= query.DateTo.Value);
+            }
 
-        // Filter by localization ID (for translations)
-        if (!string.IsNullOrEmpty(query.LocalizationId))
-        {
-            filteredItems = filteredItems.Where(item =>
-                item.ContentId.Equals(query.LocalizationId, StringComparison.OrdinalIgnoreCase));
-        }
+            // Full-text search
+            if (!string.IsNullOrEmpty(query.SearchQuery))
+            {
+                var searchTerms = query.SearchQuery.ToLower().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                filteredItems = filteredItems.Where(item =>
+                    searchTerms.Any(term =>
+                        item.Title.ToLower().Contains(term) ||
+                        item.Description.ToLower().Contains(term) ||
+                        item.Content.ToLower().Contains(term) ||
+                        item.Categories.Any(c => c.ToLower().Contains(term)) ||
+                        item.Tags.Any(t => t.ToLower().Contains(term))
+                    )
+                );
+            }
 
-        // Filter by directory ID
-        if (!string.IsNullOrEmpty(query.DirectoryId))
-        {
-            filteredItems = filteredItems.Where(item =>
-                item.Directory != null && item.Directory.Id.Equals(query.DirectoryId, StringComparison.OrdinalIgnoreCase));
-        }
+            // Locale filtering
+            if (!string.IsNullOrEmpty(query.Locale))
+            {
+                filteredItems = filteredItems.Where(item =>
+                    item.Locale.Equals(query.Locale, StringComparison.OrdinalIgnoreCase));
+            }
 
-        // Apply sorting
-        filteredItems = query.SortBy switch
-        {
-            SortField.Title => query.SortDirection == SortDirection.Ascending ?
-                filteredItems.OrderBy(item => item.Title) :
-                filteredItems.OrderByDescending(item => item.Title),
-            SortField.Author => query.SortDirection == SortDirection.Ascending ?
-                filteredItems.OrderBy(item => item.Author) :
-                filteredItems.OrderByDescending(item => item.Author),
-            SortField.LastModified => query.SortDirection == SortDirection.Ascending ?
-                filteredItems.OrderBy(item => item.LastModified ?? item.DateCreated) :
-                filteredItems.OrderByDescending(item => item.LastModified ?? item.DateCreated),
-            _ => query.SortDirection == SortDirection.Ascending ?
-                filteredItems.OrderBy(item => item.DateCreated) :
-                filteredItems.OrderByDescending(item => item.DateCreated)
-        };
+            // Localization ID filtering
+            if (!string.IsNullOrEmpty(query.LocalizationId))
+            {
+                filteredItems = filteredItems.Where(item =>
+                    item.ContentId.Equals(query.LocalizationId, StringComparison.OrdinalIgnoreCase));
+            }
 
-        if (query.Skip.HasValue)
-        {
-            filteredItems = filteredItems.Skip(query.Skip.Value);
-        }
+            // Apply sorting
+            filteredItems = query.SortBy switch
+            {
+                SortField.Title => query.SortDirection == SortDirection.Ascending ?
+                    filteredItems.OrderBy(item => item.Title) :
+                    filteredItems.OrderByDescending(item => item.Title),
+                SortField.Author => query.SortDirection == SortDirection.Ascending ?
+                    filteredItems.OrderBy(item => item.Author) :
+                    filteredItems.OrderByDescending(item => item.Author),
+                SortField.LastModified => query.SortDirection == SortDirection.Ascending ?
+                    filteredItems.OrderBy(item => item.LastModified ?? item.DateCreated) :
+                    filteredItems.OrderByDescending(item => item.LastModified ?? item.DateCreated),
+                _ => query.SortDirection == SortDirection.Ascending ?
+                    filteredItems.OrderBy(item => item.DateCreated) :
+                    filteredItems.OrderByDescending(item => item.DateCreated)
+            };
 
-        if (query.Take.HasValue)
-        {
-            filteredItems = filteredItems.Take(query.Take.Value);
-        }
+            // Apply pagination
+            if (query.Skip.HasValue)
+            {
+                filteredItems = filteredItems.Skip(query.Skip.Value);
+            }
 
-        return filteredItems.ToList().AsReadOnly();
+            if (query.Take.HasValue)
+            {
+                filteredItems = filteredItems.Take(query.Take.Value);
+            }
+
+            return filteredItems.ToList().AsReadOnly();
+        }, cancellationToken);
     }
 
-    private async Task<List<GitHubContent>> GetRepositoryContentsAsync(string path, CancellationToken cancellationToken)
+    /// <inheritdoc/>
+    public override async Task<IReadOnlyList<DirectoryItem>> GetDirectoriesAsync(string? locale = null, CancellationToken cancellationToken = default)
     {
-        var url = $"repos/{_options.Owner}/{_options.Repository}/contents/{path}?ref={_options.Branch}";
+        string cacheKey = locale != null ?
+            GetCacheKey($"directories:{locale}") :
+            GetCacheKey("directories:all");
 
-        try
+        return await GetOrCreateCachedAsync(cacheKey, async ct =>
         {
-            var response = await _httpClient.GetAsync(url, cancellationToken);
-            response.EnsureSuccessStatusCode();
+            var rootDirectories = new List<DirectoryItem>();
+            var allDirectories = new Dictionary<string, DirectoryItem>();
 
-            var content = await response.Content.ReadAsStringAsync(cancellationToken);
-            return JsonSerializer.Deserialize<List<GitHubContent>>(content,
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true })
-                ?? new List<GitHubContent>();
-        }
-        catch (HttpRequestException ex)
+            // Start from the content path
+            var contents = await _apiClient.GetRepositoryContentsAsync(_options.ContentPath, ct);
+
+            // Process the directory structure recursively
+            await ProcessDirectoriesRecursivelyAsync(
+                contents,
+                rootDirectories,
+                allDirectories,
+                null,
+                ct);
+
+            // Process directory metadata (_index.md files)
+            await ProcessDirectoryMetadataAsync(allDirectories, ct);
+
+            // Filter by locale if requested
+            if (!string.IsNullOrEmpty(locale))
+            {
+                return rootDirectories
+                    .Where(d => d.Locale.Equals(locale, StringComparison.OrdinalIgnoreCase))
+                    .ToList()
+                    .AsReadOnly();
+            }
+
+            return rootDirectories.AsReadOnly();
+        }, cancellationToken) ?? Array.Empty<DirectoryItem>();
+    }
+
+    /// <inheritdoc/>
+    public override async Task<LocalizationInfo> GetLocalizationInfoAsync(CancellationToken cancellationToken = default)
+    {
+        var cacheKey = GetCacheKey("localization:info");
+
+        return await GetOrCreateCachedAsync(cacheKey, async ct =>
         {
-            _logger.LogError(ex, "Failed to fetch repository contents at path: {Path}", path);
-            throw new ContentProviderException("Failed to fetch GitHub content", ex);
+            // If localization is disabled, return minimal info
+            if (!_options.EnableLocalization)
+            {
+                return new LocalizationInfo
+                {
+                    DefaultLocale = _options.DefaultLocale,
+                    AvailableLocales = new List<string> { _options.DefaultLocale }
+                };
+            }
+
+            var localizationInfo = new LocalizationInfo
+            {
+                DefaultLocale = _options.DefaultLocale
+            };
+
+            // Get all content items to analyze translations
+            var allItems = await GetAllItemsAsync(ct);
+
+            // Collect all available locales
+            var locales = allItems
+                .Select(item => item.Locale)
+                .Where(l => !string.IsNullOrEmpty(l))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            if (locales.Count > 0)
+            {
+                localizationInfo.AvailableLocales.AddRange(locales);
+
+                // Group by localization ID to build translations map
+                var itemsByLocalizationId = allItems
+                    .Where(item => !string.IsNullOrEmpty(item.ContentId))
+                    .GroupBy(item => item.ContentId);
+
+                foreach (var group in itemsByLocalizationId)
+                {
+                    var translations = new Dictionary<string, string>();
+
+                    foreach (var item in group)
+                    {
+                        if (!string.IsNullOrEmpty(item.Locale))
+                        {
+                            translations[item.Locale] = item.Path;
+                        }
+                    }
+
+                    if (translations.Count > 0)
+                    {
+                        localizationInfo.Translations[group.Key] = translations;
+                    }
+                }
+            }
+            else
+            {
+                // No locales found, use default
+                localizationInfo.AvailableLocales.Add(_options.DefaultLocale);
+            }
+
+            return localizationInfo;
+        }, cancellationToken);
+    }
+
+    /// <inheritdoc/>
+    public override async Task<ContentItem> CreateContentAsync(ContentItem item, string? commitMessage = null, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrEmpty(item.Path))
+            throw new ArgumentException("Content path cannot be empty", nameof(item));
+
+        // Generate a default commit message if not provided
+        var message = commitMessage ?? $"Create {Path.GetFileName(item.Path)}";
+
+        // Generate the file content
+        string fileContent = _contentParser.GenerateMarkdownWithFrontMatter(item);
+
+        // Create the file in GitHub
+        var response = await _apiClient.CreateOrUpdateFileAsync(
+            item.Path,
+            fileContent,
+            message,
+            null,
+            cancellationToken);
+
+        if (!response.Success)
+            throw new ContentProviderException($"Failed to create content: {response.ErrorMessage}");
+
+        // Update the item with provider-specific information
+        item.ProviderSpecificId = response.Content.Sha;
+        item.ProviderId = ProviderId;
+
+        // Invalidate cache
+        await RefreshCacheAsync(cancellationToken);
+
+        return item;
+    }
+
+    /// <inheritdoc/>
+    public override async Task<ContentItem> UpdateContentAsync(ContentItem item, string? commitMessage = null, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrEmpty(item.Path))
+            throw new ArgumentException("Content path cannot be empty", nameof(item));
+
+        if (string.IsNullOrEmpty(item.ProviderSpecificId))
+            throw new ArgumentException("Content SHA is required for updates", nameof(item));
+
+        // Generate a default commit message if not provided
+        var message = commitMessage ?? $"Update {Path.GetFileName(item.Path)}";
+
+        // Generate the file content
+        string fileContent = _contentParser.GenerateMarkdownWithFrontMatter(item);
+
+        // Update the file in GitHub
+        var response = await _apiClient.CreateOrUpdateFileAsync(
+            item.Path,
+            fileContent,
+            message,
+            item.ProviderSpecificId,
+            cancellationToken);
+
+        if (!response.Success)
+            throw new ContentProviderException($"Failed to update content: {response.ErrorMessage}");
+
+        // Update the item with new SHA
+        item.ProviderSpecificId = response.Content.Sha;
+
+        // Invalidate cache
+        await RefreshCacheAsync(cancellationToken);
+
+        return item;
+    }
+
+    /// <inheritdoc/>
+    public override async Task DeleteContentAsync(string id, string? commitMessage = null, CancellationToken cancellationToken = default)
+    {
+        // Get the item first to determine path and SHA
+        var item = await GetItemByIdAsync(id, cancellationToken);
+        if (item == null)
+            throw new ContentProviderException($"Content with ID {id} not found");
+
+        if (string.IsNullOrEmpty(item.ProviderSpecificId))
+            throw new ContentProviderException("Content SHA is required for deletion");
+
+        // Generate a default commit message if not provided
+        var message = commitMessage ?? $"Delete {Path.GetFileName(item.Path)}";
+
+        // Delete the file in GitHub
+        var response = await _apiClient.DeleteFileAsync(
+            item.Path,
+            message,
+            item.ProviderSpecificId,
+            cancellationToken);
+
+        if (!response.Success)
+            throw new ContentProviderException($"Failed to delete content: {response.ErrorMessage}");
+
+        // Invalidate cache
+        await RefreshCacheAsync(cancellationToken);
+    }
+
+    /// <inheritdoc/>
+    public override async Task<DirectoryItem> CreateDirectoryAsync(DirectoryItem directory, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrEmpty(directory.Path))
+            throw new ArgumentException("Directory path cannot be empty", nameof(directory));
+
+        // GitHub doesn't support creating empty directories, so we create a placeholder file
+        var placeholderPath = Path.Combine(directory.Path, ".gitkeep").Replace('\\', '/');
+        var message = $"Create directory {directory.Name}";
+
+        // Create the placeholder file
+        var response = await _apiClient.CreateOrUpdateFileAsync(
+            placeholderPath,
+            "", // Empty content
+            message,
+            null,
+            cancellationToken);
+
+        if (!response.Success)
+            throw new ContentProviderException($"Failed to create directory: {response.ErrorMessage}");
+
+        // Create _index.md file if we have metadata
+        if (!string.IsNullOrEmpty(directory.Name) || !string.IsNullOrEmpty(directory.Description))
+        {
+            var indexPath = Path.Combine(directory.Path, "_index.md").Replace('\\', '/');
+            var frontMatter = new StringBuilder();
+            frontMatter.AppendLine("---");
+
+            if (!string.IsNullOrEmpty(directory.Id))
+                frontMatter.AppendLine($"id: \"{directory.Id}\"");
+
+            if (!string.IsNullOrEmpty(directory.Name))
+                frontMatter.AppendLine($"title: \"{directory.Name}\"");
+
+            if (!string.IsNullOrEmpty(directory.Description))
+                frontMatter.AppendLine($"description: \"{directory.Description}\"");
+
+            if (!string.IsNullOrEmpty(directory.Locale))
+                frontMatter.AppendLine($"locale: \"{directory.Locale}\"");
+
+            if (directory.Order != 0)
+                frontMatter.AppendLine($"order: {directory.Order}");
+
+            frontMatter.AppendLine("---");
+
+            await _apiClient.CreateOrUpdateFileAsync(
+                indexPath,
+                frontMatter.ToString(),
+                $"Create metadata for {directory.Name} directory",
+                null,
+                cancellationToken);
         }
+
+        // Invalidate cache
+        await RefreshCacheAsync(cancellationToken);
+
+        return directory;
     }
 
     private async Task ProcessContentsRecursivelyAsync(
-        List<GitHubContent> contents,
+        List<GitHubItem> contents,
         List<ContentItem> contentItems,
         string? currentDirectory,
         CancellationToken cancellationToken)
@@ -224,11 +500,13 @@ public class GitHubContentProvider : ContentProviderBase
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            if (item.Type == "file" && _options.SupportedExtensions.Any(ext => item.Name.EndsWith(ext)))
+            if (item.IsFile && IsMarkdownFile(item.Name) && !item.Name.Equals("_index.md", StringComparison.OrdinalIgnoreCase))
             {
                 try
                 {
-                    var contentItem = await ProcessMarkdownFileAsync(item, currentDirectory, cancellationToken);
+                    var fileContent = await _apiClient.GetFileContentAsync(item.Path, cancellationToken);
+                    var contentItem = await ProcessMarkdownFileAsync(fileContent, cancellationToken);
+
                     if (contentItem != null)
                     {
                         contentItems.Add(contentItem);
@@ -236,340 +514,89 @@ public class GitHubContentProvider : ContentProviderBase
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Error processing file: {FileName}", item.Name);
+                    // Log but continue processing other files
+                    // We don't want one bad file to break everything
+                    //logger.LogError(ex, "Error processing file: {FileName}", item.Name);
                 }
             }
-            else if (item.Type == "dir")
+            else if (item.IsDirectory)
             {
-                var subContents = await GetRepositoryContentsAsync(item.Path, cancellationToken);
+                var subContents = await _apiClient.GetRepositoryContentsAsync(item.Path, cancellationToken);
                 await ProcessContentsRecursivelyAsync(subContents, contentItems, item.Name, cancellationToken);
             }
         }
     }
 
-    private async Task<ContentItem?> ProcessMarkdownFileAsync(
-        GitHubContent item,
-        string? directory,
-        CancellationToken cancellationToken)
+    private async Task<ContentItem?> ProcessMarkdownFileAsync(GitHubFileContent fileContent, CancellationToken cancellationToken)
     {
-        var content = await GetFileContentAsync(item.Url, cancellationToken);
-        if (string.IsNullOrEmpty(content))
+        if (fileContent == null || !fileContent.IsMarkdownFile())
             return null;
 
-        // Skip _index.md files as they're for directory metadata
-        if (item.Name == "_index.md")
+        // Skip _index.md files - they're for directory metadata
+        if (fileContent.Name.Equals("_index.md", StringComparison.OrdinalIgnoreCase))
             return null;
 
+        // Get file content
+        string markdownContent = fileContent.GetDecodedContent();
+        if (string.IsNullOrWhiteSpace(markdownContent))
+            return null;
+
+        // Create the content item
         var contentItem = new ContentItem
         {
-            Id = item.Path.GetHashCode().ToString("x"),
-            Path = item.Path,
+            Id = fileContent.Path.GetHashCode().ToString("x"),
+            Path = fileContent.Path,
             ProviderId = ProviderId,
-            ProviderSpecificId = item.Sha
+            ProviderSpecificId = fileContent.Sha
         };
 
-        var fileInfo = await GetFileInfoAsync(item.Path, cancellationToken);
-        contentItem.DateCreated = fileInfo.CreatedDate;
-        contentItem.LastModified = fileInfo.LastModifiedDate;
-
-        // Extract locale from path (if directory structure follows localization pattern)
-        contentItem.Locale = ExtractLocaleFromPath(item.Path);
-
-        // Parse markdown and extract front matter
-        var frontMatterEndIndex = content.IndexOf("---", 4);
-        if (frontMatterEndIndex > 0)
+        // Get file history
+        try
         {
-            var frontMatter = content.Substring(4, frontMatterEndIndex - 4).Trim();
-            ParseFrontMatter(frontMatter, contentItem);
-
-            var markdownContent = content.Substring(frontMatterEndIndex + 3).Trim();
-            contentItem.Content = Markdig.Markdown.ToHtml(markdownContent, _markdownPipeline);
+            var (created, modified) = await _apiClient.GetFileHistoryAsync(fileContent.Path, cancellationToken);
+            contentItem.DateCreated = created;
+            contentItem.LastModified = modified;
         }
-        else
+        catch
         {
-            contentItem.Content = Markdig.Markdown.ToHtml(content, _markdownPipeline);
+            // Use current date if history fails
+            contentItem.DateCreated = DateTime.UtcNow;
         }
 
-        // Set defaults if not provided
+        // Extract locale from path
+        contentItem.Locale = ExtractLocaleFromPath(fileContent.Path);
+
+        // Parse the markdown file
+        await _contentParser.ParseMarkdownContentAsync(markdownContent, contentItem);
+
+        // Set default title if not extracted from front matter
         if (string.IsNullOrEmpty(contentItem.Title))
         {
-            contentItem.Title = Path.GetFileNameWithoutExtension(item.Name);
+            contentItem.Title = Path.GetFileNameWithoutExtension(fileContent.Name);
         }
 
+        // Set default slug if not provided
         if (string.IsNullOrEmpty(contentItem.Slug))
         {
             contentItem.Slug = contentItem.Title.ToUrlSlug();
         }
 
+        // Generate URL
         contentItem.Url = GenerateUrl(contentItem.Path, contentItem.Slug, _options.ContentPath);
 
-        // Set parent directory reference
-        var directoryStructure = await BuildDirectoryStructureAsync(cancellationToken);
-        var parentDir = FindParentDirectory(directoryStructure, item.Path);
+        // Link to parent directory
+        var directories = await GetDirectoriesAsync(cancellationToken: cancellationToken);
+        var parentDir = FindParentDirectory(directories, fileContent.Path);
         if (parentDir != null)
         {
             contentItem.Directory = parentDir;
-            parentDir.Items.Add(contentItem);
         }
 
         return contentItem;
     }
 
-    private DirectoryItem? FindParentDirectory(IEnumerable<DirectoryItem> directories, string filePath)
-    {
-        string? fileDirectory = Path.GetDirectoryName(filePath)?.Replace('\\', '/');
-        if (string.IsNullOrEmpty(fileDirectory))
-            return null;
-
-        return FindDirectoryByPath(directories, fileDirectory);
-    }
-
-    private async Task<string> GetFileContentAsync(string url, CancellationToken cancellationToken)
-    {
-        try
-        {
-            var response = await _httpClient.GetAsync(url, cancellationToken);
-            response.EnsureSuccessStatusCode();
-
-            var content = await response.Content.ReadAsStringAsync(cancellationToken);
-            var fileContent = JsonSerializer.Deserialize<GitHubFileContent>(content,
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-
-            if (fileContent != null && !string.IsNullOrEmpty(fileContent.Content))
-            {
-                var base64Content = fileContent.Content.Replace("\n", "");
-                byte[] bytes = Convert.FromBase64String(base64Content);
-                return Encoding.UTF8.GetString(bytes);
-            }
-
-            return string.Empty;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to get file content from URL: {Url}", url);
-            throw new ContentProviderException("Failed to get file content", ex);
-        }
-    }
-
-    private async Task<GitHubFileInfo> GetFileInfoAsync(string path, CancellationToken cancellationToken)
-    {
-        var url = $"repos/{_options.Owner}/{_options.Repository}/commits?path={path}&page=1&per_page=1";
-
-        try
-        {
-            var response = await _httpClient.GetAsync(url, cancellationToken);
-            response.EnsureSuccessStatusCode();
-
-            var commitsJson = await response.Content.ReadAsStringAsync(cancellationToken);
-            var commits = JsonSerializer.Deserialize<List<GitHubCommit>>(commitsJson,
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true })
-                ?? new List<GitHubCommit>();
-
-            var lastCommit = commits.FirstOrDefault();
-
-            // Get creation date - fetch all commits
-            url = $"repos/{_options.Owner}/{_options.Repository}/commits?path={path}&per_page=100";
-            response = await _httpClient.GetAsync(url, cancellationToken);
-            response.EnsureSuccessStatusCode();
-
-            commitsJson = await response.Content.ReadAsStringAsync(cancellationToken);
-            var allCommits = JsonSerializer.Deserialize<List<GitHubCommit>>(commitsJson,
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true })
-                ?? new List<GitHubCommit>();
-
-            var firstCommit = allCommits.LastOrDefault();
-
-            return new GitHubFileInfo
-            {
-                Path = path,
-                CreatedDate = firstCommit?.Commit?.Author?.Date ?? DateTime.UtcNow,
-                LastModifiedDate = lastCommit?.Commit?.Author?.Date ?? DateTime.UtcNow
-            };
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to get file info for path: {Path}", path);
-            return new GitHubFileInfo
-            {
-                Path = path,
-                CreatedDate = DateTime.UtcNow,
-                LastModifiedDate = DateTime.UtcNow
-            };
-        }
-    }
-
-    private void ParseFrontMatter(string frontMatter, ContentItem contentItem)
-    {
-        foreach (var line in frontMatter.Split('\n'))
-        {
-            var parts = line.Split(':', 2);
-            if (parts.Length != 2)
-                continue;
-
-            var key = parts[0].Trim();
-            var value = parts[1].Trim();
-
-            // Remove quotes if present
-            if (value.StartsWith("\"") && value.EndsWith("\"") ||
-                value.StartsWith("'") && value.EndsWith("'"))
-            {
-                value = value.Substring(1, value.Length - 2);
-            }
-
-            switch (key.ToLower())
-            {
-                // Basic metadata
-                case "content_id":
-                    contentItem.ContentId = value;
-                    break;
-                case "title":
-                    contentItem.Title = value;
-                    break;
-                case "author":
-                    contentItem.Author = value;
-                    break;
-                case "date_created":
-                    if (DateTime.TryParse(value, out var date_created))
-                        contentItem.DateCreated = date_created;
-                    break;
-                case "date_modified":
-                    if (DateTime.TryParse(value, out var date_modified))
-                        contentItem.LastModified = date_modified;
-                    break;
-                case "description":
-                    contentItem.Description = value;
-                    break;
-                case "tags":
-                    contentItem.Tags = ParseList(value);
-                    break;
-                case "categories":
-                case "category":
-                    contentItem.Categories = ParseList(value);
-                    break;
-                case "slug":
-                    contentItem.Slug = value;
-                    break;
-                case "featured":
-                case "isfeatured":
-                    contentItem.IsFeatured = bool.TryParse(value, out var featured) && featured;
-                    break;
-                case "featuredimage":
-                case "feature_image":
-                    contentItem.FeaturedImageUrl = value;
-                    break;
-
-                // Localization
-                case "locale":
-                    contentItem.Locale = value;
-                    break;
-                case "localization_id":
-                    contentItem.ContentId = value;
-                    break;
-
-                // SEO metadata
-                case "meta_title":
-                    contentItem.Seo.MetaTitle = value;
-                    break;
-                case "meta_description":
-                    contentItem.Seo.MetaDescription = value;
-                    break;
-                case "canonical_url":
-                    contentItem.Seo.CanonicalUrl = value;
-                    break;
-                case "robots":
-                    contentItem.Seo.Robots = value;
-                    break;
-                case "og_title":
-                    contentItem.Seo.OgTitle = value;
-                    break;
-                case "og_description":
-                    contentItem.Seo.OgDescription = value;
-                    break;
-                case "og_image":
-                    contentItem.Seo.OgImageUrl = value;
-                    break;
-                case "og_type":
-                    contentItem.Seo.OgType = value;
-                    break;
-                case "twitter_card":
-                    contentItem.Seo.TwitterCard = value;
-                    break;
-                case "twitter_title":
-                    contentItem.Seo.TwitterTitle = value;
-                    break;
-                case "twitter_description":
-                    contentItem.Seo.TwitterDescription = value;
-                    break;
-                case "twitter_image":
-                    contentItem.Seo.TwitterImageUrl = value;
-                    break;
-                case "schema_type":
-                    contentItem.Seo.SchemaType = value;
-                    break;
-                case "json_ld":
-                    contentItem.Seo.JsonLd = value;
-                    break;
-
-                // Other metadata
-                default:
-                    contentItem.Metadata[key] = value;
-                    break;
-            }
-        }
-
-        // Set defaults for SEO fields if not provided
-        if (string.IsNullOrEmpty(contentItem.Seo.MetaTitle))
-        {
-            contentItem.Seo.MetaTitle = contentItem.Title;
-        }
-
-        if (string.IsNullOrEmpty(contentItem.Seo.MetaDescription))
-        {
-            contentItem.Seo.MetaDescription = contentItem.Description;
-        }
-
-        if (string.IsNullOrEmpty(contentItem.Seo.OgTitle))
-        {
-            contentItem.Seo.OgTitle = contentItem.Seo.MetaTitle;
-        }
-
-        if (string.IsNullOrEmpty(contentItem.Seo.OgDescription))
-        {
-            contentItem.Seo.OgDescription = contentItem.Seo.MetaDescription;
-        }
-
-        if (string.IsNullOrEmpty(contentItem.Seo.TwitterTitle))
-        {
-            contentItem.Seo.TwitterTitle = contentItem.Seo.OgTitle;
-        }
-
-        if (string.IsNullOrEmpty(contentItem.Seo.TwitterDescription))
-        {
-            contentItem.Seo.TwitterDescription = contentItem.Seo.OgDescription;
-        }
-    }
-
-    private async Task<IReadOnlyList<DirectoryItem>> BuildDirectoryStructureAsync(CancellationToken cancellationToken)
-    {
-        var cacheKey = GetCacheKey("directories:all");
-        return await GetOrCreateCachedAsync(cacheKey, async ct =>
-        {
-            var rootDirectories = new List<DirectoryItem>();
-            var allDirectories = new Dictionary<string, DirectoryItem>();
-
-            // Get all content to analyze directory structure
-            var contents = await GetRepositoryContentsAsync(_options.ContentPath, ct);
-            await ProcessDirectoriesRecursivelyAsync(contents, rootDirectories, allDirectories, null, ct);
-
-            // Process _index.md files for directory metadata
-            await ProcessDirectoryMetadataAsync(allDirectories, ct);
-
-            return rootDirectories.AsReadOnly();
-        }, cancellationToken) ?? Array.Empty<DirectoryItem>().ToList().AsReadOnly();
-    }
-
     private async Task ProcessDirectoriesRecursivelyAsync(
-        List<GitHubContent> contents,
+        List<GitHubItem> contents,
         List<DirectoryItem> parentDirectories,
         Dictionary<string, DirectoryItem> allDirectories,
         DirectoryItem? parentDirectory,
@@ -577,7 +604,7 @@ public class GitHubContentProvider : ContentProviderBase
     {
         // Group contents by directory
         var directoryContents = contents
-            .Where(item => item.Type == "dir")
+            .Where(item => item.IsDirectory)
             .OrderBy(item => item.Name)
             .ToList();
 
@@ -586,7 +613,7 @@ public class GitHubContentProvider : ContentProviderBase
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            // Extract locale from path if present (or use default)
+            // Extract locale from path
             string locale = ExtractLocaleFromPath(dir.Path);
 
             var directory = new DirectoryItem
@@ -603,7 +630,7 @@ public class GitHubContentProvider : ContentProviderBase
             allDirectories[dir.Path] = directory;
 
             // Process subdirectories
-            var subContents = await GetRepositoryContentsAsync(dir.Path, cancellationToken);
+            var subContents = await _apiClient.GetRepositoryContentsAsync(dir.Path, cancellationToken);
             await ProcessDirectoriesRecursivelyAsync(
                 subContents,
                 directory.Children,
@@ -624,16 +651,20 @@ public class GitHubContentProvider : ContentProviderBase
             // Look for _index.md file in this directory
             try
             {
-                var indexFilePath = $"{path}/_index.md";
-                var indexContent = await GetFileContentAsync($"repos/{_options.Owner}/{_options.Repository}/contents/{indexFilePath}?ref={_options.Branch}", cancellationToken);
-
-                if (!string.IsNullOrEmpty(indexContent))
+                var indexFilePath = Path.Combine(path, "_index.md").Replace('\\', '/');
+                var fileContent = await _apiClient.GetFileContentAsync(indexFilePath, cancellationToken);
+                if (fileContent != null)
                 {
-                    // Parse front matter
-                    var frontMatter = ExtractFrontMatter(indexContent);
-                    if (frontMatter != null && frontMatter.Count > 0)
+                    string markdownContent = fileContent.GetDecodedContent();
+                    if (!string.IsNullOrWhiteSpace(markdownContent))
                     {
-                        ApplyDirectoryMetadata(directory, frontMatter);
+                        // Extract front matter
+                        var frontMatter = ExtractFrontMatter(markdownContent);
+                        if (frontMatter.Count > 0)
+                        {
+                            // Apply metadata to directory
+                            ApplyDirectoryMetadata(directory, frontMatter);
+                        }
                     }
                 }
             }
@@ -649,11 +680,6 @@ public class GitHubContentProvider : ContentProviderBase
         if (frontMatter.TryGetValue("id", out var id))
         {
             directory.Id = id;
-        }
-        else if (string.IsNullOrEmpty(directory.Id))
-        {
-            // Generate an ID if not provided
-            directory.Id = directory.Path.GetHashCode().ToString("x");
         }
 
         if (frontMatter.TryGetValue("title", out var title))
@@ -677,7 +703,7 @@ public class GitHubContentProvider : ContentProviderBase
             directory.Locale = locale;
         }
 
-        // Process other metadata
+        // Add other metadata
         foreach (var (key, value) in frontMatter)
         {
             if (!new[] { "id", "title", "description", "order", "locale" }.Contains(key))
@@ -689,7 +715,7 @@ public class GitHubContentProvider : ContentProviderBase
 
     private string ExtractLocaleFromPath(string path)
     {
-        // If localization is disabled, always return the default locale
+        // If localization is disabled, always return default locale
         if (!_options.EnableLocalization)
         {
             return _options.DefaultLocale;
@@ -702,13 +728,14 @@ public class GitHubContentProvider : ContentProviderBase
             return segments[0];
         }
 
-        // If there's no valid locale in the path, return default
+        // No valid locale found, return default
         return _options.DefaultLocale;
     }
 
     private bool IsValidLocale(string locale)
     {
-        // Simple validation for common locale codes (can be expanded)
+        // Simple validation for common locale codes (2-letter language code)
+        // Could be expanded to support more complex locale codes like en-US
         return locale.Length == 2 && locale.All(char.IsLetter);
     }
 
@@ -717,9 +744,7 @@ public class GitHubContentProvider : ContentProviderBase
         var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
         // Look for front matter between --- delimiters
-        var frontMatterRegex = new Regex(@"^\s*---\s*\n(.*?)\n\s*---\s*\n", RegexOptions.Singleline);
-        var match = frontMatterRegex.Match(content);
-
+        var match = Regex.Match(content, @"^\s*---\s*\n(.*?)\n\s*---\s*\n", RegexOptions.Singleline);
         if (match.Success && match.Groups.Count > 1)
         {
             var frontMatterContent = match.Groups[1].Value;
@@ -727,7 +752,7 @@ public class GitHubContentProvider : ContentProviderBase
 
             foreach (var line in lines)
             {
-                var parts = line.Split(':', 2);
+                var parts = line.Split(new[] { ':' }, 2, StringSplitOptions.None);
                 if (parts.Length == 2)
                 {
                     var key = parts[0].Trim();
@@ -748,145 +773,20 @@ public class GitHubContentProvider : ContentProviderBase
         return result;
     }
 
-    public override async Task<IReadOnlyList<DirectoryItem>> GetDirectoriesAsync(string? locale = null, CancellationToken cancellationToken = default)
+    private DirectoryItem? FindParentDirectory(IEnumerable<DirectoryItem> directories, string filePath)
     {
-        var allDirectories = await BuildDirectoryStructureAsync(cancellationToken);
+        string? fileDirectory = Path.GetDirectoryName(filePath)?.Replace('\\', '/');
+        if (string.IsNullOrEmpty(fileDirectory))
+            return null;
 
-        if (!string.IsNullOrEmpty(locale))
-        {
-            // Filter directories by locale
-            return allDirectories
-                .Where(d => d.Locale.Equals(locale, StringComparison.OrdinalIgnoreCase))
-                .ToList()
-                .AsReadOnly();
-        }
-
-        return allDirectories;
-    }
-
-    public override async Task<DirectoryItem?> GetDirectoryByPathAsync(string path, CancellationToken cancellationToken = default)
-    {
-        var allDirectories = await BuildDirectoryStructureAsync(cancellationToken);
-        return FindDirectoryByPath(allDirectories, path);
-    }
-
-    public override async Task<DirectoryItem?> GetDirectoryByIdAsync(string id, string? locale = null, CancellationToken cancellationToken = default)
-    {
-        var allDirectories = await BuildDirectoryStructureAsync(cancellationToken);
-        return FindDirectoryById(allDirectories, id, locale);
-    }
-
-    public override async Task<LocalizationInfo> GetLocalizationInfoAsync(CancellationToken cancellationToken = default)
-    {
-        var cacheKey = GetCacheKey("localization:info");
-        return await GetOrCreateCachedAsync(cacheKey, async ct =>
-        {
-            try
-            {
-                // If localization is disabled, return minimal info with just the default locale
-                if (!_options.EnableLocalization)
-                {
-                    return new LocalizationInfo
-                    {
-                        DefaultLocale = _options.DefaultLocale,
-                        AvailableLocales = new List<string> { _options.DefaultLocale }
-                    };
-                }
-
-                var localizationInfo = new LocalizationInfo
-                {
-                    DefaultLocale = _options.DefaultLocale
-                };
-
-                // Get all content items to analyze translations
-                var allItems = await GetAllItemsAsync(ct);
-
-                // First, collect all the available locales
-                var locales = allItems
-                    .Select(item => item.Locale)
-                    .Where(l => !string.IsNullOrEmpty(l))
-                    .Distinct(StringComparer.OrdinalIgnoreCase)
-                    .ToList();
-
-                // If we have multiple locales, process them
-                if (locales.Count > 1)
-                {
-                    localizationInfo.AvailableLocales.AddRange(locales);
-
-                    // Group by localization ID and build translations map
-                    var itemsByLocalizationId = allItems
-                        .Where(item => !string.IsNullOrEmpty(item.ContentId))
-                        .GroupBy(item => item.ContentId);
-
-                    foreach (var group in itemsByLocalizationId)
-                    {
-                        var translations = new Dictionary<string, string>();
-
-                        foreach (var item in group)
-                        {
-                            if (!string.IsNullOrEmpty(item.Locale))
-                            {
-                                translations[item.Locale] = item.Path;
-                            }
-                        }
-
-                        if (translations.Count > 0)
-                        {
-                            localizationInfo.Translations[group.Key] = translations;
-                        }
-                    }
-                }
-                else if (locales.Count == 1)
-                {
-                    // Only one locale available, use it as default
-                    localizationInfo.DefaultLocale = locales[0];
-                    localizationInfo.AvailableLocales.Add(locales[0]);
-                }
-                else
-                {
-                    // No locales found, use default
-                    localizationInfo.AvailableLocales.Add(_options.DefaultLocale);
-                }
-
-                return localizationInfo;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error building localization info");
-
-                // Return minimal localization info on error
-                return new LocalizationInfo
-                {
-                    DefaultLocale = _options.DefaultLocale,
-                    AvailableLocales = new List<string> { _options.DefaultLocale }
-                };
-            }
-        }, cancellationToken);
-    }
-
-    public override async Task<IReadOnlyList<ContentItem>> GetContentTranslationsAsync(string localizationId, CancellationToken cancellationToken = default)
-    {
-        if (string.IsNullOrEmpty(localizationId))
-            return new List<ContentItem>().AsReadOnly();
-
-        var allItems = await GetAllItemsAsync(cancellationToken);
-
-        return allItems
-            .Where(item => item.ContentId == localizationId)
-            .ToList()
-            .AsReadOnly();
-    }
-
-    private DirectoryItem? FindDirectoryByPath(IEnumerable<DirectoryItem> directories, string path)
-    {
         foreach (var directory in directories)
         {
-            if (directory.Path.Equals(path, StringComparison.OrdinalIgnoreCase))
+            if (directory.Path.Equals(fileDirectory, StringComparison.OrdinalIgnoreCase))
             {
                 return directory;
             }
 
-            var childResult = FindDirectoryByPath(directory.Children, path);
+            var childResult = FindParentDirectory(directory.Children, filePath);
             if (childResult != null)
             {
                 return childResult;
@@ -896,73 +796,99 @@ public class GitHubContentProvider : ContentProviderBase
         return null;
     }
 
-    private DirectoryItem? FindDirectoryById(IEnumerable<DirectoryItem> directories, string id, string? locale = null)
+    private string GenerateUrl(string path, string slug, string? skipSegment = null)
     {
-        foreach (var directory in directories)
-        {
-            if (directory.Id == id && (locale == null || directory.Locale.Equals(locale, StringComparison.OrdinalIgnoreCase)))
-            {
-                return directory;
-            }
+        // Check if pathToTrim is null, whitespace, or just "/"
+        bool skipPrefixRemoval = string.IsNullOrWhiteSpace(skipSegment) || skipSegment == "/";
 
-            var childResult = FindDirectoryById(directory.Children, id, locale);
-            if (childResult != null)
+        // Step 1: Remove string a from the beginning of string b
+        if (!skipPrefixRemoval && path.StartsWith(skipSegment!))
+        {
+            // Only remove 'a' if it's followed by a slash or is the entire string
+            if (path.Length == skipSegment!.Length || path[skipSegment.Length] == '/')
             {
-                return childResult;
+                // If a is followed by a slash, remove both a and the slash
+                // If a is the entire string, this will result in an empty string
+                path = path.Length > skipSegment.Length ? path.Substring(skipSegment.Length + 1) : "";
             }
         }
 
-        return null;
-    }
-
-    private List<string> ParseList(string value)
-    {
-        // Remove brackets if present
-        if (value.StartsWith("[") && value.EndsWith("]"))
+        // Step 2: Remove the last slash-delimited segment from string b
+        int lastSlashIndex = path.LastIndexOf('/');
+        if (lastSlashIndex >= 0)
         {
-            value = value.Substring(1, value.Length - 2);
+            path = path.Substring(0, lastSlashIndex);
+        }
+        else
+        {
+            // If there's no slash, b is a single segment, so clear it
+            path = "";
         }
 
-        return value
-            .Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries)
-            .Select(v => v.Trim().Trim('\'').Trim('"'))
-            .Where(v => !string.IsNullOrEmpty(v))
-            .ToList();
+        // Step 3: Append string c, with a slash if b is not empty
+        if (!string.IsNullOrEmpty(path))
+        {
+            return path + "/" + slug;
+        }
+        else
+        {
+            return slug;
+        }
     }
 
-    private class GitHubContent
+    private string GenerateQueryCacheKey(ContentQuery query)
     {
-        public string Name { get; set; } = string.Empty;
-        public string Path { get; set; } = string.Empty;
-        public string Sha { get; set; } = string.Empty;
-        public string Type { get; set; } = string.Empty;
-        public string Url { get; set; } = string.Empty;
+        var keyParts = new List<string>();
+
+        if (!string.IsNullOrEmpty(query.Directory))
+            keyParts.Add($"dir:{query.Directory}");
+
+        if (!string.IsNullOrEmpty(query.DirectoryId))
+            keyParts.Add($"dirid:{query.DirectoryId}");
+
+        if (!string.IsNullOrEmpty(query.Category))
+            keyParts.Add($"cat:{query.Category}");
+
+        if (!string.IsNullOrEmpty(query.Tag))
+            keyParts.Add($"tag:{query.Tag}");
+
+        if (query.IsFeatured.HasValue)
+            keyParts.Add($"feat:{query.IsFeatured.Value}");
+
+        if (query.DateFrom.HasValue)
+            keyParts.Add($"from:{query.DateFrom.Value:yyyyMMdd}");
+
+        if (query.DateTo.HasValue)
+            keyParts.Add($"to:{query.DateTo.Value:yyyyMMdd}");
+
+        if (!string.IsNullOrEmpty(query.SearchQuery))
+            keyParts.Add($"q:{query.SearchQuery}");
+
+        if (!string.IsNullOrEmpty(query.Locale))
+            keyParts.Add($"loc:{query.Locale}");
+
+        if (!string.IsNullOrEmpty(query.LocalizationId))
+            keyParts.Add($"locid:{query.LocalizationId}");
+
+        keyParts.Add($"sort:{query.SortBy}:{query.SortDirection}");
+
+        if (query.Skip.HasValue)
+            keyParts.Add($"skip:{query.Skip.Value}");
+
+        if (query.Take.HasValue)
+            keyParts.Add($"take:{query.Take.Value}");
+
+        return string.Join("|", keyParts);
     }
 
-    private class GitHubFileContent
+    private bool IsMarkdownFile(string fileName)
     {
-        public string Content { get; set; } = string.Empty;
+        return _options.SupportedExtensions.Any(ext =>
+            fileName.EndsWith(ext, StringComparison.OrdinalIgnoreCase));
     }
 
-    private class GitHubCommit
+    private string NormalizePath(string path)
     {
-        public GitHubCommitDetail? Commit { get; set; }
-    }
-
-    private class GitHubCommitDetail
-    {
-        public GitHubCommitAuthor? Author { get; set; }
-    }
-
-    private class GitHubCommitAuthor
-    {
-        public DateTime Date { get; set; }
-    }
-
-    private class GitHubFileInfo
-    {
-        public string Path { get; set; } = string.Empty;
-        public DateTime CreatedDate { get; set; }
-        public DateTime LastModifiedDate { get; set; }
+        return path.Replace('\\', '/').Trim('/');
     }
 }
