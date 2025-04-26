@@ -1,4 +1,5 @@
-﻿using Osirion.Blazor.Cms.Interfaces;
+﻿using Osirion.Blazor.Cms.Core.Interfaces;
+using Osirion.Blazor.Cms.Interfaces;
 using Osirion.Blazor.Cms.Models;
 
 namespace Osirion.Blazor.Cms.Services;

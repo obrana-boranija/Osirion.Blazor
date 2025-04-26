@@ -6,6 +6,7 @@ using Osirion.Blazor.Cms.Models;
 using Osirion.Blazor.Cms.Options;
 using Osirion.Blazor.Cms.Providers.Internal;
 using Osirion.Blazor.Core.Extensions;
+using Osirion.Blazor.Cms.Core.Providers.Base;
 
 namespace Osirion.Blazor.Cms.Providers;
 

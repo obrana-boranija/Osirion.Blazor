@@ -1,11 +1,12 @@
 ﻿@page "/admin/settings"
 @rendermode InteractiveServer
 
+@using Microsoft.Extensions.Options
 @using Osirion.Blazor.Cms.Admin
 @using Osirion.Blazor.Cms.Admin.Components
-@using Osirion.Blazor.Cms.Admin.Services
-@using Microsoft.Extensions.Options
 @using Osirion.Blazor.Cms.Admin.Options
+@using Osirion.Blazor.Cms.Admin.Services
+@using Osirion.Blazor.Cms.Core.Services
 @inherits Osirion.Blazor.Components.OsirionComponentBase
 @inject CmsAdminState AdminState
 @inject IAuthenticationService AuthService

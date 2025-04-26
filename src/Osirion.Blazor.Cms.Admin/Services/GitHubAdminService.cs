@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Admin.Models;
-using Osirion.Blazor.Cms.Models;
+using Osirion.Blazor.Cms.Core.Models;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;

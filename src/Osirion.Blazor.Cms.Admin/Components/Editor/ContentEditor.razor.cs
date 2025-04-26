@@ -1,7 +1,7 @@
 ﻿using Markdig;
 using Microsoft.AspNetCore.Components;
 using Osirion.Blazor.Cms.Admin.Services;
-using Osirion.Blazor.Cms.Models;
+using Osirion.Blazor.Cms.Core.Models;
 
 namespace Osirion.Blazor.Cms.Admin.Components.Editor;
 

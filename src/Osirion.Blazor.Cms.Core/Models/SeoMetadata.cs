@@ -1,5 +1,4 @@
-﻿// src/Osirion.Blazor.Cms.Core/Models/SeoMetadata.cs
-namespace Osirion.Blazor.Cms.Models;
+﻿namespace Osirion.Blazor.Cms.Models;
 
 /// <summary>
 /// Represents SEO metadata for content items
@@ -75,4 +74,28 @@ public class SeoMetadata
     /// Gets or sets the Twitter image URL
     /// </summary>
     public string TwitterImageUrl { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Creates a deep clone of this SEO metadata
+    /// </summary>
+    public SeoMetadata Clone()
+    {
+        return new SeoMetadata
+        {
+            MetaTitle = MetaTitle,
+            MetaDescription = MetaDescription,
+            CanonicalUrl = CanonicalUrl,
+            Robots = Robots,
+            OgTitle = OgTitle,
+            OgDescription = OgDescription,
+            OgImageUrl = OgImageUrl,
+            OgType = OgType,
+            JsonLd = JsonLd,
+            SchemaType = SchemaType,
+            TwitterCard = TwitterCard,
+            TwitterTitle = TwitterTitle,
+            TwitterDescription = TwitterDescription,
+            TwitterImageUrl = TwitterImageUrl
+        };
+    }
 }

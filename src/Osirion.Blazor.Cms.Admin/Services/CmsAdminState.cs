@@ -1,5 +1,5 @@
 ﻿using Osirion.Blazor.Cms.Admin.Models;
-using Osirion.Blazor.Cms.Models;
+using Osirion.Blazor.Cms.Core.Models;
 
 namespace Osirion.Blazor.Cms.Admin.Services;
 

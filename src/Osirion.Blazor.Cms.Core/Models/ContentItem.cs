@@ -1,4 +1,4 @@
-﻿using System.Collections.Immutable;
+﻿using Osirion.Blazor.Cms.Enums;
 using System.Text.Json.Serialization;
 
 namespace Osirion.Blazor.Cms.Models;
@@ -106,6 +106,23 @@ public class ContentItem : IEquatable<ContentItem>
     }
 
     /// <summary>
+    /// Removes a tag from the content item
+    /// </summary>
+    public void RemoveTag(string tag)
+    {
+        if (!string.IsNullOrWhiteSpace(tag))
+        {
+            var matchingTag = _tags.FirstOrDefault(t =>
+                t.Equals(tag, StringComparison.OrdinalIgnoreCase));
+
+            if (matchingTag != null)
+            {
+                _tags.Remove(matchingTag);
+            }
+        }
+    }
+
+    /// <summary>
     /// Gets or sets the categories associated with this content item
     /// </summary>
     private readonly List<string> _categories = new();
@@ -119,6 +136,23 @@ public class ContentItem : IEquatable<ContentItem>
         if (!string.IsNullOrWhiteSpace(category) && !_categories.Contains(category, StringComparer.OrdinalIgnoreCase))
         {
             _categories.Add(category);
+        }
+    }
+
+    /// <summary>
+    /// Removes a category from the content item
+    /// </summary>
+    public void RemoveCategory(string category)
+    {
+        if (!string.IsNullOrWhiteSpace(category))
+        {
+            var matchingCategory = _categories.FirstOrDefault(c =>
+                c.Equals(category, StringComparison.OrdinalIgnoreCase));
+
+            if (matchingCategory != null)
+            {
+                _categories.Remove(matchingCategory);
+            }
         }
     }
 
@@ -203,6 +237,16 @@ public class ContentItem : IEquatable<ContentItem>
     public SeoMetadata Seo { get; set; } = new SeoMetadata();
 
     /// <summary>
+    /// Gets the publish date (scheduled or actual)
+    /// </summary>
+    public DateTime PublishDate => GetMetadata<DateTime>("publish_date", DateCreated);
+
+    /// <summary>
+    /// Gets or sets the ordering index (for manual sorting)
+    /// </summary>
+    public int OrderIndex { get; set; }
+
+    /// <summary>
     /// Creates a deep clone of this content item
     /// </summary>
     public ContentItem Clone()
@@ -227,6 +271,7 @@ public class ContentItem : IEquatable<ContentItem>
             Status = Status,
             ProviderId = ProviderId,
             ProviderSpecificId = ProviderSpecificId,
+            OrderIndex = OrderIndex,
             Directory = Directory,
             Seo = new SeoMetadata
             {
@@ -270,9 +315,22 @@ public class ContentItem : IEquatable<ContentItem>
     private int CalculateReadTime()
     {
         const int wordsPerMinute = 200;
-        var words = Content.Split(new[] { ' ', '\n', '\r', '\t' },
-            StringSplitOptions.RemoveEmptyEntries).Length;
-        return Math.Max(1, (int)Math.Ceiling(words / (double)wordsPerMinute));
+
+        // Count words in content
+        var wordCount = 0;
+        if (!string.IsNullOrWhiteSpace(Content))
+        {
+            wordCount = Content.Split(new[] { ' ', '\n', '\r', '\t' },
+                StringSplitOptions.RemoveEmptyEntries).Length;
+        }
+        else if (!string.IsNullOrWhiteSpace(OriginalMarkdown))
+        {
+            wordCount = OriginalMarkdown.Split(new[] { ' ', '\n', '\r', '\t' },
+                StringSplitOptions.RemoveEmptyEntries).Length;
+        }
+
+        // Minimum reading time is 1 minute
+        return Math.Max(1, (int)Math.Ceiling(wordCount / (double)wordsPerMinute));
     }
 
     /// <summary>
@@ -303,25 +361,4 @@ public class ContentItem : IEquatable<ContentItem>
     {
         return HashCode.Combine(Id, ProviderId, Path);
     }
-}
-
-/// <summary>
-/// Defines the status of a content item
-/// </summary>
-public enum ContentStatus
-{
-    /// <summary>
-    /// Item is a draft and not publicly visible
-    /// </summary>
-    Draft,
-
-    /// <summary>
-    /// Item is published and publicly visible
-    /// </summary>
-    Published,
-
-    /// <summary>
-    /// Item is archived and may have limited visibility
-    /// </summary>
-    Archived
 }

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Osirion.Blazor.Cms.Admin.Models;
 using Osirion.Blazor.Cms.Admin.Services;
+using Osirion.Blazor.Cms.Core.Models;
 using Osirion.Blazor.Cms.Models;
 
 namespace Osirion.Blazor.Cms.Admin.Components;
