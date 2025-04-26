@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Caching;
@@ -14,15 +15,15 @@ using Osirion.Blazor.Cms.Options;
 using Osirion.Blazor.Cms.Providers;
 using Osirion.Blazor.Cms.Services;
 
-namespace Osirion.Blazor.Cms;
+namespace Osirion.Blazor.Cms.Extensions;
 
 /// <summary>
-/// Extension methods for configuring content services
+/// Extension methods for adding Osirion.Blazor.Cms services to the dependency injection container
 /// </summary>
 public static class ContentServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds Osirion.Blazor.Cms Core services to the service collection
+    /// Adds Osirion.Blazor.Cms services to the service collection
     /// </summary>
     /// <param name="services">The service collection</param>
     /// <param name="configure">Action to configure content providers</param>
@@ -34,35 +35,57 @@ public static class ContentServiceCollectionExtensions
         if (services == null) throw new ArgumentNullException(nameof(services));
         if (configure == null) throw new ArgumentNullException(nameof(configure));
 
-        // Add core services
+        // Register core services
         AddCoreServices(services);
 
         // Create builder and apply configuration
         var builder = new ContentBuilder(services);
         configure(builder);
 
-        // Add ContentProviderManager
+        // Register ContentProviderManager - scoped to match typical Blazor component lifetime
         services.TryAddScoped<IContentProviderManager, ContentProviderManager>();
 
         return services;
     }
 
     /// <summary>
-    /// Adds minimal content services with default configuration
+    /// Adds Osirion.Blazor.Cms services from configuration
     /// </summary>
     /// <param name="services">The service collection</param>
+    /// <param name="configuration">The configuration</param>
     /// <returns>The service collection for chaining</returns>
-    public static IServiceCollection AddOsirionContent(this IServiceCollection services)
+    public static IServiceCollection AddOsirionContent(
+        this IServiceCollection services,
+        IConfiguration configuration)
     {
         if (services == null) throw new ArgumentNullException(nameof(services));
+        if (configuration == null) throw new ArgumentNullException(nameof(configuration));
 
-        // Add core services
-        AddCoreServices(services);
+        // Register caching options
+        services.Configure<ContentCacheOptions>(configuration.GetSection("Osirion:Cms:Caching"));
 
-        // Add ContentProviderManager
-        services.TryAddScoped<IContentProviderManager, ContentProviderManager>();
+        return services.AddOsirionContent(builder =>
+        {
+            // Configure GitHub provider if in config
+            var githubSection = configuration.GetSection("Osirion:Cms:GitHub");
+            if (githubSection.Exists())
+            {
+                builder.AddGitHub(github =>
+                {
+                    githubSection.Bind(github);
+                });
+            }
 
-        return services;
+            // Configure file system provider if in config
+            var fileSystemSection = configuration.GetSection("Osirion:Cms:FileSystem");
+            if (fileSystemSection.Exists())
+            {
+                builder.AddFileSystem(fileSystem =>
+                {
+                    fileSystemSection.Bind(fileSystem);
+                });
+            }
+        });
     }
 
     /// <summary>
@@ -86,7 +109,7 @@ public static class ContentServiceCollectionExtensions
 
         // Register GitHub provider
         services.TryAddScoped<GitHubContentProvider>();
-        services.TryAddScoped<IContentProvider>(sp => (IContentProvider)sp.GetRequiredService<GitHubContentProvider>());
+        services.TryAddScoped<IContentProvider>(sp => sp.GetRequiredService<GitHubContentProvider>());
 
         return services;
     }
@@ -109,7 +132,7 @@ public static class ContentServiceCollectionExtensions
 
         // Register file system provider
         services.TryAddScoped<FileSystemContentProvider>();
-        services.TryAddScoped<IContentProvider>(sp => (IContentProvider)sp.GetRequiredService<FileSystemContentProvider>());
+        services.TryAddScoped<IContentProvider>(sp => sp.GetRequiredService<FileSystemContentProvider>());
 
         return services;
     }
@@ -133,4 +156,3 @@ public static class ContentServiceCollectionExtensions
             new OptionsWrapper<ContentCacheOptions>(new ContentCacheOptions()));
     }
 }
-

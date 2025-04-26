@@ -1,37 +1,32 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using Osirion.Blazor.Cms.Caching;
 using Osirion.Blazor.Cms.Exceptions;
 using Osirion.Blazor.Cms.Interfaces;
 using Osirion.Blazor.Cms.Models;
+using Osirion.Blazor.Core.Extensions;
 
 namespace Osirion.Blazor.Cms.Providers.Base;
 
 /// <summary>
-/// Base class for content providers with common functionality
+/// Base class for content providers with in-memory caching
 /// </summary>
 public abstract class ContentProviderBase : IContentProvider, IDisposable
 {
-    private readonly IContentCacheService _cacheService;
-    private readonly ILogger _logger;
+    private readonly IMemoryCache _memoryCache;
+    protected readonly ILogger Logger;
     private bool _disposed;
-    private Microsoft.Extensions.Caching.Memory.IMemoryCache _memoryCache;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ContentProviderBase"/> class.
     /// </summary>
+    /// <param name="memoryCache">The memory cache</param>
+    /// <param name="logger">The logger</param>
     protected ContentProviderBase(
-        IContentCacheService cacheService,
+        IMemoryCache memoryCache,
         ILogger logger)
     {
-        _cacheService = cacheService ?? throw new ArgumentNullException(nameof(cacheService));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
-
-    protected ContentProviderBase(ILogger<FileSystemContentProvider> logger, Microsoft.Extensions.Caching.Memory.IMemoryCache memoryCache)
-    {
-        _logger = logger;
-        _memoryCache = memoryCache;
+        _memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
+        Logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     /// <inheritdoc/>
@@ -60,7 +55,7 @@ public abstract class ContentProviderBase : IContentProvider, IDisposable
         var cacheKey = GetCacheKey($"item:id:{id}");
 
         return await ExecuteWithExceptionHandlingAsync(
-            async () => await _cacheService.GetOrCreateAsync(
+            async () => await GetOrCreateCachedAsync(
                 cacheKey,
                 async ct =>
                 {
@@ -68,7 +63,6 @@ public abstract class ContentProviderBase : IContentProvider, IDisposable
                     var allItems = await GetAllItemsAsync(ct);
                     return allItems.FirstOrDefault(i => i.Id == id);
                 },
-                CacheDuration,
                 cancellationToken),
             nameof(GetItemByIdAsync));
     }
@@ -83,12 +77,12 @@ public abstract class ContentProviderBase : IContentProvider, IDisposable
     public abstract Task<IReadOnlyList<ContentItem>> GetItemsByQueryAsync(ContentQuery query, CancellationToken cancellationToken = default);
 
     /// <inheritdoc/>
-    public virtual async Task<IReadOnlyList<ContentCategory>> GetCategoriesAsync(CancellationToken cancellationToken = default)
+    public virtual async Task<IReadOnlyList<ContentCategory>?> GetCategoriesAsync(CancellationToken cancellationToken = default)
     {
         var cacheKey = GetCacheKey("categories");
 
         return await ExecuteWithExceptionHandlingAsync(
-            async () => await _cacheService.GetOrCreateAsync(
+            async () => await GetOrCreateCachedAsync(
                 cacheKey,
                 async ct =>
                 {
@@ -100,25 +94,24 @@ public abstract class ContentProviderBase : IContentProvider, IDisposable
                         .Select(group => new ContentCategory
                         {
                             Name = group.First(),
-                            Slug = CreateSlug(group.First()),
+                            Slug = group.First().ToUrlSlug(),
                             Count = group.Count()
                         })
                         .OrderBy(c => c.Name)
                         .ToList()
                         .AsReadOnly();
                 },
-                CacheDuration,
                 cancellationToken),
             nameof(GetCategoriesAsync));
     }
 
     /// <inheritdoc/>
-    public virtual async Task<IReadOnlyList<ContentTag>> GetTagsAsync(CancellationToken cancellationToken = default)
+    public virtual async Task<IReadOnlyList<ContentTag>?> GetTagsAsync(CancellationToken cancellationToken = default)
     {
         var cacheKey = GetCacheKey("tags");
 
         return await ExecuteWithExceptionHandlingAsync(
-            async () => await _cacheService.GetOrCreateAsync(
+            async () => await GetOrCreateCachedAsync(
                 cacheKey,
                 async ct =>
                 {
@@ -130,14 +123,13 @@ public abstract class ContentProviderBase : IContentProvider, IDisposable
                         .Select(group => new ContentTag
                         {
                             Name = group.First(),
-                            Slug = CreateSlug(group.First()),
+                            Slug = group.First().ToUrlSlug(),
                             Count = group.Count()
                         })
                         .OrderBy(t => t.Name)
                         .ToList()
                         .AsReadOnly();
                 },
-                CacheDuration,
                 cancellationToken),
             nameof(GetTagsAsync));
     }
@@ -145,8 +137,17 @@ public abstract class ContentProviderBase : IContentProvider, IDisposable
     /// <inheritdoc/>
     public virtual async Task RefreshCacheAsync(CancellationToken cancellationToken = default)
     {
-        await _cacheService.RemoveByPrefixAsync(ProviderId, cancellationToken);
-        _logger.LogInformation("Cache refreshed for provider: {ProviderId}", ProviderId);
+        // Get all cache keys for this provider
+        var cachePrefix = $"{ProviderId}:";
+
+        // There's no direct way to clear by prefix in MemoryCache
+        // For a server-side app, we can just clear everything related to this provider
+        if (_memoryCache is MemoryCache memCache)
+        {
+            // Use Compact with percentage 1.0 to clear all
+            memCache.Compact(1.0);
+            Logger.LogInformation("Cleared entire in-memory cache for provider: {ProviderId}", ProviderId);
+        }
     }
 
     /// <inheritdoc/>
@@ -167,14 +168,13 @@ public abstract class ContentProviderBase : IContentProvider, IDisposable
         var cacheKey = GetCacheKey($"directory:path:{path}");
 
         return await ExecuteWithExceptionHandlingAsync(
-            async () => await _cacheService.GetOrCreateAsync(
+            async () => await GetOrCreateCachedAsync(
                 cacheKey,
                 async ct =>
                 {
                     var directories = await GetDirectoriesAsync(null, ct);
-                    return directories.FirstOrDefault(d => d.Path.Equals(path, StringComparison.OrdinalIgnoreCase));
+                    return FindDirectoryByPath(directories, path);
                 },
-                CacheDuration,
                 cancellationToken),
             nameof(GetDirectoryByPathAsync));
     }
@@ -188,14 +188,13 @@ public abstract class ContentProviderBase : IContentProvider, IDisposable
         var cacheKey = GetCacheKey($"directory:id:{id}");
 
         return await ExecuteWithExceptionHandlingAsync(
-            async () => await _cacheService.GetOrCreateAsync(
+            async () => await GetOrCreateCachedAsync(
                 cacheKey,
                 async ct =>
                 {
                     var directories = await GetDirectoriesAsync(locale, ct);
                     return FindDirectoryById(directories, id);
                 },
-                CacheDuration,
                 cancellationToken),
             nameof(GetDirectoryByIdAsync));
     }
@@ -209,25 +208,24 @@ public abstract class ContentProviderBase : IContentProvider, IDisposable
         var cacheKey = GetCacheKey($"directory:url:{url}");
 
         return await ExecuteWithExceptionHandlingAsync(
-            async () => await _cacheService.GetOrCreateAsync(
+            async () => await GetOrCreateCachedAsync(
                 cacheKey,
                 async ct =>
                 {
                     var directories = await GetDirectoriesAsync(null, ct);
                     return FindDirectoryByUrl(directories, url);
                 },
-                CacheDuration,
                 cancellationToken),
             nameof(GetDirectoryByUrlAsync));
     }
 
     /// <inheritdoc/>
-    public virtual async Task<LocalizationInfo> GetLocalizationInfoAsync(CancellationToken cancellationToken = default)
+    public virtual async Task<LocalizationInfo?> GetLocalizationInfoAsync(CancellationToken cancellationToken = default)
     {
         var cacheKey = GetCacheKey("localization");
 
         return await ExecuteWithExceptionHandlingAsync(
-            async () => await _cacheService.GetOrCreateAsync(
+            async () => await GetOrCreateCachedAsync(
                 cacheKey,
                 async ct =>
                 {
@@ -242,13 +240,12 @@ public abstract class ContentProviderBase : IContentProvider, IDisposable
 
                     return info;
                 },
-                CacheDuration,
                 cancellationToken),
             nameof(GetLocalizationInfoAsync));
     }
 
     /// <inheritdoc/>
-    public virtual async Task<IReadOnlyList<ContentItem>> GetContentTranslationsAsync(string localizationId, CancellationToken cancellationToken = default)
+    public virtual async Task<IReadOnlyList<ContentItem>?> GetContentTranslationsAsync(string localizationId, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(localizationId))
             return Array.Empty<ContentItem>();
@@ -256,14 +253,13 @@ public abstract class ContentProviderBase : IContentProvider, IDisposable
         var cacheKey = GetCacheKey($"translations:{localizationId}");
 
         return await ExecuteWithExceptionHandlingAsync(
-            async () => await _cacheService.GetOrCreateAsync(
+            async () => await GetOrCreateCachedAsync(
                 cacheKey,
                 async ct =>
                 {
                     var query = new ContentQuery { LocalizationId = localizationId };
                     return await GetItemsByQueryAsync(query, ct);
                 },
-                CacheDuration,
                 cancellationToken),
             nameof(GetContentTranslationsAsync));
     }
@@ -277,39 +273,56 @@ public abstract class ContentProviderBase : IContentProvider, IDisposable
     }
 
     /// <summary>
-    /// Creates a URL-friendly slug from a string
+    /// Simple in-memory caching implementation
     /// </summary>
-    protected virtual string CreateSlug(string input)
+    protected async Task<T?> GetOrCreateCachedAsync<T>(
+        string cacheKey,
+        Func<CancellationToken, Task<T>> factory,
+        CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrWhiteSpace(input))
-            return "untitled";
-
-        // Convert to lowercase
-        var slug = input.ToLowerInvariant();
-
-        // Remove accents, replace spaces with hyphens, remove invalid chars
-        slug = slug
-            .Replace(" ", "-")
-            .Replace("_", "-")
-            .Replace(".", "-");
-
-        // Remove any characters that aren't alphanumerics, hyphens, or underscores
-        slug = System.Text.RegularExpressions.Regex.Replace(slug, @"[^a-z0-9\-_]", "");
-
-        // Replace double hyphens with single hyphen
-        while (slug.Contains("--"))
+        // See if the item is in the cache
+        if (_memoryCache.TryGetValue(cacheKey, out T? cachedValue))
         {
-            slug = slug.Replace("--", "-");
+            Logger.LogDebug("Cache hit for key: {Key}", cacheKey);
+            return cachedValue;
         }
 
-        // Trim hyphens from start and end
-        slug = slug.Trim('-');
+        // Not in cache, create it
+        Logger.LogDebug("Cache miss for key: {Key}", cacheKey);
+        var result = await factory(cancellationToken);
 
-        // If slug is empty, use "untitled"
-        if (string.IsNullOrEmpty(slug))
-            return "untitled";
+        // Only cache non-null values
+        if (result != null)
+        {
+            var cacheOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(CacheDuration);
 
-        return slug;
+            _memoryCache.Set(cacheKey, result, cacheOptions);
+            Logger.LogDebug("Added to cache: {Key}", cacheKey);
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Finds a directory with the specified path in a directory tree
+    /// </summary>
+    protected DirectoryItem? FindDirectoryByPath(IEnumerable<DirectoryItem> directories, string path)
+    {
+        var normalizedPath = path.Replace('\\', '/').TrimEnd('/');
+
+        foreach (var directory in directories)
+        {
+            var directoryPath = directory.Path.Replace('\\', '/').TrimEnd('/');
+            if (directoryPath.Equals(normalizedPath, StringComparison.OrdinalIgnoreCase))
+                return directory;
+
+            var childResult = FindDirectoryByPath(directory.Children, path);
+            if (childResult != null)
+                return childResult;
+        }
+
+        return null;
     }
 
     /// <summary>
@@ -364,7 +377,7 @@ public abstract class ContentProviderBase : IContentProvider, IDisposable
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error in {OperationName} for provider {ProviderId}: {Message}",
+            Logger.LogError(ex, "Error in {OperationName} for provider {ProviderId}: {Message}",
                 operationName, ProviderId, ex.Message);
 
             throw new ContentProviderException(
@@ -394,30 +407,5 @@ public abstract class ContentProviderBase : IContentProvider, IDisposable
         }
 
         _disposed = true;
-    }
-
-    /// <summary>
-    /// Gets or creates a cached value using async factory method
-    /// </summary>
-    protected async Task<T> GetOrCreateCachedAsync<T>(
-    string cacheKey,
-    Func<CancellationToken, Task<T>> factory,
-    CancellationToken cancellationToken = default)
-    {
-        // Try to get from cache first
-        if (_memoryCache.TryGetValue(cacheKey, out T? cachedValue))
-        {
-            return cachedValue!;
-        }
-
-        // Compute the value - we accept that multiple threads might do this simultaneously
-        var value = await factory(cancellationToken);
-
-        // Store in cache with absolute expiration
-        var cacheEntryOptions = new MemoryCacheEntryOptions()
-            .SetAbsoluteExpiration(CacheDuration);
-
-        _memoryCache.Set(cacheKey, value, cacheEntryOptions);
-        return value;
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Caching;
 using Osirion.Blazor.Cms.Interfaces;
 
@@ -13,7 +14,7 @@ public abstract class ReadOnlyContentProviderBase : ContentProviderBase
     /// Initializes a new instance of the <see cref="ReadOnlyContentProviderBase"/> class.
     /// </summary>
     protected ReadOnlyContentProviderBase(
-        IContentCacheService cacheService,
+        IMemoryCache cacheService,
         ILogger logger)
         : base(cacheService, logger)
     {

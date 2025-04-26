@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Osirion.Blazor.Cms.Enums;
 using Osirion.Blazor.Cms.Models;
 using Osirion.Blazor.Cms.Options;
 using Osirion.Blazor.Cms.Providers.Base;
@@ -25,7 +26,7 @@ public class FileSystemContentProvider : ContentProviderBase
         IOptions<FileSystemContentOptions> options,
         ILogger<FileSystemContentProvider> logger,
         IMemoryCache memoryCache)
-        : base(logger, memoryCache)
+        : base(memoryCache, logger) // Corrected parameter order to match base class constructor
     {
         _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
 
@@ -36,10 +37,10 @@ public class FileSystemContentProvider : ContentProviderBase
     }
 
     /// <inheritdoc/>
-    public override string ProviderId => _options.ProviderId ?? "filesystem-{_options.BasePath.GetHashCode():x}";
+    public override string ProviderId => _options.ProviderId ?? $"filesystem-{_options.BasePath.GetHashCode():x}";
 
     /// <inheritdoc/>
-    public override string DisplayName => "FileSystem: {_options.BasePath}";
+    public override string DisplayName => $"FileSystem: {_options.BasePath}";
 
     /// <inheritdoc/>
     public override bool IsReadOnly => true;
@@ -50,15 +51,29 @@ public class FileSystemContentProvider : ContentProviderBase
     /// <inheritdoc/>
     public override Task InitializeAsync(CancellationToken cancellationToken = default)
     {
-        //if (!Directory.Exists(_options.BasePath))
-        //{
-        //    throw new DirectoryNotFoundException($"Content directory not found: {_options.BasePath}");
-        //}
+        if (!Directory.Exists(_options.BasePath))
+        {
+            if (_options.CreateDirectoriesIfNotExist)
+            {
+                try
+                {
+                    Directory.CreateDirectory(_options.BasePath);
+                }
+                catch (Exception ex)
+                {
+                    throw new DirectoryNotFoundException($"Content directory not found and could not be created: {_options.BasePath}. Error: {ex.Message}");
+                }
+            }
+            else
+            {
+                throw new DirectoryNotFoundException($"Content directory not found: {_options.BasePath}");
+            }
+        }
 
-        //if (_options.WatchForChanges)
-        //{
-        //    SetupFileWatcher();
-        //}
+        if (_options.WatchForChanges)
+        {
+            SetupFileWatcher();
+        }
 
         return Task.CompletedTask;
     }
@@ -68,14 +83,12 @@ public class FileSystemContentProvider : ContentProviderBase
     {
         var cacheKey = GetCacheKey("content:all");
 
-        //var items = await GetOrCreateCachedAsync(cacheKey, async ct =>
-        //{
-        //    var contentItems = new List<ContentItem>();
-        //    await ProcessDirectoryAsync(_options.BasePath, contentItems, ct);
-        //    return contentItems.AsReadOnly();
-        //}, cancellationToken) ?? Array.Empty<ContentItem>();
-
-        return null;
+        return await GetOrCreateCachedAsync(cacheKey, async ct =>
+        {
+            var contentItems = new List<ContentItem>();
+            await ProcessDirectoryAsync(_options.BasePath, contentItems, ct);
+            return contentItems.AsReadOnly();
+        }, cancellationToken) ?? new List<ContentItem>().AsReadOnly();
     }
 
     /// <inheritdoc/>
@@ -103,7 +116,7 @@ public class FileSystemContentProvider : ContentProviderBase
         var items = await GetAllItemsAsync(cancellationToken);
         var filteredItems = items.AsQueryable();
 
-        // Apply filters (same implementation as GitHubContentProvider)
+        // Apply filters
         if (!string.IsNullOrEmpty(query.Directory))
         {
             filteredItems = filteredItems.Where(item =>
@@ -181,25 +194,52 @@ public class FileSystemContentProvider : ContentProviderBase
         return filteredItems.ToList().AsReadOnly();
     }
 
+    /// <inheritdoc/>
+    public override async Task<IReadOnlyList<DirectoryItem>> GetDirectoriesAsync(string? locale = null, CancellationToken cancellationToken = default)
+    {
+        var cacheKey = GetCacheKey($"directories:{locale ?? "all"}");
+
+        return await GetOrCreateCachedAsync(cacheKey, async ct =>
+        {
+            var rootDirectories = new List<DirectoryItem>();
+            await ScanDirectoriesAsync(_options.BasePath, rootDirectories, null, locale, ct);
+            return rootDirectories.AsReadOnly();
+        }, cancellationToken) ?? new List<DirectoryItem>().AsReadOnly();
+    }
+
     private async Task ProcessDirectoryAsync(string directory, List<ContentItem> contentItems, CancellationToken cancellationToken)
     {
-        foreach (var file in Directory.EnumerateFiles(directory, "*.*", SearchOption.AllDirectories))
-        {
-            cancellationToken.ThrowIfCancellationRequested();
+        var searchOption = _options.IncludeSubdirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
 
-            if (_options.SupportedExtensions.Any(ext => file.EndsWith(ext, StringComparison.OrdinalIgnoreCase)))
+        foreach (var pattern in _options.IncludePatterns)
+        {
+            // Convert glob pattern to a regex pattern
+            var regexPattern = GlobPatternToRegex(pattern);
+
+            foreach (var file in Directory.EnumerateFiles(directory, "*.*", searchOption))
             {
-                try
+                cancellationToken.ThrowIfCancellationRequested();
+
+                // Skip files that match exclude patterns
+                if (_options.ExcludePatterns.Any(ep => MatchesGlobPattern(file, ep)))
+                    continue;
+
+                // Check if file matches the include pattern
+                if (MatchesGlobPattern(file, pattern))
                 {
-                    var contentItem = await ProcessMarkdownFileAsync(file, cancellationToken);
-                    if (contentItem != null)
+                    try
                     {
-                        contentItems.Add(contentItem);
+                        var contentItem = await ProcessMarkdownFileAsync(file, cancellationToken);
+                        if (contentItem != null)
+                        {
+                            contentItems.Add(contentItem);
+                        }
                     }
-                }
-                catch (Exception ex)
-                {
-                    //_logger.LogError(ex, "Error processing file: {FileName}", file);
+                    catch (Exception ex)
+                    {
+                        // Log but continue processing other files
+                        Logger.LogError(ex, "Error processing file: {FileName}", file);
+                    }
                 }
             }
         }
@@ -213,18 +253,36 @@ public class FileSystemContentProvider : ContentProviderBase
             if (string.IsNullOrEmpty(content))
                 return null;
 
-            //var relativePath = Path.GetRelativePath(_options.BasePath, filePath);
+            var relativePath = Path.GetRelativePath(_options.BasePath, filePath);
             var fileInfo = new FileInfo(filePath);
 
             var contentItem = new ContentItem
             {
-                //Id = relativePath.GetHashCode().ToString("x"),
-                //Path = NormalizePath(relativePath),
+                Id = relativePath.GetHashCode().ToString("x"),
+                Path = NormalizePath(relativePath),
                 ProviderId = ProviderId,
                 ProviderSpecificId = filePath,
                 DateCreated = fileInfo.CreationTimeUtc,
                 LastModified = fileInfo.LastWriteTimeUtc
             };
+
+            // Extract locale from path if localization is enabled
+            if (_options.EnableLocalization)
+            {
+                var pathSegments = relativePath.Split('/', '\\');
+                if (pathSegments.Length > 0 && _options.SupportedLocales.Contains(pathSegments[0]))
+                {
+                    contentItem.Locale = pathSegments[0];
+                }
+                else
+                {
+                    contentItem.Locale = _options.DefaultLocale;
+                }
+            }
+            else
+            {
+                contentItem.Locale = _options.DefaultLocale;
+            }
 
             // Parse markdown and extract front matter
             var frontMatterEndIndex = content.IndexOf("---", 4);
@@ -235,10 +293,12 @@ public class FileSystemContentProvider : ContentProviderBase
 
                 var markdownContent = content.Substring(frontMatterEndIndex + 3).Trim();
                 contentItem.Content = Markdown.ToHtml(markdownContent, _markdownPipeline);
+                contentItem.OriginalMarkdown = markdownContent;
             }
             else
             {
                 contentItem.Content = Markdown.ToHtml(content, _markdownPipeline);
+                contentItem.OriginalMarkdown = content;
             }
 
             // Set defaults if not provided
@@ -252,49 +312,195 @@ public class FileSystemContentProvider : ContentProviderBase
                 contentItem.Slug = contentItem.Title.ToUrlSlug();
             }
 
-            //contentItem.Url = GenerateUrl(contentItem.Path, contentItem.Slug, _options.BasePath);
+            // Generate URL
+            contentItem.Url = GenerateUrl(contentItem.Path, contentItem.Slug, _options.ContentRoot);
 
             return contentItem;
         }
         catch (Exception ex)
         {
-            //_logger.LogError(ex, "Failed to process markdown file: {FilePath}", filePath);
+            Logger.LogError(ex, "Failed to process markdown file: {FilePath}", filePath);
             return null;
+        }
+    }
+
+    private async Task ScanDirectoriesAsync(
+        string directoryPath,
+        List<DirectoryItem> parentDirectories,
+        DirectoryItem? parentDirectory,
+        string? locale,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var dirInfo = new DirectoryInfo(directoryPath);
+            if (!dirInfo.Exists)
+                return;
+
+            // Get the relative path from the base path
+            var relativePath = Path.GetRelativePath(_options.BasePath, directoryPath);
+            if (relativePath == ".")
+                relativePath = "";
+
+            // Check locale filter
+            var currentLocale = _options.DefaultLocale;
+            var pathSegments = relativePath.Split('/', '\\');
+            if (_options.EnableLocalization && pathSegments.Length > 0 && _options.SupportedLocales.Contains(pathSegments[0]))
+            {
+                currentLocale = pathSegments[0];
+            }
+
+            // Skip if locale doesn't match the filter
+            if (locale != null && currentLocale != locale)
+                return;
+
+            // Create directory item for this directory
+            var directory = new DirectoryItem
+            {
+                Id = relativePath.GetHashCode().ToString("x"),
+                Name = dirInfo.Name,
+                Path = NormalizePath(relativePath),
+                Locale = currentLocale,
+                Parent = parentDirectory
+            };
+
+            // Add metadata from _index.md if exists
+            await ProcessDirectoryMetadataAsync(directory, directoryPath, cancellationToken);
+
+            // Add to parent collection
+            parentDirectories.Add(directory);
+
+            // Process subdirectories if we're including them
+            if (_options.IncludeSubdirectories)
+            {
+                foreach (var subdirInfo in dirInfo.GetDirectories())
+                {
+                    // Skip directories that match exclude patterns
+                    if (_options.ExcludePatterns.Any(pattern => MatchesGlobPattern(subdirInfo.FullName, pattern)))
+                        continue;
+
+                    await ScanDirectoriesAsync(
+                        subdirInfo.FullName,
+                        directory.Children,
+                        directory,
+                        locale,
+                        cancellationToken);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error scanning directory: {DirectoryPath}", directoryPath);
+        }
+    }
+
+    private async Task ProcessDirectoryMetadataAsync(DirectoryItem directory, string directoryPath, CancellationToken cancellationToken)
+    {
+        var indexPath = Path.Combine(directoryPath, "_index.md");
+        if (File.Exists(indexPath))
+        {
+            try
+            {
+                var content = await File.ReadAllTextAsync(indexPath, cancellationToken);
+                var frontMatterEndIndex = content.IndexOf("---", 4);
+                if (frontMatterEndIndex > 0)
+                {
+                    var frontMatter = content.Substring(4, frontMatterEndIndex - 4).Trim();
+                    var metadata = ParseDirectoryFrontMatter(frontMatter);
+
+                    // Apply metadata to directory
+                    if (metadata.TryGetValue("title", out var title))
+                        directory.Name = title;
+
+                    if (metadata.TryGetValue("description", out var description))
+                        directory.Description = description;
+
+                    if (metadata.TryGetValue("order", out var orderStr) && int.TryParse(orderStr, out var order))
+                        directory.Order = order;
+
+                    // Add other metadata as properties
+                    foreach (var key in metadata.Keys.Where(k => k != "title" && k != "description" && k != "order"))
+                    {
+                        directory.Metadata[key] = metadata[key];
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Error processing directory metadata: {IndexPath}", indexPath);
+            }
         }
     }
 
     private void SetupFileWatcher()
     {
-        //_fileWatcher = new FileSystemWatcher(_options.BasePath)
-        //{
-        //    IncludeSubdirectories = true,
-        //    NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite
-        //};
+        try
+        {
+            _fileWatcher = new FileSystemWatcher(_options.BasePath)
+            {
+                IncludeSubdirectories = _options.IncludeSubdirectories,
+                NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite | NotifyFilters.DirectoryName
+            };
 
-        //foreach (var extension in _options.SupportedExtensions)
-        //{
-        //    _fileWatcher.Filters.Add($"*{extension}");
-        //}
+            // Add filters based on supported extensions
+            foreach (var extension in _options.SupportedExtensions)
+            {
+                _fileWatcher.Filters.Add($"*{extension}");
+            }
 
-        //_fileWatcher.Changed += OnFileChanged;
-        //_fileWatcher.Created += OnFileChanged;
-        //_fileWatcher.Deleted += OnFileChanged;
-        //_fileWatcher.Renamed += OnFileChanged;
+            _fileWatcher.Changed += OnFileChanged;
+            _fileWatcher.Created += OnFileChanged;
+            _fileWatcher.Deleted += OnFileChanged;
+            _fileWatcher.Renamed += OnFileChanged;
 
-        //_fileWatcher.EnableRaisingEvents = true;
+            _fileWatcher.EnableRaisingEvents = true;
+
+            Logger.LogInformation("File watcher set up for path: {BasePath}", _options.BasePath);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to set up file watcher for {BasePath}", _options.BasePath);
+        }
     }
 
     private void OnFileChanged(object sender, FileSystemEventArgs e)
     {
-        //_logger.LogInformation("File system change detected: {ChangeType} - {Path}", e.ChangeType, e.FullPath);
+        Logger.LogInformation("File system change detected: {ChangeType} - {Path}", e.ChangeType, e.FullPath);
 
         // Invalidate cache
-        RefreshCacheAsync().GetAwaiter().GetResult();
+        RefreshCacheAsync().ConfigureAwait(false);
     }
 
     private string NormalizePath(string path)
     {
         return path.Replace('\\', '/').Trim('/');
+    }
+
+    private Dictionary<string, string> ParseDirectoryFrontMatter(string frontMatter)
+    {
+        var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        var lines = frontMatter.Split('\n');
+        foreach (var line in lines)
+        {
+            var parts = line.Split(':', 2);
+            if (parts.Length != 2)
+                continue;
+
+            var key = parts[0].Trim().ToLowerInvariant();
+            var value = parts[1].Trim();
+
+            // Remove quotes if present
+            if ((value.StartsWith("\"") && value.EndsWith("\"")) ||
+                (value.StartsWith("'") && value.EndsWith("'")))
+            {
+                value = value.Substring(1, value.Length - 2);
+            }
+
+            result[key] = value;
+        }
+
+        return result;
     }
 
     private void ParseFrontMatter(string frontMatter, ContentItem contentItem)
@@ -305,17 +511,17 @@ public class FileSystemContentProvider : ContentProviderBase
             if (parts.Length != 2)
                 continue;
 
-            var key = parts[0].Trim();
+            var key = parts[0].Trim().ToLowerInvariant();
             var value = parts[1].Trim();
 
             // Remove quotes if present
-            if (value.StartsWith("\"") && value.EndsWith("\"") ||
-                value.StartsWith("'") && value.EndsWith("'"))
+            if ((value.StartsWith("\"") && value.EndsWith("\"")) ||
+                (value.StartsWith("'") && value.EndsWith("'")))
             {
                 value = value.Substring(1, value.Length - 2);
             }
 
-            switch (key.ToLower())
+            switch (key)
             {
                 case "title":
                     contentItem.Title = value;
@@ -331,11 +537,11 @@ public class FileSystemContentProvider : ContentProviderBase
                     contentItem.Description = value;
                     break;
                 case "tags":
-                    //contentItem.Tags = ParseList(value);
+                    ParseListItems(value).ForEach(contentItem.AddTag);
                     break;
                 case "categories":
                 case "category":
-                    //contentItem.Categories = ParseList(value);
+                    ParseListItems(value).ForEach(contentItem.AddCategory);
                     break;
                 case "slug":
                     contentItem.Slug = value;
@@ -348,38 +554,145 @@ public class FileSystemContentProvider : ContentProviderBase
                 case "feature_image":
                     contentItem.FeaturedImageUrl = value;
                     break;
+                case "content_id":
+                case "localization_id":
+                    contentItem.ContentId = value;
+                    break;
+                case "locale":
+                case "language":
+                    contentItem.Locale = value;
+                    break;
+                case "meta_title":
+                case "seo_title":
+                    contentItem.Seo.MetaTitle = value;
+                    break;
+                case "meta_description":
+                case "seo_description":
+                    contentItem.Seo.MetaDescription = value;
+                    break;
                 default:
-                    contentItem.Metadata[key] = value;
+                    // Add as custom metadata
+                    if (bool.TryParse(value, out var boolVal))
+                        contentItem.SetMetadata(key, boolVal);
+                    else if (int.TryParse(value, out var intVal))
+                        contentItem.SetMetadata(key, intVal);
+                    else if (double.TryParse(value, out var doubleVal))
+                        contentItem.SetMetadata(key, doubleVal);
+                    else
+                        contentItem.SetMetadata(key, value);
                     break;
             }
         }
     }
 
-    private List<string> ParseList(string value)
+    private List<string> ParseListItems(string value)
     {
-        // Remove brackets if present
+        var result = new List<string>();
+
+        // Handle YAML arrays with brackets
         if (value.StartsWith("[") && value.EndsWith("]"))
         {
             value = value.Substring(1, value.Length - 2);
+            var items = value.Split(',');
+
+            foreach (var item in items)
+            {
+                var trimmedItem = item.Trim();
+                if (trimmedItem.StartsWith("\"") && trimmedItem.EndsWith("\"") ||
+                    trimmedItem.StartsWith("'") && trimmedItem.EndsWith("'"))
+                {
+                    trimmedItem = trimmedItem.Substring(1, trimmedItem.Length - 2);
+                }
+
+                if (!string.IsNullOrEmpty(trimmedItem))
+                {
+                    result.Add(trimmedItem);
+                }
+            }
+
+            return result;
         }
 
-        return value
-            .Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries)
-            .Select(v => v.Trim().Trim('\'').Trim('"'))
-            .Where(v => !string.IsNullOrEmpty(v))
-            .ToList();
+        // Handle comma or semicolon separated values
+        foreach (var item in value.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries))
+        {
+            var trimmedItem = item.Trim();
+            if (!string.IsNullOrEmpty(trimmedItem))
+            {
+                result.Add(trimmedItem);
+            }
+        }
+
+        return result;
+    }
+
+    private string GenerateUrl(string path, string slug, string? rootPath = null)
+    {
+        var segments = path.Split('/', StringSplitOptions.RemoveEmptyEntries);
+        if (segments.Length == 0)
+            return slug;
+
+        // Remove filename from path
+        var directoryPath = string.Join("/", segments.Take(segments.Length - 1));
+
+        // Remove locale prefix if using localization
+        if (_options.EnableLocalization && segments.Length > 0 && _options.SupportedLocales.Contains(segments[0]))
+        {
+            directoryPath = string.Join("/", segments.Skip(1).Take(segments.Length - 2));
+        }
+
+        // Combine with slug
+        var url = string.IsNullOrEmpty(directoryPath) ? slug : $"{directoryPath}/{slug}";
+
+        // Add root path if specified
+        if (!string.IsNullOrEmpty(rootPath))
+        {
+            url = $"{rootPath.TrimEnd('/')}/{url}";
+        }
+
+        return url;
+    }
+
+    /// <summary>
+    /// Determines if a path matches a glob pattern
+    /// </summary>
+    private bool MatchesGlobPattern(string path, string pattern)
+    {
+        var regex = new System.Text.RegularExpressions.Regex(
+            "^" +
+            System.Text.RegularExpressions.Regex.Escape(pattern)
+                .Replace("\\*\\*", ".*")      // ** matches any number of directories
+                .Replace("\\*", "[^/\\\\]*")  // * matches any number of characters except path separators
+                .Replace("\\?", "[^/\\\\]")   // ? matches a single character except path separators
+            + "$",
+            System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+
+        return regex.IsMatch(path);
+    }
+
+    /// <summary>
+    /// Converts a glob pattern to a regex pattern
+    /// </summary>
+    private string GlobPatternToRegex(string pattern)
+    {
+        return "^" +
+            System.Text.RegularExpressions.Regex.Escape(pattern)
+                .Replace("\\*\\*", ".*")      // ** matches any number of directories
+                .Replace("\\*", "[^/\\\\]*")  // * matches any number of characters except path separators
+                .Replace("\\?", "[^/\\\\]")   // ? matches a single character except path separators
+            + "$";
     }
 
     /// <summary>
     /// Disposes of the resources used by the provider
     /// </summary>
-    public void Dispose()
+    protected override void Dispose(bool disposing)
     {
-        _fileWatcher?.Dispose();
-    }
+        if (disposing)
+        {
+            _fileWatcher?.Dispose();
+        }
 
-    public override Task<IReadOnlyList<DirectoryItem>> GetDirectoriesAsync(string? locale = null, CancellationToken cancellationToken = default)
-    {
-        throw new NotImplementedException();
+        base.Dispose(disposing);
     }
 }

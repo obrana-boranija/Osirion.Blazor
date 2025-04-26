@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Core.Interfaces;
 using Osirion.Blazor.Cms.Core.Providers.GitHub;
+using Osirion.Blazor.Cms.Core.Providers.Interfaces;
 using Osirion.Blazor.Cms.Interfaces;
 using Osirion.Blazor.Cms.Options;
 using Osirion.Blazor.Cms.Providers;
@@ -21,6 +21,9 @@ internal class ContentBuilder : IContentBuilder
     public ContentBuilder(IServiceCollection services)
     {
         Services = services ?? throw new ArgumentNullException(nameof(services));
+
+        // Ensure the provider factory is registered
+        Services.TryAddSingleton<IContentProviderFactory, ContentProviderFactory>();
     }
 
     /// <inheritdoc/>
@@ -32,6 +35,18 @@ internal class ContentBuilder : IContentBuilder
         var options = new GitHubContentOptions();
         configure?.Invoke(options);
 
+        // Validate options
+        if (string.IsNullOrEmpty(options.Owner))
+        {
+            throw new ArgumentException("GitHub owner is required", nameof(configure));
+        }
+
+        if (string.IsNullOrEmpty(options.Repository))
+        {
+            throw new ArgumentException("GitHub repository is required", nameof(configure));
+        }
+
+        // Register options
         Services.Configure<GitHubContentOptions>(opt =>
         {
             opt.Owner = options.Owner;
@@ -43,61 +58,73 @@ internal class ContentBuilder : IContentBuilder
             opt.EnableCaching = options.EnableCaching;
             opt.CacheDurationMinutes = options.CacheDurationMinutes;
             opt.SupportedExtensions = options.SupportedExtensions;
+            opt.CommitterName = options.CommitterName;
+            opt.CommitterEmail = options.CommitterEmail;
+            opt.ApiUrl = options.ApiUrl;
+            opt.IsDefault = options.IsDefault;
         });
 
         // Configure HttpClient properly during registration
-        Services.AddHttpClient<GitHubContentProvider>()
-            .ConfigureHttpClient((serviceProvider, client) =>
-            {
-                client.BaseAddress = new Uri("https://api.github.com/");
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("OsirionBlazor", "2.0"));
+        Services.AddHttpClient<IGitHubApiClient, GitHubApiClient>(client =>
+        {
+            client.BaseAddress = new Uri(options.ApiUrl ?? "https://api.github.com/");
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("OsirionBlazor", "2.0"));
 
-                var gitHubOptions = serviceProvider.GetRequiredService<IOptions<GitHubContentOptions>>().Value;
-                if (!string.IsNullOrEmpty(gitHubOptions.ApiToken))
-                {
-                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", gitHubOptions.ApiToken);
-                }
-            })
-            .ConfigurePrimaryHttpMessageHandler(() =>
+            if (!string.IsNullOrEmpty(options.ApiToken))
             {
-                if (OperatingSystem.IsBrowser())
-                {
-                    return new HttpClientHandler(); // Use a compatible handler for browser environments
-                }
-                return new SocketsHttpHandler
-                {
-                    PooledConnectionLifetime = TimeSpan.FromMinutes(15)
-                };
-            });
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", options.ApiToken);
+            }
+        });
 
-        // Register as singleton
-        Services.AddSingleton<IContentProvider>(sp =>
-        (IContentProvider)sp.GetRequiredService<GitHubContentProvider>());
+        // Register GitHub provider
+        Services.TryAddScoped<GitHubContentProvider>();
+        Services.TryAddScoped<IContentProvider>(sp => sp.GetRequiredService<GitHubContentProvider>());
+
+        // Set as default if specified
+        if (options.IsDefault)
+        {
+            var providerId = options.ProviderId ?? $"github-{options.Owner}-{options.Repository}";
+            SetDefaultProvider(providerId);
+        }
 
         return this;
-
     }
 
     /// <inheritdoc/>
     public IContentBuilder AddFileSystem(Action<FileSystemContentOptions>? configure = null)
     {
-        //var options = new FileSystemContentOptions();
-        //configure?.Invoke(options);
+        var options = new FileSystemContentOptions();
+        configure?.Invoke(options);
 
-        //Services.Configure<FileSystemContentOptions>(opt =>
-        //{
-        //    opt.BasePath = options.BasePath;
-        //    opt.WatchForChanges = options.WatchForChanges;
-        //    opt.ProviderId = options.ProviderId;
-        //    opt.EnableCaching = options.EnableCaching;
-        //    opt.CacheDurationMinutes = options.CacheDurationMinutes;
-        //    opt.SupportedExtensions = options.SupportedExtensions;
-        //});
+        // Validate options
+        if (string.IsNullOrEmpty(options.BasePath))
+        {
+            throw new ArgumentException("FileSystem base path is required", nameof(configure));
+        }
 
-        //// Register file system provider
-        //Services.TryAddScoped<FileSystemContentProvider>();
-        //Services.TryAddScoped<IContentProvider>(sp => sp.GetRequiredService<FileSystemContentProvider>());
+        // Register options
+        Services.Configure<FileSystemContentOptions>(opt =>
+        {
+            opt.BasePath = options.BasePath;
+            opt.WatchForChanges = options.WatchForChanges;
+            opt.ProviderId = options.ProviderId;
+            opt.EnableCaching = options.EnableCaching;
+            opt.CacheDurationMinutes = options.CacheDurationMinutes;
+            opt.SupportedExtensions = options.SupportedExtensions;
+            opt.IsDefault = options.IsDefault;
+        });
+
+        // Register file system provider
+        Services.TryAddScoped<FileSystemContentProvider>();
+        Services.TryAddScoped<IContentProvider>(sp => sp.GetRequiredService<FileSystemContentProvider>());
+
+        // Set as default if specified
+        if (options.IsDefault)
+        {
+            var providerId = options.ProviderId ?? $"filesystem-{options.BasePath.GetHashCode():x}";
+            SetDefaultProvider(providerId);
+        }
 
         return this;
     }
@@ -108,7 +135,8 @@ internal class ContentBuilder : IContentBuilder
     {
         if (configure != null)
         {
-            Services.AddSingleton(sp => {
+            // Register with factory method to allow configuration
+            Services.AddScoped(sp => {
                 var provider = ActivatorUtilities.CreateInstance<TProvider>(sp);
                 configure(provider);
                 return provider;
@@ -116,18 +144,59 @@ internal class ContentBuilder : IContentBuilder
         }
         else
         {
-            Services.AddSingleton<TProvider>();
+            // Standard registration
+            Services.AddScoped<TProvider>();
         }
 
-        Services.AddSingleton<IContentProvider>(sp => sp.GetRequiredService<TProvider>());
+        // Register as IContentProvider
+        Services.AddScoped<IContentProvider>(sp => sp.GetRequiredService<TProvider>());
 
         // Register with the factory
-        Services.AddSingleton<IContentProviderFactory>(sp =>
+        Services.PostConfigure<IContentProviderFactory>(factory =>
         {
-            var factory = sp.GetService<ContentProviderFactory>() ?? new ContentProviderFactory(sp);
-            var provider = sp.GetRequiredService<TProvider>();
-            ((ContentProviderFactory)factory).RegisterProvider<TProvider>(_ => provider);
-            return factory;
+            if (factory is ContentProviderFactory contentFactory)
+            {
+                contentFactory.RegisterProvider<TProvider>(sp => sp.GetRequiredService<TProvider>());
+            }
+        });
+
+        return this;
+    }
+
+    /// <inheritdoc/>
+    public IContentBuilder SetDefaultProvider<TProvider>()
+        where TProvider : class, IContentProvider
+    {
+        // We need to resolve the provider to get its ID
+        Services.PostConfigure<IContentProviderFactory>(factory =>
+        {
+            if (factory is ContentProviderFactory contentFactory)
+            {
+                var provider = Services
+                    .BuildServiceProvider()
+                    .GetRequiredService<TProvider>();
+
+                contentFactory.SetDefaultProvider(provider.ProviderId);
+            }
+        });
+
+        return this;
+    }
+
+    /// <inheritdoc/>
+    public IContentBuilder SetDefaultProvider(string providerId)
+    {
+        if (string.IsNullOrEmpty(providerId))
+        {
+            throw new ArgumentException("Provider ID cannot be empty", nameof(providerId));
+        }
+
+        Services.PostConfigure<IContentProviderFactory>(factory =>
+        {
+            if (factory is ContentProviderFactory contentFactory)
+            {
+                contentFactory.SetDefaultProvider(providerId);
+            }
         });
 
         return this;

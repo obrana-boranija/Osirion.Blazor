@@ -1,82 +1,42 @@
 ﻿namespace Osirion.Blazor.Cms.Options;
 
 /// <summary>
-/// Configuration options for GitHub content provider
+/// Configuration options for file system content provider
 /// </summary>
 public class FileSystemContentOptions : ContentProviderOptions
 {
     /// <summary>
-    /// Gets or sets the GitHub owner (user or organization)
+    /// Gets or sets the base path for content files
     /// </summary>
-    public string Owner { get; set; } = string.Empty;
+    public string BasePath { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the GitHub repository name
+    /// Gets or sets whether to watch for file changes and automatically update cache
     /// </summary>
-    public string Repository { get; set; } = string.Empty;
+    public bool WatchForChanges { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the content path within the repository
+    /// Gets or sets the polling interval in milliseconds when file system watchers are not available
     /// </summary>
-    public string ContentPath { get; set; } = string.Empty;
+    public int PollingIntervalMs { get; set; } = 30000;
 
     /// <summary>
-    /// Gets or sets the branch to read from
+    /// Gets or sets whether to include subdirectories when searching for content
     /// </summary>
-    public string Branch { get; set; } = "main";
+    public bool IncludeSubdirectories { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the GitHub API token (optional, for private repos or higher rate limits)
+    /// Gets or sets whether to create directories if they don't exist
     /// </summary>
-    public string? ApiToken { get; set; }
+    public bool CreateDirectoriesIfNotExist { get; set; } = false;
 
     /// <summary>
-    /// Gets or sets the GitHub API URL (defaults to api.github.com)
+    /// Gets or sets the file glob patterns to include
     /// </summary>
-    public string ApiUrl { get; set; } = "https://api.github.com";
+    public List<string> IncludePatterns { get; set; } = new() { "**/*.md", "**/*.markdown" };
 
     /// <summary>
-    /// Gets or sets whether write operations are allowed
+    /// Gets or sets the file glob patterns to exclude
     /// </summary>
-    public bool AllowWrite { get; set; } = false;
-
-    /// <summary>
-    /// Gets or sets whether to allow branch creation
-    /// </summary>
-    public bool AllowBranchCreation { get; set; } = false;
-
-    /// <summary>
-    /// Gets or sets whether to allow pull requests
-    /// </summary>
-    public bool AllowPullRequests { get; set; } = false;
-
-    /// <summary>
-    /// Gets or sets whether to allow file deletion
-    /// </summary>
-    public bool AllowFileDelete { get; set; } = false;
-
-    /// <summary>
-    /// Gets or sets the committer name for commits
-    /// </summary>
-    public string? CommitterName { get; set; }
-
-    /// <summary>
-    /// Gets or sets the committer email for commits
-    /// </summary>
-    public string? CommitterEmail { get; set; }
-
-    /// <summary>
-    /// Gets or sets whether to fetch commit history
-    /// </summary>
-    public bool FetchHistory { get; set; } = true;
-
-    /// <summary>
-    /// Gets or sets the maximum number of history items to fetch
-    /// </summary>
-    public int MaxHistoryItems { get; set; } = 10;
-
-    /// <summary>
-    /// Gets or sets the request timeout in seconds
-    /// </summary>
-    public int RequestTimeoutSeconds { get; set; } = 30;
+    public List<string> ExcludePatterns { get; set; } = new() { "**/node_modules/**", "**/bin/**", "**/obj/**" };
 }

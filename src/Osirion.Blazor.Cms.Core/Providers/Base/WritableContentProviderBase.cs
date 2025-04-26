@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Caching;
 using Osirion.Blazor.Cms.Interfaces;
 using Osirion.Blazor.Cms.Models;
@@ -14,7 +15,7 @@ public abstract class WritableContentProviderBase : ContentProviderBase, IConten
     /// Initializes a new instance of the <see cref="WritableContentProviderBase"/> class.
     /// </summary>
     protected WritableContentProviderBase(
-        IContentCacheService cacheService,
+        IMemoryCache cacheService,
         ILogger logger)
         : base(cacheService, logger)
     {
