@@ -6,13 +6,13 @@ using Osirion.Blazor.Cms.Caching;
 using Osirion.Blazor.Cms.Configuration;
 using Osirion.Blazor.Cms.Core.Caching;
 using Osirion.Blazor.Cms.Core.Interfaces;
+using Osirion.Blazor.Cms.Core.Providers.FileSystem;
 using Osirion.Blazor.Cms.Core.Providers.GitHub;
 using Osirion.Blazor.Cms.Core.Providers.Interfaces;
 using Osirion.Blazor.Cms.Core.Services;
 using Osirion.Blazor.Cms.Interfaces;
 using Osirion.Blazor.Cms.Internal;
 using Osirion.Blazor.Cms.Options;
-using Osirion.Blazor.Cms.Providers;
 using Osirion.Blazor.Cms.Services;
 
 namespace Osirion.Blazor.Cms.Extensions;

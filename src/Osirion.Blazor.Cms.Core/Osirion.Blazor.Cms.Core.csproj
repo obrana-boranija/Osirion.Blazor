@@ -54,6 +54,7 @@
 	  <Folder Include="Constants\" />
 	  <Folder Include="Models\Base\" />
 	  <Folder Include="Providers\FileSystem\Models\" />
+	  <Folder Include="Transformers\" />
 	  <Folder Include="Utilities\" />
 	</ItemGroup>
 

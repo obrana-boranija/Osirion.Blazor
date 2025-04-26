@@ -1,9 +1,7 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Core.Exceptions;
 using Osirion.Blazor.Cms.Exceptions;
-using System.Reflection.Metadata.Ecma335;
 using System.Text.Json;
 
 namespace Osirion.Blazor.Cms.Middleware;
@@ -64,19 +62,28 @@ public class CmsExceptionHandlingMiddleware
 
     private int GetStatusCode(Exception exception)
     {
-        return 500;
-        //return exception switch
-        //{
-        //    ContentProviderException => (int)HttpStatusCode.BadRequest,
-        //    ContentItemNotFoundException => (int)HttpStatusCode.NotFound,
-        //    ContentValidationException => (int)HttpStatusCode.UnprocessableEntity,
-        //    ContentAuthorizationException => (int)HttpStatusCode.Forbidden,
-        //    _ => (int)HttpStatusCode.InternalServerError
-        //};
+        return exception switch
+        {
+            ContentItemNotFoundException => StatusCodes.Status404NotFound,
+            ContentValidationException => StatusCodes.Status422UnprocessableEntity,
+            ContentAuthorizationException => StatusCodes.Status403Forbidden,
+            Exceptions.DirectoryNotFoundException => StatusCodes.Status404NotFound,
+            ContentConfigurationException => StatusCodes.Status500InternalServerError,
+            ContentFileSystemException => StatusCodes.Status500InternalServerError,
+            ProviderApiException apiEx => apiEx.StatusCode ?? StatusCodes.Status500InternalServerError,
+            _ => StatusCodes.Status500InternalServerError
+        };
     }
 
     private string GetErrorMessage(Exception exception)
     {
-        return "An error occurred while processing your request.";
+        return exception switch
+        {
+            ContentItemNotFoundException notFound => $"Content not found: {notFound.ItemId}",
+            ContentValidationException validation => $"Validation failed: {string.Join(", ", validation.Errors.Select(e => $"{e.Key}: {string.Join("; ", e.Value)}"))}",
+            ContentAuthorizationException auth => $"Not authorized: {auth.Message}",
+            Exceptions.DirectoryNotFoundException dirNotFound => $"Directory not found: {dirNotFound.DirectoryPath}",
+            _ => exception.Message
+        };
     }
 }

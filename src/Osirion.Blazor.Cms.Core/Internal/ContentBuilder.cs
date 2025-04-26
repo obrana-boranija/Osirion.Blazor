@@ -1,11 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Osirion.Blazor.Cms.Core.Interfaces;
+using Osirion.Blazor.Cms.Core.Providers.FileSystem;
 using Osirion.Blazor.Cms.Core.Providers.GitHub;
 using Osirion.Blazor.Cms.Core.Providers.Interfaces;
 using Osirion.Blazor.Cms.Interfaces;
 using Osirion.Blazor.Cms.Options;
-using Osirion.Blazor.Cms.Providers;
 using System.Net.Http.Headers;
 
 namespace Osirion.Blazor.Cms.Internal;
