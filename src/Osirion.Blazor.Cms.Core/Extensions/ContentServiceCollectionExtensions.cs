@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -35,14 +36,11 @@ public static class ContentServiceCollectionExtensions
         if (services == null) throw new ArgumentNullException(nameof(services));
         if (configure == null) throw new ArgumentNullException(nameof(configure));
 
-        // Register core services
         AddCoreServices(services);
 
-        // Create builder and apply configuration
         var builder = new ContentBuilder(services);
         configure(builder);
 
-        // Register ContentProviderManager - scoped to match typical Blazor component lifetime
         services.TryAddScoped<IContentProviderManager, ContentProviderManager>();
 
         return services;
@@ -66,7 +64,6 @@ public static class ContentServiceCollectionExtensions
 
         return services.AddOsirionContent(builder =>
         {
-            // Configure GitHub provider if in config
             var githubSection = configuration.GetSection("Osirion:Cms:GitHub");
             if (githubSection.Exists())
             {
@@ -76,7 +73,6 @@ public static class ContentServiceCollectionExtensions
                 });
             }
 
-            // Configure file system provider if in config
             var fileSystemSection = configuration.GetSection("Osirion:Cms:FileSystem");
             if (fileSystemSection.Exists())
             {
@@ -101,13 +97,10 @@ public static class ContentServiceCollectionExtensions
         if (services == null) throw new ArgumentNullException(nameof(services));
         if (configure == null) throw new ArgumentNullException(nameof(configure));
 
-        // Configure options
         services.Configure(configure);
 
-        // Add HttpClient for GitHub API
         services.AddHttpClient<IGitHubApiClient, GitHubApiClient>();
 
-        // Register GitHub provider
         services.TryAddScoped<GitHubContentProvider>();
         services.TryAddScoped<IContentProvider>(sp => sp.GetRequiredService<GitHubContentProvider>());
 
@@ -127,10 +120,8 @@ public static class ContentServiceCollectionExtensions
         if (services == null) throw new ArgumentNullException(nameof(services));
         if (configure == null) throw new ArgumentNullException(nameof(configure));
 
-        // Configure options
         services.Configure(configure);
 
-        // Register file system provider
         services.TryAddScoped<FileSystemContentProvider>();
         services.TryAddScoped<IContentProvider>(sp => sp.GetRequiredService<FileSystemContentProvider>());
 
@@ -139,19 +130,18 @@ public static class ContentServiceCollectionExtensions
 
     private static void AddCoreServices(IServiceCollection services)
     {
-        // Register content cache service
         services.TryAddSingleton<IContentCacheService, ContentCacheService>();
 
-        // Add memory cache if not already registered
-        services.TryAddSingleton<Microsoft.Extensions.Caching.Memory.IMemoryCache, Microsoft.Extensions.Caching.Memory.MemoryCache>();
+        services.TryAddSingleton<CachedContentProviderFactory>();
 
-        // Register content parser
+        services.TryAddSingleton<IMemoryCache, MemoryCache>();
+
+        services.TryAddSingleton<IMarkdownProcessor, MarkdownProcessor>();
+
         services.TryAddSingleton<IContentParser, ContentParser>();
 
-        // Register content provider factory
         services.TryAddSingleton<IContentProviderFactory, ContentProviderFactory>();
 
-        // Register default options
         services.TryAddSingleton<IOptions<ContentCacheOptions>>(
             new OptionsWrapper<ContentCacheOptions>(new ContentCacheOptions()));
     }

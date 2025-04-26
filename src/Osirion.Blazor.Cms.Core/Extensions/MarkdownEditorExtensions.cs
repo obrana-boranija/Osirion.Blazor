@@ -1,5 +1,6 @@
 ﻿using Markdig;
 using Microsoft.Extensions.DependencyInjection;
+using Osirion.Blazor.Cms.Core.Interfaces;
 using Osirion.Blazor.Cms.Services;
 
 namespace Osirion.Blazor.Cms.Extensions;

@@ -1,7 +1,7 @@
 using Markdig;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using Osirion.Blazor.Cms.Services;
+using Osirion.Blazor.Cms.Core.Interfaces;
 
 namespace Osirion.Blazor.Cms;
 

@@ -1,8 +1,8 @@
-﻿using Markdig;
-using Osirion.Blazor.Cms.Core.Models;
+﻿using Osirion.Blazor.Cms.Core.Models;
 using Osirion.Blazor.Cms.Enums;
 using Osirion.Blazor.Cms.Interfaces;
 using Osirion.Blazor.Cms.Models;
+using Osirion.Blazor.Cms.Core.Interfaces;
 using Osirion.Blazor.Core.Extensions;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -14,18 +14,14 @@ namespace Osirion.Blazor.Cms.Services;
 /// </summary>
 public class ContentParser : IContentParser
 {
-    private readonly MarkdownPipeline _markdownPipeline;
-    private static readonly Regex _frontMatterRegex = new(@"^\s*---\s*\n(.*?)\n\s*---\s*\n", RegexOptions.Singleline);
+    private readonly IMarkdownProcessor _markdownProcessor;
 
     /// <summary>
     /// Initializes a new instance of the ContentParser class
     /// </summary>
-    public ContentParser()
+    public ContentParser(IMarkdownProcessor markdownProcessor)
     {
-        _markdownPipeline = new MarkdownPipelineBuilder()
-            .UseAdvancedExtensions()
-            .UseYamlFrontMatter()
-            .Build();
+        _markdownProcessor = markdownProcessor ?? throw new ArgumentNullException(nameof(markdownProcessor));
     }
 
     /// <inheritdoc/>
@@ -37,26 +33,13 @@ public class ContentParser : IContentParser
         // Store original markdown for later use
         contentItem.OriginalMarkdown = markdownContent;
 
-        // Extract front matter and content
-        var match = _frontMatterRegex.Match(markdownContent);
+        // Extract front matter
+        var frontMatter = _markdownProcessor.ExtractFrontMatter(markdownContent);
+        ApplyFrontMatterToContentItem(frontMatter, contentItem);
 
-        if (match.Success && match.Groups.Count > 1)
-        {
-            var frontMatterContent = match.Groups[1].Value;
-            ParseFrontMatter(frontMatterContent, contentItem);
-
-            // Extract the content (everything after front matter)
-            var contentStartIndex = match.Index + match.Length;
-            var content = markdownContent.Substring(contentStartIndex).Trim();
-
-            // Convert Markdown to HTML
-            contentItem.Content = await Task.Run(() => Markdown.ToHtml(content, _markdownPipeline));
-        }
-        else
-        {
-            // No front matter, treat entire content as markdown
-            contentItem.Content = await Task.Run(() => Markdown.ToHtml(markdownContent, _markdownPipeline));
-        }
+        // Get content without front matter by rendering the markdown
+        var htmlContent = await _markdownProcessor.RenderToHtmlAsync(markdownContent);
+        contentItem.Content = htmlContent;
     }
 
     /// <inheritdoc/>
@@ -162,11 +145,11 @@ public class ContentParser : IContentParser
         // Add original markdown content if available, otherwise use the HTML content
         if (!string.IsNullOrEmpty(contentItem.OriginalMarkdown))
         {
-            var match = _frontMatterRegex.Match(contentItem.OriginalMarkdown);
-            if (match.Success)
+            // Extract just the content part, not the front matter
+            var frontMatterMatch = Regex.Match(contentItem.OriginalMarkdown, @"^\s*---\s*\n(.*?)\n\s*---\s*\n", RegexOptions.Singleline);
+            if (frontMatterMatch.Success)
             {
-                // Extract just the content part, not the front matter
-                var contentStartIndex = match.Index + match.Length;
+                var contentStartIndex = frontMatterMatch.Index + frontMatterMatch.Length;
                 markdown.Append(contentItem.OriginalMarkdown.Substring(contentStartIndex));
             }
             else
@@ -176,8 +159,9 @@ public class ContentParser : IContentParser
         }
         else if (!string.IsNullOrEmpty(contentItem.Content))
         {
-            // Try to convert HTML back to markdown (simplified version - a real implementation would be more complex)
-            markdown.Append(StripHtmlTags(contentItem.Content));
+            // Try to convert HTML back to markdown
+            var plainText = _markdownProcessor.ConvertHtmlToMarkdownAsync(contentItem.Content).GetAwaiter().GetResult();
+            markdown.Append(plainText);
         }
 
         return markdown.ToString();
@@ -186,49 +170,13 @@ public class ContentParser : IContentParser
     /// <inheritdoc/>
     public Dictionary<string, string> ExtractFrontMatter(string content)
     {
-        var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
-        var match = _frontMatterRegex.Match(content);
-        if (match.Success && match.Groups.Count > 1)
-        {
-            var frontMatterContent = match.Groups[1].Value;
-            var lines = frontMatterContent.Split('\n');
-
-            foreach (var line in lines)
-            {
-                // Skip empty lines
-                var trimmedLine = line.Trim();
-                if (string.IsNullOrEmpty(trimmedLine))
-                    continue;
-
-                // Parse key-value pair
-                var separatorIndex = trimmedLine.IndexOf(':');
-                if (separatorIndex > 0)
-                {
-                    var key = trimmedLine.Substring(0, separatorIndex).Trim();
-                    var value = trimmedLine.Substring(separatorIndex + 1).Trim();
-
-                    // Remove quotes if present
-                    if ((value.StartsWith("\"") && value.EndsWith("\"")) ||
-                        (value.StartsWith("'") && value.EndsWith("'")))
-                    {
-                        value = value.Substring(1, value.Length - 2);
-                    }
-
-                    result[key] = value;
-                }
-            }
-        }
-
-        return result;
+        return _markdownProcessor.ExtractFrontMatter(content);
     }
 
     /// <inheritdoc/>
     public async Task<string> ConvertHtmlToMarkdownAsync(string htmlContent)
     {
-        // A proper implementation would use an HTML-to-Markdown converter
-        // This is a simplified placeholder that just strips HTML tags
-        return await Task.FromResult(StripHtmlTags(htmlContent));
+        return await _markdownProcessor.ConvertHtmlToMarkdownAsync(htmlContent);
     }
 
     /// <inheritdoc/>
@@ -276,18 +224,7 @@ public class ContentParser : IContentParser
     /// <inheritdoc/>
     public string RenderMarkdownToHtml(string markdown)
     {
-        if (string.IsNullOrWhiteSpace(markdown))
-            return string.Empty;
-
-        // Remove front matter if present
-        var match = _frontMatterRegex.Match(markdown);
-        if (match.Success)
-        {
-            var contentStartIndex = match.Index + match.Length;
-            markdown = markdown.Substring(contentStartIndex).Trim();
-        }
-
-        return Markdown.ToHtml(markdown, _markdownPipeline);
+        return _markdownProcessor.RenderToHtml(markdown);
     }
 
     /// <inheritdoc/>
@@ -365,182 +302,131 @@ public class ContentParser : IContentParser
         return contentItem;
     }
 
-    private void ParseFrontMatter(string frontMatter, ContentItem contentItem)
+    // Helper method to apply front matter to content item
+    private void ApplyFrontMatterToContentItem(Dictionary<string, string> frontMatter, ContentItem contentItem)
     {
-        var lines = frontMatter.Split('\n');
-
-        foreach (var line in lines)
+        foreach (var kvp in frontMatter)
         {
-            var trimmedLine = line.Trim();
-            if (string.IsNullOrEmpty(trimmedLine))
-                continue;
+            var key = kvp.Key.ToLowerInvariant();
+            var value = kvp.Value;
 
-            // Check if it's a list item (categories, tags, etc.)
-            if (trimmedLine.StartsWith("  - ") || trimmedLine.StartsWith("- "))
+            switch (key)
             {
-                // Currently, we don't handle nested lists in this simplified parser
-                continue;
+                case "title":
+                    contentItem.Title = value;
+                    break;
+                case "author":
+                    contentItem.Author = value;
+                    break;
+                case "description":
+                    contentItem.Description = value;
+                    break;
+                case "date":
+                    if (DateTime.TryParse(value, out var date))
+                        contentItem.DateCreated = date;
+                    break;
+                case "last_modified":
+                case "date_modified":
+                    if (DateTime.TryParse(value, out var lastModified))
+                        contentItem.LastModified = lastModified;
+                    break;
+                case "slug":
+                    contentItem.Slug = value;
+                    break;
+                case "featured":
+                case "is_featured":
+                    contentItem.IsFeatured = bool.TryParse(value, out var featured) && featured;
+                    break;
+                case "featured_image":
+                case "feature_image":
+                case "image":
+                    contentItem.FeaturedImageUrl = value;
+                    break;
+                case "content_id":
+                case "localization_id":
+                    contentItem.ContentId = value;
+                    break;
+                case "locale":
+                case "language":
+                    contentItem.Locale = value;
+                    break;
+                case "status":
+                    if (Enum.TryParse<ContentStatus>(value, true, out var status))
+                        contentItem.Status = status;
+                    break;
+                case "meta_title":
+                case "seo_title":
+                    contentItem.Seo.MetaTitle = value;
+                    break;
+                case "meta_description":
+                case "seo_description":
+                    contentItem.Seo.MetaDescription = value;
+                    break;
+                case "canonical_url":
+                    contentItem.Seo.CanonicalUrl = value;
+                    break;
+                case "robots":
+                    contentItem.Seo.Robots = value;
+                    break;
+                case "categories":
+                case "category":
+                    // Handles comma-separated list of categories
+                    foreach (var category in ParseListValue(value))
+                    {
+                        contentItem.AddCategory(category);
+                    }
+                    break;
+                case "tags":
+                case "tag":
+                    // Handles comma-separated list of tags
+                    foreach (var tag in ParseListValue(value))
+                    {
+                        contentItem.AddTag(tag);
+                    }
+                    break;
+                default:
+                    // Add as custom metadata
+                    if (bool.TryParse(value, out var boolVal))
+                        contentItem.SetMetadata(key, boolVal);
+                    else if (int.TryParse(value, out var intVal))
+                        contentItem.SetMetadata(key, intVal);
+                    else if (double.TryParse(value, out var doubleVal))
+                        contentItem.SetMetadata(key, doubleVal);
+                    else
+                        contentItem.SetMetadata(key, value);
+                    break;
             }
-
-            // Parse key-value pair
-            var separatorIndex = trimmedLine.IndexOf(':');
-            if (separatorIndex > 0)
-            {
-                var key = trimmedLine.Substring(0, separatorIndex).Trim().ToLowerInvariant();
-                var value = trimmedLine.Substring(separatorIndex + 1).Trim();
-
-                // Remove quotes if present
-                if ((value.StartsWith("\"") && value.EndsWith("\"")) ||
-                    (value.StartsWith("'") && value.EndsWith("'")))
-                {
-                    value = value.Substring(1, value.Length - 2);
-                }
-
-                ApplyFrontMatterValue(key, value, contentItem);
-            }
-        }
-
-        // Process lists (categories, tags) in a second pass
-        var currentList = string.Empty;
-        var listItems = new List<string>();
-
-        foreach (var line in lines)
-        {
-            var trimmedLine = line.Trim();
-
-            if (string.IsNullOrEmpty(trimmedLine))
-                continue;
-
-            if (trimmedLine.EndsWith(":"))
-            {
-                // Start of a new list
-                if (currentList != string.Empty && listItems.Count > 0)
-                {
-                    // Apply previous list
-                    ApplyFrontMatterList(currentList, listItems, contentItem);
-                    listItems.Clear();
-                }
-
-                currentList = trimmedLine.Substring(0, trimmedLine.Length - 1).Trim().ToLowerInvariant();
-            }
-            else if ((trimmedLine.StartsWith("  - ") || trimmedLine.StartsWith("- ")) && !string.IsNullOrEmpty(currentList))
-            {
-                var item = trimmedLine.TrimStart(' ', '-').Trim();
-
-                // Remove quotes if present
-                if ((item.StartsWith("\"") && item.EndsWith("\"")) ||
-                    (item.StartsWith("'") && item.EndsWith("'")))
-                {
-                    item = item.Substring(1, item.Length - 2);
-                }
-
-                listItems.Add(item);
-            }
-        }
-
-        // Apply any final list
-        if (currentList != string.Empty && listItems.Count > 0)
-        {
-            ApplyFrontMatterList(currentList, listItems, contentItem);
         }
     }
 
-    private void ApplyFrontMatterValue(string key, string value, ContentItem contentItem)
+    // Parse a comma-separated list value
+    private IEnumerable<string> ParseListValue(string value)
     {
-        switch (key)
-        {
-            case "title":
-                contentItem.Title = value;
-                break;
-            case "author":
-                contentItem.Author = value;
-                break;
-            case "description":
-                contentItem.Description = value;
-                break;
-            case "date":
-                if (DateTime.TryParse(value, out var date))
-                    contentItem.DateCreated = date;
-                break;
-            case "last_modified":
-            case "date_modified":
-                if (DateTime.TryParse(value, out var lastModified))
-                    contentItem.LastModified = lastModified;
-                break;
-            case "slug":
-                contentItem.Slug = value;
-                break;
-            case "featured":
-            case "is_featured":
-                contentItem.IsFeatured = bool.TryParse(value, out var featured) && featured;
-                break;
-            case "featured_image":
-            case "feature_image":
-            case "image":
-                contentItem.FeaturedImageUrl = value;
-                break;
-            case "content_id":
-            case "localization_id":
-                contentItem.ContentId = value;
-                break;
-            case "locale":
-            case "language":
-                contentItem.Locale = value;
-                break;
-            case "status":
-                if (Enum.TryParse<ContentStatus>(value, true, out var status))
-                    contentItem.Status = status;
-                break;
-            case "meta_title":
-            case "seo_title":
-                contentItem.Seo.MetaTitle = value;
-                break;
-            case "meta_description":
-            case "seo_description":
-                contentItem.Seo.MetaDescription = value;
-                break;
-            case "canonical_url":
-                contentItem.Seo.CanonicalUrl = value;
-                break;
-            case "robots":
-                contentItem.Seo.Robots = value;
-                break;
-            default:
-                // Add as custom metadata
-                if (bool.TryParse(value, out var boolVal))
-                    contentItem.SetMetadata(key, boolVal);
-                else if (int.TryParse(value, out var intVal))
-                    contentItem.SetMetadata(key, intVal);
-                else if (double.TryParse(value, out var doubleVal))
-                    contentItem.SetMetadata(key, doubleVal);
-                else
-                    contentItem.SetMetadata(key, value);
-                break;
-        }
-    }
+        if (string.IsNullOrWhiteSpace(value))
+            yield break;
 
-    private void ApplyFrontMatterList(string listName, List<string> items, ContentItem contentItem)
-    {
-        switch (listName.ToLowerInvariant())
+        // Handle YAML array format [item1, item2]
+        if (value.StartsWith("[") && value.EndsWith("]"))
         {
-            case "categories":
-            case "category":
-                foreach (var item in items)
-                {
-                    contentItem.AddCategory(item);
-                }
-                break;
-            case "tags":
-            case "tag":
-                foreach (var item in items)
-                {
-                    contentItem.AddTag(item);
-                }
-                break;
-            default:
-                // Add as custom metadata
-                contentItem.SetMetadata(listName, items);
-                break;
+            value = value.Substring(1, value.Length - 2);
+        }
+
+        // Split by comma (or semicolon) and process each item
+        foreach (var item in value.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries))
+        {
+            var trimmedItem = item.Trim();
+
+            // Remove quotes if present
+            if ((trimmedItem.StartsWith("\"") && trimmedItem.EndsWith("\"")) ||
+                (trimmedItem.StartsWith("'") && trimmedItem.EndsWith("'")))
+            {
+                trimmedItem = trimmedItem.Substring(1, trimmedItem.Length - 2);
+            }
+
+            if (!string.IsNullOrEmpty(trimmedItem))
+            {
+                yield return trimmedItem;
+            }
         }
     }
 
@@ -566,26 +452,6 @@ public class ContentParser : IContentParser
             .Replace("\n", "\\n")
             .Replace("\r", "\\r")
             .Replace("\t", "\\t");
-    }
-
-    private string StripHtmlTags(string html)
-    {
-        // Simple regex-based HTML tag stripper
-        // Note: For production, use a proper HTML-to-Markdown converter
-        var text = Regex.Replace(html, "<[^>]*>", string.Empty);
-
-        // Replace common HTML entities
-        text = text.Replace("&nbsp;", " ")
-                   .Replace("&lt;", "<")
-                   .Replace("&gt;", ">")
-                   .Replace("&amp;", "&")
-                   .Replace("&quot;", "\"")
-                   .Replace("&#39;", "'");
-
-        // Replace multiple blank lines with a single one
-        text = Regex.Replace(text, @"\n\s*\n", "\n\n");
-
-        return text.Trim();
     }
 
     private bool IsValidSlug(string slug)

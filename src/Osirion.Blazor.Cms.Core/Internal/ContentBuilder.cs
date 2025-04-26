@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Osirion.Blazor.Cms.Core.Caching;
 using Osirion.Blazor.Cms.Core.Interfaces;
 using Osirion.Blazor.Cms.Core.Providers.FileSystem;
 using Osirion.Blazor.Cms.Core.Providers.GitHub;
@@ -79,8 +80,20 @@ internal class ContentBuilder : IContentBuilder
 
         // Register GitHub provider
         Services.TryAddScoped<GitHubContentProvider>();
-        Services.TryAddScoped<IContentProvider>(sp => sp.GetRequiredService<GitHubContentProvider>());
 
+        // Register decorated provider if caching is enabled
+        if (options.EnableCaching)
+        {
+            Services.AddTransient<IContentProvider>(sp => {
+                var provider = sp.GetRequiredService<GitHubContentProvider>();
+                var factory = sp.GetRequiredService<CachedContentProviderFactory>();
+                return factory.CreateCachedProvider(provider);
+            });
+        }
+        else
+        {
+            Services.AddTransient<IContentProvider>(sp => sp.GetRequiredService<GitHubContentProvider>());
+        }
         // Set as default if specified
         if (options.IsDefault)
         {

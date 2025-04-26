@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Core.Interfaces;
+using Osirion.Blazor.Cms.Core.Providers.Interfaces;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -21,19 +21,22 @@ public class AuthenticationService : IAuthenticationService
     private string? _accessToken;
     private string? _username;
     private readonly IStateStorageService _stateStorage;
+    private readonly IGitHubTokenProvider _tokenProvider;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="AuthenticationService"/> class.
+    /// Initializes a new instance of the AuthenticationService class
     /// </summary>
     public AuthenticationService(
         HttpClient httpClient,
         IConfiguration configuration,
         ILogger<AuthenticationService> logger,
-        IStateStorageService stateStorage)
+        IStateStorageService stateStorage,
+        IGitHubTokenProvider tokenProvider)
     {
         _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _stateStorage = stateStorage ?? throw new ArgumentNullException(nameof(stateStorage));
+        _tokenProvider = tokenProvider ?? throw new ArgumentNullException(nameof(tokenProvider));
 
         // Read GitHub configuration
         _clientId = configuration["GitHub:ClientId"];
@@ -41,7 +44,7 @@ public class AuthenticationService : IAuthenticationService
         _accessToken = configuration["GitHub:ApiToken"];
 
         // Try to restore auth state
-        RestoreAuthStateAsync().ConfigureAwait(false);
+        _ = RestoreAuthStateAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -58,60 +61,15 @@ public class AuthenticationService : IAuthenticationService
     {
         try
         {
-            // If no client ID or secret, we can't authenticate
-            if (string.IsNullOrEmpty(_clientId) || string.IsNullOrEmpty(_clientSecret))
-            {
-                _logger.LogError("GitHub client ID or secret is missing. Cannot authenticate.");
+            // Check if credentials are configured
+            if (!AreCredentialsConfigured())
                 return false;
-            }
 
-            // Exchange code for access token
-            var tokenRequest = new
-            {
-                client_id = _clientId,
-                client_secret = _clientSecret,
-                code
-            };
-
-            var content = new StringContent(
-                JsonSerializer.Serialize(tokenRequest),
-                Encoding.UTF8,
-                "application/json"
-            );
-
-            // GitHub's token endpoint
-            var httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-            var response = await httpClient.PostAsync(
-                "https://github.com/login/oauth/access_token",
-                content
-            );
-
-            response.EnsureSuccessStatusCode();
-
-            // Parse response to get access token
-            var responseContent = await response.Content.ReadAsStringAsync();
-            if (response.Content.Headers.ContentType?.MediaType == "application/json")
-            {
-                var tokenResponse = JsonSerializer.Deserialize<GitHubTokenResponse>(responseContent);
-                _accessToken = tokenResponse?.AccessToken;
-            }
-            else
-            {
-                // Parse as form url encoded
-                var formValues = responseContent.Split('&')
-                    .Select(v => v.Split('='))
-                    .ToDictionary(pair => pair[0], pair => pair.Length > 1 ? pair[1] : string.Empty);
-
-                _accessToken = formValues.ContainsKey("access_token") ? formValues["access_token"] : null;
-            }
+            // Exchange code for token
+            _accessToken = await _tokenProvider.ExchangeCodeForTokenAsync(code, _clientId!, _clientSecret!);
 
             if (string.IsNullOrEmpty(_accessToken))
-            {
-                _logger.LogError("Failed to get access token from GitHub");
                 return false;
-            }
 
             // Get user information
             var success = await GetUserInfoAsync();
@@ -168,6 +126,23 @@ public class AuthenticationService : IAuthenticationService
         await RemoveAuthStateAsync();
     }
 
+    /// <summary>
+    /// Checks if client credentials are configured
+    /// </summary>
+    private bool AreCredentialsConfigured()
+    {
+        if (string.IsNullOrEmpty(_clientId) || string.IsNullOrEmpty(_clientSecret))
+        {
+            _logger.LogError("GitHub client ID or secret is missing. Cannot authenticate.");
+            return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Gets user information using the current access token
+    /// </summary>
     private async Task<bool> GetUserInfoAsync()
     {
         if (string.IsNullOrEmpty(_accessToken))
@@ -177,11 +152,7 @@ public class AuthenticationService : IAuthenticationService
 
         try
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "https://api.github.com/user");
-            request.Headers.Authorization = new AuthenticationHeaderValue("token", _accessToken);
-            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            request.Headers.UserAgent.Add(new ProductInfoHeaderValue("OsirionBlogCMS", "2.0"));
-
+            var request = CreateUserInfoRequest();
             var response = await _httpClient.SendAsync(request);
             response.EnsureSuccessStatusCode();
 
@@ -198,6 +169,21 @@ public class AuthenticationService : IAuthenticationService
         }
     }
 
+    /// <summary>
+    /// Creates the HTTP request to get user information
+    /// </summary>
+    private HttpRequestMessage CreateUserInfoRequest()
+    {
+        var request = new HttpRequestMessage(HttpMethod.Get, "https://api.github.com/user");
+        request.Headers.Authorization = new AuthenticationHeaderValue("token", _accessToken);
+        request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        request.Headers.UserAgent.Add(new ProductInfoHeaderValue("OsirionBlogCMS", "2.0"));
+        return request;
+    }
+
+    /// <summary>
+    /// Persists authentication state to storage
+    /// </summary>
     private async Task PersistAuthStateAsync()
     {
         if (_stateStorage.IsInitialized)
@@ -207,6 +193,9 @@ public class AuthenticationService : IAuthenticationService
         }
     }
 
+    /// <summary>
+    /// Restores authentication state from storage
+    /// </summary>
     private async Task RestoreAuthStateAsync()
     {
         if (_stateStorage.IsInitialized)
@@ -225,6 +214,9 @@ public class AuthenticationService : IAuthenticationService
         }
     }
 
+    /// <summary>
+    /// Removes authentication state from storage
+    /// </summary>
     private async Task RemoveAuthStateAsync()
     {
         if (_stateStorage.IsInitialized)
@@ -234,18 +226,9 @@ public class AuthenticationService : IAuthenticationService
         }
     }
 
-    private class GitHubTokenResponse
-    {
-        [JsonPropertyName("access_token")]
-        public string? AccessToken { get; set; }
-
-        [JsonPropertyName("token_type")]
-        public string? TokenType { get; set; }
-
-        [JsonPropertyName("scope")]
-        public string? Scope { get; set; }
-    }
-
+    /// <summary>
+    /// GitHub user information response model
+    /// </summary>
     private class GitHubUserInfo
     {
         [JsonPropertyName("login")]

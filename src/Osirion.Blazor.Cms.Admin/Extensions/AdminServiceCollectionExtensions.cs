@@ -33,6 +33,7 @@ public static class CmsAdminServiceCollectionExtensions
         var builder = new CmsAdminBuilder(services);
         configure(builder);
 
+        services.TryAddScoped<IGitHubTokenProvider, GitHubTokenProvider>();
         services.TryAddScoped<IStateStorageService, LocalStorageService>();
         services.TryAddScoped<CmsAdminState>();
         services.TryAddScoped<IGitHubAdminService, GitHubAdminService>();
