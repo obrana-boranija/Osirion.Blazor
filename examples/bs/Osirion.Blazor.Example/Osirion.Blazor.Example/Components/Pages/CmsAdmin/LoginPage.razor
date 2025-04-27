@@ -2,16 +2,14 @@
 @rendermode InteractiveServer
 
 @using Osirion.Blazor.Cms.Admin.Components
-@using Osirion.Blazor.Cms.Admin.Options
 @using Microsoft.Extensions.Options
 @inherits Osirion.Blazor.Components.OsirionComponentBase
 @inject NavigationManager NavigationManager
-@inject IOptions<GitHubAuthOptions> GitHubAuthOptions
 
 <div class="@GetLoginPageClass()">
     <Login Title="Osirion CMS Admin"
            Description="Sign in to manage your content"
-           EnableGitHubAuth="@GitHubAuthOptions.Value.Enabled"
+           EnableGitHubAuth
            ReturnUrl="@GetReturnUrl()"
            Theme="@Theme"
            OnLoginResult="HandleLoginResult" />

@@ -1,5 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Osirion.Blazor.Analytics.Internal;
+using Osirion.Blazor.Analytics.Options;
 using Osirion.Blazor.Analytics.Services;
 
 namespace Osirion.Blazor.Analytics.Extensions;
@@ -25,6 +27,23 @@ public static class AnalyticsServiceCollectionExtensions
         // Create builder and apply configuration
         var builder = new AnalyticsBuilder(services);
         configure(builder);
+
+        // Register analytics service
+        services.AddSingleton<IAnalyticsService, AnalyticsService>();
+
+        return services;
+    }
+
+    public static IServiceCollection AddOsirionAnalytics(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        if (services == null) throw new ArgumentNullException(nameof(services));
+        if (configuration == null) throw new ArgumentNullException(nameof(configuration));
+
+        // Example: Retrieve configuration section and register services
+        var analyticsConfigSection = configuration.GetSection(AnalyticsOptions.Section);
+        services.Configure<AnalyticsOptions>(analyticsConfigSection);
 
         // Register analytics service
         services.AddSingleton<IAnalyticsService, AnalyticsService>();

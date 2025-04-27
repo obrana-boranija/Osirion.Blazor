@@ -1,6 +1,7 @@
 ﻿using Markdig;
 using Microsoft.Extensions.Logging;
-using Osirion.Blazor.Cms.Core.Interfaces;
+using Osirion.Blazor.Cms.Domain.Interfaces;
+using Osirion.Blazor.Cms.Infrastructure.Markdown;
 using System.Text.RegularExpressions;
 
 namespace Osirion.Blazor.Cms.Core.Services;
@@ -190,5 +191,15 @@ public class MarkdownProcessor : IMarkdownProcessor
                     <p>There was an error rendering this markdown content.</p>
                     <pre>{sanitizedMessage}</pre>
                 </div>";
+    }
+
+    public Task<(Dictionary<string, string> FrontMatter, string Content)> ExtractFrontMatterAsync(string markdown, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<string> ConvertHtmlToMarkdownAsync(string html, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
     }
 }

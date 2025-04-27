@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
-using Osirion.Blazor.Cms.Core.Providers.Interfaces;
+using Osirion.Blazor.Cms.Domain.Interfaces;
 using System.Net.Http.Headers;
-using System.Text.Json.Serialization;
-using System.Text.Json;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Osirion.Blazor.Cms.Core.Providers.GitHub;
 

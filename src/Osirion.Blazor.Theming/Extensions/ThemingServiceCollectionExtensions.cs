@@ -2,6 +2,7 @@
 using Osirion.Blazor.Theming.Internal;
 using Osirion.Blazor.Theming.Services;
 using Osirion.Blazor.Theming.Options;
+using Microsoft.Extensions.Configuration;
 
 namespace Osirion.Blazor.Theming.Extensions;
 
@@ -39,6 +40,22 @@ public static class ThemingServiceCollectionExtensions
         configure(builder);
 
         // Register theme service (singleton to maintain state across components)
+        services.AddSingleton<IThemeService, ThemeService>();
+
+        return services;
+    }
+
+    public static IServiceCollection AddOsirionTheming(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        if (services == null) throw new ArgumentNullException(nameof(services));
+        if (configuration == null) throw new ArgumentNullException(nameof(configuration));
+
+        // Bind configuration to ThemingOptions
+        services.Configure<ThemingOptions>(configuration.GetSection(ThemingOptions.Section));
+
+        // Register theme service
         services.AddSingleton<IThemeService, ThemeService>();
 
         return services;

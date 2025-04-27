@@ -1,9 +1,12 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using NSubstitute.Extensions;
 using Osirion.Blazor.Analytics;
 using Osirion.Blazor.Analytics.Extensions;
 using Osirion.Blazor.Cms;
 using Osirion.Blazor.Cms.Admin.Interfaces;
-using Osirion.Blazor.Cms.Core.Extensions;
+using Osirion.Blazor.Cms.Domain.Interfaces;
+using Osirion.Blazor.Cms.Front.DependencyInjection;
 using Osirion.Blazor.Navigation;
 using Osirion.Blazor.Navigation.Extensions;
 using Osirion.Blazor.Theming;
@@ -16,38 +19,18 @@ namespace Osirion.Blazor.Tests.Fakes;
 /// </summary>
 public class TestOsirionBuilder : IOsirionBuilder
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="TestOsirionBuilder"/> class.
-    /// </summary>
     public TestOsirionBuilder(IServiceCollection services)
     {
         Services = services ?? throw new ArgumentNullException(nameof(services));
     }
 
-    /// <inheritdoc/>
     public IServiceCollection Services { get; }
 
-    /// <summary>
-    /// Tracks whether UseContent was called
-    /// </summary>
     public bool UseContentCalled { get; private set; }
-
-    /// <summary>
-    /// Tracks whether UseAnalytics was called
-    /// </summary>
     public bool UseAnalyticsCalled { get; private set; }
-
-    /// <summary>
-    /// Tracks whether UseNavigation was called
-    /// </summary>
     public bool UseNavigationCalled { get; private set; }
-
-    /// <summary>
-    /// Tracks whether UseTheming was called
-    /// </summary>
     public bool UseThemingCalled { get; private set; }
 
-    /// <inheritdoc/>
     public IOsirionBuilder UseContent(Action<IContentBuilder> configure)
     {
         if (configure == null) throw new ArgumentNullException(nameof(configure));
@@ -57,7 +40,19 @@ public class TestOsirionBuilder : IOsirionBuilder
         return this;
     }
 
-    /// <inheritdoc/>
+    public IOsirionBuilder UseContent(IConfiguration configuration)
+    {
+        if (configuration == null) throw new ArgumentNullException(nameof(configuration));
+
+        UseContentCalled = true;
+        Services.AddOsirionContent(builder =>
+        {
+            builder.AddGitHub(options => configuration.GetSection("Osirion:Content:GitHub").Bind(options));
+            builder.AddFileSystem(options => configuration.GetSection("Osirion:Content:FileSystem").Bind(options));
+        });
+        return this;
+    }
+
     public IOsirionBuilder UseAnalytics(Action<IAnalyticsBuilder> configure)
     {
         if (configure == null) throw new ArgumentNullException(nameof(configure));
@@ -67,17 +62,41 @@ public class TestOsirionBuilder : IOsirionBuilder
         return this;
     }
 
-    /// <inheritdoc/>
+    public IOsirionBuilder UseAnalytics(IConfiguration configuration)
+    {
+        if (configuration == null) throw new ArgumentNullException(nameof(configuration));
+
+        UseAnalyticsCalled = true;
+        Services.AddOsirionAnalytics(builder =>
+        {
+            builder.AddClarity(options => configuration.GetSection("Osirion:Analytics:Clarity").Bind(options));
+            builder.AddMatomo(options => configuration.GetSection("Osirion:Analytics:Matomo").Bind(options));
+        });
+        return this;
+    }
+
     public IOsirionBuilder UseNavigation(Action<INavigationBuilder> configure)
     {
         if (configure == null) throw new ArgumentNullException(nameof(configure));
 
         UseNavigationCalled = true;
-        Services.AddOsirionNavigation(configure);
+        Services.AddEnhancedNavigation(configure);
         return this;
     }
 
-    /// <inheritdoc/>
+    public IOsirionBuilder UseNavigation(IConfiguration configuration)
+    {
+        if (configuration == null) throw new ArgumentNullException(nameof(configuration));
+
+        UseNavigationCalled = true;
+        Services.AddEnhancedNavigation(builder =>
+        {
+            builder.UseEnhancedNavigation(configuration.GetSection("Osirion:Navigation:Enhanced"));
+            builder.AddScrollToTop(configuration.GetSection("Osirion:Navigation:ScrollToTop"));
+        });
+        return this;
+    }
+
     public IOsirionBuilder UseTheming(Action<IThemingBuilder> configure)
     {
         if (configure == null) throw new ArgumentNullException(nameof(configure));
@@ -87,7 +106,24 @@ public class TestOsirionBuilder : IOsirionBuilder
         return this;
     }
 
+    public IOsirionBuilder UseTheming(IConfiguration configuration)
+    {
+        if (configuration == null) throw new ArgumentNullException(nameof(configuration));
+
+        UseThemingCalled = true;
+        Services.AddOsirionTheming(builder =>
+        {
+            builder.Configure(options => configuration.GetSection("Osirion:Theming").Bind(options));
+        });
+        return this;
+    }
+
     public IOsirionBuilder UseCmsAdmin(Action<ICmsAdminBuilder> configure)
+    {
+        throw new NotImplementedException();
+    }
+
+    public IOsirionBuilder UseCmsAdmin(IConfiguration configuration)
     {
         throw new NotImplementedException();
     }

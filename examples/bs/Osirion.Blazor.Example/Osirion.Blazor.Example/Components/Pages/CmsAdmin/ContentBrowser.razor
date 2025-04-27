@@ -5,21 +5,20 @@
 @using Osirion.Blazor.Cms.Admin.Components.Browser
 @using Osirion.Blazor.Cms.Admin.Components.Repository
 @using Osirion.Blazor.Cms.Admin.Services
-@using Osirion.Blazor.Cms.Core.Models
-@using Osirion.Blazor.Cms.Core.Providers.GitHub.Models
-@using Osirion.Blazor.Cms.Core.Providers.Interfaces
-@using Osirion.Blazor.Cms.Models
+@using Osirion.Blazor.Cms.Domain.Models
+@using Osirion.Blazor.Cms.Domain.Models.GitHub
+@using Osirion.Blazor.Cms.Domain.ValueObjects
 @inherits Osirion.Blazor.Components.OsirionComponentBase
 @inject IGitHubAdminService GitHubService
 @inject CmsAdminState AdminState
 @inject NavigationManager NavigationManager
 
 <AdminPage Title="Content Browser" Subtitle="Manage Your Content">
-@*     <BreadcrumbItems>
+    @*     <BreadcrumbItems>
         @(new AdminLayout.BreadcrumbItem("Dashboard", "/admin"))
         @(new AdminLayout.BreadcrumbItem("Content"))
     </BreadcrumbItems> *@
-    
+
     <ActionsTemplate>
         <button type="button"
                 class="osirion-admin-button osirion-admin-button-primary"
@@ -35,7 +34,7 @@
             New Post
         </button>
     </ActionsTemplate>
-    
+
     <ChildContent>
         <div class="osirion-admin-content-browser-page">
             <div class="osirion-admin-content-browser-header">
@@ -74,7 +73,7 @@
             </div>
         </div>
     </ChildContent>
-    
+
 </AdminPage>
 
 @code {
@@ -99,26 +98,18 @@
     {
         // Create new blog post with empty content
         var newPost = new BlogPost
-        {
-            Metadata = new FrontMatter
             {
-                Title = "New Post",
-                Description = "Enter description here",
-                Author = string.Empty,
-                Date = DateTime.Now.ToString("yyyy-MM-dd"),
-                Categories = new List<string>(),
-                Tags = new List<string>()
-            },
-            Content = "## New Post\n\nStart writing your content here...",
-            FilePath = string.IsNullOrEmpty(AdminState.CurrentPath) ? 
-                "new-post.md" : 
-                $"{AdminState.CurrentPath}/new-post.md"
-        };
-        
+                Metadata = FrontMatter.Create("New Post", "Enter description here", DateTime.Now),
+                Content = "## New Post\n\nStart writing your content here...",
+                FilePath = string.IsNullOrEmpty(AdminState.CurrentPath) ?
+                    "new-post.md" :
+                    $"{AdminState.CurrentPath}/new-post.md"
+            };
+
         AdminState.SetEditingPost(newPost, true);
         NavigationManager.NavigateTo("/admin/content/edit");
     }
-    
+
     private async Task HandleFileSelected(GitHubItem item)
     {
         if (item.IsMarkdownFile)
@@ -127,7 +118,7 @@
             {
                 // Load the blog post
                 var blogPost = await GitHubService.GetBlogPostAsync(item.Path);
-                
+
                 // Navigate to edit page
                 NavigationManager.NavigateTo($"/admin/content/edit/{item.Path}");
             }

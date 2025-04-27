@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Components;
 using Osirion.Blazor.Cms.Admin.Services;
-using Osirion.Blazor.Cms.Core.Models;
-using Osirion.Blazor.Cms.Core.Providers.GitHub.Models;
-using Osirion.Blazor.Cms.Core.Providers.Interfaces;
+using Osirion.Blazor.Cms.Domain.Interfaces;
+using Osirion.Blazor.Cms.Domain.Models;
+using Osirion.Blazor.Cms.Domain.Models.GitHub;
+using Osirion.Blazor.Cms.Domain.ValueObjects;
+
 
 namespace Osirion.Blazor.Cms.Admin.Components.Browser;
 
@@ -184,15 +186,7 @@ public partial class FileExplorer(IGitHubAdminService gitHubService, CmsAdminSta
             // Create new blog post with empty content
             var newPost = new BlogPost
             {
-                Metadata = new FrontMatter
-                {
-                    Title = "New Post",
-                    Description = "Enter description here",
-                    Author = string.Empty,
-                    Date = DateTime.Now.ToString("yyyy-MM-dd"),
-                    Categories = new List<string>(),
-                    Tags = new List<string>()
-                },
+                Metadata = FrontMatter.Create("", "Enter description here", DateTime.Now),
                 Content = "## New Post\n\nStart writing your content here...",
                 FilePath = string.IsNullOrEmpty(CurrentPath) ?
                         "new-post.md" :

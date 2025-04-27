@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Components;
-using Osirion.Blazor.Cms.Core.Interfaces;
-using Osirion.Blazor.Cms.Enums;
-using Osirion.Blazor.Cms.Models;
+using Osirion.Blazor.Cms.Domain.Entities;
+using Osirion.Blazor.Cms.Domain.Enums;
+using Osirion.Blazor.Cms.Domain.Repositories;
+using Osirion.Blazor.Cms.Domain.Services;
 
 namespace Osirion.Blazor.Cms.Components;
 
@@ -162,13 +163,13 @@ public partial class LocalizedContentView
             var provider = ContentProviderManager.GetDefaultProvider();
             if (provider != null)
             {
-                var translations = await provider.GetContentTranslationsAsync(LocalizationId);
+                //var translations = await provider.GetContentTranslationsAsync(LocalizationId);
 
-                AvailableTranslations.Clear();
-                foreach (var translation in translations)
-                {
-                    AvailableTranslations[translation.Locale] = translation.Path;
-                }
+                //AvailableTranslations.Clear();
+                //foreach (var translation in translations)
+                //{
+                //    AvailableTranslations[translation.Locale] = translation.Path;
+                //}
             }
         }
         catch (Exception ex)

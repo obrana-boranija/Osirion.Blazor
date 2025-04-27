@@ -1,8 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Osirion.Blazor.Cms.Admin.Extensions;
 using Osirion.Blazor.Cms.Admin.Interfaces;
-using Osirion.Blazor.Cms.Admin.Services;
 
 namespace Osirion.Blazor.Cms.Admin.Internal;
 
@@ -34,7 +31,7 @@ internal class CmsAdminBuilder : ICmsAdminBuilder
     {
         if (configure == null) throw new ArgumentNullException(nameof(configure));
 
-        Services.Configure<CmsAdminOptions>(configure);
+        Services.Configure(configure);
         return this;
     }
 }

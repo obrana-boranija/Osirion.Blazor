@@ -1,8 +1,9 @@
 ﻿using Markdig;
 using Microsoft.AspNetCore.Components;
 using Osirion.Blazor.Cms.Admin.Services;
-using Osirion.Blazor.Cms.Core.Models;
-using Osirion.Blazor.Cms.Core.Providers.Interfaces;
+using Osirion.Blazor.Cms.Domain.Interfaces;
+using Osirion.Blazor.Cms.Domain.Models;
+using Osirion.Blazor.Cms.Infrastructure.Extensions;
 
 namespace Osirion.Blazor.Cms.Admin.Components.Editor;
 
@@ -199,140 +200,11 @@ public partial class ContentEditor(CmsAdminState adminState, IGitHubAdminService
     {
         if (string.IsNullOrEmpty(title))
         {
-            return "new-post";
+            return "new-".ToUrlSlug(10);
         }
 
         // Generate a slug from the title
-        return title.ToLowerInvariant()
-            .Replace(" ", "-")
-            .Replace("&", "and")
-            .Replace("?", "")
-            .Replace("!", "")
-            .Replace(".", "")
-            .Replace(",", "")
-            .Replace(":", "")
-            .Replace(";", "")
-            .Replace("'", "")
-            .Replace("\"", "")
-            .Replace("(", "")
-            .Replace(")", "")
-            .Replace("[", "")
-            .Replace("]", "")
-            .Replace("/", "-")
-            .Replace("\\", "-");
-    }
-
-    private string RenderMarkdown(string markdown)
-    {
-        try
-        {
-            // Use Markdig properly with the pipeline to render markdown to HTML
-            return Markdown.ToHtml(markdown, _markdownPipeline);
-        }
-        catch (Exception ex)
-        {
-            Console.Error.WriteLine($"Error rendering markdown: {ex.Message}");
-
-            // Fallback to basic formatting if Markdig fails
-            return markdown
-                .Replace("# ", "<h1>").Replace("\n# ", "\n<h1>").Replace("</h1>", "</h1>\n")
-                .Replace("## ", "<h2>").Replace("\n## ", "\n<h2>").Replace("</h2>", "</h2>\n")
-                .Replace("### ", "<h3>").Replace("\n### ", "\n<h3>").Replace("</h3>", "</h3>\n")
-                .Replace("#### ", "<h4>").Replace("\n#### ", "\n<h4>").Replace("</h4>", "</h4>\n")
-                .Replace("**", "<strong>").Replace("**", "</strong>")
-                .Replace("*", "<em>").Replace("*", "</em>")
-                .Replace("\n", "<br />");
-        }
-    }
-
-    private void InsertHeading()
-    {
-        if (adminState.EditingPost == null)
-        {
-            return;
-        }
-
-        adminState.EditingPost.Content += "\n## New Heading";
-    }
-
-    private void InsertBold()
-    {
-        if (adminState.EditingPost == null)
-        {
-            return;
-        }
-
-        adminState.EditingPost.Content += "**bold text**";
-    }
-
-    private void InsertItalic()
-    {
-        if (adminState.EditingPost == null)
-        {
-            return;
-        }
-
-        adminState.EditingPost.Content += "*italic text*";
-    }
-
-    private void InsertLink()
-    {
-        if (adminState.EditingPost == null)
-        {
-            return;
-        }
-
-        adminState.EditingPost.Content += "[link text](https://example.com)";
-    }
-
-    private void InsertImage()
-    {
-        if (adminState.EditingPost == null)
-        {
-            return;
-        }
-
-        adminState.EditingPost.Content += "![alt text](https://example.com/image.jpg)";
-    }
-
-    private void InsertList()
-    {
-        if (adminState.EditingPost == null)
-        {
-            return;
-        }
-
-        adminState.EditingPost.Content += "\n- Item 1\n- Item 2\n- Item 3";
-    }
-
-    private void InsertCodeBlock()
-    {
-        if (adminState.EditingPost == null)
-        {
-            return;
-        }
-
-        adminState.EditingPost.Content += "\n```\ncode goes here\n```";
-    }
-
-    private string GetEditorLayoutClass()
-    {
-        string layoutClass = "";
-
-        if (IsMetadataPanelVisible && IsPreviewVisible)
-        {
-            layoutClass = "three-panel";
-        }
-        else if (IsMetadataPanelVisible)
-        {
-            layoutClass = "with-metadata";
-        }
-        else if (IsPreviewVisible)
-        {
-            layoutClass = "with-preview";
-        }
-
-        return layoutClass;
+        return title.ToUrlSlug();
     }
 
     private string GetContentEditorClass()
