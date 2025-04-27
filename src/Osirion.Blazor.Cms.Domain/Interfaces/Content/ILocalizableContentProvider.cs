@@ -3,6 +3,6 @@
 /// <summary>
 /// Interface for a content provider that supports localization
 /// </summary>
-public interface ILocalizableContentProvider : IContentProvider, IContentLocalization
+public interface ILocalizableContentProvider : IContentProviderInterface, IContentLocalization
 {
 }

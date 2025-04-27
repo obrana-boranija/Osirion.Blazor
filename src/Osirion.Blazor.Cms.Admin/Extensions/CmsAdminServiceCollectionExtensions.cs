@@ -4,9 +4,9 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Osirion.Blazor.Cms.Admin.Interfaces;
 using Osirion.Blazor.Cms.Admin.Internal;
 using Osirion.Blazor.Cms.Admin.Services;
-using Osirion.Blazor.Cms.Core.Providers.GitHub;
 
 using Osirion.Blazor.Cms.Domain.Interfaces;
+using Osirion.Blazor.Cms.Infrastructure.Services;
 
 namespace Osirion.Blazor.Cms.Admin.Extensions;
 

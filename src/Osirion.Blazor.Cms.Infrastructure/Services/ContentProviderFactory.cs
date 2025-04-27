@@ -1,46 +1,49 @@
 ﻿using Microsoft.Extensions.Logging;
+using Osirion.Blazor.Cms.Domain.Exceptions;
 using Osirion.Blazor.Cms.Domain.Services;
 
 namespace Osirion.Blazor.Cms.Infrastructure.Services;
 
-/// <summary>
-/// Factory for creating content providers using the strategy pattern
-/// </summary>
 public class ContentProviderFactory : IContentProviderFactory
 {
-    private readonly ContentProviderStrategy _strategy;
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<ContentProviderFactory> _logger;
+    private readonly Dictionary<string, Func<IServiceProvider, IContentProvider>> _factories;
+    private string? _defaultProviderId;
 
-    /// <summary>
-    /// Initializes a new instance of the ContentProviderFactory class
-    /// </summary>
     public ContentProviderFactory(
         IServiceProvider serviceProvider,
         ILogger<ContentProviderFactory> logger)
     {
         _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-
-        // Create the strategy with the service provider
-        var strategyLogger = _serviceProvider.GetService(typeof(ILogger<ContentProviderStrategy>)) as ILogger<ContentProviderStrategy>
-            ?? throw new ArgumentNullException("Logger<ContentProviderStrategy>");
-        _strategy = new ContentProviderStrategy(_serviceProvider, strategyLogger);
+        _factories = new Dictionary<string, Func<IServiceProvider, IContentProvider>>();
     }
 
-    /// <inheritdoc/>
     public IContentProvider CreateProvider(string providerId)
     {
-        return _strategy.CreateProvider(providerId);
+        if (string.IsNullOrEmpty(providerId))
+            throw new ArgumentException("Provider ID cannot be empty", nameof(providerId));
+
+        if (!_factories.TryGetValue(providerId, out var factory))
+            throw new KeyNotFoundException($"No content provider registered with ID '{providerId}'");
+
+        try
+        {
+            return factory(_serviceProvider);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating content provider: {ProviderId}", providerId);
+            throw new ContentProviderException($"Failed to create content provider: {providerId}", ex);
+        }
     }
 
-    /// <inheritdoc/>
     public IEnumerable<string> GetAvailableProviderTypes()
     {
-        return _strategy.GetAvailableProviderIds();
+        return _factories.Keys;
     }
 
-    /// <inheritdoc/>
     public void RegisterProvider<T>(Func<IServiceProvider, T> factory) where T : class, IContentProvider
     {
         if (factory == null)
@@ -55,8 +58,15 @@ public class ContentProviderFactory : IContentProviderFactory
             if (string.IsNullOrEmpty(providerId))
                 throw new InvalidOperationException("Provider ID cannot be null or empty");
 
-            _strategy.RegisterProvider(providerId, sp => factory(sp));
+            _factories[providerId] = sp => factory(sp);
             _logger.LogInformation("Registered content provider: {ProviderId}", providerId);
+
+            // If this is the first provider, make it the default
+            if (_defaultProviderId == null)
+            {
+                _defaultProviderId = providerId;
+                _logger.LogInformation("Set default provider: {ProviderId}", providerId);
+            }
         }
         catch (Exception ex)
         {
@@ -65,15 +75,20 @@ public class ContentProviderFactory : IContentProviderFactory
         }
     }
 
-    /// <inheritdoc/>
     public void SetDefaultProvider(string providerId)
     {
-        _strategy.SetDefaultProvider(providerId);
+        if (string.IsNullOrEmpty(providerId))
+            throw new ArgumentException("Provider ID cannot be empty", nameof(providerId));
+
+        if (!_factories.ContainsKey(providerId))
+            throw new KeyNotFoundException($"No content provider registered with ID '{providerId}'");
+
+        _defaultProviderId = providerId;
+        _logger.LogInformation("Set default provider: {ProviderId}", providerId);
     }
 
-    /// <inheritdoc/>
     public string? GetDefaultProviderId()
     {
-        return _strategy.GetDefaultProviderId();
+        return _defaultProviderId;
     }
 }

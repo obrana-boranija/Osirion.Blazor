@@ -3,6 +3,6 @@
 /// <summary>
 /// Interface for a writable content provider
 /// </summary>
-public interface IWritableContentProvider : IContentProvider, IContentWriter
+public interface IWritableContentProvider : IContentProviderInterface, IContentWriter
 {
 }

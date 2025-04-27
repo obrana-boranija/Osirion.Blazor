@@ -1,17 +1,11 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Osirion.Blazor.Cms.Application.DependencyInjection;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Options;
-using Osirion.Blazor.Cms.Domain.Repositories;
 using Osirion.Blazor.Cms.Domain.Services;
 using Osirion.Blazor.Cms.Infrastructure.Caching;
-using Osirion.Blazor.Cms.Infrastructure.Extensions;
-using Osirion.Blazor.Cms.Infrastructure.Factories;
 using Osirion.Blazor.Cms.Infrastructure.FileSystem;
 using Osirion.Blazor.Cms.Infrastructure.GitHub;
-using Osirion.Blazor.Cms.Infrastructure.Markdown;
-using Osirion.Blazor.Cms.Infrastructure.Services;
 
 namespace Osirion.Blazor.Cms.Infrastructure.DependencyInjection;
 
@@ -174,63 +168,5 @@ public class ContentBuilder : IContentBuilder
     {
         _providerFactory.SetDefaultProvider(providerId);
         return this;
-    }
-}
-
-/// <summary>
-/// Extension methods for adding Osirion CMS to the service collection
-/// </summary>
-public static class ServiceCollectionExtensions
-{
-    /// <summary>
-    /// Adds Osirion CMS services to the service collection
-    /// </summary>
-    /// <param name="services">The service collection</param>
-    /// <param name="configuration">The configuration</param>
-    /// <param name="configure">Action to configure the content builder</param>
-    /// <returns>The service collection for chaining</returns>
-    public static IServiceCollection AddOsirionContent(
-        this IServiceCollection services,
-        IConfiguration configuration,
-        Action<IContentBuilder> configure)
-    {
-        // Add required services
-        services.AddMemoryCache();
-
-        // Configure caching
-        services.Configure<CacheOptions>(configuration.GetSection(CacheOptions.Section));
-
-        // Register markdown processor
-        services.AddScoped<IMarkdownProcessor, MarkdownProcessor>();
-
-        // Add infrastructure services
-        services.AddOsirionCmsInfrastructure(configuration);
-
-        // Add CQRS components
-        services.AddOsirionCqrs();
-
-        // Register repositories
-        services.AddRepositories();
-
-        // Add domain events
-        services.AddDomainEvents();
-
-        // Create factory components
-        services.AddSingleton<CacheDecoratorFactory>();
-        services.AddScoped<IContentProviderFactory, ContentProviderFactory>();
-        services.AddScoped<IUnitOfWorkFactory, UnitOfWorkFactory>();
-        services.AddScoped<IContentProviderManager, ContentProviderManager>();
-
-        // Create the content builder and configure
-        using (var scope = services.BuildServiceProvider().CreateScope())
-        {
-            var providerFactory = scope.ServiceProvider.GetRequiredService<IContentProviderFactory>();
-            var cacheFactory = scope.ServiceProvider.GetRequiredService<CacheDecoratorFactory>();
-
-            var builder = new ContentBuilder(services, configuration, providerFactory, cacheFactory);
-            configure(builder);
-        }
-
-        return services;
     }
 }

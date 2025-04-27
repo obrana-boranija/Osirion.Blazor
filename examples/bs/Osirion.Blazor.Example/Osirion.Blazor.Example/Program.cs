@@ -14,17 +14,17 @@ builder.Services.AddOsirion(osirion =>
 {
     osirion
         // Add content services with GitHub provider
-        //.UseContent(content => content.AddGitHub(options =>
-        //{
-        //    options.Owner = "obrana-boranija";
-        //    options.Repository = "hexavera-blog";
-        //    options.ContentPath = "localized";
-        //    options.Branch = "main";
-        //    options.ApiToken = "";
-        //    options.CacheDurationMinutes = 30;
-        //    options.EnableLocalization = true;
-        //    options.DefaultLocale = "en";
-        //}))
+        .UseContent(content => content.AddGitHub(options =>
+        {
+            options.Owner = "obrana-boranija";
+            options.Repository = "hexavera-blog";
+            options.ContentPath = "localized";
+            options.Branch = "main";
+            options.ApiToken = "";
+            options.CacheDurationMinutes = 30;
+            options.EnableLocalization = true;
+            options.DefaultLocale = "en";
+        }))
         //Configure CMS Admin
         //.UseCmsAdmin(admin =>
         //{

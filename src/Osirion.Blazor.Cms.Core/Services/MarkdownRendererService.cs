@@ -1,7 +1,6 @@
 ﻿using Markdig;
 using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Interfaces;
-using Osirion.Blazor.Cms.Infrastructure.Markdown;
 
 namespace Osirion.Blazor.Cms.Services;
 
