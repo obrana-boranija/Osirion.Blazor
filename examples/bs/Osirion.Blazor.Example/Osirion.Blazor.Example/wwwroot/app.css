@@ -167,8 +167,7 @@ h1:focus {
 }
 
 
-/* Circuit board pattern */
-.bg-circuit {
+/*.bg-test {
     inset: 0;
     height: 100%;
     width: 100%;
@@ -176,10 +175,21 @@ h1:focus {
     background-image: radial-gradient(#00ffaa10 2px, transparent 2px), linear-gradient(90deg, transparent 0, transparent 4px, #00ffaa10 4px, transparent 5px), linear-gradient(0deg, transparent 0, transparent 4px, #00ffaa10 4px, transparent 5px);
     background-size: 20px 20px, 40px 40px, 40px 40px;
     animation: circuitPulse 4s ease infinite;
-}
+}*/
+
+/* Circuit board pattern */
+/*.bg-circuit {
+    inset: 0;
+    height: 100%;
+    width: 100%;
+    background-color: #000;
+    background-image: radial-gradient(#00ffaa10 2px, transparent 2px), linear-gradient(90deg, transparent 0, transparent 4px, #00ffaa10 4px, transparent 5px), linear-gradient(0deg, transparent 0, transparent 4px, #00ffaa10 4px, transparent 5px);
+    background-size: 20px 20px, 40px 40px, 40px 40px;
+    animation: circuitPulse 4s ease infinite;
+}*/
 
 /* Matrix-style falling characters */
-.bg-matrix {
+/*.bg-matrix {
     inset: 0;
     height: 100%;
     width: 100%;
@@ -202,10 +212,10 @@ h1:focus {
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         animation: matrixRain 20s linear infinite;
-    }
+    }*/
 
 /* Glowing hexagon grid */
-.bg-hex-tech {
+/*.bg-hex-tech {
     inset: 0;
     height: 100%;
     width: 100%;
@@ -214,20 +224,20 @@ h1:focus {
     background-size: 40px 70px;
     background-position: 0 0, 0 0, 20px 35px, 20px 35px;
     animation: hexPulse 4s ease-in-out infinite;
-}
+}*/
 
 /* Gradient mesh with blur effect */
-.bg-gradient-mesh {
+/*.bg-gradient-mesh {
     inset: 0;
     height: 100%;
     width: 100%;
     background: radial-gradient(circle at 0% 0%, #ff006660 0%, transparent 50%), radial-gradient(circle at 100% 0%, #00ff8a60 0%, transparent 50%), radial-gradient(circle at 100% 100%, #0066ff60 0%, transparent 50%), radial-gradient(circle at 0% 100%, #ff00dd60 0%, transparent 50%);
     filter: blur(60px);
     animation: meshMove 20s ease infinite;
-}
+}*/
 
 /* Neon grid lines */
-.bg-neon-grid {
+/*.bg-neon-grid {
     inset: 0;
     height: 100%;
     width: 100%;
@@ -236,10 +246,10 @@ h1:focus {
     background-size: 24px 24px;
     box-shadow: 0 0 20px #ff00ff30;
     animation: neonPulse 2s ease-in-out infinite;
-}
+}*/
 
 /* Animated wave pattern */
-.bg-tech-wave {
+/*.bg-tech-wave {
     inset: 0;
     height: 100%;
     width: 100%;
@@ -248,7 +258,7 @@ h1:focus {
     overflow: hidden;
 }
 
-    .bg-test::before {
+    .bg-tech-wave::before {
         content: "";
         position: absolute;
         width: 200%;
@@ -257,10 +267,10 @@ h1:focus {
         left: -50%;
         background: radial-gradient(circle, transparent 30%, #ffffff05 70%);
         animation: waveRotate 20s linear infinite;
-    }
+    }*/
 
 /* Animations */
-@keyframes circuitPulse {
+/*@keyframes circuitPulse {
     0%, 100% {
         opacity: 0.5;
     }
@@ -330,18 +340,23 @@ h1:focus {
     }
 }
 
-.bg-test {
-    inset: 0;
-    height: 100%;
+
+
+.bg-mud {
+    position: absolute;
+    inset: 5% 0 0;
+    height: 80%;
     width: 100%;
-    background-image: linear-gradient(to right,#8080803f 1px,transparent 1px),linear-gradient(to bottom,#8080803f 1px,transparent 1px);
-    background-size: 24px 24px;
-    -webkit-mask-image: linear-gradient(180deg,transparent 5%,rgba(0,0,0,1) 52%,rgba(0,0,0,1) 44%,transparent 95%);
-    mask-image: linear-gradient(180deg,transparent 0%,rgba(0,0,0,1) 0%,rgba(0,0,0,1) 0%,transparent 100%);
-}
+    background-image: radial-gradient(#e5e7eb 1px,transparent 1px);
+    background-size: 16px 16px;
+    opacity: .2;
+    z-index: -3;
+    -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 50%,#000 60%,transparent 100%);
+    mask-image: radial-gradient(ellipse 50% 50% at 50% 50%,#000 60%,transparent 100%);
+}*/
 
 /* Cyberpunk inspired grid */
-.bg-cyberpunk {
+/*.bg-cyberpunk {
     inset: 0;
     height: 100%;
     width: 100%;
@@ -369,14 +384,13 @@ h1:focus {
     100% {
         transform: rotateX(60deg) translateY(40px);
     }
-}
+}*/
 
 
 
 
-
-/* Gri pattern */
-.bg-grid {
+/* Grid pattern */
+/*.bg-grid {
     inset: 0;
     height: 100%;
     width: 100%;
@@ -384,10 +398,10 @@ h1:focus {
     background-size: 24px 24px;
     -webkit-mask-image: linear-gradient(180deg,transparent 5%,rgba(0,0,0,1) 52%,rgba(0,0,0,1) 44%,transparent 95%);
     mask-image: linear-gradient(180deg,transparent 0%,rgba(0,0,0,1) 0%,rgba(0,0,0,1) 0%,transparent 100%);
-}
+}*/
 
 /* Dots pattern */
-.bg-dots {
+/*.bg-dots {
     inset: 0;
     height: 100%;
     width: 100%;
@@ -395,59 +409,59 @@ h1:focus {
     background-size: 24px 24px;
     -webkit-mask-image: linear-gradient(180deg, transparent 5%, rgba(0,0,0,1) 95%);
     mask-image: linear-gradient(180deg, transparent 5%, rgba(0,0,0,1) 95%);
-}
+}*/
 
 /* Diagonal lines pattern */
-.bg-diagonal {
+/*.bg-diagonal {
     inset: 0;
     height: 100%;
     width: 100%;
     background-image: repeating-linear-gradient( 45deg, #8080803f 0, #8080803f 1px, transparent 1px, transparent 24px );
     -webkit-mask-image: linear-gradient(180deg, transparent 5%, rgba(0,0,0,1) 95%);
     mask-image: linear-gradient(180deg, transparent 5%, rgba(0,0,0,1) 95%);
-}
+}*/
 
 /* Honeycomb pattern */
-.bg-honeycomb {
+/*.bg-honeycomb {
     inset: 0;
     height: 100%;
     width: 100%;
     background-image: linear-gradient(30deg, #8080803f 12%, transparent 12.5%, transparent 87%, #8080803f 87.5%, #8080803f), linear-gradient(150deg, #8080803f 12%, transparent 12.5%, transparent 87%, #8080803f 87.5%, #8080803f), linear-gradient(30deg, #8080803f 12%, transparent 12.5%, transparent 87%, #8080803f 87.5%, #8080803f), linear-gradient(150deg, #8080803f 12%, transparent 12.5%, transparent 87%, #8080803f 87.5%, #8080803f);
     background-size: 40px 70px;
     background-position: 0 0, 0 0, 20px 35px, 20px 35px;
-}
+}*/
 
 /* Pulsing grid */
-.bg-grid-pulse {
+/*.bg-grid-pulse {
     inset: 0;
     height: 100%;
     width: 100%;
     background-image: linear-gradient(to right, #8080803f 1px, transparent 1px), linear-gradient(to bottom, #8080803f 1px, transparent 1px);
     background-size: 24px 24px;
     animation: gridPulse 3s ease-in-out infinite;
-}
+}*/
 
 /* Animated floating dots */
-.bg-dots-animated {
+/*.bg-dots-animated {
     inset: 0;
     height: 100%;
     width: 100%;
     background-image: radial-gradient(#8080803f 1px, transparent 1px);
     background-size: 24px 24px;
     animation: floatDots 20s linear infinite;
-}
+}*/
 
 /* Animated diagonal stripes */
-.bg-diagonal-animated {
+/*.bg-diagonal-animated {
     inset: 0;
     height: 100%;
     width: 100%;
     background-image: repeating-linear-gradient( 45deg, #8080803f 0, #8080803f 1px, transparent 1px, transparent 24px );
     animation: moveDiagonal 15s linear infinite;
-}
+}*/
 
 /* Animations */
-@keyframes floatDots {
+/*@keyframes floatDots {
     0% {
         background-position: 0 0;
     }
@@ -475,4 +489,4 @@ h1:focus {
     50% {
         background-size: 28px 28px;
     }
-}
+}*/
