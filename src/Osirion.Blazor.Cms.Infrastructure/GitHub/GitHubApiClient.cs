@@ -1,13 +1,12 @@
-﻿// Create src/Osirion.Blazor.Cms.Infrastructure/GitHub/GitHubApiClient.cs
-
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Osirion.Blazor.Cms.Domain.Exceptions;
+using Osirion.Blazor.Cms.Domain.Models;
+using Osirion.Blazor.Cms.Domain.Options;
+using Osirion.Blazor.Cms.Infrastructure.GitHub.Models;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Osirion.Blazor.Cms.Domain.Exceptions;
-using Osirion.Blazor.Cms.Infrastructure.GitHub.Models;
-using Osirion.Blazor.Cms.Infrastructure.Options;
 
 namespace Osirion.Blazor.Cms.Infrastructure.GitHub;
 

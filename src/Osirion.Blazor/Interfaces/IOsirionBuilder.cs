@@ -2,6 +2,7 @@
 using Osirion.Blazor.Analytics;
 using Osirion.Blazor.Cms;
 using Osirion.Blazor.Cms.Admin.Interfaces;
+using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Navigation;
 using Osirion.Blazor.Theming;
 

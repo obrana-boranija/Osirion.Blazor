@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using Osirion.Blazor.Cms.Domain.Models;
+using System.Text.Json.Serialization;
 
 namespace Osirion.Blazor.Cms.Infrastructure.GitHub.Models;
 

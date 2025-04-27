@@ -1,13 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Osirion.Blazor.Cms.Core.Caching;
-using Osirion.Blazor.Cms.Core.Interfaces;
-using Osirion.Blazor.Cms.Core.Providers.FileSystem;
-using Osirion.Blazor.Cms.Core.Providers.GitHub;
-using Osirion.Blazor.Cms.Core.Providers.Interfaces;
+using Osirion.Blazor.Cms.Domain.Interfaces;
+using Osirion.Blazor.Cms.Domain.Options;
+using Osirion.Blazor.Cms.Domain.Services;
 using Osirion.Blazor.Cms.Infrastructure.GitHub;
-using Osirion.Blazor.Cms.Interfaces;
-using Osirion.Blazor.Cms.Options;
+using Osirion.Blazor.Cms.Infrastructure.Services;
 using System.Net.Http.Headers;
 
 namespace Osirion.Blazor.Cms.Internal;
@@ -32,9 +29,9 @@ internal class ContentBuilder : IContentBuilder
     public IServiceCollection Services { get; }
 
     /// <inheritdoc/>
-    public IContentBuilder AddGitHub(Action<GitHubContentOptions>? configure = null)
+    public IContentBuilder AddGitHub(Action<GitHubOptions>? configure = null)
     {
-        var options = new GitHubContentOptions();
+        var options = new GitHubOptions();
         configure?.Invoke(options);
 
         // Validate options
@@ -49,7 +46,7 @@ internal class ContentBuilder : IContentBuilder
         }
 
         // Register options
-        Services.Configure<GitHubContentOptions>(opt =>
+        Services.Configure<GitHubOptions>(opt =>
         {
             opt.Owner = options.Owner;
             opt.Repository = options.Repository;
@@ -83,9 +80,9 @@ internal class ContentBuilder : IContentBuilder
     }
 
     /// <inheritdoc/>
-    public IContentBuilder AddFileSystem(Action<FileSystemContentOptions>? configure = null)
+    public IContentBuilder AddFileSystem(Action<FileSystemOptions>? configure = null)
     {
-        var options = new FileSystemContentOptions();
+        var options = new FileSystemOptions();
         configure?.Invoke(options);
 
         // Validate options
@@ -95,7 +92,7 @@ internal class ContentBuilder : IContentBuilder
         }
 
         // Register options
-        Services.Configure<FileSystemContentOptions>(opt =>
+        Services.Configure<FileSystemOptions>(opt =>
         {
             opt.BasePath = options.BasePath;
             opt.WatchForChanges = options.WatchForChanges;
@@ -107,8 +104,8 @@ internal class ContentBuilder : IContentBuilder
         });
 
         // Register file system provider
-        Services.TryAddScoped<FileSystemContentProvider>();
-        Services.TryAddScoped<IContentProvider>(sp => sp.GetRequiredService<FileSystemContentProvider>());
+        Services.TryAddScoped<FileSystemOptions>();
+        //Services.TryAddScoped<IContentProvider>(sp => sp.GetRequiredService<FileSystemOptions>());
 
         // Set as default if specified
         if (options.IsDefault)

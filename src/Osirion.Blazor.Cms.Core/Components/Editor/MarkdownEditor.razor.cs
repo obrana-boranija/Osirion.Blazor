@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
-using Osirion.Blazor.Cms.Extensions;
-using Osirion.Blazor.Cms.Models;
+using System.Text.Json;
 
 namespace Osirion.Blazor.Cms;
 
@@ -200,36 +199,7 @@ public partial class MarkdownEditor : IAsyncDisposable
         }
     }
 
-    /// <summary>
-    /// Gets the current selection in the editor
-    /// </summary>
-    public async Task<TextSelection> GetSelectionAsync()
-    {
-        try
-        {
-            // Use inline JS to get selection without requiring a separate JS file
-            return await JSRuntime.InvokeAsync<TextSelection>("eval", $@"
-                (function() {{
-                    const textarea = document.querySelector('[_bl_{TextAreaRef.Id}]');
-                    if (!textarea) return {{ text: '', start: 0, end: 0 }};
-                    
-                    const start = textarea.selectionStart;
-                    const end = textarea.selectionEnd;
-                    const text = textarea.value.substring(start, end);
-                    
-                    return {{ text, start, end }};
-                }})()");
-        }
-        catch
-        {
-            // Return empty selection if JS interop fails (e.g., in SSR)
-            return new TextSelection { Text = string.Empty, Start = 0, End = 0 };
-        }
-    }
-
-    /// <summary>
-    /// Inserts text at the current cursor position
-    /// </summary>
+    // Update the InsertTextAsync method
     public async Task InsertTextAsync(string text)
     {
         try
@@ -245,7 +215,7 @@ public partial class MarkdownEditor : IAsyncDisposable
                     const after = textarea.value.substring(end);
                     
                     // Set new text and update cursor position
-                    textarea.value = before + {JSRuntime.SerializeForJs(text)} + after;
+                    textarea.value = before + {JsonSerializer.Serialize(text)} + after;
                     
                     // Set selection after inserted text
                     const newCursorPos = start + {text.Length};
@@ -266,13 +236,15 @@ public partial class MarkdownEditor : IAsyncDisposable
         }
     }
 
-    /// <summary>
-    /// Wraps selected text with prefix and suffix
-    /// </summary>
+    // Update the WrapTextAsync method
     public async Task WrapTextAsync(string prefix, string suffix, string defaultText)
     {
         try
         {
+            var serializedPrefix = JsonSerializer.Serialize(prefix); // Serialize prefix
+            var serializedSuffix = JsonSerializer.Serialize(suffix); // Serialize suffix
+            var serializedDefaultText = JsonSerializer.Serialize(defaultText); // Serialize defaultText
+
             await JSRuntime.InvokeVoidAsync("eval", $@"
                 (function() {{
                     const textarea = document.querySelector('[_bl_{TextAreaRef.Id}]');
@@ -285,10 +257,10 @@ public partial class MarkdownEditor : IAsyncDisposable
                     const after = textarea.value.substring(end);
                     
                     // Use selected text or default text if no selection
-                    const textToWrap = selectedText.length > 0 ? selectedText : {JSRuntime.SerializeForJs(defaultText)};
+                    const textToWrap = selectedText.length > 0 ? selectedText : {serializedDefaultText};
                     
                     // Set new text with wrapping
-                    textarea.value = before + {JSRuntime.SerializeForJs(prefix)} + textToWrap + {JSRuntime.SerializeForJs(suffix)} + after;
+                    textarea.value = before + {serializedPrefix} + textToWrap + {serializedSuffix} + after;
                     
                     // Set cursor position and selection
                     if (selectedText.length > 0) {{

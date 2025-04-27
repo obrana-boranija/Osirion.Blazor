@@ -55,8 +55,4 @@
 	  <ProjectReference Include="..\Osirion.Blazor.Cms.Core\Osirion.Blazor.Cms.Core.csproj" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="Models\" />
-	</ItemGroup>
-
 </Project>

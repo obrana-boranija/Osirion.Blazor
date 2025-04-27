@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Components;
-using Osirion.Blazor.Cms.Core.Interfaces;
+using Osirion.Blazor.Cms.Domain.Interfaces;
 
 namespace Osirion.Blazor.Cms.Admin.Components;
 

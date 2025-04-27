@@ -1,8 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
-using Osirion.Blazor.Cms.Core.Interfaces;
 using Osirion.Blazor.Cms.Domain.Entities;
-using Osirion.Blazor.Cms.Models;
+using Osirion.Blazor.Cms.Domain.Services;
 
 namespace Osirion.Blazor.Cms.Components;
 
@@ -82,15 +81,15 @@ public partial class LocalizedNavigation
             if (provider != null)
             {
                 // Get available locales
-                var localizationInfo = await provider.GetLocalizationInfoAsync();
-                AvailableLocales = EnableLocalization
-                    ? localizationInfo.AvailableLocales.Select(locale => locale.Code).ToList()
-                    : new List<string> { localizationInfo.DefaultLocale };
+                //var localizationInfo = await provider.GetLocalizationInfoAsync();
+                //AvailableLocales = EnableLocalization
+                //    ? localizationInfo.AvailableLocales.Select(locale => locale.Code).ToList()
+                //    : new List<string> { localizationInfo.DefaultLocale };
 
-                if (string.IsNullOrEmpty(CurrentLocale) && AvailableLocales.Any())
-                {
-                    CurrentLocale = localizationInfo.DefaultLocale;
-                }
+                //if (string.IsNullOrEmpty(CurrentLocale) && AvailableLocales.Any())
+                //{
+                //    CurrentLocale = localizationInfo.DefaultLocale;
+                //}
 
                 // Get directories for the current locale or all directories if localization is disabled
                 Directories = EnableLocalization

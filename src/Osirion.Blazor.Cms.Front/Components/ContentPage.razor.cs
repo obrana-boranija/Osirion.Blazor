@@ -1,10 +1,9 @@
 using Microsoft.AspNetCore.Components;
-using Osirion.Blazor.Cms.Core.Interfaces;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Enums;
+using Osirion.Blazor.Cms.Domain.Models;
 using Osirion.Blazor.Cms.Domain.Repositories;
-using Osirion.Blazor.Cms.Interfaces;
-using Osirion.Blazor.Cms.Models;
+using Osirion.Blazor.Cms.Domain.Services;
 using System.Text.RegularExpressions;
 
 namespace Osirion.Blazor.Cms.Components;

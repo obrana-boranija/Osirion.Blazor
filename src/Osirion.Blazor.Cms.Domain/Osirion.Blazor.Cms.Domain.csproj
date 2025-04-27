@@ -22,7 +22,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<Folder Include="atemp\" />
 		<Folder Include="wwwroot\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="Markdig" Version="0.41.0" />
 	</ItemGroup>
 
 </Project>

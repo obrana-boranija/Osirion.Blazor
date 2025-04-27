@@ -2,9 +2,9 @@
 using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Exceptions;
+using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Domain.Repositories;
 using Osirion.Blazor.Cms.Infrastructure.Markdown;
-using Osirion.Blazor.Cms.Infrastructure.Options;
 using Osirion.Blazor.Cms.Infrastructure.Repositories;
 using System.Text;
 using System.Text.RegularExpressions;

@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Domain.Repositories;
 using Osirion.Blazor.Cms.Infrastructure.Factories;
 using Osirion.Blazor.Cms.Infrastructure.GitHub;
-using Osirion.Blazor.Cms.Infrastructure.Options;
 
 namespace Osirion.Blazor.Cms.Infrastructure.Extensions;
 

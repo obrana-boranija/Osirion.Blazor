@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Components.Routing;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.JSInterop;
+using Osirion.Blazor.Cms.Domain.Interfaces;
 using System.Text.Json;
-using Osirion.Blazor.Cms.Core.Interfaces;
 
 namespace Osirion.Blazor.Cms.Core.Services;
 

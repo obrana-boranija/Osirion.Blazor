@@ -1,10 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Osirion.Blazor.Analytics;
 using Osirion.Blazor.Analytics.Extensions;
-using Osirion.Blazor.Cms;
 using Osirion.Blazor.Cms.Admin.Extensions;
 using Osirion.Blazor.Cms.Admin.Interfaces;
-using Osirion.Blazor.Cms.Extensions;
+using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Navigation;
 using Osirion.Blazor.Navigation.Extensions;
 using Osirion.Blazor.Theming;
@@ -23,7 +22,7 @@ internal class OsirionBuilder : IOsirionBuilder
 
     public IOsirionBuilder UseContent(Action<IContentBuilder> configure)
     {
-        Services.AddOsirionContent(configure);
+        //Services.AddOsirionContent(configure);
         return this;
     }
 

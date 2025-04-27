@@ -53,9 +53,4 @@
 		<None Include="..\..\icon.png" Pack="true" PackagePath="\" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="Models\Base\" />
-	  <Folder Include="Providers\FileSystem\Models\" />
-	</ItemGroup>
-
 </Project>
