@@ -18,12 +18,11 @@ public class RepositoryFactory : IRepositoryFactory
 
     public RepositoryFactory(
         IServiceProvider serviceProvider,
-        ILogger<RepositoryFactory> logger,
-        string defaultProviderId)
+        ILogger<RepositoryFactory> logger)
     {
         _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _defaultProviderId = defaultProviderId ?? throw new ArgumentNullException(nameof(defaultProviderId));
+        _defaultProviderId = "test"; // defaultProviderId ?? throw new ArgumentNullException(nameof(defaultProviderId));
 
         // Populate available providers - could come from configuration or auto-discovery
         _availableProviders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)

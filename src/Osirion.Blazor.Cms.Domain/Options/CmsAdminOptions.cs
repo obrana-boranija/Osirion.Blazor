@@ -1,4 +1,4 @@
-﻿namespace Osirion.Blazor.Cms.Admin;
+﻿namespace Osirion.Blazor.Cms.Domain.Options;
 
 /// <summary>
 /// Configuration options for Osirion.Blazor.Cms.Admin

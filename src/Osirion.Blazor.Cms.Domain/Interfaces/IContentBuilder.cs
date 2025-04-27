@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Osirion.Blazor.Cms.Domain.Options;
+﻿using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Domain.Services;
 
 namespace Osirion.Blazor.Cms.Domain.Interfaces;
@@ -7,13 +6,8 @@ namespace Osirion.Blazor.Cms.Domain.Interfaces;
 /// <summary>
 /// Builder interface for configuring content providers
 /// </summary>
-public interface IContentBuilder
+public interface IContentBuilder : ICmsBuilder
 {
-    /// <summary>
-    /// Gets the service collection being configured
-    /// </summary>
-    IServiceCollection Services { get; }
-
     /// <summary>
     /// Adds a GitHub content provider
     /// </summary>

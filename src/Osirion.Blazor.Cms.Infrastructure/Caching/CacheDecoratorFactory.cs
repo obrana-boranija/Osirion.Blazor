@@ -22,7 +22,7 @@ public class CacheDecoratorFactory
     {
         _memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
         _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
-        _cacheOptions = cacheOptions?.Value ?? throw new ArgumentNullException(nameof(cacheOptions));
+        _cacheOptions = cacheOptions?.Value ?? new CacheOptions();
     }
 
     /// <summary>
@@ -30,6 +30,10 @@ public class CacheDecoratorFactory
     /// </summary>
     public IContentRepository CreateContentCacheDecorator(IContentRepository repository, string providerIdentifier)
     {
+        // Skip decoration if caching is disabled
+        if (!_cacheOptions.Enabled)
+            return repository;
+
         var logger = _loggerFactory.CreateLogger<StaleWhileRevalidateCacheDecorator>();
 
         return new StaleWhileRevalidateCacheDecorator(
@@ -46,6 +50,10 @@ public class CacheDecoratorFactory
     /// </summary>
     public IDirectoryRepository CreateDirectoryCacheDecorator(IDirectoryRepository repository, string providerIdentifier)
     {
+        // Skip decoration if caching is disabled
+        if (!_cacheOptions.Enabled)
+            return repository;
+
         var logger = _loggerFactory.CreateLogger<StaleWhileRevalidateDirectoryCache>();
 
         return new StaleWhileRevalidateDirectoryCache(

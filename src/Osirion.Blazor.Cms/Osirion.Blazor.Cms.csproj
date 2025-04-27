@@ -50,8 +50,4 @@
 		<None Include="..\..\icon.png" Pack="true" PackagePath="\" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="Extensions\" />
-	</ItemGroup>
-
 </Project>

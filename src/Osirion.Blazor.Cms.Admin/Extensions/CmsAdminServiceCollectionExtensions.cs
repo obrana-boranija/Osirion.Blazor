@@ -1,19 +1,20 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Osirion.Blazor.Cms.Admin.Interfaces;
-using Osirion.Blazor.Cms.Admin.Internal;
 using Osirion.Blazor.Cms.Admin.Services;
-using Osirion.Blazor.Cms.Core.Providers.GitHub;
 
 using Osirion.Blazor.Cms.Domain.Interfaces;
+using Osirion.Blazor.Cms.Domain.Options;
+using Osirion.Blazor.Cms.Infrastructure.GitHub;
+using Osirion.Blazor.Cms.Infrastructure.Services;
 
 namespace Osirion.Blazor.Cms.Admin.Extensions;
 
 /// <summary>
 /// Extension methods for adding Osirion.Blazor.Cms.Admin services
 /// </summary>
-public static class CmsAdminServiceCollectionExtensions
+public static class ServiceCollectionExtensions
 {
     /// <summary>
     /// Adds Osirion.Blazor.Cms.Admin services to the service collection
@@ -28,13 +29,16 @@ public static class CmsAdminServiceCollectionExtensions
         if (services == null) throw new ArgumentNullException(nameof(services));
         if (configure == null) throw new ArgumentNullException(nameof(configure));
 
-        var builder = new CmsAdminBuilder(services);
-        configure(builder);
+        services.TryAddSingleton<IMemoryCache>(sp =>
+            new MemoryCache(new MemoryCacheOptions()));
 
-        services.TryAddScoped<IGitHubTokenProvider, GitHubTokenProvider>();
-        services.TryAddScoped<CmsAdminState>();
-        services.TryAddScoped<IGitHubAdminService, GitHubAdminService>();
-        services.TryAddScoped<CmsAdminState, CmsAdminStatePersistent>();
+        services.AddScoped<IGitHubApiClient, GitHubApiClient>();
+        services.AddScoped<IGitHubTokenProvider, GitHubTokenProvider>();
+        services.AddScoped<IAuthenticationService, AuthenticationService>();
+        services.AddScoped<IGitHubAdminService, GitHubAdminService>();
+
+        //var builder = new CmsAdminBuilder(services);
+        //configure(builder);
 
         return services;
     }

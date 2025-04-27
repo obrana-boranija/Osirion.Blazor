@@ -1,89 +1,42 @@
-﻿@page "/blog"
-@page "/blog/tag/{TagSlug}"
-@page "/blog/category/{CategorySlug}"
-@page "/{locale}/blog"
-@page "/{locale}/blog/category/{CategorySlug}"
-@page "/{locale}/blog/tag/{TagSlug}"
-@using Osirion.Blazor.Cms.Domain.Interfaces
+﻿@page "/cms-demo"
+@using Osirion.Blazor.Cms.Components
 @using Osirion.Blazor.Cms.Domain.Services
-@inject IContentProvider ContentProvider
-@attribute [StreamRendering]
 
+<PageTitle>CMS Demo - Osirion.Blazor</PageTitle>
 
-<PageTitle>CMS Demo</PageTitle>
-
-<h1>Content Management System Demo</h1>
-<p class="lead">This page demonstrates the GitHub CMS integration with content from the repository.</p>
-
-<div class="row">
-    <!-- Main Content -->
-    <div class="col-md-8">
-        <nav aria-label="Content directories" class="mb-4">
-            <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#blog-content" type="button" role="tab">Blog Posts</button>
-                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#docs-content" type="button" role="tab">Documentation</button>
-                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#all-content" type="button" role="tab">All Content</button>
-            </div>
-        </nav>
-
-        <div class="tab-content" id="nav-tabContent">
-            <div class="tab-pane fade show active" id="blog-content" role="tabpanel">
-                <h2>Latest Blog Posts</h2>
-                <ContentList Directory="@Directory"
-                             Category="@CategorySlug"
-                             Tag="@TagSlug"
-                             Locale="@Locale"
-                             ItemsPerPage="5"
-                             ShowPagination="true" />
-            </div>
-@*             <div class="tab-pane fade" id="docs-content" role="tabpanel">
-                <h2>Documentation</h2>
-                <ContentList Directory="docs" Tag="@TagSlug" Category="@CategorySlug" />
-            </div>
-            <div class="tab-pane fade" id="all-content" role="tabpanel">
-                <h2>All Content</h2>
-                <ContentList />
-            </div> *@
-        </div>
-    </div>
-
-    <!-- Sidebar -->
-    <div class="col-md-4">
-        <div class="card mb-4">
-            <div class="card-body">
-                <h5 class="card-title">Search Content</h5>
-                <SearchBox Placeholder="Search articles..." />
+<div class="container mt-4">
+    <h1>Osirion CMS Demo</h1>
+    <p class="lead">This page demonstrates the Osirion.Blazor.Cms component library.</p>
+    
+    <div class="row mt-4">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <ContentViewer Path="@_contentPath" ProviderId="@_providerId" />
+                </div>
             </div>
         </div>
-
-        <div class="card mb-4">
-            <div class="card-body">
-                <h5 class="card-title">Navigation</h5>
-                <DirectoryNavigation />
-            </div>
-        </div>
-
-        <div class="card mb-4">
-            <div class="card-body">
-                <h5 class="card-title">Categories</h5>
-                <CategoriesList ActiveCategory="@CategorySlug"
-                                CategoryUrlFormatter="@(category => $"/{(locale is null ? $"{locale}/" : "")}blog/category/{category.Slug}")" />
-            </div>
-        </div>
-
-        <div class="card mb-4">
-            <div class="card-body">
-                <h5 class="card-title">Popular Tags</h5>
-                <TagCloud MaxTags="20"
-                          ActiveTag="@TagSlug"
-                          TagUrlFormatter="@(tag => $"/{(locale is null ? $"{locale}/" : "")}blog/tag/{tag.Slug}")" />
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Featured Content</h5>
-                <ContentList FeaturedCount="3" />
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5 class="mb-0">Content Selection</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="contentPath" class="form-label">Content Path</label>
+                        <input type="text" class="form-control" id="contentPath" @bind="_contentPath" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="providerId" class="form-label">Provider ID</label>
+                        <select class="form-select" id="providerId" @bind="_providerId">
+                            @foreach (var provider in _providers)
+                            {
+                                <option value="@provider.Value">@provider.Key</option>
+                            }
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" @onclick="LoadContent">Load Content</button>
+                </div>
             </div>
         </div>
     </div>
@@ -99,6 +52,9 @@
     [Parameter]
     public string? locale { get; set; }
 
+    [Inject]
+    private IContentProviderManager ContentProviderManager { get; set; } = default!;
+
     private string Directory => "blog";
     private string Locale => locale ?? "en";
 
@@ -106,4 +62,43 @@
         !string.IsNullOrEmpty(CategorySlug) ? $"Category: {CategorySlug}" :
         !string.IsNullOrEmpty(TagSlug) ? $"Tag: {TagSlug}" :
         "Blog";
+
+    private string _contentPath = "blog/sample-post.md";
+    private string _providerId = "";
+    private Dictionary<string, string> _providers = new();
+
+    /// <summary>
+    /// Initialize component when parameters are set
+    /// </summary>
+    protected override async Task OnInitializedAsync()
+    {
+        // Get the available providers
+        foreach (var provider in ContentProviderManager.GetAllProviders())
+        {
+            _providers.Add(provider.DisplayName, provider.ProviderId);
+        }
+
+        // Set default provider
+        var defaultProvider = ContentProviderManager.GetDefaultProvider();
+        if (defaultProvider != null)
+        {
+            _providerId = defaultProvider.ProviderId;
+        }
+        else if (_providers.Count > 0)
+        {
+            // If no default, use the first provider
+            _providerId = _providers.Values.First();
+        }
+
+        await base.OnInitializedAsync();
+    }
+
+    /// <summary>
+    /// Load the content when the button is clicked
+    /// </summary>
+    private void LoadContent()
+    {
+        // Component will automatically refresh with new parameters
+        StateHasChanged();
+    }
 }

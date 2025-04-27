@@ -1,99 +1,159 @@
-﻿using Osirion.Blazor.Cms.Domain.Services;
+﻿using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Entities;
+using Osirion.Blazor.Cms.Domain.Exceptions;
+using Osirion.Blazor.Cms.Domain.Interfaces.Content;
 using Osirion.Blazor.Cms.Domain.Repositories;
+using Osirion.Blazor.Cms.Domain.Services;
 
 namespace Osirion.Blazor.Cms.Infrastructure.Services;
 
-/// <summary>
-/// Implementation of IContentProviderManager that manages access to content providers
-/// </summary>
 public class ContentProviderManager : IContentProviderManager
 {
     private readonly IEnumerable<IContentProvider> _providers;
-    private readonly IContentProviderFactory? _providerFactory;
+    private readonly IContentProviderFactory _providerFactory;
+    private readonly ILogger<ContentProviderManager> _logger;
 
-    /// <summary>
-    /// Initializes a new instance of the ContentProviderManager class
-    /// </summary>
     public ContentProviderManager(
         IEnumerable<IContentProvider> providers,
-        IContentProviderFactory? providerFactory = null)
+        IContentProviderFactory providerFactory,
+        ILogger<ContentProviderManager> logger)
     {
         _providers = providers ?? throw new ArgumentNullException(nameof(providers));
-        _providerFactory = providerFactory;
+        _providerFactory = providerFactory ?? throw new ArgumentNullException(nameof(providerFactory));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    /// <inheritdoc/>
     public IContentProvider? GetDefaultProvider()
     {
-        // If we have a factory, try to get the default provider from it
+        // Try to get from factory first
         if (_providerFactory != null)
         {
             var defaultProviderId = _providerFactory.GetDefaultProviderId();
             if (!string.IsNullOrEmpty(defaultProviderId))
             {
-                var defaultProvider = _providers.FirstOrDefault(p => p.ProviderId == defaultProviderId);
-                if (defaultProvider != null)
+                var provider = _providers.FirstOrDefault(p => p.ProviderId == defaultProviderId);
+                if (provider != null)
                 {
-                    return defaultProvider;
+                    return provider;
                 }
+
+                _logger.LogWarning("Default provider ID {ProviderId} configured but not found", defaultProviderId);
             }
         }
 
         // Fall back to first registered provider
-        return _providers.FirstOrDefault();
+        var firstProvider = _providers.FirstOrDefault();
+        if (firstProvider == null)
+        {
+            _logger.LogWarning("No content providers registered");
+        }
+
+        return firstProvider;
     }
 
-    /// <inheritdoc/>
     public IContentProvider? GetProvider(string providerId)
     {
         if (string.IsNullOrEmpty(providerId))
-            throw new ArgumentException("Provider ID cannot be null or empty", nameof(providerId));
+            throw new ArgumentException("Provider ID cannot be empty", nameof(providerId));
 
-        return _providers.FirstOrDefault(p => p.ProviderId == providerId);
+        var provider = _providers.FirstOrDefault(p => p.ProviderId == providerId);
+        if (provider == null)
+        {
+            _logger.LogWarning("Provider not found: {ProviderId}", providerId);
+        }
+
+        return provider;
     }
 
-    /// <inheritdoc/>
     public IEnumerable<IContentProvider> GetAllProviders() => _providers;
 
-    ///// <inheritdoc/>
-    //public async Task<LocalizationInfo> GetLocalizationInfoAsync(CancellationToken cancellationToken = default)
-    //{
-    //    var provider = GetDefaultProvider();
-    //    return provider != null
-    //        ? await provider.GetLocalizationInfoAsync(cancellationToken)
-    //        : new LocalizationInfo();
-    //}
-
-    /// <inheritdoc/>
     public async Task<IReadOnlyList<DirectoryItem>> GetDirectoryTreeAsync(string? locale = null, CancellationToken cancellationToken = default)
     {
         var provider = GetDefaultProvider();
-        return provider != null
-            ? await provider.GetDirectoriesAsync(locale, cancellationToken)
-            : Array.Empty<DirectoryItem>().ToList().AsReadOnly();
+        if (provider == null)
+        {
+            _logger.LogWarning("No default provider available for GetDirectoryTreeAsync");
+            return Array.Empty<DirectoryItem>();
+        }
+
+        try
+        {
+            return await provider.GetDirectoriesAsync(locale, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting directory tree with locale {Locale}", locale);
+            throw new ContentProviderException("Failed to get directory tree", ex);
+        }
     }
 
-    /// <inheritdoc/>
     public async Task<IReadOnlyList<ContentItem>> GetContentByLocaleAsync(string locale, CancellationToken cancellationToken = default)
     {
         var provider = GetDefaultProvider();
         if (provider == null)
-            return Array.Empty<ContentItem>().ToList().AsReadOnly();
+        {
+            _logger.LogWarning("No default provider available for GetContentByLocaleAsync");
+            return Array.Empty<ContentItem>();
+        }
 
-        var query = new ContentQuery { Locale = locale };
-        return await provider.GetItemsByQueryAsync(query, cancellationToken);
+        try
+        {
+            var query = new ContentQuery { Locale = locale };
+            return await provider.GetItemsByQueryAsync(query, cancellationToken) ?? Array.Empty<ContentItem>();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting content by locale {Locale}", locale);
+            throw new ContentProviderException($"Failed to get content by locale {locale}", ex);
+        }
     }
 
-    /// <inheritdoc/>
     public async Task<ContentItem?> GetLocalizedContentAsync(string localizationId, string locale, CancellationToken cancellationToken = default)
     {
-        return null;
-        //var provider = GetDefaultProvider();
-        //if (provider == null)
-        //    return null;
+        var provider = GetDefaultProvider();
+        if (provider == null)
+        {
+            _logger.LogWarning("No default provider available for GetLocalizedContentAsync");
+            return null;
+        }
 
-        //var translations = await provider.GetContentTranslationsAsync(localizationId, cancellationToken);
-        //return translations.FirstOrDefault(t => t.Locale.Equals(locale, StringComparison.OrdinalIgnoreCase));
+        try
+        {
+            // Get all translations for the content item
+            var query = new ContentQuery
+            {
+                LocalizationId = localizationId,
+                IncludeUnpublished = false
+            };
+
+            var allTranslations = await provider.GetItemsByQueryAsync(query, cancellationToken);
+            if (allTranslations == null || !allTranslations.Any())
+            {
+                return null;
+            }
+
+            // Find the requested locale
+            var localizedContent = allTranslations.FirstOrDefault(c =>
+                c.Locale.Equals(locale, StringComparison.OrdinalIgnoreCase));
+
+            if (localizedContent != null)
+            {
+                return localizedContent;
+            }
+
+            // Fallback to default locale if configured
+            var defaultLocale = provider is IContentLocalization locProvider
+                ? locProvider.DefaultLocale
+                : "en";
+
+            return allTranslations.FirstOrDefault(c =>
+                c.Locale.Equals(defaultLocale, StringComparison.OrdinalIgnoreCase));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting localized content: {LocalizationId}, {Locale}",
+                localizationId, locale);
+            return null;
+        }
     }
 }

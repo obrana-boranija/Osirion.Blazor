@@ -3,7 +3,7 @@
 /// <summary>
 /// Core interface for content providers, composing multiple content interfaces
 /// </summary>
-public interface IContentProvider : IContentReader, IContentQuerying, IContentCaching
+public interface IContentProviderInterface : IContentReader, IContentQuerying, IContentCaching
 {
     /// <summary>
     /// Gets the unique identifier for the provider
