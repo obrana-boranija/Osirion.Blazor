@@ -1,3 +1,5 @@
+using Osirion.Blazor.Cms;
+using Osirion.Blazor.Cms.Admin.Extensions;
 using Osirion.Blazor.Example.Components;
 using Osirion.Blazor.Extensions;
 using Osirion.Blazor.Theming;
@@ -9,22 +11,27 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 
+builder.Services.AddOsirionCms(builder.Configuration);
+
+// Add admin features if needed
+//builder.Services.AddOsirionCmsAdmin(builder.Configuration);
+
 // Add Osirion.Blazor services
 builder.Services.AddOsirion(osirion =>
 {
     osirion
         // Add content services with GitHub provider
-        .UseContent(content => content.AddGitHub(options =>
-        {
-            options.Owner = "obrana-boranija";
-            options.Repository = "hexavera-blog";
-            options.ContentPath = "localized";
-            options.Branch = "main";
-            options.ApiToken = "";
-            options.CacheDurationMinutes = 30;
-            options.EnableLocalization = true;
-            options.DefaultLocale = "en";
-        }))
+        //.UseContent(content => content.AddGitHub(options =>
+        //{
+        //    options.Owner = "obrana-boranija";
+        //    options.Repository = "hexavera-blog";
+        //    options.ContentPath = "localized";
+        //    options.Branch = "main";
+        //    options.ApiToken = "";
+        //    options.CacheDurationMinutes = 30;
+        //    options.EnableLocalization = true;
+        //    options.DefaultLocale = "en";
+        //}))
         //Configure CMS Admin
         //.UseCmsAdmin(admin =>
         //{

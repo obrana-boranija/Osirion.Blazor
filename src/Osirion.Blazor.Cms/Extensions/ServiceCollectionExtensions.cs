@@ -7,6 +7,8 @@ using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Domain.Repositories;
 using Osirion.Blazor.Cms.Domain.Services;
 using Osirion.Blazor.Cms.Infrastructure.Caching;
+using Osirion.Blazor.Cms.Infrastructure.DependencyInjection;
+using Osirion.Blazor.Cms.Infrastructure.Extensions;
 using Osirion.Blazor.Cms.Infrastructure.Factories;
 using Osirion.Blazor.Cms.Infrastructure.FileSystem;
 using Osirion.Blazor.Cms.Infrastructure.GitHub;
@@ -54,9 +56,6 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<CacheDecoratorFactory>();
         services.AddScoped<IRepositoryFactory, RepositoryFactory>();
         services.AddScoped<IUnitOfWorkFactory, UnitOfWorkFactory>();
-
-        // Register event services
-        services.AddDomainEvents();
 
         // Register CQRS services
         services.AddScoped<ICommandDispatcher, CommandDispatcher>();
