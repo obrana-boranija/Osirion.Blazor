@@ -2,11 +2,13 @@
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Osirion.Blazor.Cms.Enums;
-using Osirion.Blazor.Cms.Models;
+using Osirion.Blazor.Cms.Domain.Entities;
+using Osirion.Blazor.Cms.Domain.Enums;
+using Osirion.Blazor.Cms.Domain.Repositories;
 using Osirion.Blazor.Cms.Options;
 using Osirion.Blazor.Cms.Providers.Base;
 using Osirion.Blazor.Core.Extensions;
+using System.Xml.Linq;
 
 namespace Osirion.Blazor.Cms.Core.Providers.FileSystem;
 
@@ -256,15 +258,7 @@ public class FileSystemContentProvider : ContentProviderBase
             var relativePath = Path.GetRelativePath(_options.BasePath, filePath);
             var fileInfo = new FileInfo(filePath);
 
-            var contentItem = new ContentItem
-            {
-                Id = relativePath.GetHashCode().ToString("x"),
-                Path = NormalizePath(relativePath),
-                ProviderId = ProviderId,
-                ProviderSpecificId = filePath,
-                DateCreated = fileInfo.CreationTimeUtc,
-                LastModified = fileInfo.LastWriteTimeUtc
-            };
+            var contentItem = ContentItem.Create(relativePath.GetHashCode().ToString("x"), "", "", filePath, ProviderId);
 
             // Extract locale from path if localization is enabled
             if (_options.EnableLocalization)
@@ -272,16 +266,16 @@ public class FileSystemContentProvider : ContentProviderBase
                 var pathSegments = relativePath.Split('/', '\\');
                 if (pathSegments.Length > 0 && _options.SupportedLocales.Contains(pathSegments[0]))
                 {
-                    contentItem.Locale = pathSegments[0];
+                    contentItem.SetLocale(pathSegments[0]);
                 }
                 else
                 {
-                    contentItem.Locale = _options.DefaultLocale;
+                    contentItem.SetLocale(_options.DefaultLocale);
                 }
             }
             else
             {
-                contentItem.Locale = _options.DefaultLocale;
+                contentItem.SetLocale(_options.DefaultLocale);
             }
 
             // Parse markdown and extract front matter
@@ -292,28 +286,28 @@ public class FileSystemContentProvider : ContentProviderBase
                 ParseFrontMatter(frontMatter, contentItem);
 
                 var markdownContent = content.Substring(frontMatterEndIndex + 3).Trim();
-                contentItem.Content = Markdown.ToHtml(markdownContent, _markdownPipeline);
-                contentItem.OriginalMarkdown = markdownContent;
+                contentItem.SetContent(Markdown.ToHtml(markdownContent, _markdownPipeline));
+                contentItem.SetOriginalMarkdown(markdownContent);
             }
             else
             {
-                contentItem.Content = Markdown.ToHtml(content, _markdownPipeline);
-                contentItem.OriginalMarkdown = content;
+                contentItem.SetContent(Markdown.ToHtml(content, _markdownPipeline));
+                contentItem.SetOriginalMarkdown(content);
             }
 
             // Set defaults if not provided
             if (string.IsNullOrEmpty(contentItem.Title))
             {
-                contentItem.Title = Path.GetFileNameWithoutExtension(filePath);
+                contentItem.SetTitle(Path.GetFileNameWithoutExtension(filePath));
             }
 
             if (string.IsNullOrEmpty(contentItem.Slug))
             {
-                contentItem.Slug = contentItem.Title.ToUrlSlug();
+                contentItem.SetSlug(contentItem.Title.ToUrlSlug());
             }
 
             // Generate URL
-            contentItem.Url = GenerateUrl(contentItem.Path, contentItem.Slug, _options.ContentRoot);
+            contentItem.SetUrl(GenerateUrl(contentItem.Path, contentItem.Slug, _options.ContentRoot));
 
             return contentItem;
         }
@@ -355,14 +349,7 @@ public class FileSystemContentProvider : ContentProviderBase
                 return;
 
             // Create directory item for this directory
-            var directory = new DirectoryItem
-            {
-                Id = relativePath.GetHashCode().ToString("x"),
-                Name = dirInfo.Name,
-                Path = NormalizePath(relativePath),
-                Locale = currentLocale,
-                Parent = parentDirectory
-            };
+            var directory = DirectoryItem.Create(relativePath.GetHashCode().ToString("x"), NormalizePath(relativePath), dirInfo.Name, ProviderId);
 
             // Add metadata from _index.md if exists
             await ProcessDirectoryMetadataAsync(directory, directoryPath, cancellationToken);
@@ -381,7 +368,7 @@ public class FileSystemContentProvider : ContentProviderBase
 
                     await ScanDirectoriesAsync(
                         subdirInfo.FullName,
-                        directory.Children,
+                        directory.Children.ToList(),
                         directory,
                         locale,
                         cancellationToken);
@@ -410,18 +397,18 @@ public class FileSystemContentProvider : ContentProviderBase
 
                     // Apply metadata to directory
                     if (metadata.TryGetValue("title", out var title))
-                        directory.Name = title;
+                        directory.SetName(title);
 
                     if (metadata.TryGetValue("description", out var description))
-                        directory.Description = description;
+                        directory.SetDescription(description);
 
                     if (metadata.TryGetValue("order", out var orderStr) && int.TryParse(orderStr, out var order))
-                        directory.Order = order;
+                        directory.SetOrder(order);
 
                     // Add other metadata as properties
                     foreach (var key in metadata.Keys.Where(k => k != "title" && k != "description" && k != "order"))
                     {
-                        directory.Metadata[key] = metadata[key];
+                        directory.SetMetadata(key, metadata[key]);
                     }
                 }
             }
@@ -524,17 +511,17 @@ public class FileSystemContentProvider : ContentProviderBase
             switch (key)
             {
                 case "title":
-                    contentItem.Title = value;
+                    contentItem.SetTitle(value);
                     break;
                 case "author":
-                    contentItem.Author = value;
+                    contentItem.SetAuthor(value);
                     break;
                 case "date":
                     if (DateTime.TryParse(value, out var date))
-                        contentItem.DateCreated = date;
+                        contentItem.SetCreatedDate(date);
                     break;
                 case "description":
-                    contentItem.Description = value;
+                    contentItem.SetDescription(value);
                     break;
                 case "tags":
                     ParseListItems(value).ForEach(contentItem.AddTag);
@@ -544,31 +531,31 @@ public class FileSystemContentProvider : ContentProviderBase
                     ParseListItems(value).ForEach(contentItem.AddCategory);
                     break;
                 case "slug":
-                    contentItem.Slug = value;
+                    contentItem.SetSlug(value);
                     break;
                 case "featured":
                 case "isfeatured":
-                    contentItem.IsFeatured = bool.TryParse(value, out var featured) && featured;
+                    contentItem.SetFeatured(bool.TryParse(value, out var featured) && featured);
                     break;
                 case "featuredimage":
                 case "feature_image":
-                    contentItem.FeaturedImageUrl = value;
+                    contentItem.SetFeaturedImage(value);
                     break;
                 case "content_id":
                 case "localization_id":
-                    contentItem.ContentId = value;
+                    contentItem.SetContentId(value);
                     break;
                 case "locale":
                 case "language":
-                    contentItem.Locale = value;
+                    contentItem.SetLocale(value);
                     break;
                 case "meta_title":
                 case "seo_title":
-                    contentItem.Seo.MetaTitle = value;
+                    //contentItem.Seo.MetaTitle = value;
                     break;
                 case "meta_description":
                 case "seo_description":
-                    contentItem.Seo.MetaDescription = value;
+                    //contentItem.Seo.MetaDescription = value;
                     break;
                 default:
                     // Add as custom metadata

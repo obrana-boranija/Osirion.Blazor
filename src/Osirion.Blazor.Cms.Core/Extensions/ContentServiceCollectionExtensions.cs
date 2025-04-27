@@ -8,9 +8,9 @@ using Osirion.Blazor.Cms.Configuration;
 using Osirion.Blazor.Cms.Core.Caching;
 using Osirion.Blazor.Cms.Core.Interfaces;
 using Osirion.Blazor.Cms.Core.Providers.FileSystem;
-using Osirion.Blazor.Cms.Core.Providers.GitHub;
-using Osirion.Blazor.Cms.Core.Providers.Interfaces;
 using Osirion.Blazor.Cms.Core.Services;
+using Osirion.Blazor.Cms.Infrastructure.GitHub;
+using Osirion.Blazor.Cms.Infrastructure.Markdown;
 using Osirion.Blazor.Cms.Interfaces;
 using Osirion.Blazor.Cms.Internal;
 using Osirion.Blazor.Cms.Options;
@@ -100,9 +100,6 @@ public static class ContentServiceCollectionExtensions
         services.Configure(configure);
 
         services.AddHttpClient<IGitHubApiClient, GitHubApiClient>();
-
-        services.TryAddScoped<GitHubContentProvider>();
-        services.TryAddScoped<IContentProvider>(sp => sp.GetRequiredService<GitHubContentProvider>());
 
         return services;
     }

@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Components;
-using Osirion.Blazor.Cms.Models;
+using Osirion.Blazor.Cms.Domain.Entities;
 
 namespace Osirion.Blazor.Cms.Components;
 public partial class SeoMetadataRenderer

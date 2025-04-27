@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Caching;
+using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Interfaces;
 using Osirion.Blazor.Cms.Models;
 
@@ -42,7 +43,7 @@ public abstract class WritableContentProviderBase : ContentProviderBase, IConten
             throw new ArgumentNullException(nameof(item));
 
         // Set provider ID
-        item.ProviderId = ProviderId;
+        item.SetProviderId(ProviderId);
 
         // Validate there's no existing item with the same path
         var existingItem = await GetItemByPathAsync(item.Path, cancellationToken);
@@ -69,8 +70,7 @@ public abstract class WritableContentProviderBase : ContentProviderBase, IConten
         if (item == null)
             throw new ArgumentNullException(nameof(item));
 
-        // Set provider ID
-        item.ProviderId = ProviderId;
+        item.SetProviderId(ProviderId);
 
         // Validate that the item exists
         var existingItem = item.Id != null

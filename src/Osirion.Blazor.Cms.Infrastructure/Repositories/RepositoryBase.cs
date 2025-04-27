@@ -8,8 +8,9 @@ namespace Osirion.Blazor.Cms.Infrastructure.Repositories;
 /// </summary>
 /// <typeparam name="T">Entity type</typeparam>
 /// <typeparam name="TId">Entity ID type</typeparam>
-public abstract class RepositoryBase<T, TId> : IRepository<T, TId> where T : class
+public abstract class RepositoryBase<T, TId> : IRepository<T, TId>, IDisposable where T : class
 {
+    private bool _disposed;
     protected readonly ILogger Logger;
     protected readonly string ProviderId;
 
@@ -55,5 +56,23 @@ public abstract class RepositoryBase<T, TId> : IRepository<T, TId> where T : cla
     {
         Logger.LogError(exception, "Error {Operation} entity of type {EntityType} with ID {Id} in provider {ProviderId}: {Message}",
             operation, typeof(T).Name, id, ProviderId, exception.Message);
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (_disposed) return;
+
+        if (disposing)
+        {
+            // Dispose managed resources
+        }
+
+        _disposed = true;
     }
 }

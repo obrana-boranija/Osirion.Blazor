@@ -115,4 +115,22 @@ public class MetadataContainer
         }
         return clone;
     }
+
+    public void SetPropertyValue<T>(string propertyName, T value)
+    {
+        if (string.IsNullOrEmpty(propertyName))
+            throw new ArgumentException("Property name cannot be empty", nameof(propertyName));
+
+        SetValue(propertyName, value);
+    }
+
+    public T? GetPropertyValue<T>(string propertyName, T? defaultValue = default)
+    {
+        return GetValue<T>(propertyName, defaultValue);
+    }
+
+    public bool HasProperty(string propertyName)
+    {
+        return ContainsKey(propertyName);
+    }
 }

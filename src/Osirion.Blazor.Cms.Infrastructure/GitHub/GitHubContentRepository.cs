@@ -7,12 +7,7 @@ using Osirion.Blazor.Cms.Infrastructure.GitHub.Models;
 using Osirion.Blazor.Cms.Infrastructure.Markdown;
 using Osirion.Blazor.Cms.Infrastructure.Options;
 using Osirion.Blazor.Cms.Infrastructure.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Osirion.Blazor.Cms.Infrastructure.GitHub;
 
@@ -661,7 +656,7 @@ public class GitHubContentRepository : RepositoryBase<ContentItem, string>, ICon
             contentItem.SetOriginalMarkdown(result.Content);
 
             // Render HTML
-            var html = await _markdownProcessor.RenderToHtmlAsync(result.Content, cancellationToken);
+            var html = await _markdownProcessor.RenderToHtmlAsync(result.Content);
             contentItem.SetContent(html);
 
             // Process frontmatter

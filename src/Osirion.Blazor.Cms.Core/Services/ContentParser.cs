@@ -1,8 +1,10 @@
 ﻿using Osirion.Blazor.Cms.Core.Models;
-using Osirion.Blazor.Cms.Enums;
+using Osirion.Blazor.Cms.Domain.Entities;
+using Osirion.Blazor.Cms.Domain.Enums;
+using Osirion.Blazor.Cms.Domain.ValueObjects;
+using Osirion.Blazor.Cms.Infrastructure.Markdown;
 using Osirion.Blazor.Cms.Interfaces;
 using Osirion.Blazor.Cms.Models;
-using Osirion.Blazor.Cms.Core.Interfaces;
 using Osirion.Blazor.Core.Extensions;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -31,7 +33,7 @@ public class ContentParser : IContentParser
             return;
 
         // Store original markdown for later use
-        contentItem.OriginalMarkdown = markdownContent;
+        contentItem.SetOriginalMarkdown(markdownContent);
 
         // Extract front matter
         var frontMatter = _markdownProcessor.ExtractFrontMatter(markdownContent);
@@ -39,7 +41,7 @@ public class ContentParser : IContentParser
 
         // Get content without front matter by rendering the markdown
         var htmlContent = await _markdownProcessor.RenderToHtmlAsync(markdownContent);
-        contentItem.Content = htmlContent;
+        contentItem.SetContent(htmlContent);
     }
 
     /// <inheritdoc/>
@@ -200,7 +202,7 @@ public class ContentParser : IContentParser
             // Auto-generate slug from title if missing
             if (!string.IsNullOrWhiteSpace(content.Title))
             {
-                content.Slug = content.Title.ToUrlSlug();
+                content.SetSlug(content.Title.ToUrlSlug());
             }
             else
             {
@@ -232,19 +234,8 @@ public class ContentParser : IContentParser
     {
         var blogPost = new BlogPost
         {
-            Metadata = new FrontMatter
-            {
-                Title = contentItem.Title,
-                Description = contentItem.Description,
-                Author = contentItem.Author,
-                Date = contentItem.DateCreated.ToString("yyyy-MM-dd"),
-                FeaturedImage = contentItem.FeaturedImageUrl,
-                Categories = contentItem.Categories.ToList(),
-                Tags = contentItem.Tags.ToList(),
-                IsFeatured = contentItem.IsFeatured,
-                Published = contentItem.Status == ContentStatus.Published,
-                Slug = contentItem.Slug
-            },
+            Metadata = FrontMatter.Create(contentItem.Id, contentItem.Title, contentItem.Description, contentItem.Author, contentItem.DateCreated,
+            contentItem.FeaturedImageUrl, contentItem.Categories, contentItem.Tags, contentItem.IsFeatured, contentItem.Status == ContentStatus.Published, null, contentItem.Slug),
             Content = contentItem.OriginalMarkdown ?? string.Empty,
             FilePath = contentItem.Path,
             Sha = contentItem.ProviderSpecificId ?? string.Empty
@@ -255,7 +246,8 @@ public class ContentParser : IContentParser
         {
             if (!IsStandardFrontMatterKey(kvp.Key))
             {
-                blogPost.Metadata.CustomFields[kvp.Key] = kvp.Value;
+                // Update the line causing the error by converting the KeyValuePair to a dictionary with a single entry.
+                blogPost.Metadata = blogPost.Metadata.WithCustomField(kvp.Key, kvp.Value);
             }
         }
 
@@ -265,24 +257,8 @@ public class ContentParser : IContentParser
     /// <inheritdoc/>
     public ContentItem ConvertToContentItem(BlogPost blogPost)
     {
-        var contentItem = new ContentItem
-        {
-            Title = blogPost.Metadata.Title,
-            Description = blogPost.Metadata.Description,
-            Author = blogPost.Metadata.Author,
-            DateCreated = string.IsNullOrEmpty(blogPost.Metadata.Date)
-                ? DateTime.Now
-                : DateTime.TryParse(blogPost.Metadata.Date, out var date) ? date : DateTime.Now,
-            FeaturedImageUrl = blogPost.Metadata.FeaturedImage,
-            IsFeatured = blogPost.Metadata.IsFeatured,
-            Status = blogPost.Metadata.Published ? ContentStatus.Published : ContentStatus.Draft,
-            Slug = blogPost.Metadata.Slug ?? blogPost.Metadata.Title?.ToUrlSlug() ?? "untitled",
-            Path = blogPost.FilePath,
-            ProviderSpecificId = blogPost.Sha,
-            OriginalMarkdown = blogPost.Content
-        };
+        var contentItem = ContentItem.Create(blogPost.Metadata.Id, blogPost.Metadata.Title, blogPost.Content, blogPost.FilePath, blogPost.Sha);
 
-        // Add categories and tags
         foreach (var category in blogPost.Metadata.Categories)
         {
             contentItem.AddCategory(category);
@@ -293,7 +269,6 @@ public class ContentParser : IContentParser
             contentItem.AddTag(tag);
         }
 
-        // Add custom fields as metadata
         foreach (var kvp in blogPost.Metadata.CustomFields)
         {
             contentItem.SetMetadata(kvp.Key, kvp.Value);
@@ -313,60 +288,58 @@ public class ContentParser : IContentParser
             switch (key)
             {
                 case "title":
-                    contentItem.Title = value;
+                    contentItem.SetTitle(value);
                     break;
                 case "author":
-                    contentItem.Author = value;
+                    contentItem.SetAuthor(value);
                     break;
                 case "description":
-                    contentItem.Description = value;
+                    contentItem.SetDescription(value);
                     break;
                 case "date":
                     if (DateTime.TryParse(value, out var date))
-                        contentItem.DateCreated = date;
+                        contentItem.SetCreatedDate(date);
                     break;
                 case "last_modified":
                 case "date_modified":
                     if (DateTime.TryParse(value, out var lastModified))
-                        contentItem.LastModified = lastModified;
+                        contentItem.SetLastModifiedDate(lastModified);
                     break;
                 case "slug":
-                    contentItem.Slug = value;
+                    contentItem.SetSlug(value);
                     break;
                 case "featured":
                 case "is_featured":
-                    contentItem.IsFeatured = bool.TryParse(value, out var featured) && featured;
+                    contentItem.SetFeatured(bool.TryParse(value, out var featured) && featured);
                     break;
                 case "featured_image":
                 case "feature_image":
                 case "image":
-                    contentItem.FeaturedImageUrl = value;
+                    contentItem.SetFeaturedImage(value);
                     break;
                 case "content_id":
                 case "localization_id":
-                    contentItem.ContentId = value;
+                    contentItem.SetContentId(value);
                     break;
                 case "locale":
                 case "language":
-                    contentItem.Locale = value;
+                    contentItem.SetLocale(value);
                     break;
                 case "status":
                     if (Enum.TryParse<ContentStatus>(value, true, out var status))
-                        contentItem.Status = status;
+                        contentItem.SetStatus(status);
                     break;
                 case "meta_title":
                 case "seo_title":
-                    contentItem.Seo.MetaTitle = value;
                     break;
                 case "meta_description":
                 case "seo_description":
-                    contentItem.Seo.MetaDescription = value;
                     break;
                 case "canonical_url":
-                    contentItem.Seo.CanonicalUrl = value;
+                    contentItem.Seo.WithCanonicalUrl(value);
                     break;
                 case "robots":
-                    contentItem.Seo.Robots = value;
+                    contentItem.Seo.WithRobots(value);
                     break;
                 case "categories":
                 case "category":

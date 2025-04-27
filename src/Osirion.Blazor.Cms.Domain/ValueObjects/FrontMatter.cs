@@ -1,13 +1,20 @@
-﻿using Osirion.Blazor.Cms.Domain.Common;
-using System.Text;
+﻿using System.Text;
+using System.Text.Json.Serialization;
+using Osirion.Blazor.Cms.Domain.Common;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Osirion.Blazor.Cms.Domain.ValueObjects;
 
 /// <summary>
-/// Represents the frontmatter metadata for content
+/// Represents the frontmatter metadata for a blog post or page
 /// </summary>
 public class FrontMatter : ValueObject
 {
+    /// <summary>
+    /// Gets the Id of the post
+    /// </summary>
+    public string Id { get; private set; } = string.Empty;
+
     /// <summary>
     /// Gets the title of the post
     /// </summary>
@@ -68,11 +75,42 @@ public class FrontMatter : ValueObject
     /// </summary>
     public IReadOnlyDictionary<string, object> CustomFields { get; private set; } = new Dictionary<string, object>();
 
-    // Private constructor for initialization
+    // Private constructor to enforce creation through factory method
     private FrontMatter() { }
 
-    // Factory method
+    /// <summary>
+    /// Factory method to create a new FrontMatter instance
+    /// </summary>
+    public static FrontMatter Create(string title)
+    {
+        var frontMatter = new FrontMatter
+        {
+            Title = title
+        };
+
+        return frontMatter;
+    }
+
+    /// <summary>
+    /// Factory method to create a new FrontMatter instance
+    /// </summary>
+    public static FrontMatter Create(string title, string description,  DateTime dateCreated)
+    {
+        var frontMatter = new FrontMatter
+        {
+            Title = title,
+            Description = description,
+            Date = dateCreated.ToString()
+        };
+
+        return frontMatter;
+    }
+
+    /// <summary>
+    /// Factory method to create a new FrontMatter instance
+    /// </summary>
     public static FrontMatter Create(
+        string id,
         string title,
         string? description = null,
         string? author = null,
@@ -91,7 +129,7 @@ public class FrontMatter : ValueObject
             Title = title,
             Description = description ?? string.Empty,
             Author = author ?? string.Empty,
-            Date = date?.ToString("yyyy-MM-dd") ?? DateTime.Now.ToString("yyyy-MM-dd"),
+            Date = (date ?? DateTime.Now).ToString("yyyy-MM-dd"),
             FeaturedImage = featuredImage,
             IsFeatured = isFeatured,
             Published = published,
@@ -120,7 +158,7 @@ public class FrontMatter : ValueObject
         return frontMatter;
     }
 
-    // Builder methods for immutable updates
+    // Fluent builder methods
     public FrontMatter WithTitle(string title)
     {
         var clone = Clone();
@@ -228,19 +266,16 @@ public class FrontMatter : ValueObject
         var clone = Clone();
 
         // Create a new dictionary with the existing custom fields plus the new one
-        var newCustomFields = new Dictionary<string, object>();
-        foreach (var kvp in CustomFields)
-        {
-            newCustomFields[kvp.Key] = kvp.Value;
-        }
-
+        var newCustomFields = new Dictionary<string, object>(CustomFields);
         newCustomFields[key] = value;
         clone.CustomFields = newCustomFields;
 
         return clone;
     }
 
-    // Convert to YAML
+    /// <summary>
+    /// Creates a YAML representation of the frontmatter
+    /// </summary>
     public string ToYaml()
     {
         var yaml = new StringBuilder();
@@ -332,10 +367,12 @@ public class FrontMatter : ValueObject
         return yaml.ToString();
     }
 
-    // Create a deep clone
+    /// <summary>
+    /// Creates a deep clone of this FrontMatter
+    /// </summary>
     public FrontMatter Clone()
     {
-        var clone = new FrontMatter
+        return new FrontMatter
         {
             Title = Title,
             Description = Description,
@@ -350,21 +387,91 @@ public class FrontMatter : ValueObject
             Tags = new List<string>(Tags),
             CustomFields = new Dictionary<string, object>(CustomFields)
         };
-
-        return clone;
     }
 
-    // Helper method to escape YAML strings
-    private static string EscapeYamlString(string value)
+    /// <summary>
+    /// Static method to create FrontMatter from a dictionary of values
+    /// </summary>
+    public static FrontMatter FromDictionary(IDictionary<string, string> values)
     {
-        if (string.IsNullOrEmpty(value))
-            return value;
+        if (values == null)
+            throw new ArgumentNullException(nameof(values));
 
-        // Replace any double quotes with escaped double quotes
-        return value.Replace("\"", "\\\"");
+        // Extract required title or use empty string
+        string title = values.TryGetValue("title", out var titleValue) ? titleValue : string.Empty;
+
+        // Create the base front matter
+        var frontMatter = Create(title);
+
+        // Update properties from the dictionary
+        if (values.TryGetValue("description", out var description))
+            frontMatter = frontMatter.WithDescription(description);
+
+        if (values.TryGetValue("author", out var author))
+            frontMatter = frontMatter.WithAuthor(author);
+
+        if (values.TryGetValue("date", out var dateStr) && DateTime.TryParse(dateStr, out var date))
+            frontMatter = frontMatter.WithDate(date);
+
+        if (values.TryGetValue("featuredImage", out var featuredImage) ||
+            values.TryGetValue("featured_image", out featuredImage))
+            frontMatter = frontMatter.WithFeaturedImage(featuredImage);
+
+        if (values.TryGetValue("featured", out var featuredStr) ||
+            values.TryGetValue("isFeatured", out featuredStr))
+            frontMatter = frontMatter.WithFeatured(bool.TryParse(featuredStr, out var featured) && featured);
+
+        if (values.TryGetValue("published", out var publishedStr))
+            frontMatter = frontMatter.WithPublished(!bool.TryParse(publishedStr, out var published) || published);
+
+        if (values.TryGetValue("layout", out var layout))
+            frontMatter = frontMatter.WithLayout(layout);
+
+        if (values.TryGetValue("slug", out var slug))
+            frontMatter = frontMatter.WithSlug(slug);
+
+        // Handle categories and tags
+        if (values.TryGetValue("categories", out var categoriesStr) ||
+            values.TryGetValue("category", out categoriesStr))
+        {
+            var categories = ParseListValue(categoriesStr);
+            frontMatter = frontMatter.WithCategories(categories);
+        }
+
+        if (values.TryGetValue("tags", out var tagsStr) ||
+            values.TryGetValue("tag", out tagsStr))
+        {
+            var tags = ParseListValue(tagsStr);
+            frontMatter = frontMatter.WithTags(tags);
+        }
+
+        // Add remaining values as custom fields
+        var customFields = new Dictionary<string, object>();
+        foreach (var kvp in values)
+        {
+            if (!IsStandardKey(kvp.Key))
+            {
+                // Try to parse as different types
+                if (bool.TryParse(kvp.Value, out var boolVal))
+                    customFields[kvp.Key] = boolVal;
+                else if (int.TryParse(kvp.Value, out var intVal))
+                    customFields[kvp.Key] = intVal;
+                else if (double.TryParse(kvp.Value, out var doubleVal))
+                    customFields[kvp.Key] = doubleVal;
+                else
+                    customFields[kvp.Key] = kvp.Value;
+            }
+        }
+
+        if (customFields.Count > 0)
+            frontMatter = frontMatter.WithCustomFields(customFields);
+
+        return frontMatter;
     }
 
-    // For value object equality
+    /// <summary>
+    /// Provides equality comparison components for the value object
+    /// </summary>
     protected override IEnumerable<object> GetEqualityComponents()
     {
         yield return Title;
@@ -394,84 +501,9 @@ public class FrontMatter : ValueObject
         }
     }
 
-    // Factory method to create from a dictionary of values
-    public static FrontMatter FromDictionary(IDictionary<string, string> values)
-    {
-        if (values == null)
-            throw new ArgumentNullException(nameof(values));
-
-        // Extract required title or use empty string
-        string title = values.TryGetValue("title", out var titleValue) ? titleValue : string.Empty;
-
-        // Create the base front matter
-        var frontMatter = new FrontMatter
-        {
-            Title = title
-        };
-
-        // Set other properties from the dictionary
-        if (values.TryGetValue("description", out var description))
-            frontMatter = frontMatter.WithDescription(description);
-
-        if (values.TryGetValue("author", out var author))
-            frontMatter = frontMatter.WithAuthor(author);
-
-        if (values.TryGetValue("date", out var dateStr) && DateTime.TryParse(dateStr, out var date))
-            frontMatter = frontMatter.WithDate(date);
-
-        if (values.TryGetValue("featuredImage", out var featuredImage) || values.TryGetValue("featured_image", out featuredImage))
-            frontMatter = frontMatter.WithFeaturedImage(featuredImage);
-
-        if (values.TryGetValue("featured", out var featuredStr) || values.TryGetValue("isFeatured", out featuredStr))
-            frontMatter = frontMatter.WithFeatured(bool.TryParse(featuredStr, out var featured) && featured);
-
-        if (values.TryGetValue("published", out var publishedStr))
-            frontMatter = frontMatter.WithPublished(!bool.TryParse(publishedStr, out var published) || published);
-
-        if (values.TryGetValue("layout", out var layout))
-            frontMatter = frontMatter.WithLayout(layout);
-
-        if (values.TryGetValue("slug", out var slug))
-            frontMatter = frontMatter.WithSlug(slug);
-
-        // Handle categories and tags
-        if (values.TryGetValue("categories", out var categoriesStr) || values.TryGetValue("category", out categoriesStr))
-        {
-            var categories = ParseListValue(categoriesStr);
-            frontMatter = frontMatter.WithCategories(categories);
-        }
-
-        if (values.TryGetValue("tags", out var tagsStr) || values.TryGetValue("tag", out tagsStr))
-        {
-            var tags = ParseListValue(tagsStr);
-            frontMatter = frontMatter.WithTags(tags);
-        }
-
-        // Add remaining values as custom fields
-        var customFields = new Dictionary<string, object>();
-        foreach (var kvp in values)
-        {
-            if (!IsStandardKey(kvp.Key))
-            {
-                // Try to parse as different types
-                if (bool.TryParse(kvp.Value, out var boolValue))
-                    customFields[kvp.Key] = boolValue;
-                else if (int.TryParse(kvp.Value, out var intValue))
-                    customFields[kvp.Key] = intValue;
-                else if (double.TryParse(kvp.Value, out var doubleValue))
-                    customFields[kvp.Key] = doubleValue;
-                else
-                    customFields[kvp.Key] = kvp.Value;
-            }
-        }
-
-        if (customFields.Count > 0)
-            frontMatter = frontMatter.WithCustomFields(customFields);
-
-        return frontMatter;
-    }
-
-    // Helper to parse list values from string
+    /// <summary>
+    /// Helper method to parse list values from string
+    /// </summary>
     private static List<string> ParseListValue(string value)
     {
         var result = new List<string>();
@@ -506,15 +538,225 @@ public class FrontMatter : ValueObject
         return result;
     }
 
-    // Helper to check if a key is a standard frontmatter key
+    /// <summary>
+    /// Checks if a key is a standard frontmatter key
+    /// </summary>
     private static bool IsStandardKey(string key)
     {
         var standardKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
-            "title", "description", "author", "date", "featuredImage", "featured_image",
-            "featured", "isFeatured", "published", "layout", "slug", "categories", "category", "tags", "tag"
+            "title", "description", "author", "date", "featuredimage", "featured_image",
+            "featured", "isFeatured", "published", "layout", "slug", "categories",
+            "category", "tags", "tag"
         };
 
         return standardKeys.Contains(key);
+    }
+
+    /// <summary>
+    /// Escapes special characters in a YAML string
+    /// </summary>
+    private static string EscapeYamlString(string value)
+    {
+        if (string.IsNullOrEmpty(value))
+            return value;
+
+        return value
+            .Replace("\\", "\\\\")
+            .Replace("\"", "\\\"")
+            .Replace("\n", "\\n")
+            .Replace("\r", "\\r")
+            .Replace("\t", "\\t");
+    }
+
+    /// <summary>
+    /// Parses YAML frontmatter from a complete markdown document
+    /// </summary>
+    public static FrontMatter FromMarkdown(string markdown)
+    {
+        if (string.IsNullOrWhiteSpace(markdown))
+            return new FrontMatter();
+
+        // Regular expression to extract frontmatter
+        var frontMatterRegex = new System.Text.RegularExpressions.Regex(
+            @"^\s*---\s*\n(.*?)\n\s*---\s*\n",
+            System.Text.RegularExpressions.RegexOptions.Singleline
+        );
+
+        var match = frontMatterRegex.Match(markdown);
+
+        if (match.Success)
+        {
+            // Extract and parse frontmatter
+            var frontMatterYaml = match.Groups[1].Value;
+            var frontMatterDict = frontMatterYaml
+                .Split('\n')
+                .Where(line => !string.IsNullOrWhiteSpace(line))
+                .Select(line => line.Split(new[] { ':' }, 2))
+                .Where(parts => parts.Length == 2)
+                .ToDictionary(
+                    parts => parts[0].Trim(),
+                    parts => parts[1].Trim().Trim('"', '\''),
+                    StringComparer.OrdinalIgnoreCase
+                );
+
+            return FromDictionary(frontMatterDict);
+        }
+
+        // No frontmatter found, return default
+        return new FrontMatter();
+    }
+
+    public static FrontMatter FromYaml(string yaml)
+    {
+        var frontMatter = new FrontMatter();
+
+        if (string.IsNullOrWhiteSpace(yaml))
+            return frontMatter;
+
+        // Simple line-by-line parsing for common properties
+        var lines = yaml.Split('\n');
+
+        string? currentList = null;
+        List<string> currentItems = new();
+
+        foreach (var line in lines)
+        {
+            var trimmedLine = line.Trim();
+
+            // Skip the opening and closing --- lines
+            if (trimmedLine == "---")
+                continue;
+
+            // Check if this is a new list
+            if (trimmedLine.EndsWith(':'))
+            {
+                // Save any previous list
+                if (currentList != null && currentItems.Count > 0)
+                {
+                    AssignList(frontMatter, currentList, currentItems);
+                }
+
+                // Start a new list
+                currentList = trimmedLine.TrimEnd(':');
+                currentItems = new List<string>();
+                continue;
+            }
+
+            // Check if this is a list item
+            if (trimmedLine.StartsWith("  - "))
+            {
+                var item = trimmedLine.Substring(4).Trim();
+                // Remove quotes if present
+                if (item.StartsWith("\"") && item.EndsWith("\""))
+                {
+                    item = item.Substring(1, item.Length - 2);
+                }
+
+                currentItems.Add(item);
+                continue;
+            }
+
+            // Process key-value pair
+            var separatorIndex = trimmedLine.IndexOf(':');
+            if (separatorIndex > 0)
+            {
+                // Save any previous list
+                if (currentList != null && currentItems.Count > 0)
+                {
+                    AssignList(frontMatter, currentList, currentItems);
+                    currentList = null;
+                    currentItems.Clear();
+                }
+
+                var key = trimmedLine.Substring(0, separatorIndex).Trim();
+                var value = trimmedLine.Substring(separatorIndex + 1).Trim();
+
+                // Remove quotes if present
+                if (value.StartsWith("\"") && value.EndsWith("\""))
+                {
+                    value = value.Substring(1, value.Length - 2);
+                }
+
+                AssignProperty(frontMatter, key, value);
+            }
+        }
+
+        // Save any final list
+        if (currentList != null && currentItems.Count > 0)
+        {
+            AssignList(frontMatter, currentList, currentItems);
+        }
+
+        return frontMatter;
+    }
+
+    private static void AssignList(FrontMatter frontMatter, string listName, List<string> items)
+    {
+        switch (listName.ToLowerInvariant())
+        {
+            case "categories":
+                frontMatter = frontMatter.WithCategories(items);
+                break;
+            case "tags":
+                frontMatter = frontMatter.WithTags(items);
+                break;
+            default:
+                // For custom list properties, add as a custom field
+                frontMatter = frontMatter.WithCustomField(listName, items);
+                break;
+        }
+    }
+
+    private static void AssignProperty(FrontMatter frontMatter, string key, string value)
+    {
+        switch (key.ToLowerInvariant())
+        {
+            case "title":
+                frontMatter.Title = value;
+                break;
+            case "description":
+                frontMatter.Description = value;
+                break;
+            case "author":
+                frontMatter.Author = value;
+                break;
+            case "date":
+                frontMatter.Date = value;
+                break;
+            case "featuredimage":
+                frontMatter.FeaturedImage = value;
+                break;
+            case "featured":
+                frontMatter.IsFeatured = bool.TryParse(value, out var featured) && featured;
+                break;
+            case "published":
+                frontMatter.Published = !bool.TryParse(value, out var published) || published;
+                break;
+            case "layout":
+                frontMatter.Layout = value;
+                break;
+            case "slug":
+                frontMatter.Slug = value;
+                break;
+            default:
+                if (bool.TryParse(value, out var boolValue))
+                {
+                    frontMatter = frontMatter.WithCustomField(key, boolValue);
+                }
+                else if (int.TryParse(value, out var intValue))
+                {
+                    frontMatter = frontMatter.WithCustomField(key, intValue);
+                }
+                else if (double.TryParse(value, out var doubleValue))
+                {
+                    frontMatter = frontMatter.WithCustomField(key, doubleValue);
+                }
+                else
+                {
+                    frontMatter = frontMatter.WithCustomField(key, value);
+                }
+                break;
+        }
     }
 }

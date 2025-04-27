@@ -1,4 +1,6 @@
-﻿using Osirion.Blazor.Cms.Models;
+﻿using Osirion.Blazor.Cms.Domain.Entities;
+using Osirion.Blazor.Cms.Domain.Repositories;
+using Osirion.Blazor.Cms.Models;
 
 namespace Osirion.Blazor.Cms.Interfaces;
 

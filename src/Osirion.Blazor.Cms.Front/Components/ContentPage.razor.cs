@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Components;
 using Osirion.Blazor.Cms.Core.Interfaces;
-using Osirion.Blazor.Cms.Enums;
+using Osirion.Blazor.Cms.Domain.Entities;
+using Osirion.Blazor.Cms.Domain.Enums;
+using Osirion.Blazor.Cms.Domain.Repositories;
 using Osirion.Blazor.Cms.Interfaces;
 using Osirion.Blazor.Cms.Models;
 using System.Text.RegularExpressions;
@@ -250,32 +252,6 @@ public partial class ContentPage
     /// Gets or sets a value indicating whether the component is loading.
     /// </summary>
     protected bool IsLoading { get; set; } = true;
-
-    ///// <summary>
-    ///// Initializes the component.
-    ///// </summary>
-    //protected override async Task OnInitializedAsync()
-    //{
-    //    if (ContentItem == null && !string.IsNullOrEmpty(Path))
-    //    {
-    //        await LoadContentAsync();
-    //    }
-    //    else if (ContentItem != null)
-    //    {
-    //        IsLoading = false;
-
-    //        if (OnContentLoaded.HasDelegate)
-    //        {
-    //            await OnContentLoaded.InvokeAsync(ContentItem);
-    //        }
-    //    }
-    //    else
-    //    {
-    //        IsLoading = false;
-    //    }
-
-    //    await base.OnInitializedAsync();
-    //}
 
     /// <summary>
     /// Processes changes to component parameters.

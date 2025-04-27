@@ -1,4 +1,5 @@
-﻿namespace Osirion.Blazor.Cms.Exceptions;
+﻿using Osirion.Blazor.Cms.Domain.Exceptions;
+namespace Osirion.Blazor.Cms.Exceptions;
 
 /// <summary>
 /// Exception thrown when there is a problem with the file system

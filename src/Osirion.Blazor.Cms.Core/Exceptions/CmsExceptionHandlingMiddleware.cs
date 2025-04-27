@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Core.Exceptions;
+using Osirion.Blazor.Cms.Domain.Exceptions;
 using Osirion.Blazor.Cms.Exceptions;
 using System.Text.Json;
+using DirectoryNotFoundException = Osirion.Blazor.Cms.Domain.Exceptions.DirectoryNotFoundException;
 
 namespace Osirion.Blazor.Cms.Middleware;
 
@@ -67,7 +69,7 @@ public class CmsExceptionHandlingMiddleware
             ContentItemNotFoundException => StatusCodes.Status404NotFound,
             ContentValidationException => StatusCodes.Status422UnprocessableEntity,
             ContentAuthorizationException => StatusCodes.Status403Forbidden,
-            Exceptions.DirectoryNotFoundException => StatusCodes.Status404NotFound,
+            DirectoryNotFoundException => StatusCodes.Status404NotFound,
             ContentConfigurationException => StatusCodes.Status500InternalServerError,
             ContentFileSystemException => StatusCodes.Status500InternalServerError,
             ProviderApiException apiEx => apiEx.StatusCode ?? StatusCodes.Status500InternalServerError,
@@ -79,10 +81,10 @@ public class CmsExceptionHandlingMiddleware
     {
         return exception switch
         {
-            ContentItemNotFoundException notFound => $"Content not found: {notFound.ItemId}",
+            ContentItemNotFoundException notFound => $"Content not found: {notFound.ContentId}",
             ContentValidationException validation => $"Validation failed: {string.Join(", ", validation.Errors.Select(e => $"{e.Key}: {string.Join("; ", e.Value)}"))}",
             ContentAuthorizationException auth => $"Not authorized: {auth.Message}",
-            Exceptions.DirectoryNotFoundException dirNotFound => $"Directory not found: {dirNotFound.DirectoryPath}",
+            DirectoryNotFoundException dirNotFound => $"Directory not found: {dirNotFound.DirectoryId}",
             _ => exception.Message
         };
     }

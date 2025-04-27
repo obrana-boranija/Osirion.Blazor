@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Osirion.Blazor.Cms.Admin.Services;
-using Osirion.Blazor.Cms.Core.Providers.GitHub.Models;
 using Osirion.Blazor.Cms.Core.Providers.Interfaces;
+using Osirion.Blazor.Cms.Infrastructure.GitHub.Models;
 
 namespace Osirion.Blazor.Cms.Admin.Components.Repository;
 public partial class BranchSelector(IGitHubAdminService GitHubService, CmsAdminState AdminState)

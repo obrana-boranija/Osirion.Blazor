@@ -1,12 +1,12 @@
 using Microsoft.AspNetCore.Components;
-using Osirion.Blazor.Cms.Core.Models;
+using Osirion.Blazor.Cms.Domain.ValueObjects;
 
 namespace Osirion.Blazor.Cms.Admin.Components.Editor;
 
 public partial class MetadataEditor
 {
     [Parameter]
-    public FrontMatter Metadata { get; set; } = new();
+    public FrontMatter Metadata { get; set; }
 
     [Parameter]
     public EventCallback<FrontMatter> MetadataChanged { get; set; }
@@ -19,7 +19,7 @@ public partial class MetadataEditor
         get => string.Join(", ", Metadata.Categories);
         set
         {
-            Metadata.Categories = ParseList(value);
+            Metadata.WithCategories(ParseList(value));
             NotifyMetadataChanged();
         }
     }
@@ -29,7 +29,7 @@ public partial class MetadataEditor
         get => string.Join(", ", Metadata.Tags);
         set
         {
-            Metadata.Tags = ParseList(value);
+            Metadata.WithTags(ParseList(value));
             NotifyMetadataChanged();
         }
     }
@@ -47,18 +47,9 @@ public partial class MetadataEditor
         }
         set
         {
-            Metadata.Date = value.ToString("yyyy-MM-dd");
+            Metadata.WithDate(value);
             NotifyMetadataChanged();
         }
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
-        await base.OnInitializedAsync();
-
-        // Initialize with empty collections if null
-        Metadata.Categories ??= new List<string>();
-        Metadata.Tags ??= new List<string>();
     }
 
     private List<string> ParseList(string input)
@@ -69,7 +60,7 @@ public partial class MetadataEditor
         }
 
         return input
-            .Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries)
+            .Split([',', ';'], StringSplitOptions.RemoveEmptyEntries)
             .Select(item => item.Trim())
             .Where(item => !string.IsNullOrWhiteSpace(item))
             .ToList();

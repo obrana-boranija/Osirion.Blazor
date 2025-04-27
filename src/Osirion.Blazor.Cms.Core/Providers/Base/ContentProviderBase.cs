@@ -1,5 +1,8 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using Osirion.Blazor.Cms.Domain.Entities;
+using Osirion.Blazor.Cms.Domain.Exceptions;
+using Osirion.Blazor.Cms.Domain.Repositories;
 using Osirion.Blazor.Cms.Exceptions;
 using Osirion.Blazor.Cms.Interfaces;
 using Osirion.Blazor.Cms.Models;
@@ -91,12 +94,10 @@ public abstract class ContentProviderBase : IContentProvider, IDisposable
                     return items
                         .SelectMany(item => item.Categories)
                         .GroupBy(category => category.ToLowerInvariant())
-                        .Select(group => new ContentCategory
-                        {
-                            Name = group.First(),
-                            Slug = group.First().ToUrlSlug(),
-                            Count = group.Count()
-                        })
+                        .Select(group => ContentCategory.Create(
+                            group.First(),
+                            group.First().ToUrlSlug(),
+                            group.Count()))
                         .OrderBy(c => c.Name)
                         .ToList()
                         .AsReadOnly();
@@ -120,12 +121,10 @@ public abstract class ContentProviderBase : IContentProvider, IDisposable
                     return items
                         .SelectMany(item => item.Tags)
                         .GroupBy(tag => tag.ToLowerInvariant())
-                        .Select(group => new ContentTag
-                        {
-                            Name = group.First(),
-                            Slug = group.First().ToUrlSlug(),
-                            Count = group.Count()
-                        })
+                        .Select(group => ContentTag.Create(
+                            group.First(),
+                            group.First().ToUrlSlug(),
+                            group.Count()))
                         .OrderBy(t => t.Name)
                         .ToList()
                         .AsReadOnly();

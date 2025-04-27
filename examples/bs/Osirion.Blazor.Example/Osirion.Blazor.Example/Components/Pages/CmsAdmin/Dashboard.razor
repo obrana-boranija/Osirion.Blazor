@@ -7,21 +7,22 @@
 @using Osirion.Blazor.Cms.Admin.Services
 @using Osirion.Blazor.Cms.Core.Models
 @using Osirion.Blazor.Cms.Core.Providers.Interfaces
+@using Osirion.Blazor.Cms.Domain.ValueObjects
 @using Osirion.Blazor.Cms.Models
 @inherits Osirion.Blazor.Components.OsirionComponentBase
 @inject IGitHubAdminService GitHubService
 
 <AdminPage Title="Dashboard" Subtitle="Content Management System">
-@*     <BreadcrumbItems>
+    @*     <BreadcrumbItems>
         @(new AdminLayout.BreadcrumbItem("Dashboard"))
     </BreadcrumbItems> *@
-    
+
     <div class="osirion-admin-dashboard-content">
         <div class="osirion-admin-dashboard-header">
             <h2 class="osirion-admin-page-title">Dashboard</h2>
             <p class="osirion-admin-page-description">Manage your content with Osirion CMS.</p>
         </div>
-        
+
         <div class="osirion-admin-dashboard-cards">
             <div class="osirion-admin-card">
                 <div class="osirion-admin-card-header">
@@ -31,7 +32,7 @@
                     <RepositorySelector />
                 </div>
             </div>
-            
+
             <div class="osirion-admin-card">
                 <div class="osirion-admin-card-header">
                     <h3 class="osirion-admin-card-title">Branch</h3>
@@ -40,7 +41,7 @@
                     <BranchSelector AllowCreateBranch="true" />
                 </div>
             </div>
-            
+
             <div class="osirion-admin-card">
                 <div class="osirion-admin-card-header">
                     <h3 class="osirion-admin-card-title">Create Content</h3>
@@ -48,7 +49,7 @@
                 <div class="osirion-admin-card-body">
                     <p>Create new content for your website:</p>
                     <div class="osirion-admin-card-actions">
-                        <button type="button" 
+                        <button type="button"
                                 class="osirion-admin-button osirion-admin-button-primary"
                                 @onclick="CreateNewPost">
                             <span class="osirion-admin-icon">
@@ -65,7 +66,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="osirion-admin-dashboard-content-browser">
             <FileExplorer Title="Content Files" CanCreateFile="true" CanDeleteFile="true" />
         </div>
@@ -77,25 +78,17 @@
     {
         // Create new blog post with empty content
         var newPost = new BlogPost
-        {
-            Metadata = new FrontMatter
             {
-                Title = "New Post",
-                Description = "Enter description here",
-                Author = string.Empty,
-                Date = DateTime.Now.ToString("yyyy-MM-dd"),
-                Categories = new List<string>(),
-                Tags = new List<string>()
-            },
-            Content = "## New Post\n\nStart writing your content here...",
-            FilePath = string.IsNullOrEmpty(AdminState.CurrentPath) ? 
-                "new-post.md" : 
-                $"{AdminState.CurrentPath}/new-post.md"
-        };
-        
+                Metadata = FrontMatter.Create("New Post", "Enter description here", DateTime.Now),
+                Content = "## New Post\n\nStart writing your content here...",
+                FilePath = string.IsNullOrEmpty(AdminState.CurrentPath) ?
+                    "new-post.md" :
+                    $"{AdminState.CurrentPath}/new-post.md"
+            };
+
         AdminState.SetEditingPost(newPost, true);
     }
-    
+
     [Inject]
     private CmsAdminState AdminState { get; set; } = default!;
 }

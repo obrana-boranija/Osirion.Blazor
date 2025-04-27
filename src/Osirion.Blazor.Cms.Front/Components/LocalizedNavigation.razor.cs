@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Osirion.Blazor.Cms.Core.Interfaces;
+using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Models;
 
 namespace Osirion.Blazor.Cms.Components;

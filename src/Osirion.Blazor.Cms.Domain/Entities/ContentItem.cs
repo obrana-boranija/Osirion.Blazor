@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Osirion.Blazor.Cms.Domain.Common;
+﻿using Osirion.Blazor.Cms.Domain.Common;
 using Osirion.Blazor.Cms.Domain.Enums;
 using Osirion.Blazor.Cms.Domain.Exceptions;
+using Osirion.Blazor.Cms.Domain.Extensions;
 using Osirion.Blazor.Cms.Domain.ValueObjects;
 
 namespace Osirion.Blazor.Cms.Domain.Entities;
@@ -11,141 +9,49 @@ namespace Osirion.Blazor.Cms.Domain.Entities;
 /// <summary>
 /// Represents a content item in the CMS
 /// </summary>
-public class ContentItem : Entity<string>
+public class ContentItem : DomainEntity<string>
 {
     // Private backing fields for collections
     private readonly List<string> _tags = new();
     private readonly List<string> _categories = new();
-    private readonly MetadataContainer _metadata = new();
+    private readonly Dictionary<string, object> _metadataValues = new(StringComparer.OrdinalIgnoreCase);
 
-    /// <summary>
-    /// Gets or sets the title of the content item
-    /// </summary>
     public string Title { get; private set; } = string.Empty;
-
-    /// <summary>
-    /// Gets or sets the author of the content item
-    /// </summary>
     public string Author { get; private set; } = string.Empty;
-
-    /// <summary>
-    /// Gets or sets the publication date of the content item
-    /// </summary>
     public DateTime DateCreated { get; private set; }
-
-    /// <summary>
-    /// Gets or sets the last modified date of the content item
-    /// </summary>
     public DateTime? LastModified { get; private set; }
-
-    /// <summary>
-    /// Gets or sets the content body (HTML)
-    /// </summary>
     public string Content { get; private set; } = string.Empty;
-
-    /// <summary>
-    /// Gets or sets the original markdown content if available
-    /// </summary>
     public string? OriginalMarkdown { get; private set; }
-
-    /// <summary>
-    /// Gets or sets the locale/language code
-    /// </summary>
     public string Locale { get; private set; } = string.Empty;
-
-    /// <summary>
-    /// Gets or sets the content ID that is shared across all localizations
-    /// </summary>
     public string ContentId { get; private set; } = string.Empty;
-
-    /// <summary>
-    /// Gets or sets the description or summary of the content item
-    /// </summary>
     public string Description { get; private set; } = string.Empty;
-
-    /// <summary>
-    /// Gets or sets the URL-friendly slug
-    /// </summary>
     public string Slug { get; private set; } = string.Empty;
-
-    /// <summary>
-    /// Gets or sets the full URL to the content item
-    /// </summary>
     public string Url { get; private set; } = string.Empty;
-
-    /// <summary>
-    /// Gets or sets the full path to the content item
-    /// </summary>
     public string Path { get; private set; } = string.Empty;
-
-    /// <summary>
-    /// Gets or sets the featured image URL
-    /// </summary>
     public string? FeaturedImageUrl { get; private set; }
-
-    /// <summary>
-    /// Gets or sets whether this content item is featured
-    /// </summary>
     public bool IsFeatured { get; private set; }
-
-    /// <summary>
-    /// Gets or sets the status of the content item
-    /// </summary>
     public ContentStatus Status { get; private set; } = ContentStatus.Published;
-
-    /// <summary>
-    /// Gets the tags associated with this content item
-    /// </summary>
-    public IReadOnlyList<string> Tags => _tags.AsReadOnly();
-
-    /// <summary>
-    /// Gets the categories associated with this content item
-    /// </summary>
-    public IReadOnlyList<string> Categories => _categories.AsReadOnly();
-
-    /// <summary>
-    /// Gets the metadata dictionary for serialization
-    /// </summary>
-    public IReadOnlyDictionary<string, object> Metadata => _metadata.Values;
-
-    /// <summary>
-    /// Gets or sets the provider identifier that created this content item
-    /// </summary>
-    public string ProviderId { get; private set; } = string.Empty;
-
-    /// <summary>
-    /// Gets or sets the provider-specific identifier
-    /// </summary>
-    public string? ProviderSpecificId { get; private set; }
-
-    /// <summary>
-    /// Gets the estimated reading time in minutes
-    /// </summary>
-    public int ReadTimeMinutes => CalculateReadTime();
-
-    /// <summary>
-    /// Gets or sets the parent directory of this content item
-    /// </summary>
+    public int OrderIndex { get; private set; }
     public DirectoryItem? Directory { get; private set; }
 
-    /// <summary>
-    /// Gets or sets the SEO metadata for this content item
-    /// </summary>
+    // Collections
+    public IReadOnlyList<string> Tags => _tags.AsReadOnly();
+    public IReadOnlyList<string> Categories => _categories.AsReadOnly();
+    public IReadOnlyDictionary<string, object> Metadata => _metadataValues;
+
+    // Value objects
     public SeoMetadata Seo { get; private set; } = new SeoMetadata();
 
-    /// <summary>
-    /// Gets the publish date (scheduled or actual)
-    /// </summary>
+    // Computed properties
+    public int ReadTimeMinutes => CalculateReadTime();
     public DateTime PublishDate => GetMetadata<DateTime>("publish_date", DateCreated);
 
-    /// <summary>
-    /// Gets or sets the ordering index (for manual sorting)
-    /// </summary>
-    public int OrderIndex { get; private set; }
-
-    // Constructor with required fields
+    // Private constructor for initialization
     private ContentItem() { }
 
+    /// <summary>
+    /// Creates a new content item
+    /// </summary>
     public static ContentItem Create(
         string id,
         string title,
@@ -153,6 +59,12 @@ public class ContentItem : Entity<string>
         string path,
         string providerId)
     {
+        if (string.IsNullOrWhiteSpace(title))
+            throw new ContentValidationException("Title", "Title cannot be empty");
+
+        if (string.IsNullOrWhiteSpace(path))
+            throw new ContentValidationException("Path", "Path cannot be empty");
+
         var contentItem = new ContentItem
         {
             Id = id,
@@ -164,12 +76,12 @@ public class ContentItem : Entity<string>
         };
 
         // Generate slug from title if not provided
-        contentItem.Slug = contentItem.GenerateSlug(title);
+        contentItem.Slug = title.GenerateSlug();
 
         return contentItem;
     }
 
-    // Domain methods
+    // Modifier methods
     public void SetTitle(string title)
     {
         if (string.IsNullOrWhiteSpace(title))
@@ -186,6 +98,11 @@ public class ContentItem : Entity<string>
         LastModified = DateTime.UtcNow;
     }
 
+    public void SetOriginalMarkdown(string? markdown)
+    {
+        OriginalMarkdown = markdown;
+    }
+
     public void SetDescription(string description)
     {
         Description = description;
@@ -198,7 +115,7 @@ public class ContentItem : Entity<string>
             throw new ContentValidationException("Slug", "Slug cannot be empty");
 
         // Validate slug format
-        if (!IsValidSlug(slug))
+        if (!slug.IsValidSlug())
             throw new ContentValidationException("Slug", "Slug must contain only lowercase letters, numbers, and hyphens");
 
         Slug = slug;
@@ -208,6 +125,14 @@ public class ContentItem : Entity<string>
     public void SetUrl(string url)
     {
         Url = url;
+    }
+
+    public void SetPath(string path)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+            throw new ContentValidationException("Path", "Path cannot be empty");
+
+        Path = path;
     }
 
     public void SetFeaturedImage(string? url)
@@ -245,9 +170,14 @@ public class ContentItem : Entity<string>
         ContentId = contentId;
     }
 
-    public void SetProviderSpecificId(string? id)
+    public void SetCreatedDate(DateTime date)
     {
-        ProviderSpecificId = id;
+        DateCreated = date;
+    }
+
+    public void SetLastModifiedDate(DateTime date)
+    {
+        LastModified = date;
     }
 
     public void SetOrderIndex(int orderIndex)
@@ -265,6 +195,7 @@ public class ContentItem : Entity<string>
         Seo = seo ?? throw new ArgumentNullException(nameof(seo));
     }
 
+    // Collection modifiers
     public void AddTag(string tag)
     {
         if (string.IsNullOrWhiteSpace(tag))
@@ -333,46 +264,48 @@ public class ContentItem : Entity<string>
         }
     }
 
+    // Metadata operations
     public T? GetMetadata<T>(string key, T? defaultValue = default)
     {
-        return _metadata.GetValue(key, defaultValue);
+        if (_metadataValues.TryGetValue(key, out var value))
+        {
+            if (value is T typedValue)
+            {
+                return typedValue;
+            }
+
+            // Try to convert if possible
+            try
+            {
+                return (T)Convert.ChangeType(value, typeof(T));
+            }
+            catch
+            {
+                return defaultValue;
+            }
+        }
+
+        return defaultValue;
     }
 
     public void SetMetadata<T>(string key, T value)
     {
-        _metadata.SetValue(key, value);
+        if (string.IsNullOrEmpty(key))
+            throw new ArgumentException("Metadata key cannot be empty", nameof(key));
+
+        if (value == null)
+        {
+            _metadataValues.Remove(key);
+        }
+        else
+        {
+            _metadataValues[key] = value;
+        }
+
         LastModified = DateTime.UtcNow;
     }
 
     // Helper methods
-    private string GenerateSlug(string text)
-    {
-        if (string.IsNullOrEmpty(text))
-            return "untitled";
-
-        // Convert to lowercase
-        var slug = text.ToLowerInvariant();
-
-        // Remove special characters
-        slug = System.Text.RegularExpressions.Regex.Replace(slug, @"[^a-z0-9\s-]", "");
-
-        // Replace spaces with hyphens
-        slug = System.Text.RegularExpressions.Regex.Replace(slug, @"\s+", "-");
-
-        // Remove consecutive hyphens
-        slug = System.Text.RegularExpressions.Regex.Replace(slug, @"-{2,}", "-");
-
-        // Trim hyphens from ends
-        slug = slug.Trim('-');
-
-        return slug;
-    }
-
-    private bool IsValidSlug(string slug)
-    {
-        return System.Text.RegularExpressions.Regex.IsMatch(slug, "^[a-z0-9-]+$");
-    }
-
     private int CalculateReadTime()
     {
         const int wordsPerMinute = 200;
@@ -434,7 +367,10 @@ public class ContentItem : Entity<string>
         }
 
         // Clone metadata
-        clone._metadata = _metadata.Clone();
+        foreach (var kvp in _metadataValues)
+        {
+            clone._metadataValues[kvp.Key] = kvp.Value;
+        }
 
         return clone;
     }

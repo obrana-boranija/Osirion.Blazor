@@ -1,5 +1,5 @@
 ﻿using Osirion.Blazor.Cms.Core.Models;
-using Osirion.Blazor.Cms.Core.Providers.GitHub.Models;
+using Osirion.Blazor.Cms.Infrastructure.GitHub.Models;
 
 namespace Osirion.Blazor.Cms.Admin.Services;
 

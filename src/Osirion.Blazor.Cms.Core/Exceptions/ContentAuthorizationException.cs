@@ -1,4 +1,6 @@
-﻿namespace Osirion.Blazor.Cms.Exceptions;
+﻿using Osirion.Blazor.Cms.Domain.Exceptions;
+
+namespace Osirion.Blazor.Cms.Exceptions;
 
 /// <summary>
 /// Exception thrown when the user is not authorized to perform an operation

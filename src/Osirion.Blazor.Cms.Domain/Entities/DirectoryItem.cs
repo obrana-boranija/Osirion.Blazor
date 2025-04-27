@@ -1,79 +1,49 @@
-﻿using System;
+﻿using Osirion.Blazor.Cms.Domain.Common;
+using Osirion.Blazor.Cms.Domain.Exceptions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Osirion.Blazor.Cms.Domain.Common;
-using Osirion.Blazor.Cms.Domain.Exceptions;
 
 namespace Osirion.Blazor.Cms.Domain.Entities;
 
 /// <summary>
 /// Represents a directory in the content structure
 /// </summary>
-public class DirectoryItem : Entity<string>
+public class DirectoryItem : DomainEntity<string>
 {
-    private readonly MetadataContainer _metadata = new();
+    private readonly Dictionary<string, object> _metadataValues = new(StringComparer.OrdinalIgnoreCase);
     private readonly List<DirectoryItem> _children = new();
     private readonly List<ContentItem> _items = new();
 
-    /// <summary>
-    /// Gets or sets the path of the directory
-    /// </summary>
+    // Core properties
     public string Path { get; private set; } = string.Empty;
-
-    /// <summary>
-    /// Gets or sets the name of the directory
-    /// </summary>
     public string Name { get; private set; } = string.Empty;
-
-    /// <summary>
-    /// Gets or sets the description of the directory
-    /// </summary>
     public string Description { get; private set; } = string.Empty;
-
-    /// <summary>
-    /// Gets or sets the URL for the directory
-    /// </summary>
     public string Url { get; private set; } = string.Empty;
-
-    /// <summary>
-    /// Gets or sets the locale/language code
-    /// </summary>
     public string Locale { get; private set; } = string.Empty;
-
-    /// <summary>
-    /// Gets or sets the order for sorting
-    /// </summary>
     public int Order { get; private set; }
-
-    /// <summary>
-    /// Gets or sets the parent directory
-    /// </summary>
     public DirectoryItem? Parent { get; private set; }
 
-    /// <summary>
-    /// Gets the child directories
-    /// </summary>
+    // Collections and readonly properties
     public IReadOnlyList<DirectoryItem> Children => _children.AsReadOnly();
-
-    /// <summary>
-    /// Gets the content items in this directory
-    /// </summary>
     public IReadOnlyList<ContentItem> Items => _items.AsReadOnly();
+    public IReadOnlyDictionary<string, object> Metadata => _metadataValues;
 
-    /// <summary>
-    /// Gets the metadata dictionary
-    /// </summary>
-    public IReadOnlyDictionary<string, object> Metadata => _metadata.Values;
-
-    /// <summary>
-    /// Gets or sets the provider identifier that created this directory
-    /// </summary>
-    public string ProviderId { get; private set; } = string.Empty;
-
-    /// <summary>
-    /// Gets or sets the provider-specific identifier
-    /// </summary>
-    public string? ProviderSpecificId { get; private set; }
+    // Computed properties
+    public int Depth
+    {
+        get
+        {
+            int depth = 0;
+            var current = Parent;
+            while (current != null)
+            {
+                depth++;
+                current = current.Parent;
+            }
+            return depth;
+        }
+    }
 
     // Private constructor for initialization
     private DirectoryItem() { }
@@ -96,7 +66,7 @@ public class DirectoryItem : Entity<string>
         };
     }
 
-    // Domain methods
+    // Modifier methods
     public void SetName(string name)
     {
         if (string.IsNullOrEmpty(name))
@@ -113,6 +83,14 @@ public class DirectoryItem : Entity<string>
     public void SetUrl(string url)
     {
         Url = url;
+    }
+
+    public void SetPath(string path)
+    {
+        if (string.IsNullOrEmpty(path))
+            throw new ContentValidationException("Path", "Directory path cannot be empty");
+
+        Path = path;
     }
 
     public void SetLocale(string locale)
@@ -134,6 +112,7 @@ public class DirectoryItem : Entity<string>
         Parent = parent;
     }
 
+    // Child directory operations
     public void AddChild(DirectoryItem child)
     {
         if (child == null)
@@ -158,6 +137,15 @@ public class DirectoryItem : Entity<string>
         }
     }
 
+    public void ClearChildren()
+    {
+        foreach (var child in _children.ToList())
+        {
+            RemoveChild(child);
+        }
+    }
+
+    // Content item operations
     public void AddItem(ContentItem item)
     {
         if (item == null)
@@ -183,59 +171,47 @@ public class DirectoryItem : Entity<string>
     {
         foreach (var item in _items.ToList())
         {
-            item.SetDirectory(null);
+            RemoveItem(item);
         }
-        _items.Clear();
     }
 
+    // Metadata operations
     public T? GetMetadata<T>(string key, T? defaultValue = default)
     {
-        return _metadata.GetValue(key, defaultValue);
+        if (_metadataValues.TryGetValue(key, out var value))
+        {
+            if (value is T typedValue)
+            {
+                return typedValue;
+            }
+
+            // Try to convert if possible
+            try
+            {
+                return (T)Convert.ChangeType(value, typeof(T));
+            }
+            catch
+            {
+                return defaultValue;
+            }
+        }
+
+        return defaultValue;
     }
 
     public void SetMetadata<T>(string key, T value)
     {
-        _metadata.SetValue(key, value);
-    }
+        if (string.IsNullOrEmpty(key))
+            throw new ArgumentException("Metadata key cannot be empty", nameof(key));
 
-    public void SetProviderSpecificId(string? id)
-    {
-        ProviderSpecificId = id;
-    }
-
-    /// <summary>
-    /// Gets the depth level in the directory tree (0 = root)
-    /// </summary>
-    public int Depth
-    {
-        get
+        if (value == null)
         {
-            int depth = 0;
-            var current = Parent;
-            while (current != null)
-            {
-                depth++;
-                current = current.Parent;
-            }
-            return depth;
+            _metadataValues.Remove(key);
         }
-    }
-
-    /// <summary>
-    /// Gets the full path from root to this directory
-    /// </summary>
-    public List<DirectoryItem> GetBreadcrumbPath()
-    {
-        var path = new List<DirectoryItem>();
-        var current = this;
-
-        while (current != null)
+        else
         {
-            path.Insert(0, current);
-            current = current.Parent;
+            _metadataValues[key] = value;
         }
-
-        return path;
     }
 
     /// <summary>
@@ -260,6 +236,23 @@ public class DirectoryItem : Entity<string>
     }
 
     /// <summary>
+    /// Gets the full path from root to this directory
+    /// </summary>
+    public List<DirectoryItem> GetBreadcrumbPath()
+    {
+        var path = new List<DirectoryItem>();
+        var current = this;
+
+        while (current != null)
+        {
+            path.Insert(0, current);
+            current = current.Parent;
+        }
+
+        return path;
+    }
+
+    /// <summary>
     /// Creates a deep clone of this directory item (without children and items)
     /// </summary>
     public DirectoryItem Clone()
@@ -279,7 +272,10 @@ public class DirectoryItem : Entity<string>
         };
 
         // Clone metadata
-        clone._metadata = _metadata.Clone();
+        foreach (var kvp in _metadataValues)
+        {
+            clone._metadataValues[kvp.Key] = kvp.Value;
+        }
 
         return clone;
     }

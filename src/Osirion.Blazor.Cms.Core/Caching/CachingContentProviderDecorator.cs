@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Caching;
+using Osirion.Blazor.Cms.Domain.Entities;
+using Osirion.Blazor.Cms.Domain.Repositories;
 using Osirion.Blazor.Cms.Interfaces;
 using Osirion.Blazor.Cms.Models;
 

@@ -5,6 +5,7 @@ using Osirion.Blazor.Cms.Core.Interfaces;
 using Osirion.Blazor.Cms.Core.Providers.FileSystem;
 using Osirion.Blazor.Cms.Core.Providers.GitHub;
 using Osirion.Blazor.Cms.Core.Providers.Interfaces;
+using Osirion.Blazor.Cms.Infrastructure.GitHub;
 using Osirion.Blazor.Cms.Interfaces;
 using Osirion.Blazor.Cms.Options;
 using System.Net.Http.Headers;
@@ -77,29 +78,6 @@ internal class ContentBuilder : IContentBuilder
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", options.ApiToken);
             }
         });
-
-        // Register GitHub provider
-        Services.TryAddScoped<GitHubContentProvider>();
-
-        // Register decorated provider if caching is enabled
-        if (options.EnableCaching)
-        {
-            Services.AddTransient<IContentProvider>(sp => {
-                var provider = sp.GetRequiredService<GitHubContentProvider>();
-                var factory = sp.GetRequiredService<CachedContentProviderFactory>();
-                return factory.CreateCachedProvider(provider);
-            });
-        }
-        else
-        {
-            Services.AddTransient<IContentProvider>(sp => sp.GetRequiredService<GitHubContentProvider>());
-        }
-        // Set as default if specified
-        if (options.IsDefault)
-        {
-            var providerId = options.ProviderId ?? $"github-{options.Owner}-{options.Repository}";
-            SetDefaultProvider(providerId);
-        }
 
         return this;
     }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Osirion.Blazor.Cms.Admin.Services;
 using Osirion.Blazor.Cms.Core.Models;
+using Osirion.Blazor.Cms.Domain.ValueObjects;
 using Osirion.Blazor.Cms.Models;
 
 namespace Osirion.Blazor.Example.Components.Pages.CmsAdmin;
@@ -109,15 +110,7 @@ public partial class EditContent
         // Create new blog post with empty content
         var newPost = new BlogPost
         {
-            Metadata = new FrontMatter
-            {
-                Title = "New Post",
-                Description = "Enter description here",
-                Author = string.Empty,
-                Date = DateTime.Now.ToString("yyyy-MM-dd"),
-                Categories = new List<string>(),
-                Tags = new List<string>()
-            },
+            Metadata = FrontMatter.Create("New Post", "Enter description here", DateTime.Now),
             Content = "## New Post\n\nStart writing your content here...",
             FilePath = string.IsNullOrEmpty(AdminState.CurrentPath) ?
                 "new-post.md" :

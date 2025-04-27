@@ -1,4 +1,5 @@
-﻿using Osirion.Blazor.Cms.Core.Providers.GitHub.Models;
+﻿using Osirion.Blazor.Cms.Domain.ValueObjects;
+using Osirion.Blazor.Cms.Infrastructure.GitHub.Models;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -12,7 +13,7 @@ public class BlogPost
     /// <summary>
     /// Gets or sets the frontmatter metadata for the post
     /// </summary>
-    public FrontMatter Metadata { get; set; } = new();
+    public FrontMatter Metadata { get; set; }
 
     /// <summary>
     /// Gets or sets the markdown content of the post
