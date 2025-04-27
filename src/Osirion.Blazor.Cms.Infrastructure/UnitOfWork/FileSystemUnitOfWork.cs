@@ -1,8 +1,5 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
+using Osirion.Blazor.Cms.Domain.Events;
 using Osirion.Blazor.Cms.Domain.Repositories;
 
 namespace Osirion.Blazor.Cms.Infrastructure.UnitOfWork;
@@ -14,6 +11,7 @@ public class FileSystemUnitOfWork : IUnitOfWork
 {
     private readonly IContentRepository _contentRepository;
     private readonly IDirectoryRepository _directoryRepository;
+    private readonly IDomainEventDispatcher _eventDispatcher;
     private readonly ILogger<FileSystemUnitOfWork> _logger;
     private bool _transactionStarted = false;
     private readonly string _backupDirectory;
@@ -23,11 +21,13 @@ public class FileSystemUnitOfWork : IUnitOfWork
     public FileSystemUnitOfWork(
         IContentRepository contentRepository,
         IDirectoryRepository directoryRepository,
+        IDomainEventDispatcher eventDispatcher,
         ILogger<FileSystemUnitOfWork> logger,
         string backupDirectory)
     {
         _contentRepository = contentRepository ?? throw new ArgumentNullException(nameof(contentRepository));
         _directoryRepository = directoryRepository ?? throw new ArgumentNullException(nameof(directoryRepository));
+        _eventDispatcher = eventDispatcher ?? throw new ArgumentNullException(nameof(eventDispatcher));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _backupDirectory = backupDirectory ?? throw new ArgumentNullException(nameof(backupDirectory));
 
@@ -35,11 +35,27 @@ public class FileSystemUnitOfWork : IUnitOfWork
         Directory.CreateDirectory(_backupDirectory);
     }
 
+    public FileSystemUnitOfWork(IContentRepository contentRepository, IDirectoryRepository directoryRepository, ILogger<FileSystemUnitOfWork> logger, string backupDirectory)
+    {
+        _contentRepository = contentRepository;
+        _directoryRepository = directoryRepository;
+        _logger = logger;
+        _backupDirectory = backupDirectory;
+    }
+
     public IContentRepository ContentRepository => _contentRepository;
 
     public IDirectoryRepository DirectoryRepository => _directoryRepository;
 
     public string ProviderId => "filesystem";
+
+    private async Task DispatchDomainEventsAsync(IEnumerable<IDomainEvent> domainEvents)
+    {
+        foreach (var domainEvent in domainEvents)
+        {
+            await _eventDispatcher.DispatchAsync(domainEvent);
+        }
+    }
 
     public Task BeginTransactionAsync(CancellationToken cancellationToken = default)
     {
@@ -54,13 +70,15 @@ public class FileSystemUnitOfWork : IUnitOfWork
         return Task.CompletedTask;
     }
 
-    public Task CommitAsync(CancellationToken cancellationToken = default)
+    public async Task CommitAsync(CancellationToken cancellationToken = default)
     {
         if (!_transactionStarted)
             throw new InvalidOperationException("No transaction in progress");
 
         try
         {
+            var domainEvents = GetDomainEventsFromTrackedEntities();
+
             // For file system, committing just means keeping the changes
             // Clean up any backups made
             foreach (var file in _modifiedFiles)
@@ -77,14 +95,14 @@ public class FileSystemUnitOfWork : IUnitOfWork
             _savePoints.Clear();
 
             _logger.LogInformation("Committed file system transaction");
+
+            await DispatchDomainEventsAsync(domainEvents);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error committing file system transaction");
             throw;
         }
-
-        return Task.CompletedTask;
     }
 
     public Task RollbackAsync(CancellationToken cancellationToken = default)
@@ -259,5 +277,17 @@ public class FileSystemUnitOfWork : IUnitOfWork
                 _logger.LogError(ex, "Error rolling back transaction during async disposal");
             }
         }
+    }
+
+    private List<IDomainEvent> GetDomainEventsFromTrackedEntities()
+    {
+        // This is a simplified implementation - we need to track entities during the transaction
+        var events = new List<IDomainEvent>();
+
+        // Placeholder for collecting events from tracked entities
+        // We need to track entities modified during the transaction
+        // and collect their domain events here
+
+        return events;
     }
 }

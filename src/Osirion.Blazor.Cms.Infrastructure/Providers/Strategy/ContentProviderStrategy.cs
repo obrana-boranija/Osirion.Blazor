@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Infrastructure.Providers.FileSystem;
-using Osirion.Blazor.Cms.Infrastructure.Providers.GitHub;
+using Osirion.Blazor.Cms.Infrastructure.Services;
 
 namespace Osirion.Blazor.Cms.Infrastructure.Providers.Strategy
 {

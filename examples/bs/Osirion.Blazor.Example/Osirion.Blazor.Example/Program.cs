@@ -25,7 +25,7 @@ builder.Services.AddOsirion(osirion =>
         //    options.EnableLocalization = true;
         //    options.DefaultLocale = "en";
         //}))
-        // Configure CMS Admin
+         //Configure CMS Admin
         //.UseCmsAdmin(admin =>
         //{
         //    admin.Configure(options =>

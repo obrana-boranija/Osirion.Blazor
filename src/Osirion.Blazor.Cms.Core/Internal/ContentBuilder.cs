@@ -12,15 +12,16 @@ namespace Osirion.Blazor.Cms.Internal;
 /// <summary>
 /// Implementation of the content builder
 /// </summary>
-internal class ContentBuilder : IContentBuilder
+internal class ContentBuilderz : IContentBuilder
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="ContentBuilder"/> class.
     /// </summary>
-    public ContentBuilder(IServiceCollection services)
+    public ContentBuilderz(IServiceCollection services)
     {
         Services = services ?? throw new ArgumentNullException(nameof(services));
 
+        Services.AddHttpClient<IGitHubApiClient, GitHubApiClient>();
         // Ensure the provider factory is registered
         Services.TryAddSingleton<IContentProviderFactory, ContentProviderFactory>();
     }

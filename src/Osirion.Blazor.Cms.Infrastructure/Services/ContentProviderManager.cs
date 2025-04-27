@@ -88,11 +88,12 @@ public class ContentProviderManager : IContentProviderManager
     /// <inheritdoc/>
     public async Task<ContentItem?> GetLocalizedContentAsync(string localizationId, string locale, CancellationToken cancellationToken = default)
     {
-        var provider = GetDefaultProvider();
-        if (provider == null)
-            return null;
+        return null;
+        //var provider = GetDefaultProvider();
+        //if (provider == null)
+        //    return null;
 
-        var translations = await provider.GetContentTranslationsAsync(localizationId, cancellationToken);
-        return translations.FirstOrDefault(t => t.Locale.Equals(locale, StringComparison.OrdinalIgnoreCase));
+        //var translations = await provider.GetContentTranslationsAsync(localizationId, cancellationToken);
+        //return translations.FirstOrDefault(t => t.Locale.Equals(locale, StringComparison.OrdinalIgnoreCase));
     }
 }

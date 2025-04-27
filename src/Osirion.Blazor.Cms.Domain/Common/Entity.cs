@@ -1,45 +1,72 @@
-﻿namespace Osirion.Blazor.Cms.Domain.Common;
+﻿// src/Osirion.Blazor.Cms.Domain/Common/Entity.cs
+using Osirion.Blazor.Cms.Domain.Events;
+using System.Collections.ObjectModel;
 
-/// <summary>
-/// Base class for all domain entities
-/// </summary>
-public abstract class Entity<TId> : IEquatable<Entity<TId>> where TId : notnull
+namespace Osirion.Blazor.Cms.Domain.Common
 {
-    /// <summary>
-    /// Gets or sets the unique identifier for this entity
-    /// </summary>
-    public TId Id { get; protected set; } = default!;
-
-    protected Entity() { }
-
-    protected Entity(TId id)
+    public abstract class Entity<TId> : IEquatable<Entity<TId>> where TId : notnull
     {
-        Id = id;
-    }
+        private List<IDomainEvent>? _domainEvents;
 
-    public override bool Equals(object? obj)
-    {
-        return obj is Entity<TId> entity && Equals(entity);
-    }
+        public TId Id { get; protected set; } = default!;
 
-    public bool Equals(Entity<TId>? other)
-    {
-        return other is not null &&
-               EqualityComparer<TId>.Default.Equals(Id, other.Id);
-    }
+        protected Entity() { }
 
-    public override int GetHashCode()
-    {
-        return Id?.GetHashCode() ?? 0;
-    }
+        protected Entity(TId id)
+        {
+            Id = id;
+        }
 
-    public static bool operator ==(Entity<TId>? left, Entity<TId>? right)
-    {
-        return EqualityComparer<Entity<TId>>.Default.Equals(left, right);
-    }
+        public IReadOnlyCollection<IDomainEvent> DomainEvents
+        {
+            get
+            {
+                return _domainEvents is not null
+                    ? new ReadOnlyCollection<IDomainEvent>(_domainEvents)
+                    : Array.Empty<IDomainEvent>();
+            }
+        }
 
-    public static bool operator !=(Entity<TId>? left, Entity<TId>? right)
-    {
-        return !(left == right);
+        public void AddDomainEvent(IDomainEvent domainEvent)
+        {
+            _domainEvents ??= new List<IDomainEvent>();
+            _domainEvents.Add(domainEvent);
+        }
+
+        public void RemoveDomainEvent(IDomainEvent domainEvent)
+        {
+            _domainEvents?.Remove(domainEvent);
+        }
+
+        public void ClearDomainEvents()
+        {
+            _domainEvents?.Clear();
+        }
+
+        public override bool Equals(object? obj)
+        {
+            return obj is Entity<TId> entity && Equals(entity);
+        }
+
+        public bool Equals(Entity<TId>? other)
+        {
+            return other is not null &&
+                   EqualityComparer<TId>.Default.Equals(Id, other.Id);
+        }
+
+        public override int GetHashCode()
+        {
+            return Id?.GetHashCode() ?? 0;
+        }
+
+        public static bool operator ==(Entity<TId>? left, Entity<TId>? right)
+        {
+            return EqualityComparer<Entity<TId>>.Default.Equals(left, right);
+        }
+
+        public static bool operator !=(Entity<TId>? left, Entity<TId>? right)
+        {
+            return !(left == right);
+        }
     }
 }

@@ -25,7 +25,7 @@ public class ContentCreatedEventHandler : IDomainEventHandler<ContentCreatedEven
             domainEvent.ProviderId,
             domainEvent.OccurredOn);
 
-        // Here you could implement additional actions:
+        // Here we could implement additional actions:
         // - Send notifications
         // - Update indexes
         // - Generate cache entries

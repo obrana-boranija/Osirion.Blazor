@@ -1,4 +1,5 @@
 ﻿using Osirion.Blazor.Cms.Domain.Common;
+using Osirion.Blazor.Cms.Domain.Events;
 using Osirion.Blazor.Cms.Domain.Exceptions;
 using System;
 using System.Collections.Generic;
@@ -294,5 +295,32 @@ public class DirectoryItem : DomainEntity<string>
         }
 
         return clone;
+    }
+
+    public void RaiseCreatedEvent()
+    {
+        AddDomainEvent(new DirectoryCreatedEvent(
+            Id,
+            Name,
+            Path,
+            ProviderId));
+    }
+
+    public void RaiseUpdatedEvent()
+    {
+        AddDomainEvent(new DirectoryUpdatedEvent(
+            Id,
+            Name,
+            Path,
+            ProviderId));
+    }
+
+    public void RaiseDeletedEvent(bool recursive)
+    {
+        AddDomainEvent(new DirectoryDeletedEvent(
+            Id,
+            Path,
+            ProviderId,
+            recursive));
     }
 }

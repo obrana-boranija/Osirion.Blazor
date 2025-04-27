@@ -1,5 +1,6 @@
 ﻿using Osirion.Blazor.Cms.Domain.Common;
 using Osirion.Blazor.Cms.Domain.Enums;
+using Osirion.Blazor.Cms.Domain.Events;
 using Osirion.Blazor.Cms.Domain.Exceptions;
 using Osirion.Blazor.Cms.Domain.Extensions;
 using Osirion.Blazor.Cms.Domain.ValueObjects;
@@ -144,12 +145,6 @@ public class ContentItem : DomainEntity<string>
     public void SetFeatured(bool isFeatured)
     {
         IsFeatured = isFeatured;
-        LastModified = DateTime.UtcNow;
-    }
-
-    public void SetStatus(ContentStatus status)
-    {
-        Status = status;
         LastModified = DateTime.UtcNow;
     }
 
@@ -373,5 +368,54 @@ public class ContentItem : DomainEntity<string>
         }
 
         return clone;
+    }
+
+    public void RaiseCreatedEvent()
+    {
+        AddDomainEvent(new ContentCreatedEvent(
+            Id,
+            Title,
+            Path,
+            ProviderId));
+    }
+
+    public void RaiseUpdatedEvent()
+    {
+        AddDomainEvent(new ContentUpdatedEvent(
+            Id,
+            Title,
+            Path,
+            ProviderId));
+    }
+
+    public void RaiseDeletedEvent()
+    {
+        AddDomainEvent(new ContentDeletedEvent(
+            Id,
+            Path,
+            ProviderId));
+    }
+
+    public void RaiseStatusChangedEvent(ContentStatus previousStatus)
+    {
+        AddDomainEvent(new ContentStatusChangedEvent(
+            Id,
+            Title,
+            previousStatus,
+            Status,
+            ProviderId));
+    }
+
+    public void SetStatus(ContentStatus status)
+    {
+        var previousStatus = Status;
+        Status = status;
+        LastModified = DateTime.UtcNow;
+
+        // Raise event only if status actually changed
+        if (previousStatus != status)
+        {
+            RaiseStatusChangedEvent(previousStatus);
+        }
     }
 }

@@ -54,7 +54,7 @@
         {
             foreach (var provider in ContentProviders)
             {
-                await provider.RefreshCacheAsync();
+                // await provider.RefreshCacheAsync();
             }
             RefreshStatus = "Content cache refreshed successfully!";
             RefreshSuccess = true;

@@ -163,13 +163,13 @@ public partial class LocalizedContentView
             var provider = ContentProviderManager.GetDefaultProvider();
             if (provider != null)
             {
-                var translations = await provider.GetContentTranslationsAsync(LocalizationId);
+                //var translations = await provider.GetContentTranslationsAsync(LocalizationId);
 
-                AvailableTranslations.Clear();
-                foreach (var translation in translations)
-                {
-                    AvailableTranslations[translation.Locale] = translation.Path;
-                }
+                //AvailableTranslations.Clear();
+                //foreach (var translation in translations)
+                //{
+                //    AvailableTranslations[translation.Locale] = translation.Path;
+                //}
             }
         }
         catch (Exception ex)

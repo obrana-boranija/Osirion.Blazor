@@ -1,9 +1,10 @@
 using Microsoft.AspNetCore.Components;
 using Osirion.Blazor.Cms.Admin.Services;
-using Osirion.Blazor.Cms.Core.Providers.Interfaces;
+using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Models;
+using Osirion.Blazor.Cms.Domain.Models.GitHub;
 using Osirion.Blazor.Cms.Domain.ValueObjects;
-using Osirion.Blazor.Cms.Infrastructure.GitHub.Models;
+
 
 namespace Osirion.Blazor.Cms.Admin.Components;
 

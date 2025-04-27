@@ -77,24 +77,4 @@ public interface IContentProvider
     /// Gets a specific directory by its URL
     /// </summary>
     Task<DirectoryItem?> GetDirectoryByUrlAsync(string url, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Gets localization information for the provider
-    /// </summary>
-    //Task<LocalizationInfo> GetLocalizationInfoAsync(CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Gets translations for a specific content item
-    /// </summary>
-    Task<IReadOnlyList<ContentItem>> GetContentTranslationsAsync(string localizationId, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Refreshes the provider cache
-    /// </summary>
-    Task RefreshCacheAsync(CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Initializes the provider
-    /// </summary>
-    Task InitializeAsync(CancellationToken cancellationToken = default);
 }

@@ -33,11 +33,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<Folder Include="Handlers\" />
+		<Folder Include="Markdown\" />
 		<Folder Include="wwwroot\" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="Octokit" Version="14.0.0" />
+		<PackageReference Include="Octokit" Version="14.0.0" />
+		<PackageReference Include="Scrutor" Version="6.0.1" />
 	</ItemGroup>
 
 </Project>

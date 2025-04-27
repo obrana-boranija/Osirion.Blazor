@@ -1,4 +1,5 @@
-﻿using Osirion.Blazor.Cms.Domain.ValueObjects;
+﻿using Osirion.Blazor.Cms.Domain.Models.GitHub;
+using Osirion.Blazor.Cms.Domain.ValueObjects;
 using System.Text;
 using System.Text.RegularExpressions;
 

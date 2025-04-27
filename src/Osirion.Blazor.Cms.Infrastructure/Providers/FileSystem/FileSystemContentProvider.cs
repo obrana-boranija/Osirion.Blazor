@@ -17,6 +17,8 @@ namespace Osirion.Blazor.Cms.Infrastructure.Providers.FileSystem
           IDirectoryContentProvider,
           IQueryContentProvider
     {
+        public string ProviderId => $"filesystem-{RootFolder.GetHashCode()}";
+
         public FileSystemContentProvider(IConfiguration config)
             : base(config) { }
 

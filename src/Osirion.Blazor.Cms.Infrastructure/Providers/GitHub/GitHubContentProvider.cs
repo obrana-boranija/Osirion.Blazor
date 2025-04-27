@@ -1,59 +1,123 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Octokit;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Interfaces;
+using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Domain.Repositories;
+using Osirion.Blazor.Cms.Infrastructure.GitHub;
 using Osirion.Blazor.Cms.Infrastructure.Providers.Base;
-using System.Text.Json;
 
-namespace Osirion.Blazor.Cms.Infrastructure.Providers.GitHub
+namespace Osirion.Blazor.Cms.Infrastructure.Services;
+
+public class GitHubContentProvider : BaseContentProvider,
+          IReadContentProvider,
+          IDirectoryContentProvider,
+          IQueryContentProvider
 {
-    /// <summary>
-    /// Fetches content JSON files from a GitHub repo via Octokit.
-    /// Keeps external API details out of Core (SoC) :contentReference[oaicite:4]{index=4}.
-    /// </summary>
-    public class GitHubContentProvider :
-        BaseContentProvider,
-        IReadContentProvider,
-        IDirectoryContentProvider,
-        IQueryContentProvider
+    private readonly IGitHubApiClient _apiClient;
+    private readonly GitHubContentRepository _contentRepository;
+    private readonly GitHubDirectoryRepository _directoryRepository;
+    private readonly GitHubOptions _options;
+
+    public GitHubContentProvider(IConfiguration config)
+        : base(config) { }
+
+    public string ProviderId => $"github-{RootFolder.GetHashCode()}";
+
+    ///// <inheritdoc/>
+    //public override string ProviderId => _options.ProviderId ?? $"github-{_options.Owner}-{_options.Repository}";
+
+    ///// <inheritdoc/>
+    //public override string DisplayName => $"GitHub: {_options.Owner}/{_options.Repository}";
+
+    ///// <inheritdoc/>
+    //public override bool IsReadOnly => string.IsNullOrEmpty(_options.ApiToken);
+
+    ///// <inheritdoc/>
+    //public override async Task<IReadOnlyList<ContentItem>> GetAllItemsAsync(CancellationToken cancellationToken = default)
+    //{
+    //    return await _contentRepository.GetAllAsync(cancellationToken);
+    //}
+
+    ///// <inheritdoc/>
+    //public override async Task<ContentItem?> GetItemByPathAsync(string path, CancellationToken cancellationToken = default)
+    //{
+    //    return await _contentRepository.GetByPathAsync(path, cancellationToken);
+    //}
+
+    ///// <inheritdoc/>
+    //public override async Task<ContentItem?> GetItemByUrlAsync(string url, CancellationToken cancellationToken = default)
+    //{
+    //    return await _contentRepository.GetByUrlAsync(url, cancellationToken);
+    //}
+
+    ///// <inheritdoc/>
+    //public override async Task<IReadOnlyList<ContentItem>?> GetItemsByQueryAsync(ContentQuery query, CancellationToken cancellationToken = default)
+    //{
+    //    return await _contentRepository.FindByQueryAsync(query, cancellationToken);
+    //}
+
+    ///// <inheritdoc/>
+    //public override async Task<IReadOnlyList<DirectoryItem>> GetDirectoriesAsync(string? locale = null, CancellationToken cancellationToken = default)
+    //{
+    //    return await _directoryRepository.GetByLocaleAsync(locale, cancellationToken);
+    //}
+
+    ///// <inheritdoc/>
+    //public override async Task InitializeAsync(CancellationToken cancellationToken = default)
+    //{
+    //    Logger.LogInformation("Initializing GitHub content provider: {Owner}/{Repository}",
+    //        _options.Owner, _options.Repository);
+
+    //    // Configure API client
+    //    _apiClient.SetRepository(_options.Owner, _options.Repository);
+    //    _apiClient.SetBranch(_options.Branch);
+
+    //    if (!string.IsNullOrEmpty(_options.ApiToken))
+    //    {
+    //        _apiClient.SetAccessToken(_options.ApiToken);
+    //    }
+
+    //    // Pre-load some data in the background
+    //    _ = Task.Run(async () => {
+    //        try
+    //        {
+    //            await _contentRepository.GetAllAsync(cancellationToken);
+    //            await _directoryRepository.GetAllAsync(cancellationToken);
+    //        }
+    //        catch (Exception ex)
+    //        {
+    //            Logger.LogError(ex, "Error pre-loading content for GitHub provider");
+    //        }
+    //    }, cancellationToken);
+
+    //    await base.InitializeAsync(cancellationToken);
+    //}
+
+    ///// <inheritdoc/>
+    //public override async Task RefreshCacheAsync(CancellationToken cancellationToken = default)
+    //{
+    //    await _contentRepository.RefreshCacheAsync(cancellationToken);
+    //    await _directoryRepository.RefreshCacheAsync(cancellationToken);
+    //    await base.RefreshCacheAsync(cancellationToken);
+    //}
+
+    public Task<ContentItem> GetByIdAsync(Guid id)
     {
-        private readonly GitHubClient _client;
-        private readonly string _owner, _repo, _path;
+        throw new NotImplementedException();
+    }
 
-        public GitHubContentProvider(IConfiguration config)
-            : base(config)
-        {
-            _client = new GitHubClient(new ProductHeaderValue("Osirion.Cms"));
-            _owner = config["Cms:GitHub:Owner"]!;
-            _repo = config["Cms:GitHub:Repo"]!;
-            _path = config["Cms:GitHub:ContentPath"]!;
-        }
+    public Task<IEnumerable<ContentItem>> GetAllAsync()
+    {
+        throw new NotImplementedException();
+    }
 
-        public async Task<ContentItem> GetByIdAsync(Guid id)
-        {
-            var file = await _client.Repository.Content
-                .GetAllContentsByRef(_owner, _repo,
-                  $"{_path}/{id}.json", "main");
-            return JsonSerializer.Deserialize<ContentItem>(file.First().Content)!;
-        }
+    public Task<IEnumerable<string>> GetDirectoriesAsync(string path)
+    {
+        throw new NotImplementedException();
+    }
 
-        public async Task<IEnumerable<ContentItem>> GetAllAsync()
-        {
-            var items = await _client.Repository.Content
-                .GetAllContentsByRef(_owner, _repo, _path, "main");
-            return items
-              .Where(f => f.Name.EndsWith(".json"))
-              .Select(f => JsonSerializer.Deserialize<ContentItem>(f.Content)!)
-              .ToList();
-        }
-
-        public Task<IEnumerable<string>> GetDirectoriesAsync(string path) =>
-            // Not supported by GitHub API; return empty or throw
-            Task.FromResult<IEnumerable<string>>(Array.Empty<string>());
-
-        public Task<IEnumerable<ContentItem>> QueryAsync(ContentQuery filter) =>
-            GetAllAsync()
-              .ContinueWith(t => t.Result.Where(i => i.Tags.Contains(filter.Tag)));
+    public Task<IEnumerable<ContentItem>> QueryAsync(ContentQuery filter)
+    {
+        throw new NotImplementedException();
     }
 }

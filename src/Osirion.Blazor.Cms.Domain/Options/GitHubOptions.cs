@@ -6,6 +6,11 @@
 public class GitHubOptions
 {
     /// <summary>
+    /// The section name in the configuration file
+    /// </summary>
+    public const string Section = "Osirion:Cms:GitHub";
+
+    /// <summary>
     /// Gets or sets the GitHub owner (user or organization)
     /// </summary>
     public string Owner { get; set; } = string.Empty;

@@ -6,6 +6,11 @@
 public class CacheOptions
 {
     /// <summary>
+    /// The section name in the configuration file
+    /// </summary>
+    public const string Section = "Osirion:Cms:Cache";
+
+    /// <summary>
     /// Gets or sets whether caching is enabled
     /// </summary>
     public bool Enabled { get; set; } = true;

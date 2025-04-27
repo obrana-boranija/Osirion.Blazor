@@ -8,7 +8,7 @@ public class ThemingOptions
     /// <summary>
     /// Configuration section name
     /// </summary>
-    public const string Section = "Theming";
+    public const string Section = "Osirion:Theming";
 
     /// <summary>
     /// Gets or sets whether to use default styles

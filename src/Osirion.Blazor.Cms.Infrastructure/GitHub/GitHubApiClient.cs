@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Domain.Exceptions;
-using Osirion.Blazor.Cms.Domain.Models;
+using Osirion.Blazor.Cms.Domain.Interfaces;
+using Osirion.Blazor.Cms.Domain.Models.GitHub;
 using Osirion.Blazor.Cms.Domain.Options;
-using Osirion.Blazor.Cms.Infrastructure.GitHub.Models;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
