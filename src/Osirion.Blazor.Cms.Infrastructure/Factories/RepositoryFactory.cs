@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Repositories;
+using Osirion.Blazor.Cms.Infrastructure.FileSystem;
 using Osirion.Blazor.Cms.Infrastructure.GitHub;
 
 namespace Osirion.Blazor.Cms.Infrastructure.Factories;
@@ -51,8 +52,7 @@ public class RepositoryFactory : IRepositoryFactory
             if (providerId.StartsWith("filesystem", StringComparison.OrdinalIgnoreCase))
             {
                 _logger.LogDebug("Creating FileSystem content repository");
-                throw new NotImplementedException("FileSystem content repository is not yet implemented");
-                //return _serviceProvider.GetRequiredService<FileSystemContentRepository>();
+                return _serviceProvider.GetRequiredService<FileSystemContentRepository>();
             }
 
             throw new ArgumentException($"Unsupported provider type: {providerId}", nameof(providerId));
@@ -75,16 +75,14 @@ public class RepositoryFactory : IRepositoryFactory
             if (providerId.StartsWith("github", StringComparison.OrdinalIgnoreCase))
             {
                 _logger.LogDebug("Creating GitHub directory repository");
-                throw new NotImplementedException("GitHub directory repository is not yet implemented");
-                //return _serviceProvider.GetRequiredService<GitHubDirectoryRepository>();
+                return _serviceProvider.GetRequiredService<GitHubDirectoryRepository>();
             }
 
             // Handle FileSystem provider
             if (providerId.StartsWith("filesystem", StringComparison.OrdinalIgnoreCase))
             {
                 _logger.LogDebug("Creating FileSystem directory repository");
-                throw new NotImplementedException("FileSystem directory repository is not yet implemented");
-                //return _serviceProvider.GetRequiredService<FileSystemDirectoryRepository>();
+                return _serviceProvider.GetRequiredService<FileSystemDirectoryRepository>();
             }
 
             throw new ArgumentException($"Unsupported provider type: {providerId}", nameof(providerId));
