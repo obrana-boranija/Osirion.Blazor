@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <SupportedPlatform Include="browser" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.4" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.4" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.4" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.4" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.4" />
+    <PackageReference Include="Microsoft.JSInterop" Version="9.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Osirion.Blazor.Cms.Application\Osirion.Blazor.Cms.Application.csproj" />
+    <ProjectReference Include="..\Osirion.Blazor.Cms.Domain\Osirion.Blazor.Cms.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Options\" />
+  </ItemGroup>
+
+</Project>

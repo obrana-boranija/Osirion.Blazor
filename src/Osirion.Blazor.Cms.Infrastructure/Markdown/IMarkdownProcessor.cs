@@ -1,4 +1,4 @@
-﻿namespace Osirion.Blazor.Cms.Core.Interfaces
+﻿namespace Osirion.Blazor.Cms.Infrastructure.Markdown
 {
     public interface IMarkdownProcessor
     {

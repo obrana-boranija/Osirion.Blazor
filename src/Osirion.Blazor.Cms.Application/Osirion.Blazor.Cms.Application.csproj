@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <SupportedPlatform Include="browser" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="11.11.0" />
+    <PackageReference Include="Markdig" Version="0.41.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.4" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.4" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Osirion.Blazor.Cms.Domain\Osirion.Blazor.Cms.Domain.csproj" />
+  </ItemGroup>
+
+</Project>
