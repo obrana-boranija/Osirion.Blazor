@@ -1,11 +1,11 @@
-﻿namespace Osirion.Blazor.Cms.Application.Commands.Directory;
-
-using Microsoft.Extensions.Logging;
-using Osirion.Blazor.Cms.Application.Commands;
+﻿using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Events;
 using Osirion.Blazor.Cms.Domain.Exceptions;
 using Osirion.Blazor.Cms.Domain.Repositories;
+using DirectoryNotFoundException = Osirion.Blazor.Cms.Domain.Exceptions.DirectoryNotFoundException;
+
+namespace Osirion.Blazor.Cms.Application.Commands.Directory;
 
 /// <summary>
 /// Handler for CreateDirectoryCommand

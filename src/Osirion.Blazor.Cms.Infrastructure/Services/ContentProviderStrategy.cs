@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
-using Osirion.Blazor.Cms.Interfaces;
+using Osirion.Blazor.Cms.Domain.Services;
 
-namespace Osirion.Blazor.Cms.Core.Providers.Strategy;
+namespace Osirion.Blazor.Cms.Infrastructure.Services;
 
 /// <summary>
 /// Provides a strategy pattern implementation for content providers

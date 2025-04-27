@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Enums;
 using Osirion.Blazor.Cms.Domain.Repositories;
+using Osirion.Blazor.Cms.Infrastructure.Extensions;
 using Osirion.Blazor.Cms.Options;
 using Osirion.Blazor.Cms.Providers.Base;
 using Osirion.Blazor.Core.Extensions;

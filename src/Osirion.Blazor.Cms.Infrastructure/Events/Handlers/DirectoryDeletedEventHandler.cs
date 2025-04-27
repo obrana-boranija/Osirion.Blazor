@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Events;
+using System.Numerics;
 
 namespace Osirion.Blazor.Cms.Infrastructure.Events.Handlers;
 

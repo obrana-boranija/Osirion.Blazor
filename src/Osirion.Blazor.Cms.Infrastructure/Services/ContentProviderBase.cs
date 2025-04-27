@@ -3,13 +3,10 @@ using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Exceptions;
 using Osirion.Blazor.Cms.Domain.Repositories;
-using Osirion.Blazor.Cms.Exceptions;
+using Osirion.Blazor.Cms.Domain.Services;
 using Osirion.Blazor.Cms.Infrastructure.Extensions;
-using Osirion.Blazor.Cms.Interfaces;
-using Osirion.Blazor.Cms.Models;
-using Osirion.Blazor.Core.Extensions;
 
-namespace Osirion.Blazor.Cms.Providers.Base;
+namespace Osirion.Blazor.Cms.Infrastructure.Services;
 
 /// <summary>
 /// Base class for content providers with in-memory caching
@@ -220,29 +217,29 @@ public abstract class ContentProviderBase : IContentProvider, IDisposable
     }
 
     /// <inheritdoc/>
-    public virtual async Task<LocalizationInfo?> GetLocalizationInfoAsync(CancellationToken cancellationToken = default)
-    {
-        var cacheKey = GetCacheKey("localization");
+    //public virtual async Task<LocalizationInfo?> GetLocalizationInfoAsync(CancellationToken cancellationToken = default)
+    //{
+    //    var cacheKey = GetCacheKey("localization");
 
-        return await ExecuteWithExceptionHandlingAsync(
-            async () => await GetOrCreateCachedAsync(
-                cacheKey,
-                async ct =>
-                {
-                    // Default implementation returns a basic localization info
-                    // Derived classes should override this method to provide actual localization information
-                    var info = new LocalizationInfo
-                    {
-                        DefaultLocale = "en"
-                    };
+    //    return await ExecuteWithExceptionHandlingAsync(
+    //        async () => await GetOrCreateCachedAsync(
+    //            cacheKey,
+    //            async ct =>
+    //            {
+    //                // Default implementation returns a basic localization info
+    //                // Derived classes should override this method to provide actual localization information
+    //                var info = new LocalizationInfo
+    //                {
+    //                    DefaultLocale = "en"
+    //                };
 
-                    info.AddLocale("en", "English");
+    //                info.AddLocale("en", "English");
 
-                    return info;
-                },
-                cancellationToken),
-            nameof(GetLocalizationInfoAsync));
-    }
+    //                return info;
+    //            },
+    //            cancellationToken),
+    //        nameof(GetLocalizationInfoAsync));
+    //}
 
     /// <inheritdoc/>
     public virtual async Task<IReadOnlyList<ContentItem>?> GetContentTranslationsAsync(string localizationId, CancellationToken cancellationToken = default)

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Entities;
+using Osirion.Blazor.Cms.Domain.Services;
 
 namespace Osirion.Blazor.Cms.Application.Queries.Content;
 

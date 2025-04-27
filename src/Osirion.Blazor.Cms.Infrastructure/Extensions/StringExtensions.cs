@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace Osirion.Blazor.Core.Extensions;
+namespace Osirion.Blazor.Cms.Infrastructure.Extensions;
 
 public static class StringExtensions
 {

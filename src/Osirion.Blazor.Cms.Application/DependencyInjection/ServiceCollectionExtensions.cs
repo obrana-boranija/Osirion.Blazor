@@ -4,6 +4,9 @@ using Osirion.Blazor.Cms.Application.Commands.Content;
 using Osirion.Blazor.Cms.Application.Queries;
 using Osirion.Blazor.Cms.Application.Queries.Content;
 using Osirion.Blazor.Cms.Application.Validation;
+using Osirion.Blazor.Cms.Application.Queries.Directory;
+using Osirion.Blazor.Cms.Application.Commands.Directory;
+using Osirion.Blazor.Cms.Domain.Entities;
 
 namespace Osirion.Blazor.Cms.Application.DependencyInjection;
 
@@ -44,29 +47,30 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICommandHandler<DeleteContentCommand>, DeleteContentCommandHandler>();
 
         // Directory commands
-        // The implementations will need to be created
-        // services.AddScoped<ICommandHandler<CreateDirectoryCommand>, CreateDirectoryCommandHandler>();
-        // services.AddScoped<ICommandHandler<UpdateDirectoryCommand>, UpdateDirectoryCommandHandler>();
-        // services.AddScoped<ICommandHandler<DeleteDirectoryCommand>, DeleteDirectoryCommandHandler>();
-        // services.AddScoped<ICommandHandler<MoveDirectoryCommand>, MoveDirectoryCommandHandler>();
+        services.AddScoped<ICommandHandler<CreateDirectoryCommand>, CreateDirectoryCommandHandler>();
+        services.AddScoped<ICommandHandler<UpdateDirectoryCommand>, UpdateDirectoryCommandHandler>();
+        services.AddScoped<ICommandHandler<DeleteDirectoryCommand>, DeleteDirectoryCommandHandler>();
+        services.AddScoped<ICommandHandler<MoveDirectoryCommand>, MoveDirectoryCommandHandler>();
     }
 
     private static void RegisterQueryHandlers(IServiceCollection services)
     {
         // Content queries
-        services.AddScoped<IQueryHandler<GetContentByIdQuery, Domain.Entities.ContentItem?>, GetContentByIdQueryHandler>();
-        services.AddScoped<IQueryHandler<GetContentByPathQuery, Domain.Entities.ContentItem?>, GetContentByPathQueryHandler>();
-        services.AddScoped<IQueryHandler<SearchContentQuery, IReadOnlyList<Domain.Entities.ContentItem>>, SearchContentQueryHandler>();
+        services.AddScoped<IQueryHandler<GetContentByIdQuery, ContentItem?>, GetContentByIdQueryHandler>();
+        services.AddScoped<IQueryHandler<GetContentByPathQuery, ContentItem?>, GetContentByPathQueryHandler>();
+        services.AddScoped<IQueryHandler<SearchContentQuery, IReadOnlyList<ContentItem>>, SearchContentQueryHandler>();
 
         // The implementations will need to be created
-        //services.AddScoped<IQueryHandler<GetContentByUrlQuery, Domain.Entities.ContentItem?>, GetContentByUrlQueryHandler>();
-        //services.AddScoped<IQueryHandler<GetAllContentQuery, IReadOnlyList<Domain.Entities.ContentItem>>, GetAllContentQueryHandler>();
+        //services.AddScoped<IQueryHandler<GetContentByUrlQuery, ContentItem?>, GetContentByUrlQueryHandler>();
+        //services.AddScoped<IQueryHandler<GetAllContentQuery, IReadOnlyList<ContentItem>>, GetAllContentQueryHandler>();
         //services.AddScoped<IQueryHandler<GetContentTagsQuery, IReadOnlyList<Domain.Repositories.ContentTag>>, GetContentTagsQueryHandler>();
         //services.AddScoped<IQueryHandler<GetContentCategoriesQuery, IReadOnlyList<Domain.Repositories.ContentCategory>>, GetContentCategoriesQueryHandler>();
 
-        // The implementations will need to be created
-        // services.AddScoped<IQueryHandler<GetDirectoryByIdQuery, Domain.Entities.DirectoryItem?>, GetDirectoryByIdQueryHandler>();
-        // services.AddScoped<IQueryHandler<GetDirectoryByPathQuery, Domain.Entities.DirectoryItem?>, GetDirectoryByPathQueryHandler>();
-        // services.AddScoped<IQueryHandler<GetDirectoryTreeQuery, IReadOnlyList<Domain.Entities.DirectoryItem>>, GetDirectoryTreeQueryHandler>();
+        // Directory queries(added)
+        //services.AddScoped<IQueryHandler<GetDirectoryByIdQuery, DirectoryItem?>, GetDirectoryByIdQueryHandler>();
+        services.AddScoped<IQueryHandler<GetDirectoryByPathQuery, DirectoryItem?>, GetDirectoryByPathQueryHandler>();
+        services.AddScoped<IQueryHandler<GetDirectoryTreeQuery, IReadOnlyList<DirectoryItem>>, GetDirectoryTreeQueryHandler>();
     }
+
+
 }

@@ -720,7 +720,7 @@ public class FileSystemDirectoryRepository : RepositoryBase<DirectoryItem, strin
             _fileWatcher = new FileSystemWatcher(_options.BasePath)
             {
                 IncludeSubdirectories = _options.IncludeSubdirectories,
-                NotifyFilter = NotifyFilters.DirectoryName | NotifyFilters.LastWrite | NotifyFilters.Created | NotifyFilters.Deleted,
+                NotifyFilter = NotifyFilters.DirectoryName | NotifyFilters.LastWrite /*| NotifyFilters.Created | NotifyFilters.Deleted*/,
                 EnableRaisingEvents = true
             };
 
