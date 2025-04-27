@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Osirion.Blazor.Cms.Domain.Interfaces;
+using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Domain.Services;
 using Osirion.Blazor.Cms.Infrastructure.Caching;
 using Osirion.Blazor.Cms.Infrastructure.DependencyInjection;
@@ -28,10 +29,10 @@ public static class OsirionContentServiceCollectionExtensions
         if (configuration == null) throw new ArgumentNullException(nameof(configuration));
 
         // Example logic: Configure services based on the configuration
-        var section = configuration.GetSection("OsirionContent");
+        var section = configuration.GetSection(GitHubOptions.Section);
         if (section.Exists())
         {
-            //services.Configure<ContentOptions>(section);
+            services.Configure<GitHubOptions>(section);
         }
 
         return services;
