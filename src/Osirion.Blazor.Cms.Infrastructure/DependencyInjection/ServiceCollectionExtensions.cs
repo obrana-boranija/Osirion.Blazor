@@ -58,7 +58,6 @@ public static class ServiceCollectionExtensions
         services.AddOsirionDomainEvents();
 
         // Register repositories and unit of work
-        services.TryAddScoped<IRepositoryFactory, RepositoryFactory>();
         services.TryAddScoped<IUnitOfWorkFactory, UnitOfWorkFactory>();
 
         // Register cache decorator factory
@@ -116,17 +115,18 @@ public static class ServiceCollectionExtensions
         services.TryAddHttpClient<IGitHubAdminService, GitHubAdminService>();
 
         // Register GitHub repositories
-        services.TryAddScoped<GitHubContentRepository>();
-        services.TryAddScoped<GitHubDirectoryRepository>();
+        services.TryAddSingleton<GitHubContentRepository>();
+        services.TryAddSingleton<GitHubDirectoryRepository>();
 
         // Register provider
-        services.TryAddScoped<GitHubContentProvider>();
+        services.TryAddSingleton<GitHubContentProvider>();
 
         // Register as IContentProvider
-        services.AddScoped<IContentProvider>(sp => sp.GetRequiredService<GitHubContentProvider>());
+        services.TryAddSingleton<IContentProvider>(
+            sp => sp.GetRequiredService<GitHubContentProvider>());
 
         // Register default setter
-        services.AddSingleton<IDefaultProviderSetter>(sp => {
+        services.TryAddSingleton<IDefaultProviderSetter>(sp => {
             var options = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<GitHubOptions>>().Value;
             var providerId = options.ProviderId ?? $"github-{options.Owner}-{options.Repository}";
             return new DefaultProviderSetter(providerId, options.IsDefault);

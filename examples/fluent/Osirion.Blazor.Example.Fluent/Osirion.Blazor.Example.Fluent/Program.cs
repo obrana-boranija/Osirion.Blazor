@@ -1,4 +1,5 @@
 using Microsoft.FluentUI.AspNetCore.Components;
+using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Example.Fluent.Client.Pages;
 using Osirion.Blazor.Example.Fluent.Components;
 using Osirion.Blazor.Extensions;
@@ -99,6 +100,13 @@ else
 app.UseHttpsRedirection();
 
 app.UseAntiforgery();
+
+// Initialize the CMS providers
+using (var scope = app.Services.CreateScope())
+{
+    var initializer = scope.ServiceProvider.GetRequiredService<IContentProviderInitializer>();
+    await initializer.InitializeProvidersAsync();
+}
 
 app.MapStaticAssets();
 app.MapRazorComponents<App>()

@@ -1,13 +1,13 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿// src/Osirion.Blazor.Cms.Infrastructure/Factories/UnitOfWorkFactory.cs
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Repositories;
+using Osirion.Blazor.Cms.Domain.Services;
+using Osirion.Blazor.Cms.Infrastructure.FileSystem;
 using Osirion.Blazor.Cms.Infrastructure.GitHub;
 using Osirion.Blazor.Cms.Infrastructure.UnitOfWork;
-using System;
-using System.IO;
-using System.Threading.Tasks;
 
 namespace Osirion.Blazor.Cms.Infrastructure.Factories;
 
@@ -17,18 +17,18 @@ namespace Osirion.Blazor.Cms.Infrastructure.Factories;
 public class UnitOfWorkFactory : IUnitOfWorkFactory
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly IRepositoryFactory _repositoryFactory;
+    private readonly IContentProviderRegistry _providerRegistry;
     private readonly IConfiguration _configuration;
     private readonly ILoggerFactory _loggerFactory;
 
     public UnitOfWorkFactory(
         IServiceProvider serviceProvider,
-        IRepositoryFactory repositoryFactory,
+        IContentProviderRegistry providerRegistry,
         IConfiguration configuration,
         ILoggerFactory loggerFactory)
     {
         _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
-        _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
+        _providerRegistry = providerRegistry ?? throw new ArgumentNullException(nameof(providerRegistry));
         _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
     }
@@ -38,17 +38,20 @@ public class UnitOfWorkFactory : IUnitOfWorkFactory
         if (string.IsNullOrEmpty(providerId))
             throw new ArgumentException("Provider ID cannot be empty", nameof(providerId));
 
-        // Create appropriate repositories
-        var contentRepository = _repositoryFactory.CreateContentRepository(providerId);
-        var directoryRepository = _repositoryFactory.CreateDirectoryRepository(providerId);
+        // Get provider to determine provider type
+        var provider = _providerRegistry.GetProvider(providerId);
+        if (provider == null)
+            throw new InvalidOperationException($"Provider not found with ID: {providerId}");
 
-        // Create the right UnitOfWork based on provider type
+        // Create appropriate unit of work based on provider type
         if (providerId.StartsWith("github"))
         {
             var apiClient = _serviceProvider.GetRequiredService<IGitHubApiClient>();
+            var contentRepo = _serviceProvider.GetRequiredService<GitHubContentRepository>();
+            var directoryRepo = _serviceProvider.GetRequiredService<GitHubDirectoryRepository>();
             var logger = _loggerFactory.CreateLogger<GitHubUnitOfWork>();
 
-            return new GitHubUnitOfWork(apiClient, contentRepository, directoryRepository, logger);
+            return new GitHubUnitOfWork(apiClient, contentRepo, directoryRepo, logger);
         }
         else if (providerId.StartsWith("filesystem"))
         {
@@ -56,9 +59,11 @@ public class UnitOfWorkFactory : IUnitOfWorkFactory
             string backupDirectory = _configuration["Osirion:Cms:FileSystem:BackupDirectory"] ??
                                     Path.Combine(Path.GetTempPath(), "osirion-cms-backup");
 
+            var contentRepo = _serviceProvider.GetRequiredService<FileSystemContentRepository>();
+            var directoryRepo = _serviceProvider.GetRequiredService<FileSystemDirectoryRepository>();
             var logger = _loggerFactory.CreateLogger<FileSystemUnitOfWork>();
 
-            return new FileSystemUnitOfWork(contentRepository, directoryRepository, logger, backupDirectory);
+            return new FileSystemUnitOfWork(contentRepo, directoryRepo, logger, backupDirectory);
         }
         else
         {
@@ -68,11 +73,10 @@ public class UnitOfWorkFactory : IUnitOfWorkFactory
 
     public IUnitOfWork CreateForDefaultProvider()
     {
-        var defaultProviderId = _repositoryFactory.GetDefaultProviderId();
-
-        if (string.IsNullOrEmpty(defaultProviderId))
+        var defaultProvider = _providerRegistry.GetDefaultProvider();
+        if (defaultProvider == null)
             throw new InvalidOperationException("No default provider is configured");
 
-        return Create(defaultProviderId);
+        return Create(defaultProvider.ProviderId);
     }
 }

@@ -1,4 +1,5 @@
 ﻿@page "/cms-demo"
+@page "/cms-demo/{*Slug}"
 @using Osirion.Blazor.Cms.Components
 @using Osirion.Blazor.Cms.Domain.Services
 
@@ -43,6 +44,9 @@
 </div>
 
 @code {
+    [Parameter]
+    public string? Slug { get; set; }
+
     [Parameter]
     public string? CategorySlug { get; set; }
 
@@ -89,6 +93,8 @@
             // If no default, use the first provider
             _providerId = _providers.Values.First();
         }
+
+        _contentPath = string.IsNullOrEmpty(Slug) ? _contentPath : Slug;
 
         await base.OnInitializedAsync();
     }
