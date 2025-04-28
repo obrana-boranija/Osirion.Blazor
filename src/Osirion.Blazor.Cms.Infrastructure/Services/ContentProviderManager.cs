@@ -9,65 +9,25 @@ namespace Osirion.Blazor.Cms.Infrastructure.Services;
 
 public class ContentProviderManager : IContentProviderManager
 {
-    private readonly IEnumerable<IContentProvider> _providers;
-    private readonly IContentProviderFactory _providerFactory;
+    private readonly IContentProviderRegistry _registry;
     private readonly ILogger<ContentProviderManager> _logger;
 
     public ContentProviderManager(
-        IEnumerable<IContentProvider> providers,
-        IContentProviderFactory providerFactory,
+        IContentProviderRegistry registry,
         ILogger<ContentProviderManager> logger)
     {
-        _providers = providers ?? throw new ArgumentNullException(nameof(providers));
-        _providerFactory = providerFactory ?? throw new ArgumentNullException(nameof(providerFactory));
+        _registry = registry ?? throw new ArgumentNullException(nameof(registry));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public IContentProvider? GetDefaultProvider()
-    {
-        // Try to get from factory first
-        if (_providerFactory != null)
-        {
-            var defaultProviderId = _providerFactory.GetDefaultProviderId();
-            if (!string.IsNullOrEmpty(defaultProviderId))
-            {
-                var provider = _providers.FirstOrDefault(p => p.ProviderId == defaultProviderId);
-                if (provider != null)
-                {
-                    return provider;
-                }
+    public IContentProvider? GetDefaultProvider() => _registry.GetDefaultProvider();
 
-                _logger.LogWarning("Default provider ID {ProviderId} configured but not found", defaultProviderId);
-            }
-        }
+    public IContentProvider? GetProvider(string providerId) => _registry.GetProvider(providerId);
 
-        // Fall back to first registered provider
-        var firstProvider = _providers.FirstOrDefault();
-        if (firstProvider == null)
-        {
-            _logger.LogWarning("No content providers registered");
-        }
+    public IEnumerable<IContentProvider> GetAllProviders() => _registry.GetAllProviders();
 
-        return firstProvider;
-    }
-
-    public IContentProvider? GetProvider(string providerId)
-    {
-        if (string.IsNullOrEmpty(providerId))
-            throw new ArgumentException("Provider ID cannot be empty", nameof(providerId));
-
-        var provider = _providers.FirstOrDefault(p => p.ProviderId == providerId);
-        if (provider == null)
-        {
-            _logger.LogWarning("Provider not found: {ProviderId}", providerId);
-        }
-
-        return provider;
-    }
-
-    public IEnumerable<IContentProvider> GetAllProviders() => _providers;
-
-    public async Task<IReadOnlyList<DirectoryItem>> GetDirectoryTreeAsync(string? locale = null, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<DirectoryItem>> GetDirectoryTreeAsync(
+        string? locale = null, CancellationToken cancellationToken = default)
     {
         var provider = GetDefaultProvider();
         if (provider == null)
@@ -87,7 +47,8 @@ public class ContentProviderManager : IContentProviderManager
         }
     }
 
-    public async Task<IReadOnlyList<ContentItem>> GetContentByLocaleAsync(string locale, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<ContentItem>> GetContentByLocaleAsync(
+        string locale, CancellationToken cancellationToken = default)
     {
         var provider = GetDefaultProvider();
         if (provider == null)
@@ -108,7 +69,8 @@ public class ContentProviderManager : IContentProviderManager
         }
     }
 
-    public async Task<ContentItem?> GetLocalizedContentAsync(string localizationId, string locale, CancellationToken cancellationToken = default)
+    public async Task<ContentItem?> GetLocalizedContentAsync(
+        string localizationId, string locale, CancellationToken cancellationToken = default)
     {
         var provider = GetDefaultProvider();
         if (provider == null)

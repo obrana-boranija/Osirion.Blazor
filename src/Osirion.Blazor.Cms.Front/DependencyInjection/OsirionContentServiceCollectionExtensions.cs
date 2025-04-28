@@ -2,10 +2,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Options;
-using Osirion.Blazor.Cms.Domain.Services;
 using Osirion.Blazor.Cms.Infrastructure.Builders;
 using Osirion.Blazor.Cms.Infrastructure.Caching;
-using Osirion.Blazor.Cms.Infrastructure.Services;
 
 namespace Osirion.Blazor.Cms.Front.DependencyInjection;
 
@@ -17,7 +15,6 @@ public static class OsirionContentServiceCollectionExtensions
         if (configure == null) throw new ArgumentNullException(nameof(configure));
 
         //services.AddOsirionContent(configure);
-        services.AddSingleton<IContentProviderFactory, ContentProviderFactory>();
         services.AddSingleton<CacheDecoratorFactory>();
         services.AddSingleton<IContentBuilder, ContentBuilder>();
 

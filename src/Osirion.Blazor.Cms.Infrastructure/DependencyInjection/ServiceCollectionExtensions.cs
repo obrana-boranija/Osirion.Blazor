@@ -1,14 +1,13 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Domain.Repositories;
 using Osirion.Blazor.Cms.Domain.Services;
-using Osirion.Blazor.Cms.Infrastructure.Builders;
 using Osirion.Blazor.Cms.Infrastructure.Factories;
-using Osirion.Blazor.Cms.Infrastructure.Markdown;
+using Osirion.Blazor.Cms.Infrastructure.FileSystem;
+using Osirion.Blazor.Cms.Infrastructure.GitHub;
+using Osirion.Blazor.Cms.Infrastructure.Providers;
 using Osirion.Blazor.Cms.Infrastructure.Services;
 
 namespace Osirion.Blazor.Cms.Infrastructure.DependencyInjection;
@@ -19,99 +18,119 @@ namespace Osirion.Blazor.Cms.Infrastructure.DependencyInjection;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds Osirion.Blazor.Cms services to the service collection
+    /// Adds core Osirion.Blazor.Cms services to the service collection
     /// </summary>
-    public static IServiceCollection AddOsirionCms(
+    public static IServiceCollection AddCms(
         this IServiceCollection services,
         IConfiguration configuration,
-        Action<IContentBuilder>? configureContent = null)
+        Action<OsirionCmsBuilder>? configureCms = null)
     {
         // Register options
         services.Configure<CacheOptions>(configuration.GetSection(CacheOptions.Section));
 
+        services.AddMemoryCache();
+
         // Register core services
-        services.TryAddSingleton<IMarkdownProcessor, MarkdownProcessor>();
-        services.TryAddScoped<IMarkdownRendererService, MarkdownRendererService>();
-        services.TryAddScoped<IStateStorageService, LocalStorageService>();
+        services.AddSingleton<IMarkdownProcessor, MarkdownProcessor>();
+        services.AddScoped<IMarkdownRendererService, MarkdownRendererService>();
+        services.AddScoped<IStateStorageService, LocalStorageService>();
+        services.AddScoped<IContentCacheService, InMemoryContentCacheService>();
 
-        // Register content cache service
-        services.TryAddScoped<IContentCacheService, InMemoryContentCacheService>();
+        // Register provider registry and manager
+        services.AddSingleton<IContentProviderRegistry, ContentProviderRegistry>();
+        services.AddScoped<IContentProviderManager, ContentProviderManager>();
+        services.AddSingleton<IContentProviderInitializer, ContentProviderInitializer>();
 
-        // Register factories
-        services.TryAddSingleton<IContentProviderFactory, ContentProviderFactory>();
-        services.TryAddScoped<IRepositoryFactory, RepositoryFactory>();
-        services.TryAddScoped<IUnitOfWorkFactory, UnitOfWorkFactory>();
-
-        // Register provider manager
-        services.TryAddScoped<IContentProviderManager, ContentProviderManager>();
-
-        // Add CQRS components
+        // Register CQRS and domain events
         services.AddOsirionCqrs();
-
-        // Add domain events
         services.AddOsirionDomainEvents();
 
-        // Add repositories
-        services.AddOsirionRepositories();
+        // Register repositories and unit of work
+        services.AddScoped<IRepositoryFactory, RepositoryFactory>();
+        services.AddScoped<IUnitOfWorkFactory, UnitOfWorkFactory>();
 
-        // Configure content providers if specified
-        services.AddOsirionContent(configuration, configureContent);
-
-        // Register content provider initializer
-        services.TryAddSingleton<IContentProviderInitializer, ContentProviderInitializer>();
+        // Apply builder configuration if provided
+        if (configureCms != null)
+        {
+            var builder = new OsirionCmsBuilder(services, configuration);
+            configureCms(builder);
+        }
 
         return services;
     }
 
     /// <summary>
-    /// Adds content provider configuration to the service collection
+    /// Adds GitHub content provider
     /// </summary>
-    public static IServiceCollection AddOsirionContent(
+    public static IServiceCollection AddGitHubContentProvider(
         this IServiceCollection services,
         IConfiguration configuration,
-        Action<IContentBuilder>? configure = null)
+        Action<GitHubOptions>? configureOptions = null)
     {
-        // Create logger for the builder
-        var loggerFactory = services.BuildServiceProvider().GetRequiredService<ILoggerFactory>();
-        var logger = loggerFactory.CreateLogger<ContentBuilder>();
-
-        // Create the content builder
-        var contentBuilder = new ContentBuilder(services, configuration, logger);
-
-        // Apply configuration or use defaults
-        if (configure != null)
+        // Configure options
+        if (configureOptions != null)
         {
-            configure(contentBuilder);
+            services.Configure<GitHubOptions>(options => {
+                // First apply configuration from settings
+                configuration.GetSection(GitHubOptions.Section).Bind(options);
+                // Then apply custom configuration
+                configureOptions(options);
+            });
         }
         else
         {
-            contentBuilder.AddGitHub();
-            contentBuilder.AddFileSystem();
+            services.Configure<GitHubOptions>(configuration.GetSection(GitHubOptions.Section));
         }
+
+        // Register HTTP clients and services
+        services.AddHttpClient<IGitHubApiClient, GitHubApiClient>();
+        services.AddHttpClient<IGitHubTokenProvider, GitHubTokenProvider>();
+        services.AddHttpClient<IAuthenticationService, AuthenticationService>();
+        services.AddHttpClient<IGitHubAdminService, GitHubAdminService>();
+
+        // Register GitHub repositories and provider
+        services.AddScoped<GitHubContentRepository>();
+        services.AddScoped<GitHubDirectoryRepository>();
+        services.AddScoped<GitHubContentProvider>();
+
+        // Register as IContentProvider
+        services.AddScoped<IContentProvider>(sp =>
+            sp.GetRequiredService<GitHubContentProvider>());
 
         return services;
     }
 
     /// <summary>
-    /// Adds Osirion.Blazor.Cms.Admin services to the service collection
+    /// Adds FileSystem content provider
     /// </summary>
-    public static IServiceCollection AddOsirionCmsAdmin(
+    public static IServiceCollection AddFileSystemContentProvider(
         this IServiceCollection services,
         IConfiguration configuration,
-        Action<ICmsAdminBuilder> configureAdmin)
+        Action<FileSystemOptions>? configureOptions = null)
     {
-        if (configureAdmin == null)
-            throw new ArgumentNullException(nameof(configureAdmin));
+        // Configure options
+        if (configureOptions != null)
+        {
+            services.Configure<FileSystemOptions>(options => {
+                // First apply configuration from settings
+                configuration.GetSection(FileSystemOptions.Section).Bind(options);
+                // Then apply custom configuration
+                configureOptions(options);
+            });
+        }
+        else
+        {
+            services.Configure<FileSystemOptions>(configuration.GetSection(FileSystemOptions.Section));
+        }
 
-        // Create logger for the builder
-        var loggerFactory = services.BuildServiceProvider().GetRequiredService<ILoggerFactory>();
-        var logger = loggerFactory.CreateLogger<CmsAdminBuilder>();
+        // Register FileSystem repositories and provider
+        services.AddScoped<FileSystemContentRepository>();
+        services.AddScoped<FileSystemDirectoryRepository>();
+        services.AddScoped<FileSystemContentProvider>();
 
-        // Create the admin builder
-        var adminBuilder = new CmsAdminBuilder(services, configuration, logger);
-
-        // Apply configuration
-        configureAdmin(adminBuilder);
+        // Register as IContentProvider
+        services.AddScoped<IContentProvider>(sp =>
+            sp.GetRequiredService<FileSystemContentProvider>());
 
         return services;
     }
