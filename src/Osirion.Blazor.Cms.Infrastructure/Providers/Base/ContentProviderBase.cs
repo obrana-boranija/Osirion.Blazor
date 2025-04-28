@@ -6,7 +6,7 @@ using Osirion.Blazor.Cms.Domain.Repositories;
 using Osirion.Blazor.Cms.Domain.Services;
 using Osirion.Blazor.Cms.Infrastructure.Extensions;
 
-namespace Osirion.Blazor.Cms.Infrastructure.Services;
+namespace Osirion.Blazor.Cms.Infrastructure.Providers;
 
 /// <summary>
 /// Base class for content providers with in-memory caching

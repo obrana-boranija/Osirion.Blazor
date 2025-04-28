@@ -7,6 +7,7 @@ using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Domain.Services;
 using Osirion.Blazor.Cms.Infrastructure.FileSystem;
 using Osirion.Blazor.Cms.Infrastructure.GitHub;
+using Osirion.Blazor.Cms.Infrastructure.Providers;
 using Osirion.Blazor.Cms.Infrastructure.Services;
 
 namespace Osirion.Blazor.Cms.Infrastructure.Builders;
@@ -47,27 +48,20 @@ public class ContentBuilder : CmsBuilderBase, IContentBuilder
             Services.Configure<GitHubOptions>(Configuration.GetSection(GitHubOptions.Section));
         }
 
-        // Register HTTP clients first
-        RegisterHttpClient<IGitHubApiClient, GitHubApiClient>();
-        RegisterHttpClient<IGitHubTokenProvider, GitHubTokenProvider>();
-        RegisterHttpClient<IAuthenticationService, AuthenticationService>();
-        RegisterHttpClient<IGitHubAdminService, GitHubAdminService>();
-
         // Register GitHub repositories
         Services.AddScoped<GitHubContentRepository>();
         Services.AddScoped<GitHubDirectoryRepository>();
-        Services.AddScoped<GitHubContentProvider>();
 
-        // Register provider factory registration
-        Services.AddSingleton<IProviderRegistration>(sp =>
+        // Register provider directly
+        Services.AddScoped<GitHubContentProvider>();
+        Services.AddScoped<IContentProvider>(sp => sp.GetRequiredService<GitHubContentProvider>());
+
+        // Register default setter
+        Services.AddSingleton<IDefaultProviderSetter>(sp =>
         {
             var options = sp.GetRequiredService<IOptions<GitHubOptions>>().Value;
             var providerId = options.ProviderId ?? $"github-{options.Owner}-{options.Repository}";
-
-            return new ProviderRegistration(
-                providerId,
-                sp => sp.GetRequiredService<GitHubContentProvider>(),
-                options.IsDefault);
+            return new DefaultProviderSetter(providerId, options.IsDefault);
         });
 
         Logger.LogInformation("Added GitHub content provider");
@@ -97,18 +91,17 @@ public class ContentBuilder : CmsBuilderBase, IContentBuilder
         // Register FileSystem repositories
         Services.AddScoped<FileSystemContentRepository>();
         Services.AddScoped<FileSystemDirectoryRepository>();
-        Services.AddScoped<FileSystemContentProvider>();
 
-        // Register provider factory registration
-        Services.AddSingleton<IProviderRegistration>(sp =>
+        // Register provider directly
+        Services.AddScoped<FileSystemContentProvider>();
+        Services.AddScoped<IContentProvider>(sp => sp.GetRequiredService<FileSystemContentProvider>());
+
+        // Register default setter
+        Services.AddSingleton<IDefaultProviderSetter>(sp =>
         {
             var options = sp.GetRequiredService<IOptions<FileSystemOptions>>().Value;
             var providerId = options.ProviderId ?? $"filesystem-{options.BasePath.GetHashCode():x}";
-
-            return new ProviderRegistration(
-                providerId,
-                sp => sp.GetRequiredService<FileSystemContentProvider>(),
-                options.IsDefault);
+            return new DefaultProviderSetter(providerId, options.IsDefault);
         });
 
         Logger.LogInformation("Added FileSystem content provider");
@@ -122,61 +115,20 @@ public class ContentBuilder : CmsBuilderBase, IContentBuilder
         // Register the provider
         Services.AddScoped<TProvider>();
 
-        // Store the configurator for use during initialization
-        if (configure != null)
-        {
-            Services.AddSingleton<IProviderConfigurator>(new ProviderConfigurator<TProvider>(configure));
-        }
-
-        // Register provider registration
-        Services.AddSingleton<IProviderRegistration>(sp =>
-        {
+        // Register as IContentProvider
+        Services.AddScoped<IContentProvider>(sp => {
             var provider = sp.GetRequiredService<TProvider>();
-            var providerId = provider.ProviderId;
 
-            return new ProviderRegistration(
-                providerId,
-                sp => {
-                    var p = sp.GetRequiredService<TProvider>();
+            // Apply configuration if provided
+            if (configure != null)
+            {
+                configure(provider);
+            }
 
-                    // Apply configuration if available
-                    sp.GetServices<IProviderConfigurator>()
-                        .OfType<ProviderConfigurator<TProvider>>()
-                        .ToList()
-                        .ForEach(config => config.Configure(p));
-
-                    return p;
-                },
-                false);
+            return provider;
         });
 
         Logger.LogInformation("Added custom content provider: {ProviderType}", typeof(TProvider).Name);
-        return this;
-    }
-
-    /// <inheritdoc/>
-    public IContentBuilder SetDefaultProvider<TProvider>()
-        where TProvider : class, IContentProvider
-    {
-        // Register default provider setter
-        Services.AddSingleton<IDefaultProviderSetter>(sp =>
-            new TypeDefaultProviderSetter<TProvider>());
-
-        Logger.LogInformation("Set default provider to type: {ProviderType}", typeof(TProvider).Name);
-        return this;
-    }
-
-    /// <inheritdoc/>
-    public IContentBuilder SetDefaultProvider(string providerId)
-    {
-        if (string.IsNullOrEmpty(providerId))
-            throw new ArgumentException("Provider ID cannot be empty", nameof(providerId));
-
-        // Register default provider setter
-        Services.AddSingleton<IDefaultProviderSetter>(
-            new IdDefaultProviderSetter(providerId));
-
-        Logger.LogInformation("Set default provider to ID: {ProviderId}", providerId);
         return this;
     }
 }

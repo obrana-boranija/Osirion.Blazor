@@ -3,7 +3,7 @@ using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using System.Text.RegularExpressions;
 
-namespace Osirion.Blazor.Cms.Infrastructure.Markdown;
+namespace Osirion.Blazor.Cms.Infrastructure.Services;
 
 public class MarkdownProcessor : IMarkdownProcessor
 {
@@ -25,7 +25,7 @@ public class MarkdownProcessor : IMarkdownProcessor
         if (sanitizeHtml)
             markdown = SanitizeMarkdown(markdown);
 
-        return Markdig.Markdown.ToHtml(markdown, _pipeline);
+        return Markdown.ToHtml(markdown, _pipeline);
     }
 
     public async Task<string> RenderToHtmlAsync(string markdown, bool sanitizeHtml = true)
@@ -69,8 +69,8 @@ public class MarkdownProcessor : IMarkdownProcessor
                     var value = parts[1].Trim();
 
                     // Remove quotes if present
-                    if ((value.StartsWith("\"") && value.EndsWith("\"")) ||
-                        (value.StartsWith("'") && value.EndsWith("'")))
+                    if (value.StartsWith("\"") && value.EndsWith("\"") ||
+                        value.StartsWith("'") && value.EndsWith("'"))
                     {
                         value = value.Substring(1, value.Length - 2);
                     }

@@ -4,7 +4,6 @@ using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Models;
 using Osirion.Blazor.Cms.Domain.ValueObjects;
 using Osirion.Blazor.Cms.Infrastructure.Extensions;
-using Osirion.Blazor.Cms.Infrastructure.Markdown;
 using System.Text;
 using System.Text.RegularExpressions;
 

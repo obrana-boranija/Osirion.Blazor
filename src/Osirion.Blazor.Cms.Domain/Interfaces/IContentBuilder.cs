@@ -31,18 +31,18 @@ public interface IContentBuilder : ICmsBuilder
     IContentBuilder AddProvider<TProvider>(Action<TProvider>? configure = null)
         where TProvider : class, IContentProvider;
 
-    /// <summary>
-    /// Sets the default provider
-    /// </summary>
-    /// <typeparam name="TProvider">The provider type to set as default</typeparam>
-    /// <returns>The builder for chaining</returns>
-    IContentBuilder SetDefaultProvider<TProvider>()
-        where TProvider : class, IContentProvider;
+    ///// <summary>
+    ///// Sets the default provider
+    ///// </summary>
+    ///// <typeparam name="TProvider">The provider type to set as default</typeparam>
+    ///// <returns>The builder for chaining</returns>
+    //IContentBuilder SetDefaultProvider<TProvider>()
+    //    where TProvider : class, IContentProvider;
 
-    /// <summary>
-    /// Sets the default provider by ID
-    /// </summary>
-    /// <param name="providerId">The ID of the provider to set as default</param>
-    /// <returns>The builder for chaining</returns>
-    IContentBuilder SetDefaultProvider(string providerId);
+    ///// <summary>
+    ///// Sets the default provider by ID
+    ///// </summary>
+    ///// <param name="providerId">The ID of the provider to set as default</param>
+    ///// <returns>The builder for chaining</returns>
+    //IContentBuilder SetDefaultProvider(string providerId);
 }

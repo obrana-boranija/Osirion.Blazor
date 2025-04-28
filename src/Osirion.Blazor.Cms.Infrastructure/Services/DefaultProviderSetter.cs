@@ -5,39 +5,24 @@ using Osirion.Blazor.Cms.Domain.Services;
 namespace Osirion.Blazor.Cms.Infrastructure.Services;
 
 /// <summary>
-/// Default provider setter that uses a provider ID
+/// Sets a provider as the default provider
 /// </summary>
-public class IdDefaultProviderSetter : IDefaultProviderSetter
+public class DefaultProviderSetter : IDefaultProviderSetter
 {
     private readonly string _providerId;
+    private readonly bool _isDefault;
 
-    /// <summary>
-    /// Initializes a new instance of the IdDefaultProviderSetter class
-    /// </summary>
-    public IdDefaultProviderSetter(string providerId)
+    public DefaultProviderSetter(string providerId, bool isDefault)
     {
         _providerId = providerId ?? throw new ArgumentNullException(nameof(providerId));
+        _isDefault = isDefault;
     }
 
-    /// <inheritdoc/>
     public void SetDefault(IServiceProvider serviceProvider)
     {
-        var factory = serviceProvider.GetRequiredService<IContentProviderFactory>();
-        factory.SetDefaultProvider(_providerId);
-    }
-}
+        if (!_isDefault) return;
 
-/// <summary>
-/// Default provider setter that uses a provider type
-/// </summary>
-public class TypeDefaultProviderSetter<TProvider> : IDefaultProviderSetter
-    where TProvider : class, IContentProvider
-{
-    /// <inheritdoc/>
-    public void SetDefault(IServiceProvider serviceProvider)
-    {
-        var factory = serviceProvider.GetRequiredService<IContentProviderFactory>();
-        var provider = serviceProvider.GetRequiredService<TProvider>();
-        factory.SetDefaultProvider(provider.ProviderId);
+        var registry = serviceProvider.GetRequiredService<IContentProviderRegistry>();
+        registry.SetDefaultProvider(_providerId);
     }
 }
