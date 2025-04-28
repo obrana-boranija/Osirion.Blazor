@@ -4,6 +4,7 @@ using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Infrastructure.Builders;
 using Osirion.Blazor.Cms.Infrastructure.Caching;
+using Osirion.Blazor.Cms.Infrastructure.DependencyInjection;
 
 namespace Osirion.Blazor.Cms.Front.DependencyInjection;
 
@@ -11,6 +12,7 @@ public static class OsirionContentServiceCollectionExtensions
 {
     public static IServiceCollection AddOsirionContent(this IServiceCollection services, Action<IContentBuilder> configure)
     {
+        
         if (services == null) throw new ArgumentNullException(nameof(services));
         if (configure == null) throw new ArgumentNullException(nameof(configure));
 
@@ -25,6 +27,8 @@ public static class OsirionContentServiceCollectionExtensions
     {
         if (services == null) throw new ArgumentNullException(nameof(services));
         if (configuration == null) throw new ArgumentNullException(nameof(configuration));
+
+        services.AddGitHubContentProvider(configuration);
 
         // Example logic: Configure services based on the configuration
         var section = configuration.GetSection(GitHubOptions.Section);
