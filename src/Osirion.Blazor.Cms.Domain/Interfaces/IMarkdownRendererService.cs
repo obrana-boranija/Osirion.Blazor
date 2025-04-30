@@ -25,7 +25,8 @@ public interface IMarkdownRendererService
     /// <param name="markdown">Markdown content to render</param>
     /// <param name="configureMarkdig">Optional action to configure the Markdig pipeline</param>
     /// <returns>Rendered HTML</returns>
-    Task<string> RenderToHtmlAsync(string markdown, Action<MarkdownPipelineBuilder>? configureMarkdig = null);
+    Task<string> RenderToHtmlAsync(string markdown, Action<MarkdownPipelineBuilder>? configureOptions = null,
+        CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Sanitizes markdown content to remove potentially harmful content

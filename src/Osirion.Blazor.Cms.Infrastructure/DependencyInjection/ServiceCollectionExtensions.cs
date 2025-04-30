@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Markdig.Renderers;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Osirion.Blazor.Cms.Domain.Interfaces;
@@ -9,6 +10,7 @@ using Osirion.Blazor.Cms.Infrastructure.Caching;
 using Osirion.Blazor.Cms.Infrastructure.Factories;
 using Osirion.Blazor.Cms.Infrastructure.FileSystem;
 using Osirion.Blazor.Cms.Infrastructure.GitHub;
+using Osirion.Blazor.Cms.Infrastructure.Markdown;
 using Osirion.Blazor.Cms.Infrastructure.Providers;
 using Osirion.Blazor.Cms.Infrastructure.Services;
 
@@ -42,7 +44,6 @@ public static class ServiceCollectionExtensions
 
         // Register core services (singletons and scoped services)
         services.TryAddSingleton<IMarkdownProcessor, MarkdownProcessor>();
-        services.TryAddScoped<IMarkdownRendererService, MarkdownRendererService>();
         services.TryAddScoped<IStateStorageService, LocalStorageService>();
         services.TryAddScoped<IContentCacheService, InMemoryContentCacheService>();
 
