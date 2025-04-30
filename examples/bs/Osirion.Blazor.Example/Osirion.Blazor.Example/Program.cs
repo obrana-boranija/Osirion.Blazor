@@ -1,5 +1,4 @@
 using Osirion.Blazor.Cms;
-using Osirion.Blazor.Cms.Admin.Extensions;
 using Osirion.Blazor.Example.Components;
 using Osirion.Blazor.Extensions;
 using Osirion.Blazor.Theming;
@@ -10,6 +9,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
+
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddOsirionCms(builder.Configuration);
 

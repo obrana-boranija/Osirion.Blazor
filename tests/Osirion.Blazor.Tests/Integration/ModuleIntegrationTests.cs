@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Osirion.Blazor.Analytics.Options;
 using Osirion.Blazor.Analytics.Services;
-using Osirion.Blazor.Cms.Options;
+using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Extensions;
 using Osirion.Blazor.Navigation.Options;
 using Osirion.Blazor.Navigation.Services;
@@ -76,11 +76,11 @@ public class ModuleIntegrationTests
 
         // Assert
         // Content module
-        var githubOptions = serviceProvider.GetRequiredService<IOptions<GitHubContentOptions>>();
+        var githubOptions = serviceProvider.GetRequiredService<IOptions<GitHubOptions>>();
         githubOptions.Value.Owner.ShouldBe("test-owner");
         githubOptions.Value.Repository.ShouldBe("test-repo");
 
-        var fileSystemOptions = serviceProvider.GetRequiredService<IOptions<FileSystemContentOptions>>();
+        var fileSystemOptions = serviceProvider.GetRequiredService<IOptions<FileSystemOptions>>();
         fileSystemOptions.Value.BasePath.ShouldBe("/test/path");
 
         // Analytics module
@@ -150,11 +150,11 @@ public class ModuleIntegrationTests
 
         // Assert
         // Content module
-        var githubOptions = serviceProvider.GetRequiredService<IOptions<GitHubContentOptions>>();
+        var githubOptions = serviceProvider.GetRequiredService<IOptions<GitHubOptions>>();
         githubOptions.Value.Owner.ShouldBe("test-owner");
         githubOptions.Value.Repository.ShouldBe("test-repo");
 
-        var fileSystemOptions = serviceProvider.GetRequiredService<IOptions<FileSystemContentOptions>>();
+        var fileSystemOptions = serviceProvider.GetRequiredService<IOptions<FileSystemOptions>>();
         fileSystemOptions.Value.BasePath.ShouldBe("/test/path");
 
         // Analytics module
@@ -203,7 +203,7 @@ public class ModuleIntegrationTests
 
         // Assert
         // Content should be configured
-        var githubOptions = serviceProvider.GetRequiredService<IOptions<GitHubContentOptions>>();
+        var githubOptions = serviceProvider.GetRequiredService<IOptions<GitHubOptions>>();
         githubOptions.Value.Owner.ShouldBe("test-owner");
         githubOptions.Value.Repository.ShouldBe("test-repo");
 

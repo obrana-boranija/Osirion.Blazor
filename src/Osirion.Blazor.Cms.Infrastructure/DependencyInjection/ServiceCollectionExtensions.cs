@@ -57,6 +57,15 @@ public static class ServiceCollectionExtensions
         // Register domain events
         services.AddOsirionDomainEvents();
 
+        // Add markdown services
+        services.AddMarkdownServices();
+
+        // Add directory services
+        services.AddDirectoryServices();
+
+        // Add content services
+        services.AddContentServices();
+
         // Register repositories and unit of work
         services.TryAddScoped<IUnitOfWorkFactory, UnitOfWorkFactory>();
 

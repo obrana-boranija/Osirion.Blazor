@@ -30,20 +30,20 @@ builder.Services.AddOsirion(osirion =>
             options.DefaultLocale = "en";
         }))
         // Configure CMS Admin
-        .UseCmsAdmin(admin =>
-        {
-            admin.Configure(options =>
-            {
-                options.Owner = "obrana-boranija";
-                options.DefaultRepository = "hexavera-blog";
-                options.DefaultBranch = "master";
-            });
+        //.UseCmsAdmin(admin =>
+        //{
+        //    admin.Configure(options =>
+        //    {
+        //        options.Owner = "obrana-boranija";
+        //        options.DefaultRepository = "hexavera-blog";
+        //        options.DefaultBranch = "master";
+        //    });
 
-            admin.UseGitHubAuthentication(
-                clientId: "your-github-oauth-client-id",
-                clientSecret: "your-github-oauth-client-secret"
-            );
-        })
+        //    admin.UseGitHubAuthentication(
+        //        clientId: "your-github-oauth-client-id",
+        //        clientSecret: "your-github-oauth-client-secret"
+        //    );
+        //})
         // Add navigation services
         .UseNavigation(navigation =>
         {

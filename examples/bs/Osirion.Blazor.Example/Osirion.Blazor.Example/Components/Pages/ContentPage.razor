@@ -1,5 +1,6 @@
-﻿@page "/{locale}/blog/{*path}"
-@page "/blog/{*path}"
+﻿@page "/{directory}/{slug}"
+@page "/{locale}/{directory}/{slug}"
+@using Microsoft.AspNetCore.Components.WebAssembly.Hosting
 @using Osirion.Blazor.Cms.Components
 @using Osirion.Blazor.Cms.Domain.Entities
 @using Osirion.Blazor.Cms.Domain.Services
@@ -53,7 +54,7 @@
                 }
 
                 <ContentList Locale="@Locale"
-                             DirectoryId="@CurrentDirectory.Id"
+                             Directory="@Directory"
                              ContentUrlFormatter="@FormatContentUrl"
                              ShowPagination="true"
                              ItemsPerPage="10" />
@@ -80,16 +81,20 @@
 
 @code {
     [Parameter]
-    public string Locale { get; set; } = "en";
+    public string? Locale { get; set; }
 
     [Parameter]
-    public string? Path { get; set; }
+    public string? Directory { get; set; }
+
+    [Parameter]
+    public string? Slug { get; set; }
 
     private ContentItem? Content { get; set; }
     private DirectoryItem? CurrentDirectory { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
+        var isInteractive = NavigationManager.Uri.Contains("_blazor");
         await LoadContentAsync();
     }
 
@@ -100,7 +105,7 @@
 
     private async Task LoadContentAsync()
     {
-        if (string.IsNullOrEmpty(Path))
+        if (string.IsNullOrEmpty(Slug))
         {
             // Home page - no specific content
             Content = null;
@@ -113,7 +118,7 @@
             return;
 
         // Try to load content first
-        string fullPath = $"{Locale}/{Path}";
+        string fullPath = $"{Locale}/{Slug}";
         Content = await provider.GetItemByUrlAsync(NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
 
         if (Content != null)
@@ -123,18 +128,18 @@
         }
 
         // If not a content item, try as a directory
-        CurrentDirectory = await provider.GetDirectoryByPathAsync(Path);
+        // CurrentDirectory = await provider.GetDirectoryByPathAsync(Directory);
 
-        if (CurrentDirectory == null)
-        {
-            // Handle 404 case
-            // You could redirect to a 404 page or show a not found message
-        }
+        // if (CurrentDirectory == null)
+        // {
+        //     // Handle 404 case
+        //     // You could redirect to a 404 page or show a not found message
+        // }
     }
 
     private void HandleLocaleChanged(string locale)
     {
-        NavigationManager.NavigateTo(Path ?? "/");
+        NavigationManager.NavigateTo(Slug ?? "/");
     }
 
     private void HandleDirectorySelected(DirectoryItem directory)

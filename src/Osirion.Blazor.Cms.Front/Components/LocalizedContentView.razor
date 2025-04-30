@@ -1,10 +1,9 @@
 ﻿<div class="@GetContentViewClass()">
-    @*    @if (IsLoading)
+    @if (IsLoading && IsInteractive)
     {
         <div class="osirion-loading">@LoadingText</div>
     }
-    else  *@
-    @if (Item is null)
+    else if (Item is null)
     {
         <div class="osirion-not-found">@NotFoundText</div>
     }

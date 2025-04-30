@@ -25,7 +25,7 @@ public class MarkdownProcessor : IMarkdownProcessor
         if (sanitizeHtml)
             markdown = SanitizeMarkdown(markdown);
 
-        return Markdown.ToHtml(markdown, _pipeline);
+        return Markdig.Markdown.ToHtml(markdown, _pipeline);
     }
 
     public async Task<string> RenderToHtmlAsync(string markdown, bool sanitizeHtml = true)

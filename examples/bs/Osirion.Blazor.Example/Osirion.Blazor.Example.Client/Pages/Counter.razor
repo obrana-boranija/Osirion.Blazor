@@ -1,5 +1,7 @@
 ﻿@page "/counter"
-@rendermode InteractiveAuto
+@using Microsoft.AspNetCore.Components.Web
+@using Osirion.Blazor.Cms.Core.Services
+@* @rendermode InteractiveAuto *@
 
 <PageTitle>WebAssembly Counter</PageTitle>
 
@@ -25,7 +27,21 @@
     </div>
 </div>
 
+@* @if (RenderMode.IsServerSideRendering)
+{
+    <div>SSR Content</div>
+}
+else if (RenderMode.IsServerMode)
+{
+    <div>Server-side Content</div>
+}
+else
+{
+    <div>WebAssembly Content</div>
+} *@
+
 @code {
+    
     private int currentCount = 0;
 
     private void IncrementCount()

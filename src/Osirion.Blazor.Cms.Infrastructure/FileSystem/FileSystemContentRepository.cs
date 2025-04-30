@@ -74,11 +74,11 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
                 var cache = new Dictionary<string, ContentItem>();
 
                 // Create base directory if it doesn't exist
-                if (!Directory.Exists(_options.BasePath))
+                if (!System.IO.Directory.Exists(_options.BasePath))
                 {
                     if (_options.CreateDirectoriesIfNotExist)
                     {
-                        Directory.CreateDirectory(_options.BasePath);
+                        System.IO.Directory.CreateDirectory(_options.BasePath);
                     }
                     else
                     {
@@ -90,7 +90,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
                 var files = new List<string>();
                 foreach (var extension in _options.SupportedExtensions)
                 {
-                    files.AddRange(Directory.GetFiles(
+                    files.AddRange(System.IO.Directory.GetFiles(
                         _options.BasePath,
                         $"*{extension}",
                         _options.IncludeSubdirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly));
@@ -144,11 +144,11 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
 
                 // Ensure directory exists
                 var directoryPath = Path.GetDirectoryName(fullPath);
-                if (!string.IsNullOrEmpty(directoryPath) && !Directory.Exists(directoryPath))
+                if (!string.IsNullOrEmpty(directoryPath) && !System.IO.Directory.Exists(directoryPath))
                 {
                     if (_options.CreateDirectoriesIfNotExist)
                     {
-                        Directory.CreateDirectory(directoryPath);
+                        System.IO.Directory.CreateDirectory(directoryPath);
                     }
                     else
                     {
@@ -309,11 +309,11 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
         {
             try
             {
-                if (!Directory.Exists(_options.BasePath))
+                if (!System.IO.Directory.Exists(_options.BasePath))
                 {
                     if (_options.CreateDirectoriesIfNotExist)
                     {
-                        Directory.CreateDirectory(_options.BasePath);
+                        System.IO.Directory.CreateDirectory(_options.BasePath);
                     }
                     else
                     {

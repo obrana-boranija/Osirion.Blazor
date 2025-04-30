@@ -3,12 +3,11 @@ using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Exceptions;
 using Osirion.Blazor.Cms.Domain.Interfaces;
+using Osirion.Blazor.Cms.Domain.Interfaces.Directory;
 using Osirion.Blazor.Cms.Domain.Models.GitHub;
 using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Domain.Repositories;
-using Osirion.Blazor.Cms.Infrastructure.Repositories;
-using System.Text;
-using System.Text.RegularExpressions;
+using Osirion.Blazor.Cms.Infrastructure.Directory;
 using DirectoryNotFoundException = Osirion.Blazor.Cms.Domain.Exceptions.DirectoryNotFoundException;
 
 namespace Osirion.Blazor.Cms.Infrastructure.GitHub;
@@ -16,21 +15,19 @@ namespace Osirion.Blazor.Cms.Infrastructure.GitHub;
 /// <summary>
 /// Repository implementation for GitHub directories
 /// </summary>
-public class GitHubDirectoryRepository : RepositoryBase<DirectoryItem, string>, IDirectoryRepository
+public class GitHubDirectoryRepository : DirectoryRepositoryBase, IDirectoryRepository
 {
     private readonly IGitHubApiClient _apiClient;
     private readonly GitHubOptions _options;
-    private readonly SemaphoreSlim _cacheLock = new(1, 1);
-
-    // In-memory cache for directories
-    private Dictionary<string, DirectoryItem>? _directoryCache;
-    private DateTime _cacheExpiration = DateTime.MinValue;
 
     public GitHubDirectoryRepository(
         IGitHubApiClient apiClient,
         IOptions<GitHubOptions> options,
+        IDirectoryCacheManager cacheManager,
+        IDirectoryMetadataProcessor metadataProcessor,
+        IPathUtilities pathUtils,
         ILogger<GitHubDirectoryRepository> logger)
-        : base(GetProviderId(options.Value), logger)
+        : base(GetProviderId(options.Value), cacheManager, metadataProcessor, pathUtils, logger)
     {
         _apiClient = apiClient ?? throw new ArgumentNullException(nameof(apiClient));
         _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
@@ -48,168 +45,6 @@ public class GitHubDirectoryRepository : RepositoryBase<DirectoryItem, string>, 
     private static string GetProviderId(GitHubOptions options)
     {
         return options.ProviderId ?? $"github-{options.Owner}-{options.Repository}";
-    }
-
-    /// <inheritdoc/>
-    public override async Task<IReadOnlyList<DirectoryItem>> GetAllAsync(CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            await EnsureCacheIsLoaded(cancellationToken);
-
-            if (_directoryCache == null)
-                return new List<DirectoryItem>();
-
-            // Return only root directories (no parent)
-            return _directoryCache.Values
-                .Where(d => d.Parent == null)
-                .ToList();
-        }
-        catch (Exception ex)
-        {
-            LogError(ex, "getting all directories");
-            throw new ContentProviderException($"Failed to get all directories: {ex.Message}", ex, ProviderId);
-        }
-    }
-
-    /// <inheritdoc/>
-    public override async Task<DirectoryItem?> GetByIdAsync(string id, CancellationToken cancellationToken = default)
-    {
-        if (string.IsNullOrEmpty(id))
-            throw new ArgumentException("ID cannot be empty", nameof(id));
-
-        try
-        {
-            await EnsureCacheIsLoaded(cancellationToken);
-
-            if (_directoryCache != null && _directoryCache.TryGetValue(id, out var directory))
-            {
-                return directory;
-            }
-
-            return null;
-        }
-        catch (Exception ex)
-        {
-            LogError(ex, "getting directory by ID", id);
-            throw new ContentProviderException($"Failed to get directory by ID: {ex.Message}", ex, ProviderId);
-        }
-    }
-
-    /// <inheritdoc/>
-    public async Task<DirectoryItem?> GetByPathAsync(string path, CancellationToken cancellationToken = default)
-    {
-        if (string.IsNullOrEmpty(path))
-            throw new ArgumentException("Path cannot be empty", nameof(path));
-
-        try
-        {
-            await EnsureCacheIsLoaded(cancellationToken);
-
-            var normalizedPath = NormalizePath(path);
-            return _directoryCache?.Values.FirstOrDefault(d => NormalizePath(d.Path) == normalizedPath);
-        }
-        catch (Exception ex)
-        {
-            LogError(ex, "getting directory by path", path);
-            throw new ContentProviderException($"Failed to get directory by path: {ex.Message}", ex, ProviderId);
-        }
-    }
-
-    /// <inheritdoc/>
-    public async Task<DirectoryItem?> GetByUrlAsync(string url, CancellationToken cancellationToken = default)
-    {
-        if (string.IsNullOrEmpty(url))
-            throw new ArgumentException("URL cannot be empty", nameof(url));
-
-        try
-        {
-            await EnsureCacheIsLoaded(cancellationToken);
-
-            return _directoryCache?.Values.FirstOrDefault(d => d.Url == url);
-        }
-        catch (Exception ex)
-        {
-            LogError(ex, "getting directory by URL", url);
-            throw new ContentProviderException($"Failed to get directory by URL: {ex.Message}", ex, ProviderId);
-        }
-    }
-
-    /// <inheritdoc/>
-    public async Task<IReadOnlyList<DirectoryItem>> GetByLocaleAsync(string? locale = null, CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            await EnsureCacheIsLoaded(cancellationToken);
-
-            if (_directoryCache == null)
-                return new List<DirectoryItem>();
-
-            if (string.IsNullOrEmpty(locale))
-            {
-                // Return all directories grouped by locale
-                return _directoryCache.Values
-                    .Where(d => d.Parent == null) // Get only root directories
-                    .ToList();
-            }
-            else
-            {
-                // Return directories for the specified locale
-                return _directoryCache.Values
-                    .Where(d => d.Locale == locale && d.Parent == null)
-                    .ToList();
-            }
-        }
-        catch (Exception ex)
-        {
-            LogError(ex, "getting directories by locale");
-            throw new ContentProviderException($"Failed to get directories by locale: {ex.Message}", ex, ProviderId);
-        }
-    }
-
-    /// <inheritdoc/>
-    public async Task<IReadOnlyList<DirectoryItem>> GetChildrenAsync(string parentId, CancellationToken cancellationToken = default)
-    {
-        if (string.IsNullOrEmpty(parentId))
-            throw new ArgumentException("Parent ID cannot be empty", nameof(parentId));
-
-        try
-        {
-            await EnsureCacheIsLoaded(cancellationToken);
-
-            if (_directoryCache == null)
-                return new List<DirectoryItem>();
-
-            // Find the parent directory
-            if (!_directoryCache.TryGetValue(parentId, out var parent))
-                return new List<DirectoryItem>();
-
-            // Return its children
-            return parent.Children.ToList();
-        }
-        catch (Exception ex)
-        {
-            LogError(ex, "getting children", parentId);
-            throw new ContentProviderException($"Failed to get directory children: {ex.Message}", ex, ProviderId);
-        }
-    }
-
-    /// <inheritdoc/>
-    public async Task<IReadOnlyList<DirectoryItem>> GetTreeAsync(string? locale = null, CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            // Get directories by locale (root directories only)
-            var rootDirectories = await GetByLocaleAsync(locale, cancellationToken);
-
-            // Children are already populated in the cache
-            return rootDirectories;
-        }
-        catch (Exception ex)
-        {
-            LogError(ex, "getting directory tree");
-            throw new ContentProviderException($"Failed to get directory tree: {ex.Message}", ex, ProviderId);
-        }
     }
 
     /// <inheritdoc/>
@@ -249,52 +84,6 @@ public class GitHubDirectoryRepository : RepositoryBase<DirectoryItem, string>, 
     public override async Task DeleteAsync(string id, CancellationToken cancellationToken = default)
     {
         await DeleteRecursiveAsync(id, null, cancellationToken);
-    }
-
-    /// <inheritdoc/>
-    public async Task DeleteRecursiveAsync(string id, string? commitMessage = null, CancellationToken cancellationToken = default)
-    {
-        if (string.IsNullOrEmpty(id))
-            throw new ArgumentException("ID cannot be empty", nameof(id));
-
-        LogOperation("deleting", id);
-
-        try
-        {
-            // Get directory to get path and metadata
-            var directory = await GetByIdAsync(id, cancellationToken);
-            if (directory == null)
-                throw new DirectoryNotFoundException(id);
-
-            // Generate a default commit message if not provided
-            var message = commitMessage ?? $"Delete directory {directory.Name}";
-
-            // Get all files in the directory and its subdirectories
-            var allFiles = await GetAllFilesInPathAsync(directory.Path, cancellationToken);
-
-            // Delete all files in reverse order (deeper paths first)
-            foreach (var file in allFiles.OrderByDescending(f => f.Path.Count(c => c == '/')))
-            {
-                await _apiClient.DeleteFileAsync(
-                    file.Path,
-                    message,
-                    file.Sha,
-                    cancellationToken);
-            }
-
-            // Refresh cache
-            await RefreshCacheAsync(cancellationToken);
-        }
-        catch (DirectoryNotFoundException)
-        {
-            // Re-throw not found exception
-            throw;
-        }
-        catch (Exception ex)
-        {
-            LogError(ex, "deleting", id);
-            throw new ContentProviderException($"Failed to delete directory: {ex.Message}", ex, ProviderId);
-        }
     }
 
     /// <inheritdoc/>
@@ -355,61 +144,50 @@ public class GitHubDirectoryRepository : RepositoryBase<DirectoryItem, string>, 
     }
 
     /// <inheritdoc/>
-    public async Task RefreshCacheAsync(CancellationToken cancellationToken = default)
+    protected override async Task<Dictionary<string, DirectoryItem>> LoadDirectoriesAsync(
+        CancellationToken cancellationToken)
     {
-        await _cacheLock.WaitAsync(cancellationToken);
-        try
-        {
-            _directoryCache = null;
-            _cacheExpiration = DateTime.MinValue;
+        var cache = new Dictionary<string, DirectoryItem>();
+        var contentPath = PathUtils.NormalizePath(_options.ContentPath);
 
-            // Force reload
-            await EnsureCacheIsLoaded(cancellationToken, forceRefresh: true);
-        }
-        finally
-        {
-            _cacheLock.Release();
-        }
+        // Get repository contents
+        var contents = await _apiClient.GetRepositoryContentsAsync(contentPath, cancellationToken);
+
+        // Process contents recursively to build directory structure
+        await ProcessDirectoriesRecursivelyAsync(contents, cache, null, cancellationToken);
+
+        // Process _index.md files for metadata
+        await ProcessDirectoryMetadataAsync(cache, cancellationToken);
+
+        return cache;
     }
 
-    #region Helper Methods
-
-    private async Task EnsureCacheIsLoaded(CancellationToken cancellationToken, bool forceRefresh = false)
+    /// <inheritdoc/>
+    protected override async Task DeleteDirectoryInternalAsync(
+        string id,
+        bool recursive,
+        string? commitMessage,
+        CancellationToken cancellationToken)
     {
-        if (!forceRefresh && _directoryCache != null && DateTime.UtcNow < _cacheExpiration)
+        // Get directory to get path and metadata
+        var directory = await GetByIdAsync(id, cancellationToken);
+        if (directory == null)
+            throw new DirectoryNotFoundException(id);
+
+        // Generate a default commit message if not provided
+        var message = commitMessage ?? $"Delete directory {directory.Name}";
+
+        // Get all files in the directory and its subdirectories
+        var allFiles = await GetAllFilesInPathAsync(directory.Path, cancellationToken);
+
+        // Delete all files in reverse order (deeper paths first)
+        foreach (var file in allFiles.OrderByDescending(f => f.Path.Count(c => c == '/')))
         {
-            return; // Cache is still valid
-        }
-
-        await _cacheLock.WaitAsync(cancellationToken);
-        try
-        {
-            // Double-check inside the lock
-            if (!forceRefresh && _directoryCache != null && DateTime.UtcNow < _cacheExpiration)
-            {
-                return; // Cache was populated while waiting for lock
-            }
-
-            // Load all directories
-            var cache = new Dictionary<string, DirectoryItem>();
-            var contentPath = NormalizePath(_options.ContentPath);
-
-            // Get repository contents
-            var contents = await _apiClient.GetRepositoryContentsAsync(contentPath, cancellationToken);
-
-            // Process contents recursively to build directory structure
-            await ProcessDirectoriesRecursivelyAsync(contents, cache, null, cancellationToken);
-
-            // Process _index.md files for metadata
-            await ProcessDirectoryMetadataAsync(cache, cancellationToken);
-
-            // Update cache
-            _directoryCache = cache;
-            _cacheExpiration = DateTime.UtcNow.AddMinutes(_options.CacheDurationMinutes);
-        }
-        finally
-        {
-            _cacheLock.Release();
+            await _apiClient.DeleteFileAsync(
+                file.Path,
+                message,
+                file.Sha,
+                cancellationToken);
         }
     }
 
@@ -441,7 +219,7 @@ public class GitHubDirectoryRepository : RepositoryBase<DirectoryItem, string>, 
             // Extract locale from path if enabled
             if (_options.EnableLocalization)
             {
-                directory.SetLocale(ExtractLocaleFromPath(item.Path));
+                directory.SetLocale(PathUtils.ExtractLocaleFromPath(item.Path));
             }
             else
             {
@@ -470,15 +248,12 @@ public class GitHubDirectoryRepository : RepositoryBase<DirectoryItem, string>, 
                 var fileContent = await _apiClient.GetFileContentAsync(indexFilePath, cancellationToken);
                 var decodedContent = fileContent.GetDecodedContent();
 
-                // Extract front matter
-                var frontMatter = ExtractFrontMatter(decodedContent);
-
                 // Find the directory
                 var directory = directoryCache.Values.FirstOrDefault(d => d.Path == directoryPath);
                 if (directory != null)
                 {
-                    // Update directory with metadata from _index.md
-                    ApplyFrontMatterToDirectory(directory, frontMatter);
+                    // Process metadata
+                    MetadataProcessor.ProcessMetadata(directory, decodedContent);
 
                     // Save SHA for updates
                     directory.SetProviderSpecificId(fileContent.Sha);
@@ -489,86 +264,6 @@ public class GitHubDirectoryRepository : RepositoryBase<DirectoryItem, string>, 
                 // _index.md might not exist - that's ok
                 continue;
             }
-        }
-    }
-
-    private Dictionary<string, string> ExtractFrontMatter(string content)
-    {
-        var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
-        // Look for front matter between --- delimiters
-        var match = Regex.Match(content, @"^\s*---\s*\n(.*?)\n\s*---\s*\n", RegexOptions.Singleline);
-        if (match.Success && match.Groups.Count > 1)
-        {
-            var frontMatterContent = match.Groups[1].Value;
-            var lines = frontMatterContent.Split('\n');
-
-            foreach (var line in lines)
-            {
-                var parts = line.Split(new[] { ':' }, 2, StringSplitOptions.None);
-                if (parts.Length == 2)
-                {
-                    var key = parts[0].Trim();
-                    var value = parts[1].Trim();
-
-                    // Remove quotes if present
-                    if ((value.StartsWith("\"") && value.EndsWith("\"")) ||
-                        (value.StartsWith("'") && value.EndsWith("'")))
-                    {
-                        value = value.Substring(1, value.Length - 2);
-                    }
-
-                    result[key] = value;
-                }
-            }
-        }
-
-        return result;
-    }
-
-    private void ApplyFrontMatterToDirectory(DirectoryItem directory, Dictionary<string, string> frontMatter)
-    {
-        foreach (var kvp in frontMatter)
-        {
-            var key = kvp.Key.ToLowerInvariant();
-            var value = kvp.Value;
-
-            switch (key)
-            {
-                case "title":
-                    directory.SetName(value);
-                    break;
-                case "description":
-                    directory.SetDescription(value);
-                    break;
-                case "order":
-                    if (int.TryParse(value, out var order))
-                        directory.SetOrder(order);
-                    break;
-                case "locale":
-                    directory.SetLocale(value);
-                    break;
-                case "url":
-                    directory.SetUrl(value);
-                    break;
-                default:
-                    // Add as custom metadata
-                    if (bool.TryParse(value, out var boolVal))
-                        directory.SetMetadata(key, boolVal);
-                    else if (int.TryParse(value, out var intVal))
-                        directory.SetMetadata(key, intVal);
-                    else if (double.TryParse(value, out var doubleVal))
-                        directory.SetMetadata(key, doubleVal);
-                    else
-                        directory.SetMetadata(key, value);
-                    break;
-            }
-        }
-
-        // If URL is not set, generate a default one
-        if (string.IsNullOrEmpty(directory.Url))
-        {
-            directory.SetUrl(GenerateDirectoryUrl(directory.Path));
         }
     }
 
@@ -612,40 +307,9 @@ public class GitHubDirectoryRepository : RepositoryBase<DirectoryItem, string>, 
     private async Task SaveDirectoryMetadataAsync(DirectoryItem directory, string commitMessage, CancellationToken cancellationToken)
     {
         var indexPath = Path.Combine(directory.Path, "_index.md").Replace('\\', '/');
-        var frontMatter = new StringBuilder();
-        frontMatter.AppendLine("---");
 
-        // Add metadata
-        frontMatter.AppendLine($"title: \"{EscapeYamlString(directory.Name)}\"");
-
-        if (!string.IsNullOrEmpty(directory.Description))
-            frontMatter.AppendLine($"description: \"{EscapeYamlString(directory.Description)}\"");
-
-        if (directory.Order != 0)
-            frontMatter.AppendLine($"order: {directory.Order}");
-
-        if (!string.IsNullOrEmpty(directory.Locale))
-            frontMatter.AppendLine($"locale: \"{directory.Locale}\"");
-
-        if (!string.IsNullOrEmpty(directory.Url))
-            frontMatter.AppendLine($"url: \"{directory.Url}\"");
-
-        // Add custom metadata
-        foreach (var meta in directory.Metadata)
-        {
-            if (meta.Value is string strValue)
-                frontMatter.AppendLine($"{meta.Key}: \"{EscapeYamlString(strValue)}\"");
-            else if (meta.Value is bool boolValue)
-                frontMatter.AppendLine($"{meta.Key}: {boolValue.ToString().ToLowerInvariant()}");
-            else if (meta.Value is int intValue)
-                frontMatter.AppendLine($"{meta.Key}: {intValue}");
-            else if (meta.Value is double doubleValue)
-                frontMatter.AppendLine($"{meta.Key}: {doubleValue}");
-            else
-                frontMatter.AppendLine($"{meta.Key}: \"{meta.Value}\"");
-        }
-
-        frontMatter.AppendLine("---");
+        // Generate metadata content
+        var content = MetadataProcessor.GenerateMetadataContent(directory);
 
         // Check if _index.md already exists
         string? sha = directory.ProviderSpecificId;
@@ -665,23 +329,13 @@ public class GitHubDirectoryRepository : RepositoryBase<DirectoryItem, string>, 
         // Create or update _index.md
         var response = await _apiClient.CreateOrUpdateFileAsync(
             indexPath,
-            frontMatter.ToString(),
+            content,
             commitMessage,
             sha,
             cancellationToken);
 
         // Update the entity with the new SHA
         directory.SetProviderSpecificId(response.Content.Sha);
-    }
-
-    private string EscapeYamlString(string value)
-    {
-        return value
-            .Replace("\\", "\\\\")
-            .Replace("\"", "\\\"")
-            .Replace("\n", "\\n")
-            .Replace("\r", "\\r")
-            .Replace("\t", "\\t");
     }
 
     private async Task<List<GitHubItem>> GetAllFilesInPathAsync(string path, CancellationToken cancellationToken)
@@ -744,89 +398,4 @@ public class GitHubDirectoryRepository : RepositoryBase<DirectoryItem, string>, 
                 cancellationToken);
         }
     }
-
-    private string NormalizePath(string path)
-    {
-        return path.Replace('\\', '/').Trim('/');
-    }
-
-    private string ExtractLocaleFromPath(string path)
-    {
-        // If localization is disabled, always return default locale
-        if (!_options.EnableLocalization)
-        {
-            return _options.DefaultLocale;
-        }
-
-        // Check if content path is set and remove it from the beginning
-        var contentPath = NormalizePath(_options.ContentPath);
-        if (!string.IsNullOrEmpty(contentPath) && path.StartsWith(contentPath))
-        {
-            // Only remove if it's followed by a slash or is the entire path
-            if (path.Length == contentPath.Length || path[contentPath.Length] == '/')
-            {
-                // Remove content path prefix
-                path = path.Length > contentPath.Length
-                    ? path.Substring(contentPath.Length + 1)
-                    : "";
-            }
-        }
-
-        // Try to extract locale from path format like "en/blog" or "es/articles"
-        var segments = path.Split('/', StringSplitOptions.RemoveEmptyEntries);
-        if (segments.Length > 0 && IsValidLocale(segments[0]))
-        {
-            return segments[0];
-        }
-
-        // No valid locale found, return default
-        return _options.DefaultLocale;
-    }
-
-    private bool IsValidLocale(string locale)
-    {
-        // Check against supported locales list if defined
-        if (_options.SupportedLocales.Count > 0)
-        {
-            return _options.SupportedLocales.Contains(locale, StringComparer.OrdinalIgnoreCase);
-        }
-
-        // Fallback to simple validation: 2-letter language code or language-region format
-        return (locale.Length == 2 && locale.All(char.IsLetter)) ||
-               (locale.Length == 5 && locale[2] == '-' &&
-                locale.Substring(0, 2).All(char.IsLetter) &&
-                locale.Substring(3, 2).All(char.IsLetter));
-    }
-
-    private string GenerateDirectoryUrl(string path)
-    {
-        // Normalize path
-        path = NormalizePath(path);
-
-        // Remove content path prefix if present
-        var contentPath = NormalizePath(_options.ContentPath);
-        if (!string.IsNullOrEmpty(contentPath) && path.StartsWith(contentPath))
-        {
-            if (path.Length == contentPath.Length || path[contentPath.Length] == '/')
-            {
-                path = path.Length > contentPath.Length
-                    ? path.Substring(contentPath.Length + 1)
-                    : "";
-            }
-        }
-
-        // If using localization, check if the first segment is a locale and remove it
-        if (_options.EnableLocalization && !string.IsNullOrEmpty(path))
-        {
-            var segments = path.Split('/', StringSplitOptions.RemoveEmptyEntries);
-            if (segments.Length > 0 && IsValidLocale(segments[0]))
-            {
-                path = string.Join("/", segments.Skip(1));
-            }
-        }
-
-        return path;
-    }
-
-    #endregion
 }

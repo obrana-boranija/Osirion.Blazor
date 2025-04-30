@@ -1,23 +1,29 @@
-﻿@page "/cms-demo"
-@page "/cms-demo/{*Slug}"
+﻿@page "/blog"
+@page "/docs"
+
 @using Osirion.Blazor.Cms.Components
+@using Osirion.Blazor.Cms.Domain.Entities
+@using Osirion.Blazor.Cms.Domain.Enums
+@using Osirion.Blazor.Cms.Domain.Repositories
 @using Osirion.Blazor.Cms.Domain.Services
+@rendermode InteractiveServer
 
 <PageTitle>CMS Demo - Osirion.Blazor</PageTitle>
 
 <div class="container mt-4">
     <h1>Osirion CMS Demo</h1>
     <p class="lead">This page demonstrates the Osirion.Blazor.Cms component library.</p>
-    
+
     <div class="row mt-4">
         <div class="col-md-8">
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <ContentView Path="@_contentPath"  />
+                    <LocalizedContentView Item="_contentItem" CssClass="" />
                 </div>
             </div>
         </div>
         <div class="col-md-4">
+            <ContentList />
             <div class="card shadow-sm">
                 <div class="card-header">
                     <h5 class="mb-0">Content Selection</h5>
@@ -69,34 +75,57 @@
 
     private string _contentPath = "blog/sample-post.md";
     private string _providerId = "";
+    private ContentItem? _contentItem;
     private Dictionary<string, string> _providers = new();
 
     /// <summary>
     /// Initialize component when parameters are set
     /// </summary>
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     // Get the available providers
+    //     foreach (var provider in ContentProviderManager.GetAllProviders())
+    //     {
+    //         _providers.Add(provider.DisplayName, provider.ProviderId);
+    //     }
+
+    //     // Set default provider
+    //     var defaultProvider = ContentProviderManager.GetDefaultProvider();
+    //     if (defaultProvider != null)
+    //     {
+    //         _providerId = defaultProvider.ProviderId;
+    //     }
+    //     else if (_providers.Count > 0)
+    //     {
+    //         // If no default, use the first provider
+    //         _providerId = _providers.Values.First();
+    //     }
+
+    //     _contentPath = string.IsNullOrEmpty(Slug) ? _contentPath : Slug;
+
+    //     await base.OnInitializedAsync();
+    // }
+
+    private IReadOnlyList<ContentItem>? blogPosts = Array.Empty<ContentItem>();
+
     protected override async Task OnInitializedAsync()
     {
-        // Get the available providers
-        foreach (var provider in ContentProviderManager.GetAllProviders())
-        {
-            _providers.Add(provider.DisplayName, provider.ProviderId);
-        }
+        // Get the provider
+        var provider = ContentProviderManager.GetDefaultProvider();
 
-        // Set default provider
-        var defaultProvider = ContentProviderManager.GetDefaultProvider();
-        if (defaultProvider != null)
-        {
-            _providerId = defaultProvider.ProviderId;
-        }
-        else if (_providers.Count > 0)
-        {
-            // If no default, use the first provider
-            _providerId = _providers.Values.First();
-        }
+        // Create a query
+        var query = new ContentQuery
+            {
+                //Directory = "blog", // Filter by directory
+                SortBy = SortField.Date,
+                SortDirection = SortDirection.Descending,
+                Take = 10 // Latest 10 blog posts
+            };
 
-        _contentPath = string.IsNullOrEmpty(Slug) ? _contentPath : Slug;
+        // Execute query
+        blogPosts = await provider.GetItemsByQueryAsync(query);
 
-        await base.OnInitializedAsync();
+        _contentItem = blogPosts?.FirstOrDefault();
     }
 
     /// <summary>

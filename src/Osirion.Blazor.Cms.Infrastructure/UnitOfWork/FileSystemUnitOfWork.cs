@@ -32,7 +32,7 @@ public class FileSystemUnitOfWork : IUnitOfWork
         _backupDirectory = backupDirectory ?? throw new ArgumentNullException(nameof(backupDirectory));
 
         // Ensure backup directory exists
-        Directory.CreateDirectory(_backupDirectory);
+        System.IO.Directory.CreateDirectory(_backupDirectory);
     }
 
     public FileSystemUnitOfWork(IContentRepository contentRepository, IDirectoryRepository directoryRepository, ILogger<FileSystemUnitOfWork> logger, string backupDirectory)
