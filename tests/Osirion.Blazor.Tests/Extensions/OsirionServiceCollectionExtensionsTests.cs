@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Osirion.Blazor.Analytics.Options;
-using Osirion.Blazor.Cms.Options;
+using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Extensions;
 using Osirion.Blazor.Navigation.Options;
 using Osirion.Blazor.Theming;
@@ -89,12 +89,12 @@ public class OsirionServiceCollectionExtensionsTests
         result.ShouldBe(services);
 
         // Verify Content configuration
-        var githubOptions = serviceProvider.GetService<IOptions<GitHubContentOptions>>();
+        var githubOptions = serviceProvider.GetService<IOptions<GitHubOptions>>();
         githubOptions.ShouldNotBeNull();
         githubOptions.Value.Owner.ShouldBe("test-owner");
         githubOptions.Value.Repository.ShouldBe("test-repo");
 
-        var fileSystemOptions = serviceProvider.GetService<IOptions<FileSystemContentOptions>>();
+        var fileSystemOptions = serviceProvider.GetService<IOptions<FileSystemOptions>>();
         fileSystemOptions.ShouldNotBeNull();
         fileSystemOptions.Value.BasePath.ShouldBe("/test/path");
 
@@ -155,7 +155,7 @@ public class OsirionServiceCollectionExtensionsTests
         var serviceProvider = services.BuildServiceProvider();
 
         // Verify Content is configured
-        var githubOptions = serviceProvider.GetService<IOptions<GitHubContentOptions>>();
+        var githubOptions = serviceProvider.GetService<IOptions<GitHubOptions>>();
         githubOptions.ShouldNotBeNull();
         githubOptions.Value.Owner.ShouldBe("test-owner");
         githubOptions.Value.Repository.ShouldBe("test-repo");

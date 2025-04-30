@@ -33,8 +33,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="Handlers\" />
-		<Folder Include="Markdown\" />
 		<Folder Include="wwwroot\" />
 	</ItemGroup>
 

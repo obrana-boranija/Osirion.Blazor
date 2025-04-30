@@ -49,12 +49,12 @@ public class ContentBuilder : CmsBuilderBase, IContentBuilder
         }
 
         // Register GitHub repositories
-        Services.AddScoped<GitHubContentRepository>();
-        Services.AddScoped<GitHubDirectoryRepository>();
+        Services.AddSingleton<GitHubContentRepository>();
+        Services.AddSingleton<GitHubDirectoryRepository>();
 
         // Register provider directly
-        Services.AddScoped<GitHubContentProvider>();
-        Services.AddScoped<IContentProvider>(sp => sp.GetRequiredService<GitHubContentProvider>());
+        Services.AddSingleton<GitHubContentProvider>();
+        Services.AddSingleton<IContentProvider>(sp => sp.GetRequiredService<GitHubContentProvider>());
 
         // Register default setter
         Services.AddSingleton<IDefaultProviderSetter>(sp =>

@@ -25,15 +25,15 @@
                         @directory.Name
                         @if (ShowItemCount)
                         {
-                            <span class="osirion-directory-count">@directory.ItemCount</span>
+                            <span class="osirion-directory-count">@directory.Children?.Count</span>
                         }
                     </a>
 
-                    @if (ShowSubdirectories && directory.Subdirectories != null && directory.Subdirectories.Any()
+                    @if (ShowSubdirectories && directory.Children != null && directory.Children.Any()
                    && (ExpandedDirectory == directory.Path || ExpandAllSubdirectories))
                     {
                         <ul class="osirion-subdirectory-list">
-                            @foreach (var subdirectory in directory.Subdirectories)
+                            @foreach (var subdirectory in directory.Children)
                             {
                                 <li class="osirion-directory-item">
                                     <a href="@GetDirectoryUrl(subdirectory)"
@@ -43,7 +43,7 @@
                                         @subdirectory.Name
                                         @if (ShowItemCount)
                                         {
-                                            <span class="osirion-directory-count">@subdirectory.ItemCount</span>
+                                            <span class="osirion-directory-count">@subdirectory.Children?.Count</span>
                                         }
                                     </a>
                                 </li>

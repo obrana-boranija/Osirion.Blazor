@@ -162,13 +162,13 @@ public partial class ContentList : IDisposable
     /// </summary>
     private IDisposable? _contentProviderSubscription;
 
-    /// <summary>
-    /// Initializes the component.
-    /// </summary>
-    protected override async Task OnInitializedAsync()
-    {
-        await LoadContentAsync();
-    }
+    ///// <summary>
+    ///// Initializes the component.
+    ///// </summary>
+    //protected override async Task OnInitializedAsync()
+    //{
+    //    await LoadContentAsync();
+    //}
 
     /// <summary>
     /// Processes changes to component parameters.

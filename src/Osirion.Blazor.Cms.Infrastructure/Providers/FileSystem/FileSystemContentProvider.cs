@@ -142,12 +142,12 @@ public class FileSystemContentProvider : ContentProviderBase
         Logger.LogInformation("Initializing FileSystem content provider: {BasePath}", _options.BasePath);
 
         // Ensure base directory exists
-        if (!Directory.Exists(_options.BasePath))
+        if (!System.IO.Directory.Exists(_options.BasePath))
         {
             if (_options.CreateDirectoriesIfNotExist)
             {
                 Logger.LogInformation("Creating base directory: {BasePath}", _options.BasePath);
-                Directory.CreateDirectory(_options.BasePath);
+                System.IO.Directory.CreateDirectory(_options.BasePath);
             }
             else
             {

@@ -104,28 +104,63 @@ public class DirectoryItem : DomainEntity<string>
         Order = order;
     }
 
-    public void SetParent(DirectoryItem? parent)
+    /// <summary>
+    /// Sets the parent of this directory with additional safeguards
+    /// </summary>
+    public void SetParent(DirectoryItem? parent, bool skipCircularCheck = false)
     {
-        // Prevent circular references
-        if (parent != null && IsAncestorOf(parent))
-            throw new ContentValidationException("Parent", "Cannot set a child directory as parent");
+        // If parent is null, just clear the parent reference
+        if (parent == null)
+        {
+            Parent = null;
+            return;
+        }
+
+        // Don't set self as parent
+        if (parent.Id == Id)
+            throw new ContentValidationException("Parent", "Cannot set a directory as its own parent");
+
+        // Skip circular checks if we already did them (from AddChild)
+        if (!skipCircularCheck)
+        {
+            // Check if this directory is already an ancestor of the new parent
+            if (IsAncestorOf(parent))
+                throw new ContentValidationException("Parent", "Cannot set a child directory as parent");
+
+            // Check if parent is already in this directory's ancestry
+            if (parent.IsAncestorOf(this))
+                throw new ContentValidationException("Parent", "Cannot set a parent that would create a circular reference");
+        }
 
         Parent = parent;
     }
 
-    // Child directory operations
+    /// <summary>
+    /// Adds a directory as a child of this directory with additional safeguards
+    /// </summary>
     public void AddChild(DirectoryItem child)
     {
         if (child == null)
             throw new ArgumentNullException(nameof(child));
 
+        // Don't add self as child
+        if (child.Id == Id)
+            throw new ContentValidationException("Child", "Cannot add a directory as its own child");
+
+        // Check if this directory is already an ancestor of the child (would create circular reference)
         if (IsAncestorOf(child))
             throw new ContentValidationException("Child", "Cannot add a directory as child of its descendant");
 
+        // Check if child is already in this directory's ancestry (would create circular reference)
+        if (child.IsAncestorOf(this))
+            throw new ContentValidationException("Child", "Cannot add an ancestor directory as a child");
+
+        // Avoid duplicates in the children collection
         if (!_children.Contains(child))
         {
+            // Set parent first to ensure proper relationship
+            child.SetParent(this, skipCircularCheck: true); // Skip check since we already did it
             _children.Add(child);
-            child.SetParent(this);
         }
     }
 
@@ -223,11 +258,30 @@ public class DirectoryItem : DomainEntity<string>
         if (directory == null)
             return false;
 
+        // More robust equality check
+        if (Id == directory.Id)
+            return false; // A directory isn't its own ancestor
+
+        // Maximum depth to prevent infinite loops in case of circular references
+        int maxDepth = 100;
+        int depth = 0;
+        var visited = new HashSet<string>(); // Track visited IDs to detect loops
         var current = directory.Parent;
 
-        while (current != null)
+        while (current != null && depth < maxDepth)
         {
-            if (current == this)
+            depth++;
+
+            // If we've seen this ID before, we have a loop
+            if (!visited.Add(current.Id))
+            {
+                // Log this circular reference
+                // Logger.LogWarning("Circular reference detected in directory structure: {DirectoryId}", current.Id);
+                return false;
+            }
+
+            // Found match - this directory is an ancestor
+            if (current.Id == Id)
                 return true;
 
             current = current.Parent;

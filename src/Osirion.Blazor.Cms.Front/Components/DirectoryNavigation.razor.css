@@ -36,11 +36,11 @@
 }
 
     .osirion-directory-link:hover {
-        background-color: var(--osirion-background-hover, #f3f4f6);
+        background-color: var(--osirion-background-secondary, #f3f4f6);
     }
 
     .osirion-directory-link.osirion-active {
-        background-color: var(--osirion-background-active, #e0f2fe);
+        background-color: var(--osirion-background-secondary, #e0f2fe);
         color: var(--osirion-action-primary, #0369a1);
     }
 

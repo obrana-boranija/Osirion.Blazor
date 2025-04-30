@@ -63,18 +63,18 @@ public partial class LocalizedContentView
     private bool HasMultipleTranslations => AvailableTranslations.Count > 1;
     private bool ShowTranslations => EnableLocalization && HasMultipleTranslations;
 
-    protected override async Task OnInitializedAsync()
-    {
-        if (Item == null && !string.IsNullOrEmpty(Path))
-        {
-            await LoadContentAsync();
-        }
-        else if (Item != null)
-        {
-            LocalizationId = Item.ContentId;
-            await LoadTranslationsAsync();
-        }
-    }
+    //protected override async Task OnInitializedAsync()
+    //{
+    //    if (Item == null && !string.IsNullOrEmpty(Path))
+    //    {
+    //        await LoadContentAsync();
+    //    }
+    //    else if (Item != null)
+    //    {
+    //        LocalizationId = Item.ContentId;
+    //        await LoadTranslationsAsync();
+    //    }
+    //}
 
     protected override async Task OnParametersSetAsync()
     {
@@ -85,8 +85,19 @@ public partial class LocalizedContentView
         else if (Item != null && LocalizationId != Item.ContentId)
         {
             LocalizationId = Item.ContentId;
-            await LoadTranslationsAsync();
+            await LoadContentAsync();
         }
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if(firstRender)
+        {
+            IsLoading = false;
+            StateHasChanged();
+        }
+
+        base.OnAfterRender(firstRender);
     }
 
     private async Task LoadContentAsync()
@@ -97,9 +108,13 @@ public partial class LocalizedContentView
             var provider = ContentProviderManager.GetDefaultProvider();
             if (provider != null)
             {
-                Item = await provider.GetItemByPathAsync(Path);
+                if(Item is null)
+                {
+                    Item = await provider.GetItemByPathAsync(Path);
+                }
+                
 
-                if (Item != null)
+                if (Item is not null)
                 {
                     LocalizationId = Item.ContentId;
                     await LoadTranslationsAsync();
@@ -160,17 +175,17 @@ public partial class LocalizedContentView
 
         try
         {
-            var provider = ContentProviderManager.GetDefaultProvider();
-            if (provider != null)
-            {
-                //var translations = await provider.GetContentTranslationsAsync(LocalizationId);
+            //var provider = ContentProviderManager.GetDefaultProvider();
+            //if (provider != null)
+            //{
+            //    var translations = await provider.GetContentTranslationsAsync(LocalizationId);
 
-                //AvailableTranslations.Clear();
-                //foreach (var translation in translations)
-                //{
-                //    AvailableTranslations[translation.Locale] = translation.Path;
-                //}
-            }
+            //    AvailableTranslations.Clear();
+            //    foreach (var translation in translations)
+            //    {
+            //        AvailableTranslations[translation.Locale] = translation.Path;
+            //    }
+            //}
         }
         catch (Exception ex)
         {

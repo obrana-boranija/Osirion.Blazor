@@ -1,14 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using NSubstitute.Extensions;
 using Osirion.Blazor.Analytics;
 using Osirion.Blazor.Analytics.Extensions;
-using Osirion.Blazor.Cms;
-using Osirion.Blazor.Cms.Admin.Interfaces;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Front.DependencyInjection;
 using Osirion.Blazor.Navigation;
-using Osirion.Blazor.Navigation.Extensions;
 using Osirion.Blazor.Theming;
 using Osirion.Blazor.Theming.Extensions;
 
