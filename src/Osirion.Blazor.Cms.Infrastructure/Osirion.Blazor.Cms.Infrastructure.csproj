@@ -33,7 +33,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="Handlers\" />
 		<Folder Include="wwwroot\" />
 	</ItemGroup>
 

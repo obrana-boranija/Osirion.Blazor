@@ -76,6 +76,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.GitHub
                 // Process contents recursively
                 await ProcessContentsRecursivelyAsync(contents, cache, cancellationToken);
 
+
                 // Update cache
                 ItemCache = cache;
                 CacheExpiration = DateTime.UtcNow.AddMinutes(_options.CacheDurationMinutes);

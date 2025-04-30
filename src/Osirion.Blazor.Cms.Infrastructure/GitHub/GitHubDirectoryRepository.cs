@@ -8,6 +8,7 @@ using Osirion.Blazor.Cms.Domain.Models.GitHub;
 using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Domain.Repositories;
 using Osirion.Blazor.Cms.Infrastructure.Directory;
+using Osirion.Blazor.Cms.Infrastructure.Utilities;
 using DirectoryNotFoundException = Osirion.Blazor.Cms.Domain.Exceptions.DirectoryNotFoundException;
 
 namespace Osirion.Blazor.Cms.Infrastructure.GitHub;
@@ -191,47 +192,117 @@ public class GitHubDirectoryRepository : DirectoryRepositoryBase, IDirectoryRepo
         }
     }
 
+    /// <summary>
+    /// Process directories recursively with additional safety checks
+    /// </summary>
     private async Task ProcessDirectoriesRecursivelyAsync(
         List<GitHubItem> contents,
         Dictionary<string, DirectoryItem> directoryCache,
         DirectoryItem? parentDirectory,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        HashSet<string>? processedPaths = null)
     {
+        // Initialize path tracking if not provided
+        processedPaths ??= new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
         foreach (var item in contents.Where(i => i.IsDirectory))
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            // Create directory item
-            var directoryId = item.Path.GetHashCode().ToString("x");
-            var directory = DirectoryItem.Create(
-                id: directoryId,
-                path: item.Path,
-                name: item.Name,
-                providerId: ProviderId);
-
-            // Set parent if available
-            if (parentDirectory != null)
+            // Skip if we've already processed this path to avoid cycles
+            if (!processedPaths.Add(item.Path))
             {
-                directory.SetParent(parentDirectory);
-                parentDirectory.AddChild(directory);
+                Logger.LogWarning("Skipping already processed directory path: {Path}", item.Path);
+                continue;
             }
 
-            // Extract locale from path if enabled
-            if (_options.EnableLocalization)
+            // Create directory item with more robust ID generation
+            var directoryId = IdGenerator.GenerateDirectoryId(item.Path, item.Name, GetProviderId(_options));
+
+            // Check if we already have this directory in cache
+            if (directoryCache.TryGetValue(directoryId, out var existingDirectory))
             {
-                directory.SetLocale(PathUtils.ExtractLocaleFromPath(item.Path));
+                // If this directory already exists with a different parent, we have a problem
+                if (parentDirectory != null && existingDirectory.Parent != null &&
+                    existingDirectory.Parent.Id != parentDirectory.Id)
+                {
+                    Logger.LogWarning(
+                        "Directory '{Name}' ({Id}) already exists with different parent. Path: {Path}",
+                        item.Name, directoryId, item.Path);
+
+                    // Skip this to avoid circular references
+                    continue;
+                }
+
+                // Use existing directory
+                var directory = existingDirectory;
+
+                // Update parent if needed
+                if (parentDirectory != null && directory.Parent == null)
+                {
+                    try
+                    {
+                        parentDirectory.AddChild(directory);
+                    }
+                    catch (ContentValidationException ex)
+                    {
+                        Logger.LogWarning(ex,
+                            "Cannot set parent-child relationship between '{Parent}' and '{Child}'",
+                            parentDirectory.Name, directory.Name);
+                        // Continue processing other directories
+                    }
+                }
             }
             else
             {
-                directory.SetLocale(_options.DefaultLocale);
+                // Create new directory
+                var directory = DirectoryItem.Create(
+                    id: directoryId,
+                    path: item.Path,
+                    name: item.Name,
+                    providerId: ProviderId);
+
+                // Set parent if available
+                if (parentDirectory != null)
+                {
+                    try
+                    {
+                        parentDirectory.AddChild(directory);
+                    }
+                    catch (ContentValidationException ex)
+                    {
+                        Logger.LogWarning(ex,
+                            "Cannot set parent-child relationship between '{Parent}' and '{Child}'",
+                            parentDirectory.Name, directory.Name);
+                        // Still add to cache but without parent relationship
+                    }
+                }
+
+                // Extract locale from path if enabled
+                if (_options.EnableLocalization)
+                {
+                    directory.SetLocale(PathUtils.ExtractLocaleFromPath(item.Path));
+                }
+                else
+                {
+                    directory.SetLocale(_options.DefaultLocale);
+                }
+
+                // Add to cache
+                directoryCache[directoryId] = directory;
             }
 
-            // Add to cache
-            directoryCache[directoryId] = directory;
+            // Get an updated reference to the directory from cache
+            var dirForProcessing = directoryCache[directoryId];
 
-            // Process subdirectories
+            // Process subdirectories with safety tracking
             var subContents = await _apiClient.GetRepositoryContentsAsync(item.Path, cancellationToken);
-            await ProcessDirectoriesRecursivelyAsync(subContents, directoryCache, directory, cancellationToken);
+            await ProcessDirectoriesRecursivelyAsync(
+                subContents,
+                directoryCache,
+                dirForProcessing,
+                cancellationToken,
+                processedPaths);
         }
     }
 

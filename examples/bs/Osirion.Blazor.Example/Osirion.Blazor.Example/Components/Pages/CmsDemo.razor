@@ -15,14 +15,17 @@
     <p class="lead">This page demonstrates the Osirion.Blazor.Cms component library.</p>
 
     <div class="row mt-4">
-        <div class="col-md-8">
+        <div class="col-md-3 sticky-top">
+            <DirectoryNavigation Directories="directories" CurrentDirectory="blog" />
+        </div>
+        <div class="col-md-6">
             <div class="card shadow-sm">
                 <div class="card-body">
                     <LocalizedContentView Item="_contentItem" CssClass="" />
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
             <ContentList />
             <div class="card shadow-sm">
                 <div class="card-header">
@@ -48,92 +51,3 @@
         </div>
     </div>
 </div>
-
-@code {
-    [Parameter]
-    public string? Slug { get; set; }
-
-    [Parameter]
-    public string? CategorySlug { get; set; }
-
-    [Parameter]
-    public string? TagSlug { get; set; }
-
-    [Parameter]
-    public string? locale { get; set; }
-
-    [Inject]
-    private IContentProviderManager ContentProviderManager { get; set; } = default!;
-
-    private string Directory => "blog";
-    private string Locale => locale ?? "en";
-
-    private string PageTitle =>
-        !string.IsNullOrEmpty(CategorySlug) ? $"Category: {CategorySlug}" :
-        !string.IsNullOrEmpty(TagSlug) ? $"Tag: {TagSlug}" :
-        "Blog";
-
-    private string _contentPath = "blog/sample-post.md";
-    private string _providerId = "";
-    private ContentItem? _contentItem;
-    private Dictionary<string, string> _providers = new();
-
-    /// <summary>
-    /// Initialize component when parameters are set
-    /// </summary>
-    // protected override async Task OnInitializedAsync()
-    // {
-    //     // Get the available providers
-    //     foreach (var provider in ContentProviderManager.GetAllProviders())
-    //     {
-    //         _providers.Add(provider.DisplayName, provider.ProviderId);
-    //     }
-
-    //     // Set default provider
-    //     var defaultProvider = ContentProviderManager.GetDefaultProvider();
-    //     if (defaultProvider != null)
-    //     {
-    //         _providerId = defaultProvider.ProviderId;
-    //     }
-    //     else if (_providers.Count > 0)
-    //     {
-    //         // If no default, use the first provider
-    //         _providerId = _providers.Values.First();
-    //     }
-
-    //     _contentPath = string.IsNullOrEmpty(Slug) ? _contentPath : Slug;
-
-    //     await base.OnInitializedAsync();
-    // }
-
-    private IReadOnlyList<ContentItem>? blogPosts = Array.Empty<ContentItem>();
-
-    protected override async Task OnInitializedAsync()
-    {
-        // Get the provider
-        var provider = ContentProviderManager.GetDefaultProvider();
-
-        // Create a query
-        var query = new ContentQuery
-            {
-                //Directory = "blog", // Filter by directory
-                SortBy = SortField.Date,
-                SortDirection = SortDirection.Descending,
-                Take = 10 // Latest 10 blog posts
-            };
-
-        // Execute query
-        blogPosts = await provider.GetItemsByQueryAsync(query);
-
-        _contentItem = blogPosts?.FirstOrDefault();
-    }
-
-    /// <summary>
-    /// Load the content when the button is clicked
-    /// </summary>
-    private void LoadContent()
-    {
-        // Component will automatically refresh with new parameters
-        StateHasChanged();
-    }
-}

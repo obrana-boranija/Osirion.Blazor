@@ -1,11 +1,12 @@
 using Microsoft.AspNetCore.Components;
+using Osirion.Blazor.Cms.Domain.Entities;
 
 namespace Osirion.Blazor.Cms.Components;
 
 public partial class DirectoryNavigation
 {
     [Parameter]
-    public IReadOnlyList<DirectoryInfo>? Directories { get; set; }
+    public IReadOnlyList<DirectoryItem>? Directories { get; set; }
 
     [Parameter]
     public string? CurrentDirectory { get; set; }
@@ -32,31 +33,31 @@ public partial class DirectoryNavigation
     public string NoContentText { get; set; } = "No directories available.";
 
     [Parameter]
-    public Func<DirectoryInfo, string>? DirectoryUrlFormatter { get; set; }
+    public Func<DirectoryItem, string>? DirectoryUrlFormatter { get; set; }
 
     [Parameter]
     public string? Title { get; set; }
 
     [Parameter]
-    public EventCallback<DirectoryInfo> DirectoryClicked { get; set; }
+    public EventCallback<DirectoryItem> DirectoryClicked { get; set; }
 
     private string GetDirectoryNavClass()
     {
-        return $"osirion-directory-navigation {CssClass}".Trim();
+        return $"osirion-directory-navigation".Trim();
     }
 
-    private string GetDirectoryUrl(DirectoryInfo directory)
+    private string GetDirectoryUrl(DirectoryItem directory)
     {
-        return DirectoryUrlFormatter?.Invoke(directory) ?? $"/{directory.Path}";
+        return DirectoryUrlFormatter?.Invoke(directory) ?? $"/{directory.Url}";
     }
 
-    private string GetLinkClass(DirectoryInfo directory)
+    private string GetLinkClass(DirectoryItem directory)
     {
         var isActive = directory.Path == CurrentDirectory;
         return $"osirion-directory-link {(isActive ? "osirion-active" : "")}".Trim();
     }
 
-    private async Task OnDirectoryClick(DirectoryInfo directory)
+    private async Task OnDirectoryClick(DirectoryItem directory)
     {
         if (DirectoryClicked.HasDelegate)
         {
@@ -64,11 +65,11 @@ public partial class DirectoryNavigation
         }
     }
 
-    public class DirectoryInfo
-    {
-        public string Path { get; set; } = string.Empty;
-        public string Name { get; set; } = string.Empty;
-        public int ItemCount { get; set; }
-        public IReadOnlyList<DirectoryInfo>? Subdirectories { get; set; }
-    }
+    //public class DirectoryInfo
+    //{
+    //    public string Path { get; set; } = string.Empty;
+    //    public string Name { get; set; } = string.Empty;
+    //    public int ItemCount { get; set; }
+    //    public IReadOnlyList<DirectoryInfo>? Subdirectories { get; set; }
+    //}
 }
