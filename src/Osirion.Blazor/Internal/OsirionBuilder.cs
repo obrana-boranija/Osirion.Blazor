@@ -6,7 +6,6 @@ using Osirion.Blazor.Cms.Admin.Extensions;
 using Osirion.Blazor.Cms.Admin.Interfaces;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Front.DependencyInjection;
-using Osirion.Blazor.Cms.Infrastructure.DependencyInjection;
 using Osirion.Blazor.Navigation;
 using Osirion.Blazor.Theming;
 using Osirion.Blazor.Theming.Extensions;
@@ -24,7 +23,7 @@ internal class OsirionBuilder : IOsirionBuilder
 
     public IOsirionBuilder UseContent(Action<IContentBuilder> configure)
     {
-        Services.AddCms(configure);
+        Services.AddOsirionContent(configure);
         return this;
     }
 

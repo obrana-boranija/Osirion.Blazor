@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Osirion.Blazor.Navigation.Internal;
 using Osirion.Blazor.Navigation.Options;
 using Osirion.Blazor.Navigation.Services;
@@ -29,7 +30,7 @@ public static class NavigationServiceCollectionExtensions
         configure(builder);
 
         // Register navigation service
-        services.AddSingleton<INavigationService, NavigationService>();
+        services.TryAddSingleton<INavigationService, NavigationService>();
 
         return services;
     }
@@ -53,7 +54,7 @@ public static class NavigationServiceCollectionExtensions
         services.Configure<EnhancedNavigationOptions>(navigationSection);
 
         // Register navigation service
-        services.AddSingleton<INavigationService, NavigationService>();
+        services.TryAddSingleton<INavigationService, NavigationService>();
 
         return services;
     }

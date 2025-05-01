@@ -34,6 +34,12 @@ public static class AnalyticsServiceCollectionExtensions
         return services;
     }
 
+    /// <summary>
+    /// Adds analytics services to the service collection using configuration
+    /// </summary>
+    /// <param name="services">The service collection</param>
+    /// <param name="configuration">The configuration</param>
+    /// <returns>The service collection for chaining</returns>
     public static IServiceCollection AddOsirionAnalytics(
         this IServiceCollection services,
         IConfiguration configuration)
@@ -41,9 +47,22 @@ public static class AnalyticsServiceCollectionExtensions
         if (services == null) throw new ArgumentNullException(nameof(services));
         if (configuration == null) throw new ArgumentNullException(nameof(configuration));
 
-        // Example: Retrieve configuration section and register services
-        var analyticsConfigSection = configuration.GetSection("Osirion:Analytics");
-        services.Configure<AnalyticsOptions>(analyticsConfigSection);
+        // Get analytics section
+        var builder = new AnalyticsBuilder(services);
+
+        // Register Clarity if configured
+        var claritySection = configuration.GetSection(ClarityOptions.Section);
+        if (claritySection.Exists())
+        {
+            builder.AddClarity(options => claritySection.Bind(options));
+        }
+
+        // Register Matomo if configured
+        var matomoSection = configuration.GetSection(MatomoOptions.Section);
+        if (matomoSection.Exists())
+        {
+            builder.AddMatomo(options => matomoSection.Bind(options));
+        }
 
         // Register analytics service
         services.AddSingleton<IAnalyticsService, AnalyticsService>();

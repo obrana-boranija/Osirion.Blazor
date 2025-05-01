@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Osirion.Blazor.Cms.Admin.Interfaces;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Infrastructure.GitHub;
@@ -11,7 +12,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.Builders;
 /// <summary>
 /// Implementation of the CMS admin builder
 /// </summary>
-internal class CmsAdminBuilder : CmsBuilderBase, ICmsAdminBuilder
+public class CmsAdminBuilder : CmsBuilderBase, ICmsAdminBuilder
 {
     /// <summary>
     /// Initializes a new instance of the CmsAdminBuilder class
@@ -25,24 +26,24 @@ internal class CmsAdminBuilder : CmsBuilderBase, ICmsAdminBuilder
     }
 
     /// <inheritdoc/>
-    public ICmsAdminBuilder Configure(Action<CmsAdminOptions> configure)
+    public ICmsAdminBuilder Configure(Action<GitHubOptions> configure)
     {
         if (configure == null)
             throw new ArgumentNullException(nameof(configure));
 
-        // Configure CMS admin options
+        // Configure GitHub options
         Services.Configure(configure);
 
-        // Register necessary HTTP clients first
+        // Register necessary HTTP clients
         RegisterHttpClient<IGitHubApiClient, GitHubApiClient>();
         RegisterHttpClient<IGitHubTokenProvider, GitHubTokenProvider>();
         RegisterHttpClient<IAuthenticationService, AuthenticationService>();
         RegisterHttpClient<IGitHubAdminService, GitHubAdminService>();
 
         // Register admin services
-        //Services.AddScoped<ICmsAdminService, CmsAdminService>();
+        Services.AddScoped<IGitHubAdminService, GitHubAdminService>();
 
-        Logger.LogInformation("Configured CMS admin options");
+        Logger.LogInformation("Configured CMS admin with GitHub options");
         return this;
     }
 
@@ -60,14 +61,9 @@ internal class CmsAdminBuilder : CmsBuilderBase, ICmsAdminBuilder
         RegisterHttpClient<IAuthenticationService, AuthenticationService>();
 
         // Register auth services
-        //Services.AddScoped<IGitHubAuthService, GitHubAuthService>();
+        Services.AddScoped<IAuthenticationService, AuthenticationService>();
 
         Logger.LogInformation("Added GitHub authentication for CMS admin");
         return this;
-    }
-
-    public ICmsAdminBuilder Configure(Action<GitHubOptions> configure)
-    {
-        throw new NotImplementedException();
     }
 }

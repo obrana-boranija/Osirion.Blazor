@@ -24,8 +24,8 @@ public interface INavigationBuilder
     /// <summary>
     /// Configures enhanced navigation using a configuration section
     /// </summary>
-    /// <param name="configuration"></param>
-    /// <returns></returns>
+    /// <param name="configuration">The configuration</param>
+    /// <returns>The builder for chaining</returns>
     INavigationBuilder UseEnhancedNavigation(IConfiguration configuration);
 
     /// <summary>
@@ -38,7 +38,7 @@ public interface INavigationBuilder
     /// <summary>
     /// Adds scroll to top functionality using a configuration section
     /// </summary>
-    /// <param name="configuration"></param>
-    /// <returns></returns>
+    /// <param name="configuration">The configuration</param>
+    /// <returns>The builder for chaining</returns>
     INavigationBuilder AddScrollToTop(IConfiguration configuration);
 }

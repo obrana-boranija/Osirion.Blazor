@@ -1,6 +1,7 @@
 ﻿using Osirion.Blazor.Cms.Domain.Options;
+using Osirion.Blazor.Cms.Domain.Interfaces;
 
-namespace Osirion.Blazor.Cms.Domain.Interfaces;
+namespace Osirion.Blazor.Cms.Admin.Interfaces;
 
 /// <summary>
 /// Builder interface for CMS administration features

@@ -1,10 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Osirion.Blazor.Analytics.Options;
 using Osirion.Blazor.Internal;
-using Osirion.Blazor.Navigation.Options;
 using Osirion.Blazor.Theming;
-using Osirion.Blazor.Theming.Options;
 
 namespace Osirion.Blazor.Extensions;
 
@@ -54,94 +51,37 @@ public static class OsirionServiceCollectionExtensions
         {
             // Content configuration
             var contentSection = configuration.GetSection("Osirion:Cms");
-
             if (contentSection.Exists())
             {
-                builder.UseContent(content =>
-                {
-                    var githubSection = contentSection.GetSection("GitHub:Web");
-                    if (githubSection.Exists())
-                    {
-                        content.AddGitHub(options =>
-                        {
-                            githubSection.Bind(options);
-                        });
-                    }
+                builder.UseContent(configuration);
+            }
 
-                    var fileSystemSection = contentSection.GetSection("FileSystem");
-                    if (fileSystemSection.Exists())
-                    {
-                        content.AddFileSystem(options =>
-                        {
-                            fileSystemSection.Bind(options);
-                        });
-                    }
-                });
+            // CMS Admin configuration
+            var cmsAdminSection = configuration.GetSection("Osirion:Cms:GitHub:Admin");
+            if (cmsAdminSection.Exists())
+            {
+                builder.UseCmsAdmin(configuration);
             }
 
             // Analytics configuration
             var analyticsSection = configuration.GetSection("Osirion:Analytics");
             if (analyticsSection.Exists())
             {
-                builder.UseAnalytics(analytics =>
-                {
-                    var claritySection = analyticsSection.GetSection(ClarityOptions.Section);
-                    if (claritySection.Exists())
-                    {
-                        analytics.AddClarity(options =>
-                        {
-                            claritySection.Bind(options);
-                        });
-                    }
-
-                    var matomoSection = analyticsSection.GetSection(MatomoOptions.Section);
-                    if (matomoSection.Exists())
-                    {
-                        analytics.AddMatomo(options =>
-                        {
-                            matomoSection.Bind(options);
-                        });
-                    }
-                });
+                builder.UseAnalytics(configuration);
             }
 
             // Navigation configuration
             var navigationSection = configuration.GetSection("Osirion:Navigation");
             if (navigationSection.Exists())
             {
-                builder.UseNavigation(navigation =>
-                {
-                    var enhancedSection = configuration.GetSection(EnhancedNavigationOptions.Section);
-                    if (enhancedSection.Exists())
-                    {
-                        navigation.UseEnhancedNavigation(options =>
-                        {
-                            enhancedSection.Bind(options);
-                        });
-                    }
-
-                    var scrollSection = configuration.GetSection(ScrollToTopOptions.Section);
-                    if (scrollSection.Exists())
-                    {
-                        navigation.AddScrollToTop(options =>
-                        {
-                            scrollSection.Bind(options);
-                        });
-                    }
-                });
+                builder.UseNavigation(configuration);
             }
 
             // Theming configuration
-            var themingSection = configuration.GetSection(ThemingOptions.Section);
+            var themingSection = configuration.GetSection("Osirion:Theming");
             if (themingSection.Exists())
             {
-                builder.UseTheming(theming =>
-                {
-                    theming.Configure(options =>
-                    {
-                        themingSection.Bind(options);
-                    });
-                });
+                builder.UseTheming(configuration);
             }
         });
     }

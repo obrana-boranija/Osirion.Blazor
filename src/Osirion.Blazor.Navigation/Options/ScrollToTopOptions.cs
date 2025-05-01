@@ -44,4 +44,9 @@ public class ScrollToTopOptions
     /// Gets or sets custom icon markup
     /// </summary>
     public string? CustomIcon { get; set; }
+
+    /// <summary>
+    /// Gets or sets custom icon markup
+    /// </summary>
+    public bool Enabled { get; set; } = true;
 }

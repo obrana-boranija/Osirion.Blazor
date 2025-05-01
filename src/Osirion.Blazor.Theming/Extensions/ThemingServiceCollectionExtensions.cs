@@ -45,6 +45,12 @@ public static class ThemingServiceCollectionExtensions
         return services;
     }
 
+    /// <summary>
+    /// Adds theming services to the service collection using configuration
+    /// </summary>
+    /// <param name="services">The service collection</param>
+    /// <param name="configuration">The configuration</param>
+    /// <returns>The service collection for chaining</returns>
     public static IServiceCollection AddOsirionTheming(
         this IServiceCollection services,
         IConfiguration configuration)

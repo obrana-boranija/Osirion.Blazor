@@ -12,7 +12,9 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddOsirionCms(builder.Configuration);
+builder.Services.AddOsirion(builder.Configuration);
+
+//builder.Services.AddOsirionCms(builder.Configuration);
 
 // Add admin features if needed
 //builder.Services.AddOsirionCmsAdmin(builder.Configuration);
@@ -51,18 +53,18 @@ builder.Services.AddOsirion(osirion =>
         // Add navigation services
         .UseNavigation(navigation =>
         {
-            navigation.UseEnhancedNavigation(options =>
-            {
-                options.Behavior = Osirion.Blazor.ScrollBehavior.Smooth;
-                options.PreserveScrollForSamePageNavigation = false;
-            });
-            navigation.AddScrollToTop(options =>
-            {
-                options.Position = Osirion.Blazor.Position.BottomRight;
-                options.Behavior = Osirion.Blazor.ScrollBehavior.Smooth;
-                options.VisibilityThreshold = 100;
-                //options.CssClass = "btn btn-danger";
-            });
+            //navigation.UseEnhancedNavigation(options =>
+            //{
+            //    options.Behavior = Osirion.Blazor.ScrollBehavior.Smooth;
+            //    options.PreserveScrollForSamePageNavigation = false;
+            //});
+            //navigation.AddScrollToTop(options =>
+            //{
+            //    options.Position = Osirion.Blazor.Position.BottomRight;
+            //    options.Behavior = Osirion.Blazor.ScrollBehavior.Smooth;
+            //    options.VisibilityThreshold = 100;
+            //    options.CssClass = "btn btn-danger";
+            //});
         })
         // Add analytics services
         .UseAnalytics(analytics =>
