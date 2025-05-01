@@ -8,7 +8,7 @@ public class EnhancedNavigationOptions
     /// <summary>
     /// Configuration section name
     /// </summary>
-    public const string Section = "Osirion:EnhancedNavigation";
+    public const string Section = "Osirion:Navigation:Enhanced";
 
     /// <summary>
     /// Gets or sets the default scroll behavior

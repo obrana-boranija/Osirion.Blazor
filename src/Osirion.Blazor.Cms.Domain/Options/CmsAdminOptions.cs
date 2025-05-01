@@ -8,7 +8,7 @@ public class CmsAdminOptions
     /// <summary>
     /// Configuration section name
     /// </summary>
-    public const string Section = "Osirion:CmsAdmin";
+    public const string Section = "Osirion:Cms:GitHub:Admin";
 
     /// <summary>
     /// Gets or sets the owner (user or organization) of the repositories

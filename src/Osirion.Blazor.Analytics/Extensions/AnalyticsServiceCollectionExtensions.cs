@@ -42,7 +42,7 @@ public static class AnalyticsServiceCollectionExtensions
         if (configuration == null) throw new ArgumentNullException(nameof(configuration));
 
         // Example: Retrieve configuration section and register services
-        var analyticsConfigSection = configuration.GetSection(AnalyticsOptions.Section);
+        var analyticsConfigSection = configuration.GetSection("Osirion:Analytics");
         services.Configure<AnalyticsOptions>(analyticsConfigSection);
 
         // Register analytics service

@@ -23,6 +23,13 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Internal\**" />
+	  <Content Remove="Internal\**" />
+	  <EmbeddedResource Remove="Internal\**" />
+	  <None Remove="Internal\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<SupportedPlatform Include="browser" />
 	</ItemGroup>
 
@@ -53,10 +60,6 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\Osirion.Blazor.Cms.Core\Osirion.Blazor.Cms.Core.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Internal\" />
 	</ItemGroup>
 
 </Project>

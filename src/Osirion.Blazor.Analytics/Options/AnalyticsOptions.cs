@@ -6,11 +6,6 @@
 public abstract class AnalyticsOptions
 {
     /// <summary>
-    /// Configuration section name
-    /// </summary>
-    public const string Section = "Osirion:Analytics";
-
-    /// <summary>
     /// Gets or sets the site ID or tracking ID
     /// </summary>
     public string? SiteId { get; set; }

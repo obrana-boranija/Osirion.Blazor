@@ -1,7 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Osirion.Blazor.Analytics.Options;
 using Osirion.Blazor.Internal;
+using Osirion.Blazor.Navigation.Options;
 using Osirion.Blazor.Theming;
+using Osirion.Blazor.Theming.Options;
 
 namespace Osirion.Blazor.Extensions;
 
@@ -50,12 +53,13 @@ public static class OsirionServiceCollectionExtensions
         return services.AddOsirion(builder =>
         {
             // Content configuration
-            var contentSection = configuration.GetSection("Osirion:Content");
+            var contentSection = configuration.GetSection("Osirion:Cms");
+
             if (contentSection.Exists())
             {
                 builder.UseContent(content =>
                 {
-                    var githubSection = contentSection.GetSection("GitHub");
+                    var githubSection = contentSection.GetSection("GitHub:Web");
                     if (githubSection.Exists())
                     {
                         content.AddGitHub(options =>
@@ -81,7 +85,7 @@ public static class OsirionServiceCollectionExtensions
             {
                 builder.UseAnalytics(analytics =>
                 {
-                    var claritySection = analyticsSection.GetSection("Clarity");
+                    var claritySection = analyticsSection.GetSection(ClarityOptions.Section);
                     if (claritySection.Exists())
                     {
                         analytics.AddClarity(options =>
@@ -90,7 +94,7 @@ public static class OsirionServiceCollectionExtensions
                         });
                     }
 
-                    var matomoSection = analyticsSection.GetSection("Matomo");
+                    var matomoSection = analyticsSection.GetSection(MatomoOptions.Section);
                     if (matomoSection.Exists())
                     {
                         analytics.AddMatomo(options =>
@@ -107,7 +111,7 @@ public static class OsirionServiceCollectionExtensions
             {
                 builder.UseNavigation(navigation =>
                 {
-                    var enhancedSection = navigationSection.GetSection("Enhanced");
+                    var enhancedSection = configuration.GetSection(EnhancedNavigationOptions.Section);
                     if (enhancedSection.Exists())
                     {
                         navigation.UseEnhancedNavigation(options =>
@@ -116,7 +120,7 @@ public static class OsirionServiceCollectionExtensions
                         });
                     }
 
-                    var scrollSection = navigationSection.GetSection("ScrollToTop");
+                    var scrollSection = configuration.GetSection(ScrollToTopOptions.Section);
                     if (scrollSection.Exists())
                     {
                         navigation.AddScrollToTop(options =>
@@ -128,7 +132,7 @@ public static class OsirionServiceCollectionExtensions
             }
 
             // Theming configuration
-            var themingSection = configuration.GetSection("Osirion:Theming");
+            var themingSection = configuration.GetSection(ThemingOptions.Section);
             if (themingSection.Exists())
             {
                 builder.UseTheming(theming =>
