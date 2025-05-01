@@ -5,25 +5,90 @@
 
 html.osirion-radzen-integration {
     /* Map Radzen's design tokens to our semantic tokens */
+    /* Primary color scale mapping - based on Radzen's Blue/Primary */
+    --osirion-color-primary-50: #edf5fa; /* Derived from primary-lighter */
+    --osirion-color-primary-100: #daecf6; /* Radzen primary-lighter */
+    --osirion-color-primary-200: #b4d8ed; /* Derived */
+    --osirion-color-primary-300: #8fc5e4; /* Derived */
+    --osirion-color-primary-400: #69b1db; /* Derived */
+    --osirion-color-primary-500: #479cc8; /* Radzen primary */
+    --osirion-color-primary-600: #3d8bb1; /* Radzen primary-dark */
+    --osirion-color-primary-700: #2d667f; /* Radzen primary-darker */
+    --osirion-color-primary-800: #1e4352; /* Derived */
+    --osirion-color-primary-900: #0f2026; /* Derived */
+    --osirion-color-primary-950: #071013; /* Derived */
+    /* Neutral/Gray color scale mapping */
+    --osirion-color-neutral-50: #f8f9fa; /* Radzen base-100 */
+    --osirion-color-neutral-100: #f1f3f5; /* Derived */
+    --osirion-color-neutral-200: #e9ecef; /* Radzen base-200 */
+    --osirion-color-neutral-300: #dee2e6; /* Radzen base-300 */
+    --osirion-color-neutral-400: #ced4da; /* Radzen base-400 */
+    --osirion-color-neutral-500: #adb5bd; /* Radzen base-500 */
+    --osirion-color-neutral-600: #6c757d; /* Radzen secondary */
+    --osirion-color-neutral-700: #495057; /* Radzen secondary-dark */
+    --osirion-color-neutral-800: #343a40; /* Radzen secondary-darker */
+    --osirion-color-neutral-900: #212529; /* Radzen text-color */
+    --osirion-color-neutral-950: #16191c; /* Derived */
+    /* Success color scale mapping */
+    --osirion-color-success-50: #f4faf6; /* Derived */
+    --osirion-color-success-100: #d4edda; /* Radzen success-light */
+    --osirion-color-success-200: #c3e6cb; /* Radzen success-lighter */
+    --osirion-color-success-300: #8fd19a; /* Derived */
+    --osirion-color-success-400: #5bbc6d; /* Derived */
+    --osirion-color-success-500: #28a745; /* Radzen success */
+    --osirion-color-success-600: #218838; /* Radzen success-dark */
+    --osirion-color-success-700: #1a692b; /* Radzen success-darker */
+    --osirion-color-success-800: #124a1e; /* Derived */
+    --osirion-color-success-900: #092b11; /* Derived */
+    --osirion-color-success-950: #041508; /* Derived */
+    /* Warning color scale mapping */
+    --osirion-color-warning-50: #fff9e6; /* Derived */
+    --osirion-color-warning-100: #fff3cd; /* Radzen warning-light */
+    --osirion-color-warning-200: #ffeeba; /* Radzen warning-lighter */
+    --osirion-color-warning-300: #ffdf7e; /* Derived */
+    --osirion-color-warning-400: #ffd042; /* Derived */
+    --osirion-color-warning-500: #ffc107; /* Radzen warning */
+    --osirion-color-warning-600: #e0a800; /* Radzen warning-dark */
+    --osirion-color-warning-700: #aa8000; /* Radzen warning-darker */
+    --osirion-color-warning-800: #745700; /* Derived */
+    --osirion-color-warning-900: #3e2e00; /* Derived */
+    --osirion-color-warning-950: #211900; /* Derived */
+    /* Danger color scale mapping */
+    --osirion-color-danger-50: #fdf2f3; /* Derived */
+    --osirion-color-danger-100: #f8d7da; /* Radzen danger-light */
+    --osirion-color-danger-200: #f5c6cb; /* Radzen danger-lighter */
+    --osirion-color-danger-300: #ef9aa2; /* Derived */
+    --osirion-color-danger-400: #e96d79; /* Derived */
+    --osirion-color-danger-500: #dc3545; /* Radzen danger */
+    --osirion-color-danger-600: #c82333; /* Radzen danger-dark */
+    --osirion-color-danger-700: #a71d2a; /* Radzen danger-darker */
+    --osirion-color-danger-800: #86161f; /* Derived */
+    --osirion-color-danger-900: #650f15; /* Derived */
+    --osirion-color-danger-950: #43090d; /* Derived */
     /* Background and text colors */
     --osirion-background-primary: var(--rz-base-background-color, #ffffff);
     --osirion-background-secondary: var(--rz-base-100, #f8f9fa);
     --osirion-background-tertiary: var(--rz-base-200, #e9ecef);
     --osirion-background-muted: var(--rz-base-300, #dee2e6);
+    --osirion-background-inverted: var(--rz-black, #000000);
     --osirion-text-primary: var(--rz-text-color, #212529);
     --osirion-text-secondary: var(--rz-text-secondary-color, #6c757d);
     --osirion-text-tertiary: var(--rz-text-tertiary-color, #6c757d);
+    --osirion-text-disabled: var(--rz-text-disabled-color, #adb5bd);
     --osirion-text-inverted: var(--rz-white, #ffffff);
     /* Border colors */
     --osirion-border-color: var(--rz-border, #e9ecef);
     --osirion-border-color-hover: var(--rz-border-darker, #ced4da);
     --osirion-border-width: var(--rz-border-width, 1px);
     /* Border radius */
-    --osirion-radius-base: var(--rz-border-radius, 4px);
+    --osirion-radius-none: 0;
     --osirion-radius-sm: var(--rz-border-radius-sm, 2px);
+    --osirion-radius-base: var(--rz-border-radius, 4px);
+    --osirion-radius-md: var(--rz-border-radius, 4px);
     --osirion-radius-lg: var(--rz-border-radius-lg, 6px);
     --osirion-radius-xl: calc(var(--rz-border-radius-lg, 6px) * 1.5);
     --osirion-radius-2xl: calc(var(--rz-border-radius-lg, 6px) * 2);
+    --osirion-radius-3xl: calc(var(--rz-border-radius-lg, 6px) * 2.5);
     --osirion-radius-full: 9999px;
     /* Action colors */
     --osirion-action-primary: var(--rz-primary, #479cc8);
@@ -38,30 +103,95 @@ html.osirion-radzen-integration {
     --osirion-status-success: var(--rz-success, #28a745);
     --osirion-status-success-bg: var(--rz-success-light, #d4edda);
     --osirion-status-success-border: var(--rz-success-lighter, #c3e6cb);
+    --osirion-status-success-text: var(--rz-success-darker, #155724);
     --osirion-status-warning: var(--rz-warning, #ffc107);
     --osirion-status-warning-bg: var(--rz-warning-light, #fff3cd);
     --osirion-status-warning-border: var(--rz-warning-lighter, #ffeeba);
+    --osirion-status-warning-text: var(--rz-warning-darker, #856404);
     --osirion-status-danger: var(--rz-danger, #dc3545);
     --osirion-status-danger-bg: var(--rz-danger-light, #f8d7da);
     --osirion-status-danger-border: var(--rz-danger-lighter, #f5c6cb);
+    --osirion-status-danger-text: var(--rz-danger-darker, #721c24);
+    --osirion-status-info: var(--rz-info, #17a2b8);
+    --osirion-status-info-bg: var(--rz-info-light, #d1ecf1);
+    --osirion-status-info-border: var(--rz-info-lighter, #bee5eb);
+    --osirion-status-info-text: var(--rz-info-darker, #0c5460);
     /* Typography */
     --osirion-font-family-base: var(--rz-text-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
     --osirion-font-family-mono: var(--rz-code-font-family, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace);
-    --osirion-font-size-base: var(--rz-body-font-size, 0.875rem);
+    --osirion-font-size-2xs: 0.625rem; /* 10px - Radzen doesn't have this specific size */
+    --osirion-font-size-xs: 0.75rem; /* 12px */
+    --osirion-font-size-sm: var(--rz-body-font-size, 0.875rem); /* 14px */
+    --osirion-font-size-base: 1rem; /* 16px */
+    --osirion-font-size-lg: 1.125rem; /* 18px */
+    --osirion-font-size-xl: 1.25rem; /* 20px */
+    --osirion-font-size-2xl: 1.5rem; /* 24px */
+    --osirion-font-size-3xl: 1.875rem; /* 30px */
+    --osirion-font-size-4xl: 2.25rem; /* 36px */
+    --osirion-font-size-5xl: 3rem; /* 48px */
+
+    --osirion-font-weight-light: 300;
     --osirion-font-weight-normal: var(--rz-text-font-weight, 400);
     --osirion-font-weight-medium: 500;
+    --osirion-font-weight-semibold: 600;
     --osirion-font-weight-bold: var(--rz-text-font-weight-bold, 700);
+    --osirion-line-height-none: 1;
+    --osirion-line-height-tight: 1.25;
+    --osirion-line-height-snug: 1.375;
     --osirion-line-height-normal: var(--rz-body-line-height, 1.5);
-    /* Spacing */
-    --osirion-spacing-4: var(--rz-spacing, 1rem);
+    --osirion-line-height-relaxed: 1.625;
+    --osirion-line-height-loose: 2;
+    /* Spacing - based on Radzen's spacing system */
+    --osirion-spacing-0: 0;
+    --osirion-spacing-px: 1px;
+    --osirion-spacing-0-5: 0.125rem; /* 2px */
+    --osirion-spacing-1: 0.25rem; /* 4px */
+    --osirion-spacing-1-5: 0.375rem; /* 6px */
+    --osirion-spacing-2: 0.5rem; /* 8px */
+    --osirion-spacing-2-5: 0.625rem; /* 10px */
+    --osirion-spacing-3: 0.75rem; /* 12px */
+    --osirion-spacing-3-5: 0.875rem; /* 14px */
+    --osirion-spacing-4: var(--rz-spacing, 1rem); /* 16px */
+    --osirion-spacing-5: 1.25rem; /* 20px */
+    --osirion-spacing-6: 1.5rem; /* 24px */
+    --osirion-spacing-8: 2rem; /* 32px */
+    --osirion-spacing-10: 2.5rem; /* 40px */
+    --osirion-spacing-12: 3rem; /* 48px */
+    --osirion-spacing-16: 4rem; /* 64px */
+    --osirion-spacing-20: 5rem; /* 80px */
+    --osirion-spacing-24: 6rem; /* 96px */
     /* Shadow */
     --osirion-shadow-sm: var(--rz-shadow-1, 0 1px 3px 0 rgba(0, 0, 0, .07), 0 1px 2px 0 rgba(0, 0, 0, .05));
     --osirion-shadow-base: var(--rz-shadow-2, 0 3px 1px -2px rgba(0, 0, 0, .2), 0 2px 2px 0 rgba(0, 0, 0, .14), 0 1px 5px 0 rgba(0, 0, 0, .12));
+    --osirion-shadow-md: var(--rz-shadow-2, 0 3px 1px -2px rgba(0, 0, 0, .2), 0 2px 2px 0 rgba(0, 0, 0, .14), 0 1px 5px 0 rgba(0, 0, 0, .12));
     --osirion-shadow-lg: var(--rz-shadow-3, 0 3px 3px -2px rgba(0, 0, 0, .2), 0 3px 4px 0 rgba(0, 0, 0, .14), 0 1px 8px 0 rgba(0, 0, 0, .12));
     --osirion-shadow-xl: var(--rz-shadow-4, 0 4px 5px -2px rgba(0, 0, 0, .2), 0 7px 10px 1px rgba(0, 0, 0, .14), 0 2px 16px 1px rgba(0, 0, 0, .12));
+    --osirion-shadow-2xl: var(--rz-shadow-5, 0 6px 10px -4px rgba(0, 0, 0, .2), 0 9px 12px 1px rgba(0, 0, 0, .14), 0 3px 16px 2px rgba(0, 0, 0, .12));
+    --osirion-shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+    /* Transitions */
+    --osirion-transition-timing-default: ease-in-out;
+    --osirion-transition-timing-in: ease-in;
+    --osirion-transition-timing-out: ease-out;
+    --osirion-transition-timing-linear: linear;
+    --osirion-transition-duration-150: 150ms;
+    --osirion-transition-duration-200: 200ms;
+    --osirion-transition-duration-300: 300ms;
+    /* Z-index */
+    --osirion-z-index-0: 0;
+    --osirion-z-index-10: 10;
+    --osirion-z-index-20: 100; /* Menu level */
+    --osirion-z-index-30: 1000; /* Popup level */
+    --osirion-z-index-40: 1050; /* Dialog level */
+    --osirion-z-index-50: 2000; /* Tooltip level */
     /* Component specific */
     --osirion-button-radius: var(--rz-border-radius, 4px);
     --osirion-input-radius: var(--rz-border-radius, 4px);
+    --osirion-card-background: var(--rz-base-background-color, #ffffff);
+    --osirion-card-border-color: var(--rz-border, #e9ecef);
+    --osirion-card-border-radius: var(--rz-border-radius, 4px);
+    --osirion-card-padding: 1rem;
+    --osirion-card-shadow: var(--rz-shadow-2, 0 3px 1px -2px rgba(0, 0, 0, .2), 0 2px 2px 0 rgba(0, 0, 0, .14), 0 1px 5px 0 rgba(0, 0, 0, .12));
+    --osirion-tag-radius: var(--rz-border-radius, 4px);
     /* ScrollToTop specific */
     --osirion-scroll-background: var(--rz-primary, #479cc8);
     --osirion-scroll-hover-background: var(--rz-primary-dark, #3d8bb1);
@@ -83,14 +213,76 @@ html.osirion-radzen-integration {
 
     /* Radzen Dark Mode Integration */
     html.osirion-radzen-integration.rz-dark-theme {
+        /* Primary color scale for dark mode */
+        --osirion-color-primary-50: #0d1a26; /* Dark mode derived */
+        --osirion-color-primary-100: #14293d; /* Dark mode derived */
+        --osirion-color-primary-200: #1c3853; /* Dark mode derived */
+        --osirion-color-primary-300: #23476a; /* Dark mode derived */
+        --osirion-color-primary-400: #2b5680; /* Dark mode derived */
+        --osirion-color-primary-500: #3d8bb1; /* Same as primary-dark in light mode */
+        --osirion-color-primary-600: var(--rz-primary, #6ba6d6); /* Radzen primary in dark */
+        --osirion-color-primary-700: #8fbeeb; /* Radzen primary-light in dark */
+        --osirion-color-primary-800: #b3d7f5; /* Radzen primary-lighter in dark */
+        --osirion-color-primary-900: #d7ebfa; /* Dark mode derived */
+        --osirion-color-primary-950: #ebf5fd; /* Dark mode derived */
+        /* Neutral/Gray color scale inversion for dark mode */
+        --osirion-color-neutral-50: #1a1a1a; /* Radzen base-900 in dark */
+        --osirion-color-neutral-100: #323232; /* Radzen base-800 in dark */
+        --osirion-color-neutral-200: #484848; /* Radzen base-700 in dark */
+        --osirion-color-neutral-300: #555555; /* Radzen base-600 in dark */
+        --osirion-color-neutral-400: #656565; /* Radzen base-500 in dark */
+        --osirion-color-neutral-500: #757575; /* Radzen base-400 in dark */
+        --osirion-color-neutral-600: #8a8a8a; /* Radzen base-300 in dark */
+        --osirion-color-neutral-700: #aaaaaa; /* Radzen base-200 in dark */
+        --osirion-color-neutral-800: #cccccc; /* Radzen base-100 in dark */
+        --osirion-color-neutral-900: #e5e5e5; /* Dark mode derived */
+        --osirion-color-neutral-950: #f2f2f2; /* Dark mode derived */
+        /* Success colors for dark mode */
+        --osirion-color-success-50: #061b0a; /* Dark mode derived */
+        --osirion-color-success-100: #0b3214; /* Dark mode derived */
+        --osirion-color-success-200: #0f471c; /* Dark mode derived */
+        --osirion-color-success-300: #145e25; /* Dark mode derived */
+        --osirion-color-success-400: #19732e; /* Dark mode derived */
+        --osirion-color-success-500: #28a745; /* Same as light mode */
+        --osirion-color-success-600: #5cb85c; /* Derived - brighter for dark mode */
+        --osirion-color-success-700: #79c879; /* Derived */
+        --osirion-color-success-800: #a3dba3; /* Derived */
+        --osirion-color-success-900: #c3e9c3; /* Derived */
+        --osirion-color-success-950: #e3f6e3; /* Derived */
+        /* Warning colors for dark mode */
+        --osirion-color-warning-50: #332701; /* Dark mode derived */
+        --osirion-color-warning-100: #4d3a01; /* Dark mode derived */
+        --osirion-color-warning-200: #664e02; /* Dark mode derived */
+        --osirion-color-warning-300: #806102; /* Dark mode derived */
+        --osirion-color-warning-400: #997501; /* Dark mode derived */
+        --osirion-color-warning-500: #ffc107; /* Same as light mode */
+        --osirion-color-warning-600: #ffcd39; /* Derived - brighter for dark mode */
+        --osirion-color-warning-700: #ffdb6d; /* Derived */
+        --osirion-color-warning-800: #ffe8a0; /* Derived */
+        --osirion-color-warning-900: #fff4cf; /* Derived */
+        --osirion-color-warning-950: #fff9e7; /* Derived */
+        /* Danger colors for dark mode */
+        --osirion-color-danger-50: #2b0a0d; /* Dark mode derived */
+        --osirion-color-danger-100: #41101a; /* Dark mode derived */
+        --osirion-color-danger-200: #561520; /* Dark mode derived */
+        --osirion-color-danger-300: #6b1a27; /* Dark mode derived */
+        --osirion-color-danger-400: #80202e; /* Dark mode derived */
+        --osirion-color-danger-500: #dc3545; /* Same as light mode */
+        --osirion-color-danger-600: #e35d6b; /* Derived - brighter for dark mode */
+        --osirion-color-danger-700: #ea8590; /* Derived */
+        --osirion-color-danger-800: #f0adb4; /* Derived */
+        --osirion-color-danger-900: #f7d5d9; /* Derived */
+        --osirion-color-danger-950: #fbecee; /* Derived */
         /* Dark mode mappings from Radzen's dark theme */
         --osirion-background-primary: var(--rz-base-900, #1a1a1a);
         --osirion-background-secondary: var(--rz-base-800, #323232);
         --osirion-background-tertiary: var(--rz-base-700, #484848);
         --osirion-background-muted: var(--rz-base-600, #555555);
+        --osirion-background-inverted: var(--rz-white, #ffffff);
         --osirion-text-primary: var(--rz-text-color, #ffffff);
         --osirion-text-secondary: var(--rz-text-secondary-color, #aaaaaa);
         --osirion-text-tertiary: var(--rz-text-tertiary-color, #8a8a8a);
+        --osirion-text-disabled: var(--rz-text-disabled-color, #666666);
         --osirion-border-color: var(--rz-border, #525252);
         --osirion-border-color-hover: var(--rz-border-darker, #767676);
         /* Action colors - adjusted for dark mode */
@@ -99,12 +291,28 @@ html.osirion-radzen-integration {
         --osirion-action-primary-active: var(--rz-primary-lighter, #b3d7f5);
         /* Status colors for dark themes */
         --osirion-status-success-bg: rgba(40, 167, 69, 0.2);
+        --osirion-status-success-border: var(--rz-success, #28a745);
+        --osirion-status-success-text: var(--rz-success-light, #75c687);
         --osirion-status-warning-bg: rgba(255, 193, 7, 0.2);
+        --osirion-status-warning-border: var(--rz-warning, #ffc107);
+        --osirion-status-warning-text: var(--rz-warning-light, #ffdb6d);
         --osirion-status-danger-bg: rgba(220, 53, 69, 0.2);
+        --osirion-status-danger-border: var(--rz-danger, #dc3545);
+        --osirion-status-danger-text: var(--rz-danger-light, #ea868f);
+        --osirion-status-info-bg: rgba(23, 162, 184, 0.2);
+        --osirion-status-info-border: var(--rz-info, #17a2b8);
+        --osirion-status-info-text: var(--rz-info-light, #4cd3e9);
         /* Shadow adjustments for dark mode */
         --osirion-shadow-sm: var(--rz-shadow-1, 0 1px 3px 0 rgba(0, 0, 0, .4), 0 1px 2px 0 rgba(0, 0, 0, .3));
         --osirion-shadow-base: var(--rz-shadow-2, 0 3px 1px -2px rgba(0, 0, 0, .4), 0 2px 2px 0 rgba(0, 0, 0, .3), 0 1px 5px 0 rgba(0, 0, 0, .3));
+        --osirion-shadow-md: var(--rz-shadow-2, 0 3px 1px -2px rgba(0, 0, 0, .4), 0 2px 2px 0 rgba(0, 0, 0, .3), 0 1px 5px 0 rgba(0, 0, 0, .3));
         --osirion-shadow-lg: var(--rz-shadow-3, 0 3px 3px -2px rgba(0, 0, 0, .4), 0 3px 4px 0 rgba(0, 0, 0, .3), 0 1px 8px 0 rgba(0, 0, 0, .3));
+        --osirion-shadow-xl: var(--rz-shadow-4, 0 4px 5px -2px rgba(0, 0, 0, .4), 0 7px 10px 1px rgba(0, 0, 0, .3), 0 2px 16px 1px rgba(0, 0, 0, .3));
+        --osirion-shadow-2xl: var(--rz-shadow-5, 0 6px 10px -4px rgba(0, 0, 0, .4), 0 9px 12px 1px rgba(0, 0, 0, .3), 0 3px 16px 2px rgba(0, 0, 0, .3));
+        --osirion-shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.3);
+        /* Component specific dark mode */
+        --osirion-card-background: var(--rz-base-900, #1a1a1a);
+        --osirion-card-border-color: var(--rz-border, #525252);
         /* Legacy compatibility */
         --osirion-color-background: var(--rz-base-900, #1a1a1a);
         --osirion-color-background-light: var(--rz-base-800, #323232);
@@ -121,6 +329,7 @@ html.osirion-radzen-integration {
         font-size: var(--rz-button-font-size, 1rem);
         font-weight: var(--rz-button-font-weight, 400);
         border-radius: var(--rz-border-radius, 4px);
+        transition: all 0.2s ease-in-out;
     }
 
     html.osirion-radzen-integration .osirion-input {
@@ -129,5 +338,27 @@ html.osirion-radzen-integration {
         font-family: var(--rz-text-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
         font-size: var(--rz-body-font-size, 0.875rem);
         border-radius: var(--rz-border-radius, 4px);
+        border: var(--rz-border-width, 1px) solid var(--rz-border, #e9ecef);
+        background-color: var(--rz-base-background-color, #ffffff);
+        color: var(--rz-text-color, #212529);
+    }
+
+    html.osirion-radzen-integration .osirion-card {
+        border-radius: var(--rz-border-radius, 4px);
+        background-color: var(--rz-base-background-color, #ffffff);
+        border: var(--rz-border-width, 1px) solid var(--rz-border, #e9ecef);
+        box-shadow: var(--rz-shadow-2, 0 3px 1px -2px rgba(0, 0, 0, .2), 0 2px 2px 0 rgba(0, 0, 0, .14), 0 1px 5px 0 rgba(0, 0, 0, .12));
+        padding: 1rem;
+    }
+
+    html.osirion-radzen-integration .osirion-tag {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.25em 0.75em;
+        font-size: 0.75rem;
+        line-height: 1.5;
+        border-radius: var(--rz-border-radius, 4px);
+        background-color: var(--rz-base-200, #e9ecef);
+        color: var(--rz-text-color, #212529);
         border: var(--rz-border-width, 1px) solid var(--rz-border, #e9ecef);
     }

@@ -10,77 +10,274 @@
 .osirion-theme-dark,
 :root[data-bs-theme="dark"],
 [data-bs-theme="dark"] {
-    /* Text Colors */
-    --osirion-text-primary: var(--osirion-neutral-100);
-    --osirion-text-secondary: var(--osirion-neutral-300);
-    --osirion-text-tertiary: var(--osirion-neutral-400);
-    --osirion-text-disabled: var(--osirion-neutral-500);
-    --osirion-text-inverse: var(--osirion-neutral-900);
-    --osirion-text-on-primary: white;
-    --osirion-text-on-secondary: white;
-    /* Background Colors */
-    --osirion-background-primary: var(--osirion-neutral-900);
-    --osirion-background-secondary: var(--osirion-neutral-800);
-    --osirion-background-tertiary: var(--osirion-neutral-700);
-    --osirion-background-active: var(--osirion-primary-900);
-    --osirion-background-hover: var(--osirion-neutral-700);
-    --osirion-background-disabled: var(--osirion-neutral-700);
-    /* Border Colors */
-    --osirion-border-primary: var(--osirion-neutral-700);
-    --osirion-border-secondary: var(--osirion-neutral-600);
-    --osirion-border-focus: var(--osirion-primary-400);
-    --osirion-border-active: var(--osirion-primary-300);
-    /* Link Colors */
-    --osirion-link-color: var(--osirion-primary-400);
-    --osirion-link-hover-color: var(--osirion-primary-300);
-    --osirion-link-active-color: var(--osirion-primary-200);
-    --osirion-link-visited-color: var(--osirion-primary-400);
-    /* Component-Specific Colors */
-    --osirion-card-background: var(--osirion-neutral-800);
-    --osirion-card-border: var(--osirion-neutral-700);
-    --osirion-card-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    --osirion-button-background: var(--osirion-neutral-800);
-    --osirion-button-text: var(--osirion-neutral-100);
-    --osirion-button-border: var(--osirion-neutral-600);
-    --osirion-button-hover-background: var(--osirion-neutral-700);
-    --osirion-button-hover-border: var(--osirion-neutral-500);
-    --osirion-button-active-background: var(--osirion-neutral-600);
-    --osirion-button-primary-background: var(--osirion-primary-500);
-    --osirion-button-primary-text: white;
-    --osirion-button-primary-border: var(--osirion-primary-500);
-    --osirion-button-primary-hover-background: var(--osirion-primary-600);
-    --osirion-button-primary-hover-border: var(--osirion-primary-600);
-    --osirion-button-primary-active-background: var(--osirion-primary-700);
-    --osirion-input-background: var(--osirion-neutral-800);
-    --osirion-input-border: var(--osirion-neutral-600);
-    --osirion-input-text: var(--osirion-neutral-100);
-    --osirion-input-placeholder: var(--osirion-neutral-500);
-    --osirion-input-focus-border: var(--osirion-primary-400);
-    --osirion-input-hover-border: var(--osirion-neutral-500);
+    /* ========== COLOR SYSTEM SCALE MAPPINGS FOR DARK THEME ========== */
+    /* Invert and adjust color scales for dark mode */
+    /* Primary color scale (blue) - adjusted for dark mode */
+    --osirion-color-primary-50: #172554; /* Darkest shade as background */
+    --osirion-color-primary-100: #1e3a8a;
+    --osirion-color-primary-200: #1e40af;
+    --osirion-color-primary-300: #1d4ed8;
+    --osirion-color-primary-400: #2563eb;
+    --osirion-color-primary-500: #3b82f6; /* Balanced middle */
+    --osirion-color-primary-600: #60a5fa; /* Base for UI elements in dark mode */
+    --osirion-color-primary-700: #93c5fd;
+    --osirion-color-primary-800: #bfdbfe;
+    --osirion-color-primary-900: #dbeafe;
+    --osirion-color-primary-950: #eff6ff; /* Lightest shade as text */
+    /* Neutral color scale (gray) - inverted for dark mode */
+    --osirion-color-neutral-50: #0f1117; /* Darkest - for backgrounds */
+    --osirion-color-neutral-100: #111827;
+    --osirion-color-neutral-200: #1f2937;
+    --osirion-color-neutral-300: #374151;
+    --osirion-color-neutral-400: #4b5563;
+    --osirion-color-neutral-500: #6b7280;
+    --osirion-color-neutral-600: #9ca3af;
+    --osirion-color-neutral-700: #d1d5db;
+    --osirion-color-neutral-800: #e5e7eb;
+    --osirion-color-neutral-900: #f3f4f6;
+    --osirion-color-neutral-950: #f9fafb; /* Lightest - for text */
+    /* Success color scale (green) - adjusted for dark mode */
+    --osirion-color-success-50: #052e16; /* Darkest shade */
+    --osirion-color-success-100: #14532d;
+    --osirion-color-success-200: #166534;
+    --osirion-color-success-300: #15803d;
+    --osirion-color-success-400: #16a34a;
+    --osirion-color-success-500: #22c55e; /* Balanced middle */
+    --osirion-color-success-600: #4ade80; /* Base for UI elements */
+    --osirion-color-success-700: #86efac;
+    --osirion-color-success-800: #bbf7d0;
+    --osirion-color-success-900: #dcfce7;
+    --osirion-color-success-950: #f0fdf4; /* Lightest shade */
+    /* Warning color scale (amber) - adjusted for dark mode */
+    --osirion-color-warning-50: #451a03; /* Darkest shade */
+    --osirion-color-warning-100: #78350f;
+    --osirion-color-warning-200: #92400e;
+    --osirion-color-warning-300: #b45309;
+    --osirion-color-warning-400: #d97706;
+    --osirion-color-warning-500: #f59e0b; /* Balanced middle */
+    --osirion-color-warning-600: #fbbf24; /* Base for UI elements */
+    --osirion-color-warning-700: #fcd34d;
+    --osirion-color-warning-800: #fde68a;
+    --osirion-color-warning-900: #fef3c7;
+    --osirion-color-warning-950: #fffbeb; /* Lightest shade */
+    /* Danger color scale (red) - adjusted for dark mode */
+    --osirion-color-danger-50: #450a0a; /* Darkest shade */
+    --osirion-color-danger-100: #7f1d1d;
+    --osirion-color-danger-200: #991b1b;
+    --osirion-color-danger-300: #b91c1c;
+    --osirion-color-danger-400: #dc2626;
+    --osirion-color-danger-500: #ef4444; /* Balanced middle */
+    --osirion-color-danger-600: #f87171; /* Base for UI elements */
+    --osirion-color-danger-700: #fca5a5;
+    --osirion-color-danger-800: #fecaca;
+    --osirion-color-danger-900: #fee2e2;
+    --osirion-color-danger-950: #fef2f2; /* Lightest shade */
+    /* Info color scale (blue) - adjusted for dark mode */
+    --osirion-color-info-50: #172554; /* Same as primary for consistency */
+    --osirion-color-info-100: #1e3a8a;
+    --osirion-color-info-200: #1e40af;
+    --osirion-color-info-300: #1d4ed8;
+    --osirion-color-info-400: #2563eb;
+    --osirion-color-info-500: #3b82f6;
+    --osirion-color-info-600: #60a5fa;
+    --osirion-color-info-700: #93c5fd;
+    --osirion-color-info-800: #bfdbfe;
+    --osirion-color-info-900: #dbeafe;
+    --osirion-color-info-950: #eff6ff;
+    /* Pure black/white - inverted for dark mode */
+    --osirion-color-white: #000000; /* Inverted for dark mode */
+    --osirion-color-black: #ffffff; /* Inverted for dark mode */
+    /* ========== COMPONENT TOKENS - DARK THEME ========== */
+    /* Dark theme values that components will use */
+    /* Background colors */
+    --osirion-background-primary: var(--osirion-color-neutral-100); /* #111827 - Very dark gray */
+    --osirion-background-secondary: var(--osirion-color-neutral-200); /* #1f2937 - Dark gray */
+    --osirion-background-tertiary: var(--osirion-color-neutral-300); /* #374151 - Medium-dark gray */
+    --osirion-background-muted: var(--osirion-color-neutral-200); /* #1f2937 - Dark gray */
+    --osirion-background-inverted: var(--osirion-color-neutral-900); /* #f3f4f6 - Light gray */
+    /* Text colors */
+    --osirion-text-primary: var(--osirion-color-neutral-900); /* #f3f4f6 - Light gray */
+    --osirion-text-secondary: var(--osirion-color-neutral-700); /* #d1d5db - Medium-light gray */
+    --osirion-text-tertiary: var(--osirion-color-neutral-600); /* #9ca3af - Medium gray */
+    --osirion-text-inverted: var(--osirion-color-neutral-100); /* #111827 - Very dark gray */
+    --osirion-text-disabled: var(--osirion-color-neutral-500); /* #6b7280 - Medium gray */
+    /* Border colors */
+    --osirion-border-color: var(--osirion-color-neutral-400); /* #4b5563 - Medium-dark gray */
+    --osirion-border-color-hover: var(--osirion-color-neutral-500); /* #6b7280 - Medium gray */
+    --osirion-border-color-focus: var(--osirion-color-primary-500); /* #3b82f6 - Blue */
+    /* Action colors */
+    --osirion-action-primary: var(--osirion-color-primary-600); /* #60a5fa - Bright blue */
+    --osirion-action-primary-hover: var(--osirion-color-primary-500); /* #3b82f6 - Blue */
+    --osirion-action-primary-active: var(--osirion-color-primary-400); /* #2563eb - Dark blue */
+    --osirion-action-primary-text: var(--osirion-color-neutral-100); /* #111827 - Very dark gray */
+    --osirion-action-primary-focus: var(--osirion-color-primary-700); /* #93c5fd - Light blue */
+    --osirion-action-primary-disabled: var(--osirion-color-primary-300); /* #1d4ed8 - Very dark blue */
+
+    --osirion-action-secondary: var(--osirion-color-neutral-300); /* #374151 - Medium-dark gray */
+    --osirion-action-secondary-hover: var(--osirion-color-neutral-400); /* #4b5563 - Medium-dark gray */
+    --osirion-action-secondary-active: var(--osirion-color-neutral-500); /* #6b7280 - Medium gray */
+    --osirion-action-secondary-text: var(--osirion-color-neutral-900); /* #f3f4f6 - Light gray */
+    --osirion-action-secondary-focus: var(--osirion-color-neutral-600); /* #9ca3af - Medium gray */
+    --osirion-action-secondary-disabled: var(--osirion-color-neutral-200); /* #1f2937 - Dark gray */
+    /* Link colors */
+    --osirion-link-color: var(--osirion-color-primary-600); /* #60a5fa - Bright blue */
+    --osirion-link-hover-color: var(--osirion-color-primary-700); /* #93c5fd - Light blue */
+    --osirion-link-active-color: var(--osirion-color-primary-800); /* #bfdbfe - Very light blue */
+    --osirion-link-visited-color: var(--osirion-color-primary-500); /* #3b82f6 - Blue */
+    /* Status colors */
+    --osirion-status-success: var(--osirion-color-success-600); /* #4ade80 - Bright green */
+    --osirion-status-success-bg: var(--osirion-color-success-100); /* #14532d - Very dark green */
+    --osirion-status-success-border: var(--osirion-color-success-300); /* #15803d - Dark green */
+    --osirion-status-success-text: var(--osirion-color-success-600); /* #4ade80 - Bright green */
+    --osirion-status-success-focus: var(--osirion-color-success-500); /* #22c55e - Medium green */
+    --osirion-status-success-hover: var(--osirion-color-success-700); /* #86efac - Light green */
+
+    --osirion-status-warning: var(--osirion-color-warning-600); /* #fbbf24 - Bright amber */
+    --osirion-status-warning-bg: var(--osirion-color-warning-100); /* #78350f - Very dark amber */
+    --osirion-status-warning-border: var(--osirion-color-warning-300); /* #b45309 - Dark amber */
+    --osirion-status-warning-text: var(--osirion-color-warning-600); /* #fbbf24 - Bright amber */
+    --osirion-status-warning-focus: var(--osirion-color-warning-500); /* #f59e0b - Medium amber */
+    --osirion-status-warning-hover: var(--osirion-color-warning-700); /* #fcd34d - Light amber */
+
+    --osirion-status-danger: var(--osirion-color-danger-600); /* #f87171 - Bright red */
+    --osirion-status-danger-bg: var(--osirion-color-danger-100); /* #7f1d1d - Very dark red */
+    --osirion-status-danger-border: var(--osirion-color-danger-300); /* #b91c1c - Dark red */
+    --osirion-status-danger-text: var(--osirion-color-danger-600); /* #f87171 - Bright red */
+    --osirion-status-danger-focus: var(--osirion-color-danger-500); /* #ef4444 - Medium red */
+    --osirion-status-danger-hover: var(--osirion-color-danger-700); /* #fca5a5 - Light red */
+
+    --osirion-status-info: var(--osirion-color-info-600); /* #60a5fa - Bright blue */
+    --osirion-status-info-bg: var(--osirion-color-info-100); /* #1e3a8a - Very dark blue */
+    --osirion-status-info-border: var(--osirion-color-info-300); /* #1d4ed8 - Dark blue */
+    --osirion-status-info-text: var(--osirion-color-info-600); /* #60a5fa - Bright blue */
+    --osirion-status-info-focus: var(--osirion-color-info-500); /* #3b82f6 - Medium blue */
+    --osirion-status-info-hover: var(--osirion-color-info-700); /* #93c5fd - Light blue */
+    /* Component specific */
+    --osirion-card-background: var(--osirion-background-secondary); /* #1f2937 - Dark gray */
+    --osirion-card-border-color: var(--osirion-border-color); /* #4b5563 - Medium-dark gray */
+    --osirion-card-border-radius: var(--osirion-radius-lg);
+    --osirion-card-padding: var(--osirion-spacing-6);
+    --osirion-card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+    --osirion-button-radius: var(--osirion-radius-md);
+    --osirion-button-background: var(--osirion-action-primary); /* #60a5fa - Bright blue */
+    --osirion-button-text: var(--osirion-color-neutral-100); /* #111827 - Very dark gray */
+    --osirion-button-border: var(--osirion-action-primary); /* #60a5fa - Bright blue */
+    --osirion-button-hover-background: var(--osirion-action-primary-hover); /* #3b82f6 - Blue */
+    --osirion-button-hover-text: var(--osirion-color-neutral-100); /* #111827 - Very dark gray */
+    --osirion-button-active-background: var(--osirion-action-primary-active); /* #2563eb - Dark blue */
+    --osirion-button-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    --osirion-button-secondary-background: var(--osirion-action-secondary); /* #374151 - Medium-dark gray */
+    --osirion-button-secondary-text: var(--osirion-color-neutral-900); /* #f3f4f6 - Light gray */
+    --osirion-button-secondary-border: var(--osirion-color-neutral-500); /* #6b7280 - Medium gray */
+    --osirion-button-secondary-hover-background: var(--osirion-action-secondary-hover); /* #4b5563 - Medium-dark gray */
+    --osirion-button-secondary-hover-text: var(--osirion-color-neutral-900); /* #f3f4f6 - Light gray */
+    --osirion-button-secondary-active-background: var(--osirion-action-secondary-active); /* #6b7280 - Medium gray */
+
+    --osirion-input-radius: var(--osirion-radius-md);
+    --osirion-input-background: var(--osirion-color-neutral-200); /* #1f2937 - Dark gray */
+    --osirion-input-border: var(--osirion-border-color); /* #4b5563 - Medium-dark gray */
+    --osirion-input-text: var(--osirion-text-primary); /* #f3f4f6 - Light gray */
+    --osirion-input-placeholder: var(--osirion-text-tertiary); /* #9ca3af - Medium gray */
+    --osirion-input-focus-border: var(--osirion-color-primary-600); /* #60a5fa - Bright blue */
+    --osirion-input-hover-border: var(--osirion-border-color-hover); /* #6b7280 - Medium gray */
+    --osirion-input-disabled-background: var(--osirion-color-neutral-300); /* #374151 - Medium-dark gray */
+    --osirion-input-disabled-text: var(--osirion-text-disabled); /* #6b7280 - Medium gray */
+
+    --osirion-tag-radius: var(--osirion-radius-full);
+    --osirion-tag-background: var(--osirion-color-neutral-300); /* #374151 - Medium-dark gray */
+    --osirion-tag-text: var(--osirion-text-primary); /* #f3f4f6 - Light gray */
+    --osirion-tag-hover-background: var(--osirion-color-neutral-400); /* #4b5563 - Medium-dark gray */
+    --osirion-tag-border: var(--osirion-border-color); /* #4b5563 - Medium-dark gray */
     /* Navigation */
-    --osirion-nav-background: var(--osirion-background-secondary);
-    --osirion-nav-text: var(--osirion-text-secondary);
-    --osirion-nav-active-background: var(--osirion-background-active);
-    --osirion-nav-active-text: var(--osirion-primary-400);
-    --osirion-nav-hover-background: var(--osirion-background-hover);
-    /* Status Colors - Dark Theme */
-    --osirion-status-success-bg: rgba(16, 185, 129, 0.2);
-    --osirion-status-success-text: var(--osirion-success-300);
-    --osirion-status-success-border: var(--osirion-success-600);
-    --osirion-status-error-bg: rgba(239, 68, 68, 0.2);
-    --osirion-status-error-text: var(--osirion-error-300);
-    --osirion-status-error-border: var(--osirion-error-600);
-    --osirion-status-warning-bg: rgba(245, 158, 11, 0.2);
-    --osirion-status-warning-text: var(--osirion-warning-300);
-    --osirion-status-warning-border: var(--osirion-warning-600);
-    --osirion-status-info-bg: rgba(59, 130, 246, 0.2);
-    --osirion-status-info-text: var(--osirion-info-300);
-    --osirion-status-info-border: var(--osirion-info-600);
-    /* Component-specific theme colors */
-    --osirion-tag-background: var(--osirion-neutral-700);
-    --osirion-tag-text: var(--osirion-neutral-200);
-    --osirion-tag-hover-background: var(--osirion-neutral-600);
-    --osirion-category-background: var(--osirion-primary-900);
-    --osirion-category-text: var(--osirion-primary-300);
-    --osirion-category-hover-background: var(--osirion-primary-800);
+    --osirion-nav-background: var(--osirion-background-secondary); /* #1f2937 - Dark gray */
+    --osirion-nav-border: var(--osirion-border-color); /* #4b5563 - Medium-dark gray */
+    --osirion-nav-text: var(--osirion-text-secondary); /* #d1d5db - Medium-light gray */
+    --osirion-nav-active-background: var(--osirion-color-primary-200); /* #1e40af - Very dark blue */
+    --osirion-nav-active-text: var(--osirion-color-primary-600); /* #60a5fa - Bright blue */
+    --osirion-nav-active-border: var(--osirion-color-primary-600); /* #60a5fa - Bright blue */
+    --osirion-nav-hover-background: var(--osirion-color-neutral-300); /* #374151 - Medium-dark gray */
+    --osirion-nav-hover-text: var(--osirion-text-primary); /* #f3f4f6 - Light gray */
+    /* Focus states - more visible in dark mode */
+    --osirion-focus-ring-color: rgba(96, 165, 250, 0.7); /* Semi-transparent bright blue */
+    --osirion-focus-ring-width: 3px;
+    --osirion-focus-ring-offset: 2px;
+    /* Scrollbar colors */
+    --osirion-scrollbar-track: var(--osirion-color-neutral-200); /* #1f2937 - Dark gray */
+    --osirion-scrollbar-thumb: var(--osirion-color-neutral-500); /* #6b7280 - Medium gray */
+    --osirion-scrollbar-thumb-hover: var(--osirion-color-neutral-600); /* #9ca3af - Medium gray */
+    /* Overlay/modal colors */
+    --osirion-overlay-background: rgba(0, 0, 0, 0.7); /* Darker overlay for dark mode */
+    --osirion-modal-background: var(--osirion-background-secondary); /* #1f2937 - Dark gray */
+    --osirion-modal-border: var(--osirion-border-color); /* #4b5563 - Medium-dark gray */
+    --osirion-modal-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+    /* ScrollToTop specific */
+    --osirion-scroll-background: var(--osirion-action-primary); /* #60a5fa - Bright blue */
+    --osirion-scroll-hover-background: var(--osirion-action-primary-hover); /* #3b82f6 - Blue */
+    --osirion-scroll-color: var(--osirion-color-neutral-100); /* #111827 - Very dark gray */
+    --osirion-scroll-hover-color: var(--osirion-color-neutral-100); /* #111827 - Very dark gray */
+    --osirion-scroll-box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+    --osirion-scroll-hover-box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+    /* Shadow adjustments for dark mode */
+    --osirion-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+    --osirion-shadow-base: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+    --osirion-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
+    --osirion-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.4);
+    --osirion-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
+    --osirion-shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    --osirion-shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.3);
+    /* Legacy compatibility variables */
+    --osirion-admin-bg: var(--osirion-background-primary); /* #111827 - Very dark gray */
+    --osirion-admin-bg-sidebar: var(--osirion-background-secondary); /* #1f2937 - Dark gray */
+    --osirion-admin-bg-header: var(--osirion-background-secondary); /* #1f2937 - Dark gray */
+    --osirion-admin-text: var(--osirion-text-primary); /* #f3f4f6 - Light gray */
+    --osirion-admin-text-muted: var(--osirion-text-tertiary); /* #9ca3af - Medium gray */
+    --osirion-admin-border: var(--osirion-border-color); /* #4b5563 - Medium-dark gray */
+    --osirion-admin-light: var(--osirion-background-tertiary); /* #374151 - Medium-dark gray */
+    --osirion-admin-primary: var(--osirion-action-primary); /* #60a5fa - Bright blue */
+    --osirion-admin-primary-light: var(--osirion-color-primary-700); /* #93c5fd - Light blue */
+    --osirion-admin-primary-dark: var(--osirion-color-primary-300); /* #1d4ed8 - Very dark blue */
+    --osirion-admin-secondary: var(--osirion-color-neutral-500); /* #6b7280 - Medium gray */
+    /* Legacy content variables */
+    --osirion-color: var(--osirion-text-primary); /* #f3f4f6 - Light gray */
+    --osirion-color-light: var(--osirion-text-secondary); /* #d1d5db - Medium-light gray */
+    --osirion-color-background: var(--osirion-background-primary); /* #111827 - Very dark gray */
+    --osirion-color-background-light: var(--osirion-background-secondary); /* #1f2937 - Dark gray */
+    --osirion-color-border: var(--osirion-border-color); /* #4b5563 - Medium-dark gray */
+    --osirion-active-text: var(--osirion-action-primary); /* #60a5fa - Bright blue */
+    --osirion-active-background: var(--osirion-color-primary-200); /* #1e40af - Very dark blue */
+    --osirion-color-active: var(--osirion-action-primary); /* #60a5fa - Bright blue */
+    --osirion-color-background-active: var(--osirion-color-primary-200); /* #1e40af - Very dark blue */
+    --osirion-tag-background-color: var(--osirion-color-neutral-300); /* #374151 - Medium-dark gray */
+    --osirion-tag-text-color: var(--osirion-text-primary); /* #f3f4f6 - Light gray */
+    --osirion-category-background-color: var(--osirion-color-primary-200); /* #1e40af - Very dark blue */
+    --osirion-category-text-color: var(--osirion-color-primary-600); /* #60a5fa - Bright blue */
+}
+
+/* High Contrast Dark Mode */
+@media (prefers-contrast: more) {
+    :root[data-theme="dark"],
+    .dark-theme,
+    .theme-dark,
+    :root[data-bs-theme="dark"] {
+        /* Maximize contrast for essential UI elements */
+        --osirion-text-primary: var(--osirion-color-white); /* Pure white text */
+        --osirion-text-secondary: var(--osirion-color-neutral-800); /* #e5e7eb - Very light gray */
+        --osirion-border-color: var(--osirion-color-neutral-600); /* #9ca3af - Medium gray */
+        /* Brighter accent colors */
+        --osirion-action-primary: var(--osirion-color-primary-500); /* #3b82f6 - Blue */
+        --osirion-action-primary-text: var(--osirion-color-black); /* Pure black text on bright blue */
+        /* Stronger status colors */
+        --osirion-status-success: var(--osirion-color-success-500); /* #22c55e - Medium green */
+        --osirion-status-warning: var(--osirion-color-warning-500); /* #f59e0b - Medium amber */
+        --osirion-status-danger: var(--osirion-color-danger-500); /* #ef4444 - Medium red */
+        --osirion-status-info: var(--osirion-color-info-500); /* #3b82f6 - Blue */
+        /* Much stronger focus indicators */
+        --osirion-focus-ring-color: rgba(255, 255, 255, 0.9); /* Nearly white focus ring */
+        --osirion-focus-ring-width: 4px;
+        --osirion-focus-ring-offset: 3px;
+        /* Higher contrast borders */
+        --osirion-card-border-color: var(--osirion-color-neutral-600); /* #9ca3af - Medium gray */
+        --osirion-input-border: var(--osirion-color-neutral-600); /* #9ca3af - Medium gray */
+        --osirion-button-border: var(--osirion-color-neutral-500); /* #6b7280 - Medium gray */
+    }
 }
