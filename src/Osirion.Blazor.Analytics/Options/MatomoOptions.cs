@@ -8,7 +8,7 @@ public class MatomoOptions : AnalyticsOptions
     /// <summary>
     /// Configuration section name
     /// </summary>
-    public const string Section = "Osirion:Analytics:Matomo";
+    public new const string Section = "Osirion:Analytics:Matomo";
 
     /// <summary>
     /// Gets or sets the Matomo tracker URL

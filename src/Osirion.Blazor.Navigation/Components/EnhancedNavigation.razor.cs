@@ -47,7 +47,6 @@ public partial class EnhancedNavigation
         {
             ScrollBehavior.Smooth => "smooth",
             ScrollBehavior.Instant => "instant",
-            ScrollBehavior.Auto => "auto",
             _ => "auto"
         };
 

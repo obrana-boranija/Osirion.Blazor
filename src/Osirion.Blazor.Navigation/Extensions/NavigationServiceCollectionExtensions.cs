@@ -1,11 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Osirion.Blazor.Navigation.Internal;
 using Osirion.Blazor.Navigation.Options;
 using Osirion.Blazor.Navigation.Services;
 
-namespace Osirion.Blazor.Navigation;
+namespace Osirion.Blazor.Navigation.Extensions;
 
 /// <summary>
 /// Extension methods for configuring navigation services
@@ -13,12 +12,12 @@ namespace Osirion.Blazor.Navigation;
 public static class NavigationServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds navigation services to the service collection
+    /// Adds enhanced navigation services to the service collection
     /// </summary>
     /// <param name="services">The service collection</param>
     /// <param name="configure">Action to configure navigation services</param>
     /// <returns>The service collection for chaining</returns>
-    public static IServiceCollection AddEnhancedNavigation(
+    public static IServiceCollection AddOsirionNavigation(
         this IServiceCollection services,
         Action<INavigationBuilder> configure)
     {
@@ -30,32 +29,39 @@ public static class NavigationServiceCollectionExtensions
         configure(builder);
 
         // Register navigation service
-        services.TryAddSingleton<INavigationService, NavigationService>();
+        services.AddSingleton<INavigationService, NavigationService>();
 
         return services;
     }
 
     /// <summary>
-    /// Adds navigation services to the service collection using an IConfiguration instance
+    /// Adds enhanced navigation services to the service collection using configuration
     /// </summary>
     /// <param name="services">The service collection</param>
-    /// <param name="configuration">The configuration instance</param>
+    /// <param name="configuration">The configuration</param>
     /// <returns>The service collection for chaining</returns>
-    /// <exception cref="ArgumentNullException"></exception>
-    public static IServiceCollection AddEnhancedNavigation(
+    public static IServiceCollection AddOsirionNavigation(
         this IServiceCollection services,
         IConfiguration configuration)
     {
         if (services == null) throw new ArgumentNullException(nameof(services));
         if (configuration == null) throw new ArgumentNullException(nameof(configuration));
 
-        // Example: Use configuration to configure navigation services
-        var navigationSection = configuration.GetSection(EnhancedNavigationOptions.Section);
-        services.Configure<EnhancedNavigationOptions>(navigationSection);
+        return services.AddOsirionNavigation(builder =>
+        {
+            // Check for EnhancedNavigation configuration
+            var enhancedSection = configuration.GetSection(EnhancedNavigationOptions.Section);
+            if (enhancedSection.Exists())
+            {
+                builder.AddEnhancedNavigation(options => enhancedSection.Bind(options));
+            }
 
-        // Register navigation service
-        services.TryAddSingleton<INavigationService, NavigationService>();
-
-        return services;
+            // Check for ScrollToTop configuration
+            var scrollToTopSection = configuration.GetSection(ScrollToTopOptions.Section);
+            if (scrollToTopSection.Exists())
+            {
+                builder.AddScrollToTop(options => scrollToTopSection.Bind(options));
+            }
+        });
     }
 }

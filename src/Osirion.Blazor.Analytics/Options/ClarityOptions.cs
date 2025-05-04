@@ -8,7 +8,7 @@ public class ClarityOptions : AnalyticsOptions
     /// <summary>
     /// Configuration section name
     /// </summary>
-    public const string Section = "Osirion:Analytics:Clarity";
+    public new const string Section = "Osirion:Analytics:Clarity";
 
     /// <summary>
     /// Gets or sets the Clarity tracker URL

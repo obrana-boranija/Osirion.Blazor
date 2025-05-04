@@ -47,26 +47,30 @@ public static class AnalyticsServiceCollectionExtensions
         if (services == null) throw new ArgumentNullException(nameof(services));
         if (configuration == null) throw new ArgumentNullException(nameof(configuration));
 
-        // Get analytics section
-        var builder = new AnalyticsBuilder(services);
-
-        // Register Clarity if configured
+        var analyticsSection = configuration.GetSection(AnalyticsOptions.Section);
         var claritySection = configuration.GetSection(ClarityOptions.Section);
-        if (claritySection.Exists())
-        {
-            builder.AddClarity(options => claritySection.Bind(options));
-        }
-
-        // Register Matomo if configured
         var matomoSection = configuration.GetSection(MatomoOptions.Section);
-        if (matomoSection.Exists())
+
+        return services.AddOsirionAnalytics(builder =>
         {
-            builder.AddMatomo(options => matomoSection.Bind(options));
-        }
+            //// Get the analytics section from configuration
+            //var analyticsSection = configuration.GetSection(AnalyticsOptions.Section);
 
-        // Register analytics service
-        services.AddSingleton<IAnalyticsService, AnalyticsService>();
+            // Check for Clarity configuration
+            var claritySection = configuration.GetSection(ClarityOptions.Section);
+            if (claritySection.Exists())
+            {
+                builder.AddClarity(options => claritySection.Bind(options));
+            }
 
-        return services;
+            // Check for Matomo configuration
+            var matomoSection = configuration.GetSection(MatomoOptions.Section);
+            if (matomoSection.Exists())
+            {
+                builder.AddMatomo(options => matomoSection.Bind(options));
+            }
+
+            // Custom providers could be added here based on configuration
+        });
     }
 }

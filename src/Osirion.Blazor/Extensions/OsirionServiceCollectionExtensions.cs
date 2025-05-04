@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Osirion.Blazor.Analytics.Options;
 using Osirion.Blazor.Internal;
+using Osirion.Blazor.Navigation.Options;
 using Osirion.Blazor.Theming;
 
 namespace Osirion.Blazor.Extensions;
@@ -64,15 +66,12 @@ public static class OsirionServiceCollectionExtensions
             }
 
             // Analytics configuration
-            var analyticsSection = configuration.GetSection("Osirion:Analytics");
-            if (analyticsSection.Exists())
+            if (configuration.GetSection(AnalyticsOptions.Section).Exists())
             {
                 builder.UseAnalytics(configuration);
             }
 
-            // Navigation configuration
-            var navigationSection = configuration.GetSection("Osirion:Navigation");
-            if (navigationSection.Exists())
+            if (configuration.GetSection(NavigationOptions.Section).Exists())
             {
                 builder.UseNavigation(configuration);
             }
@@ -91,7 +90,8 @@ public static class OsirionServiceCollectionExtensions
         // Add basic navigation with enhanced features
         builder.UseNavigation(navigation =>
         {
-            navigation.UseEnhancedNavigation();
+            navigation.AddEnhancedNavigation();
+            navigation.AddScrollToTop();
         });
 
         // Use default theming (no framework integration)

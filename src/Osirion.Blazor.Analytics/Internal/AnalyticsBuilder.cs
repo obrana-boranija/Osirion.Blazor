@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Osirion.Blazor.Analytics.Options;
 using Osirion.Blazor.Analytics.Providers;
 
@@ -35,9 +36,9 @@ internal class AnalyticsBuilder : IAnalyticsBuilder
             opt.TrackUserAttributes = options.TrackUserAttributes;
         });
 
-        Services.AddSingleton<ClarityProvider>();
-        Services.AddSingleton<IAnalyticsProvider>(sp =>
-            sp.GetRequiredService<ClarityProvider>());
+        Services.TryAddSingleton<ClarityProvider>();
+
+        Services.TryAddSingleton<IAnalyticsProvider, ClarityProvider>();
 
         return this;
     }
@@ -59,9 +60,8 @@ internal class AnalyticsBuilder : IAnalyticsBuilder
             opt.RequireConsent = options.RequireConsent;
         });
 
-        Services.AddSingleton<MatomoProvider>();
-        Services.AddSingleton<IAnalyticsProvider>(sp =>
-            sp.GetRequiredService<MatomoProvider>());
+        Services.TryAddSingleton<MatomoProvider>();
+        Services.TryAddSingleton<IAnalyticsProvider, MatomoProvider>();
 
         return this;
     }
@@ -80,11 +80,10 @@ internal class AnalyticsBuilder : IAnalyticsBuilder
         }
         else
         {
-            Services.AddSingleton<TProvider>();
+            Services.TryAddSingleton<TProvider>();
         }
 
-        Services.AddSingleton<IAnalyticsProvider>(sp =>
-            sp.GetRequiredService<TProvider>());
+        Services.TryAddSingleton<IAnalyticsProvider, TProvider>();
 
         return this;
     }

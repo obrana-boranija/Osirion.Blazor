@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Options;
+using Osirion.Blazor.Components;
 using Osirion.Blazor.Navigation.Options;
 
 namespace Osirion.Blazor.Navigation.Components;
-public partial class ScrollToTop(IOptions<ScrollToTopOptions>? ScrollOptions)
+
+public partial class ScrollToTop
 {
     /// <summary>
     /// Gets or sets the position of the button
@@ -54,7 +56,7 @@ public partial class ScrollToTop(IOptions<ScrollToTopOptions>? ScrollOptions)
     {
         get
         {
-            var options = ScrollOptions?.Value ?? new ScrollToTopOptions();
+            var options = Options?.Value ?? new ScrollToTopOptions();
             return new ScrollToTopOptions
             {
                 Position = Position != Position.BottomRight ? Position : options.Position,
@@ -67,6 +69,11 @@ public partial class ScrollToTop(IOptions<ScrollToTopOptions>? ScrollOptions)
                 Enabled = (bool)(Enabled is null ? options.Enabled : Enabled)
             };
         }
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
     }
 
     /// <summary>
@@ -97,7 +104,7 @@ public partial class ScrollToTop(IOptions<ScrollToTopOptions>? ScrollOptions)
                         if (!scrollButton) return;
 
                         function updateButtonVisibility() {{
-                            scrollButton.style.display = window.scrollY > @EffectiveOptions.VisibilityThreshold ? 'flex' : 'none';
+                            scrollButton.style.display = window.scrollY > {EffectiveOptions.VisibilityThreshold} ? 'flex' : 'none';
                         }}
 
                         updateButtonVisibility();
@@ -111,7 +118,7 @@ public partial class ScrollToTop(IOptions<ScrollToTopOptions>? ScrollOptions)
                                 window.scrollTo({{
                                     top: 0,
                                     left: 0,
-                                    behavior: '@(EffectiveOptions.Behavior.ToString().ToLowerInvariant())'
+                                    behavior: '{(EffectiveOptions.Behavior.ToString().ToLowerInvariant())}'
                                 }});
                             }});
                         }}
