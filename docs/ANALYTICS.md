@@ -1,163 +1,214 @@
-# Analytics Components
+# Osirion.Blazor.Analytics
 
-Osirion.Blazor provides SSR-compatible analytics components that work with popular analytics platforms. These components are designed to be simple to use, configurable, and secure.
+[![NuGet](https://img.shields.io/nuget/v/Osirion.Blazor.Analytics)](https://www.nuget.org/packages/Osirion.Blazor.Analytics)
+[![NuGet Downloads](https://img.shields.io/nuget/dt/Osirion.Blazor)](https://www.nuget.org/packages/Osirion.Blazor.Analytics)
+[![License](https://img.shields.io/github/license/obrana-boranija/Osirion.Blazor)](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/LICENSE.txt)
+
+Analytics integration for Blazor applications, supporting multiple providers with SSR compatibility.
 
 ## Features
 
-- **SSR Compatible**: Works with Server-Side Rendering and Static SSR
-- **No JavaScript Interop**: Pure Blazor implementation without JS dependencies
-- **Configuration-Driven**: Configure via DI container or directly through parameters
-- **Type-Safe**: Strongly-typed options with intellisense support
+- **Multiple Providers**: Microsoft Clarity, Matomo, Google Analytics 4 and Yandex Metrica support out of the box
+- **Provider Pattern**: Easily extend with your own analytics providers
+- **SSR Compatible**: Works with Server-Side Rendering and Static SSG
+- **Configuration-Driven**: Simple setup through dependency injection
+- **Privacy-Focused**: Opt-in tracking with consent options
 
-## Supported Analytics Platforms
+## Installation
 
-### Microsoft Clarity
-
-Microsoft Clarity is a user behavior analytics tool that helps you understand how users interact with your website.
-
-#### Usage
-
-```razor
-@using Osirion.Blazor.Components.Analytics
-@using Osirion.Blazor.Components.Analytics.Options
-
-<!-- Using with parameters -->
-<ClarityTracker Options="@(new ClarityOptions 
-{ 
-    TrackerUrl = "https://www.clarity.ms/tag/", 
-    SiteId = "your-site-id", 
-    Track = true 
-})" />
-
-<!-- Using with injected options -->
-@inject IOptions<ClarityOptions> ClarityOptions
-<ClarityTracker Options="@ClarityOptions.Value" />
+```bash
+dotnet add package Osirion.Blazor.Analytics
 ```
 
-#### Configuration
+## Usage
+
+### Quick Start
 
 ```csharp
 // In Program.cs
-builder.Services.AddClarityTracker(builder.Configuration);
+using Osirion.Blazor.Analytics.Extensions;
 
-// Or programmatically
-builder.Services.AddClarityTracker(options =>
-{
-    options.TrackerUrl = "https://www.clarity.ms/tag/";
-    options.SiteId = "your-site-id";
-    options.Track = true;
+builder.Services.AddOsirionAnalytics(analytics => {
+    analytics
+        .AddClarity(options => {
+            options.SiteId = "your-clarity-site-id";
+        })
+        .AddMatomo(options => {
+            options.SiteId = "1";
+            options.TrackerUrl = "//analytics.example.com/";
+        })
+        .AddGA4(options => {
+            options.MeasurementId = "G-XXXXXXXXXX";
+            options.DebugMode = builder.Environment.IsDevelopment();
+        })
+        .AddYandexMetrica(options => {
+            options.CounterId = "12345678";
+            options.WebVisor = true;
+            options.TrackLinks = true;
+        });
 });
 ```
+
+```razor
+@using Osirion.Blazor.Analytics.Components
+
+<!-- In your layout -->
+<ClarityTracker />
+<MatomoTracker />
+<GA4Tracker />
+<YandexMetricaTracker />
+```
+
+### With Configuration
 
 ```json
 // In appsettings.json
 {
-  "Clarity": {
-    "TrackerUrl": "https://www.clarity.ms/tag/",
-    "SiteId": "your-site-id",
-    "Track": true
+  "Osirion": {
+    "Analytics": {
+      "Clarity": {
+        "SiteId": "your-clarity-site-id",
+        "Enabled": true
+      },
+      "Matomo": {
+        "SiteId": "1",
+        "TrackerUrl": "//analytics.example.com/",
+        "TrackLinks": true,
+        "RequireConsent": false
+      },
+      "GA4": {
+        "MeasurementId": "G-XXXXXXXXXX",
+        "Enabled": true,
+        "AnonymizeIp": true,
+        "TrackOutboundLinks": true,
+        "DebugMode": false
+      },
+      "YandexMetrica": {
+        "CounterId": "12345678",
+        "Enabled": true,
+        "WebVisor": true,
+        "ClickMap": true,
+        "TrackLinks": true,
+        "AccurateTrackBounce": true,
+        "EcommerceEnabled": true,
+        "EcommerceContainerName": "dataLayer"
+      }
+    }
   }
 }
 ```
-
-### Matomo
-
-Matomo (formerly Piwik) is an open-source analytics platform that gives you full control over your data.
-
-#### Usage
-
-```razor
-@using Osirion.Blazor.Components.Analytics
-@using Osirion.Blazor.Components.Analytics.Options
-
-<!-- Using with parameters -->
-<MatomoTracker Options="@(new MatomoOptions 
-{ 
-    TrackerUrl = "//analytics.example.com/", 
-    SiteId = "1", 
-    Track = true 
-})" />
-
-<!-- Using with injected options -->
-@inject IOptions<MatomoOptions> MatomoOptions
-<MatomoTracker Options="@MatomoOptions.Value" />
-```
-
-#### Configuration
 
 ```csharp
 // In Program.cs
-builder.Services.AddMatomoTracker(builder.Configuration);
+builder.Services.AddOsirionAnalytics(builder.Configuration);
 
-// Or programmatically
-builder.Services.AddMatomoTracker(options =>
+// Or when using the full Osirion.Blazor package:
+builder.Services.AddOsirion(builder.Configuration);
+```
+
+### Manual Tracking
+
+```csharp
+@inject IAnalyticsService Analytics
+
+// Track a page view
+await Analytics.TrackPageViewAsync("/custom-path");
+
+// Track an event
+await Analytics.TrackEventAsync("category", "action", "label", value);
+```
+
+### Creating Custom Providers
+
+```csharp
+public class CustomProvider : IAnalyticsProvider
 {
-    options.TrackerUrl = "//analytics.example.com/";
-    options.SiteId = "1";
-    options.Track = true;
+    public string ProviderId => "custom";
+    public bool IsEnabled => true;
+    public bool ShouldRender => true;
+
+    public Task TrackEventAsync(string category, string action, string? label = null, object? value = null, CancellationToken cancellationToken = default)
+    {
+        // Custom implementation
+        return Task.CompletedTask;
+    }
+
+    public Task TrackPageViewAsync(string? path = null, CancellationToken cancellationToken = default)
+    {
+        // Custom implementation
+        return Task.CompletedTask;
+    }
+
+    public string GetScript()
+    {
+        return "<script>/* Custom tracking script */</script>";
+    }
+}
+
+// Register the provider
+builder.Services.AddOsirionAnalytics(analytics => {
+    analytics.AddProvider<CustomProvider>();
 });
 ```
 
-```json
-// In appsettings.json
-{
-  "Matomo": {
-    "TrackerUrl": "//analytics.example.com/",
-    "SiteId": "1",
-    "Track": true
-  }
-}
-```
+## Configuration Options
 
-## Common Options
+### Clarity Options
 
-Both analytics components share common properties:
+- `SiteId`: Your Microsoft Clarity site ID
+- `Enabled`: Whether the tracker is enabled (default: true)
+- `TrackerUrl`: The URL for the Clarity script (default: "https://www.clarity.ms/tag/")
+- `TrackUserAttributes`: Whether to track user attributes (default: true)
+- `AutoTrackPageViews`: Whether to automatically track page views (default: true)
 
-- `TrackerUrl` (string): The URL of the analytics script
-- `SiteId` (string): Your site ID for the analytics platform
-- `Track` (bool): Controls whether tracking is enabled
+### Matomo Options
 
-## Best Practices
+- `SiteId`: Your Matomo site ID
+- `Enabled`: Whether the tracker is enabled (default: true)
+- `TrackerUrl`: The URL to your Matomo installation
+- `TrackLinks`: Whether to track link clicks (default: true)
+- `TrackDownloads`: Whether to track downloads (default: true)
+- `RequireConsent`: Whether to require cookie consent (default: false)
+- `AutoTrackPageViews`: Whether to automatically track page views (default: true)
 
-1. **Environment-Specific Configuration**: Use different configuration values for development, staging, and production
-2. **Security**: Ensure tracker URLs are from trusted sources
-3. **Performance**: Place analytics components at the bottom of your layout to avoid blocking critical content
-4. **Privacy**: Consider user consent before enabling tracking
-5. **Conditional Rendering**: Use the `Track` property to conditionally enable analytics based on user preferences or environment
+### Yandex Metrica Options
 
-## Example: Using with Environment Configuration
+- `CounterId`: Your Yandex Metrica counter ID
+- `Enabled`: Whether the tracker is enabled (default: true)
+- `WebVisor`: Enable session replay recordings (default: false)
+- `ClickMap`: Create a map of clicks on your site (default: true)
+- `TrackLinks`: Track clicks on outbound links (default: true)
+- `AccurateTrackBounce`: Accurately track bounce rate (default: true)
+- `TrackHash`: Collect data for all pages, not just ones with counter code (default: null)
+- `DeferLoad`: Disable automatic sending of page view data (default: false)
+- `AlternativeCdn`: Use alternative CDN domain (optional)
+- `Params`: Custom parameters to track (optional)
+- `UserParams`: User parameters for tracking (optional)
+- `EcommerceEnabled`: Enable e-commerce data layer (default: false)
+- `EcommerceContainerName`: E-commerce data layer container name (default: "dataLayer")
+
+## Integration with Privacy Modules
+
+Osirion.Blazor.Analytics can integrate with privacy consent modules to provide GDPR-compliant analytics:
 
 ```csharp
-// Program.cs
-var environment = builder.Environment;
+builder.Services.AddOsirionAnalytics(analytics => {
+    analytics.AddMatomo(options => {
+        options.RequireConsent = true;
+    });
+});
 
-if (environment.IsProduction())
-{
-    builder.Services.AddClarityTracker(builder.Configuration);
-    builder.Services.AddMatomoTracker(builder.Configuration);
-}
-else
-{
-    // Disable tracking in non-production environments
-    builder.Services.AddClarityTracker(options => options.Track = false);
-    builder.Services.AddMatomoTracker(options => options.Track = false);
-}
+builder.Services.AddOsirionPrivacy();
 ```
 
-## Example: Using with Feature Flags
+## SSR Considerations
 
-```razor
-@inject IFeatureManager FeatureManager
+The analytics components are designed to work seamlessly in Server-Side Rendering (SSR) environments:
 
-@if (await FeatureManager.IsEnabledAsync("Analytics"))
-{
-    <ClarityTracker Options="@clarityOptions" />
-    <MatomoTracker Options="@matomoOptions" />
-}
-```
+- Scripts are only rendered when needed
+- No JavaScript interop is required for basic functionality
+- Components properly handle non-interactive rendering scenarios
 
-## Troubleshooting
+## License
 
-1. **Components not rendering**: Check that all required options (`TrackerUrl`, `SiteId`) are set and `Track` is true
-2. **Analytics not capturing data**: Verify that the tracker URLs are correct and accessible
-3. **Configuration not working**: Ensure configuration section names match (`Clarity`, `Matomo`) in your configuration source
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/LICENSE.txt) file for details.

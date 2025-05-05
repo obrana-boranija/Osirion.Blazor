@@ -22,7 +22,7 @@ internal class NavigationBuilder : INavigationBuilder
     public IServiceCollection Services { get; }
 
     /// <inheritdoc/>
-    public INavigationBuilder UseEnhancedNavigation(Action<EnhancedNavigationOptions>? configure = null)
+    public INavigationBuilder AddEnhancedNavigation(Action<EnhancedNavigationOptions>? configure = null)
     {
         var options = new EnhancedNavigationOptions();
         configure?.Invoke(options);
@@ -34,7 +34,30 @@ internal class NavigationBuilder : INavigationBuilder
             opt.PreserveScrollForSamePageNavigation = options.PreserveScrollForSamePageNavigation;
         });
 
-        AddManagerService();
+        Services.AddScoped<EnhancedNavigationManager>();
+
+        return this;
+    }
+
+    /// <inheritdoc/>
+    public INavigationBuilder AddEnhancedNavigation(IConfiguration configuration)
+    {
+        if (configuration == null)
+        {
+            throw new ArgumentNullException(nameof(configuration));
+        }
+
+        var options = new EnhancedNavigationOptions();
+        configuration.Bind(options);
+
+        Services.Configure<EnhancedNavigationOptions>(opt =>
+        {
+            opt.Behavior = options.Behavior;
+            opt.ResetScrollOnNavigation = options.ResetScrollOnNavigation;
+            opt.PreserveScrollForSamePageNavigation = options.PreserveScrollForSamePageNavigation;
+        });
+
+        Services.AddScoped<EnhancedNavigationManager>();
 
         return this;
     }
@@ -57,50 +80,22 @@ internal class NavigationBuilder : INavigationBuilder
         });
 
         // Create and register the ScrollToTopManager
-        AddManagerService(options);
-
-        return this;
-    }
-
-    private void AddManagerService(ScrollToTopOptions? options = null)
-    {
-        var manager = new ScrollToTopManager
+        Services.AddSingleton(sp => new ScrollToTopManager
         {
             IsEnabled = true,
-            Position = options?.Position ?? Position.BottomRight,
-            Behavior = options?.Behavior ?? ScrollBehavior.Smooth,
-            VisibilityThreshold = options?.VisibilityThreshold ?? 300,
-            Text = options?.Text ?? null,
-            Title = options?.Title ?? "Scroll to top",
-            CssClass = options?.CssClass ?? null,
-            CustomIcon = options?.CustomIcon ?? null
-        };
-
-        Services.AddSingleton(manager);
-    }
-
-    public INavigationBuilder UseEnhancedNavigation(IConfiguration configuration)
-    {
-        if (configuration == null)
-        {
-            throw new ArgumentNullException(nameof(configuration));
-        }
-
-        var options = new EnhancedNavigationOptions();
-        configuration.Bind(options);
-
-        Services.Configure<EnhancedNavigationOptions>(opt =>
-        {
-            opt.Behavior = options.Behavior;
-            opt.ResetScrollOnNavigation = options.ResetScrollOnNavigation;
-            opt.PreserveScrollForSamePageNavigation = options.PreserveScrollForSamePageNavigation;
+            Position = options.Position,
+            Behavior = options.Behavior,
+            VisibilityThreshold = options.VisibilityThreshold,
+            Text = options.Text,
+            Title = options.Title,
+            CssClass = options.CssClass,
+            CustomIcon = options.CustomIcon
         });
-
-        AddManagerService();
 
         return this;
     }
 
+    /// <inheritdoc/>
     public INavigationBuilder AddScrollToTop(IConfiguration configuration)
     {
         if (configuration == null)
@@ -122,7 +117,18 @@ internal class NavigationBuilder : INavigationBuilder
             opt.CustomIcon = options.CustomIcon;
         });
 
-        AddManagerService(options);
+        // Create and register the ScrollToTopManager
+        Services.AddSingleton(sp => new ScrollToTopManager
+        {
+            IsEnabled = true,
+            Position = options.Position,
+            Behavior = options.Behavior,
+            VisibilityThreshold = options.VisibilityThreshold,
+            Text = options.Text,
+            Title = options.Title,
+            CssClass = options.CssClass,
+            CustomIcon = options.CustomIcon
+        });
 
         return this;
     }

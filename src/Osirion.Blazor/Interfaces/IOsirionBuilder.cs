@@ -1,11 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Osirion.Blazor.Analytics;
-using Osirion.Blazor.Cms;
-using Osirion.Blazor.Cms.Admin.Interfaces;
-using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Navigation;
 using Osirion.Blazor.Theming;
+using Osirion.Blazor.Cms.Domain.Interfaces;
+using Osirion.Blazor.Cms.Admin.Interfaces;
 
 namespace Osirion.Blazor;
 
@@ -29,8 +28,8 @@ public interface IOsirionBuilder
     /// <summary>
     /// Configures content services using an IConfiguration instance
     /// </summary>
-    /// <param name="configuration"></param>
-    /// <returns></returns>
+    /// <param name="configuration">The configuration</param>
+    /// <returns>The builder for chaining</returns>
     IOsirionBuilder UseContent(IConfiguration configuration);
 
     /// <summary>
@@ -43,8 +42,8 @@ public interface IOsirionBuilder
     /// <summary>
     /// Configures CMS admin services using an IConfiguration instance
     /// </summary>
-    /// <param name="configuration"></param>
-    /// <returns></returns>
+    /// <param name="configuration">The configuration</param>
+    /// <returns>The builder for chaining</returns>
     IOsirionBuilder UseCmsAdmin(IConfiguration configuration);
 
     /// <summary>
@@ -57,8 +56,8 @@ public interface IOsirionBuilder
     /// <summary>
     /// Configures analytics services using an IConfiguration instance
     /// </summary>
-    /// <param name="configuration"></param>
-    /// <returns></returns>
+    /// <param name="configuration">The configuration</param>
+    /// <returns>The builder for chaining</returns>
     IOsirionBuilder UseAnalytics(IConfiguration configuration);
 
     /// <summary>
@@ -71,8 +70,8 @@ public interface IOsirionBuilder
     /// <summary>
     /// Configures navigation services using an IConfiguration instance
     /// </summary>
-    /// <param name="configuration"></param>
-    /// <returns></returns>
+    /// <param name="configuration">The configuration</param>
+    /// <returns>The builder for chaining</returns>
     IOsirionBuilder UseNavigation(IConfiguration configuration);
 
     /// <summary>
@@ -85,7 +84,7 @@ public interface IOsirionBuilder
     /// <summary>
     /// Configures theming services using an IConfiguration instance
     /// </summary>
-    /// <param name="configuration"></param>
-    /// <returns></returns>
+    /// <param name="configuration">The configuration</param>
+    /// <returns>The builder for chaining</returns>
     IOsirionBuilder UseTheming(IConfiguration configuration);
 }

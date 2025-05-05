@@ -1,7 +1,10 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Options;
+using Osirion.Blazor.Components;
 using Osirion.Blazor.Navigation.Options;
 
 namespace Osirion.Blazor.Navigation.Components;
+
 public partial class ScrollToTop
 {
     /// <summary>
@@ -41,6 +44,12 @@ public partial class ScrollToTop
     public string? CustomIcon { get; set; }
 
     /// <summary>
+    /// Enable Scroll to Top button
+    /// </summary>
+    [Parameter]
+    public bool? Enabled { get; set; }
+
+    /// <summary>
     /// Gets the effective options, merging parameters with configured options
     /// </summary>
     private ScrollToTopOptions EffectiveOptions
@@ -56,9 +65,15 @@ public partial class ScrollToTop
                 Text = Text ?? options.Text,
                 Title = Title != "Scroll to top" ? Title : options.Title,
                 CssClass = CssClass ?? options.CssClass,
-                CustomIcon = CustomIcon ?? options.CustomIcon
+                CustomIcon = CustomIcon ?? options.CustomIcon,
+                Enabled = (bool)(Enabled is null ? options.Enabled : Enabled)
             };
         }
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
     }
 
     /// <summary>
@@ -77,5 +92,45 @@ public partial class ScrollToTop
 
         // Use both class naming conventions for better compatibility
         return $"scroll-to-top osirion-scroll-to-top {positionClass} {EffectiveOptions.CssClass}".Trim();
+    }
+
+    private string GetScript()
+    {
+        return $@"
+            <script id=""osirion-scroll-to-top-script"">
+                (function() {{
+                    function initScrollToTop() {{
+                        const scrollButton = document.getElementById('osirion-scroll-to-top');
+                        if (!scrollButton) return;
+
+                        function updateButtonVisibility() {{
+                            scrollButton.style.display = window.scrollY > {EffectiveOptions.VisibilityThreshold} ? 'flex' : 'none';
+                        }}
+
+                        updateButtonVisibility();
+
+                        window.addEventListener('scroll', updateButtonVisibility);
+
+                        if (!scrollButton.hasAttribute('data-initialized')) {{
+                            scrollButton.setAttribute('data-initialized', 'true');
+                            scrollButton.addEventListener('click', function(e) {{
+                                e.preventDefault();
+                                window.scrollTo({{
+                                    top: 0,
+                                    left: 0,
+                                    behavior: '{(EffectiveOptions.Behavior.ToString().ToLowerInvariant())}'
+                                }});
+                            }});
+                        }}
+                    }}
+
+                    if (document.readyState === 'loading') {{
+                        document.addEventListener('DOMContentLoaded', initScrollToTop);
+                    }} else {{
+                        initScrollToTop();
+                    }}
+                }})();
+            </script>
+        ";
     }
 }

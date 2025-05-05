@@ -24,27 +24,21 @@ public static class ThemingServiceCollectionExtensions
         if (services == null) throw new ArgumentNullException(nameof(services));
         if (configure == null) throw new ArgumentNullException(nameof(configure));
 
-        // Register default options
-        services.Configure<ThemingOptions>(options =>
-        {
-            // Default options ensure everything works without specific configuration
-            options.UseDefaultStyles = true;
-            options.Framework = CssFramework.None;
-            options.DefaultMode = ThemeMode.Light;
-            options.EnableDarkMode = true;
-            options.FollowSystemPreference = false;
-        });
+        services.AddSingleton<IThemeService, ThemeService>();
 
         // Create builder and apply configuration
         var builder = new ThemingBuilder(services);
         configure(builder);
 
-        // Register theme service (singleton to maintain state across components)
-        services.AddSingleton<IThemeService, ThemeService>();
-
         return services;
     }
 
+    /// <summary>
+    /// Adds theming services to the service collection using configuration
+    /// </summary>
+    /// <param name="services">The service collection</param>
+    /// <param name="configuration">The configuration</param>
+    /// <returns>The service collection for chaining</returns>
     public static IServiceCollection AddOsirionTheming(
         this IServiceCollection services,
         IConfiguration configuration)
@@ -52,13 +46,55 @@ public static class ThemingServiceCollectionExtensions
         if (services == null) throw new ArgumentNullException(nameof(services));
         if (configuration == null) throw new ArgumentNullException(nameof(configuration));
 
-        // Bind configuration to ThemingOptions
-        services.Configure<ThemingOptions>(configuration.GetSection(ThemingOptions.Section));
+        return services.AddOsirionTheming(builder =>
+        {
+            // Get the theming section from configuration
+            var themingSection = configuration.GetSection(ThemingOptions.Section);
 
-        // Register theme service
-        services.AddSingleton<IThemeService, ThemeService>();
+            if (themingSection.Exists())
+            {
+                // Configure theme options
+                builder.Configure(options => themingSection.Bind(options));
 
-        return services;
+                var followSystemPreference = themingSection.GetValue<bool>("FollowSystemPreference");
+                if (followSystemPreference)
+                {
+                    builder.UseSystemPreference(followSystemPreference);
+                }
+
+                var framework = themingSection.GetValue<CssFramework>("Framework");
+                if (framework != CssFramework.None)
+                {
+                    builder.UseFramework(framework);
+                }
+
+                //var defaultMode = themingSection.GetValue<bool>("DefaultMode");
+                //if (defaultMode)
+                //{
+                //    builder.EnableDarkMode(defaultMode);
+                //}
+
+                var darkMode = themingSection.GetValue<bool>("EnableDarkMode");
+                if (darkMode)
+                {
+                    builder.EnableDarkMode(darkMode);
+                }
+
+                var customVariables = themingSection.GetValue<string>("CustomVariables");
+                if (!string.IsNullOrWhiteSpace(customVariables))
+                {
+                    builder.WithCustomVariables(customVariables);
+                }
+            }
+        });
+
+        //// Bind configuration to ThemingOptions
+        //services.Configure<ThemingOptions>(configuration.GetSection(ThemingOptions.Section));
+
+        //// Register theme service
+        //services.AddSingleton<IThemeService, ThemeService>();
+
+        //return services;
     }
 
     /// <summary>

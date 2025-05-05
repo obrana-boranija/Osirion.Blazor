@@ -1,7 +1,8 @@
-﻿/*:root {
+﻿:root {
     --bs-primary: #e50000;
     --bs-primary-dark: #1a1a1a;
-}*/
+    --bs-body-bg: #e50000;
+}
 
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;

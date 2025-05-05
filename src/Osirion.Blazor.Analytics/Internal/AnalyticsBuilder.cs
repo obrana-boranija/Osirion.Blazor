@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Osirion.Blazor.Analytics.Options;
 using Osirion.Blazor.Analytics.Providers;
 
@@ -35,9 +36,9 @@ internal class AnalyticsBuilder : IAnalyticsBuilder
             opt.TrackUserAttributes = options.TrackUserAttributes;
         });
 
-        Services.AddSingleton<ClarityProvider>();
-        Services.AddSingleton<IAnalyticsProvider>(sp =>
-            sp.GetRequiredService<ClarityProvider>());
+        Services.TryAddSingleton<ClarityProvider>();
+
+        Services.TryAddSingleton<IAnalyticsProvider, ClarityProvider>();
 
         return this;
     }
@@ -59,9 +60,69 @@ internal class AnalyticsBuilder : IAnalyticsBuilder
             opt.RequireConsent = options.RequireConsent;
         });
 
-        Services.AddSingleton<MatomoProvider>();
-        Services.AddSingleton<IAnalyticsProvider>(sp =>
-            sp.GetRequiredService<MatomoProvider>());
+        Services.TryAddSingleton<MatomoProvider>();
+        Services.TryAddSingleton<IAnalyticsProvider, MatomoProvider>();
+
+        return this;
+    }
+
+    /// <inheritdoc/>
+    public IAnalyticsBuilder AddGA4(Action<GA4Options>? configure = null)
+    {
+        var options = new GA4Options();
+        configure?.Invoke(options);
+
+        Services.Configure<GA4Options>(opt =>
+        {
+            opt.MeasurementId = options.MeasurementId;
+            opt.Enabled = options.Enabled;
+            opt.AutoTrackPageViews = options.AutoTrackPageViews;
+            opt.AnonymizeIp = options.AnonymizeIp;
+            opt.LinkAttribution = options.LinkAttribution;
+            opt.DebugMode = options.DebugMode;
+            opt.CookieFlags = options.CookieFlags;
+            opt.ConfigParameters = options.ConfigParameters;
+            opt.SendPageView = options.SendPageView;
+            opt.TransportType = options.TransportType;
+            opt.TrackOutboundLinks = options.TrackOutboundLinks;
+            opt.CookieDomain = options.CookieDomain;
+            opt.CookieExpires = options.CookieExpires;
+            opt.RestrictDataProcessing = options.RestrictDataProcessing;
+        });
+
+        Services.AddSingleton<GA4Provider>();
+        Services.AddSingleton<IAnalyticsProvider, GA4Provider>();
+
+        return this;
+    }
+
+    /// <inheritdoc/>
+    public IAnalyticsBuilder AddYandexMetrica(Action<YandexMetricaOptions>? configure = null)
+    {
+        var options = new YandexMetricaOptions();
+        configure?.Invoke(options);
+
+        Services.Configure<YandexMetricaOptions>(opt =>
+        {
+            opt.CounterId = options.CounterId;
+            opt.Enabled = options.Enabled;
+            opt.AutoTrackPageViews = options.AutoTrackPageViews;
+            opt.TrackLinks = options.TrackLinks;
+            opt.AccurateTrackBounce = options.AccurateTrackBounce;
+            opt.WebVisor = options.WebVisor;
+            opt.ClickMap = options.ClickMap;
+            opt.TrackHash = options.TrackHash;
+            opt.HashTracking = options.HashTracking;
+            opt.DeferLoad = options.DeferLoad;
+            opt.AlternativeCdn = options.AlternativeCdn;
+            opt.Params = options.Params;
+            opt.UserParams = options.UserParams;
+            opt.EcommerceEnabled = options.EcommerceEnabled;
+            opt.EcommerceContainerName = options.EcommerceContainerName;
+        });
+
+        Services.AddSingleton<YandexMetricaProvider>();
+        Services.AddSingleton<IAnalyticsProvider, YandexMetricaProvider>();
 
         return this;
     }
@@ -80,11 +141,10 @@ internal class AnalyticsBuilder : IAnalyticsBuilder
         }
         else
         {
-            Services.AddSingleton<TProvider>();
+            Services.TryAddSingleton<TProvider>();
         }
 
-        Services.AddSingleton<IAnalyticsProvider>(sp =>
-            sp.GetRequiredService<TProvider>());
+        Services.TryAddSingleton<IAnalyticsProvider, TProvider>();
 
         return this;
     }

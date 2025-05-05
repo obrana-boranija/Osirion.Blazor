@@ -4,59 +4,33 @@
 @inherits Osirion.Blazor.Components.OsirionComponentBase
 @inject IOptions<ScrollToTopOptions>? Options
 
-<button type="button"
-        class="@GetButtonClass()"
-        aria-label="@EffectiveOptions.Title"
-        id="osirion-scroll-to-top"
-        style="display: none;">
-    @if (!string.IsNullOrEmpty(EffectiveOptions.CustomIcon))
-    {
-        @((MarkupString)EffectiveOptions.CustomIcon)
-    }
-    else
-    {
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 19V5M5 12l7-7 7 7" />
-        </svg>
-    }
-
-    @if (!string.IsNullOrEmpty(EffectiveOptions.Text))
-    {
-        <span class="scroll-text">@EffectiveOptions.Text</span>
-    }
-</button>
-
-<script id="osirion-scroll-to-top-script">
-    (function() {
-        function initScrollToTop() {
-            const scrollButton = document.getElementById('osirion-scroll-to-top');
-            if (!scrollButton) return;
-
-            function updateButtonVisibility() {
-                scrollButton.style.display = window.scrollY > @EffectiveOptions.VisibilityThreshold ? 'flex' : 'none';
-            }
-
-            updateButtonVisibility();
-
-            window.addEventListener('scroll', updateButtonVisibility);
-
-            if (!scrollButton.hasAttribute('data-initialized')) {
-                scrollButton.setAttribute('data-initialized', 'true');
-                scrollButton.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    window.scrollTo({
-                        top: 0,
-                        left: 0,
-                        behavior: '@(EffectiveOptions.Behavior.ToString().ToLowerInvariant())'
-                    });
-                });
-            }
+@if (EffectiveOptions.Enabled == true)
+{
+    <button type="button"
+            class="@GetButtonClass()"
+            aria-label="@EffectiveOptions.Title"
+            id="osirion-scroll-to-top"
+            style="display: none;">
+        @if (!string.IsNullOrEmpty(EffectiveOptions.CustomIcon))
+        {
+            @((MarkupString)EffectiveOptions.CustomIcon)
+        }
+        else
+        {
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 19V5M5 12l7-7 7 7" />
+            </svg>
         }
 
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initScrollToTop);
-        } else {
-            initScrollToTop();
+        @if (!string.IsNullOrEmpty(EffectiveOptions.Text))
+        {
+            <span class="scroll-text">@EffectiveOptions.Text</span>
         }
-    })();
-</script>
+    </button>
+
+    @((MarkupString)script)
+
+    @functions {
+        private MarkupString script => (MarkupString)GetScript();
+    }
+}

@@ -8,7 +8,7 @@ public class FileSystemOptions
     /// <summary>
     /// The section name in the configuration file
     /// </summary>
-    public const string Section = "Osirion:Cms:FileSystem";
+    public const string Section = "Osirion:Cms:FileSystem:Web";
 
     /// <summary>
     /// Gets or sets the base path for content files

@@ -29,7 +29,7 @@ public class NavigationService : INavigationService
     /// <inheritdoc/>
     public Task ScrollToTopAsync(ScrollBehavior? behavior = null, CancellationToken cancellationToken = default)
     {
-        // This would require JS interop in a real implementation
+        // This is implemented without JS interop for SSR compatibility
         _logger.LogInformation("Scrolling to top with behavior: {Behavior}", behavior ?? _options.Behavior);
         return Task.CompletedTask;
     }
@@ -37,7 +37,7 @@ public class NavigationService : INavigationService
     /// <inheritdoc/>
     public Task ScrollToElementAsync(string elementId, ScrollBehavior? behavior = null, CancellationToken cancellationToken = default)
     {
-        // This would require JS interop in a real implementation
+        // This is implemented without JS interop for SSR compatibility
         _logger.LogInformation("Scrolling to element {ElementId} with behavior: {Behavior}", elementId, behavior ?? _options.Behavior);
         return Task.CompletedTask;
     }

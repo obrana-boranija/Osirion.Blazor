@@ -9,6 +9,7 @@ using Osirion.Blazor.Cms.Front.DependencyInjection;
 using Osirion.Blazor.Navigation;
 using Osirion.Blazor.Theming;
 using Osirion.Blazor.Theming.Extensions;
+using Osirion.Blazor.Navigation.Extensions;
 
 namespace Osirion.Blazor.Internal;
 
@@ -33,23 +34,11 @@ internal class OsirionBuilder : IOsirionBuilder
         return this;
     }
 
-    public IOsirionBuilder UseAnalytics(Action<IAnalyticsBuilder> configure)
-    {
-        Services.AddOsirionAnalytics(configure);
-        return this;
-    }
-
-    public IOsirionBuilder UseNavigation(Action<INavigationBuilder> configure)
-    {
-        Services.AddEnhancedNavigation(configure);
-        return this;
-    }
-
-    public IOsirionBuilder UseTheming(Action<IThemingBuilder> configure)
-    {
-        Services.AddOsirionTheming(configure);
-        return this;
-    }
+    //public IOsirionBuilder UseTheming(Action<IThemingBuilder> configure)
+    //{
+    //    Services.AddOsirionTheming(configure);
+    //    return this;
+    //}
 
     public IOsirionBuilder UseContent(IConfiguration configuration)
     {
@@ -63,21 +52,51 @@ internal class OsirionBuilder : IOsirionBuilder
         return this;
     }
 
+    /// <inheritdoc/>
+    public IOsirionBuilder UseAnalytics(Action<IAnalyticsBuilder> configure)
+    {
+        Services.AddOsirionAnalytics(configure);
+        return this;
+    }
+
+    /// <inheritdoc/>
     public IOsirionBuilder UseAnalytics(IConfiguration configuration)
     {
         Services.AddOsirionAnalytics(configuration);
         return this;
     }
 
-    public IOsirionBuilder UseNavigation(IConfiguration configuration)
+    /// <inheritdoc/>
+    public IOsirionBuilder UseNavigation(Action<INavigationBuilder> configure)
     {
-        Services.AddEnhancedNavigation(configuration);
+        Services.AddOsirionNavigation(configure);
         return this;
     }
 
+    /// <inheritdoc/>
+    public IOsirionBuilder UseNavigation(IConfiguration configuration)
+    {
+        Services.AddOsirionNavigation(configuration);
+        return this;
+    }
+
+    /// <inheritdoc/>
+    public IOsirionBuilder UseTheming(Action<IThemingBuilder> configure)
+    {
+        Services.AddOsirionTheming(configure);
+        return this;
+    }
+
+    /// <inheritdoc/>
     public IOsirionBuilder UseTheming(IConfiguration configuration)
     {
         Services.AddOsirionTheming(configuration);
         return this;
     }
+
+    //public IOsirionBuilder UseTheming(IConfiguration configuration)
+    //{
+    //    Services.AddOsirionTheming(configuration);
+    //    return this;
+    //}
 }

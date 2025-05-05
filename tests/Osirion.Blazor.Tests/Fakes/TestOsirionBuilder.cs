@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Osirion.Blazor.Analytics;
 using Osirion.Blazor.Analytics.Extensions;
+using Osirion.Blazor.Cms.Admin.Interfaces;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Front.DependencyInjection;
 using Osirion.Blazor.Navigation;

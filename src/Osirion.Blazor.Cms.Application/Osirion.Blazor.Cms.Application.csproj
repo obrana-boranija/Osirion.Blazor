@@ -6,6 +6,13 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 	</PropertyGroup>
 
+	<ItemGroup>
+	  <Compile Remove="DependencyInjection\**" />
+	  <Content Remove="DependencyInjection\**" />
+	  <EmbeddedResource Remove="DependencyInjection\**" />
+	  <None Remove="DependencyInjection\**" />
+	</ItemGroup>
+
 
 	<ItemGroup>
 		<SupportedPlatform Include="browser" />
@@ -27,7 +34,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="DependencyInjection\" />
 		<Folder Include="wwwroot\" />
 	</ItemGroup>
 

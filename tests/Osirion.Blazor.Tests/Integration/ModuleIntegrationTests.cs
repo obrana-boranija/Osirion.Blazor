@@ -56,7 +56,7 @@ public class ModuleIntegrationTests
                 })
                 .UseNavigation(navigation =>
                 {
-                    navigation.UseEnhancedNavigation(options =>
+                    navigation.AddEnhancedNavigation(options =>
                     {
                         options.Behavior = ScrollBehavior.Smooth;
                     });

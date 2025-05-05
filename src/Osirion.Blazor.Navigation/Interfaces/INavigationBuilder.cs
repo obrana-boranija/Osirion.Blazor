@@ -15,18 +15,18 @@ public interface INavigationBuilder
     IServiceCollection Services { get; }
 
     /// <summary>
-    /// Configures enhanced navigation
+    /// Adds enhanced navigation
     /// </summary>
     /// <param name="configure">Action to configure enhanced navigation options</param>
     /// <returns>The builder for chaining</returns>
-    INavigationBuilder UseEnhancedNavigation(Action<EnhancedNavigationOptions>? configure = null);
+    INavigationBuilder AddEnhancedNavigation(Action<EnhancedNavigationOptions>? configure = null);
 
     /// <summary>
-    /// Configures enhanced navigation using a configuration section
+    /// Adds enhanced navigation using a configuration section
     /// </summary>
-    /// <param name="configuration"></param>
-    /// <returns></returns>
-    INavigationBuilder UseEnhancedNavigation(IConfiguration configuration);
+    /// <param name="configuration">The configuration</param>
+    /// <returns>The builder for chaining</returns>
+    INavigationBuilder AddEnhancedNavigation(IConfiguration configuration);
 
     /// <summary>
     /// Adds scroll to top functionality
@@ -38,7 +38,7 @@ public interface INavigationBuilder
     /// <summary>
     /// Adds scroll to top functionality using a configuration section
     /// </summary>
-    /// <param name="configuration"></param>
-    /// <returns></returns>
+    /// <param name="configuration">The configuration</param>
+    /// <returns>The builder for chaining</returns>
     INavigationBuilder AddScrollToTop(IConfiguration configuration);
 }

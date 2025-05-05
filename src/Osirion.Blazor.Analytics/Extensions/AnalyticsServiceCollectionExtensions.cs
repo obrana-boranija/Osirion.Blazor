@@ -34,6 +34,12 @@ public static class AnalyticsServiceCollectionExtensions
         return services;
     }
 
+    /// <summary>
+    /// Adds analytics services to the service collection using configuration
+    /// </summary>
+    /// <param name="services">The service collection</param>
+    /// <param name="configuration">The configuration</param>
+    /// <returns>The service collection for chaining</returns>
     public static IServiceCollection AddOsirionAnalytics(
         this IServiceCollection services,
         IConfiguration configuration)
@@ -41,13 +47,37 @@ public static class AnalyticsServiceCollectionExtensions
         if (services == null) throw new ArgumentNullException(nameof(services));
         if (configuration == null) throw new ArgumentNullException(nameof(configuration));
 
-        // Example: Retrieve configuration section and register services
-        var analyticsConfigSection = configuration.GetSection(AnalyticsOptions.Section);
-        services.Configure<AnalyticsOptions>(analyticsConfigSection);
+        return services.AddOsirionAnalytics(builder =>
+        {
+            // Check for Clarity configuration
+            var claritySection = configuration.GetSection(ClarityOptions.Section);
+            if (claritySection.Exists())
+            {
+                builder.AddClarity(options => claritySection.Bind(options));
+            }
 
-        // Register analytics service
-        services.AddSingleton<IAnalyticsService, AnalyticsService>();
+            // Check for Matomo configuration
+            var matomoSection = configuration.GetSection(MatomoOptions.Section);
+            if (matomoSection.Exists())
+            {
+                builder.AddMatomo(options => matomoSection.Bind(options));
+            }
 
-        return services;
+            // Check for Google Analytics 4 configuration
+            var ga4Section = configuration.GetSection(GA4Options.Section);
+            if (ga4Section.Exists())
+            {
+                builder.AddGA4(options => ga4Section.Bind(options));
+            }
+
+            // Check for Yandex Metrica configuration
+            var yandexSection = configuration.GetSection(YandexMetricaOptions.Section);
+            if (yandexSection.Exists())
+            {
+                builder.AddYandexMetrica(options => yandexSection.Bind(options));
+            }
+
+            // Custom providers could be added here based on configuration
+        });
     }
 }

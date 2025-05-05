@@ -8,7 +8,7 @@ public class ScrollToTopOptions
     /// <summary>
     /// Configuration section name
     /// </summary>
-    public const string Section = "ScrollToTop";
+    public const string Section = "Osirion:Navigation:ScrollToTop";
 
     /// <summary>
     /// Gets or sets the position of the button
@@ -44,4 +44,9 @@ public class ScrollToTopOptions
     /// Gets or sets custom icon markup
     /// </summary>
     public string? CustomIcon { get; set; }
+
+    /// <summary>
+    /// Gets or sets custom icon markup
+    /// </summary>
+    public bool Enabled { get; set; } = true;
 }
