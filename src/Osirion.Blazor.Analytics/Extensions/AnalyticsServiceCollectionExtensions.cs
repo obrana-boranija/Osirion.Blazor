@@ -47,15 +47,8 @@ public static class AnalyticsServiceCollectionExtensions
         if (services == null) throw new ArgumentNullException(nameof(services));
         if (configuration == null) throw new ArgumentNullException(nameof(configuration));
 
-        var analyticsSection = configuration.GetSection(AnalyticsOptions.Section);
-        var claritySection = configuration.GetSection(ClarityOptions.Section);
-        var matomoSection = configuration.GetSection(MatomoOptions.Section);
-
         return services.AddOsirionAnalytics(builder =>
         {
-            //// Get the analytics section from configuration
-            //var analyticsSection = configuration.GetSection(AnalyticsOptions.Section);
-
             // Check for Clarity configuration
             var claritySection = configuration.GetSection(ClarityOptions.Section);
             if (claritySection.Exists())
@@ -68,6 +61,20 @@ public static class AnalyticsServiceCollectionExtensions
             if (matomoSection.Exists())
             {
                 builder.AddMatomo(options => matomoSection.Bind(options));
+            }
+
+            // Check for Google Analytics 4 configuration
+            var ga4Section = configuration.GetSection(GA4Options.Section);
+            if (ga4Section.Exists())
+            {
+                builder.AddGA4(options => ga4Section.Bind(options));
+            }
+
+            // Check for Yandex Metrica configuration
+            var yandexSection = configuration.GetSection(YandexMetricaOptions.Section);
+            if (yandexSection.Exists())
+            {
+                builder.AddYandexMetrica(options => yandexSection.Bind(options));
             }
 
             // Custom providers could be added here based on configuration

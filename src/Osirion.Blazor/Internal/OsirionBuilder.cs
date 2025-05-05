@@ -34,11 +34,11 @@ internal class OsirionBuilder : IOsirionBuilder
         return this;
     }
 
-    public IOsirionBuilder UseTheming(Action<IThemingBuilder> configure)
-    {
-        Services.AddOsirionTheming(configure);
-        return this;
-    }
+    //public IOsirionBuilder UseTheming(Action<IThemingBuilder> configure)
+    //{
+    //    Services.AddOsirionTheming(configure);
+    //    return this;
+    //}
 
     public IOsirionBuilder UseContent(IConfiguration configuration)
     {
@@ -80,9 +80,23 @@ internal class OsirionBuilder : IOsirionBuilder
         return this;
     }
 
+    /// <inheritdoc/>
+    public IOsirionBuilder UseTheming(Action<IThemingBuilder> configure)
+    {
+        Services.AddOsirionTheming(configure);
+        return this;
+    }
+
+    /// <inheritdoc/>
     public IOsirionBuilder UseTheming(IConfiguration configuration)
     {
         Services.AddOsirionTheming(configuration);
         return this;
     }
+
+    //public IOsirionBuilder UseTheming(IConfiguration configuration)
+    //{
+    //    Services.AddOsirionTheming(configuration);
+    //    return this;
+    //}
 }

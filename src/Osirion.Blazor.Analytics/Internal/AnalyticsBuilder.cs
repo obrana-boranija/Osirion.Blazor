@@ -67,6 +67,67 @@ internal class AnalyticsBuilder : IAnalyticsBuilder
     }
 
     /// <inheritdoc/>
+    public IAnalyticsBuilder AddGA4(Action<GA4Options>? configure = null)
+    {
+        var options = new GA4Options();
+        configure?.Invoke(options);
+
+        Services.Configure<GA4Options>(opt =>
+        {
+            opt.MeasurementId = options.MeasurementId;
+            opt.Enabled = options.Enabled;
+            opt.AutoTrackPageViews = options.AutoTrackPageViews;
+            opt.AnonymizeIp = options.AnonymizeIp;
+            opt.LinkAttribution = options.LinkAttribution;
+            opt.DebugMode = options.DebugMode;
+            opt.CookieFlags = options.CookieFlags;
+            opt.ConfigParameters = options.ConfigParameters;
+            opt.SendPageView = options.SendPageView;
+            opt.TransportType = options.TransportType;
+            opt.TrackOutboundLinks = options.TrackOutboundLinks;
+            opt.CookieDomain = options.CookieDomain;
+            opt.CookieExpires = options.CookieExpires;
+            opt.RestrictDataProcessing = options.RestrictDataProcessing;
+        });
+
+        Services.AddSingleton<GA4Provider>();
+        Services.AddSingleton<IAnalyticsProvider, GA4Provider>();
+
+        return this;
+    }
+
+    /// <inheritdoc/>
+    public IAnalyticsBuilder AddYandexMetrica(Action<YandexMetricaOptions>? configure = null)
+    {
+        var options = new YandexMetricaOptions();
+        configure?.Invoke(options);
+
+        Services.Configure<YandexMetricaOptions>(opt =>
+        {
+            opt.CounterId = options.CounterId;
+            opt.Enabled = options.Enabled;
+            opt.AutoTrackPageViews = options.AutoTrackPageViews;
+            opt.TrackLinks = options.TrackLinks;
+            opt.AccurateTrackBounce = options.AccurateTrackBounce;
+            opt.WebVisor = options.WebVisor;
+            opt.ClickMap = options.ClickMap;
+            opt.TrackHash = options.TrackHash;
+            opt.HashTracking = options.HashTracking;
+            opt.DeferLoad = options.DeferLoad;
+            opt.AlternativeCdn = options.AlternativeCdn;
+            opt.Params = options.Params;
+            opt.UserParams = options.UserParams;
+            opt.EcommerceEnabled = options.EcommerceEnabled;
+            opt.EcommerceContainerName = options.EcommerceContainerName;
+        });
+
+        Services.AddSingleton<YandexMetricaProvider>();
+        Services.AddSingleton<IAnalyticsProvider, YandexMetricaProvider>();
+
+        return this;
+    }
+
+    /// <inheritdoc/>
     public IAnalyticsBuilder AddProvider<TProvider>(Action<TProvider>? configure = null)
         where TProvider : class, IAnalyticsProvider
     {

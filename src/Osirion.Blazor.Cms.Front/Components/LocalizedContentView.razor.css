@@ -64,6 +64,20 @@
     margin-bottom: var(--osirion-spacing-6, 1.5rem);
 }
 
+.osirion-content-article {
+    max-width: var(--osirion-width-content, 65ch);
+    margin: 0 auto;
+}
+
+    .osirion-content-article h1 {
+        font-size: var(--osirion-font-size-3xl, 2.25rem);
+        line-height: 1.2;
+        margin-bottom: var(--osirion-spacing-6, 1.5rem);
+        color: var(--osirion-text-primary, #111827);
+        font-weight: var(--osirion-font-weight-bold, 700);
+        letter-spacing: -0.025em;
+    }
+
 .osirion-content-body {
     line-height: var(--osirion-line-height-relaxed, 1.7);
     color: var(--osirion-text-primary, #374151);

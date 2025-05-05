@@ -4,6 +4,7 @@ using Osirion.Blazor.Analytics.Options;
 using Osirion.Blazor.Internal;
 using Osirion.Blazor.Navigation.Options;
 using Osirion.Blazor.Theming;
+using Osirion.Blazor.Theming.Options;
 
 namespace Osirion.Blazor.Extensions;
 
@@ -77,8 +78,7 @@ public static class OsirionServiceCollectionExtensions
             }
 
             // Theming configuration
-            var themingSection = configuration.GetSection("Osirion:Theming");
-            if (themingSection.Exists())
+            if (configuration.GetSection(ThemingOptions.Section).Exists())
             {
                 builder.UseTheming(configuration);
             }

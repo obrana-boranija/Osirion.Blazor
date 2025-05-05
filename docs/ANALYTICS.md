@@ -8,7 +8,7 @@ Analytics integration for Blazor applications, supporting multiple providers wit
 
 ## Features
 
-- **Multiple Providers**: Microsoft Clarity and Matomo support out of the box
+- **Multiple Providers**: Microsoft Clarity, Matomo, Google Analytics 4 and Yandex Metrica support out of the box
 - **Provider Pattern**: Easily extend with your own analytics providers
 - **SSR Compatible**: Works with Server-Side Rendering and Static SSG
 - **Configuration-Driven**: Simple setup through dependency injection
@@ -36,6 +36,15 @@ builder.Services.AddOsirionAnalytics(analytics => {
         .AddMatomo(options => {
             options.SiteId = "1";
             options.TrackerUrl = "//analytics.example.com/";
+        })
+        .AddGA4(options => {
+            options.MeasurementId = "G-XXXXXXXXXX";
+            options.DebugMode = builder.Environment.IsDevelopment();
+        })
+        .AddYandexMetrica(options => {
+            options.CounterId = "12345678";
+            options.WebVisor = true;
+            options.TrackLinks = true;
         });
 });
 ```
@@ -46,6 +55,8 @@ builder.Services.AddOsirionAnalytics(analytics => {
 <!-- In your layout -->
 <ClarityTracker />
 <MatomoTracker />
+<GA4Tracker />
+<YandexMetricaTracker />
 ```
 
 ### With Configuration
@@ -64,6 +75,23 @@ builder.Services.AddOsirionAnalytics(analytics => {
         "TrackerUrl": "//analytics.example.com/",
         "TrackLinks": true,
         "RequireConsent": false
+      },
+      "GA4": {
+        "MeasurementId": "G-XXXXXXXXXX",
+        "Enabled": true,
+        "AnonymizeIp": true,
+        "TrackOutboundLinks": true,
+        "DebugMode": false
+      },
+      "YandexMetrica": {
+        "CounterId": "12345678",
+        "Enabled": true,
+        "WebVisor": true,
+        "ClickMap": true,
+        "TrackLinks": true,
+        "AccurateTrackBounce": true,
+        "EcommerceEnabled": true,
+        "EcommerceContainerName": "dataLayer"
       }
     }
   }
@@ -142,6 +170,22 @@ builder.Services.AddOsirionAnalytics(analytics => {
 - `TrackDownloads`: Whether to track downloads (default: true)
 - `RequireConsent`: Whether to require cookie consent (default: false)
 - `AutoTrackPageViews`: Whether to automatically track page views (default: true)
+
+### Yandex Metrica Options
+
+- `CounterId`: Your Yandex Metrica counter ID
+- `Enabled`: Whether the tracker is enabled (default: true)
+- `WebVisor`: Enable session replay recordings (default: false)
+- `ClickMap`: Create a map of clicks on your site (default: true)
+- `TrackLinks`: Track clicks on outbound links (default: true)
+- `AccurateTrackBounce`: Accurately track bounce rate (default: true)
+- `TrackHash`: Collect data for all pages, not just ones with counter code (default: null)
+- `DeferLoad`: Disable automatic sending of page view data (default: false)
+- `AlternativeCdn`: Use alternative CDN domain (optional)
+- `Params`: Custom parameters to track (optional)
+- `UserParams`: User parameters for tracking (optional)
+- `EcommerceEnabled`: Enable e-commerce data layer (default: false)
+- `EcommerceContainerName`: E-commerce data layer container name (default: "dataLayer")
 
 ## Integration with Privacy Modules
 

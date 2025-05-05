@@ -28,6 +28,20 @@ public interface IAnalyticsBuilder
     IAnalyticsBuilder AddMatomo(Action<MatomoOptions>? configure = null);
 
     /// <summary>
+    /// Adds Google Analytics 4
+    /// </summary>
+    /// <param name="configure">Action to configure GA4 options</param>
+    /// <returns>The builder for chaining</returns>
+    IAnalyticsBuilder AddGA4(Action<GA4Options>? configure = null);
+
+    /// <summary>
+    /// Adds Yandex Metrica analytics
+    /// </summary>
+    /// <param name="configure">Action to configure Yandex Metrica options</param>
+    /// <returns>The builder for chaining</returns>
+    IAnalyticsBuilder AddYandexMetrica(Action<YandexMetricaOptions>? configure = null);
+
+    /// <summary>
     /// Adds a custom analytics provider
     /// </summary>
     /// <typeparam name="TProvider">The provider type</typeparam>
