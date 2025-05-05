@@ -1,6 +1,7 @@
 ﻿# Osirion.Blazor
 
 [![NuGet](https://img.shields.io/nuget/v/Osirion.Blazor)](https://www.nuget.org/packages/Osirion.Blazor)
+[![NuGet Downloads](https://img.shields.io/nuget/dt/Osirion.Blazor)](https://www.nuget.org/packages/Osirion.Blazor)
 [![License](https://img.shields.io/github/license/obrana-boranija/Osirion.Blazor)](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/LICENSE.txt)
 
 Modern, high-performance Blazor components and utilities with SSR compatibility, modular design, and framework integration.
