@@ -1,17 +1,19 @@
-﻿@inherits Osirion.Blazor.Components.OsirionComponentBase
+﻿@namespace Osirion.Blazor.Cms.Admin.Components.Editor
+@inherits Osirion.Blazor.Components.OsirionComponentBase
 
 <div class="@GetMetadataEditorClass()">
     <div class="osirion-admin-metadata-header">
         <h3 class="osirion-admin-metadata-title">Metadata</h3>
     </div>
 
-    <div class="osirion-admin-metadata-content">
- @*        <div class="osirion-admin-form-group">
+     <div class="osirion-admin-metadata-content">
+        @*<div class="osirion-admin-form-group">
             <label class="osirion-admin-label" for="title">Title</label>
             <input type="text"
                    class="osirion-admin-input"
                    id="title"
                    @bind="Metadata.Title"
+                   @bind:after="NotifyMetadataChanged"
                    placeholder="Enter title" />
         </div>
 
@@ -20,6 +22,7 @@
             <textarea class="osirion-admin-textarea"
                       id="description"
                       @bind="Metadata.Description"
+                      @bind:after="NotifyMetadataChanged"
                       placeholder="Enter description"
                       rows="3"></textarea>
         </div>
@@ -30,6 +33,7 @@
                    class="osirion-admin-input"
                    id="author"
                    @bind="Metadata.Author"
+                   @bind:after="NotifyMetadataChanged"
                    placeholder="Enter author" />
         </div>
 
@@ -47,6 +51,7 @@
                    class="osirion-admin-input"
                    id="featuredImage"
                    @bind="Metadata.FeaturedImage"
+                   @bind:after="NotifyMetadataChanged"
                    placeholder="Enter image URL" />
         </div>
 
@@ -70,7 +75,9 @@
 
         <div class="osirion-admin-form-group">
             <label class="osirion-admin-checkbox">
-                <input type="checkbox" @bind="Metadata.IsFeatured" />
+                <input type="checkbox"
+                       @bind="Metadata.IsFeatured"
+                       @bind:after="NotifyMetadataChanged" />
                 <span>Featured Post</span>
             </label>
         </div> *@

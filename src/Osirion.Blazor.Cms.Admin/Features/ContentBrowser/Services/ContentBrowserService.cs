@@ -87,7 +87,7 @@ public class ContentBrowserService
         {
             _logger.LogInformation("Searching files with query: {Query}", query);
             var results = await _repositoryAdapter.SearchFilesAsync(query);
-            _logger.LogInformation("Found {Count} items matching query: {Query}", query);
+            _logger.LogInformation("Found {Count} items matching query: {Query}", results.Count, query);
 
             return results;
         }

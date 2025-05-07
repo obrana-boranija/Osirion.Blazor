@@ -1,14 +1,16 @@
-﻿using Markdig;
-using Microsoft.AspNetCore.Components;
-using Osirion.Blazor.Cms.Admin.Services;
-using Osirion.Blazor.Cms.Domain.Interfaces;
+﻿using Microsoft.AspNetCore.Components;
+using Osirion.Blazor.Cms.Admin.Common.Base;
+using Osirion.Blazor.Cms.Admin.Common.Extensions;
+using Osirion.Blazor.Cms.Admin.Features.ContentEditor.ViewModels;
 using Osirion.Blazor.Cms.Domain.Models;
-using Osirion.Blazor.Cms.Infrastructure.Extensions;
 
 namespace Osirion.Blazor.Cms.Admin.Components.Editor;
 
-public partial class ContentEditor(CmsAdminState adminState, IGitHubAdminService gitHubService)
+public partial class ContentEditor : EditableComponentBase
 {
+    [Inject]
+    private ContentEditorViewModel ViewModel { get; set; } = default!;
+
     [Parameter]
     public bool IsMetadataPanelVisible { get; set; } = true;
 
@@ -24,76 +26,28 @@ public partial class ContentEditor(CmsAdminState adminState, IGitHubAdminService
     [Parameter]
     public EventCallback OnDiscard { get; set; }
 
-    private bool IsSaving { get; set; }
-    private string? ErrorMessage { get; set; }
-
     private MarkdownEditorPreview? EditorPreviewRef;
-
-    private string FileName { get; set; } = string.Empty;
-    private string CommitMessage
-    {
-        get
-        {
-            if (!AskForCommitMessage)
-            {
-                return string.Empty;
-            }
-
-            return _commitMessage;
-        }
-        set => _commitMessage = value;
-    }
-    private string _commitMessage = "Update content";
-
-    private bool IsFileName => adminState.IsCreatingNewFile || string.IsNullOrEmpty(adminState.EditingPost?.FilePath);
-
-    // Use Markdig for better markdown rendering
-    private MarkdownPipeline _markdownPipeline = default!;
+    private string ActiveTab { get; set; } = "content";
 
     protected override void OnInitialized()
     {
-        adminState.StateChanged += StateHasChanged;
-
-        _markdownPipeline = new MarkdownPipelineBuilder()
-            .UseAdvancedExtensions()
-            .UseYamlFrontMatter()
-            .Build();
-
-        if (adminState.EditingPost != null && adminState.IsCreatingNewFile)
-        {
-            // Generate filename from post title
-            FileName = GenerateFileName(adminState.EditingPost.Metadata.Title);
-        }
+        base.OnInitialized();
+        ViewModel.StateChanged += StateHasChanged;
     }
 
     protected override void OnParametersSet()
     {
-        if (adminState.EditingPost != null && adminState.IsCreatingNewFile)
-        {
-            // Generate filename from post title if not set
-            if (string.IsNullOrEmpty(FileName))
-            {
-                FileName = GenerateFileName(adminState.EditingPost.Metadata.Title);
-            }
-
-            // Set default commit message
-            CommitMessage = "Create new file";
-        }
-        else if (adminState.EditingPost != null && !adminState.IsCreatingNewFile)
-        {
-            // Set default commit message for existing file
-            CommitMessage = $"Update {adminState.EditingPost.FilePath}";
-        }
+        base.OnParametersSet();
     }
 
     public void Dispose()
     {
-        adminState.StateChanged -= StateHasChanged;
+        ViewModel.StateChanged -= StateHasChanged;
     }
 
-    private void ToggleMetadataPanel()
+    private void SetActiveTab(string tab)
     {
-        IsMetadataPanelVisible = !IsMetadataPanelVisible;
+        ActiveTab = tab;
     }
 
     private void TogglePreview()
@@ -101,114 +55,43 @@ public partial class ContentEditor(CmsAdminState adminState, IGitHubAdminService
         IsPreviewVisible = !IsPreviewVisible;
     }
 
+    private void UpdateContent(string content)
+    {
+        if (ViewModel.EditingPost != null)
+        {
+            ViewModel.EditingPost.Content = content;
+            MarkAsDirty();
+        }
+    }
+
     private async Task SaveChanges()
     {
-        if (adminState.EditingPost == null)
+        await SaveWithConfirmationAsync(async () =>
         {
-            return;
-        }
+            await ViewModel.SavePostAsync();
 
-        IsSaving = true;
-        adminState.SetSaving(true);
-        ErrorMessage = null;
-
-        try
-        {
-            string filePath;
-            string? existingSha = null;
-
-            if (adminState.IsCreatingNewFile)
+            if (OnSaveComplete.HasDelegate && ViewModel.EditingPost != null)
             {
-                // Construct full path for new file
-                // Ensure the filename has .md extension
-                string filename = FileName.Trim();
-                if (!filename.EndsWith(".md", StringComparison.OrdinalIgnoreCase))
-                {
-                    filename += ".md";
-                }
-
-                filePath = string.IsNullOrEmpty(adminState.CurrentPath) ?
-                    filename :
-                    $"{adminState.CurrentPath}/{filename}";
+                await OnSaveComplete.InvokeAsync(ViewModel.EditingPost);
             }
-            else
-            {
-                // Use existing file path
-                filePath = adminState.EditingPost.FilePath;
-                existingSha = adminState.EditingPost.Sha;
-            }
-
-            // Get full content with frontmatter
-            var fullContent = adminState.EditingPost.ToMarkdown();
-
-            // Commit message
-            var message = string.IsNullOrEmpty(CommitMessage) ?
-                (adminState.IsCreatingNewFile ? $"Create {filePath}" : $"Update {filePath}") :
-                CommitMessage;
-
-            // Save the file
-            var response = await gitHubService.CreateOrUpdateFileAsync(
-                filePath,
-                fullContent,
-                message,
-                existingSha);
-
-            // Update the blog post with new information
-            adminState.EditingPost.FilePath = response.Content.Path;
-            adminState.EditingPost.Sha = response.Content.Sha;
-
-            // Reset state
-            if (OnSaveComplete.HasDelegate)
-            {
-                await OnSaveComplete.InvokeAsync(adminState.EditingPost);
-            }
-
-            // Show success message
-            adminState.SetStatusMessage($"File saved successfully: {filePath}");
-
-            // Reset file name for new files
-            if (adminState.IsCreatingNewFile)
-            {
-                FileName = string.Empty;
-            }
-        }
-        catch (Exception ex)
-        {
-            ErrorMessage = $"Failed to save file: {ex.Message}";
-            adminState.SetErrorMessage(ErrorMessage);
-        }
-        finally
-        {
-            IsSaving = false;
-            adminState.SetSaving(false);
-        }
+        });
     }
 
     private async Task DiscardChanges()
     {
-        if (OnDiscard.HasDelegate)
+        if (await ConfirmDiscardChangesAsync())
         {
-            await OnDiscard.InvokeAsync();
+            ViewModel.DiscardChanges();
+
+            if (OnDiscard.HasDelegate)
+            {
+                await OnDiscard.InvokeAsync();
+            }
         }
-
-        adminState.ClearEditing();
-        FileName = string.Empty;
-        CommitMessage = string.Empty;
-    }
-
-    private string GenerateFileName(string title)
-    {
-        if (string.IsNullOrEmpty(title))
-        {
-            return "new-".ToUrlSlug(10);
-        }
-
-        // Generate a slug from the title
-        return title.ToUrlSlug();
     }
 
     private string GetContentEditorClass()
     {
-        return $"osirion-admin-content-editor {CssClass}".Trim();
+        return this.GetCssClassNames(CssClass);
     }
 }
