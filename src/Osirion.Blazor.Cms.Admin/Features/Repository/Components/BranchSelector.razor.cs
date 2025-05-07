@@ -1,15 +1,10 @@
-﻿using Microsoft.AspNetCore.Components;
-using Osirion.Blazor.Cms.Admin.Common.Extensions;
-using Osirion.Blazor.Cms.Admin.Features.Repository.ViewModels;
+using Microsoft.AspNetCore.Components;
 using Osirion.Blazor.Cms.Domain.Models.GitHub;
 
 namespace Osirion.Blazor.Cms.Admin.Features.Repository.Components;
 
-public partial class BranchSelector : ComponentBase
+public partial class BranchSelector
 {
-    [Inject]
-    private BranchSelectorViewModel ViewModel { get; set; } = default!;
-
     [Parameter]
     public string Title { get; set; } = "Select Branch";
 
@@ -39,7 +34,7 @@ public partial class BranchSelector : ComponentBase
 
     private async Task RefreshBranches()
     {
-        await ExecuteWithLoadingAsync(async () =>
+        await ExecuteAsync(async () =>
         {
             await ViewModel.RefreshBranchesAsync();
         });
@@ -49,7 +44,7 @@ public partial class BranchSelector : ComponentBase
     {
         var branchName = e.Value?.ToString() ?? string.Empty;
 
-        await ExecuteWithLoadingAsync(async () =>
+        await ExecuteAsync(async () =>
         {
             await ViewModel.SelectBranchAsync(branchName);
 
@@ -60,14 +55,9 @@ public partial class BranchSelector : ComponentBase
         });
     }
 
-    private void SetCreatingNewBranch(bool isCreating)
-    {
-        ViewModel.SetCreatingNewBranch(isCreating);
-    }
-
     private async Task CreateBranch()
     {
-        await ExecuteWithLoadingAsync(async () =>
+        await ExecuteAsync(async () =>
         {
             await ViewModel.CreateBranchAsync();
 
@@ -76,10 +66,5 @@ public partial class BranchSelector : ComponentBase
                 await OnBranchChange.InvokeAsync(ViewModel.SelectedBranch);
             }
         });
-    }
-
-    private string GetBranchSelectorClass()
-    {
-        return this.GetCssClassNames(CssClass);
     }
 }

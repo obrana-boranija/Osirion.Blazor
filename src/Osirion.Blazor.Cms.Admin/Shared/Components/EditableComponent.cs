@@ -104,36 +104,4 @@ public abstract class EditableComponent : BaseComponent
             return true;
         }
     }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await RegisterBeforeUnloadHandlerAsync();
-        }
-
-        await base.OnAfterRenderAsync(firstRender);
-    }
-
-    private async Task RegisterBeforeUnloadHandlerAsync()
-    {
-        try
-        {
-            await JS.InvokeVoidAsync("eval", @"
-                window.registerBeforeUnload = function() {
-                    window.addEventListener('beforeunload', function(e) {
-                        e.preventDefault();
-                        e.returnValue = '';
-                        return '';
-                    });
-                };
-            ");
-
-            await JS.InvokeVoidAsync("registerBeforeUnload");
-        }
-        catch
-        {
-            // Ignore errors, this is a progressive enhancement
-        }
-    }
 }

@@ -1,0 +1,158 @@
+.branch-selector {
+    display: flex;
+    flex-direction: column;
+    border: var(--border-width, 1px) solid var(--border-color, #e1e4e8);
+    border-radius: var(--border-radius, 6px);
+    overflow: hidden;
+    margin-bottom: var(--spacing-4, 1rem);
+}
+
+.branch-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-3, 0.75rem);
+    background-color: var(--background-secondary, #f6f8fa);
+    border-bottom: var(--border-width, 1px) solid var(--border-color, #e1e4e8);
+}
+
+.branch-title {
+    margin: 0;
+    font-size: var(--font-size-sm, 0.875rem);
+    font-weight: var(--font-weight-medium, 500);
+}
+
+.branch-actions {
+    display: flex;
+    gap: var(--spacing-1, 0.25rem);
+}
+
+.branch-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: var(--spacing-1, 0.25rem);
+    border: 1px solid var(--border-color, #e1e4e8);
+    border-radius: var(--border-radius-sm, 3px);
+    background-color: var(--background-primary, #ffffff);
+    color: var(--text-primary, #24292e);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+    .branch-button:hover:not(:disabled) {
+        background-color: var(--background-hover, #f6f8fa);
+    }
+
+    .branch-button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+.branch-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+}
+
+.branch-select-container {
+    padding: var(--spacing-2, 0.5rem) var(--spacing-3, 0.75rem);
+}
+
+.branch-select {
+    width: 100%;
+    padding: var(--spacing-2, 0.5rem);
+    border: var(--border-width, 1px) solid var(--border-color, #e1e4e8);
+    border-radius: var(--border-radius, 6px);
+    background-color: var(--background-primary, #ffffff);
+    color: var(--text-primary, #24292e);
+    font-family: var(--font-family-base, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif);
+    font-size: var(--font-size-base, 14px);
+}
+
+.branch-loading,
+.branch-error,
+.branch-empty {
+    padding: var(--spacing-3, 0.75rem);
+    text-align: center;
+}
+
+.branch-loading-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--border-color, #e1e4e8);
+    border-top-color: var(--primary-color, #0366d6);
+    border-radius: 50%;
+    animation: branch-spin 1s linear infinite;
+    margin-right: var(--spacing-2, 0.5rem);
+}
+
+@keyframes branch-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.branch-actions-container {
+    padding: var(--spacing-2, 0.5rem) var(--spacing-3, 0.75rem);
+    border-top: var(--border-width, 1px) solid var(--border-color, #e1e4e8);
+}
+
+.branch-button-new {
+    width: 100%;
+    padding: var(--spacing-2, 0.5rem);
+}
+
+.branch-create-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3, 0.75rem);
+}
+
+.branch-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1, 0.25rem);
+}
+
+.branch-label {
+    font-size: var(--font-size-sm, 0.875rem);
+    font-weight: var(--font-weight-medium, 500);
+}
+
+.branch-input {
+    padding: var(--spacing-2, 0.5rem);
+    border: var(--border-width, 1px) solid var(--border-color, #e1e4e8);
+    border-radius: var(--border-radius, 6px);
+    background-color: var(--background-primary, #ffffff);
+    color: var(--text-primary, #24292e);
+    font-family: var(--font-family-base, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif);
+    font-size: var(--font-size-base, 14px);
+}
+
+.branch-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-2, 0.5rem);
+    margin-top: var(--spacing-2, 0.5rem);
+}
+
+.branch-button-primary {
+    background-color: var(--primary-color, #0366d6);
+    border-color: var(--primary-color, #0366d6);
+    color: white;
+    padding: var(--spacing-2, 0.5rem) var(--spacing-3, 0.75rem);
+}
+
+    .branch-button-primary:hover:not(:disabled) {
+        background-color: var(--primary-color-dark, #0550ae);
+    }
+
+.branch-button-small {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+}

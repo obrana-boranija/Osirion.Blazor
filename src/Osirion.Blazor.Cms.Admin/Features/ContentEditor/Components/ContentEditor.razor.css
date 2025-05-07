@@ -125,6 +125,12 @@
     gap: 0.5rem;
 }
 
+.content-editor-input {
+    padding: 0.25rem 0.5rem;
+    border: 1px solid var(--border-color, #e1e4e8);
+    border-radius: 4px;
+}
+
 .content-editor-loading-spinner {
     display: inline-block;
     width: 1rem;

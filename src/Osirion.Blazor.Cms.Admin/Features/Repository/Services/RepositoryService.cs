@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using Osirion.Blazor.Cms.Admin.Services.Adapters;
+using Osirion.Blazor.Cms.Admin.Infrastructure.Adapters;
 using Osirion.Blazor.Cms.Domain.Models.GitHub;
 
 namespace Osirion.Blazor.Cms.Admin.Features.Repository.Services;

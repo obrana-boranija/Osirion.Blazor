@@ -1,4 +1,4 @@
-﻿using Osirion.Blazor.Cms.Admin.Services.Adapters;
+﻿using Osirion.Blazor.Cms.Admin.Infrastructure.Adapters;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 
 namespace Osirion.Blazor.Cms.Admin.Features.Authentication.Services;

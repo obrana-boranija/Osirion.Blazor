@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Admin.Configuration;
+using Osirion.Blazor.Cms.Admin.Infrastructure.Adapters;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 
 namespace Osirion.Blazor.Cms.Admin.Services.Adapters;
@@ -25,7 +26,7 @@ public class ContentRepositoryAdapterFactory : IContentRepositoryAdapterFactory
     {
         return providerType.ToLowerInvariant() switch
         {
-            "github" => new GitHubRepositoryAdapter(_gitHubService, _gitHubLogger),
+            "github" => (IContentRepositoryAdapter)new GitHubRepositoryAdapter(_gitHubService, _gitHubLogger),
             // Add other providers here as needed
             _ => throw new ArgumentException($"Unsupported provider type: {providerType}")
         };

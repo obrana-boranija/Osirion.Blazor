@@ -11,6 +11,7 @@ public abstract class BaseComponent : OsirionComponentBase
 {
     [Inject] protected IEventPublisher EventPublisher { get; set; } = null!;
     [Inject] protected IEventSubscriber EventSubscriber { get; set; } = null!;
+    [Inject] protected NavigationManager NavigationManager { get; set; } = null!;
 
     protected bool IsLoading { get; private set; }
     protected string? ErrorMessage { get; set; }
@@ -37,8 +38,23 @@ public abstract class BaseComponent : OsirionComponentBase
         }
     }
 
-    protected void ShowNotification(string message, StatusType type = StatusType.Info)
+    protected async Task ExecuteWithLoadingAsync(Func<Task> action)
     {
-        EventPublisher.Publish(new StatusNotificationEvent(message, type));
+        try
+        {
+            IsLoading = true;
+            StateHasChanged();
+            await action();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = ex.Message;
+            EventPublisher.Publish(new ErrorOccurredEvent(ErrorMessage, ex));
+        }
+        finally
+        {
+            IsLoading = false;
+            StateHasChanged();
+        }
     }
 }

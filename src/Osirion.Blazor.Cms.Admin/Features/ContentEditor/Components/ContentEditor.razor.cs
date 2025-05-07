@@ -20,7 +20,7 @@ public partial class ContentEditor : BaseComponent
     public EventCallback OnDiscard { get; set; }
 
     private string ActiveTab { get; set; } = "content";
-    private bool IsDirty { get; set; }
+    private bool IsDirty { get; set; } = false;
 
     protected override void OnInitialized()
     {
@@ -67,7 +67,6 @@ public partial class ContentEditor : BaseComponent
         }
     }
 
-    // Mark content as dirty when it changes
     private void OnContentChanged()
     {
         IsDirty = true;

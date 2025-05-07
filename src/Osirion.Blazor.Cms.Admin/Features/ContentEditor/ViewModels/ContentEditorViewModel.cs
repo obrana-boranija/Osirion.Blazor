@@ -78,7 +78,7 @@ public class ContentEditorViewModel : IDisposable
                 }
 
                 // Combine directory and filename
-                string directory = EditingPost.Directory;
+                string directory = Path.GetDirectoryName(EditingPost.FilePath) ?? string.Empty;
                 EditingPost.FilePath = string.IsNullOrEmpty(directory)
                     ? filename
                     : $"{directory}/{filename}";
@@ -107,6 +107,14 @@ public class ContentEditorViewModel : IDisposable
                     FileName = string.Empty;
                 }
             }
+
+            // Publish saved event
+            _eventPublisher.Publish(new ContentSavedEvent(EditingPost.FilePath));
+
+            // Show success message
+            _eventPublisher.Publish(new StatusNotificationEvent(
+                $"Saved {Path.GetFileName(EditingPost.FilePath)} successfully.",
+                StatusType.Success));
         }
         catch (Exception ex)
         {

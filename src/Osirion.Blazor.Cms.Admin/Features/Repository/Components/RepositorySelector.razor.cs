@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Osirion.Blazor.Cms.Domain.Models.GitHub;
 
 namespace Osirion.Blazor.Cms.Admin.Features.Repository.Components;
 
@@ -11,16 +12,17 @@ public partial class RepositorySelector
     public string SelectPrompt { get; set; } = "-- Select a repository --";
 
     [Parameter]
-    public EventCallback<string> OnRepositoryChanged { get; set; }
+    public EventCallback<GitHubRepository> OnRepositoryChange { get; set; }
 
     private string SelectedRepositoryName => ViewModel.SelectedRepository?.Name ?? string.Empty;
 
+    protected override void OnInitialized()
+    {
+        ViewModel.StateChanged += StateHasChanged;
+    }
+
     protected override async Task OnInitializedAsync()
     {
-        // Subscribe to view model state changes
-        ViewModel.StateChanged += StateHasChanged;
-
-        // Load repositories on initialization
         await RefreshRepositories();
     }
 
@@ -45,9 +47,9 @@ public partial class RepositorySelector
         {
             await ViewModel.SelectRepositoryAsync(repositoryName);
 
-            if (OnRepositoryChanged.HasDelegate)
+            if (OnRepositoryChange.HasDelegate && ViewModel.SelectedRepository != null)
             {
-                await OnRepositoryChanged.InvokeAsync(repositoryName);
+                await OnRepositoryChange.InvokeAsync(ViewModel.SelectedRepository);
             }
         });
     }

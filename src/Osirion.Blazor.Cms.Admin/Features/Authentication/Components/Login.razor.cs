@@ -1,14 +1,9 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Osirion.Blazor.Cms.Admin.Common.Extensions;
-using Osirion.Blazor.Cms.Admin.Features.Authentication.ViewModels;
 
 namespace Osirion.Blazor.Cms.Admin.Features.Authentication.Components;
 
-public partial class Login(NavigationManager navigationManager) : LoadableComponentBase
+public partial class Login
 {
-    [Inject]
-    private LoginViewModel ViewModel { get; set; } = default!;
-
     [Parameter]
     public string Title { get; set; } = "Osirion CMS Admin";
 
@@ -36,21 +31,14 @@ public partial class Login(NavigationManager navigationManager) : LoadableCompon
     protected override async Task OnInitializedAsync()
     {
         // Check if we have a code parameter (from GitHub OAuth redirect)
-        var uri = navigationManager.ToAbsoluteUri(navigationManager.Uri);
-        var queryParameters = System.Web.HttpUtility.ParseQueryString(uri.Query);
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        var queryParameters = QueryHelpers.ParseQuery(uri.Query);
 
-        if (queryParameters["code"] is string code) // Access the "code" parameter safely
+        string code;
+        if (queryParameters.TryGetValue("code", out code))
         {
             // Process GitHub OAuth login
-            await ExecuteWithLoadingAsync(async () =>
-            {
-                await ViewModel.LoginWithGitHubAsync(code);
-
-                if (OnLoginResult.HasDelegate)
-                {
-                    await OnLoginResult.InvokeAsync(!string.IsNullOrEmpty(ViewModel.ErrorMessage));
-                }
-            });
+            await LoginWithGitHubCodeAsync(code);
         }
     }
 
@@ -61,25 +49,33 @@ public partial class Login(NavigationManager navigationManager) : LoadableCompon
 
     private void LoginWithGitHub()
     {
-        // Redirect to GitHub OAuth authorize URL - in real implementation this would be configured
+        // Redirect to GitHub OAuth authorize URL
         ViewModel.ErrorMessage = "GitHub OAuth login requires additional configuration.";
+    }
+
+    private async Task LoginWithGitHubCodeAsync(string code)
+    {
+        await ExecuteAsync(async () =>
+        {
+            await ViewModel.LoginWithGitHubAsync(code);
+
+            if (OnLoginResult.HasDelegate)
+            {
+                await OnLoginResult.InvokeAsync(string.IsNullOrEmpty(ViewModel.ErrorMessage));
+            }
+        });
     }
 
     private async Task LoginWithToken()
     {
-        await ExecuteWithLoadingAsync(async () =>
+        await ExecuteAsync(async () =>
         {
             await ViewModel.LoginWithTokenAsync();
 
             if (OnLoginResult.HasDelegate)
             {
-                await OnLoginResult.InvokeAsync(!string.IsNullOrEmpty(ViewModel.ErrorMessage));
+                await OnLoginResult.InvokeAsync(string.IsNullOrEmpty(ViewModel.ErrorMessage));
             }
         });
-    }
-
-    private string GetLoginClass()
-    {
-        return this.GetCssClassNames($"osirion-admin-theme-{Theme}");
     }
 }

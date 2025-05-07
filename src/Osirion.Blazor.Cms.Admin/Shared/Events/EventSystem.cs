@@ -1,23 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
+using Osirion.Blazor.Cms.Admin.Core.Events;
 
 namespace Osirion.Blazor.Cms.Admin.Shared.Events;
-
-/// <summary>
-/// Interface for publishing events
-/// </summary>
-public interface IEventPublisher
-{
-    void Publish<TEvent>(TEvent @event) where TEvent : class;
-}
-
-/// <summary>
-/// Interface for subscribing to events
-/// </summary>
-public interface IEventSubscriber
-{
-    void Subscribe<TEvent>(Action<TEvent> handler) where TEvent : class;
-    void Unsubscribe<TEvent>(Action<TEvent> handler) where TEvent : class;
-}
 
 /// <summary>
 /// Centralized event bus for application-wide events
