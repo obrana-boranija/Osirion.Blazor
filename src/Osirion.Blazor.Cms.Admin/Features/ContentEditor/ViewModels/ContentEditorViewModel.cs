@@ -1,15 +1,17 @@
 ﻿using Osirion.Blazor.Cms.Admin.Core.Events;
 using Osirion.Blazor.Cms.Admin.Features.ContentEditor.Services;
 using Osirion.Blazor.Cms.Domain.Models;
+using Osirion.Blazor.Cms.Domain.ValueObjects;
 
 namespace Osirion.Blazor.Cms.Admin.Features.ContentEditor.ViewModels;
 
-public class ContentEditorViewModel
+public class ContentEditorViewModel : IDisposable
 {
-    private readonly ContentEditorService _editorService;
+    private readonly IContentEditorService _editorService;
     private readonly IEventPublisher _eventPublisher;
     private readonly IEventSubscriber _eventSubscriber;
 
+    // State properties
     public BlogPost? EditingPost { get; private set; }
     public bool IsCreatingNew { get; private set; }
     public bool IsSaving { get; private set; }
@@ -17,10 +19,11 @@ public class ContentEditorViewModel
     public string FileName { get; set; } = string.Empty;
     public string CommitMessage { get; set; } = string.Empty;
 
+    // State changed event
     public event Action? StateChanged;
 
     public ContentEditorViewModel(
-        ContentEditorService editorService,
+        IContentEditorService editorService,
         IEventPublisher eventPublisher,
         IEventSubscriber eventSubscriber)
     {
@@ -28,9 +31,9 @@ public class ContentEditorViewModel
         _eventPublisher = eventPublisher;
         _eventSubscriber = eventSubscriber;
 
-        // Subscribe to events that affect the editor
-        _eventSubscriber.Subscribe<ContentSelectedEvent>(HandleContentSelected);
-        _eventSubscriber.Subscribe<CreateNewContentEvent>(HandleCreateNewContent);
+        // Subscribe to content-related events
+        _eventSubscriber.Subscribe<ContentSelectedEvent>(OnContentSelected);
+        _eventSubscriber.Subscribe<CreateNewContentEvent>(OnCreateNewContent);
     }
 
     public async Task LoadPostAsync(string path)
@@ -38,6 +41,7 @@ public class ContentEditorViewModel
         try
         {
             var blogPost = await _editorService.GetBlogPostAsync(path);
+
             EditingPost = blogPost;
             IsCreatingNew = false;
             CommitMessage = $"Update {Path.GetFileName(path)}";
@@ -48,6 +52,7 @@ public class ContentEditorViewModel
         {
             ErrorMessage = $"Failed to load post: {ex.Message}";
             _eventPublisher.Publish(new ErrorOccurredEvent(ErrorMessage, ex));
+            NotifyStateChanged();
         }
     }
 
@@ -56,12 +61,13 @@ public class ContentEditorViewModel
         if (EditingPost == null)
             return;
 
-        IsSaving = true;
-        ErrorMessage = null;
-        NotifyStateChanged();
-
         try
         {
+            // Update state
+            IsSaving = true;
+            ErrorMessage = null;
+            NotifyStateChanged();
+
             // Update file path for new posts
             if (IsCreatingNew)
             {
@@ -71,11 +77,11 @@ public class ContentEditorViewModel
                     filename += ".md";
                 }
 
-                // Get the current directory from the editing post
-                string directory = Path.GetDirectoryName(EditingPost.FilePath) ?? string.Empty;
-                EditingPost.FilePath = string.IsNullOrEmpty(directory) ?
-                    filename :
-                    Path.Combine(directory, filename).Replace('\\', '/');
+                // Combine directory and filename
+                string directory = EditingPost.Directory;
+                EditingPost.FilePath = string.IsNullOrEmpty(directory)
+                    ? filename
+                    : $"{directory}/{filename}";
             }
 
             // Create commit message if empty
@@ -87,18 +93,12 @@ public class ContentEditorViewModel
             }
 
             // Save post
-            var result = await _editorService.SaveContentAsync(EditingPost, CommitMessage);
+            var result = await _editorService.SaveBlogPostAsync(EditingPost, CommitMessage);
 
-            // Update post with new information if successful
+            // Update post with new SHA
             if (result != null)
             {
                 EditingPost.Sha = result.Content.Sha;
-
-                // Publish content saved event
-                _eventPublisher.Publish(new ContentSavedEvent(EditingPost.FilePath));
-                _eventPublisher.Publish(new StatusNotificationEvent(
-                    $"File saved successfully: {Path.GetFileName(EditingPost.FilePath)}",
-                    StatusType.Success));
 
                 // Reset state for new posts
                 if (IsCreatingNew)
@@ -120,6 +120,24 @@ public class ContentEditorViewModel
         }
     }
 
+    public void UpdateContent(string content)
+    {
+        if (EditingPost != null)
+        {
+            EditingPost.Content = content;
+            NotifyStateChanged();
+        }
+    }
+
+    public void UpdateMetadata(FrontMatter metadata)
+    {
+        if (EditingPost != null)
+        {
+            EditingPost.Metadata = metadata;
+            NotifyStateChanged();
+        }
+    }
+
     public void DiscardChanges()
     {
         EditingPost = null;
@@ -131,12 +149,12 @@ public class ContentEditorViewModel
         NotifyStateChanged();
     }
 
-    private void HandleContentSelected(ContentSelectedEvent e)
+    private void OnContentSelected(ContentSelectedEvent e)
     {
         LoadPostAsync(e.Path).ConfigureAwait(false);
     }
 
-    private void HandleCreateNewContent(CreateNewContentEvent e)
+    private void OnCreateNewContent(CreateNewContentEvent e)
     {
         // Create new post
         EditingPost = _editorService.CreateNewBlogPost(e.Directory);
@@ -151,5 +169,12 @@ public class ContentEditorViewModel
     protected void NotifyStateChanged()
     {
         StateChanged?.Invoke();
+    }
+
+    public void Dispose()
+    {
+        // Unsubscribe from events
+        _eventSubscriber.Unsubscribe<ContentSelectedEvent>(OnContentSelected);
+        _eventSubscriber.Unsubscribe<CreateNewContentEvent>(OnCreateNewContent);
     }
 }

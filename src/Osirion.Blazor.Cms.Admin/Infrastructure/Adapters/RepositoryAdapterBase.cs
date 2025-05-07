@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using Osirion.Blazor.Cms.Admin.Services.Adapters;
 using Osirion.Blazor.Cms.Domain.Models;
 using Osirion.Blazor.Cms.Domain.Models.GitHub;
 using System.Runtime.CompilerServices;

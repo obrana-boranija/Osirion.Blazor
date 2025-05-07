@@ -5,7 +5,7 @@ using Osirion.Blazor.Cms.Domain.Models.GitHub;
 
 namespace Osirion.Blazor.Cms.Admin.Features.Repository.Components;
 
-public partial class BranchSelector : LoadableComponentBase
+public partial class BranchSelector : ComponentBase
 {
     [Inject]
     private BranchSelectorViewModel ViewModel { get; set; } = default!;

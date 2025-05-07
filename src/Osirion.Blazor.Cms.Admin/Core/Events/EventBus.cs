@@ -3,21 +3,18 @@
 namespace Osirion.Blazor.Cms.Admin.Core.Events;
 
 /// <summary>
-/// Centralized event bus for application-wide events
+/// Implementation of the event bus
 /// </summary>
-public class EventBus
+public class EventBus : IEventPublisher, IEventSubscriber
 {
     private readonly Dictionary<Type, List<Delegate>> _handlers = new();
     private readonly ILogger<EventBus> _logger;
 
     public EventBus(ILogger<EventBus> logger)
     {
-        _logger = logger;
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    /// <summary>
-    /// Subscribe to an event type
-    /// </summary>
     public void Subscribe<TEvent>(Action<TEvent> handler) where TEvent : class
     {
         var eventType = typeof(TEvent);
@@ -31,9 +28,6 @@ public class EventBus
         _logger.LogDebug("Handler subscribed for event type: {EventType}", eventType.Name);
     }
 
-    /// <summary>
-    /// Unsubscribe from an event type
-    /// </summary>
     public void Unsubscribe<TEvent>(Action<TEvent> handler) where TEvent : class
     {
         var eventType = typeof(TEvent);
@@ -45,9 +39,6 @@ public class EventBus
         }
     }
 
-    /// <summary>
-    /// Publish an event to all subscribers
-    /// </summary>
     public void Publish<TEvent>(TEvent @event) where TEvent : class
     {
         var eventType = typeof(TEvent);
@@ -58,7 +49,10 @@ public class EventBus
             return;
         }
 
-        foreach (var handler in _handlers[eventType])
+        // Make a copy to avoid concurrent modification issues
+        var handlers = _handlers[eventType].ToList();
+
+        foreach (var handler in handlers)
         {
             try
             {

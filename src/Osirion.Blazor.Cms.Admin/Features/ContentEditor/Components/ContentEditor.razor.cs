@@ -1,24 +1,17 @@
 using Microsoft.AspNetCore.Components;
-using Osirion.Blazor.Cms.Admin.Features.ContentEditor.Components.Shared;
 using Osirion.Blazor.Cms.Admin.Features.ContentEditor.ViewModels;
 using Osirion.Blazor.Cms.Admin.Shared.Components;
 using Osirion.Blazor.Cms.Domain.Models;
 
 namespace Osirion.Blazor.Cms.Admin.Features.ContentEditor.Components;
 
-public partial class ContentEditor : EditableComponent
+public partial class ContentEditor : BaseComponent
 {
     [Inject]
-    private ContentEditorViewModel ViewModel { get; set; } = null!;
-
-    [Parameter]
-    public bool IsMetadataPanelVisible { get; set; } = true;
+    public ContentEditorViewModel ViewModel { get; set; } = null!;
 
     [Parameter]
     public bool IsPreviewVisible { get; set; } = true;
-
-    [Parameter]
-    public bool AskForCommitMessage { get; set; } = true;
 
     [Parameter]
     public EventCallback<BlogPost> OnSaveComplete { get; set; }
@@ -26,12 +19,11 @@ public partial class ContentEditor : EditableComponent
     [Parameter]
     public EventCallback OnDiscard { get; set; }
 
-    private MarkdownEditorWithPreview? EditorPreviewRef;
     private string ActiveTab { get; set; } = "content";
+    private bool IsDirty { get; set; }
 
     protected override void OnInitialized()
     {
-        base.OnInitialized();
         ViewModel.StateChanged += StateHasChanged;
     }
 
@@ -50,20 +42,12 @@ public partial class ContentEditor : EditableComponent
         IsPreviewVisible = !IsPreviewVisible;
     }
 
-    private void UpdateContent(string content)
-    {
-        if (ViewModel.EditingPost != null)
-        {
-            ViewModel.EditingPost.Content = content;
-            MarkAsDirty();
-        }
-    }
-
     private async Task SaveChanges()
     {
-        await SaveWithConfirmationAsync(async () =>
+        await ExecuteAsync(async () =>
         {
             await ViewModel.SavePostAsync();
+            IsDirty = false;
 
             if (OnSaveComplete.HasDelegate && ViewModel.EditingPost != null)
             {
@@ -74,14 +58,18 @@ public partial class ContentEditor : EditableComponent
 
     private async Task DiscardChanges()
     {
-        if (await ConfirmDiscardChangesAsync())
-        {
-            ViewModel.DiscardChanges();
+        ViewModel.DiscardChanges();
+        IsDirty = false;
 
-            if (OnDiscard.HasDelegate)
-            {
-                await OnDiscard.InvokeAsync();
-            }
+        if (OnDiscard.HasDelegate)
+        {
+            await OnDiscard.InvokeAsync();
         }
+    }
+
+    // Mark content as dirty when it changes
+    private void OnContentChanged()
+    {
+        IsDirty = true;
     }
 }
