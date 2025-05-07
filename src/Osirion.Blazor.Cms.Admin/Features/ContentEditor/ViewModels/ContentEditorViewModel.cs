@@ -1,15 +1,17 @@
-﻿using Osirion.Blazor.Cms.Admin.Features.ContentEditor.Services;
+﻿using Osirion.Blazor.Cms.Admin.Application.Commands;
 using Osirion.Blazor.Cms.Admin.Services.Events;
 using Osirion.Blazor.Cms.Admin.Services.State;
+using Osirion.Blazor.Cms.Application.Commands;
+using Osirion.Blazor.Cms.Application.Queries;
 using Osirion.Blazor.Cms.Domain.Models;
-using Osirion.Blazor.Cms.Domain.ValueObjects;
-using Osirion.Blazor.Cms.Infrastructure.Extensions;
+using Osirion.Blazor.Cms.Domain.Models.GitHub;
 
 namespace Osirion.Blazor.Cms.Admin.Features.ContentEditor.ViewModels;
 
 public class ContentEditorViewModel
 {
-    private readonly ContentEditorService _editorService;
+    private readonly ICommandDispatcher _commandDispatcher;
+    private readonly IQueryDispatcher _queryDispatcher;
     private readonly CmsApplicationState _appState;
     private readonly CmsEventMediator _eventMediator;
 
@@ -23,27 +25,26 @@ public class ContentEditorViewModel
     public event Action? StateChanged;
 
     public ContentEditorViewModel(
-        ContentEditorService editorService,
+        ICommandDispatcher commandDispatcher,
+        IQueryDispatcher queryDispatcher,
         CmsApplicationState appState,
         CmsEventMediator eventMediator)
     {
-        _editorService = editorService;
+        _commandDispatcher = commandDispatcher;
+        _queryDispatcher = queryDispatcher;
         _appState = appState;
         _eventMediator = eventMediator;
-
-        // Subscribe to content selected events
-        _eventMediator.Subscribe<ContentSelectedEvent>(OnContentSelected);
     }
 
     public async Task LoadPostAsync(string path)
     {
         try
         {
-            EditingPost = await _editorService.GetBlogPostAsync(path);
-            IsCreatingNew = false;
+            var query = new GetBlogPostQuery { Path = path };
+            EditingPost = await _queryDispatcher.DispatchAsync<GetBlogPostQuery, BlogPost>(query);
 
-            // Set default commit message
-            CommitMessage = $"Update {System.IO.Path.GetFileName(path)}";
+            IsCreatingNew = false;
+            CommitMessage = $"Update {Path.GetFileName(path)}";
 
             NotifyStateChanged();
         }
@@ -52,27 +53,6 @@ public class ContentEditorViewModel
             ErrorMessage = $"Failed to load post: {ex.Message}";
             _appState.SetErrorMessage(ErrorMessage);
         }
-    }
-
-    public void CreateNewPost()
-    {
-        var newPost = new BlogPost
-        {
-            Metadata = FrontMatter.Create("New Post", "Enter description here", DateTime.Now),
-            Content = "## New Post\n\nStart writing your content here...",
-            FilePath = string.IsNullOrEmpty(_appState.CurrentPath) ?
-                "new-post.md" :
-                $"{_appState.CurrentPath}/new-post.md"
-        };
-
-        EditingPost = newPost;
-        IsCreatingNew = true;
-
-        // Set default values
-        FileName = GenerateFileName(newPost.Metadata.Title);
-        CommitMessage = "Create new file";
-
-        NotifyStateChanged();
     }
 
     public async Task SavePostAsync()
@@ -86,7 +66,7 @@ public class ContentEditorViewModel
 
         try
         {
-            // For new posts, update the file path with the specified filename
+            // Update file path for new posts
             if (IsCreatingNew)
             {
                 string filename = FileName.Trim();
@@ -100,7 +80,19 @@ public class ContentEditorViewModel
                     $"{_appState.CurrentPath}/{filename}";
             }
 
-            var response = await _editorService.SaveContentAsync(EditingPost, CommitMessage);
+            // Create command
+            var command = new SaveContentCommand
+            {
+                Path = EditingPost.FilePath,
+                Content = EditingPost.ToMarkdown(),
+                CommitMessage = string.IsNullOrEmpty(CommitMessage) ?
+                    (IsCreatingNew ? $"Create {EditingPost.FilePath}" : $"Update {EditingPost.FilePath}") :
+                    CommitMessage,
+                Sha = EditingPost.Sha
+            };
+
+            // Dispatch command
+            var response = await _commandDispatcher.DispatchAsync<SaveContentCommand, GitHubFileCommitResponse>(command);
 
             // Update post with new information
             EditingPost.FilePath = response.Content.Path;
@@ -130,33 +122,7 @@ public class ContentEditorViewModel
         }
     }
 
-    public void DiscardChanges()
-    {
-        EditingPost = null;
-        IsCreatingNew = false;
-        FileName = string.Empty;
-        CommitMessage = string.Empty;
-
-        NotifyStateChanged();
-    }
-
-    private void OnContentSelected(ContentSelectedEvent e)
-    {
-        if (e.Item.IsMarkdownFile)
-        {
-            _ = LoadPostAsync(e.Item.Path);
-        }
-    }
-
-    private string GenerateFileName(string title)
-    {
-        if (string.IsNullOrEmpty(title))
-        {
-            return "new-post";
-        }
-
-        return title.ToUrlSlug();
-    }
+    // Other methods...
 
     protected void NotifyStateChanged()
     {

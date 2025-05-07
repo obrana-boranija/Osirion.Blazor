@@ -1,69 +1,143 @@
 ﻿using Osirion.Blazor.Cms.Domain.Models.GitHub;
+using System.Text.Json;
 
-namespace Osirion.Blazor.Cms.Admin.Services.State
+namespace Osirion.Blazor.Cms.Admin.Services.State;
+
+public class CmsApplicationState
 {
-    public class CmsApplicationState
+    // State properties
+    public GitHubRepository? SelectedRepository { get; private set; }
+    public GitHubBranch? SelectedBranch { get; private set; }
+    public string CurrentPath { get; private set; } = string.Empty;
+    public List<GitHubItem> CurrentItems { get; private set; } = new();
+    public string? StatusMessage { get; private set; }
+    public string? ErrorMessage { get; private set; }
+    public string CurrentTheme { get; private set; } = "light";
+
+    // State changed event
+    public event Action? StateChanged;
+
+    // State modification methods
+    public void SelectRepository(GitHubRepository? repository)
     {
-        // State properties
-        public GitHubRepository? SelectedRepository { get; private set; }
-        public GitHubBranch? SelectedBranch { get; private set; }
-        public string CurrentPath { get; private set; } = string.Empty;
-        public List<GitHubItem> CurrentItems { get; private set; } = new();
-        public string? StatusMessage { get; private set; }
-        public string? ErrorMessage { get; private set; }
+        SelectedRepository = repository;
+        SelectedBranch = null;
+        CurrentPath = string.Empty;
+        CurrentItems.Clear();
+        NotifyStateChanged();
+    }
 
-        // State changed event
-        public event Action? StateChanged;
+    public void SelectBranch(GitHubBranch? branch)
+    {
+        SelectedBranch = branch;
+        CurrentPath = string.Empty;
+        CurrentItems.Clear();
+        NotifyStateChanged();
+    }
 
-        // State modification methods
-        public void SelectRepository(GitHubRepository repository)
+    public void SetCurrentPath(string path, List<GitHubItem> items)
+    {
+        CurrentPath = path;
+        CurrentItems = items;
+        NotifyStateChanged();
+    }
+
+    public void SetStatusMessage(string message)
+    {
+        StatusMessage = message;
+        ErrorMessage = null;
+        NotifyStateChanged();
+    }
+
+    public void SetErrorMessage(string message)
+    {
+        ErrorMessage = message;
+        StatusMessage = null;
+        NotifyStateChanged();
+    }
+
+    public void ClearMessages()
+    {
+        StatusMessage = null;
+        ErrorMessage = null;
+        NotifyStateChanged();
+    }
+
+    public void SetTheme(string theme)
+    {
+        CurrentTheme = theme;
+        NotifyStateChanged();
+    }
+
+    public void Reset()
+    {
+        SelectedRepository = null;
+        SelectedBranch = null;
+        CurrentPath = string.Empty;
+        CurrentItems.Clear();
+        StatusMessage = null;
+        ErrorMessage = null;
+        NotifyStateChanged();
+    }
+
+    public string Serialize()
+    {
+        var state = new Dictionary<string, object?>();
+
+        if (SelectedRepository != null)
+            state["SelectedRepository"] = SelectedRepository;
+
+        if (SelectedBranch != null)
+            state["SelectedBranch"] = SelectedBranch;
+
+        state["CurrentPath"] = CurrentPath;
+        state["CurrentTheme"] = CurrentTheme;
+
+        return JsonSerializer.Serialize(state);
+    }
+
+    public void DeserializeFrom(string serializedState)
+    {
+        if (string.IsNullOrEmpty(serializedState))
+            return;
+
+        try
         {
-            SelectedRepository = repository;
-            SelectedBranch = null;
-            CurrentPath = string.Empty;
-            CurrentItems.Clear();
+            var state = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(serializedState);
+            if (state == null) return;
+
+            if (state.TryGetValue("SelectedRepository", out var repoElement))
+            {
+                SelectedRepository = repoElement.Deserialize<GitHubRepository>();
+            }
+
+            if (state.TryGetValue("SelectedBranch", out var branchElement))
+            {
+                SelectedBranch = branchElement.Deserialize<GitHubBranch>();
+            }
+
+            if (state.TryGetValue("CurrentPath", out var pathElement) &&
+                pathElement.ValueKind == JsonValueKind.String)
+            {
+                CurrentPath = pathElement.GetString() ?? string.Empty;
+            }
+
+            if (state.TryGetValue("CurrentTheme", out var themeElement) &&
+                themeElement.ValueKind == JsonValueKind.String)
+            {
+                CurrentTheme = themeElement.GetString() ?? "light";
+            }
+
             NotifyStateChanged();
         }
-
-        public void SelectBranch(GitHubBranch branch)
+        catch
         {
-            SelectedBranch = branch;
-            CurrentPath = string.Empty;
-            CurrentItems.Clear();
-            NotifyStateChanged();
+            // If deserialization fails, just keep current state
         }
+    }
 
-        public void SetCurrentPath(string path, List<GitHubItem> items)
-        {
-            CurrentPath = path;
-            CurrentItems = items;
-            NotifyStateChanged();
-        }
-
-        public void SetStatusMessage(string message)
-        {
-            StatusMessage = message;
-            ErrorMessage = null;
-            NotifyStateChanged();
-        }
-
-        public void SetErrorMessage(string message)
-        {
-            ErrorMessage = message;
-            StatusMessage = null;
-            NotifyStateChanged();
-        }
-
-        public void ClearMessages()
-        {
-            StatusMessage = null;
-            ErrorMessage = null;
-            NotifyStateChanged();
-        }
-
-        protected void NotifyStateChanged()
-        {
-            StateChanged?.Invoke();
-        }
+    protected void NotifyStateChanged()
+    {
+        StateChanged?.Invoke();
     }
 }

@@ -1,0 +1,49 @@
+﻿using Microsoft.Extensions.Logging;
+using Osirion.Blazor.Cms.Admin.Configuration;
+using Osirion.Blazor.Cms.Admin.Services.State;
+using Microsoft.Extensions.Options;
+
+namespace Osirion.Blazor.Cms.Admin.Services;
+
+public class CmsAdminStartupService
+{
+    private readonly StateManager _stateManager;
+    private readonly ErrorHandlingService _errorHandler;
+    private readonly ILogger<CmsAdminStartupService> _logger;
+    private readonly CmsAdminOptions _options;
+    private bool _isInitialized = false;
+
+    public CmsAdminStartupService(
+        StateManager stateManager,
+        ErrorHandlingService errorHandler,
+        IOptions<CmsAdminOptions> options,
+        ILogger<CmsAdminStartupService> logger)
+    {
+        _stateManager = stateManager;
+        _errorHandler = errorHandler;
+        _options = options.Value;
+        _logger = logger;
+    }
+
+    public async Task InitializeAsync()
+    {
+        if (_isInitialized)
+            return;
+
+        try
+        {
+            _logger.LogInformation("Initializing CMS Admin module");
+
+            // Initialize state
+            await _stateManager.InitializeAsync();
+
+            _isInitialized = true;
+            _logger.LogInformation("CMS Admin module initialized successfully");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error initializing CMS Admin module");
+            _errorHandler.HandleException(ex, "startup");
+        }
+    }
+}

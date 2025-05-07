@@ -3,7 +3,6 @@ using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Models;
 using Osirion.Blazor.Cms.Domain.Models.GitHub;
 using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace Osirion.Blazor.Cms.Admin.Services.Adapters;
 
@@ -22,87 +21,199 @@ public class GitHubRepositoryAdapter : IContentRepositoryAdapter
 
     public async Task<List<GitHubRepository>> GetRepositoriesAsync()
     {
-        LogMethodCall();
-        return await _gitHubService.GetRepositoriesAsync();
+        try
+        {
+            LogMethodCall();
+            return await _gitHubService.GetRepositoriesAsync();
+        }
+        catch (Exception ex)
+        {
+            LogError(ex);
+            throw;
+        }
     }
 
     public async Task<List<GitHubBranch>> GetBranchesAsync(string repositoryName)
     {
-        LogMethodCall(repositoryName);
-        return await _gitHubService.GetBranchesAsync(repositoryName);
+        try
+        {
+            LogMethodCall(repositoryName);
+            return await _gitHubService.GetBranchesAsync(repositoryName);
+        }
+        catch (Exception ex)
+        {
+            LogError(ex, $"repository: {repositoryName}");
+            throw;
+        }
     }
 
     public async Task<List<GitHubItem>> GetContentsAsync(string path)
     {
-        LogMethodCall(path);
-        return await _gitHubService.GetRepositoryContentsAsync(path);
+        try
+        {
+            LogMethodCall(path);
+            return await _gitHubService.GetRepositoryContentsAsync(path);
+        }
+        catch (Exception ex)
+        {
+            LogError(ex, $"path: {path}");
+            throw;
+        }
+    }
+
+    public async Task<List<GitHubItem>> SearchFilesAsync(string query)
+    {
+        try
+        {
+            LogMethodCall(query);
+            return await _gitHubService.SearchFilesAsync(query);
+        }
+        catch (Exception ex)
+        {
+            LogError(ex, $"query: {query}");
+            throw;
+        }
     }
 
     public async Task<BlogPost> GetBlogPostAsync(string path)
     {
-        LogMethodCall(path);
-        return await _gitHubService.GetBlogPostAsync(path);
+        try
+        {
+            LogMethodCall(path);
+            return await _gitHubService.GetBlogPostAsync(path);
+        }
+        catch (Exception ex)
+        {
+            LogError(ex, $"path: {path}");
+            throw;
+        }
     }
 
     public async Task<GitHubFileCommitResponse> SaveContentAsync(
         string path, string content, string message, string? sha = null)
     {
-        LogMethodCall(path);
-        return await _gitHubService.CreateOrUpdateFileAsync(path, content, message, sha);
+        try
+        {
+            LogMethodCall(path);
+            return await _gitHubService.CreateOrUpdateFileAsync(path, content, message, sha);
+        }
+        catch (Exception ex)
+        {
+            LogError(ex, $"path: {path}");
+            throw;
+        }
     }
 
     public async Task<GitHubFileCommitResponse> DeleteFileAsync(string path, string message, string sha)
     {
-        LogMethodCall(path);
-        return await _gitHubService.DeleteFileAsync(path, message, sha);
+        try
+        {
+            LogMethodCall(path);
+            return await _gitHubService.DeleteFileAsync(path, message, sha);
+        }
+        catch (Exception ex)
+        {
+            LogError(ex, $"path: {path}");
+            throw;
+        }
     }
 
     public async Task<GitHubBranch> CreateBranchAsync(string name, string baseBranch)
     {
-        LogMethodCall($"{name} from {baseBranch}");
-        return await _gitHubService.CreateBranchAsync(name, baseBranch);
-    }
-
-    public void SetRepository(string repositoryName)
-    {
-        LogMethodCall(repositoryName);
-        _gitHubService.SetRepository(repositoryName);
-    }
-
-    public void SetBranch(string branchName)
-    {
-        LogMethodCall(branchName);
-        _gitHubService.SetBranch(branchName);
-    }
-
-    public async Task SetAccessTokenAsync(string token)
-    {
-        LogMethodCall();
-        await _gitHubService.SetAuthTokenAsync(token);
+        try
+        {
+            LogMethodCall($"{name} from {baseBranch}");
+            return await _gitHubService.CreateBranchAsync(name, baseBranch);
+        }
+        catch (Exception ex)
+        {
+            LogError(ex, $"name: {name}, base: {baseBranch}");
+            throw;
+        }
     }
 
     public async Task<GitHubPullRequest> CreatePullRequestAsync(
         string title, string body, string head, string baseBranch)
     {
-        LogMethodCall($"{head} -> {baseBranch}");
-        return await _gitHubService.CreatePullRequestAsync(title, body, head, baseBranch);
+        try
+        {
+            LogMethodCall($"{head} -> {baseBranch}");
+            return await _gitHubService.CreatePullRequestAsync(title, body, head, baseBranch);
+        }
+        catch (Exception ex)
+        {
+            LogError(ex, $"head: {head}, base: {baseBranch}");
+            throw;
+        }
     }
 
-    public async Task<List<GitHubItem>> SearchFilesAsync(string query)
+    public void SetRepository(string repositoryName)
     {
-        LogMethodCall(query);
-        return await _gitHubService.SearchFilesAsync(query);
+        try
+        {
+            LogMethodCall(repositoryName);
+            _gitHubService.SetRepository(repositoryName);
+        }
+        catch (Exception ex)
+        {
+            LogError(ex, $"repository: {repositoryName}");
+            throw;
+        }
+    }
+
+    public void SetBranch(string branchName)
+    {
+        try
+        {
+            LogMethodCall(branchName);
+            _gitHubService.SetBranch(branchName);
+        }
+        catch (Exception ex)
+        {
+            LogError(ex, $"branch: {branchName}");
+            throw;
+        }
+    }
+
+    public async Task SetAccessTokenAsync(string token)
+    {
+        try
+        {
+            LogMethodCall();
+            await _gitHubService.SetAuthTokenAsync(token);
+        }
+        catch (Exception ex)
+        {
+            LogError(ex);
+            throw;
+        }
     }
 
     private void LogMethodCall([CallerMemberName] string? methodName = null, string? details = null)
     {
-        var logMessage = new StringBuilder($"GitHub repository adapter: {methodName}");
-
+        var message = $"GitHub repository adapter: {methodName}";
         if (!string.IsNullOrEmpty(details))
         {
-            logMessage.Append($" - {details}");
+            message += $" - {details}";
         }
 
-        _logger.LogDebug(logMessage.ToString());
+        _logger.LogDebug(message);
+    }
+
+    private void LogError(Exception ex, string? context = null, [CallerMemberName] string? methodName = null)
+    {
+        var message = $"Error in GitHub repository adapter";
+
+        if (methodName != null)
+        {
+            message += $": {methodName}";
+        }
+
+        if (context != null)
+        {
+            message += $" ({context})";
+        }
+
+        _logger.LogError(ex, message);
     }
 }
