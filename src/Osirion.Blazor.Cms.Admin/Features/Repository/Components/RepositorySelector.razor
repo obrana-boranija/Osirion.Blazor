@@ -1,18 +1,19 @@
 @namespace Osirion.Blazor.Cms.Admin.Features.Repository.Components
 @using Osirion.Blazor.Cms.Admin.Features.Repository.ViewModels
-@inherits Osirion.Blazor.Cms.Admin.Common.Base.LoadableComponentBase
+@inherits Osirion.Blazor.Cms.Admin.Shared.Components.BaseComponent
 @inject RepositorySelectorViewModel ViewModel
+@inject NavigationManager NavigationManager
 
-<div class="@GetRepositorySelectorClass()">
-    <div class="osirion-admin-header">
-        <h2 class="osirion-admin-title">@Title</h2>
+<div class="repository-selector @CssClass">
+    <div class="repository-header">
+        <h2 class="repository-title">@Title</h2>
 
-        <div class="osirion-admin-actions">
+        <div class="repository-actions">
             <button type="button"
-                    class="osirion-admin-button osirion-admin-button-refresh"
+                    class="repository-button repository-button-refresh"
                     title="Refresh repositories"
-                    @onclick="() => RefreshRepositories()">
-                <span class="osirion-admin-icon">
+                    @onclick="RefreshRepositories">
+                <span class="repository-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M21 12a9 9 0 0 1-9 9c-4.97 0-9-4.03-9-9s4.03-9 9-9c2.39 0 4.68.94 6.4 2.6L12 12" />
                     </svg>
@@ -23,15 +24,15 @@
 
     @if (ViewModel.IsLoading)
     {
-        <div class="osirion-admin-loading">
-            <span class="osirion-admin-loading-spinner"></span>
+        <div class="repository-loading">
+            <span class="repository-loading-spinner"></span>
             <span>Loading repositories...</span>
         </div>
     }
     else if (ViewModel.ErrorMessage != null)
     {
-        <div class="osirion-admin-error">
-            <span class="osirion-admin-error-icon">
+        <div class="repository-error">
+            <span class="repository-error-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="12" cy="12" r="10" />
                     <line x1="12" y1="8" x2="12" y2="12" />
@@ -39,24 +40,24 @@
                 </svg>
             </span>
             <span>@ViewModel.ErrorMessage</span>
-            <button type="button" class="osirion-admin-button osirion-admin-button-small" @onclick="() => RefreshRepositories()">
+            <button type="button" class="repository-button repository-button-small" @onclick="RefreshRepositories">
                 Retry
             </button>
         </div>
     }
     else if (ViewModel.Repositories.Count == 0)
     {
-        <div class="osirion-admin-empty">
+        <div class="repository-empty">
             <span>No repositories found.</span>
-            <button type="button" class="osirion-admin-button osirion-admin-button-small" @onclick="() => RefreshRepositories()">
+            <button type="button" class="repository-button repository-button-small" @onclick="RefreshRepositories">
                 Refresh
             </button>
         </div>
     }
     else
     {
-        <div class="osirion-admin-select-container">
-            <select class="osirion-admin-select"
+        <div class="repository-select-container">
+            <select class="repository-select"
                     value="@SelectedRepositoryName"
                     @onchange="OnRepositorySelected">
                 <option value="">@SelectPrompt</option>
@@ -69,30 +70,30 @@
 
         @if (ViewModel.SelectedRepository != null)
         {
-            <div class="osirion-admin-repo-details">
-                <div class="osirion-admin-repo-info">
-                    <span class="osirion-admin-repo-name">@ViewModel.SelectedRepository.Name</span>
+            <div class="repository-details">
+                <div class="repository-info">
+                    <span class="repository-name">@ViewModel.SelectedRepository.Name</span>
                     @if (!string.IsNullOrEmpty(ViewModel.SelectedRepository.Description))
                     {
-                        <span class="osirion-admin-repo-description">@ViewModel.SelectedRepository.Description</span>
+                        <span class="repository-description">@ViewModel.SelectedRepository.Description</span>
                     }
-                    <span class="osirion-admin-repo-visibility">
+                    <span class="repository-visibility">
                         @if (ViewModel.SelectedRepository.Private)
                         {
-                            <span class="osirion-admin-repo-private">Private</span>
+                            <span class="repository-private">Private</span>
                         }
                         else
                         {
-                            <span class="osirion-admin-repo-public">Public</span>
+                            <span class="repository-public">Public</span>
                         }
                     </span>
                 </div>
 
                 <button type="button"
-                        class="osirion-admin-button osirion-admin-button-link"
+                        class="repository-button repository-button-link"
                         @onclick="OpenRepositoryLink"
                         title="Open repository in GitHub">
-                    <span class="osirion-admin-icon">
+                    <span class="repository-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
                             <polyline points="15 3 21 3 21 9" />

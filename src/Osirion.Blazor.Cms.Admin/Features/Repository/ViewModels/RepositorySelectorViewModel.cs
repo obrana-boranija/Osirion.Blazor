@@ -1,6 +1,6 @@
-﻿using Osirion.Blazor.Cms.Admin.Features.Repository.Services;
-using Osirion.Blazor.Cms.Admin.Services.Events;
-using Osirion.Blazor.Cms.Admin.Services.State;
+﻿using Microsoft.Extensions.Logging;
+using Osirion.Blazor.Cms.Admin.Core.State;
+using Osirion.Blazor.Cms.Admin.Features.Repository.Services;
 using Osirion.Blazor.Cms.Domain.Models.GitHub;
 
 namespace Osirion.Blazor.Cms.Admin.Features.Repository.ViewModels;
@@ -8,11 +8,11 @@ namespace Osirion.Blazor.Cms.Admin.Features.Repository.ViewModels;
 public class RepositorySelectorViewModel
 {
     private readonly RepositoryService _repositoryService;
-    private readonly CmsApplicationState _appState;
-    private readonly CmsEventMediator _eventMediator;
+    private readonly CmsState _state;
+    private readonly ILogger<RepositorySelectorViewModel> _logger;
 
     public List<GitHubRepository> Repositories { get; private set; } = new();
-    public GitHubRepository? SelectedRepository => _appState.SelectedRepository;
+    public GitHubRepository? SelectedRepository => _state.SelectedRepository;
     public bool IsLoading { get; private set; }
     public string? ErrorMessage { get; private set; }
 
@@ -20,17 +20,22 @@ public class RepositorySelectorViewModel
 
     public RepositorySelectorViewModel(
         RepositoryService repositoryService,
-        CmsApplicationState appState,
-        CmsEventMediator eventMediator)
+        CmsState state,
+        ILogger<RepositorySelectorViewModel> logger)
     {
         _repositoryService = repositoryService;
-        _appState = appState;
-        _eventMediator = eventMediator;
+        _state = state;
+        _logger = logger;
 
-        _appState.StateChanged += OnAppStateChanged;
+        _state.StateChanged += OnStateChanged;
     }
 
-    public async Task RefreshRepositoriesAsync(bool resetSelection = true)
+    private void OnStateChanged()
+    {
+        NotifyStateChanged();
+    }
+
+    public async Task LoadRepositoriesAsync()
     {
         IsLoading = true;
         ErrorMessage = null;
@@ -38,18 +43,15 @@ public class RepositorySelectorViewModel
 
         try
         {
+            _logger.LogInformation("Loading repositories");
             Repositories = await _repositoryService.GetRepositoriesAsync();
-
-            if (resetSelection)
-            {
-                // Reset repository selection
-                _appState.SelectRepository(null);
-            }
+            _logger.LogInformation("Loaded {Count} repositories", Repositories.Count);
         }
         catch (Exception ex)
         {
             ErrorMessage = $"Failed to load repositories: {ex.Message}";
-            _appState.SetErrorMessage(ErrorMessage);
+            _logger.LogError(ex, "Failed to load repositories");
+            _state.SetErrorMessage(ErrorMessage);
         }
         finally
         {
@@ -62,11 +64,11 @@ public class RepositorySelectorViewModel
     {
         if (string.IsNullOrEmpty(repositoryName))
         {
-            _appState.SelectRepository(null);
+            _state.SelectRepository(null);
             return;
         }
 
-        var repository = Repositories.Find(r => r.Name == repositoryName);
+        var repository = Repositories.FirstOrDefault(r => r.Name == repositoryName);
         if (repository != null)
         {
             IsLoading = true;
@@ -74,19 +76,22 @@ public class RepositorySelectorViewModel
 
             try
             {
-                // Set the selected repository in state
-                _appState.SelectRepository(repository);
+                _logger.LogInformation("Selecting repository: {Name}", repository.Name);
 
-                // Configure the repository adapter
+                // Update state
+                _state.SelectRepository(repository);
+
+                // Update service
                 _repositoryService.SetRepository(repository.Name);
 
-                // Publish repository selected event
-                _eventMediator.Publish(new RepositorySelectedEvent(repository));
+                // Load branches
+                await LoadBranchesForRepositoryAsync(repository.Name);
             }
             catch (Exception ex)
             {
                 ErrorMessage = $"Failed to select repository: {ex.Message}";
-                _appState.SetErrorMessage(ErrorMessage);
+                _logger.LogError(ex, "Failed to select repository: {Name}", repository.Name);
+                _state.SetErrorMessage(ErrorMessage);
             }
             finally
             {
@@ -96,9 +101,28 @@ public class RepositorySelectorViewModel
         }
     }
 
-    private void OnAppStateChanged()
+    private async Task LoadBranchesForRepositoryAsync(string repositoryName)
     {
-        NotifyStateChanged();
+        try
+        {
+            var branches = await _repositoryService.GetBranchesAsync(repositoryName);
+            _logger.LogInformation("Loaded {Count} branches for repository {Name}", branches.Count, repositoryName);
+
+            // If default branch exists, select it
+            var defaultBranch = branches.FirstOrDefault(b =>
+                b.Name == (_state.SelectedRepository?.DefaultBranch ?? "main"));
+
+            if (defaultBranch != null)
+            {
+                _state.SelectBranch(defaultBranch);
+                _repositoryService.SetBranch(defaultBranch.Name);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to load branches for repository: {Name}", repositoryName);
+            throw;
+        }
     }
 
     protected void NotifyStateChanged()

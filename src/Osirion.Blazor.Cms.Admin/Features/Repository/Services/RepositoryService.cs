@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Admin.Services.Adapters;
-using Osirion.Blazor.Cms.Admin.Services.Events;
 using Osirion.Blazor.Cms.Domain.Models.GitHub;
 
 namespace Osirion.Blazor.Cms.Admin.Features.Repository.Services;
@@ -8,16 +7,13 @@ namespace Osirion.Blazor.Cms.Admin.Features.Repository.Services;
 public class RepositoryService
 {
     private readonly IContentRepositoryAdapter _repositoryAdapter;
-    private readonly CmsEventMediator _eventMediator;
     private readonly ILogger<RepositoryService> _logger;
 
     public RepositoryService(
         IContentRepositoryAdapter repositoryAdapter,
-        CmsEventMediator eventMediator,
         ILogger<RepositoryService> logger)
     {
         _repositoryAdapter = repositoryAdapter;
-        _eventMediator = eventMediator;
         _logger = logger;
     }
 
@@ -28,16 +24,11 @@ public class RepositoryService
             _logger.LogInformation("Fetching repositories");
             var repositories = await _repositoryAdapter.GetRepositoriesAsync();
             _logger.LogInformation("Retrieved {Count} repositories", repositories.Count);
-
-            // Publish event with all repositories
-            _eventMediator.Publish(new RepositoryChangedEvent(repositories));
-
             return repositories;
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving repositories");
-            _eventMediator.Publish(new ErrorOccurredEvent("Failed to load repositories", ex));
             throw;
         }
     }
@@ -55,7 +46,6 @@ public class RepositoryService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving branches for repository: {Repository}", repositoryName);
-            _eventMediator.Publish(new ErrorOccurredEvent($"Failed to load branches for {repositoryName}", ex));
             throw;
         }
     }
@@ -67,16 +57,11 @@ public class RepositoryService
             _logger.LogInformation("Creating branch {Branch} from {BaseBranch}", branchName, baseBranch);
             var newBranch = await _repositoryAdapter.CreateBranchAsync(branchName, baseBranch);
             _logger.LogInformation("Branch {Branch} created successfully", branchName);
-
-            _eventMediator.Publish(new StatusNotificationEvent(
-                $"Branch {branchName} created successfully", StatusType.Success));
-
             return newBranch;
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error creating branch {Branch} from {BaseBranch}", branchName, baseBranch);
-            _eventMediator.Publish(new ErrorOccurredEvent($"Failed to create branch {branchName}", ex));
             throw;
         }
     }
@@ -91,7 +76,6 @@ public class RepositoryService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error setting repository: {Repository}", repositoryName);
-            _eventMediator.Publish(new ErrorOccurredEvent($"Failed to set repository {repositoryName}", ex));
             throw;
         }
     }
@@ -106,41 +90,6 @@ public class RepositoryService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error setting branch: {Branch}", branchName);
-            _eventMediator.Publish(new ErrorOccurredEvent($"Failed to set branch {branchName}", ex));
-            throw;
-        }
-    }
-
-    public async Task<GitHubPullRequest> CreatePullRequestAsync(
-        string title,
-        string body,
-        string headBranch,
-        string baseBranch)
-    {
-        try
-        {
-            _logger.LogInformation("Creating pull request from {Head} to {Base}: {Title}",
-                headBranch, baseBranch, title);
-
-            var pullRequest = await _repositoryAdapter.CreatePullRequestAsync(
-                title, body, headBranch, baseBranch);
-
-            _logger.LogInformation("Pull request created successfully: {Url}",
-                pullRequest.Url);
-
-            _eventMediator.Publish(new StatusNotificationEvent(
-                "Pull request created successfully", StatusType.Success));
-
-            return pullRequest;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error creating pull request from {Head} to {Base}",
-                headBranch, baseBranch);
-
-            _eventMediator.Publish(new ErrorOccurredEvent(
-                $"Failed to create pull request from {headBranch} to {baseBranch}", ex));
-
             throw;
         }
     }

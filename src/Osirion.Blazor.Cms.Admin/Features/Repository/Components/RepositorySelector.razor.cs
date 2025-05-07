@@ -1,73 +1,62 @@
 using Microsoft.AspNetCore.Components;
 
-namespace Osirion.Blazor.Cms.Admin.Features.Repository.Components
+namespace Osirion.Blazor.Cms.Admin.Features.Repository.Components;
+
+public partial class RepositorySelector
 {
-    public partial class RepositorySelector(NavigationManager navigationManager)
+    [Parameter]
+    public string Title { get; set; } = "Select Repository";
+
+    [Parameter]
+    public string SelectPrompt { get; set; } = "-- Select a repository --";
+
+    [Parameter]
+    public EventCallback<string> OnRepositoryChanged { get; set; }
+
+    private string SelectedRepositoryName => ViewModel.SelectedRepository?.Name ?? string.Empty;
+
+    protected override async Task OnInitializedAsync()
     {
-        [Parameter]
-        public string Title { get; set; } = "Select Repository";
+        // Subscribe to view model state changes
+        ViewModel.StateChanged += StateHasChanged;
 
-        [Parameter]
-        public string SelectPrompt { get; set; } = "-- Select a repository --";
+        // Load repositories on initialization
+        await RefreshRepositories();
+    }
 
-        [Parameter]
-        public EventCallback<string> OnRepositoryChanged { get; set; }
+    public void Dispose()
+    {
+        ViewModel.StateChanged -= StateHasChanged;
+    }
 
-        private string SelectedRepositoryName => ViewModel.SelectedRepository?.Name ?? string.Empty;
-
-        protected override async Task OnInitializedAsync()
+    private async Task RefreshRepositories()
+    {
+        await ExecuteAsync(async () =>
         {
-            // Subscribe to view model state changes
-            ViewModel.StateChanged += StateHasChanged;
+            await ViewModel.LoadRepositoriesAsync();
+        });
+    }
 
-            // Load repositories on initialization
-            await RefreshRepositories();
-        }
+    private async Task OnRepositorySelected(ChangeEventArgs e)
+    {
+        var repositoryName = e.Value?.ToString() ?? string.Empty;
 
-        protected override void OnParametersSet()
+        await ExecuteAsync(async () =>
         {
-            base.OnParametersSet();
-        }
+            await ViewModel.SelectRepositoryAsync(repositoryName);
 
-        public void Dispose()
-        {
-            ViewModel.StateChanged -= StateHasChanged;
-        }
-
-        private async Task RefreshRepositories()
-        {
-            await ExecuteWithLoadingAsync(async () =>
+            if (OnRepositoryChanged.HasDelegate)
             {
-                await ViewModel.RefreshRepositoriesAsync();
-            });
-        }
-
-        private async Task OnRepositorySelected(ChangeEventArgs e)
-        {
-            var repositoryName = e.Value?.ToString() ?? string.Empty;
-
-            await ExecuteWithLoadingAsync(async () =>
-            {
-                await ViewModel.SelectRepositoryAsync(repositoryName);
-
-                if (OnRepositoryChanged.HasDelegate)
-                {
-                    await OnRepositoryChanged.InvokeAsync(repositoryName);
-                }
-            });
-        }
-
-        private void OpenRepositoryLink()
-        {
-            if (ViewModel.SelectedRepository != null && !string.IsNullOrEmpty(ViewModel.SelectedRepository.HtmlUrl))
-            {
-                navigationManager.NavigateTo(ViewModel.SelectedRepository.HtmlUrl, true);
+                await OnRepositoryChanged.InvokeAsync(repositoryName);
             }
-        }
+        });
+    }
 
-        private string GetRepositorySelectorClass()
+    private void OpenRepositoryLink()
+    {
+        if (ViewModel.SelectedRepository != null && !string.IsNullOrEmpty(ViewModel.SelectedRepository.HtmlUrl))
         {
-            return $"osirion-admin-repository-selector {CssClass}".Trim();
+            NavigationManager.NavigateTo(ViewModel.SelectedRepository.HtmlUrl, true);
         }
     }
 }

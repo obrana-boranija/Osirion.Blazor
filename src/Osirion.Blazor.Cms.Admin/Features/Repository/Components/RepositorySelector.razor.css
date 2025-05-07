@@ -1,44 +1,149 @@
-.osirion-admin-repository-selector {
+.repository-selector {
     display: flex;
     flex-direction: column;
-    border: var(--osirion-border-width, 1px) solid var(--osirion-border-color);
-    border-radius: var(--osirion-radius-base);
+    border: var(--border-width, 1px) solid var(--border-color, #e1e4e8);
+    border-radius: var(--border-radius, 6px);
     overflow: hidden;
-    margin-bottom: var(--osirion-spacing-4, 1rem);
+    margin-bottom: var(--spacing-4, 1rem);
 }
 
-.osirion-admin-header {
+.repository-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: var(--osirion-spacing-3, 0.75rem);
-    background-color: var(--osirion-background-secondary);
-    border-bottom: var(--osirion-border-width, 1px) solid var(--osirion-border-color);
+    padding: var(--spacing-3, 0.75rem);
+    background-color: var(--background-secondary, #f6f8fa);
+    border-bottom: var(--border-width, 1px) solid var(--border-color, #e1e4e8);
 }
 
-.osirion-admin-title {
+.repository-title {
     margin: 0;
-    font-size: var(--osirion-font-size-sm, 0.875rem);
-    font-weight: var(--osirion-font-weight-medium, 500);
+    font-size: var(--font-size-sm, 0.875rem);
+    font-weight: var(--font-weight-medium, 500);
 }
 
-.osirion-admin-select-container {
-    padding: var(--osirion-spacing-2, 0.5rem) var(--osirion-spacing-3, 0.75rem);
+.repository-actions {
+    display: flex;
+    gap: var(--spacing-1, 0.25rem);
 }
 
-.osirion-admin-select {
+.repository-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-1, 0.25rem);
+    border: 1px solid var(--border-color, #e1e4e8);
+    border-radius: var(--border-radius-sm, 3px);
+    background-color: var(--background-primary, #ffffff);
+    color: var(--text-primary, #24292e);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+    .repository-button:hover {
+        background-color: var(--background-hover, #f6f8fa);
+    }
+
+.repository-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+}
+
+.repository-select-container {
+    padding: var(--spacing-2, 0.5rem) var(--spacing-3, 0.75rem);
+}
+
+.repository-select {
     width: 100%;
-    padding: var(--osirion-spacing-2, 0.5rem);
-    border: var(--osirion-border-width, 1px) solid var(--osirion-border-color);
-    border-radius: var(--osirion-radius-base);
-    background-color: var(--osirion-background-primary);
-    color: var(--osirion-text-primary);
-    font-family: var(--osirion-font-family-base);
-    font-size: var(--osirion-font-size-base);
+    padding: var(--spacing-2, 0.5rem);
+    border: var(--border-width, 1px) solid var(--border-color, #e1e4e8);
+    border-radius: var(--border-radius, 6px);
+    background-color: var(--background-primary, #ffffff);
+    color: var(--text-primary, #24292e);
+    font-family: var(--font-family-base, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif);
+    font-size: var(--font-size-base, 14px);
 }
 
-.osirion-admin-repo-details {
-    padding: var(--osirion-spacing-3, 0.75rem);
-    background-color: var(--osirion-background-secondary);
-    border-top: var(--osirion-border-width, 1px) solid var(--osirion-border-color);
+.repository-details {
+    padding: var(--spacing-3, 0.75rem);
+    background-color: var(--background-secondary, #f6f8fa);
+    border-top: var(--border-width, 1px) solid var(--border-color, #e1e4e8);
+}
+
+.repository-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1, 0.25rem);
+    margin-bottom: var(--spacing-2, 0.5rem);
+}
+
+.repository-loading,
+.repository-error,
+.repository-empty {
+    padding: var(--spacing-3, 0.75rem);
+    text-align: center;
+}
+
+.repository-loading-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--border-color, #e1e4e8);
+    border-top-color: var(--primary-color, #0366d6);
+    border-radius: 50%;
+    animation: repository-spin 1s linear infinite;
+    margin-right: var(--spacing-2, 0.5rem);
+}
+
+@keyframes repository-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.repository-button-link {
+    background: transparent;
+    border: none;
+    color: var(--primary-color, #0366d6);
+    padding: 0;
+    font-weight: normal;
+    text-decoration: none;
+}
+
+    .repository-button-link:hover {
+        text-decoration: underline;
+        background: transparent;
+    }
+
+.repository-name {
+    font-weight: var(--font-weight-medium, 500);
+    color: var(--text-primary, #24292e);
+}
+
+.repository-description {
+    color: var(--text-secondary, #6a737d);
+    font-size: var(--font-size-sm, 0.875rem);
+}
+
+.repository-visibility {
+    display: flex;
+    gap: var(--spacing-2, 0.5rem);
+    font-size: var(--font-size-xs, 0.75rem);
+}
+
+.repository-private {
+    padding: 0.125rem 0.375rem;
+    background-color: var(--background-error-light, #ffebe9);
+    color: var(--text-error, #cf222e);
+    border-radius: 999px;
+}
+
+.repository-public {
+    padding: 0.125rem 0.375rem;
+    background-color: var(--background-success-light, #dafbe1);
+    color: var(--text-success, #2da44e);
+    border-radius: 999px;
 }

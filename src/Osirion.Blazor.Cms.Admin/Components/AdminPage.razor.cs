@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Components;
-using Osirion.Blazor.Cms.Admin.Services;
+using Osirion.Blazor.Cms.Admin.Core.State;
 
 namespace Osirion.Blazor.Cms.Admin.Components;
-public partial class AdminPage(CmsAdminState adminState)
+public partial class AdminPage(CmsState adminState)
 {
     [Parameter]
     public string Title { get; set; } = "Osirion CMS";

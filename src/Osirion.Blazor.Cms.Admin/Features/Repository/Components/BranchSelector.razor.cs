@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Osirion.Blazor.Cms.Admin.Common.Base;
 using Osirion.Blazor.Cms.Admin.Common.Extensions;
 using Osirion.Blazor.Cms.Admin.Features.Repository.ViewModels;
 using Osirion.Blazor.Cms.Domain.Models.GitHub;
