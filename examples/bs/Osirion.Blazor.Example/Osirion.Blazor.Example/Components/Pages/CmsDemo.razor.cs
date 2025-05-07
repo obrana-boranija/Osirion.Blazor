@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Enums;
+using Osirion.Blazor.Cms.Domain.Exceptions;
 using Osirion.Blazor.Cms.Domain.Repositories;
 using Osirion.Blazor.Cms.Domain.Services;
 
@@ -31,6 +32,7 @@ public partial class CmsDemo(IContentProviderManager ContentProviderManager)
     private string _providerId = "";
     private ContentItem? _contentItem;
     private Dictionary<string, string> _providers = new();
+    private string? exMessage = null;
 
     /// <summary>
     /// Initialize component when parameters are set
@@ -65,25 +67,32 @@ public partial class CmsDemo(IContentProviderManager ContentProviderManager)
 
     protected override async Task OnInitializedAsync()
     {
-        // Get the provider
-        var provider = ContentProviderManager.GetDefaultProvider();
-
-        // Create a query
-        var query = new ContentQuery
+        try
         {
-            //Directory = "blog", // Filter by directory
-            SortBy = SortField.Date,
-            SortDirection = SortDirection.Descending,
-            Take = 10 // Latest 10 blog posts
-        };
+            // Get the provider
+            var provider = ContentProviderManager.GetDefaultProvider();
 
-        // Execute query
-        blogPosts = await provider.GetItemsByQueryAsync(query);
-        var localDir = await provider.GetDirectoriesAsync("en");
+            // Create a query
+            var query = new ContentQuery
+            {
+                //Directory = "blog", // Filter by directory
+                SortBy = SortField.Date,
+                SortDirection = SortDirection.Descending,
+                Take = 10 // Latest 10 blog posts
+            };
 
-        directories = localDir.FirstOrDefault()?.Children;
+            // Execute query
+            blogPosts = await provider.GetItemsByQueryAsync(query);
+            var localDir = await provider.GetDirectoriesAsync("en");
 
-        _contentItem = blogPosts?.FirstOrDefault();
+            directories = localDir.FirstOrDefault()?.Children;
+
+            _contentItem = blogPosts?.FirstOrDefault();
+        }
+        catch (ContentProviderException ex)
+        {
+            exMessage = ex.Message;
+        }
     }
 
     /// <summary>
