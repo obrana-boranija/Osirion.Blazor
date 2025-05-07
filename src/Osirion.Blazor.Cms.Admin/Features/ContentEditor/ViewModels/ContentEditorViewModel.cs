@@ -1,10 +1,12 @@
 ﻿using Osirion.Blazor.Cms.Admin.Application.Commands;
+using Osirion.Blazor.Cms.Admin.Application.Queries;
 using Osirion.Blazor.Cms.Admin.Services.Events;
 using Osirion.Blazor.Cms.Admin.Services.State;
 using Osirion.Blazor.Cms.Application.Commands;
 using Osirion.Blazor.Cms.Application.Queries;
 using Osirion.Blazor.Cms.Domain.Models;
 using Osirion.Blazor.Cms.Domain.Models.GitHub;
+using System.Threading;
 
 namespace Osirion.Blazor.Cms.Admin.Features.ContentEditor.ViewModels;
 
@@ -92,11 +94,11 @@ public class ContentEditorViewModel
             };
 
             // Dispatch command
-            var response = await _commandDispatcher.DispatchAsync<SaveContentCommand, GitHubFileCommitResponse>(command);
+            await _commandDispatcher.DispatchAsync(command);
 
             // Update post with new information
-            EditingPost.FilePath = response.Content.Path;
-            EditingPost.Sha = response.Content.Sha;
+            EditingPost.FilePath = command.Path;
+            EditingPost.Sha = command.Sha;
 
             // Publish content saved event
             _eventMediator.Publish(new ContentSavedEvent(EditingPost.FilePath));
@@ -122,7 +124,16 @@ public class ContentEditorViewModel
         }
     }
 
-    // Other methods...
+    public void DiscardChanges()
+    {
+        EditingPost = null;
+        IsCreatingNew = false;
+        FileName = string.Empty;
+        CommitMessage = string.Empty;
+        ErrorMessage = null;
+
+        NotifyStateChanged();
+    }
 
     protected void NotifyStateChanged()
     {

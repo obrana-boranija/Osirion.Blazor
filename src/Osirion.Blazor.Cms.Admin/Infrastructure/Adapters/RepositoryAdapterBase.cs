@@ -46,4 +46,8 @@ public abstract class RepositoryAdapterBase : IContentRepositoryAdapter
         }
         _logger.LogDebug(message);
     }
+
+    public abstract Task<GitHubPullRequest> CreatePullRequestAsync(string title, string body, string head, string baseBranch);
+
+    public abstract Task<List<GitHubItem>> SearchFilesAsync(string query);
 }

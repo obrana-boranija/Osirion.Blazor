@@ -126,7 +126,7 @@ public class RepositoryService
                 title, body, headBranch, baseBranch);
 
             _logger.LogInformation("Pull request created successfully: {Url}",
-                pullRequest.HtmlUrl);
+                pullRequest.Url);
 
             _eventMediator.Publish(new StatusNotificationEvent(
                 "Pull request created successfully", StatusType.Success));

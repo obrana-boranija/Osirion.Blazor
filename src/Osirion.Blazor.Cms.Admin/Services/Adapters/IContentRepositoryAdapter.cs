@@ -17,6 +17,8 @@ public interface IContentRepositoryAdapter
     Task<GitHubFileCommitResponse> SaveContentAsync(string path, string content, string message, string? sha = null);
     Task<GitHubFileCommitResponse> DeleteFileAsync(string path, string message, string sha);
     Task<GitHubBranch> CreateBranchAsync(string name, string baseBranch);
+    Task<GitHubPullRequest> CreatePullRequestAsync(string title, string body, string head, string baseBranch);
+    Task<List<GitHubItem>> SearchFilesAsync(string query);
 
     // Configuration
     void SetRepository(string repositoryName);
