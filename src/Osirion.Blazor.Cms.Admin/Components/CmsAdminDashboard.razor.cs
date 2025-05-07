@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Components;
-using Osirion.Blazor.Cms.Admin.Services;
+using Osirion.Blazor.Cms.Admin.Core.State;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Models;
 using Osirion.Blazor.Cms.Domain.Models.GitHub;
@@ -8,7 +8,7 @@ using Osirion.Blazor.Cms.Domain.ValueObjects;
 
 namespace Osirion.Blazor.Cms.Admin.Components;
 
-public partial class CmsAdminDashboard(IGitHubAdminService gitHubService, CmsAdminState adminState)
+public partial class CmsAdminDashboard(IGitHubAdminService gitHubService, CmsState adminState)
 {
     [Parameter]
     public RenderFragment? ChildContent { get; set; }

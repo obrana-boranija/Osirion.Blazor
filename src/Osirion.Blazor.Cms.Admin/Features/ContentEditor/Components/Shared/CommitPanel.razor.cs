@@ -1,8 +1,9 @@
 using Microsoft.AspNetCore.Components;
+using Osirion.Blazor.Cms.Admin.Shared.Components;
 
-namespace Osirion.Blazor.Cms.Admin.Components.Editor;
+namespace Osirion.Blazor.Cms.Admin.Features.ContentEditor.Components.Shared;
 
-public partial class CommitPanel
+public partial class CommitPanel : BaseComponent
 {
     [Parameter]
     public string Title { get; set; } = "Commit Changes";

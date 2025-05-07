@@ -1,0 +1,125 @@
+﻿@namespace Osirion.Blazor.Cms.Admin.Features.ContentEditor.Components
+@inherits EditableComponent
+@using Osirion.Blazor.Cms.Admin.Features.ContentEditor.Components.Shared
+@using Osirion.Blazor.Cms.Admin.Features.ContentEditor.ViewModels
+@using Osirion.Blazor.Cms.Admin.Shared.Components
+
+<div class="content-editor @CssClass">
+    @if (ViewModel.EditingPost == null)
+    {
+        <div class="content-editor-empty">
+            <span>Select a file to edit or create a new file.</span>
+        </div>
+    }
+    else
+    {
+        <div class="content-editor-container">
+            <div class="content-editor-header">
+                <div class="content-editor-tabs">
+                    <button type="button" 
+                            class="content-editor-tab-button @(ActiveTab == "content" ? "active" : "")"
+                            @onclick="@(() => SetActiveTab("content"))">
+                        Content
+                    </button>
+                    <button type="button" 
+                            class="content-editor-tab-button @(ActiveTab == "metadata" ? "active" : "")"
+                            @onclick="@(() => SetActiveTab("metadata"))">
+                        Metadata
+                    </button>
+                </div>
+                <div class="content-editor-actions">
+                    <button type="button"
+                            class="content-editor-button content-editor-button-icon"
+                            title="Toggle Preview"
+                            @onclick="TogglePreview">
+                        <span class="content-editor-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="content-editor-body">
+                @if (ActiveTab == "content")
+                {
+                    <div class="content-editor-main">
+                        <MarkdownEditorWithPreview @ref="EditorPreviewRef"
+                                       Content="@ViewModel.EditingPost.Content"
+                                       ContentChanged="@((content) => UpdateContent(content))"
+                                       ShowToolbar="true"
+                                       EditorLabel="Markdown"
+                                       PreviewLabel="Preview"
+                                       AutoFocus="true"
+                                       SyncScroll="true"
+                                       ShowPreview="@IsPreviewVisible" />
+                    </div>
+                }
+                else if (ActiveTab == "metadata")
+                {
+                    <MetadataEditor Metadata="@ViewModel.EditingPost.Metadata"
+                                   MetadataChanged="@((metadata) => MarkAsDirty())"
+                                   ShowPreview="true" />
+                }
+            </div>
+        </div>
+
+        <div class="content-editor-footer">
+            <div class="content-editor-status">
+                @if (IsDirty)
+                {
+                    <span class="content-editor-status-dirty">Changes not saved</span>
+                }
+            </div>
+
+            <button type="button"
+                    class="content-editor-button content-editor-button-secondary"
+                    @onclick="DiscardChanges">
+                Discard Changes
+            </button>
+
+            <div class="content-editor-main-actions">
+                @if (ViewModel.IsCreatingNew)
+                {
+                    <div class="content-editor-form-group content-editor-form-group-inline">
+                        <label class="content-editor-label" for="fileName">File Name:</label>
+                        <input type="text"
+                               class="content-editor-input"
+                               id="fileName"
+                               @bind="ViewModel.FileName"
+                               placeholder="Enter file name" />
+                        <span class="content-editor-input-suffix">.md</span>
+                    </div>
+                }
+
+                @if (AskForCommitMessage)
+                {
+                    <CommitPanel CommitMessage="@ViewModel.CommitMessage"
+                                CommitMessageChanged="@((msg) => ViewModel.CommitMessage = msg)"
+                                OnCommitClicked="SaveChanges"
+                                OnCancelClicked="DiscardChanges"
+                                IsCommitting="@IsSaving" />
+                }
+                else
+                {
+                    <button type="button"
+                            class="content-editor-button content-editor-button-primary"
+                            @onclick="SaveChanges"
+                            disabled="@(IsSaving || (ViewModel.IsCreatingNew && string.IsNullOrWhiteSpace(ViewModel.FileName)))">
+                        @if (IsSaving)
+                        {
+                            <span class="content-editor-loading-spinner"></span>
+                            <span>Saving...</span>
+                        }
+                        else
+                        {
+                            <span>Save Changes</span>
+                        }
+                    </button>
+                }
+            </div>
+        </div>
+    }
+</div>

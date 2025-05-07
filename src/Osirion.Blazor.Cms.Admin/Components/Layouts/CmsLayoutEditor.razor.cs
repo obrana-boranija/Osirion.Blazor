@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Components;
-using Osirion.Blazor.Cms.Admin.Services;
+using Osirion.Blazor.Cms.Admin.Core.State;
 
 namespace Osirion.Blazor.Cms.Admin.Components;
 
-public partial class CmsLayoutEditor(CmsAdminState adminState)
+public partial class CmsLayoutEditor(CmsState adminState)
 {
     /// <summary>
     /// Gets or sets the page title

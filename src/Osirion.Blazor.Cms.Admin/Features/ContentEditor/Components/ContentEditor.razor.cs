@@ -1,15 +1,15 @@
-﻿using Microsoft.AspNetCore.Components;
-using Osirion.Blazor.Cms.Admin.Common.Base;
-using Osirion.Blazor.Cms.Admin.Common.Extensions;
+using Microsoft.AspNetCore.Components;
+using Osirion.Blazor.Cms.Admin.Features.ContentEditor.Components.Shared;
 using Osirion.Blazor.Cms.Admin.Features.ContentEditor.ViewModels;
+using Osirion.Blazor.Cms.Admin.Shared.Components;
 using Osirion.Blazor.Cms.Domain.Models;
 
-namespace Osirion.Blazor.Cms.Admin.Components.Editor;
+namespace Osirion.Blazor.Cms.Admin.Features.ContentEditor.Components;
 
-public partial class ContentEditor : EditableComponentBase
+public partial class ContentEditor : EditableComponent
 {
     [Inject]
-    private ContentEditorViewModel ViewModel { get; set; } = default!;
+    private ContentEditorViewModel ViewModel { get; set; } = null!;
 
     [Parameter]
     public bool IsMetadataPanelVisible { get; set; } = true;
@@ -26,18 +26,13 @@ public partial class ContentEditor : EditableComponentBase
     [Parameter]
     public EventCallback OnDiscard { get; set; }
 
-    private MarkdownEditorPreview? EditorPreviewRef;
+    private MarkdownEditorWithPreview? EditorPreviewRef;
     private string ActiveTab { get; set; } = "content";
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
         ViewModel.StateChanged += StateHasChanged;
-    }
-
-    protected override void OnParametersSet()
-    {
-        base.OnParametersSet();
     }
 
     public void Dispose()
@@ -88,10 +83,5 @@ public partial class ContentEditor : EditableComponentBase
                 await OnDiscard.InvokeAsync();
             }
         }
-    }
-
-    private string GetContentEditorClass()
-    {
-        return this.GetCssClassNames(CssClass);
     }
 }

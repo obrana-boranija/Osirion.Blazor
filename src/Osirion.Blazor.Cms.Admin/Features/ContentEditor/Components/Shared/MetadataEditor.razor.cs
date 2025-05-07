@@ -1,12 +1,13 @@
 using Microsoft.AspNetCore.Components;
+using Osirion.Blazor.Cms.Admin.Shared.Components;
 using Osirion.Blazor.Cms.Domain.ValueObjects;
 
-namespace Osirion.Blazor.Cms.Admin.Components.Editor;
+namespace Osirion.Blazor.Cms.Admin.Features.ContentEditor.Components.Shared;
 
-public partial class MetadataEditor
+public partial class MetadataEditor : BaseComponent
 {
     [Parameter]
-    public FrontMatter Metadata { get; set; }
+    public FrontMatter Metadata { get; set; } = FrontMatter.Create("New Post");
 
     [Parameter]
     public EventCallback<FrontMatter> MetadataChanged { get; set; }
@@ -14,12 +15,19 @@ public partial class MetadataEditor
     [Parameter]
     public bool ShowPreview { get; set; } = true;
 
+    [Parameter]
+    public bool ShowActions { get; set; } = true;
+
+    [Parameter]
+    public EventCallback OnRefresh { get; set; }
+
     private string CategoriesInput
     {
         get => string.Join(", ", Metadata.Categories);
         set
         {
-            Metadata.WithCategories(ParseList(value));
+            var updatedMetadata = Metadata.WithCategories(ParseList(value));
+            Metadata = updatedMetadata;
             NotifyMetadataChanged();
         }
     }
@@ -29,7 +37,8 @@ public partial class MetadataEditor
         get => string.Join(", ", Metadata.Tags);
         set
         {
-            Metadata.WithTags(ParseList(value));
+            var updatedMetadata = Metadata.WithTags(ParseList(value));
+            Metadata = updatedMetadata;
             NotifyMetadataChanged();
         }
     }
@@ -47,9 +56,15 @@ public partial class MetadataEditor
         }
         set
         {
-            Metadata.WithDate(value);
+            Metadata = Metadata.WithDate(value);
             NotifyMetadataChanged();
         }
+    }
+
+    protected override void OnParametersSet()
+    {
+        // Initialize with default empty front matter if null
+        Metadata ??= FrontMatter.Create("New Post");
     }
 
     private List<string> ParseList(string input)
@@ -79,8 +94,11 @@ public partial class MetadataEditor
         return Metadata.ToYaml();
     }
 
-    private string GetMetadataEditorClass()
+    private async Task RefreshMetadata()
     {
-        return $"osirion-admin-metadata-editor {CssClass}".Trim();
+        if (OnRefresh.HasDelegate)
+        {
+            await OnRefresh.InvokeAsync();
+        }
     }
 }

@@ -1,0 +1,153 @@
+﻿@namespace Osirion.Blazor.Cms.Admin.Features.ContentEditor.Components.Shared
+@inherits BaseComponent
+@using Osirion.Blazor.Cms.Admin.Shared.Components
+@using Osirion.Blazor.Cms.Domain.ValueObjects
+
+<div class="metadata-editor @CssClass">
+    <div class="metadata-editor-header">
+        <h3 class="metadata-editor-title">Metadata</h3>
+
+        @if (ShowActions)
+        {
+            <div class="metadata-editor-actions">
+                <button type="button"
+                        class="metadata-editor-button metadata-editor-button-icon"
+                        title="Refresh metadata"
+                        @onclick="RefreshMetadata">
+                    <span class="metadata-editor-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M23 4v6h-6"></path>
+                            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                        </svg>
+                    </span>
+                </button>
+            </div>
+        }
+    </div>
+
+    <div class="metadata-editor-content">
+        <div class="metadata-editor-form-group">
+            <label class="metadata-editor-label" for="title">Title</label>
+            <input type="text"
+                   class="metadata-editor-input"
+                   id="title"
+                   @bind="Metadata.Title"
+                   @bind:event="oninput"
+                   @bind:after="NotifyMetadataChanged"
+                   placeholder="Enter title" />
+        </div>
+
+        <div class="metadata-editor-form-group">
+            <label class="metadata-editor-label" for="description">Description</label>
+            <textarea class="metadata-editor-textarea"
+                      id="description"
+                      @bind="Metadata.Description"
+                      @bind:event="oninput"
+                      @bind:after="NotifyMetadataChanged"
+                      placeholder="Enter description"
+                      rows="3"></textarea>
+        </div>
+
+        <div class="metadata-editor-form-group">
+            <label class="metadata-editor-label" for="author">Author</label>
+            <input type="text"
+                   class="metadata-editor-input"
+                   id="author"
+                   @bind="Metadata.Author"
+                   @bind:event="oninput"
+                   @bind:after="NotifyMetadataChanged"
+                   placeholder="Enter author" />
+        </div>
+
+        <div class="metadata-editor-form-group">
+            <label class="metadata-editor-label" for="date">Date</label>
+            <input type="date"
+                   class="metadata-editor-input"
+                   id="date"
+                   @bind="PostDate"
+                   @bind:event="onchange"
+                   @bind:after="NotifyMetadataChanged" />
+        </div>
+
+        <div class="metadata-editor-form-group">
+            <label class="metadata-editor-label" for="featuredImage">Featured Image URL</label>
+            <input type="text"
+                   class="metadata-editor-input"
+                   id="featuredImage"
+                   @bind="Metadata.FeaturedImage"
+                   @bind:event="oninput"
+                   @bind:after="NotifyMetadataChanged"
+                   placeholder="Enter image URL" />
+        </div>
+
+        <div class="metadata-editor-form-group">
+            <label class="metadata-editor-label" for="categories">Categories</label>
+            <input type="text"
+                   class="metadata-editor-input"
+                   id="categories"
+                   @bind="CategoriesInput"
+                   @bind:event="oninput"
+                   placeholder="Enter categories (comma separated)" />
+        </div>
+
+        <div class="metadata-editor-form-group">
+            <label class="metadata-editor-label" for="tags">Tags</label>
+            <input type="text"
+                   class="metadata-editor-input"
+                   id="tags"
+                   @bind="TagsInput"
+                   @bind:event="oninput"
+                   placeholder="Enter tags (comma separated)" />
+        </div>
+
+        <div class="metadata-editor-checkboxes">
+            <div class="metadata-editor-checkbox-group">
+                <label class="metadata-editor-checkbox">
+                    <input type="checkbox"
+                           @bind="Metadata.IsFeatured"
+                           @bind:after="NotifyMetadataChanged" />
+                    <span>Featured</span>
+                </label>
+            </div>
+
+            <div class="metadata-editor-checkbox-group">
+                <label class="metadata-editor-checkbox">
+                    <input type="checkbox"
+                           @bind="Metadata.Published"
+                           @bind:after="NotifyMetadataChanged" />
+                    <span>Published</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="metadata-editor-form-group">
+            <label class="metadata-editor-label" for="layout">Layout Template</label>
+            <input type="text"
+                   class="metadata-editor-input"
+                   id="layout"
+                   @bind="Metadata.Layout"
+                   @bind:event="oninput"
+                   @bind:after="NotifyMetadataChanged"
+                   placeholder="Enter layout template name (optional)" />
+        </div>
+
+        <div class="metadata-editor-form-group">
+            <label class="metadata-editor-label" for="slug">Slug</label>
+            <input type="text"
+                   class="metadata-editor-input"
+                   id="slug"
+                   @bind="Metadata.Slug"
+                   @bind:event="oninput"
+                   @bind:after="NotifyMetadataChanged"
+                   placeholder="Enter URL slug (optional)" />
+        </div>
+
+        @if (ShowPreview)
+        {
+            <div class="metadata-editor-form-group">
+                <label class="metadata-editor-label">Front Matter Preview</label>
+                <pre class="metadata-editor-code-preview">@GetFormattedFrontMatter()</pre>
+            </div>
+        }
+    </div>
+</div>

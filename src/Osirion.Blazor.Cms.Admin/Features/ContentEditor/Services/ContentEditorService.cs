@@ -1,25 +1,27 @@
 ﻿using Microsoft.Extensions.Logging;
-using Osirion.Blazor.Cms.Admin.Services.Adapters;
-using Osirion.Blazor.Cms.Admin.Services.Events;
+using Osirion.Blazor.Cms.Admin.Core.Events;
+using Osirion.Blazor.Cms.Admin.Shared.Events;
 using Osirion.Blazor.Cms.Domain.Models;
 using Osirion.Blazor.Cms.Domain.Models.GitHub;
+using Osirion.Blazor.Cms.Domain.Repositories;
 using Osirion.Blazor.Cms.Domain.ValueObjects;
+using System.Text.RegularExpressions;
 
 namespace Osirion.Blazor.Cms.Admin.Features.ContentEditor.Services;
 
 public class ContentEditorService
 {
-    private readonly IContentRepositoryAdapter _repositoryAdapter;
-    private readonly CmsEventMediator _eventMediator;
+    private readonly IContentRepository _contentRepository;
+    private readonly IEventPublisher _eventPublisher;
     private readonly ILogger<ContentEditorService> _logger;
 
     public ContentEditorService(
-        IContentRepositoryAdapter repositoryAdapter,
-        CmsEventMediator eventMediator,
+        IContentRepository contentRepository,
+        IEventPublisher eventPublisher,
         ILogger<ContentEditorService> logger)
     {
-        _repositoryAdapter = repositoryAdapter;
-        _eventMediator = eventMediator;
+        _contentRepository = contentRepository;
+        _eventPublisher = eventPublisher;
         _logger = logger;
     }
 
@@ -34,7 +36,7 @@ public class ContentEditorService
                 ? $"Update {Path.GetFileName(post.FilePath)}"
                 : commitMessage;
 
-            var response = await _repositoryAdapter.SaveContentAsync(
+            var response = await _contentRepository.SaveContentAsync(
                 post.FilePath,
                 content,
                 message,
@@ -42,8 +44,8 @@ public class ContentEditorService
 
             _logger.LogInformation("Content saved successfully: {Path}", post.FilePath);
 
-            _eventMediator.Publish(new ContentSavedEvent(post.FilePath));
-            _eventMediator.Publish(new StatusNotificationEvent(
+            _eventPublisher.Publish(new ContentSavedEvent(post.FilePath));
+            _eventPublisher.Publish(new StatusNotificationEvent(
                 $"File saved successfully: {post.FilePath}", StatusType.Success));
 
             return response;
@@ -51,8 +53,8 @@ public class ContentEditorService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error saving content: {Path}", post.FilePath);
-            _eventMediator.Publish(new ErrorOccurredEvent($"Failed to save file: {post.FilePath}", ex));
-            throw;
+            _eventPublisher.Publish(new ErrorOccurredEvent($"Failed to save file: {post.FilePath}", ex));
+            throw new ContentEditorException($"Failed to save content: {ex.Message}", ex);
         }
     }
 
@@ -61,15 +63,15 @@ public class ContentEditorService
         try
         {
             _logger.LogInformation("Fetching blog post: {Path}", path);
-            var blogPost = await _repositoryAdapter.GetBlogPostAsync(path);
+            var blogPost = await _contentRepository.GetBlogPostAsync(path);
             _logger.LogInformation("Blog post fetched successfully: {Path}", path);
             return blogPost;
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error fetching blog post: {Path}", path);
-            _eventMediator.Publish(new ErrorOccurredEvent($"Failed to load file: {path}", ex));
-            throw;
+            _eventPublisher.Publish(new ErrorOccurredEvent($"Failed to load file: {path}", ex));
+            throw new ContentEditorException($"Failed to load content: {ex.Message}", ex);
         }
     }
 
@@ -97,12 +99,12 @@ public class ContentEditorService
             _logger.LogInformation("Deleting blog post: {Path}", path);
 
             var message = $"Delete {Path.GetFileName(path)}";
-            var response = await _repositoryAdapter.DeleteFileAsync(path, message, sha);
+            var response = await _contentRepository.DeleteFileAsync(path, message, sha);
 
             _logger.LogInformation("Blog post deleted successfully: {Path}", path);
 
-            _eventMediator.Publish(new ContentDeletedEvent(path));
-            _eventMediator.Publish(new StatusNotificationEvent(
+            _eventPublisher.Publish(new ContentDeletedEvent(path));
+            _eventPublisher.Publish(new StatusNotificationEvent(
                 $"File deleted successfully: {path}", StatusType.Success));
 
             return response;
@@ -110,8 +112,8 @@ public class ContentEditorService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error deleting blog post: {Path}", path);
-            _eventMediator.Publish(new ErrorOccurredEvent($"Failed to delete file: {path}", ex));
-            throw;
+            _eventPublisher.Publish(new ErrorOccurredEvent($"Failed to delete file: {path}", ex));
+            throw new ContentEditorException($"Failed to delete content: {ex.Message}", ex);
         }
     }
 
@@ -122,19 +124,11 @@ public class ContentEditorService
             return "new-post";
         }
 
-        // Convert to lowercase and remove invalid characters
-        var fileName = new string(title.ToLowerInvariant()
-            .Where(c => char.IsLetterOrDigit(c) || c == ' ' || c == '-')
-            .ToArray());
-
-        // Replace spaces with dashes
-        fileName = fileName.Replace(" ", "-");
-
-        // Remove consecutive dashes
-        while (fileName.Contains("--"))
-        {
-            fileName = fileName.Replace("--", "-");
-        }
+        // Convert to kebab case
+        var fileName = Regex.Replace(title.ToLowerInvariant(), @"[^a-z0-9\s-]", "");
+        fileName = Regex.Replace(fileName, @"\s+", "-");
+        fileName = Regex.Replace(fileName, @"-{2,}", "-");
+        fileName = fileName.Trim('-');
 
         // Ensure it ends with .md
         if (!fileName.EndsWith(".md", StringComparison.OrdinalIgnoreCase))
@@ -144,4 +138,11 @@ public class ContentEditorService
 
         return fileName;
     }
+}
+
+// Custom exception for ContentEditor operations
+public class ContentEditorException : Exception
+{
+    public ContentEditorException(string message) : base(message) { }
+    public ContentEditorException(string message, Exception innerException) : base(message, innerException) { }
 }
