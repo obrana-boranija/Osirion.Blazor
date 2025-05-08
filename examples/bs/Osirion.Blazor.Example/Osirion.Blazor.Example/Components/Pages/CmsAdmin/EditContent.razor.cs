@@ -1,12 +1,24 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Osirion.Blazor.Cms.Admin.Services;
+using Osirion.Blazor.Cms.Admin.Core.Events;
+using Osirion.Blazor.Cms.Admin.Core.State;
+using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Models;
 using Osirion.Blazor.Cms.Domain.ValueObjects;
+using Osirion.Blazor.Components;
 
 namespace Osirion.Blazor.Example.Components.Pages.CmsAdmin;
 
-public partial class EditContent
+public partial class EditContent(NavigationManager navigationManager) : OsirionComponentBase, IDisposable
 {
+    [Inject]
+    private CmsState AdminState { get; set; } = default!;
+
+    [Inject]
+    private IGitHubAdminService GitHubService { get; set; } = default!;
+
+    [Inject]
+    private IEventPublisher EventPublisher { get; set; } = default!;
+
     [SupplyParameterFromQuery]
     public string? Path { get; set; }
 
@@ -14,8 +26,8 @@ public partial class EditContent
 
     protected override void OnInitialized()
     {
-        // Don't try to load content yet - wait for OnAfterRenderAsync
-        // We can still initialize other state that doesn't require JSInterop
+        // Subscribe to state changes to trigger re-render
+        AdminState.StateChanged += StateHasChanged;
     }
 
     protected override async Task OnParametersSetAsync()
@@ -32,22 +44,7 @@ public partial class EditContent
     {
         if (firstRender)
         {
-            //// Initialize state persistence if available
-            //if (AdminState is CmsAdminStatePersistent persistentState)
-            //{
-            //    await persistentState.InitializeAsync();
-
-            //    // Now we can load content based on parameters or state
-            //    await LoadContentBasedOnParameters();
-
-            //    // Force a re-render to reflect the updated state
-            //    StateHasChanged();
-            //}
-            //else
-            //{
-                // Even if we don't have the persistent state, still try to load content
-                await LoadContentBasedOnParameters();
-            //}
+            await LoadContentBasedOnParameters();
         }
 
         await base.OnAfterRenderAsync(firstRender);
@@ -66,7 +63,7 @@ public partial class EditContent
         else if (AdminState.SelectedItem != null && AdminState.SelectedItem.IsMarkdownFile)
         {
             // Redirect to proper route if we have a selected item
-            NavigationManager.NavigateTo($"/admin/content/edit/{AdminState.SelectedItem.Path}");
+            navigationManager.NavigateTo($"/admin/content/edit/{AdminState.SelectedItem.Path}");
         }
         else if (AdminState.EditingPost != null && AdminState.IsEditing)
         {
@@ -75,7 +72,7 @@ public partial class EditContent
             if (!string.IsNullOrEmpty(AdminState.EditingPost.FilePath) &&
                 !AdminState.IsCreatingNewFile)
             {
-                NavigationManager.NavigateTo($"/admin/content/edit/{AdminState.EditingPost.FilePath}");
+                navigationManager.NavigateTo($"/admin/content/edit/{AdminState.EditingPost.FilePath}");
             }
         }
     }
@@ -88,6 +85,7 @@ public partial class EditContent
         }
 
         IsLoading = true;
+        StateHasChanged();
 
         try
         {
@@ -101,6 +99,7 @@ public partial class EditContent
         finally
         {
             IsLoading = false;
+            StateHasChanged();
         }
     }
 
@@ -116,24 +115,28 @@ public partial class EditContent
                 $"{AdminState.CurrentPath}/new-post.md"
         };
 
+        // Update state
         AdminState.SetEditingPost(newPost, true);
+
+        // Publish event
+        EventPublisher.Publish(new CreateNewContentEvent(AdminState.CurrentPath));
     }
 
     private void GoToContentBrowser()
     {
-        NavigationManager.NavigateTo("/admin/content");
+        navigationManager.NavigateTo("/admin/content");
     }
 
     private async Task HandleSaveComplete(BlogPost post)
     {
         // Navigate to content listing
-        NavigationManager.NavigateTo("/admin/content");
+        navigationManager.NavigateTo("/admin/content");
     }
 
     private void HandleDiscardChanges()
     {
         // Navigate to content listing
-        NavigationManager.NavigateTo("/admin/content");
+        navigationManager.NavigateTo("/admin/content");
     }
 
     private string GetPageTitle()
@@ -145,6 +148,29 @@ public partial class EditContent
 
         return AdminState.IsCreatingNewFile
             ? "New Post"
-            : $"Edit: {AdminState.EditingPost.Metadata.Title}";
+            : $"Edit: {AdminState.EditingPost.Metadata?.Title}";
+    }
+
+    private string GetPageSubtitle()
+    {
+        if (AdminState.EditingPost == null)
+        {
+            return "Create or edit content";
+        }
+
+        if (AdminState.IsCreatingNewFile)
+        {
+            return "Create a new post";
+        }
+
+        // Get the file path relative to the repository root
+        var filePath = AdminState.EditingPost.FilePath;
+        return $"Editing: {filePath}";
+    }
+
+    public void Dispose()
+    {
+        // Unsubscribe from state changes when component is disposed
+        AdminState.StateChanged -= StateHasChanged;
     }
 }
