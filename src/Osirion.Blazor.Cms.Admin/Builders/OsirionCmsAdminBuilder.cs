@@ -2,19 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Admin.Configuration;
-using Osirion.Blazor.Cms.Admin.Core.Events;
-using Osirion.Blazor.Cms.Admin.Core.State;
 using Osirion.Blazor.Cms.Admin.DependencyInjection;
-using Osirion.Blazor.Cms.Admin.Features;
-using Osirion.Blazor.Cms.Admin.Features.Authentication.Services;
-using Osirion.Blazor.Cms.Admin.Features.ContentBrowser.Services;
-using Osirion.Blazor.Cms.Admin.Features.ContentEditor.Services;
-using Osirion.Blazor.Cms.Admin.Features.Repository.Services;
-using Osirion.Blazor.Cms.Admin.Infrastructure.Adapters;
-using Osirion.Blazor.Cms.Admin.Services;
-using Osirion.Blazor.Cms.Admin.Services.Adapters;
-using Osirion.Blazor.Cms.Admin.Services.Events;
-using Osirion.Blazor.Cms.Admin.Services.State;
 using Osirion.Blazor.Cms.Domain.Services;
 
 namespace Osirion.Blazor.Cms.Admin.Builders;
@@ -46,9 +34,6 @@ public class OsirionCmsAdminBuilder : IOsirionCmsAdminBuilder
         Services = services ?? throw new ArgumentNullException(nameof(services));
         _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-
-        // Register core services
-        RegisterCoreServices();
     }
 
     /// <summary>
@@ -177,45 +162,5 @@ public class OsirionCmsAdminBuilder : IOsirionCmsAdminBuilder
         Services.AddScoped<IContentProvider, TProvider>();
 
         return this;
-    }
-
-    /// <summary>
-    /// Registers core services needed for the CMS admin
-    /// </summary>
-    private void RegisterCoreServices()
-    {
-        // Register state services
-        Services.AddScoped<CmsState>();
-        Services.AddScoped<StateManager>();
-
-        // Register event system
-        Services.AddSingleton<CmsEventMediator>();
-        Services.AddSingleton<IEventPublisher, EventBus>();
-        Services.AddSingleton<IEventSubscriber>(provider =>
-            provider.GetRequiredService<IEventPublisher>() as EventBus
-            ?? throw new InvalidOperationException("IEventPublisher is not of type EventBus."));
-
-        // Register error handling
-        Services.AddScoped<ErrorHandlingService>();
-
-        // Register startup service
-        Services.AddScoped<CmsAdminStartupService>();
-
-        // Register repository adapter factory
-        Services.AddScoped<IContentRepositoryAdapterFactory, ContentRepositoryAdapterFactory>();
-        Services.AddScoped<IContentRepositoryAdapter>(sp => {
-            var factory = sp.GetRequiredService<IContentRepositoryAdapterFactory>();
-            return factory.CreateDefaultAdapter();
-        });
-
-        // Register feature services
-        Services.AddScoped<AuthenticationService>();
-        Services.AddScoped<ContentBrowserService>();
-        Services.AddScoped<IContentEditorService, ContentEditorService>();
-        Services.AddScoped<RepositoryService>();
-        Services.AddScoped<IMarkdownEditorService, MarkdownEditorService>();
-
-        // Register all feature modules
-        Services.AddFeatures();
     }
 }

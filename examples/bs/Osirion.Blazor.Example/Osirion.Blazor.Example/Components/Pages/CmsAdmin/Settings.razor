@@ -4,6 +4,7 @@
 @using Microsoft.Extensions.Options
 @using Osirion.Blazor.Cms.Admin
 @using Osirion.Blazor.Cms.Admin.Components
+@using Osirion.Blazor.Cms.Admin.Configuration
 @using Osirion.Blazor.Cms.Admin.Core.State
 @using Osirion.Blazor.Cms.Admin.Features.Layouts.Components
 @using Osirion.Blazor.Cms.Admin.Services
@@ -35,17 +36,17 @@
                 <div class="osirion-admin-card-body">
                     <div class="osirion-admin-form-group">
                         <label class="osirion-admin-label">Owner</label>
-                        <p class="osirion-admin-form-value">@AdminOptions.Value.Owner</p>
+                        @* <p class="osirion-admin-form-value">@AdminOptions.Value.Owne</p> *@
                     </div>
                     
                     <div class="osirion-admin-form-group">
                         <label class="osirion-admin-label">Default Repository</label>
-                        <p class="osirion-admin-form-value">@(AdminOptions.Value.DefaultRepository ?? "Not set")</p>
+                        @* <p class="osirion-admin-form-value">@(AdminOptions.Value.DefaultRepository ?? "Not set")</p> *@
                     </div>
                     
                     <div class="osirion-admin-form-group">
                         <label class="osirion-admin-label">Default Branch</label>
-                        <p class="osirion-admin-form-value">@AdminOptions.Value.DefaultBranch</p>
+                        @* <p class="osirion-admin-form-value">@AdminOptions.Value.DefaultBranch</p> *@
                     </div>
                     
                     <div class="osirion-admin-form-group">
@@ -72,30 +73,30 @@
                     <div class="osirion-admin-form-group">
                         <label class="osirion-admin-label">Allowed File Extensions</label>
                         <p class="osirion-admin-form-value">
-                            @foreach (var ext in AdminOptions.Value.AllowedFileExtensions)
+@*                             @foreach (var ext in AdminOptions.Value.AllowedFileExtensions)
                             {
                                 <span class="osirion-admin-tag">@ext</span>
-                            }
+                            } *@
                         </p>
                     </div>
                     
                     <div class="osirion-admin-form-group">
                         <label class="osirion-admin-checkbox">
-                            <input type="checkbox" checked="@AdminOptions.Value.AllowFileDelete" disabled />
+                            @* <input type="checkbox" checked="@AdminOptions.Value.AllowFileDelete" disabled /> *@
                             <span>Allow File Deletion</span>
                         </label>
                     </div>
                     
                     <div class="osirion-admin-form-group">
                         <label class="osirion-admin-checkbox">
-                            <input type="checkbox" checked="@AdminOptions.Value.AllowBranchCreation" disabled />
+                            @* <input type="checkbox" checked="@AdminOptions.Value.AllowBranchCreation" disabled /> *@
                             <span>Allow Branch Creation</span>
                         </label>
                     </div>
                     
                     <div class="osirion-admin-form-group">
                         <label class="osirion-admin-checkbox">
-                            <input type="checkbox" checked="@AdminOptions.Value.AllowPullRequests" disabled />
+                            @* <input type="checkbox" checked="@AdminOptions.Value.AllowPullRequests" disabled /> *@
                             <span>Allow Pull Requests</span>
                         </label>
                     </div>

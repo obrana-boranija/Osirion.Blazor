@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Osirion.Blazor.Cms.Admin.Builders;
 using Osirion.Blazor.Cms.Admin.Configuration;
 using Osirion.Blazor.Cms.Admin.Core.Configuration;
 using Osirion.Blazor.Cms.Admin.Interfaces;
@@ -21,20 +22,20 @@ public static class OsirionCmsAdminServiceCollectionExtensions
     /// <returns>The service collection</returns>
     public static IServiceCollection AddOsirionCmsAdmin(
         this IServiceCollection services,
-        Action<ICmsAdminBuilder> configure)
+        Action<IOsirionCmsAdminBuilder> configure)
     {
         if (services == null) throw new ArgumentNullException(nameof(services));
         if (configure == null) throw new ArgumentNullException(nameof(configure));
 
         // Add core services
-        services.AddOsirionCmsAdmin();
+        services.AddOsirionCmsAdminDI();
 
         // Configure options
         var serviceProvider = services.BuildServiceProvider();
-        var logger = serviceProvider.GetRequiredService<ILogger<CmsAdminBuilder>>();
+        var logger = serviceProvider.GetRequiredService<ILogger<OsirionCmsAdminBuilder>>();
         var configuration = serviceProvider.GetRequiredService<IConfiguration>();
 
-        var builder = new CmsAdminBuilder(services, configuration, logger);
+        var builder = new OsirionCmsAdminBuilder(services, configuration, logger);
         configure(builder);
 
         return services;
@@ -54,7 +55,7 @@ public static class OsirionCmsAdminServiceCollectionExtensions
         if (configuration == null) throw new ArgumentNullException(nameof(configuration));
 
         // Add core services
-        services.AddOsirionCmsAdmin();
+        services.AddOsirionCmsAdminDI();
 
         // Configure from appsettings
         services.Configure<CmsAdminOptions>(configuration.GetSection("Osirion:Cms:Admin"));
@@ -62,44 +63,14 @@ public static class OsirionCmsAdminServiceCollectionExtensions
         // Configure GitHub provider if present
         if (configuration.GetSection("Osirion:Cms:Admin:GitHub").Exists())
         {
-            services.AddGitHubServices(configuration);
+            services.AddGitHubAdminServices(configuration);
         }
 
         // Configure FileSystem provider if present
         if (configuration.GetSection("Osirion:Cms:Admin:FileSystem").Exists())
         {
-            services.AddFileSystemServices(configuration);
+            services.AddFileSystemAdminServices(configuration);
         }
-
-        return services;
-    }
-
-    // Helper methods for configuring specific providers
-
-    /// <summary>
-    /// Adds GitHub services to the service collection
-    /// </summary>
-    private static IServiceCollection AddGitHubServices(
-        this IServiceCollection services,
-        IConfiguration configuration)
-    {
-        services.Configure<GitHubOptions>(configuration.GetSection("Osirion:Cms:Admin:GitHub"));
-
-        // Add GitHub-specific services here
-
-        return services;
-    }
-
-    /// <summary>
-    /// Adds FileSystem services to the service collection
-    /// </summary>
-    private static IServiceCollection AddFileSystemServices(
-        this IServiceCollection services,
-        IConfiguration configuration)
-    {
-        services.Configure<FileSystemAdminOptions>(configuration.GetSection("Osirion:Cms:Admin:FileSystem"));
-
-        // Add FileSystem-specific services here
 
         return services;
     }
