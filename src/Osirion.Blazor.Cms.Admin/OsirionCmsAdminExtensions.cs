@@ -55,6 +55,7 @@ public static class OsirionCmsAdminExtensions
         services.TryAddScoped<IContentEditorService, ContentEditorService>();
         services.TryAddScoped<IMarkdownEditorService, MarkdownEditorService>();
         services.TryAddScoped<IAdminContentService, AdminContentService>();
+        services.TryAddScoped<IMarkdownEditorService, MarkdownEditorService>();
         services.TryAddScoped<RepositoryService>();
 
         // Register view models

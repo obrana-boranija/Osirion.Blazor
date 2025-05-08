@@ -1,4 +1,6 @@
-﻿namespace Osirion.Blazor.Cms.Domain.Interfaces;
+﻿using Osirion.Blazor.Cms.Domain.Interfaces;
+
+namespace Osirion.Blazor.Cms.Domain.Interfaces;
 
 /// <summary>
 /// Interface for authentication services
@@ -16,31 +18,32 @@ public interface IAuthenticationService
     string? AccessToken { get; }
 
     /// <summary>
-    /// Gets the authenticated username
+    /// Gets the current username
     /// </summary>
     string? Username { get; }
 
     /// <summary>
     /// Event raised when authentication state changes
     /// </summary>
-    event Action<bool>? AuthenticationChanged;
+    event Action<bool> AuthenticationChanged;
+
+    /// <summary>
+    /// Initializes the authentication service and restores authentication state
+    /// </summary>
+    Task InitializeAsync();
 
     /// <summary>
     /// Authenticates with GitHub using an OAuth code
     /// </summary>
-    /// <param name="code">The OAuth code</param>
-    /// <returns>True if authentication was successful</returns>
     Task<bool> AuthenticateWithGitHubAsync(string code);
 
     /// <summary>
     /// Sets and validates an access token
     /// </summary>
-    /// <param name="token">The access token to set</param>
-    /// <returns>True if the token is valid</returns>
     Task<bool> SetAccessTokenAsync(string token);
 
     /// <summary>
-    /// Signs out the current user
+    /// Signs the user out
     /// </summary>
     Task SignOutAsync();
 }

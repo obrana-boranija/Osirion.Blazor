@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Osirion.Blazor.Cms.Admin.Services;
+using Osirion.Blazor.Cms.Admin.Core.Events;
+using Osirion.Blazor.Cms.Admin.Core.State;
+using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Models;
 using Osirion.Blazor.Cms.Domain.ValueObjects;
 
 namespace Osirion.Blazor.Example.Components.Pages.CmsAdmin;
 
-public partial class EditContent
+public partial class EditContent(NavigationManager navigationManager, CmsState adminState, IGitHubAdminService gitHubService, IEventPublisher eventPublisher)
 {
     [SupplyParameterFromQuery]
     public string? Path { get; set; }
@@ -14,15 +16,21 @@ public partial class EditContent
 
     protected override void OnInitialized()
     {
-        // Don't try to load content yet - wait for OnAfterRenderAsync
-        // We can still initialize other state that doesn't require JSInterop
+        // Subscribe to state changes from AdminState
+        adminState.StateChanged += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        // Unsubscribe to prevent memory leaks
+        adminState.StateChanged -= StateHasChanged;
     }
 
     protected override async Task OnParametersSetAsync()
     {
         // Reload content if parameters change and we're already rendered
         if (!string.IsNullOrEmpty(Path) &&
-            (AdminState.EditingPost == null || AdminState.EditingPost.FilePath != Path))
+        (adminState.EditingPost == null || adminState.EditingPost.FilePath != Path))
         {
             await LoadContentAsync();
         }
@@ -32,22 +40,8 @@ public partial class EditContent
     {
         if (firstRender)
         {
-            //// Initialize state persistence if available
-            //if (AdminState is CmsAdminStatePersistent persistentState)
-            //{
-            //    await persistentState.InitializeAsync();
-
-            //    // Now we can load content based on parameters or state
-            //    await LoadContentBasedOnParameters();
-
-            //    // Force a re-render to reflect the updated state
-            //    StateHasChanged();
-            //}
-            //else
-            //{
-                // Even if we don't have the persistent state, still try to load content
-                await LoadContentBasedOnParameters();
-            //}
+            // Load content based on parameters or state on first render
+            await LoadContentBasedOnParameters();
         }
 
         await base.OnAfterRenderAsync(firstRender);
@@ -63,19 +57,19 @@ public partial class EditContent
             // Path parameter takes precedence
             await LoadContentAsync();
         }
-        else if (AdminState.SelectedItem != null && AdminState.SelectedItem.IsMarkdownFile)
+        else if (adminState.SelectedItem != null && adminState.SelectedItem.IsMarkdownFile)
         {
             // Redirect to proper route if we have a selected item
-            NavigationManager.NavigateTo($"/admin/content/edit/{AdminState.SelectedItem.Path}");
+            navigationManager.NavigateTo($"/admin/content/edit?Path={adminState.SelectedItem.Path}");
         }
-        else if (AdminState.EditingPost != null && AdminState.IsEditing)
+        else if (adminState.EditingPost != null && adminState.IsEditing)
         {
             // We already have a post being edited (likely from content browser)
             // Just ensure we're on the right path
-            if (!string.IsNullOrEmpty(AdminState.EditingPost.FilePath) &&
-                !AdminState.IsCreatingNewFile)
+            if (!string.IsNullOrEmpty(adminState.EditingPost.FilePath) &&
+                !adminState.IsCreatingNewFile)
             {
-                NavigationManager.NavigateTo($"/admin/content/edit/{AdminState.EditingPost.FilePath}");
+                navigationManager.NavigateTo($"/admin/content/edit?Path={adminState.EditingPost.FilePath}");
             }
         }
     }
@@ -88,19 +82,26 @@ public partial class EditContent
         }
 
         IsLoading = true;
+        StateHasChanged(); // Important: Update UI to show loading state
 
         try
         {
-            var blogPost = await GitHubService.GetBlogPostAsync(Path);
-            AdminState.SetEditingPost(blogPost);
+            var blogPost = await gitHubService.GetBlogPostAsync(Path);
+
+            // Set the post in AdminState (this triggers StateChanged event)
+            adminState.SetEditingPost(blogPost);
+
+            // Also publish a content selected event
+            eventPublisher.Publish(new ContentSelectedEvent(Path));
         }
         catch (Exception ex)
         {
-            AdminState.SetErrorMessage($"Failed to load content: {ex.Message}");
+            adminState.SetErrorMessage($"Failed to load content: {ex.Message}");
         }
         finally
         {
             IsLoading = false;
+            StateHasChanged();
         }
     }
 
@@ -111,40 +112,58 @@ public partial class EditContent
         {
             Metadata = FrontMatter.Create("New Post", "Enter description here", DateTime.Now),
             Content = "## New Post\n\nStart writing your content here...",
-            FilePath = string.IsNullOrEmpty(AdminState.CurrentPath) ?
+            FilePath = string.IsNullOrEmpty(adminState.CurrentPath) ?
                 "new-post.md" :
-                $"{AdminState.CurrentPath}/new-post.md"
+                $"{adminState.CurrentPath}/new-post.md"
         };
 
-        AdminState.SetEditingPost(newPost, true);
+        adminState.SetEditingPost(newPost, true);
+
+        // Also publish a create new content event
+        eventPublisher.Publish(new CreateNewContentEvent(adminState.CurrentPath));
     }
 
     private void GoToContentBrowser()
     {
-        NavigationManager.NavigateTo("/admin/content");
+        navigationManager.NavigateTo("/admin/content");
     }
 
     private async Task HandleSaveComplete(BlogPost post)
     {
         // Navigate to content listing
-        NavigationManager.NavigateTo("/admin/content");
+        navigationManager.NavigateTo("/admin/content");
     }
 
     private void HandleDiscardChanges()
     {
+        // Clear editing state in AdminState
+        adminState.ClearEditing();
+
         // Navigate to content listing
-        NavigationManager.NavigateTo("/admin/content");
+        navigationManager.NavigateTo("/admin/content");
     }
 
     private string GetPageTitle()
     {
-        if (AdminState.EditingPost == null)
+        if (adminState.EditingPost == null)
         {
             return "Edit Content";
         }
 
-        return AdminState.IsCreatingNewFile
+        return adminState.IsCreatingNewFile
             ? "New Post"
-            : $"Edit: {AdminState.EditingPost.Metadata.Title}";
+            : $"Edit: {adminState.EditingPost.Metadata?.Title}";
+    }
+
+    private string GetPageSubtitle()
+    {
+        if (adminState.EditingPost == null)
+        {
+            return "Edit Content";
+        }
+
+        return adminState.IsCreatingNewFile
+            ? "New Description"
+            : $"Edit: {adminState.EditingPost.Metadata?.Description}";
     }
 }

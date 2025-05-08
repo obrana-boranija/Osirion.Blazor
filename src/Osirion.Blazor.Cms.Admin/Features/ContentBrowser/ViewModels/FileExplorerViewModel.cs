@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Admin.Core.Events;
 using Osirion.Blazor.Cms.Admin.Core.State;
 using Osirion.Blazor.Cms.Admin.Features.ContentBrowser.Services;
@@ -11,6 +12,7 @@ public class FileExplorerViewModel
 {
     private readonly ContentBrowserService _browserService;
     private readonly CmsState _state;
+    private readonly NavigationManager _navigationManager;
     private readonly ILogger<FileExplorerViewModel> _logger;
     private readonly CmsEventMediator _eventMediator;
 
@@ -33,11 +35,13 @@ public class FileExplorerViewModel
     public FileExplorerViewModel(
         ContentBrowserService browserService,
         CmsState state,
+        NavigationManager navigationManager,
         CmsEventMediator eventMediator,
         ILogger<FileExplorerViewModel> logger)
     {
         _browserService = browserService;
         _state = state;
+        _navigationManager = navigationManager;
         _eventMediator = eventMediator;
         _logger = logger;
 
@@ -152,6 +156,10 @@ public class FileExplorerViewModel
             {
                 // Publish content selected event to open it in the editor
                 _eventMediator.Publish(new ContentSelectedEvent(item.Path));
+
+                // Navigate directly to the edit page with the path
+                _navigationManager.NavigateTo($"/admin/content/edit?Path={item.Path}");
+
                 _logger.LogInformation("Markdown file opened in editor: {Path}", item.Path);
             }
             else

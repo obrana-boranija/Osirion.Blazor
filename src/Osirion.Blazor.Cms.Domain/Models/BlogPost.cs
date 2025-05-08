@@ -13,7 +13,7 @@ public class BlogPost
     /// <summary>
     /// Gets or sets the frontmatter metadata for the post
     /// </summary>
-    public FrontMatter Metadata { get; set; }
+    public FrontMatter? Metadata { get; set; }
 
     /// <summary>
     /// Gets or sets the markdown content of the post

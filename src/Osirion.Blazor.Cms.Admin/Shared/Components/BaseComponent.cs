@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Osirion.Blazor.Cms.Admin.Core.Events;
+using Osirion.Blazor.Cms.Admin.Core.State;
 using Osirion.Blazor.Components;
 
 namespace Osirion.Blazor.Cms.Admin.Shared.Components;
@@ -12,6 +13,7 @@ public abstract class BaseComponent : OsirionComponentBase
     [Inject] protected IEventPublisher EventPublisher { get; set; } = null!;
     [Inject] protected IEventSubscriber EventSubscriber { get; set; } = null!;
     [Inject] protected NavigationManager NavigationManager { get; set; } = null!;
+    [Inject] protected CmsState AdminState { get; set; } = null!;
 
     protected bool IsLoading { get; private set; }
     protected string? ErrorMessage { get; set; }

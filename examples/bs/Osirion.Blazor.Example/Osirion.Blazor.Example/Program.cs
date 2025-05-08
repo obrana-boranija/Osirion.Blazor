@@ -35,6 +35,7 @@ builder.Services.AddOsirionCmsAdmin(options =>
         auth.GitHubClientSecret = "fef6f7e1dac44e185df867fb9ddd80daf58705b8";
         auth.GitHubRedirectUri = "https://your-site.com/admin/login";
         auth.AllowPersonalAccessTokens = true; // Allow PAT authentication
+        auth.PersonalAccessToken = "";
     });
 
     // Configure UI theme

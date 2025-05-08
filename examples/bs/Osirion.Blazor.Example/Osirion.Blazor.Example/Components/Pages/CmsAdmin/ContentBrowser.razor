@@ -1,32 +1,29 @@
 ﻿@page "/admin/content"
-@rendermode InteractiveServer
-
-@using Osirion.Blazor.Cms.Admin.Components
-
+@namespace Osirion.Blazor.Example.Components.Pages.CmsAdmin
 @using Osirion.Blazor.Cms.Admin.Core.State
 @using Osirion.Blazor.Cms.Admin.Features.ContentBrowser.Components
 @using Osirion.Blazor.Cms.Admin.Features.Layouts.Components
+@using Osirion.Blazor.Cms.Admin.Features.Layouts.Models
 @using Osirion.Blazor.Cms.Admin.Features.Repository.Components
-@using Osirion.Blazor.Cms.Admin.Services
-@using Osirion.Blazor.Cms.Domain.Models
 @using Osirion.Blazor.Cms.Domain.Models.GitHub
-@using Osirion.Blazor.Cms.Domain.ValueObjects
-@inherits Osirion.Blazor.Components.OsirionComponentBase
-@inject IGitHubAdminService GitHubService
-@inject CmsState AdminState
-@inject NavigationManager NavigationManager
+@using Osirion.Blazor.Components
+@rendermode InteractiveServer
+@inherits OsirionComponentBase
 
-<AdminPage Title="Content Browser" Subtitle="Manage Your Content">
-@*         <BreadcrumbItems>
-        @(new AdminLayout.BreadcrumbItem("Dashboard", "/admin"))
-        @(new AdminLayout.BreadcrumbItem("Content"))
+<PageTitle>Content Browser - Osirion CMS</PageTitle>
+
+<AdminPage Title="Content Browser" Subtitle="Browse and manage your content">
+@*     <BreadcrumbItems>
+        @(new BreadcrumbItem("Dashboard", "/admin"))
+        @(new BreadcrumbItem("Content Browser"))
     </BreadcrumbItems> *@
 
     <ActionsTemplate>
         <button type="button"
                 class="osirion-admin-button osirion-admin-button-primary"
-                @onclick="CreateNewPost">
-            <span class="osirion-admin-icon">
+                @onclick="CreateNewPost"
+                disabled="@(!IsRepositoryConfigured)">
+            <span class="osirion-admin-button-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                     <polyline points="14 2 14 8 20 8" />
@@ -41,15 +38,15 @@
     <ChildContent>
         <div class="osirion-admin-content-browser-page">
             <div class="osirion-admin-content-browser-header">
-                <h2 class="osirion-admin-page-title">Content Browser</h2>
-                <p class="osirion-admin-page-description">Browse and manage your content files.</p>
+                <h1 class="osirion-admin-page-title">Content Browser</h1>
+                <p class="osirion-admin-page-description">Browse and manage your content files and folders.</p>
             </div>
 
             <div class="osirion-admin-content-browser-container">
                 <div class="osirion-admin-browser-sidebar">
                     <div class="osirion-admin-card">
                         <div class="osirion-admin-card-header">
-                            <h3 class="osirion-admin-card-title">Repository</h3>
+                            <h2 class="osirion-admin-card-title">Repository</h2>
                         </div>
                         <div class="osirion-admin-card-body">
                             <RepositorySelector />
@@ -58,74 +55,67 @@
 
                     <div class="osirion-admin-card">
                         <div class="osirion-admin-card-header">
-                            <h3 class="osirion-admin-card-title">Branch</h3>
+                            <h2 class="osirion-admin-card-title">Branch</h2>
                         </div>
                         <div class="osirion-admin-card-body">
                             <BranchSelector AllowCreateBranch="true" />
                         </div>
                     </div>
+
+                    <div class="osirion-admin-card">
+                        <div class="osirion-admin-card-header">
+                            <h2 class="osirion-admin-card-title">Search</h2>
+                        </div>
+                        <div class="osirion-admin-card-body">
+                            <div class="osirion-admin-search-box">
+                                <input type="text"
+                                       class="osirion-admin-search-input"
+                                       placeholder="Search files..."
+                                       @bind="SearchQuery"
+                                       @bind:event="oninput"
+                                       @onkeydown="HandleSearchKeyDown" />
+                                <button type="button"
+                                        class="osirion-admin-search-button"
+                                        @onclick="SearchFiles"
+                                        disabled="@(string.IsNullOrWhiteSpace(SearchQuery) || !IsRepositoryConfigured)">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="11" cy="11" r="8" />
+                                        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="osirion-admin-browser-main">
-                    <FileExplorer OnFileSelected="@(EventCallback.Factory.Create<GitHubItem>(this, HandleFileSelected))"
-                                  OnCreateFile="@(EventCallback.Factory.Create(this, CreateNewPost))" />
+                    <div class="osirion-admin-content-browser-frame">
+                        @if (IsSearchActive)
+                        {
+                            <div class="osirion-admin-search-header">
+                                <div class="osirion-admin-search-info">
+                                    <span>Search results for: </span>
+                                    <strong>"@SearchQuery"</strong>
+                                    @if (SearchResults?.Count > 0)
+                                    {
+                                        <span class="osirion-admin-search-count">(@SearchResults.Count results)</span>
+                                    }
+                                </div>
+                                <button type="button"
+                                        class="osirion-admin-button osirion-admin-button-small"
+                                        @onclick="ClearSearch">
+                                    Clear Search
+                                </button>
+                            </div>
+                        }
+
+                        <FileExplorer OnFileSelected="@(EventCallback.Factory.Create<GitHubItem>(this, HandleFileSelected))"
+                                      OnCreateFile="@(EventCallback.Factory.Create(this, CreateNewPost))" />
+                    </div>
                 </div>
             </div>
         </div>
     </ChildContent>
 
+    
 </AdminPage>
-
-@code {
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        // if (firstRender)
-        // {
-        //     // Initialize state persistence if available
-        //     if (AdminState is CmsAdminStatePersistent persistentState)
-        //     {
-        //         await persistentState.InitializeAsync();
-
-        //         // Force a re-render to reflect the updated state
-        //         StateHasChanged();
-        //     }
-        // }
-
-        await base.OnAfterRenderAsync(firstRender);
-    }
-
-    private void CreateNewPost()
-    {
-        // Create new blog post with empty content
-        var newPost = new BlogPost
-            {
-                Metadata = FrontMatter.Create("New Post", "Enter description here", DateTime.Now),
-                Content = "## New Post\n\nStart writing your content here...",
-                FilePath = string.IsNullOrEmpty(AdminState.CurrentPath) ?
-                    "new-post.md" :
-                    $"{AdminState.CurrentPath}/new-post.md"
-            };
-
-        AdminState.SetEditingPost(newPost, true);
-        NavigationManager.NavigateTo("/admin/content/edit");
-    }
-
-    private async Task HandleFileSelected(GitHubItem item)
-    {
-        if (item.IsMarkdownFile)
-        {
-            try
-            {
-                // Load the blog post
-                var blogPost = await GitHubService.GetBlogPostAsync(item.Path);
-
-                // Navigate to edit page
-                NavigationManager.NavigateTo($"/admin/content/edit/{item.Path}");
-            }
-            catch (Exception ex)
-            {
-                AdminState.SetErrorMessage($"Failed to load file: {ex.Message}");
-            }
-        }
-    }
-}
