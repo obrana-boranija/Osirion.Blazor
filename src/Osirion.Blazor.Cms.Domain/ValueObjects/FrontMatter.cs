@@ -76,7 +76,7 @@ public class FrontMatter : ValueObject
     public IReadOnlyDictionary<string, object> CustomFields { get; set; } = new Dictionary<string, object>();
 
     // Private constructor to enforce creation through factory method
-    private FrontMatter() { }
+    public FrontMatter() { }
 
     /// <summary>
     /// Factory method to create a new FrontMatter instance
