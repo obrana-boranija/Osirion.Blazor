@@ -242,20 +242,20 @@ namespace Osirion.Blazor.Cms.Infrastructure.GitHub
             contentItem.SetProviderSpecificId(fileContent.Sha);
 
             // Get file history for dates
-            try
-            {
-                var (created, modified) = await _apiClient.GetFileHistoryAsync(fileContent.Path, cancellationToken);
+            //try
+            //{
+            //    var (created, modified) = await _apiClient.GetFileHistoryAsync(fileContent.Path, cancellationToken);
 
-                contentItem.SetCreatedDate(created);
-                if (modified.HasValue)
-                {
-                    contentItem.SetLastModifiedDate(modified.Value);
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogWarning(ex, "Failed to get file history for {Path}, using current date", fileContent.Path);
-            }
+            //    contentItem.SetCreatedDate(created);
+            //    if (modified.HasValue)
+            //    {
+            //        contentItem.SetLastModifiedDate(modified.Value);
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    Logger.LogWarning(ex, "Failed to get file history for {Path}, using current date", fileContent.Path);
+            //}
 
             // Extract locale from path if enabled
             if (_options.EnableLocalization)

@@ -1,6 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Domain.Interfaces;
+using Osirion.Blazor.Cms.Domain.Options.Configuration;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json.Serialization;
@@ -14,12 +15,13 @@ public class AuthenticationService : IAuthenticationService
 {
     private readonly HttpClient _httpClient;
     private readonly ILogger<AuthenticationService> _logger;
-    private readonly string? _clientId;
-    private readonly string? _clientSecret;
-    private string? _accessToken;
-    private string? _username;
     private readonly IStateStorageService _stateStorage;
     private readonly IGitHubTokenProvider _tokenProvider;
+    private readonly GitHubAdminOptions _githubOptions;
+    private readonly AuthenticationOptions _authOptions;
+
+    private string? _accessToken;
+    private string? _username;
 
     /// <summary>
     /// Event raised when authentication state changes
@@ -31,7 +33,7 @@ public class AuthenticationService : IAuthenticationService
     /// </summary>
     public AuthenticationService(
         HttpClient httpClient,
-        IConfiguration configuration,
+        IOptions<CmsAdminOptions> options,
         ILogger<AuthenticationService> logger,
         IStateStorageService stateStorage,
         IGitHubTokenProvider tokenProvider)
@@ -41,10 +43,9 @@ public class AuthenticationService : IAuthenticationService
         _stateStorage = stateStorage ?? throw new ArgumentNullException(nameof(stateStorage));
         _tokenProvider = tokenProvider ?? throw new ArgumentNullException(nameof(tokenProvider));
 
-        // Read GitHub configuration
-        _clientId = configuration["GitHub:ClientId"];
-        _clientSecret = configuration["GitHub:ClientSecret"];
-        _accessToken = configuration["GitHub:ApiToken"];
+        // Get options from the injected CmsAdminOptions
+        _githubOptions = options.Value.GitHub;
+        _authOptions = options.Value.Authentication;
 
         // Try to restore auth state
         _ = RestoreAuthStateAsync().ConfigureAwait(false);
@@ -69,7 +70,10 @@ public class AuthenticationService : IAuthenticationService
                 return false;
 
             // Exchange code for token
-            _accessToken = await _tokenProvider.ExchangeCodeForTokenAsync(code, _clientId!, _clientSecret!);
+            _accessToken = await _tokenProvider.ExchangeCodeForTokenAsync(
+                code,
+                _authOptions.GitHubClientId,
+                _authOptions.GitHubClientSecret);
 
             if (string.IsNullOrEmpty(_accessToken))
                 return false;
@@ -137,7 +141,8 @@ public class AuthenticationService : IAuthenticationService
     /// </summary>
     private bool AreCredentialsConfigured()
     {
-        if (string.IsNullOrEmpty(_clientId) || string.IsNullOrEmpty(_clientSecret))
+        if (string.IsNullOrEmpty(_authOptions.GitHubClientId) ||
+            string.IsNullOrEmpty(_authOptions.GitHubClientSecret))
         {
             _logger.LogError("GitHub client ID or secret is missing. Cannot authenticate.");
             return false;
