@@ -1,0 +1,41 @@
+@namespace Osirion.Blazor.Cms.Admin.Features.Layouts.Components
+@inherits BaseComponent
+@using Osirion.Blazor.Cms.Admin.Features.Security.Components
+@using Osirion.Blazor.Cms.Admin.Features.Layouts.Models
+@using Osirion.Blazor.Cms.Admin.Shared.Components
+
+<AuthGuard ShowLoginForm="@ShowLoginForm">
+    <AdminLayout 
+        Title="@Title"
+        Subtitle="@Subtitle"
+        Theme="@Theme"
+        StatusMessage="@AdminState.StatusMessage"
+        ErrorMessage="@AdminState.ErrorMessage"
+        CurrentPage="@CurrentPage"
+        BreadcrumbItems="@BreadcrumbItems"
+        OnSignOut="@(EventCallback.Factory.Create(this, HandleSignOut))">
+
+        <HeaderTemplate>
+            @HeaderTemplate
+        </HeaderTemplate>
+
+        <NavigationTemplate>
+            @if (NavigationTemplate != null)
+            {
+                @NavigationTemplate
+            }
+        </NavigationTemplate>
+
+        <ActionsTemplate>
+            @ActionsTemplate
+        </ActionsTemplate>
+
+        <SidebarFooterTemplate>
+            @SidebarFooterTemplate
+        </SidebarFooterTemplate>
+
+        <ChildContent>
+            @ChildContent
+        </ChildContent>
+    </AdminLayout>
+</AuthGuard>

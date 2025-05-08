@@ -1,0 +1,69 @@
+@using Osirion.Blazor.Cms.Admin.Shared.Components
+@inherits BaseComponent
+
+<div class="commit-panel">
+    <div class="commit-panel-header">
+        <h3 class="commit-panel-title">@Title</h3>
+    </div>
+
+    <div class="commit-panel-body">
+        <div class="commit-panel-form-group">
+            <label class="commit-panel-label" for="commitMessage">Commit Message</label>
+            <input type="text"
+                   class="commit-panel-input"
+                   id="commitMessage"
+                   @bind="CommitMessage"
+                   @bind:event="oninput"
+                   placeholder="Enter a descriptive commit message" />
+        </div>
+
+        @if (ShowDescription)
+        {
+            <div class="commit-panel-form-group">
+                <label class="commit-panel-label" for="commitDescription">Description</label>
+                <textarea class="commit-panel-textarea"
+                          id="commitDescription"
+                          @bind="CommitDescription"
+                          @bind:event="oninput"
+                          rows="3"
+                          placeholder="Enter a detailed commit description (optional)"></textarea>
+            </div>
+        }
+
+        <div class="commit-panel-actions">
+            <button type="button"
+                    class="commit-panel-button"
+                    @onclick="OnCancel">
+                Cancel
+            </button>
+
+            <button type="button"
+                    class="commit-panel-button commit-panel-button-primary"
+                    @onclick="OnCommit"
+                    disabled="@(string.IsNullOrWhiteSpace(CommitMessage) || IsCommitting)">
+                @if (IsCommitting)
+                {
+                    <span class="commit-panel-loading-spinner"></span>
+                    <span>Committing...</span>
+                }
+                else
+                {
+                    <span class="commit-panel-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                        </svg>
+                    </span>
+                    <span>@CommitButtonText</span>
+                }
+            </button>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="commit-panel-footer commit-panel-error">
+            <span>@ErrorMessage</span>
+        </div>
+    }
+</div>

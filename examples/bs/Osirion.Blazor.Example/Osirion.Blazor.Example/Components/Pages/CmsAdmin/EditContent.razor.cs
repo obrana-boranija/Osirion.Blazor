@@ -32,22 +32,22 @@ public partial class EditContent
     {
         if (firstRender)
         {
-            // Initialize state persistence if available
-            if (AdminState is CmsAdminStatePersistent persistentState)
-            {
-                await persistentState.InitializeAsync();
+            //// Initialize state persistence if available
+            //if (AdminState is CmsAdminStatePersistent persistentState)
+            //{
+            //    await persistentState.InitializeAsync();
 
-                // Now we can load content based on parameters or state
-                await LoadContentBasedOnParameters();
+            //    // Now we can load content based on parameters or state
+            //    await LoadContentBasedOnParameters();
 
-                // Force a re-render to reflect the updated state
-                StateHasChanged();
-            }
-            else
-            {
+            //    // Force a re-render to reflect the updated state
+            //    StateHasChanged();
+            //}
+            //else
+            //{
                 // Even if we don't have the persistent state, still try to load content
                 await LoadContentBasedOnParameters();
-            }
+            //}
         }
 
         await base.OnAfterRenderAsync(firstRender);

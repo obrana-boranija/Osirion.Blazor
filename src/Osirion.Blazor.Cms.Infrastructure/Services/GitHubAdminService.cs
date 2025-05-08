@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Models;
 using Osirion.Blazor.Cms.Domain.Models.GitHub;
+using Osirion.Blazor.Cms.Domain.Options.Configuration;
 
 namespace Osirion.Blazor.Cms.Infrastructure.Services;
 
@@ -12,16 +14,27 @@ public class GitHubAdminService : IGitHubAdminService
 {
     private readonly IGitHubApiClient _apiClient;
     private readonly ILogger<GitHubAdminService> _logger;
-    private readonly IMarkdownProcessor _markdownProcessor;
+    private readonly GitHubAdminOptions _options;
 
     public GitHubAdminService(
         IGitHubApiClient apiClient,
-        ILogger<GitHubAdminService> logger,
-        IMarkdownProcessor markdownProcessor)
+        IOptions<CmsAdminOptions> options,
+        ILogger<GitHubAdminService> logger)
     {
         _apiClient = apiClient ?? throw new ArgumentNullException(nameof(apiClient));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _markdownProcessor = markdownProcessor ?? throw new ArgumentNullException(nameof(markdownProcessor));
+        _options = options.Value.GitHub;
+
+        // Initialize API client with configuration
+        if (!string.IsNullOrEmpty(_options.Owner) && !string.IsNullOrEmpty(_options.Repository))
+        {
+            _apiClient.SetRepository(_options.Owner, _options.Repository);
+        }
+
+        if (!string.IsNullOrEmpty(_options.DefaultBranch))
+        {
+            _apiClient.SetBranch(_options.DefaultBranch);
+        }
     }
 
     public string CurrentBranch { get; private set; } = "main";
@@ -123,18 +136,7 @@ public class GitHubAdminService : IGitHubAdminService
     {
         try
         {
-            // This requires OAuth token with repo scope
-            // For now, just return a dummy repository
-            return new List<GitHubRepository> {
-                new GitHubRepository {
-                    Id = 1,
-                    Name = "sample-repo",
-                    FullName = "username/sample-repo",
-                    HtmlUrl = "https://github.com/username/sample-repo",
-                    Description = "Sample repository",
-                    DefaultBranch = "main"
-                }
-            };
+            return await _apiClient.GetRepositoriesAsync();
         }
         catch (Exception ex)
         {
@@ -172,7 +174,25 @@ public class GitHubAdminService : IGitHubAdminService
 
     public async Task SetAuthTokenAsync(string token)
     {
+        if (string.IsNullOrEmpty(token))
+        {
+            _logger.LogWarning("Attempted to set empty auth token");
+            return;
+        }
+
+        _logger.LogInformation("Setting auth token in GitHubAdminService. Token length: {length}", token.Length);
         _apiClient.SetAccessToken(token);
+
+        // Test the token works
+        try
+        {
+            await _apiClient.GetRepositoriesAsync();
+            _logger.LogInformation("Token successfully verified");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Token validation failed");
+        }
     }
 
     public void SetBranch(string branch)

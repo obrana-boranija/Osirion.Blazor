@@ -10,6 +10,16 @@
 
 <PageTitle>CMS Demo - Osirion.Blazor</PageTitle>
 
+@if (string.IsNullOrWhiteSpace(exMessage) == false)
+{
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>Holy guacamole!</strong> @exMessage
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+}
+
 <div class="container mt-4">
     <h1>Osirion CMS Demo</h1>
     <p class="lead">This page demonstrates the Osirion.Blazor.Cms component library.</p>
@@ -51,3 +61,4 @@
         </div>
     </div>
 </div>
+

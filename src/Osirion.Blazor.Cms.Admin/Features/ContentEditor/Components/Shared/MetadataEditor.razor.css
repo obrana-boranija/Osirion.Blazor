@@ -1,0 +1,153 @@
+.metadata-editor {
+    height: 100%;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--osirion-background-primary);
+    border-radius: var(--osirion-radius-base);
+}
+
+.metadata-editor-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--osirion-spacing-3) var(--osirion-spacing-4);
+    border-bottom: var(--osirion-border-width) solid var(--osirion-border-color);
+    background-color: var(--osirion-background-secondary);
+}
+
+.metadata-editor-title {
+    margin: 0;
+    font-size: var(--osirion-font-size-base);
+    font-weight: var(--osirion-font-weight-medium);
+    color: var(--osirion-text-primary);
+}
+
+.metadata-editor-actions {
+    display: flex;
+    gap: var(--osirion-spacing-1);
+}
+
+.metadata-editor-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--osirion-spacing-2) var(--osirion-spacing-3);
+    border: var(--osirion-border-width) solid var(--osirion-border-color);
+    border-radius: var(--osirion-radius-base);
+    background-color: var(--osirion-background-primary);
+    color: var(--osirion-text-primary);
+    font-size: var(--osirion-font-size-sm);
+    cursor: pointer;
+    transition: all var(--osirion-transition-duration-200) var(--osirion-transition-timing-default);
+}
+
+    .metadata-editor-button:hover {
+        background-color: var(--osirion-background-hover, var(--osirion-color-neutral-100));
+    }
+
+.metadata-editor-button-icon {
+    padding: var(--osirion-spacing-1);
+    border: none;
+    background: transparent;
+}
+
+.metadata-editor-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.metadata-editor-content {
+    flex: 1;
+    padding: var(--osirion-spacing-4);
+    overflow-y: auto;
+}
+
+.metadata-editor-form-group {
+    margin-bottom: var(--osirion-spacing-4);
+}
+
+.metadata-editor-label {
+    display: block;
+    margin-bottom: var(--osirion-spacing-1);
+    font-weight: var(--osirion-font-weight-medium);
+    color: var(--osirion-text-primary);
+    font-size: var(--osirion-font-size-sm);
+}
+
+.metadata-editor-input,
+.metadata-editor-textarea {
+    display: block;
+    width: 100%;
+    padding: var(--osirion-spacing-2) var(--osirion-spacing-3);
+    border: var(--osirion-border-width) solid var(--osirion-border-color);
+    border-radius: var(--osirion-radius-base);
+    background-color: var(--osirion-background-primary);
+    color: var(--osirion-text-primary);
+    font-family: var(--osirion-font-family-base);
+    font-size: var(--osirion-font-size-sm);
+    transition: border-color var(--osirion-transition-duration-200) var(--osirion-transition-timing-default);
+}
+
+    .metadata-editor-input:focus,
+    .metadata-editor-textarea:focus {
+        outline: none;
+        border-color: var(--osirion-action-primary);
+        box-shadow: 0 0 0 var(--osirion-focus-ring-width) var(--osirion-focus-ring-color);
+    }
+
+.metadata-editor-textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.metadata-editor-checkboxes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--osirion-spacing-4);
+    margin-bottom: var(--osirion-spacing-4);
+}
+
+.metadata-editor-checkbox-group {
+    min-width: 120px;
+}
+
+.metadata-editor-checkbox {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+    .metadata-editor-checkbox input {
+        margin-right: var(--osirion-spacing-2);
+    }
+
+.metadata-editor-code-preview {
+    padding: var(--osirion-spacing-3);
+    background-color: var(--osirion-background-secondary);
+    border: var(--osirion-border-width) solid var(--osirion-border-color);
+    border-radius: var(--osirion-radius-base);
+    font-family: var(--osirion-font-family-mono);
+    font-size: var(--osirion-font-size-sm);
+    line-height: var(--osirion-line-height-normal);
+    white-space: pre-wrap;
+    overflow-x: auto;
+    color: var(--osirion-text-primary);
+}
+
+@media (max-width: 768px) {
+    .metadata-editor-checkboxes {
+        flex-direction: column;
+        gap: var(--osirion-spacing-2);
+    }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .metadata-editor-input,
+    .metadata-editor-textarea,
+    .metadata-editor-button {
+        transition: none;
+    }
+}

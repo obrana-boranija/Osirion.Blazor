@@ -1,8 +1,7 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Blazored.LocalStorage;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
-using Microsoft.JSInterop;
 using Osirion.Blazor.Cms.Domain.Interfaces;
-using System.Text.Json;
 
 namespace Osirion.Blazor.Cms.Infrastructure.Services;
 
@@ -12,15 +11,17 @@ namespace Osirion.Blazor.Cms.Infrastructure.Services;
 /// </summary>
 public class LocalStorageService : IStateStorageService, IDisposable
 {
-    private readonly IJSRuntime _jsRuntime;
+    private readonly ILocalStorageService _localStorage;
     private readonly Dictionary<string, string> _memoryStore = new();
     private readonly NavigationManager _navigationManager;
     private bool _isInitialized = false;
     private bool _isClientSide = false;
 
-    public LocalStorageService(IJSRuntime jsRuntime, NavigationManager navigationManager)
+    public LocalStorageService(
+        ILocalStorageService localStorage,
+        NavigationManager navigationManager)
     {
-        _jsRuntime = jsRuntime;
+        _localStorage = localStorage ?? throw new ArgumentNullException(nameof(localStorage));
         _navigationManager = navigationManager;
         _navigationManager.LocationChanged += OnLocationChanged;
     }
@@ -33,37 +34,39 @@ public class LocalStorageService : IStateStorageService, IDisposable
         {
             try
             {
-                _isClientSide = await _jsRuntime.InvokeAsync<bool>("eval", "typeof window !== 'undefined'");
+                // Check if we're on the client
+                await _localStorage.ContainKeyAsync("test");
+                _isClientSide = true;
                 _isInitialized = true;
             }
             catch
             {
-                // If JSInterop fails, we're likely in server-side prerendering
-                _isClientSide = false;
-                _isInitialized = false;
+                // If accessing localStorage fails, we're in server prerendering
+                _isClientSide = true;
+                _isInitialized = true;
             }
         }
     }
 
     public async Task SaveStateAsync<T>(string key, T value)
     {
-        var json = JsonSerializer.Serialize(value);
+        var json = System.Text.Json.JsonSerializer.Serialize(value);
 
         // Always update memory store
         _memoryStore[key] = json;
 
         // If we're in client-side mode, also update localStorage
-        if (_isClientSide && _isInitialized)
-        {
+        //if (_isClientSide && _isInitialized)
+        //{
             try
             {
-                await _jsRuntime.InvokeVoidAsync("localStorage.setItem", key, json);
+                await _localStorage.SetItemAsStringAsync(key, json);
             }
             catch
             {
                 // Fail silently if localStorage is not available
             }
-        }
+        //}
     }
 
     public async Task<T?> GetStateAsync<T>(string key)
@@ -71,28 +74,31 @@ public class LocalStorageService : IStateStorageService, IDisposable
         // Try to get from memory first
         if (_memoryStore.TryGetValue(key, out var memoryJson))
         {
-            return JsonSerializer.Deserialize<T>(memoryJson);
+            return System.Text.Json.JsonSerializer.Deserialize<T>(memoryJson);
         }
 
         // If we're in client-side mode, try localStorage
-        if (_isClientSide && _isInitialized)
-        {
+        //if (_isClientSide && _isInitialized)
+        //{
             try
             {
-                var json = await _jsRuntime.InvokeAsync<string?>("localStorage.getItem", key);
-
-                if (!string.IsNullOrEmpty(json))
+                var exists = await _localStorage.ContainKeyAsync(key);
+                if (exists)
                 {
-                    // Save to memory for future use
-                    _memoryStore[key] = json;
-                    return JsonSerializer.Deserialize<T>(json);
+                    var json = await _localStorage.GetItemAsStringAsync(key);
+                    if (!string.IsNullOrEmpty(json))
+                    {
+                        // Save to memory for future use
+                        _memoryStore[key] = json;
+                        return System.Text.Json.JsonSerializer.Deserialize<T>(json);
+                    }
                 }
             }
             catch
             {
                 // Fail silently if localStorage is not available
             }
-        }
+        //}
 
         return default;
     }
@@ -103,17 +109,17 @@ public class LocalStorageService : IStateStorageService, IDisposable
         _memoryStore.Remove(key);
 
         // If we're in client-side mode, also remove from localStorage
-        if (_isClientSide && _isInitialized)
-        {
+        //if (_isClientSide && _isInitialized)
+        //{
             try
             {
-                await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", key);
+                await _localStorage.RemoveItemAsync(key);
             }
             catch
             {
                 // Fail silently if localStorage is not available
             }
-        }
+        //}
     }
 
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)

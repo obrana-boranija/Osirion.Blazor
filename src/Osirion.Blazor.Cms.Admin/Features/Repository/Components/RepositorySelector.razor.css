@@ -1,0 +1,158 @@
+.repository-selector {
+    display: flex;
+    flex-direction: column;
+    border: var(--osirion-border-width) solid var(--osirion-border-color);
+    border-radius: var(--osirion-radius-lg);
+    overflow: hidden;
+    margin-bottom: var(--osirion-spacing-4);
+}
+
+.repository-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--osirion-spacing-3);
+    background-color: var(--osirion-background-secondary);
+    border-bottom: var(--osirion-border-width) solid var(--osirion-border-color);
+}
+
+.repository-title {
+    margin: 0;
+    font-size: var(--osirion-font-size-sm);
+    font-weight: var(--osirion-font-weight-medium);
+}
+
+.repository-actions {
+    display: flex;
+    gap: var(--osirion-spacing-1);
+}
+
+.repository-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--osirion-spacing-1);
+    border: var(--osirion-border-width) solid var(--osirion-border-color);
+    border-radius: var(--osirion-radius-sm);
+    background-color: var(--osirion-background-primary);
+    color: var(--osirion-text-primary);
+    cursor: pointer;
+    transition: all var(--osirion-transition-duration-200) var(--osirion-transition-timing-default);
+}
+
+    .repository-button:hover {
+        background-color: var(--osirion-background-hover, var(--osirion-color-neutral-100));
+    }
+
+.repository-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+}
+
+.repository-select-container {
+    padding: var(--osirion-spacing-2) var(--osirion-spacing-3);
+}
+
+.repository-select {
+    width: 100%;
+    padding: var(--osirion-spacing-2);
+    border: var(--osirion-border-width) solid var(--osirion-border-color);
+    border-radius: var(--osirion-radius-lg);
+    background-color: var(--osirion-background-primary);
+    color: var(--osirion-text-primary);
+    font-family: var(--osirion-font-family-base);
+    font-size: var(--osirion-font-size-base);
+}
+
+.repository-details {
+    padding: var(--osirion-spacing-3);
+    background-color: var(--osirion-background-secondary);
+    border-top: var(--osirion-border-width) solid var(--osirion-border-color);
+}
+
+.repository-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--osirion-spacing-1);
+    margin-bottom: var(--osirion-spacing-2);
+}
+
+.repository-loading,
+.repository-error,
+.repository-empty {
+    padding: var(--osirion-spacing-3);
+    text-align: center;
+}
+
+.repository-loading-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--osirion-border-color);
+    border-top-color: var(--osirion-action-primary);
+    border-radius: 50%;
+    animation: repository-spin 1s linear infinite;
+    margin-right: var(--osirion-spacing-2);
+}
+
+@keyframes repository-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.repository-button-link {
+    background: transparent;
+    border: none;
+    color: var(--osirion-action-primary);
+    padding: 0;
+    font-weight: var(--osirion-font-weight-normal);
+    text-decoration: none;
+}
+
+    .repository-button-link:hover {
+        text-decoration: underline;
+        background: transparent;
+    }
+
+.repository-name {
+    font-weight: var(--osirion-font-weight-medium);
+    color: var(--osirion-text-primary);
+}
+
+.repository-description {
+    color: var(--osirion-text-secondary);
+    font-size: var(--osirion-font-size-sm);
+}
+
+.repository-visibility {
+    display: flex;
+    gap: var(--osirion-spacing-2);
+    font-size: var(--osirion-font-size-xs);
+}
+
+.repository-private {
+    padding: var(--osirion-spacing-0-5) var(--osirion-spacing-1-5);
+    background-color: var(--osirion-status-danger-bg);
+    color: var(--osirion-status-danger);
+    border-radius: var(--osirion-radius-full);
+}
+
+.repository-public {
+    padding: var(--osirion-spacing-0-5) var(--osirion-spacing-1-5);
+    background-color: var(--osirion-status-success-bg);
+    color: var(--osirion-status-success);
+    border-radius: var(--osirion-radius-full);
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .repository-button,
+    .repository-loading-spinner {
+        transition: none;
+        animation: none;
+    }
+}

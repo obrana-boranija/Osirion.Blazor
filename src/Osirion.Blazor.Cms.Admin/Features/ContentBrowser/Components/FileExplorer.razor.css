@@ -1,0 +1,225 @@
+.file-explorer {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    border: var(--osirion-border-width) solid var(--osirion-border-color);
+    border-radius: var(--osirion-radius-lg);
+    overflow: hidden;
+    background-color: var(--osirion-background-primary);
+}
+
+.file-explorer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--osirion-spacing-2) var(--osirion-spacing-4);
+    background-color: var(--osirion-background-secondary);
+    border-bottom: var(--osirion-border-width) solid var(--osirion-border-color);
+}
+
+.file-explorer-path-navigation {
+    display: flex;
+    align-items: center;
+    gap: var(--osirion-spacing-2);
+    overflow: hidden;
+}
+
+.file-explorer-current-path {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-family: var(--osirion-font-family-mono);
+    font-size: var(--osirion-font-size-sm);
+}
+
+.file-explorer-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--osirion-spacing-2);
+    padding: var(--osirion-spacing-2);
+    border: var(--osirion-border-width) solid var(--osirion-border-color);
+    border-radius: var(--osirion-radius-md);
+    background-color: var(--osirion-background-primary);
+    color: var(--osirion-text-primary);
+    cursor: pointer;
+}
+
+    .file-explorer-button:hover:not(:disabled) {
+        background-color: var(--osirion-background-hover, var(--osirion-background-secondary));
+    }
+
+    .file-explorer-button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+.file-explorer-button-icon {
+    padding: var(--osirion-spacing-1);
+    border: none;
+    background: transparent;
+}
+
+.file-explorer-button-primary {
+    background-color: var(--osirion-action-primary);
+    border-color: var(--osirion-action-primary);
+    color: var(--osirion-action-primary-text);
+}
+
+    .file-explorer-button-primary:hover:not(:disabled) {
+        background-color: var(--osirion-action-primary-hover);
+    }
+
+.file-explorer-button-danger {
+    color: var(--osirion-status-danger);
+}
+
+    .file-explorer-button-danger:hover {
+        background-color: var(--osirion-status-danger-bg);
+    }
+
+.file-explorer-button-small {
+    padding: var(--osirion-spacing-1) var(--osirion-spacing-2);
+    font-size: var(--osirion-font-size-xs);
+}
+
+.file-explorer-loading,
+.file-explorer-error,
+.file-explorer-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--osirion-spacing-8);
+    text-align: center;
+    color: var(--osirion-text-secondary);
+}
+
+.file-explorer-loading-spinner {
+    display: inline-block;
+    width: var(--osirion-spacing-4);
+    height: var(--osirion-spacing-4);
+    border: 2px solid var(--osirion-border-color);
+    border-top-color: var(--osirion-action-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: var(--osirion-spacing-2);
+}
+
+.file-explorer-items {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--osirion-spacing-2);
+}
+
+.file-explorer-item {
+    display: flex;
+    align-items: center;
+    padding: var(--osirion-spacing-2);
+    border-radius: var(--osirion-radius-md);
+    cursor: pointer;
+}
+
+    .file-explorer-item:hover {
+        background-color: var(--osirion-background-hover, var(--osirion-background-secondary));
+    }
+
+    .file-explorer-item.selected {
+        background-color: var(--osirion-color-primary-100);
+    }
+
+.file-explorer-item-icon {
+    display: flex;
+    margin-right: var(--osirion-spacing-2);
+    color: var(--osirion-text-secondary);
+}
+
+.file-explorer-directory .file-explorer-item-icon {
+    color: var(--osirion-color-warning-500);
+}
+
+.file-explorer-item-name {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.file-explorer-item-actions {
+    visibility: hidden;
+}
+
+.file-explorer-item:hover .file-explorer-item-actions {
+    visibility: visible;
+}
+
+.file-explorer-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: var(--osirion-z-index-50);
+}
+
+.file-explorer-modal-content {
+    background-color: var(--osirion-background-primary);
+    border-radius: var(--osirion-radius-lg);
+    width: 100%;
+    max-width: 400px;
+    box-shadow: var(--osirion-shadow-xl);
+}
+
+.file-explorer-modal-header {
+    padding: var(--osirion-spacing-4);
+    border-bottom: var(--osirion-border-width) solid var(--osirion-border-color);
+}
+
+.file-explorer-modal-title {
+    margin: 0;
+    font-size: var(--osirion-font-size-lg);
+    font-weight: var(--osirion-font-weight-medium);
+}
+
+.file-explorer-modal-body {
+    padding: var(--osirion-spacing-4);
+}
+
+.file-explorer-modal-warning {
+    color: var(--osirion-status-danger);
+    font-weight: var(--osirion-font-weight-medium);
+}
+
+.file-explorer-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--osirion-spacing-2);
+    padding: var(--osirion-spacing-4);
+    background-color: var(--osirion-background-secondary);
+    border-top: var(--osirion-border-width) solid var(--osirion-border-color);
+}
+
+.file-explorer-button-secondary {
+    background-color: var(--osirion-background-secondary);
+}
+
+.file-explorer-button-danger {
+    background-color: var(--osirion-status-danger);
+    border-color: var(--osirion-status-danger);
+    color: var(--osirion-action-primary-text);
+}
+
+    .file-explorer-button-danger:hover:not(:disabled) {
+        background-color: var(--osirion-color-danger-700);
+    }
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

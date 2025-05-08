@@ -1,0 +1,74 @@
+/* DefaultNavigation Component Styles */
+.osirion-admin-nav-list-container {
+    width: 100%;
+}
+
+.osirion-admin-nav-section {
+    margin-bottom: var(--osirion-spacing-6, 1.5rem);
+}
+
+.osirion-admin-nav-title {
+    font-size: var(--osirion-font-size-xs, 0.75rem);
+    font-weight: var(--osirion-font-weight-semibold, 600);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--osirion-text-tertiary);
+    margin-bottom: var(--osirion-spacing-2, 0.5rem);
+    padding: 0 var(--osirion-spacing-2, 0.5rem);
+}
+
+.osirion-admin-nav-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.osirion-admin-nav-item {
+    margin-bottom: var(--osirion-spacing-1, 0.25rem);
+}
+
+.osirion-admin-nav-link {
+    display: flex;
+    align-items: center;
+    padding: var(--osirion-spacing-2, 0.5rem) var(--osirion-spacing-3, 0.75rem);
+    color: var(--osirion-text-primary);
+    text-decoration: none;
+    border-radius: var(--osirion-radius-base, 0.25rem);
+    transition: background-color var(--osirion-transition-duration-200, 0.2s), color var(--osirion-transition-duration-200, 0.2s);
+    font-size: var(--osirion-font-size-sm, 0.875rem);
+}
+
+    .osirion-admin-nav-link:hover {
+        background-color: var(--osirion-background-hover);
+        color: var(--osirion-text-primary);
+    }
+
+    .osirion-admin-nav-link.active {
+        background-color: var(--osirion-action-primary);
+        color: var(--osirion-action-primary-text, white);
+    }
+
+    .osirion-admin-nav-link .osirion-admin-icon {
+        margin-right: var(--osirion-spacing-2, 0.5rem);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 18px;
+        height: 18px;
+        opacity: 0.8;
+    }
+
+    .osirion-admin-nav-link:hover .osirion-admin-icon {
+        opacity: 1;
+    }
+
+    .osirion-admin-nav-link.active .osirion-admin-icon {
+        opacity: 1;
+    }
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .osirion-admin-nav-link {
+        transition: none;
+    }
+}

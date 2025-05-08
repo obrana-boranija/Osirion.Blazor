@@ -1,0 +1,192 @@
+@namespace Osirion.Blazor.Cms.Admin.Features.ContentBrowser.Components
+@inherits BaseComponent
+@using Osirion.Blazor.Cms.Admin.Features.ContentBrowser.ViewModels
+@using Osirion.Blazor.Cms.Admin.Shared.Components
+@using Osirion.Blazor.Cms.Domain.Models.GitHub
+@inject FileExplorerViewModel ViewModel
+
+<div class="file-explorer @CssClass">
+    <div class="file-explorer-header">
+        <div class="file-explorer-path-navigation">
+            <button type="button"
+                    class="file-explorer-button file-explorer-button-icon"
+                    title="Go to root"
+                    @onclick="ViewModel.NavigateToRootAsync">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                    <polyline points="9 22 9 12 15 12 15 22" />
+                </svg>
+            </button>
+
+            <span class="file-explorer-current-path">
+                @(string.IsNullOrEmpty(ViewModel.CurrentPath) ? "/" : ViewModel.CurrentPath)
+            </span>
+
+            <button type="button"
+                    class="file-explorer-button file-explorer-button-icon"
+                    title="Refresh"
+                    @onclick="ViewModel.LoadContentsAsync">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M23 4v6h-6" />
+                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+                </svg>
+            </button>
+        </div>
+
+        <div class="file-explorer-actions">
+            <button type="button"
+                    class="file-explorer-button file-explorer-button-primary"
+                    @onclick="CreateNewFile"
+                    disabled="!ViewModel.IsValidRepositoryAndBranch">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                    <line x1="12" y1="18" x2="12" y2="12" />
+                    <line x1="9" y1="15" x2="15" y2="15" />
+                </svg>
+                <span class="file-explorer-button-text">New File</span>
+            </button>
+        </div>
+    </div>
+
+    @if (ViewModel.IsLoading)
+    {
+            <div class="file-explorer-loading">
+                <span class="file-explorer-loading-spinner"></span>
+                <span>Loading...</span>
+            </div>
+    }
+    else if (!string.IsNullOrEmpty(ViewModel.ErrorMessage))
+    {
+            <div class="file-explorer-error">
+                <span class="file-explorer-error-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" y1="8" x2="12" y2="12" />
+                        <line x1="12" y1="16" x2="12.01" y2="16" />
+                    </svg>
+                </span>
+                <span>@ViewModel.ErrorMessage</span>
+                <button type="button" class="file-explorer-button file-explorer-button-small" @onclick="ViewModel.LoadContentsAsync">
+                    Retry
+                </button>
+            </div>
+    }
+    else if (!ViewModel.IsValidRepositoryAndBranch)
+    {
+            <div class="file-explorer-empty">
+                <span>Please select a repository and branch.</span>
+            </div>
+    }
+    else if (ViewModel.Contents.Count == 0)
+    {
+            <div class="file-explorer-empty">
+                <span>No files found in this directory.</span>
+            </div>
+    }
+    else
+    {
+            <div class="file-explorer-items">
+@*             @if (!string.IsNullOrEmpty(ViewModel.CurrentPath))
+            {
+                        <div class="file-explorer-item file-explorer-parent-dir" @onclick="@(() => ViewModel.NavigateToParentDirectoryAsync())">
+                            <span class="file-explorer-item-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+                                    <path d="M11 13h5l-1.5 3h1.5l-3 4-3-4h1.5z" transform="rotate(90 13 16)" />
+                                </svg>
+                            </span>
+                            <span class="file-explorer-item-name">..</span>
+                        </div>
+            } *@
+
+            @foreach (var item in ViewModel.Contents.Where(i => i.IsDirectory).OrderBy(i => i.Name))
+            {
+                        <div class="file-explorer-item file-explorer-directory @(ViewModel.IsItemSelected(item) ? "selected" : "")"
+                             @onclick="@(() => ViewModel.SelectItem(item))">
+                            <span class="file-explorer-item-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+                                </svg>
+                            </span>
+                            <span class="file-explorer-item-name">@item.Name</span>
+                        </div>
+            }
+
+            @foreach (var item in ViewModel.Contents.Where(i => i.IsFile).OrderBy(i => i.Name))
+            {
+                        <div class="file-explorer-item file-explorer-file @(ViewModel.IsItemSelected(item) ? "selected" : "")"
+                             @onclick="@(() => ViewModel.SelectItem(item))">
+                            <span class="file-explorer-item-icon">
+                        @if (item.Name.EndsWith(".md", StringComparison.OrdinalIgnoreCase))
+                        {
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                            <polyline points="14 2 14 8 20 8" />
+                                            <line x1="16" y1="13" x2="8" y2="13" />
+                                            <line x1="16" y1="17" x2="8" y2="17" />
+                                            <polyline points="10 9 9 9 8 9" />
+                                        </svg>
+                        }
+                        else
+                        {
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" />
+                                            <polyline points="13 2 13 9 20 9" />
+                                        </svg>
+                        }
+                            </span>
+                            <span class="file-explorer-item-name">@item.Name</span>
+                            <div class="file-explorer-item-actions">
+                                <button type="button"
+                                        class="file-explorer-button file-explorer-button-icon file-explorer-button-delete"
+                                        title="Delete"
+                                        @onclick:stopPropagation="true"
+                                        @onclick="@(() => ViewModel.ShowDeleteConfirmation(item))">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="3 6 5 6 21 6" />
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+            }
+            </div>
+    }
+
+    @if (ViewModel.IsShowingDeleteConfirmation)
+    {
+            <div class="file-explorer-modal">
+                <div class="file-explorer-modal-content">
+                    <div class="file-explorer-modal-header">
+                        <h3 class="file-explorer-modal-title">Delete File</h3>
+                    </div>
+                    <div class="file-explorer-modal-body">
+                        <p>Are you sure you want to delete "@ViewModel.FileToDelete?.Name"?</p>
+                        <p class="file-explorer-modal-warning">This action cannot be undone.</p>
+                    </div>
+                    <div class="file-explorer-modal-footer">
+                        <button type="button"
+                                class="file-explorer-button file-explorer-button-secondary"
+                                @onclick="ViewModel.CancelDelete">
+                            Cancel
+                        </button>
+                        <button type="button"
+                                class="file-explorer-button file-explorer-button-danger"
+                                @onclick="ViewModel.DeleteFileAsync"
+                                disabled="@ViewModel.IsDeletingFile">
+                        @if (ViewModel.IsDeletingFile)
+                        {
+                                    <span class="file-explorer-loading-spinner"></span>
+                                    <span>Deleting...</span>
+                        }
+                        else
+                        {
+                                    <span>Delete</span>
+                        }
+                        </button>
+                    </div>
+                </div>
+            </div>
+    }
+</div>

@@ -13,70 +13,70 @@ public class FrontMatter : ValueObject
     /// <summary>
     /// Gets the Id of the post
     /// </summary>
-    public string Id { get; private set; } = string.Empty;
+    public string Id { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets the title of the post
     /// </summary>
-    public string Title { get; private set; } = string.Empty;
+    public string Title { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets the description of the post
     /// </summary>
-    public string Description { get; private set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets the author of the post
     /// </summary>
-    public string Author { get; private set; } = string.Empty;
+    public string Author { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets the date of the post in ISO format (yyyy-MM-dd)
     /// </summary>
-    public string Date { get; private set; } = DateTime.Now.ToString("yyyy-MM-dd");
+    public string Date { get; set; } = DateTime.Now.ToString("yyyy-MM-dd");
 
     /// <summary>
     /// Gets the URL for the featured image
     /// </summary>
-    public string? FeaturedImage { get; private set; }
+    public string? FeaturedImage { get; set; }
 
     /// <summary>
     /// Gets the categories of the post
     /// </summary>
-    public IReadOnlyList<string> Categories { get; private set; } = new List<string>();
+    public IReadOnlyList<string> Categories { get; set; } = new List<string>();
 
     /// <summary>
     /// Gets the tags of the post
     /// </summary>
-    public IReadOnlyList<string> Tags { get; private set; } = new List<string>();
+    public IReadOnlyList<string> Tags { get; set; } = new List<string>();
 
     /// <summary>
     /// Gets whether the post is featured
     /// </summary>
-    public bool IsFeatured { get; private set; }
+    public bool IsFeatured { get; set; }
 
     /// <summary>
     /// Gets whether the post is published
     /// </summary>
-    public bool Published { get; private set; } = true;
+    public bool Published { get; set; } = true;
 
     /// <summary>
     /// Gets the layout template to use for the post
     /// </summary>
-    public string? Layout { get; private set; }
+    public string? Layout { get; set; }
 
     /// <summary>
     /// Gets the URL slug for the post
     /// </summary>
-    public string? Slug { get; private set; }
+    public string? Slug { get; set; }
 
     /// <summary>
     /// Gets custom fields for the post
     /// </summary>
-    public IReadOnlyDictionary<string, object> CustomFields { get; private set; } = new Dictionary<string, object>();
+    public IReadOnlyDictionary<string, object> CustomFields { get; set; } = new Dictionary<string, object>();
 
     // Private constructor to enforce creation through factory method
-    private FrontMatter() { }
+    public FrontMatter() { }
 
     /// <summary>
     /// Factory method to create a new FrontMatter instance

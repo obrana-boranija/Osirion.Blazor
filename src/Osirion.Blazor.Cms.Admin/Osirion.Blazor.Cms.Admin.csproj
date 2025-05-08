@@ -59,7 +59,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\Osirion.Blazor.Cms.Application\Osirion.Blazor.Cms.Application.csproj" />
 	  <ProjectReference Include="..\Osirion.Blazor.Cms.Core\Osirion.Blazor.Cms.Core.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Extensions\" />
+	  <Folder Include="Features\Authentication\Services\" />
+	  <Folder Include="Shared\Events\" />
 	</ItemGroup>
 
 </Project>

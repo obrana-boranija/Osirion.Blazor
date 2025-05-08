@@ -1,0 +1,167 @@
+.branch-selector {
+    display: flex;
+    flex-direction: column;
+    border: var(--osirion-border-width) solid var(--osirion-border-color);
+    border-radius: var(--osirion-radius-lg);
+    overflow: hidden;
+    margin-bottom: var(--osirion-spacing-4);
+}
+
+.branch-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--osirion-spacing-3);
+    background-color: var(--osirion-background-secondary);
+    border-bottom: var(--osirion-border-width) solid var(--osirion-border-color);
+}
+
+.branch-title {
+    margin: 0;
+    font-size: var(--osirion-font-size-sm);
+    font-weight: var(--osirion-font-weight-medium);
+}
+
+.branch-actions {
+    display: flex;
+    gap: var(--osirion-spacing-1);
+}
+
+.branch-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--osirion-spacing-2);
+    padding: var(--osirion-spacing-1);
+    border: var(--osirion-border-width) solid var(--osirion-border-color);
+    border-radius: var(--osirion-radius-sm);
+    background-color: var(--osirion-background-primary);
+    color: var(--osirion-text-primary);
+    cursor: pointer;
+    transition: all var(--osirion-transition-duration-200) var(--osirion-transition-timing-default);
+}
+
+    .branch-button:hover:not(:disabled) {
+        background-color: var(--osirion-background-hover, var(--osirion-color-neutral-100));
+    }
+
+    .branch-button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+.branch-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+}
+
+.branch-select-container {
+    padding: var(--osirion-spacing-2) var(--osirion-spacing-3);
+}
+
+.branch-select {
+    width: 100%;
+    padding: var(--osirion-spacing-2);
+    border: var(--osirion-border-width) solid var(--osirion-border-color);
+    border-radius: var(--osirion-radius-lg);
+    background-color: var(--osirion-background-primary);
+    color: var(--osirion-text-primary);
+    font-family: var(--osirion-font-family-base);
+    font-size: var(--osirion-font-size-base);
+}
+
+.branch-loading,
+.branch-error,
+.branch-empty {
+    padding: var(--osirion-spacing-3);
+    text-align: center;
+}
+
+.branch-loading-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--osirion-border-color);
+    border-top-color: var(--osirion-action-primary);
+    border-radius: 50%;
+    animation: branch-spin 1s linear infinite;
+    margin-right: var(--osirion-spacing-2);
+}
+
+@keyframes branch-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.branch-actions-container {
+    padding: var(--osirion-spacing-2) var(--osirion-spacing-3);
+    border-top: var(--osirion-border-width) solid var(--osirion-border-color);
+}
+
+.branch-button-new {
+    width: 100%;
+    padding: var(--osirion-spacing-2);
+}
+
+.branch-create-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--osirion-spacing-3);
+}
+
+.branch-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--osirion-spacing-1);
+}
+
+.branch-label {
+    font-size: var(--osirion-font-size-sm);
+    font-weight: var(--osirion-font-weight-medium);
+}
+
+.branch-input {
+    padding: var(--osirion-spacing-2);
+    border: var(--osirion-border-width) solid var(--osirion-border-color);
+    border-radius: var(--osirion-radius-lg);
+    background-color: var(--osirion-background-primary);
+    color: var(--osirion-text-primary);
+    font-family: var(--osirion-font-family-base);
+    font-size: var(--osirion-font-size-base);
+}
+
+.branch-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--osirion-spacing-2);
+    margin-top: var(--osirion-spacing-2);
+}
+
+.branch-button-primary {
+    background-color: var(--osirion-action-primary);
+    border-color: var(--osirion-action-primary);
+    color: var(--osirion-action-primary-text);
+    padding: var(--osirion-spacing-2) var(--osirion-spacing-3);
+}
+
+    .branch-button-primary:hover:not(:disabled) {
+        background-color: var(--osirion-action-primary-hover);
+    }
+
+.branch-button-small {
+    padding: var(--osirion-spacing-1) var(--osirion-spacing-2);
+    font-size: var(--osirion-font-size-xs);
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .branch-button,
+    .branch-loading-spinner {
+        transition: none;
+        animation: none;
+    }
+}

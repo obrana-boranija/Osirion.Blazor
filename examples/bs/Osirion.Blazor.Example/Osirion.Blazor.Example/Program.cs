@@ -1,7 +1,6 @@
-using Osirion.Blazor.Cms;
+using Osirion.Blazor.Cms.Admin.DependencyInjection;
 using Osirion.Blazor.Example.Components;
 using Osirion.Blazor.Extensions;
-using Osirion.Blazor.Theming;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,80 +13,58 @@ builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddOsirion(builder.Configuration);
 
-//builder.Services.AddOsirionCms(builder.Configuration);
+// In Program.cs
+builder.Services.AddOsirionCmsAdmin(options =>
+{
+    // Configure GitHub provider
+    options.UseGitHubProvider(github =>
+    {
+        github.Owner = "obrana-boranija";
+        github.Repository = "Osirion.Blazor";
+        github.DefaultBranch = "master"; // Optional, defaults to "main"
+        github.ContentPath = ""; // Optional subdirectory in the repository
+        github.CommitterName = "Your Name"; // Optional
+        github.CommitterEmail = "your.email@example.com"; // Optional
+    });
 
-// Add admin features if needed
-//builder.Services.AddOsirionCmsAdmin(builder.Configuration);
+    // Configure authentication
+    options.ConfigureAuthentication(auth =>
+    {
+        auth.EnableGitHubOAuth = true;
+        auth.GitHubClientId = "Ov23lid1Y6zZLKbwaaih";
+        auth.GitHubClientSecret = "fef6f7e1dac44e185df867fb9ddd80daf58705b8";
+        auth.GitHubRedirectUri = "https://your-site.com/admin/login";
+        auth.AllowPersonalAccessTokens = true; // Allow PAT authentication
+    });
 
-// Add Osirion.Blazor services
-//builder.Services.AddOsirion(osirion =>
-//{
-//    osirion
-//        // Add content services with GitHub provider
-//        //.UseContent(content => content.AddGitHub(options =>
-//        //{
-//        //    options.Owner = "obrana-boranija";
-//        //    options.Repository = "hexavera-blog";
-//        //    options.ContentPath = "localized";
-//        //    options.Branch = "main";
-//        //    options.ApiToken = "";
-//        //    options.CacheDurationMinutes = 30;
-//        //    options.EnableLocalization = true;
-//        //    options.DefaultLocale = "en";
-//        //}))
-//        //Configure CMS Admin
-//        //.UseCmsAdmin(admin =>
-//        //{
-//        //    admin.Configure(options =>
-//        //    {
-//        //        options.Owner = "obrana-boranija";
-//        //        options.DefaultRepository = "hexavera-blog";
-//        //        options.DefaultBranch = "master";
-//        //    });
+    // Configure UI theme
+    options.ConfigureTheme(theme =>
+    {
+        theme.DefaultMode = "light"; // "light" or "dark"
+        theme.PrimaryColor = "#2563eb"; // Primary brand color
+        theme.UseDarkMode = false; // Enable dark mode by default
+        theme.RespectSystemPreferences = true; // Follow system preferences
+    });
 
-//        //    admin.UseGitHubAuthentication(
-//        //        clientId: "your-github-oauth-client-id",
-//        //        clientSecret: "your-github-oauth-client-secret"
-//        //    );
-//        //})
-//        // Add navigation services
-//        .UseNavigation(navigation =>
-//        {
-//            //navigation.UseEnhancedNavigation(options =>
-//            //{
-//            //    options.Behavior = Osirion.Blazor.ScrollBehavior.Smooth;
-//            //    options.PreserveScrollForSamePageNavigation = false;
-//            //});
-//            //navigation.AddScrollToTop(options =>
-//            //{
-//            //    options.Position = Osirion.Blazor.Position.BottomRight;
-//            //    options.Behavior = Osirion.Blazor.ScrollBehavior.Smooth;
-//            //    options.VisibilityThreshold = 100;
-//            //    options.CssClass = "btn btn-danger";
-//            //});
-//        })
-//        // Add analytics services
-//        .UseAnalytics(analytics =>
-//        {
-//            analytics.AddClarity(options =>
-//            {
-//                options.SiteId = "demo-clarity-id";
-//                options.Enabled = false; // Disable for demo
-//            });
-//            analytics.AddMatomo(options =>
-//            {
-//                options.SiteId = "demo-matomo-id";
-//                options.TrackerUrl = "https://your-matomo-url/";
-//                options.Enabled = false; // Disable for demo
-//            });
-//        })
-//        // Add theming services
-//        .UseTheming(theming =>
-//        {
-//            theming.UseFramework(CssFramework.Bootstrap);
-//            theming.EnableDarkMode(true);
-//        });
-//});
+    // Configure content rules
+    options.ConfigureContentRules(rules =>
+    {
+        rules.RequireApproval = false; // Require content approval
+        rules.MaximumDraftAge = 30; // Auto-delete drafts after 30 days
+        rules.EnforceFrontMatterValidation = true; // Validate front matter
+        rules.RequiredFrontMatterFields = new List<string> { "title", "date" };
+        rules.AutoGenerateSlugs = true; // Auto-generate slugs from titles
+        rules.AllowedFileExtensions = new List<string> { ".md", ".markdown" };
+        rules.AllowFileDeletion = true; // Allow deleting files
+    });
+
+    // Configure localization (optional)
+    options.UseLocalization(localization =>
+    {
+        localization.AddSupportedCultures("en-US", "fr-FR", "de-DE");
+        localization.SetDefaultCulture("en-US");
+    });
+});
 
 var app = builder.Build();
 

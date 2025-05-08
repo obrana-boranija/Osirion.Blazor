@@ -31,8 +31,10 @@ public class ContentItem : DomainEntity<string>
     public string Path { get; private set; } = string.Empty;
     public string? FeaturedImageUrl { get; private set; }
     public bool IsFeatured { get; private set; }
+    public bool IsPublished { get; private set; }
     public ContentStatus Status { get; private set; } = ContentStatus.Published;
     public int OrderIndex { get; private set; }
+    public string Sha { get; private set; } = string.Empty;
     public DirectoryItem? Directory { get; private set; }
 
     // Collections

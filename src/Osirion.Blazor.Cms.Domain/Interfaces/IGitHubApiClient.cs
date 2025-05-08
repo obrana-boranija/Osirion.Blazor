@@ -3,81 +3,96 @@
 namespace Osirion.Blazor.Cms.Domain.Interfaces;
 
 /// <summary>
-/// Client for interacting with the GitHub API
+/// Interface for GitHub API client operations
 /// </summary>
 public interface IGitHubApiClient
 {
     /// <summary>
-    /// Gets the content of a repository at the specified path
+    /// Gets a list of repositories the authenticated user has access to
     /// </summary>
-    Task<List<GitHubItem>> GetRepositoryContentsAsync(string path, CancellationToken cancellationToken = default);
+    /// <returns>List of GitHub repositories</returns>
+    Task<List<GitHubRepository>> GetRepositoriesAsync(CancellationToken cancellationToken = default!);
 
     /// <summary>
-    /// Gets the content of a file
+    /// Gets the branches for the current repository
     /// </summary>
-    Task<GitHubFileContent> GetFileContentAsync(string path, CancellationToken cancellationToken = default);
+    /// <returns>List of GitHub branches</returns>
+    Task<List<GitHubBranch>> GetBranchesAsync(CancellationToken cancellationToken = default!);
 
     /// <summary>
-    /// Gets information about a file from the commit history
+    /// Gets the contents of the repository at the specified path
     /// </summary>
-    Task<(DateTime Created, DateTime? Modified)> GetFileHistoryAsync(string path, CancellationToken cancellationToken = default);
+    /// <param name="path">Path in the repository</param>
+    /// <returns>List of GitHub items (files and directories)</returns>
+    Task<List<GitHubItem>> GetRepositoryContentsAsync(string path, CancellationToken cancellationToken = default!);
 
     /// <summary>
-    /// Gets all branches in the repository
+    /// Gets the content of a file in the repository
     /// </summary>
-    Task<List<GitHubBranch>> GetBranchesAsync(CancellationToken cancellationToken = default);
+    /// <param name="path">Path to the file</param>
+    /// <returns>File content</returns>
+    Task<GitHubFileContent> GetFileContentAsync(string path, CancellationToken cancellationToken = default!);
 
     /// <summary>
     /// Creates or updates a file in the repository
     /// </summary>
-    Task<GitHubFileCommitResponse> CreateOrUpdateFileAsync(
-        string path,
-        string content,
-        string message,
-        string? sha = null,
-        CancellationToken cancellationToken = default);
+    /// <param name="path">Path to the file</param>
+    /// <param name="content">Content of the file</param>
+    /// <param name="message">Commit message</param>
+    /// <param name="sha">SHA of the file to update (null for new files)</param>
+    /// <returns>Commit response</returns>
+    Task<GitHubFileCommitResponse> CreateOrUpdateFileAsync(string path, string content, string message, string? sha = null, CancellationToken cancellationToken = default!);
 
     /// <summary>
     /// Deletes a file from the repository
     /// </summary>
-    Task<GitHubFileCommitResponse> DeleteFileAsync(
-        string path,
-        string message,
-        string sha,
-        CancellationToken cancellationToken = default);
+    /// <param name="path">Path to the file</param>
+    /// <param name="message">Commit message</param>
+    /// <param name="sha">SHA of the file to delete</param>
+    /// <returns>Commit response</returns>
+    Task<GitHubFileCommitResponse> DeleteFileAsync(string path, string message, string sha, CancellationToken cancellationToken = default!);
+
+    /// <summary>
+    /// Creates a new branch in the repository
+    /// </summary>
+    /// <param name="branchName">Name of the new branch</param>
+    /// <param name="baseBranch">Name of the base branch</param>
+    /// <returns>The created branch</returns>
+    Task<GitHubBranch> CreateBranchAsync(string branchName, string baseBranch, CancellationToken cancellationToken = default!);
+
+    /// <summary>
+    /// Creates a new pull request in the repository
+    /// </summary>
+    /// <param name="title">Title of the pull request</param>
+    /// <param name="body">Body of the pull request</param>
+    /// <param name="head">Head branch name</param>
+    /// <param name="baseBranch">Base branch name</param>
+    /// <returns>The created pull request</returns>
+    Task<GitHubPullRequest> CreatePullRequestAsync(string title, string body, string head, string baseBranch, CancellationToken cancellationToken = default!);
 
     /// <summary>
     /// Searches for files in the repository
     /// </summary>
-    Task<GitHubSearchResult> SearchFilesAsync(string query, CancellationToken cancellationToken = default);
+    /// <param name="query">Search query</param>
+    /// <returns>Search results</returns>
+    Task<GitHubSearchResult> SearchFilesAsync(string query, CancellationToken cancellationToken = default!);
 
     /// <summary>
-    /// Sets the access token for authenticated requests
+    /// Sets the owner and repository for subsequent requests
     /// </summary>
-    void SetAccessToken(string token);
+    /// <param name="owner">Repository owner</param>
+    /// <param name="repository">Repository name</param>
+    void SetRepository(string owner, string repository);
 
     /// <summary>
-    /// Sets the repository for API operations
+    /// Sets the branch for subsequent requests
     /// </summary>
-    void SetRepository(string owner, string repo);
-
-    /// <summary>
-    /// Sets the branch for API operations
-    /// </summary>
+    /// <param name="branch">Branch name</param>
     void SetBranch(string branch);
 
     /// <summary>
-    /// Creates a new branch
+    /// Sets the access token for authentication
     /// </summary>
-    Task<GitHubBranch> CreateBranchAsync(string name, string fromBranch, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Creates a pull request
-    /// </summary>
-    Task<GitHubPullRequest> CreatePullRequestAsync(
-        string title,
-        string body,
-        string head,
-        string baseBranch,
-        CancellationToken cancellationToken = default);
+    /// <param name="token">GitHub access token</param>
+    void SetAccessToken(string token);
 }

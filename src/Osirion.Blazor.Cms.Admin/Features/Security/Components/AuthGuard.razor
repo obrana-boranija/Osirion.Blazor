@@ -1,0 +1,30 @@
+@namespace Osirion.Blazor.Cms.Admin.Features.Security.Components
+@inherits BaseComponent
+@using Osirion.Blazor.Cms.Admin.Features.Authentication.Components
+@using Osirion.Blazor.Cms.Admin.Shared.Components
+
+@if (authService.IsAuthenticated)
+{
+    @ChildContent
+}
+else
+{
+    @if (ShowLoginForm)
+    {
+        <Login ReturnUrl="@ReturnUrl" OnLoginResult="HandleLoginResult" />
+    }
+    else
+    {
+        <div class="osirion-admin-unauthorized">
+            <div class="osirion-admin-unauthorized-content">
+                <h2 class="osirion-admin-unauthorized-title">Authentication Required</h2>
+                <p class="osirion-admin-unauthorized-message">You need to log in to access this area.</p>
+                <button type="button"
+                        class="osirion-admin-button osirion-admin-button-primary"
+                        @onclick="RedirectToLogin">
+                    Log In
+                </button>
+            </div>
+        </div>
+    }
+}
