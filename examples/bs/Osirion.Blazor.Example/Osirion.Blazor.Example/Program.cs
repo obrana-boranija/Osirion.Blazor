@@ -1,8 +1,5 @@
-using Osirion.Blazor.Cms;
-using Osirion.Blazor.Cms.Admin.Module;
 using Osirion.Blazor.Example.Components;
 using Osirion.Blazor.Extensions;
-using Osirion.Blazor.Theming;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,13 +11,6 @@ builder.Services.AddRazorComponents()
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddOsirion(builder.Configuration);
-
-builder.Services.AddOsirionCmsAdmin(builder.Configuration, options => {
-    options.PersistUserSelections = true;
-    options.DefaultContentProvider = "GitHub";
-    options.GitHub.DefaultOwner = "yourUsername";
-    options.GitHub.DefaultRepository = "yourRepository";
-});
 
 //builder.Services.AddOsirionCms(builder.Configuration);
 

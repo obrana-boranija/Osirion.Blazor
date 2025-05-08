@@ -4,40 +4,35 @@ using Osirion.Blazor.Cms.Admin.Core.Events;
 namespace Osirion.Blazor.Cms.Admin.Services.Events;
 
 /// <summary>
-/// Mediator service for handling events in the CMS admin interface
+/// Event mediator for the CMS admin interface, providing a centralized event handling system
+/// that implements both publisher and subscriber interfaces.
 /// </summary>
-public class CmsEventMediator
+public class CmsEventMediator : IEventPublisher, IEventSubscriber
 {
-    private readonly Dictionary<Type, List<object>> _handlers = new();
+    private readonly Dictionary<Type, List<Delegate>> _handlers = new();
     private readonly ILogger<CmsEventMediator> _logger;
-    private readonly List<ICmsEvent> _eventHistory = new();
-    private readonly int _maxHistorySize = 100;
 
     public CmsEventMediator(ILogger<CmsEventMediator> logger)
     {
         _logger = logger;
     }
 
-    /// <summary>
-    /// Subscribes to an event type
-    /// </summary>
-    public void Subscribe<TEvent>(Action<TEvent> handler) where TEvent : ICmsEvent
+    /// <inheritdoc/>
+    public void Subscribe<TEvent>(Action<TEvent> handler) where TEvent : class
     {
         var eventType = typeof(TEvent);
 
         if (!_handlers.ContainsKey(eventType))
         {
-            _handlers[eventType] = new List<object>();
+            _handlers[eventType] = new List<Delegate>();
         }
 
         _handlers[eventType].Add(handler);
         _logger.LogDebug("Handler subscribed for event type: {EventType}", eventType.Name);
     }
 
-    /// <summary>
-    /// Unsubscribes from an event type
-    /// </summary>
-    public void Unsubscribe<TEvent>(Action<TEvent> handler) where TEvent : ICmsEvent
+    /// <inheritdoc/>
+    public void Unsubscribe<TEvent>(Action<TEvent> handler) where TEvent : class
     {
         var eventType = typeof(TEvent);
 
@@ -48,48 +43,30 @@ public class CmsEventMediator
         }
     }
 
-    /// <summary>
-    /// Publishes an event
-    /// </summary>
-    public void Publish<TEvent>(TEvent @event) where TEvent : ICmsEvent
+    /// <inheritdoc/>
+    public void Publish<TEvent>(TEvent @event) where TEvent : class
     {
         var eventType = typeof(TEvent);
         _logger.LogDebug("Publishing event: {EventType}", eventType.Name);
 
-        // Add to history
-        _eventHistory.Add(@event);
-        if (_eventHistory.Count > _maxHistorySize)
+        if (!_handlers.ContainsKey(eventType))
         {
-            _eventHistory.RemoveAt(0);
+            return;
         }
 
-        if (_handlers.ContainsKey(eventType))
+        // Create a copy of handlers to avoid modification issues if a handler unsubscribes
+        var handlers = _handlers[eventType].ToList();
+
+        foreach (var handler in handlers)
         {
-            foreach (var handler in _handlers[eventType])
+            try
             {
-                try
-                {
-                    ((Action<TEvent>)handler)(@event);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Error in event handler for {EventType}", eventType.Name);
-                }
+                ((Action<TEvent>)handler)(@event);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error handling event {EventType}", eventType.Name);
             }
         }
-    }
-
-    /// <summary>
-    /// Gets the event history
-    /// </summary>
-    public IReadOnlyList<ICmsEvent> GetEventHistory() => _eventHistory.AsReadOnly();
-
-    /// <summary>
-    /// Clears all event handlers
-    /// </summary>
-    public void ClearHandlers()
-    {
-        _handlers.Clear();
-        _logger.LogDebug("All event handlers cleared");
     }
 }

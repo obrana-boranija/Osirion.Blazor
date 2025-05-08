@@ -9,7 +9,6 @@ using Osirion.Blazor.Navigation;
 using Osirion.Blazor.Theming;
 using Osirion.Blazor.Theming.Extensions;
 using Osirion.Blazor.Navigation.Extensions;
-using Osirion.Blazor.Cms.Admin.Module;
 
 namespace Osirion.Blazor.Internal;
 

@@ -65,6 +65,7 @@
 
 	<ItemGroup>
 	  <Folder Include="Extensions\" />
+	  <Folder Include="Shared\Events\" />
 	</ItemGroup>
 
 </Project>
