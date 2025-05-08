@@ -1,9 +1,15 @@
 using Microsoft.AspNetCore.Components;
 using Osirion.Blazor.Cms.Admin.Core.State;
+using Osirion.Blazor.Cms.Admin.Features.Layouts.Models;
+using Osirion.Blazor.Cms.Admin.Shared.Components;
 
-namespace Osirion.Blazor.Cms.Admin.Components;
-public partial class AdminPage(CmsState adminState)
+namespace Osirion.Blazor.Cms.Admin.Features.Layouts.Components;
+
+public partial class AdminPage : BaseComponent
 {
+    [Inject]
+    protected CmsState AdminState { get; set; } = default!;
+
     [Parameter]
     public string Title { get; set; } = "Osirion CMS";
 
@@ -72,21 +78,5 @@ public partial class AdminPage(CmsState adminState)
         }
 
         return Task.CompletedTask;
-    }
-
-    [Inject]
-    protected NavigationManager NavigationManager { get; set; } = default!;
-
-    // Define BreadcrumbItem class for navigation
-    public class BreadcrumbItem
-    {
-        public string Text { get; set; }
-        public string Url { get; set; }
-
-        public BreadcrumbItem(string text, string url = "")
-        {
-            Text = text;
-            Url = url;
-        }
     }
 }

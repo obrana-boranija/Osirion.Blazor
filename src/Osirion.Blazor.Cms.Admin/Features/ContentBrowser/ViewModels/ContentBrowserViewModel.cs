@@ -1,6 +1,6 @@
-﻿using Osirion.Blazor.Cms.Admin.Features.ContentBrowser.Services;
+﻿using Osirion.Blazor.Cms.Admin.Core.State;
+using Osirion.Blazor.Cms.Admin.Features.ContentBrowser.Services;
 using Osirion.Blazor.Cms.Admin.Services.Events;
-using Osirion.Blazor.Cms.Admin.Services.State;
 using Osirion.Blazor.Cms.Domain.Models.GitHub;
 
 namespace Osirion.Blazor.Cms.Admin.Features.ContentBrowser.ViewModels;
@@ -8,7 +8,7 @@ namespace Osirion.Blazor.Cms.Admin.Features.ContentBrowser.ViewModels;
 public class ContentBrowserViewModel
 {
     private readonly ContentBrowserService _contentService;
-    private readonly CmsApplicationState _appState;
+    private readonly CmsState _appState;
     private readonly CmsEventMediator _eventMediator;
 
     public List<GitHubItem> Contents { get; private set; } = new();
@@ -21,7 +21,7 @@ public class ContentBrowserViewModel
 
     public ContentBrowserViewModel(
         ContentBrowserService contentService,
-        CmsApplicationState appState,
+        CmsState appState,
         CmsEventMediator eventMediator)
     {
         _contentService = contentService;

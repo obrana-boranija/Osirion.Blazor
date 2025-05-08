@@ -1,16 +1,18 @@
 ﻿@page "/admin/content/edit"
 @rendermode InteractiveServer
 
-@using Osirion.Blazor.Cms.Admin.Components
-@using Osirion.Blazor.Cms.Admin.Components.Editor
+@using Osirion.Blazor.Cms.Admin.Core.State
+@using Osirion.Blazor.Cms.Admin.Features.ContentEditor.Components
+@using Osirion.Blazor.Cms.Admin.Features.Layouts.Components
+@using Osirion.Blazor.Cms.Admin.Features.Security.Components
 @using Osirion.Blazor.Cms.Admin.Services
 @inherits Osirion.Blazor.Components.OsirionComponentBase
 @inject IGitHubAdminService GitHubService
-@inject CmsAdminState AdminState
+@inject CmsState AdminState
 @inject NavigationManager NavigationManager
 
 <AuthGuard ShowLoginForm="true">
-    <CmsEditorLayout Title="@GetPageTitle()">
+    <CmsLayoutEditor Title="@GetPageTitle()">
 @*         <BreadcrumbItems>
             @(new AdminPage.BreadcrumbItem("Dashboard", "/admin"))
             @(new AdminPage.BreadcrumbItem("Content", "/admin/content"))
@@ -30,36 +32,40 @@
                 Back to Content
             </button>
         </ActionsTemplate>
+
+        <ChildContent>
+            <div class="osirion-admin-edit-content">
+                @if (IsLoading)
+                {
+                    <div class="osirion-admin-loading">
+                        <span class="osirion-admin-loading-spinner"></span>
+                        <span>Loading content...</span>
+                    </div>
+                }
+                else if (AdminState.EditingPost == null || !AdminState.IsEditing)
+                {
+                    <div class="osirion-admin-empty">
+                        <p>No content found for editing. Select a file from the content browser or create a new post.</p>
+                        <button type="button"
+                                class="osirion-admin-button osirion-admin-button-primary"
+                                @onclick="CreateNewPost">
+                            Create New Post
+                        </button>
+                        <button type="button"
+                                class="osirion-admin-button osirion-admin-button-secondary"
+                                @onclick="GoToContentBrowser">
+                            Browse Content
+                        </button>
+                    </div>
+                }
+                else
+                {
+                    <ContentEditor OnSaveComplete="HandleSaveComplete"
+                                   OnDiscard="HandleDiscardChanges" />
+                }
+            </div>
+        </ChildContent>
         
-        <div class="osirion-admin-edit-content">
-            @if (IsLoading)
-            {
-                <div class="osirion-admin-loading">
-                    <span class="osirion-admin-loading-spinner"></span>
-                    <span>Loading content...</span>
-                </div>
-            }
-            else if (AdminState.EditingPost == null || !AdminState.IsEditing)
-            {
-                <div class="osirion-admin-empty">
-                    <p>No content found for editing. Select a file from the content browser or create a new post.</p>
-                    <button type="button"
-                            class="osirion-admin-button osirion-admin-button-primary"
-                            @onclick="CreateNewPost">
-                        Create New Post
-                    </button>
-                    <button type="button"
-                            class="osirion-admin-button osirion-admin-button-secondary"
-                            @onclick="GoToContentBrowser">
-                        Browse Content
-                    </button>
-                </div>
-            }
-            else
-            {
-                <ContentEditor OnSaveComplete="HandleSaveComplete" 
-                              OnDiscard="HandleDiscardChanges" />
-            }
-        </div>
-    </CmsEditorLayout>
+        
+    </CmsLayoutEditor>
 </AuthGuard>

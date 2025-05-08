@@ -1,10 +1,17 @@
 using Microsoft.AspNetCore.Components;
+using Osirion.Blazor.Cms.Admin.Shared.Components;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 
-namespace Osirion.Blazor.Cms.Admin.Components;
+namespace Osirion.Blazor.Cms.Admin.Features.Security.Components;
 
-public partial class AuthGuard(IAuthenticationService authService, NavigationManager navigationManager)
+public partial class AuthGuard
 {
+    [Inject]
+    private IAuthenticationService authService { get; set; } = default!;
+
+    [Inject]
+    private NavigationManager navigationManager { get; set; } = default!;
+
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 

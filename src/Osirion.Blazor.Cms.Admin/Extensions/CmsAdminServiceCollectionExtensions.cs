@@ -31,12 +31,12 @@ public static class ServiceCollectionExtensions
         // Register configuration
         if (configureOptions != null)
         {
-            services.Configure<CmsAdminOptions>(configureOptions);
+            services.Configure(configureOptions);
         }
         else
         {
             services.Configure<CmsAdminOptions>(
-                configuration.GetSection("Osirion:Cms:Admin"));
+                configuration.GetSection("Osirion:Cms:GitHub:Admin"));
         }
 
         // Core services

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Admin.Configuration;
+using Osirion.Blazor.Cms.Admin.Core.State;
 using Osirion.Blazor.Cms.Admin.Services.Events;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 
@@ -8,7 +9,7 @@ namespace Osirion.Blazor.Cms.Admin.Services.State;
 
 public class StateManager : IDisposable
 {
-    private readonly CmsApplicationState _state;
+    private readonly CmsState _state;
     private readonly IStateStorageService _storageService;
     private readonly CmsEventMediator _eventMediator;
     private readonly ILogger<StateManager> _logger;
@@ -17,7 +18,7 @@ public class StateManager : IDisposable
     private bool _isInitialized = false;
 
     public StateManager(
-        CmsApplicationState state,
+        CmsState state,
         IStateStorageService storageService,
         CmsEventMediator eventMediator,
         IOptions<CmsAdminOptions> options,

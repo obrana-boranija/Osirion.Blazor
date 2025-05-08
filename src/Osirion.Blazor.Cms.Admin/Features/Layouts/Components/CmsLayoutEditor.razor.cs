@@ -1,10 +1,15 @@
 using Microsoft.AspNetCore.Components;
 using Osirion.Blazor.Cms.Admin.Core.State;
+using Osirion.Blazor.Cms.Admin.Features.Layouts.Models;
+using Osirion.Blazor.Cms.Admin.Shared.Components;
 
-namespace Osirion.Blazor.Cms.Admin.Components;
+namespace Osirion.Blazor.Cms.Admin.Features.Layouts.Components;
 
-public partial class CmsLayoutEditor(CmsState adminState)
+public partial class CmsLayoutEditor : BaseComponent
 {
+    [Inject]
+    private CmsState AdminState { get; set; } = default!;
+
     /// <summary>
     /// Gets or sets the page title
     /// </summary>
@@ -21,7 +26,7 @@ public partial class CmsLayoutEditor(CmsState adminState)
     /// Gets or sets breadcrumb items for navigation
     /// </summary>
     [Parameter]
-    public List<AdminPage.BreadcrumbItem>? BreadcrumbItems { get; set; }
+    public List<BreadcrumbItem>? BreadcrumbItems { get; set; }
 
     /// <summary>
     /// Gets or sets the child content
@@ -47,8 +52,8 @@ public partial class CmsLayoutEditor(CmsState adminState)
     [Parameter]
     public string? ErrorMessage { get; set; }
 
-    private string? LocalStatusMessage => StatusMessage ?? adminState.StatusMessage;
-    private string? LocalErrorMessage => ErrorMessage ?? adminState.ErrorMessage;
+    private string? LocalStatusMessage => StatusMessage ?? AdminState.StatusMessage;
+    private string? LocalErrorMessage => ErrorMessage ?? AdminState.ErrorMessage;
 
     private void ClearStatusMessage()
     {
@@ -58,7 +63,7 @@ public partial class CmsLayoutEditor(CmsState adminState)
         }
         else
         {
-            adminState.ClearMessages();
+            AdminState.ClearMessages();
         }
     }
 
@@ -70,7 +75,7 @@ public partial class CmsLayoutEditor(CmsState adminState)
         }
         else
         {
-            adminState.ClearMessages();
+            AdminState.ClearMessages();
         }
     }
 

@@ -1,14 +1,12 @@
 using Microsoft.AspNetCore.Components;
-using Osirion.Blazor.Cms.Admin.Core.State;
-using Osirion.Blazor.Cms.Domain.Interfaces;
+using Osirion.Blazor.Cms.Admin.Shared.Components;
 using Osirion.Blazor.Cms.Domain.Models;
 using Osirion.Blazor.Cms.Domain.Models.GitHub;
 using Osirion.Blazor.Cms.Domain.ValueObjects;
 
+namespace Osirion.Blazor.Cms.Admin.Features.Dashboard.Components;
 
-namespace Osirion.Blazor.Cms.Admin.Components;
-
-public partial class CmsAdminDashboard(IGitHubAdminService gitHubService, CmsState adminState)
+public partial class CmsAdminDashboard
 {
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
@@ -16,17 +14,17 @@ public partial class CmsAdminDashboard(IGitHubAdminService gitHubService, CmsSta
     [Parameter]
     public string Theme { get; set; } = "light";
 
-    private bool IsEditing => adminState.IsEditing;
-    private bool IsViewingContent => adminState.SelectedRepository != null && adminState.SelectedBranch != null;
+    private bool IsEditing => AdminState.IsEditing;
+    private bool IsViewingContent => AdminState.SelectedRepository != null && AdminState.SelectedBranch != null;
 
     protected override void OnInitialized()
     {
-        adminState.StateChanged += StateHasChanged;
+        AdminState.StateChanged += StateHasChanged;
     }
 
     public void Dispose()
     {
-        adminState.StateChanged -= StateHasChanged;
+        AdminState.StateChanged -= StateHasChanged;
     }
 
     private async Task HandleRepositoryChange(GitHubRepository repository)
@@ -51,42 +49,42 @@ public partial class CmsAdminDashboard(IGitHubAdminService gitHubService, CmsSta
         {
             Metadata = FrontMatter.Create("", "Enter description here", DateTime.Now),
             Content = "## New Post\n\nStart writing your content here...",
-            FilePath = string.IsNullOrEmpty(adminState.CurrentPath) ?
+            FilePath = string.IsNullOrEmpty(AdminState.CurrentPath) ?
                 "new-post.md" :
-                $"{adminState.CurrentPath}/new-post.md"
+                $"{AdminState.CurrentPath}/new-post.md"
         };
 
-        adminState.SetEditingPost(newPost, true);
+        AdminState.SetEditingPost(newPost, true);
     }
 
     private async Task HandleSaveComplete(BlogPost post)
     {
         // Reload the directory contents
-        if (adminState.SelectedRepository != null && adminState.SelectedBranch != null)
+        if (AdminState.SelectedRepository != null && AdminState.SelectedBranch != null)
         {
             try
             {
-                var contents = await gitHubService.GetRepositoryContentsAsync(adminState.CurrentPath);
-                adminState.SetCurrentPath(adminState.CurrentPath, contents);
+                var contents = await GitHubService.GetRepositoryContentsAsync(AdminState.CurrentPath);
+                AdminState.SetCurrentPath(AdminState.CurrentPath, contents);
             }
             catch (Exception ex)
             {
-                adminState.SetErrorMessage($"Failed to refresh directory: {ex.Message}");
+                AdminState.SetErrorMessage($"Failed to refresh directory: {ex.Message}");
             }
         }
 
         // Clear editing state
-        adminState.ClearEditing();
+        AdminState.ClearEditing();
     }
 
     private void HandleDiscardChanges()
     {
-        adminState.ClearEditing();
+        AdminState.ClearEditing();
     }
 
     private void ClearMessages()
     {
-        adminState.ClearMessages();
+        AdminState.ClearMessages();
     }
 
     private string GetAdminDashboardClass()

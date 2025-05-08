@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using Osirion.Blazor.Cms.Application.Commands;
+﻿using Osirion.Blazor.Cms.Application.Commands;
 
 namespace Osirion.Blazor.Cms.Admin.Application.Commands;
 

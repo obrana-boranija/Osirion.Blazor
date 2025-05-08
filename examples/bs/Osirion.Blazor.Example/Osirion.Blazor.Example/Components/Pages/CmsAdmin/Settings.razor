@@ -4,12 +4,14 @@
 @using Microsoft.Extensions.Options
 @using Osirion.Blazor.Cms.Admin
 @using Osirion.Blazor.Cms.Admin.Components
+@using Osirion.Blazor.Cms.Admin.Core.State
+@using Osirion.Blazor.Cms.Admin.Features.Layouts.Components
 @using Osirion.Blazor.Cms.Admin.Services
 @using Osirion.Blazor.Cms.Core.Services
 @using Osirion.Blazor.Cms.Domain.Interfaces
 @using Osirion.Blazor.Cms.Domain.Options
 @inherits Osirion.Blazor.Components.OsirionComponentBase
-@inject CmsAdminState AdminState
+@inject CmsState AdminState
 @inject IAuthenticationService AuthService
 @inject IOptions<CmsAdminOptions> AdminOptions
 

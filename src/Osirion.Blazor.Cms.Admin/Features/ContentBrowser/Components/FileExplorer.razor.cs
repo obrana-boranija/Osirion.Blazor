@@ -1,13 +1,14 @@
 using Microsoft.AspNetCore.Components;
 using Osirion.Blazor.Cms.Admin.Core.Events;
 using Osirion.Blazor.Cms.Admin.Shared.Components;
+using Osirion.Blazor.Cms.Domain.Models.GitHub;
 
 namespace Osirion.Blazor.Cms.Admin.Features.ContentBrowser.Components;
 
 public partial class FileExplorer : BaseComponent
 {
     [Parameter]
-    public EventCallback OnFileSelected { get; set; }
+    public EventCallback<GitHubItem> OnFileSelected { get; set; }
 
     [Parameter]
     public EventCallback OnCreateFile { get; set; }

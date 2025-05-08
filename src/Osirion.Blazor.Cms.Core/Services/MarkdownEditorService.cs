@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Markdig;
+using Microsoft.Extensions.Logging;
 using System.Text.RegularExpressions;
 
 namespace Osirion.Blazor.Cms.Services;
@@ -27,6 +28,10 @@ public interface IMarkdownEditorService
     /// Provides markdown formatting suggestions
     /// </summary>
     IEnumerable<MarkdownFormattingSuggestion> GetFormattingSuggestions(string markdown);
+
+    string RenderToHtml(string markdown, bool sanitizeHtml = true);
+
+    Task<string> RenderToHtmlAsync(string markdown, bool sanitizeHtml = true);
 }
 
 /// <summary>
@@ -73,10 +78,23 @@ public class MarkdownFormattingSuggestion
 public class MarkdownEditorService : IMarkdownEditorService
 {
     private readonly ILogger<MarkdownEditorService> _logger;
+    private readonly static Regex _frontMatterRegex = new(@"^\s*---\s*\n(.*?)\n\s*---\s*\n", RegexOptions.Singleline);
+    private readonly MarkdownPipeline _defaultPipeline;
 
     public MarkdownEditorService(ILogger<MarkdownEditorService> logger)
     {
-        _logger = logger;
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+
+        // Create secure default pipeline
+        _defaultPipeline = new MarkdownPipelineBuilder()
+            .UseAdvancedExtensions()
+            .UseYamlFrontMatter()
+            .DisableHtml() // Prevent raw HTML injection
+            .UseAutoLinks()
+            .UseTaskLists()
+            .UsePipeTables()
+            .UseEmojiAndSmiley()
+            .Build();
     }
 
     /// <summary>
@@ -332,5 +350,42 @@ public class MarkdownEditorService : IMarkdownEditorService
     private int GetLineNumber(string markdown, int index)
     {
         return markdown.Substring(0, index).Count(c => c == '\n') + 1;
+    }
+
+    /// <inheritdoc/>
+    public string RenderToHtml(string markdown, bool sanitizeHtml = true)
+    {
+        if (string.IsNullOrWhiteSpace(markdown))
+            return string.Empty;
+
+        try
+        {
+            if (sanitizeHtml)
+            {
+                markdown = SanitizeMarkdown(markdown);
+            }
+
+            var match = _frontMatterRegex.Match(markdown);
+            if (match.Success)
+            {
+                var contentStartIndex = match.Index + match.Length;
+                markdown = markdown.Substring(contentStartIndex).Trim();
+            }
+
+            return Markdig.Markdown.ToHtml(markdown, _defaultPipeline);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error rendering markdown: {Message}", ex.Message);
+            //return FormatErrorMessage(ex.Message);
+            return string.Empty;
+        }
+    }
+
+    /// <inheritdoc/>
+    public async Task<string> RenderToHtmlAsync(string markdown, bool sanitizeHtml = true)
+    {
+        // Use Task.Run to offload CPU-intensive rendering to a background thread
+        return await Task.Run(() => RenderToHtml(markdown, sanitizeHtml));
     }
 }

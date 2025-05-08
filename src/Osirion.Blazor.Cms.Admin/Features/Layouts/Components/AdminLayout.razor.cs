@@ -1,10 +1,15 @@
-﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components;
+using Osirion.Blazor.Cms.Admin.Features.Layouts.Models;
+using Osirion.Blazor.Cms.Admin.Shared.Components;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 
-namespace Osirion.Blazor.Cms.Admin.Components;
+namespace Osirion.Blazor.Cms.Admin.Features.Layouts.Components;
 
-public partial class AdminLayout(IAuthenticationService authService)
+public partial class AdminLayout : BaseComponent
 {
+    [Inject]
+    protected IAuthenticationService authService { get; set; } = default!;
+
     /// <summary>
     /// Gets or sets the page title
     /// </summary>
@@ -57,7 +62,7 @@ public partial class AdminLayout(IAuthenticationService authService)
     /// Gets or sets breadcrumb items for navigation
     /// </summary>
     [Parameter]
-    public List<AdminPage.BreadcrumbItem>? BreadcrumbItems { get; set; }
+    public List<BreadcrumbItem>? BreadcrumbItems { get; set; }
 
     /// <summary>
     /// Gets or sets the child content

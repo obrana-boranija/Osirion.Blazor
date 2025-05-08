@@ -2,7 +2,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Osirion.Blazor.Analytics;
 using Osirion.Blazor.Analytics.Extensions;
-using Osirion.Blazor.Cms.Admin.Extensions;
 using Osirion.Blazor.Cms.Admin.Interfaces;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Front.DependencyInjection;
@@ -10,6 +9,7 @@ using Osirion.Blazor.Navigation;
 using Osirion.Blazor.Theming;
 using Osirion.Blazor.Theming.Extensions;
 using Osirion.Blazor.Navigation.Extensions;
+using Osirion.Blazor.Cms.Admin.Module;
 
 namespace Osirion.Blazor.Internal;
 
@@ -30,7 +30,7 @@ internal class OsirionBuilder : IOsirionBuilder
 
     public IOsirionBuilder UseCmsAdmin(Action<ICmsAdminBuilder> configure)
     {
-        Services.AddOsirionCmsAdmin(configure);
+        //Services.AddOsirionCmsAdmin(configure);
         return this;
     }
 

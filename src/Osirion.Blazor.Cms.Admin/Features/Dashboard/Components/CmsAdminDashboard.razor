@@ -1,56 +1,62 @@
-﻿@using Osirion.Blazor.Cms.Admin.Features.ContentBrowser.Components
+@namespace Osirion.Blazor.Cms.Admin.Features.Dashboard.Components
+@inherits BaseComponent
+@using Osirion.Blazor.Cms.Admin.Core.State
+@using Osirion.Blazor.Cms.Admin.Features.ContentBrowser.Components
 @using Osirion.Blazor.Cms.Admin.Features.ContentEditor.Components
 @using Osirion.Blazor.Cms.Admin.Features.Repository.Components
+@using Osirion.Blazor.Cms.Admin.Shared.Components
+@using Osirion.Blazor.Cms.Domain.Interfaces
+@inject IGitHubAdminService GitHubService
+@inject CmsState AdminState
 
 <div class="@GetAdminDashboardClass()">
     <div class="osirion-admin-sidebar">
         <div class="osirion-admin-logo">
             <h1 class="osirion-admin-brand">Osirion CMS</h1>
         </div>
-        
+
         <div class="osirion-admin-navigation">
             <div class="osirion-admin-nav-section">
                 <h2 class="osirion-admin-nav-title">Repository</h2>
                 <RepositorySelector OnRepositoryChange="HandleRepositoryChange" />
                 <BranchSelector OnBranchChange="HandleBranchChange" />
             </div>
-            
+
             <div class="osirion-admin-nav-section">
                 <h2 class="osirion-admin-nav-title">Content</h2>
-                <FileExplorer OnFileSelected="HandleFileSelected" 
-                             OnCreateFile="HandleCreateFile" />
+                <FileExplorer OnCreateFile="HandleCreateFile" />
             </div>
         </div>
     </div>
-    
+
     <div class="osirion-admin-main">
         <div class="osirion-admin-header">
             <div class="osirion-admin-breadcrumb">
                 <span class="osirion-admin-breadcrumb-item">Dashboard</span>
-                @if (adminState.SelectedRepository != null)
+                @if (AdminState.SelectedRepository != null)
                 {
                     <span class="osirion-admin-breadcrumb-separator">/</span>
-                    <span class="osirion-admin-breadcrumb-item">@adminState.SelectedRepository.Name</span>
-                    
-                    @if (adminState.SelectedBranch != null)
+                    <span class="osirion-admin-breadcrumb-item">@AdminState.SelectedRepository.Name</span>
+
+                    @if (AdminState.SelectedBranch != null)
                     {
                         <span class="osirion-admin-breadcrumb-separator">/</span>
-                        <span class="osirion-admin-breadcrumb-item">@adminState.SelectedBranch.Name</span>
-                        
-                        @if (!string.IsNullOrEmpty(adminState.CurrentPath))
+                        <span class="osirion-admin-breadcrumb-item">@AdminState.SelectedBranch.Name</span>
+
+                        @if (!string.IsNullOrEmpty(AdminState.CurrentPath))
                         {
                             <span class="osirion-admin-breadcrumb-separator">/</span>
-                            <span class="osirion-admin-breadcrumb-item">@adminState.CurrentPath</span>
+                            <span class="osirion-admin-breadcrumb-item">@AdminState.CurrentPath</span>
                         }
                     }
                 }
             </div>
-            
+
             <div class="osirion-admin-actions">
                 @if (IsViewingContent)
                 {
-                    <button type="button" 
-                            class="osirion-admin-button osirion-admin-button-primary" 
+                    <button type="button"
+                            class="osirion-admin-button osirion-admin-button-primary"
                             @onclick="HandleCreateFile">
                         <span class="osirion-admin-icon">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -65,9 +71,9 @@
                 }
             </div>
         </div>
-        
+
         <div class="osirion-admin-content">
-            @if (adminState.StatusMessage != null)
+            @if (AdminState.StatusMessage != null)
             {
                 <div class="osirion-admin-alert osirion-admin-alert-success">
                     <span class="osirion-admin-alert-icon">
@@ -76,17 +82,17 @@
                             <polyline points="22 4 12 14.01 9 11.01" />
                         </svg>
                     </span>
-                        <span>@adminState.StatusMessage</span>
-                    <button type="button" 
-                            class="osirion-admin-alert-close" 
+                    <span>@AdminState.StatusMessage</span>
+                    <button type="button"
+                            class="osirion-admin-alert-close"
                             @onclick="ClearMessages"
                             aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
             }
-            
-            @if (adminState.ErrorMessage != null)
+
+            @if (AdminState.ErrorMessage != null)
             {
                 <div class="osirion-admin-alert osirion-admin-alert-error">
                     <span class="osirion-admin-alert-icon">
@@ -96,20 +102,20 @@
                             <line x1="12" y1="16" x2="12.01" y2="16" />
                         </svg>
                     </span>
-                    <span>@adminState.ErrorMessage</span>
-                    <button type="button" 
-                            class="osirion-admin-alert-close" 
+                    <span>@AdminState.ErrorMessage</span>
+                    <button type="button"
+                            class="osirion-admin-alert-close"
                             @onclick="ClearMessages"
                             aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
             }
-            
+
             @if (IsEditing)
             {
-                <ContentEditor OnSaveComplete="HandleSaveComplete" 
-                              OnDiscard="HandleDiscardChanges" />
+                <ContentEditor OnSaveComplete="HandleSaveComplete"
+                               OnDiscard="HandleDiscardChanges" />
             }
             else
             {

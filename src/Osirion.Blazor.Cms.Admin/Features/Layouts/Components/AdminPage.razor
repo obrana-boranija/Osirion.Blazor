@@ -1,13 +1,19 @@
-﻿<AuthGuard ShowLoginForm="@ShowLoginForm">
+@namespace Osirion.Blazor.Cms.Admin.Features.Layouts.Components
+@inherits BaseComponent
+@using Osirion.Blazor.Cms.Admin.Features.Security.Components
+@using Osirion.Blazor.Cms.Admin.Features.Layouts.Models
+@using Osirion.Blazor.Cms.Admin.Shared.Components
+
+<AuthGuard ShowLoginForm="@ShowLoginForm">
     <AdminLayout 
         Title="@Title"
         Subtitle="@Subtitle"
         Theme="@Theme"
-        StatusMessage="@adminState.StatusMessage"
-        ErrorMessage="@adminState.ErrorMessage"
+        StatusMessage="@AdminState.StatusMessage"
+        ErrorMessage="@AdminState.ErrorMessage"
         CurrentPage="@CurrentPage"
         BreadcrumbItems="@BreadcrumbItems"
-                 OnSignOut="@(EventCallback.Factory.Create(this, HandleSignOut))">
+        OnSignOut="@(EventCallback.Factory.Create(this, HandleSignOut))">
 
         <HeaderTemplate>
             @HeaderTemplate
@@ -31,6 +37,5 @@
         <ChildContent>
             @ChildContent
         </ChildContent>
-
     </AdminLayout>
 </AuthGuard>

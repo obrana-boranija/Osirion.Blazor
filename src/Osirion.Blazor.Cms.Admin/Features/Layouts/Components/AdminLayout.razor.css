@@ -1,4 +1,4 @@
-﻿/* Styles for the AdminLayout component */
+/* Styles for the AdminLayout component */
 
 .osirion-admin-dashboard {
     display: flex;
@@ -185,6 +185,34 @@
     display: flex;
     align-items: center;
     gap: var(--osirion-spacing-2);
+}
+
+/* Button styles */
+.osirion-admin-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--osirion-spacing-2) var(--osirion-spacing-3);
+    border: 1px solid var(--osirion-border-color);
+    border-radius: var(--osirion-radius-base);
+    background-color: var(--osirion-background-primary);
+    color: var(--osirion-text-primary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+    .osirion-admin-button:hover:not(:disabled) {
+        background-color: var(--osirion-background-hover);
+    }
+
+    .osirion-admin-button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+.osirion-admin-button-small {
+    padding: 0.25rem 0.5rem;
+    font-size: var(--osirion-font-size-sm);
 }
 
 /* Responsive styles */

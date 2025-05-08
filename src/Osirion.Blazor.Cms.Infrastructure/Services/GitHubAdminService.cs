@@ -12,16 +12,16 @@ public class GitHubAdminService : IGitHubAdminService
 {
     private readonly IGitHubApiClient _apiClient;
     private readonly ILogger<GitHubAdminService> _logger;
-    private readonly IMarkdownProcessor _markdownProcessor;
+    //private readonly IMarkdownProcessor _markdownProcessor;
 
     public GitHubAdminService(
         IGitHubApiClient apiClient,
-        ILogger<GitHubAdminService> logger,
-        IMarkdownProcessor markdownProcessor)
+        ILogger<GitHubAdminService> logger
+        /*IMarkdownProcessor markdownProcessor*/)
     {
         _apiClient = apiClient ?? throw new ArgumentNullException(nameof(apiClient));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _markdownProcessor = markdownProcessor ?? throw new ArgumentNullException(nameof(markdownProcessor));
+        //_markdownProcessor = markdownProcessor ?? throw new ArgumentNullException(nameof(markdownProcessor));
     }
 
     public string CurrentBranch { get; private set; } = "main";

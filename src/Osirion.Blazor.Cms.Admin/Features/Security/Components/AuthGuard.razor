@@ -1,4 +1,9 @@
-﻿@if (authService.IsAuthenticated)
+@namespace Osirion.Blazor.Cms.Admin.Features.Security.Components
+@inherits BaseComponent
+@using Osirion.Blazor.Cms.Admin.Features.Authentication.Components
+@using Osirion.Blazor.Cms.Admin.Shared.Components
+
+@if (authService.IsAuthenticated)
 {
     @ChildContent
 }

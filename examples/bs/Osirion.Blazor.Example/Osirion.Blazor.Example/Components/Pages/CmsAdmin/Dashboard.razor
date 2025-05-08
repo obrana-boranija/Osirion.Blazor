@@ -1,10 +1,13 @@
 ﻿@page "/admin"
+@using Osirion.Blazor.Cms.Admin.Core.State
+@using Osirion.Blazor.Cms.Admin.Features.ContentBrowser.Components
+@using Osirion.Blazor.Cms.Admin.Features.Layouts.Components
+@using Osirion.Blazor.Cms.Admin.Features.Repository.Components
 
 @rendermode InteractiveServer
 
 
 @inherits Osirion.Blazor.Components.OsirionComponentBase
-@inject IGitHubAdminService GitHubService
 
 <AdminPage Title="Dashboard" Subtitle="Content Management System">
     @*     <BreadcrumbItems>
@@ -84,5 +87,5 @@
     }
 
     [Inject]
-    private CmsAdminState AdminState { get; set; } = default!;
+    private CmsState AdminState { get; set; } = default!;
 }

@@ -1,6 +1,6 @@
-﻿using Osirion.Blazor.Cms.Admin.Features.Repository.Services;
+﻿using Osirion.Blazor.Cms.Admin.Core.State;
+using Osirion.Blazor.Cms.Admin.Features.Repository.Services;
 using Osirion.Blazor.Cms.Admin.Services.Events;
-using Osirion.Blazor.Cms.Admin.Services.State;
 using Osirion.Blazor.Cms.Domain.Models.GitHub;
 
 namespace Osirion.Blazor.Cms.Admin.Features.Repository.ViewModels;
@@ -8,7 +8,7 @@ namespace Osirion.Blazor.Cms.Admin.Features.Repository.ViewModels;
 public class BranchSelectorViewModel
 {
     private readonly RepositoryService _repositoryService;
-    private readonly CmsApplicationState _appState;
+    private readonly CmsState _appState;
     private readonly CmsEventMediator _eventMediator;
 
     public List<GitHubBranch> Branches { get; private set; } = new();
@@ -26,7 +26,7 @@ public class BranchSelectorViewModel
 
     public BranchSelectorViewModel(
         RepositoryService repositoryService,
-        CmsApplicationState appState,
+        CmsState appState,
         CmsEventMediator eventMediator)
     {
         _repositoryService = repositoryService;
