@@ -4,21 +4,11 @@ using Osirion.Blazor.Cms.Admin.Core.State;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Models;
 using Osirion.Blazor.Cms.Domain.ValueObjects;
-using Osirion.Blazor.Components;
 
 namespace Osirion.Blazor.Example.Components.Pages.CmsAdmin;
 
-public partial class EditContent(NavigationManager navigationManager) : OsirionComponentBase, IDisposable
+public partial class EditContent(NavigationManager navigationManager, CmsState adminState, IGitHubAdminService gitHubService, IEventPublisher eventPublisher)
 {
-    [Inject]
-    private CmsState AdminState { get; set; } = default!;
-
-    [Inject]
-    private IGitHubAdminService GitHubService { get; set; } = default!;
-
-    [Inject]
-    private IEventPublisher EventPublisher { get; set; } = default!;
-
     [SupplyParameterFromQuery]
     public string? Path { get; set; }
 
@@ -26,15 +16,21 @@ public partial class EditContent(NavigationManager navigationManager) : OsirionC
 
     protected override void OnInitialized()
     {
-        // Subscribe to state changes to trigger re-render
-        AdminState.StateChanged += StateHasChanged;
+        // Subscribe to state changes from AdminState
+        adminState.StateChanged += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        // Unsubscribe to prevent memory leaks
+        adminState.StateChanged -= StateHasChanged;
     }
 
     protected override async Task OnParametersSetAsync()
     {
         // Reload content if parameters change and we're already rendered
         if (!string.IsNullOrEmpty(Path) &&
-            (AdminState.EditingPost == null || AdminState.EditingPost.FilePath != Path))
+        (adminState.EditingPost == null || adminState.EditingPost.FilePath != Path))
         {
             await LoadContentAsync();
         }
@@ -44,6 +40,7 @@ public partial class EditContent(NavigationManager navigationManager) : OsirionC
     {
         if (firstRender)
         {
+            // Load content based on parameters or state on first render
             await LoadContentBasedOnParameters();
         }
 
@@ -60,19 +57,19 @@ public partial class EditContent(NavigationManager navigationManager) : OsirionC
             // Path parameter takes precedence
             await LoadContentAsync();
         }
-        else if (AdminState.SelectedItem != null && AdminState.SelectedItem.IsMarkdownFile)
+        else if (adminState.SelectedItem != null && adminState.SelectedItem.IsMarkdownFile)
         {
             // Redirect to proper route if we have a selected item
-            navigationManager.NavigateTo($"/admin/content/edit/{AdminState.SelectedItem.Path}");
+            navigationManager.NavigateTo($"/admin/content/edit?Path={adminState.SelectedItem.Path}");
         }
-        else if (AdminState.EditingPost != null && AdminState.IsEditing)
+        else if (adminState.EditingPost != null && adminState.IsEditing)
         {
             // We already have a post being edited (likely from content browser)
             // Just ensure we're on the right path
-            if (!string.IsNullOrEmpty(AdminState.EditingPost.FilePath) &&
-                !AdminState.IsCreatingNewFile)
+            if (!string.IsNullOrEmpty(adminState.EditingPost.FilePath) &&
+                !adminState.IsCreatingNewFile)
             {
-                navigationManager.NavigateTo($"/admin/content/edit/{AdminState.EditingPost.FilePath}");
+                navigationManager.NavigateTo($"/admin/content/edit?Path={adminState.EditingPost.FilePath}");
             }
         }
     }
@@ -85,16 +82,21 @@ public partial class EditContent(NavigationManager navigationManager) : OsirionC
         }
 
         IsLoading = true;
-        StateHasChanged();
+        StateHasChanged(); // Important: Update UI to show loading state
 
         try
         {
-            var blogPost = await GitHubService.GetBlogPostAsync(Path);
-            AdminState.SetEditingPost(blogPost);
+            var blogPost = await gitHubService.GetBlogPostAsync(Path);
+
+            // Set the post in AdminState (this triggers StateChanged event)
+            adminState.SetEditingPost(blogPost);
+
+            // Also publish a content selected event
+            eventPublisher.Publish(new ContentSelectedEvent(Path));
         }
         catch (Exception ex)
         {
-            AdminState.SetErrorMessage($"Failed to load content: {ex.Message}");
+            adminState.SetErrorMessage($"Failed to load content: {ex.Message}");
         }
         finally
         {
@@ -110,16 +112,15 @@ public partial class EditContent(NavigationManager navigationManager) : OsirionC
         {
             Metadata = FrontMatter.Create("New Post", "Enter description here", DateTime.Now),
             Content = "## New Post\n\nStart writing your content here...",
-            FilePath = string.IsNullOrEmpty(AdminState.CurrentPath) ?
+            FilePath = string.IsNullOrEmpty(adminState.CurrentPath) ?
                 "new-post.md" :
-                $"{AdminState.CurrentPath}/new-post.md"
+                $"{adminState.CurrentPath}/new-post.md"
         };
 
-        // Update state
-        AdminState.SetEditingPost(newPost, true);
+        adminState.SetEditingPost(newPost, true);
 
-        // Publish event
-        EventPublisher.Publish(new CreateNewContentEvent(AdminState.CurrentPath));
+        // Also publish a create new content event
+        eventPublisher.Publish(new CreateNewContentEvent(adminState.CurrentPath));
     }
 
     private void GoToContentBrowser()
@@ -135,42 +136,34 @@ public partial class EditContent(NavigationManager navigationManager) : OsirionC
 
     private void HandleDiscardChanges()
     {
+        // Clear editing state in AdminState
+        adminState.ClearEditing();
+
         // Navigate to content listing
         navigationManager.NavigateTo("/admin/content");
     }
 
     private string GetPageTitle()
     {
-        if (AdminState.EditingPost == null)
+        if (adminState.EditingPost == null)
         {
             return "Edit Content";
         }
 
-        return AdminState.IsCreatingNewFile
+        return adminState.IsCreatingNewFile
             ? "New Post"
-            : $"Edit: {AdminState.EditingPost.Metadata?.Title}";
+            : $"Edit: {adminState.EditingPost.Metadata?.Title}";
     }
 
     private string GetPageSubtitle()
     {
-        if (AdminState.EditingPost == null)
+        if (adminState.EditingPost == null)
         {
-            return "Create or edit content";
+            return "Edit Content";
         }
 
-        if (AdminState.IsCreatingNewFile)
-        {
-            return "Create a new post";
-        }
-
-        // Get the file path relative to the repository root
-        var filePath = AdminState.EditingPost.FilePath;
-        return $"Editing: {filePath}";
-    }
-
-    public void Dispose()
-    {
-        // Unsubscribe from state changes when component is disposed
-        AdminState.StateChanged -= StateHasChanged;
+        return adminState.IsCreatingNewFile
+            ? "New Description"
+            : $"Edit: {adminState.EditingPost.Metadata?.Description}";
     }
 }

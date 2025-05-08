@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Admin.Services.State;
+using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Options.Configuration;
 
 namespace Osirion.Blazor.Cms.Admin.Services;
@@ -14,11 +15,13 @@ public class CmsAdminStartupService
     private readonly ErrorHandlingService _errorHandler;
     private readonly ILogger<CmsAdminStartupService> _logger;
     private readonly CmsAdminOptions _options;
+    private readonly IAuthenticationService _authenticationService;
     private bool _isInitialized = false;
 
     public CmsAdminStartupService(
         StateManager stateManager,
         ErrorHandlingService errorHandler,
+        IAuthenticationService authenticationService,
         IOptions<CmsAdminOptions> options,
         ILogger<CmsAdminStartupService> logger)
     {
@@ -26,6 +29,7 @@ public class CmsAdminStartupService
         _errorHandler = errorHandler;
         _options = options.Value;
         _logger = logger;
+        _authenticationService = authenticationService;
     }
 
     /// <summary>
@@ -40,7 +44,10 @@ public class CmsAdminStartupService
         {
             _logger.LogInformation("Initializing CMS Admin module");
 
-            // Initialize state
+            // Initialize authentication first
+            await _authenticationService.InitializeAsync();
+
+            // Then initialize state
             await _stateManager.InitializeAsync();
 
             _isInitialized = true;

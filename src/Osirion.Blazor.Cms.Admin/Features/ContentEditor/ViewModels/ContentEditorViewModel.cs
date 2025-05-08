@@ -36,6 +36,25 @@ public class ContentEditorViewModel : IDisposable
         _eventSubscriber.Subscribe<CreateNewContentEvent>(OnCreateNewContent);
     }
 
+    // New method to initialize from AdminState
+    public void InitializeFromState(BlogPost post, bool isCreatingNew)
+    {
+        EditingPost = post;
+        IsCreatingNew = isCreatingNew;
+
+        if (isCreatingNew)
+        {
+            FileName = _editorService.GenerateFileNameFromTitle(post.Metadata?.Title ?? "new-document-name");
+            CommitMessage = $"Create {FileName}";
+        }
+        else
+        {
+            CommitMessage = $"Update {Path.GetFileName(post.FilePath)}";
+        }
+
+        NotifyStateChanged();
+    }
+
     public async Task LoadPostAsync(string path)
     {
         try

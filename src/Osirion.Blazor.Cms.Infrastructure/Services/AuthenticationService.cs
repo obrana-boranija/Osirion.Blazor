@@ -23,6 +23,7 @@ public class AuthenticationService : IAuthenticationService
 
     private string? _accessToken;
     private string? _username;
+    private bool _initialized = false;
 
     /// <summary>
     /// Event raised when authentication state changes
@@ -50,9 +51,6 @@ public class AuthenticationService : IAuthenticationService
         var options_value = options.Value;
         _githubOptions = options_value.GitHub;
         _authOptions = options_value.Authentication;
-
-        // Try to restore auth state
-        _ = RestoreAuthStateAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -63,6 +61,29 @@ public class AuthenticationService : IAuthenticationService
 
     /// <inheritdoc/>
     public string? Username => _username;
+
+    /// <summary>
+    /// Initializes the authentication service
+    /// </summary>
+    public async Task InitializeAsync()
+    {
+        if (_initialized) return;
+
+        _logger.LogInformation("Initializing authentication service");
+
+        // First try to restore from storage
+        await RestoreAuthStateAsync();
+
+        // If not authenticated and PAT is configured, use it
+        if (!IsAuthenticated && !string.IsNullOrEmpty(_authOptions.PersonalAccessToken))
+        {
+            _logger.LogInformation("Using configured PersonalAccessToken for automatic authentication");
+            await SetAccessTokenAsync(_authOptions.PersonalAccessToken);
+        }
+
+        _initialized = true;
+        _logger.LogInformation("Authentication service initialized");
+    }
 
     /// <inheritdoc/>
     public async Task<bool> AuthenticateWithGitHubAsync(string code)
@@ -244,6 +265,9 @@ public class AuthenticationService : IAuthenticationService
         {
             await _stateStorage.SaveStateAsync("github_auth_token", _accessToken);
             await _stateStorage.SaveStateAsync("github_username", _username);
+            // Also store auth_status and last_login_method for consistency with LoginViewModel
+            await _stateStorage.SaveStateAsync("auth_status", true);
+            await _stateStorage.SaveStateAsync("last_login_method", "pat");
             _logger.LogDebug("Auth state persisted to storage. Token exists: {HasToken}", !string.IsNullOrEmpty(_accessToken));
         }
         else
@@ -264,7 +288,19 @@ public class AuthenticationService : IAuthenticationService
 
         if (_stateStorage.IsInitialized)
         {
+            // First try the auth_token directly
             _accessToken = await _stateStorage.GetStateAsync<string>("github_auth_token");
+
+            // If not found, try alternative keys that LoginViewModel might have used
+            if (string.IsNullOrEmpty(_accessToken))
+            {
+                var authStatus = await _stateStorage.GetStateAsync<bool>("auth_status");
+                if (authStatus)
+                {
+                    _accessToken = await _stateStorage.GetStateAsync<string>("github_auth_token");
+                }
+            }
+
             _username = await _stateStorage.GetStateAsync<string>("github_username");
 
             _logger.LogDebug("Auth state restored from storage. Token exists: {HasToken}", !string.IsNullOrEmpty(_accessToken));
@@ -275,7 +311,8 @@ public class AuthenticationService : IAuthenticationService
                 // Set the token on the API client
                 _apiClient.SetAccessToken(_accessToken);
 
-                if (!await GetUserInfoAsync())
+                var success = await GetUserInfoAsync();
+                if (!success)
                 {
                     _logger.LogWarning("Restored token validation failed");
                     await RemoveAuthStateAsync();
@@ -283,6 +320,7 @@ public class AuthenticationService : IAuthenticationService
                 else
                 {
                     _logger.LogInformation("Restored token validated successfully");
+                    AuthenticationChanged?.Invoke(true);
                 }
             }
         }
@@ -306,6 +344,8 @@ public class AuthenticationService : IAuthenticationService
         {
             await _stateStorage.RemoveStateAsync("github_auth_token");
             await _stateStorage.RemoveStateAsync("github_username");
+            await _stateStorage.RemoveStateAsync("auth_status");
+            await _stateStorage.RemoveStateAsync("last_login_method");
             _logger.LogDebug("Auth state removed from storage");
         }
         else

@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Components;
-using Osirion.Blazor.Cms.Admin.Shared.Components;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 
 namespace Osirion.Blazor.Cms.Admin.Features.Security.Components;

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Options;
+using Osirion.Blazor.Cms.Admin.Common.Constants;
 using Osirion.Blazor.Cms.Domain.Options.Configuration;
 
 namespace Osirion.Blazor.Cms.Admin.Features.Authentication.Components;
@@ -41,12 +42,23 @@ public partial class Login
 
     protected override async Task OnInitializedAsync()
     {
+        // Check if we have a configured PAT in options
+        if (!string.IsNullOrEmpty(Options.Value.Authentication.PersonalAccessToken))
+        {
+            // If we have a PAT in the options, try to use it directly
+            ViewModel.AccessToken = Options.Value.Authentication.PersonalAccessToken;
+            await LoginWithToken();
+            return;
+        }
+
+        // Otherwise initialize normally
+        await ViewModel.InitializeAsync();
+
         // Check if we have a code parameter (from GitHub OAuth redirect)
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
         var queryParameters = QueryHelpers.ParseQuery(uri.Query);
 
-        string code;
-        if (queryParameters.TryGetValue("code", out code))
+        if (queryParameters.TryGetValue("code", out string code))
         {
             // Process GitHub OAuth login
             await LoginWithGitHubCodeAsync(code);
@@ -74,7 +86,8 @@ public partial class Login
     private string GetRedirectUri()
     {
         var baseUri = NavigationManager.BaseUri.TrimEnd('/');
-        return $"{baseUri}/admin/auth/callback";
+        return Options.Value.Authentication.GitHubRedirectUri ??
+               $"{baseUri}/admin/auth/callback";
     }
 
     private async Task LoginWithGitHubCodeAsync(string code)

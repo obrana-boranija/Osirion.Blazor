@@ -29,4 +29,9 @@ public class AuthenticationOptions
     /// Gets or sets whether personal access tokens are allowed
     /// </summary>
     public bool AllowPersonalAccessTokens { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets personal access token (PAT) for automatic authentication
+    /// </summary>
+    public string? PersonalAccessToken { get; set; }
 }
