@@ -3,55 +3,55 @@
     flex-direction: column;
     height: 100%;
     overflow: hidden;
-    border: var(--osirion-border-width) solid var(--osirion-border-color);
-    border-radius: var(--osirion-radius-base);
-    background-color: var(--osirion-background-primary);
+    border: 1px solid var(--osirion-admin-border);
+    border-radius: 6px;
+    background-color: var(--osirion-admin-bg);
 }
 
 .markdown-editor-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: var(--osirion-spacing-2) var(--osirion-spacing-3);
-    background-color: var(--osirion-background-secondary);
-    border-bottom: var(--osirion-border-width) solid var(--osirion-border-color);
+    padding: 8px 16px;
+    background-color: var(--osirion-admin-light);
+    border-bottom: 1px solid var(--osirion-admin-border);
 }
 
 .markdown-editor-title {
-    font-size: var(--osirion-font-size-sm);
-    font-weight: var(--osirion-font-weight-medium);
-    color: var(--osirion-text-secondary);
+    font-size: 14px;
+    font-weight: var(--osirion-admin-font-weight-medium);
+    color: var(--osirion-admin-text-muted);
 }
 
 .markdown-editor-toolbar {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--osirion-spacing-1);
+    gap: 2px;
 }
 
 .markdown-editor-toolbar-button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    height: 30px;
-    width: 30px;
+    height: 28px;
+    width: 28px;
     padding: 0;
     border: none;
     background-color: transparent;
-    color: var(--osirion-text-secondary);
-    border-radius: var(--osirion-radius-base);
+    color: var(--osirion-admin-text-muted);
+    border-radius: 4px;
     cursor: pointer;
-    transition: all var(--osirion-transition-duration-150) var(--osirion-transition-timing-default);
+    transition: all 0.15s ease;
 }
 
     .markdown-editor-toolbar-button:hover {
-        background-color: var(--osirion-background-hover, var(--osirion-color-neutral-200));
-        color: var(--osirion-text-primary);
+        background-color: var(--osirion-admin-hover);
+        color: var(--osirion-admin-text);
     }
 
 .markdown-editor-toolbar-button-active {
-    background-color: var(--osirion-color-primary-100);
-    color: var(--osirion-action-primary);
+    background-color: rgba(3, 102, 214, 0.1);
+    color: var(--osirion-admin-primary);
 }
 
 .markdown-editor-toolbar-icon {
@@ -65,21 +65,21 @@
     flex-direction: column;
     flex: 1;
     overflow: hidden;
-    border-right: var(--osirion-border-width) solid var(--osirion-border-color);
+    border-right: 1px solid var(--osirion-admin-border);
 }
 
 .markdown-editor-textarea {
     flex: 1;
     overflow-y: auto;
-    padding: var(--osirion-spacing-3);
-    font-family: var(--osirion-font-family-mono);
-    font-size: var(--osirion-font-size-sm);
-    line-height: var(--osirion-line-height-normal);
-    color: var(--osirion-text-primary);
+    padding: 16px;
+    font-family: ui-monospace, SFMono-Regular, SF Mono, Consolas, Liberation Mono, Menlo, monospace;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--osirion-admin-text);
     resize: none;
     border: none;
     outline: none;
-    background-color: var(--osirion-background-primary);
+    background-color: var(--osirion-admin-bg);
     tab-size: 4;
 }
 
@@ -91,23 +91,27 @@
 }
 
 .markdown-preview-header {
-    padding: var(--osirion-spacing-2) var(--osirion-spacing-3);
-    background-color: var(--osirion-background-secondary);
-    border-bottom: var(--osirion-border-width) solid var(--osirion-border-color);
+    padding: 8px 16px;
+    background-color: var(--osirion-admin-light);
+    border-bottom: 1px solid var(--osirion-admin-border);
 }
 
 .markdown-preview-title {
-    font-size: var(--osirion-font-size-sm);
-    font-weight: var(--osirion-font-weight-medium);
-    color: var(--osirion-text-secondary);
+    font-size: 14px;
+    font-weight: var(--osirion-admin-font-weight-medium);
+    color: var(--osirion-admin-text-muted);
     margin: 0;
 }
 
 .markdown-preview-content {
     flex: 1;
     overflow-y: auto;
-    padding: var(--osirion-spacing-4);
-    background-color: var(--osirion-background-primary);
+    padding: 16px;
+    background-color: var(--osirion-admin-bg);
+    font-family: var(--osirion-admin-font-family);
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--osirion-admin-text);
 }
 
 /* Split view layout */
@@ -124,47 +128,47 @@
     display: none;
 }
 
-/* Markdown Preview Styles */
+/* Markdown Preview Styles - GitHub style */
 .markdown-preview-content h1,
 .markdown-preview-content h2,
 .markdown-preview-content h3,
 .markdown-preview-content h4,
 .markdown-preview-content h5,
 .markdown-preview-content h6 {
-    margin-top: 1.5em;
-    margin-bottom: 0.5em;
-    font-weight: var(--osirion-font-weight-semibold);
-    line-height: var(--osirion-line-height-tight);
-    color: var(--osirion-text-primary);
+    margin-top: 24px;
+    margin-bottom: 16px;
+    font-weight: var(--osirion-admin-font-weight-bold);
+    line-height: 1.25;
+    color: var(--osirion-admin-text);
 }
 
 .markdown-preview-content h1 {
-    font-size: var(--osirion-font-size-2xl);
-    border-bottom: var(--osirion-border-width) solid var(--osirion-border-color);
+    font-size: 2em;
+    border-bottom: 1px solid var(--osirion-admin-border);
     padding-bottom: 0.3em;
 }
 
 .markdown-preview-content h2 {
-    font-size: var(--osirion-font-size-xl);
-    border-bottom: var(--osirion-border-width) solid var(--osirion-border-color);
+    font-size: 1.5em;
+    border-bottom: 1px solid var(--osirion-admin-border);
     padding-bottom: 0.3em;
 }
 
 .markdown-preview-content h3 {
-    font-size: var(--osirion-font-size-lg);
+    font-size: 1.25em;
 }
 
 .markdown-preview-content h4 {
-    font-size: var(--osirion-font-size-base);
+    font-size: 1em;
 }
 
 .markdown-preview-content h5 {
-    font-size: var(--osirion-font-size-sm);
+    font-size: 0.875em;
 }
 
 .markdown-preview-content h6 {
-    font-size: var(--osirion-font-size-xs);
-    color: var(--osirion-text-secondary);
+    font-size: 0.85em;
+    color: var(--osirion-admin-text-muted);
 }
 
 .markdown-preview-content p,
@@ -175,47 +179,49 @@
 .markdown-preview-content pre,
 .markdown-preview-content blockquote {
     margin-top: 0;
-    margin-bottom: var(--osirion-spacing-4);
+    margin-bottom: 16px;
 }
 
 .markdown-preview-content blockquote {
-    padding: 0 var(--osirion-spacing-4);
-    color: var(--osirion-text-secondary);
-    border-left: 0.25em solid var(--osirion-border-color);
+    padding: 0 1em;
+    color: var(--osirion-admin-text-muted);
+    border-left: 0.25em solid var(--osirion-admin-border);
 }
 
 .markdown-preview-content ul,
 .markdown-preview-content ol {
-    padding-left: var(--osirion-spacing-8);
+    padding-left: 2em;
 }
 
 .markdown-preview-content li + li {
-    margin-top: var(--osirion-spacing-1);
+    margin-top: 0.25em;
 }
 
 .markdown-preview-content code {
     padding: 0.2em 0.4em;
     margin: 0;
     font-size: 85%;
-    background-color: var(--osirion-background-secondary);
-    border-radius: var(--osirion-radius-base);
-    font-family: var(--osirion-font-family-mono);
+    background-color: rgba(110, 118, 129, 0.1);
+    border-radius: 6px;
+    font-family: ui-monospace, SFMono-Regular, SF Mono, Consolas, Liberation Mono, Menlo, monospace;
 }
 
 .markdown-preview-content pre {
-    padding: var(--osirion-spacing-4);
+    padding: 16px;
     overflow: auto;
     font-size: 85%;
-    line-height: var(--osirion-line-height-normal);
-    background-color: var(--osirion-background-secondary);
-    border-radius: var(--osirion-radius-base);
+    line-height: 1.45;
+    background-color: var(--osirion-admin-light);
+    border-radius: 6px;
 }
 
     .markdown-preview-content pre code {
         padding: 0;
         margin: 0;
         font-size: 100%;
-        background-color: transparent;
+        word-break: normal;
+        white-space: pre;
+        background: transparent;
         border: 0;
     }
 
@@ -228,31 +234,60 @@
 
     .markdown-preview-content table th,
     .markdown-preview-content table td {
-        padding: var(--osirion-spacing-2) var(--osirion-spacing-3);
-        border: var(--osirion-border-width) solid var(--osirion-border-color);
+        padding: 6px 13px;
+        border: 1px solid var(--osirion-admin-border);
     }
 
     .markdown-preview-content table tr {
-        background-color: var(--osirion-background-primary);
-        border-top: var(--osirion-border-width) solid var(--osirion-border-color);
+        background-color: var(--osirion-admin-bg);
+        border-top: 1px solid var(--osirion-admin-border);
     }
 
         .markdown-preview-content table tr:nth-child(2n) {
-            background-color: var(--osirion-background-secondary);
+            background-color: var(--osirion-admin-light);
         }
 
 .markdown-preview-content img {
     max-width: 100%;
     box-sizing: content-box;
+    background-color: var(--osirion-admin-bg);
+    border-radius: 6px;
 }
 
 .markdown-preview-content hr {
     height: 0.25em;
     padding: 0;
-    margin: var(--osirion-spacing-6) 0;
-    background-color: var(--osirion-border-color);
+    margin: 24px 0;
+    background-color: var(--osirion-admin-border);
     border: 0;
 }
+
+.markdown-preview-content a {
+    color: var(--osirion-admin-primary);
+    text-decoration: none;
+}
+
+    .markdown-preview-content a:hover {
+        text-decoration: underline;
+    }
+
+/* GitHub-style task lists */
+.markdown-preview-content ul.contains-task-list {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.markdown-preview-content .task-list-item {
+    position: relative;
+    list-style-type: none;
+    padding-left: 1.5em;
+}
+
+    .markdown-preview-content .task-list-item input[type="checkbox"] {
+        position: absolute;
+        left: 0;
+        top: 0.25em;
+    }
 
 /* Responsive styles */
 @media (max-width: 768px) {
@@ -267,7 +302,7 @@
 
     .markdown-editor-container {
         border-right: none;
-        border-bottom: var(--osirion-border-width) solid var(--osirion-border-color);
+        border-bottom: 1px solid var(--osirion-admin-border);
     }
 }
 

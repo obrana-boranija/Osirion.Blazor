@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
+using Osirion.Blazor.Cms.Admin.Core.Events;
 using Osirion.Blazor.Cms.Admin.Core.State;
 using Osirion.Blazor.Cms.Admin.Features.ContentBrowser.Services;
+using Osirion.Blazor.Cms.Admin.Services.Events;
 using Osirion.Blazor.Cms.Domain.Models.GitHub;
 
 namespace Osirion.Blazor.Cms.Admin.Features.ContentBrowser.ViewModels;
@@ -10,6 +12,7 @@ public class FileExplorerViewModel
     private readonly ContentBrowserService _browserService;
     private readonly CmsState _state;
     private readonly ILogger<FileExplorerViewModel> _logger;
+    private readonly CmsEventMediator _eventMediator;
 
     public List<GitHubItem> Contents => _state.CurrentItems;
     public string CurrentPath => _state.CurrentPath;
@@ -30,10 +33,12 @@ public class FileExplorerViewModel
     public FileExplorerViewModel(
         ContentBrowserService browserService,
         CmsState state,
+        CmsEventMediator eventMediator,
         ILogger<FileExplorerViewModel> logger)
     {
         _browserService = browserService;
         _state = state;
+        _eventMediator = eventMediator;
         _logger = logger;
 
         _state.StateChanged += OnStateChanged;
@@ -82,6 +87,92 @@ public class FileExplorerViewModel
     public async Task NavigateToRootAsync()
     {
         await NavigateToPathAsync(string.Empty);
+    }
+
+    /// <summary>
+    /// Navigates to the parent directory of the current path
+    /// </summary>
+    public async Task NavigateToParentDirectoryAsync()
+    {
+        if (string.IsNullOrEmpty(CurrentPath))
+            return;
+
+        string parentPath = string.Empty;
+
+        // Get the parent directory path
+        int lastSlashIndex = CurrentPath.LastIndexOf('/');
+        if (lastSlashIndex > 0)
+        {
+            parentPath = CurrentPath.Substring(0, lastSlashIndex);
+        }
+
+        // Navigate to the parent directory
+        await NavigateToPathAsync(parentPath);
+    }
+
+    /// <summary>
+    /// Handles item click - navigates into directories or opens files
+    /// </summary>
+    public async Task HandleItemClickAsync(GitHubItem item)
+    {
+        if (item == null)
+            return;
+
+        SelectItem(item);
+
+        if (item.IsDirectory)
+        {
+            // Navigate into the directory
+            await NavigateToPathAsync(item.Path);
+        }
+        else if (item.IsFile)
+        {
+            await OpenFileAsync(item);
+        }
+    }
+
+    /// <summary>
+    /// Opens a file for editing
+    /// </summary>
+    public async Task OpenFileAsync(GitHubItem item)
+    {
+        if (item == null || !item.IsFile)
+            return;
+
+        IsLoading = true;
+        ErrorMessage = null;
+        NotifyStateChanged();
+
+        try
+        {
+            _logger.LogInformation("Opening file: {Path}", item.Path);
+
+            // For markdown files, open in editor
+            if (item.IsMarkdownFile)
+            {
+                // Publish content selected event to open it in the editor
+                _eventMediator.Publish(new ContentSelectedEvent(item.Path));
+                _logger.LogInformation("Markdown file opened in editor: {Path}", item.Path);
+            }
+            else
+            {
+                // For other files, we could implement different handling
+                // For now, just select the item
+                _logger.LogInformation("Non-markdown file selected: {Path}", item.Path);
+                _eventMediator.Publish(new StatusNotificationEvent($"Selected file: {item.Name}", StatusType.Info));
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Failed to open file: {ex.Message}";
+            _logger.LogError(ex, "Failed to open file: {Path}", item.Path);
+            _state.SetErrorMessage(ErrorMessage);
+        }
+        finally
+        {
+            IsLoading = false;
+            NotifyStateChanged();
+        }
     }
 
     public void SelectItem(GitHubItem item)

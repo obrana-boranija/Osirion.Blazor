@@ -1,21 +1,20 @@
-/* Styles for the AdminLayout component */
+/* AdminLayout Component - GitHub-inspired styling */
 
 .osirion-admin-dashboard {
     display: flex;
     min-height: 100vh;
-    background-color: var(--osirion-background-primary);
+    background-color: var(--osirion-color-white);
     color: var(--osirion-text-primary);
     font-family: var(--osirion-font-family-base);
     font-size: var(--osirion-font-size-base);
     line-height: var(--osirion-line-height-normal);
 }
 
-/* Sidebar styles */
+/* Sidebar styles - GitHub-inspired */
 .osirion-admin-sidebar {
-    width: var(--osirion-sidebar-width, 280px);
-    background-color: var(--osirion-background-secondary);
-    border-right: 1px solid var(--osirion-border-color);
-    padding: var(--osirion-spacing-4);
+    width: 260px;
+    background-color: var(--osirion-color-neutral-50);
+    border-right: 1px solid var(--osirion-color-neutral-200);
     display: flex;
     flex-direction: column;
     overflow-y: auto;
@@ -26,39 +25,49 @@
 }
 
 .osirion-admin-logo {
-    padding: var(--osirion-spacing-4) 0;
-    margin-bottom: var(--osirion-spacing-6);
-    border-bottom: 1px solid var(--osirion-border-color);
+    padding: var(--osirion-spacing-4);
+    margin-bottom: var(--osirion-spacing-2);
+    border-bottom: 1px solid var(--osirion-color-neutral-200);
 }
 
 .osirion-admin-brand-link {
     text-decoration: none;
     color: var(--osirion-text-primary);
-    display: block;
 }
 
 .osirion-admin-brand {
-    font-size: var(--osirion-font-size-xl);
-    font-weight: var(--osirion-font-weight-bold);
+    font-size: var(--osirion-font-size-lg);
+    font-weight: var(--osirion-font-weight-semibold);
     margin: 0;
-    color: var(--osirion-text-primary);
 }
 
 .osirion-admin-subtitle {
-    color: var(--osirion-text-tertiary);
-    margin: 0.5rem 0 0;
+    color: var(--osirion-text-secondary);
+    margin: var(--osirion-spacing-1) 0 0;
     font-size: var(--osirion-font-size-sm);
 }
 
 .osirion-admin-navigation {
     flex: 1;
     overflow-y: auto;
+    padding: 0 var(--osirion-spacing-2);
 }
 
 .osirion-admin-sidebar-footer {
-    border-top: 1px solid var(--osirion-border-color);
-    padding-top: var(--osirion-spacing-4);
-    margin-top: var(--osirion-spacing-4);
+    padding: var(--osirion-spacing-3) var(--osirion-spacing-4);
+    border-top: 1px solid var(--osirion-color-neutral-200);
+    font-size: var(--osirion-font-size-sm);
+}
+
+.osirion-admin-user {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.osirion-admin-username {
+    font-weight: var(--osirion-font-weight-medium);
+    margin-right: var(--osirion-spacing-2);
 }
 
 /* Main content area */
@@ -69,25 +78,18 @@
     overflow-x: hidden;
 }
 
-/* Header styles */
+/* Header styles - GitHub-inspired */
 .osirion-admin-header {
-    height: var(--osirion-header-height, 60px);
+    height: 60px;
     padding: 0 var(--osirion-spacing-4);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid var(--osirion-border-color);
-    background-color: var(--osirion-background-secondary);
+    background-color: var(--osirion-color-white);
+    border-bottom: 1px solid var(--osirion-color-neutral-200);
     position: sticky;
     top: 0;
     z-index: var(--osirion-z-index-10);
-}
-
-/* Content styles */
-.osirion-admin-content {
-    flex: 1;
-    padding: var(--osirion-spacing-4);
-    overflow-y: auto;
 }
 
 /* Breadcrumb styles */
@@ -97,30 +99,40 @@
     font-size: var(--osirion-font-size-sm);
     overflow-x: auto;
     white-space: nowrap;
-    scrollbar-width: none; /* For Firefox */
-    -ms-overflow-style: none; /* For IE and Edge */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
 }
 
     .osirion-admin-breadcrumb::-webkit-scrollbar {
-        display: none; /* For Chrome, Safari, and Opera */
+        display: none; /* Chrome, Safari, and Opera */
     }
-
-.osirion-admin-breadcrumb-separator {
-    margin: 0 0.5rem;
-    color: var(--osirion-text-tertiary);
-}
 
 .osirion-admin-breadcrumb-home {
     display: inline-flex;
     align-items: center;
-    color: var(--osirion-text-tertiary);
+    color: var(--osirion-text-secondary);
     text-decoration: none;
-    cursor: pointer;
-    transition: color var(--osirion-transition-duration-200) var(--osirion-transition-timing-default);
+    transition: color 0.2s;
 }
 
     .osirion-admin-breadcrumb-home:hover {
-        color: var(--osirion-action-primary);
+        color: var(--osirion-color-primary-600);
+        text-decoration: underline;
+    }
+
+.osirion-admin-breadcrumb-separator {
+    margin: 0 var(--osirion-spacing-2);
+    color: var(--osirion-color-neutral-400);
+}
+
+.osirion-admin-breadcrumb-item {
+    color: var(--osirion-text-secondary);
+    text-decoration: none;
+}
+
+    .osirion-admin-breadcrumb-item:hover {
+        color: var(--osirion-color-primary-600);
+        text-decoration: underline;
     }
 
 .osirion-admin-breadcrumb-current {
@@ -128,56 +140,11 @@
     font-weight: var(--osirion-font-weight-medium);
 }
 
-/* User info in sidebar footer */
-.osirion-admin-user {
-    display: flex;
+.osirion-admin-icon {
+    display: inline-flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 0.5rem 0;
-}
-
-.osirion-admin-username {
-    font-weight: var(--osirion-font-weight-medium);
-    color: var(--osirion-text-primary);
-}
-
-/* Alert styles */
-.osirion-admin-alert {
-    padding: var(--osirion-spacing-4);
-    margin-bottom: var(--osirion-spacing-4);
-    border-radius: var(--osirion-radius-base);
-    display: flex;
-    align-items: center;
-    position: relative;
-}
-
-.osirion-admin-alert-success {
-    background-color: var(--osirion-status-success-bg);
-    border: 1px solid var(--osirion-status-success-border);
-    color: var(--osirion-status-success);
-}
-
-.osirion-admin-alert-error {
-    background-color: var(--osirion-status-danger-bg);
-    border: 1px solid var(--osirion-status-danger-border);
-    color: var(--osirion-status-danger);
-}
-
-.osirion-admin-alert-icon {
-    display: flex;
+    justify-content: center;
     margin-right: var(--osirion-spacing-2);
-}
-
-.osirion-admin-alert-close {
-    position: absolute;
-    top: var(--osirion-spacing-2);
-    right: var(--osirion-spacing-2);
-    background: transparent;
-    border: none;
-    color: currentColor;
-    font-size: 1.25rem;
-    cursor: pointer;
-    padding: 0;
 }
 
 /* Actions section in header */
@@ -187,33 +154,148 @@
     gap: var(--osirion-spacing-2);
 }
 
-/* Button styles */
+/* Content styles */
+.osirion-admin-content {
+    flex: 1;
+    padding: var(--osirion-spacing-6);
+    overflow-y: auto;
+}
+
+/* Alert styles */
+.osirion-admin-alert {
+    padding: var(--osirion-spacing-3) var(--osirion-spacing-4);
+    margin-bottom: var(--osirion-spacing-4);
+    border: 1px solid;
+    border-radius: 6px;
+    display: flex;
+    align-items: flex-start;
+    position: relative;
+}
+
+.osirion-admin-alert-success {
+    background-color: var(--osirion-color-success-50);
+    border-color: var(--osirion-color-success-200);
+    color: var(--osirion-color-success-700);
+}
+
+.osirion-admin-alert-error {
+    background-color: var(--osirion-color-danger-50);
+    border-color: var(--osirion-color-danger-200);
+    color: var(--osirion-color-danger-700);
+}
+
+.osirion-admin-alert-icon {
+    display: flex;
+    margin-right: var(--osirion-spacing-2);
+    flex-shrink: 0;
+}
+
+.osirion-admin-alert-close {
+    position: absolute;
+    top: var(--osirion-spacing-3);
+    right: var(--osirion-spacing-3);
+    background: transparent;
+    border: none;
+    color: currentColor;
+    cursor: pointer;
+    padding: 0;
+    font-size: 16px;
+    line-height: 1;
+    opacity: 0.7;
+}
+
+    .osirion-admin-alert-close:hover {
+        opacity: 1;
+    }
+
+/* Button styles - GitHub-inspired */
 .osirion-admin-button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: var(--osirion-spacing-2) var(--osirion-spacing-3);
-    border: 1px solid var(--osirion-border-color);
-    border-radius: var(--osirion-radius-base);
-    background-color: var(--osirion-background-primary);
+    height: 32px;
+    padding: 0 var(--osirion-spacing-3);
+    border: 1px solid;
+    border-radius: 6px;
+    background-color: var(--osirion-color-neutral-50);
+    border-color: var(--osirion-color-neutral-300);
     color: var(--osirion-text-primary);
+    font-size: var(--osirion-font-size-sm);
+    font-weight: var(--osirion-font-weight-medium);
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s, border-color 0.2s;
+    white-space: nowrap;
 }
 
-    .osirion-admin-button:hover:not(:disabled) {
-        background-color: var(--osirion-background-hover);
+    .osirion-admin-button:hover {
+        background-color: var(--osirion-color-neutral-100);
+        border-color: var(--osirion-color-neutral-400);
+    }
+
+    .osirion-admin-button:active {
+        background-color: var(--osirion-color-neutral-200);
     }
 
     .osirion-admin-button:disabled {
-        opacity: 0.6;
+        opacity: 0.5;
         cursor: not-allowed;
     }
 
 .osirion-admin-button-small {
-    padding: 0.25rem 0.5rem;
-    font-size: var(--osirion-font-size-sm);
+    height: 28px;
+    padding: 0 var(--osirion-spacing-2);
+    font-size: var(--osirion-font-size-xs);
 }
+
+/* Dark mode adjustments */
+.osirion-admin-theme-dark {
+    --osirion-text-primary: var(--osirion-color-neutral-100);
+    --osirion-text-secondary: var(--osirion-color-neutral-300);
+    --osirion-text-tertiary: var(--osirion-color-neutral-400);
+    --osirion-background-primary: var(--osirion-color-neutral-900);
+    --osirion-background-secondary: var(--osirion-color-neutral-800);
+}
+
+    .osirion-admin-theme-dark .osirion-admin-dashboard {
+        background-color: var(--osirion-color-neutral-800);
+    }
+
+    .osirion-admin-theme-dark .osirion-admin-sidebar {
+        background-color: var(--osirion-color-neutral-900);
+        border-right-color: var(--osirion-color-neutral-700);
+    }
+
+    .osirion-admin-theme-dark .osirion-admin-logo {
+        border-bottom-color: var(--osirion-color-neutral-700);
+    }
+
+    .osirion-admin-theme-dark .osirion-admin-header {
+        background-color: var(--osirion-color-neutral-800);
+        border-bottom-color: var(--osirion-color-neutral-700);
+    }
+
+    .osirion-admin-theme-dark .osirion-admin-alert-success {
+        background-color: rgba(46, 160, 67, 0.15);
+        border-color: rgba(46, 160, 67, 0.4);
+        color: var(--osirion-color-success-300);
+    }
+
+    .osirion-admin-theme-dark .osirion-admin-alert-error {
+        background-color: rgba(248, 81, 73, 0.15);
+        border-color: rgba(248, 81, 73, 0.4);
+        color: var(--osirion-color-danger-300);
+    }
+
+    .osirion-admin-theme-dark .osirion-admin-button {
+        background-color: var(--osirion-color-neutral-700);
+        border-color: var(--osirion-color-neutral-600);
+        color: var(--osirion-color-neutral-100);
+    }
+
+        .osirion-admin-theme-dark .osirion-admin-button:hover {
+            background-color: var(--osirion-color-neutral-600);
+            border-color: var(--osirion-color-neutral-500);
+        }
 
 /* Responsive styles */
 @media (max-width: 992px) {
@@ -226,7 +308,11 @@
         height: auto;
         position: static;
         border-right: none;
-        border-bottom: 1px solid var(--osirion-border-color);
+        border-bottom: 1px solid var(--osirion-color-neutral-200);
+    }
+
+    .osirion-admin-sidebar-footer {
+        border-top: none;
     }
 
     .osirion-admin-header {
@@ -251,5 +337,17 @@
     .osirion-admin-actions {
         width: 100%;
         justify-content: flex-end;
+    }
+
+    .osirion-admin-content {
+        padding: var(--osirion-spacing-4);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .osirion-admin-breadcrumb-home,
+    .osirion-admin-button,
+    .osirion-admin-alert-close {
+        transition: none;
     }
 }

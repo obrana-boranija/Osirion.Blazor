@@ -90,7 +90,7 @@
 }
 
     .commit-panel-button:hover:not(:disabled) {
-        background-color: var(--osirion-background-hover, var(--osirion-color-neutral-100));
+        background-color: var(--osirion-background-secondary);
     }
 
     .commit-panel-button:disabled {
@@ -98,14 +98,16 @@
         cursor: not-allowed;
     }
 
+/* GitHub-style primary button */
 .commit-panel-button-primary {
-    background-color: var(--osirion-action-primary);
-    border-color: var(--osirion-action-primary);
-    color: var(--osirion-action-primary-text);
+    background-color: var(--osirion-color-success-600);
+    border-color: var(--osirion-color-success-600);
+    color: var(--osirion-color-white);
 }
 
     .commit-panel-button-primary:hover:not(:disabled) {
-        background-color: var(--osirion-action-primary-hover);
+        background-color: var(--osirion-color-success-700);
+        border-color: var(--osirion-color-success-700);
     }
 
 .commit-panel-icon {
@@ -117,8 +119,8 @@
     display: inline-block;
     width: 16px;
     height: 16px;
-    border: 2px solid var(--osirion-border-color);
-    border-top-color: var(--osirion-action-primary-text);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: var(--osirion-color-white);
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin-right: var(--osirion-spacing-2);
@@ -155,6 +157,7 @@
     }
 }
 
+/* Accessibility */
 @media (prefers-reduced-motion: reduce) {
     .commit-panel-input,
     .commit-panel-textarea,

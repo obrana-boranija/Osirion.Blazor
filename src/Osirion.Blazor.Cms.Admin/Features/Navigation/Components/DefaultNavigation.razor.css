@@ -1,20 +1,21 @@
-/* DefaultNavigation Component Styles */
+/* DefaultNavigation Component - GitHub-inspired styling */
+
 .osirion-admin-nav-list-container {
     width: 100%;
 }
 
 .osirion-admin-nav-section {
-    margin-bottom: var(--osirion-spacing-6, 1.5rem);
+    margin-bottom: var(--osirion-spacing-5);
 }
 
 .osirion-admin-nav-title {
-    font-size: var(--osirion-font-size-xs, 0.75rem);
-    font-weight: var(--osirion-font-weight-semibold, 600);
+    font-size: var(--osirion-font-size-xs);
+    font-weight: var(--osirion-font-weight-semibold);
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: var(--osirion-text-tertiary);
-    margin-bottom: var(--osirion-spacing-2, 0.5rem);
-    padding: 0 var(--osirion-spacing-2, 0.5rem);
+    margin-bottom: var(--osirion-spacing-2);
+    padding: var(--osirion-spacing-1) var(--osirion-spacing-3);
 }
 
 .osirion-admin-nav-list {
@@ -24,49 +25,77 @@
 }
 
 .osirion-admin-nav-item {
-    margin-bottom: var(--osirion-spacing-1, 0.25rem);
+    margin-bottom: 2px;
 }
 
 .osirion-admin-nav-link {
     display: flex;
     align-items: center;
-    padding: var(--osirion-spacing-2, 0.5rem) var(--osirion-spacing-3, 0.75rem);
+    padding: var(--osirion-spacing-2) var(--osirion-spacing-3);
+    border-radius: 6px;
     color: var(--osirion-text-primary);
     text-decoration: none;
-    border-radius: var(--osirion-radius-base, 0.25rem);
-    transition: background-color var(--osirion-transition-duration-200, 0.2s), color var(--osirion-transition-duration-200, 0.2s);
-    font-size: var(--osirion-font-size-sm, 0.875rem);
+    font-size: var(--osirion-font-size-sm);
+    transition: background-color 0.2s;
 }
 
     .osirion-admin-nav-link:hover {
-        background-color: var(--osirion-background-hover);
+        background-color: var(--osirion-color-neutral-100);
         color: var(--osirion-text-primary);
     }
 
     .osirion-admin-nav-link.active {
-        background-color: var(--osirion-action-primary);
-        color: var(--osirion-action-primary-text, white);
+        background-color: var(--osirion-color-primary-50);
+        color: var(--osirion-color-primary-700);
+        font-weight: var(--osirion-font-weight-medium);
     }
 
     .osirion-admin-nav-link .osirion-admin-icon {
-        margin-right: var(--osirion-spacing-2, 0.5rem);
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 18px;
-        height: 18px;
-        opacity: 0.8;
+        width: 16px;
+        height: 16px;
+        margin-right: var(--osirion-spacing-2);
+        color: var(--osirion-text-tertiary);
+        flex-shrink: 0;
     }
 
     .osirion-admin-nav-link:hover .osirion-admin-icon {
-        opacity: 1;
+        color: var(--osirion-text-secondary);
     }
 
     .osirion-admin-nav-link.active .osirion-admin-icon {
-        opacity: 1;
+        color: var(--osirion-color-primary-600);
     }
 
-/* Accessibility */
+/* Dark mode adjustments */
+.osirion-admin-theme-dark .osirion-admin-nav-link {
+    color: var(--osirion-color-neutral-300);
+}
+
+    .osirion-admin-theme-dark .osirion-admin-nav-link:hover {
+        background-color: var(--osirion-color-neutral-800);
+        color: var(--osirion-color-neutral-100);
+    }
+
+    .osirion-admin-theme-dark .osirion-admin-nav-link.active {
+        background-color: var(--osirion-color-primary-900);
+        color: var(--osirion-color-primary-400);
+    }
+
+    .osirion-admin-theme-dark .osirion-admin-nav-link .osirion-admin-icon {
+        color: var(--osirion-color-neutral-500);
+    }
+
+    .osirion-admin-theme-dark .osirion-admin-nav-link:hover .osirion-admin-icon {
+        color: var(--osirion-color-neutral-400);
+    }
+
+    .osirion-admin-theme-dark .osirion-admin-nav-link.active .osirion-admin-icon {
+        color: var(--osirion-color-primary-400);
+    }
+
 @media (prefers-reduced-motion: reduce) {
     .osirion-admin-nav-link {
         transition: none;

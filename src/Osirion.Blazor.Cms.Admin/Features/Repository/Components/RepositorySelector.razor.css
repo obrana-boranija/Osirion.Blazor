@@ -1,48 +1,61 @@
 .repository-selector {
     display: flex;
     flex-direction: column;
-    border: var(--osirion-border-width) solid var(--osirion-border-color);
-    border-radius: var(--osirion-radius-lg);
+    border: 1px solid var(--osirion-admin-border);
+    border-radius: 6px;
     overflow: hidden;
-    margin-bottom: var(--osirion-spacing-4);
+    margin-bottom: 16px;
+    background-color: var(--osirion-admin-bg);
 }
 
 .repository-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: var(--osirion-spacing-3);
-    background-color: var(--osirion-background-secondary);
-    border-bottom: var(--osirion-border-width) solid var(--osirion-border-color);
+    padding: 8px 16px;
+    background-color: var(--osirion-admin-light);
+    border-bottom: 1px solid var(--osirion-admin-border);
 }
 
 .repository-title {
     margin: 0;
-    font-size: var(--osirion-font-size-sm);
-    font-weight: var(--osirion-font-weight-medium);
+    font-size: 14px;
+    font-weight: var(--osirion-admin-font-weight-medium);
+    color: var(--osirion-admin-text);
 }
 
 .repository-actions {
     display: flex;
-    gap: var(--osirion-spacing-1);
+    gap: 4px;
 }
 
 .repository-button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: var(--osirion-spacing-1);
-    border: var(--osirion-border-width) solid var(--osirion-border-color);
-    border-radius: var(--osirion-radius-sm);
-    background-color: var(--osirion-background-primary);
-    color: var(--osirion-text-primary);
+    padding: 4px;
+    border: 1px solid var(--osirion-admin-border);
+    border-radius: 4px;
+    background-color: var(--osirion-admin-bg);
+    color: var(--osirion-admin-text);
     cursor: pointer;
-    transition: all var(--osirion-transition-duration-200) var(--osirion-transition-timing-default);
+    transition: all 0.2s ease;
+    line-height: 1;
+    min-height: 28px;
 }
 
     .repository-button:hover {
-        background-color: var(--osirion-background-hover, var(--osirion-color-neutral-100));
+        background-color: var(--osirion-admin-hover);
     }
+
+    .repository-button:active {
+        background-color: var(--osirion-admin-light);
+    }
+
+.repository-button-refresh {
+    min-width: 28px;
+    background-color: var(--osirion-admin-bg);
+}
 
 .repository-icon {
     display: flex;
@@ -53,49 +66,99 @@
 }
 
 .repository-select-container {
-    padding: var(--osirion-spacing-2) var(--osirion-spacing-3);
+    padding: 16px;
 }
 
 .repository-select {
     width: 100%;
-    padding: var(--osirion-spacing-2);
-    border: var(--osirion-border-width) solid var(--osirion-border-color);
-    border-radius: var(--osirion-radius-lg);
-    background-color: var(--osirion-background-primary);
-    color: var(--osirion-text-primary);
-    font-family: var(--osirion-font-family-base);
-    font-size: var(--osirion-font-size-base);
+    padding: 5px 12px;
+    border: 1px solid var(--osirion-admin-border);
+    border-radius: 6px;
+    background-color: var(--osirion-admin-bg);
+    color: var(--osirion-admin-text);
+    font-family: var(--osirion-admin-font-family);
+    font-size: 14px;
+    line-height: 20px;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' viewBox='0 0 12 12'%3E%3Cpath fill='%23444D56' d='M6 8.825L1.175 4 2.05 3.125 6 7.075 9.95 3.125 10.825 4 6 8.825Z'/%3E%3C/svg%3E");
+    background-position: right 8px center;
+    background-repeat: no-repeat;
+    padding-right: 32px;
+    height: 32px;
 }
 
+    .repository-select:focus {
+        outline: none;
+        border-color: var(--osirion-admin-primary);
+        box-shadow: 0 0 0 3px rgba(3, 102, 214, 0.3);
+    }
+
 .repository-details {
-    padding: var(--osirion-spacing-3);
-    background-color: var(--osirion-background-secondary);
-    border-top: var(--osirion-border-width) solid var(--osirion-border-color);
+    padding: 16px;
+    background-color: var(--osirion-admin-light);
+    border-top: 1px solid var(--osirion-admin-border);
 }
 
 .repository-info {
     display: flex;
     flex-direction: column;
-    gap: var(--osirion-spacing-1);
-    margin-bottom: var(--osirion-spacing-2);
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.repository-name {
+    font-weight: var(--osirion-admin-font-weight-medium);
+    color: var(--osirion-admin-text);
+}
+
+.repository-description {
+    color: var(--osirion-admin-text-muted);
+    font-size: 13px;
+}
+
+.repository-visibility {
+    display: flex;
+    gap: 8px;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+.repository-private {
+    padding: 0 5px;
+    background-color: #ffebe9;
+    color: var(--osirion-admin-danger);
+    border-radius: 10px;
+    border: 1px solid rgba(207, 34, 46, 0.3);
+    font-weight: var(--osirion-admin-font-weight-medium);
+}
+
+.repository-public {
+    padding: 0 5px;
+    background-color: #dafbe1;
+    color: var(--osirion-admin-success);
+    border-radius: 10px;
+    border: 1px solid rgba(45, 164, 78, 0.3);
+    font-weight: var(--osirion-admin-font-weight-medium);
 }
 
 .repository-loading,
 .repository-error,
 .repository-empty {
-    padding: var(--osirion-spacing-3);
+    padding: 24px 16px;
     text-align: center;
+    color: var(--osirion-admin-text-muted);
 }
 
 .repository-loading-spinner {
     display: inline-block;
     width: 16px;
     height: 16px;
-    border: 2px solid var(--osirion-border-color);
-    border-top-color: var(--osirion-action-primary);
+    border: 2px solid rgba(140, 149, 159, 0.3);
+    border-top-color: var(--osirion-admin-primary);
     border-radius: 50%;
     animation: repository-spin 1s linear infinite;
-    margin-right: var(--osirion-spacing-2);
+    margin-right: 8px;
+    vertical-align: text-bottom;
 }
 
 @keyframes repository-spin {
@@ -104,13 +167,22 @@
     }
 }
 
+.repository-error-icon {
+    margin-right: 8px;
+    vertical-align: text-bottom;
+    color: var(--osirion-admin-danger);
+}
+
 .repository-button-link {
     background: transparent;
     border: none;
-    color: var(--osirion-action-primary);
-    padding: 0;
-    font-weight: var(--osirion-font-weight-normal);
+    color: var(--osirion-admin-primary);
+    padding: 4px 0;
+    font-weight: var(--osirion-admin-font-weight-normal);
     text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    font-size: 13px;
 }
 
     .repository-button-link:hover {
@@ -118,34 +190,11 @@
         background: transparent;
     }
 
-.repository-name {
-    font-weight: var(--osirion-font-weight-medium);
-    color: var(--osirion-text-primary);
-}
-
-.repository-description {
-    color: var(--osirion-text-secondary);
-    font-size: var(--osirion-font-size-sm);
-}
-
-.repository-visibility {
-    display: flex;
-    gap: var(--osirion-spacing-2);
-    font-size: var(--osirion-font-size-xs);
-}
-
-.repository-private {
-    padding: var(--osirion-spacing-0-5) var(--osirion-spacing-1-5);
-    background-color: var(--osirion-status-danger-bg);
-    color: var(--osirion-status-danger);
-    border-radius: var(--osirion-radius-full);
-}
-
-.repository-public {
-    padding: var(--osirion-spacing-0-5) var(--osirion-spacing-1-5);
-    background-color: var(--osirion-status-success-bg);
-    color: var(--osirion-status-success);
-    border-radius: var(--osirion-radius-full);
+.repository-button-small {
+    padding: 3px 12px;
+    font-size: 12px;
+    height: 24px;
+    line-height: 1;
 }
 
 /* Accessibility */

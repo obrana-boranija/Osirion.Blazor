@@ -1,0 +1,204 @@
+/* CmsLayoutEditor Component - GitHub-inspired styling */
+
+.osirion-editor-layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: var(--osirion-color-white);
+    color: var(--osirion-text-primary);
+    font-family: var(--osirion-font-family-base);
+}
+
+.osirion-editor-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    padding: 0 var(--osirion-spacing-4);
+    background-color: var(--osirion-color-white);
+    border-bottom: 1px solid var(--osirion-color-neutral-200);
+    position: sticky;
+    top: 0;
+    z-index: var(--osirion-z-index-10);
+}
+
+.osirion-editor-header-left {
+    display: flex;
+    align-items: center;
+}
+
+.osirion-editor-home-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 6px;
+    color: var(--osirion-text-secondary);
+    margin-right: var(--osirion-spacing-3);
+    transition: background-color 0.2s, color 0.2s;
+}
+
+    .osirion-editor-home-link:hover {
+        background-color: var(--osirion-color-neutral-100);
+        color: var(--osirion-color-primary-600);
+    }
+
+.osirion-editor-breadcrumb {
+    display: flex;
+    align-items: center;
+    font-size: var(--osirion-font-size-sm);
+}
+
+.osirion-editor-breadcrumb-separator {
+    margin: 0 var(--osirion-spacing-2);
+    color: var(--osirion-color-neutral-400);
+}
+
+.osirion-editor-breadcrumb-item {
+    color: var(--osirion-text-secondary);
+    text-decoration: none;
+}
+
+    .osirion-editor-breadcrumb-item:hover {
+        color: var(--osirion-color-primary-600);
+        text-decoration: underline;
+    }
+
+.osirion-editor-breadcrumb-current {
+    color: var(--osirion-text-primary);
+    font-weight: var(--osirion-font-weight-medium);
+}
+
+.osirion-editor-header-right {
+    display: flex;
+    align-items: center;
+    gap: var(--osirion-spacing-2);
+}
+
+.osirion-editor-main {
+    flex: 1;
+    padding: var(--osirion-spacing-6);
+    overflow-y: auto;
+}
+
+/* Alert styles */
+.osirion-admin-alert {
+    padding: var(--osirion-spacing-3) var(--osirion-spacing-4);
+    margin-bottom: var(--osirion-spacing-4);
+    border: 1px solid;
+    border-radius: 6px;
+    display: flex;
+    align-items: flex-start;
+    position: relative;
+}
+
+.osirion-admin-alert-success {
+    background-color: var(--osirion-color-success-50);
+    border-color: var(--osirion-color-success-200);
+    color: var(--osirion-color-success-700);
+}
+
+.osirion-admin-alert-error {
+    background-color: var(--osirion-color-danger-50);
+    border-color: var(--osirion-color-danger-200);
+    color: var(--osirion-color-danger-700);
+}
+
+.osirion-admin-alert-icon {
+    display: flex;
+    margin-right: var(--osirion-spacing-2);
+    flex-shrink: 0;
+}
+
+.osirion-admin-alert-close {
+    position: absolute;
+    top: var(--osirion-spacing-3);
+    right: var(--osirion-spacing-3);
+    background: transparent;
+    border: none;
+    color: currentColor;
+    cursor: pointer;
+    padding: 0;
+    font-size: 16px;
+    line-height: 1;
+    opacity: 0.7;
+}
+
+    .osirion-admin-alert-close:hover {
+        opacity: 1;
+    }
+
+/* Dark mode adjustments */
+.osirion-admin-theme-dark.osirion-editor-layout {
+    background-color: var(--osirion-color-neutral-800);
+}
+
+.osirion-admin-theme-dark .osirion-editor-header {
+    background-color: var(--osirion-color-neutral-800);
+    border-bottom-color: var(--osirion-color-neutral-700);
+}
+
+.osirion-admin-theme-dark .osirion-editor-home-link {
+    color: var(--osirion-color-neutral-400);
+}
+
+    .osirion-admin-theme-dark .osirion-editor-home-link:hover {
+        background-color: var(--osirion-color-neutral-700);
+        color: var(--osirion-color-primary-400);
+    }
+
+.osirion-admin-theme-dark .osirion-editor-breadcrumb-item {
+    color: var(--osirion-color-neutral-400);
+}
+
+    .osirion-admin-theme-dark .osirion-editor-breadcrumb-item:hover {
+        color: var(--osirion-color-primary-400);
+    }
+
+.osirion-admin-theme-dark .osirion-editor-breadcrumb-current {
+    color: var(--osirion-color-neutral-200);
+}
+
+.osirion-admin-theme-dark .osirion-admin-alert-success {
+    background-color: rgba(46, 160, 67, 0.15);
+    border-color: rgba(46, 160, 67, 0.4);
+    color: var(--osirion-color-success-300);
+}
+
+.osirion-admin-theme-dark .osirion-admin-alert-error {
+    background-color: rgba(248, 81, 73, 0.15);
+    border-color: rgba(248, 81, 73, 0.4);
+    color: var(--osirion-color-danger-300);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .osirion-editor-header {
+        height: auto;
+        padding: var(--osirion-spacing-3);
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .osirion-editor-header-left {
+        margin-bottom: var(--osirion-spacing-2);
+        width: 100%;
+    }
+
+    .osirion-editor-header-right {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .osirion-editor-main {
+        padding: var(--osirion-spacing-4);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .osirion-editor-home-link,
+    .osirion-admin-alert-close {
+        transition: none;
+    }
+}

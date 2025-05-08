@@ -1,0 +1,141 @@
+/* Settings Component - GitHub-inspired styling */
+
+.osirion-admin-settings-page {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.osirion-admin-settings-header {
+    margin-bottom: var(--osirion-spacing-6);
+}
+
+.osirion-admin-settings-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--osirion-spacing-4);
+}
+
+.osirion-admin-form-group {
+    margin-bottom: var(--osirion-spacing-4);
+}
+
+.osirion-admin-label {
+    display: block;
+    margin-bottom: var(--osirion-spacing-1);
+    font-size: var(--osirion-font-size-sm);
+    font-weight: var(--osirion-font-weight-medium);
+    color: var(--osirion-text-primary);
+}
+
+.osirion-admin-form-value {
+    padding: var(--osirion-spacing-2) 0;
+    color: var(--osirion-text-secondary);
+}
+
+.osirion-admin-checkbox {
+    display: flex;
+    align-items: center;
+    margin-bottom: var(--osirion-spacing-2);
+    cursor: pointer;
+}
+
+    .osirion-admin-checkbox input {
+        margin-right: var(--osirion-spacing-2);
+    }
+
+.osirion-admin-tag {
+    display: inline-block;
+    padding: var(--osirion-spacing-0-5) var(--osirion-spacing-2);
+    margin-right: var(--osirion-spacing-1);
+    margin-bottom: var(--osirion-spacing-1);
+    background-color: var(--osirion-color-neutral-100);
+    border-radius: 2em;
+    font-size: var(--osirion-font-size-xs);
+    color: var(--osirion-text-secondary);
+}
+
+.osirion-admin-theme-selector {
+    display: flex;
+    gap: var(--osirion-spacing-2);
+}
+
+.osirion-admin-button-theme {
+    flex: 1;
+    justify-content: center;
+    min-width: 80px;
+}
+
+    .osirion-admin-button-theme.active {
+        background-color: var(--osirion-color-primary-600);
+        border-color: var(--osirion-color-primary-600);
+        color: white;
+    }
+
+.osirion-admin-card-footer-text {
+    color: var(--osirion-text-tertiary);
+    font-size: var(--osirion-font-size-sm);
+    font-style: italic;
+}
+
+.osirion-admin-status-success {
+    color: var(--osirion-color-success-600);
+    font-weight: var(--osirion-font-weight-medium);
+    display: flex;
+    align-items: center;
+}
+
+    .osirion-admin-status-success::before {
+        content: "";
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: var(--osirion-color-success-600);
+        margin-right: var(--osirion-spacing-2);
+    }
+
+.osirion-admin-status-error {
+    color: var(--osirion-color-danger-600);
+    font-weight: var(--osirion-font-weight-medium);
+    display: flex;
+    align-items: center;
+}
+
+    .osirion-admin-status-error::before {
+        content: "";
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: var(--osirion-color-danger-600);
+        margin-right: var(--osirion-spacing-2);
+    }
+
+/* Dark mode adjustments */
+.osirion-admin-theme-dark .osirion-admin-tag {
+    background-color: var(--osirion-color-neutral-700);
+    color: var(--osirion-color-neutral-300);
+}
+
+.osirion-admin-theme-dark .osirion-admin-status-success {
+    color: var(--osirion-color-success-400);
+}
+
+    .osirion-admin-theme-dark .osirion-admin-status-success::before {
+        background-color: var(--osirion-color-success-400);
+    }
+
+.osirion-admin-theme-dark .osirion-admin-status-error {
+    color: var(--osirion-color-danger-400);
+}
+
+    .osirion-admin-theme-dark .osirion-admin-status-error::before {
+        background-color: var(--osirion-color-danger-400);
+    }
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+    .osirion-admin-settings-container {
+        grid-template-columns: 1fr;
+    }
+}

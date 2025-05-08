@@ -13,6 +13,15 @@ public partial class FileExplorer : BaseComponent
     [Parameter]
     public EventCallback OnCreateFile { get; set; }
 
+    [Parameter]
+    public string Title { get; set; } = "Files";
+
+    [Parameter]
+    public bool CanCreateFile { get; set; } = true;
+
+    [Parameter]
+    public bool CanDeleteFile { get; set; } = true;
+
     protected override void OnInitialized()
     {
         ViewModel.StateChanged += StateHasChanged;
