@@ -1,186 +1,177 @@
-﻿/**
- * Markdown editor functionality with progressive enhancement for Blazor
- * Supports both client-side and server-side rendering
- */
+﻿// Global script for markdown editor
 
-// Helper function to safely get element even if it doesn't exist yet
-function getElement(id) {
-    return document.getElementById(id);
-}
+// Make functions globally available
+window.markdownEditor = {
+    /**
+     * Focus the given element
+     */
+    focusElement: function (element) {
+        if (element) {
+            setTimeout(() => element.focus(), 0);
+        }
+    },
 
-/**
- * Initializes a markdown editor on the specified element
- * @param {string} editorId - The ID of the textarea element
- * @param {string} previewId - The ID of the preview element
- * @returns {Object} - Editor controller with methods
- */
-export function initializeEditor(editorId, previewId) {
-    const editorElement = getElement(editorId);
-    const previewElement = getElement(previewId);
+    /**
+     * Get scroll information about an element
+     */
+    getScrollInfo: function (element) {
+        if (!element) return { percentage: 0 };
 
-    if (!editorElement) {
-        console.warn(`Markdown editor element with ID '${editorId}' not found`);
+        const scrollTop = element.scrollTop;
+        const scrollHeight = element.scrollHeight;
+        const clientHeight = element.clientHeight;
+        const percentage = scrollHeight <= clientHeight
+            ? 0
+            : scrollTop / (scrollHeight - clientHeight);
+
         return {
-            getValue: () => "",
-            setValue: () => { },
-            focus: () => { },
-            getSelectionRange: () => ({ start: 0, end: 0 }),
-            insertTextAtCursor: () => { }
+            scrollTop,
+            scrollHeight,
+            clientHeight,
+            percentage
         };
-    }
+    },
 
-    // Set up basic editor behavior - can be enhanced with a markdown library if needed
-    const setupTabHandler = () => {
-        editorElement.addEventListener('keydown', function (e) {
-            if (e.key === 'Tab') {
-                e.preventDefault();
+    /**
+     * Set scroll position by percentage
+     */
+    setScrollPercentage: function (element, percentage) {
+        if (!element) return;
 
-                const start = this.selectionStart;
-                const end = this.selectionEnd;
+        const scrollHeight = element.scrollHeight;
+        const clientHeight = element.clientHeight;
 
-                // Set textarea value to: text before caret + tab + text after caret
-                this.value = this.value.substring(0, start) +
-                    "    " + this.value.substring(end); // 4 spaces for a tab
+        if (scrollHeight > clientHeight) {
+            element.scrollTop = percentage * (scrollHeight - clientHeight);
+        }
+    },
 
-                // Move caret to proper position
-                this.selectionStart = this.selectionEnd = start + 4;
+    /**
+     * Insert text at the current cursor position
+     */
+    insertTextAtCursor: function (textarea, prefix, suffix, placeholder) {
+        if (!textarea) return "";
+
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const text = textarea.value;
+        const selectedText = text.substring(start, end);
+        const replacement = selectedText.length > 0 ? selectedText : placeholder;
+
+        const newText = text.substring(0, start) +
+            prefix +
+            replacement +
+            suffix +
+            text.substring(end);
+
+        // Update textarea value
+        textarea.value = newText;
+
+        // Set new cursor position
+        const newCursorPos = start + prefix.length + replacement.length;
+        textarea.setSelectionRange(newCursorPos, newCursorPos);
+
+        return newText;
+    },
+
+    /**
+     * Handle tab key in textarea (for indentation)
+     */
+    handleTabKey: function (textarea, isShiftKey) {
+        if (!textarea) return "";
+
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const text = textarea.value;
+
+        // If multiple lines are selected
+        if (start !== end && text.substring(start, end).includes('\n')) {
+            return this.handleMultiLineTab(textarea, isShiftKey);
+        }
+
+        // Single line or no selection
+        if (isShiftKey) {
+            // Unindent: remove a tab or spaces at the beginning of the line
+            const lineStart = text.lastIndexOf('\n', start - 1) + 1;
+            const lineEnd = text.indexOf('\n', start);
+            const line = lineEnd !== -1 ? text.substring(lineStart, lineEnd) : text.substring(lineStart);
+
+            if (line.startsWith('\t')) {
+                // Remove one tab
+                const newText = text.substring(0, lineStart) + line.substring(1) + text.substring(lineEnd !== -1 ? lineEnd : text.length);
+                textarea.value = newText;
+                textarea.setSelectionRange(start - 1 > lineStart ? start - 1 : lineStart, end - 1 > lineStart ? end - 1 : lineStart);
+                return newText;
+            } else if (line.startsWith('    ')) {
+                // Remove one level of space indentation (4 spaces)
+                const newText = text.substring(0, lineStart) + line.substring(4) + text.substring(lineEnd !== -1 ? lineEnd : text.length);
+                textarea.value = newText;
+                textarea.setSelectionRange(start - 4 > lineStart ? start - 4 : lineStart, end - 4 > lineStart ? end - 4 : lineStart);
+                return newText;
+            }
+
+            return text; // No change
+        } else {
+            // Insert a tab
+            const newText = text.substring(0, start) + '\t' + text.substring(end);
+            textarea.value = newText;
+            textarea.setSelectionRange(start + 1, start + 1);
+            return newText;
+        }
+    },
+
+    /**
+     * Handle tab key for multi-line selection
+     */
+    handleMultiLineTab: function (textarea, isShiftKey) {
+        if (!textarea) return "";
+
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const text = textarea.value;
+
+        // Find the start of the first line
+        const lineStart = text.lastIndexOf('\n', start - 1) + 1;
+
+        // Get the selected text plus the start of the first line
+        const selectionWithStartLine = text.substring(lineStart, end);
+
+        // Split into lines
+        const lines = selectionWithStartLine.split('\n');
+
+        // Process each line
+        const processedLines = lines.map(line => {
+            if (isShiftKey) {
+                // Remove indentation
+                if (line.startsWith('\t')) {
+                    return line.substring(1);
+                } else if (line.startsWith('    ')) {
+                    return line.substring(4);
+                }
+                return line;
+            } else {
+                // Add indentation
+                return '\t' + line;
             }
         });
-    };
 
-    // Initialize the editor
-    setupTabHandler();
+        // Join lines back together
+        const newSelection = processedLines.join('\n');
 
-    // Return API object for Blazor interop
-    return {
-        getValue: () => editorElement.value,
+        // Calculate change in length
+        const lengthDifference = newSelection.length - selectionWithStartLine.length;
 
-        setValue: (text) => {
-            editorElement.value = text;
-        },
+        // Create new text
+        const newText = text.substring(0, lineStart) + newSelection + text.substring(end);
 
-        focus: () => {
-            editorElement.focus();
-        },
+        // Update textarea
+        textarea.value = newText;
 
-        getSelectionRange: () => {
-            return {
-                start: editorElement.selectionStart,
-                end: editorElement.selectionEnd
-            };
-        },
+        // Set selection
+        const newStart = start;
+        const newEnd = end + lengthDifference;
+        textarea.setSelectionRange(newStart, newEnd);
 
-        insertTextAtCursor: (text) => {
-            const start = editorElement.selectionStart;
-            const end = editorElement.selectionEnd;
-
-            // Insert text at cursor position
-            editorElement.value = editorElement.value.substring(0, start) +
-                text + editorElement.value.substring(end);
-
-            // Move cursor after inserted text
-            const newPosition = start + text.length;
-            editorElement.selectionStart = editorElement.selectionEnd = newPosition;
-
-            // Focus back to editor
-            editorElement.focus();
-        },
-
-        // Apply formatting to selected text or insert at cursor
-        applyFormatting: (formatType) => {
-            const start = editorElement.selectionStart;
-            const end = editorElement.selectionEnd;
-            const selectedText = editorElement.value.substring(start, end);
-
-            let formattedText = '';
-            let cursorOffset = 0;
-
-            switch (formatType) {
-                case 'bold':
-                    formattedText = `**${selectedText}**`;
-                    cursorOffset = selectedText ? 0 : 2;
-                    break;
-                case 'italic':
-                    formattedText = `*${selectedText}*`;
-                    cursorOffset = selectedText ? 0 : 1;
-                    break;
-                case 'heading1':
-                    formattedText = `# ${selectedText}`;
-                    cursorOffset = selectedText ? 0 : 2;
-                    break;
-                case 'heading2':
-                    formattedText = `## ${selectedText}`;
-                    cursorOffset = selectedText ? 0 : 3;
-                    break;
-                case 'heading3':
-                    formattedText = `### ${selectedText}`;
-                    cursorOffset = selectedText ? 0 : 4;
-                    break;
-                case 'link':
-                    formattedText = selectedText ? `[${selectedText}](url)` : '[](url)';
-                    cursorOffset = selectedText ? 1 : 1;
-                    break;
-                case 'image':
-                    formattedText = `![${selectedText}](url)`;
-                    cursorOffset = selectedText ? 0 : 2;
-                    break;
-                case 'code':
-                    formattedText = `\`${selectedText}\``;
-                    cursorOffset = selectedText ? 0 : 1;
-                    break;
-                case 'codeblock':
-                    formattedText = `\`\`\`\n${selectedText}\n\`\`\``;
-                    cursorOffset = selectedText ? 0 : 4;
-                    break;
-                case 'quote':
-                    formattedText = `> ${selectedText}`;
-                    cursorOffset = selectedText ? 0 : 2;
-                    break;
-                case 'list':
-                    formattedText = `- ${selectedText}`;
-                    cursorOffset = selectedText ? 0 : 2;
-                    break;
-                default:
-                    formattedText = selectedText;
-            }
-
-            // Replace selected text with formatted text
-            editorElement.value = editorElement.value.substring(0, start) +
-                formattedText + editorElement.value.substring(end);
-
-            // Position cursor correctly
-            if (selectedText) {
-                // If there was selected text, place cursor at the end of the formatted text
-                editorElement.selectionStart = editorElement.selectionEnd = start + formattedText.length;
-            } else {
-                // If no text was selected, place cursor within the formatting marks
-                const newPosition = start + formattedText.length - cursorOffset;
-                editorElement.selectionStart = editorElement.selectionEnd = newPosition;
-            }
-
-            // Focus back to editor
-            editorElement.focus();
-        }
-    };
-}
-
-/**
- * Updates the preview with the rendered HTML
- * @param {string} previewId - The ID of the preview element
- * @param {string} html - The HTML content to display
- */
-export function updatePreview(previewId, html) {
-    const previewElement = getElement(previewId);
-    if (previewElement) {
-        previewElement.innerHTML = html;
+        return newText;
     }
-}
-
-/**
- * Clean up the editor instance
- * @param {string} editorId - The ID of the editor element
- */
-export function disposeEditor(editorId) {
-    // Currently nothing to clean up with this simple implementation
-    // This method exists for future enhancements
-}
+};

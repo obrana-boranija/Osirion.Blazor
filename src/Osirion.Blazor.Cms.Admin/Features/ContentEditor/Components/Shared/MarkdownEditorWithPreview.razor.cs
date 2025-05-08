@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
+using Osirion.Blazor.Cms.Admin.Features.ContentEditor.Services;
 using Osirion.Blazor.Cms.Admin.Shared.Components;
+using System.Text;
 
 namespace Osirion.Blazor.Cms.Admin.Features.ContentEditor.Components.Shared;
 
@@ -51,12 +53,19 @@ public partial class MarkdownEditorWithPreview : BaseComponent, IAsyncDisposable
     private ElementReference TextAreaRef;
     private ElementReference PreviewRef;
     private string Preview = string.Empty;
-    private DotNetObjectReference<MarkdownEditorWithPreview>? objRef;
-    private IJSObjectReference? editorModule;
     private bool isEditorFocused = false;
+    private double editorScrollPercentage = 0;
+    private double previewScrollPercentage = 0;
+    private IJSObjectReference? minimalJsModule;
+    private bool jsInteropAvailable = false;
+    private bool isPrerendering = true;
 
     protected override async Task OnInitializedAsync()
     {
+        // Check if we're prerendering
+        isPrerendering = NavigationManager.Uri.StartsWith("http://localhost:") == false &&
+                          NavigationManager.Uri.Contains("://");
+
         await base.OnInitializedAsync();
         await UpdatePreviewAsync();
     }
@@ -65,17 +74,24 @@ public partial class MarkdownEditorWithPreview : BaseComponent, IAsyncDisposable
     {
         if (firstRender)
         {
-            objRef = DotNetObjectReference.Create(this);
-            editorModule = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/Osirion.Blazor.Cms.Admin/js/markdownEditor.js");
-
-            if (SyncScroll)
+            try
             {
-                await InitializeSyncScrollAsync();
+                // Load only the minimal required JavaScript
+                minimalJsModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
+                    "import", "./_content/Osirion.Blazor.Cms.Admin/js/minimalMarkdownEditor.js");
+
+                jsInteropAvailable = true;
+
+                if (AutoFocus && !isPrerendering)
+                {
+                    await FocusEditorAsync();
+                }
             }
-
-            if (AutoFocus)
+            catch (Exception ex)
             {
-                await FocusEditorAsync();
+                // JS interop not available - continue without it
+                jsInteropAvailable = false;
+                Console.WriteLine($"JS interop not available: {ex.Message}");
             }
         }
 
@@ -89,9 +105,9 @@ public partial class MarkdownEditorWithPreview : BaseComponent, IAsyncDisposable
             Preview = await MarkdownService.RenderToHtmlAsync(Content);
             StateHasChanged();
 
-            if (SyncScroll && isEditorFocused && editorModule != null)
+            if (SyncScroll && isEditorFocused && jsInteropAvailable && !isPrerendering)
             {
-                await editorModule.InvokeVoidAsync("syncScrollPositions", TextAreaRef, PreviewRef, isEditorFocused);
+                await SyncScrollPositionAsync(true);
             }
         }
         catch (Exception ex)
@@ -100,36 +116,64 @@ public partial class MarkdownEditorWithPreview : BaseComponent, IAsyncDisposable
         }
     }
 
-    private async Task InitializeSyncScrollAsync()
-    {
-        if (editorModule != null)
-        {
-            await editorModule.InvokeVoidAsync("initializeSyncScroll", TextAreaRef, PreviewRef, objRef);
-        }
-    }
-
     public async Task FocusEditorAsync()
     {
-        if (editorModule != null)
+        if (isPrerendering) return;
+
+        try
         {
-            await editorModule.InvokeVoidAsync("focusEditor", TextAreaRef);
+            if (jsInteropAvailable && minimalJsModule != null)
+            {
+                await minimalJsModule.InvokeVoidAsync("focusElement", TextAreaRef);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Focus error: {ex.Message}");
+            // Silently fail if JS interop isn't available
         }
     }
 
     public async Task InsertMarkdown(string prefix, string suffix, string placeholder)
     {
-        if (editorModule != null)
-        {
-            string newContent = await editorModule.InvokeAsync<string>("insertText",
-                TextAreaRef, prefix, suffix, placeholder);
+        if (isPrerendering) return;
 
-            if (Content != newContent)
+        if (jsInteropAvailable && minimalJsModule != null)
+        {
+            try
             {
-                Content = newContent;
+                string newContent = await minimalJsModule.InvokeAsync<string>(
+                    "insertTextAtCursor", TextAreaRef, prefix, suffix, placeholder);
+
+                if (Content != newContent)
+                {
+                    Content = newContent;
+                    await ContentChanged.InvokeAsync(Content);
+                    await UpdatePreviewAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Insert markdown error: {ex.Message}");
+                // Fallback for when JS interop fails
+                Content = InsertTextManually(Content, prefix, suffix, placeholder);
                 await ContentChanged.InvokeAsync(Content);
                 await UpdatePreviewAsync();
             }
         }
+        else
+        {
+            // Fallback for when JS interop isn't available
+            Content = Content + prefix + placeholder + suffix;
+            await ContentChanged.InvokeAsync(Content);
+            await UpdatePreviewAsync();
+        }
+    }
+
+    private string InsertTextManually(string text, string prefix, string suffix, string placeholder)
+    {
+        // This is a simple fallback when JS interop is not available
+        return text + prefix + placeholder + suffix;
     }
 
     private void OnEditorFocus()
@@ -142,38 +186,82 @@ public partial class MarkdownEditorWithPreview : BaseComponent, IAsyncDisposable
         isEditorFocused = false;
     }
 
-    [JSInvokable]
-    public async Task OnEditorScrolled()
+    private async Task OnEditorScrolled(EventArgs args)
     {
-        if (SyncScroll && isEditorFocused && editorModule != null)
+        if (isPrerendering) return;
+
+        if (SyncScroll && isEditorFocused && jsInteropAvailable)
         {
-            await editorModule.InvokeVoidAsync("syncScrollPositions", TextAreaRef, PreviewRef, true);
+            await SyncScrollPositionAsync(true);
         }
     }
 
-    [JSInvokable]
-    public async Task OnPreviewScrolled()
+    private async Task OnPreviewScrolled(EventArgs args)
     {
-        if (SyncScroll && !isEditorFocused && editorModule != null)
+        if (isPrerendering) return;
+
+        if (SyncScroll && !isEditorFocused && jsInteropAvailable)
         {
-            await editorModule.InvokeVoidAsync("syncScrollPositions", TextAreaRef, PreviewRef, false);
+            await SyncScrollPositionAsync(false);
+        }
+    }
+
+    private async Task SyncScrollPositionAsync(bool fromEditor)
+    {
+        if (isPrerendering || !jsInteropAvailable || minimalJsModule == null) return;
+
+        try
+        {
+            if (fromEditor)
+            {
+                // Get editor scroll info
+                var scrollInfo = await minimalJsModule.InvokeAsync<ScrollInfo>("getScrollInfo", TextAreaRef);
+                editorScrollPercentage = scrollInfo.Percentage;
+
+                // Apply to preview
+                await minimalJsModule.InvokeVoidAsync("setScrollPercentage", PreviewRef, editorScrollPercentage);
+            }
+            else
+            {
+                // Get preview scroll info
+                var scrollInfo = await minimalJsModule.InvokeAsync<ScrollInfo>("getScrollInfo", PreviewRef);
+                previewScrollPercentage = scrollInfo.Percentage;
+
+                // Apply to editor
+                await minimalJsModule.InvokeVoidAsync("setScrollPercentage", TextAreaRef, previewScrollPercentage);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error syncing scroll: {ex.Message}");
+            // Do not rethrow - this is non-critical functionality
         }
     }
 
     private async Task HandleKeyDown(KeyboardEventArgs e)
     {
+        if (isPrerendering) return;
+
         // Handle tab key for indentation
         if (e.Key == "Tab")
         {
-            if (editorModule != null)
+            if (jsInteropAvailable && minimalJsModule != null)
             {
-                string newContent = await editorModule.InvokeAsync<string>("handleTabKey",
-                    TextAreaRef, e.ShiftKey);
-
-                if (Content != newContent)
+                try
                 {
-                    Content = newContent;
-                    await ContentChanged.InvokeAsync(Content);
+                    string newContent = await minimalJsModule.InvokeAsync<string>(
+                        "handleTabKey", TextAreaRef, e.ShiftKey);
+
+                    if (Content != newContent)
+                    {
+                        Content = newContent;
+                        await ContentChanged.InvokeAsync(Content);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Tab key handling error: {ex.Message}");
+                    // Just continue - tab key handling is a non-critical enhancement
                 }
             }
         }
@@ -181,19 +269,27 @@ public partial class MarkdownEditorWithPreview : BaseComponent, IAsyncDisposable
 
     async ValueTask IAsyncDisposable.DisposeAsync()
     {
-        try
+        if (jsInteropAvailable)
         {
-            if (editorModule != null)
+            try
             {
-                await editorModule.InvokeVoidAsync("cleanup", TextAreaRef, PreviewRef);
-                await editorModule.DisposeAsync();
+                if (minimalJsModule != null)
+                {
+                    await minimalJsModule.DisposeAsync();
+                }
             }
+            catch
+            {
+                // Ignore errors during disposal
+            }
+        }
+    }
 
-            objRef?.Dispose();
-        }
-        catch
-        {
-            // Ignore errors during disposal
-        }
+    private class ScrollInfo
+    {
+        public double ScrollTop { get; set; }
+        public double ScrollHeight { get; set; }
+        public double ClientHeight { get; set; }
+        public double Percentage { get; set; }
     }
 }
