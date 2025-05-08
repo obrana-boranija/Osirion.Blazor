@@ -17,6 +17,7 @@ public class AuthenticationService : IAuthenticationService
     private readonly ILogger<AuthenticationService> _logger;
     private readonly IStateStorageService _stateStorage;
     private readonly IGitHubTokenProvider _tokenProvider;
+    private readonly IGitHubApiClient _apiClient;
     private readonly GitHubAdminOptions _githubOptions;
     private readonly AuthenticationOptions _authOptions;
 
@@ -36,16 +37,19 @@ public class AuthenticationService : IAuthenticationService
         IOptions<CmsAdminOptions> options,
         ILogger<AuthenticationService> logger,
         IStateStorageService stateStorage,
-        IGitHubTokenProvider tokenProvider)
+        IGitHubTokenProvider tokenProvider,
+        IGitHubApiClient apiClient)
     {
         _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _stateStorage = stateStorage ?? throw new ArgumentNullException(nameof(stateStorage));
         _tokenProvider = tokenProvider ?? throw new ArgumentNullException(nameof(tokenProvider));
+        _apiClient = apiClient ?? throw new ArgumentNullException(nameof(apiClient));
 
         // Get options from the injected CmsAdminOptions
-        _githubOptions = options.Value.GitHub;
-        _authOptions = options.Value.Authentication;
+        var options_value = options.Value;
+        _githubOptions = options_value.GitHub;
+        _authOptions = options_value.Authentication;
 
         // Try to restore auth state
         _ = RestoreAuthStateAsync().ConfigureAwait(false);
@@ -78,6 +82,9 @@ public class AuthenticationService : IAuthenticationService
             if (string.IsNullOrEmpty(_accessToken))
                 return false;
 
+            // Set the token on the API client immediately
+            _apiClient.SetAccessToken(_accessToken);
+
             // Get user information
             var success = await GetUserInfoAsync();
 
@@ -86,6 +93,10 @@ public class AuthenticationService : IAuthenticationService
             {
                 await PersistAuthStateAsync();
                 AuthenticationChanged?.Invoke(true);
+            }
+            else
+            {
+                _accessToken = null;
             }
 
             return success;
@@ -102,7 +113,18 @@ public class AuthenticationService : IAuthenticationService
     {
         try
         {
+            if (string.IsNullOrEmpty(token))
+            {
+                _logger.LogWarning("Attempted to set empty token");
+                return false;
+            }
+
             _accessToken = token;
+            _logger.LogInformation("Setting access token. Token length: {Length}", token.Length);
+
+            // Set the token on the API client immediately
+            _apiClient.SetAccessToken(token);
+
             var success = await GetUserInfoAsync();
 
             // Save state if successful
@@ -110,10 +132,13 @@ public class AuthenticationService : IAuthenticationService
             {
                 await PersistAuthStateAsync();
                 AuthenticationChanged?.Invoke(true);
+                _logger.LogInformation("Token validated successfully");
             }
             else
             {
+                _accessToken = null;
                 await RemoveAuthStateAsync();
+                _logger.LogWarning("Token validation failed");
             }
 
             return success;
@@ -158,6 +183,7 @@ public class AuthenticationService : IAuthenticationService
     {
         if (string.IsNullOrEmpty(_accessToken))
         {
+            _logger.LogWarning("Cannot get user info - access token is empty");
             return false;
         }
 
@@ -165,10 +191,19 @@ public class AuthenticationService : IAuthenticationService
         {
             var request = CreateUserInfoRequest();
             var response = await _httpClient.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogWarning("GitHub API returned non-success status code: {StatusCode}", response.StatusCode);
+                return false;
+            }
+
             response.EnsureSuccessStatusCode();
 
             var userInfo = await response.Content.ReadFromJsonAsync<GitHubUserInfo>();
             _username = userInfo?.Login;
+
+            _logger.LogInformation("Retrieved user info: {Username}", _username);
             return !string.IsNullOrEmpty(_username);
         }
         catch (Exception ex)
@@ -186,9 +221,12 @@ public class AuthenticationService : IAuthenticationService
     private HttpRequestMessage CreateUserInfoRequest()
     {
         var request = new HttpRequestMessage(HttpMethod.Get, "https://api.github.com/user");
+
+        // GitHub API prefers "token" scheme rather than "Bearer"
         request.Headers.Authorization = new AuthenticationHeaderValue("token", _accessToken);
         request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         request.Headers.UserAgent.Add(new ProductInfoHeaderValue("OsirionBlogCMS", "2.0"));
+
         return request;
     }
 
@@ -197,10 +235,20 @@ public class AuthenticationService : IAuthenticationService
     /// </summary>
     private async Task PersistAuthStateAsync()
     {
+        if (!_stateStorage.IsInitialized)
+        {
+            await _stateStorage.InitializeAsync();
+        }
+
         if (_stateStorage.IsInitialized)
         {
             await _stateStorage.SaveStateAsync("github_auth_token", _accessToken);
             await _stateStorage.SaveStateAsync("github_username", _username);
+            _logger.LogDebug("Auth state persisted to storage. Token exists: {HasToken}", !string.IsNullOrEmpty(_accessToken));
+        }
+        else
+        {
+            _logger.LogWarning("Could not persist auth state - storage not initialized");
         }
     }
 
@@ -209,19 +257,38 @@ public class AuthenticationService : IAuthenticationService
     /// </summary>
     private async Task RestoreAuthStateAsync()
     {
+        if (!_stateStorage.IsInitialized)
+        {
+            await _stateStorage.InitializeAsync();
+        }
+
         if (_stateStorage.IsInitialized)
         {
             _accessToken = await _stateStorage.GetStateAsync<string>("github_auth_token");
             _username = await _stateStorage.GetStateAsync<string>("github_username");
 
+            _logger.LogDebug("Auth state restored from storage. Token exists: {HasToken}", !string.IsNullOrEmpty(_accessToken));
+
             // Validate restored token
             if (!string.IsNullOrEmpty(_accessToken))
             {
+                // Set the token on the API client
+                _apiClient.SetAccessToken(_accessToken);
+
                 if (!await GetUserInfoAsync())
                 {
+                    _logger.LogWarning("Restored token validation failed");
                     await RemoveAuthStateAsync();
                 }
+                else
+                {
+                    _logger.LogInformation("Restored token validated successfully");
+                }
             }
+        }
+        else
+        {
+            _logger.LogWarning("Could not restore auth state - storage not initialized");
         }
     }
 
@@ -230,10 +297,20 @@ public class AuthenticationService : IAuthenticationService
     /// </summary>
     private async Task RemoveAuthStateAsync()
     {
+        if (!_stateStorage.IsInitialized)
+        {
+            await _stateStorage.InitializeAsync();
+        }
+
         if (_stateStorage.IsInitialized)
         {
             await _stateStorage.RemoveStateAsync("github_auth_token");
             await _stateStorage.RemoveStateAsync("github_username");
+            _logger.LogDebug("Auth state removed from storage");
+        }
+        else
+        {
+            _logger.LogWarning("Could not remove auth state - storage not initialized");
         }
     }
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Blazored.LocalStorage;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Osirion.Blazor.Cms.Admin.Core.Events;
 using Osirion.Blazor.Cms.Admin.Core.State;
@@ -63,6 +64,8 @@ public static class OsirionCmsAdminExtensions
         services.TryAddScoped<FileExplorerViewModel>();
         services.TryAddScoped<RepositorySelectorViewModel>();
         services.TryAddScoped<BranchSelectorViewModel>();
+
+        services.AddBlazoredLocalStorage();
 
         // Register features
         services.AddFeatures();

@@ -118,7 +118,7 @@ public class LoginViewModel
                 // Save auth state in persistent storage
                 await _stateStorage.SaveStateAsync("auth_status", true);
                 await _stateStorage.SaveStateAsync("last_login_method", "pat");
-                await _stateStorage.SaveStateAsync("pat_token", AccessToken);
+                await _stateStorage.SaveStateAsync("github_auth_token", AccessToken);
 
                 // Ensure event is published
                 _eventMediator.Publish(new AuthenticationChangedEvent(true));
@@ -158,7 +158,7 @@ public class LoginViewModel
 
         if (lastLoginMethod == "pat")
         {
-            var token = await _stateStorage.GetStateAsync<string>("pat_token");
+            var token = await _stateStorage.GetStateAsync<string>("github_auth_token");
 
             if (!string.IsNullOrEmpty(token))
             {
@@ -175,7 +175,7 @@ public class LoginViewModel
         // Clear auth state from storage
         await _stateStorage.RemoveStateAsync("auth_status");
         await _stateStorage.RemoveStateAsync("last_login_method");
-        await _stateStorage.RemoveStateAsync("pat_token");
+        await _stateStorage.RemoveStateAsync("github_auth_token");
 
         // The AuthenticationChanged event will be triggered by the service
         _navigationManager.NavigateTo("/admin/login");

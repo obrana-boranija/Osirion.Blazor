@@ -174,8 +174,25 @@ public class GitHubAdminService : IGitHubAdminService
 
     public async Task SetAuthTokenAsync(string token)
     {
+        if (string.IsNullOrEmpty(token))
+        {
+            _logger.LogWarning("Attempted to set empty auth token");
+            return;
+        }
+
+        _logger.LogInformation("Setting auth token in GitHubAdminService. Token length: {length}", token.Length);
         _apiClient.SetAccessToken(token);
-        await Task.CompletedTask;
+
+        // Test the token works
+        try
+        {
+            await _apiClient.GetRepositoriesAsync();
+            _logger.LogInformation("Token successfully verified");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Token validation failed");
+        }
     }
 
     public void SetBranch(string branch)
