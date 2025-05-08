@@ -111,6 +111,7 @@
                   @bind:event="oninput"
                   @onkeydown="HandleKeyDown"
                   @ref="TextAreaRef"
+                  @onscroll="OnEditorScrolled"
                   placeholder="Write your markdown content here..."
                   @onfocus="OnEditorFocus"
                   @onblur="OnEditorBlur"></textarea>
@@ -123,8 +124,15 @@
                 <span class="markdown-preview-title">@PreviewLabel</span>
             </div>
 
-            <div class="markdown-preview-content" @ref="PreviewRef">
-                @((MarkupString)Preview)
+            <div class="markdown-preview-content" @ref="PreviewRef" @onscroll="OnPreviewScrolled">
+                @if (!string.IsNullOrEmpty(Preview))
+                {
+                    @((MarkupString)Preview)
+                }
+                else
+                {
+                    <p class="markdown-preview-placeholder">Preview will appear here as you type.</p>
+                }
             </div>
         </div>
     }

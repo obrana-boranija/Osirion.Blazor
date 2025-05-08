@@ -3,9 +3,9 @@
     flex-direction: column;
     height: 100%;
     overflow: hidden;
-    border: 1px solid var(--osirion-admin-border);
+    border: 1px solid var(--osirion-admin-border, #d0d7de);
     border-radius: 6px;
-    background-color: var(--osirion-admin-bg);
+    background-color: var(--osirion-admin-bg, #ffffff);
 }
 
 .markdown-editor-header {
@@ -13,14 +13,14 @@
     align-items: center;
     justify-content: space-between;
     padding: 8px 16px;
-    background-color: var(--osirion-admin-light);
-    border-bottom: 1px solid var(--osirion-admin-border);
+    background-color: var(--osirion-admin-light, #f6f8fa);
+    border-bottom: 1px solid var(--osirion-admin-border, #d0d7de);
 }
 
 .markdown-editor-title {
     font-size: 14px;
-    font-weight: var(--osirion-admin-font-weight-medium);
-    color: var(--osirion-admin-text-muted);
+    font-weight: 500;
+    color: var(--osirion-admin-text-muted, #57606a);
 }
 
 .markdown-editor-toolbar {
@@ -38,20 +38,20 @@
     padding: 0;
     border: none;
     background-color: transparent;
-    color: var(--osirion-admin-text-muted);
+    color: var(--osirion-admin-text-muted, #57606a);
     border-radius: 4px;
     cursor: pointer;
     transition: all 0.15s ease;
 }
 
     .markdown-editor-toolbar-button:hover {
-        background-color: var(--osirion-admin-hover);
-        color: var(--osirion-admin-text);
+        background-color: var(--osirion-admin-hover, #eaeef2);
+        color: var(--osirion-admin-text, #24292f);
     }
 
 .markdown-editor-toolbar-button-active {
     background-color: rgba(3, 102, 214, 0.1);
-    color: var(--osirion-admin-primary);
+    color: var(--osirion-admin-primary, #0969da);
 }
 
 .markdown-editor-toolbar-icon {
@@ -65,7 +65,7 @@
     flex-direction: column;
     flex: 1;
     overflow: hidden;
-    border-right: 1px solid var(--osirion-admin-border);
+    border-right: 1px solid var(--osirion-admin-border, #d0d7de);
 }
 
 .markdown-editor-textarea {
@@ -75,11 +75,11 @@
     font-family: ui-monospace, SFMono-Regular, SF Mono, Consolas, Liberation Mono, Menlo, monospace;
     font-size: 14px;
     line-height: 1.5;
-    color: var(--osirion-admin-text);
+    color: var(--osirion-admin-text, #24292f);
     resize: none;
     border: none;
     outline: none;
-    background-color: var(--osirion-admin-bg);
+    background-color: var(--osirion-admin-bg, #ffffff);
     tab-size: 4;
 }
 
@@ -92,14 +92,14 @@
 
 .markdown-preview-header {
     padding: 8px 16px;
-    background-color: var(--osirion-admin-light);
-    border-bottom: 1px solid var(--osirion-admin-border);
+    background-color: var(--osirion-admin-light, #f6f8fa);
+    border-bottom: 1px solid var(--osirion-admin-border, #d0d7de);
 }
 
 .markdown-preview-title {
     font-size: 14px;
-    font-weight: var(--osirion-admin-font-weight-medium);
-    color: var(--osirion-admin-text-muted);
+    font-weight: 500;
+    color: var(--osirion-admin-text-muted, #57606a);
     margin: 0;
 }
 
@@ -107,11 +107,16 @@
     flex: 1;
     overflow-y: auto;
     padding: 16px;
-    background-color: var(--osirion-admin-bg);
-    font-family: var(--osirion-admin-font-family);
+    background-color: var(--osirion-admin-bg, #ffffff);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
     font-size: 14px;
     line-height: 1.5;
-    color: var(--osirion-admin-text);
+    color: var(--osirion-admin-text, #24292f);
+}
+
+.markdown-preview-placeholder {
+    color: var(--osirion-admin-text-muted, #8b949e);
+    font-style: italic;
 }
 
 /* Split view layout */
@@ -137,20 +142,20 @@
 .markdown-preview-content h6 {
     margin-top: 24px;
     margin-bottom: 16px;
-    font-weight: var(--osirion-admin-font-weight-bold);
+    font-weight: 600;
     line-height: 1.25;
-    color: var(--osirion-admin-text);
+    color: var(--osirion-admin-text, #24292f);
 }
 
 .markdown-preview-content h1 {
     font-size: 2em;
-    border-bottom: 1px solid var(--osirion-admin-border);
+    border-bottom: 1px solid var(--osirion-admin-border, #d0d7de);
     padding-bottom: 0.3em;
 }
 
 .markdown-preview-content h2 {
     font-size: 1.5em;
-    border-bottom: 1px solid var(--osirion-admin-border);
+    border-bottom: 1px solid var(--osirion-admin-border, #d0d7de);
     padding-bottom: 0.3em;
 }
 
@@ -168,7 +173,7 @@
 
 .markdown-preview-content h6 {
     font-size: 0.85em;
-    color: var(--osirion-admin-text-muted);
+    color: var(--osirion-admin-text-muted, #57606a);
 }
 
 .markdown-preview-content p,
@@ -184,8 +189,8 @@
 
 .markdown-preview-content blockquote {
     padding: 0 1em;
-    color: var(--osirion-admin-text-muted);
-    border-left: 0.25em solid var(--osirion-admin-border);
+    color: var(--osirion-admin-text-muted, #57606a);
+    border-left: 0.25em solid var(--osirion-admin-border, #d0d7de);
 }
 
 .markdown-preview-content ul,
@@ -211,7 +216,7 @@
     overflow: auto;
     font-size: 85%;
     line-height: 1.45;
-    background-color: var(--osirion-admin-light);
+    background-color: var(--osirion-admin-light, #f6f8fa);
     border-radius: 6px;
 }
 
@@ -235,22 +240,22 @@
     .markdown-preview-content table th,
     .markdown-preview-content table td {
         padding: 6px 13px;
-        border: 1px solid var(--osirion-admin-border);
+        border: 1px solid var(--osirion-admin-border, #d0d7de);
     }
 
     .markdown-preview-content table tr {
-        background-color: var(--osirion-admin-bg);
-        border-top: 1px solid var(--osirion-admin-border);
+        background-color: var(--osirion-admin-bg, #ffffff);
+        border-top: 1px solid var(--osirion-admin-border, #d0d7de);
     }
 
         .markdown-preview-content table tr:nth-child(2n) {
-            background-color: var(--osirion-admin-light);
+            background-color: var(--osirion-admin-light, #f6f8fa);
         }
 
 .markdown-preview-content img {
     max-width: 100%;
     box-sizing: content-box;
-    background-color: var(--osirion-admin-bg);
+    background-color: var(--osirion-admin-bg, #ffffff);
     border-radius: 6px;
 }
 
@@ -258,12 +263,12 @@
     height: 0.25em;
     padding: 0;
     margin: 24px 0;
-    background-color: var(--osirion-admin-border);
+    background-color: var(--osirion-admin-border, #d0d7de);
     border: 0;
 }
 
 .markdown-preview-content a {
-    color: var(--osirion-admin-primary);
+    color: var(--osirion-admin-primary, #0969da);
     text-decoration: none;
 }
 
@@ -289,6 +294,17 @@
         top: 0.25em;
     }
 
+/* Dark mode support */
+:root.dark {
+    --osirion-admin-bg: #0d1117;
+    --osirion-admin-text: #e6edf3;
+    --osirion-admin-text-muted: #8b949e;
+    --osirion-admin-border: #30363d;
+    --osirion-admin-light: #161b22;
+    --osirion-admin-hover: #30363d;
+    --osirion-admin-primary: #58a6ff;
+}
+
 /* Responsive styles */
 @media (max-width: 768px) {
     .split-view {
@@ -302,7 +318,7 @@
 
     .markdown-editor-container {
         border-right: none;
-        border-bottom: 1px solid var(--osirion-admin-border);
+        border-bottom: 1px solid var(--osirion-admin-border, #d0d7de);
     }
 }
 
