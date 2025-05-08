@@ -1,48 +1,56 @@
 .branch-selector {
     display: flex;
     flex-direction: column;
-    border: var(--osirion-border-width) solid var(--osirion-border-color);
-    border-radius: var(--osirion-radius-lg);
+    border: 1px solid var(--osirion-admin-border);
+    border-radius: 6px;
     overflow: hidden;
-    margin-bottom: var(--osirion-spacing-4);
+    margin-bottom: 16px;
+    background-color: var(--osirion-admin-bg);
 }
 
 .branch-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: var(--osirion-spacing-3);
-    background-color: var(--osirion-background-secondary);
-    border-bottom: var(--osirion-border-width) solid var(--osirion-border-color);
+    padding: 8px 16px;
+    background-color: var(--osirion-admin-light);
+    border-bottom: 1px solid var(--osirion-admin-border);
 }
 
 .branch-title {
     margin: 0;
-    font-size: var(--osirion-font-size-sm);
-    font-weight: var(--osirion-font-weight-medium);
+    font-size: 14px;
+    font-weight: var(--osirion-admin-font-weight-medium);
+    color: var(--osirion-admin-text);
 }
 
 .branch-actions {
     display: flex;
-    gap: var(--osirion-spacing-1);
+    gap: 4px;
 }
 
 .branch-button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: var(--osirion-spacing-2);
-    padding: var(--osirion-spacing-1);
-    border: var(--osirion-border-width) solid var(--osirion-border-color);
-    border-radius: var(--osirion-radius-sm);
-    background-color: var(--osirion-background-primary);
-    color: var(--osirion-text-primary);
+    padding: 5px 16px;
+    border: 1px solid var(--osirion-admin-border);
+    border-radius: 6px;
+    background-color: var(--osirion-admin-bg);
+    color: var(--osirion-admin-text);
+    font-size: 14px;
     cursor: pointer;
-    transition: all var(--osirion-transition-duration-200) var(--osirion-transition-timing-default);
+    transition: all 0.2s ease;
+    line-height: 20px;
+    min-height: 32px;
 }
 
     .branch-button:hover:not(:disabled) {
-        background-color: var(--osirion-background-hover, var(--osirion-color-neutral-100));
+        background-color: var(--osirion-admin-hover);
+    }
+
+    .branch-button:active:not(:disabled) {
+        background-color: var(--osirion-admin-light);
     }
 
     .branch-button:disabled {
@@ -56,39 +64,55 @@
     justify-content: center;
     width: 16px;
     height: 16px;
+    margin-right: 4px;
 }
 
 .branch-select-container {
-    padding: var(--osirion-spacing-2) var(--osirion-spacing-3);
+    padding: 16px;
 }
 
 .branch-select {
     width: 100%;
-    padding: var(--osirion-spacing-2);
-    border: var(--osirion-border-width) solid var(--osirion-border-color);
-    border-radius: var(--osirion-radius-lg);
-    background-color: var(--osirion-background-primary);
-    color: var(--osirion-text-primary);
-    font-family: var(--osirion-font-family-base);
-    font-size: var(--osirion-font-size-base);
+    padding: 5px 12px;
+    border: 1px solid var(--osirion-admin-border);
+    border-radius: 6px;
+    background-color: var(--osirion-admin-bg);
+    color: var(--osirion-admin-text);
+    font-family: var(--osirion-admin-font-family);
+    font-size: 14px;
+    line-height: 20px;
+    height: 32px;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' viewBox='0 0 12 12'%3E%3Cpath fill='%23444D56' d='M6 8.825L1.175 4 2.05 3.125 6 7.075 9.95 3.125 10.825 4 6 8.825Z'/%3E%3C/svg%3E");
+    background-position: right 8px center;
+    background-repeat: no-repeat;
+    padding-right: 32px;
 }
+
+    .branch-select:focus {
+        outline: none;
+        border-color: var(--osirion-admin-primary);
+        box-shadow: 0 0 0 3px rgba(3, 102, 214, 0.3);
+    }
 
 .branch-loading,
 .branch-error,
 .branch-empty {
-    padding: var(--osirion-spacing-3);
+    padding: 24px 16px;
     text-align: center;
+    color: var(--osirion-admin-text-muted);
 }
 
 .branch-loading-spinner {
     display: inline-block;
     width: 16px;
     height: 16px;
-    border: 2px solid var(--osirion-border-color);
-    border-top-color: var(--osirion-action-primary);
+    border: 2px solid rgba(140, 149, 159, 0.3);
+    border-top-color: var(--osirion-admin-primary);
     border-radius: 50%;
     animation: branch-spin 1s linear infinite;
-    margin-right: var(--osirion-spacing-2);
+    margin-right: 8px;
+    vertical-align: text-bottom;
 }
 
 @keyframes branch-spin {
@@ -97,65 +121,89 @@
     }
 }
 
+.branch-error-icon {
+    margin-right: 8px;
+    vertical-align: text-bottom;
+    color: var(--osirion-admin-danger);
+}
+
 .branch-actions-container {
-    padding: var(--osirion-spacing-2) var(--osirion-spacing-3);
-    border-top: var(--osirion-border-width) solid var(--osirion-border-color);
+    padding: 0 16px 16px;
+    border-top: 1px solid var(--osirion-admin-border);
 }
 
 .branch-button-new {
     width: 100%;
-    padding: var(--osirion-spacing-2);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--osirion-admin-light);
+    color: var(--osirion-admin-text);
+    border: 1px solid var(--osirion-admin-border);
+    border-radius: 6px;
+    padding: 5px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
+
+    .branch-button-new:hover {
+        background-color: var(--osirion-admin-hover);
+    }
 
 .branch-create-form {
     display: flex;
     flex-direction: column;
-    gap: var(--osirion-spacing-3);
+    gap: 16px;
+    padding-top: 16px;
 }
 
 .branch-form-group {
     display: flex;
     flex-direction: column;
-    gap: var(--osirion-spacing-1);
+    gap: 4px;
 }
 
 .branch-label {
-    font-size: var(--osirion-font-size-sm);
-    font-weight: var(--osirion-font-weight-medium);
+    font-size: 14px;
+    font-weight: var(--osirion-admin-font-weight-medium);
+    color: var(--osirion-admin-text);
 }
 
 .branch-input {
-    padding: var(--osirion-spacing-2);
-    border: var(--osirion-border-width) solid var(--osirion-border-color);
-    border-radius: var(--osirion-radius-lg);
-    background-color: var(--osirion-background-primary);
-    color: var(--osirion-text-primary);
-    font-family: var(--osirion-font-family-base);
-    font-size: var(--osirion-font-size-base);
+    padding: 5px 12px;
+    border: 1px solid var(--osirion-admin-border);
+    border-radius: 6px;
+    background-color: var(--osirion-admin-bg);
+    color: var(--osirion-admin-text);
+    font-family: var(--osirion-admin-font-family);
+    font-size: 14px;
+    line-height: 20px;
+    height: 32px;
 }
+
+    .branch-input:focus {
+        outline: none;
+        border-color: var(--osirion-admin-primary);
+        box-shadow: 0 0 0 3px rgba(3, 102, 214, 0.3);
+    }
 
 .branch-form-actions {
     display: flex;
     justify-content: flex-end;
-    gap: var(--osirion-spacing-2);
-    margin-top: var(--osirion-spacing-2);
+    gap: 8px;
+    margin-top: 16px;
 }
 
 .branch-button-primary {
-    background-color: var(--osirion-action-primary);
-    border-color: var(--osirion-action-primary);
-    color: var(--osirion-action-primary-text);
-    padding: var(--osirion-spacing-2) var(--osirion-spacing-3);
+    background-color: var(--osirion-admin-primary);
+    border-color: transparent;
+    color: white;
 }
 
     .branch-button-primary:hover:not(:disabled) {
-        background-color: var(--osirion-action-primary-hover);
+        background-color: var(--osirion-admin-primary-dark);
     }
-
-.branch-button-small {
-    padding: var(--osirion-spacing-1) var(--osirion-spacing-2);
-    font-size: var(--osirion-font-size-xs);
-}
 
 /* Accessibility */
 @media (prefers-reduced-motion: reduce) {

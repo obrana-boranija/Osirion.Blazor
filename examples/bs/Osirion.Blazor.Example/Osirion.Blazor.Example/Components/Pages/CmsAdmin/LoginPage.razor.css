@@ -1,0 +1,17 @@
+/* LoginPage Component - GitHub-inspired styling */
+
+.osirion-admin-login-page {
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--osirion-color-neutral-50);
+    padding: var(--osirion-spacing-4);
+}
+
+/* Dark mode adjustments */
+.osirion-admin-theme-dark.osirion-admin-login-page {
+    background-color: var(--osirion-color-neutral-900);
+}
