@@ -15,7 +15,18 @@ public record CreateNewContentEvent(string Directory) : ICmsEvent;
 public record RepositorySelectedEvent(GitHubRepository Repository) : ICmsEvent;
 public record BranchSelectedEvent(GitHubBranch Branch) : ICmsEvent;
 
+// Navigation events
+public record NavigationRequestedEvent(string Route) : ICmsEvent;
+public record StateResetRequestedEvent() : ICmsEvent;
+
+// UI events
+public record ThemeChangedEvent(string Theme) : ICmsEvent;
+public record ErrorOccurredEvent(string Message, Exception? Exception = null) : ICmsEvent;
+
 // Notification events
 public enum StatusType { Info, Success, Warning, Error }
 public record StatusNotificationEvent(string Message, StatusType Type = StatusType.Info) : ICmsEvent;
-public record ErrorOccurredEvent(string Message, Exception? Exception = null) : ICmsEvent;
+
+// Authentication events
+public record AuthenticationChangedEvent(bool IsAuthenticated) : ICmsEvent;
+public record UserProfileLoadedEvent(string Username) : ICmsEvent;

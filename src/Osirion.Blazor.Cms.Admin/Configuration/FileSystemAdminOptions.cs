@@ -19,9 +19,4 @@ public class FileSystemAdminOptions
     /// Gets or sets whether to create directories if they don't exist
     /// </summary>
     public bool CreateDirectoriesIfNotExist { get; set; } = true;
-
-    /// <summary>
-    /// Gets or sets the default content provider
-    /// </summary>
-    public string DefaultContentProvider { get; set; } = "FileSystem";
 }

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Components;
+using Osirion.Blazor.Cms.Admin.Core.Events;
 using Osirion.Blazor.Cms.Admin.Features.Authentication.Services;
 using Osirion.Blazor.Cms.Admin.Services.Events;
 

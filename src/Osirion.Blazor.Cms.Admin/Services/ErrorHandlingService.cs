@@ -1,9 +1,13 @@
 ﻿using Microsoft.Extensions.Logging;
+using Osirion.Blazor.Cms.Admin.Core.Events;
 using Osirion.Blazor.Cms.Admin.Core.State;
 using Osirion.Blazor.Cms.Admin.Services.Events;
 
 namespace Osirion.Blazor.Cms.Admin.Services;
 
+/// <summary>
+/// Service for handling errors in the CMS admin interface
+/// </summary>
 public class ErrorHandlingService
 {
     private readonly CmsState _state;
@@ -23,6 +27,9 @@ public class ErrorHandlingService
         _eventMediator.Subscribe<ErrorOccurredEvent>(HandleError);
     }
 
+    /// <summary>
+    /// Handles an error event
+    /// </summary>
     private void HandleError(ErrorOccurredEvent errorEvent)
     {
         // Log the error
@@ -42,6 +49,9 @@ public class ErrorHandlingService
         _state.SetErrorMessage(errorEvent.Message);
     }
 
+    /// <summary>
+    /// Handles an exception with context
+    /// </summary>
     public void HandleException(Exception exception, string context, bool updateState = true)
     {
         var message = $"Error in {context}: {exception.Message}";

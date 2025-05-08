@@ -1,12 +1,16 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Admin.Configuration;
+using Osirion.Blazor.Cms.Admin.Core.Events;
 using Osirion.Blazor.Cms.Admin.Core.State;
 using Osirion.Blazor.Cms.Admin.Services.Events;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 
 namespace Osirion.Blazor.Cms.Admin.Services.State;
 
+/// <summary>
+/// Manages persistence of application state across sessions
+/// </summary>
 public class StateManager : IDisposable
 {
     private readonly CmsState _state;
@@ -40,6 +44,9 @@ public class StateManager : IDisposable
         _eventMediator.Subscribe<StateResetRequestedEvent>(_ => ResetStateAsync());
     }
 
+    /// <summary>
+    /// Initializes the state manager and loads persisted state if available
+    /// </summary>
     public async Task InitializeAsync()
     {
         if (_isInitialized || !_options.PersistUserSelections)
@@ -72,11 +79,17 @@ public class StateManager : IDisposable
         }
     }
 
+    /// <summary>
+    /// Event handler for state changes
+    /// </summary>
     private async void OnStateChanged()
     {
         await SaveStateAsync();
     }
 
+    /// <summary>
+    /// Saves the current state to persistence
+    /// </summary>
     private async Task SaveStateAsync()
     {
         if (!_storageService.IsInitialized || !_options.PersistUserSelections)
@@ -94,6 +107,9 @@ public class StateManager : IDisposable
         }
     }
 
+    /// <summary>
+    /// Resets the state and clears persistence
+    /// </summary>
     private async Task ResetStateAsync()
     {
         try
@@ -112,6 +128,9 @@ public class StateManager : IDisposable
         }
     }
 
+    /// <summary>
+    /// Disposes of resources
+    /// </summary>
     public void Dispose()
     {
         _state.StateChanged -= OnStateChanged;

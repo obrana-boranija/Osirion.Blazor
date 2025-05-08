@@ -31,10 +31,8 @@ public class CmsState
     public string? StatusMessage { get; private set; }
     public string? ErrorMessage { get; private set; }
 
-    // State change events - make it protected so derived classes can access it
-    protected Action? _stateChanged;
-
-    // Public event accessor
+    // State change events
+    private Action? _stateChanged;
     public event Action StateChanged
     {
         add => _stateChanged += value;
@@ -53,7 +51,7 @@ public class CmsState
     /// <summary>
     /// Sets the selected repository
     /// </summary>
-    public virtual void SelectRepository(GitHubRepository repository)
+    public virtual void SelectRepository(GitHubRepository? repository)
     {
         SelectedRepository = repository;
         SelectedBranch = null;
@@ -75,7 +73,7 @@ public class CmsState
     /// <summary>
     /// Sets the selected branch
     /// </summary>
-    public virtual void SelectBranch(GitHubBranch branch)
+    public virtual void SelectBranch(GitHubBranch? branch)
     {
         SelectedBranch = branch;
         CurrentItems.Clear();
@@ -184,6 +182,9 @@ public class CmsState
         NotifyStateChanged();
     }
 
+    /// <summary>
+    /// Serialize state to string for persistence
+    /// </summary>
     public string Serialize()
     {
         var state = new Dictionary<string, object?>();
@@ -200,6 +201,9 @@ public class CmsState
         return JsonSerializer.Serialize(state);
     }
 
+    /// <summary>
+    /// Deserialize state from string
+    /// </summary>
     public void DeserializeFrom(string serializedState)
     {
         if (string.IsNullOrEmpty(serializedState))
@@ -240,6 +244,9 @@ public class CmsState
         }
     }
 
+    /// <summary>
+    /// Notifies listeners that state has changed
+    /// </summary>
     protected void NotifyStateChanged()
     {
         _stateChanged?.Invoke();

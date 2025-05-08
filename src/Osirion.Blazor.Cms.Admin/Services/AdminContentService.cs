@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Osirion.Blazor.Cms.Admin.Core.Events;
 using Osirion.Blazor.Cms.Admin.Interfaces;
 using Osirion.Blazor.Cms.Admin.Services.Events;
 using Osirion.Blazor.Cms.Application.Commands;

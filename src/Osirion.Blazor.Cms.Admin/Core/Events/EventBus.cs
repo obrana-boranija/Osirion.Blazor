@@ -49,7 +49,7 @@ public class EventBus : IEventPublisher, IEventSubscriber
             return;
         }
 
-        // Make a copy to avoid concurrent modification issues
+        // Create a copy to avoid concurrent modification issues if a handler unsubscribes
         var handlers = _handlers[eventType].ToList();
 
         foreach (var handler in handlers)

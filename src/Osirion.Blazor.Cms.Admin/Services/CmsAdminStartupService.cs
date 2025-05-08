@@ -1,10 +1,13 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Admin.Configuration;
 using Osirion.Blazor.Cms.Admin.Services.State;
-using Microsoft.Extensions.Options;
 
 namespace Osirion.Blazor.Cms.Admin.Services;
 
+/// <summary>
+/// Startup service for the CMS admin interface
+/// </summary>
 public class CmsAdminStartupService
 {
     private readonly StateManager _stateManager;
@@ -25,6 +28,9 @@ public class CmsAdminStartupService
         _logger = logger;
     }
 
+    /// <summary>
+    /// Initializes the CMS admin module
+    /// </summary>
     public async Task InitializeAsync()
     {
         if (_isInitialized)

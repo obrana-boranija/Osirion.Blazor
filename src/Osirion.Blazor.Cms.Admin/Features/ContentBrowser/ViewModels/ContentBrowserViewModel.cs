@@ -1,4 +1,5 @@
-﻿using Osirion.Blazor.Cms.Admin.Core.State;
+﻿using Osirion.Blazor.Cms.Admin.Core.Events;
+using Osirion.Blazor.Cms.Admin.Core.State;
 using Osirion.Blazor.Cms.Admin.Features.ContentBrowser.Services;
 using Osirion.Blazor.Cms.Admin.Services.Events;
 using Osirion.Blazor.Cms.Domain.Models.GitHub;
@@ -75,7 +76,7 @@ public class ContentBrowserViewModel
         else if (item.IsMarkdownFile)
         {
             // Publish event for content selection
-            _eventMediator.Publish(new ContentSelectedEvent(item));
+            _eventMediator.Publish(new ContentSelectedEvent(item.Path));
         }
 
         NotifyStateChanged();

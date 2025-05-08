@@ -1,4 +1,5 @@
-﻿using Osirion.Blazor.Cms.Admin.Core.State;
+﻿using Osirion.Blazor.Cms.Admin.Core.Events;
+using Osirion.Blazor.Cms.Admin.Core.State;
 using Osirion.Blazor.Cms.Admin.Features.Repository.Services;
 using Osirion.Blazor.Cms.Admin.Services.Events;
 using Osirion.Blazor.Cms.Domain.Models.GitHub;

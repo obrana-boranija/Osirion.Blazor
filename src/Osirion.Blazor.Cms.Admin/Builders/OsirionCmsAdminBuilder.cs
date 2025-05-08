@@ -15,8 +15,6 @@ using Osirion.Blazor.Cms.Admin.Services;
 using Osirion.Blazor.Cms.Admin.Services.Adapters;
 using Osirion.Blazor.Cms.Admin.Services.Events;
 using Osirion.Blazor.Cms.Admin.Services.State;
-using Osirion.Blazor.Cms.Domain.Interfaces;
-using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Domain.Services;
 
 namespace Osirion.Blazor.Cms.Admin.Builders;
@@ -152,6 +150,24 @@ public class OsirionCmsAdminBuilder : IOsirionCmsAdminBuilder
     }
 
     /// <summary>
+    /// Configures localization for CMS admin
+    /// </summary>
+    public IOsirionCmsAdminBuilder UseLocalization(Action<LocalizationOptions> configure)
+    {
+        if (configure == null)
+            throw new ArgumentNullException(nameof(configure));
+
+        _logger.LogInformation("Configuring localization for CMS admin");
+
+        Services.Configure<CmsAdminOptions>(options =>
+        {
+            configure(options.Localization);
+        });
+
+        return this;
+    }
+
+    /// <summary>
     /// Adds a custom content provider to CMS admin
     /// </summary>
     public IOsirionCmsAdminBuilder AddProvider<TProvider>() where TProvider : class, IContentProvider
@@ -195,8 +211,9 @@ public class OsirionCmsAdminBuilder : IOsirionCmsAdminBuilder
         // Register feature services
         Services.AddScoped<AuthenticationService>();
         Services.AddScoped<ContentBrowserService>();
-        Services.AddScoped<ContentEditorService>();
+        Services.AddScoped<IContentEditorService, ContentEditorService>();
         Services.AddScoped<RepositoryService>();
+        Services.AddScoped<IMarkdownEditorService, MarkdownEditorService>();
 
         // Register all feature modules
         Services.AddFeatures();

@@ -38,6 +38,8 @@ public static class ProviderServiceCollectionExtensions
         services.Configure<FileSystemAdminOptions>(
             configuration.GetSection("Osirion:Cms:FileSystem:Admin"));
 
+        // Register file system services
+        // Note: Implementation will depend on actual services in the Infrastructure layer
         //services.AddScoped<IFileSystemAdminService, FileSystemAdminService>();
 
         return services;
