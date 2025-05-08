@@ -1,14 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Osirion.Blazor.Cms.Admin.Core.Events;
-using Osirion.Blazor.Cms.Admin.Features.Authentication.Services;
 using Osirion.Blazor.Cms.Admin.Services.Events;
+using Osirion.Blazor.Cms.Domain.Interfaces;
 
 namespace Osirion.Blazor.Cms.Admin.Features.Authentication.ViewModels;
 
 public class LoginViewModel
 {
-    private readonly AuthenticationService _authService;
+    private readonly IAuthenticationService _authService;
     private readonly NavigationManager _navigationManager;
     private readonly CmsEventMediator _eventMediator;
 
@@ -21,13 +20,16 @@ public class LoginViewModel
     public event Action? StateChanged;
 
     public LoginViewModel(
-        AuthenticationService authService,
+        IAuthenticationService authService,
         NavigationManager navigationManager,
         CmsEventMediator eventMediator)
     {
         _authService = authService;
         _navigationManager = navigationManager;
         _eventMediator = eventMediator;
+
+        // Subscribe to authentication changes
+        _authService.AuthenticationChanged += OnAuthenticationChanged;
     }
 
     public void ToggleTokenInput()
@@ -47,11 +49,11 @@ public class LoginViewModel
 
         try
         {
-            var result = await _authService.LoginWithGitHubAsync(code);
+            var result = await _authService.AuthenticateWithGitHubAsync(code);
 
             if (result)
             {
-                _eventMediator.Publish(new AuthenticationChangedEvent(true));
+                // The AuthenticationChanged event will be triggered by the service
                 _navigationManager.NavigateTo(ReturnUrl);
             }
             else
@@ -85,11 +87,11 @@ public class LoginViewModel
 
         try
         {
-            var result = await _authService.LoginWithTokenAsync(AccessToken);
+            var result = await _authService.SetAccessTokenAsync(AccessToken);
 
             if (result)
             {
-                _eventMediator.Publish(new AuthenticationChangedEvent(true));
+                // The AuthenticationChanged event will be triggered by the service
                 _navigationManager.NavigateTo(ReturnUrl);
             }
             else
@@ -111,8 +113,14 @@ public class LoginViewModel
     public async Task SignOutAsync()
     {
         await _authService.SignOutAsync();
-        _eventMediator.Publish(new AuthenticationChangedEvent(false));
+        // The AuthenticationChanged event will be triggered by the service
         _navigationManager.NavigateTo("/admin/login");
+    }
+
+    private void OnAuthenticationChanged(bool isAuthenticated)
+    {
+        // Publish an event to the application
+        _eventMediator.Publish(new AuthenticationChangedEvent(isAuthenticated));
     }
 
     protected void NotifyStateChanged()

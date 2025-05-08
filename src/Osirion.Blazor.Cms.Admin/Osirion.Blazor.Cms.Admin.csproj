@@ -65,6 +65,7 @@
 
 	<ItemGroup>
 	  <Folder Include="Extensions\" />
+	  <Folder Include="Features\Authentication\Services\" />
 	  <Folder Include="Shared\Events\" />
 	</ItemGroup>
 

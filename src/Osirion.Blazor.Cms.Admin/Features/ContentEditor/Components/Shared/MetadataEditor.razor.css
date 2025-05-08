@@ -3,51 +3,51 @@
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    background-color: var(--background-primary, #ffffff);
-    border-radius: var(--border-radius, 0.25rem);
+    background-color: var(--osirion-background-primary);
+    border-radius: var(--osirion-radius-base);
 }
 
 .metadata-editor-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: var(--spacing-3, 0.75rem) var(--spacing-4, 1rem);
-    border-bottom: var(--border-width, 1px) solid var(--border-color, #e1e4e8);
-    background-color: var(--background-secondary, #f6f8fa);
+    padding: var(--osirion-spacing-3) var(--osirion-spacing-4);
+    border-bottom: var(--osirion-border-width) solid var(--osirion-border-color);
+    background-color: var(--osirion-background-secondary);
 }
 
 .metadata-editor-title {
     margin: 0;
-    font-size: var(--font-size-base, 1rem);
-    font-weight: var(--font-weight-medium, 500);
-    color: var(--text-primary, #24292e);
+    font-size: var(--osirion-font-size-base);
+    font-weight: var(--osirion-font-weight-medium);
+    color: var(--osirion-text-primary);
 }
 
 .metadata-editor-actions {
     display: flex;
-    gap: var(--spacing-1, 0.25rem);
+    gap: var(--osirion-spacing-1);
 }
 
 .metadata-editor-button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: var(--spacing-2, 0.5rem) var(--spacing-3, 0.75rem);
-    border: var(--border-width, 1px) solid var(--border-color, #e1e4e8);
-    border-radius: var(--border-radius, 0.25rem);
-    background-color: var(--background-primary, #ffffff);
-    color: var(--text-primary, #24292e);
-    font-size: var(--font-size-sm, 0.875rem);
+    padding: var(--osirion-spacing-2) var(--osirion-spacing-3);
+    border: var(--osirion-border-width) solid var(--osirion-border-color);
+    border-radius: var(--osirion-radius-base);
+    background-color: var(--osirion-background-primary);
+    color: var(--osirion-text-primary);
+    font-size: var(--osirion-font-size-sm);
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--osirion-transition-duration-200) var(--osirion-transition-timing-default);
 }
 
     .metadata-editor-button:hover {
-        background-color: var(--background-hover, #f3f4f6);
+        background-color: var(--osirion-background-hover, var(--osirion-color-neutral-100));
     }
 
 .metadata-editor-button-icon {
-    padding: var(--spacing-1, 0.25rem);
+    padding: var(--osirion-spacing-1);
     border: none;
     background: transparent;
 }
@@ -60,41 +60,41 @@
 
 .metadata-editor-content {
     flex: 1;
-    padding: var(--spacing-4, 1rem);
+    padding: var(--osirion-spacing-4);
     overflow-y: auto;
 }
 
 .metadata-editor-form-group {
-    margin-bottom: var(--spacing-4, 1rem);
+    margin-bottom: var(--osirion-spacing-4);
 }
 
 .metadata-editor-label {
     display: block;
-    margin-bottom: var(--spacing-1, 0.25rem);
-    font-weight: var(--font-weight-medium, 500);
-    color: var(--text-primary, #24292e);
-    font-size: var(--font-size-sm, 0.875rem);
+    margin-bottom: var(--osirion-spacing-1);
+    font-weight: var(--osirion-font-weight-medium);
+    color: var(--osirion-text-primary);
+    font-size: var(--osirion-font-size-sm);
 }
 
 .metadata-editor-input,
 .metadata-editor-textarea {
     display: block;
     width: 100%;
-    padding: var(--spacing-2, 0.5rem) var(--spacing-3, 0.75rem);
-    border: var(--border-width, 1px) solid var(--border-color, #e1e4e8);
-    border-radius: var(--border-radius, 0.25rem);
-    background-color: var(--background-primary, #ffffff);
-    color: var(--text-primary, #24292e);
-    font-family: var(--font-family-base, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif);
-    font-size: var(--font-size-sm, 0.875rem);
-    transition: border-color 0.2s ease;
+    padding: var(--osirion-spacing-2) var(--osirion-spacing-3);
+    border: var(--osirion-border-width) solid var(--osirion-border-color);
+    border-radius: var(--osirion-radius-base);
+    background-color: var(--osirion-background-primary);
+    color: var(--osirion-text-primary);
+    font-family: var(--osirion-font-family-base);
+    font-size: var(--osirion-font-size-sm);
+    transition: border-color var(--osirion-transition-duration-200) var(--osirion-transition-timing-default);
 }
 
     .metadata-editor-input:focus,
     .metadata-editor-textarea:focus {
         outline: none;
-        border-color: var(--primary-color, #0366d6);
-        box-shadow: 0 0 0 3px rgba(3, 102, 214, 0.1);
+        border-color: var(--osirion-action-primary);
+        box-shadow: 0 0 0 var(--osirion-focus-ring-width) var(--osirion-focus-ring-color);
     }
 
 .metadata-editor-textarea {
@@ -105,8 +105,8 @@
 .metadata-editor-checkboxes {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--spacing-4, 1rem);
-    margin-bottom: var(--spacing-4, 1rem);
+    gap: var(--osirion-spacing-4);
+    margin-bottom: var(--osirion-spacing-4);
 }
 
 .metadata-editor-checkbox-group {
@@ -120,25 +120,34 @@
 }
 
     .metadata-editor-checkbox input {
-        margin-right: var(--spacing-2, 0.5rem);
+        margin-right: var(--osirion-spacing-2);
     }
 
 .metadata-editor-code-preview {
-    padding: var(--spacing-3, 0.75rem);
-    background-color: var(--background-secondary, #f6f8fa);
-    border: var(--border-width, 1px) solid var(--border-color, #e1e4e8);
-    border-radius: var(--border-radius, 0.25rem);
-    font-family: var(--font-family-mono, SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace);
-    font-size: var(--font-size-sm, 0.875rem);
-    line-height: 1.5;
+    padding: var(--osirion-spacing-3);
+    background-color: var(--osirion-background-secondary);
+    border: var(--osirion-border-width) solid var(--osirion-border-color);
+    border-radius: var(--osirion-radius-base);
+    font-family: var(--osirion-font-family-mono);
+    font-size: var(--osirion-font-size-sm);
+    line-height: var(--osirion-line-height-normal);
     white-space: pre-wrap;
     overflow-x: auto;
-    color: var(--text-primary, #24292e);
+    color: var(--osirion-text-primary);
 }
 
 @media (max-width: 768px) {
     .metadata-editor-checkboxes {
         flex-direction: column;
-        gap: var(--spacing-2, 0.5rem);
+        gap: var(--osirion-spacing-2);
+    }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .metadata-editor-input,
+    .metadata-editor-textarea,
+    .metadata-editor-button {
+        transition: none;
     }
 }

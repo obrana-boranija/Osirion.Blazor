@@ -1,48 +1,48 @@
 .branch-selector {
     display: flex;
     flex-direction: column;
-    border: var(--border-width, 1px) solid var(--border-color, #e1e4e8);
-    border-radius: var(--border-radius, 6px);
+    border: var(--osirion-border-width) solid var(--osirion-border-color);
+    border-radius: var(--osirion-radius-lg);
     overflow: hidden;
-    margin-bottom: var(--spacing-4, 1rem);
+    margin-bottom: var(--osirion-spacing-4);
 }
 
 .branch-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: var(--spacing-3, 0.75rem);
-    background-color: var(--background-secondary, #f6f8fa);
-    border-bottom: var(--border-width, 1px) solid var(--border-color, #e1e4e8);
+    padding: var(--osirion-spacing-3);
+    background-color: var(--osirion-background-secondary);
+    border-bottom: var(--osirion-border-width) solid var(--osirion-border-color);
 }
 
 .branch-title {
     margin: 0;
-    font-size: var(--font-size-sm, 0.875rem);
-    font-weight: var(--font-weight-medium, 500);
+    font-size: var(--osirion-font-size-sm);
+    font-weight: var(--osirion-font-weight-medium);
 }
 
 .branch-actions {
     display: flex;
-    gap: var(--spacing-1, 0.25rem);
+    gap: var(--osirion-spacing-1);
 }
 
 .branch-button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
-    padding: var(--spacing-1, 0.25rem);
-    border: 1px solid var(--border-color, #e1e4e8);
-    border-radius: var(--border-radius-sm, 3px);
-    background-color: var(--background-primary, #ffffff);
-    color: var(--text-primary, #24292e);
+    gap: var(--osirion-spacing-2);
+    padding: var(--osirion-spacing-1);
+    border: var(--osirion-border-width) solid var(--osirion-border-color);
+    border-radius: var(--osirion-radius-sm);
+    background-color: var(--osirion-background-primary);
+    color: var(--osirion-text-primary);
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--osirion-transition-duration-200) var(--osirion-transition-timing-default);
 }
 
     .branch-button:hover:not(:disabled) {
-        background-color: var(--background-hover, #f6f8fa);
+        background-color: var(--osirion-background-hover, var(--osirion-color-neutral-100));
     }
 
     .branch-button:disabled {
@@ -59,24 +59,24 @@
 }
 
 .branch-select-container {
-    padding: var(--spacing-2, 0.5rem) var(--spacing-3, 0.75rem);
+    padding: var(--osirion-spacing-2) var(--osirion-spacing-3);
 }
 
 .branch-select {
     width: 100%;
-    padding: var(--spacing-2, 0.5rem);
-    border: var(--border-width, 1px) solid var(--border-color, #e1e4e8);
-    border-radius: var(--border-radius, 6px);
-    background-color: var(--background-primary, #ffffff);
-    color: var(--text-primary, #24292e);
-    font-family: var(--font-family-base, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif);
-    font-size: var(--font-size-base, 14px);
+    padding: var(--osirion-spacing-2);
+    border: var(--osirion-border-width) solid var(--osirion-border-color);
+    border-radius: var(--osirion-radius-lg);
+    background-color: var(--osirion-background-primary);
+    color: var(--osirion-text-primary);
+    font-family: var(--osirion-font-family-base);
+    font-size: var(--osirion-font-size-base);
 }
 
 .branch-loading,
 .branch-error,
 .branch-empty {
-    padding: var(--spacing-3, 0.75rem);
+    padding: var(--osirion-spacing-3);
     text-align: center;
 }
 
@@ -84,11 +84,11 @@
     display: inline-block;
     width: 16px;
     height: 16px;
-    border: 2px solid var(--border-color, #e1e4e8);
-    border-top-color: var(--primary-color, #0366d6);
+    border: 2px solid var(--osirion-border-color);
+    border-top-color: var(--osirion-action-primary);
     border-radius: 50%;
     animation: branch-spin 1s linear infinite;
-    margin-right: var(--spacing-2, 0.5rem);
+    margin-right: var(--osirion-spacing-2);
 }
 
 @keyframes branch-spin {
@@ -98,61 +98,70 @@
 }
 
 .branch-actions-container {
-    padding: var(--spacing-2, 0.5rem) var(--spacing-3, 0.75rem);
-    border-top: var(--border-width, 1px) solid var(--border-color, #e1e4e8);
+    padding: var(--osirion-spacing-2) var(--osirion-spacing-3);
+    border-top: var(--osirion-border-width) solid var(--osirion-border-color);
 }
 
 .branch-button-new {
     width: 100%;
-    padding: var(--spacing-2, 0.5rem);
+    padding: var(--osirion-spacing-2);
 }
 
 .branch-create-form {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-3, 0.75rem);
+    gap: var(--osirion-spacing-3);
 }
 
 .branch-form-group {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-1, 0.25rem);
+    gap: var(--osirion-spacing-1);
 }
 
 .branch-label {
-    font-size: var(--font-size-sm, 0.875rem);
-    font-weight: var(--font-weight-medium, 500);
+    font-size: var(--osirion-font-size-sm);
+    font-weight: var(--osirion-font-weight-medium);
 }
 
 .branch-input {
-    padding: var(--spacing-2, 0.5rem);
-    border: var(--border-width, 1px) solid var(--border-color, #e1e4e8);
-    border-radius: var(--border-radius, 6px);
-    background-color: var(--background-primary, #ffffff);
-    color: var(--text-primary, #24292e);
-    font-family: var(--font-family-base, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif);
-    font-size: var(--font-size-base, 14px);
+    padding: var(--osirion-spacing-2);
+    border: var(--osirion-border-width) solid var(--osirion-border-color);
+    border-radius: var(--osirion-radius-lg);
+    background-color: var(--osirion-background-primary);
+    color: var(--osirion-text-primary);
+    font-family: var(--osirion-font-family-base);
+    font-size: var(--osirion-font-size-base);
 }
 
 .branch-form-actions {
     display: flex;
     justify-content: flex-end;
-    gap: var(--spacing-2, 0.5rem);
-    margin-top: var(--spacing-2, 0.5rem);
+    gap: var(--osirion-spacing-2);
+    margin-top: var(--osirion-spacing-2);
 }
 
 .branch-button-primary {
-    background-color: var(--primary-color, #0366d6);
-    border-color: var(--primary-color, #0366d6);
-    color: white;
-    padding: var(--spacing-2, 0.5rem) var(--spacing-3, 0.75rem);
+    background-color: var(--osirion-action-primary);
+    border-color: var(--osirion-action-primary);
+    color: var(--osirion-action-primary-text);
+    padding: var(--osirion-spacing-2) var(--osirion-spacing-3);
 }
 
     .branch-button-primary:hover:not(:disabled) {
-        background-color: var(--primary-color-dark, #0550ae);
+        background-color: var(--osirion-action-primary-hover);
     }
 
 .branch-button-small {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.75rem;
+    padding: var(--osirion-spacing-1) var(--osirion-spacing-2);
+    font-size: var(--osirion-font-size-xs);
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .branch-button,
+    .branch-loading-spinner {
+        transition: none;
+        animation: none;
+    }
 }

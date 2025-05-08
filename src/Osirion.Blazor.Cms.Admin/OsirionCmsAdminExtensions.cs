@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Osirion.Blazor.Cms.Admin.Core.Events;
 using Osirion.Blazor.Cms.Admin.Core.State;
 using Osirion.Blazor.Cms.Admin.Features;
-using Osirion.Blazor.Cms.Admin.Features.Authentication.Services;
 using Osirion.Blazor.Cms.Admin.Features.Authentication.ViewModels;
 using Osirion.Blazor.Cms.Admin.Features.ContentBrowser.Services;
 using Osirion.Blazor.Cms.Admin.Features.ContentBrowser.ViewModels;
@@ -17,11 +16,6 @@ using Osirion.Blazor.Cms.Admin.Services;
 using Osirion.Blazor.Cms.Admin.Services.Adapters;
 using Osirion.Blazor.Cms.Admin.Services.Events;
 using Osirion.Blazor.Cms.Admin.Services.State;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Osirion.Blazor.Cms.Admin;
 
@@ -56,7 +50,6 @@ public static class OsirionCmsAdminExtensions
 
         // Register services
         services.TryAddScoped<ErrorHandlingService>();
-        services.TryAddScoped<AuthenticationService>();
         services.TryAddScoped<ContentBrowserService>();
         services.TryAddScoped<IContentEditorService, ContentEditorService>();
         services.TryAddScoped<IMarkdownEditorService, MarkdownEditorService>();

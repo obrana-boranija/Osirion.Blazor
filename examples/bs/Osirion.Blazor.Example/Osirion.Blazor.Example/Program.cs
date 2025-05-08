@@ -20,9 +20,9 @@ builder.Services.AddOsirionCmsAdmin(options =>
     options.UseGitHubProvider(github =>
     {
         github.Owner = "obrana-boranija";
-        github.Repository = "hexavera-blog";
-        github.DefaultBranch = "main"; // Optional, defaults to "main"
-        github.ContentPath = "localized"; // Optional subdirectory in the repository
+        github.Repository = "Osirion.Blazor";
+        github.DefaultBranch = "master"; // Optional, defaults to "main"
+        github.ContentPath = ""; // Optional subdirectory in the repository
         github.CommitterName = "Your Name"; // Optional
         github.CommitterEmail = "your.email@example.com"; // Optional
     });

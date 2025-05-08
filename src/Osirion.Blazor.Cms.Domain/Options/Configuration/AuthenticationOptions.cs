@@ -1,4 +1,4 @@
-﻿namespace Osirion.Blazor.Cms.Admin.Configuration;
+﻿namespace Osirion.Blazor.Cms.Domain.Options.Configuration;
 
 /// <summary>
 /// Configuration options for authentication

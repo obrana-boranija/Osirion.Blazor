@@ -2,25 +2,25 @@
     display: flex;
     flex-direction: column;
     height: 100%;
-    border: 1px solid var(--border-color, #e1e4e8);
-    border-radius: 6px;
+    border: var(--osirion-border-width) solid var(--osirion-border-color);
+    border-radius: var(--osirion-radius-lg);
     overflow: hidden;
-    background-color: var(--background-primary, #ffffff);
+    background-color: var(--osirion-background-primary);
 }
 
 .file-explorer-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0.5rem 1rem;
-    background-color: var(--background-secondary, #f6f8fa);
-    border-bottom: 1px solid var(--border-color, #e1e4e8);
+    padding: var(--osirion-spacing-2) var(--osirion-spacing-4);
+    background-color: var(--osirion-background-secondary);
+    border-bottom: var(--osirion-border-width) solid var(--osirion-border-color);
 }
 
 .file-explorer-path-navigation {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: var(--osirion-spacing-2);
     overflow: hidden;
 }
 
@@ -29,25 +29,25 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-family: var(--font-family-mono, monospace);
-    font-size: 0.875rem;
+    font-family: var(--osirion-font-family-mono);
+    font-size: var(--osirion-font-size-sm);
 }
 
 .file-explorer-button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
-    padding: 0.5rem;
-    border: 1px solid var(--border-color, #e1e4e8);
-    border-radius: 4px;
-    background-color: var(--background-primary, #ffffff);
-    color: var(--text-primary, #24292e);
+    gap: var(--osirion-spacing-2);
+    padding: var(--osirion-spacing-2);
+    border: var(--osirion-border-width) solid var(--osirion-border-color);
+    border-radius: var(--osirion-radius-md);
+    background-color: var(--osirion-background-primary);
+    color: var(--osirion-text-primary);
     cursor: pointer;
 }
 
     .file-explorer-button:hover:not(:disabled) {
-        background-color: var(--background-hover, #f3f4f6);
+        background-color: var(--osirion-background-hover, var(--osirion-background-secondary));
     }
 
     .file-explorer-button:disabled {
@@ -56,32 +56,32 @@
     }
 
 .file-explorer-button-icon {
-    padding: 0.25rem;
+    padding: var(--osirion-spacing-1);
     border: none;
     background: transparent;
 }
 
 .file-explorer-button-primary {
-    background-color: var(--primary-color, #2563eb);
-    border-color: var(--primary-color, #2563eb);
-    color: white;
+    background-color: var(--osirion-action-primary);
+    border-color: var(--osirion-action-primary);
+    color: var(--osirion-action-primary-text);
 }
 
     .file-explorer-button-primary:hover:not(:disabled) {
-        background-color: var(--primary-color-dark, #1d4ed8);
+        background-color: var(--osirion-action-primary-hover);
     }
 
 .file-explorer-button-danger {
-    color: var(--danger-color, #dc2626);
+    color: var(--osirion-status-danger);
 }
 
     .file-explorer-button-danger:hover {
-        background-color: var(--danger-color-light, #fee2e2);
+        background-color: var(--osirion-status-danger-bg);
     }
 
 .file-explorer-button-small {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.75rem;
+    padding: var(--osirion-spacing-1) var(--osirion-spacing-2);
+    font-size: var(--osirion-font-size-xs);
 }
 
 .file-explorer-loading,
@@ -91,52 +91,52 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 2rem;
+    padding: var(--osirion-spacing-8);
     text-align: center;
-    color: var(--text-secondary, #6a737d);
+    color: var(--osirion-text-secondary);
 }
 
 .file-explorer-loading-spinner {
     display: inline-block;
-    width: 1rem;
-    height: 1rem;
-    border: 2px solid var(--border-color, #e1e4e8);
-    border-top-color: var(--primary-color, #2563eb);
+    width: var(--osirion-spacing-4);
+    height: var(--osirion-spacing-4);
+    border: 2px solid var(--osirion-border-color);
+    border-top-color: var(--osirion-action-primary);
     border-radius: 50%;
     animation: spin 1s linear infinite;
-    margin-bottom: 0.5rem;
+    margin-bottom: var(--osirion-spacing-2);
 }
 
 .file-explorer-items {
     flex: 1;
     overflow-y: auto;
-    padding: 0.5rem;
+    padding: var(--osirion-spacing-2);
 }
 
 .file-explorer-item {
     display: flex;
     align-items: center;
-    padding: 0.5rem;
-    border-radius: 4px;
+    padding: var(--osirion-spacing-2);
+    border-radius: var(--osirion-radius-md);
     cursor: pointer;
 }
 
     .file-explorer-item:hover {
-        background-color: var(--background-hover, #f3f4f6);
+        background-color: var(--osirion-background-hover, var(--osirion-background-secondary));
     }
 
     .file-explorer-item.selected {
-        background-color: var(--primary-color-light, #dbeafe);
+        background-color: var(--osirion-color-primary-100);
     }
 
 .file-explorer-item-icon {
     display: flex;
-    margin-right: 0.5rem;
-    color: var(--text-secondary, #6a737d);
+    margin-right: var(--osirion-spacing-2);
+    color: var(--osirion-text-secondary);
 }
 
 .file-explorer-directory .file-explorer-item-icon {
-    color: var(--folder-color, #f59e0b);
+    color: var(--osirion-color-warning-500);
 }
 
 .file-explorer-item-name {
@@ -164,58 +164,58 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1000;
+    z-index: var(--osirion-z-index-50);
 }
 
 .file-explorer-modal-content {
-    background-color: var(--background-primary, #ffffff);
-    border-radius: 6px;
+    background-color: var(--osirion-background-primary);
+    border-radius: var(--osirion-radius-lg);
     width: 100%;
     max-width: 400px;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--osirion-shadow-xl);
 }
 
 .file-explorer-modal-header {
-    padding: 1rem;
-    border-bottom: 1px solid var(--border-color, #e1e4e8);
+    padding: var(--osirion-spacing-4);
+    border-bottom: var(--osirion-border-width) solid var(--osirion-border-color);
 }
 
 .file-explorer-modal-title {
     margin: 0;
-    font-size: 1.125rem;
-    font-weight: 500;
+    font-size: var(--osirion-font-size-lg);
+    font-weight: var(--osirion-font-weight-medium);
 }
 
 .file-explorer-modal-body {
-    padding: 1rem;
+    padding: var(--osirion-spacing-4);
 }
 
 .file-explorer-modal-warning {
-    color: var(--danger-color, #dc2626);
-    font-weight: 500;
+    color: var(--osirion-status-danger);
+    font-weight: var(--osirion-font-weight-medium);
 }
 
 .file-explorer-modal-footer {
     display: flex;
     justify-content: flex-end;
-    gap: 0.5rem;
-    padding: 1rem;
-    background-color: var(--background-secondary, #f6f8fa);
-    border-top: 1px solid var(--border-color, #e1e4e8);
+    gap: var(--osirion-spacing-2);
+    padding: var(--osirion-spacing-4);
+    background-color: var(--osirion-background-secondary);
+    border-top: var(--osirion-border-width) solid var(--osirion-border-color);
 }
 
 .file-explorer-button-secondary {
-    background-color: var(--background-secondary, #f6f8fa);
+    background-color: var(--osirion-background-secondary);
 }
 
 .file-explorer-button-danger {
-    background-color: var(--danger-color, #dc2626);
-    border-color: var(--danger-color, #dc2626);
-    color: white;
+    background-color: var(--osirion-status-danger);
+    border-color: var(--osirion-status-danger);
+    color: var(--osirion-action-primary-text);
 }
 
     .file-explorer-button-danger:hover:not(:disabled) {
-        background-color: var(--danger-color-dark, #b91c1c);
+        background-color: var(--osirion-color-danger-700);
     }
 
 @keyframes spin {

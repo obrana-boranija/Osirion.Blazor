@@ -1,406 +1,500 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Osirion.Blazor.Cms.Domain.Exceptions;
+using Octokit;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Models.GitHub;
 using Osirion.Blazor.Cms.Domain.Options;
+using Osirion.Blazor.Cms.Domain.Options.Configuration;
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 
 namespace Osirion.Blazor.Cms.Infrastructure.GitHub;
 
 /// <summary>
-/// Implementation of IGitHubApiClient
+/// Client for GitHub API operations
 /// </summary>
 public class GitHubApiClient : IGitHubApiClient
 {
     private readonly HttpClient _httpClient;
     private readonly ILogger<GitHubApiClient> _logger;
+    private readonly IAuthenticationService _authService;
     private readonly JsonSerializerOptions _jsonOptions;
 
-    private string _owner;
-    private string _repo;
-    private string _branch;
-    private string? _committerName;
-    private string? _committerEmail;
-    private static readonly SemaphoreSlim _rateLimitLock = new(1, 1);
+    private string? _owner;
+    private string? _repository;
+    private string _branch = "main";
 
+    /// <summary>
+    /// Initializes a new instance of the GitHubApiClient
+    /// </summary>
     public GitHubApiClient(
         HttpClient httpClient,
-        IOptions<GitHubOptions> options,
+        IOptions<GitHubAdminOptions> options,
+        IAuthenticationService authService,
         ILogger<GitHubApiClient> logger)
     {
         _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+        _authService = authService ?? throw new ArgumentNullException(nameof(authService));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
-        var optionsValue = options?.Value ?? throw new ArgumentNullException(nameof(options));
+        var githubOptions = options?.Value ?? new GitHubAdminOptions();
 
-        _owner = optionsValue.Owner;
-        _repo = optionsValue.Repository;
-        _branch = optionsValue.Branch;
-        _committerName = optionsValue.CommitterName;
-        _committerEmail = optionsValue.CommitterEmail;
+        // Initialize options from config
+        _owner = githubOptions.Owner;
+        _repository = githubOptions.Repository;
+        _branch = githubOptions.DefaultBranch;
 
         // Configure HTTP client
-        _httpClient.BaseAddress = new Uri(optionsValue.ApiUrl ?? "https://api.github.com/");
-        _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        _httpClient.DefaultRequestHeaders.Add("User-Agent", "OsirionBlogCMS");
+        _httpClient.BaseAddress = new Uri(githubOptions.ApiUrl ?? "https://api.github.com");
+        _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github.v3+json"));
+        _httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("OsirionBlogCMS", "2.0"));
 
-        // Set API token if provided
-        if (!string.IsNullOrEmpty(optionsValue.ApiToken))
+        // Setup token from authentication service if available
+        if (!string.IsNullOrEmpty(_authService.AccessToken))
         {
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("token", optionsValue.ApiToken);
+            SetAccessToken(_authService.AccessToken);
         }
 
-        // Configure JSON serialization options
+        // Subscribe to authentication changes
+        _authService.AuthenticationChanged += OnAuthenticationChanged;
+
+        // Configure JSON options
         _jsonOptions = new JsonSerializerOptions
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            PropertyNameCaseInsensitive = true,
-            DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
+            WriteIndented = true
         };
     }
 
+    /// <summary>
+    /// Sets the access token for API requests
+    /// </summary>
     public void SetAccessToken(string token)
     {
         if (string.IsNullOrEmpty(token))
         {
-            _httpClient.DefaultRequestHeaders.Authorization = null;
+            // Remove Authorization header if token is empty
+            _httpClient.DefaultRequestHeaders.Remove("Authorization");
+            return;
         }
-        else
-        {
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("token", token);
-        }
+
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("token", token);
     }
 
-    public void SetRepository(string owner, string repo)
+    /// <summary>
+    /// Sets the repository for API requests
+    /// </summary>
+    public void SetRepository(string owner, string repository)
     {
         _owner = owner;
-        _repo = repo;
+        _repository = repository;
     }
 
+    /// <summary>
+    /// Sets the branch for API requests
+    /// </summary>
     public void SetBranch(string branch)
     {
         _branch = branch;
     }
 
-    public async Task<List<GitHubItem>> GetRepositoryContentsAsync(string path, CancellationToken cancellationToken = default)
+    /// <summary>
+    /// Gets the contents of a repository at a specific path
+    /// </summary>
+    public async Task<List<GitHubItem>> GetRepositoryContentsAsync(string path = "", CancellationToken cancellationToken = default)
     {
-        return await ExecuteApiCallAsync<List<GitHubItem>>(
-            $"repos/{_owner}/{_repo}/contents/{path}?ref={_branch}",
-            HttpMethod.Get,
-            null,
-            "Failed to fetch repository contents",
-            cancellationToken);
-    }
+        ValidateRepositorySettings();
 
-    public async Task<GitHubFileContent> GetFileContentAsync(string path, CancellationToken cancellationToken = default)
-    {
-        return await ExecuteApiCallAsync<GitHubFileContent>(
-            $"repos/{_owner}/{_repo}/contents/{path}?ref={_branch}",
-            HttpMethod.Get,
-            null,
-            "Failed to fetch file content",
-            cancellationToken);
-    }
-
-    public async Task<(DateTime Created, DateTime? Modified)> GetFileHistoryAsync(string path, CancellationToken cancellationToken = default)
-    {
-        // Get latest commit for the file
-        var latestCommitUrl = $"repos/{_owner}/{_repo}/commits?path={path}&page=1&per_page=1";
-        var latestCommits = await ExecuteApiCallAsync<List<GitHubCommitInfo>>(
-            latestCommitUrl,
-            HttpMethod.Get,
-            null,
-            "Failed to fetch latest commit",
-            cancellationToken);
-
-        var latestCommit = latestCommits.FirstOrDefault();
-        DateTime? modifiedDate = latestCommit?.Committer?.Date;
-
-        // Get first commit for the file
-        var firstCommitUrl = $"repos/{_owner}/{_repo}/commits?path={path}&per_page=1";
-        var allCommits = await ExecuteApiCallAsync<List<GitHubCommitInfo>>(
-            firstCommitUrl,
-            HttpMethod.Get,
-            null,
-            "Failed to fetch commit history",
-            cancellationToken);
-
-        var firstCommit = allCommits.LastOrDefault();
-        DateTime createdDate = firstCommit?.Author?.Date ?? DateTime.UtcNow;
-
-        return (createdDate, modifiedDate);
-    }
-
-    public async Task<List<GitHubBranch>> GetBranchesAsync(CancellationToken cancellationToken = default)
-    {
-        return await ExecuteApiCallAsync<List<GitHubBranch>>(
-            $"repos/{_owner}/{_repo}/branches",
-            HttpMethod.Get,
-            null,
-            "Failed to fetch branches",
-            cancellationToken);
-    }
-
-    public async Task<GitHubBranch> CreateBranchAsync(string name, string fromBranch, CancellationToken cancellationToken = default)
-    {
-        // First, get the SHA of the source branch
-        var sourceBranch = await ExecuteApiCallAsync<GitHubBranch>(
-            $"repos/{_owner}/{_repo}/branches/{fromBranch}",
-            HttpMethod.Get,
-            null,
-            $"Failed to get branch {fromBranch}",
-            cancellationToken);
-
-        // Create the new branch reference
-        var reference = new
+        var requestUrl = $"/repos/{_owner}/{_repository}/contents/{path}";
+        if (!string.IsNullOrEmpty(_branch))
         {
-            @ref = $"refs/heads/{name}",
-            sha = sourceBranch.Commit.Sha
-        };
-
-        await ExecuteApiCallAsync<object>(
-            $"repos/{_owner}/{_repo}/git/refs",
-            HttpMethod.Post,
-            reference,
-            $"Failed to create branch {name}",
-            cancellationToken);
-
-        // Get the newly created branch
-        return await ExecuteApiCallAsync<GitHubBranch>(
-            $"repos/{_owner}/{_repo}/branches/{name}",
-            HttpMethod.Get,
-            null,
-            $"Failed to get newly created branch {name}",
-            cancellationToken);
-    }
-
-    public async Task<GitHubFileCommitResponse> CreateOrUpdateFileAsync(
-        string path,
-        string content,
-        string message,
-        string? sha = null,
-        CancellationToken cancellationToken = default)
-    {
-        // Convert content to Base64
-        var contentBytes = Encoding.UTF8.GetBytes(content);
-        var base64Content = Convert.ToBase64String(contentBytes);
-
-        var requestData = new GitHubFileCommitRequest
-        {
-            Message = message,
-            Content = base64Content,
-            Branch = _branch,
-            Sha = sha
-        };
-
-        // Add committer info if available
-        if (!string.IsNullOrEmpty(_committerName) && !string.IsNullOrEmpty(_committerEmail))
-        {
-            requestData.Committer = new GitHubCommitter
-            {
-                Name = _committerName,
-                Email = _committerEmail
-            };
+            requestUrl += $"?ref={_branch}";
         }
 
-        return await ExecuteApiCallAsync<GitHubFileCommitResponse>(
-            $"repos/{_owner}/{_repo}/contents/{path}",
-            HttpMethod.Put,
-            requestData,
-            "Failed to create or update file",
-            cancellationToken);
+        var response = await _httpClient.GetAsync(requestUrl, cancellationToken);
+        response.EnsureSuccessStatusCode();
+
+        // If response is an array, it's a directory
+        if (response.Content.Headers.ContentType?.MediaType == "application/json" &&
+            await IsJsonArrayAsync(response))
+        {
+            return await response.Content.ReadFromJsonAsync<List<GitHubItem>>(_jsonOptions, cancellationToken) ?? new List<GitHubItem>();
+        }
+
+        // If response is an object, it's a file
+        var item = await response.Content.ReadFromJsonAsync<GitHubItem>(_jsonOptions, cancellationToken);
+        return item != null ? new List<GitHubItem> { item } : new List<GitHubItem>();
     }
 
-    public async Task<GitHubFileCommitResponse> DeleteFileAsync(
-        string path,
-        string message,
-        string sha,
-        CancellationToken cancellationToken = default)
+    /// <summary>
+    /// Gets the content of a file
+    /// </summary>
+    public async Task<GitHubFileContent> GetFileContentAsync(string path, CancellationToken cancellationToken = default)
     {
-        var requestData = new GitHubFileDeleteRequest
+        ValidateRepositorySettings();
+
+        var requestUrl = $"/repos/{_owner}/{_repository}/contents/{path}";
+        if (!string.IsNullOrEmpty(_branch))
         {
-            Message = message,
+            requestUrl += $"?ref={_branch}";
+        }
+
+        var response = await _httpClient.GetAsync(requestUrl, cancellationToken);
+        response.EnsureSuccessStatusCode();
+
+        var fileContent = await response.Content.ReadFromJsonAsync<GitHubFileContent>(_jsonOptions, cancellationToken);
+        return fileContent ?? throw new InvalidOperationException($"Failed to read file content for {path}");
+    }
+
+    /// <summary>
+    /// Gets information about a file from the commit history
+    /// </summary>
+    public async Task<(DateTime Created, DateTime? Modified)> GetFileHistoryAsync(string path, CancellationToken cancellationToken = default)
+    {
+        ValidateRepositorySettings();
+
+        // Get commits that modified this file
+        var requestUrl = $"/repos/{_owner}/{_repository}/commits?path={path}";
+        if (!string.IsNullOrEmpty(_branch))
+        {
+            requestUrl += $"&sha={_branch}";
+        }
+
+        var response = await _httpClient.GetAsync(requestUrl, cancellationToken);
+        response.EnsureSuccessStatusCode();
+
+        var commits = await response.Content.ReadFromJsonAsync<List<GitHubCommitInfo>>(_jsonOptions, cancellationToken)
+            ?? new List<GitHubCommitInfo>();
+
+        // Sort commits by date (oldest first)
+        commits = commits.OrderBy(c => c.Commit?.Author?.Date).ToList();
+
+        // First commit is the creation date
+        var created = commits.FirstOrDefault()?.Commit?.Author?.Date ?? DateTime.UtcNow;
+
+        // Last commit (if different from first) is the modified date
+        DateTime? modified = null;
+        if (commits.Count > 1)
+        {
+            modified = commits.LastOrDefault()?.Commit?.Author?.Date;
+        }
+
+        return (created, modified);
+    }
+
+    /// <summary>
+    /// Creates or updates a file in the repository
+    /// </summary>
+    public async Task<GitHubFileCommitResponse> CreateOrUpdateFileAsync(
+        string path, string content, string commitMessage, string? existingSha = null, CancellationToken cancellationToken = default)
+    {
+        ValidateRepositorySettings();
+
+        var requestUrl = $"/repos/{_owner}/{_repository}/contents/{path}";
+
+        var request = new GitHubFileUpdateRequest
+        {
+            Message = commitMessage,
+            Content = Convert.ToBase64String(Encoding.UTF8.GetBytes(content)),
+            Branch = _branch
+        };
+
+        // If sha is provided, it's an update
+        if (!string.IsNullOrEmpty(existingSha))
+        {
+            request.Sha = existingSha;
+        }
+
+        var jsonContent = JsonSerializer.Serialize(request, _jsonOptions);
+        var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+        var response = await _httpClient.PutAsync(requestUrl, httpContent, cancellationToken);
+        response.EnsureSuccessStatusCode();
+
+        var commitResponse = await response.Content.ReadFromJsonAsync<GitHubFileCommitResponse>(_jsonOptions, cancellationToken);
+        return commitResponse ?? throw new InvalidOperationException($"Failed to commit file {path}");
+    }
+
+    /// <summary>
+    /// Deletes a file from the repository
+    /// </summary>
+    public async Task<GitHubFileCommitResponse> DeleteFileAsync(
+        string path, string commitMessage, string sha, CancellationToken cancellationToken = default)
+    {
+        ValidateRepositorySettings();
+
+        var requestUrl = $"/repos/{_owner}/{_repository}/contents/{path}";
+
+        var request = new GitHubFileDeleteRequest
+        {
+            Message = commitMessage,
             Sha = sha,
             Branch = _branch
         };
 
-        // Add committer info if available
-        if (!string.IsNullOrEmpty(_committerName) && !string.IsNullOrEmpty(_committerEmail))
+        var jsonContent = JsonSerializer.Serialize(request, _jsonOptions);
+        var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+        var requestMessage = new HttpRequestMessage(HttpMethod.Delete, requestUrl)
         {
-            requestData.Committer = new GitHubCommitter
-            {
-                Name = _committerName,
-                Email = _committerEmail
-            };
-        }
-
-        return await ExecuteApiCallAsync<GitHubFileCommitResponse>(
-            $"repos/{_owner}/{_repo}/contents/{path}",
-            HttpMethod.Delete,
-            requestData,
-            "Failed to delete file",
-            cancellationToken);
-    }
-
-    public async Task<GitHubSearchResult> SearchFilesAsync(string query, CancellationToken cancellationToken = default)
-    {
-        // GitHub's search API for code
-        var encodedQuery = Uri.EscapeDataString($"{query} repo:{_owner}/{_repo}");
-        if (!string.IsNullOrEmpty(_branch))
-        {
-            encodedQuery += $"+ref:{_branch}";
-        }
-
-        return await ExecuteApiCallAsync<GitHubSearchResult>(
-            $"search/code?q={encodedQuery}",
-            HttpMethod.Get,
-            null,
-            "Failed to search files",
-            cancellationToken);
-    }
-
-    public async Task<GitHubPullRequest> CreatePullRequestAsync(
-        string title,
-        string body,
-        string head,
-        string baseBranch,
-        CancellationToken cancellationToken = default)
-    {
-        var requestData = new
-        {
-            title,
-            body,
-            head,
-            @base = baseBranch
+            Content = httpContent
         };
 
-        return await ExecuteApiCallAsync<GitHubPullRequest>(
-            $"repos/{_owner}/{_repo}/pulls",
-            HttpMethod.Post,
-            requestData,
-            "Failed to create pull request",
-            cancellationToken);
+        var response = await _httpClient.SendAsync(requestMessage, cancellationToken);
+        response.EnsureSuccessStatusCode();
+
+        var commitResponse = await response.Content.ReadFromJsonAsync<GitHubFileCommitResponse>(_jsonOptions, cancellationToken);
+        return commitResponse ?? throw new InvalidOperationException($"Failed to delete file {path}");
     }
 
-    private async Task<T> ExecuteApiCallAsync<T>(
-        string url,
-        HttpMethod method,
-        object? data,
-        string errorMessage,
-        CancellationToken cancellationToken)
-        where T : class, new()
+    /// <summary>
+    /// Gets the branches of a repository
+    /// </summary>
+    public async Task<List<GitHubBranch>> GetBranchesAsync(CancellationToken cancellationToken = default)
     {
-        // Handle rate limiting
-        await _rateLimitLock.WaitAsync(cancellationToken);
-        try
+        ValidateRepositorySettings();
+
+        var requestUrl = $"/repos/{_owner}/{_repository}/branches";
+
+        var response = await _httpClient.GetAsync(requestUrl, cancellationToken);
+        response.EnsureSuccessStatusCode();
+
+        var branches = await response.Content.ReadFromJsonAsync<List<GitHubBranch>>(_jsonOptions, cancellationToken);
+        return branches ?? new List<GitHubBranch>();
+    }
+
+    /// <summary>
+    /// Creates a new branch in the repository
+    /// </summary>
+    public async Task<GitHubBranch> CreateBranchAsync(string branchName, string fromBranch, CancellationToken cancellationToken = default)
+    {
+        ValidateRepositorySettings();
+
+        // First, get the SHA of the commit to branch from
+        var requestUrl = $"/repos/{_owner}/{_repository}/git/refs/heads/{fromBranch}";
+
+        var response = await _httpClient.GetAsync(requestUrl, cancellationToken);
+        response.EnsureSuccessStatusCode();
+
+        var reference = await response.Content.ReadFromJsonAsync<GitHubReference>(_jsonOptions, cancellationToken);
+        if (reference == null || reference.Object == null)
         {
-            // Create the request
-            using var request = new HttpRequestMessage(method, url);
-
-            // Add request body if provided
-            if (data != null)
-            {
-                var json = JsonSerializer.Serialize(data, _jsonOptions);
-                request.Content = new StringContent(json, Encoding.UTF8, "application/json");
-            }
-
-            // Send the request
-            using var response = await _httpClient.SendAsync(request, cancellationToken);
-
-            // Check for rate limiting
-            if (response.Headers.TryGetValues("X-RateLimit-Remaining", out var values))
-            {
-                if (int.TryParse(values.FirstOrDefault(), out var remaining) && remaining < 5)
-                {
-                    _logger.LogWarning("GitHub API rate limit nearly reached. {Remaining} requests remaining.", remaining);
-                }
-            }
-
-            // Handle response
-            var content = await response.Content.ReadAsStringAsync(cancellationToken);
-
-            if (response.IsSuccessStatusCode)
-            {
-                try
-                {
-                    // Check if response is an array when T is a list
-                    if (typeof(T) == typeof(List<GitHubItem>) &&
-                        !string.IsNullOrEmpty(content) &&
-                        !content.TrimStart().StartsWith("["))
-                    {
-                        // Single item response when expecting a list
-                        var item = JsonSerializer.Deserialize<GitHubItem>(content, _jsonOptions);
-                        if (item != null)
-                        {
-                            var list = new List<GitHubItem> { item };
-                            return list as T ?? new T();
-                        }
-                    }
-
-                    var result = JsonSerializer.Deserialize<T>(content, _jsonOptions) ?? new T();
-
-                    // Set success flag if response is GitHubApiResponse
-                    if (result is GitHubApiResponse apiResponse)
-                    {
-                        apiResponse.Success = true;
-                    }
-
-                    return result;
-                }
-                catch (JsonException ex)
-                {
-                    _logger.LogError(ex, "Failed to parse GitHub API response: {Content}", content);
-                    throw new ContentProviderException($"{errorMessage}: Invalid JSON response");
-                }
-            }
-            else
-            {
-                _logger.LogError("GitHub API error: {StatusCode} - {Content}", response.StatusCode, content);
-
-                // Try to extract error message
-                string detailedError = content;
-                try
-                {
-                    var errorObj = JsonSerializer.Deserialize<JsonElement>(content);
-                    if (errorObj.TryGetProperty("message", out var messageElement))
-                    {
-                        detailedError = messageElement.GetString() ?? detailedError;
-                    }
-                }
-                catch
-                {
-                    // Ignore JSON parsing errors and use full content as error message
-                }
-
-                throw new ContentProviderException($"{errorMessage}: {response.StatusCode} - {detailedError}");
-            }
+            throw new InvalidOperationException($"Failed to get reference for branch {fromBranch}");
         }
-        catch (ContentProviderException)
+
+        // Create the new branch
+        var createRefUrl = $"/repos/{_owner}/{_repository}/git/refs";
+
+        var request = new GitHubCreateReferenceRequest
         {
-            // Re-throw our custom exceptions
-            throw;
-        }
-        catch (HttpRequestException ex)
+            Ref = $"refs/heads/{branchName}",
+            Sha = reference.Object.Sha
+        };
+
+        var jsonContent = JsonSerializer.Serialize(request, _jsonOptions);
+        var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+        var createResponse = await _httpClient.PostAsync(createRefUrl, httpContent, cancellationToken);
+        createResponse.EnsureSuccessStatusCode();
+
+        // Return the branch information
+        return new GitHubBranch
         {
-            _logger.LogError(ex, "HTTP error calling GitHub API: {Url}", url);
-            throw new ContentProviderException($"{errorMessage}: {ex.Message}", ex);
-        }
-        catch (TaskCanceledException ex) when (!cancellationToken.IsCancellationRequested)
+            Name = branchName,
+            Protected = false,
+            Commit = new()
+        };
+    }
+
+    /// <summary>
+    /// Creates a pull request in the repository
+    /// </summary>
+    public async Task<GitHubPullRequest> CreatePullRequestAsync(
+        string title, string body, string head, string baseBranch, CancellationToken cancellationToken = default)
+    {
+        ValidateRepositorySettings();
+
+        var requestUrl = $"/repos/{_owner}/{_repository}/pulls";
+
+        var request = new GitHubCreatePullRequest
         {
-            _logger.LogError(ex, "Timeout calling GitHub API: {Url}", url);
-            throw new ContentProviderException($"{errorMessage}: Request timed out", ex);
-        }
-        catch (Exception ex)
+            Title = title,
+            Body = body,
+            Head = head,
+            Base = baseBranch
+        };
+
+        var jsonContent = JsonSerializer.Serialize(request, _jsonOptions);
+        var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+        var response = await _httpClient.PostAsync(requestUrl, httpContent, cancellationToken);
+        response.EnsureSuccessStatusCode();
+
+        var pullRequest = await response.Content.ReadFromJsonAsync<GitHubPullRequest>(_jsonOptions, cancellationToken);
+        return pullRequest ?? throw new InvalidOperationException("Failed to create pull request");
+    }
+
+    /// <summary>
+    /// Searches for files in the repository
+    /// </summary>
+    public async Task<GitHubSearchResult> SearchFilesAsync(string query, CancellationToken cancellationToken = default)
+    {
+        ValidateRepositorySettings();
+
+        // Format repository qualifier
+        var repoQualifier = $"repo:{_owner}/{_repository}";
+
+        // Add branch qualifier if available
+        var branchQualifier = !string.IsNullOrEmpty(_branch) ? $"+ref:{_branch}" : "";
+
+        // Combine qualifiers with query
+        var searchQuery = $"{query}+{repoQualifier}{branchQualifier}";
+
+        // URL encode the query
+        var encodedQuery = Uri.EscapeDataString(searchQuery);
+
+        var requestUrl = $"/search/code?q={encodedQuery}";
+
+        var response = await _httpClient.GetAsync(requestUrl, cancellationToken);
+        response.EnsureSuccessStatusCode();
+
+        var searchResult = await response.Content.ReadFromJsonAsync<GitHubSearchResult>(_jsonOptions, cancellationToken);
+        return searchResult ?? new GitHubSearchResult
         {
-            _logger.LogError(ex, "Unexpected error calling GitHub API: {Url}", url);
-            throw new ContentProviderException($"{errorMessage}: {ex.Message}", ex);
-        }
-        finally
+            TotalCount = 0,
+            IncompleteResults = false,
+            Items = new List<GitHubItem>()
+        };
+    }
+
+    /// <summary>
+    /// Checks if the response contains a JSON array
+    /// </summary>
+    private async Task<bool> IsJsonArrayAsync(HttpResponseMessage response)
+    {
+        var content = await response.Content.ReadAsStringAsync();
+        content = content.TrimStart();
+        return content.StartsWith("[");
+    }
+
+    /// <summary>
+    /// Validates repository settings
+    /// </summary>
+    private void ValidateRepositorySettings()
+    {
+        if (string.IsNullOrEmpty(_owner) || string.IsNullOrEmpty(_repository))
         {
-            _rateLimitLock.Release();
+            throw new InvalidOperationException("Repository owner and name must be set before making API requests");
         }
     }
+
+    /// <summary>
+    /// Handles authentication changes
+    /// </summary>
+    private void OnAuthenticationChanged(bool isAuthenticated)
+    {
+        if (isAuthenticated)
+        {
+            // Set token when authenticated
+            SetAccessToken(_authService.AccessToken);
+        }
+        else
+        {
+            // Remove token when not authenticated
+            SetAccessToken(null);
+        }
+    }
+}
+
+/// <summary>
+/// Request model for updating a file
+/// </summary>
+internal class GitHubFileUpdateRequest
+{
+    public string Message { get; set; } = string.Empty;
+    public string Content { get; set; } = string.Empty;
+    public string? Sha { get; set; }
+    public string Branch { get; set; } = string.Empty;
+}
+
+/// <summary>
+/// Request model for deleting a file
+/// </summary>
+internal class GitHubFileDeleteRequest
+{
+    public string Message { get; set; } = string.Empty;
+    public string Sha { get; set; } = string.Empty;
+    public string Branch { get; set; } = string.Empty;
+}
+
+/// <summary>
+/// Response model for a reference
+/// </summary>
+internal class GitHubReference
+{
+    public string Ref { get; set; } = string.Empty;
+    public string Url { get; set; } = string.Empty;
+    public GitHubReferenceObject? Object { get; set; }
+}
+
+/// <summary>
+/// Reference object model
+/// </summary>
+internal class GitHubReferenceObject
+{
+    public string Type { get; set; } = string.Empty;
+    public string Sha { get; set; } = string.Empty;
+    public string Url { get; set; } = string.Empty;
+}
+
+/// <summary>
+/// Request model for creating a reference
+/// </summary>
+internal class GitHubCreateReferenceRequest
+{
+    public string Ref { get; set; } = string.Empty;
+    public string Sha { get; set; } = string.Empty;
+}
+
+/// <summary>
+/// Request model for creating a pull request
+/// </summary>
+internal class GitHubCreatePullRequest
+{
+    public string Title { get; set; } = string.Empty;
+    public string Body { get; set; } = string.Empty;
+    public string Head { get; set; } = string.Empty;
+    public string Base { get; set; } = string.Empty;
+}
+
+/// <summary>
+/// Commit information model
+/// </summary>
+internal class GitHubCommitInfo
+{
+    public string Sha { get; set; } = string.Empty;
+    public string Url { get; set; } = string.Empty;
+    public GitHubCommitDetails? Commit { get; set; }
+}
+
+/// <summary>
+/// Commit details model
+/// </summary>
+internal class GitHubCommitDetails
+{
+    public GitHubAuthor? Author { get; set; }
+    public GitHubAuthor? Committer { get; set; }
+    public string Message { get; set; } = string.Empty;
+}
+
+/// <summary>
+/// Author/committer information
+/// </summary>
+internal class GitHubAuthor
+{
+    public string Name { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public DateTime Date { get; set; }
 }

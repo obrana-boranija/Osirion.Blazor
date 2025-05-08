@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Osirion.Blazor.Cms.Admin.Configuration;
 using Osirion.Blazor.Cms.Admin.Services.State;
+using Osirion.Blazor.Cms.Domain.Options.Configuration;
 
 namespace Osirion.Blazor.Cms.Admin.Services;
 

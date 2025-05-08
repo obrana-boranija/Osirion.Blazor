@@ -2,10 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Admin.Builders;
-using Osirion.Blazor.Cms.Admin.Configuration;
-using Osirion.Blazor.Cms.Admin.Core.Configuration;
-using Osirion.Blazor.Cms.Admin.Interfaces;
-using Osirion.Blazor.Cms.Infrastructure.Builders;
+using Osirion.Blazor.Cms.Domain.Options.Configuration;
 
 namespace Osirion.Blazor.Cms.Admin.DependencyInjection;
 

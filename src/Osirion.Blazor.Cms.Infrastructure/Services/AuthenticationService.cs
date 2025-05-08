@@ -8,7 +8,7 @@ using System.Text.Json.Serialization;
 namespace Osirion.Blazor.Cms.Infrastructure.Services;
 
 /// <summary>
-/// Service for GitHub authentication
+/// Service for GitHub authentication with repository adapter support
 /// </summary>
 public class AuthenticationService : IAuthenticationService
 {
@@ -20,6 +20,11 @@ public class AuthenticationService : IAuthenticationService
     private string? _username;
     private readonly IStateStorageService _stateStorage;
     private readonly IGitHubTokenProvider _tokenProvider;
+
+    /// <summary>
+    /// Event raised when authentication state changes
+    /// </summary>
+    public event Action<bool>? AuthenticationChanged;
 
     /// <summary>
     /// Initializes a new instance of the AuthenticationService class
@@ -76,6 +81,7 @@ public class AuthenticationService : IAuthenticationService
             if (success)
             {
                 await PersistAuthStateAsync();
+                AuthenticationChanged?.Invoke(true);
             }
 
             return success;
@@ -99,6 +105,7 @@ public class AuthenticationService : IAuthenticationService
             if (success)
             {
                 await PersistAuthStateAsync();
+                AuthenticationChanged?.Invoke(true);
             }
             else
             {
@@ -122,6 +129,7 @@ public class AuthenticationService : IAuthenticationService
         _accessToken = null;
         _username = null;
         await RemoveAuthStateAsync();
+        AuthenticationChanged?.Invoke(false);
     }
 
     /// <summary>

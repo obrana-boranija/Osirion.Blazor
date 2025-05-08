@@ -1,23 +1,35 @@
-.markdown-editor {
+.markdown-editor-with-preview {
     display: flex;
     flex-direction: column;
     height: 100%;
     overflow: hidden;
-    border: var(--border-width, 1px) solid var(--border-color, #e1e4e8);
-    border-radius: var(--border-radius, 0.25rem);
-    background-color: var(--background-primary, #ffffff);
+    border: var(--osirion-border-width) solid var(--osirion-border-color);
+    border-radius: var(--osirion-radius-base);
+    background-color: var(--osirion-background-primary);
+}
+
+.markdown-editor-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--osirion-spacing-2) var(--osirion-spacing-3);
+    background-color: var(--osirion-background-secondary);
+    border-bottom: var(--osirion-border-width) solid var(--osirion-border-color);
+}
+
+.markdown-editor-title {
+    font-size: var(--osirion-font-size-sm);
+    font-weight: var(--osirion-font-weight-medium);
+    color: var(--osirion-text-secondary);
 }
 
 .markdown-editor-toolbar {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--spacing-1, 0.25rem);
-    padding: var(--spacing-2, 0.5rem);
-    background-color: var(--background-secondary, #f6f8fa);
-    border-bottom: var(--border-width, 1px) solid var(--border-color, #e1e4e8);
+    gap: var(--osirion-spacing-1);
 }
 
-.markdown-editor-button {
+.markdown-editor-toolbar-button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -26,291 +38,242 @@
     padding: 0;
     border: none;
     background-color: transparent;
-    color: var(--text-secondary, #6a737d);
-    border-radius: var(--border-radius, 0.25rem);
+    color: var(--osirion-text-secondary);
+    border-radius: var(--osirion-radius-base);
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: all var(--osirion-transition-duration-150) var(--osirion-transition-timing-default);
 }
 
-    .markdown-editor-button:hover {
-        background-color: var(--background-hover, rgba(0, 0, 0, 0.05));
-        color: var(--text-primary, #24292e);
+    .markdown-editor-toolbar-button:hover {
+        background-color: var(--osirion-background-hover, var(--osirion-color-neutral-200));
+        color: var(--osirion-text-primary);
     }
 
-.markdown-editor-button-active {
-    background-color: var(--primary-color-light, rgba(3, 102, 214, 0.1));
-    color: var(--primary-color, #0366d6);
+.markdown-editor-toolbar-button-active {
+    background-color: var(--osirion-color-primary-100);
+    color: var(--osirion-action-primary);
 }
 
-.markdown-editor-button svg {
-    width: 16px;
-    height: 16px;
-}
-
-.markdown-editor-separator {
-    width: 1px;
-    height: 24px;
-    margin: 0 var(--spacing-1, 0.25rem);
-    background-color: var(--border-color, #e1e4e8);
-}
-
-.markdown-editor-content {
+.markdown-editor-toolbar-icon {
     display: flex;
-    flex: 1;
-    overflow: hidden;
+    align-items: center;
+    justify-content: center;
 }
 
-.markdown-editor-column {
+.markdown-editor-container {
     display: flex;
     flex-direction: column;
-    overflow: hidden;
     flex: 1;
+    overflow: hidden;
+    border-right: var(--osirion-border-width) solid var(--osirion-border-color);
 }
 
-.markdown-editor-header {
-    padding: var(--spacing-2, 0.5rem) var(--spacing-3, 0.75rem);
-    font-size: var(--font-size-sm, 0.875rem);
-    font-weight: var(--font-weight-medium, 500);
-    color: var(--text-secondary, #6a737d);
-    background-color: var(--background-secondary, #f6f8fa);
-    border-bottom: var(--border-width, 1px) solid var(--border-color, #e1e4e8);
-}
-
-.markdown-editor-editor-column {
-    border-right: var(--border-width, 1px) solid var(--border-color, #e1e4e8);
-}
-
-.markdown-editor-editor {
+.markdown-editor-textarea {
     flex: 1;
     overflow-y: auto;
-    padding: var(--spacing-3, 0.75rem);
-    font-family: var(--font-family-mono, SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace);
-    font-size: var(--font-size-sm, 0.875rem);
-    line-height: 1.5;
-    color: var(--text-primary, #24292e);
+    padding: var(--osirion-spacing-3);
+    font-family: var(--osirion-font-family-mono);
+    font-size: var(--osirion-font-size-sm);
+    line-height: var(--osirion-line-height-normal);
+    color: var(--osirion-text-primary);
     resize: none;
     border: none;
     outline: none;
-    background-color: var(--background-primary, #ffffff);
+    background-color: var(--osirion-background-primary);
     tab-size: 4;
 }
 
-.markdown-editor-preview {
+.markdown-preview-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+}
+
+.markdown-preview-header {
+    padding: var(--osirion-spacing-2) var(--osirion-spacing-3);
+    background-color: var(--osirion-background-secondary);
+    border-bottom: var(--osirion-border-width) solid var(--osirion-border-color);
+}
+
+.markdown-preview-title {
+    font-size: var(--osirion-font-size-sm);
+    font-weight: var(--osirion-font-weight-medium);
+    color: var(--osirion-text-secondary);
+    margin: 0;
+}
+
+.markdown-preview-content {
     flex: 1;
     overflow-y: auto;
-    padding: var(--spacing-3, 0.75rem) var(--spacing-4, 1rem);
-    background-color: var(--background-primary, #ffffff);
+    padding: var(--osirion-spacing-4);
+    background-color: var(--osirion-background-primary);
 }
 
-/* Markdown Preview Styles */
-.markdown-preview {
-    font-family: var(--font-family-base, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif);
-    line-height: 1.6;
-    color: var(--text-primary, #24292e);
-}
-
-    .markdown-preview h1,
-    .markdown-preview h2,
-    .markdown-preview h3,
-    .markdown-preview h4,
-    .markdown-preview h5,
-    .markdown-preview h6 {
-        margin-top: 1.5em;
-        margin-bottom: 0.5em;
-        font-weight: 600;
-        line-height: 1.25;
-    }
-
-    .markdown-preview h1 {
-        font-size: 2em;
-        border-bottom: 1px solid var(--border-color, #e1e4e8);
-        padding-bottom: 0.3em;
-    }
-
-    .markdown-preview h2 {
-        font-size: 1.5em;
-        border-bottom: 1px solid var(--border-color, #e1e4e8);
-        padding-bottom: 0.3em;
-    }
-
-    .markdown-preview h3 {
-        font-size: 1.25em;
-    }
-
-    .markdown-preview h4 {
-        font-size: 1em;
-    }
-
-    .markdown-preview h5 {
-        font-size: 0.875em;
-    }
-
-    .markdown-preview h6 {
-        font-size: 0.85em;
-        color: var(--text-secondary, #6a737d);
-    }
-
-    .markdown-preview p,
-    .markdown-preview ul,
-    .markdown-preview ol,
-    .markdown-preview dl,
-    .markdown-preview table,
-    .markdown-preview pre,
-    .markdown-preview blockquote {
-        margin-top: 0;
-        margin-bottom: 16px;
-    }
-
-    .markdown-preview blockquote {
-        padding: 0 1em;
-        color: var(--text-secondary, #6a737d);
-        border-left: 0.25em solid var(--border-color, #e1e4e8);
-    }
-
-    .markdown-preview ul,
-    .markdown-preview ol {
-        padding-left: 2em;
-    }
-
-    .markdown-preview li + li {
-        margin-top: 0.25em;
-    }
-
-    .markdown-preview code {
-        padding: 0.2em 0.4em;
-        margin: 0;
-        font-size: 85%;
-        background-color: var(--background-secondary, #f6f8fa);
-        border-radius: var(--border-radius, 0.25rem);
-    }
-
-    .markdown-preview pre {
-        padding: 16px;
-        overflow: auto;
-        font-size: 85%;
-        line-height: 1.45;
-        background-color: var(--background-secondary, #f6f8fa);
-        border-radius: var(--border-radius, 0.25rem);
-    }
-
-        .markdown-preview pre code {
-            padding: 0;
-            margin: 0;
-            font-size: 100%;
-            background-color: transparent;
-            border: 0;
-        }
-
-    .markdown-preview table {
-        display: block;
-        width: 100%;
-        overflow: auto;
-        border-collapse: collapse;
-    }
-
-        .markdown-preview table th,
-        .markdown-preview table td {
-            padding: 6px 13px;
-            border: 1px solid var(--border-color, #e1e4e8);
-        }
-
-        .markdown-preview table tr {
-            background-color: var(--background-primary, #ffffff);
-            border-top: 1px solid var(--border-color, #e1e4e8);
-        }
-
-            .markdown-preview table tr:nth-child(2n) {
-                background-color: var(--background-secondary, #f6f8fa);
-            }
-
-    .markdown-preview img {
-        max-width: 100%;
-        box-sizing: content-box;
-    }
-
-    .markdown-preview hr {
-        height: 0.25em;
-        padding: 0;
-        margin: 24px 0;
-        background-color: var(--border-color, #e1e4e8);
-        border: 0;
-    }
-
-/* Editor modes */
-.markdown-editor-content.split-mode {
+/* Split view layout */
+.split-view {
     flex-direction: row;
 }
 
-.markdown-editor-content.editor-only .markdown-editor-preview-column {
+    .split-view .markdown-editor-container,
+    .split-view .markdown-preview-container {
+        width: 50%;
+    }
+
+.editor-only .markdown-preview-container {
     display: none;
 }
 
-.markdown-editor-content.editor-only .markdown-editor-editor-column {
-    border-right: none;
+/* Markdown Preview Styles */
+.markdown-preview-content h1,
+.markdown-preview-content h2,
+.markdown-preview-content h3,
+.markdown-preview-content h4,
+.markdown-preview-content h5,
+.markdown-preview-content h6 {
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+    font-weight: var(--osirion-font-weight-semibold);
+    line-height: var(--osirion-line-height-tight);
+    color: var(--osirion-text-primary);
 }
 
-.markdown-editor-content.preview-only .markdown-editor-editor-column {
-    display: none;
+.markdown-preview-content h1 {
+    font-size: var(--osirion-font-size-2xl);
+    border-bottom: var(--osirion-border-width) solid var(--osirion-border-color);
+    padding-bottom: 0.3em;
 }
 
-.markdown-editor-content.preview-only .markdown-editor-preview-column {
-    border-left: none;
+.markdown-preview-content h2 {
+    font-size: var(--osirion-font-size-xl);
+    border-bottom: var(--osirion-border-width) solid var(--osirion-border-color);
+    padding-bottom: 0.3em;
 }
 
-/* Responsive adjustments */
+.markdown-preview-content h3 {
+    font-size: var(--osirion-font-size-lg);
+}
+
+.markdown-preview-content h4 {
+    font-size: var(--osirion-font-size-base);
+}
+
+.markdown-preview-content h5 {
+    font-size: var(--osirion-font-size-sm);
+}
+
+.markdown-preview-content h6 {
+    font-size: var(--osirion-font-size-xs);
+    color: var(--osirion-text-secondary);
+}
+
+.markdown-preview-content p,
+.markdown-preview-content ul,
+.markdown-preview-content ol,
+.markdown-preview-content dl,
+.markdown-preview-content table,
+.markdown-preview-content pre,
+.markdown-preview-content blockquote {
+    margin-top: 0;
+    margin-bottom: var(--osirion-spacing-4);
+}
+
+.markdown-preview-content blockquote {
+    padding: 0 var(--osirion-spacing-4);
+    color: var(--osirion-text-secondary);
+    border-left: 0.25em solid var(--osirion-border-color);
+}
+
+.markdown-preview-content ul,
+.markdown-preview-content ol {
+    padding-left: var(--osirion-spacing-8);
+}
+
+.markdown-preview-content li + li {
+    margin-top: var(--osirion-spacing-1);
+}
+
+.markdown-preview-content code {
+    padding: 0.2em 0.4em;
+    margin: 0;
+    font-size: 85%;
+    background-color: var(--osirion-background-secondary);
+    border-radius: var(--osirion-radius-base);
+    font-family: var(--osirion-font-family-mono);
+}
+
+.markdown-preview-content pre {
+    padding: var(--osirion-spacing-4);
+    overflow: auto;
+    font-size: 85%;
+    line-height: var(--osirion-line-height-normal);
+    background-color: var(--osirion-background-secondary);
+    border-radius: var(--osirion-radius-base);
+}
+
+    .markdown-preview-content pre code {
+        padding: 0;
+        margin: 0;
+        font-size: 100%;
+        background-color: transparent;
+        border: 0;
+    }
+
+.markdown-preview-content table {
+    display: block;
+    width: 100%;
+    overflow: auto;
+    border-collapse: collapse;
+}
+
+    .markdown-preview-content table th,
+    .markdown-preview-content table td {
+        padding: var(--osirion-spacing-2) var(--osirion-spacing-3);
+        border: var(--osirion-border-width) solid var(--osirion-border-color);
+    }
+
+    .markdown-preview-content table tr {
+        background-color: var(--osirion-background-primary);
+        border-top: var(--osirion-border-width) solid var(--osirion-border-color);
+    }
+
+        .markdown-preview-content table tr:nth-child(2n) {
+            background-color: var(--osirion-background-secondary);
+        }
+
+.markdown-preview-content img {
+    max-width: 100%;
+    box-sizing: content-box;
+}
+
+.markdown-preview-content hr {
+    height: 0.25em;
+    padding: 0;
+    margin: var(--osirion-spacing-6) 0;
+    background-color: var(--osirion-border-color);
+    border: 0;
+}
+
+/* Responsive styles */
 @media (max-width: 768px) {
-    .markdown-editor-content.split-mode {
+    .split-view {
         flex-direction: column;
     }
 
-    .markdown-editor-editor-column {
+        .split-view .markdown-editor-container,
+        .split-view .markdown-preview-container {
+            width: 100%;
+        }
+
+    .markdown-editor-container {
         border-right: none;
-        border-bottom: var(--border-width, 1px) solid var(--border-color, #e1e4e8);
+        border-bottom: var(--osirion-border-width) solid var(--osirion-border-color);
     }
 }
 
-/* Dark theme overrides */
-.dark-theme .markdown-editor,
-.dark-theme .markdown-editor-editor,
-.dark-theme .markdown-editor-preview {
-    background-color: var(--background-dark, #0d1117);
-    color: var(--text-dark, #c9d1d9);
-}
-
-.dark-theme .markdown-editor-toolbar,
-.dark-theme .markdown-editor-header {
-    background-color: var(--background-dark-secondary, #161b22);
-    border-color: var(--border-dark, #30363d);
-}
-
-.dark-theme .markdown-editor {
-    border-color: var(--border-dark, #30363d);
-}
-
-.dark-theme .markdown-editor-editor-column {
-    border-right-color: var(--border-dark, #30363d);
-}
-
-.dark-theme .markdown-editor-separator {
-    background-color: var(--border-dark, #30363d);
-}
-
-.dark-theme .markdown-preview blockquote {
-    border-left-color: var(--border-dark, #30363d);
-    color: var(--text-dark-secondary, #8b949e);
-}
-
-.dark-theme .markdown-preview code,
-.dark-theme .markdown-preview pre {
-    background-color: var(--background-dark-secondary, #161b22);
-}
-
-.dark-theme .markdown-preview table th,
-.dark-theme .markdown-preview table td,
-.dark-theme .markdown-preview table tr {
-    border-color: var(--border-dark, #30363d);
-}
-
-    .dark-theme .markdown-preview table tr:nth-child(2n) {
-        background-color: var(--background-dark-secondary, #161b22);
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .markdown-editor-toolbar-button {
+        transition: none;
     }
+}

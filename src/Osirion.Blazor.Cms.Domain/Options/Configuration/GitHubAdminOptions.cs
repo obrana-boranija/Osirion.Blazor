@@ -1,4 +1,4 @@
-﻿namespace Osirion.Blazor.Cms.Admin.Configuration;
+﻿namespace Osirion.Blazor.Cms.Domain.Options.Configuration;
 
 /// <summary>
 /// Configuration options for GitHub integration
@@ -19,6 +19,11 @@ public class GitHubAdminOptions
     /// Gets or sets the default branch
     /// </summary>
     public string DefaultBranch { get; set; } = "main";
+
+    /// <summary>
+    /// Gets or sets the GitHub API URL
+    /// </summary>
+    public string? ApiUrl { get; set; } = "https://api.github.com";
 
     /// <summary>
     /// Gets or sets the content path within the repository
