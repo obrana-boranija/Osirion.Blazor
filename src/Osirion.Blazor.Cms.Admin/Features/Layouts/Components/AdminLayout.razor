@@ -1,9 +1,10 @@
 @namespace Osirion.Blazor.Cms.Admin.Features.Layouts.Components
+@using Osirion.Blazor.Cms.Admin.Features.Navigation.Components
 @using Osirion.Blazor.Cms.Admin.Shared.Components
 @inherits BaseComponent
 @implements IDisposable
 
-<div class="admin-layout d-flex @(Theme == "dark" ? "admin-layout-dark" : "")">
+<div class="admin-layout d-flex">
     <!-- Sidebar -->
     <div class="sidebar border-end">
         <div class="sidebar-header border-bottom p-3">

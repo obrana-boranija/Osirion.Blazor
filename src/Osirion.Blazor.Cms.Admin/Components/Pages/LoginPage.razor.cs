@@ -30,7 +30,6 @@ public partial class LoginPage
 
     private bool IsLoggingIn => ViewModel.IsLoggingIn;
     private bool IsShowingTokenInput => ViewModel.IsShowingTokenInput;
-    private string? ErrorMessage => ViewModel.ErrorMessage;
 
     private bool EnableGitHubAuth => !string.IsNullOrEmpty(Options.Value.Authentication.GitHubClientId) &&
                                    !string.IsNullOrEmpty(Options.Value.Authentication.GitHubClientSecret);

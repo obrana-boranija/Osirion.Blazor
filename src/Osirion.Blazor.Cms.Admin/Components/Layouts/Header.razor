@@ -1,0 +1,27 @@
+﻿@using Osirion.Blazor.Cms.Admin.Components.Layouts.Navigation
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-2 border-bottom">
+    <div class="mb-3 mb-md-0">
+        <div class="d-flex align-items-center">
+            @if (ShowBreadcrumb)
+            {
+                <div class="mb-2">
+                    <Breadcrumb Items="@BreadcrumbItems" CurrentPage="@Title" />
+                </div>
+            }
+        </div>
+
+        <h1 class="h3 mb-1">@Title</h1>
+
+        @if (!string.IsNullOrEmpty(Subtitle))
+        {
+            <p class="text-muted mb-0">@Subtitle</p>
+        }
+    </div>
+
+    @if (ActionContent != null)
+    {
+        <div class="d-flex align-items-center gap-2">
+            @ActionContent
+        </div>
+    }
+</div>

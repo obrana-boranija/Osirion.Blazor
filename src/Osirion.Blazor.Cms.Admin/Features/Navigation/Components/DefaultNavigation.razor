@@ -2,154 +2,92 @@
 @using Osirion.Blazor.Cms.Admin.Shared.Components
 @inherits BaseComponent
 
-<div class="osirion-admin-nav-list-container">
-    <div class="osirion-admin-nav-section">
-        <h2 class="osirion-admin-nav-title">Dashboard</h2>
-        <ul class="osirion-admin-nav-list">
-            <li class="osirion-admin-nav-item">
-                <a href="/admin" class="osirion-admin-nav-link @GetActiveClass("/osirion")">
-                    <span class="osirion-admin-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="3" y="3" width="7" height="9" />
-                            <rect x="14" y="3" width="7" height="5" />
-                            <rect x="14" y="12" width="7" height="9" />
-                            <rect x="3" y="16" width="7" height="5" />
-                        </svg>
-                    </span>
-                    Overview
+<div class="default-navigation">
+    <div class="mb-4">
+        <h6 class="text-uppercase fw-semibold text-muted mb-3 px-3 fs-6">Dashboard</h6>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a href="/admin" class="nav-link d-flex align-items-center @GetActiveClass("/osirion")">
+                    <i class="bi bi-grid-1x2-fill me-2"></i>
+                    <span>Overview</span>
                 </a>
             </li>
         </ul>
     </div>
 
-    <div class="osirion-admin-nav-section">
-        <h2 class="osirion-admin-nav-title">Content Management</h2>
-        <ul class="osirion-admin-nav-list">
-            <li class="osirion-admin-nav-item">
-                <a href="/admin/content" class="osirion-admin-nav-link @GetActiveClass("/osirion/content")">
-                    <span class="osirion-admin-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                            <polyline points="14 2 14 8 20 8" />
-                            <line x1="16" y1="13" x2="8" y2="13" />
-                            <line x1="16" y1="17" x2="8" y2="17" />
-                            <polyline points="10 9 9 9 8 9" />
-                        </svg>
-                    </span>
-                    Content Browser
+    <div class="mb-4">
+        <h6 class="text-uppercase fw-semibold text-muted mb-3 px-3 fs-6">Content Management</h6>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a href="/admin/content" class="nav-link d-flex align-items-center @GetActiveClass("/osirion/content")">
+                    <i class="bi bi-file-earmark-text me-2"></i>
+                    <span>Content Browser</span>
                 </a>
             </li>
-            <li class="osirion-admin-nav-item">
-                <a href="/admin/content/edit" class="osirion-admin-nav-link @GetActiveClass("/osirion/content/edit")">
-                    <span class="osirion-admin-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 20h9" />
-                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
-                        </svg>
-                    </span>
-                    New Content
+            <li class="nav-item">
+                <a href="/admin/content/edit" class="nav-link d-flex align-items-center @GetActiveClass("/osirion/content/edit")">
+                    <i class="bi bi-pencil-square me-2"></i>
+                    <span>New Content</span>
                 </a>
             </li>
-            <li class="osirion-admin-nav-item">
-                <a href="/admin/media" class="osirion-admin-nav-link @GetActiveClass("/osirion/media")">
-                    <span class="osirion-admin-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-                            <circle cx="8.5" cy="8.5" r="1.5" />
-                            <polyline points="21 15 16 10 5 21" />
-                        </svg>
-                    </span>
-                    Media Library
+            <li class="nav-item">
+                <a href="/admin/media" class="nav-link d-flex align-items-center @GetActiveClass("/osirion/media")">
+                    <i class="bi bi-images me-2"></i>
+                    <span>Media Library</span>
                 </a>
             </li>
         </ul>
     </div>
 
-    <div class="osirion-admin-nav-section">
-        <h2 class="osirion-admin-nav-title">Repository</h2>
-        <ul class="osirion-admin-nav-list">
-            <li class="osirion-admin-nav-item">
-                <a href="/admin/pull-requests" class="osirion-admin-nav-link @GetActiveClass("/osirion/pull-requests")">
-                    <span class="osirion-admin-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="18" cy="18" r="3" />
-                            <circle cx="6" cy="6" r="3" />
-                            <path d="M13 6h3a2 2 0 0 1 2 2v7" />
-                            <line x1="6" y1="9" x2="6" y2="21" />
-                        </svg>
-                    </span>
-                    Pull Requests
+    <div class="mb-4">
+        <h6 class="text-uppercase fw-semibold text-muted mb-3 px-3 fs-6">Repository</h6>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a href="/admin/pull-requests" class="nav-link d-flex align-items-center @GetActiveClass("/osirion/pull-requests")">
+                    <i class="bi bi-git me-2"></i>
+                    <span>Pull Requests</span>
                 </a>
             </li>
-            <li class="osirion-admin-nav-item">
-                <a href="/admin/branches" class="osirion-admin-nav-link @GetActiveClass("/osirion/branches")">
-                    <span class="osirion-admin-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="6" y1="3" x2="6" y2="15" />
-                            <circle cx="18" cy="6" r="3" />
-                            <circle cx="6" cy="18" r="3" />
-                            <path d="M18 9a9 9 0 0 1-9 9" />
-                        </svg>
-                    </span>
-                    Branches
+            <li class="nav-item">
+                <a href="/admin/branches" class="nav-link d-flex align-items-center @GetActiveClass("/osirion/branches")">
+                    <i class="bi bi-diagram-3 me-2"></i>
+                    <span>Branches</span>
                 </a>
             </li>
         </ul>
     </div>
 
-    <div class="osirion-admin-nav-section">
-        <h2 class="osirion-admin-nav-title">Settings</h2>
-        <ul class="osirion-admin-nav-list">
-            <li class="osirion-admin-nav-item">
-                <a href="/admin/settings" class="osirion-admin-nav-link @GetActiveClass("/osirion/settings")">
-                    <span class="osirion-admin-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="3" />
-                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
-                        </svg>
-                    </span>
-                    General Settings
+    <div class="mb-4">
+        <h6 class="text-uppercase fw-semibold text-muted mb-3 px-3 fs-6">Settings</h6>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a href="/admin/settings" class="nav-link d-flex align-items-center @GetActiveClass("/osirion/settings")">
+                    <i class="bi bi-gear me-2"></i>
+                    <span>General Settings</span>
                 </a>
             </li>
-            <li class="osirion-admin-nav-item">
-                <a href="/admin/users" class="osirion-admin-nav-link @GetActiveClass("/osirion/users")">
-                    <span class="osirion-admin-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                            <circle cx="12" cy="7" r="4" />
-                        </svg>
-                    </span>
-                    User Management
+            <li class="nav-item">
+                <a href="/admin/users" class="nav-link d-flex align-items-center @GetActiveClass("/osirion/users")">
+                    <i class="bi bi-people me-2"></i>
+                    <span>User Management</span>
                 </a>
             </li>
         </ul>
     </div>
 
-    <div class="osirion-admin-nav-section">
-        <h2 class="osirion-admin-nav-title">Help</h2>
-        <ul class="osirion-admin-nav-list">
-            <li class="osirion-admin-nav-item">
-                <a href="https://github.com/obrana-boranija/Osirion.Blazor" target="_blank" class="osirion-admin-nav-link">
-                    <span class="osirion-admin-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
-                        </svg>
-                    </span>
-                    Documentation
+    <div class="mb-4">
+        <h6 class="text-uppercase fw-semibold text-muted mb-3 px-3 fs-6">Help</h6>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a href="https://github.com/obrana-boranija/Osirion.Blazor" target="_blank" class="nav-link d-flex align-items-center">
+                    <i class="bi bi-github me-2"></i>
+                    <span>Documentation</span>
                 </a>
             </li>
-            <li class="osirion-admin-nav-item">
-                <a href="/admin/logs" class="osirion-admin-nav-link @GetActiveClass("/osirion/logs")">
-                    <span class="osirion-admin-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M14 3v4a1 1 0 0 0 1 1h4" />
-                            <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
-                            <line x1="9" y1="9" x2="10" y2="9" />
-                            <line x1="9" y1="13" x2="15" y2="13" />
-                            <line x1="9" y1="17" x2="15" y2="17" />
-                        </svg>
-                    </span>
-                    Activity Logs
+            <li class="nav-item">
+                <a href="/admin/logs" class="nav-link d-flex align-items-center @GetActiveClass("/osirion/logs")">
+                    <i class="bi bi-list-check me-2"></i>
+                    <span>Activity Logs</span>
                 </a>
             </li>
         </ul>

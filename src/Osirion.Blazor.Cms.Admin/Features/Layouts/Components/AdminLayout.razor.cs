@@ -28,9 +28,6 @@ public partial class AdminLayout : IDisposable
     public EventCallback<string?> StatusMessageChanged { get; set; }
 
     [Parameter]
-    public string? ErrorMessage { get; set; }
-
-    [Parameter]
     public EventCallback<string?> ErrorMessageChanged { get; set; }
 
     [Parameter]

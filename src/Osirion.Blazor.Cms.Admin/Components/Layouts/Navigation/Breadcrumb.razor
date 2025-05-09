@@ -1,0 +1,35 @@
+﻿@using Osirion.Blazor.Cms.Admin.Features.Layouts.Models
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item">
+            <a href="/osirion" class="text-decoration-none">
+                <i class="bi bi-house-door"></i>
+                <span class="ms-1 d-none d-sm-inline">Dashboard</span>
+            </a>
+        </li>
+
+        @if (Items != null && Items.Count > 0)
+        {
+            @foreach (var item in Items)
+            {
+                if (string.IsNullOrEmpty(item.Url) || item == Items.Last())
+                {
+                    <li class="breadcrumb-item active" aria-current="page">@item.Text</li>
+                }
+                else
+                {
+                    <li class="breadcrumb-item"><a href="@item.Url" class="text-decoration-none">@item.Text</a></li>
+                }
+            }
+        }
+        else if (!string.IsNullOrEmpty(CurrentPage))
+        {
+            <li class="breadcrumb-item active" aria-current="page">@CurrentPage</li>
+        }
+    </ol>
+</nav>
+
+@code {
+    
+}

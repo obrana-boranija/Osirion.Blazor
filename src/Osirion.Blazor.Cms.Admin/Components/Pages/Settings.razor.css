@@ -2,53 +2,29 @@
 
 ::deep h1.h3 {
     font-weight: 600;
-    color: #24292f;
-}
-
-::deep p.text-muted {
-    color: #57606a !important;
 }
 
 ::deep .card {
-    border-color: #d0d7de;
-    border-radius: 6px;
     margin-bottom: 1rem;
 }
 
 ::deep .card-header {
-    background-color: #f6f8fa;
-    border-bottom-color: #d0d7de;
     padding: 0.75rem 1rem;
 }
 
 ::deep .card-title {
     font-weight: 600;
     font-size: 0.9375rem;
-    color: #24292f;
 }
 
 ::deep .card-footer {
-    background-color: #f6f8fa;
-    border-top-color: #d0d7de;
     padding: 0.75rem 1rem;
-}
-
-::deep .shadow-sm {
-    box-shadow: 0 1px 3px rgba(0,0,0,0.12) !important;
 }
 
 /* Form controls */
 ::deep .form-label.fw-semibold {
     font-weight: 600 !important;
     font-size: 0.875rem;
-    color: #24292f;
-}
-
-::deep .badge.bg-light {
-    background-color: #f6f8fa !important;
-    border-color: #d0d7de !important;
-    color: #57606a !important;
-    font-weight: 500;
 }
 
 ::deep .form-check-input {
@@ -56,78 +32,10 @@
     height: 1.25em;
 }
 
-    ::deep .form-check-input:checked {
-        background-color: #2da44e;
-        border-color: #2da44e;
-    }
-
-    ::deep .form-check-input:focus {
-        border-color: #2da44e;
-        box-shadow: 0 0 0 0.25rem rgba(45, 164, 78, 0.25);
-    }
-
-/* Buttons */
-::deep .btn-primary {
-    background-color: #2da44e;
-    border-color: #2da44e;
-}
-
-    ::deep .btn-primary:hover {
-        background-color: #2c974b;
-        border-color: #2c974b;
-    }
-
-    ::deep .btn-primary:focus,
-    ::deep .btn-primary:active {
-        background-color: #2c974b;
-        border-color: #2c974b;
-        box-shadow: 0 0 0 0.25rem rgba(45, 164, 78, 0.25);
-    }
-
-::deep .btn-outline-secondary {
-    border-color: #d0d7de;
-    color: #24292f;
-}
-
-    ::deep .btn-outline-secondary:hover {
-        background-color: #f6f8fa;
-        color: #24292f;
-        border-color: #d0d7de;
-    }
-
-::deep .btn-outline-danger {
-    color: #cf222e;
-    border-color: #cf222e;
-}
-
-    ::deep .btn-outline-danger:hover {
-        background-color: #cf222e;
-        border-color: #cf222e;
-        color: white;
-    }
-
-/* Status colors */
-::deep .text-success {
-    color: #2da44e !important;
-}
-
-::deep .text-danger {
-    color: #cf222e !important;
-}
-
-::deep .text-primary {
-    color: #0969da !important;
-}
-
 ::deep h6.fw-semibold {
     font-weight: 600 !important;
     font-size: 0.875rem;
     margin-bottom: 0.5rem;
-}
-
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-    /* Dark mode styles */
 }
 
 /* Responsive adjustments */

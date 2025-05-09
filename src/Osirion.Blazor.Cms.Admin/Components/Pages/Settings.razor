@@ -84,11 +84,11 @@
                     <div class="mb-3">
                         <label class="form-label fw-semibold mb-1">Allowed File Extensions</label>
                         <div>
-                            <span class="badge bg-light text-dark border me-1">.md</span>
-                            <span class="badge bg-light text-dark border me-1">.markdown</span>
-                            <span class="badge bg-light text-dark border me-1">.yaml</span>
-                            <span class="badge bg-light text-dark border me-1">.yml</span>
-                            <span class="badge bg-light text-dark border">.json</span>
+                            <span class="badge border me-1" style="color: red;">.md</span>
+                            <span class="badge border me-1" style="color: red;">.markdown</span>
+                            <span class="badge border me-1" style="color: red; text-decoration: line-through;">.yaml</span>
+                            <span class="badge border me-1" style="color: red; text-decoration: line-through;">.yml</span>
+                            <span class="badge border" style="color: red; text-decoration: line-through;">.json</span>
                         </div>
                     </div>
 
@@ -113,7 +113,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="card-footer bg-light">
+                <div class="card-footer">
                     <small class="text-muted fst-italic">
                         Settings are defined in application configuration.
                         See documentation for how to modify these settings.
@@ -132,7 +132,7 @@
                     <label class="form-label fw-semibold mb-3">Theme</label>
                     <div class="d-flex">
                         <button type="button"
-                                class="btn flex-grow-1 me-2 @(Theme == "light" ? "btn-primary" : "btn-outline-secondary")"
+                                class="btn flex-grow-1 me-2"
                                 @onclick="@(() => Theme = "light")">
                             <i class="bi bi-sun me-2"></i>
                             Light

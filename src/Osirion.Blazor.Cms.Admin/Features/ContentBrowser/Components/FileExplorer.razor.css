@@ -1,8 +1,5 @@
 /* GitHub-inspired styling for the FileExplorer component */
 
-::deep .file-explorer {
-    border-color: var(--bs-gray-300) !important;
-}
 
 /* File path styling */
 ::deep .file-path {
@@ -23,19 +20,6 @@
 
     ::deep .list-group-item:first-child {
         border-top: none;
-    }
-
-    ::deep .list-group-item:hover {
-        background-color: var(--bs-gray-100);
-    }
-
-    ::deep .list-group-item.active:hover {
-        background-color: #0969da;
-    }
-
-    ::deep .list-group-item.active {
-        background-color: #0969da;
-        border-color: #0969da;
     }
 
 /* File actions styling */
@@ -63,37 +47,9 @@
     border: none;
 }
 
-    ::deep .btn-icon:hover {
-        background-color: rgba(0, 0, 0, 0.05);
-    }
-
-::deep .list-group-item.active .btn-icon:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-}
-
-/* Icon styling */
-::deep .bi-folder-fill {
-    color: #54aeff;
-}
-
-::deep .bi-markdown-fill {
-    color: #0969da;
-}
-
-::deep .bi-file-earmark {
-    color: #57606a;
-}
-
-::deep .list-group-item.active .bi-folder-fill,
-::deep .list-group-item.active .bi-markdown-fill,
-::deep .list-group-item.active .bi-file-earmark {
-    color: white;
-}
-
 /* Modal styling */
 ::deep .modal-header {
     padding: 0.75rem 1rem;
-    background-color: var(--bs-gray-100);
     border-bottom: 1px solid var(--bs-gray-300);
 }
 
@@ -104,8 +60,6 @@
 
 ::deep .modal-footer {
     padding: 0.75rem 1rem;
-    background-color: var(--bs-gray-50);
-    border-top: 1px solid var(--bs-gray-300);
 }
 
 /* Card header styling */
@@ -113,5 +67,3 @@
     padding: 0.75rem 1rem;
     border-bottom: 1px solid var(--bs-gray-300);
 }
-
-/* Responsive adjustments */

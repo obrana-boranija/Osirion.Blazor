@@ -7,9 +7,6 @@ namespace Osirion.Blazor.Cms.Admin.Features.Layouts.Components;
 
 public partial class CmsLayoutEditor : BaseComponent
 {
-    [Inject]
-    private CmsState AdminState { get; set; } = default!;
-
     /// <summary>
     /// Gets or sets the page title
     /// </summary>
@@ -45,12 +42,6 @@ public partial class CmsLayoutEditor : BaseComponent
     /// </summary>
     [Parameter]
     public string? StatusMessage { get; set; }
-
-    /// <summary>
-    /// Gets or sets the error message
-    /// </summary>
-    [Parameter]
-    public string? ErrorMessage { get; set; }
 
     private string? LocalStatusMessage => StatusMessage ?? AdminState.StatusMessage;
     private string? LocalErrorMessage => ErrorMessage ?? AdminState.ErrorMessage;
