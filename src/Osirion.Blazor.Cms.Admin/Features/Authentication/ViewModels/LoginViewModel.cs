@@ -224,7 +224,7 @@ public class LoginViewModel
         await _stateStorage.RemoveStateAsync("github_auth_token");
 
         // The AuthenticationChanged event will be triggered by the service
-        _navigationManager.NavigateTo("/admin/login");
+        _navigationManager.NavigateTo("/osirion/login");
     }
 
     private void OnAuthenticationChanged(bool isAuthenticated)

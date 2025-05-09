@@ -1,25 +1,11 @@
-﻿@page "/admin/login"
-@rendermode InteractiveServer
+using Microsoft.AspNetCore.Components;
 
-@using Osirion.Blazor.Cms.Admin.Components
-@using Microsoft.Extensions.Options
-@using Osirion.Blazor.Cms.Admin.Features.Authentication.Components
-@inherits Osirion.Blazor.Components.OsirionComponentBase
-@inject NavigationManager NavigationManager
-
-<div class="@GetLoginPageClass()">
-    <Login Title="Osirion CMS Admin"
-           Description="Sign in to manage your content"
-           EnableGitHubAuth
-           ReturnUrl="@GetReturnUrl()"
-           Theme="@Theme"
-           OnLoginResult="HandleLoginResult" />
-</div>
-
-@code {
+namespace Osirion.Blazor.Cms.Admin.Components.Pages;
+public partial class LoginPage
+{
     [Parameter]
     [SupplyParameterFromQuery(Name = "returnUrl")]
-    public string ReturnUrl { get; set; } = "/admin";
+    public string ReturnUrl { get; set; } = "/osirion";
 
     [Parameter]
     public string Theme { get; set; } = "light";
@@ -29,7 +15,7 @@
         // Sanitize and validate return URL to prevent open redirect
         if (string.IsNullOrEmpty(ReturnUrl))
         {
-            return "/admin";
+            return "/osirion";
         }
 
         // Only accept relative URLs
@@ -38,7 +24,7 @@
             return ReturnUrl;
         }
 
-        return "/admin";
+        return "/osirion";
     }
 
     private void HandleLoginResult(bool success)

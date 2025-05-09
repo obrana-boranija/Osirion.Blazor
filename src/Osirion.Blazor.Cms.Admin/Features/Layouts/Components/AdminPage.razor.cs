@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Components;
-using Osirion.Blazor.Cms.Admin.Core.State;
 using Osirion.Blazor.Cms.Admin.Features.Layouts.Models;
 using Osirion.Blazor.Cms.Admin.Shared.Components;
 
@@ -7,9 +6,6 @@ namespace Osirion.Blazor.Cms.Admin.Features.Layouts.Components;
 
 public partial class AdminPage : BaseComponent
 {
-    [Inject]
-    protected CmsState AdminState { get; set; } = default!;
-
     [Parameter]
     public string Title { get; set; } = "Osirion CMS";
 
@@ -48,6 +44,8 @@ public partial class AdminPage : BaseComponent
 
     protected override void OnInitialized()
     {
+        AdminState.StateChanged += StateHasChanged;
+
         // If no current page specified but we have a URL, extract the page name
         if (string.IsNullOrEmpty(CurrentPage))
         {
@@ -78,5 +76,11 @@ public partial class AdminPage : BaseComponent
         }
 
         return Task.CompletedTask;
+    }
+
+    public void Dispose()
+    {
+        // Unsubscribe from state changes when component is disposed
+        AdminState.StateChanged -= StateHasChanged;
     }
 }

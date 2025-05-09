@@ -1,0 +1,11 @@
+﻿@page "/osirion/login"
+@using Osirion.Blazor.Cms.Admin.Features.Authentication.Components
+
+<div class="@GetLoginPageClass()">
+    <Login Title="Osirion CMS Admin"
+           Description="Sign in to manage your content"
+           EnableGitHubAuth
+           ReturnUrl="@GetReturnUrl()"
+           Theme="@Theme"
+           OnLoginResult="HandleLoginResult" />
+</div>

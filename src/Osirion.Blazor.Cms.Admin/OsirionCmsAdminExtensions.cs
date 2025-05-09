@@ -44,7 +44,7 @@ public static class OsirionCmsAdminExtensions
 
         // Register adapters
         services.TryAddScoped<IContentRepositoryAdapterFactory, ContentRepositoryAdapterFactory>();
-        services.TryAddScoped<IContentRepositoryAdapter>(sp => {
+        services.TryAddScoped(sp => {
             var factory = sp.GetRequiredService<IContentRepositoryAdapterFactory>();
             return factory.CreateDefaultAdapter();
         });

@@ -1,177 +1,198 @@
-﻿// Global script for markdown editor
+﻿/**
+ * Minimal JavaScript for the Markdown Editor component
+ * This provides essential text manipulation functions while minimizing JS dependencies
+ */
 
-// Make functions globally available
-window.markdownEditor = {
-    /**
-     * Focus the given element
-     */
-    focusElement: function (element) {
-        if (element) {
-            setTimeout(() => element.focus(), 0);
+// Focus on a specific element
+export function focusElement(element) {
+    if (element) {
+        element.focus();
+
+        // If it's a textarea, place cursor at the end
+        if (element.tagName.toLowerCase() === 'textarea') {
+            const length = element.value.length;
+            element.setSelectionRange(length, length);
         }
-    },
+    }
+}
 
-    /**
-     * Get scroll information about an element
-     */
-    getScrollInfo: function (element) {
-        if (!element) return { percentage: 0 };
+/**
+ * Inserts text at the current cursor position in a textarea
+ * @param {HTMLTextAreaElement} textarea - The textarea element
+ * @param {string} prefix - Text to insert before the selection/cursor
+ * @param {string} suffix - Text to insert after the selection/cursor
+ * @param {string} placeholder - Text to insert if no text is selected
+ * @returns {string} - The updated textarea value
+ */
+export function insertTextAtCursor(textarea, prefix, suffix, placeholder) {
+    if (!textarea) return "";
 
-        const scrollTop = element.scrollTop;
-        const scrollHeight = element.scrollHeight;
-        const clientHeight = element.clientHeight;
-        const percentage = scrollHeight <= clientHeight
-            ? 0
-            : scrollTop / (scrollHeight - clientHeight);
+    // Save the current scroll position before modifying text
+    const scrollTop = textarea.scrollTop;
 
-        return {
-            scrollTop,
-            scrollHeight,
-            clientHeight,
-            percentage
-        };
-    },
+    // Get the current selection start and end positions
+    const startPos = textarea.selectionStart;
+    const endPos = textarea.selectionEnd;
 
-    /**
-     * Set scroll position by percentage
-     */
-    setScrollPercentage: function (element, percentage) {
-        if (!element) return;
+    // Get the current value of the textarea
+    const text = textarea.value;
 
-        const scrollHeight = element.scrollHeight;
-        const clientHeight = element.clientHeight;
+    // Get the selected text
+    const selectedText = text.substring(startPos, endPos);
 
-        if (scrollHeight > clientHeight) {
-            element.scrollTop = percentage * (scrollHeight - clientHeight);
-        }
-    },
+    // Determine what text to insert
+    const insertText = selectedText.length > 0 ? selectedText : placeholder;
 
-    /**
-     * Insert text at the current cursor position
-     */
-    insertTextAtCursor: function (textarea, prefix, suffix, placeholder) {
-        if (!textarea) return "";
+    // Create the new text value with the insertion
+    const newText =
+        text.substring(0, startPos) +
+        prefix +
+        insertText +
+        suffix +
+        text.substring(endPos);
 
-        const start = textarea.selectionStart;
-        const end = textarea.selectionEnd;
-        const text = textarea.value;
-        const selectedText = text.substring(start, end);
-        const replacement = selectedText.length > 0 ? selectedText : placeholder;
+    // Set the new value
+    textarea.value = newText;
 
-        const newText = text.substring(0, start) +
-            prefix +
-            replacement +
-            suffix +
-            text.substring(end);
+    // Calculate where the cursor should be after insertion
+    const newCursorPos = startPos + prefix.length + insertText.length + suffix.length;
 
-        // Update textarea value
-        textarea.value = newText;
-
-        // Set new cursor position
-        const newCursorPos = start + prefix.length + replacement.length;
+    // Set the selection range to position the cursor
+    setTimeout(() => {
+        textarea.focus();
         textarea.setSelectionRange(newCursorPos, newCursorPos);
 
-        return newText;
-    },
+        // Restore the scroll position
+        textarea.scrollTop = scrollTop;
 
-    /**
-     * Handle tab key in textarea (for indentation)
-     */
-    handleTabKey: function (textarea, isShiftKey) {
-        if (!textarea) return "";
+        // Trigger an input event to update bound values
+        const event = new Event('input', { bubbles: true });
+        textarea.dispatchEvent(event);
+    }, 0);
 
-        const start = textarea.selectionStart;
-        const end = textarea.selectionEnd;
-        const text = textarea.value;
+    // Return the new text value
+    return newText;
+}
 
-        // If multiple lines are selected
-        if (start !== end && text.substring(start, end).includes('\n')) {
-            return this.handleMultiLineTab(textarea, isShiftKey);
-        }
-
-        // Single line or no selection
-        if (isShiftKey) {
-            // Unindent: remove a tab or spaces at the beginning of the line
-            const lineStart = text.lastIndexOf('\n', start - 1) + 1;
-            const lineEnd = text.indexOf('\n', start);
-            const line = lineEnd !== -1 ? text.substring(lineStart, lineEnd) : text.substring(lineStart);
-
-            if (line.startsWith('\t')) {
-                // Remove one tab
-                const newText = text.substring(0, lineStart) + line.substring(1) + text.substring(lineEnd !== -1 ? lineEnd : text.length);
-                textarea.value = newText;
-                textarea.setSelectionRange(start - 1 > lineStart ? start - 1 : lineStart, end - 1 > lineStart ? end - 1 : lineStart);
-                return newText;
-            } else if (line.startsWith('    ')) {
-                // Remove one level of space indentation (4 spaces)
-                const newText = text.substring(0, lineStart) + line.substring(4) + text.substring(lineEnd !== -1 ? lineEnd : text.length);
-                textarea.value = newText;
-                textarea.setSelectionRange(start - 4 > lineStart ? start - 4 : lineStart, end - 4 > lineStart ? end - 4 : lineStart);
-                return newText;
-            }
-
-            return text; // No change
-        } else {
-            // Insert a tab
-            const newText = text.substring(0, start) + '\t' + text.substring(end);
-            textarea.value = newText;
-            textarea.setSelectionRange(start + 1, start + 1);
-            return newText;
-        }
-    },
-
-    /**
-     * Handle tab key for multi-line selection
-     */
-    handleMultiLineTab: function (textarea, isShiftKey) {
-        if (!textarea) return "";
-
-        const start = textarea.selectionStart;
-        const end = textarea.selectionEnd;
-        const text = textarea.value;
-
-        // Find the start of the first line
-        const lineStart = text.lastIndexOf('\n', start - 1) + 1;
-
-        // Get the selected text plus the start of the first line
-        const selectionWithStartLine = text.substring(lineStart, end);
-
-        // Split into lines
-        const lines = selectionWithStartLine.split('\n');
-
-        // Process each line
-        const processedLines = lines.map(line => {
-            if (isShiftKey) {
-                // Remove indentation
-                if (line.startsWith('\t')) {
-                    return line.substring(1);
-                } else if (line.startsWith('    ')) {
-                    return line.substring(4);
-                }
-                return line;
-            } else {
-                // Add indentation
-                return '\t' + line;
-            }
-        });
-
-        // Join lines back together
-        const newSelection = processedLines.join('\n');
-
-        // Calculate change in length
-        const lengthDifference = newSelection.length - selectionWithStartLine.length;
-
-        // Create new text
-        const newText = text.substring(0, lineStart) + newSelection + text.substring(end);
-
-        // Update textarea
-        textarea.value = newText;
-
-        // Set selection
-        const newStart = start;
-        const newEnd = end + lengthDifference;
-        textarea.setSelectionRange(newStart, newEnd);
-
-        return newText;
+/**
+ * Gets scroll information from an element
+ * @param {HTMLElement} element - The element to get scroll info from
+ * @returns {object} - Scroll information including percentage
+ */
+export function getScrollInfo(element) {
+    if (!element) {
+        return { scrollTop: 0, scrollHeight: 0, clientHeight: 0, percentage: 0 };
     }
-};
+
+    const scrollTop = element.scrollTop;
+    const scrollHeight = element.scrollHeight;
+    const clientHeight = element.clientHeight;
+
+    // Calculate the scroll percentage (0 to 1)
+    const maxScroll = scrollHeight - clientHeight;
+    const percentage = maxScroll <= 0 ? 0 : scrollTop / maxScroll;
+
+    return {
+        scrollTop,
+        scrollHeight,
+        clientHeight,
+        percentage
+    };
+}
+
+/**
+ * Sets the scroll position of an element based on a percentage
+ * @param {HTMLElement} element - The element to scroll
+ * @param {number} percentage - The scroll percentage (0 to 1)
+ */
+export function setScrollPercentage(element, percentage) {
+    if (!element) return;
+
+    const maxScroll = element.scrollHeight - element.clientHeight;
+    if (maxScroll <= 0) return;
+
+    // Ensure percentage is between 0 and 1
+    const clampedPercentage = Math.max(0, Math.min(1, percentage));
+
+    // Set the scroll position
+    element.scrollTop = maxScroll * clampedPercentage;
+}
+
+/**
+ * Handles tab key press in the textarea for indentation
+ * @param {HTMLTextAreaElement} textarea - The textarea element
+ * @param {boolean} isShiftKey - Whether shift key was pressed with tab
+ * @returns {string} - The updated textarea value
+ */
+export function handleTabKey(textarea, isShiftKey) {
+    if (!textarea) return "";
+
+    // Save the current scroll position
+    const scrollTop = textarea.scrollTop;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const text = textarea.value;
+
+    // Check if multiple lines are selected
+    const selectedText = text.substring(start, end);
+    const hasNewline = selectedText.indexOf('\n') !== -1;
+
+    let result;
+
+    // Handle multi-line indentation/outdentation
+    if (hasNewline) {
+        // Split text into lines
+        const lines = selectedText.split('\n');
+        let newText;
+
+        if (isShiftKey) {
+            // Remove indentation (outdent)
+            newText = lines.map(line => line.startsWith('    ')
+                ? line.substring(4)
+                : (line.startsWith('\t') ? line.substring(1) : line)
+            ).join('\n');
+        } else {
+            // Add indentation (indent)
+            newText = lines.map(line => '    ' + line).join('\n');
+        }
+
+        // Replace the selected text with the indented/outdented text
+        result = text.substring(0, start) + newText + text.substring(end);
+        textarea.value = result;
+
+        // Update selection
+        setTimeout(() => {
+            textarea.focus();
+            textarea.setSelectionRange(start, start + newText.length);
+            textarea.scrollTop = scrollTop;
+
+            // Trigger an input event to update bound values
+            const event = new Event('input', { bubbles: true });
+            textarea.dispatchEvent(event);
+        }, 0);
+    }
+    // Handle single line or no selection
+    else {
+        if (isShiftKey) {
+            // Handle outdent logic for single line if needed
+            return text;
+        } else {
+            // Insert a tab (as 4 spaces) at cursor position
+            result = text.substring(0, start) + '    ' + text.substring(end);
+            textarea.value = result;
+
+            setTimeout(() => {
+                textarea.focus();
+                textarea.setSelectionRange(start + 4, start + 4);
+                textarea.scrollTop = scrollTop;
+
+                // Trigger an input event to update bound values
+                const event = new Event('input', { bubbles: true });
+                textarea.dispatchEvent(event);
+            }, 0);
+        }
+    }
+
+    return result || text;
+}

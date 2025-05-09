@@ -35,10 +35,10 @@ public static class CmsConstants
     // Route paths
     public static class Routes
     {
-        public const string Login = "/admin/login";
-        public const string Dashboard = "/admin";
-        public const string ContentBrowser = "/admin/content";
-        public const string ContentEditor = "/admin/content/edit";
-        public const string Settings = "/admin/settings";
+        public const string Login = "/osirion/login";
+        public const string Dashboard = "/osirion";
+        public const string ContentBrowser = "/osirion/content";
+        public const string ContentEditor = "/osirion/content/edit";
+        public const string Settings = "/osirion/settings";
     }
 }

@@ -33,7 +33,7 @@ builder.Services.AddOsirionCmsAdmin(options =>
         auth.EnableGitHubOAuth = true;
         auth.GitHubClientId = "Ov23lid1Y6zZLKbwaaih";
         auth.GitHubClientSecret = "fef6f7e1dac44e185df867fb9ddd80daf58705b8";
-        auth.GitHubRedirectUri = "https://your-site.com/admin/login";
+        auth.GitHubRedirectUri = "https://your-site.com/osirion/login";
         auth.AllowPersonalAccessTokens = true; // Allow PAT authentication
         auth.PersonalAccessToken = "";
     });
@@ -83,13 +83,14 @@ else
 
 app.UseHttpsRedirection();
 
-
+app.UseStaticFiles();
+app.UseRouting();
 app.UseAntiforgery();
 
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
-    .AddAdditionalAssemblies(typeof(Osirion.Blazor.Example.Client._Imports).Assembly);
+    .AddAdditionalAssemblies([ typeof(Osirion.Blazor.Example.Client._Imports).Assembly, typeof(Osirion.Blazor.Cms.Admin.OsirionCmsAdminExtensions).Assembly ]);
 
 app.Run();
