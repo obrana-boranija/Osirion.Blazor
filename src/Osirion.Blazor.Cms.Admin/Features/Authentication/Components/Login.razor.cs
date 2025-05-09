@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Options;
-using Osirion.Blazor.Cms.Admin.Common.Constants;
 using Osirion.Blazor.Cms.Domain.Options.Configuration;
 
 namespace Osirion.Blazor.Cms.Admin.Features.Authentication.Components;

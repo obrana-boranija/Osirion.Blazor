@@ -1,104 +1,66 @@
 using Microsoft.AspNetCore.Components;
 using Osirion.Blazor.Cms.Admin.Features.Layouts.Models;
-using Osirion.Blazor.Cms.Admin.Shared.Components;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 
 namespace Osirion.Blazor.Cms.Admin.Features.Layouts.Components;
 
-public partial class AdminLayout : BaseComponent
+public partial class AdminLayout : IDisposable
 {
     [Inject]
     protected IAuthenticationService authService { get; set; } = default!;
 
-    /// <summary>
-    /// Gets or sets the page title
-    /// </summary>
     [Parameter]
     public string Title { get; set; } = "Osirion CMS";
 
-    /// <summary>
-    /// Gets or sets the page subtitle
-    /// </summary>
     [Parameter]
     public string? Subtitle { get; set; }
 
-    /// <summary>
-    /// Gets or sets the current theme (light or dark)
-    /// </summary>
     [Parameter]
     public string Theme { get; set; } = "light";
 
-    /// <summary>
-    /// Gets or sets the status message
-    /// </summary>
+    [Parameter]
+    public EventCallback<string> ThemeChanged { get; set; }
+
     [Parameter]
     public string? StatusMessage { get; set; }
 
-    /// <summary>
-    /// Gets or sets the event callback for status message changes
-    /// </summary>
     [Parameter]
     public EventCallback<string?> StatusMessageChanged { get; set; }
 
-    /// <summary>
-    /// Gets or sets the error message
-    /// </summary>
     [Parameter]
     public string? ErrorMessage { get; set; }
 
-    /// <summary>
-    /// Gets or sets the event callback for error message changes
-    /// </summary>
     [Parameter]
     public EventCallback<string?> ErrorMessageChanged { get; set; }
 
-    /// <summary>
-    /// Gets or sets the current page name for breadcrumb
-    /// </summary>
     [Parameter]
     public string? CurrentPage { get; set; }
 
-    /// <summary>
-    /// Gets or sets breadcrumb items for navigation
-    /// </summary>
     [Parameter]
     public List<BreadcrumbItem>? BreadcrumbItems { get; set; }
 
-    /// <summary>
-    /// Gets or sets the child content
-    /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
-    /// <summary>
-    /// Gets or sets the header template
-    /// </summary>
     [Parameter]
     public RenderFragment? HeaderTemplate { get; set; }
 
-    /// <summary>
-    /// Gets or sets the navigation template
-    /// </summary>
     [Parameter]
     public RenderFragment? NavigationTemplate { get; set; }
 
-    /// <summary>
-    /// Gets or sets the actions template
-    /// </summary>
     [Parameter]
     public RenderFragment? ActionsTemplate { get; set; }
 
-    /// <summary>
-    /// Gets or sets the sidebar footer template
-    /// </summary>
     [Parameter]
     public RenderFragment? SidebarFooterTemplate { get; set; }
 
-    /// <summary>
-    /// Gets or sets the event callback for sign out
-    /// </summary>
     [Parameter]
     public EventCallback OnSignOut { get; set; }
+
+    protected override void OnInitialized()
+    {
+        AdminState.StateChanged += StateHasChanged;
+    }
 
     private async Task SignOut()
     {
@@ -122,8 +84,17 @@ public partial class AdminLayout : BaseComponent
         await ErrorMessageChanged.InvokeAsync(null);
     }
 
-    private string GetAdminLayoutClass()
+    private async Task ToggleTheme()
     {
-        return $"osirion-admin-dashboard osirion-admin-theme-{Theme} {CssClass}".Trim();
+        Theme = Theme == "light" ? "dark" : "light";
+        if (ThemeChanged.HasDelegate)
+        {
+            await ThemeChanged.InvokeAsync(Theme);
+        }
+    }
+
+    public void Dispose()
+    {
+        AdminState.StateChanged -= StateHasChanged;
     }
 }

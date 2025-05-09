@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Components;
-using Octokit;
 using Osirion.Blazor.Cms.Admin.Core.Events;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Models;
@@ -7,10 +6,15 @@ using Osirion.Blazor.Cms.Domain.ValueObjects;
 
 namespace Osirion.Blazor.Cms.Admin.Components.Pages;
 
-public partial class EditContent(IGitHubAdminService gitHubService)
+public partial class EditContent : IDisposable
 {
+    [Inject]
+    private IGitHubAdminService GitHubService { get; set; } = default!;
+
     [SupplyParameterFromQuery]
     public string? Path { get; set; }
+
+    protected bool IsLoading { get; set; }
 
     protected override void OnInitialized()
     {
@@ -28,7 +32,7 @@ public partial class EditContent(IGitHubAdminService gitHubService)
     {
         // Reload content if parameters change and we're already rendered
         if (!string.IsNullOrEmpty(Path) &&
-        (AdminState.EditingPost == null || AdminState.EditingPost.FilePath != Path))
+           (AdminState.EditingPost == null || AdminState.EditingPost.FilePath != Path))
         {
             await LoadContentAsync();
         }
@@ -65,7 +69,7 @@ public partial class EditContent(IGitHubAdminService gitHubService)
             // We already have a post being edited (likely from content browser)
             // Just ensure we're on the right path
             if (!string.IsNullOrEmpty(AdminState.EditingPost.FilePath) &&
-            !AdminState.IsCreatingNewFile)
+                !AdminState.IsCreatingNewFile)
             {
                 NavigationManager.NavigateTo($"/osirion/content/edit?Path={AdminState.EditingPost.FilePath}");
             }
@@ -84,7 +88,7 @@ public partial class EditContent(IGitHubAdminService gitHubService)
 
         try
         {
-            var blogPost = await gitHubService.GetBlogPostAsync(Path);
+            var blogPost = await GitHubService.GetBlogPostAsync(Path);
 
             // Set the post in AdminState (this triggers StateChanged event)
             AdminState.SetEditingPost(blogPost);
@@ -111,8 +115,8 @@ public partial class EditContent(IGitHubAdminService gitHubService)
             Metadata = FrontMatter.Create("New Post", "Enter description here", DateTime.Now),
             Content = "## New Post\n\nStart writing your content here...",
             FilePath = string.IsNullOrEmpty(AdminState.CurrentPath) ?
-            "new-post.md" :
-                $"{AdminState.CurrentPath}/new-post.md"
+              "new-post.md" :
+              $"{AdminState.CurrentPath}/new-post.md"
         };
 
         AdminState.SetEditingPost(newPost, true);
@@ -149,7 +153,7 @@ public partial class EditContent(IGitHubAdminService gitHubService)
         }
 
         return AdminState.IsCreatingNewFile
-        ? "New Post"
+            ? "New Post"
             : $"Edit: {AdminState.EditingPost.Metadata?.Title}";
     }
 
@@ -157,11 +161,11 @@ public partial class EditContent(IGitHubAdminService gitHubService)
     {
         if (AdminState.EditingPost == null)
         {
-            return "Edit Content";
+            return "Edit your markdown content";
         }
 
         return AdminState.IsCreatingNewFile
-        ? "New Description"
-            : $"Edit: {AdminState.EditingPost.Metadata?.Description}";
+            ? "Create a new markdown file"
+            : AdminState.EditingPost.Metadata?.Description ?? "Edit content";
     }
 }

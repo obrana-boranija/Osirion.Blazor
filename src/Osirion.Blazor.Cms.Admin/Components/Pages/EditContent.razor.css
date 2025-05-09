@@ -1,97 +1,89 @@
-.osirion-admin-edit-content-page {
-    display: flex;
-    flex-direction: column;
-    min-height: calc(100vh - 200px);
+/* GitHub-inspired styling for EditContent page */
+
+::deep h1.h3 {
+    font-weight: 600;
+    color: #24292f;
 }
 
-.osirion-admin-loading {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 300px;
-    color: var(--osirion-text-secondary);
+::deep p.text-muted {
+    color: #57606a !important;
 }
 
-.osirion-admin-loading-spinner {
-    display: inline-block;
-    width: 32px;
-    height: 32px;
-    border: 3px solid var(--osirion-color-neutral-200);
-    border-top-color: var(--osirion-color-primary-500);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin-bottom: var(--osirion-spacing-4);
-}
-
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-.osirion-admin-empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: var(--osirion-spacing-8);
-    min-height: 50vh;
-}
-
-.osirion-admin-empty-state-icon {
-    margin-bottom: var(--osirion-spacing-6);
-    color: var(--osirion-color-neutral-400);
-}
-
-.osirion-admin-empty-state-title {
-    font-size: var(--osirion-font-size-xl);
-    font-weight: var(--osirion-font-weight-semibold);
-    margin-bottom: var(--osirion-spacing-3);
-    color: var(--osirion-text-primary);
-}
-
-.osirion-admin-empty-state-message {
-    font-size: var(--osirion-font-size-base);
-    color: var(--osirion-text-secondary);
-    margin-bottom: var(--osirion-spacing-6);
-    max-width: 500px;
-}
-
-.osirion-admin-empty-state-actions {
-    display: flex;
-    gap: var(--osirion-spacing-3);
-}
-
-.osirion-admin-editor-container {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    height: calc(100vh - 180px);
-    background-color: var(--osirion-color-white);
-    border: 1px solid var(--osirion-color-neutral-200);
+::deep .card {
+    border-color: #d0d7de;
     border-radius: 6px;
-    overflow: hidden;
-    box-shadow: var(--osirion-shadow-sm);
 }
 
-/* Dark Mode Adjustments */
-:root[data-theme="dark"] .osirion-admin-loading-spinner {
-    border-color: var(--osirion-color-neutral-700);
-    border-top-color: var(--osirion-color-primary-400);
+::deep .shadow-sm {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12) !important;
 }
 
-:root[data-theme="dark"] .osirion-admin-empty-state-icon {
-    color: var(--osirion-color-neutral-600);
+::deep .btn-primary {
+    background-color: #2da44e;
+    border-color: #2da44e;
 }
 
-:root[data-theme="dark"] .osirion-admin-editor-container {
-    background-color: var(--osirion-color-neutral-800);
-    border-color: var(--osirion-color-neutral-700);
+    ::deep .btn-primary:hover {
+        background-color: #2c974b;
+        border-color: #2c974b;
+    }
+
+    ::deep .btn-primary:focus,
+    ::deep .btn-primary:active {
+        background-color: #2c974b;
+        border-color: #2c974b;
+        box-shadow: 0 0 0 0.25rem rgba(45, 164, 78, 0.25);
+    }
+
+::deep .btn-outline-secondary {
+    border-color: #d0d7de;
+    color: #24292f;
 }
 
-/* Responsive Adjustments */
+    ::deep .btn-outline-secondary:hover {
+        background-color: #f6f8fa;
+        color: #24292f;
+        border-color: #d0d7de;
+    }
+
+::deep .spinner-border.text-primary {
+    color: #2da44e !important;
+}
+
+::deep .text-muted {
+    color: #57606a !important;
+}
+
+/* Empty state styling */
+::deep .bi-file-earmark-text {
+    opacity: 0.6;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    /* Dark mode styles */
+}
+
+/* Responsive adjustments */
 @media (max-width: 768px) {
-    .osirion-admin-empty-state-actions {
-        flex-
+    ::deep .card {
+        height: auto !important;
+    }
+
+    ::deep .card-body {
+        height: auto !important;
+    }
+
+    ::deep .row.align-items-center {
+        flex-direction: column;
+    }
+
+    ::deep .col-auto {
+        width: 100%;
+        margin-top: 1rem;
+    }
+
+        ::deep .col-auto .btn {
+            width: 100%;
+        }
+}

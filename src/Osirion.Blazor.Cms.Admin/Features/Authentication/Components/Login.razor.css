@@ -1,224 +1,127 @@
-.login {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+/* GitHub-inspired styling for the Login component */
+
+::deep .login-page {
+    background-color: #f6f8fa;
     min-height: 100vh;
-    width: 100%;
-    padding: var(--osirion-spacing-4);
-    background-color: var(--osirion-background-primary);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
 }
 
-.login-container {
-    background-color: var(--osirion-background-primary);
-    border-radius: var(--osirion-radius-md);
-    box-shadow: var(--osirion-shadow-md);
-    padding: var(--osirion-spacing-6);
-    width: 100%;
-    max-width: 340px;
-    border: var(--osirion-border-width) solid var(--osirion-border-color);
+::deep .card {
+    border-color: #d0d7de;
 }
 
-.login-header {
-    text-align: center;
-    margin-bottom: var(--osirion-spacing-6);
+::deep .card-title {
+    font-weight: 600;
+    color: #24292f;
 }
 
-.login-title {
-    font-size: var(--osirion-font-size-xl);
-    margin-bottom: var(--osirion-spacing-2);
-    color: var(--osirion-text-primary);
-    font-weight: var(--osirion-font-weight-semibold);
+/* Form controls */
+::deep .form-control {
+    font-size: 0.875rem;
+    border-radius: 6px;
+    border-color: #d0d7de;
+    padding: 0.375rem 0.75rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 
-.login-description {
-    color: var(--osirion-text-secondary);
-    margin-bottom: var(--osirion-spacing-4);
-    font-size: var(--osirion-font-size-sm);
-}
-
-.login-options {
-    display: flex;
-    flex-direction: column;
-    gap: var(--osirion-spacing-3);
-}
-
-.login-form {
-    margin-top: var(--osirion-spacing-4);
-}
-
-.login-form-group {
-    margin-bottom: var(--osirion-spacing-4);
-}
-
-.login-label {
-    display: block;
-    margin-bottom: var(--osirion-spacing-1);
-    font-weight: var(--osirion-font-weight-medium);
-    color: var(--osirion-text-primary);
-    font-size: var(--osirion-font-size-sm);
-}
-
-.login-input {
-    display: block;
-    width: 100%;
-    padding: var(--osirion-spacing-2) var(--osirion-spacing-3);
-    border: var(--osirion-border-width) solid var(--osirion-border-color);
-    border-radius: var(--osirion-radius-md);
-    background-color: var(--osirion-background-primary);
-    color: var(--osirion-text-primary);
-    font-family: var(--osirion-font-family-base);
-    font-size: var(--osirion-font-size-sm);
-    transition: border-color var(--osirion-transition-duration-200) var(--osirion-transition-timing-default);
-}
-
-    .login-input:focus {
-        outline: none;
-        border-color: var(--osirion-color-primary-500);
-        box-shadow: 0 0 0 3px var(--osirion-color-primary-100);
+    ::deep .form-control:focus {
+        border-color: #0969da;
+        box-shadow: 0 0 0 0.25rem rgba(9, 105, 218, 0.25);
     }
 
-.login-form-help {
-    display: block;
-    margin-top: var(--osirion-spacing-1);
-    font-size: var(--osirion-font-size-xs);
-    color: var(--osirion-text-tertiary);
+::deep .form-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #24292f;
 }
 
-.login-form-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: var(--osirion-spacing-2);
-    margin-top: var(--osirion-spacing-4);
+/* Button styling */
+::deep .btn-dark {
+    background-color: #24292f;
+    border-color: #24292f;
 }
 
-.login-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--osirion-spacing-2);
-    min-height: 32px;
-    padding: var(--osirion-spacing-1-5) var(--osirion-spacing-3);
-    border: var(--osirion-border-width) solid var(--osirion-border-color);
-    border-radius: var(--osirion-radius-md);
-    background-color: var(--osirion-background-primary);
-    color: var(--osirion-text-primary);
-    font-size: var(--osirion-font-size-sm);
-    font-weight: var(--osirion-font-weight-medium);
-    cursor: pointer;
-    transition: all var(--osirion-transition-duration-200) var(--osirion-transition-timing-default);
-}
-
-    .login-button:hover:not(:disabled) {
-        background-color: var(--osirion-background-secondary);
+    ::deep .btn-dark:hover {
+        background-color: #1c2128;
+        border-color: #1c2128;
     }
 
-    .login-button:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
+::deep .btn-primary {
+    background-color: #2da44e;
+    border-color: #2da44e;
+}
+
+    ::deep .btn-primary:hover {
+        background-color: #2c974b;
+        border-color: #2c974b;
     }
 
-.login-button-primary {
-    background-color: var(--osirion-color-success-600);
-    border-color: var(--osirion-color-success-600);
-    color: var(--osirion-color-white);
+::deep .btn-outline-secondary {
+    border-color: #d0d7de;
+    color: #24292f;
 }
 
-    .login-button-primary:hover:not(:disabled) {
-        background-color: var(--osirion-color-success-700);
-        border-color: var(--osirion-color-success-700);
+    ::deep .btn-outline-secondary:hover {
+        background-color: #f6f8fa;
+        color: #24292f;
+        border-color: #d8dee4;
     }
 
-.login-button-outline {
-    background-color: transparent;
-    border-color: var(--osirion-border-color);
-    color: var(--osirion-text-primary);
+/* Alert styling */
+::deep .alert-danger {
+    background-color: #ffebe9;
+    border-color: #ffcecb;
+    color: #cf222e;
 }
 
-    .login-button-outline:hover:not(:disabled) {
-        background-color: var(--osirion-background-hover, var(--osirion-color-neutral-100));
+/* Icon styling */
+::deep .bi-github {
+    font-size: 1.125rem;
+}
+
+/* Dark mode support */
+:root.dark ::deep .login-page {
+    background-color: #0d1117;
+}
+
+:root.dark ::deep .card {
+    background-color: #161b22;
+    border-color: #30363d;
+}
+
+:root.dark ::deep .card-title {
+    color: #e6edf3;
+}
+
+:root.dark ::deep .text-secondary {
+    color: #8b949e !important;
+}
+
+:root.dark ::deep .form-control {
+    background-color: #0d1117;
+    border-color: #30363d;
+    color: #e6edf3;
+}
+
+    :root.dark ::deep .form-control:focus {
+        border-color: #1f6feb;
+        box-shadow: 0 0 0 0.25rem rgba(9, 105, 218, 0.25);
     }
 
-.login-button-github {
-    background-color: #24292e;
-    border-color: #24292e;
-    color: white;
-    width: 100%;
+:root.dark ::deep .form-label {
+    color: #e6edf3;
 }
 
-    .login-button-github:hover:not(:disabled) {
-        background-color: #1e2327;
-        border-color: #1e2327;
+:root.dark ::deep .form-text {
+    color: #8b949e !important;
+}
+
+:root.dark ::deep .btn-outline-secondary {
+    border-color: #30363d;
+    color: #e6edf3;
+}
+
+    :root.dark ::deep .btn-outline-secondary:hover {
+        background-color: #30363d;
+        color: #e6edf3;
     }
-
-.login-button-secondary {
-    width: 100%;
-}
-
-.login-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.login-alert {
-    padding: var(--osirion-spacing-3);
-    margin-bottom: var(--osirion-spacing-4);
-    border-radius: var(--osirion-radius-md);
-    display: flex;
-    align-items: flex-start;
-    position: relative;
-    font-size: var(--osirion-font-size-sm);
-}
-
-.login-alert-error {
-    background-color: var(--osirion-color-danger-50);
-    border: 1px solid var(--osirion-color-danger-200);
-    color: var(--osirion-color-danger-700);
-}
-
-.login-alert-icon {
-    display: flex;
-    margin-right: var(--osirion-spacing-2);
-    flex-shrink: 0;
-    margin-top: 0.1rem;
-}
-
-.login-alert-close {
-    position: absolute;
-    top: var(--osirion-spacing-2);
-    right: var(--osirion-spacing-2);
-    background: transparent;
-    border: none;
-    color: currentColor;
-    font-size: 1.1rem;
-    cursor: pointer;
-    padding: 0;
-    line-height: 1;
-}
-
-.login-loading-spinner {
-    display: inline-block;
-    width: 16px;
-    height: 16px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-top-color: white;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin-right: var(--osirion-spacing-2);
-}
-
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-/* Accessibility */
-@media (prefers-reduced-motion: reduce) {
-    .login-input,
-    .login-button,
-    .login-loading-spinner {
-        transition: none;
-        animation: none;
-    }
-}

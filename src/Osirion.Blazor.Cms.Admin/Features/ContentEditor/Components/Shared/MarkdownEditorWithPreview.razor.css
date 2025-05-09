@@ -1,369 +1,333 @@
-/* Main container - taking full height of the parent */
-.markdown-editor-with-preview {
+/* GitHub-inspired styling for MarkdownEditorWithPreview */
+
+::deep .markdown-editor {
+    height: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+}
+
+/* Layout modes */
+::deep .editor-with-preview {
     display: flex;
-    flex-direction: column;
-    height: calc(100vh - 160px); /* Adjust based on your layout needs */
-    min-height: 500px;
-    overflow: hidden;
-    border: 1px solid var(--osirion-border-color, #d0d7de);
-    border-radius: 6px;
-    background-color: var(--osirion-background-primary, #ffffff);
-}
-
-/* Headers for both panels */
-.markdown-editor-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 8px 16px;
-    background-color: var(--osirion-background-secondary, #f6f8fa);
-    border-bottom: 1px solid var(--osirion-border-color, #d0d7de);
-    flex-shrink: 0; /* Prevent header from shrinking */
-    height: 42px; /* Fixed height for consistency */
-    z-index: 1; /* Ensure header stays on top */
-}
-
-.markdown-preview-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 8px 16px;
-    background-color: var(--osirion-background-secondary, #f6f8fa);
-    border-bottom: 1px solid var(--osirion-border-color, #d0d7de);
-    flex-shrink: 0; /* Prevent header from shrinking */
-    height: 42px; /* Fixed height for consistency */
-    z-index: 1; /* Ensure header stays on top */
-}
-
-.markdown-editor-title,
-.markdown-preview-title {
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--osirion-text-secondary, #57606a);
-    margin: 0;
-}
-
-/* Split view layout - side by side with equal height */
-.split-view {
     flex-direction: row;
-    flex: 1; /* Take remaining space */
-    overflow: hidden;
 }
 
-    .split-view .markdown-editor-container,
-    .split-view .markdown-preview-container {
-        width: 50%;
+    ::deep .editor-with-preview .editor-pane,
+    ::deep .editor-with-preview .preview-pane {
+        flex: 1;
+        overflow: hidden;
         display: flex;
         flex-direction: column;
-        overflow: hidden; /* Hide overflow, let the content panels handle scrolling */
-        height: 100%; /* Full height of parent */
     }
 
-    .split-view .markdown-editor-container {
-        border-right: 1px solid var(--osirion-border-color, #d0d7de);
-    }
-
-/* When preview is hidden, ensure editor expands properly */
-.editor-only {
+::deep .editor-only {
+    display: flex;
     flex-direction: column;
-    flex: 1;
 }
 
-    .editor-only .markdown-editor-container {
+    ::deep .editor-only .editor-pane {
+        flex: 1;
         width: 100%;
-        height: 100%;
     }
 
-    .editor-only .markdown-preview-container {
+    ::deep .editor-only .preview-pane {
         display: none;
     }
 
-/* Editor container */
-.markdown-editor-container {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    overflow: hidden;
+/* Toolbar styling */
+::deep .editor-toolbar {
+    padding: 0.5rem;
+    background-color: var(--bs-gray-100);
+    border-bottom: 1px solid var(--bs-gray-300);
+    z-index: 3;
 }
 
-/* The actual editor textarea */
-.markdown-editor-textarea {
-    flex: 1;
-    overflow-y: auto;
-    padding: 16px;
-    font-family: ui-monospace, SFMono-Regular, SF Mono, Consolas, Liberation Mono, Menlo, monospace;
-    font-size: 14px;
-    line-height: 1.5;
-    color: var(--osirion-text-primary, #24292f);
-    resize: none;
-    border: none;
-    outline: none;
-    background-color: var(--osirion-background-primary, #ffffff);
-    tab-size: 4;
-    height: calc(100% - 16px); /* Adjust for padding */
-}
-
-/* Preview container */
-.markdown-preview-container {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    overflow: hidden;
-}
-
-/* The actual preview content area with scrolling */
-.markdown-preview-content {
-    flex: 1;
-    overflow-y: auto;
-    padding: 16px;
-    background-color: var(--osirion-background-primary, #ffffff);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
-    font-size: 14px;
-    line-height: 1.5;
-    color: var(--osirion-text-primary, #24292f);
-    height: calc(100% - 16px); /* Adjust for padding */
-}
-
-.markdown-preview-placeholder {
-    color: var(--osirion-text-secondary, #8b949e);
-    font-style: italic;
-}
-
-/* Toolbar */
-.markdown-editor-toolbar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-}
-
-.markdown-editor-toolbar-button {
+::deep .btn-icon {
+    width: 28px;
+    height: 28px;
+    padding: 0;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    height: 28px;
-    width: 28px;
-    padding: 0;
-    border: none;
-    background-color: transparent;
-    color: var(--osirion-text-secondary, #57606a);
     border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.15s ease;
+    background: transparent;
+    color: var(--bs-gray-700);
+    border: none;
 }
 
-    .markdown-editor-toolbar-button:hover {
-        background-color: var(--osirion-hover-background, #eaeef2);
-        color: var(--osirion-text-primary, #24292f);
+    ::deep .btn-icon:hover {
+        background-color: var(--bs-gray-200);
+        color: var(--bs-gray-900);
     }
 
-.markdown-editor-toolbar-button-active {
-    background-color: rgba(3, 102, 214, 0.1);
-    color: var(--osirion-action-primary, #0969da);
+    ::deep .btn-icon:focus {
+        box-shadow: none;
+        background-color: var(--bs-gray-200);
+    }
+
+/* Editor area styling */
+::deep .editor-container {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
 }
 
-.markdown-editor-toolbar-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+::deep .editor-textarea {
+    border: none;
+    border-radius: 0;
+    padding: 1rem;
+    font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, "Liberation Mono", monospace;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--bs-gray-900);
+    resize: none;
+    height: 100%;
+    box-shadow: none;
 }
 
-/* Markdown Preview Styles - GitHub style */
-.markdown-preview-content h1,
-.markdown-preview-content h2,
-.markdown-preview-content h3,
-.markdown-preview-content h4,
-.markdown-preview-content h5,
-.markdown-preview-content h6 {
-    margin-top: 24px;
-    margin-bottom: 16px;
-    font-weight: 600;
-    line-height: 1.25;
-    color: var(--osirion-text-primary, #24292f);
+    ::deep .editor-textarea:focus {
+        box-shadow: none;
+        outline: none;
+        border: none;
+    }
+
+/* Preview header styling */
+::deep .preview-header {
+    padding: 0.5rem 1rem;
+    background-color: var(--bs-gray-100);
+    border-bottom: 1px solid var(--bs-gray-300);
+    z-index: 3;
 }
 
-.markdown-preview-content h1 {
-    font-size: 2em;
-    border-bottom: 1px solid var(--osirion-border-color, #d0d7de);
-    padding-bottom: 0.3em;
+/* Preview styling */
+::deep .preview-container {
+    overflow-y: auto;
+    padding: 1rem;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--bs-gray-900);
 }
 
-.markdown-preview-content h2 {
-    font-size: 1.5em;
-    border-bottom: 1px solid var(--osirion-border-color, #d0d7de);
-    padding-bottom: 0.3em;
+/* GitHub-style Markdown preview */
+::deep .markdown-preview {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    word-wrap: break-word;
 }
 
-.markdown-preview-content h3 {
-    font-size: 1.25em;
-}
+    ::deep .markdown-preview h1,
+    ::deep .markdown-preview h2,
+    ::deep .markdown-preview h3,
+    ::deep .markdown-preview h4,
+    ::deep .markdown-preview h5,
+    ::deep .markdown-preview h6 {
+        margin-top: 24px;
+        margin-bottom: 16px;
+        font-weight: 600;
+        line-height: 1.25;
+    }
 
-.markdown-preview-content h4 {
-    font-size: 1em;
-}
+    ::deep .markdown-preview h1 {
+        font-size: 2em;
+        border-bottom: 1px solid var(--bs-gray-300);
+        padding-bottom: 0.3em;
+    }
 
-.markdown-preview-content h5 {
-    font-size: 0.875em;
-}
+    ::deep .markdown-preview h2 {
+        font-size: 1.5em;
+        border-bottom: 1px solid var(--bs-gray-300);
+        padding-bottom: 0.3em;
+    }
 
-.markdown-preview-content h6 {
-    font-size: 0.85em;
-    color: var(--osirion-text-secondary, #57606a);
-}
+    ::deep .markdown-preview h3 {
+        font-size: 1.25em;
+    }
 
-.markdown-preview-content p,
-.markdown-preview-content ul,
-.markdown-preview-content ol,
-.markdown-preview-content dl,
-.markdown-preview-content table,
-.markdown-preview-content pre,
-.markdown-preview-content blockquote {
-    margin-top: 0;
-    margin-bottom: 16px;
-}
+    ::deep .markdown-preview a {
+        color: #0969da;
+        text-decoration: none;
+    }
 
-.markdown-preview-content blockquote {
-    padding: 0 1em;
-    color: var(--osirion-text-secondary, #57606a);
-    border-left: 0.25em solid var(--osirion-border-color, #d0d7de);
-}
+        ::deep .markdown-preview a:hover {
+            text-decoration: underline;
+        }
 
-.markdown-preview-content ul,
-.markdown-preview-content ol {
-    padding-left: 2em;
-}
+    ::deep .markdown-preview blockquote {
+        padding: 0 1em;
+        color: var(--bs-gray-600);
+        border-left: 0.25em solid var(--bs-gray-300);
+        margin: 0 0 16px 0;
+    }
 
-.markdown-preview-content li + li {
-    margin-top: 0.25em;
-}
+    ::deep .markdown-preview pre {
+        padding: 16px;
+        overflow: auto;
+        font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, "Liberation Mono", monospace;
+        font-size: 85%;
+        line-height: 1.45;
+        background-color: var(--bs-gray-100);
+        border-radius: 6px;
+        margin-bottom: 16px;
+    }
 
-.markdown-preview-content code {
-    padding: 0.2em 0.4em;
-    margin: 0;
-    font-size: 85%;
-    background-color: rgba(110, 118, 129, 0.1);
-    border-radius: 6px;
-    font-family: ui-monospace, SFMono-Regular, SF Mono, Consolas, Liberation Mono, Menlo, monospace;
-}
+    ::deep .markdown-preview code {
+        font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, "Liberation Mono", monospace;
+        font-size: 85%;
+        padding: 0.2em 0.4em;
+        margin: 0;
+        background-color: rgba(175, 184, 193, 0.2);
+        border-radius: 6px;
+    }
 
-.markdown-preview-content pre {
-    padding: 16px;
-    overflow: auto;
-    font-size: 85%;
-    line-height: 1.45;
-    background-color: var(--osirion-background-secondary, #f6f8fa);
-    border-radius: 6px;
-    margin-bottom: 16px;
-}
-
-    .markdown-preview-content pre code {
+    ::deep .markdown-preview pre code {
         padding: 0;
         margin: 0;
-        font-size: 100%;
-        word-break: normal;
-        white-space: pre;
-        background: transparent;
+        background-color: transparent;
+    }
+
+    ::deep .markdown-preview img {
+        max-width: 100%;
+        box-sizing: content-box;
+        background-color: var(--bs-white);
+    }
+
+    ::deep .markdown-preview table {
+        display: block;
+        width: 100%;
+        overflow: auto;
+        margin-bottom: 16px;
+    }
+
+        ::deep .markdown-preview table th,
+        ::deep .markdown-preview table td {
+            padding: 6px 13px;
+            border: 1px solid var(--bs-gray-300);
+        }
+
+        ::deep .markdown-preview table tr {
+            background-color: var(--bs-white);
+            border-top: 1px solid var(--bs-gray-300);
+        }
+
+            ::deep .markdown-preview table tr:nth-child(2n) {
+                background-color: var(--bs-gray-100);
+            }
+
+    ::deep .markdown-preview hr {
+        height: 0.25em;
+        padding: 0;
+        margin: 24px 0;
+        background-color: var(--bs-gray-300);
         border: 0;
     }
 
-.markdown-preview-content table {
-    display: block;
-    width: 100%;
-    overflow: auto;
-    border-collapse: collapse;
-    margin-bottom: 16px;
-}
-
-    .markdown-preview-content table th,
-    .markdown-preview-content table td {
-        padding: 6px 13px;
-        border: 1px solid var(--osirion-border-color, #d0d7de);
+    ::deep .markdown-preview ul,
+    ::deep .markdown-preview ol {
+        padding-left: 2em;
+        margin-bottom: 16px;
     }
 
-    .markdown-preview-content table tr {
-        background-color: var(--osirion-background-primary, #ffffff);
-        border-top: 1px solid var(--osirion-border-color, #d0d7de);
+    ::deep .markdown-preview li + li {
+        margin-top: 0.25em;
     }
 
-        .markdown-preview-content table tr:nth-child(2n) {
-            background-color: var(--osirion-background-secondary, #f6f8fa);
-        }
-
-.markdown-preview-content img {
-    max-width: 100%;
-    box-sizing: content-box;
-    background-color: var(--osirion-background-primary, #ffffff);
-    border-radius: 6px;
-    margin-bottom: 16px;
-}
-
-.markdown-preview-content hr {
-    height: 0.25em;
-    padding: 0;
-    margin: 24px 0;
-    background-color: var(--osirion-border-color, #d0d7de);
-    border: 0;
-}
-
-.markdown-preview-content a {
-    color: var(--osirion-action-primary, #0969da);
-    text-decoration: none;
-}
-
-    .markdown-preview-content a:hover {
-        text-decoration: underline;
+    /* Task lists */
+    ::deep .markdown-preview input[type="checkbox"] {
+        margin-right: 0.5em;
+        margin-top: 0.3em;
     }
 
-/* GitHub-style task lists */
-.markdown-preview-content ul.contains-task-list {
-    list-style-type: none;
-    padding-left: 0;
-}
+    ::deep .markdown-preview .contains-task-list {
+        list-style-type: none;
+        padding-left: 0;
+    }
 
-.markdown-preview-content .task-list-item {
-    position: relative;
-    list-style-type: none;
-    padding-left: 1.5em;
-}
-
-    .markdown-preview-content .task-list-item input[type="checkbox"] {
-        position: absolute;
-        left: 0;
-        top: 0.25em;
+    ::deep .markdown-preview .task-list-item {
+        display: flex;
+        align-items: flex-start;
+        padding-left: 0;
     }
 
 /* Dark mode support */
-:root.dark .markdown-editor-with-preview,
-.osirion-admin-theme-dark .markdown-editor-with-preview {
-    --osirion-background-primary: #0d1117;
-    --osirion-background-secondary: #161b22;
-    --osirion-text-primary: #e6edf3;
-    --osirion-text-secondary: #8b949e;
-    --osirion-border-color: #30363d;
-    --osirion-hover-background: #30363d;
-    --osirion-action-primary: #58a6ff;
+:root.dark ::deep .editor-toolbar,
+:root.dark ::deep .preview-header {
+    background-color: #161b22;
+    border-color: #30363d;
 }
 
-/* Responsive adjustments */
+:root.dark ::deep .editor-textarea {
+    background-color: #0d1117;
+    color: #e6edf3;
+}
+
+:root.dark ::deep .preview-container {
+    background-color: #0d1117;
+    color: #e6edf3;
+}
+
+:root.dark ::deep .markdown-preview h1,
+:root.dark ::deep .markdown-preview h2 {
+    border-color: #30363d;
+}
+
+:root.dark ::deep .markdown-preview blockquote {
+    color: #8b949e;
+    border-color: #30363d;
+}
+
+:root.dark ::deep .markdown-preview pre {
+    background-color: #161b22;
+}
+
+:root.dark ::deep .markdown-preview code {
+    background-color: rgba(110, 118, 129, 0.4);
+}
+
+:root.dark ::deep .markdown-preview table th,
+:root.dark ::deep .markdown-preview table td {
+    border-color: #30363d;
+}
+
+:root.dark ::deep .markdown-preview table tr {
+    background-color: #0d1117;
+    border-color: #30363d;
+}
+
+    :root.dark ::deep .markdown-preview table tr:nth-child(2n) {
+        background-color: #161b22;
+    }
+
+:root.dark ::deep .markdown-preview hr {
+    background-color: #30363d;
+}
+
+:root.dark ::deep .btn-icon {
+    color: #8b949e;
+}
+
+    :root.dark ::deep .btn-icon:hover {
+        background-color: #30363d;
+        color: #e6edf3;
+    }
+
+/* Responsive styling */
 @media (max-width: 768px) {
-    .split-view {
+    ::deep .editor-with-preview {
         flex-direction: column;
     }
 
-        .split-view .markdown-editor-container,
-        .split-view .markdown-preview-container {
+        ::deep .editor-with-preview .editor-pane,
+        ::deep .editor-with-preview .preview-pane {
             width: 100%;
             height: 50%;
         }
 
-        .split-view .markdown-editor-container {
-            border-right: none;
-            border-bottom: 1px solid var(--osirion-border-color, #d0d7de);
+        ::deep .editor-with-preview .preview-pane {
+            border-left: none;
+            border-top: 1px solid var(--bs-gray-300);
         }
-}
 
-/* Accessibility */
-@media (prefers-reduced-motion: reduce) {
-    .markdown-editor-toolbar-button {
-        transition: none;
+    :root.dark ::deep .editor-with-preview .preview-pane {
+        border-color: #30363d;
     }
 }

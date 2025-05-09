@@ -1,275 +1,76 @@
-.osirion-dashboard {
-    display: flex;
-    flex-direction: column;
-    gap: var(--osirion-spacing-6);
-    padding: var(--osirion-spacing-4);
-    max-width: 100%;
-    margin: 0 auto;
+/* GitHub-inspired styling for Dashboard page */
+
+::deep .card {
+    border-color: #d0d7de;
+    border-radius: 6px;
 }
 
-.osirion-dashboard-header {
-    margin-bottom: var(--osirion-spacing-4);
+::deep .card-header {
+    background-color: #f6f8fa;
+    border-bottom-color: #d0d7de;
+    padding: 0.75rem 1rem;
 }
 
-.osirion-dashboard-title {
-    font-size: var(--osirion-font-size-2xl);
-    font-weight: var(--osirion-font-weight-semibold);
-    margin: 0 0 var(--osirion-spacing-2);
-    color: var(--osirion-text-primary);
+::deep .card-title {
+    font-weight: 600;
+    font-size: 0.9375rem;
+    color: #24292f;
 }
 
-.osirion-dashboard-description {
-    font-size: var(--osirion-font-size-base);
-    color: var(--osirion-text-secondary);
-    margin: 0;
+::deep .btn-primary {
+    background-color: #2da44e;
+    border-color: #2da44e;
 }
 
-/* Repository setup notification */
-.osirion-dashboard-notification {
-    display: flex;
-    align-items: flex-start;
-    gap: var(--osirion-spacing-4);
-    padding: var(--osirion-spacing-4);
-    border: var(--osirion-border-width) solid var(--osirion-color-primary-200);
-    border-radius: var(--osirion-radius-md);
-    background-color: var(--osirion-color-primary-50);
-    margin-bottom: var(--osirion-spacing-6);
-}
-
-.osirion-dashboard-notification-icon {
-    color: var(--osirion-color-primary-500);
-    flex-shrink: 0;
-}
-
-.osirion-dashboard-notification-content {
-    flex: 1;
-}
-
-.osirion-dashboard-notification-title {
-    font-size: var(--osirion-font-size-lg);
-    font-weight: var(--osirion-font-weight-semibold);
-    margin: 0 0 var(--osirion-spacing-2);
-    color: var(--osirion-color-primary-700);
-}
-
-.osirion-dashboard-notification-text {
-    color: var(--osirion-color-primary-700);
-    margin: 0;
-}
-
-/* Dashboard grid layout */
-.osirion-dashboard-grid {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: var(--osirion-spacing-6);
-}
-
-.osirion-dashboard-column {
-    display: flex;
-    flex-direction: column;
-    gap: var(--osirion-spacing-6);
-}
-
-/* Cards */
-.osirion-card {
-    border: var(--osirion-border-width) solid var(--osirion-border-color);
-    border-radius: var(--osirion-radius-md);
-    background-color: var(--osirion-background-primary);
-    overflow: hidden;
-}
-
-.osirion-card-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: var(--osirion-spacing-3) var(--osirion-spacing-4);
-    background-color: var(--osirion-background-secondary);
-    border-bottom: var(--osirion-border-width) solid var(--osirion-border-color);
-}
-
-.osirion-card-title {
-    font-size: var(--osirion-font-size-base);
-    font-weight: var(--osirion-font-weight-semibold);
-    margin: 0;
-    color: var(--osirion-text-primary);
-}
-
-.osirion-card-button {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--osirion-spacing-1);
-    padding: var(--osirion-spacing-1) var(--osirion-spacing-3);
-    border: var(--osirion-border-width) solid var(--osirion-border-color);
-    border-radius: var(--osirion-radius-md);
-    background-color: var(--osirion-background-primary);
-    color: var(--osirion-text-primary);
-    font-size: var(--osirion-font-size-sm);
-    font-weight: var(--osirion-font-weight-medium);
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-    .osirion-card-button:hover:not(:disabled) {
-        background-color: var(--osirion-background-tertiary);
+    ::deep .btn-primary:hover {
+        background-color: #2c974b;
+        border-color: #2c974b;
     }
 
-    .osirion-card-button:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
+    ::deep .btn-primary:focus,
+    ::deep .btn-primary:active {
+        background-color: #2c974b;
+        border-color: #2c974b;
+        box-shadow: 0 0 0 0.25rem rgba(45, 164, 78, 0.25);
     }
 
-.osirion-card-body {
-    padding: var(--osirion-spacing-4);
+::deep .btn-outline-secondary {
+    border-color: #d0d7de;
+    color: #24292f;
 }
 
-.osirion-card-file-explorer {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-    .osirion-card-file-explorer .osirion-card-body {
-        flex: 1;
-        padding: 0;
-        overflow: hidden;
+    ::deep .btn-outline-secondary:hover {
+        background-color: #f6f8fa;
+        color: #24292f;
+        border-color: #d0d7de;
     }
 
-/* Quick actions */
-.osirion-quick-actions {
-    display: flex;
-    flex-direction: column;
-    gap: var(--osirion-spacing-3);
-}
-
-.osirion-action-button {
-    display: flex;
-    align-items: flex-start;
-    gap: var(--osirion-spacing-3);
-    padding: var(--osirion-spacing-3) var(--osirion-spacing-4);
-    border: var(--osirion-border-width) solid var(--osirion-border-color);
-    border-radius: var(--osirion-radius-md);
-    background-color: var(--osirion-background-primary);
-    color: var(--osirion-text-primary);
-    text-decoration: none;
-    transition: all 0.2s ease;
-    cursor: pointer;
-}
-
-    .osirion-action-button:hover:not(:disabled) {
-        background-color: var(--osirion-background-secondary);
+    ::deep .btn-outline-secondary:disabled {
+        opacity: 0.5;
+        border-color: #d0d7de;
+        color: #8c959f;
     }
 
-    .osirion-action-button:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-    }
-
-.osirion-action-button-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    border-radius: var(--osirion-radius-md);
-    background-color: var(--osirion-background-secondary);
-    color: var(--osirion-text-secondary);
-    flex-shrink: 0;
+::deep .text-primary {
+    color: #0969da !important;
 }
 
-.osirion-action-button:hover:not(:disabled) .osirion-action-button-icon {
-    color: var(--osirion-text-primary);
-    background-color: var(--osirion-background-tertiary);
+::deep .alert-info {
+    color: #0969da;
+    background-color: #ddf4ff;
+    border-color: #80ccff;
 }
 
-.osirion-action-button-content {
-    flex: 1;
+::deep .shadow-sm {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12) !important;
 }
 
-.osirion-action-button-title {
-    font-weight: var(--osirion-font-weight-medium);
-    margin-bottom: var(--osirion-spacing-1);
-    color: var(--osirion-text-primary);
+/* Icon styling */
+::deep .bi {
+    line-height: 1;
 }
 
-.osirion-action-button-description {
-    font-size: var(--osirion-font-size-sm);
-    color: var(--osirion-text-secondary);
-}
-
-/* Dashboard footer */
-.osirion-dashboard-footer {
-    margin-top: var(--osirion-spacing-4);
-}
-
-.osirion-dashboard-help {
-    padding: var(--osirion-spacing-4);
-    border: var(--osirion-border-width) solid var(--osirion-border-color);
-    border-radius: var(--osirion-radius-md);
-    background-color: var(--osirion-background-secondary);
-}
-
-.osirion-dashboard-help-title {
-    font-size: var(--osirion-font-size-base);
-    font-weight: var(--osirion-font-weight-semibold);
-    margin: 0 0 var(--osirion-spacing-3);
-    color: var(--osirion-text-primary);
-}
-
-.osirion-dashboard-help-links {
-    display: flex;
-    gap: var(--osirion-spacing-4);
-}
-
-.osirion-dashboard-help-link {
-    display: flex;
-    align-items: center;
-    gap: var(--osirion-spacing-2);
-    color: var(--osirion-color-primary-600);
-    text-decoration: none;
-    font-size: var(--osirion-font-size-sm);
-}
-
-    .osirion-dashboard-help-link:hover {
-        text-decoration: underline;
-    }
-
-/* Responsive adjustments */
-@media (max-width: 992px) {
-    .osirion-dashboard-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 640px) {
-    .osirion-dashboard-notification {
-        flex-direction: column;
-    }
-
-    .osirion-dashboard-help-links {
-        flex-direction: column;
-        gap: var(--osirion-spacing-2);
-    }
-}
-
-/* Dark mode adjustments */
-.osirion-theme-dark .osirion-dashboard-notification {
-    background-color: rgba(9, 105, 218, 0.1);
-    border-color: rgba(9, 105, 218, 0.3);
-}
-
-.osirion-theme-dark .osirion-dashboard-notification-icon {
-    color: var(--osirion-color-primary-300);
-}
-
-.osirion-theme-dark .osirion-dashboard-notification-title,
-.osirion-theme-dark .osirion-dashboard-notification-text {
-    color: var(--osirion-color-primary-300);
-}
-
-/* Accessibility improvements */
-@media (prefers-reduced-motion: reduce) {
-    .osirion-card-button,
-    .osirion-action-button {
-        transition: none;
-    }
+/* Dark mode support can be added here */
+@media (prefers-color-scheme: dark) {
+    /* Add dark mode styles */
 }

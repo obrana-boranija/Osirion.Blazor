@@ -3,33 +3,28 @@
 @using Osirion.Blazor.Cms.Admin.Shared.Components
 @using Osirion.Blazor.Cms.Domain.ValueObjects
 
-<div class="metadata-editor @CssClass">
-    <div class="metadata-editor-header">
-        <h3 class="metadata-editor-title">Metadata</h3>
+<div class="metadata-editor h-100 overflow-auto">
+    <div class="sticky-top pt-2 px-3 pb-2 bg-white border-bottom d-flex justify-content-between align-items-center">
+        <h6 class="mb-0 fw-semibold">Metadata</h6>
 
         @if (ShowActions)
         {
-            <div class="metadata-editor-actions">
+            <div class="btn-toolbar">
                 <button type="button"
-                        class="metadata-editor-button metadata-editor-button-icon"
+                        class="btn btn-sm btn-icon"
                         title="Refresh metadata"
                         @onclick="RefreshMetadata">
-                    <span class="metadata-editor-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M23 4v6h-6"></path>
-                            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
-                        </svg>
-                    </span>
+                    <i class="bi bi-arrow-repeat"></i>
                 </button>
             </div>
         }
     </div>
 
-    <div class="metadata-editor-content">
-        <div class="metadata-editor-form-group">
-            <label class="metadata-editor-label" for="title">Title</label>
+    <div class="p-3">
+        <div class="mb-3">
+            <label for="title" class="form-label fw-medium">Title</label>
             <input type="text"
-                   class="metadata-editor-input"
+                   class="form-control"
                    id="title"
                    @bind="Metadata.Title"
                    @bind:event="oninput"
@@ -37,9 +32,9 @@
                    placeholder="Enter title" />
         </div>
 
-        <div class="metadata-editor-form-group">
-            <label class="metadata-editor-label" for="description">Description</label>
-            <textarea class="metadata-editor-textarea"
+        <div class="mb-3">
+            <label for="description" class="form-label fw-medium">Description</label>
+            <textarea class="form-control"
                       id="description"
                       @bind="Metadata.Description"
                       @bind:event="oninput"
@@ -48,10 +43,10 @@
                       rows="3"></textarea>
         </div>
 
-        <div class="metadata-editor-form-group">
-            <label class="metadata-editor-label" for="author">Author</label>
+        <div class="mb-3">
+            <label for="author" class="form-label fw-medium">Author</label>
             <input type="text"
-                   class="metadata-editor-input"
+                   class="form-control"
                    id="author"
                    @bind="Metadata.Author"
                    @bind:event="oninput"
@@ -59,20 +54,20 @@
                    placeholder="Enter author" />
         </div>
 
-        <div class="metadata-editor-form-group">
-            <label class="metadata-editor-label" for="date">Date</label>
+        <div class="mb-3">
+            <label for="date" class="form-label fw-medium">Date</label>
             <input type="date"
-                   class="metadata-editor-input"
+                   class="form-control"
                    id="date"
                    @bind="PostDate"
                    @bind:event="onchange"
                    @bind:after="NotifyMetadataChanged" />
         </div>
 
-        <div class="metadata-editor-form-group">
-            <label class="metadata-editor-label" for="featuredImage">Featured Image URL</label>
+        <div class="mb-3">
+            <label for="featuredImage" class="form-label fw-medium">Featured Image URL</label>
             <input type="text"
-                   class="metadata-editor-input"
+                   class="form-control"
                    id="featuredImage"
                    @bind="Metadata.FeaturedImage"
                    @bind:event="oninput"
@@ -80,50 +75,57 @@
                    placeholder="Enter image URL" />
         </div>
 
-        <div class="metadata-editor-form-group">
-            <label class="metadata-editor-label" for="categories">Categories</label>
+        <div class="mb-3">
+            <label for="categories" class="form-label fw-medium">Categories</label>
             <input type="text"
-                   class="metadata-editor-input"
+                   class="form-control"
                    id="categories"
                    @bind="CategoriesInput"
                    @bind:event="oninput"
                    placeholder="Enter categories (comma separated)" />
         </div>
 
-        <div class="metadata-editor-form-group">
-            <label class="metadata-editor-label" for="tags">Tags</label>
+        <div class="mb-3">
+            <label for="tags" class="form-label fw-medium">Tags</label>
             <input type="text"
-                   class="metadata-editor-input"
+                   class="form-control"
                    id="tags"
                    @bind="TagsInput"
                    @bind:event="oninput"
                    placeholder="Enter tags (comma separated)" />
         </div>
 
-        <div class="metadata-editor-checkboxes">
-            <div class="metadata-editor-checkbox-group">
-                <label class="metadata-editor-checkbox">
-                    <input type="checkbox"
+        <div class="row mb-3">
+            <div class="col-6">
+                <div class="form-check">
+                    <input class="form-check-input"
+                           type="checkbox"
+                           id="isFeatured"
                            @bind="Metadata.IsFeatured"
                            @bind:after="NotifyMetadataChanged" />
-                    <span>Featured</span>
-                </label>
+                    <label class="form-check-label" for="isFeatured">
+                        Featured
+                    </label>
+                </div>
             </div>
-
-            <div class="metadata-editor-checkbox-group">
-                <label class="metadata-editor-checkbox">
-                    <input type="checkbox"
+            <div class="col-6">
+                <div class="form-check">
+                    <input class="form-check-input"
+                           type="checkbox"
+                           id="isPublished"
                            @bind="Metadata.Published"
                            @bind:after="NotifyMetadataChanged" />
-                    <span>Published</span>
-                </label>
+                    <label class="form-check-label" for="isPublished">
+                        Published
+                    </label>
+                </div>
             </div>
         </div>
 
-        <div class="metadata-editor-form-group">
-            <label class="metadata-editor-label" for="layout">Layout Template</label>
+        <div class="mb-3">
+            <label for="layout" class="form-label fw-medium">Layout Template</label>
             <input type="text"
-                   class="metadata-editor-input"
+                   class="form-control"
                    id="layout"
                    @bind="Metadata.Layout"
                    @bind:event="oninput"
@@ -131,10 +133,10 @@
                    placeholder="Enter layout template name (optional)" />
         </div>
 
-        <div class="metadata-editor-form-group">
-            <label class="metadata-editor-label" for="slug">Slug</label>
+        <div class="mb-3">
+            <label for="slug" class="form-label fw-medium">Slug</label>
             <input type="text"
-                   class="metadata-editor-input"
+                   class="form-control"
                    id="slug"
                    @bind="Metadata.Slug"
                    @bind:event="oninput"
@@ -144,9 +146,9 @@
 
         @if (ShowPreview)
         {
-            <div class="metadata-editor-form-group">
-                <label class="metadata-editor-label">Front Matter Preview</label>
-                <pre class="metadata-editor-code-preview">@GetFormattedFrontMatter()</pre>
+            <div class="mb-3">
+                <label class="form-label fw-medium">Front Matter Preview</label>
+                <pre class="bg-light border rounded p-2 font-monospace small">@GetFormattedFrontMatter()</pre>
             </div>
         }
     </div>

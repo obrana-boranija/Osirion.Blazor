@@ -1,20 +1,15 @@
 using Microsoft.AspNetCore.Components;
-using Octokit;
 using Osirion.Blazor.Cms.Admin.Core.Events;
 using Osirion.Blazor.Cms.Admin.Core.State;
 using Osirion.Blazor.Cms.Admin.Features.ContentEditor.ViewModels;
-using Osirion.Blazor.Cms.Admin.Shared.Components;
 using Osirion.Blazor.Cms.Domain.Models;
 
 namespace Osirion.Blazor.Cms.Admin.Features.ContentEditor.Components;
 
-public partial class ContentEditor : BaseComponent
+public partial class ContentEditor : IDisposable
 {
     [Inject]
     public ContentEditorViewModel ViewModel { get; set; } = null!;
-
-    [Inject]
-    public CmsState AdminState { get; set; } = null!;
 
     [Parameter]
     public bool IsPreviewVisible { get; set; } = true;
@@ -30,7 +25,7 @@ public partial class ContentEditor : BaseComponent
 
     protected override void OnInitialized()
     {
-        // Subscribe to changes from both ViewModel and AdminState
+        // Subscribe to changes from ViewModel
         ViewModel.StateChanged += StateHasChanged;
 
         // If ViewModel.EditingPost is null but AdminState has a post,

@@ -1,11 +1,96 @@
 ﻿@page "/osirion/login"
-@using Osirion.Blazor.Cms.Admin.Features.Authentication.Components
+@rendermode InteractiveServer
 
-<div class="@GetLoginPageClass()">
-    <Login Title="Osirion CMS Admin"
-           Description="Sign in to manage your content"
-           EnableGitHubAuth
-           ReturnUrl="@GetReturnUrl()"
-           Theme="@Theme"
-           OnLoginResult="HandleLoginResult" />
+<div class="min-vh-100 d-flex align-items-center justify-content-center py-5 @(Theme == "dark" ? "bg-dark text-white" : "bg-light")">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5 col-xl-4">
+                <div class="card shadow @(Theme == "dark" ? "bg-dark text-white border-secondary" : "")">
+                    <div class="card-body p-4 p-md-5">
+                        <div class="text-center mb-4">
+                            <i class="bi bi-github display-1 text-primary mb-2"></i>
+                            <h1 class="h4 mb-3">Osirion CMS Admin</h1>
+                            <p class="text-muted mb-4">Sign in to manage your content</p>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(ErrorMessage))
+                        {
+                                <div class="alert alert-danger d-flex align-items-center" role="alert">
+                                    <i class="bi bi-exclamation-circle-fill me-2"></i>
+                                    <div>@ErrorMessage</div>
+                                </div>
+                        }
+
+                        @if (IsShowingTokenInput)
+                        {
+                                <div class="mb-3">
+                                    <label for="accessToken" class="form-label">GitHub Access Token</label>
+                                    <input type="password" 
+                                          class="form-control @(Theme == "dark" ? "bg-dark text-white border-secondary" : "")" 
+                                          id="accessToken"
+                                          @bind="AccessToken"
+                                          placeholder="Enter your personal access token" />
+                                    <div class="form-text">
+                                        Access token should have repo scope permissions.
+                                    </div>
+                                </div>
+
+                                <div class="d-grid gap-2">
+                                    <button type="button"
+                                            class="btn btn-primary"
+                                            @onclick="LoginWithToken"
+                                            disabled="@(string.IsNullOrEmpty(AccessToken) || IsLoggingIn)">
+                                    @if (IsLoggingIn)
+                                    {
+                                                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                                <span>Authenticating...</span>
+                                    }
+                                    else
+                                    {
+                                                <span>Login with Token</span>
+                                    }
+                                    </button>
+                                    <button type="button"
+                                            class="btn btn-outline-secondary"
+                                            @onclick="ToggleTokenInput">
+                                        Cancel
+                                    </button>
+                                </div>
+                        }
+                        else
+                        {
+                                <div class="d-grid gap-3">
+                                @if (EnableGitHubAuth)
+                                {
+                                            <button type="button"
+                                                    class="btn btn-dark"
+                                                    @onclick="LoginWithGitHub">
+                                                <i class="bi bi-github me-2"></i>
+                                                Login with GitHub
+                                            </button>
+                                }
+
+                                    <button type="button"
+                                            class="btn btn-outline-secondary"
+                                            @onclick="ToggleTokenInput">
+                                        <i class="bi bi-key me-2"></i>
+                                        Login with Access Token
+                                    </button>
+                                </div>
+                        }
+                    </div>
+                    <div class="card-footer @(Theme == "dark" ? "bg-dark border-secondary" : "bg-light") text-center py-3">
+                        <small class="text-muted">
+                            Powered by 
+                            <a href="https://github.com/obrana-boranija/Osirion.Blazor" 
+                              target="_blank" 
+                              class="text-decoration-none">
+                                Osirion.Blazor
+                            </a>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

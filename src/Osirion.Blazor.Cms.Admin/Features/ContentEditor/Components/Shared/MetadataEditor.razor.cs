@@ -1,10 +1,9 @@
 using Microsoft.AspNetCore.Components;
-using Osirion.Blazor.Cms.Admin.Shared.Components;
 using Osirion.Blazor.Cms.Domain.ValueObjects;
 
 namespace Osirion.Blazor.Cms.Admin.Features.ContentEditor.Components.Shared;
 
-public partial class MetadataEditor : BaseComponent
+public partial class MetadataEditor
 {
     [Parameter]
     public FrontMatter Metadata { get; set; } = FrontMatter.Create("New Post");
