@@ -1,15 +1,19 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
-using Osirion.Blazor.Cms.Admin.Shared.Components;
+using System.Text.RegularExpressions;
 
 namespace Osirion.Blazor.Cms.Admin.Features.ContentEditor.Components.Shared;
 
-public partial class MarkdownEditorWithPreview : BaseComponent, IAsyncDisposable
+public enum EditorMode
 {
-    [Inject]
-    private IJSRuntime JSRuntime { get; set; } = null!;
+    Edit,
+    Preview,
+    Split
+}
 
+public partial class MarkdownEditorWithPreview : IAsyncDisposable
+{
     [Parameter]
     public string Content { get; set; } = string.Empty;
 
@@ -34,6 +38,9 @@ public partial class MarkdownEditorWithPreview : BaseComponent, IAsyncDisposable
     [Parameter]
     public bool SyncScroll { get; set; } = true;
 
+    [Parameter]
+    public bool SpellCheck { get; set; } = false;
+
     private string EditorContent
     {
         get => Content;
@@ -44,6 +51,7 @@ public partial class MarkdownEditorWithPreview : BaseComponent, IAsyncDisposable
                 Content = value;
                 _ = ContentChanged.InvokeAsync(value);
                 _ = UpdatePreviewAsync();
+                CalculateLineAndColumn(value);
             }
         }
     }
@@ -56,11 +64,17 @@ public partial class MarkdownEditorWithPreview : BaseComponent, IAsyncDisposable
     private double previewScrollPercentage = 0;
     private IJSObjectReference? jsModule;
     private bool jsInteropAvailable = false;
+    private bool IsFullscreen = false;
+    private EditorMode EditorMode { get; set; } = EditorMode.Split;
+    private int CurrentLine { get; set; } = 1;
+    private int CurrentColumn { get; set; } = 1;
+    private int caretPosition = 0;
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
         await UpdatePreviewAsync();
+        CalculateLineAndColumn(Content);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -98,7 +112,7 @@ public partial class MarkdownEditorWithPreview : BaseComponent, IAsyncDisposable
             Preview = await MarkdownService.RenderToHtmlAsync(Content);
             StateHasChanged();
 
-            if (SyncScroll && isEditorFocused && jsInteropAvailable && jsModule != null)
+            if (SyncScroll && isEditorFocused && jsInteropAvailable && jsModule != null && EditorMode == EditorMode.Split)
             {
                 await SyncScrollPositionAsync(true);
             }
@@ -106,6 +120,35 @@ public partial class MarkdownEditorWithPreview : BaseComponent, IAsyncDisposable
         catch (Exception ex)
         {
             ErrorMessage = $"Error rendering preview: {ex.Message}";
+        }
+    }
+
+    private void CalculateLineAndColumn(string text)
+    {
+        if (string.IsNullOrEmpty(text) || caretPosition == 0)
+        {
+            CurrentLine = 1;
+            CurrentColumn = 1;
+            return;
+        }
+
+        // Get the text up to the caret position
+        string textUpToCaret = text.Substring(0, Math.Min(caretPosition, text.Length));
+
+        // Count the number of newlines for line number
+        CurrentLine = Regex.Matches(textUpToCaret, "\n").Count + 1;
+
+        // Find the last newline before the caret position
+        int lastNewlineIndex = textUpToCaret.LastIndexOf('\n');
+        if (lastNewlineIndex == -1)
+        {
+            // If there's no newline, the column is the caret position + 1
+            CurrentColumn = caretPosition + 1;
+        }
+        else
+        {
+            // The column is the number of characters after the last newline + 1
+            CurrentColumn = textUpToCaret.Length - lastNewlineIndex;
         }
     }
 
@@ -130,12 +173,14 @@ public partial class MarkdownEditorWithPreview : BaseComponent, IAsyncDisposable
         {
             if (jsInteropAvailable && jsModule != null)
             {
-                string newContent = await jsModule.InvokeAsync<string>(
+                var result = await jsModule.InvokeAsync<InsertionResult>(
                     "insertTextAtCursor", TextAreaRef, prefix, suffix, placeholder);
 
-                if (Content != newContent)
+                if (Content != result.Text)
                 {
-                    EditorContent = newContent;
+                    EditorContent = result.Text;
+                    caretPosition = result.CaretPosition;
+                    CalculateLineAndColumn(result.Text);
                 }
             }
             else
@@ -164,7 +209,7 @@ public partial class MarkdownEditorWithPreview : BaseComponent, IAsyncDisposable
 
     private async Task OnEditorScrolled(EventArgs args)
     {
-        if (SyncScroll && isEditorFocused && jsInteropAvailable && jsModule != null)
+        if (SyncScroll && isEditorFocused && jsInteropAvailable && jsModule != null && EditorMode == EditorMode.Split)
         {
             await SyncScrollPositionAsync(true);
         }
@@ -172,7 +217,7 @@ public partial class MarkdownEditorWithPreview : BaseComponent, IAsyncDisposable
 
     private async Task OnPreviewScrolled(EventArgs args)
     {
-        if (SyncScroll && !isEditorFocused && jsInteropAvailable && jsModule != null)
+        if (SyncScroll && !isEditorFocused && jsInteropAvailable && jsModule != null && EditorMode == EditorMode.Split)
         {
             await SyncScrollPositionAsync(false);
         }
@@ -212,6 +257,20 @@ public partial class MarkdownEditorWithPreview : BaseComponent, IAsyncDisposable
 
     private async Task HandleKeyDown(KeyboardEventArgs e)
     {
+        // Get current caret position after any key press
+        try
+        {
+            if (jsInteropAvailable && jsModule != null)
+            {
+                caretPosition = await jsModule.InvokeAsync<int>("getCaretPosition", TextAreaRef);
+                CalculateLineAndColumn(Content);
+            }
+        }
+        catch
+        {
+            // Silently ignore any errors getting caret position
+        }
+
         // Handle tab key for indentation
         if (e.Key == "Tab")
         {
@@ -219,12 +278,14 @@ public partial class MarkdownEditorWithPreview : BaseComponent, IAsyncDisposable
             {
                 try
                 {
-                    string newContent = await jsModule.InvokeAsync<string>(
+                    var result = await jsModule.InvokeAsync<InsertionResult>(
                         "handleTabKey", TextAreaRef, e.ShiftKey);
 
-                    if (Content != newContent)
+                    if (Content != result.Text)
                     {
-                        EditorContent = newContent;
+                        EditorContent = result.Text;
+                        caretPosition = result.CaretPosition;
+                        CalculateLineAndColumn(result.Text);
                     }
                 }
                 catch (Exception ex)
@@ -234,6 +295,28 @@ public partial class MarkdownEditorWithPreview : BaseComponent, IAsyncDisposable
                 }
             }
         }
+    }
+
+    private async Task ToggleFullscreen()
+    {
+        if (jsInteropAvailable && jsModule != null)
+        {
+            try
+            {
+                IsFullscreen = await jsModule.InvokeAsync<bool>("toggleFullscreen", ".markdown-editor");
+                StateHasChanged();
+            }
+            catch
+            {
+                // Silently fail if JS interop isn't available
+            }
+        }
+    }
+
+    private void SetEditorMode(EditorMode mode)
+    {
+        EditorMode = mode;
+        StateHasChanged();
     }
 
     async ValueTask IAsyncDisposable.DisposeAsync()
@@ -257,5 +340,11 @@ public partial class MarkdownEditorWithPreview : BaseComponent, IAsyncDisposable
         public double ScrollHeight { get; set; }
         public double ClientHeight { get; set; }
         public double Percentage { get; set; }
+    }
+
+    private class InsertionResult
+    {
+        public string Text { get; set; } = string.Empty;
+        public int CaretPosition { get; set; }
     }
 }
