@@ -4,57 +4,53 @@
 @using Osirion.Blazor.Cms.Admin.Shared.Components
 @inject BranchSelectorViewModel ViewModel
 
-<div class="branch-selector @CssClass">
-    <div class="branch-header">
-        <h2 class="branch-title">@Title</h2>
-
-        <div class="branch-actions">
+<div class="card shadow-sm mb-3">
+    <div class="card-header d-flex justify-content-between align-items-center bg-light">
+        <h5 class="card-title mb-0 fs-6">@Title</h5>
+        <div class="btn-group">
             <button type="button"
-                    class="branch-button branch-button-refresh"
+                    class="btn btn-sm btn-outline-secondary"
                     title="Refresh branches"
                     @onclick="RefreshBranches">
-                <span class="branch-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 12a9 9 0 0 1-9 9c-4.97 0-9-4.03-9-9s4.03-9 9-9c2.39 0 4.68.94 6.4 2.6L12 12" />
-                    </svg>
-                </span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
+                  <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z"/>
+                  <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"/>
+                </svg>
             </button>
         </div>
     </div>
 
     @if (ViewModel.IsLoading)
     {
-        <div class="branch-loading">
-            <span class="branch-loading-spinner"></span>
-            <span>Loading branches...</span>
+        <div class="card-body text-center py-4">
+            <div class="spinner-border spinner-border-sm text-secondary me-2" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <span class="text-secondary">Loading branches...</span>
         </div>
     }
     else if (ViewModel.ErrorMessage != null)
     {
-        <div class="branch-error">
-            <span class="branch-error-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10" />
-                    <line x1="12" y1="8" x2="12" y2="12" />
-                    <line x1="12" y1="16" x2="12.01" y2="16" />
-                </svg>
-            </span>
-            <span>@ViewModel.ErrorMessage</span>
-            <button type="button" class="branch-button branch-button-small" @onclick="RefreshBranches">
+        <div class="card-body">
+            <div class="alert alert-danger d-flex align-items-center" role="alert">
+                <i class="bi bi-exclamation-circle-fill me-2"></i>
+                <div>@ViewModel.ErrorMessage</div>
+            </div>
+            <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="RefreshBranches">
                 Retry
             </button>
         </div>
     }
     else if (ViewModel.Branches.Count == 0)
     {
-        <div class="branch-empty">
-            <span>No branches found. Please select a repository first.</span>
+        <div class="card-body text-center py-4">
+            <span class="text-secondary">No branches found. Please select a repository first.</span>
         </div>
     }
     else
     {
-        <div class="branch-select-container">
-            <select class="branch-select"
+        <div class="card-body">
+            <select class="form-select"
                     value="@(ViewModel.SelectedBranch?.Name ?? string.Empty)"
                     @onchange="OnBranchSelected">
                 <option value="">@SelectPrompt</option>
@@ -67,63 +63,58 @@
 
         @if (AllowCreateBranch)
         {
-            <div class="branch-actions-container">
+            <div class="card-footer bg-light">
                 @if (ViewModel.IsCreatingNewBranch)
                 {
-                    <div class="branch-create-form">
-                        <div class="branch-form-group">
-                            <label class="branch-label">New Branch Name</label>
-                            <input type="text"
-                                   class="branch-input"
-                                   @bind="ViewModel.NewBranchName"
-                                   placeholder="Enter branch name" />
-                        </div>
+                    <div class="mb-3">
+                        <label for="newBranchName" class="form-label small fw-medium">New Branch Name</label>
+                        <input type="text"
+                               class="form-control form-control-sm"
+                               id="newBranchName"
+                               @bind="ViewModel.NewBranchName"
+                               placeholder="Enter branch name" />
+                    </div>
 
-                        <div class="branch-form-group">
-                            <label class="branch-label">Base Branch</label>
-                            <select class="branch-select"
-                                    @bind="ViewModel.BaseBranchName">
-                                @foreach (var branch in ViewModel.Branches)
-                                {
-                                    <option value="@branch.Name">@branch.Name</option>
-                                }
-                            </select>
-                        </div>
+                    <div class="mb-3">
+                        <label for="baseBranch" class="form-label small fw-medium">Base Branch</label>
+                        <select class="form-select form-select-sm"
+                                id="baseBranch"
+                                @bind="ViewModel.BaseBranchName">
+                            @foreach (var branch in ViewModel.Branches)
+                            {
+                                <option value="@branch.Name">@branch.Name</option>
+                            }
+                        </select>
+                    </div>
 
-                        <div class="branch-form-actions">
-                            <button type="button"
-                                    class="branch-button"
-                                    @onclick="@(() => ViewModel.SetCreatingNewBranch(false))">
-                                Cancel
-                            </button>
-                            <button type="button"
-                                    class="branch-button branch-button-primary"
-                                    @onclick="CreateBranch"
-                                    disabled="@(string.IsNullOrWhiteSpace(ViewModel.NewBranchName) || ViewModel.IsCreatingBranch)">
-                                @if (ViewModel.IsCreatingBranch)
-                                {
-                                    <span class="branch-loading-spinner"></span>
-                                    <span>Creating...</span>
-                                }
-                                else
-                                {
-                                    <span>Create Branch</span>
-                                }
-                            </button>
-                        </div>
+                    <div class="d-flex gap-2 justify-content-end">
+                        <button type="button"
+                                class="btn btn-sm btn-outline-secondary"
+                                @onclick="@(() => ViewModel.SetCreatingNewBranch(false))">
+                            Cancel
+                        </button>
+                        <button type="button"
+                                class="btn btn-sm btn-primary"
+                                @onclick="CreateBranch"
+                                disabled="@(string.IsNullOrWhiteSpace(ViewModel.NewBranchName) || ViewModel.IsCreatingBranch)">
+                            @if (ViewModel.IsCreatingBranch)
+                            {
+                                <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                                <span>Creating...</span>
+                            }
+                            else
+                            {
+                                <span>Create Branch</span>
+                            }
+                        </button>
                     </div>
                 }
                 else
                 {
                     <button type="button"
-                            class="branch-button branch-button-new"
+                            class="btn btn-sm btn-outline-primary"
                             @onclick="@(() => ViewModel.SetCreatingNewBranch(true))">
-                        <span class="branch-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <line x1="12" y1="5" x2="12" y2="19"></line>
-                                <line x1="5" y1="12" x2="19" y2="12"></line>
-                            </svg>
-                        </span>
+                        <i class="bi bi-git me-1"></i>
                         New Branch
                     </button>
                 }

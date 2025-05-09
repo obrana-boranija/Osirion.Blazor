@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Components;
 using Osirion.Blazor.Cms.Admin.Core.Events;
 using Osirion.Blazor.Cms.Domain.Models;
 using Osirion.Blazor.Cms.Domain.ValueObjects;
@@ -12,11 +13,11 @@ public partial class Dashboard
     private bool IsRepositoryConfigured =>
         AdminState.SelectedRepository != null && AdminState.SelectedBranch != null;
 
-    //protected override void OnInitialized()
-    //{
-    //    // Subscribe to state changes to trigger re-render
-    //    AdminState.StateChanged += StateHasChanged;
-    //}
+    protected override void OnInitialized()
+    {
+        // Subscribe to state changes to trigger re-render
+        AdminState.StateChanged += StateHasChanged;
+    }
 
     /// <summary>
     /// Creates a new post and navigates to edit screen
@@ -48,9 +49,9 @@ public partial class Dashboard
         NavigationManager.NavigateTo("/osirion/content/edit");
     }
 
-    //public void Dispose()
-    //{
-    //    // Unsubscribe from state changes when component is disposed
-    //    AdminState.StateChanged -= StateHasChanged;
-    //}
+    public void Dispose()
+    {
+        // Unsubscribe from state changes when component is disposed
+        AdminState.StateChanged -= StateHasChanged;
+    }
 }

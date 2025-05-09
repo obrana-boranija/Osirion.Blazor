@@ -3,7 +3,7 @@ using Osirion.Blazor.Cms.Domain.Models.GitHub;
 
 namespace Osirion.Blazor.Cms.Admin.Features.Repository.Components;
 
-public partial class BranchSelector
+public partial class BranchSelector : IDisposable
 {
     [Parameter]
     public string Title { get; set; } = "Select Branch";

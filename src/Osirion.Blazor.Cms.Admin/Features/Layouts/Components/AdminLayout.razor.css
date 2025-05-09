@@ -1,353 +1,195 @@
-/* AdminLayout Component - GitHub-inspired styling */
+/* GitHub-inspired styling for AdminLayout */
 
-.osirion-admin-dashboard {
-    display: flex;
-    min-height: 100vh;
-    background-color: var(--osirion-color-white);
-    color: var(--osirion-text-primary);
-    font-family: var(--osirion-font-family-base);
-    font-size: var(--osirion-font-size-base);
-    line-height: var(--osirion-line-height-normal);
+/* Root variables */
+:root {
+    --github-blue: #0969da;
+    --github-green: #2da44e;
+    --github-red: #cf222e;
+    --github-yellow: #bf8700;
+    --github-bg-light: #f6f8fa;
+    --github-bg-dark: #0d1117;
+    --github-header-light: #ffffff;
+    --github-header-dark: #161b22;
+    --github-text-light: #24292f;
+    --github-text-secondary-light: #57606a;
+    --github-text-dark: #e6edf3;
+    --github-text-secondary-dark: #8b949e;
+    --github-border-light: #d0d7de;
+    --github-border-dark: #30363d;
 }
 
-/* Sidebar styles - GitHub-inspired */
-.osirion-admin-sidebar {
+/* Layout structure */
+.admin-layout {
+    min-height: 100vh;
+    width: 100%;
+    background-color: #ffffff;
+    color: var(--github-text-light);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+}
+
+.admin-layout-dark {
+    background-color: var(--github-bg-dark);
+    color: var(--github-text-dark);
+}
+
+/* Sidebar styling */
+.sidebar {
     width: 260px;
-    background-color: var(--osirion-color-neutral-50);
-    border-right: 1px solid var(--osirion-color-neutral-200);
+    min-height: 100vh;
+    background-color: var(--github-bg-light);
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
-    position: sticky;
-    top: 0;
-    height: 100vh;
-    z-index: var(--osirion-z-index-20);
+    flex-shrink: 0;
+    border-color: var(--github-border-light) !important;
 }
 
-.osirion-admin-logo {
-    padding: var(--osirion-spacing-4);
-    margin-bottom: var(--osirion-spacing-2);
-    border-bottom: 1px solid var(--osirion-color-neutral-200);
+.admin-layout-dark .sidebar {
+    background-color: var(--github-bg-dark);
+    border-color: var(--github-border-dark) !important;
 }
 
-.osirion-admin-brand-link {
-    text-decoration: none;
-    color: var(--osirion-text-primary);
+.sidebar-header {
+    border-color: var(--github-border-light) !important;
 }
 
-.osirion-admin-brand {
-    font-size: var(--osirion-font-size-lg);
-    font-weight: var(--osirion-font-weight-semibold);
-    margin: 0;
+.admin-layout-dark .sidebar-header {
+    border-color: var(--github-border-dark) !important;
 }
 
-.osirion-admin-subtitle {
-    color: var(--osirion-text-secondary);
-    margin: var(--osirion-spacing-1) 0 0;
-    font-size: var(--osirion-font-size-sm);
-}
-
-.osirion-admin-navigation {
-    flex: 1;
-    overflow-y: auto;
-    padding: 0 var(--osirion-spacing-2);
-}
-
-.osirion-admin-sidebar-footer {
-    padding: var(--osirion-spacing-3) var(--osirion-spacing-4);
-    border-top: 1px solid var(--osirion-color-neutral-200);
-    font-size: var(--osirion-font-size-sm);
-}
-
-.osirion-admin-user {
+.sidebar-brand {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--github-text-light);
     display: flex;
     align-items: center;
-    justify-content: space-between;
 }
 
-.osirion-admin-username {
-    font-weight: var(--osirion-font-weight-medium);
-    margin-right: var(--osirion-spacing-2);
+.admin-layout-dark .sidebar-brand {
+    color: var(--github-text-dark);
+}
+
+.sidebar-subtitle {
+    color: var(--github-text-secondary-light);
+}
+
+.admin-layout-dark .sidebar-subtitle {
+    color: var(--github-text-secondary-dark);
+}
+
+.sidebar-footer {
+    border-color: var(--github-border-light) !important;
+}
+
+.admin-layout-dark .sidebar-footer {
+    border-color: var(--github-border-dark) !important;
+}
+
+/* Avatar styling */
+.avatar-circle {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    background-color: var(--github-blue);
+    color: white;
 }
 
 /* Main content area */
-.osirion-admin-main {
+.main-content {
     flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow-x: hidden;
+    min-width: 0;
 }
 
-/* Header styles - GitHub-inspired */
-.osirion-admin-header {
-    height: 60px;
-    padding: 0 var(--osirion-spacing-4);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: var(--osirion-color-white);
-    border-bottom: 1px solid var(--osirion-color-neutral-200);
+.main-header {
+    background-color: var(--github-header-light);
+    border-color: var(--github-border-light) !important;
     position: sticky;
     top: 0;
-    z-index: var(--osirion-z-index-10);
+    z-index: 100;
 }
 
-/* Breadcrumb styles */
-.osirion-admin-breadcrumb {
-    display: flex;
-    align-items: center;
-    font-size: var(--osirion-font-size-sm);
-    overflow-x: auto;
-    white-space: nowrap;
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE and Edge */
+.admin-layout-dark .main-header {
+    background-color: var(--github-header-dark);
+    border-color: var(--github-border-dark) !important;
 }
 
-    .osirion-admin-breadcrumb::-webkit-scrollbar {
-        display: none; /* Chrome, Safari, and Opera */
-    }
-
-.osirion-admin-breadcrumb-home {
-    display: inline-flex;
-    align-items: center;
-    color: var(--osirion-text-secondary);
-    text-decoration: none;
-    transition: color 0.2s;
-}
-
-    .osirion-admin-breadcrumb-home:hover {
-        color: var(--osirion-color-primary-600);
-        text-decoration: underline;
-    }
-
-.osirion-admin-breadcrumb-separator {
-    margin: 0 var(--osirion-spacing-2);
-    color: var(--osirion-color-neutral-400);
-}
-
-.osirion-admin-breadcrumb-item {
-    color: var(--osirion-text-secondary);
-    text-decoration: none;
-}
-
-    .osirion-admin-breadcrumb-item:hover {
-        color: var(--osirion-color-primary-600);
-        text-decoration: underline;
-    }
-
-.osirion-admin-breadcrumb-current {
-    color: var(--osirion-text-primary);
-    font-weight: var(--osirion-font-weight-medium);
-}
-
-.osirion-admin-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: var(--osirion-spacing-2);
-}
-
-/* Actions section in header */
-.osirion-admin-actions {
-    display: flex;
-    align-items: center;
-    gap: var(--osirion-spacing-2);
-}
-
-/* Content styles */
-.osirion-admin-content {
-    flex: 1;
-    padding: var(--osirion-spacing-6);
-    overflow-y: auto;
-}
-
-/* Alert styles */
-.osirion-admin-alert {
-    padding: var(--osirion-spacing-3) var(--osirion-spacing-4);
-    margin-bottom: var(--osirion-spacing-4);
-    border: 1px solid;
-    border-radius: 6px;
-    display: flex;
-    align-items: flex-start;
-    position: relative;
-}
-
-.osirion-admin-alert-success {
-    background-color: var(--osirion-color-success-50);
-    border-color: var(--osirion-color-success-200);
-    color: var(--osirion-color-success-700);
-}
-
-.osirion-admin-alert-error {
-    background-color: var(--osirion-color-danger-50);
-    border-color: var(--osirion-color-danger-200);
-    color: var(--osirion-color-danger-700);
-}
-
-.osirion-admin-alert-icon {
-    display: flex;
-    margin-right: var(--osirion-spacing-2);
-    flex-shrink: 0;
-}
-
-.osirion-admin-alert-close {
-    position: absolute;
-    top: var(--osirion-spacing-3);
-    right: var(--osirion-spacing-3);
-    background: transparent;
-    border: none;
-    color: currentColor;
-    cursor: pointer;
-    padding: 0;
-    font-size: 16px;
-    line-height: 1;
-    opacity: 0.7;
-}
-
-    .osirion-admin-alert-close:hover {
-        opacity: 1;
-    }
-
-/* Button styles - GitHub-inspired */
-.osirion-admin-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+.btn-icon {
+    width: 32px;
     height: 32px;
-    padding: 0 var(--osirion-spacing-3);
-    border: 1px solid;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     border-radius: 6px;
-    background-color: var(--osirion-color-neutral-50);
-    border-color: var(--osirion-color-neutral-300);
-    color: var(--osirion-text-primary);
-    font-size: var(--osirion-font-size-sm);
-    font-weight: var(--osirion-font-weight-medium);
-    cursor: pointer;
-    transition: background-color 0.2s, border-color 0.2s;
-    white-space: nowrap;
+    background: transparent;
+    color: var(--github-text-secondary-light);
+    border: none;
 }
 
-    .osirion-admin-button:hover {
-        background-color: var(--osirion-color-neutral-100);
-        border-color: var(--osirion-color-neutral-400);
+    .btn-icon:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+        color: var(--github-text-light);
     }
 
-    .osirion-admin-button:active {
-        background-color: var(--osirion-color-neutral-200);
-    }
-
-    .osirion-admin-button:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
-
-.osirion-admin-button-small {
-    height: 28px;
-    padding: 0 var(--osirion-spacing-2);
-    font-size: var(--osirion-font-size-xs);
+.admin-layout-dark .btn-icon {
+    color: var(--github-text-secondary-dark);
 }
 
-/* Dark mode adjustments */
-.osirion-admin-theme-dark {
-    --osirion-text-primary: var(--osirion-color-neutral-100);
-    --osirion-text-secondary: var(--osirion-color-neutral-300);
-    --osirion-text-tertiary: var(--osirion-color-neutral-400);
-    --osirion-background-primary: var(--osirion-color-neutral-900);
-    --osirion-background-secondary: var(--osirion-color-neutral-800);
+    .admin-layout-dark .btn-icon:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+        color: var(--github-text-dark);
+    }
+
+/* Breadcrumb styling */
+.breadcrumb-item + .breadcrumb-item::before {
+    content: "/";
 }
 
-    .osirion-admin-theme-dark .osirion-admin-dashboard {
-        background-color: var(--osirion-color-neutral-800);
+.breadcrumb-item a {
+    color: var(--github-blue);
+    text-decoration: none;
+}
+
+    .breadcrumb-item a:hover {
+        text-decoration: underline;
     }
 
-    .osirion-admin-theme-dark .osirion-admin-sidebar {
-        background-color: var(--osirion-color-neutral-900);
-        border-right-color: var(--osirion-color-neutral-700);
-    }
+.breadcrumb-item.active {
+    color: var(--github-text-secondary-light);
+}
 
-    .osirion-admin-theme-dark .osirion-admin-logo {
-        border-bottom-color: var(--osirion-color-neutral-700);
-    }
+.admin-layout-dark .breadcrumb-item.active {
+    color: var(--github-text-secondary-dark);
+}
 
-    .osirion-admin-theme-dark .osirion-admin-header {
-        background-color: var(--osirion-color-neutral-800);
-        border-bottom-color: var(--osirion-color-neutral-700);
-    }
-
-    .osirion-admin-theme-dark .osirion-admin-alert-success {
-        background-color: rgba(46, 160, 67, 0.15);
-        border-color: rgba(46, 160, 67, 0.4);
-        color: var(--osirion-color-success-300);
-    }
-
-    .osirion-admin-theme-dark .osirion-admin-alert-error {
-        background-color: rgba(248, 81, 73, 0.15);
-        border-color: rgba(248, 81, 73, 0.4);
-        color: var(--osirion-color-danger-300);
-    }
-
-    .osirion-admin-theme-dark .osirion-admin-button {
-        background-color: var(--osirion-color-neutral-700);
-        border-color: var(--osirion-color-neutral-600);
-        color: var(--osirion-color-neutral-100);
-    }
-
-        .osirion-admin-theme-dark .osirion-admin-button:hover {
-            background-color: var(--osirion-color-neutral-600);
-            border-color: var(--osirion-color-neutral-500);
-        }
-
-/* Responsive styles */
+/* Responsive adjustments */
 @media (max-width: 992px) {
-    .osirion-admin-dashboard {
+    .admin-layout {
         flex-direction: column;
     }
 
-    .osirion-admin-sidebar {
+    .sidebar {
         width: 100%;
-        height: auto;
-        position: static;
-        border-right: none;
-        border-bottom: 1px solid var(--osirion-color-neutral-200);
+        min-height: auto;
     }
 
-    .osirion-admin-sidebar-footer {
-        border-top: none;
-    }
-
-    .osirion-admin-header {
+    .main-header {
         position: static;
     }
 }
 
 @media (max-width: 768px) {
-    .osirion-admin-header {
+    .main-header > div {
         flex-direction: column;
         align-items: flex-start;
-        gap: var(--osirion-spacing-2);
-        height: auto;
-        padding: var(--osirion-spacing-4);
     }
 
-    .osirion-admin-breadcrumb {
-        width: 100%;
-        margin-bottom: var(--osirion-spacing-2);
-    }
-
-    .osirion-admin-actions {
-        width: 100%;
-        justify-content: flex-end;
-    }
-
-    .osirion-admin-content {
-        padding: var(--osirion-spacing-4);
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .osirion-admin-breadcrumb-home,
-    .osirion-admin-button,
-    .osirion-admin-alert-close {
-        transition: none;
-    }
+        .main-header > div > div:last-child {
+            margin-top: 0.5rem;
+            width: 100%;
+            justify-content: flex-end;
+        }
 }

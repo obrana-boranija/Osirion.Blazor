@@ -1,15 +1,117 @@
-.osirion-admin-login-page {
-    min-height: 100vh;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background-color: var(--osirion-color-neutral-50);
-    padding: var(--osirion-spacing-4);
+/* GitHub-inspired styling for Login page */
+
+::deep .text-primary {
+    color: #0969da !important;
 }
 
-/* Dark mode adjustments */
-.osirion-admin-theme-dark.osirion-admin-login-page {
-    background-color: var(--osirion-color-neutral-900);
+::deep .text-muted {
+    color: #57606a !important;
+}
+
+::deep .card {
+    border-color: #d0d7de;
+    border-radius: 6px;
+}
+
+    ::deep .card.bg-dark {
+        background-color: #0d1117 !important;
+    }
+
+        ::deep .card.bg-dark .text-muted {
+            color: #8b949e !important;
+        }
+
+::deep .shadow {
+    box-shadow: 0 8px 24px rgba(140, 149, 159, 0.2) !important;
+}
+
+::deep .form-control {
+    border-color: #d0d7de;
+    border-radius: 6px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+}
+
+    ::deep .form-control:focus {
+        border-color: #0969da;
+        box-shadow: 0 0 0 3px rgba(9, 105, 218, 0.25);
+    }
+
+::deep .form-text {
+    font-size: 0.75rem;
+    color: #57606a;
+}
+
+::deep .btn-primary {
+    background-color: #2da44e;
+    border-color: #2da44e;
+}
+
+    ::deep .btn-primary:hover {
+        background-color: #2c974b;
+        border-color: #2c974b;
+    }
+
+    ::deep .btn-primary:focus,
+    ::deep .btn-primary:active {
+        background-color: #2c974b;
+        border-color: #2c974b;
+        box-shadow: 0 0 0 0.25rem rgba(45, 164, 78, 0.25);
+    }
+
+::deep .btn-dark {
+    background-color: #24292f;
+    border-color: #24292f;
+}
+
+    ::deep .btn-dark:hover {
+        background-color: #333a42;
+        border-color: #333a42;
+    }
+
+::deep .btn-outline-secondary {
+    border-color: #d0d7de;
+    color: #24292f;
+}
+
+    ::deep .btn-outline-secondary:hover {
+        background-color: #f6f8fa;
+        color: #24292f;
+        border-color: #d0d7de;
+    }
+
+::deep .alert-danger {
+    color: #cf222e;
+    background-color: #ffebe9;
+    border-color: #ffcecb;
+}
+
+::deep .card-footer {
+    border-top-color: #d0d7de;
+}
+
+::deep .bg-light {
+    background-color: #f6f8fa !important;
+}
+
+::deep .bg-dark {
+    background-color: #0d1117 !important;
+}
+
+    ::deep .bg-dark .text-white a,
+    ::deep .bg-dark .text-white a:hover {
+        color: #58a6ff !important;
+    }
+
+    ::deep .bg-dark .card-footer.bg-dark {
+        background-color: #161b22 !important;
+    }
+
+/* Dark mode support is intrinsic via the Theme parameter */
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+    ::deep .card-body {
+        padding: 1.5rem !important;
+    }
 }

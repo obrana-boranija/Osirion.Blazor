@@ -1,139 +1,212 @@
 ﻿@page "/osirion/settings"
+@rendermode InteractiveServer
 
-<AdminPage Title="Settings" Subtitle="Configuration">
-    @*     <BreadcrumbItems>
-        @(new AdminLayout.BreadcrumbItem("Dashboard", "/admin"))
-        @(new AdminLayout.BreadcrumbItem("Settings"))
-    </BreadcrumbItems> *@
-
-    <div class="osirion-admin-settings-page">
-        <div class="osirion-admin-settings-header">
-            <h2 class="osirion-admin-page-title">Settings</h2>
-            <p class="osirion-admin-page-description">Configure your CMS settings.</p>
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="h3 mb-2">Settings</h1>
+            <p class="text-muted">Configure your CMS settings and preferences</p>
         </div>
+    </div>
 
-        <div class="osirion-admin-settings-container">
-            <div class="osirion-admin-card">
-                <div class="osirion-admin-card-header">
-                    <h3 class="osirion-admin-card-title">GitHub Configuration</h3>
+    <div class="row g-4">
+        <div class="col-12 col-lg-4">
+            <!-- GitHub Configuration -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0 fs-6">GitHub Configuration</h5>
                 </div>
-                <div class="osirion-admin-card-body">
-                    <div class="osirion-admin-form-group">
-                        <label class="osirion-admin-label">Owner</label>
-                        @* <p class="osirion-admin-form-value">@AdminOptions.Value.Owne</p> *@
-                    </div>
-
-                    <div class="osirion-admin-form-group">
-                        <label class="osirion-admin-label">Default Repository</label>
-                        @* <p class="osirion-admin-form-value">@(AdminOptions.Value.DefaultRepository ?? "Not set")</p> *@
-                    </div>
-
-                    <div class="osirion-admin-form-group">
-                        <label class="osirion-admin-label">Default Branch</label>
-                        @* <p class="osirion-admin-form-value">@AdminOptions.Value.DefaultBranch</p> *@
-                    </div>
-
-                    <div class="osirion-admin-form-group">
-                        <label class="osirion-admin-label">Authentication Status</label>
-                        <p class="osirion-admin-form-value">
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold mb-1">Authentication Status</label>
+                        <div>
                             @if (AuthService.IsAuthenticated)
                             {
-                                <span class="osirion-admin-status-success">Authenticated as @AuthService.Username</span>
+                                <div class="d-flex align-items-center text-success">
+                                    <i class="bi bi-check-circle-fill me-2"></i>
+                                    <span>Authenticated as @AuthService.Username</span>
+                                </div>
                             }
                             else
                             {
-                                <span class="osirion-admin-status-error">Not authenticated</span>
+                                <div class="d-flex align-items-center text-danger">
+                                    <i class="bi bi-x-circle-fill me-2"></i>
+                                    <span>Not authenticated</span>
+                                </div>
                             }
-                        </p>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold mb-1">Selected Repository</label>
+                        <div>
+                            @if (AdminState.SelectedRepository != null)
+                            {
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-github me-2"></i>
+                                    <span>@AdminState.SelectedRepository.Name</span>
+                                </div>
+                            }
+                            else
+                            {
+                                <span class="text-muted">No repository selected</span>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold mb-1">Selected Branch</label>
+                        <div>
+                            @if (AdminState.SelectedBranch != null)
+                            {
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-git me-2"></i>
+                                    <span>@AdminState.SelectedBranch.Name</span>
+                                </div>
+                            }
+                            else
+                            {
+                                <span class="text-muted">No branch selected</span>
+                            }
+                        </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <div class="osirion-admin-card">
-                <div class="osirion-admin-card-header">
-                    <h3 class="osirion-admin-card-title">Content Settings</h3>
+        <div class="col-12 col-lg-4">
+            <!-- Content Settings -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0 fs-6">Content Settings</h5>
                 </div>
-                <div class="osirion-admin-card-body">
-                    <div class="osirion-admin-form-group">
-                        <label class="osirion-admin-label">Allowed File Extensions</label>
-                        <p class="osirion-admin-form-value">
-                            @*                             @foreach (var ext in AdminOptions.Value.AllowedFileExtensions)
-                            {
-                                <span class="osirion-admin-tag">@ext</span>
-                            } *@
-                        </p>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold mb-1">Allowed File Extensions</label>
+                        <div>
+                            <span class="badge bg-light text-dark border me-1">.md</span>
+                            <span class="badge bg-light text-dark border me-1">.markdown</span>
+                            <span class="badge bg-light text-dark border me-1">.yaml</span>
+                            <span class="badge bg-light text-dark border me-1">.yml</span>
+                            <span class="badge bg-light text-dark border">.json</span>
+                        </div>
                     </div>
 
-                    <div class="osirion-admin-form-group">
-                        <label class="osirion-admin-checkbox">
-                            @* <input type="checkbox" checked="@AdminOptions.Value.AllowFileDelete" disabled /> *@
-                            <span>Allow File Deletion</span>
-                        </label>
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="fileDelete" checked disabled>
+                            <label class="form-check-label" for="fileDelete">Allow File Deletion</label>
+                        </div>
                     </div>
 
-                    <div class="osirion-admin-form-group">
-                        <label class="osirion-admin-checkbox">
-                            @* <input type="checkbox" checked="@AdminOptions.Value.AllowBranchCreation" disabled /> *@
-                            <span>Allow Branch Creation</span>
-                        </label>
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="branchCreation" checked disabled>
+                            <label class="form-check-label" for="branchCreation">Allow Branch Creation</label>
+                        </div>
                     </div>
 
-                    <div class="osirion-admin-form-group">
-                        <label class="osirion-admin-checkbox">
-                            @* <input type="checkbox" checked="@AdminOptions.Value.AllowPullRequests" disabled /> *@
-                            <span>Allow Pull Requests</span>
-                        </label>
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="pullRequests" checked disabled>
+                            <label class="form-check-label" for="pullRequests">Allow Pull Requests</label>
+                        </div>
                     </div>
                 </div>
-
-                <div class="osirion-admin-card-footer">
-                    <p class="osirion-admin-card-footer-text">
+                <div class="card-footer bg-light">
+                    <small class="text-muted fst-italic">
                         Settings are defined in application configuration.
                         See documentation for how to modify these settings.
-                    </p>
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-4">
+            <!-- Theme Settings -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0 fs-6">Theme Settings</h5>
+                </div>
+                <div class="card-body">
+                    <label class="form-label fw-semibold mb-3">Theme</label>
+                    <div class="d-flex">
+                        <button type="button"
+                                class="btn flex-grow-1 me-2 @(Theme == "light" ? "btn-primary" : "btn-outline-secondary")"
+                                @onclick="@(() => Theme = "light")">
+                            <i class="bi bi-sun me-2"></i>
+                            Light
+                        </button>
+                        <button type="button"
+                                class="btn flex-grow-1 @(Theme == "dark" ? "btn-primary" : "btn-outline-secondary")"
+                                @onclick="@(() => Theme = "dark")">
+                            <i class="bi bi-moon me-2"></i>
+                            Dark
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <div class="osirion-admin-card">
-                <div class="osirion-admin-card-header">
-                    <h3 class="osirion-admin-card-title">Theme Settings</h3>
+            <!-- Session Settings -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0 fs-6">Session Settings</h5>
                 </div>
-                <div class="osirion-admin-card-body">
-                    <div class="osirion-admin-form-group">
-                        <label class="osirion-admin-label">Theme</label>
-                        <div class="osirion-admin-theme-selector">
-                            <button type="button"
-                                    class="osirion-admin-button osirion-admin-button-theme @(Theme == "light" ? "active" : "")"
-                                    @onclick="@(() => Theme = "light")">
-                                <span class="osirion-admin-icon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <circle cx="12" cy="12" r="5" />
-                                        <line x1="12" y1="1" x2="12" y2="3" />
-                                        <line x1="12" y1="21" x2="12" y2="23" />
-                                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-                                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-                                        <line x1="1" y1="12" x2="3" y2="12" />
-                                        <line x1="21" y1="12" x2="23" y2="12" />
-                                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-                                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-                                    </svg>
-                                </span>
-                                Light
-                            </button>
-                            <button type="button"
-                                    class="osirion-admin-button osirion-admin-button-theme @(Theme == "dark" ? "active" : "")"
-                                    @onclick="@(() => Theme = "dark")">
-                                <span class="osirion-admin-icon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-                                    </svg>
-                                </span>
-                                Dark
-                            </button>
+                <div class="card-body">
+                    <button type="button" class="btn btn-outline-danger w-100" @onclick="SignOut">
+                        <i class="bi bi-box-arrow-right me-2"></i>
+                        Sign Out
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-2">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5 class="card-title mb-0 fs-6">About Osirion CMS</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h6 class="fw-semibold">Version Information</h6>
+                            <p class="text-muted mb-0">Osirion.Blazor.Cms.Admin v2.0.2</p>
+                            <p class="text-muted mb-0">Osirion.Blazor v2.0.2</p>
+                        </div>
+                        <div class="col-md-4">
+                            <h6 class="fw-semibold">Links</h6>
+                            <div>
+                                <a href="https://github.com/obrana-boranija/Osirion.Blazor"
+                                   target="_blank"
+                                   class="text-decoration-none text-primary d-block mb-1">
+                                    <i class="bi bi-github me-2"></i>GitHub Repository
+                                </a>
+                                <a href="https://www.nuget.org/packages/Osirion.Blazor"
+                                   target="_blank"
+                                   class="text-decoration-none text-primary d-block mb-1">
+                                    <i class="bi bi-box me-2"></i>NuGet Package
+                                </a>
+                                <a href="https://docs.osirion.io"
+                                   target="_blank"
+                                   class="text-decoration-none text-primary d-block">
+                                    <i class="bi bi-file-earmark-text me-2"></i>Documentation
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <h6 class="fw-semibold">License</h6>
+                            <p class="text-muted mb-2">This project is licensed under the MIT License.</p>
+                            <a href="https://github.com/obrana-boranija/Osirion.Blazor/blob/master/LICENSE.txt"
+                               target="_blank"
+                               class="text-decoration-none text-primary">
+                                <i class="bi bi-file-earmark-text me-2"></i>View License
+                            </a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</AdminPage>
+</div>

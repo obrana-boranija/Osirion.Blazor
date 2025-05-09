@@ -3,7 +3,7 @@ using Osirion.Blazor.Cms.Domain.Models.GitHub;
 
 namespace Osirion.Blazor.Cms.Admin.Features.Repository.Components;
 
-public partial class RepositorySelector
+public partial class RepositorySelector : IDisposable
 {
     [Parameter]
     public string Title { get; set; } = "Select Repository";
@@ -52,13 +52,5 @@ public partial class RepositorySelector
                 await OnRepositoryChange.InvokeAsync(ViewModel.SelectedRepository);
             }
         });
-    }
-
-    private void OpenRepositoryLink()
-    {
-        if (ViewModel.SelectedRepository != null && !string.IsNullOrEmpty(ViewModel.SelectedRepository.HtmlUrl))
-        {
-            NavigationManager.NavigateTo(ViewModel.SelectedRepository.HtmlUrl, true);
-        }
     }
 }

@@ -3,107 +3,96 @@
 @using Osirion.Blazor.Cms.Admin.Features.Repository.ViewModels
 @using Osirion.Blazor.Cms.Admin.Shared.Components
 @inject RepositorySelectorViewModel ViewModel
-@inject NavigationManager NavigationManager
 
-<div class="repository-selector @CssClass">
-    <div class="repository-header">
-        <h2 class="repository-title">@Title</h2>
-
-        <div class="repository-actions">
+<div class="card shadow-sm mb-3">
+    <div class="card-header d-flex justify-content-between align-items-center bg-light">
+        <h5 class="card-title mb-0 fs-6">@Title</h5>
+        <div class="btn-group">
             <button type="button"
-                    class="repository-button repository-button-refresh"
+                    class="btn btn-sm btn-outline-secondary"
                     title="Refresh repositories"
                     @onclick="RefreshRepositories">
-                <span class="repository-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 12a9 9 0 0 1-9 9c-4.97 0-9-4.03-9-9s4.03-9 9-9c2.39 0 4.68.94 6.4 2.6L12 12" />
-                    </svg>
-                </span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
+                  <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z"/>
+                  <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"/>
+                </svg>
             </button>
         </div>
     </div>
 
     @if (ViewModel.IsLoading)
     {
-            <div class="repository-loading">
-                <span class="repository-loading-spinner"></span>
-                <span>Loading repositories...</span>
+        <div class="card-body text-center py-4">
+            <div class="spinner-border spinner-border-sm text-secondary me-2" role="status">
+                <span class="visually-hidden">Loading...</span>
             </div>
+            <span class="text-secondary">Loading repositories...</span>
+        </div>
     }
     else if (ViewModel.ErrorMessage != null)
     {
-            <div class="repository-error">
-                <span class="repository-error-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10" />
-                        <line x1="12" y1="8" x2="12" y2="12" />
-                        <line x1="12" y1="16" x2="12.01" y2="16" />
-                    </svg>
-                </span>
-                <span>@ViewModel.ErrorMessage</span>
-                <button type="button" class="repository-button repository-button-small" @onclick="RefreshRepositories">
-                    Retry
-                </button>
+        <div class="card-body">
+            <div class="alert alert-danger d-flex align-items-center" role="alert">
+                <i class="bi bi-exclamation-circle-fill me-2"></i>
+                <div>@ViewModel.ErrorMessage</div>
             </div>
+            <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="RefreshRepositories">
+                Retry
+            </button>
+        </div>
     }
     else if (ViewModel.Repositories.Count == 0)
     {
-            <div class="repository-empty">
-                <span>No repositories found.</span>
-                <button type="button" class="repository-button repository-button-small" @onclick="RefreshRepositories">
-                    Refresh
-                </button>
-            </div>
+        <div class="card-body text-center py-4">
+            <span class="text-secondary">No repositories found.</span>
+            <button type="button" class="btn btn-sm btn-outline-secondary d-block mx-auto mt-2" @onclick="RefreshRepositories">
+                Refresh
+            </button>
+        </div>
     }
     else
     {
-            <div class="repository-select-container">
-                <select class="repository-select"
-                        value="@SelectedRepositoryName"
-                        @onchange="OnRepositorySelected">
-                    <option value="">@SelectPrompt</option>
+        <div class="card-body">
+            <select class="form-select"
+                    value="@SelectedRepositoryName"
+                    @onchange="OnRepositorySelected">
+                <option value="">@SelectPrompt</option>
                 @foreach (var repo in ViewModel.Repositories)
                 {
-                            <option value="@repo.Name">@repo.Name</option>
+                    <option value="@repo.Name">@repo.Name</option>
                 }
-                </select>
-            </div>
+            </select>
+        </div>
 
         @if (ViewModel.SelectedRepository != null)
         {
-                    <div class="repository-details">
-                        <div class="repository-info">
-                            <span class="repository-name">@ViewModel.SelectedRepository.Name</span>
+            <div class="card-footer bg-light">
+                <div class="mb-2">
+                    <span class="fw-semibold">@ViewModel.SelectedRepository.Name</span>
                     @if (!string.IsNullOrEmpty(ViewModel.SelectedRepository.Description))
                     {
-                                    <span class="repository-description">@ViewModel.SelectedRepository.Description</span>
+                        <p class="text-secondary small mb-1">@ViewModel.SelectedRepository.Description</p>
                     }
-                            <span class="repository-visibility">
+                    <div>
                         @if (ViewModel.SelectedRepository.Private)
                         {
-                                        <span class="repository-private">Private</span>
+                            <span class="badge bg-danger-subtle text-danger-emphasis">Private</span>
                         }
                         else
                         {
-                                        <span class="repository-public">Public</span>
+                            <span class="badge bg-success-subtle text-success-emphasis">Public</span>
                         }
-                            </span>
-                        </div>
-
-                        <button type="button"
-                                class="repository-button repository-button-link"
-                                @onclick="OpenRepositoryLink"
-                                title="Open repository in GitHub">
-                            <span class="repository-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                                    <polyline points="15 3 21 3 21 9" />
-                                    <line x1="10" y1="14" x2="21" y2="3" />
-                                </svg>
-                            </span>
-                            View on GitHub
-                        </button>
                     </div>
+                </div>
+
+                <a href="@ViewModel.SelectedRepository.HtmlUrl"
+                   class="btn btn-sm btn-outline-primary d-inline-flex align-items-center"
+                   target="_blank"
+                   rel="noopener">
+                    <i class="bi bi-box-arrow-up-right me-1"></i>
+                    View on GitHub
+                </a>
+            </div>
         }
     }
 </div>

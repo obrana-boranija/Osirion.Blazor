@@ -5,45 +5,44 @@
 @using Osirion.Blazor.Cms.Domain.Models
 @using Osirion.Blazor.Cms.Domain.ValueObjects
 
-<div class="content-editor @CssClass">
+<div class="content-editor border rounded overflow-hidden d-flex flex-column h-100">
     @if (ViewModel.EditingPost == null)
     {
-        <div class="content-editor-empty">
-            <span>Select a file to edit or create a new file.</span>
+        <div class="d-flex flex-column align-items-center justify-content-center h-100 bg-light p-4 text-secondary">
+            <i class="bi bi-file-earmark-text fs-1 mb-3"></i>
+            <p>Select a file to edit or create a new file.</p>
         </div>
     }
     else
     {
-        <div class="content-editor-header">
-            <div class="content-editor-tabs">
-                <button type="button"
-                        class="content-editor-tab-button @(ActiveTab == "content" ? "active" : "")"
-                        @onclick="@(() => SetActiveTab("content"))">
-                    Content
-                </button>
-                <button type="button"
-                        class="content-editor-tab-button @(ActiveTab == "metadata" ? "active" : "")"
-                        @onclick="@(() => SetActiveTab("metadata"))">
-                    Metadata
-                </button>
-            </div>
-            <div class="content-editor-actions">
-                <button type="button"
-                        class="content-editor-button content-editor-button-icon"
-                        title="Toggle Preview"
-                        @onclick="TogglePreview">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                        <circle cx="12" cy="12" r="3"></circle>
-                    </svg>
-                </button>
-            </div>
+        <div class="border-bottom bg-light">
+            <ul class="nav nav-tabs px-3 pt-2">
+                <li class="nav-item">
+                    <button class="nav-link @(ActiveTab == "content" ? "active" : "")"
+                            @onclick="@(() => SetActiveTab("content"))">
+                        Content
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link @(ActiveTab == "metadata" ? "active" : "")"
+                            @onclick="@(() => SetActiveTab("metadata"))">
+                        Metadata
+                    </button>
+                </li>
+                <li class="nav-item ms-auto">
+                    <button class="btn btn-sm btn-outline-secondary"
+                            title="Toggle Preview"
+                            @onclick="TogglePreview">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                </li>
+            </ul>
         </div>
 
-        <div class="content-editor-body">
+        <div class="flex-grow-1 overflow-hidden">
             @if (ActiveTab == "content")
             {
-                <div class="content-editor-main">
+                <div class="h-100">
                     <MarkdownEditorWithPreview Content="@ViewModel.EditingPost.Content"
                                                ContentChanged="@((content) => { ViewModel.UpdateContent(content); OnContentChanged(); })"
                                                ShowToolbar="true"
@@ -52,34 +51,38 @@
             }
             else if (ActiveTab == "metadata")
             {
-                <MetadataEditor Metadata="@ViewModel.EditingPost.Metadata"
-                                MetadataChanged="@((metadata) => { ViewModel.UpdateMetadata(metadata); OnContentChanged(); })"
-                                ShowPreview="true" />
+                <div class="h-100">
+                    <MetadataEditor Metadata="@ViewModel.EditingPost.Metadata"
+                                    MetadataChanged="@((metadata) => { ViewModel.UpdateMetadata(metadata); OnContentChanged(); })"
+                                    ShowPreview="true" />
+                </div>
             }
         </div>
 
-        <div class="content-editor-footer">
-            <div class="content-editor-status">
+        <div class="border-top bg-light p-3 d-flex align-items-center justify-content-between">
+            <div>
                 @if (IsDirty)
                 {
-                    <span class="content-editor-status-dirty">Changes not saved</span>
+                    <span class="text-warning d-inline-flex align-items-center">
+                        <i class="bi bi-circle-fill fs-6 me-2" style="font-size: 8px !important;"></i>
+                        <span>Changes not saved</span>
+                    </span>
                 }
             </div>
 
-            <div class="content-editor-actions">
+            <div class="d-flex align-items-center gap-2">
                 <button type="button"
-                        class="content-editor-button content-editor-button-secondary"
+                        class="btn btn-outline-secondary"
                         @onclick="DiscardChanges">
                     Discard Changes
                 </button>
 
                 @if (ViewModel.IsCreatingNew)
                 {
-                    <div class="content-editor-form-group-inline">
-                        <label for="fileName">File Name:</label>
+                    <div class="input-group">
+                        <span class="input-group-text">File Name:</span>
                         <input type="text"
-                               class="content-editor-input"
-                               id="fileName"
+                               class="form-control"
                                @bind="ViewModel.FileName"
                                @bind:event="oninput"
                                placeholder="Enter file name" />
@@ -87,12 +90,12 @@
                 }
 
                 <button type="button"
-                        class="content-editor-button content-editor-button-primary"
+                        class="btn btn-primary"
                         @onclick="SaveChanges"
                         disabled="@(ViewModel.IsSaving || (ViewModel.IsCreatingNew && string.IsNullOrWhiteSpace(ViewModel.FileName)))">
                     @if (ViewModel.IsSaving)
                     {
-                        <span class="content-editor-loading-spinner"></span>
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
                         <span>Saving...</span>
                     }
                     else
