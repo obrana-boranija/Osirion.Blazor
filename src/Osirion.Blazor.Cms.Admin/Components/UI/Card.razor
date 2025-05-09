@@ -1,0 +1,26 @@
+﻿@namespace Osirion.Blazor.Cms.Admin.Components.UI
+
+<div class="card shadow-sm @CssClass">
+    @if (!string.IsNullOrEmpty(Title) || HeaderContent != null)
+    {
+        <div class="card-header d-flex justify-content-between align-items-center">
+            @if (!string.IsNullOrEmpty(Title))
+            {
+                <h5 class="card-title mb-0 fs-6 fw-semibold">@Title</h5>
+            }
+            
+            @HeaderContent
+        </div>
+    }
+    
+    <div class="card-body @BodyCssClass">
+        @ChildContent
+    </div>
+    
+    @if (FooterContent != null)
+    {
+        <div class="card-footer">
+            @FooterContent
+        </div>
+    }
+</div>

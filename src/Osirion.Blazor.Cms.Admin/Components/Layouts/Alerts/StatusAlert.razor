@@ -1,0 +1,30 @@
+﻿@namespace Osirion.Blazor.Cms.Admin.Components.Layouts.Alerts
+
+@if (!string.IsNullOrEmpty(Message))
+{
+    <div class="alert @AlertClass alert-dismissible fade show d-flex align-items-center" role="alert">
+        <div class="d-flex align-items-center">
+            @if (Type == AlertType.Success)
+            {
+                <i class="bi bi-check-circle-fill text-success me-2 fs-5"></i>
+            }
+            else if (Type == AlertType.Error)
+            {
+                <i class="bi bi-exclamation-circle-fill text-danger me-2 fs-5"></i>
+            }
+            else if (Type == AlertType.Warning)
+            {
+                <i class="bi bi-exclamation-triangle-fill text-warning me-2 fs-5"></i>
+            }
+            else if (Type == AlertType.Info)
+            {
+                <i class="bi bi-info-circle-fill text-primary me-2 fs-5"></i>
+            }
+            <div>@Message</div>
+        </div>
+        @if (OnDismiss.HasDelegate)
+        {
+            <button type="button" class="btn-close" @onclick="OnDismiss" aria-label="Close"></button>
+        }
+    </div>
+}

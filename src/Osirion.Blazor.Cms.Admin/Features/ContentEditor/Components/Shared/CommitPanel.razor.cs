@@ -33,9 +33,6 @@ public partial class CommitPanel : BaseComponent
     public EventCallback<bool> IsCommittingChanged { get; set; }
 
     [Parameter]
-    public string ErrorMessage { get; set; } = string.Empty;
-
-    [Parameter]
     public EventCallback OnCommitClicked { get; set; }
 
     [Parameter]

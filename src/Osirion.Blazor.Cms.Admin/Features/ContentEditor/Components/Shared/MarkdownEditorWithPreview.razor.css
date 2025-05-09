@@ -2,7 +2,6 @@
 
 ::deep .markdown-editor {
     height: 100%;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
 }
 
 /* Layout modes */
@@ -36,7 +35,6 @@
 /* Toolbar styling */
 ::deep .editor-toolbar {
     padding: 0.5rem;
-    background-color: var(--bs-gray-100);
     border-bottom: 1px solid var(--bs-gray-300);
     z-index: 3;
 }
@@ -50,18 +48,11 @@
     justify-content: center;
     border-radius: 4px;
     background: transparent;
-    color: var(--bs-gray-700);
     border: none;
 }
 
-    ::deep .btn-icon:hover {
-        background-color: var(--bs-gray-200);
-        color: var(--bs-gray-900);
-    }
-
     ::deep .btn-icon:focus {
         box-shadow: none;
-        background-color: var(--bs-gray-200);
     }
 
 /* Editor area styling */
@@ -78,7 +69,6 @@
     font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, "Liberation Mono", monospace;
     font-size: 0.875rem;
     line-height: 1.6;
-    color: var(--bs-gray-900);
     resize: none;
     height: 100%;
     box-shadow: none;
@@ -93,7 +83,6 @@
 /* Preview header styling */
 ::deep .preview-header {
     padding: 0.5rem 1rem;
-    background-color: var(--bs-gray-100);
     border-bottom: 1px solid var(--bs-gray-300);
     z-index: 3;
 }
@@ -104,7 +93,6 @@
     padding: 1rem;
     font-size: 0.875rem;
     line-height: 1.6;
-    color: var(--bs-gray-900);
 }
 
 /* GitHub-style Markdown preview */
@@ -144,7 +132,6 @@
     }
 
     ::deep .markdown-preview a {
-        color: #0969da;
         text-decoration: none;
     }
 
@@ -154,7 +141,6 @@
 
     ::deep .markdown-preview blockquote {
         padding: 0 1em;
-        color: var(--bs-gray-600);
         border-left: 0.25em solid var(--bs-gray-300);
         margin: 0 0 16px 0;
     }
@@ -165,7 +151,6 @@
         font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, "Liberation Mono", monospace;
         font-size: 85%;
         line-height: 1.45;
-        background-color: var(--bs-gray-100);
         border-radius: 6px;
         margin-bottom: 16px;
     }
@@ -175,7 +160,6 @@
         font-size: 85%;
         padding: 0.2em 0.4em;
         margin: 0;
-        background-color: rgba(175, 184, 193, 0.2);
         border-radius: 6px;
     }
 
@@ -188,7 +172,6 @@
     ::deep .markdown-preview img {
         max-width: 100%;
         box-sizing: content-box;
-        background-color: var(--bs-white);
     }
 
     ::deep .markdown-preview table {
@@ -205,19 +188,13 @@
         }
 
         ::deep .markdown-preview table tr {
-            background-color: var(--bs-white);
             border-top: 1px solid var(--bs-gray-300);
         }
-
-            ::deep .markdown-preview table tr:nth-child(2n) {
-                background-color: var(--bs-gray-100);
-            }
 
     ::deep .markdown-preview hr {
         height: 0.25em;
         padding: 0;
         margin: 24px 0;
-        background-color: var(--bs-gray-300);
         border: 0;
     }
 
@@ -248,68 +225,6 @@
         padding-left: 0;
     }
 
-/* Dark mode support */
-:root.dark ::deep .editor-toolbar,
-:root.dark ::deep .preview-header {
-    background-color: #161b22;
-    border-color: #30363d;
-}
-
-:root.dark ::deep .editor-textarea {
-    background-color: #0d1117;
-    color: #e6edf3;
-}
-
-:root.dark ::deep .preview-container {
-    background-color: #0d1117;
-    color: #e6edf3;
-}
-
-:root.dark ::deep .markdown-preview h1,
-:root.dark ::deep .markdown-preview h2 {
-    border-color: #30363d;
-}
-
-:root.dark ::deep .markdown-preview blockquote {
-    color: #8b949e;
-    border-color: #30363d;
-}
-
-:root.dark ::deep .markdown-preview pre {
-    background-color: #161b22;
-}
-
-:root.dark ::deep .markdown-preview code {
-    background-color: rgba(110, 118, 129, 0.4);
-}
-
-:root.dark ::deep .markdown-preview table th,
-:root.dark ::deep .markdown-preview table td {
-    border-color: #30363d;
-}
-
-:root.dark ::deep .markdown-preview table tr {
-    background-color: #0d1117;
-    border-color: #30363d;
-}
-
-    :root.dark ::deep .markdown-preview table tr:nth-child(2n) {
-        background-color: #161b22;
-    }
-
-:root.dark ::deep .markdown-preview hr {
-    background-color: #30363d;
-}
-
-:root.dark ::deep .btn-icon {
-    color: #8b949e;
-}
-
-    :root.dark ::deep .btn-icon:hover {
-        background-color: #30363d;
-        color: #e6edf3;
-    }
-
 /* Responsive styling */
 @media (max-width: 768px) {
     ::deep .editor-with-preview {
@@ -326,8 +241,4 @@
             border-left: none;
             border-top: 1px solid var(--bs-gray-300);
         }
-
-    :root.dark ::deep .editor-with-preview .preview-pane {
-        border-color: #30363d;
-    }
 }

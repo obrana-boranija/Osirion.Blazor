@@ -1,7 +1,6 @@
 .commit-panel {
     display: flex;
     flex-direction: column;
-    background-color: var(--osirion-background-primary);
     border: var(--osirion-border-width) solid var(--osirion-border-color);
     border-radius: var(--osirion-radius-lg);
     overflow: hidden;
@@ -13,7 +12,6 @@
     justify-content: space-between;
     align-items: center;
     padding: var(--osirion-spacing-3);
-    background-color: var(--osirion-background-secondary);
     border-bottom: var(--osirion-border-width) solid var(--osirion-border-color);
 }
 
@@ -21,7 +19,6 @@
     margin: 0;
     font-size: var(--osirion-font-size-base);
     font-weight: var(--osirion-font-weight-medium);
-    color: var(--osirion-text-primary);
 }
 
 .commit-panel-body {
