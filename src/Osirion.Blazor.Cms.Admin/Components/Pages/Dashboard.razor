@@ -1,0 +1,137 @@
+﻿@page "/osirion"
+@page "/osirion/content"
+@rendermode InteractiveServer
+
+
+<AdminPage Title="Dashboard">
+<div class="osirion-dashboard">
+    <div class="osirion-dashboard-header">
+        <h1 class="osirion-dashboard-title">Dashboard</h1>
+        <p class="osirion-dashboard-description">Manage your content with Osirion CMS</p>
+    </div>
+
+        @if (!IsRepositoryConfigured)
+        {
+                <div class="osirion-dashboard-notification">
+                    <div class="osirion-dashboard-notification-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="12" y1="8" x2="12" y2="12" />
+                            <line x1="12" y1="16" x2="12.01" y2="16" />
+                        </svg>
+                    </div>
+                    <div class="osirion-dashboard-notification-content">
+                        <h2 class="osirion-dashboard-notification-title">Repository Setup Required</h2>
+                        <p class="osirion-dashboard-notification-text">Please select a repository and branch to get started with content management.</p>
+                    </div>
+                </div>
+        }
+
+        <div class="osirion-dashboard-grid">
+            <div class="osirion-dashboard-column">
+                <div class="osirion-card">
+                    <div class="osirion-card-header">
+                        <h2 class="osirion-card-title">Repository Configuration</h2>
+                    </div>
+                    <div class="osirion-card-body">
+                        <RepositorySelector />
+                        <BranchSelector AllowCreateBranch="true" />
+                    </div>
+                </div>
+
+                <div class="osirion-card">
+                    <div class="osirion-card-header">
+                        <h2 class="osirion-card-title">Quick Actions</h2>
+                    </div>
+                    <div class="osirion-card-body osirion-quick-actions">
+                        <button class="osirion-action-button" @onclick="CreateNewPost" disabled="@(!IsRepositoryConfigured)">
+                            <div class="osirion-action-button-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                    <polyline points="14 2 14 8 20 8" />
+                                    <line x1="12" y1="18" x2="12" y2="12" />
+                                    <line x1="9" y1="15" x2="15" y2="15" />
+                                </svg>
+                            </div>
+                            <div class="osirion-action-button-content">
+                                <div class="osirion-action-button-title">Create New Content</div>
+                                <div class="osirion-action-button-description">Create a new blog post, page or document</div>
+                            </div>
+                        </button>
+
+                        <a href="/osirion/content" class="osirion-action-button">
+                            <div class="osirion-action-button-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20 11.08V8l-6-6H6a2 2 0 0 0-2 2v16c0 1.1.9 2 2 2h6" />
+                                    <path d="M14 3v5h5" />
+                                    <circle cx="18" cy="18" r="3" />
+                                    <path d="M18 15v2l1 1" />
+                                </svg>
+                            </div>
+                            <div class="osirion-action-button-content">
+                                <div class="osirion-action-button-title">Browse Content</div>
+                                <div class="osirion-action-button-description">Browse and manage existing content files</div>
+                            </div>
+                        </a>
+
+                        <a href="/osirion/settings" class="osirion-action-button">
+                            <div class="osirion-action-button-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="3" />
+                                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                                </svg>
+                            </div>
+                            <div class="osirion-action-button-content">
+                                <div class="osirion-action-button-title">Settings</div>
+                                <div class="osirion-action-button-description">Configure CMS settings and preferences</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="osirion-dashboard-column">
+                <div class="osirion-card osirion-card-file-explorer">
+                    <div class="osirion-card-header">
+                        <h2 class="osirion-card-title">Content Explorer</h2>
+                        <button class="osirion-card-button" @onclick="CreateNewPost" disabled="@(!IsRepositoryConfigured)">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 5v14M5 12h14" />
+                            </svg>
+                            New
+                        </button>
+                    </div>
+                    <div class="osirion-card-body">
+                        <FileExplorer OnCreateFile="CreateNewPost" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="osirion-dashboard-footer">
+            <div class="osirion-dashboard-help">
+                <h3 class="osirion-dashboard-help-title">Need Help?</h3>
+                <div class="osirion-dashboard-help-links">
+                    <a href="https://docs.osirion.io" target="_blank" class="osirion-dashboard-help-link">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                            <polyline points="14 2 14 8 20 8" />
+                            <line x1="16" y1="13" x2="8" y2="13" />
+                            <line x1="16" y1="17" x2="8" y2="17" />
+                            <polyline points="10 9 9 9 8 9" />
+                        </svg>
+                        Documentation
+                    </a>
+                    <a href="https://github.com/obrana-boranija/Osirion.Blazor/issues" target="_blank" class="osirion-dashboard-help-link">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="12" y1="8" x2="12" y2="12" />
+                            <line x1="12" y1="16" x2="12.01" y2="16" />
+                        </svg>
+                        Report Issues
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</AdminPage>

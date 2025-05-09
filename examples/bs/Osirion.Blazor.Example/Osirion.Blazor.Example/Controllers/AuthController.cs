@@ -7,7 +7,7 @@ namespace Osirion.Blazor.Example.Controllers;
 /// Controller for handling GitHub OAuth callbacks
 /// </summary>
 [ApiController]
-[Route("admin/auth")]
+[Route("osirion/auth")]
 public class AuthController : ControllerBase
 {
     private readonly IGitHubTokenProvider _tokenProvider;
@@ -35,6 +35,6 @@ public class AuthController : ControllerBase
 
         // Redirect to the login page with the code
         // The Blazor app will extract the code and use it to complete the auth process
-        return Redirect($"/admin/login?code={code}");
+        return Redirect($"/osirion/login?code={code}");
     }
 }

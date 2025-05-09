@@ -15,7 +15,7 @@ public abstract class BaseComponent : OsirionComponentBase
     [Inject] protected NavigationManager NavigationManager { get; set; } = null!;
     [Inject] protected CmsState AdminState { get; set; } = null!;
 
-    protected bool IsLoading { get; private set; }
+    protected bool IsLoading { get; set; }
     protected string? ErrorMessage { get; set; }
 
     protected async Task ExecuteAsync(Func<Task> action)

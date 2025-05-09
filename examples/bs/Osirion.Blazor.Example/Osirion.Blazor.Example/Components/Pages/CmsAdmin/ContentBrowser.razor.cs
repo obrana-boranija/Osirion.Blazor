@@ -84,7 +84,7 @@ public partial class ContentBrowser(NavigationManager navigationManager) : Osiri
         EventPublisher.Publish(new CreateNewContentEvent(AdminState.CurrentPath));
 
         // Navigate to edit page
-        navigationManager.NavigateTo("/admin/content/edit");
+        navigationManager.NavigateTo("/osirion/content/edit");
     }
 
     /// <summary>
@@ -100,7 +100,7 @@ public partial class ContentBrowser(NavigationManager navigationManager) : Osiri
                 var blogPost = await GitHubService.GetBlogPostAsync(item.Path);
 
                 // Navigate to edit page
-                navigationManager.NavigateTo($"/admin/content/edit/{item.Path}");
+                navigationManager.NavigateTo($"/osirion/content/edit/{item.Path}");
             }
             catch (Exception ex)
             {

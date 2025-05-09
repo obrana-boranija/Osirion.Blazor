@@ -15,7 +15,7 @@ public partial class AuthGuard
     public RenderFragment? ChildContent { get; set; }
 
     [Parameter]
-    public string LoginPath { get; set; } = "/admin/login";
+    public string LoginPath { get; set; } = "/osirion/login";
 
     [Parameter]
     public bool ShowLoginForm { get; set; } = false;

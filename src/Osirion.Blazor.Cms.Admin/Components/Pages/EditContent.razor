@@ -1,15 +1,7 @@
-﻿@page "/admin/content/edit"
-@namespace Osirion.Blazor.Example.Components.Pages.CmsAdmin
-@using Osirion.Blazor.Cms.Admin.Core.State
-@using Osirion.Blazor.Cms.Admin.Features.ContentEditor.Components
-@using Osirion.Blazor.Cms.Admin.Features.Layouts.Components
-@using Osirion.Blazor.Cms.Admin.Features.Layouts.Models
-@using Osirion.Blazor.Cms.Domain.Models
-@using Osirion.Blazor.Components
+﻿@page "/osirion/content/edit"
 @rendermode InteractiveServer
-@inherits OsirionComponentBase
 
-<PageTitle>@GetPageTitle() - Osirion CMS</PageTitle>
+@using Osirion.Blazor.Cms.Admin.Features.ContentEditor.Components
 
 <AdminPage Title="@GetPageTitle()" Subtitle="@GetPageSubtitle()">
 @*     <BreadcrumbItems>
@@ -41,7 +33,7 @@
                     <span>Loading content...</span>
                 </div>
             }
-            else if (adminState.EditingPost == null || !adminState.IsEditing)
+            else if (AdminState.EditingPost == null || !AdminState.IsEditing)
             {
                 <div class="osirion-admin-empty-state">
                     <div class="osirion-admin-empty-state-icon">

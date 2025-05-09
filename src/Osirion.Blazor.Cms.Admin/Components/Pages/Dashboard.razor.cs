@@ -1,31 +1,22 @@
-using Microsoft.AspNetCore.Components;
 using Osirion.Blazor.Cms.Admin.Core.Events;
-using Osirion.Blazor.Cms.Admin.Core.State;
 using Osirion.Blazor.Cms.Domain.Models;
 using Osirion.Blazor.Cms.Domain.ValueObjects;
-using Osirion.Blazor.Components;
 
-namespace Osirion.Blazor.Example.Components.Pages.CmsAdmin;
+namespace Osirion.Blazor.Cms.Admin.Components.Pages;
 
-public partial class Dashboard(NavigationManager navigationManager) : OsirionComponentBase
+public partial class Dashboard
 {
-    [Inject]
-    private CmsState AdminState { get; set; } = default!;
-
-    [Inject]
-    private IEventPublisher EventPublisher { get; set; } = default!;
-
     /// <summary>
     /// Checks if both repository and branch are configured
     /// </summary>
     private bool IsRepositoryConfigured =>
         AdminState.SelectedRepository != null && AdminState.SelectedBranch != null;
 
-    protected override void OnInitialized()
-    {
-        // Subscribe to state changes to trigger re-render
-        AdminState.StateChanged += StateHasChanged;
-    }
+    //protected override void OnInitialized()
+    //{
+    //    // Subscribe to state changes to trigger re-render
+    //    AdminState.StateChanged += StateHasChanged;
+    //}
 
     /// <summary>
     /// Creates a new post and navigates to edit screen
@@ -35,6 +26,7 @@ public partial class Dashboard(NavigationManager navigationManager) : OsirionCom
         if (!IsRepositoryConfigured)
         {
             // Cannot create without repository and branch
+            AdminState.SetErrorMessage("Please select a repository and branch before creating content.");
             return;
         }
 
@@ -53,12 +45,12 @@ public partial class Dashboard(NavigationManager navigationManager) : OsirionCom
         EventPublisher.Publish(new CreateNewContentEvent(AdminState.CurrentPath));
 
         // Navigate to edit page
-        navigationManager.NavigateTo("/admin/content/edit");
+        NavigationManager.NavigateTo("/osirion/content/edit");
     }
 
-    public void Dispose()
-    {
-        // Unsubscribe from state changes when component is disposed
-        AdminState.StateChanged -= StateHasChanged;
-    }
+    //public void Dispose()
+    //{
+    //    // Unsubscribe from state changes when component is disposed
+    //    AdminState.StateChanged -= StateHasChanged;
+    //}
 }

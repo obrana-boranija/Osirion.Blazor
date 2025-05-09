@@ -87,7 +87,7 @@ public partial class Login
     {
         var baseUri = NavigationManager.BaseUri.TrimEnd('/');
         return Options.Value.Authentication.GitHubRedirectUri ??
-               $"{baseUri}/admin/auth/callback";
+               $"{baseUri}/osirion/auth/callback";
     }
 
     private async Task LoginWithGitHubCodeAsync(string code)

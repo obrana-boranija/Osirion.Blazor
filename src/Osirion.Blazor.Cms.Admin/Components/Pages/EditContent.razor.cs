@@ -1,36 +1,34 @@
-﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components;
+using Octokit;
 using Osirion.Blazor.Cms.Admin.Core.Events;
-using Osirion.Blazor.Cms.Admin.Core.State;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Models;
 using Osirion.Blazor.Cms.Domain.ValueObjects;
 
-namespace Osirion.Blazor.Example.Components.Pages.CmsAdmin;
+namespace Osirion.Blazor.Cms.Admin.Components.Pages;
 
-public partial class EditContent(NavigationManager navigationManager, CmsState adminState, IGitHubAdminService gitHubService, IEventPublisher eventPublisher)
+public partial class EditContent(IGitHubAdminService gitHubService)
 {
     [SupplyParameterFromQuery]
     public string? Path { get; set; }
 
-    private bool IsLoading { get; set; }
-
     protected override void OnInitialized()
     {
         // Subscribe to state changes from AdminState
-        adminState.StateChanged += StateHasChanged;
+        AdminState.StateChanged += StateHasChanged;
     }
 
     public void Dispose()
     {
         // Unsubscribe to prevent memory leaks
-        adminState.StateChanged -= StateHasChanged;
+        AdminState.StateChanged -= StateHasChanged;
     }
 
     protected override async Task OnParametersSetAsync()
     {
         // Reload content if parameters change and we're already rendered
         if (!string.IsNullOrEmpty(Path) &&
-        (adminState.EditingPost == null || adminState.EditingPost.FilePath != Path))
+        (AdminState.EditingPost == null || AdminState.EditingPost.FilePath != Path))
         {
             await LoadContentAsync();
         }
@@ -57,19 +55,19 @@ public partial class EditContent(NavigationManager navigationManager, CmsState a
             // Path parameter takes precedence
             await LoadContentAsync();
         }
-        else if (adminState.SelectedItem != null && adminState.SelectedItem.IsMarkdownFile)
+        else if (AdminState.SelectedItem != null && AdminState.SelectedItem.IsMarkdownFile)
         {
             // Redirect to proper route if we have a selected item
-            navigationManager.NavigateTo($"/admin/content/edit?Path={adminState.SelectedItem.Path}");
+            NavigationManager.NavigateTo($"/osirion/content/edit?Path={AdminState.SelectedItem.Path}");
         }
-        else if (adminState.EditingPost != null && adminState.IsEditing)
+        else if (AdminState.EditingPost != null && AdminState.IsEditing)
         {
             // We already have a post being edited (likely from content browser)
             // Just ensure we're on the right path
-            if (!string.IsNullOrEmpty(adminState.EditingPost.FilePath) &&
-                !adminState.IsCreatingNewFile)
+            if (!string.IsNullOrEmpty(AdminState.EditingPost.FilePath) &&
+            !AdminState.IsCreatingNewFile)
             {
-                navigationManager.NavigateTo($"/admin/content/edit?Path={adminState.EditingPost.FilePath}");
+                NavigationManager.NavigateTo($"/osirion/content/edit?Path={AdminState.EditingPost.FilePath}");
             }
         }
     }
@@ -89,14 +87,14 @@ public partial class EditContent(NavigationManager navigationManager, CmsState a
             var blogPost = await gitHubService.GetBlogPostAsync(Path);
 
             // Set the post in AdminState (this triggers StateChanged event)
-            adminState.SetEditingPost(blogPost);
+            AdminState.SetEditingPost(blogPost);
 
             // Also publish a content selected event
-            eventPublisher.Publish(new ContentSelectedEvent(Path));
+            EventPublisher.Publish(new ContentSelectedEvent(Path));
         }
         catch (Exception ex)
         {
-            adminState.SetErrorMessage($"Failed to load content: {ex.Message}");
+            AdminState.SetErrorMessage($"Failed to load content: {ex.Message}");
         }
         finally
         {
@@ -112,58 +110,58 @@ public partial class EditContent(NavigationManager navigationManager, CmsState a
         {
             Metadata = FrontMatter.Create("New Post", "Enter description here", DateTime.Now),
             Content = "## New Post\n\nStart writing your content here...",
-            FilePath = string.IsNullOrEmpty(adminState.CurrentPath) ?
-                "new-post.md" :
-                $"{adminState.CurrentPath}/new-post.md"
+            FilePath = string.IsNullOrEmpty(AdminState.CurrentPath) ?
+            "new-post.md" :
+                $"{AdminState.CurrentPath}/new-post.md"
         };
 
-        adminState.SetEditingPost(newPost, true);
+        AdminState.SetEditingPost(newPost, true);
 
         // Also publish a create new content event
-        eventPublisher.Publish(new CreateNewContentEvent(adminState.CurrentPath));
+        EventPublisher.Publish(new CreateNewContentEvent(AdminState.CurrentPath));
     }
 
     private void GoToContentBrowser()
     {
-        navigationManager.NavigateTo("/admin/content");
+        NavigationManager.NavigateTo("/osirion/content");
     }
 
     private async Task HandleSaveComplete(BlogPost post)
     {
         // Navigate to content listing
-        navigationManager.NavigateTo("/admin/content");
+        NavigationManager.NavigateTo("/osirion/content");
     }
 
     private void HandleDiscardChanges()
     {
         // Clear editing state in AdminState
-        adminState.ClearEditing();
+        AdminState.ClearEditing();
 
         // Navigate to content listing
-        navigationManager.NavigateTo("/admin/content");
+        NavigationManager.NavigateTo("/osirion/content");
     }
 
     private string GetPageTitle()
     {
-        if (adminState.EditingPost == null)
+        if (AdminState.EditingPost == null)
         {
             return "Edit Content";
         }
 
-        return adminState.IsCreatingNewFile
-            ? "New Post"
-            : $"Edit: {adminState.EditingPost.Metadata?.Title}";
+        return AdminState.IsCreatingNewFile
+        ? "New Post"
+            : $"Edit: {AdminState.EditingPost.Metadata?.Title}";
     }
 
     private string GetPageSubtitle()
     {
-        if (adminState.EditingPost == null)
+        if (AdminState.EditingPost == null)
         {
             return "Edit Content";
         }
 
-        return adminState.IsCreatingNewFile
-            ? "New Description"
-            : $"Edit: {adminState.EditingPost.Metadata?.Description}";
+        return AdminState.IsCreatingNewFile
+        ? "New Description"
+            : $"Edit: {AdminState.EditingPost.Metadata?.Description}";
     }
 }

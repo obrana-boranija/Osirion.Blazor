@@ -158,7 +158,7 @@ public class FileExplorerViewModel
                 _eventMediator.Publish(new ContentSelectedEvent(item.Path));
 
                 // Navigate directly to the edit page with the path
-                _navigationManager.NavigateTo($"/admin/content/edit?Path={item.Path}");
+                _navigationManager.NavigateTo($"/osirion/content/edit?Path={item.Path}");
 
                 _logger.LogInformation("Markdown file opened in editor: {Path}", item.Path);
             }

@@ -1,32 +1,139 @@
+/* Main container - taking full height of the parent */
 .markdown-editor-with-preview {
     display: flex;
     flex-direction: column;
-    height: 100%;
+    height: calc(100vh - 160px); /* Adjust based on your layout needs */
+    min-height: 500px;
     overflow: hidden;
-    border: 1px solid var(--osirion-admin-border, #d0d7de);
+    border: 1px solid var(--osirion-border-color, #d0d7de);
     border-radius: 6px;
-    background-color: var(--osirion-admin-bg, #ffffff);
+    background-color: var(--osirion-background-primary, #ffffff);
 }
 
+/* Headers for both panels */
 .markdown-editor-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 8px 16px;
-    background-color: var(--osirion-admin-light, #f6f8fa);
-    border-bottom: 1px solid var(--osirion-admin-border, #d0d7de);
+    background-color: var(--osirion-background-secondary, #f6f8fa);
+    border-bottom: 1px solid var(--osirion-border-color, #d0d7de);
+    flex-shrink: 0; /* Prevent header from shrinking */
+    height: 42px; /* Fixed height for consistency */
+    z-index: 1; /* Ensure header stays on top */
 }
 
-.markdown-editor-title {
+.markdown-preview-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 16px;
+    background-color: var(--osirion-background-secondary, #f6f8fa);
+    border-bottom: 1px solid var(--osirion-border-color, #d0d7de);
+    flex-shrink: 0; /* Prevent header from shrinking */
+    height: 42px; /* Fixed height for consistency */
+    z-index: 1; /* Ensure header stays on top */
+}
+
+.markdown-editor-title,
+.markdown-preview-title {
     font-size: 14px;
     font-weight: 500;
-    color: var(--osirion-admin-text-muted, #57606a);
+    color: var(--osirion-text-secondary, #57606a);
+    margin: 0;
 }
 
+/* Split view layout - side by side with equal height */
+.split-view {
+    flex-direction: row;
+    flex: 1; /* Take remaining space */
+    overflow: hidden;
+}
+
+    .split-view .markdown-editor-container,
+    .split-view .markdown-preview-container {
+        width: 50%;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden; /* Hide overflow, let the content panels handle scrolling */
+        height: 100%; /* Full height of parent */
+    }
+
+    .split-view .markdown-editor-container {
+        border-right: 1px solid var(--osirion-border-color, #d0d7de);
+    }
+
+/* When preview is hidden, ensure editor expands properly */
+.editor-only {
+    flex-direction: column;
+    flex: 1;
+}
+
+    .editor-only .markdown-editor-container {
+        width: 100%;
+        height: 100%;
+    }
+
+    .editor-only .markdown-preview-container {
+        display: none;
+    }
+
+/* Editor container */
+.markdown-editor-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* The actual editor textarea */
+.markdown-editor-textarea {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    font-family: ui-monospace, SFMono-Regular, SF Mono, Consolas, Liberation Mono, Menlo, monospace;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--osirion-text-primary, #24292f);
+    resize: none;
+    border: none;
+    outline: none;
+    background-color: var(--osirion-background-primary, #ffffff);
+    tab-size: 4;
+    height: calc(100% - 16px); /* Adjust for padding */
+}
+
+/* Preview container */
+.markdown-preview-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* The actual preview content area with scrolling */
+.markdown-preview-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    background-color: var(--osirion-background-primary, #ffffff);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--osirion-text-primary, #24292f);
+    height: calc(100% - 16px); /* Adjust for padding */
+}
+
+.markdown-preview-placeholder {
+    color: var(--osirion-text-secondary, #8b949e);
+    font-style: italic;
+}
+
+/* Toolbar */
 .markdown-editor-toolbar {
     display: flex;
     flex-wrap: wrap;
-    gap: 2px;
+    gap: 4px;
 }
 
 .markdown-editor-toolbar-button {
@@ -38,99 +145,26 @@
     padding: 0;
     border: none;
     background-color: transparent;
-    color: var(--osirion-admin-text-muted, #57606a);
+    color: var(--osirion-text-secondary, #57606a);
     border-radius: 4px;
     cursor: pointer;
     transition: all 0.15s ease;
 }
 
     .markdown-editor-toolbar-button:hover {
-        background-color: var(--osirion-admin-hover, #eaeef2);
-        color: var(--osirion-admin-text, #24292f);
+        background-color: var(--osirion-hover-background, #eaeef2);
+        color: var(--osirion-text-primary, #24292f);
     }
 
 .markdown-editor-toolbar-button-active {
     background-color: rgba(3, 102, 214, 0.1);
-    color: var(--osirion-admin-primary, #0969da);
+    color: var(--osirion-action-primary, #0969da);
 }
 
 .markdown-editor-toolbar-icon {
     display: flex;
     align-items: center;
     justify-content: center;
-}
-
-.markdown-editor-container {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    overflow: hidden;
-    border-right: 1px solid var(--osirion-admin-border, #d0d7de);
-}
-
-.markdown-editor-textarea {
-    flex: 1;
-    overflow-y: auto;
-    padding: 16px;
-    font-family: ui-monospace, SFMono-Regular, SF Mono, Consolas, Liberation Mono, Menlo, monospace;
-    font-size: 14px;
-    line-height: 1.5;
-    color: var(--osirion-admin-text, #24292f);
-    resize: none;
-    border: none;
-    outline: none;
-    background-color: var(--osirion-admin-bg, #ffffff);
-    tab-size: 4;
-}
-
-.markdown-preview-container {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    overflow: hidden;
-}
-
-.markdown-preview-header {
-    padding: 8px 16px;
-    background-color: var(--osirion-admin-light, #f6f8fa);
-    border-bottom: 1px solid var(--osirion-admin-border, #d0d7de);
-}
-
-.markdown-preview-title {
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--osirion-admin-text-muted, #57606a);
-    margin: 0;
-}
-
-.markdown-preview-content {
-    flex: 1;
-    overflow-y: auto;
-    padding: 16px;
-    background-color: var(--osirion-admin-bg, #ffffff);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
-    font-size: 14px;
-    line-height: 1.5;
-    color: var(--osirion-admin-text, #24292f);
-}
-
-.markdown-preview-placeholder {
-    color: var(--osirion-admin-text-muted, #8b949e);
-    font-style: italic;
-}
-
-/* Split view layout */
-.split-view {
-    flex-direction: row;
-}
-
-    .split-view .markdown-editor-container,
-    .split-view .markdown-preview-container {
-        width: 50%;
-    }
-
-.editor-only .markdown-preview-container {
-    display: none;
 }
 
 /* Markdown Preview Styles - GitHub style */
@@ -144,18 +178,18 @@
     margin-bottom: 16px;
     font-weight: 600;
     line-height: 1.25;
-    color: var(--osirion-admin-text, #24292f);
+    color: var(--osirion-text-primary, #24292f);
 }
 
 .markdown-preview-content h1 {
     font-size: 2em;
-    border-bottom: 1px solid var(--osirion-admin-border, #d0d7de);
+    border-bottom: 1px solid var(--osirion-border-color, #d0d7de);
     padding-bottom: 0.3em;
 }
 
 .markdown-preview-content h2 {
     font-size: 1.5em;
-    border-bottom: 1px solid var(--osirion-admin-border, #d0d7de);
+    border-bottom: 1px solid var(--osirion-border-color, #d0d7de);
     padding-bottom: 0.3em;
 }
 
@@ -173,7 +207,7 @@
 
 .markdown-preview-content h6 {
     font-size: 0.85em;
-    color: var(--osirion-admin-text-muted, #57606a);
+    color: var(--osirion-text-secondary, #57606a);
 }
 
 .markdown-preview-content p,
@@ -189,8 +223,8 @@
 
 .markdown-preview-content blockquote {
     padding: 0 1em;
-    color: var(--osirion-admin-text-muted, #57606a);
-    border-left: 0.25em solid var(--osirion-admin-border, #d0d7de);
+    color: var(--osirion-text-secondary, #57606a);
+    border-left: 0.25em solid var(--osirion-border-color, #d0d7de);
 }
 
 .markdown-preview-content ul,
@@ -216,8 +250,9 @@
     overflow: auto;
     font-size: 85%;
     line-height: 1.45;
-    background-color: var(--osirion-admin-light, #f6f8fa);
+    background-color: var(--osirion-background-secondary, #f6f8fa);
     border-radius: 6px;
+    margin-bottom: 16px;
 }
 
     .markdown-preview-content pre code {
@@ -235,40 +270,42 @@
     width: 100%;
     overflow: auto;
     border-collapse: collapse;
+    margin-bottom: 16px;
 }
 
     .markdown-preview-content table th,
     .markdown-preview-content table td {
         padding: 6px 13px;
-        border: 1px solid var(--osirion-admin-border, #d0d7de);
+        border: 1px solid var(--osirion-border-color, #d0d7de);
     }
 
     .markdown-preview-content table tr {
-        background-color: var(--osirion-admin-bg, #ffffff);
-        border-top: 1px solid var(--osirion-admin-border, #d0d7de);
+        background-color: var(--osirion-background-primary, #ffffff);
+        border-top: 1px solid var(--osirion-border-color, #d0d7de);
     }
 
         .markdown-preview-content table tr:nth-child(2n) {
-            background-color: var(--osirion-admin-light, #f6f8fa);
+            background-color: var(--osirion-background-secondary, #f6f8fa);
         }
 
 .markdown-preview-content img {
     max-width: 100%;
     box-sizing: content-box;
-    background-color: var(--osirion-admin-bg, #ffffff);
+    background-color: var(--osirion-background-primary, #ffffff);
     border-radius: 6px;
+    margin-bottom: 16px;
 }
 
 .markdown-preview-content hr {
     height: 0.25em;
     padding: 0;
     margin: 24px 0;
-    background-color: var(--osirion-admin-border, #d0d7de);
+    background-color: var(--osirion-border-color, #d0d7de);
     border: 0;
 }
 
 .markdown-preview-content a {
-    color: var(--osirion-admin-primary, #0969da);
+    color: var(--osirion-action-primary, #0969da);
     text-decoration: none;
 }
 
@@ -295,17 +332,18 @@
     }
 
 /* Dark mode support */
-:root.dark {
-    --osirion-admin-bg: #0d1117;
-    --osirion-admin-text: #e6edf3;
-    --osirion-admin-text-muted: #8b949e;
-    --osirion-admin-border: #30363d;
-    --osirion-admin-light: #161b22;
-    --osirion-admin-hover: #30363d;
-    --osirion-admin-primary: #58a6ff;
+:root.dark .markdown-editor-with-preview,
+.osirion-admin-theme-dark .markdown-editor-with-preview {
+    --osirion-background-primary: #0d1117;
+    --osirion-background-secondary: #161b22;
+    --osirion-text-primary: #e6edf3;
+    --osirion-text-secondary: #8b949e;
+    --osirion-border-color: #30363d;
+    --osirion-hover-background: #30363d;
+    --osirion-action-primary: #58a6ff;
 }
 
-/* Responsive styles */
+/* Responsive adjustments */
 @media (max-width: 768px) {
     .split-view {
         flex-direction: column;
@@ -314,12 +352,13 @@
         .split-view .markdown-editor-container,
         .split-view .markdown-preview-container {
             width: 100%;
+            height: 50%;
         }
 
-    .markdown-editor-container {
-        border-right: none;
-        border-bottom: 1px solid var(--osirion-admin-border, #d0d7de);
-    }
+        .split-view .markdown-editor-container {
+            border-right: none;
+            border-bottom: 1px solid var(--osirion-border-color, #d0d7de);
+        }
 }
 
 /* Accessibility */

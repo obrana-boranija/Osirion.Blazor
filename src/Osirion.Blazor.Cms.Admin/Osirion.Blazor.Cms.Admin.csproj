@@ -23,9 +23,13 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Extensions\**" />
 	  <Compile Remove="Internal\**" />
+	  <Content Remove="Extensions\**" />
 	  <Content Remove="Internal\**" />
+	  <EmbeddedResource Remove="Extensions\**" />
 	  <EmbeddedResource Remove="Internal\**" />
+	  <None Remove="Extensions\**" />
 	  <None Remove="Internal\**" />
 	</ItemGroup>
 
@@ -64,7 +68,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Extensions\" />
+	  <Folder Include="Core\Services\" />
 	  <Folder Include="Features\Authentication\Services\" />
 	  <Folder Include="Shared\Events\" />
 	</ItemGroup>

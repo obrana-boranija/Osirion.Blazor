@@ -3,10 +3,12 @@
 @using Osirion.Blazor.Cms.Admin.Features.Authentication.Components
 @using Osirion.Blazor.Cms.Admin.Shared.Components
 
+@ChildContent
+
 @* @if (authService.IsAuthenticated)
-{ *@
+{
     @ChildContent
-@* }
+}
 else
 {
     @if (ShowLoginForm)
