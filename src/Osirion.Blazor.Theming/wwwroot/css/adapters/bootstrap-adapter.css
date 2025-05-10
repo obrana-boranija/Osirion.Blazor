@@ -67,8 +67,8 @@ html.osirion-bootstrap-integration {
     --osirion-color-danger-950: #2c0b0f; /* Derived */
     /* Background and text colors */
     --osirion-background-primary: var(--bs-body-bg, #ffffff);
-    --osirion-background-secondary: var(--bs-tertiary-bg, #f8f9fa);
-    --osirion-background-tertiary: var(--bs-secondary-bg, #e9ecef);
+    --osirion-background-secondary: var(--bs-secondary-bg, #f8f9fa);
+    --osirion-background-tertiary: var(--bs-tertiary-bg, #e9ecef);
     --osirion-background-muted: var(--bs-border-color-subtle, #dee2e6);
     --osirion-background-inverted: var(--bs-dark, #212529);
     --osirion-text-primary: var(--bs-body-color, #212529);
@@ -278,8 +278,8 @@ html.osirion-bootstrap-integration {
         --osirion-color-danger-950: #f8d7da; /* Bootstrap danger-bg-subtle in light */
         /* Dark mode mappings from Bootstrap's dark theme */
         --osirion-background-primary: var(--bs-body-bg, #212529);
-        --osirion-background-secondary: var(--bs-tertiary-bg, #2b3035);
-        --osirion-background-tertiary: var(--bs-secondary-bg, #343a40);
+        --osirion-background-secondary: var(--bs-secondary-bg, #2b3035);
+        --osirion-background-tertiary: var(--bs-tertiary-bg, #343a40);
         --osirion-background-muted: var(--bs-border-color-subtle, #495057);
         --osirion-background-inverted: var(--bs-white, #ffffff);
         --osirion-text-primary: var(--bs-body-color, #dee2e6);

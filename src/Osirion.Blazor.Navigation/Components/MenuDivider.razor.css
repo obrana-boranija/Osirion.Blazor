@@ -1,0 +1,12 @@
+.osirion-menu-divider {
+    height: 1px;
+    margin: var(--osirion-spacing-1, 0.25rem) var(--osirion-spacing-2, 0.5rem);
+    background-color: var(--osirion-border-color, #e5e7eb);
+}
+
+/* Dark mode */
+:root[data-theme="dark"] .osirion-menu-divider,
+.dark-theme .osirion-menu-divider,
+[data-bs-theme="dark"] .osirion-menu-divider {
+    background-color: var(--osirion-border-color, #4b5563);
+}

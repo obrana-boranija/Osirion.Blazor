@@ -13,6 +13,11 @@ public class ContentQuery
     public string? Directory { get; set; }
 
     /// <summary>
+    /// Gets or sets the slug to filter by
+    /// </summary>
+    public string? Slug { get; set; }
+
+    /// <summary>
     /// Gets or sets the directory ID to filter by
     /// </summary>
     public string? DirectoryId { get; set; }
@@ -131,6 +136,7 @@ public class ContentQuery
         {
             Directory = Directory,
             DirectoryId = DirectoryId,
+            Slug = Slug,
             Category = Category,
             Tag = Tag,
             SearchQuery = SearchQuery,

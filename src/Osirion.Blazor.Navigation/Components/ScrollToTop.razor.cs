@@ -79,7 +79,7 @@ public partial class ScrollToTop
     /// <summary>
     /// Gets the CSS class for the button based on position and options
     /// </summary>
-    private string GetButtonClass()
+    protected override string GetButtonClass()
     {
         var positionClass = EffectiveOptions.Position switch
         {
@@ -91,7 +91,7 @@ public partial class ScrollToTop
         };
 
         // Use both class naming conventions for better compatibility
-        return $"scroll-to-top osirion-scroll-to-top {positionClass} {EffectiveOptions.CssClass}".Trim();
+        return $"{base.GetButtonClass()} osirion-scroll-to-top {positionClass} {EffectiveOptions.CssClass}".Trim();
     }
 
     private string GetScript()

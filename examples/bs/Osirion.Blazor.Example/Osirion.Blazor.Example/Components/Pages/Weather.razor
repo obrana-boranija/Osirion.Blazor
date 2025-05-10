@@ -5,7 +5,7 @@
 
 <PageTitle>Weather</PageTitle>
 
-<BlogLayout Title="Test post"
+@* <BlogLayout Title="Test post"
             Description="Test description"
             ImageUrl="https://images.pexels.com/photos/31090535/pexels-photo-31090535/free-photo-of-rustic-western-style-wooden-saloon-front.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
             ImageAlt="Post.Title">
@@ -20,12 +20,10 @@
             <div class="osirion-blog-author">Written by Dejan</div>
             <div class="osirion-blog-date">Published on @DateTime.Today.ToLongDateString()</div>
         </div>
-
-@*         <div class="osirion-blog-tags">
-            @foreach (var tag in Post.Tags)
-            {
-                <a href="/blog/tag/@tag" class="osirion-blog-tag">@tag</a>
-            }
-        </div> *@
     </FooterContent>
-</BlogLayout>
+</BlogLayout> *@
+
+<FeaturedPostsSection Title="Featured Posts"
+                      Description="Explore our latest articles and insights"
+                      ShowMetadata="true"
+                      ShowCategories="true" />

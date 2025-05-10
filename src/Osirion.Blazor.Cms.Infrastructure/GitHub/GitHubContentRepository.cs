@@ -5,6 +5,7 @@ using Osirion.Blazor.Cms.Domain.Exceptions;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Models.GitHub;
 using Osirion.Blazor.Cms.Domain.Options;
+using Osirion.Blazor.Cms.Domain.Repositories;
 using Osirion.Blazor.Cms.Infrastructure.Repositories;
 
 namespace Osirion.Blazor.Cms.Infrastructure.GitHub
@@ -15,16 +16,19 @@ namespace Osirion.Blazor.Cms.Infrastructure.GitHub
     public class GitHubContentRepository : BaseContentRepository
     {
         private readonly IGitHubApiClient _apiClient;
+        private readonly IDirectoryRepository _directoryRepository;
         private readonly GitHubOptions _options;
 
         public GitHubContentRepository(
             IGitHubApiClient apiClient,
             IMarkdownProcessor markdownProcessor,
             IOptions<GitHubOptions> options,
+            IDirectoryRepository directoryRepository,
             ILogger<GitHubContentRepository> logger)
             : base(GetProviderId(options.Value), markdownProcessor, logger)
         {
             _apiClient = apiClient ?? throw new ArgumentNullException(nameof(apiClient));
+            _directoryRepository = directoryRepository;
             _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
 
             // Set base class properties
@@ -74,7 +78,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.GitHub
                 var contents = await _apiClient.GetRepositoryContentsAsync(contentPath, cancellationToken);
 
                 // Process contents recursively
-                await ProcessContentsRecursivelyAsync(contents, cache, cancellationToken);
+                await ProcessContentsRecursivelyAsync(contents, cache, cancellationToken: cancellationToken);
 
 
                 // Update cache
@@ -182,7 +186,8 @@ namespace Osirion.Blazor.Cms.Infrastructure.GitHub
         private async Task ProcessContentsRecursivelyAsync(
             List<GitHubItem> contents,
             Dictionary<string, ContentItem> contentItems,
-            CancellationToken cancellationToken)
+            string? directory = default!,
+            CancellationToken cancellationToken = default!)
         {
             foreach (var item in contents)
             {
@@ -193,7 +198,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.GitHub
                     try
                     {
                         var fileContent = await _apiClient.GetFileContentAsync(item.Path, cancellationToken);
-                        var contentItem = await ProcessMarkdownFileAsync(fileContent, cancellationToken);
+                        var contentItem = await ProcessMarkdownFileAsync(fileContent, directory, cancellationToken);
 
                         if (contentItem != null)
                         {
@@ -208,12 +213,12 @@ namespace Osirion.Blazor.Cms.Infrastructure.GitHub
                 else if (item.IsDirectory)
                 {
                     var subContents = await _apiClient.GetRepositoryContentsAsync(item.Path, cancellationToken);
-                    await ProcessContentsRecursivelyAsync(subContents, contentItems, cancellationToken);
+                    await ProcessContentsRecursivelyAsync(subContents, contentItems, item.Name, cancellationToken);
                 }
             }
         }
 
-        private async Task<ContentItem?> ProcessMarkdownFileAsync(GitHubFileContent fileContent, CancellationToken cancellationToken)
+        private async Task<ContentItem?> ProcessMarkdownFileAsync(GitHubFileContent fileContent, string? directory = default!, CancellationToken cancellationToken = default!)
         {
             if (fileContent == null || !fileContent.IsMarkdownFile())
                 return null;
@@ -267,6 +272,9 @@ namespace Osirion.Blazor.Cms.Infrastructure.GitHub
             {
                 contentItem.SetLocale(_options.DefaultLocale);
             }
+
+            var dir = await _directoryRepository.GetByNameAsync(directory, contentItem.Locale, cancellationToken);
+            contentItem.SetDirectory(dir);
 
             // Process the markdown content
             await ProcessMarkdownAsync(markdownContent, contentItem, cancellationToken);

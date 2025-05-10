@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Exceptions;
 using Osirion.Blazor.Cms.Domain.Interfaces.Directory;
+using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Infrastructure.Repositories;
 using DirectoryNotFoundException = Osirion.Blazor.Cms.Domain.Exceptions.DirectoryNotFoundException;
 
@@ -15,18 +17,21 @@ public abstract class DirectoryRepositoryBase : RepositoryBase<DirectoryItem, st
     protected readonly IDirectoryCacheManager CacheManager;
     protected readonly IDirectoryMetadataProcessor MetadataProcessor;
     protected readonly IPathUtilities PathUtils;
+    private readonly ContentProviderOptions _contentOptions;
 
     protected DirectoryRepositoryBase(
         string providerId,
         IDirectoryCacheManager cacheManager,
         IDirectoryMetadataProcessor metadataProcessor,
         IPathUtilities pathUtils,
+        IOptions<ContentProviderOptions> contentOptions,
         ILogger logger)
         : base(providerId, logger)
     {
         CacheManager = cacheManager ?? throw new ArgumentNullException(nameof(cacheManager));
         MetadataProcessor = metadataProcessor ?? throw new ArgumentNullException(nameof(metadataProcessor));
         PathUtils = pathUtils ?? throw new ArgumentNullException(nameof(pathUtils));
+        _contentOptions = contentOptions.Value;
     }
 
     /// <inheritdoc/>
@@ -117,6 +122,28 @@ public abstract class DirectoryRepositoryBase : RepositoryBase<DirectoryItem, st
     }
 
     /// <summary>
+    /// Gets directory by URL
+    /// </summary>
+    public virtual async Task<DirectoryItem?> GetByNameAsync(string? name, string? locale = default, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrEmpty(name))
+            return null;
+
+        try
+        {
+            var cache = await GetDirectoryCacheAsync(cancellationToken);
+
+            locale = locale ?? _contentOptions.DefaultLocale;
+            return cache.Values.FirstOrDefault(d => d.Name.ToLower() == name.ToLower() && d.Locale.ToLower() == locale.ToLower());
+        }
+        catch (Exception ex)
+        {
+            LogError(ex, "getting directory by Name", name);
+            throw new ContentProviderException($"Failed to get directory by Name: {ex.Message}", ex, ProviderId);
+        }
+    }
+
+    /// <summary>
     /// Gets directories by locale
     /// </summary>
     public virtual async Task<IReadOnlyList<DirectoryItem>> GetByLocaleAsync(string? locale = null, CancellationToken cancellationToken = default)
@@ -139,7 +166,7 @@ public abstract class DirectoryRepositoryBase : RepositoryBase<DirectoryItem, st
             {
                 // Return directories for the specified locale
                 return cache.Values
-                    .Where(d => d.Locale == locale && d.Parent == null)
+                    .Where(d => d.Locale == locale && d.Parent is not null)
                     .ToList();
             }
         }
@@ -184,7 +211,7 @@ public abstract class DirectoryRepositoryBase : RepositoryBase<DirectoryItem, st
         try
         {
             // Get directories by locale (root directories only)
-            var rootDirectories = await GetByLocaleAsync(locale, cancellationToken);
+            var rootDirectories = await GetByLocaleAsync(locale ?? _contentOptions.DefaultLocale, cancellationToken);
 
             // Children are already populated in the cache
             return rootDirectories;

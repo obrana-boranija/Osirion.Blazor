@@ -44,6 +44,13 @@ public interface IContentProvider
     Task<ContentItem?> GetItemByUrlAsync(string url, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Gets all available translations for content with the specified localization ID
+    /// </summary>
+    /// <param name="localizationId">The unique identifier connecting translations of the same content</param>
+    /// <returns>A dictionary of locale codes mapped to their respective content items</returns>
+    Task<Dictionary<string, ContentItem>> GetContentTranslationsAsync(string localizationId);
+
+    /// <summary>
     /// Gets content items based on a query
     /// </summary>
     Task<IReadOnlyList<ContentItem>?> GetItemsByQueryAsync(ContentQuery query, CancellationToken cancellationToken = default);

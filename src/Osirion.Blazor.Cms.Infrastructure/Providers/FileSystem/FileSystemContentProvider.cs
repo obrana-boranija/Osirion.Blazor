@@ -27,7 +27,7 @@ public class FileSystemContentProvider : ContentProviderBase
         IOptions<FileSystemOptions> options,
         IMemoryCache memoryCache,
         ILogger<FileSystemContentProvider> logger)
-        : base(memoryCache, logger)
+        : base(memoryCache, options, logger)
     {
         _contentRepository = contentRepository ?? throw new ArgumentNullException(nameof(contentRepository));
         _directoryRepository = directoryRepository ?? throw new ArgumentNullException(nameof(directoryRepository));

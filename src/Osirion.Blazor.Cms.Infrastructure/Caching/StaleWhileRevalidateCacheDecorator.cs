@@ -308,6 +308,9 @@ public class StaleWhileRevalidateCacheDecorator : IContentRepository
         if (!string.IsNullOrEmpty(query.DirectoryId))
             keyBuilder.Append($"dirid:{query.DirectoryId}:");
 
+        if (!string.IsNullOrEmpty(query.Slug))
+            keyBuilder.Append($"slug:{query.Slug}:");
+
         if (!string.IsNullOrEmpty(query.Category))
             keyBuilder.Append($"cat:{query.Category}:");
 

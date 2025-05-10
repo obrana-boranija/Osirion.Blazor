@@ -20,18 +20,19 @@
     </div>
 }
 
-<div class="container mt-4">
+<div class="container-fluid mt-4">
     <h1>Osirion CMS Demo</h1>
     <p class="lead">This page demonstrates the Osirion.Blazor.Cms component library.</p>
 
     <div class="row mt-4">
         <div class="col-md-3 sticky-top">
+            <SearchBox />
             <DirectoryNavigation Directories="directories" CurrentDirectory="blog" />
         </div>
         <div class="col-md-6">
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <LocalizedContentView Item="_contentItem" CssClass="" />
+                    <LocalizedContentView Item="_contentItem" ShowNavigationLinks />
                 </div>
             </div>
         </div>

@@ -1,0 +1,162 @@
+/* Base menu item styles */
+.osirion-menu-item {
+    display: flex;
+    align-items: center;
+    padding: var(--osirion-spacing-2, 0.5rem) var(--osirion-spacing-3, 0.75rem);
+    color: var(--osirion-text-primary, #374151);
+    font-size: var(--osirion-font-size-sm, 0.875rem);
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color var(--osirion-transition-duration-150, 0.15s) ease;
+    min-height: 2.5rem;
+    min-width: 5rem;
+}
+
+    .osirion-menu-item:hover:not(.osirion-menu-item-disabled) {
+        background-color: rgb(27, 31, 42);
+    }
+
+    .osirion-menu-item:focus {
+        outline: none;
+        background-color: rgb(27, 31, 42);
+    }
+
+    .osirion-menu-item:focus-visible {
+        outline: 2px solid var(--osirion-focus-ring-color, rgba(59, 130, 246, 0.5));
+        outline-offset: -2px;
+    }
+
+/* Active state */
+.osirion-menu-item-active {
+    background-color: rgb(27, 31, 42);
+    color: var(--osirion-color-active, #0369a1);
+    font-weight: var(--osirion-font-weight-medium, 500);
+}
+
+/* Disabled state */
+.osirion-menu-item-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* Icons and text */
+.osirion-menu-item-icon {
+    margin-right: var(--osirion-spacing-2, 0.5rem);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    flex-shrink: 0;
+}
+
+.osirion-menu-item-text {
+    flex: 1;
+}
+
+.osirion-menu-item-chevron {
+    margin-left: var(--osirion-spacing-2, 0.5rem);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Submenu - pure CSS approach for SSR compatibility */
+.osirion-menu-item-has-submenu {
+    position: relative;
+}
+
+.osirion-submenu {
+    display: none;
+    position: absolute;
+    left: 100%;
+    top: 0;
+    min-width: 10rem;
+    background-color: var(--osirion-background-primary, #ffffff);
+    border: var(--osirion-border-width, 1px) solid var(--osirion-border-color, #e5e7eb);
+    border-radius: var(--osirion-radius-md, 0.375rem);
+    box-shadow: var(--osirion-shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1));
+    z-index: var(--osirion-z-index-20, 20);
+    padding: var(--osirion-spacing-1, 0.25rem) 0;
+}
+
+/* Show submenu on hover - no JavaScript needed */
+.osirion-menu-item-has-submenu:hover > .osirion-submenu,
+.osirion-menu-item-has-submenu:focus-within > .osirion-submenu {
+    display: block;
+}
+
+/* Horizontal menu styling for submenu */
+.osirion-menu-horizontal > .osirion-menu-inner > .osirion-menu-item-has-submenu > .osirion-submenu {
+    top: 100%;
+    left: 0;
+}
+
+/* Horizontal menu item adjustments */
+.osirion-menu-horizontal > .osirion-menu-inner > .osirion-menu-item {
+    margin: 0 var(--osirion-spacing-1, 0.25rem);
+    border-radius: var(--osirion-radius-md, 0.375rem);
+}
+
+/* Dark mode */
+:root[data-theme="dark"] .osirion-menu-item,
+.dark-theme .osirion-menu-item,
+[data-bs-theme="dark"] .osirion-menu-item {
+    color: var(--osirion-text-primary, #e5e7eb);
+}
+
+    :root[data-theme="dark"] .osirion-menu-item:hover:not(.osirion-menu-item-disabled),
+    .dark-theme .osirion-menu-item:hover:not(.osirion-menu-item-disabled),
+    [data-bs-theme="dark"] .osirion-menu-item:hover:not(.osirion-menu-item-disabled),
+    :root[data-theme="dark"] .osirion-menu-item:focus,
+    .dark-theme .osirion-menu-item:focus,
+    [data-bs-theme="dark"] .osirion-menu-item:focus {
+        background-color: var(--osirion-background-tertiary, #374151);
+    }
+
+:root[data-theme="dark"] .osirion-menu-item-active,
+.dark-theme .osirion-menu-item-active,
+[data-bs-theme="dark"] .osirion-menu-item-active {
+    background-color: var(--osirion-color-background-active, #1e40af);
+    color: var(--osirion-color-active, #93c5fd);
+}
+
+:root[data-theme="dark"] .osirion-submenu,
+.dark-theme .osirion-submenu,
+[data-bs-theme="dark"] .osirion-submenu {
+    background-color: var(--osirion-background-secondary, #1f2937);
+    border-color: var(--osirion-border-color, #4b5563);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .osirion-menu-horizontal.osirion-menu-collapsible {
+        overflow: visible;
+        height: auto;
+    }
+
+        .osirion-menu-horizontal.osirion-menu-collapsible > .osirion-menu-inner {
+            display: flex;
+            flex-direction: column;
+        }
+
+            .osirion-menu-horizontal.osirion-menu-collapsible > .osirion-menu-inner > .osirion-menu-item {
+                width: 100%;
+                margin: 0;
+            }
+
+    .osirion-menu-horizontal > .osirion-menu-inner > .osirion-menu-item-has-submenu > .osirion-submenu {
+        position: static;
+        box-shadow: none;
+        border: none;
+        border-left: 1px solid var(--osirion-border-color, #e5e7eb);
+        margin-left: var(--osirion-spacing-6, 1.5rem);
+        display: none;
+    }
+
+    .osirion-menu-horizontal > .osirion-menu-inner > .osirion-menu-item-has-submenu:hover > .osirion-submenu,
+    .osirion-menu-horizontal > .osirion-menu-inner > .osirion-menu-item-has-submenu:focus-within > .osirion-submenu {
+        display: block;
+    }
+}

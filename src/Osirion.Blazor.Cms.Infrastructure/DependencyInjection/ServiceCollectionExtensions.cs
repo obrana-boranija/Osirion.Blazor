@@ -127,6 +127,7 @@ public static class ServiceCollectionExtensions
         // Register GitHub repositories
         services.TryAddSingleton<GitHubContentRepository>();
         services.TryAddSingleton<GitHubDirectoryRepository>();
+        services.TryAddSingleton<IDirectoryRepository, GitHubDirectoryRepository>();
 
         // Register provider
         services.TryAddSingleton<GitHubContentProvider>();

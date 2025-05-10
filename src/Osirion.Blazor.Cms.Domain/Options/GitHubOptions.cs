@@ -3,7 +3,7 @@
 /// <summary>
 /// Configuration options for GitHub integration
 /// </summary>
-public class GitHubOptions
+public class GitHubOptions : ContentProviderOptions
 {
     /// <summary>
     /// The section name in the configuration file
@@ -49,49 +49,4 @@ public class GitHubOptions
     /// Gets or sets the GitHub API URL
     /// </summary>
     public string? ApiUrl { get; set; } = "https://api.github.com";
-
-    /// <summary>
-    /// Gets or sets the unique provider ID
-    /// </summary>
-    public string? ProviderId { get; set; }
-
-    /// <summary>
-    /// Gets or sets whether caching is enabled
-    /// </summary>
-    public bool EnableCaching { get; set; } = true;
-
-    /// <summary>
-    /// Gets or sets the cache duration in minutes
-    /// </summary>
-    public int CacheDurationMinutes { get; set; } = 30;
-
-    /// <summary>
-    /// Gets or sets whether this is the default provider
-    /// </summary>
-    public bool IsDefault { get; set; }
-
-    /// <summary>
-    /// Gets or sets whether localization is enabled
-    /// </summary>
-    public bool EnableLocalization { get; set; } = false;
-
-    /// <summary>
-    /// Gets or sets the default locale
-    /// </summary>
-    public string DefaultLocale { get; set; } = "en";
-
-    /// <summary>
-    /// Gets or sets the supported locales
-    /// </summary>
-    public List<string> SupportedLocales { get; set; } = new() { "en" };
-
-    /// <summary>
-    /// Gets or sets the supported file extensions
-    /// </summary>
-    public List<string> SupportedExtensions { get; set; } = new() { ".md", ".markdown" };
-
-    /// <summary>
-    /// Gets or sets whether to validate content on write operations
-    /// </summary>
-    public bool ValidateContent { get; set; } = true;
 }

@@ -1,93 +1,32 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">Osirion.Blazor</a>
-    </div>
+﻿@using Osirion.Blazor.Components
+@inherits OsirionComponentBase
+
+<div class="dummy-placeholder">
+    
 </div>
 
 <input type="checkbox" title="Navigation menu" class="navbar-toggler" />
 
 <div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="nav flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
+    <Menu AriaLabel="Main Navigation" Orientation="MenuOrientation.Horizontal">
+        <MenuItem Text="Home" Href="/" Icon="home" />
+        @foreach (var dir in _directories)
+        {
+            <MenuItem Text="@dir.Name" Href="@dir.Url" Icon="@dir.Name.ToLower()" />
+        }
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="static-demo">
-                <span class="bi bi-file-earmark-text-fill" aria-hidden="true"></span> Static Demo
-            </NavLink>
-        </div>
+        <MenuItem Text="Osirion" Href="navigation-demo" HasSubmenu="true">
+            <MenuItem Text="Nav" Href="navigation-demo" />
+            <MenuItem Text="Nav Server" Href="navigation-server-demo" />
+            <MenuItem Text="Nav WASM" Href="navigation-wasm-demo" />
+        </MenuItem>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Interactive WASM
-            </NavLink>
-        </div>
+        <MenuDivider />
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="server-demo">
-                <span class="bi bi-server" aria-hidden="true"></span> Server Interactive
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="blog">
-                <span class="bi bi-collection-fill" aria-hidden="true"></span> Blog (CMS Demo)
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="navigation-demo">
-                <span class="bi bi-arrow-up-circle-fill" aria-hidden="true"></span> Navigation
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="navigation-server-demo">
-                <span class="bi bi-arrow-up-circle-fill" aria-hidden="true"></span> Navigation Server
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="navigation-wasm-demo">
-                <span class="bi bi-arrow-up-circle-fill" aria-hidden="true"></span> Navigation Wasm
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="analytics-demo">
-                <span class="bi bi-graph-up" aria-hidden="true"></span> Analytics
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="debug">
-                <span class="bi bi-bug-fill" aria-hidden="true"></span> Debug Info
-            </NavLink>
-        </div>
-
-        <hr class="my-2" />
-        <div class="px-3 fw-bold">Content</div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="content/blog/enhanced-navigation-interceptor.md">
-                <span class="bi bi-file-text-fill" aria-hidden="true"></span> Enhanced Navigation
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="content/blog/github-cms-with-blazor.md">
-                <span class="bi bi-file-text-fill" aria-hidden="true"></span> GitHub CMS
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="content/docs/getting-started-with-osirion-blazor.md">
-                <span class="bi bi-file-text-fill" aria-hidden="true"></span> Getting Started
-            </NavLink>
-        </div>
-    </nav>
+        <SearchBox />
+    </Menu>
+    
 </div>
+
+
 

@@ -7,7 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="compilerconfig.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="compilerconfig.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Osirion.Blazor.Example.Client\Osirion.Blazor.Example.Client.csproj" />
+    <PackageReference Include="BlazorServerUrlRequestCultureProvider" Version="2.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.4" />
   </ItemGroup>
 

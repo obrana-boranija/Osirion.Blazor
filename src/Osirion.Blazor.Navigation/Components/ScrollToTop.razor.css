@@ -3,8 +3,6 @@
     position: fixed;
     width: var(--osirion-scroll-size, 45px);
     height: var(--osirion-scroll-size, 45px);
-    background-color: var(--osirion-action-primary);
-    color: var(--osirion-action-primary-text);
     border: var(--osirion-border-width) solid transparent;
     border-radius: var(--osirion-radius-full);
     box-shadow: var(--osirion-shadow-md);
@@ -28,8 +26,6 @@
 
     /* Hover state */
     .osirion-scroll-to-top:hover {
-        background-color: var(--osirion-action-primary-hover);
-        color: var(--osirion-action-primary-text);
         transform: translateY(-2px);
         box-shadow: var(--osirion-shadow-lg);
     }

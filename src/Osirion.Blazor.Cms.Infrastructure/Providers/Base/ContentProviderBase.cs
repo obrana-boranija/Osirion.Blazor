@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Exceptions;
+using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Domain.Repositories;
 using Osirion.Blazor.Cms.Domain.Services;
 using Osirion.Blazor.Cms.Infrastructure.Extensions;
@@ -14,6 +16,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.Providers;
 public abstract class ContentProviderBase : IContentProvider, IDisposable
 {
     private readonly IMemoryCache _memoryCache;
+    private readonly ContentProviderOptions _options;
     protected readonly ILogger Logger;
     private bool _disposed;
 
@@ -24,9 +27,11 @@ public abstract class ContentProviderBase : IContentProvider, IDisposable
     /// <param name="logger">The logger</param>
     protected ContentProviderBase(
         IMemoryCache memoryCache,
+        IOptions<ContentProviderOptions> options,
         ILogger logger)
     {
         _memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
+        _options = options.Value;
         Logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -404,5 +409,61 @@ public abstract class ContentProviderBase : IContentProvider, IDisposable
         }
 
         _disposed = true;
+    }
+
+    /// <inheritdoc />
+    public virtual async Task<Dictionary<string, ContentItem>> GetContentTranslationsAsync(string localizationId)
+    {
+        if (string.IsNullOrEmpty(localizationId))
+        {
+            return new Dictionary<string, ContentItem>();
+        }
+
+        // Try to get from cache first
+        string cacheKey = $"translations_{localizationId}";
+        if (_memoryCache.TryGetValue(cacheKey, out Dictionary<string, ContentItem>? cachedTranslations) &&
+            cachedTranslations != null)
+        {
+            return cachedTranslations;
+        }
+
+        try
+        {
+            // Create a dictionary to hold translations
+            var translations = new Dictionary<string, ContentItem>();
+
+            // For each supported locale, try to find content with the same localization ID
+            foreach (var locale in _options.SupportedLocales)
+            {
+                // Query by localization ID and locale
+                var query = new ContentQuery
+                {
+                    LocalizationId = localizationId,
+                    Locale = locale,
+                    Take = 1
+                };
+
+                var results = await GetItemsByQueryAsync(query);
+                var contentItem = results.FirstOrDefault();
+
+                if (contentItem != null)
+                {
+                    translations[locale] = contentItem;
+                }
+            }
+
+            // Cache the result
+            if (_options.EnableCaching)
+            {
+                _memoryCache.Set(cacheKey, translations, TimeSpan.FromMinutes(_options.CacheDurationMinutes));
+            }
+
+            return translations;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error retrieving translations for localization ID {LocalizationId}", localizationId);
+            return new Dictionary<string, ContentItem>();
+        }
     }
 }

@@ -1,4 +1,6 @@
-﻿<div class="@GetWrapperClass()">
+﻿@inherits OsirionComponentBase
+
+<div class="@GetWrapperClass()">
     @if (Title != null)
     {
         <h2 class="osirion-search-title">@Title</h2>
@@ -9,6 +11,6 @@
                type="text"
                placeholder="@Placeholder"
                class="osirion-search-input" />
-        <button type="submit" class="osirion-search-button">@SearchButtonText</button>
+        <button type="submit" class="@GetButtonClass()">@SearchButtonText</button>
     </form>
 </div>

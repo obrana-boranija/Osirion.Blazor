@@ -124,7 +124,7 @@ public partial class LocalizedContentView
                         // If we need previous and next items, load them
                         var allItems = await provider.GetItemsByQueryAsync(new ContentQuery
                         {
-                            Directory = Item.Directory?.Path,
+                            Directory = Item.Directory?.Name,
                             Locale = CurrentLocale,
                             SortBy = SortField.Date,
                             SortDirection = SortDirection.Descending
@@ -175,17 +175,17 @@ public partial class LocalizedContentView
 
         try
         {
-            //var provider = ContentProviderManager.GetDefaultProvider();
-            //if (provider != null)
-            //{
-            //    var translations = await provider.GetContentTranslationsAsync(LocalizationId);
+            var provider = ContentProviderManager.GetDefaultProvider();
+            if (provider != null)
+            {
+                var translations = await provider.GetContentTranslationsAsync(LocalizationId);
 
-            //    AvailableTranslations.Clear();
-            //    foreach (var translation in translations)
-            //    {
-            //        AvailableTranslations[translation.Locale] = translation.Path;
-            //    }
-            //}
+                AvailableTranslations.Clear();
+                foreach (var translation in translations)
+                {
+                    AvailableTranslations[translation.Key] = translation.Value.Url;
+                }
+            }
         }
         catch (Exception ex)
         {
@@ -217,7 +217,8 @@ public partial class LocalizedContentView
 
     private string GetCategoryUrl(string category)
     {
-        return CategoryUrlFormatter?.Invoke(category) ?? $"/{CurrentLocale}/category/{category.ToLower().Replace(' ', '-')}";
+        var url = (CategoryUrlFormatter?.Invoke(category) ?? $"/{CurrentLocale}/category/{category.ToLower().Replace(' ', '-')}").Trim('/');
+        return url;
     }
 
     private string GetTagUrl(string tag)

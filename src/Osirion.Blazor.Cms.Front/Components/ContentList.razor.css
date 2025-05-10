@@ -74,7 +74,7 @@
 }
 
     .osirion-content-title-link:hover {
-        color: var(--osirion-action-primary, #2563eb);
+        color: var(--osirion-background-tertiary, #2563eb);
     }
 
 .osirion-content-meta {
@@ -83,7 +83,6 @@
     gap: var(--osirion-spacing-2, 0.5rem);
     font-size: var(--osirion-font-size-sm, 0.875rem);
     font-weight: var(--osirion-font-weight-normal, 400);
-    color: var(--osirion-text-secondary, #6b7280);
     margin-bottom: var(--osirion-spacing-4, 1rem);
 }
 
@@ -113,8 +112,8 @@
 }
 
 .osirion-content-tag {
-    background-color: var(--osirion-tag-background-color, var(--osirion-background-tertiary, #f3f4f6));
-    color: var(--osirion-tag-text-color, var(--osirion-text-secondary, #4b5563));
+    background-color: var(--osirion-background-tertiary, var(--osirion-background-tertiary, #f3f4f6));
+    color: var(--osirion-text-secondary, var(--osirion-text-secondary, #4b5563));
     padding: var(--osirion-spacing-1, 0.25rem) var(--osirion-spacing-3, 0.75rem);
     border-radius: var(--osirion-radius-full, 9999px);
     font-size: var(--osirion-font-size-xs, 0.75rem);
@@ -123,7 +122,8 @@
 }
 
     .osirion-content-tag:hover {
-        background-color: var(--osirion-tag-hover-background-color, var(--osirion-background-hover, #e5e7eb));
+        background-color: var(--osirion-background-secondary, var(--osirion-background-secondary, #e5e7eb));
+        cursor:pointer;
     }
 
 .osirion-content-footer {
@@ -135,7 +135,7 @@
     display: flex;
     align-items: center;
     gap: var(--osirion-spacing-2, 0.5rem);
-    color: var(--osirion-action-primary, #2563eb);
+    /*color: var(--osirion-action-primary-hover, #2563eb);*/
     text-decoration: none;
     font-weight: var(--osirion-font-weight-semibold, 600);
     transition: color var(--osirion-transition-duration-200, 0.2s) ease;
@@ -143,7 +143,7 @@
 
     .osirion-content-read-more:hover {
         text-decoration: underline;
-        color: var(--osirion-action-primary-hover, #1d4ed8);
+        /*color: var(--osirion-action-primary-hover, #1d4ed8);*/
     }
 
 .osirion-content-read-more-icon {

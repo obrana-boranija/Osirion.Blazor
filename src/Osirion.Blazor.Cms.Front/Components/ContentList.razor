@@ -1,4 +1,5 @@
-﻿<div class="@GetContentListClass()">
+﻿@using Osirion.Blazor.Cms.Domain.Repositories
+<div class="@GetContentListClass()">
     @if (IsLoading && IsInteractive)
     {
         <div class="osirion-content-loading">
@@ -68,7 +69,7 @@
 
                         <p class="osirion-content-description">@item.Description</p>
 
-                        @if (item.Tags.Any())
+@*                         @if (item.Tags.Any())
                         {
                             <div class="osirion-content-tags">
                                 @foreach (var tag in item.Tags.Take(3))
@@ -80,7 +81,7 @@
                                     <span class="osirion-content-tag">+@(item.Tags.Count - 3)</span>
                                 }
                             </div>
-                        }
+                        } *@
 
                         <div class="osirion-content-footer">
                             <a href="@GetContentUrl(item)" class="osirion-content-read-more">
