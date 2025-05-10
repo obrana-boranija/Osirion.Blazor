@@ -113,7 +113,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.Repositories
         }
 
         /// <inheritdoc/>
-        public async Task<IReadOnlyList<ContentItem>> FindByQueryAsync(ContentQuery query, CancellationToken cancellationToken = default)
+        public async Task<IReadOnlyList<ContentItem>?> FindByQueryAsync(ContentQuery query, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -141,7 +141,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.Repositories
                     filteredItems = filteredItems.Take(query.Take.Value);
                 }
 
-                return filteredItems.ToList();
+                return filteredItems is null || !filteredItems.Any() ? null : filteredItems.ToList();
             }
             catch (Exception ex)
             {
@@ -632,13 +632,19 @@ namespace Osirion.Blazor.Cms.Infrastructure.Repositories
             {
                 var normalizedDirectory = NormalizePath(query.Directory);
                 filteredItems = filteredItems.Where(item =>
-                    NormalizePath(GetDirectoryPath(item.Path)).StartsWith(normalizedDirectory, StringComparison.OrdinalIgnoreCase));
+                    item.Directory != null && item.Directory.Name.ToLower() == query.Directory.ToLower());
             }
 
             if (!string.IsNullOrEmpty(query.DirectoryId))
             {
                 filteredItems = filteredItems.Where(item =>
                     item.Directory != null && item.Directory.Id == query.DirectoryId);
+            }
+
+            if (!string.IsNullOrEmpty(query.Slug))
+            {
+                filteredItems = filteredItems.Where(item =>
+                    item.Slug != null && item.Slug == query.Slug);
             }
 
             if (!string.IsNullOrEmpty(query.Category))

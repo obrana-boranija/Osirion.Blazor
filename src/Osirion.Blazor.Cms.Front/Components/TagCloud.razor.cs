@@ -30,7 +30,9 @@ public partial class TagCloud(IContentProviderManager contentProviderManager)
     [Parameter]
     public bool SortByCount { get; set; } = true;
 
-    private IReadOnlyList<ContentTag>? Tags { get; set; }
+    [Parameter]
+    public IReadOnlyList<ContentTag>? Tags { get; set; }
+
     private bool IsLoading { get; set; } = true;
 
     protected override async Task OnInitializedAsync()
@@ -45,35 +47,38 @@ public partial class TagCloud(IContentProviderManager contentProviderManager)
 
     private async Task LoadTagsAsync()
     {
-        IsLoading = true;
-        try
+        if (Tags is null || Tags.Any() == false)
         {
-            var provider = contentProviderManager.GetDefaultProvider();
-            if (provider != null)
+            IsLoading = true;
+            try
             {
-                var allTags = await provider.GetTagsAsync();
-
-                if (SortByCount)
+                var provider = contentProviderManager.GetDefaultProvider();
+                if (provider != null)
                 {
-                    allTags = allTags.OrderByDescending(t => t.Count).ToList();
-                }
-                else
-                {
-                    allTags = allTags.OrderBy(t => t.Name).ToList();
-                }
+                    var allTags = await provider.GetTagsAsync();
 
-                Tags = MaxTags.HasValue
-                    ? allTags.Take(MaxTags.Value).ToList()
-                    : allTags;
+                    if (SortByCount)
+                    {
+                        allTags = allTags.OrderByDescending(t => t.Count).ToList();
+                    }
+                    else
+                    {
+                        allTags = allTags.OrderBy(t => t.Name).ToList();
+                    }
+
+                    Tags = MaxTags.HasValue
+                        ? allTags.Take(MaxTags.Value).ToList()
+                        : allTags;
+                }
             }
-        }
-        catch
-        {
-            Tags = Array.Empty<ContentTag>();
-        }
-        finally
-        {
-            IsLoading = false;
+            catch
+            {
+                Tags = Array.Empty<ContentTag>();
+            }
+            finally
+            {
+                IsLoading = false;
+            }
         }
     }
 

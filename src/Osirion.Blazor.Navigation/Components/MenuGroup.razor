@@ -1,0 +1,11 @@
+﻿@inherits OsirionComponentBase
+
+<div class="osirion-menu-group @CssClass" @attributes="AdditionalAttributes">
+    @if (!string.IsNullOrEmpty(Label))
+    {
+        <div class="osirion-menu-group-label" id="@LabelId">@Label</div>
+    }
+    <div class="osirion-menu-group-items">
+        @ChildContent
+    </div>
+</div>

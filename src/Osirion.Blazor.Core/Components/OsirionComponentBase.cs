@@ -1,20 +1,12 @@
 ﻿using Microsoft.AspNetCore.Components;
-using System;
-using System.Collections.Generic;
 
 namespace Osirion.Blazor.Components;
 
 /// <summary>
 /// Base component class that provides common functionality for all Osirion.Blazor components.
 /// </summary>
-public abstract class OsirionComponentBase : ComponentBase
+public abstract partial class OsirionComponentBase : ComponentBase
 {
-    /// <summary>
-    /// Gets or sets the CSS class(es) for the component.
-    /// </summary>
-    [Parameter]
-    public string? CssClass { get; set; }
-
     /// <summary>
     /// Gets or sets additional attributes that will be applied to the component.
     /// </summary>
@@ -61,17 +53,5 @@ public abstract class OsirionComponentBase : ComponentBase
 #else
         IsInteractive = SetInteractive;
 #endif
-    }
-
-    /// <summary>
-    /// Combines the base CSS class with any additional classes provided.
-    /// </summary>
-    /// <param name="baseClass">The base CSS class for the component</param>
-    /// <returns>Combined CSS class string</returns>
-    protected string CombineCssClasses(string baseClass)
-    {
-        return string.IsNullOrWhiteSpace(CssClass)
-            ? baseClass
-            : $"{baseClass} {CssClass}";
     }
 }

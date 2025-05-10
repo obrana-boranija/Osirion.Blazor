@@ -4,11 +4,11 @@
         <h3 class="osirion-tag-cloud-title">@Title</h3>
     }
 
-    @if (IsLoading)
+    @if (IsLoading && IsInteractive)
     {
         <div class="osirion-loading">@LoadingText</div>
     }
-    else if (Tags == null || !Tags.Any())
+    else if (Tags is null || !Tags.Any())
     {
         <div class="osirion-no-tags">@NoContentText</div>
     }

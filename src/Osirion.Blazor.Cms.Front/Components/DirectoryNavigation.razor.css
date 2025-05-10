@@ -45,7 +45,7 @@
     }
 
 .osirion-directory-count {
-    background-color: var(--osirion-background-tertiary, #e5e7eb);
+    background-color: var(--osirion-background-primary, #e5e7eb);
     color: var(--osirion-text-secondary, #6b7280);
     padding: 0.25rem 0.5rem;
     border-radius: var(--osirion-radius-full, 9999px);

@@ -13,35 +13,35 @@
     <SeoMetadataRenderer Content="@Content" SiteName="My Website" BaseUrl="https://example.com" />
 }
 
-<div class="page-container">
+<div class="container-fluid">
     <div class="sidebar">
         <LocalizedNavigation CurrentLocale="@Locale"
-                             OnLocaleChanged="HandleLocaleChanged"
-                             OnDirectorySelected="HandleDirectorySelected"
-                             OnContentSelected="HandleContentSelected"
-                             DirectoryUrlFormatter="@FormatDirectoryUrl"
-                             ContentUrlFormatter="@FormatContentUrl"
-                             LocaleNameFormatter="@FormatLocaleName"
-                             Title="Navigation" />
+        OnLocaleChanged="HandleLocaleChanged"
+        OnDirectorySelected="HandleDirectorySelected"
+        OnContentSelected="HandleContentSelected"
+        DirectoryUrlFormatter="@FormatDirectoryUrl"
+        ContentUrlFormatter="@FormatContentUrl"
+        LocaleNameFormatter="@FormatLocaleName"
+        Title="Navigation" />
     </div>
 
     <div class="main-content">
         <ContentBreadcrumbs Content="@Content"
-                            Directory="@CurrentDirectory"
-                            DirectoryUrlFormatter="@FormatDirectoryUrl"
-                            HomeUrl="@($"/{Locale}")" />
+        Directory="@CurrentDirectory"
+        DirectoryUrlFormatter="@FormatDirectoryUrl"
+        HomeUrl="@($"/{Locale}")" />
 
         @if (Content != null)
         {
             <LocalizedContentView Item="@Content"
-                                  CurrentLocale="@Locale"
-                                  OnLocaleChanged="HandleLocaleChanged"
-                                  TranslationUrlFormatter="@FormatTranslationUrl"
-                                  CategoryUrlFormatter="@FormatCategoryUrl"
-                                  TagUrlFormatter="@FormatTagUrl"
-                                  ContentUrlFormatter="@FormatContentUrl"
-                                  LocaleNameFormatter="@FormatLocaleName"
-                                  ShowNavigationLinks="true" />
+            CurrentLocale="@Locale"
+            OnLocaleChanged="HandleLocaleChanged"
+            TranslationUrlFormatter="@FormatTranslationUrl"
+            CategoryUrlFormatter="@FormatCategoryUrl"
+            TagUrlFormatter="@FormatTagUrl"
+            ContentUrlFormatter="@FormatContentUrl"
+            LocaleNameFormatter="@FormatLocaleName"
+            ShowNavigationLinks="true" />
         }
         else if (CurrentDirectory != null)
         {
@@ -54,10 +54,10 @@
                 }
 
                 <ContentList Locale="@Locale"
-                             Directory="@Directory"
-                             ContentUrlFormatter="@FormatContentUrl"
-                             ShowPagination="true"
-                             ItemsPerPage="10" />
+                Directory="@Directory"
+                ContentUrlFormatter="@FormatContentUrl"
+                ShowPagination="true"
+                ItemsPerPage="10" />
             </div>
         }
         else
@@ -67,13 +67,13 @@
 
                 <h2>Featured Content</h2>
                 <ContentList Locale="@Locale"
-                             FeaturedCount="3"
-                             ContentUrlFormatter="@FormatContentUrl" />
+                FeaturedCount="3"
+                ContentUrlFormatter="@FormatContentUrl" />
 
                 <h2>Latest Articles</h2>
                 <ContentList Locale="@Locale"
-                             ItemsPerPage="5"
-                             ContentUrlFormatter="@FormatContentUrl" />
+                ItemsPerPage="5"
+                ContentUrlFormatter="@FormatContentUrl" />
             </div>
         }
     </div>
@@ -119,7 +119,8 @@
 
         // Try to load content first
         string fullPath = $"{Locale}/{Slug}";
-        Content = await provider.GetItemByUrlAsync(NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
+        var result = await provider.GetItemsByQueryAsync(new Cms.Domain.Repositories.ContentQuery { Locale = Locale, Directory = Directory, Slug = Slug });
+        Content = result?.FirstOrDefault();
 
         if (Content != null)
         {
@@ -164,12 +165,12 @@
 
     private string FormatCategoryUrl(string category)
     {
-        return $"/{Locale}/category/{category.ToLower().Replace(' ', '-')}";
+        return $"{Locale}/category/{category.ToLower().Replace(' ', '-')}";
     }
 
     private string FormatTagUrl(string tag)
     {
-        return $"/{Locale}/tag/{tag.ToLower().Replace(' ', '-')}";
+        return $"{Locale}/tag/{tag.ToLower().Replace(' ', '-')}";
     }
 
     private string FormatTranslationUrl(string localizationId, string locale)
@@ -192,6 +193,8 @@
             "ES" => "Español",
             "DE" => "Deutsch",
             "FR" => "Français",
+            "SR" => "Српски",
+            "SR-LATN-RS" => "Srpski",
             _ => locale.ToUpperInvariant()
         };
     }

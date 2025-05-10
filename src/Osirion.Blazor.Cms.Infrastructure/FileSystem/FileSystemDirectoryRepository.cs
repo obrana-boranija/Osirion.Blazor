@@ -24,7 +24,7 @@ public class FileSystemDirectoryRepository : DirectoryRepositoryBase, IDirectory
         IDirectoryMetadataProcessor metadataProcessor,
         IPathUtilities pathUtils,
         ILogger<FileSystemDirectoryRepository> logger)
-        : base(GetProviderId(options.Value), cacheManager, metadataProcessor, pathUtils, logger)
+        : base(GetProviderId(options.Value), cacheManager, metadataProcessor, pathUtils, options, logger)
     {
         _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
 

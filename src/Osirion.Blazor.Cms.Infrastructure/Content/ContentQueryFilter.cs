@@ -35,6 +35,12 @@ public class ContentQueryFilter : IContentQueryFilter
                 item.Directory != null && item.Directory.Id == query.DirectoryId);
         }
 
+        if (!string.IsNullOrEmpty(query.Slug))
+        {
+            filteredItems = filteredItems.Where(item =>
+                item.Slug != null && item.Slug == query.Slug);
+        }
+
         if (!string.IsNullOrEmpty(query.Category))
         {
             filteredItems = filteredItems.Where(item =>

@@ -24,7 +24,7 @@ public class GitHubContentProvider : ContentProviderBase
         IGitHubApiClient apiClient,
         IMemoryCache memoryCache,
         ILogger<GitHubContentProvider> logger)
-        : base(memoryCache, logger)
+        : base(memoryCache, options, logger)
     {
         _contentRepository = contentRepository ?? throw new ArgumentNullException(nameof(contentRepository));
         _directoryRepository = directoryRepository ?? throw new ArgumentNullException(nameof(directoryRepository));

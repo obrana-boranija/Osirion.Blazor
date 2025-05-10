@@ -22,6 +22,10 @@
 		<PackageIcon>icon.png</PackageIcon>
 	</PropertyGroup>
 
+	<ItemGroup>
+	  <Content Remove="compilerconfig.json" />
+	</ItemGroup>
+
 
 	<ItemGroup>
 		<SupportedPlatform Include="browser" />
@@ -32,6 +36,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<None Include="compilerconfig.json" />
 		<None Include="README.md" Pack="true" PackagePath="\" />
 		<None Include="..\..\icon.png" Pack="true" PackagePath="\" />
 	</ItemGroup>

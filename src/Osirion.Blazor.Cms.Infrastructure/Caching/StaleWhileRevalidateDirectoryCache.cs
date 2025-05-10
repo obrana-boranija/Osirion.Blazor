@@ -115,6 +115,17 @@ public class StaleWhileRevalidateDirectoryCache : IDirectoryRepository
             cancellationToken);
     }
 
+    public async Task<DirectoryItem?> GetByNameAsync(string? name, string? locale = null, CancellationToken cancellationToken = default)
+    {
+        var localeKey = locale ?? "all";
+        var cacheKey = $"directory:name:{localeKey}:{_providerIdentifier}";
+
+        return await GetOrRevalidateAsync(
+            cacheKey,
+            () => _decorated.GetByNameAsync(name, locale, cancellationToken),
+            cancellationToken);
+    }
+
     // Write operations should invalidate the cache
     public async Task<DirectoryItem> SaveAsync(DirectoryItem entity, CancellationToken cancellationToken = default)
     {

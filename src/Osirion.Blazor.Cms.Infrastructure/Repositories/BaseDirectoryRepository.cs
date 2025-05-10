@@ -207,6 +207,30 @@ public abstract class BaseDirectoryRepository<TOptions> : IDirectoryRepository w
         }
     }
 
+    /// <summary>
+    /// Gets directory by URL
+    /// </summary>
+    public async Task<DirectoryItem?> GetByNameAsync(string? name, string? locale = null, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrEmpty(name))
+            return null;
+
+        try
+        {
+            await EnsureCacheIsLoaded(cancellationToken);
+
+            if (DirectoryCache == null)
+                return null;
+
+            return DirectoryCache.Values.FirstOrDefault(d => d.Name == name && (locale is not null ? d.Locale == locale : true));
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "getting directory by Name {Name}", name);
+            throw new ContentProviderException($"Failed to get directory by Name: {ex.Message}", ex, ProviderId);
+        }
+    }
+
     public async Task<DirectoryItem> MoveAsync(string id, string? newParentId, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(id))

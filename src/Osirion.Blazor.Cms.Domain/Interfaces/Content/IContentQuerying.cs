@@ -11,7 +11,7 @@ public interface IContentQuerying
     /// <summary>
     /// Gets content items based on a query
     /// </summary>
-    Task<IReadOnlyList<ContentItem>> FindByQueryAsync(ContentQuery query, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<ContentItem>?> FindByQueryAsync(ContentQuery query, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets content items in a directory

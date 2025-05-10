@@ -29,7 +29,7 @@ public interface IContentRepository : IRepository<ContentItem, string>
     /// <param name="query">Content query</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>List of matching content items</returns>
-    Task<IReadOnlyList<ContentItem>> FindByQueryAsync(ContentQuery query, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<ContentItem>?> FindByQueryAsync(ContentQuery query, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets content items in a directory

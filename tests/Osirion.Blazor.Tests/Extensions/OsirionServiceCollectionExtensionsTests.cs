@@ -3,6 +3,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Osirion.Blazor.Analytics.Options;
 using Osirion.Blazor.Cms.Domain.Options;
+using Osirion.Blazor.Core.Enums;
+using Osirion.Blazor.Core.Options;
 using Osirion.Blazor.Extensions;
 using Osirion.Blazor.Navigation.Options;
 using Osirion.Blazor.Theming;

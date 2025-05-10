@@ -28,7 +28,7 @@ public class GitHubDirectoryRepository : DirectoryRepositoryBase, IDirectoryRepo
         IDirectoryMetadataProcessor metadataProcessor,
         IPathUtilities pathUtils,
         ILogger<GitHubDirectoryRepository> logger)
-        : base(GetProviderId(options.Value), cacheManager, metadataProcessor, pathUtils, logger)
+        : base(GetProviderId(options.Value), cacheManager, metadataProcessor, pathUtils, options, logger)
     {
         _apiClient = apiClient ?? throw new ArgumentNullException(nameof(apiClient));
         _options = options?.Value ?? throw new ArgumentNullException(nameof(options));

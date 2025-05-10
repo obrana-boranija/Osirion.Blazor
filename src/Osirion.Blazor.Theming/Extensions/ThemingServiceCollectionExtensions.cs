@@ -1,8 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Osirion.Blazor.Components;
 using Osirion.Blazor.Theming.Internal;
 using Osirion.Blazor.Theming.Services;
-using Osirion.Blazor.Theming.Options;
-using Microsoft.Extensions.Configuration;
 
 namespace Osirion.Blazor.Theming.Extensions;
 

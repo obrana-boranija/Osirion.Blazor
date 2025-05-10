@@ -4,61 +4,80 @@
 @inject IThemeService ThemeService
 @implements IDisposable
 
+@* Include core stylesheets *@
 <link rel="stylesheet" href="_content/Osirion.Blazor.Core/css/index.css" />
-<link rel="stylesheet" href="_content/Osirion.Blazor.Cms.Admin/css/osirion-admin.css" />
 
 @if (!EffectiveOptions.UseDefaultStyles)
 {
     <link rel="stylesheet" href="_content/Osirion.Blazor.Theming/css/index.css" />
-    
 }
 
+@* Apply custom variables *@
 @if (!string.IsNullOrEmpty(CustomVariables))
 {
-        <style>
-            :root {
+    <style>
+        :root {
         @((MarkupString)CustomVariables)
-            }
-        </style>
+        }
+    </style>
 }
 
+@* Apply generated theme variables *@
 @if (!string.IsNullOrEmpty(GeneratedVariables))
 {
-        <style>
-            :root {
+    <style>
+        :root {
         @((MarkupString)GeneratedVariables)
-            }
-        </style>
+        }
+    </style>
 }
 
+@* Framework integration script *@
 @if (EffectiveOptions.Framework != CssFramework.None)
 {
-        <style id="osirion-framework-style">
-            html {
-        @(GetFrameworkClassDeclaration())
+    <script id="osirion-framework-script">
+        (function() {
+            function applyFrameworkIntegration() {
+                const htmlElement = document.documentElement || document.querySelector('html');
+                const frameworkClass = "@GetFrameworkClass";
+
+                if (htmlElement && frameworkClass && !htmlElement.classList.contains(frameworkClass)) {
+                    htmlElement.classList.add(frameworkClass);
+                }
+
+                // Also apply data-bs-theme if Bootstrap is used
+        @if (EffectiveOptions.Framework == CssFramework.Bootstrap)
+        {
+            <text>
+                        const currentTheme = "@ThemeService.CurrentMode.ToString().ToLowerInvariant()";
+                        if (currentTheme === "dark" || currentTheme === "light") {
+                            htmlElement.setAttribute('data-bs-theme', currentTheme)
+                        }
+            </text>
+        }
             }
-        </style>
 
-    @* This script is essential for SSR pages that don't have ThemeProvider *@
-        <script id="osirion-framework-script">
-            (function() {
-                function applyFrameworkIntegration() {
-                    const htmlElement = document.documentElement || document.querySelector('html');
-                    const frameworkClass = "@GetFrameworkClass()";
+            // Apply immediately
+            applyFrameworkIntegration();
 
-                    if (htmlElement && frameworkClass && !htmlElement.classList.contains(frameworkClass)) {
-                        // Apply the correct framework class
-                        htmlElement.classList.add(frameworkClass);
+            // Apply on DOMContentLoaded for SSR scenarios
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', applyFrameworkIntegration);
+            }
+
+            // MutationObserver fallback for dynamic HTML changes
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                        applyFrameworkIntegration();
                     }
-                }
+                });
+            });
 
-                // Apply immediately
-                applyFrameworkIntegration();
-
-                // Apply on DOMContentLoaded
-                if (document.readyState === 'loading') {
-                    document.addEventListener('DOMContentLoaded', applyFrameworkIntegration);
-                }
-            })();
-        </script>
+            observer.observe(document.documentElement, {
+                childList: true,
+                subtree: true
+            });
+        })();
+    </script>
 }

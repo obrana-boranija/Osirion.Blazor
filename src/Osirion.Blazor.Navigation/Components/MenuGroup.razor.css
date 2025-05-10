@@ -1,0 +1,25 @@
+/* Menu Group Styles */
+.osirion-menu-group {
+    margin: var(--osirion-spacing-1, 0.25rem) 0;
+}
+
+.osirion-menu-group-label {
+    font-size: var(--osirion-font-size-xs, 0.75rem);
+    font-weight: var(--osirion-font-weight-medium, 500);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--osirion-text-tertiary, #6b7280);
+    padding: var(--osirion-spacing-1, 0.25rem) var(--osirion-spacing-3, 0.75rem);
+}
+
+.osirion-menu-group-items {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Dark mode */
+:root[data-theme="dark"] .osirion-menu-group-label,
+.dark-theme .osirion-menu-group-label,
+[data-bs-theme="dark"] .osirion-menu-group-label {
+    color: var(--osirion-text-tertiary, #9ca3af);
+}

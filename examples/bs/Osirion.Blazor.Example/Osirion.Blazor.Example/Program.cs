@@ -1,6 +1,9 @@
+using BlazorServerUrlRequestCultureProvider;
+using Microsoft.AspNetCore.Localization;
 using Osirion.Blazor.Cms.Admin.DependencyInjection;
 using Osirion.Blazor.Example.Components;
 using Osirion.Blazor.Extensions;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,7 +27,7 @@ builder.Services.AddOsirionCmsAdmin(options =>
         github.DefaultBranch = "master"; // Optional, defaults to "main"
         github.ContentPath = ""; // Optional subdirectory in the repository
         github.CommitterName = "Your Name"; // Optional
-        github.CommitterEmail = "your.email@example.com"; // Optional
+        github.CommitterEmail = "your.email@example.com"; // Optional  
     });
 
     // Configure authentication
@@ -67,6 +70,31 @@ builder.Services.AddOsirionCmsAdmin(options =>
     });
 });
 
+builder.Services.AddLocalization();
+
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    // Remove the default providers
+    // 1. QueryStringRequestCultureProvider
+    // 2. CookieRequestCultureProvider
+    // 3. AcceptLanguageHeaderRequestCultureProvider
+    options.RequestCultureProviders.Clear();
+
+    IList<CultureInfo> supportedCultures = [new("en"), new("sr"), new("sr-Latn-RS")];
+
+    options.DefaultRequestCulture = new RequestCulture("en");
+    options.SupportedCultures = supportedCultures;
+    options.SupportedUICultures = supportedCultures;
+
+    options.ApplyCurrentCultureToResponseHeaders = true;
+
+    // Configure globalization for static server-side rendering (static SSR)
+    options.RequestCultureProviders.Insert(0, new UrlRequestCultureProvider(options));
+
+    // Configure globalization for interactive server-side rendering (interactive SSR) using Blazor Server.
+    options.RequestCultureProviders.Insert(1, new BlazorNegotiateRequestCultureProvider(options));
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -82,6 +110,10 @@ else
 }
 
 app.UseHttpsRedirection();
+
+app.UseRequestLocalization();
+// app.UseRequestLocalizationInteractiveServerRenderMode(useCookie: false); // Server-side ConcurrentDictionary storage
+app.UseRequestLocalizationInteractiveServerRenderMode(useCookie: true); // Client-side cookie storage
 
 app.UseStaticFiles();
 app.UseRouting();

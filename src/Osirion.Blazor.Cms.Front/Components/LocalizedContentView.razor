@@ -13,13 +13,10 @@
             @if (ShowTranslations)
             {
                 <div class="osirion-translations">
-                    @foreach (var locale in AvailableTranslations.Keys)
+                    @foreach (var locale in AvailableTranslations.Where(t => t.Key != CurrentLocale))
                     {
-                        <a href="@GetTranslationUrl(locale)"
-                           class="@GetTranslationClass(locale)"
-                           @onclick="() => SwitchTranslation(locale)"
-                        @onclick:preventDefault>
-                            @GetLocaleName(locale)
+                        <a href="@GetTranslationUrl(locale.Value)">
+                            @GetLocaleName(locale.Key)
                         </a>
                     }
                 </div>

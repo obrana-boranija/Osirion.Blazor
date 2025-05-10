@@ -1,10 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Osirion.Blazor.Analytics.Options;
+using Osirion.Blazor.Components;
 using Osirion.Blazor.Internal;
 using Osirion.Blazor.Navigation.Options;
-using Osirion.Blazor.Theming;
-using Osirion.Blazor.Theming.Options;
 
 namespace Osirion.Blazor.Extensions;
 
