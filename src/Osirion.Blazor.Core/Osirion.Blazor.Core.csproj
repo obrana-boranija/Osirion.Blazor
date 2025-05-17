@@ -28,6 +28,7 @@
 		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="8.0.0" />
+		<PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="8.0.0" />
 		
 	</ItemGroup>
 
@@ -35,6 +36,7 @@
 	<ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
 		<PackageReference Include="Microsoft.AspNetCore.Components" Version="9.0.3" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.3" />
+		<PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="9.0.3" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.4" />
 		<PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.4" />
 		

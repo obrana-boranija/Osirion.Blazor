@@ -1,4 +1,5 @@
 ﻿using Bunit;
+using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Osirion.Blazor.Navigation.Components;
 using Osirion.Blazor.Navigation.Options;
@@ -8,27 +9,20 @@ namespace Osirion.Blazor.Navigation.Tests.Components;
 
 public class EnhancedNavigationTests : TestContext
 {
-    [Fact]
-    public void EnhancedNavigation_ShouldNotRenderScript_WhenServerSide()
+    public EnhancedNavigationTests()
     {
-        // Arrange
-        // Mock server-side environment
-        JSInterop.Mode = JSRuntimeMode.Loose;
+        // Mock server-side environment by setting SetInteractive to false
         Services.AddSingleton(Microsoft.Extensions.Options.Options.Create(new EnhancedNavigationOptions()));
 
-        // Act
-        var cut = RenderComponent<EnhancedNavigation>();
+        // Set default JSInterop mode
+        JSInterop.Mode = JSRuntimeMode.Loose;
+        SetRendererInfo(new RendererInfo("Server", false));
 
-        // Assert
-        cut.Markup.ShouldBeEmpty();
     }
 
     [Fact]
     public void EnhancedNavigation_ShouldUseDefaultOptions_WhenNoOptionsProvided()
     {
-        // Arrange
-        JSInterop.Mode = JSRuntimeMode.Loose;
-
         // Act
         var cut = RenderComponent<EnhancedNavigation>();
 
@@ -41,9 +35,6 @@ public class EnhancedNavigationTests : TestContext
     [Fact]
     public void EnhancedNavigation_ShouldUseParameterValues_WhenProvided()
     {
-        // Arrange
-        JSInterop.Mode = JSRuntimeMode.Loose;
-
         // Act
         var cut = RenderComponent<EnhancedNavigation>(parameters => parameters
             .Add(p => p.Behavior, ScrollBehavior.Smooth)

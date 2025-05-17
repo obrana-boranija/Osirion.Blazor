@@ -12272,7 +12272,7 @@ a:hover {
   /*background-color: #000;*/
   background-image: linear-gradient(to right, rgb(20.4, 3.2, 48.4) 1px, transparent 1px), linear-gradient(to bottom, rgb(20.4, 3.2, 48.4) 1px, transparent 1px);
   background-size: 24px 24px;
-  box-shadow: 0 0 20px #6610f2;
+  /*box-shadow: 0 0 20px $indigo-500;*/
 }
 
 /* Animated wave pattern */

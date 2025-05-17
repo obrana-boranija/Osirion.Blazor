@@ -4,8 +4,9 @@ using Osirion.Blazor.Analytics;
 using Osirion.Blazor.Analytics.Extensions;
 using Osirion.Blazor.Cms.Admin.Interfaces;
 using Osirion.Blazor.Cms.Domain.Interfaces;
-using Osirion.Blazor.Cms.Front.DependencyInjection;
+using Osirion.Blazor.Cms.Web.DependencyInjection;
 using Osirion.Blazor.Navigation;
+using Osirion.Blazor.Navigation.Extensions;
 using Osirion.Blazor.Theming;
 using Osirion.Blazor.Theming.Extensions;
 
@@ -77,7 +78,7 @@ public class TestOsirionBuilder : IOsirionBuilder
         if (configure == null) throw new ArgumentNullException(nameof(configure));
 
         UseNavigationCalled = true;
-        Services.AddEnhancedNavigation(configure);
+        Services.AddOsirionNavigation(configure);
         return this;
     }
 
@@ -86,9 +87,9 @@ public class TestOsirionBuilder : IOsirionBuilder
         if (configuration == null) throw new ArgumentNullException(nameof(configuration));
 
         UseNavigationCalled = true;
-        Services.AddEnhancedNavigation(builder =>
+        Services.AddOsirionNavigation(builder =>
         {
-            builder.UseEnhancedNavigation(configuration.GetSection("Osirion:Navigation:Enhanced"));
+            builder.AddEnhancedNavigation(configuration.GetSection("Osirion:Navigation:Enhanced"));
             builder.AddScrollToTop(configuration.GetSection("Osirion:Navigation:ScrollToTop"));
         });
         return this;
