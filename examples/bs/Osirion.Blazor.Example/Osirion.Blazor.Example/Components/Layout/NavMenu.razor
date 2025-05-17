@@ -1,32 +1,20 @@
 ﻿@using Osirion.Blazor.Components
 @inherits OsirionComponentBase
 
-<div class="dummy-placeholder">
-    
-</div>
+<Menu AriaLabel="Main Navigation" Orientation="MenuOrientation.Horizontal">
+    <MenuItem Text="Home" Href="/" Icon="home" />
+    @foreach (var dir in _directories)
+    {
+        <MenuItem Text="@dir.Name" Href="@dir.Url" Icon="@dir.Name.ToLower()" />
+    }
 
-<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+    <MenuItem Text="Osirion" Href="navigation-demo" HasSubmenu="true">
+        <MenuItem Text="Nav" Href="navigation-demo" />
+        <MenuItem Text="Nav Server" Href="navigation-server-demo" />
+        <MenuItem Text="Nav WASM" Href="navigation-wasm-demo" />
+    </MenuItem>
 
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <Menu AriaLabel="Main Navigation" Orientation="MenuOrientation.Horizontal">
-        <MenuItem Text="Home" Href="/" Icon="home" />
-        @foreach (var dir in _directories)
-        {
-            <MenuItem Text="@dir.Name" Href="@dir.Url" Icon="@dir.Name.ToLower()" />
-        }
+    <MenuDivider />
 
-        <MenuItem Text="Osirion" Href="navigation-demo" HasSubmenu="true">
-            <MenuItem Text="Nav" Href="navigation-demo" />
-            <MenuItem Text="Nav Server" Href="navigation-server-demo" />
-            <MenuItem Text="Nav WASM" Href="navigation-wasm-demo" />
-        </MenuItem>
-
-        <MenuDivider />
-
-        <SearchBox />
-    </Menu>
-    
-</div>
-
-
-
+    <SearchBox />
+</Menu>

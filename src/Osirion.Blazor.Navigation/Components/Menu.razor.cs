@@ -21,7 +21,7 @@ public partial class Menu
     /// Gets or sets the z-index to use when the menu is sticky.
     /// </summary>
     [Parameter]
-    public int StickyZIndex { get; set; } = 100;
+    public int StickyZIndex { get; set; } = 1000;
 
     /// <summary>
     /// Gets or sets the menu orientation: Horizontal or Vertical.

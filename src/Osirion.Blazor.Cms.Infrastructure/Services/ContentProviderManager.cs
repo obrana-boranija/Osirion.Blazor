@@ -43,7 +43,7 @@ public class ContentProviderManager : IContentProviderManager
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error getting directory tree with locale {Locale}", locale);
-            throw new ContentProviderException("Failed to get directory tree", ex);
+            return Array.Empty<DirectoryItem>();
         }
     }
 
@@ -65,7 +65,7 @@ public class ContentProviderManager : IContentProviderManager
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error getting content by locale {Locale}", locale);
-            throw new ContentProviderException($"Failed to get content by locale {locale}", ex);
+            return Array.Empty<ContentItem>();
         }
     }
 

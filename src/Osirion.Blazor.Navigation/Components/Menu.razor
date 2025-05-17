@@ -1,6 +1,11 @@
 ﻿@inherits OsirionComponentBase
 
-<div class="osirion-menu @CssClass" role="menu" @attributes="AdditionalAttributes">
+<div class="osirion-dummy-placeholder">
+</div>
+
+<input type="checkbox" title="Navigation menu" class="osirion-navbar-toggler" />
+
+<div class="osirion-nav-scrollable osirion-menu @CssClass" role="menu" @attributes="AdditionalAttributes" onclick="document.querySelector('.osirion-navbar-toggler').click()">
     <div class="osirion-menu-inner">
         @ChildContent
     </div>

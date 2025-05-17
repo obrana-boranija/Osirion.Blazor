@@ -4,9 +4,6 @@
     flex-direction: column;
     min-width: 12rem;
     background-color: rgb(2, 6, 23, 1);
-    /*border-radius: var(--osirion-radius-md, 0.375rem);*/
-    box-shadow: 0 0 20px var(--osirion-background-tertiary);
-    /*border: var(--osirion-border-width, 1px) solid var(--osirion-background-tertiary);*/
     padding: var(--osirion-spacing-1, 0.25rem) 0;
     max-width: 100%;
     overflow: hidden;
@@ -17,6 +14,36 @@
     width: 100%;
     display: flex;
     flex-direction: column;
+}
+
+.osirion-nav-scrollable {
+    display: none;
+}
+
+.osirion-dummy-placeholder {
+    min-height: 60px;
+    background-color: rgb(2, 6, 23, 1);
+}
+
+.osirion-navbar-toggler {
+    appearance: none;
+    cursor: pointer;
+    width: 3.5rem;
+    height: 2.5rem;
+    color: white;
+    position: absolute;
+    top: 0.5rem;
+    right: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.55%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") no-repeat center/1.75rem rgba(255, 255, 255, 0.1);
+}
+
+.osirion-navbar-toggler:checked {
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+.osirion-navbar-toggler:checked ~ .osirion-nav-scrollable {
+    display: block;
 }
 
 /* Horizontal menu */
@@ -63,6 +90,28 @@
             flex-direction: column;
             align-items: stretch;
         }
+
+    .osirion-menu-horizontal {
+        padding-bottom: 5px;
+    }
+}
+
+@media (min-width: 641px) {
+    .osirion-navbar-toggler {
+        display: none;
+    }
+
+    .osirion-dummy-placeholder {
+        display: none;
+    }
+
+    .osirion-nav-scrollable {
+        /* Never collapse the sidebar for wide screens */
+        display: block;
+        /* Allow sidebar to scroll for tall menus */
+        /*height: calc(100vh - 3.5rem);*/
+        overflow-y: auto;
+    }
 }
 
 /* Dark mode */

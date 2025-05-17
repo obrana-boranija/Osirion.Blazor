@@ -44,8 +44,8 @@ namespace Osirion.Blazor.Cms.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                LogError(ex, "getting all items");
-                throw new ContentProviderException($"Failed to get all content items: {ex.Message}", ex, ProviderId);
+                LogError(ex, "getting all items", ProviderId);
+                return Array.Empty<ContentItem>();
             }
         }
 
@@ -69,7 +69,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.Repositories
             catch (Exception ex)
             {
                 LogError(ex, "getting item by ID", id);
-                throw new ContentProviderException($"Failed to get content item by ID: {ex.Message}", ex, ProviderId);
+                return null;
             }
         }
 
@@ -89,7 +89,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.Repositories
             catch (Exception ex)
             {
                 LogError(ex, "getting item by path", path);
-                throw new ContentProviderException($"Failed to get content item by path: {ex.Message}", ex, ProviderId);
+                return null;
             }
         }
 
@@ -108,7 +108,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.Repositories
             catch (Exception ex)
             {
                 LogError(ex, "getting item by URL", url);
-                throw new ContentProviderException($"Failed to get content item by URL: {ex.Message}", ex, ProviderId);
+                return null;
             }
         }
 
@@ -145,8 +145,8 @@ namespace Osirion.Blazor.Cms.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                LogError(ex, "finding items by query");
-                throw new ContentProviderException($"Failed to find content items by query: {ex.Message}", ex, ProviderId);
+                LogError(ex, "finding items by query", ProviderId);
+                return Array.Empty<ContentItem>();
             }
         }
 
@@ -167,7 +167,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.Repositories
             catch (Exception ex)
             {
                 LogError(ex, "getting items by directory", directoryId);
-                throw new ContentProviderException($"Failed to get content items by directory: {ex.Message}", ex, ProviderId);
+                return Array.Empty<ContentItem>();
             }
         }
 
@@ -191,8 +191,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.Repositories
             catch (Exception ex)
             {
                 LogError(ex, "getting translations", contentId);
-                throw new ContentProviderException($"Failed to get content translations: {ex.Message}", ex, ProviderId);
-            }
+                return Array.Empty<ContentItem>();            }
         }
 
         /// <inheritdoc/>
@@ -217,8 +216,8 @@ namespace Osirion.Blazor.Cms.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                LogError(ex, "getting tags");
-                throw new ContentProviderException($"Failed to get content tags: {ex.Message}", ex, ProviderId);
+                LogError(ex, "getting tags", ProviderId);
+                return Array.Empty<ContentTag>();
             }
         }
 
