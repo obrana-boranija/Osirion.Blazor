@@ -44,9 +44,9 @@ builder.Services.AddOsirionCmsAdmin(options =>
     // Configure UI theme
     options.ConfigureTheme(theme =>
     {
-        theme.DefaultMode = "light"; // "light" or "dark"
-        theme.PrimaryColor = "#2563eb"; // Primary brand color
-        theme.UseDarkMode = false; // Enable dark mode by default
+        theme.DefaultMode = "dark"; // "light" or "dark"
+        //theme.PrimaryColor = "#2563eb"; // Primary brand color
+        theme.UseDarkMode = true; // Enable dark mode by default
         theme.RespectSystemPreferences = true; // Follow system preferences
     });
 

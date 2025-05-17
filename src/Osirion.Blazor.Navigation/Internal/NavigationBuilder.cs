@@ -8,7 +8,7 @@ namespace Osirion.Blazor.Navigation.Internal;
 /// <summary>
 /// Implementation of the navigation builder
 /// </summary>
-internal class NavigationBuilder : INavigationBuilder
+public class NavigationBuilder : INavigationBuilder
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="NavigationBuilder"/> class.

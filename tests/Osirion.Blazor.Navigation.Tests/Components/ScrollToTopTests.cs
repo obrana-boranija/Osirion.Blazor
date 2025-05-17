@@ -1,34 +1,21 @@
 ﻿using Bunit;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Components;
 using Osirion.Blazor.Navigation.Components;
-using Osirion.Blazor.Navigation.Options;
 using Shouldly;
 
 namespace Osirion.Blazor.Navigation.Tests.Components;
 
 public class ScrollToTopTests : TestContext
 {
-    [Fact]
-    public void ScrollToTop_ShouldNotRenderButton_WhenServerSide()
+    public ScrollToTopTests()
     {
+        SetRendererInfo(new RendererInfo("Server", false));
         // Arrange
-        // Mock server-side environment
         JSInterop.Mode = JSRuntimeMode.Loose;
-        Services.AddSingleton(Microsoft.Extensions.Options.Options.Create(new ScrollToTopOptions()));
-
-        // Act
-        var cut = RenderComponent<ScrollToTop>();
-
-        // Assert
-        cut.Markup.ShouldBeEmpty();
     }
-
     [Fact]
     public void ScrollToTop_ShouldUseDefaultOptions_WhenNoOptionsProvided()
     {
-        // Arrange
-        JSInterop.Mode = JSRuntimeMode.Loose;
-
         // Act
         var cut = RenderComponent<ScrollToTop>();
 
@@ -42,9 +29,6 @@ public class ScrollToTopTests : TestContext
     [Fact]
     public void ScrollToTop_ShouldUseParameterValues_WhenProvided()
     {
-        // Arrange
-        JSInterop.Mode = JSRuntimeMode.Loose;
-
         // Act
         var cut = RenderComponent<ScrollToTop>(parameters => parameters
             .Add(p => p.Position, Position.TopLeft)

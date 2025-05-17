@@ -63,7 +63,7 @@ public class ThemeService : IThemeService
     /// <inheritdoc/>
     public void SetThemeMode(ThemeMode mode)
     {
-        if (_currentMode != mode)
+        if (_currentMode != mode && _options.EnableDarkMode != false)
         {
             var previousMode = _currentMode;
             _currentMode = mode;

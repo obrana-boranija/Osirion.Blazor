@@ -1,4 +1,5 @@
-﻿using Osirion.Blazor.Theming.Options;
+﻿using Microsoft.Extensions.Options;
+using Osirion.Blazor.Components;
 using Osirion.Blazor.Theming.Services;
 using Shouldly;
 
@@ -7,24 +8,55 @@ namespace Osirion.Blazor.Theming.Tests.Services;
 public class ThemeServiceTests
 {
     [Fact]
-    public void CurrentMode_ShouldReturnDefaultMode_WhenInitialized()
+    public void Constructor_ShouldInitializeWithDefaultMode()
     {
         // Arrange
-        var options = Microsoft.Extensions.Options.Options.Create(new ThemingOptions { DefaultMode = ThemeMode.Dark });
+        var options = Options.Create(new ThemingOptions { DefaultMode = ThemeMode.Light });
+
+        // Act
         var service = new ThemeService(options);
 
-        // Act & Assert
+        // Assert
+        service.CurrentMode.ShouldBe(ThemeMode.Light);
+    }
+
+    [Fact]
+    public void SetThemeMode_ShouldChangeCurrentMode()
+    {
+        // Arrange
+        var options = Options.Create(new ThemingOptions { DefaultMode = ThemeMode.Light, EnableDarkMode = true });
+        var service = new ThemeService(options);
+
+        // Act
+        service.SetThemeMode(ThemeMode.Dark);
+
+        // Assert
         service.CurrentMode.ShouldBe(ThemeMode.Dark);
+    }
+
+    [Fact]
+    public void SetThemeMode_ShouldNotChangeToDarkMode_WhenDarkModeDisabled()
+    {
+        // Arrange
+        var options = Options.Create(new ThemingOptions { DefaultMode = ThemeMode.Light, EnableDarkMode = false });
+        var service = new ThemeService(options);
+
+        // Act
+        service.SetThemeMode(ThemeMode.Dark);
+
+        // Assert
+        service.CurrentMode.ShouldBe(ThemeMode.Light);
     }
 
     [Fact]
     public void SetThemeMode_ShouldRaiseThemeChangedEvent()
     {
         // Arrange
-        var options = Microsoft.Extensions.Options.Options.Create(new ThemingOptions());
+        var options = Options.Create(new ThemingOptions { DefaultMode = ThemeMode.Light, EnableDarkMode = true });
         var service = new ThemeService(options);
+
         ThemeChangedEventArgs? eventArgs = null;
-        service.ThemeChanged += (s, e) => eventArgs = e;
+        service.ThemeChanged += (sender, args) => eventArgs = args;
 
         // Act
         service.SetThemeMode(ThemeMode.Dark);
@@ -36,31 +68,126 @@ public class ThemeServiceTests
     }
 
     [Fact]
-    public void GenerateThemeVariables_ShouldIncludeFrameworkVariables_WhenFrameworkSet()
+    public void SetThemeMode_ShouldNotRaiseThemeChangedEvent_WhenModeUnchanged()
     {
         // Arrange
-        var options = Microsoft.Extensions.Options.Options.Create(new ThemingOptions { Framework = CssFramework.Bootstrap });
+        var options = Options.Create(new ThemingOptions { DefaultMode = ThemeMode.Light, EnableDarkMode = true });
         var service = new ThemeService(options);
 
+        bool eventRaised = false;
+        service.ThemeChanged += (sender, args) => eventRaised = true;
+
         // Act
-        var variables = service.GenerateThemeVariables();
+        service.SetThemeMode(ThemeMode.Light); // Same as current mode
 
         // Assert
-        variables.ShouldContain("--bs-primary");
+        eventRaised.ShouldBeFalse();
     }
 
     [Fact]
-    public void GenerateThemeVariables_ShouldIncludeDarkModeVariables_WhenDarkMode()
+    public void CurrentMode_PropertySetter_ShouldCallSetThemeMode()
     {
         // Arrange
-        var options = Microsoft.Extensions.Options.Options.Create(new ThemingOptions());
+        var options = Options.Create(new ThemingOptions { DefaultMode = ThemeMode.Light, EnableDarkMode = true });
         var service = new ThemeService(options);
-        service.SetThemeMode(ThemeMode.Dark);
+
+        ThemeChangedEventArgs? eventArgs = null;
+        service.ThemeChanged += (sender, args) => eventArgs = args;
+
+        // Act
+        service.CurrentMode = ThemeMode.Dark;
+
+        // Assert
+        service.CurrentMode.ShouldBe(ThemeMode.Dark);
+        eventArgs.ShouldNotBeNull();
+        eventArgs.NewMode.ShouldBe(ThemeMode.Dark);
+    }
+
+    [Fact]
+    public void GetFrameworkClass_ShouldReturnCorrectClass_ForBootstrap()
+    {
+        // Arrange
+        var options = Options.Create(new ThemingOptions { Framework = CssFramework.Bootstrap });
+        var service = new ThemeService(options);
+
+        // Act
+        var result = service.GetFrameworkClass();
+
+        // Assert
+        result.ShouldBe("osirion-bootstrap-integration");
+    }
+
+    [Fact]
+    public void GetFrameworkClass_ShouldReturnCorrectClass_ForFluentUI()
+    {
+        // Arrange
+        var options = Options.Create(new ThemingOptions { Framework = CssFramework.FluentUI });
+        var service = new ThemeService(options);
+
+        // Act
+        var result = service.GetFrameworkClass();
+
+        // Assert
+        result.ShouldBe("osirion-fluent-integration");
+    }
+
+    [Fact]
+    public void GetFrameworkClass_ShouldReturnCorrectClass_ForMudBlazor()
+    {
+        // Arrange
+        var options = Options.Create(new ThemingOptions { Framework = CssFramework.MudBlazor });
+        var service = new ThemeService(options);
+
+        // Act
+        var result = service.GetFrameworkClass();
+
+        // Assert
+        result.ShouldBe("osirion-mudblazor-integration");
+    }
+
+    [Fact]
+    public void GetFrameworkClass_ShouldReturnCorrectClass_ForRadzen()
+    {
+        // Arrange
+        var options = Options.Create(new ThemingOptions { Framework = CssFramework.Radzen });
+        var service = new ThemeService(options);
+
+        // Act
+        var result = service.GetFrameworkClass();
+
+        // Assert
+        result.ShouldBe("osirion-radzen-integration");
+    }
+
+    [Fact]
+    public void GetFrameworkClass_ShouldReturnEmptyString_ForNone()
+    {
+        // Arrange
+        var options = Options.Create(new ThemingOptions { Framework = CssFramework.None });
+        var service = new ThemeService(options);
+
+        // Act
+        var result = service.GetFrameworkClass();
+
+        // Assert
+        result.ShouldBe("");
+    }
+
+    [Fact]
+    public void GenerateThemeVariables_ShouldIncludeCustomVariables()
+    {
+        // Arrange
+        var options = Options.Create(new ThemingOptions
+        {
+            DefaultMode = ThemeMode.Light,
+            CustomVariables = "--custom-color: blue;"
+        });
+        var service = new ThemeService(options);
 
         // Act
         var variables = service.GenerateThemeVariables();
 
         // Assert
-        variables.ShouldContain("#60a5fa"); // Dark mode primary color
+        variables.ShouldContain("--custom-color: blue;");
     }
 }

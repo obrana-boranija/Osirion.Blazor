@@ -5,7 +5,7 @@ using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Infrastructure.Builders;
 using Osirion.Blazor.Cms.Infrastructure.DependencyInjection;
 
-namespace Osirion.Blazor.Cms.Front.DependencyInjection;
+namespace Osirion.Blazor.Cms.Web.DependencyInjection;
 
 /// <summary>
 /// Extension methods for adding Osirion CMS content services

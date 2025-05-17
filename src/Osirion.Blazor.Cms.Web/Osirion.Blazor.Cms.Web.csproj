@@ -22,9 +22,9 @@
 		<PackageIcon>icon.png</PackageIcon>
 	</PropertyGroup>
 
-	<ItemGroup>
+	<!--<ItemGroup>
 		<SupportedPlatform Include="browser" />
-	</ItemGroup>
+	</ItemGroup>-->
 
 	<ItemGroup>
 		<PackageReference Include="Markdig" Version="0.41.0" />

@@ -8,7 +8,7 @@ namespace Osirion.Blazor.Analytics.Internal;
 /// <summary>
 /// Implementation of the analytics builder
 /// </summary>
-internal class AnalyticsBuilder : IAnalyticsBuilder
+public class AnalyticsBuilder : IAnalyticsBuilder
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="AnalyticsBuilder"/> class.
@@ -38,7 +38,8 @@ internal class AnalyticsBuilder : IAnalyticsBuilder
 
         Services.TryAddSingleton<ClarityProvider>();
 
-        Services.TryAddSingleton<IAnalyticsProvider, ClarityProvider>();
+        // CHANGED: Use AddSingleton instead of TryAddSingleton to support multiple providers
+        Services.AddSingleton<IAnalyticsProvider, ClarityProvider>();
 
         return this;
     }
@@ -61,7 +62,9 @@ internal class AnalyticsBuilder : IAnalyticsBuilder
         });
 
         Services.TryAddSingleton<MatomoProvider>();
-        Services.TryAddSingleton<IAnalyticsProvider, MatomoProvider>();
+
+        // CHANGED: Use AddSingleton instead of TryAddSingleton
+        Services.AddSingleton<IAnalyticsProvider, MatomoProvider>();
 
         return this;
     }
@@ -91,6 +94,8 @@ internal class AnalyticsBuilder : IAnalyticsBuilder
         });
 
         Services.AddSingleton<GA4Provider>();
+
+        // CHANGED: Use AddSingleton
         Services.AddSingleton<IAnalyticsProvider, GA4Provider>();
 
         return this;
@@ -122,6 +127,8 @@ internal class AnalyticsBuilder : IAnalyticsBuilder
         });
 
         Services.AddSingleton<YandexMetricaProvider>();
+
+        // CHANGED: Use AddSingleton
         Services.AddSingleton<IAnalyticsProvider, YandexMetricaProvider>();
 
         return this;
@@ -138,13 +145,17 @@ internal class AnalyticsBuilder : IAnalyticsBuilder
                 configure(provider);
                 return provider;
             });
+
+            // CHANGED: Register as IAnalyticsProvider too when custom configure is provided
+            Services.AddSingleton<IAnalyticsProvider>(sp => sp.GetRequiredService<TProvider>());
         }
         else
         {
             Services.TryAddSingleton<TProvider>();
-        }
 
-        Services.TryAddSingleton<IAnalyticsProvider, TProvider>();
+            // CHANGED: Use AddSingleton
+            Services.AddSingleton<IAnalyticsProvider, TProvider>();
+        }
 
         return this;
     }
