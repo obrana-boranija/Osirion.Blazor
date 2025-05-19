@@ -28,7 +28,7 @@ public static class EntityExtensions
         // Trim hyphens from ends
         slug = slug.Trim('-');
 
-        return slug;
+        return string.IsNullOrWhiteSpace(slug) ? "untitled" : slug;
     }
 
     /// <summary>
