@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Domain.Repositories;
@@ -154,13 +155,10 @@ public static class ServiceCollectionExtensions
     /// <param name="configureOptions">Optional delegate to configure FileSystem options</param>
     /// <returns>The service collection for chaining</returns>
     public static IServiceCollection AddFileSystemContentProvider(
-        this IServiceCollection services,
-        IConfiguration configuration,
-        Action<FileSystemOptions>? configureOptions = null)
+    this IServiceCollection services,
+    IConfiguration configuration,
+    Action<FileSystemOptions>? configureOptions = null)
     {
-        if (services == null) throw new ArgumentNullException(nameof(services));
-        if (configuration == null) throw new ArgumentNullException(nameof(configuration));
-
         // Configure options
         if (configureOptions != null)
         {
@@ -188,7 +186,7 @@ public static class ServiceCollectionExtensions
 
         // Register default setter
         services.AddSingleton<IDefaultProviderSetter>(sp => {
-            var options = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<FileSystemOptions>>().Value;
+            var options = sp.GetRequiredService<IOptions<FileSystemOptions>>().Value;
             var providerId = options.ProviderId ?? $"filesystem-{options.BasePath.GetHashCode():x}";
             return new DefaultProviderSetter(providerId, options.IsDefault);
         });

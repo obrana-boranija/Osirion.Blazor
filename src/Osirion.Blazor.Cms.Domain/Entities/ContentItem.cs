@@ -48,9 +48,7 @@ public class ContentItem : DomainEntity<string>
     // Computed properties
     public int ReadTimeMinutes => CalculateReadTime();
     public DateTime PublishDate => GetMetadata<DateTime>("publish_date", DateCreated);
-
-    // Private constructor for initialization
-    private ContentItem() { }
+    public ContentItem() { }
 
     /// <summary>
     /// Creates a new content item

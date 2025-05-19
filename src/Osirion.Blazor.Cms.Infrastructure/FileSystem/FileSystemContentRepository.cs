@@ -5,6 +5,7 @@ using Osirion.Blazor.Cms.Domain.Exceptions;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Infrastructure.Repositories;
+using System.IO.Abstractions;
 using DirectoryNotFoundException = Osirion.Blazor.Cms.Domain.Exceptions.DirectoryNotFoundException;
 
 namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
@@ -16,15 +17,18 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
     {
         private readonly FileSystemOptions _options;
         private readonly Dictionary<string, string> _fileExtensionContentTypeMap;
+        private readonly IFileSystem _fileSystem;
         private FileSystemWatcher? _fileWatcher;
 
         public FileSystemContentRepository(
             IMarkdownProcessor markdownProcessor,
             IOptions<FileSystemOptions> options,
-            ILogger<FileSystemContentRepository> logger)
+            ILogger<FileSystemContentRepository> logger,
+            IFileSystem fileSystem)
             : base(GetProviderId(options.Value), markdownProcessor, logger)
         {
             _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
+            _fileSystem = fileSystem;
 
             // Set base class properties
             CacheDurationMinutes = _options.CacheDurationMinutes;
@@ -74,11 +78,11 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
                 var cache = new Dictionary<string, ContentItem>();
 
                 // Create base directory if it doesn't exist
-                if (!System.IO.Directory.Exists(_options.BasePath))
+                if (!_fileSystem.Directory.Exists(_options.BasePath))
                 {
                     if (_options.CreateDirectoriesIfNotExist)
                     {
-                        System.IO.Directory.CreateDirectory(_options.BasePath);
+                        _fileSystem.Directory.CreateDirectory(_options.BasePath);
                     }
                     else
                     {
@@ -90,7 +94,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
                 var files = new List<string>();
                 foreach (var extension in _options.SupportedExtensions)
                 {
-                    files.AddRange(System.IO.Directory.GetFiles(
+                    files.AddRange(_fileSystem.Directory.GetFiles(
                         _options.BasePath,
                         $"*{extension}",
                         _options.IncludeSubdirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly));
@@ -144,11 +148,11 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
 
                 // Ensure directory exists
                 var directoryPath = Path.GetDirectoryName(fullPath);
-                if (!string.IsNullOrEmpty(directoryPath) && !System.IO.Directory.Exists(directoryPath))
+                if (!string.IsNullOrEmpty(directoryPath) && !_fileSystem.Directory.Exists(directoryPath))
                 {
                     if (_options.CreateDirectoriesIfNotExist)
                     {
-                        System.IO.Directory.CreateDirectory(directoryPath);
+                        _fileSystem.Directory.CreateDirectory(directoryPath);
                     }
                     else
                     {
@@ -160,7 +164,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
                 var content = GenerateMarkdownWithFrontMatter(entity);
 
                 // Write content to file
-                await File.WriteAllTextAsync(fullPath, content, cancellationToken);
+                await _fileSystem.File.WriteAllTextAsync(fullPath, content, cancellationToken);
 
                 // Update provider-specific ID (file path in this case)
                 entity.SetProviderSpecificId(fullPath);
@@ -199,11 +203,11 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
                     fullPath = Path.Combine(_options.BasePath, item.Path);
                 }
 
-                if (!File.Exists(fullPath))
+                if (!_fileSystem.File.Exists(fullPath))
                     throw new ContentProviderException($"Content file not found: {fullPath}", ProviderId);
 
                 // Delete file
-                File.Delete(fullPath);
+                _fileSystem.File.Delete(fullPath);
 
                 // Refresh cache
                 await RefreshCacheAsync(cancellationToken);
@@ -241,7 +245,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
             try
             {
                 // Read file content
-                var content = await File.ReadAllTextAsync(filePath, cancellationToken);
+                var content = await _fileSystem.File.ReadAllTextAsync(filePath, cancellationToken);
                 if (string.IsNullOrWhiteSpace(content))
                     return null;
 
@@ -260,8 +264,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
                 // Store the provider-specific ID (file path)
                 contentItem.SetProviderSpecificId(filePath);
 
-                // Set file dates
-                var fileInfo = new FileInfo(filePath);
+                var fileInfo = _fileSystem.FileInfo.New(filePath);
                 contentItem.SetCreatedDate(fileInfo.CreationTimeUtc);
                 contentItem.SetLastModifiedDate(fileInfo.LastWriteTimeUtc);
 
@@ -309,11 +312,11 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
         {
             try
             {
-                if (!System.IO.Directory.Exists(_options.BasePath))
+                if (!_fileSystem.Directory.Exists(_options.BasePath))
                 {
                     if (_options.CreateDirectoriesIfNotExist)
                     {
-                        System.IO.Directory.CreateDirectory(_options.BasePath);
+                        _fileSystem.Directory.CreateDirectory(_options.BasePath);
                     }
                     else
                     {
