@@ -88,6 +88,22 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Osirion.Blazor.Cms.Infrastr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Osirion.Blazor.Cms.Web", "src\Osirion.Blazor.Cms.Web\Osirion.Blazor.Cms.Web.csproj", "{DE353FCC-64FE-304B-6787-D16594D1FA9D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{B07E68F8-5644-4F76-86BB-B1512E89E20E}"
+	ProjectSection(SolutionItems) = preProject
+		CODEOWNERS = CODEOWNERS
+		dependabot.yml = dependabot.yml
+		.github\pull_request_template.md = .github\pull_request_template.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{A9E069B7-F909-44C7-B914-A7D28AD10141}"
+	ProjectSection(SolutionItems) = preProject
+		ci.yml = ci.yml
+		.github\workflows\Codecov = .github\workflows\Codecov
+		.github\workflows\coverage.yml = .github\workflows\coverage.yml
+		.github\workflows\nuget-publish.yml = .github\workflows\nuget-publish.yml
+		.github\workflows\prepare-release.yml = .github\workflows\prepare-release.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -204,6 +220,7 @@ Global
 		{D098AFC4-0571-4F15-BC2A-D1CB461EE141} = {7BBC34AD-707B-4123-8627-D9FC78F42C21}
 		{3B68DD63-233F-49CB-BED4-46E308326A5F} = {7BBC34AD-707B-4123-8627-D9FC78F42C21}
 		{DE353FCC-64FE-304B-6787-D16594D1FA9D} = {7BBC34AD-707B-4123-8627-D9FC78F42C21}
+		{A9E069B7-F909-44C7-B914-A7D28AD10141} = {B07E68F8-5644-4F76-86BB-B1512E89E20E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {42605F7F-9786-49E4-AAB7-7D8A913C42D8}

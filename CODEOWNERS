@@ -1,0 +1,31 @@
+# This file defines the code owners for different parts of the repository
+# Code owners are automatically requested for review when someone opens a PR
+# that modifies code they own
+
+# Default owners for everything
+*                   @obrana-boranija/maintainers
+
+# Core module owners
+/src/Osirion.Blazor.Core/          @obrana-boranija/
+
+# CMS module owners
+/src/Osirion.Blazor.Cms*/          @obrana-boranija/
+
+# Analytics module owners
+/src/Osirion.Blazor.Analytics/     @obrana-boranija/
+
+# Navigation module owners
+/src/Osirion.Blazor.Navigation/    @obrana-boranija/
+
+# Theming module owners
+/src/Osirion.Blazor.Theming/       @obrana-boranija/
+
+# Workflow owners
+/.github/workflows/               @obrana-boranija/
+
+# Documentation owners
+/docs/                            @obrana-boranija/
+*.md                              @obrana-boranija/
+
+# Test owners
+/tests/                           @obrana-boranija/

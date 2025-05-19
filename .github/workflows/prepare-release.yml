@@ -1,12 +1,17 @@
-name: Prepare Release
+﻿name: Prepare Release
 
 on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version number (e.g., 2.0.1)'
+        description: 'Version number (e.g., 2.0.3)'
         required: true
         type: string
+      pre_release:
+        description: 'Is this a pre-release?'
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -27,31 +32,65 @@ jobs:
             8.0.x
             9.0.x
 
+      - name: Validate version format
+        run: |
+          # Validate semantic versioning format
+          if ! [[ ${{ github.event.inputs.version }} =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.]+)?$ ]]; then
+            echo "Error: Version must follow semantic versioning format (e.g., 2.0.3 or 2.0.3-beta.1)"
+            exit 1
+          fi
+
       - name: Update version in project files
         run: |
           # Track if any files were changed
           changed=0
 
-          # Update version in all Osirion.Blazor module projects
-          for file in $(find ./src -name "*.csproj"); do
-            # Use grep to check the current version
-            current_version=$(grep -oP '(?<=<Version>).*?(?=</Version>)' "$file")
-            
-            if [ "$current_version" != "${{ github.event.inputs.version }}" ]; then
-              sed -i "s/<Version>.*<\/Version>/<Version>${{ github.event.inputs.version }}<\/Version>/" "$file"
-              echo "Updated version in $file"
-              changed=$((changed + 1))
+          # List of projects to update
+          projects=(
+            "src/Osirion.Blazor.Core/Osirion.Blazor.Core.csproj"
+            "src/Osirion.Blazor.Analytics/Osirion.Blazor.Analytics.csproj"
+            "src/Osirion.Blazor.Navigation/Osirion.Blazor.Navigation.csproj"
+            "src/Osirion.Blazor.Cms/Osirion.Blazor.Cms.csproj"
+            "src/Osirion.Blazor.Cms.Admin/Osirion.Blazor.Cms.Admin.csproj"
+            "src/Osirion.Blazor.Cms.Core/Osirion.Blazor.Cms.Core.csproj"
+            "src/Osirion.Blazor.Cms.Web/Osirion.Blazor.Cms.Web.csproj"
+            "src/Osirion.Blazor.Theming/Osirion.Blazor.Theming.csproj"
+            "src/Osirion.Blazor/Osirion.Blazor.csproj"
+          )
+
+          # Update version in the specified projects
+          for file in "${projects[@]}"; do
+            if [ -f "$file" ]; then
+              # Use grep to check the current version
+              current_version=$(grep -oP '(?<=<Version>).*?(?=</Version>)' "$file")
+              
+              if [ "$current_version" != "${{ github.event.inputs.version }}" ]; then
+                sed -i "s/<Version>.*<\/Version>/<Version>${{ github.event.inputs.version }}<\/Version>/" "$file"
+                echo "Updated version in $file from $current_version to ${{ github.event.inputs.version }}"
+                changed=$((changed + 1))
+              else
+                echo "Version in $file is already set to ${{ github.event.inputs.version }}"
+              fi
+            else
+              echo "Warning: File $file does not exist"
             fi
           done
 
           # Update CHANGELOG.md
           TODAY=$(date +%Y-%m-%d)
-          sed -i "0,/## \[Unreleased\]/s/## \[Unreleased\]/## [Unreleased]\n\n## [${{ github.event.inputs.version }}] - $TODAY/" CHANGELOG.md
           
-          # Check if CHANGELOG was modified
-          if git diff --quiet CHANGELOG.md; then
-            echo "CHANGELOG.md was not modified"
+          # Check if there's already an entry for this version
+          if grep -q "## \[${{ github.event.inputs.version }}\]" CHANGELOG.md; then
+            echo "CHANGELOG.md already has an entry for version ${{ github.event.inputs.version }}"
           else
+            # Add pre-release indicator if needed
+            VERSION_HEADER="${{ github.event.inputs.version }}"
+            if [ "${{ github.event.inputs.pre_release }}" = "true" ]; then
+              VERSION_HEADER="${VERSION_HEADER} (Pre-release)"
+            fi
+            
+            sed -i "0,/## \[Unreleased\]/s/## \[Unreleased\]/## [Unreleased]\n\n## [$VERSION_HEADER] - $TODAY/" CHANGELOG.md
+            echo "Updated CHANGELOG.md with new version $VERSION_HEADER"
             changed=$((changed + 1))
           fi
 
@@ -61,19 +100,59 @@ jobs:
             exit 1
           fi
 
+      - name: Check for Release Notes
+        id: check_notes
+        run: |
+          # Extract release notes from CHANGELOG.md
+          RELEASE_NOTES=$(awk "/## \[${{ github.event.inputs.version }}/{flag=1; next} /## \[/{flag=0} flag" CHANGELOG.md)
+          RELEASE_NOTES="${RELEASE_NOTES#"${RELEASE_NOTES%%[![:space:]]*}"}"  # trim leading whitespace
+          
+          if [ -z "$RELEASE_NOTES" ]; then
+            echo "release_notes_exist=false" >> $GITHUB_OUTPUT
+            echo "WARNING: No release notes found for version ${{ github.event.inputs.version }} in CHANGELOG.md"
+            echo "Please add release notes before merging the PR."
+          else
+            echo "release_notes_exist=true" >> $GITHUB_OUTPUT
+            echo "Found release notes for version ${{ github.event.inputs.version }}"
+          fi
+          
+          # Save release notes to a file for later use
+          echo "$RELEASE_NOTES" > release_notes.txt
+
       - name: Ensure Labels Exist
         run: |
-          curl -X POST -H "Authorization: token ${{ secrets.PAT_TOKEN }}" \
-          -H "Accept: application/vnd.github.v3+json" \
-          https://api.github.com/repos/${{ github.repository }}/labels \
-          -d '{"name": "release", "color": "f29513"}' || echo "Label 'release' already exists."
+          # Function to create label if it doesn't exist
+          create_label_if_not_exists() {
+            local label_name="$1"
+            local color="$2"
+            local description="$3"
+            
+            # Check if label exists
+            label_check=$(curl -s -o /dev/null -w "%{http_code}" \
+              -H "Authorization: token ${{ secrets.PAT_TOKEN }}" \
+              -H "Accept: application/vnd.github.v3+json" \
+              "https://api.github.com/repos/${{ github.repository }}/labels/$label_name")
+            
+            if [ "$label_check" = "404" ]; then
+              echo "Creating label '$label_name'"
+              curl -X POST -H "Authorization: token ${{ secrets.PAT_TOKEN }}" \
+                -H "Accept: application/vnd.github.v3+json" \
+                "https://api.github.com/repos/${{ github.repository }}/labels" \
+                -d "{\"name\": \"$label_name\", \"color\": \"$color\", \"description\": \"$description\"}"
+            else
+              echo "Label '$label_name' already exists"
+            fi
+          }
           
-          curl -X POST -H "Authorization: token ${{ secrets.PAT_TOKEN }}" \
-          -H "Accept: application/vnd.github.v3+json" \
-          https://api.github.com/repos/${{ github.repository }}/labels \
-          -d '{"name": "automated pr", "color": "0e8a16"}' || echo "Label 'automated pr' already exists."
+          create_label_if_not_exists "release" "f29513" "Release related changes"
+          create_label_if_not_exists "automated pr" "0e8a16" "PR created by automation"
+          
+          if [ "${{ github.event.inputs.pre_release }}" = "true" ]; then
+            create_label_if_not_exists "pre-release" "fbca04" "Pre-release version"
+          fi
 
       - name: Create Pull Request
+        id: create_pr
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.PAT_TOKEN }}
@@ -82,13 +161,26 @@ jobs:
           delete-branch: true
           title: "Release ${{ github.event.inputs.version }}"
           body: |
-            Automated PR to prepare release ${{ github.event.inputs.version }}
+            # Automated PR to prepare release ${{ github.event.inputs.version }}
             
             ## Changes
-            - Updated version numbers to ${{ github.event.inputs.version }}
-            - Updated CHANGELOG.md
+            - Updated version numbers to ${{ github.event.inputs.version }} across all project files
+            - Updated CHANGELOG.md with new version entry
             
-            Please review the changes and merge if everything looks correct.
+            ## Pre-merge Checklist
+            - [ ] Ensure release notes are added to CHANGELOG.md
+            - [ ] Verify all tests pass
+            - [ ] Review version numbers in all projects
+            
+            ## Post-merge Actions
+            Once this PR is merged, a GitHub release and NuGet packages will be created automatically.
+            
+            ${{ steps.check_notes.outputs.release_notes_exist == 'false' && '⚠️ **WARNING: No release notes found in CHANGELOG.md!** Please add release notes before merging.' || '' }}
           labels: |
             release
             automated pr
+            ${{ github.event.inputs.pre_release == 'true' && 'pre-release' || '' }}
+
+      - name: PR Summary
+        run: |
+          echo "::notice::Created PR #${{ steps.create_pr.outputs.pull-request-number }} for release ${{ github.event.inputs.version }}"

@@ -5,36 +5,93 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
+  workflow_dispatch: # Allow manual triggering
 
 jobs:
-  build:
+  test:
+    name: Test and Coverage
     runs-on: ubuntu-latest
-
+    
     steps:
-    - uses: actions/checkout@v3
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
+    - uses: actions/checkout@v4
       with:
-        dotnet-version: 9.0.x
+        fetch-depth: 0  # Important for SonarCloud analysis
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: |
+          8.0.x
+          9.0.x
     
     - name: Restore dependencies
       run: dotnet restore
       
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build --no-restore --configuration Release
       
     - name: Test with coverage
-      run: dotnet test --no-build --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage
+      run: |
+        dotnet test --no-build --configuration Release --verbosity normal \
+          --collect:"XPlat Code Coverage" \
+          --results-directory ./coverage \
+          --logger "trx;LogFileName=test-results.trx"
       
     - name: Generate HTML report
       uses: danielpalme/ReportGenerator-GitHub-Action@5.2.0
       with:
         reports: './coverage/**/coverage.cobertura.xml'
         targetdir: 'coveragereport'
-        reporttypes: 'HtmlInline;Cobertura'
-        
-    - name: Upload coverage report
-      uses: actions/upload-artifact@v3
+        reporttypes: 'HtmlInline;Cobertura;MarkdownSummary'
+        title: 'Osirion.Blazor Coverage Report'
+    
+    - name: Upload coverage report artifact
+      uses: actions/upload-artifact@v4
       with:
         name: coverage-report
         path: coveragereport
+        retention-days: 30
+    
+    - name: Create coverage summary
+      id: coverage_summary
+      run: |
+        # Print summary to console
+        cat coveragereport/Summary.md
+        
+        # Extract coverage percentage
+        COVERAGE_PCT=$(grep -oP '\d+\.\d+(?=%)' coveragereport/Summary.md | head -1)
+        echo "coverage=$COVERAGE_PCT" >> $GITHUB_OUTPUT
+        
+        if (( $(echo "$COVERAGE_PCT < 70" | bc -l) )); then
+          echo "::warning::Coverage is below 70% (Current: ${COVERAGE_PCT}%)"
+        else
+          echo "::notice::Coverage is ${COVERAGE_PCT}%"
+        fi
+    
+    - name: Upload to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage/**/coverage.cobertura.xml
+        fail_ci_if_error: false
+        verbose: true
+    
+    - name: Add Coverage PR Comment
+      if: github.event_name == 'pull_request'
+      uses: marocchino/sticky-pull-request-comment@v2
+      with:
+        header: test-coverage
+        message: |
+          # Test Coverage Report
+          
+          Overall coverage: **${{ steps.coverage_summary.outputs.coverage }}%**
+          
+          <details>
+          <summary>Coverage details</summary>
+          
+          ```
+          $(cat coveragereport/Summary.md)
+          ```
+          
+          [Full HTML report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          
+          </details>

@@ -1,0 +1,42 @@
+version: 2
+updates:
+  # NuGet packages
+  - package-ecosystem: "nuget"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "automated pr"
+    reviewers:
+      - "obrana-boranija/maintainers"
+    groups:
+      microsoft-aspnetcore:
+        patterns:
+          - "Microsoft.AspNetCore.*"
+      microsoft-extensions:
+        patterns:
+          - "Microsoft.Extensions.*"
+      test-packages:
+        patterns:
+          - "xunit*"
+          - "bunit*"
+          - "Shouldly"
+          - "NSubstitute"
+          - "coverlet*"
+          - "Moq"
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "automated pr"
+      - "actions"
+    reviewers:
+      - "obrana-boranija/maintainers"

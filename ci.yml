@@ -1,0 +1,116 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.github/*.md'
+  pull_request:
+    branches: [ master ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.github/*.md'
+  workflow_dispatch:
+
+jobs:
+  build_and_test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            9.0.x
+      
+      - name: Restore dependencies
+        run: dotnet restore
+      
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+      
+      - name: Test
+        run: dotnet test --configuration Release --no-build --verbosity normal
+      
+      - name: Check formatting
+        run: |
+          dotnet format --verify-no-changes --verbosity diagnostic
+          if [ $? -ne 0 ]; then
+            echo "::error::Code formatting violations found. Run 'dotnet format' locally to fix."
+            exit 1
+          fi
+
+  analyze:
+    name: Code Analysis
+    runs-on: ubuntu-latest
+    needs: build_and_test
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            9.0.x
+      
+      - name: Install dotnet tools
+        run: |
+          dotnet tool install --global dotnet-reportgenerator-globaltool
+          dotnet tool install --global dotnet-coverage
+      
+      # Check for common issues and patterns
+      - name: Run Code Analysis
+        run: |
+          # Check solution file for projects not included
+          dotnet sln list | grep -v "Project(s)" > projects_in_sln.txt
+          find ./src -name "*.csproj" | sort > all_projects.txt
+          
+          echo "Checking for projects missing from solution file..."
+          projects_missing=false
+          while IFS= read -r project; do
+            if ! grep -q "$project" projects_in_sln.txt; then
+              echo "::warning::Project not in solution: $project"
+              projects_missing=true
+            fi
+          done < all_projects.txt
+          
+          if [ "$projects_missing" = true ]; then
+            echo "::notice::Some projects are not included in the solution file. Consider adding them."
+          fi
+          
+          # Check for consistent project properties in csproj files
+          echo "Checking for consistency in project properties..."
+          declare -A target_frameworks=()
+          declare -A lang_versions=()
+          declare -A nullable_settings=()
+          
+          while IFS= read -r project; do
+            tf=$(grep -o '<TargetFrameworks>.*</TargetFrameworks>' "$project" | sed 's/<TargetFrameworks>\(.*\)<\/TargetFrameworks>/\1/')
+            lv=$(grep -o '<LangVersion>.*</LangVersion>' "$project" | sed 's/<LangVersion>\(.*\)<\/LangVersion>/\1/')
+            ns=$(grep -o '<Nullable>.*</Nullable>' "$project" | sed 's/<Nullable>\(.*\)<\/Nullable>/\1/')
+            
+            target_frameworks["$tf"]=1
+            lang_versions["$lv"]=1
+            nullable_settings["$ns"]=1
+          done < all_projects.txt
+          
+          if [ ${#target_frameworks[@]} -gt 1 ]; then
+            echo "::warning::Inconsistent TargetFrameworks across projects: ${!target_frameworks[@]}"
+          fi
+          
+          if [ ${#lang_versions[@]} -gt 1 ]; then
+            echo "::warning::Inconsistent LangVersion across projects: ${!lang_versions[@]}"
+          fi
+          
+          if [ ${#nullable_settings[@]} -gt 1 ]; then
+            echo "::warning::Inconsistent Nullable settings across projects: ${!nullable_settings[@]}"
+          fi
