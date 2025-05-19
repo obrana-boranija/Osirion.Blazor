@@ -3,23 +3,26 @@
 <NavMenu />
 <div class="page bg-test">
     <div class="sidebar" style="width: auto">
-        <Menu AriaLabel="Main Navigation" Orientation="MenuOrientation.Vertical">
-            <MenuItem Text="Home" Href="/" Icon="home" />
+        <Menu Orientation="MenuOrientation.Vertical" Style="width: 300px;">
+            <MenuGroup Label="Main">
+                <MenuItem Text="Dashboard" Icon="dashboard" Href="/admin" />
+                <MenuItem Text="Users" Icon="user" Href="/admin/users" />
+                <MenuItem Text="Settings" Icon="settings" Href="/admin/settings" />
 
-            <MenuItem Text="Osirion" HasSubmenu="true">
-                <MenuItem Text="Nav" Href="navigation-demo" />
-                <MenuItem Text="Nav Server" Href="navigation-server-demo" />
-                <MenuItem Text="Nav WASM" Href="navigation-wasm-demo" />
-            </MenuItem>
-
-            <MenuDivider />
-
-            <MenuGroup Label="Resources">
-                <MenuItem Text="Documentation" Icon="docs" Href="/docs" />
-                <MenuItem Text="Support" Icon="contact" Href="/support" />
+                <MenuItem Text="Osirion" HasSubmenu="true">
+                    <MenuItem Text="Nav" Href="navigation-demo" />
+                    <MenuItem Text="Nav Server" Href="navigation-server-demo" />
+                    <MenuItem Text="Nav WASM" Href="navigation-wasm-demo" />
+                </MenuItem>
             </MenuGroup>
-
-            <SearchBox />
+            <MenuDivider Label="Content" />
+            <MenuGroup Label="Content Management" Expanded="true">
+                <MenuItem Text="Pages" Href="/admin/pages" />
+                <MenuItem Text="Blog" Href="/admin/blog" />
+                <MenuItem Text="Media" Href="/admin/media" />
+            </MenuGroup>
+            <MenuDivider />
+            <MenuItem Text="Logout" Icon="user" Href="/logout" />
         </Menu>
     </div>
 

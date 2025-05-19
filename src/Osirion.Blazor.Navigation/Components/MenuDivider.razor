@@ -1,6 +1,7 @@
-﻿@inherits OsirionComponentBase
+﻿@namespace Osirion.Blazor.Navigation.Components
+@inherits OsirionComponentBase
 
-<div class="@GetDividerCssClass()" role="separator" @attributes="AdditionalAttributes">
+<div class="@CombineCssClasses("osirion-menu-divider")" role="separator" @attributes="AdditionalAttributes">
     @if (!string.IsNullOrEmpty(Label))
     {
         <span class="osirion-menu-divider-label">@Label</span>

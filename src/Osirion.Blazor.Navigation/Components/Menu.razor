@@ -1,56 +1,31 @@
 ﻿@namespace Osirion.Blazor.Navigation.Components
 @inherits OsirionComponentBase
 
-<!-- Placeholder for sticky menu height -->
-<div class="osirion-dummy-placeholder"></div>
+<div class="@CombineCssClasses("osirion-menu-container")" @attributes="AdditionalAttributes">
+    <!-- Mobile menu toggle button -->
+    <input type="checkbox" id="@ToggleId" class="osirion-navbar-toggler" />
+    <label for="@ToggleId" class="osirion-navbar-toggle" aria-label="@ToggleAriaLabel">
+        <span class="osirion-toggle-icon"></span>
+    </label>
 
-<!-- Simple checkbox hack for mobile toggle -->
-<input type="checkbox" id="@ToggleId" title="@ToggleAriaLabel" class="osirion-navbar-toggler" />
-
-<!-- Main navigation menu -->
-<div class="osirion-nav-scrollable osirion-menu @CssClass" role="menu" @attributes="AdditionalAttributes">
-    <div class="osirion-menu-inner">
-        @ChildContent
-    </div>
-</div>
-
-<!-- Simple JavaScript to ensure submenus work -->
-<script>
-    // This script adds event listeners to ensure submenu visibility
-    document.addEventListener('DOMContentLoaded', function() {
-        // Find all menu items with submenus
-        var menuItemsWithSubmenus = document.querySelectorAll('.osirion-menu-item-has-submenu');
-
-        // Add event listeners to each
-        menuItemsWithSubmenus.forEach(function(item) {
-            // Find the submenu
-            var submenu = item.querySelector('.osirion-submenu');
-            if (submenu) {
-                // Show submenu on mouse enter
-                item.addEventListener('mouseenter', function() {
-                    submenu.style.display = 'block';
-                });
-
-                // Hide submenu on mouse leave
-                item.addEventListener('mouseleave', function() {
-                    submenu.style.display = '';
-                });
+    <nav class="osirion-menu-nav" aria-label="@AriaLabel">
+        <!-- Branding container -->
+        <div class="osirion-nav-branding">
+            @if (BrandingTemplate != null)
+            {
+                @BrandingTemplate
             }
-        });
+            else if (!string.IsNullOrEmpty(BrandText))
+            {
+                <div class="osirion-brand-text">@BrandText</div>
+            }
+        </div>
 
-        // Handle mobile menu toggle
-        var toggler = document.querySelector('.osirion-navbar-toggler');
-        if (toggler) {
-            toggler.addEventListener('change', function() {
-                var menu = document.querySelector('.osirion-nav-scrollable');
-                if (menu) {
-                    if (this.checked) {
-                        menu.style.display = 'block';
-                    } else {
-                        menu.style.display = '';
-                    }
-                }
-            });
-        }
-    });
-</script>
+        <!-- Main menu content -->
+        <div class="osirion-menu" role="menubar">
+            <div class="osirion-menu-inner">
+                @ChildContent
+            </div>
+        </div>
+    </nav>
+</div>

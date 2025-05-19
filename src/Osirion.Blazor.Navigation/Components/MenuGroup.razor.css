@@ -1,142 +1,89 @@
-/* Base menu item wrapper - allows for proper hover detection and submenu positioning */
-.osirion-menu-item-wrapper {
-    position: relative;
-    display: block;
+/* 
+ * MenuGroup Component Styles
+ * Pure CSS menu group with SSR compatibility
+ */
+
+/* Menu group container */
+.osirion-menu-group {
+    width: 100%;
+    margin: var(--osirion-spacing-1, 0.25rem) 0;
 }
 
-/* Base menu item styles */
-.osirion-menu-item {
+/* Group label */
+.osirion-menu-group-label {
     display: flex;
     align-items: center;
-    padding: 12px 16px;
-    color: #fff;
-    font-size: var(--osirion-font-size-sm, 0.875rem);
-    cursor: pointer;
-    text-decoration: none;
-    transition: background-color 150ms ease;
-    min-height: 40px;
-    margin: 2px 4px;
-    border-radius: 4px;
+    justify-content: space-between;
+    padding: var(--osirion-spacing-2, 0.5rem) var(--osirion-spacing-4, 1rem);
+    font-size: var(--osirion-font-size-xs, 0.75rem);
+    font-weight: var(--osirion-font-weight-semibold, 600);
+    color: var(--osirion-text-tertiary, #9ca3af);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
-    /* Hover/focus states */
-    .osirion-menu-item:hover:not(.osirion-menu-item-disabled) {
-        background-color: rgba(255, 255, 255, 0.1);
-    }
-
-    .osirion-menu-item:focus {
-        outline: none;
-        background-color: rgba(255, 255, 255, 0.1);
-    }
-
-/* Active state */
-.osirion-menu-item-active {
-    background-color: rgba(255, 255, 255, 0.2);
-    font-weight: 500;
-}
-
-/* Disabled state */
-.osirion-menu-item-disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    pointer-events: none;
-}
-
-/* Icons and text */
-.osirion-menu-item-icon {
-    margin-right: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 20px;
-    height: 20px;
-    flex-shrink: 0;
-}
-
-.osirion-menu-item-text {
+/* Text in group label */
+.osirion-menu-group-text {
     flex: 1;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
-.osirion-menu-item-chevron {
-    margin-left: 8px;
+/* Group items container */
+.osirion-menu-group-items {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+/* Collapsible group styling */
+.osirion-menu-group-collapsible .osirion-menu-group-label {
+    cursor: pointer;
+    user-select: none;
+}
+
+.osirion-menu-group-collapsible .osirion-menu-group-toggle {
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-left: var(--osirion-spacing-2, 0.5rem);
+    transition: transform var(--osirion-transition-duration-150, 150ms) var(--osirion-transition-timing-default, ease);
 }
 
-/* Change chevron direction for horizontal menu */
-.osirion-menu-horizontal > .osirion-menu-inner > .osirion-menu-item-wrapper > .osirion-menu-item > .osirion-menu-item-chevron svg {
-    transform: rotate(90deg);
+/* Collapsible logic - using CSS only (for SSR compatibility) */
+.osirion-menu-group-collapsible:not(.osirion-menu-group-expanded) .osirion-menu-group-items {
+    display: none;
 }
 
-/* ======== SUBMENU STYLES ======== */
-/* Submenu base styling */
-.osirion-submenu {
-    display: none !important;
-    position: absolute;
-    min-width: 200px;
-    background-color: rgb(2, 6, 23);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-    padding: 4px 0;
-    z-index: 9999;
+.osirion-menu-group-collapsible:not(.osirion-menu-group-expanded) .osirion-menu-group-toggle svg {
+    transform: rotate(-90deg);
 }
 
-/* Hover states for submenu display */
-.osirion-menu-item-wrapper:hover > .osirion-submenu {
-    display: block !important;
+.osirion-menu-group-expanded .osirion-menu-group-toggle svg {
+    transform: rotate(0);
 }
 
-/* Vertical menu submenu positioning */
-.osirion-menu-vertical .osirion-menu-inner > .osirion-menu-item-wrapper > .osirion-submenu {
-    left: 100%;
-    top: 0;
+/* Group hover effect */
+.osirion-menu-group-collapsible .osirion-menu-group-label:hover {
+    color: var(--osirion-text-secondary, #e5e7eb);
+    background-color: var(--osirion-background-secondary, #1f2937);
+    border-radius: var(--osirion-radius-sm, 0.125rem);
 }
 
-/* Horizontal menu submenu positioning */
-.osirion-menu-horizontal .osirion-menu-inner > .osirion-menu-item-wrapper > .osirion-submenu {
-    left: 0;
-    top: 100%;
-}
-
-/* Force display for active submenus in auto-expand mode */
-.osirion-menu-auto-expand .osirion-menu-item-active.osirion-menu-item-wrapper > .osirion-submenu {
-    display: block !important;
-}
-
-/* ======== RESPONSIVE ADJUSTMENTS ======== */
+/* Responsive behavior */
 @media (max-width: 768px) {
-    /* Full width menu items on mobile */
-    .osirion-menu-item {
-        width: calc(100% - 16px);
-        margin: 2px 8px;
+    /* Force menu groups to be expanded on mobile for better UX */
+    .osirion-menu-group-collapsible .osirion-menu-group-items {
+        display: flex !important;
     }
 
-    /* Static submenu positioning on mobile */
-    .osirion-submenu {
-        position: static !important;
-        width: 100%;
-        box-shadow: none;
-        border: none;
-        border-left: 1px solid rgba(255, 255, 255, 0.1);
-        margin-left: 20px;
-        padding-left: 10px;
-    }
-
-    /* Reset chevron rotation on mobile */
-    .osirion-menu-horizontal .osirion-menu-inner .osirion-menu-item-chevron svg {
-        transform: rotate(0deg) !important;
+    /* Adjust toggle indicator on mobile */
+    .osirion-menu-group-collapsible .osirion-menu-group-toggle {
+        display: none;
     }
 }
 
-/* ======== ACCESSIBILITY ======== */
+/* Accessibility */
 @media (prefers-reduced-motion: reduce) {
-    .osirion-menu-item,
-    .osirion-menu-item-chevron {
+    .osirion-menu-group-toggle {
         transition-duration: 0.01ms !important;
     }
 }

@@ -1,11 +1,23 @@
-﻿@inherits OsirionComponentBase
+﻿@namespace Osirion.Blazor.Navigation.Components
+@inherits OsirionComponentBase
 
-<div class="osirion-menu-group @CssClass" @attributes="AdditionalAttributes">
+<div class="@CombineCssClasses("osirion-menu-group")" @attributes="AdditionalAttributes">
     @if (!string.IsNullOrEmpty(Label))
     {
-        <div class="osirion-menu-group-label" id="@LabelId">@Label</div>
+        <div class="osirion-menu-group-label" id="@LabelId">
+            <span class="osirion-menu-group-text">@Label</span>
+            @if (Collapsible)
+            {
+                <span class="osirion-menu-group-toggle" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                </span>
+            }
+        </div>
     }
-    <div class="osirion-menu-group-items">
+
+    <div class="osirion-menu-group-items" id="@ItemsId" role="group" aria-labelledby="@(string.IsNullOrEmpty(Label) ? null : LabelId)">
         @ChildContent
     </div>
 </div>
