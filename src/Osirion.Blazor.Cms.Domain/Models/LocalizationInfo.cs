@@ -27,6 +27,7 @@ public class LocalizationInfo
     /// <returns>The best matching locale from available locales, or default locale if no match</returns>
     public string GetBestMatchingLocale(string requestedLocale)
     {
+        requestedLocale.ToLower();
         if (string.IsNullOrEmpty(requestedLocale))
             return DefaultLocale;
 

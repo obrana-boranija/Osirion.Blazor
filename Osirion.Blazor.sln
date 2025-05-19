@@ -105,6 +105,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 		.github\workflows\prepare-release.yml = .github\workflows\prepare-release.yml
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Osirion.Blazor.Cms.Domain.Tests", "tests\Osirion.Blazor.Cms.Domain.Tests\Osirion.Blazor.Cms.Domain.Tests.csproj", "{7ADC0821-C873-4A54-B395-CDE1D56D28CB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -191,6 +193,10 @@ Global
 		{DE353FCC-64FE-304B-6787-D16594D1FA9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DE353FCC-64FE-304B-6787-D16594D1FA9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DE353FCC-64FE-304B-6787-D16594D1FA9D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7ADC0821-C873-4A54-B395-CDE1D56D28CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7ADC0821-C873-4A54-B395-CDE1D56D28CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7ADC0821-C873-4A54-B395-CDE1D56D28CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7ADC0821-C873-4A54-B395-CDE1D56D28CB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -222,6 +228,7 @@ Global
 		{3B68DD63-233F-49CB-BED4-46E308326A5F} = {7BBC34AD-707B-4123-8627-D9FC78F42C21}
 		{DE353FCC-64FE-304B-6787-D16594D1FA9D} = {7BBC34AD-707B-4123-8627-D9FC78F42C21}
 		{A9E069B7-F909-44C7-B914-A7D28AD10141} = {B07E68F8-5644-4F76-86BB-B1512E89E20E}
+		{7ADC0821-C873-4A54-B395-CDE1D56D28CB} = {C9DD34FD-6269-4DDD-AA04-BB497494FE13}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {42605F7F-9786-49E4-AAB7-7D8A913C42D8}
