@@ -1,42 +1,40 @@
 version: 2
 updates:
-  # NuGet packages
+  # Enable version updates for NuGet
   - package-ecosystem: "nuget"
     directory: "/"
     schedule:
       interval: "weekly"
-      day: "monday"
     open-pull-requests-limit: 10
+    target-branch: "master"
     labels:
       - "dependencies"
       - "automated pr"
-    reviewers:
-      - "obrana-boranija/maintainers"
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+    # Group updates to reduce PR spam
     groups:
-      microsoft-aspnetcore:
+      microsoft-dependencies:
         patterns:
-          - "Microsoft.AspNetCore.*"
-      microsoft-extensions:
-        patterns:
-          - "Microsoft.Extensions.*"
-      test-packages:
+          - "Microsoft.*"
+      test-dependencies:
         patterns:
           - "xunit*"
+          - "Moq"
           - "bunit*"
-          - "Shouldly"
           - "NSubstitute"
           - "coverlet*"
-          - "Moq"
+          - "FluentAssertions"
+          - "Shouldly"
 
-  # GitHub Actions
+  # Enable version updates for GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "monthly"
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 5
     labels:
       - "dependencies"
       - "automated pr"
-      - "actions"
-    reviewers:
-      - "obrana-boranija/maintainers"
+      - "github-actions"

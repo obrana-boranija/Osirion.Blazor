@@ -1,0 +1,47 @@
+name: AI Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+    
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: AI Code Review
+        uses: anc95/ChatGPT-CodeReview@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        with:
+          review_comment_lgtm: false  # Skip comments if everything looks good
+          openai_light_model: gpt-4o-mini  # Use a smaller model for simpler changes
+          openai_heavy_model: gpt-4o  # Use the full model for complex changes
+          openai_timeout_ms: 900000  # 15 minute timeout
+          max_files: 20  # Limit number of files to review
+          path_filters: |
+            !**.md
+            src/**/*.cs
+            src/**/*.razor
+            tests/**/*.cs
+          prompt: |
+            You are an expert C# and Blazor developer who specializes in component libraries.
+            Review the code changes and provide constructive feedback on:
+            
+            1. Code quality, readability, and maintainability
+            2. Performance considerations, especially for SSR compatibility
+            3. Any potential bugs or edge cases
+            4. Adherence to Blazor best practices
+            5. Accessibility issues
+            
+            Focus on the most important issues. Don't comment on minor style issues.
+            Keep feedback concise and actionable. Suggest specific improvements.
+            Remember that Osirion.Blazor is designed to be SSR-compatible, so avoid suggesting approaches that rely on JavaScript interop where possible.
+            
+            If the code looks good, just say "LGTM" (Looks Good To Me).

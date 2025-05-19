@@ -98,14 +98,31 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{B07E
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{A9E069B7-F909-44C7-B914-A7D28AD10141}"
 	ProjectSection(SolutionItems) = preProject
+		ai-code-review.yml = ai-code-review.yml
+		build.yml = build.yml
 		ci.yml = ci.yml
+		code-quality.yml = code-quality.yml
 		.github\workflows\Codecov = .github\workflows\Codecov
+		codeql-analysis.yml = codeql-analysis.yml
 		.github\workflows\coverage.yml = .github\workflows\coverage.yml
+		matrix-testing.yml = matrix-testing.yml
 		.github\workflows\nuget-publish.yml = .github\workflows\nuget-publish.yml
+		performance-benchmarks.yml = performance-benchmarks.yml
 		.github\workflows\prepare-release.yml = .github\workflows\prepare-release.yml
+		verify-versions.yml = verify-versions.yml
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Osirion.Blazor.Cms.Domain.Tests", "tests\Osirion.Blazor.Cms.Domain.Tests\Osirion.Blazor.Cms.Domain.Tests.csproj", "{7ADC0821-C873-4A54-B395-CDE1D56D28CB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ISSUE_TEMPLATE", "ISSUE_TEMPLATE", "{E677A8F5-2B88-49AD-8F15-B015F3C23135}"
+	ProjectSection(SolutionItems) = preProject
+		bug_report.yml = bug_report.yml
+		config.yml = config.yml
+		documentation_improvement.yml = documentation_improvement.yml
+		feature_request.yml = feature_request.yml
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Osirion.Blazor.E2ETests", "tests\Osirion.Blazor.E2ETests\Osirion.Blazor.E2ETests.csproj", "{41DB3B94-83C9-4C76-BB19-26E53EB3F1AF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -197,6 +214,10 @@ Global
 		{7ADC0821-C873-4A54-B395-CDE1D56D28CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7ADC0821-C873-4A54-B395-CDE1D56D28CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7ADC0821-C873-4A54-B395-CDE1D56D28CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{41DB3B94-83C9-4C76-BB19-26E53EB3F1AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{41DB3B94-83C9-4C76-BB19-26E53EB3F1AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{41DB3B94-83C9-4C76-BB19-26E53EB3F1AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{41DB3B94-83C9-4C76-BB19-26E53EB3F1AF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -229,6 +250,8 @@ Global
 		{DE353FCC-64FE-304B-6787-D16594D1FA9D} = {7BBC34AD-707B-4123-8627-D9FC78F42C21}
 		{A9E069B7-F909-44C7-B914-A7D28AD10141} = {B07E68F8-5644-4F76-86BB-B1512E89E20E}
 		{7ADC0821-C873-4A54-B395-CDE1D56D28CB} = {C9DD34FD-6269-4DDD-AA04-BB497494FE13}
+		{E677A8F5-2B88-49AD-8F15-B015F3C23135} = {B07E68F8-5644-4F76-86BB-B1512E89E20E}
+		{41DB3B94-83C9-4C76-BB19-26E53EB3F1AF} = {C9DD34FD-6269-4DDD-AA04-BB497494FE13}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {42605F7F-9786-49E4-AAB7-7D8A913C42D8}

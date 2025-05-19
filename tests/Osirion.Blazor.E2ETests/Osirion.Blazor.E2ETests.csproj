@@ -1,0 +1,43 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="6.0.2" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
+    <PackageReference Include="Microsoft.Playwright" Version="1.52.0" />
+    <PackageReference Include="Microsoft.Playwright.TestAdapter" Version="1.52.0" />
+    <PackageReference Include="xunit" Version="2.9.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+	  <ProjectReference Include="..\..\src\Osirion.Blazor\Osirion.Blazor.csproj" />
+	  <ProjectReference Include="..\..\src\Osirion.Blazor.Analytics\Osirion.Blazor.Analytics.csproj" />
+	  <ProjectReference Include="..\..\src\Osirion.Blazor.Navigation\Osirion.Blazor.Navigation.csproj" />
+	  <ProjectReference Include="..\..\src\Osirion.Blazor.Cms\Osirion.Blazor.Cms.csproj" />
+	  <ProjectReference Include="..\..\src\Osirion.Blazor.Theming\Osirion.Blazor.Theming.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+	<ItemGroup>
+		<None Update="install-playwright.cmd">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+	<!-- This target helps install Playwright browsers -->
+	<Target Name="InstallPlaywrightBrowsers" AfterTargets="_GeneratePlaywrightProgramFile">
+		<Message Text="Installing Playwright browsers" Importance="high" />
+		<Exec Command="pwsh -Command &quot;&amp; '$(MSBuildThisFileDirectory)obj\playwright\package\node_modules\.bin\playwright.ps1' install --with-deps&quot;" />
+	</Target>
+
+</Project>

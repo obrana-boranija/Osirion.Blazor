@@ -1,0 +1,52 @@
+name: Build
+
+on:
+  push:
+    branches: [ master ]
+    paths-ignore:
+      - '**.md'
+      - '.github/workflows/prepare-release.yml'
+      - '.github/workflows/nuget-publish.yml'
+      - '.github/ISSUE_TEMPLATE/**'
+      - '.github/pull_request_template.md'
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  build:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: |
+          8.0.x
+          9.0.x
+    
+    - name: Restore dependencies
+      run: dotnet restore
+      
+    - name: Build
+      run: dotnet build --no-restore --configuration Release
+      
+    - name: Test
+      run: dotnet test --no-build --configuration Release --verbosity normal
+      
+    # Add badge status support
+    - name: Create status badge
+      if: always()
+      uses: schneegans/dynamic-badges-action@v1.6.0
+      with:
+        auth: ${{ secrets.GIST_SECRET }}
+        gistID: 2f0172ba0b1ed6188d9b47f525e61f61
+        filename: osirion-blazor-build.json
+        label: build
+        message: ${{ job.status }}
+        color: ${{ job.status == 'success' && 'success' || 'critical' }}

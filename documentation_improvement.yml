@@ -1,0 +1,52 @@
+name: Documentation Improvement
+description: Suggest improvements to documentation
+title: "[DOCS] "
+labels: ["documentation"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping us improve our documentation!
+  - type: dropdown
+    id: doc_type
+    attributes:
+      label: Documentation Type
+      description: What type of documentation needs improvement?
+      options:
+        - README
+        - API Documentation
+        - Tutorials/Guides
+        - Code Examples
+        - Component Documentation
+        - Migration Guide
+        - Other (please specify)
+    validations:
+      required: true
+  - type: input
+    id: location
+    attributes:
+      label: Documentation Location
+      description: Where is the documentation you're referring to? (URL or file path)
+      placeholder: "https://github.com/obrana-boranija/Osirion.Blazor/blob/master/README.md"
+  - type: textarea
+    id: current_issue
+    attributes:
+      label: Current Issue
+      description: What's wrong, unclear, or missing in the current documentation?
+      placeholder: The section about X is confusing because...
+    validations:
+      required: true
+  - type: textarea
+    id: suggested_improvement
+    attributes:
+      label: Suggested Improvement
+      description: How would you improve the documentation?
+      placeholder: I suggest changing/adding...
+    validations:
+      required: true
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: Additional Context
+      description: Add any other context about the documentation issue here
