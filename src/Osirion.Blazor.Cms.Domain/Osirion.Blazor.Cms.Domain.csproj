@@ -22,6 +22,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Include="README.md" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<Folder Include="atemp\" />
 		<Folder Include="wwwroot\" />
 	</ItemGroup>

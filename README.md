@@ -1,288 +1,150 @@
 ﻿# Osirion.Blazor
 
 [![NuGet](https://img.shields.io/nuget/v/Osirion.Blazor)](https://www.nuget.org/packages/Osirion.Blazor)
-[![NuGet Downloads](https://img.shields.io/nuget/dt/Osirion.Blazor)](https://www.nuget.org/packages/Osirion.Blazor)
 [![License](https://img.shields.io/github/license/obrana-boranija/Osirion.Blazor)](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/LICENSE.txt)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/obrana-boranija/Osirion.Blazor/test.yml?branch=master)](https://github.com/obrana-boranija/Osirion.Blazor/actions)
+[![codecov](https://codecov.io/gh/obrana-boranija/Osirion.Blazor/branch/master/graph/badge.svg)](https://codecov.io/gh/obrana-boranija/Osirion.Blazor)
 
-Modern, high-performance Blazor components and utilities with SSR compatibility, modular design, and framework integration.
+A modular, high-performance component library for Blazor applications with SSR compatibility and zero-JS dependencies (when possible).
 
-## Features
+## ✨ Features
 
-- **Modular Architecture**: Use only what you need with dedicated packages
-- **SSR Compatible**: Works with Server-Side Rendering, Static SSG, Interactive Server, and WebAssembly
-- **Zero-JS Dependencies**: Core functionality without JavaScript interop
-- **Multi-Platform**: Supports .NET 8, .NET 9, and future versions
-- **Framework Integration**: Works with Bootstrap, FluentUI, MudBlazor, and Radzen
+Osirion.Blazor is composed of specialized modules that can be used independently or together:
 
-### Modules
+### 📊 Analytics
 
-- **[Core](https://www.nuget.org/packages/Osirion.Blazor.Core)**: Foundation components and utilities
-- **[Analytics](https://www.nuget.org/packages/Osirion.Blazor.Analytics)**: Clarity and Matomo integration
-- **[Navigation](https://www.nuget.org/packages/Osirion.Blazor.Navigation)**: Enhanced navigation and scroll components
-- **[Theming](https://www.nuget.org/packages/Osirion.Blazor.Theming)**: Theme management with framework integration
-- **[CMS](https://www.nuget.org/packages/Osirion.Blazor.Cms)**: Content management with GitHub and FileSystem providers
+[![Docs](https://img.shields.io/badge/docs-ANALYTICS.md-blue)](docs/ANALYTICS.md)
 
-## Installation
+- Multiple provider support (Microsoft Clarity, Matomo, GA4, Yandex Metrica)
+- SSR compatibility with progressive enhancement
+- Privacy-focused with consent management
+- Easily extendable with your own providers
 
-**Main Package (includes all modules)**
+### 🧭 Navigation
+
+[![Docs](https://img.shields.io/badge/docs-NAVIGATION.md-blue)](docs/NAVIGATION.md)
+
+- Enhanced navigation with scroll restoration
+- Smooth scrolling and "back to top" functionality
+- Works without JavaScript through progressive enhancement
+- Fully customizable appearance
+
+### 📝 Content Management
+
+[![Docs](https://img.shields.io/badge/docs-GITHUB_CMS.md-blue)](docs/GITHUB_CMS.md)
+
+- GitHub and file system content providers
+- Markdown rendering with frontmatter support
+- Content organization with categories and tags
+- Directory-based navigation and search
+- SEO optimization out of the box
+
+### 🎨 Theming
+
+[![Docs](https://img.shields.io/badge/docs-STYLING.md-blue)](docs/STYLING.md)
+
+- Integration with popular CSS frameworks (Bootstrap, FluentUI, MudBlazor, Radzen)
+- Dark mode support with system preference detection
+- CSS variable-based styling system
+- Minimal JavaScript with progressive enhancement
+
+## 📦 Installation
+
+Install the complete package:
 
 ```bash
 dotnet add package Osirion.Blazor
 ```
 
-**Individual Modules**
+Or just the modules you need:
 
 ```bash
 dotnet add package Osirion.Blazor.Core
 dotnet add package Osirion.Blazor.Analytics
 dotnet add package Osirion.Blazor.Navigation
-dotnet add package Osirion.Blazor.Theming
 dotnet add package Osirion.Blazor.Cms
+dotnet add package Osirion.Blazor.Theming
 ```
 
-## Quick Start
+## 🚀 Quick Start
 
-### Using the Fluent API
+### Service Registration
 
 ```csharp
 // In Program.cs
 using Osirion.Blazor.Extensions;
 
-builder.Services.AddOsirion(osirion => {
+// Register all services at once
+builder.Services.AddOsirionBlazor(osirion => {
     osirion
-        // Configure content providers
-        .UseContent(content => {
-            content.AddGitHub(options => {
-                options.Owner = "username";
-                options.Repository = "content-repo";
-            });
+        .AddGitHubCms(options => {
+            options.Owner = "username";
+            options.Repository = "content-repo";
         })
-        
-        // Configure analytics
-        .UseAnalytics(analytics => {
-            analytics.AddClarity(options => {
-                options.SiteId = "your-clarity-id";
-            });
+        .AddScrollToTop()
+        .AddClarityTracker(options => {
+            options.SiteId = "clarity-id";
         })
-        
-        // Configure navigation
-        .UseNavigation(navigation => {
-            navigation
-                .UseEnhancedNavigation()
-                .AddScrollToTop();
-        })
-        
-        // Configure theming
-        .UseTheming(theming => {
-            theming
-                .UseFramework(CssFramework.Bootstrap)
-                .EnableDarkMode();
-        });
+        .AddOsirionStyle(CssFramework.Bootstrap);
 });
+
+// Or from configuration
+builder.Services.AddOsirionBlazor(builder.Configuration);
 ```
 
-### Layout Setup
+### Component Usage
 
 ```razor
-@using Osirion.Blazor.Navigation.Components
-@using Osirion.Blazor.Analytics.Components
-@using Osirion.Blazor.Theming.Components
+@using Osirion.Blazor.Components
 
-<head>
-    <!-- Other head elements -->
-    <ThemeProvider>
-        <!-- Your styles -->
-    </ThemeProvider>
-</head>
+<!-- In your layout -->
+<OsirionStyles FrameworkIntegration="CssFramework.Bootstrap" />
+<EnhancedNavigation Behavior="ScrollBehavior.Smooth" />
+<ScrollToTop Position="Position.BottomRight" />
+<ClarityTracker />
 
-<body>
-    <ClarityTracker />
-    <MatomoTracker />
-    <EnhancedNavigation />
-    <ScrollToTop />
-    
-    <ThemeToggle />
-    
-    <main>
-        @Body
-    </main>
-</body>
+<!-- In your pages -->
+<ContentList Directory="blog" />
+<ContentView Path="blog/my-post.md" />
+<SearchBox />
+<TagCloud />
 ```
 
-### Content Pages
+## 📚 Documentation
 
-```razor
-@page "/blog"
-@using Osirion.Blazor.Cms.Components
+- [Quick Reference](docs/QUICK_REFERENCE.md) - Quick overview of all components
+- [Analytics](docs/ANALYTICS.md) - Analytics integration documentation
+- [Navigation](docs/NAVIGATION.md) - Navigation components documentation
+- [GitHub CMS](docs/GITHUB_CMS.md) - Content management documentation
+- [Styling](docs/STYLING.md) - Theming and styling documentation
+- [Migration Guide](docs/MIGRATION.md) - Guide for upgrading between versions
 
-<h1>Blog Posts</h1>
+## 🌟 Key Principles
 
-<div class="sidebar">
-    <CategoriesList />
-    <TagCloud />
-    <SearchBox />
-</div>
+- **SSR First**: All components designed for Server-Side Rendering compatibility
+- **Zero-JS Dependencies**: No JavaScript dependencies where possible
+- **Progressive Enhancement**: Core functionality works without JavaScript, enhanced with JS when available
+- **Framework Integration**: Seamless integration with popular CSS frameworks
+- **Multi-Platform**: Supports .NET 8 and .NET 9 (and future versions)
+- **Provider Pattern**: Easily extend with your own providers for analytics, content, etc.
 
-<div class="content">
-    <ContentList Directory="blog" />
-</div>
-```
+## 📋 Requirements
 
-## Configuration from appsettings.json
+- .NET 8.0 or higher
+- Blazor (Server, WebAssembly, or Auto)
 
-```json
-{
-  "Osirion": {
-    "Content": {
-      "GitHub": {
-        "Owner": "username",
-        "Repository": "content-repo",
-        "ContentPath": "content",
-        "Branch": "main"
-      }
-    },
-    "Analytics": {
-      "Clarity": {
-        "SiteId": "your-clarity-id"
-      },
-      "Matomo": {
-        "SiteId": "1",
-        "TrackerUrl": "//analytics.example.com/"
-      }
-    },
-    "Navigation": {
-      "ScrollToTop": {
-        "Position": "BottomRight",
-        "Behavior": "Smooth"
-      }
-    },
-    "Theming": {
-      "Framework": "Bootstrap",
-      "EnableDarkMode": true,
-      "FollowSystemPreference": true
-    }
-  }
-}
-```
+## 🧪 Features Coming Soon
 
-```csharp
-// In Program.cs
-builder.Services.AddOsirion(builder.Configuration);
-```
+- Headless CMS support with Contentful, Sanity, and Strapi providers
+- Form validation and submission components
+- Authentication integration
+- Enhanced SEO components with structured data
+- Performance optimizations for large content repositories
 
-### Directory Structure with _index.md
+## 🤝 Contributing
 
-The CMS module supports directory metadata using `_index.md` files:
+Contributions are welcome! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
 
-```
-content/
-├── en/
-│   ├── _index.md
-│   ├── blog/
-│   │   ├── _index.md
-│   │   ├── post1.md
-│   │   └── post2.md
-│   └── docs/
-│       ├── _index.md
-│       └── guide.md
-└── es/
-    ├── _index.md
-    └── blog/
-        ├── _index.md
-        └── post1.md
-```
-
-The `_index.md` file can include metadata for the directory:
-
-```markdown
----
-id: "blog"               # Unique ID for the directory (same across locales)
-title: "Blog Posts"      # Display name (localized)
-description: "Our latest articles about Blazor development"
-order: 1                 # Controls ordering in navigation
----
-```
-
-### Markdown Frontmatter with SEO and Localization
-
-```markdown
----
-# Basic metadata
-title: "My Blog Post"
-author: "John Doe"
-date: "2025-04-20"
-description: "A brief description of my post"
-tags: [blazor, webassembly, dotnet]
-categories: [tutorials, web]
-slug: "my-blog-post"
-is_featured: true
-featured_image: "https://example.com/image.jpg"
-
-# Localization
-locale: "en"                       # Content locale (e.g., en, es, fr)
-localization_id: "my-blog-post"    # Shared ID across all translations
-
-# SEO metadata
-meta_title: "Optimized Title for SEO | My Site"    # <title> tag (if different from title)
-meta_description: "Longer description optimized for search engines with key phrases..."
-canonical_url: "https://mysite.com/blog/my-blog-post"
-robots: "index, follow"
-
-# Open Graph metadata
-og_title: "My Blog Post - Perfect for Sharing"
-og_description: "Description optimized for social sharing..."
-og_image: "https://example.com/image-for-social.jpg"
-og_type: "article"
-
-# Twitter Card metadata
-twitter_card: "summary_large_image"
-twitter_title: "My Blog Post - Twitter Title"
-twitter_description: "Description optimized for Twitter..."
-twitter_image: "https://example.com/twitter-image.jpg"
-
-# Structured Data / Rich Snippets
-schema_type: "Article"       # or BlogPosting, TechArticle, etc.
-json_ld: |                  # Optional custom JSON-LD
-  {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    "headline": "My Blog Post",
-    "author": {
-      "@type": "Person",
-      "name": "John Doe"
-    },
-    "datePublished": "2025-04-20",
-    "image": "https://example.com/image.jpg",
-    "publisher": {
-      "@type": "Organization",
-      "name": "My Company",
-      "logo": {
-        "@type": "ImageObject",
-        "url": "https://example.com/logo.png"
-      }
-    }
-  }
----
-
-# My Blog Post Content
-
-Your markdown content here...
-
-```
-
-## Documentation
-
-- [Navigation Components](./docs/NAVIGATION.md)
-- [Analytics Components](./docs/ANALYTICS.md)
-- [GitHub CMS Components](./docs/GITHUB_CMS.md)
-- [Styling Guide](./docs/STYLING.md)
-- [Quick Reference](./docs/QUICK_REFERENCE.md)
-- [Migration Guide](./docs/MIGRATION.md)
-
-## License
+## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE.txt) file for details.
-
-## Contributing
-
-We welcome contributions! Please see our [contributing guidelines](CONTRIBUTING.md) for details.

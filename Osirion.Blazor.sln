@@ -23,6 +23,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{A0B979F7-9
 		docs\NAVIGATION.md = docs\NAVIGATION.md
 		docs\QUICK_REFERENCE.md = docs\QUICK_REFERENCE.md
 		docs\STYLING.md = docs\STYLING.md
+		THEMING.md = THEMING.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{B0489088-7C87-4C92-B6D1-73B072183229}"
