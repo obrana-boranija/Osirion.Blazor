@@ -1,7 +1,7 @@
 ﻿using Osirion.Blazor.Cms.Domain.Options.Configuration;
 using Shouldly;
 
-namespace Osirion.Blazor.Cms.Tests.Options;
+namespace Osirion.Blazor.Cms.Tests.Domain.Options;
 
 public class ThemeOptionsTests
 {

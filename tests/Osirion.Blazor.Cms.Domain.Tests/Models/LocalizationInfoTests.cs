@@ -1,6 +1,6 @@
 ﻿using Osirion.Blazor.Cms.Domain.Models;
 
-namespace Osirion.Blazor.Cms.Tests.Domain.Models;
+namespace Osirion.Blazor.Cms.Domain.Tests.Models;
 
 public class LocalizationInfoTests
 {

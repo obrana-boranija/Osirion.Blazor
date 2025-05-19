@@ -3,7 +3,7 @@ using Osirion.Blazor.Cms.Domain.Models.GitHub;
 using Osirion.Blazor.Cms.Domain.ValueObjects;
 using System.Text;
 
-namespace Osirion.Blazor.Cms.Tests.Domain.Models;
+namespace Osirion.Blazor.Cms.Domain.Tests.Models;
 
 public class BlogPostTests
 {

@@ -1,6 +1,6 @@
 ﻿using Osirion.Blazor.Cms.Domain.Extensions;
 
-namespace Osirion.Blazor.Cms.Tests.Domain.Extensions;
+namespace Osirion.Blazor.Cms.Domain.Tests.Extensions;
 
 public class EntityExtensionsTests
 {

@@ -1,7 +1,7 @@
 ﻿using Osirion.Blazor.Cms.Domain.Enums;
 using Osirion.Blazor.Cms.Domain.Repositories;
 
-namespace Osirion.Blazor.Cms.Tests.Domain.Models;
+namespace Osirion.Blazor.Cms.Domain.Tests.Models;
 
 public class ContentQueryTests
 {

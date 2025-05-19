@@ -1,6 +1,6 @@
 ﻿using Osirion.Blazor.Cms.Domain.Exceptions;
 
-namespace Osirion.Blazor.Cms.Tests.Domain.Exceptions;
+namespace Osirion.Blazor.Cms.Domain.Tests.Exceptions;
 
 public class ExceptionTests
 {

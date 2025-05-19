@@ -1,6 +1,6 @@
 ﻿using Osirion.Blazor.Cms.Domain.Events;
 
-namespace Osirion.Blazor.Cms.Tests.Domain.Events;
+namespace Osirion.Blazor.Cms.Domain.Tests.Events;
 
 public class DomainEventTests
 {

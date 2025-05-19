@@ -1,6 +1,6 @@
 ﻿using Osirion.Blazor.Cms.Domain.Enums;
 
-namespace Osirion.Blazor.Cms.Tests.Domain.Enums;
+namespace Osirion.Blazor.Cms.Domain.Tests.Enums;
 
 public class EnumTests
 {

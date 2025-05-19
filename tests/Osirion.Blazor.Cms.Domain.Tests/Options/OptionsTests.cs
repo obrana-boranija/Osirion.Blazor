@@ -1,6 +1,6 @@
 ﻿using Osirion.Blazor.Cms.Domain.Options;
 
-namespace Osirion.Blazor.Cms.Tests.Domain.Options;
+namespace Osirion.Blazor.Cms.Domain.Tests.Domain.Options;
 
 public class OptionsTests
 {

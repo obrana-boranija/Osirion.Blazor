@@ -2,7 +2,7 @@
 using Osirion.Blazor.Cms.Domain.Events;
 using Osirion.Blazor.Cms.Domain.Exceptions;
 
-namespace Osirion.Blazor.Cms.Tests.Domain.Entities;
+namespace Osirion.Blazor.Cms.Domain.Tests.Entities;
 
 public class DirectoryItemTests
 {

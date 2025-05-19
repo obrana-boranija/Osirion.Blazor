@@ -1,6 +1,6 @@
 ﻿using Osirion.Blazor.Cms.Domain.ValueObjects;
 
-namespace Osirion.Blazor.Cms.Tests.Domain.ValueObjects;
+namespace Osirion.Blazor.Cms.Domain.Tests.ValueObjects;
 
 public class FrontMatterTests
 {

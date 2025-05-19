@@ -1,6 +1,6 @@
 ﻿using Osirion.Blazor.Cms.Domain.Common;
 
-namespace Osirion.Blazor.Cms.Tests.Domain.Common;
+namespace Osirion.Blazor.Cms.Domain.Tests.Common;
 
 public class EntityBaseTests
 {
