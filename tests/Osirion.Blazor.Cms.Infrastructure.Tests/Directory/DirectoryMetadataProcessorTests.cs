@@ -72,7 +72,7 @@ public class DirectoryMetadataProcessorTests
             { "custom_string", "string value" },
             { "custom_int", "42" },
             { "custom_bool", "true" },
-            { "custom_double", "3.14" }
+            { "custom_double", "3,14" }
         };
 
         _frontMatterExtractor.ExtractFrontMatter(Arg.Any<string>())

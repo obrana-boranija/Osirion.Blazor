@@ -13,7 +13,7 @@ public class MarkdownSanitizer : IMarkdownSanitizer
     private static readonly Regex InlineJsRegex = new(@"`javascript:.*?`", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
     /// <inheritdoc/>
-    public string SanitizeMarkdown(string markdown)
+    public string SanitizeMarkdown(string? markdown)
     {
         if (string.IsNullOrEmpty(markdown))
             return string.Empty;

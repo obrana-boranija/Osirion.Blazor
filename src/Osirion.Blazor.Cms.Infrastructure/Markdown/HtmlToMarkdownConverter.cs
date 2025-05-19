@@ -10,9 +10,9 @@ namespace Osirion.Blazor.Cms.Infrastructure.Markdown;
 public class HtmlToMarkdownConverter : IHtmlToMarkdownConverter
 {
     /// <inheritdoc/>
-    public Task<string> ConvertHtmlToMarkdownAsync(string html, CancellationToken cancellationToken = default)
+    public Task<string> ConvertHtmlToMarkdownAsync(string? html, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrEmpty(html))
+        if (string.IsNullOrWhiteSpace(html))
             return Task.FromResult(string.Empty);
 
         // This is a simple implementation
