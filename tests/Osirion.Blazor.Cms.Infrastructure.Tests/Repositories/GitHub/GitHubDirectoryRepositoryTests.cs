@@ -164,8 +164,7 @@ public class GitHubDirectoryRepositoryTests
             "Dir to Delete",
             "github");
 
-        _repository.GetByIdAsync(directoryId, Arg.Any<CancellationToken>())
-            .Returns(directory);
+        
 
         var files = new List<GitHubItem>
         {
@@ -180,6 +179,9 @@ public class GitHubDirectoryRepositoryTests
                 Sha = "index-sha"
             }
         };
+
+        _repository.GetByIdAsync(directoryId, Arg.Any<CancellationToken>())
+            .Returns(directory);
 
         _apiClient.GetRepositoryContentsAsync(
             Arg.Is<string>(s => s == "content/to-delete"),
