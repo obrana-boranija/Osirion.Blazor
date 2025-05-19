@@ -3,10 +3,13 @@
 
 <div class="@CombineCssClasses("osirion-menu-container")" @attributes="AdditionalAttributes">
     <!-- Mobile menu toggle button -->
-    <input type="checkbox" id="@ToggleId" class="osirion-navbar-toggler" />
-    <label for="@ToggleId" class="osirion-navbar-toggle" aria-label="@ToggleAriaLabel">
-        <span class="osirion-toggle-icon"></span>
-    </label>
+    @if (CollapseOnMobile)
+    {
+        <input type="checkbox" id="@ToggleId" class="osirion-navbar-toggler" />
+        <label for="@ToggleId" class="osirion-navbar-toggle" aria-label="@ToggleAriaLabel">
+            <span class="osirion-toggle-icon"></span>
+        </label>
+    }
 
     <nav class="osirion-menu-nav" aria-label="@AriaLabel">
         <!-- Branding container -->

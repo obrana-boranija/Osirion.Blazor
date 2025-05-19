@@ -81,6 +81,20 @@
     z-index: 10;
 }
 
+/* Collapsible menu behavior for mobile */
+.osirion-menu-collapsible .osirion-menu {
+    display: none; /* Hide menu by default on mobile */
+}
+
+.osirion-menu-collapsible .osirion-navbar-toggler:checked ~ .osirion-menu-nav .osirion-menu {
+    display: flex; /* Show menu when toggle is checked */
+}
+
+/* Show toggle button only for collapsible menus */
+.osirion-menu-collapsible .osirion-navbar-toggle {
+    display: block;
+}
+
 /* Toggle icon style - hamburger menu */
 .osirion-toggle-icon,
 .osirion-toggle-icon::before,
@@ -276,6 +290,14 @@
     /* Horizontal menu spacing for branding */
     .osirion-menu-horizontal .osirion-nav-branding {
         margin-right: var(--osirion-spacing-4, 1rem);
+    }
+
+    .osirion-menu-collapsible .osirion-menu {
+        display: flex !important; /* Always show menu on desktop */
+    }
+
+    .osirion-menu-collapsible .osirion-navbar-toggle {
+        display: none; /* Hide toggle on desktop */
     }
 }
 

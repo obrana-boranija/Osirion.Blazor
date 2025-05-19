@@ -119,7 +119,7 @@ public partial class Menu
         if (!string.IsNullOrEmpty(expandClass))
             classes.Add(expandClass);
 
-        // Add collapsible class if needed
+        // Add collapsible class if needed - this is critical for mobile behavior
         if (CollapseOnMobile)
             classes.Add("osirion-menu-collapsible");
 
@@ -133,19 +133,16 @@ public partial class Menu
             : $"{CssClass} {string.Join(" ", classes)}";
 
         // Apply z-index as inline style for sticky menu
-        if (IsSticky && Orientation == MenuOrientation.Horizontal)
+        if (IsSticky && Orientation == MenuOrientation.Horizontal && !AdditionalAttributes.ContainsKey("style"))
         {
-            if (!AdditionalAttributes.ContainsKey("style"))
-            {
-                AdditionalAttributes["style"] = $"z-index: {StickyZIndex};";
-            }
-            else
-            {
-                AdditionalAttributes["style"] = $"{AdditionalAttributes["style"]} z-index: {StickyZIndex};";
-            }
+            AdditionalAttributes["style"] = $"z-index: {StickyZIndex};";
+        }
+        else if (IsSticky && Orientation == MenuOrientation.Horizontal)
+        {
+            AdditionalAttributes["style"] = $"{AdditionalAttributes["style"]} z-index: {StickyZIndex};";
         }
 
-        // Set ID and aria attributes for accessibility
+        // Set ID attribute
         if (!AdditionalAttributes.ContainsKey("id"))
             AdditionalAttributes["id"] = MenuId;
     }
