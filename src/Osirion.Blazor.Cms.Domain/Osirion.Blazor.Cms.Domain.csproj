@@ -22,12 +22,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Compile Include="README.md" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Folder Include="atemp\" />
-		<Folder Include="wwwroot\" />
+	  <Compile Remove="atemp\**" />
+	  <Compile Remove="wwwroot\**" />
+	  <Content Remove="atemp\**" />
+	  <Content Remove="wwwroot\**" />
+	  <EmbeddedResource Remove="atemp\**" />
+	  <EmbeddedResource Remove="wwwroot\**" />
+	  <None Remove="atemp\**" />
+	  <None Remove="wwwroot\**" />
 	</ItemGroup>
 
 	<ItemGroup>

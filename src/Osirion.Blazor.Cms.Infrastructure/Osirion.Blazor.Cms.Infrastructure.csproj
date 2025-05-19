@@ -28,12 +28,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Osirion.Blazor.Cms.Application\Osirion.Blazor.Cms.Application.csproj" />
-		<ProjectReference Include="..\Osirion.Blazor.Cms.Domain\Osirion.Blazor.Cms.Domain.csproj" />
+	  <Compile Remove="wwwroot\**" />
+	  <Content Remove="wwwroot\**" />
+	  <EmbeddedResource Remove="wwwroot\**" />
+	  <None Remove="wwwroot\**" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="wwwroot\" />
+		<ProjectReference Include="..\Osirion.Blazor.Cms.Application\Osirion.Blazor.Cms.Application.csproj" />
+		<ProjectReference Include="..\Osirion.Blazor.Cms.Domain\Osirion.Blazor.Cms.Domain.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

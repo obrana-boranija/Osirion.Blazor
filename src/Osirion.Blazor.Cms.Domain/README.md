@@ -1,4 +1,4 @@
-﻿# Osirion.Blazor.Cms.Domain
+# Osirion.Blazor.Cms.Domain
 
 [![NuGet](https://img.shields.io/nuget/v/Osirion.Blazor.Cms.Domain)](https://www.nuget.org/packages/Osirion.Blazor.Cms.Domain)
 [![License](https://img.shields.io/github/license/obrana-boranija/Osirion.Blazor)](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/LICENSE.txt)
