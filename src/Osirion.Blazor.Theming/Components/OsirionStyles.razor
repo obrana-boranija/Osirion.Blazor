@@ -1,8 +1,10 @@
-﻿@using Osirion.Blazor.Theming.Services
+﻿@namespace Osirion.Blazor.Theming.Components
+@using Microsoft.Extensions.Options
+@using Osirion.Blazor.Components
+@using Osirion.Blazor.Theming.Services
 @inherits OsirionComponentBase
 @inject IOptions<ThemingOptions>? Options
 @inject IThemeService ThemeService
-@implements IDisposable
 
 @* Include core stylesheets *@
 <link rel="stylesheet" href="_content/Osirion.Blazor.Core/css/index.css" />
@@ -35,49 +37,9 @@
 @* Framework integration script *@
 @if (EffectiveOptions.Framework != CssFramework.None)
 {
-    <script id="osirion-framework-script">
-        (function() {
-            function applyFrameworkIntegration() {
-                const htmlElement = document.documentElement || document.querySelector('html');
-                const frameworkClass = "@GetFrameworkClass";
+    @((MarkupString)script)
+}
 
-                if (htmlElement && frameworkClass && !htmlElement.classList.contains(frameworkClass)) {
-                    htmlElement.classList.add(frameworkClass);
-                }
-
-                // Also apply data-bs-theme if Bootstrap is used
-        @if (EffectiveOptions.Framework == CssFramework.Bootstrap)
-        {
-            <text>
-                        const currentTheme = "@ThemeService.CurrentMode.ToString().ToLowerInvariant()";
-                        if (currentTheme === "dark" || currentTheme === "light") {
-                            htmlElement.setAttribute('data-bs-theme', currentTheme)
-                        }
-            </text>
-        }
-            }
-
-            // Apply immediately
-            applyFrameworkIntegration();
-
-            // Apply on DOMContentLoaded for SSR scenarios
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', applyFrameworkIntegration);
-            }
-
-            // MutationObserver fallback for dynamic HTML changes
-            const observer = new MutationObserver(function(mutations) {
-                mutations.forEach(function(mutation) {
-                    if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
-                        applyFrameworkIntegration();
-                    }
-                });
-            });
-
-            observer.observe(document.documentElement, {
-                childList: true,
-                subtree: true
-            });
-        })();
-    </script>
+@functions {
+    private MarkupString script => (MarkupString)GetScript();
 }

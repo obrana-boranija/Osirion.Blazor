@@ -81,7 +81,7 @@ public partial class Menu
     /// <summary>
     /// Gets the unique identifier for the menu component.
     /// </summary>
-    private string MenuId => Id ?? $"osirion-menu-{Guid.NewGuid():N}";
+    private string MenuId => Id ?? $"osirion-menu-{Orientation.ToString().ToLowerInvariant()}";
 
     /// <summary>
     /// Gets the menu toggle ID.

@@ -1,10 +1,11 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Options;
 using Osirion.Blazor.Components;
 using Osirion.Blazor.Theming.Services;
 
 namespace Osirion.Blazor.Theming.Components
 {
-    public partial class OsirionStyles : OsirionComponentBase, IDisposable
+    public partial class OsirionStyles : OsirionComponentBase
     {
         /// <summary>
         /// Gets or sets whether to use default styles
@@ -33,13 +34,22 @@ namespace Osirion.Blazor.Theming.Components
         /// <summary>
         /// Gets the effective options, merging parameters with configured options
         /// </summary>
-        private ThemingOptions EffectiveOptions => new()
+        private ThemingOptions EffectiveOptions
         {
-            UseDefaultStyles = UseStyles ?? Options?.Value.UseDefaultStyles ?? true,
-            CustomVariables = CustomVariables ?? Options?.Value.CustomVariables,
-            Framework = Framework ?? Options?.Value.Framework ?? CssFramework.None,
-            DefaultMode = Mode ?? Options?.Value.DefaultMode ?? ThemeMode.Light
-        };
+            get
+            {
+                var options = Options?.Value ?? new ThemingOptions();
+                return new ThemingOptions
+                {
+                    UseDefaultStyles = UseStyles ?? options.UseDefaultStyles,
+                    CustomVariables = CustomVariables ?? options.CustomVariables,
+                    Framework = Framework ?? options.Framework,
+                    DefaultMode = Mode ?? options.DefaultMode,
+                    EnableDarkMode = options.EnableDarkMode,
+                    FollowSystemPreference = options.FollowSystemPreference
+                };
+            }
+        }
 
         /// <summary>
         /// Gets the generated CSS variables for the current theme
@@ -61,6 +71,81 @@ namespace Osirion.Blazor.Theming.Components
         private void OnThemeChanged(object? sender, ThemeChangedEventArgs e)
         {
             InvokeAsync(StateHasChanged);
+        }
+
+        private string GetScript()
+        {
+            var frameworkClass = GetFrameworkClass;
+            var currentTheme = ThemeService.CurrentMode.ToString().ToLowerInvariant();
+
+            return $@"
+        <script id=""osirion-framework-script"">
+            (function() {{
+                // Store these values in variables with proper scope
+                const FRAMEWORK_CLASS = ""{frameworkClass}"";
+                const CURRENT_THEME = ""{currentTheme}"";
+                const FRAMEWORK = ""{EffectiveOptions.Framework}"";
+                
+                function applyFrameworkIntegration() {{
+                    const htmlElement = document.documentElement || document.querySelector('html');
+
+                    if (htmlElement && FRAMEWORK_CLASS && !htmlElement.classList.contains(FRAMEWORK_CLASS)) {{
+                        htmlElement.classList.add(FRAMEWORK_CLASS);
+                    }}
+
+                    // Framework-specific theme handling
+                    if (FRAMEWORK === ""Bootstrap"") {{
+                        if (CURRENT_THEME === ""dark"" || CURRENT_THEME === ""light"") {{
+                            htmlElement.setAttribute(""data-bs-theme"", CURRENT_THEME);
+                        }}
+                    }}
+                    else if (FRAMEWORK === ""MudBlazor"") {{
+                        if (CURRENT_THEME === ""dark"") {{
+                            htmlElement.classList.add(""mud-theme-dark"");
+                        }} else if (CURRENT_THEME === ""light"") {{
+                            htmlElement.classList.remove(""mud-theme-dark"");
+                        }}
+                    }}
+                    else if (FRAMEWORK === ""FluentUI"") {{
+                        if (CURRENT_THEME === ""dark"") {{
+                            htmlElement.classList.add(""fluent-dark-theme"");
+                            htmlElement.classList.remove(""fluent-light-theme"");
+                        }} else if (CURRENT_THEME === ""light"") {{
+                            htmlElement.classList.add(""fluent-light-theme"");
+                            htmlElement.classList.remove(""fluent-dark-theme"");
+                        }}
+                    }}
+                    else if (FRAMEWORK === ""Radzen"") {{
+                        if (CURRENT_THEME === ""dark"") {{
+                            htmlElement.classList.add(""rz-dark-theme"");
+                        }} else if (CURRENT_THEME === ""light"") {{
+                            htmlElement.classList.remove(""rz-dark-theme"");
+                        }}
+                    }}
+                }}
+
+                // Apply immediately
+                applyFrameworkIntegration();
+                
+                // Apply on page load events
+                if (document.readyState === ""loading"") {{
+                    document.addEventListener(""DOMContentLoaded"", applyFrameworkIntegration);
+                }}
+                
+                // Register event handlers that reapply on navigation
+                window.addEventListener(""load"", applyFrameworkIntegration);
+                window.addEventListener(""hashchange"", applyFrameworkIntegration);
+                window.addEventListener(""popstate"", applyFrameworkIntegration);
+                
+                // Check periodically if class was removed (like during navigation)
+                setInterval(function() {{
+                    const html = document.documentElement;
+                    if (html && !html.classList.contains(FRAMEWORK_CLASS)) {{
+                        applyFrameworkIntegration();
+                    }}
+                }}, 1000);
+            }})();
+        </script>";
         }
 
         public void Dispose()
