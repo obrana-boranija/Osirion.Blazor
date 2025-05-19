@@ -105,6 +105,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 		.github\workflows\Codecov = .github\workflows\Codecov
 		codeql-analysis.yml = codeql-analysis.yml
 		.github\workflows\coverage.yml = .github\workflows\coverage.yml
+		e2e.yml = e2e.yml
 		matrix-testing.yml = matrix-testing.yml
 		.github\workflows\nuget-publish.yml = .github\workflows\nuget-publish.yml
 		performance-benchmarks.yml = performance-benchmarks.yml

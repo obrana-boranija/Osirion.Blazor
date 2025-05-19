@@ -1,0 +1,76 @@
+name: E2E Tests
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+      - 'src/**/*.cs'
+      - 'src/**/*.razor'
+      - 'tests/Osirion.Blazor.E2ETests/**'
+  pull_request:
+    branches: [ master ]
+    paths:
+      - 'src/**/*.cs'
+      - 'src/**/*.razor'
+      - 'tests/Osirion.Blazor.E2ETests/**'
+  workflow_dispatch:
+
+jobs:
+  e2e-tests:
+    name: E2E Browser Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+    
+    - name: Install Linux dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y --no-install-recommends \
+          libasound2 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 \
+          libexpat1 libfontconfig1 libgcc1 libglib2.0-0 libgtk-3-0 libnspr4 \
+          libpango-1.0-0 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 \
+          libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 \
+          libxrender1 libxss1 libxtst6 xvfb ca-certificates fonts-liberation \
+          libappindicator1 libnss3 lsb-release xdg-utils wget
+    
+    - name: Install Playwright
+      run: |
+        dotnet tool install --global Microsoft.Playwright.CLI
+        playwright install --with-deps chromium
+    
+    - name: Restore dependencies
+      run: dotnet restore
+    
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+    
+    - name: Start Xvfb
+      run: |
+        Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+        echo "DISPLAY=:99" >> $GITHUB_ENV
+    
+    - name: Run E2E tests with detailed output
+      run: |
+        dotnet test tests/Osirion.Blazor.E2ETests/Osirion.Blazor.E2ETests.csproj \
+          --configuration Release \
+          --no-build \
+          --verbosity detailed \
+          --logger "console;verbosity=detailed"
+      env:
+        PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/ms-playwright
+        PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 0
+    
+    - name: Upload Playwright report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: playwright-report
+        path: |
+          tests/Osirion.Blazor.E2ETests/bin/Release/net*/playwright-report
+          tests/Osirion.Blazor.E2ETests/bin/Release/net*/test-results
