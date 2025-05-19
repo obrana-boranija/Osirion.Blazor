@@ -1,12 +1,56 @@
-﻿@inherits OsirionComponentBase
+﻿@namespace Osirion.Blazor.Navigation.Components
+@inherits OsirionComponentBase
 
-<div class="osirion-dummy-placeholder">
-</div>
+<!-- Placeholder for sticky menu height -->
+<div class="osirion-dummy-placeholder"></div>
 
-<input type="checkbox" title="Navigation menu" class="osirion-navbar-toggler" />
+<!-- Simple checkbox hack for mobile toggle -->
+<input type="checkbox" id="@ToggleId" title="@ToggleAriaLabel" class="osirion-navbar-toggler" />
 
-<div class="osirion-nav-scrollable osirion-menu @CssClass" role="menu" @attributes="AdditionalAttributes" onclick="document.querySelector('.osirion-navbar-toggler').click()">
+<!-- Main navigation menu -->
+<div class="osirion-nav-scrollable osirion-menu @CssClass" role="menu" @attributes="AdditionalAttributes">
     <div class="osirion-menu-inner">
         @ChildContent
     </div>
 </div>
+
+<!-- Simple JavaScript to ensure submenus work -->
+<script>
+    // This script adds event listeners to ensure submenu visibility
+    document.addEventListener('DOMContentLoaded', function() {
+        // Find all menu items with submenus
+        var menuItemsWithSubmenus = document.querySelectorAll('.osirion-menu-item-has-submenu');
+
+        // Add event listeners to each
+        menuItemsWithSubmenus.forEach(function(item) {
+            // Find the submenu
+            var submenu = item.querySelector('.osirion-submenu');
+            if (submenu) {
+                // Show submenu on mouse enter
+                item.addEventListener('mouseenter', function() {
+                    submenu.style.display = 'block';
+                });
+
+                // Hide submenu on mouse leave
+                item.addEventListener('mouseleave', function() {
+                    submenu.style.display = '';
+                });
+            }
+        });
+
+        // Handle mobile menu toggle
+        var toggler = document.querySelector('.osirion-navbar-toggler');
+        if (toggler) {
+            toggler.addEventListener('change', function() {
+                var menu = document.querySelector('.osirion-nav-scrollable');
+                if (menu) {
+                    if (this.checked) {
+                        menu.style.display = 'block';
+                    } else {
+                        menu.style.display = '';
+                    }
+                }
+            });
+        }
+    });
+</script>

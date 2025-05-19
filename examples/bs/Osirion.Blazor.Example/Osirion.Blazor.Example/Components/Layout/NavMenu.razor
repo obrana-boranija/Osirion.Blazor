@@ -1,20 +1,25 @@
 ﻿@using Osirion.Blazor.Components
 @inherits OsirionComponentBase
 
-<Menu AriaLabel="Main Navigation" Orientation="MenuOrientation.Horizontal">
+<Menu AriaLabel="Main Navigation" Orientation="MenuOrientation.Horizontal" CollapseOnMobile=false>
     <MenuItem Text="Home" Href="/" Icon="home" />
-    @foreach (var dir in _directories)
+@*     @foreach (var dir in _directories)
     {
         <MenuItem Text="@dir.Name" Href="@dir.Url" Icon="@dir.Name.ToLower()" />
-    }
+    } *@
 
-    <MenuItem Text="Osirion" Href="navigation-demo" HasSubmenu="true">
+    <MenuItem Text="Osirion" HasSubmenu="true">
         <MenuItem Text="Nav" Href="navigation-demo" />
         <MenuItem Text="Nav Server" Href="navigation-server-demo" />
         <MenuItem Text="Nav WASM" Href="navigation-wasm-demo" />
     </MenuItem>
 
-    <MenuDivider />
+@*     <MenuDivider />
+
+    <MenuGroup Label="Resources">
+        <MenuItem Text="Documentation" Icon="docs" Href="/docs" />
+        <MenuItem Text="Support" Icon="contact" Href="/support" />
+    </MenuGroup> *@
 
     <SearchBox />
 </Menu>

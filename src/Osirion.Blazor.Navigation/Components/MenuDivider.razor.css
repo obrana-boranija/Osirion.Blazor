@@ -1,12 +1,181 @@
-.osirion-menu-divider {
-    height: 1px;
-    margin: var(--osirion-spacing-1, 0.25rem) var(--osirion-spacing-2, 0.5rem);
-    background-color: var(--osirion-border-color, #e5e7eb);
+/* Base menu item styles */
+.osirion-menu-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 16px;
+    color: var(--osirion-text-primary, #e5e7eb);
+    font-size: var(--osirion-font-size-sm, 0.875rem);
+    font-weight: var(--osirion-font-weight-normal, 400);
+    line-height: 1.5;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 150ms ease, color 150ms ease;
+    white-space: nowrap;
+    position: relative;
+    min-height: 40px;
+    border-radius: 4px;
+    margin: 4px 8px;
 }
 
-/* Dark mode */
-:root[data-theme="dark"] .osirion-menu-divider,
-.dark-theme .osirion-menu-divider,
-[data-bs-theme="dark"] .osirion-menu-divider {
-    background-color: var(--osirion-border-color, #4b5563);
+    /* Hover and focus states */
+    .osirion-menu-item:hover:not(.osirion-menu-item-disabled),
+    .osirion-menu-item:focus:not(.osirion-menu-item-disabled) {
+        background-color: var(--osirion-background-secondary, #1f2937);
+        color: var(--osirion-text-secondary, #d1d5db);
+        outline: none;
+    }
+
+    /* Focus-visible for keyboard navigation */
+    .osirion-menu-item:focus-visible {
+        outline: 2px solid var(--osirion-focus-ring-color, rgba(59, 130, 246, 0.5));
+        outline-offset: -2px;
+    }
+
+/* Active state */
+.osirion-menu-item-active {
+    background-color: var(--osirion-action-primary, #3b82f6) !important;
+    color: var(--osirion-action-primary-text, #ffffff) !important;
+    font-weight: var(--osirion-font-weight-medium, 500);
+}
+
+    .osirion-menu-item-active:hover,
+    .osirion-menu-item-active:focus {
+        background-color: var(--osirion-action-primary-hover, #2563eb) !important;
+        color: var(--osirion-action-primary-text, #ffffff) !important;
+    }
+
+/* Disabled state */
+.osirion-menu-item-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* Icons and text */
+.osirion-menu-item-icon {
+    margin-right: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.osirion-menu-item-text {
+    flex: 1;
+}
+
+.osirion-menu-item-chevron {
+    margin-left: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 150ms ease;
+}
+
+/* Submenu handling - pure CSS approach for SSR compatibility */
+.osirion-menu-item-has-submenu {
+    position: relative;
+}
+
+.osirion-submenu {
+    display: none;
+    position: absolute;
+    left: 100%;
+    top: 0;
+    min-width: 12rem;
+    padding: 4px 0;
+    background-color: var(--osirion-background-primary, #111827);
+    border: 1px solid var(--osirion-border-color, #374151);
+    border-radius: var(--osirion-radius-md, 0.375rem);
+    box-shadow: var(--osirion-shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1));
+    z-index: 200;
+}
+
+/* Active submenu */
+.osirion-submenu-active {
+    display: block !important;
+}
+
+/* Show submenu on hover */
+.osirion-menu-item-has-submenu:hover > .osirion-submenu {
+    display: block !important;
+}
+
+/* Horizontal menu submenu positioning */
+.osirion-menu-horizontal .osirion-menu-inner > .osirion-menu-item-has-submenu > .osirion-submenu {
+    top: 100%;
+    left: 0;
+}
+
+/* Vertical menu specifics */
+.osirion-menu-vertical .osirion-menu-item {
+    margin: 4px 12px;
+    width: calc(100% - 24px);
+}
+
+.osirion-menu-vertical .osirion-menu-item-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    /* Full width menu items on mobile */
+    .osirion-menu-item {
+        width: calc(100% - 16px);
+        margin: 4px 8px;
+    }
+
+    /* Static submenu positioning */
+    .osirion-submenu {
+        position: static !important;
+        width: 100%;
+        box-shadow: none;
+        border: none;
+        border-left: 1px solid var(--osirion-border-color, #374151);
+        margin-left: 20px;
+        margin-top: 0;
+        margin-bottom: 0;
+        padding-left: 10px;
+    }
+
+    /* Reset chevron for mobile view */
+    .osirion-menu-item-has-submenu > .osirion-menu-item-chevron svg {
+        transform: rotate(0deg) !important;
+    }
+}
+
+/* Dark mode adjustments */
+:root[data-theme="dark"] .osirion-menu-item,
+.dark-theme .osirion-menu-item,
+[data-bs-theme="dark"] .osirion-menu-item {
+    color: var(--osirion-text-primary, #e5e7eb);
+}
+
+    :root[data-theme="dark"] .osirion-menu-item:hover:not(.osirion-menu-item-disabled),
+    .dark-theme .osirion-menu-item:hover:not(.osirion-menu-item-disabled),
+    [data-bs-theme="dark"] .osirion-menu-item:hover:not(.osirion-menu-item-disabled) {
+        background-color: var(--osirion-background-tertiary, #374151);
+    }
+
+:root[data-theme="dark"] .osirion-menu-item-active,
+.dark-theme .osirion-menu-item-active,
+[data-bs-theme="dark"] .osirion-menu-item-active {
+    background-color: var(--osirion-action-primary, #3b82f6) !important;
+    color: var(--osirion-action-primary-text, #ffffff) !important;
+}
+
+:root[data-theme="dark"] .osirion-submenu,
+.dark-theme .osirion-submenu,
+[data-bs-theme="dark"] .osirion-submenu {
+    background-color: var(--osirion-background-secondary, #1f2937);
+    border-color: var(--osirion-border-color, #4b5563);
+}
+
+/* Accessibility - reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+    .osirion-menu-item,
+    .osirion-menu-item-chevron {
+        transition-duration: 0.01ms !important;
+    }
 }

@@ -1,3 +1,8 @@
 ﻿@inherits OsirionComponentBase
 
-<div class="osirion-menu-divider @CssClass" role="separator" @attributes="AdditionalAttributes"></div>
+<div class="@GetDividerCssClass()" role="separator" @attributes="AdditionalAttributes">
+    @if (!string.IsNullOrEmpty(Label))
+    {
+        <span class="osirion-menu-divider-label">@Label</span>
+    }
+</div>

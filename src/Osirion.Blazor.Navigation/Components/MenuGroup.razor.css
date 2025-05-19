@@ -1,25 +1,142 @@
-/* Menu Group Styles */
-.osirion-menu-group {
-    margin: var(--osirion-spacing-1, 0.25rem) 0;
+/* Base menu item wrapper - allows for proper hover detection and submenu positioning */
+.osirion-menu-item-wrapper {
+    position: relative;
+    display: block;
 }
 
-.osirion-menu-group-label {
-    font-size: var(--osirion-font-size-xs, 0.75rem);
-    font-weight: var(--osirion-font-weight-medium, 500);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--osirion-text-tertiary, #6b7280);
-    padding: var(--osirion-spacing-1, 0.25rem) var(--osirion-spacing-3, 0.75rem);
-}
-
-.osirion-menu-group-items {
+/* Base menu item styles */
+.osirion-menu-item {
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    padding: 12px 16px;
+    color: #fff;
+    font-size: var(--osirion-font-size-sm, 0.875rem);
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 150ms ease;
+    min-height: 40px;
+    margin: 2px 4px;
+    border-radius: 4px;
 }
 
-/* Dark mode */
-:root[data-theme="dark"] .osirion-menu-group-label,
-.dark-theme .osirion-menu-group-label,
-[data-bs-theme="dark"] .osirion-menu-group-label {
-    color: var(--osirion-text-tertiary, #9ca3af);
+    /* Hover/focus states */
+    .osirion-menu-item:hover:not(.osirion-menu-item-disabled) {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .osirion-menu-item:focus {
+        outline: none;
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+/* Active state */
+.osirion-menu-item-active {
+    background-color: rgba(255, 255, 255, 0.2);
+    font-weight: 500;
+}
+
+/* Disabled state */
+.osirion-menu-item-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* Icons and text */
+.osirion-menu-item-icon {
+    margin-right: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.osirion-menu-item-text {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.osirion-menu-item-chevron {
+    margin-left: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Change chevron direction for horizontal menu */
+.osirion-menu-horizontal > .osirion-menu-inner > .osirion-menu-item-wrapper > .osirion-menu-item > .osirion-menu-item-chevron svg {
+    transform: rotate(90deg);
+}
+
+/* ======== SUBMENU STYLES ======== */
+/* Submenu base styling */
+.osirion-submenu {
+    display: none !important;
+    position: absolute;
+    min-width: 200px;
+    background-color: rgb(2, 6, 23);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    padding: 4px 0;
+    z-index: 9999;
+}
+
+/* Hover states for submenu display */
+.osirion-menu-item-wrapper:hover > .osirion-submenu {
+    display: block !important;
+}
+
+/* Vertical menu submenu positioning */
+.osirion-menu-vertical .osirion-menu-inner > .osirion-menu-item-wrapper > .osirion-submenu {
+    left: 100%;
+    top: 0;
+}
+
+/* Horizontal menu submenu positioning */
+.osirion-menu-horizontal .osirion-menu-inner > .osirion-menu-item-wrapper > .osirion-submenu {
+    left: 0;
+    top: 100%;
+}
+
+/* Force display for active submenus in auto-expand mode */
+.osirion-menu-auto-expand .osirion-menu-item-active.osirion-menu-item-wrapper > .osirion-submenu {
+    display: block !important;
+}
+
+/* ======== RESPONSIVE ADJUSTMENTS ======== */
+@media (max-width: 768px) {
+    /* Full width menu items on mobile */
+    .osirion-menu-item {
+        width: calc(100% - 16px);
+        margin: 2px 8px;
+    }
+
+    /* Static submenu positioning on mobile */
+    .osirion-submenu {
+        position: static !important;
+        width: 100%;
+        box-shadow: none;
+        border: none;
+        border-left: 1px solid rgba(255, 255, 255, 0.1);
+        margin-left: 20px;
+        padding-left: 10px;
+    }
+
+    /* Reset chevron rotation on mobile */
+    .osirion-menu-horizontal .osirion-menu-inner .osirion-menu-item-chevron svg {
+        transform: rotate(0deg) !important;
+    }
+}
+
+/* ======== ACCESSIBILITY ======== */
+@media (prefers-reduced-motion: reduce) {
+    .osirion-menu-item,
+    .osirion-menu-item-chevron {
+        transition-duration: 0.01ms !important;
+    }
 }

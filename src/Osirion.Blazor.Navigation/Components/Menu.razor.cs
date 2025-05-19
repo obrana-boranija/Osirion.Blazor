@@ -1,3 +1,4 @@
+// Menu.razor.cs
 using Microsoft.AspNetCore.Components;
 
 namespace Osirion.Blazor.Navigation.Components;
@@ -30,16 +31,50 @@ public partial class Menu
     public MenuOrientation Orientation { get; set; } = MenuOrientation.Horizontal;
 
     /// <summary>
+    /// Gets or sets the alignment of horizontal menu items.
+    /// </summary>
+    [Parameter]
+    public MenuAlignment Alignment { get; set; } = MenuAlignment.Center;
+
+    /// <summary>
     /// Gets or sets whether to collapse the menu on mobile devices.
     /// </summary>
     [Parameter]
     public bool CollapseOnMobile { get; set; } = true;
 
     /// <summary>
+    /// Gets or sets whether to auto-expand active items in vertical mode.
+    /// </summary>
+    [Parameter]
+    public bool AutoExpandActive { get; set; } = true;
+
+    /// <summary>
     /// Gets or sets the menu accessibility label.
     /// </summary>
     [Parameter]
-    public string? AriaLabel { get; set; }
+    public string AriaLabel { get; set; } = "Navigation menu";
+
+    /// <summary>
+    /// Gets or sets the mobile toggle button's accessibility label.
+    /// </summary>
+    [Parameter]
+    public string ToggleAriaLabel { get; set; } = "Toggle navigation menu";
+
+    /// <summary>
+    /// Gets or sets the menu identifier (useful for multiple menus on same page).
+    /// </summary>
+    [Parameter]
+    public string? Id { get; set; }
+
+    /// <summary>
+    /// Gets the unique identifier for the menu component.
+    /// </summary>
+    private string MenuId => Id ?? $"osirion-menu-{Guid.NewGuid():N}";
+
+    /// <summary>
+    /// Gets the menu toggle ID.
+    /// </summary>
+    private string ToggleId => $"{MenuId}-toggle";
 
     protected override void OnInitialized()
     {
@@ -50,23 +85,44 @@ public partial class Menu
             AdditionalAttributes = new Dictionary<string, object>();
         }
 
-        // Set the orientation class
-        CssClass = string.IsNullOrEmpty(CssClass)
-            ? $"osirion-menu-{Orientation.ToString().ToLowerInvariant()}"
-            : $"{CssClass} osirion-menu-{Orientation.ToString().ToLowerInvariant()}";
+        // Set menu orientation class
+        var orientationClass = $"osirion-menu-{Orientation.ToString().ToLowerInvariant()}";
 
-        // Set collapse class if enabled
+        // Set alignment class for horizontal orientation
+        var alignmentClass = Orientation == MenuOrientation.Horizontal
+            ? $"osirion-menu-align-{Alignment.ToString().ToLowerInvariant()}"
+            : string.Empty;
+
+        // Set auto-expand class for vertical orientation
+        var expandClass = Orientation == MenuOrientation.Vertical && AutoExpandActive
+            ? "osirion-menu-auto-expand"
+            : string.Empty;
+
+        // Combine all classes
+        var classes = new List<string> { "osirion-menu", orientationClass };
+
+        if (!string.IsNullOrEmpty(alignmentClass))
+            classes.Add(alignmentClass);
+
+        if (!string.IsNullOrEmpty(expandClass))
+            classes.Add(expandClass);
+
+        // Add collapsible class if needed
         if (CollapseOnMobile)
-        {
-            CssClass += " osirion-menu-collapsible";
-        }
+            classes.Add("osirion-menu-collapsible");
 
-        // Set sticky class if enabled (only for horizontal menus)
+        // Add sticky class if enabled (only for horizontal menus)
+        if (IsSticky && Orientation == MenuOrientation.Horizontal)
+            classes.Add("osirion-menu-sticky");
+
+        // Combine with existing CssClass
+        CssClass = string.IsNullOrEmpty(CssClass)
+            ? string.Join(" ", classes)
+            : $"{CssClass} {string.Join(" ", classes)}";
+
+        // Apply z-index as inline style for sticky menu
         if (IsSticky && Orientation == MenuOrientation.Horizontal)
         {
-            CssClass += " osirion-menu-sticky";
-
-            // Apply z-index as inline style
             if (!AdditionalAttributes.ContainsKey("style"))
             {
                 AdditionalAttributes["style"] = $"z-index: {StickyZIndex};";
@@ -77,11 +133,12 @@ public partial class Menu
             }
         }
 
-        // Add aria-label for accessibility
-        if (!string.IsNullOrEmpty(AriaLabel) && !AdditionalAttributes.ContainsKey("aria-label"))
-        {
+        // Set ID and aria attributes for accessibility
+        if (!AdditionalAttributes.ContainsKey("id"))
+            AdditionalAttributes["id"] = MenuId;
+
+        if (!AdditionalAttributes.ContainsKey("aria-label"))
             AdditionalAttributes["aria-label"] = AriaLabel;
-        }
     }
 }
 
@@ -92,4 +149,14 @@ public enum MenuOrientation
 {
     Horizontal,
     Vertical
+}
+
+/// <summary>
+/// Defines the menu alignment options for horizontal layout.
+/// </summary>
+public enum MenuAlignment
+{
+    Left,
+    Center,
+    Right
 }

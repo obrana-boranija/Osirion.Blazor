@@ -3,11 +3,11 @@
     display: flex;
     flex-direction: column;
     min-width: 12rem;
-    background-color: rgb(2, 6, 23, 1);
+    background-color: rgb(2, 6, 23);
     padding: var(--osirion-spacing-1, 0.25rem) 0;
     max-width: 100%;
     overflow: hidden;
-    min-height: 90px;
+    min-height: 64px;
 }
 
 .osirion-menu-inner {
@@ -16,15 +16,17 @@
     flex-direction: column;
 }
 
+/* Mobile navigation */
 .osirion-nav-scrollable {
     display: none;
 }
 
 .osirion-dummy-placeholder {
     min-height: 60px;
-    background-color: rgb(2, 6, 23, 1);
+    background-color: rgb(2, 6, 23);
 }
 
+/* Mobile toggle (hamburger menu) */
 .osirion-navbar-toggler {
     appearance: none;
     cursor: pointer;
@@ -36,8 +38,10 @@
     right: 1rem;
     border: 1px solid rgba(255, 255, 255, 0.1);
     background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.55%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") no-repeat center/1.75rem rgba(255, 255, 255, 0.1);
+    z-index: 1001;
 }
 
+/* Toggle state */
 .osirion-navbar-toggler:checked {
     background-color: rgba(255, 255, 255, 0.5);
 }
@@ -46,7 +50,7 @@
     display: block;
 }
 
-/* Horizontal menu */
+/* Horizontal menu styling */
 .osirion-menu-horizontal {
     flex-direction: row;
     min-width: auto;
@@ -54,49 +58,77 @@
     padding: 0 var(--osirion-spacing-1, 0.25rem);
 }
 
-    .osirion-menu-horizontal .osirion-menu-inner {
-        flex-direction: row;
-        align-items: center;
-        flex-wrap: wrap;
-    }
+.osirion-menu-horizontal .osirion-menu-inner {
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* Alignment options for horizontal menu */
+.osirion-menu-align-left .osirion-menu-inner {
+    justify-content: flex-start;
+}
+
+.osirion-menu-align-center .osirion-menu-inner {
+    justify-content: center;
+}
+
+.osirion-menu-align-right .osirion-menu-inner {
+    justify-content: flex-end;
+}
 
 /* Sticky menu */
 .osirion-menu-sticky {
-    position: sticky;
+    position: sticky !important;
     top: 0;
     width: 100%;
     border-radius: 0;
     border-left: none;
     border-right: none;
     border-top: none;
+    z-index: 1000;
 }
 
-    /* Create a placeholder for the sticky menu to prevent layout jumps */
-    .osirion-menu-sticky::before {
-        content: '';
-        display: block;
-        height: 0;
-        width: 100%;
-    }
+/* Create a placeholder for the sticky menu to prevent layout jumps */
+.osirion-menu-sticky::before {
+    content: "";
+    display: block;
+    height: 0;
+    width: 100%;
+}
+
+/* Auto-expand active items in vertical menu */
+.osirion-menu-vertical.osirion-menu-auto-expand .osirion-menu-item-has-submenu.osirion-menu-item-active > .osirion-submenu {
+    display: block !important;
+}
 
 /* Responsive behavior */
 @media (max-width: 768px) {
+    /* Collapse horizontal menu on mobile */
     .osirion-menu-collapsible.osirion-menu-horizontal {
         flex-direction: column;
         overflow: hidden;
     }
 
-        .osirion-menu-collapsible.osirion-menu-horizontal .osirion-menu-inner {
-            flex-direction: column;
-            align-items: stretch;
-        }
+    .osirion-menu-collapsible.osirion-menu-horizontal .osirion-menu-inner {
+        flex-direction: column;
+        align-items: stretch;
+    }
 
     .osirion-menu-horizontal {
         padding-bottom: 5px;
     }
+
+    /* Reset alignment on mobile */
+    .osirion-menu-align-left .osirion-menu-inner,
+    .osirion-menu-align-center .osirion-menu-inner,
+    .osirion-menu-align-right .osirion-menu-inner {
+        justify-content: flex-start;
+    }
 }
 
 @media (min-width: 641px) {
+    /* Hide mobile controls on desktop */
     .osirion-navbar-toggler {
         display: none;
     }
@@ -106,22 +138,12 @@
     }
 
     .osirion-nav-scrollable {
-        /* Never collapse the sidebar for wide screens */
+        /* Always show menu on desktop */
         display: block;
-        /* Allow sidebar to scroll for tall menus */
-        /*height: calc(100vh - 3.5rem);*/
+        /* Allow scrolling for tall menus */
         overflow-y: auto;
     }
 }
-
-/* Dark mode */
-/*:root[data-theme="dark"] .osirion-menu,
-.dark-theme .osirion-menu,
-[data-bs-theme="dark"] .osirion-menu {
-    background-color: var(--osirion-background-secondary, #1f2937);
-    border-color: var(--osirion-border-color, #374151);
-    box-shadow: var(--osirion-shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.2));
-}*/
 
 /* Accessibility */
 @media (prefers-reduced-motion: reduce) {
