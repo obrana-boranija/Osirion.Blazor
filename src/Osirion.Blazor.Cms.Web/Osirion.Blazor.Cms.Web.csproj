@@ -8,7 +8,7 @@
 		<IsPackable>true</IsPackable>
 
 		<!-- NuGet package properties -->
-		<PackageId>Osirion.Blazor.Cms.Front</PackageId>
+		<PackageId>Osirion.Blazor.Cms.Web</PackageId>
 		<Version>2.0.2</Version>
 		<Authors>Dejan Demonjić</Authors>
 		<Company>Tridesetri</Company>
