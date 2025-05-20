@@ -42,7 +42,7 @@ jobs:
     # Add badge status support
     - name: Create status badge
       if: always()
-      uses: schneegans/dynamic-badges-action@v1.6.0
+      uses: schneegans/dynamic-badges-action@v1.7.0
       with:
         auth: ${{ secrets.GIST_SECRET }}
         gistID: 2f0172ba0b1ed6188d9b47f525e61f61
