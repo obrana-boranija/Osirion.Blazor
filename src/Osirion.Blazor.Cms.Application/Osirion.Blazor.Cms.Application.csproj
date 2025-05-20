@@ -4,19 +4,30 @@
 		<TargetFrameworks>net8.0;net9.0</TargetFrameworks>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
+		<LangVersion>latest</LangVersion>
+		<IsPackable>true</IsPackable>
+
+		<!-- NuGet package properties -->
+		<PackageId>Osirion.Blazor.Cms.Application</PackageId>
+		<Version>2.1.0</Version>
+		<Authors>Dejan Demonjić</Authors>
+		<Company>Tridesetri</Company>
+		<Description>Application layer for the Osirion.Blazor CMS ecosystem, implementing core business logic, use cases, and application services for content management.</Description>
+		<PackageTags>blazor;components;content;cms;application;services;dtos;validators;osirion</PackageTags>
+		<PackageProjectUrl>https://github.com/obrana-boranija/Osirion.Blazor</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/obrana-boranija/Osirion.Blazor</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageIcon>icon.png</PackageIcon>
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Compile Remove="DependencyInjection\**" />
-	  <Content Remove="DependencyInjection\**" />
-	  <EmbeddedResource Remove="DependencyInjection\**" />
-	  <None Remove="DependencyInjection\**" />
+		<Compile Remove="DependencyInjection\**" />
+		<Content Remove="DependencyInjection\**" />
+		<EmbeddedResource Remove="DependencyInjection\**" />
+		<None Remove="DependencyInjection\**" />
 	</ItemGroup>
-
-
-	<!--<ItemGroup>
-		<SupportedPlatform Include="browser" />
-	</ItemGroup>-->
 
 	<ItemGroup>
 		<PackageReference Include="FluentValidation" Version="11.11.0" />
@@ -38,7 +49,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Osirion.Blazor.Cms.Domain\Osirion.Blazor.Cms.Domain.csproj" />
+		<ProjectReference Include="..\Osirion.Blazor.Cms.Domain\Osirion.Blazor.Cms.Domain.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="README.md" Pack="true" PackagePath="\" />
+		<None Include="..\..\icon.png" Pack="true" PackagePath="\" />
 	</ItemGroup>
 
 </Project>

@@ -2,7 +2,6 @@
 
 [![NuGet](https://img.shields.io/nuget/v/Osirion.Blazor)](https://www.nuget.org/packages/Osirion.Blazor)
 [![License](https://img.shields.io/github/license/obrana-boranija/Osirion.Blazor)](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/LICENSE.txt)
-[![Build Status](https://img.shields.io/github/actions/workflow/status/obrana-boranija/Osirion.Blazor/build.yml?branch=master&label=build&logo=github)](https://github.com/obrana-boranija/Osirion.Blazor/actions/workflows/build.yml)[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=obrana-boranija_Osirion.Blazor&metric=alert_status)](https://sonarcloud.io/dashboard?id=obrana-boranija_Osirion.Blazor)
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=obrana-boranija_Osirion.Blazor&metric=security_rating)](https://sonarcloud.io/dashboard?id=obrana-boranija_Osirion.Blazor)
 [![codecov](https://codecov.io/gh/obrana-boranija/Osirion.Blazor/branch/master/graph/badge.svg)](https://codecov.io/gh/obrana-boranija/Osirion.Blazor)
 
