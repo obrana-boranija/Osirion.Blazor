@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Components;
 using Osirion.Blazor.Cms.Admin.Core.Events;
-using Osirion.Blazor.Cms.Admin.Core.State;
 using Osirion.Blazor.Cms.Admin.Features.ContentEditor.ViewModels;
 using Osirion.Blazor.Cms.Domain.Models;
 

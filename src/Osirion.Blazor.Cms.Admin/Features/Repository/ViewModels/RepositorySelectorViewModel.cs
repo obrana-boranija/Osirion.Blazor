@@ -11,7 +11,7 @@ public class RepositorySelectorViewModel
     private readonly CmsState _state;
     private readonly ILogger<RepositorySelectorViewModel> _logger;
 
-    public List<GitHubRepository> Repositories { get; private set; } = new();
+    public List<GitHubRepository> Repositories { get; set; } = new();
     public GitHubRepository? SelectedRepository => _state.SelectedRepository;
     public bool IsLoading { get; private set; }
     public string? ErrorMessage { get; private set; }
