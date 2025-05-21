@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Osirion.Blazor.Cms.Domain.Interfaces;
+using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Domain.Options.Configuration;
 using Osirion.Blazor.Cms.Infrastructure.GitHub;
 using Osirion.Blazor.Cms.Infrastructure.Services;
@@ -19,8 +20,8 @@ public static class ProviderServiceCollectionExtensions
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.Configure<GitHubAdminOptions>(
-            configuration.GetSection("Osirion:Cms:GitHub:Admin"));
+        services.Configure<GitHubOptions>(
+            configuration.GetSection(GitHubOptions.Section));
 
         services.AddHttpClient<IGitHubApiClient, GitHubApiClient>();
         services.AddScoped<IGitHubAdminService, GitHubAdminService>();

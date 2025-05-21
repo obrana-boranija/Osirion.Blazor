@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Domain.Interfaces;
+using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Domain.Options.Configuration;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -18,7 +19,7 @@ public class AuthenticationService : IAuthenticationService
     private readonly IStateStorageService _stateStorage;
     private readonly IGitHubTokenProvider _tokenProvider;
     private readonly IGitHubApiClient _apiClient;
-    private readonly GitHubAdminOptions _githubOptions;
+    private readonly GitHubOptions _githubOptions;
     private readonly AuthenticationOptions _authOptions;
 
     private string? _accessToken;

@@ -18,7 +18,7 @@ public class CmsAdminOptions
     /// <summary>
     /// Gets or sets GitHub provider options
     /// </summary>
-    public GitHubAdminOptions GitHub { get; set; } = new();
+    public GitHubOptions GitHub { get; set; } = new();
 
     /// <summary>
     /// Gets or sets FileSystem provider options

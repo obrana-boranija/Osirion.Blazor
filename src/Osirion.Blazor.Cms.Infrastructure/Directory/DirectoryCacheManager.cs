@@ -35,9 +35,16 @@ public class DirectoryCacheManager : IDirectoryCacheManager
             return _directoryCache;
         }
 
-        await _cacheLock.WaitAsync(cancellationToken);
+        bool lockTaken = false;
         try
         {
+            lockTaken = await _cacheLock.WaitAsync(TimeSpan.FromSeconds(30), cancellationToken);
+            if (!lockTaken)
+            {
+                _logger.LogWarning("Timeout waiting for directory cache lock");
+                return _directoryCache ?? new Dictionary<string, DirectoryItem>();
+            }
+
             // Double-check inside the lock
             if (!forceRefresh && _directoryCache != null && DateTime.UtcNow < _cacheExpiration)
             {
@@ -69,23 +76,37 @@ public class DirectoryCacheManager : IDirectoryCacheManager
         }
         finally
         {
-            _cacheLock.Release();
+            // Only release if we acquired the lock
+            if (lockTaken)
+            {
+                _cacheLock.Release();
+            }
         }
     }
 
     /// <inheritdoc/>
     public async Task InvalidateCacheAsync(CancellationToken cancellationToken = default)
     {
-        await _cacheLock.WaitAsync(cancellationToken);
+        bool lockTaken = false;
         try
         {
+            lockTaken = await _cacheLock.WaitAsync(TimeSpan.FromSeconds(10), cancellationToken);
+            if (!lockTaken)
+            {
+                _logger.LogWarning("Timeout waiting for directory cache lock during invalidation");
+                return;
+            }
+
             _directoryCache = null;
             _cacheExpiration = DateTime.MinValue;
             _logger.LogInformation("Directory cache invalidated");
         }
         finally
         {
-            _cacheLock.Release();
+            if (lockTaken)
+            {
+                _cacheLock.Release();
+            }
         }
     }
 }

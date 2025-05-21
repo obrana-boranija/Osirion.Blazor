@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Models;
 using Osirion.Blazor.Cms.Domain.Models.GitHub;
+using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Domain.Options.Configuration;
 
 namespace Osirion.Blazor.Cms.Infrastructure.Services;
@@ -14,7 +15,7 @@ public class GitHubAdminService : IGitHubAdminService
 {
     private readonly IGitHubApiClient _apiClient;
     private readonly ILogger<GitHubAdminService> _logger;
-    private readonly GitHubAdminOptions _options;
+    private readonly GitHubOptions _options;
 
     public GitHubAdminService(
         IGitHubApiClient apiClient,
@@ -31,9 +32,9 @@ public class GitHubAdminService : IGitHubAdminService
             _apiClient.SetRepository(_options.Owner, _options.Repository);
         }
 
-        if (!string.IsNullOrEmpty(_options.DefaultBranch))
+        if (!string.IsNullOrEmpty(_options.Branch))
         {
-            _apiClient.SetBranch(_options.DefaultBranch);
+            _apiClient.SetBranch(_options.Branch);
         }
     }
 

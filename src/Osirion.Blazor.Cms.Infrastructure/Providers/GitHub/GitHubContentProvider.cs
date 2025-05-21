@@ -7,6 +7,7 @@ using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Domain.Repositories;
 using Osirion.Blazor.Cms.Infrastructure.GitHub;
+using System.Collections.Concurrent;
 
 namespace Osirion.Blazor.Cms.Infrastructure.Providers;
 
@@ -19,6 +20,10 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
     private readonly SemaphoreSlim _updateLock = new(1, 1);
     private bool _updateInProgress = false;
     private string? _lastKnownSha = null;
+
+    // Queue for handling multiple update requests
+    private readonly ConcurrentQueue<string> _pendingShaTasks = new();
+    private bool _processingQueue = false;
 
     public GitHubContentProvider(
         GitHubContentRepository contentRepository,
@@ -187,23 +192,19 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
 
     public override async Task RefreshCacheAsync(CancellationToken cancellationToken = default)
     {
+        // Directly call repositories without acquiring our own semaphore
         await _contentRepository.RefreshCacheAsync(cancellationToken);
         await _directoryRepository.RefreshCacheAsync(cancellationToken);
+
+        // Call base class implementation which might handle memory cache
         await base.RefreshCacheAsync(cancellationToken);
     }
 
     /// <summary>
     /// Updates the content cache with the latest changes from GitHub
     /// </summary>
-    public async Task UpdateCacheAsync(string? latestSha = null)
+    public async Task UpdateCacheAsync(string? latestSha = null, bool forceBackground = false)
     {
-        // Skip if an update is already in progress
-        if (_updateInProgress)
-        {
-            Logger.LogDebug("Cache update already in progress, skipping");
-            return;
-        }
-
         // Skip if the SHA hasn't changed
         if (!string.IsNullOrEmpty(latestSha) &&
             !string.IsNullOrEmpty(_lastKnownSha) &&
@@ -213,58 +214,158 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
             return;
         }
 
-        await _updateLock.WaitAsync();
+        // Add to queue instead of processing immediately
+        if (!string.IsNullOrEmpty(latestSha))
+        {
+            _pendingShaTasks.Enqueue(latestSha);
+            Logger.LogInformation("Added SHA {Sha} to update queue for provider: {ProviderId}",
+                latestSha, ProviderId);
+        }
+
+        // Start processing if not already doing so
+        if (!_processingQueue)
+        {
+            await StartProcessingQueueAsync(forceBackground || _options.UseBackgroundCacheUpdate);
+        }
+    }
+
+    private async Task StartProcessingQueueAsync(bool useBackground)
+    {
+        // Only attempt to acquire the lock if we're not already processing
+        if (_processingQueue) return;
+
+        // Try to acquire the semaphore - if we can't get it, someone else is already processing
+        bool lockAcquired = false;
         try
         {
-            _updateInProgress = true;
-            Logger.LogInformation("Starting cache update for provider: {ProviderId}", ProviderId);
-
-            if (_options.UseBackgroundCacheUpdate)
+            lockAcquired = await _updateLock.WaitAsync(0);
+            if (!lockAcquired)
             {
+                Logger.LogDebug("Another thread is already processing the queue");
+                return;
+            }
+
+            // Double-check inside the lock
+            if (_processingQueue)
+            {
+                // Someone else started processing while we were waiting
+                return;
+            }
+
+            _processingQueue = true;
+
+            // Process queue in the background if requested
+            if (useBackground)
+            {
+                // Start background processing and release the current lock
+                // as the background task will acquire its own lock
+                _updateLock.Release();
+                lockAcquired = false;
+
                 // Fire and forget in the background
                 _ = Task.Run(async () =>
                 {
+                    bool bgLockAcquired = false;
                     try
                     {
-                        await RefreshCacheAsync();
-                        _lastKnownSha = latestSha;
-                        Logger.LogInformation("Background cache update completed successfully");
+                        // Acquire the lock for background processing
+                        await _updateLock.WaitAsync();
+                        bgLockAcquired = true;
+
+                        await ProcessQueueInternalAsync();
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError(ex, "Error during background cache update");
+                        Logger.LogError(ex, "Error in background queue processing");
                     }
                     finally
                     {
-                        _updateInProgress = false;
+                        _processingQueue = false;
+
+                        // Only release if we successfully acquired
+                        if (bgLockAcquired)
+                        {
+                            _updateLock.Release();
+                        }
                     }
                 });
             }
             else
             {
-                // Refresh the cache synchronously
                 try
                 {
-                    await RefreshCacheAsync();
-                    _lastKnownSha = latestSha;
-                    Logger.LogInformation("Cache update completed successfully");
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError(ex, "Error during cache update");
-                    throw;
+                    // We already have the lock, so process synchronously
+                    await ProcessQueueInternalAsync();
                 }
                 finally
                 {
-                    _updateInProgress = false;
+                    _processingQueue = false;
                 }
             }
         }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error starting queue processing");
+            _processingQueue = false;
+        }
         finally
         {
-            if (!_options.UseBackgroundCacheUpdate)
+            // Only release if we acquired and didn't already release
+            if (lockAcquired)
             {
                 _updateLock.Release();
+            }
+        }
+    }
+
+    private async Task ProcessQueueInternalAsync()
+    {
+        // Process all items in the queue (newest SHA wins)
+        string? latestSha = null;
+
+        // Drain the queue, keeping only the latest SHA
+        while (_pendingShaTasks.TryDequeue(out var sha))
+        {
+            latestSha = sha;
+        }
+
+        if (!string.IsNullOrEmpty(latestSha))
+        {
+            try
+            {
+                // Only if not already updating content
+                if (!_updateInProgress)
+                {
+                    _updateInProgress = true;
+                    try
+                    {
+                        Logger.LogInformation("Starting content refresh for SHA {Sha}", latestSha);
+                        var startTime = DateTime.UtcNow;
+
+                        // Directly call repositories to avoid semaphore issues in nested calls
+                        // Repositories will manage their own semaphores
+                        await _contentRepository.RefreshCacheAsync();
+                        await _directoryRepository.RefreshCacheAsync();
+
+                        // Update the stored SHA only after successful refresh
+                        _lastKnownSha = latestSha;
+
+                        Logger.LogInformation("Content updated successfully to SHA {Sha} in {Duration}ms",
+                            latestSha, (DateTime.UtcNow - startTime).TotalMilliseconds);
+                    }
+                    finally
+                    {
+                        _updateInProgress = false;
+                    }
+                }
+                else
+                {
+                    Logger.LogWarning("Update already in progress, skipping update to SHA {Sha}", latestSha);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Error refreshing cache for SHA {Sha}", latestSha);
             }
         }
     }

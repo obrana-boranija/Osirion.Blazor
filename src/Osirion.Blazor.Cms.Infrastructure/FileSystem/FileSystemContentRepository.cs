@@ -58,7 +58,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
         }
 
         /// <inheritdoc/>
-        protected override async Task EnsureCacheIsLoaded(CancellationToken cancellationToken, bool forceRefresh = false)
+        protected async Task EnsureCacheIsLoaded(CancellationToken cancellationToken, bool forceRefresh = false)
         {
             if (!forceRefresh && ItemCache != null && DateTime.UtcNow < CacheExpiration)
             {
@@ -126,6 +126,67 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
             finally
             {
                 CacheLock.Release();
+            }
+        }
+
+        /// <inheritdoc/>
+        protected override async Task<Dictionary<string, ContentItem>> LoadItemsIntoCache(CancellationToken cancellationToken)
+        {
+            var cache = new Dictionary<string, ContentItem>();
+
+            try
+            {
+                // Create base directory if it doesn't exist
+                if (!_fileSystem.Directory.Exists(_options.BasePath))
+                {
+                    if (_options.CreateDirectoriesIfNotExist)
+                    {
+                        _fileSystem.Directory.CreateDirectory(_options.BasePath);
+                    }
+                    else
+                    {
+                        throw new DirectoryNotFoundException($"Base content directory does not exist: {_options.BasePath}");
+                    }
+                }
+
+                // Find all markdown files
+                var files = new List<string>();
+                foreach (var extension in _options.SupportedExtensions)
+                {
+                    files.AddRange(_fileSystem.Directory.GetFiles(
+                        _options.BasePath,
+                        $"*{extension}",
+                        _options.IncludeSubdirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly));
+                }
+
+                // Process each file
+                foreach (var file in files.Where(f => !IsExcluded(f)))
+                {
+                    try
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+
+                        var contentItem = await ProcessMarkdownFileAsync(file, cancellationToken);
+                        if (contentItem != null)
+                        {
+                            cache[contentItem.Id] = contentItem;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError(ex, "Error processing file: {FileName}", file);
+                    }
+                }
+
+                Logger.LogInformation("Loaded {Count} content items from file system at {BasePath}",
+                    cache.Count, _options.BasePath);
+
+                return cache;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Error loading content from file system at {BasePath}", _options.BasePath);
+                throw;
             }
         }
 

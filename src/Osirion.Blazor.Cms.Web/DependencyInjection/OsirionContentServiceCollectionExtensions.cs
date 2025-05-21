@@ -60,7 +60,7 @@ public static class OsirionContentServiceCollectionExtensions
         var cmsSection = configuration.GetSection("Osirion:Cms");
 
         // Configure GitHub provider if present
-        var githubSection = cmsSection.GetSection("GitHub:Web");
+        var githubSection = cmsSection.GetSection("GitHub");
         if (githubSection.Exists())
         {
             services.AddGitHubContentProvider(configuration);

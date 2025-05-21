@@ -26,6 +26,11 @@ public class ContentProviderOptions
     public bool IsDefault { get; set; }
 
     /// <summary>
+    /// Gets or sets the content path within the repository
+    /// </summary>
+    public string ContentPath { get; set; } = string.Empty;
+
+    /// <summary>
     /// Gets or sets whether localization is enabled
     /// </summary>
     public bool EnableLocalization { get; set; } = false;

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Domain.Options.Configuration;
 using Osirion.Blazor.Cms.Domain.Services;
 
@@ -19,7 +20,7 @@ public interface IOsirionCmsAdminBuilder
     /// </summary>
     /// <param name="configure">Optional configuration action</param>
     /// <returns>The builder instance for method chaining</returns>
-    IOsirionCmsAdminBuilder UseGitHubProvider(Action<GitHubAdminOptions>? configure = null);
+    IOsirionCmsAdminBuilder UseGitHubProvider(Action<GitHubOptions>? configure = null);
 
     /// <summary>
     /// Configures FileSystem provider for CMS admin

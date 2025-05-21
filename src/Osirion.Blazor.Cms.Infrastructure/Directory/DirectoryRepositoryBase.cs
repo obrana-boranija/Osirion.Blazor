@@ -34,6 +34,38 @@ public abstract class DirectoryRepositoryBase : RepositoryBase<DirectoryItem, st
         _contentOptions = contentOptions.Value;
     }
 
+    /// <summary>
+    /// Refreshes the directory cache
+    /// </summary>
+    public virtual async Task RefreshCacheAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            // Use the cache manager to invalidate and reload
+            await CacheManager.InvalidateCacheAsync(cancellationToken);
+
+            // Load directories again to populate the cache
+            await GetDirectoryCacheAsync(cancellationToken, true);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error refreshing directory cache for provider {ProviderId}", ProviderId);
+        }
+    }
+
+    /// <summary>
+    /// Gets the directory cache, loading it if necessary
+    /// </summary>
+    protected virtual async Task<Dictionary<string, DirectoryItem>> GetDirectoryCacheAsync(
+        CancellationToken cancellationToken = default,
+        bool forceRefresh = false)
+    {
+        return await CacheManager.GetCachedDirectoriesAsync(
+            LoadDirectoriesAsync,
+            cancellationToken,
+            forceRefresh);
+    }
+
     /// <inheritdoc/>
     public override async Task<IReadOnlyList<DirectoryItem>> GetAllAsync(CancellationToken cancellationToken = default)
     {
@@ -221,27 +253,6 @@ public abstract class DirectoryRepositoryBase : RepositoryBase<DirectoryItem, st
             LogError(ex, "getting directory tree");
             throw new ContentProviderException($"Failed to get directory tree: {ex.Message}", ex, ProviderId);
         }
-    }
-
-    /// <summary>
-    /// Refreshes the directory cache
-    /// </summary>
-    public virtual async Task RefreshCacheAsync(CancellationToken cancellationToken = default)
-    {
-        await CacheManager.InvalidateCacheAsync(cancellationToken);
-    }
-
-    /// <summary>
-    /// Gets the directory cache, loading it if necessary
-    /// </summary>
-    protected virtual async Task<Dictionary<string, DirectoryItem>> GetDirectoryCacheAsync(
-        CancellationToken cancellationToken = default,
-        bool forceRefresh = false)
-    {
-        return await CacheManager.GetCachedDirectoriesAsync(
-            LoadDirectoriesAsync,
-            cancellationToken,
-            forceRefresh);
     }
 
     /// <summary>

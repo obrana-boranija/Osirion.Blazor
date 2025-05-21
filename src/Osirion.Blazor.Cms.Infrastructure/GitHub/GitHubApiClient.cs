@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using Octokit;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Models.GitHub;
+using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Domain.Options.Configuration;
 using System.Net.Http.Headers;
 using System.Text;
@@ -27,20 +28,20 @@ public class GitHubApiClient : IGitHubApiClient
 
     public GitHubApiClient(
         HttpClient httpClient,
-        IOptions<CmsAdminOptions> options,
+        IOptions<GitHubOptions> options,
         ILogger<GitHubApiClient> logger)
     {
         _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
-        var githubOptions = options.Value.GitHub;
+        var githubOptions = options.Value;
         _owner = githubOptions.Owner;
         _repository = githubOptions.Repository;
-        _branch = githubOptions.DefaultBranch;
+        _branch = githubOptions.Branch;
         _apiUrl = githubOptions.ApiUrl ?? string.Empty;
 
         var authOptions = options.Value.Authentication;
-        _accessToken = authOptions.PersonalAccessToken ?? string.Empty;
+        _accessToken = authOptions.PersonalAccessToken ?? githubOptions.ApiToken ?? string.Empty;
 
         _jsonOptions = new JsonSerializerOptions
         {

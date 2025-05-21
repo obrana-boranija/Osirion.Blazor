@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Admin.DependencyInjection;
+using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Domain.Options.Configuration;
 using Osirion.Blazor.Cms.Domain.Services;
 
@@ -39,7 +40,7 @@ public class OsirionCmsAdminBuilder : IOsirionCmsAdminBuilder
     /// <summary>
     /// Configures GitHub provider for CMS admin
     /// </summary>
-    public IOsirionCmsAdminBuilder UseGitHubProvider(Action<GitHubAdminOptions>? configure = null)
+    public IOsirionCmsAdminBuilder UseGitHubProvider(Action<GitHubOptions>? configure = null)
     {
         _logger.LogInformation("Configuring GitHub provider for CMS admin");
 

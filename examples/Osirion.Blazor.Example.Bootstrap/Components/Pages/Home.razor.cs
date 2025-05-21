@@ -22,7 +22,7 @@ public partial class Home(IContentProviderManager ContentProviderManager)
         if (provider == null)
             return;
 
-        var result = await provider.GetItemsByQueryAsync(new Cms.Domain.Repositories.ContentQuery { Locale = Locale, Slug = "getting-started-with-osirion-blazor" });
+        var result = await provider.GetItemsByQueryAsync(new Cms.Domain.Repositories.ContentQuery { Locale = Locale, Slug = "introduction" });
         Content = result?.FirstOrDefault();
     }
 }

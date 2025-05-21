@@ -1,4 +1,5 @@
-﻿using Markdig.Renderers;
+﻿using Blazored.LocalStorage;
+using Markdig.Renderers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -143,6 +144,8 @@ public static class ServiceCollectionExtensions
             var providerId = options.ProviderId ?? $"github-{options.Owner}-{options.Repository}";
             return new DefaultProviderSetter(providerId, options.IsDefault);
         });
+
+        services.AddBlazoredLocalStorage();
 
         return services;
     }
