@@ -24,9 +24,13 @@
 
 	<ItemGroup>
 		<Compile Remove="DependencyInjection\**" />
+		<Compile Remove="wwwroot\**" />
 		<Content Remove="DependencyInjection\**" />
+		<Content Remove="wwwroot\**" />
 		<EmbeddedResource Remove="DependencyInjection\**" />
+		<EmbeddedResource Remove="wwwroot\**" />
 		<None Remove="DependencyInjection\**" />
+		<None Remove="wwwroot\**" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -42,10 +46,6 @@
 	<ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.4" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.4" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Folder Include="wwwroot\" />
 	</ItemGroup>
 
 	<ItemGroup>

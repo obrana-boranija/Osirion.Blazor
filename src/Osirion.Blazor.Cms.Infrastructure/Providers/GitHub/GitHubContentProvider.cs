@@ -10,12 +10,15 @@ using Osirion.Blazor.Cms.Infrastructure.GitHub;
 
 namespace Osirion.Blazor.Cms.Infrastructure.Providers;
 
-public class GitHubContentProvider : ContentProviderBase
+public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
 {
     private readonly GitHubContentRepository _contentRepository;
     private readonly GitHubDirectoryRepository _directoryRepository;
     private readonly GitHubOptions _options;
     private readonly IGitHubApiClient _apiClient;
+    private readonly SemaphoreSlim _updateLock = new(1, 1);
+    private bool _updateInProgress = false;
+    private string? _lastKnownSha = null;
 
     public GitHubContentProvider(
         GitHubContentRepository contentRepository,
@@ -149,6 +152,23 @@ public class GitHubContentProvider : ContentProviderBase
             _apiClient.SetAccessToken(_options.ApiToken);
         }
 
+        // Get the latest commit SHA
+        try
+        {
+            var branches = await _apiClient.GetBranchesAsync(cancellationToken);
+            var branch = branches.FirstOrDefault(b => b.Name == _options.Branch);
+            if (branch != null)
+            {
+                _lastKnownSha = branch.Commit.Sha;
+                Logger.LogInformation("Latest commit SHA for branch {Branch}: {Sha}",
+                    _options.Branch, _lastKnownSha);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Failed to get latest commit SHA during initialization");
+        }
+
         // Pre-load some data in the background
         _ = Task.Run(async () => {
             try
@@ -170,5 +190,82 @@ public class GitHubContentProvider : ContentProviderBase
         await _contentRepository.RefreshCacheAsync(cancellationToken);
         await _directoryRepository.RefreshCacheAsync(cancellationToken);
         await base.RefreshCacheAsync(cancellationToken);
+    }
+
+    /// <summary>
+    /// Updates the content cache with the latest changes from GitHub
+    /// </summary>
+    public async Task UpdateCacheAsync(string? latestSha = null)
+    {
+        // Skip if an update is already in progress
+        if (_updateInProgress)
+        {
+            Logger.LogDebug("Cache update already in progress, skipping");
+            return;
+        }
+
+        // Skip if the SHA hasn't changed
+        if (!string.IsNullOrEmpty(latestSha) &&
+            !string.IsNullOrEmpty(_lastKnownSha) &&
+            latestSha == _lastKnownSha)
+        {
+            Logger.LogDebug("No changes detected (SHA unchanged), skipping cache update");
+            return;
+        }
+
+        await _updateLock.WaitAsync();
+        try
+        {
+            _updateInProgress = true;
+            Logger.LogInformation("Starting cache update for provider: {ProviderId}", ProviderId);
+
+            if (_options.UseBackgroundCacheUpdate)
+            {
+                // Fire and forget in the background
+                _ = Task.Run(async () =>
+                {
+                    try
+                    {
+                        await RefreshCacheAsync();
+                        _lastKnownSha = latestSha;
+                        Logger.LogInformation("Background cache update completed successfully");
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError(ex, "Error during background cache update");
+                    }
+                    finally
+                    {
+                        _updateInProgress = false;
+                    }
+                });
+            }
+            else
+            {
+                // Refresh the cache synchronously
+                try
+                {
+                    await RefreshCacheAsync();
+                    _lastKnownSha = latestSha;
+                    Logger.LogInformation("Cache update completed successfully");
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError(ex, "Error during cache update");
+                    throw;
+                }
+                finally
+                {
+                    _updateInProgress = false;
+                }
+            }
+        }
+        finally
+        {
+            if (!_options.UseBackgroundCacheUpdate)
+            {
+                _updateLock.Release();
+            }
+        }
     }
 }

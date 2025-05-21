@@ -4,13 +4,13 @@ using Osirion.Blazor.Cms.Admin.DependencyInjection;
 using Osirion.Blazor.Example.Components;
 using Osirion.Blazor.Extensions;
 using System.Globalization;
+using Osirion.Blazor.Cms.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents()
-    .AddInteractiveWebAssemblyComponents();
+    .AddInteractiveServerComponents();
 
 builder.Services.AddHttpContextAccessor();
 
@@ -70,6 +70,8 @@ builder.Services.AddOsirionCmsAdmin(options =>
     });
 });
 
+builder.Services.AddGitHubWebhookAndPolling();
+
 builder.Services.AddLocalization();
 
 builder.Services.Configure<RequestLocalizationOptions>(options =>
@@ -100,7 +102,7 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseWebAssemblyDebugging();
+    //app.UseWebAssemblyDebugging();
 }
 else
 {
@@ -115,14 +117,14 @@ app.UseRequestLocalization();
 // app.UseRequestLocalizationInteractiveServerRenderMode(useCookie: false); // Server-side ConcurrentDictionary storage
 app.UseRequestLocalizationInteractiveServerRenderMode(useCookie: true); // Client-side cookie storage
 
+app.UseGitHubWebhook();
+
 app.UseStaticFiles();
 app.UseRouting();
 app.UseAntiforgery();
 
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode()
-    .AddInteractiveWebAssemblyRenderMode()
-    .AddAdditionalAssemblies([ typeof(Osirion.Blazor.Example.Client._Imports).Assembly, typeof(Osirion.Blazor.Cms.Admin.OsirionCmsAdminExtensions).Assembly ]);
+    .AddInteractiveServerRenderMode();
 
 app.Run();

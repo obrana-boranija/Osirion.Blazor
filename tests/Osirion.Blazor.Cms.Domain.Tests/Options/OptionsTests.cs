@@ -44,8 +44,6 @@ public class OptionsTests
         Assert.Empty(options.ContentPath);
         Assert.Equal("main", options.Branch);
         Assert.Null(options.ApiToken);
-        Assert.Null(options.CommitterName);
-        Assert.Null(options.CommitterEmail);
         Assert.Equal("https://api.github.com", options.ApiUrl);
     }
 

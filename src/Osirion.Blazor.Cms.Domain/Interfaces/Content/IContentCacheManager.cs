@@ -24,4 +24,10 @@ public interface IContentCacheManager
     /// </summary>
     /// <param name="cancellationToken">Cancellation token</param>
     Task InvalidateCacheAsync(CancellationToken cancellationToken = default);
+
+    ///// <summary>
+    ///// Checks if the current cache is still valid
+    ///// </summary>
+    ///// <returns>True if the cache is valid, false if it needs to be refreshed</returns>
+    //Task<bool> IsCacheValidAsync();
 }

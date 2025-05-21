@@ -36,17 +36,29 @@ public class GitHubOptions : ContentProviderOptions
     public string? ApiToken { get; set; }
 
     /// <summary>
-    /// Gets or sets the committer name for commits
-    /// </summary>
-    public string? CommitterName { get; set; }
-
-    /// <summary>
-    /// Gets or sets the committer email for commits
-    /// </summary>
-    public string? CommitterEmail { get; set; }
-
-    /// <summary>
     /// Gets or sets the GitHub API URL
     /// </summary>
     public string? ApiUrl { get; set; } = "https://api.github.com";
+
+    // Webhook and polling settings
+
+    /// <summary>
+    /// Gets or sets the webhook secret for validating GitHub webhooks
+    /// </summary>
+    public string? WebhookSecret { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether to enable periodic polling of the repository
+    /// </summary>
+    public bool EnablePolling { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets the polling interval in seconds
+    /// </summary>
+    public int PollingIntervalSeconds { get; set; } = 300; // 5 minutes by default
+
+    /// <summary>
+    /// Gets or sets whether to update the cache in the background
+    /// </summary>
+    public bool UseBackgroundCacheUpdate { get; set; } = true;
 }

@@ -45,6 +45,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Markdig" Version="0.41.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.0" />
 	</ItemGroup>
 
 	<ItemGroup>
