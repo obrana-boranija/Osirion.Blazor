@@ -1,4 +1,4 @@
-﻿---
+---
 title: "Introduction to Osirion.Blazor"
 date: "2025-05-20"
 author: "Osirion Team"
@@ -8,6 +8,18 @@ categories: [overview]
 slug: "introduction"
 is_featured: true
 featured_image: "https://th.bing.com/th/id/OIP.YZ0-gBP3yMKk7VZdCGwwgAHaEB"
+seo_metadata:
+  metaTitle: "Osirion.Blazor: Modular, High-Performance Components for Blazor Applications"
+  metaDescription: "Discover Osirion.Blazor, a comprehensive component library for Blazor with Analytics, Navigation, CMS, and Theming modules designed for SSR compatibility."
+  ogTitle: "Osirion.Blazor: Modular Components for Modern Blazor Applications"
+  ogDescription: "A comprehensive library of high-performance Blazor components with SSR compatibility and minimal JavaScript dependencies."
+  ogType: "website"
+  ogImage: "https://th.bing.com/th/id/OIP.YZ0-gBP3yMKk7VZdCGwwgAHaEB"
+  twitterTitle: "Osirion.Blazor: Modern Component Library for Blazor"
+  twitterDescription: "Enhance your Blazor applications with SSR-compatible components for analytics, navigation, content management, and theming."
+  twitterImage: "https://th.bing.com/th/id/OIP.YZ0-gBP3yMKk7VZdCGwwgAHaEB"
+  canonicalUrl: "https://getosirion.com/introduction"
+  schemaType: "SoftwareApplication"
 ---
 
 # Introduction to Osirion.Blazor
