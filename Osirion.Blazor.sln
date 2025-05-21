@@ -134,6 +134,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Osirion.Blazor.Example.Bootstrap", "examples\Osirion.Blazor.Example.Bootstrap\Osirion.Blazor.Example.Bootstrap.csproj", "{430F1EE9-D0B1-420C-A834-E104B0E2F58F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "en", "en", "{C283FF5E-3298-4D01-B0B1-275522B42B50}"
+	ProjectSection(SolutionItems) = preProject
+		home.md = home.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
