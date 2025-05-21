@@ -1,6 +1,6 @@
 ---
 title: "Introduction to Osirion.Blazor"
-date: "2025-05-20"
+date: "2025-05-06"
 author: "Osirion Team"
 description: "An overview of the Osirion.Blazor ecosystem, a modular, high-performance CMS and component library designed for modern Blazor applications with SSR compatibility."
 tags: [blazor, components, ssr, dotnet]
@@ -21,8 +21,6 @@ seo_metadata:
   canonicalUrl: "https://getosirion.com/introduction"
   schemaType: "SoftwareApplication"
 ---
-
-# Introduction to Osirion.Blazor
 
 Osirion.Blazor is a comprehensive, modular component library designed to enhance Blazor applications with high-performance, SSR-compatible components. Built with a focus on modern web development practices, Osirion embraces progressive enhancement principles to ensure your applications work seamlessly across all Blazor hosting models.
 
