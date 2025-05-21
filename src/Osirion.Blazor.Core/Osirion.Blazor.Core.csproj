@@ -34,11 +34,11 @@
 
 	<!-- .NET 9.0 specific dependencies -->
 	<ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
-		<PackageReference Include="Microsoft.AspNetCore.Components" Version="9.0.3" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.3" />
-		<PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="9.0.3" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.4" />
-		<PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.4" />
+		<PackageReference Include="Microsoft.AspNetCore.Components" Version="9.0.5" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.5" />
+		<PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="9.0.5" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.5" />
+		<PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.5" />
 	</ItemGroup>
 
 	<ItemGroup>

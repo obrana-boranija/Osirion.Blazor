@@ -1,7 +1,7 @@
 ﻿@page "/"
+@page "/{locale}"
+@using Osirion.Blazor.Cms.Components
 
-<PageTitle>Home</PageTitle>
-
-<h1>Hello, world!</h1>
-
-Welcome to your new app.
+<LocalizedContentView Item="@Content"
+            CurrentLocale="@Locale"
+            ShowNavigationLinks="true" />

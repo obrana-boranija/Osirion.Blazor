@@ -37,6 +37,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "blog", "blog", "{926AB9FA-2
 		examples\content\blog\github-cms-components.md = examples\content\blog\github-cms-components.md
 		examples\content\blog\github-cms-with-blazor.md = examples\content\blog\github-cms-with-blazor.md
 		examples\content\blog\navigation-components.md = examples\content\blog\navigation-components.md
+		content\en\docs\_index.md = content\en\docs\_index.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{05C1A178-E91A-4900-8CEC-17550109C491}"
@@ -135,7 +136,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Osirion.Blazor.Example.Boot
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "en", "en", "{C283FF5E-3298-4D01-B0B1-275522B42B50}"
 	ProjectSection(SolutionItems) = preProject
-		home.md = home.md
+		content\en\home.md = content\en\home.md
 	EndProjectSection
 EndProject
 Global
