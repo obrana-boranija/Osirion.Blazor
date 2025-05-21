@@ -22,8 +22,6 @@ seo_metadata:
   schemaType: "SoftwareApplication"
 ---
 
-# Introduction
-
 Osirion.Blazor is a comprehensive, modular component library designed to enhance Blazor applications with high-performance, SSR-compatible components. Built with a focus on modern web development practices, Osirion embraces progressive enhancement principles to ensure your applications work seamlessly across all Blazor hosting models.
 
 ## Core Principles
