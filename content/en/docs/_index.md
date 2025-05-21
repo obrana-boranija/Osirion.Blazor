@@ -1,5 +1,5 @@
 ---
-title: "Documentation"
+title: "documentation"
 description: "Comprehensive guides and API references for Osirion.Blazor"
 order: 1
 url: "docs"
