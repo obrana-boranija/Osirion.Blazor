@@ -1,7 +1,7 @@
 ---
 title: "Introduction to Osirion.Blazor"
 date: "2025-05-20"
-author: "Osirion Team"
+author: "Dejan Demonjić"
 description: "An overview of the Osirion.Blazor ecosystem, a modular, high-performance CMS and component library designed for modern Blazor applications with SSR compatibility."
 tags: [blazor, components, ssr, dotnet]
 categories: [overview]
