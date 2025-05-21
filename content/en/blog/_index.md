@@ -1,5 +1,5 @@
 ---
-title: "blog"
+title: "Blog"
 description: "Latest news, updates, and articles about Osirion.Blazor"
 order: 2
 url: "blog"
