@@ -1,0 +1,45 @@
+﻿@namespace Osirion.Blazor.Cms.Components
+@inherits OsirionComponentBase
+
+<section class="@GetHeroSectionClass()" style="@GetBackgroundStyle()">
+    <div class="osirion-hero-overlay"></div>
+    <div class="osirion-hero-container">
+        <div class="osirion-hero-content">
+            @if (!string.IsNullOrEmpty(Title))
+            {
+                <h1 class="osirion-hero-title">@Title</h1>
+            }
+
+            @if (!string.IsNullOrEmpty(Subtitle))
+            {
+                <p class="osirion-hero-subtitle">@Subtitle</p>
+            }
+
+            @if (ShowButtons && (!string.IsNullOrEmpty(PrimaryButtonText) || !string.IsNullOrEmpty(SecondaryButtonText)))
+            {
+                <div class="osirion-hero-buttons">
+                    @if (!string.IsNullOrEmpty(PrimaryButtonText) && !string.IsNullOrEmpty(PrimaryButtonUrl))
+                    {
+                        <a href="@PrimaryButtonUrl" class="osirion-hero-button osirion-hero-button-primary">
+                            @PrimaryButtonText
+                        </a>
+                    }
+
+                    @if (!string.IsNullOrEmpty(SecondaryButtonText) && !string.IsNullOrEmpty(SecondaryButtonUrl))
+                    {
+                        <a href="@SecondaryButtonUrl" class="osirion-hero-button osirion-hero-button-secondary">
+                            @SecondaryButtonText
+                        </a>
+                    }
+                </div>
+            }
+
+            @if (ChildContent != null)
+            {
+                <div class="osirion-hero-additional">
+                    @ChildContent
+                </div>
+            }
+        </div>
+    </div>
+</section>

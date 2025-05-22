@@ -1,0 +1,248 @@
+/* HeroSection Component - Osirion.Blazor.Cms.Web */
+
+.osirion-hero-section {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-color: var(--osirion-background-secondary, #f3f4f6);
+    color: var(--osirion-text-primary, #374151);
+    font-family: var(--osirion-font-family-base, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif);
+}
+
+/* Overlay for better text readability on background images */
+.osirion-hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    transition: opacity var(--osirion-transition-duration-300, 0.3s) ease;
+}
+
+.osirion-hero-section.osirion-hero-with-image .osirion-hero-overlay {
+    opacity: 1;
+}
+
+.osirion-hero-section.osirion-hero-with-image {
+    color: white;
+}
+
+/* Container and content */
+.osirion-hero-container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: var(--osirion-width-6xl, 72rem);
+    margin: 0 auto;
+    padding: var(--osirion-spacing-8, 2rem) var(--osirion-spacing-4, 1rem);
+}
+
+.osirion-hero-content {
+    max-width: var(--osirion-width-4xl, 56rem);
+    margin: 0 auto;
+}
+
+/* Alignment variations */
+.osirion-hero-align-left .osirion-hero-content {
+    margin-left: 0;
+    margin-right: auto;
+    text-align: left;
+}
+
+.osirion-hero-align-center .osirion-hero-content {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+.osirion-hero-align-right .osirion-hero-content {
+    margin-left: auto;
+    margin-right: 0;
+    text-align: right;
+}
+
+/* Typography */
+.osirion-hero-title {
+    font-size: var(--osirion-font-size-5xl, 3rem);
+    font-weight: var(--osirion-font-weight-bold, 700);
+    line-height: var(--osirion-line-height-tight, 1.25);
+    margin: 0 0 var(--osirion-spacing-6, 1.5rem);
+    color: inherit;
+    letter-spacing: -0.025em;
+}
+
+.osirion-hero-subtitle {
+    font-size: var(--osirion-font-size-xl, 1.25rem);
+    font-weight: var(--osirion-font-weight-normal, 400);
+    line-height: var(--osirion-line-height-relaxed, 1.625);
+    margin: 0 0 var(--osirion-spacing-8, 2rem);
+    color: inherit;
+    opacity: 0.9;
+}
+
+/* Buttons */
+.osirion-hero-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--osirion-spacing-4, 1rem);
+    margin-bottom: var(--osirion-spacing-6, 1.5rem);
+}
+
+.osirion-hero-align-center .osirion-hero-buttons {
+    justify-content: center;
+}
+
+.osirion-hero-align-right .osirion-hero-buttons {
+    justify-content: flex-end;
+}
+
+.osirion-hero-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--osirion-spacing-3, 0.75rem) var(--osirion-spacing-6, 1.5rem);
+    border-radius: var(--osirion-radius-lg, 0.5rem);
+    font-size: var(--osirion-font-size-lg, 1.125rem);
+    font-weight: var(--osirion-font-weight-semibold, 600);
+    text-decoration: none;
+    transition: all var(--osirion-transition-duration-200, 0.2s) ease;
+    min-width: 140px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.osirion-hero-button-primary {
+    background-color: var(--osirion-action-primary, #2563eb);
+    color: var(--osirion-action-primary-text, #ffffff);
+    border: 2px solid var(--osirion-action-primary, #2563eb);
+}
+
+    .osirion-hero-button-primary:hover {
+        background-color: var(--osirion-action-primary-hover, #1d4ed8);
+        border-color: var(--osirion-action-primary-hover, #1d4ed8);
+        transform: translateY(-2px);
+        box-shadow: var(--osirion-shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1));
+    }
+
+.osirion-hero-button-secondary {
+    background-color: transparent;
+    color: inherit;
+    border: 2px solid currentColor;
+}
+
+    .osirion-hero-button-secondary:hover {
+        background-color: currentColor;
+        color: var(--osirion-background-primary, #ffffff);
+        transform: translateY(-2px);
+        box-shadow: var(--osirion-shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1));
+    }
+
+/* Additional content */
+.osirion-hero-additional {
+    margin-top: var(--osirion-spacing-6, 1.5rem);
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+    .osirion-hero-title {
+        font-size: var(--osirion-font-size-4xl, 2.25rem);
+    }
+
+    .osirion-hero-subtitle {
+        font-size: var(--osirion-font-size-lg, 1.125rem);
+    }
+
+    .osirion-hero-container {
+        padding: var(--osirion-spacing-8, 2rem) var(--osirion-spacing-4, 1rem);
+    }
+}
+
+@media (max-width: 768px) {
+    .osirion-hero-section {
+        min-height: 50vh !important;
+    }
+
+    .osirion-hero-title {
+        font-size: var(--osirion-font-size-3xl, 1.875rem);
+        margin-bottom: var(--osirion-spacing-4, 1rem);
+    }
+
+    .osirion-hero-subtitle {
+        font-size: var(--osirion-font-size-base, 1rem);
+        margin-bottom: var(--osirion-spacing-6, 1.5rem);
+    }
+
+    .osirion-hero-buttons {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--osirion-spacing-3, 0.75rem);
+    }
+
+    .osirion-hero-align-center .osirion-hero-buttons,
+    .osirion-hero-align-right .osirion-hero-buttons {
+        align-items: stretch;
+    }
+
+    .osirion-hero-button {
+        width: 100%;
+        min-width: auto;
+    }
+
+    .osirion-hero-container {
+        padding: var(--osirion-spacing-6, 1.5rem) var(--osirion-spacing-4, 1rem);
+    }
+}
+
+@media (max-width: 640px) {
+    .osirion-hero-section {
+        min-height: 40vh !important;
+    }
+
+    .osirion-hero-title {
+        font-size: var(--osirion-font-size-2xl, 1.5rem);
+    }
+
+    .osirion-hero-subtitle {
+        font-size: var(--osirion-font-size-sm, 0.875rem);
+    }
+
+    .osirion-hero-button {
+        padding: var(--osirion-spacing-2, 0.5rem) var(--osirion-spacing-4, 1rem);
+        font-size: var(--osirion-font-size-base, 1rem);
+    }
+}
+
+/* Accessibility - reduce motion */
+@media (prefers-reduced-motion: reduce) {
+    .osirion-hero-overlay,
+    .osirion-hero-button {
+        transition: none;
+    }
+
+        .osirion-hero-button:hover {
+            transform: none;
+        }
+}
+
+/* Print styles */
+@media print {
+    .osirion-hero-section {
+        background-image: none !important;
+        color: black !important;
+        min-height: auto !important;
+    }
+
+    .osirion-hero-overlay {
+        display: none;
+    }
+
+    .osirion-hero-buttons {
+        display: none;
+    }
+}

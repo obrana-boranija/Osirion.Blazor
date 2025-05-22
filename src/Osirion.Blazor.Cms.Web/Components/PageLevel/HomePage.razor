@@ -1,0 +1,110 @@
+﻿@namespace Osirion.Blazor.Cms.Components
+@inherits OsirionComponentBase
+
+<div class="@GetHomePageClass()">
+    @if (IsLoading && IsInteractive)
+    {
+        <div class="osirion-loading">
+            <div class="osirion-spinner"></div>
+            <p>@LoadingText</p>
+        </div>
+    }
+    else if (Content == null && !string.IsNullOrEmpty(ContentPath))
+    {
+        <div class="osirion-not-found">
+            <p>@NotFoundText</p>
+        </div>
+    }
+    else
+    {
+        @if (ShowHero && (HeroContent != null || !string.IsNullOrEmpty(HeroTitle)))
+        {
+            <HeroSection 
+                Title="@(HeroContent?.Title ?? HeroTitle)"
+                Subtitle="@(HeroContent?.Description ?? HeroSubtitle)"
+                BackgroundImage="@(HeroContent?.FeaturedImageUrl ?? HeroBackgroundImage)"
+                PrimaryButtonText="@HeroPrimaryButtonText"
+                PrimaryButtonUrl="@HeroPrimaryButtonUrl"
+                SecondaryButtonText="@HeroSecondaryButtonText"
+                SecondaryButtonUrl="@HeroSecondaryButtonUrl"
+                ShowButtons="@ShowHeroButtons"
+                Alignment="@HeroAlignment" />
+        }
+
+        @if (ShowFeaturedContent && FeaturedItems != null && FeaturedItems.Any())
+        {
+            <FeaturedPostsSection
+                Title="@FeaturedSectionTitle"
+                Description="@FeaturedSectionDescription"
+                Posts="@FeaturedItems"
+                Layout="@FeaturedLayout"
+                Columns="@FeaturedColumns"
+                PostCount="@FeaturedCount"
+                ShowExcerpt="@ShowFeaturedExcerpt"
+                ShowAuthor="@ShowFeaturedAuthor"
+                ShowCategories="@ShowFeaturedCategories"
+                ViewAllUrl="@FeaturedViewAllUrl"
+                ShowViewAllLink="@ShowFeaturedViewAll" />
+        }
+
+        @if (Content != null)
+        {
+            <ContentSection 
+                Content="@Content.Content"
+                CssClass="osirion-homepage-content" />
+        }
+
+        @if (ShowRecentContent && RecentItems != null && RecentItems.Any())
+        {
+            <ContentSection Title="@RecentSectionTitle">
+                <ContentList 
+                    ContentItems="@RecentItems"
+                    ShowPagination="false"
+                    ReadMoreText="@ReadMoreText" />
+            </ContentSection>
+        }
+
+        @if (ShowCategories || ShowTags)
+        {
+            <ContentSection Title="@BrowseSectionTitle" CssClass="osirion-homepage-browse">
+                <div class="osirion-browse-content">
+                    @if (ShowCategories)
+                    {
+                        <div class="osirion-browse-section">
+                            <h3>@CategoriesSectionTitle</h3>
+                            <CategoriesList 
+                                MaxCategories="@MaxCategories"
+                                ShowCount="@ShowCategoryCounts"
+                                CategoryUrlFormatter="@CategoryUrlFormatter" />
+                        </div>
+                    }
+
+                    @if (ShowTags)
+                    {
+                        <div class="osirion-browse-section">
+                            <h3>@TagsSectionTitle</h3>
+                            <TagCloud 
+                                MaxTags="@MaxTags"
+                                ShowCount="@ShowTagCounts"
+                                TagUrlFormatter="@TagUrlFormatter" />
+                        </div>
+                    }
+                </div>
+            </ContentSection>
+        }
+
+        @if (!string.IsNullOrEmpty(CustomContent))
+        {
+            <ContentSection CssClass="osirion-homepage-custom">
+                @((MarkupString)CustomContent)
+            </ContentSection>
+        }
+
+        @if (ChildContent != null)
+        {
+            <ContentSection CssClass="osirion-homepage-additional">
+                @ChildContent
+            </ContentSection>
+        }
+    }
+</div>

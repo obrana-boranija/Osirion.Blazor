@@ -198,6 +198,11 @@ public class GitHubContentRepository : BaseContentRepository
         Dictionary<string, ContentItem> contentItems,
         CancellationToken cancellationToken = default)
     {
+        if(contents is null)
+        {
+            return;
+        }
+
         foreach (var item in contents)
         {
             cancellationToken.ThrowIfCancellationRequested();
