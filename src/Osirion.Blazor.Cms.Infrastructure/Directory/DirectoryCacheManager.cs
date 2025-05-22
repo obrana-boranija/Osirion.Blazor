@@ -11,19 +11,14 @@ public class DirectoryCacheManager : IDirectoryCacheManager
 {
     private readonly SemaphoreSlim _cacheLock = new(1, 1);
     private readonly ILogger<DirectoryCacheManager> _logger;
-    private readonly TimeSpan _cacheDuration;
 
     // Initialize to empty dictionary to prevent null references
     private Dictionary<string, DirectoryItem> _directoryCache = new();
-    private DateTime _cacheExpiration = DateTime.MinValue;
     private bool _updateInProgress = false;
 
-    public DirectoryCacheManager(
-        ILogger<DirectoryCacheManager> logger,
-        TimeSpan cacheDuration)
+    public DirectoryCacheManager(ILogger<DirectoryCacheManager> logger)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _cacheDuration = cacheDuration;
     }
 
     /// <inheritdoc/>
@@ -33,7 +28,7 @@ public class DirectoryCacheManager : IDirectoryCacheManager
         bool forceRefresh = false)
     {
         // If cache is valid and not forcing refresh, return current cache
-        if (!forceRefresh && _directoryCache.Count > 0 && DateTime.UtcNow < _cacheExpiration)
+        if (!forceRefresh && _directoryCache.Count > 0)
         {
             return _directoryCache;
         }
@@ -61,7 +56,7 @@ public class DirectoryCacheManager : IDirectoryCacheManager
             _updateInProgress = true;
 
             // Double-check after acquiring lock
-            if (!forceRefresh && _directoryCache.Count > 0 && DateTime.UtcNow < _cacheExpiration)
+            if (!forceRefresh && _directoryCache.Count > 0)
             {
                 return _directoryCache;
             }
@@ -82,7 +77,6 @@ public class DirectoryCacheManager : IDirectoryCacheManager
 
                 // Update cache
                 _directoryCache = directories;
-                _cacheExpiration = DateTime.UtcNow.Add(_cacheDuration);
 
                 _logger.LogInformation("Directory cache refreshed, {Count} directories loaded", directories.Count);
             }
@@ -136,7 +130,6 @@ public class DirectoryCacheManager : IDirectoryCacheManager
             }
 
             // Just invalidate expiration but keep the cache (don't set to null)
-            _cacheExpiration = DateTime.MinValue;
             _logger.LogInformation("Directory cache invalidated");
         }
         finally

@@ -33,7 +33,6 @@ public class GitHubContentRepository : BaseContentRepository
         _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
 
         // Set base class properties
-        CacheDurationMinutes = _options.CacheDurationMinutes;
         EnableLocalization = _options.EnableLocalization;
         DefaultLocale = _options.DefaultLocale;
         SupportedLocales = _options.SupportedLocales;

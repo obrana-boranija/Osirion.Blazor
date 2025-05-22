@@ -111,11 +111,14 @@ public class GitHubApiClient : IGitHubApiClient
     /// <summary>
     /// Gets the branches for the current repository
     /// </summary>
-    public async Task<List<GitHubBranch>> GetBranchesAsync(CancellationToken cancellationToken = default!)
+    public async Task<List<GitHubBranch>?> GetBranchesAsync(CancellationToken cancellationToken = default!)
     {
         try
         {
-            ValidateRepositoryConfig();
+            if (!ValidateRepositoryConfig())
+            {
+                return null;
+            }
 
             var endpoint = $"/repos/{_owner}/{_repository}/branches";
             var response = await _httpClient.GetAsync($"{_apiUrl}{endpoint}", cancellationToken);
@@ -136,11 +139,14 @@ public class GitHubApiClient : IGitHubApiClient
     /// <summary>
     /// Gets the contents of the repository at the specified path
     /// </summary>
-    public async Task<List<GitHubItem>> GetRepositoryContentsAsync(string path, CancellationToken cancellationToken = default!)
+    public async Task<List<GitHubItem>?> GetRepositoryContentsAsync(string path, CancellationToken cancellationToken = default!)
     {
         try
         {
-            ValidateRepositoryConfig();
+            if (!ValidateRepositoryConfig())
+            {
+                return null;
+            }
 
             var endpoint = $"/repos/{_owner}/{_repository}/contents/{path}";
             if (!string.IsNullOrEmpty(_branch))
@@ -177,11 +183,14 @@ public class GitHubApiClient : IGitHubApiClient
     /// <summary>
     /// Gets the content of a file in the repository
     /// </summary>
-    public async Task<GitHubFileContent> GetFileContentAsync(string path, CancellationToken cancellationToken = default!)
+    public async Task<GitHubFileContent?> GetFileContentAsync(string path, CancellationToken cancellationToken = default!)
     {
         try
         {
-            ValidateRepositoryConfig();
+            if (!ValidateRepositoryConfig())
+            {
+                return null;
+            }
 
             var endpoint = $"/repos/{_owner}/{_repository}/contents/{path}";
             if (!string.IsNullOrEmpty(_branch))
@@ -212,11 +221,14 @@ public class GitHubApiClient : IGitHubApiClient
     /// <summary>
     /// Creates or updates a file in the repository
     /// </summary>
-    public async Task<GitHubFileCommitResponse> CreateOrUpdateFileAsync(string path, string content, string message, string? sha = null, CancellationToken cancellationToken = default!)
+    public async Task<GitHubFileCommitResponse?> CreateOrUpdateFileAsync(string path, string content, string message, string? sha = null, CancellationToken cancellationToken = default!)
     {
         try
         {
-            ValidateRepositoryConfig();
+            if (!ValidateRepositoryConfig())
+            {
+                return null;
+            }
 
             var endpoint = $"/repos/{_owner}/{_repository}/contents/{path}";
 
@@ -306,11 +318,14 @@ public class GitHubApiClient : IGitHubApiClient
     /// <summary>
     /// Creates a new branch in the repository
     /// </summary>
-    public async Task<GitHubBranch> CreateBranchAsync(string branchName, string baseBranch, CancellationToken cancellationToken = default!)
+    public async Task<GitHubBranch?> CreateBranchAsync(string branchName, string baseBranch, CancellationToken cancellationToken = default!)
     {
         try
         {
-            ValidateRepositoryConfig();
+            if (!ValidateRepositoryConfig())
+            {
+                return null;
+            }
 
             // First, get the SHA of the latest commit on the base branch
             var refResponse = await _httpClient.GetAsync($"{_apiUrl}/repos/{_owner}/{_repository}/git/refs/heads/{baseBranch}", cancellationToken);
@@ -361,11 +376,14 @@ public class GitHubApiClient : IGitHubApiClient
     /// <summary>
     /// Creates a new pull request in the repository
     /// </summary>
-    public async Task<GitHubPullRequest> CreatePullRequestAsync(string title, string body, string head, string baseBranch, CancellationToken cancellationToken = default!)
+    public async Task<GitHubPullRequest?> CreatePullRequestAsync(string title, string body, string head, string baseBranch, CancellationToken cancellationToken = default!)
     {
         try
         {
-            ValidateRepositoryConfig();
+            if (!ValidateRepositoryConfig())
+            {
+                return null;
+            }
 
             var requestBody = new
             {
@@ -401,11 +419,14 @@ public class GitHubApiClient : IGitHubApiClient
     /// <summary>
     /// Searches for files in the repository
     /// </summary>
-    public async Task<GitHubSearchResult> SearchFilesAsync(string query, CancellationToken cancellationToken = default!)
+    public async Task<GitHubSearchResult?> SearchFilesAsync(string query, CancellationToken cancellationToken = default!)
     {
         try
         {
-            ValidateRepositoryConfig();
+            if (!ValidateRepositoryConfig())
+            {
+                return null;
+            }
 
             // Construct the search query
             var searchQuery = $"repo:{_owner}/{_repository}";
@@ -479,17 +500,21 @@ public class GitHubApiClient : IGitHubApiClient
     /// <summary>
     /// Validates that repository configuration is set
     /// </summary>
-    private void ValidateRepositoryConfig()
+    private bool ValidateRepositoryConfig()
     {
         if (string.IsNullOrEmpty(_owner) || string.IsNullOrEmpty(_repository))
         {
-            throw new InvalidOperationException("Repository owner and name must be set before making requests");
+            _logger.LogError("Repository owner and name must be set before making requests");
+            return false;
         }
 
         if (string.IsNullOrEmpty(_accessToken))
         {
-            throw new UnauthorizedAccessException("Access token is required for GitHub API requests");
+            _logger.LogError("Access token is required for GitHub API requests");
+            return false;
         }
+
+        return true;
     }
 }
 

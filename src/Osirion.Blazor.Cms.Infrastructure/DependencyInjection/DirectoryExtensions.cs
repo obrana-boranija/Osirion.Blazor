@@ -32,8 +32,7 @@ public static class DirectoryExtensions
         {
             var logger = sp.GetRequiredService<Microsoft.Extensions.Logging.ILogger<DirectoryCacheManager>>();
             var options = sp.GetRequiredService<IOptions<FileSystemOptions>>();
-            var cacheDuration = TimeSpan.FromMinutes(options.Value.CacheDurationMinutes);
-            return new DirectoryCacheManager(logger, cacheDuration);
+            return new DirectoryCacheManager(logger);
         });
 
         return services;

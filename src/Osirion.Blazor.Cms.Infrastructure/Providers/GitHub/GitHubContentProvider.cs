@@ -18,6 +18,9 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
     private readonly GitHubOptions _options;
     private readonly IGitHubApiClient _apiClient;
     private readonly SemaphoreSlim _updateLock = new(1, 1);
+
+    // Simplified state tracking
+    private bool _isInitialized = false;
     private bool _updateInProgress = false;
     private string? _lastKnownSha = null;
 
@@ -38,36 +41,15 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
         _directoryRepository = directoryRepository ?? throw new ArgumentNullException(nameof(directoryRepository));
         _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
         _apiClient = apiClient ?? throw new ArgumentNullException(nameof(apiClient));
-
-        // Initialize with current SHA if possible
-        Task.Run(async () =>
-        {
-            try
-            {
-                var branches = await _apiClient.GetBranchesAsync();
-                var branch = branches.FirstOrDefault(b => b.Name == _options.Branch);
-                if (branch != null)
-                {
-                    _lastKnownSha = branch.Commit.Sha;
-                    Logger.LogInformation("Initialized with SHA {Sha} for branch {Branch}",
-                        _lastKnownSha, _options.Branch);
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogWarning(ex, "Failed to get initial commit SHA");
-            }
-        });
     }
 
     public override string ProviderId => _options.ProviderId ?? $"github-{_options.Owner}-{_options.Repository}";
-
     public override string DisplayName => $"GitHub: {_options.Owner}/{_options.Repository}";
-
     public override bool IsReadOnly => string.IsNullOrEmpty(_options.ApiToken);
 
     public override async Task<IReadOnlyList<ContentItem>> GetAllItemsAsync(CancellationToken cancellationToken = default)
     {
+        await EnsureInitializedAsync(cancellationToken);
         return await _contentRepository.GetAllAsync(cancellationToken);
     }
 
@@ -76,6 +58,7 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
         if (string.IsNullOrEmpty(id))
             throw new ArgumentException("ID cannot be empty", nameof(id));
 
+        await EnsureInitializedAsync(cancellationToken);
         return await _contentRepository.GetByIdAsync(id, cancellationToken);
     }
 
@@ -84,6 +67,7 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
         if (string.IsNullOrEmpty(path))
             throw new ArgumentException("Path cannot be empty", nameof(path));
 
+        await EnsureInitializedAsync(cancellationToken);
         return await _contentRepository.GetByPathAsync(path, cancellationToken);
     }
 
@@ -92,16 +76,19 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
         if (string.IsNullOrEmpty(url))
             throw new ArgumentException("URL cannot be empty", nameof(url));
 
+        await EnsureInitializedAsync(cancellationToken);
         return await _contentRepository.GetByUrlAsync(url, cancellationToken);
     }
 
     public override async Task<IReadOnlyList<ContentItem>> GetItemsByQueryAsync(ContentQuery query, CancellationToken cancellationToken = default)
     {
+        await EnsureInitializedAsync(cancellationToken);
         return await _contentRepository.FindByQueryAsync(query, cancellationToken);
     }
 
     public override async Task<IReadOnlyList<DirectoryItem>> GetDirectoriesAsync(string? locale = null, CancellationToken cancellationToken = default)
     {
+        await EnsureInitializedAsync(cancellationToken);
         return await _directoryRepository.GetByLocaleAsync(locale, cancellationToken);
     }
 
@@ -110,6 +97,7 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
         if (string.IsNullOrEmpty(path))
             throw new ArgumentException("Path cannot be empty", nameof(path));
 
+        await EnsureInitializedAsync(cancellationToken);
         return await _directoryRepository.GetByPathAsync(path, cancellationToken);
     }
 
@@ -118,6 +106,7 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
         if (string.IsNullOrEmpty(id))
             throw new ArgumentException("ID cannot be empty", nameof(id));
 
+        await EnsureInitializedAsync(cancellationToken);
         return await _directoryRepository.GetByIdAsync(id, cancellationToken);
     }
 
@@ -126,11 +115,14 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
         if (string.IsNullOrEmpty(url))
             throw new ArgumentException("URL cannot be empty", nameof(url));
 
+        await EnsureInitializedAsync(cancellationToken);
         return await _directoryRepository.GetByUrlAsync(url, cancellationToken);
     }
 
     public override async Task<IReadOnlyList<ContentCategory>> GetCategoriesAsync(CancellationToken cancellationToken = default)
     {
+        await EnsureInitializedAsync(cancellationToken);
+
         // Get all content items
         var allContent = await GetAllItemsAsync(cancellationToken);
 
@@ -148,6 +140,8 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
 
     public override async Task<IReadOnlyList<ContentTag>> GetTagsAsync(CancellationToken cancellationToken = default)
     {
+        await EnsureInitializedAsync(cancellationToken);
+
         // Get all content items
         var allContent = await GetAllItemsAsync(cancellationToken);
 
@@ -163,61 +157,105 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
             .ToList();
     }
 
-    public override async Task InitializeAsync(CancellationToken cancellationToken = default)
+    /// <summary>
+    /// Ensures the provider is initialized and data is loaded
+    /// </summary>
+    private async Task EnsureInitializedAsync(CancellationToken cancellationToken = default)
     {
-        Logger.LogInformation("Initializing GitHub content provider: {Owner}/{Repository}",
-            _options.Owner, _options.Repository);
+        if (_isInitialized)
+            return;
 
-        // Configure API client
-        _apiClient.SetRepository(_options.Owner, _options.Repository);
-        _apiClient.SetBranch(_options.Branch);
-
-        if (!string.IsNullOrEmpty(_options.ApiToken))
-        {
-            _apiClient.SetAccessToken(_options.ApiToken);
-        }
-
-        // Get the latest commit SHA
+        bool lockTaken = false;
         try
         {
-            var branches = await _apiClient.GetBranchesAsync(cancellationToken);
-            var branch = branches.FirstOrDefault(b => b.Name == _options.Branch);
-            if (branch != null)
+            lockTaken = await _updateLock.WaitAsync(TimeSpan.FromSeconds(30), cancellationToken);
+            if (!lockTaken)
             {
-                _lastKnownSha = branch.Commit.Sha;
-                Logger.LogInformation("Latest commit SHA for branch {Branch}: {Sha}",
-                    _options.Branch, _lastKnownSha);
+                Logger.LogWarning("Timeout waiting for initialization lock");
+                return;
             }
-        }
-        catch (Exception ex)
-        {
-            Logger.LogWarning(ex, "Failed to get latest commit SHA during initialization");
-        }
 
-        // Pre-load some data in the background
-        _ = Task.Run(async () => {
+            // Double-check inside the lock
+            if (_isInitialized)
+                return;
+
+            Logger.LogInformation("Initializing GitHub content provider: {Owner}/{Repository}",
+                _options.Owner, _options.Repository);
+
+            // Configure API client
+            _apiClient.SetRepository(_options.Owner, _options.Repository);
+            _apiClient.SetBranch(_options.Branch);
+
+            if (!string.IsNullOrEmpty(_options.ApiToken))
+            {
+                _apiClient.SetAccessToken(_options.ApiToken);
+            }
+
+            // Get the latest commit SHA
             try
             {
-                await _contentRepository.RefreshCacheAsync(cancellationToken);
-                await _directoryRepository.RefreshCacheAsync(cancellationToken);
+                var branches = await _apiClient.GetBranchesAsync(cancellationToken);
+                var branch = branches.FirstOrDefault(b => b.Name == _options.Branch);
+                if (branch != null)
+                {
+                    _lastKnownSha = branch.Commit.Sha;
+                    Logger.LogInformation("Latest commit SHA for branch {Branch}: {Sha}",
+                        _options.Branch, _lastKnownSha);
+                }
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, "Error pre-loading content for GitHub provider");
+                Logger.LogWarning(ex, "Failed to get latest commit SHA during initialization");
             }
-        }, cancellationToken);
 
+            // Load initial data synchronously to ensure it's available immediately
+            try
+            {
+                Logger.LogInformation("Loading initial content data...");
+                await _contentRepository.RefreshCacheAsync(cancellationToken);
+                await _directoryRepository.RefreshCacheAsync(cancellationToken);
+                Logger.LogInformation("Initial content data loaded successfully");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Error loading initial content data");
+            }
+
+            _isInitialized = true;
+            Logger.LogInformation("GitHub content provider initialized successfully");
+        }
+        finally
+        {
+            if (lockTaken)
+            {
+                _updateLock.Release();
+            }
+        }
+    }
+
+    public override async Task InitializeAsync(CancellationToken cancellationToken = default)
+    {
+        await EnsureInitializedAsync(cancellationToken);
         await base.InitializeAsync(cancellationToken);
     }
 
     public override async Task RefreshCacheAsync(CancellationToken cancellationToken = default)
     {
-        // Directly call repositories without acquiring our own semaphore
-        await _contentRepository.RefreshCacheAsync(cancellationToken);
-        await _directoryRepository.RefreshCacheAsync(cancellationToken);
+        Logger.LogInformation("Refreshing cache for GitHub provider: {ProviderId}", ProviderId);
 
-        // Call base class implementation which might handle memory cache
-        await base.RefreshCacheAsync(cancellationToken);
+        try
+        {
+            await _contentRepository.RefreshCacheAsync(cancellationToken);
+            await _directoryRepository.RefreshCacheAsync(cancellationToken);
+
+            // Don't call base class - we don't need the memory cache layer
+            Logger.LogInformation("Cache refreshed successfully for GitHub provider: {ProviderId}", ProviderId);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error refreshing cache for GitHub provider: {ProviderId}", ProviderId);
+            throw;
+        }
     }
 
     /// <summary>
@@ -269,7 +307,6 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
             // Double-check inside the lock
             if (_processingQueue)
             {
-                // Someone else started processing while we were waiting
                 return;
             }
 
@@ -279,7 +316,6 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
             if (useBackground)
             {
                 // Start background processing and release the current lock
-                // as the background task will acquire its own lock
                 _updateLock.Release();
                 lockTaken = false;
 
@@ -289,10 +325,8 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
                     bool bgLockAcquired = false;
                     try
                     {
-                        // Acquire the lock for background processing
                         await _updateLock.WaitAsync();
                         bgLockAcquired = true;
-
                         await ProcessQueueInternalAsync();
                     }
                     catch (Exception ex)
@@ -302,8 +336,6 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
                     finally
                     {
                         _processingQueue = false;
-
-                        // Only release if we successfully acquired
                         if (bgLockAcquired)
                         {
                             _updateLock.Release();
@@ -315,7 +347,6 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
             {
                 try
                 {
-                    // We already have the lock, so process synchronously
                     await ProcessQueueInternalAsync();
                 }
                 finally
@@ -331,7 +362,6 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
         }
         finally
         {
-            // Only release if we acquired and didn't already release
             if (lockTaken)
             {
                 _updateLock.Release();
@@ -354,7 +384,6 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
         {
             try
             {
-                // Only if not already updating content
                 if (!_updateInProgress)
                 {
                     _updateInProgress = true;
@@ -363,8 +392,6 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
                         Logger.LogInformation("Starting content refresh for SHA {Sha}", latestSha);
                         var startTime = DateTime.UtcNow;
 
-                        // Directly call repositories to avoid semaphore issues in nested calls
-                        // Repositories will manage their own semaphores
                         await _contentRepository.RefreshCacheAsync();
                         await _directoryRepository.RefreshCacheAsync();
 

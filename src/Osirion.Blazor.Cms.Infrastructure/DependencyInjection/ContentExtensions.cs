@@ -29,8 +29,7 @@ public static class ContentExtensions
         {
             var logger = sp.GetRequiredService<Microsoft.Extensions.Logging.ILogger<ContentCacheManager>>();
             var options = sp.GetRequiredService<IOptions<FileSystemOptions>>();
-            var cacheDuration = TimeSpan.FromMinutes(options.Value.CacheDurationMinutes);
-            return new ContentCacheManager(logger, cacheDuration);
+            return new ContentCacheManager(logger);
         });
 
         return services;

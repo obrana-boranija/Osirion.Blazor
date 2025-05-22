@@ -31,7 +31,6 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
             _fileSystem = fileSystem;
 
             // Set base class properties
-            CacheDurationMinutes = _options.CacheDurationMinutes;
             EnableLocalization = _options.EnableLocalization;
             DefaultLocale = _options.DefaultLocale;
             SupportedLocales = _options.SupportedLocales;
@@ -60,7 +59,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
         /// <inheritdoc/>
         protected async Task EnsureCacheIsLoaded(CancellationToken cancellationToken, bool forceRefresh = false)
         {
-            if (!forceRefresh && ItemCache != null && DateTime.UtcNow < CacheExpiration)
+            if (!forceRefresh && ItemCache != null)
             {
                 return; // Cache is still valid
             }
@@ -69,7 +68,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
             try
             {
                 // Double-check inside the lock
-                if (!forceRefresh && ItemCache != null && DateTime.UtcNow < CacheExpiration)
+                if (!forceRefresh && ItemCache != null)
                 {
                     return; // Cache was populated while waiting for lock
                 }
@@ -121,7 +120,6 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
 
                 // Update cache
                 ItemCache = cache;
-                CacheExpiration = DateTime.UtcNow.AddMinutes(_options.CacheDurationMinutes);
             }
             finally
             {

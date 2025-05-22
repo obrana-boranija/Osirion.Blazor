@@ -8,17 +8,18 @@ using System.Text.RegularExpressions;
 namespace Osirion.Blazor.Cms.Infrastructure.Repositories;
 
 /// <summary>
-/// Base implementation for content repositories with common functionality
+/// Base implementation for content repositories with simplified caching
 /// </summary>
 public abstract class BaseContentRepository : RepositoryBase<ContentItem, string>, IContentRepository
 {
     protected readonly IMarkdownProcessor MarkdownProcessor;
     protected readonly SemaphoreSlim CacheLock = new(1, 1);
 
-    // In-memory cache for items - initialized to empty dict to avoid null issues
+    // Simplified cache - no time-based expiration
     protected Dictionary<string, ContentItem> ItemCache = new();
-    protected DateTime CacheExpiration = DateTime.MinValue;
-    protected int CacheDurationMinutes = 30;
+    protected bool CacheLoaded = false;
+
+    // Configuration properties set by derived classes
     protected bool EnableLocalization = false;
     protected string DefaultLocale = "en";
     protected List<string> SupportedLocales = new() { "en" };
@@ -82,7 +83,7 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
         // Check if an update is already in progress to avoid multiple simultaneous refreshes
         if (_updateInProgress)
         {
-            Logger.LogInformation("Cache refresh already in progress for provider {ProviderId}, skipping", ProviderId);
+            Logger.LogDebug("Cache refresh already in progress for provider {ProviderId}, skipping", ProviderId);
             return;
         }
 
@@ -90,7 +91,7 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
         try
         {
             // Use a shorter timeout for webhooks - we don't want to block too long
-            lockTaken = await CacheLock.WaitAsync(TimeSpan.FromSeconds(5), cancellationToken);
+            lockTaken = await CacheLock.WaitAsync(TimeSpan.FromSeconds(10), cancellationToken);
             if (!lockTaken)
             {
                 Logger.LogWarning("Could not acquire lock for cache refresh - another operation in progress for provider {ProviderId}", ProviderId);
@@ -103,10 +104,7 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
             Logger.LogInformation("Refreshing cache for provider {ProviderId}. Current cache has {ItemCount} items",
                 ProviderId, ItemCache?.Count ?? 0);
 
-            // Invalidate cache (but don't set to null!)
-            CacheExpiration = DateTime.MinValue;
-
-            // Immediately reload the cache
+            // Force reload the cache
             await LoadAndAssignCache(cancellationToken);
 
             Logger.LogInformation("Cache refreshed for provider {ProviderId}. New cache has {ItemCount} items",
@@ -155,7 +153,7 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
 
             // Atomically update the cache
             ItemCache = newCache;
-            CacheExpiration = DateTime.UtcNow.AddMinutes(CacheDurationMinutes);
+            CacheLoaded = true;
 
             Logger.LogInformation("Cache loaded successfully for provider {ProviderId} in {Duration}ms. Items count: {ItemCount}",
                 ProviderId, (DateTime.UtcNow - startTime).TotalMilliseconds, newCache.Count);
@@ -168,6 +166,7 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
             if (ItemCache == null)
             {
                 ItemCache = new Dictionary<string, ContentItem>();
+                CacheLoaded = true; // Mark as loaded even if empty to avoid infinite loading attempts
             }
 
             throw; // Rethrow to let the caller handle it
@@ -175,12 +174,12 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
     }
 
     /// <summary>
-    /// Ensures the cache is loaded
+    /// Ensures the cache is loaded (simplified version without time-based expiration)
     /// </summary>
     protected virtual async Task EnsureCacheIsLoaded(CancellationToken cancellationToken, bool forceRefresh = false)
     {
-        // Skip if we have a valid cache and aren't forcing refresh
-        if (!forceRefresh && ItemCache is not null && ItemCache.Any())
+        // Skip if we have a loaded cache and aren't forcing refresh
+        if (!forceRefresh && CacheLoaded)
         {
             return;
         }
@@ -196,20 +195,20 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
         try
         {
             // Try to acquire the lock with a reasonable timeout
-            lockTaken = await CacheLock.WaitAsync(TimeSpan.FromSeconds(10), cancellationToken);
+            lockTaken = await CacheLock.WaitAsync(TimeSpan.FromSeconds(15), cancellationToken);
             if (!lockTaken)
             {
                 Logger.LogWarning("Timeout waiting for cache lock in EnsureCacheIsLoaded for provider {ProviderId}", ProviderId);
-                return; // Use whatever cache we have, even if expired
+                return; // Use whatever cache we have, even if not loaded
             }
 
             // Mark update as in progress to prevent webhook contention
             _updateInProgress = true;
 
             // Double-check cache validity after acquiring lock
-            if (!forceRefresh && ItemCache is not null && ItemCache.Any())
+            if (!forceRefresh && CacheLoaded)
             {
-                return; // Another thread updated the cache while we were waiting
+                return; // Another thread loaded the cache while we were waiting
             }
 
             // Load and assign the cache
@@ -223,6 +222,7 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
             if (ItemCache == null)
             {
                 ItemCache = new Dictionary<string, ContentItem>();
+                CacheLoaded = true; // Mark as loaded to avoid infinite retry
             }
         }
         finally
@@ -403,6 +403,7 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
     /// Deletes a content item with a commit message
     /// </summary>
     public abstract Task DeleteWithCommitMessageAsync(string id, string commitMessage, CancellationToken cancellationToken = default);
+
 
     /// <summary>
     /// Normalizes a path for consistent comparison

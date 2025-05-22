@@ -11,16 +11,6 @@ public class ContentProviderOptions
     public string? ProviderId { get; set; }
 
     /// <summary>
-    /// Gets or sets whether caching is enabled
-    /// </summary>
-    public bool EnableCaching { get; set; } = true;
-
-    /// <summary>
-    /// Gets or sets the cache duration in minutes
-    /// </summary>
-    public int CacheDurationMinutes { get; set; } = 30;
-
-    /// <summary>
     /// Gets or sets whether this is the default provider
     /// </summary>
     public bool IsDefault { get; set; }
