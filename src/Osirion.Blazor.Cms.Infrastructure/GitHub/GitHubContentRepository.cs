@@ -18,6 +18,7 @@ public class GitHubContentRepository : BaseContentRepository
     private readonly IGitHubApiClient _apiClient;
     private readonly IDirectoryRepository _directoryRepository;
     private readonly GitHubOptions _options;
+    private string _lastKnownCommitSha = string.Empty;
 
     public GitHubContentRepository(
         IGitHubApiClient apiClient,
@@ -28,7 +29,7 @@ public class GitHubContentRepository : BaseContentRepository
         : base(GetProviderId(options.Value), markdownProcessor, logger)
     {
         _apiClient = apiClient ?? throw new ArgumentNullException(nameof(apiClient));
-        _directoryRepository = directoryRepository;
+        _directoryRepository = directoryRepository ?? throw new ArgumentNullException(nameof(directoryRepository));
         _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
 
         // Set base class properties
@@ -62,10 +63,29 @@ public class GitHubContentRepository : BaseContentRepository
         try
         {
             // Get repository contents
+            Logger.LogInformation("Loading GitHub content from {Owner}/{Repository} path: {Path}",
+                _options.Owner, _options.Repository, contentPath);
+
             var contents = await _apiClient.GetRepositoryContentsAsync(contentPath, cancellationToken);
 
+            // Update last known commit SHA if available
+            try
+            {
+                var branches = await _apiClient.GetBranchesAsync(cancellationToken);
+                var branch = branches.FirstOrDefault(b => b.Name == _options.Branch);
+                if (branch != null)
+                {
+                    _lastKnownCommitSha = branch.Commit.Sha;
+                    Logger.LogInformation("Updated commit SHA to {Sha}", _lastKnownCommitSha);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWarning(ex, "Failed to update commit SHA");
+            }
+
             // Process contents recursively
-            await ProcessContentsRecursivelyAsync(contents, cache, cancellationToken: cancellationToken);
+            await ProcessContentsRecursivelyAsync(contents, cache, cancellationToken);
 
             Logger.LogInformation("Loaded {Count} content items from GitHub repository {Owner}/{Repository}",
                 cache.Count, _options.Owner, _options.Repository);
@@ -76,93 +96,9 @@ public class GitHubContentRepository : BaseContentRepository
         {
             Logger.LogError(ex, "Error loading content from GitHub repository {Owner}/{Repository}",
                 _options.Owner, _options.Repository);
-            throw;
-        }
-    }
 
-    /// <inheritdoc/>
-    protected async Task EnsureCacheIsLoaded(CancellationToken cancellationToken, bool forceRefresh = false)
-    {
-        // First check without locking
-        if (!forceRefresh && ItemCache != null && DateTime.UtcNow < CacheExpiration)
-        {
-            return; // Cache is still valid
-        }
-
-        try
-        {
-            // Acquire lock with timeout to prevent deadlocks
-            bool lockAcquired = await CacheLock.WaitAsync(TimeSpan.FromSeconds(30), cancellationToken);
-            if (!lockAcquired)
-            {
-                Logger?.LogError($"Failed to acquire cache lock within the timeout period.");
-            }
-
-            try
-            {
-                // Double-check inside the lock
-                if (!forceRefresh && ItemCache != null && DateTime.UtcNow < CacheExpiration)
-                {
-                    return; // Cache was populated while waiting for lock
-                }
-
-                // Check for cancellation before expensive operations
-                cancellationToken.ThrowIfCancellationRequested();
-
-                // Load all content items
-                var cache = new Dictionary<string, ContentItem>();
-                var contentPath = NormalizePath(_options.ContentPath);
-
-                try
-                {
-                    // Get repository contents
-                    var contents = await _apiClient.GetRepositoryContentsAsync(contentPath, cancellationToken);
-
-                    // Process contents recursively
-                    await ProcessContentsRecursivelyAsync(contents, cache, cancellationToken: cancellationToken);
-
-                    // Update cache atomically
-                    ItemCache = cache;
-                    CacheExpiration = DateTime.UtcNow.AddMinutes(_options.CacheDurationMinutes);
-
-                    // Log successful cache refresh
-                    Logger?.LogInformation($"Cache refreshed successfully with {cache.Count} items.");
-                }
-                catch (Exception ex) when (!(ex is OperationCanceledException))
-                {
-                    // Log the error
-                    Logger?.LogError(ex, "Failed to refresh content cache.");
-
-                    // If we have an existing cache, keep using it but reduce expiration
-                    if (ItemCache != null)
-                    {
-                        // Extend current cache by a short time to prevent cascade failures
-                        CacheExpiration = DateTime.UtcNow.AddMinutes(Math.Min(5, _options.CacheDurationMinutes / 2));
-                        Logger?.LogWarning("Using existing cache with reduced expiration time.");
-                    }
-                    else
-                    {
-                        // Rethrow if we have no existing cache to fall back on
-                        throw;
-                    }
-                }
-            }
-            finally
-            {
-                // Ensure lock is always released
-                CacheLock.Release();
-            }
-        }
-        catch (OperationCanceledException)
-        {
-            // Operation was cancelled, just propagate the cancellation
-            throw;
-        }
-        catch (Exception ex)
-        {
-            // Log the error at a higher level
-            Logger?.LogError(ex, "Unhandled exception in EnsureCacheIsLoaded.");
-            throw;
+            // Return empty cache rather than null
+            return new Dictionary<string, ContentItem>();
         }
     }
 
@@ -261,8 +197,7 @@ public class GitHubContentRepository : BaseContentRepository
     private async Task ProcessContentsRecursivelyAsync(
         List<GitHubItem> contents,
         Dictionary<string, ContentItem> contentItems,
-        string? directory = default!,
-        CancellationToken cancellationToken = default!)
+        CancellationToken cancellationToken = default)
     {
         foreach (var item in contents)
         {
@@ -273,7 +208,7 @@ public class GitHubContentRepository : BaseContentRepository
                 try
                 {
                     var fileContent = await _apiClient.GetFileContentAsync(item.Path, cancellationToken);
-                    var contentItem = await ProcessMarkdownFileAsync(fileContent, directory, cancellationToken);
+                    var contentItem = await ProcessMarkdownFileAsync(fileContent, cancellationToken);
 
                     if (contentItem != null)
                     {
@@ -288,14 +223,14 @@ public class GitHubContentRepository : BaseContentRepository
             else if (item.IsDirectory)
             {
                 var subContents = await _apiClient.GetRepositoryContentsAsync(item.Path, cancellationToken);
-                await ProcessContentsRecursivelyAsync(subContents, contentItems, item.Name, cancellationToken);
+                await ProcessContentsRecursivelyAsync(subContents, contentItems, cancellationToken);
             }
         }
     }
 
-    private async Task<ContentItem?> ProcessMarkdownFileAsync(GitHubFileContent fileContent, string? directory = default!, CancellationToken cancellationToken = default!)
+    private async Task<ContentItem?> ProcessMarkdownFileAsync(GitHubFileContent fileContent, CancellationToken cancellationToken = default)
     {
-        if (fileContent == null || !fileContent.IsMarkdownFile())
+        if (fileContent == null || !IsMarkdownFile(fileContent.Name))
             return null;
 
         // Skip _index.md files - they're for directory metadata
@@ -321,20 +256,20 @@ public class GitHubContentRepository : BaseContentRepository
         // Store the provider-specific ID (SHA)
         contentItem.SetProviderSpecificId(fileContent.Sha);
 
-        // Get file history for dates
+        // Get file history for dates (if needed)
         //try
         //{
-        //    var (created, modified) = await _apiClient.GetFileHistoryAsync(fileContent.Path, cancellationToken);
-
-        //    contentItem.SetCreatedDate(created);
-        //    if (modified.HasValue)
+        //    var commit = await _apiClient.GetCommitForPathAsync(fileContent.Path, cancellationToken);
+        //    if (commit != null)
         //    {
-        //        contentItem.SetLastModifiedDate(modified.Value);
+        //        contentItem.SetLastModifiedDate(commit.Committer.Date);
+        //        contentItem.SetCreatedDate(commit.Author.Date);
         //    }
         //}
         //catch (Exception ex)
         //{
         //    Logger.LogWarning(ex, "Failed to get file history for {Path}, using current date", fileContent.Path);
+        //    contentItem.SetCreatedDate(DateTime.UtcNow);
         //}
 
         // Extract locale from path if enabled
@@ -348,8 +283,20 @@ public class GitHubContentRepository : BaseContentRepository
             contentItem.SetLocale(_options.DefaultLocale);
         }
 
-        var dir = await _directoryRepository.GetByNameAsync(directory, contentItem.Locale, cancellationToken);
-        contentItem.SetDirectory(dir);
+        // Set directory if found
+        try
+        {
+            var directoryPath = GetDirectoryPath(fileContent.Path);
+            var directory = await _directoryRepository.GetByPathAsync(directoryPath, cancellationToken);
+            if (directory != null)
+            {
+                contentItem.SetDirectory(directory);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Failed to set directory for content: {Path}", fileContent.Path);
+        }
 
         // Process the markdown content
         await ProcessMarkdownAsync(markdownContent, contentItem, cancellationToken);

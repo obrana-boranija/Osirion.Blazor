@@ -13,8 +13,10 @@ public class DirectoryCacheManager : IDirectoryCacheManager
     private readonly ILogger<DirectoryCacheManager> _logger;
     private readonly TimeSpan _cacheDuration;
 
-    private Dictionary<string, DirectoryItem>? _directoryCache;
+    // Initialize to empty dictionary to prevent null references
+    private Dictionary<string, DirectoryItem> _directoryCache = new();
     private DateTime _cacheExpiration = DateTime.MinValue;
+    private bool _updateInProgress = false;
 
     public DirectoryCacheManager(
         ILogger<DirectoryCacheManager> logger,
@@ -30,52 +32,80 @@ public class DirectoryCacheManager : IDirectoryCacheManager
         CancellationToken cancellationToken = default,
         bool forceRefresh = false)
     {
-        if (!forceRefresh && _directoryCache != null && DateTime.UtcNow < _cacheExpiration)
+        // If cache is valid and not forcing refresh, return current cache
+        if (!forceRefresh && _directoryCache.Count > 0 && DateTime.UtcNow < _cacheExpiration)
         {
+            return _directoryCache;
+        }
+
+        // Return existing cache if update is in progress
+        if (_updateInProgress)
+        {
+            _logger.LogDebug("Directory cache update already in progress, using existing cache with {Count} items",
+                _directoryCache?.Count ?? 0);
             return _directoryCache;
         }
 
         bool lockTaken = false;
         try
         {
-            lockTaken = await _cacheLock.WaitAsync(TimeSpan.FromSeconds(30), cancellationToken);
+            // Try to acquire lock with a shorter timeout for webhook scenarios
+            lockTaken = await _cacheLock.WaitAsync(TimeSpan.FromSeconds(5), cancellationToken);
             if (!lockTaken)
             {
-                _logger.LogWarning("Timeout waiting for directory cache lock");
-                return _directoryCache ?? new Dictionary<string, DirectoryItem>();
+                _logger.LogWarning("Timeout waiting for directory cache lock - returning existing cache");
+                return _directoryCache;
             }
 
-            // Double-check inside the lock
-            if (!forceRefresh && _directoryCache != null && DateTime.UtcNow < _cacheExpiration)
+            // Mark update as in progress
+            _updateInProgress = true;
+
+            // Double-check after acquiring lock
+            if (!forceRefresh && _directoryCache.Count > 0 && DateTime.UtcNow < _cacheExpiration)
             {
                 return _directoryCache;
             }
 
-            // Load directories using the provided function
-            var directories = await loadFunc(cancellationToken);
+            _logger.LogInformation("Loading directory cache");
 
-            // Update cache
-            _directoryCache = directories;
-            _cacheExpiration = DateTime.UtcNow.Add(_cacheDuration);
-
-            _logger.LogDebug("Directory cache refreshed, {Count} directories loaded", directories.Count);
-            return directories;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error refreshing directory cache");
-
-            // If we have an existing cache, return it even if expired
-            if (_directoryCache != null)
+            try
             {
-                _logger.LogWarning("Returning stale directory cache after refresh error");
-                return _directoryCache;
+                // Load directories using the provided function
+                var directories = await loadFunc(cancellationToken);
+
+                // Ensure we never have a null cache
+                if (directories == null)
+                {
+                    _logger.LogWarning("Load function returned null directory cache, using empty dictionary");
+                    directories = new Dictionary<string, DirectoryItem>();
+                }
+
+                // Update cache
+                _directoryCache = directories;
+                _cacheExpiration = DateTime.UtcNow.Add(_cacheDuration);
+
+                _logger.LogInformation("Directory cache refreshed, {Count} directories loaded", directories.Count);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading directory cache");
+
+                // If we have an existing cache, keep it
+                if (_directoryCache == null)
+                {
+                    _directoryCache = new Dictionary<string, DirectoryItem>();
+                }
+
+                // Rethrow to let caller know about the error
+                throw;
             }
 
-            throw;
+            return _directoryCache;
         }
         finally
         {
+            _updateInProgress = false;
+
             // Only release if we acquired the lock
             if (lockTaken)
             {
@@ -87,17 +117,25 @@ public class DirectoryCacheManager : IDirectoryCacheManager
     /// <inheritdoc/>
     public async Task InvalidateCacheAsync(CancellationToken cancellationToken = default)
     {
+        // Skip if update is already in progress
+        if (_updateInProgress)
+        {
+            _logger.LogWarning("Cache invalidation skipped - update already in progress");
+            return;
+        }
+
         bool lockTaken = false;
         try
         {
-            lockTaken = await _cacheLock.WaitAsync(TimeSpan.FromSeconds(10), cancellationToken);
+            // Try to acquire the lock with a short timeout
+            lockTaken = await _cacheLock.WaitAsync(TimeSpan.FromSeconds(2), cancellationToken);
             if (!lockTaken)
             {
                 _logger.LogWarning("Timeout waiting for directory cache lock during invalidation");
                 return;
             }
 
-            _directoryCache = null;
+            // Just invalidate expiration but keep the cache (don't set to null)
             _cacheExpiration = DateTime.MinValue;
             _logger.LogInformation("Directory cache invalidated");
         }

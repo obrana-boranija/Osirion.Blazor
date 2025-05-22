@@ -38,6 +38,26 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
         _directoryRepository = directoryRepository ?? throw new ArgumentNullException(nameof(directoryRepository));
         _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
         _apiClient = apiClient ?? throw new ArgumentNullException(nameof(apiClient));
+
+        // Initialize with current SHA if possible
+        Task.Run(async () =>
+        {
+            try
+            {
+                var branches = await _apiClient.GetBranchesAsync();
+                var branch = branches.FirstOrDefault(b => b.Name == _options.Branch);
+                if (branch != null)
+                {
+                    _lastKnownSha = branch.Commit.Sha;
+                    Logger.LogInformation("Initialized with SHA {Sha} for branch {Branch}",
+                        _lastKnownSha, _options.Branch);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWarning(ex, "Failed to get initial commit SHA");
+            }
+        });
     }
 
     public override string ProviderId => _options.ProviderId ?? $"github-{_options.Owner}-{_options.Repository}";
@@ -205,10 +225,11 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
     /// </summary>
     public async Task UpdateCacheAsync(string? latestSha = null, bool forceBackground = false)
     {
-        // Skip if the SHA hasn't changed
+        // Skip if the SHA hasn't changed and not forcing update
         if (!string.IsNullOrEmpty(latestSha) &&
             !string.IsNullOrEmpty(_lastKnownSha) &&
-            latestSha == _lastKnownSha)
+            latestSha == _lastKnownSha &&
+            !forceBackground)
         {
             Logger.LogDebug("No changes detected (SHA unchanged), skipping cache update");
             return;
@@ -235,11 +256,11 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
         if (_processingQueue) return;
 
         // Try to acquire the semaphore - if we can't get it, someone else is already processing
-        bool lockAcquired = false;
+        bool lockTaken = false;
         try
         {
-            lockAcquired = await _updateLock.WaitAsync(0);
-            if (!lockAcquired)
+            lockTaken = await _updateLock.WaitAsync(0);
+            if (!lockTaken)
             {
                 Logger.LogDebug("Another thread is already processing the queue");
                 return;
@@ -260,7 +281,7 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
                 // Start background processing and release the current lock
                 // as the background task will acquire its own lock
                 _updateLock.Release();
-                lockAcquired = false;
+                lockTaken = false;
 
                 // Fire and forget in the background
                 _ = Task.Run(async () =>
@@ -311,7 +332,7 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
         finally
         {
             // Only release if we acquired and didn't already release
-            if (lockAcquired)
+            if (lockTaken)
             {
                 _updateLock.Release();
             }
@@ -368,5 +389,22 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
                 Logger.LogError(ex, "Error refreshing cache for SHA {Sha}", latestSha);
             }
         }
+    }
+
+    /// <summary>
+    /// Handles GitHub webhook events
+    /// </summary>
+    public async Task HandleWebhookAsync(string commitSha)
+    {
+        Logger.LogInformation("Received webhook for commit SHA: {Sha}", commitSha);
+
+        if (string.IsNullOrEmpty(commitSha))
+        {
+            Logger.LogWarning("Received webhook with empty commit SHA");
+            return;
+        }
+
+        // Use the same update mechanism as polling
+        await UpdateCacheAsync(commitSha, true);
     }
 }

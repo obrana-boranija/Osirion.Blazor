@@ -197,10 +197,10 @@ public class GitHubApiClient : IGitHubApiClient
 
             if (fileContent == null)
             {
-                throw new Exception($"Failed to deserialize file content for {path}");
+                _logger.LogError($"Failed to deserialize file content for {path}");
             }
 
-            return fileContent;
+            return fileContent ?? new();
         }
         catch (Exception ex)
         {

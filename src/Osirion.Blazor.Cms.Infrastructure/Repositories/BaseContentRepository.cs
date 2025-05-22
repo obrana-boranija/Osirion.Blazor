@@ -15,14 +15,17 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
     protected readonly IMarkdownProcessor MarkdownProcessor;
     protected readonly SemaphoreSlim CacheLock = new(1, 1);
 
-    // In-memory cache for items
-    protected Dictionary<string, ContentItem>? ItemCache;
+    // In-memory cache for items - initialized to empty dict to avoid null issues
+    protected Dictionary<string, ContentItem> ItemCache = new();
     protected DateTime CacheExpiration = DateTime.MinValue;
     protected int CacheDurationMinutes = 30;
     protected bool EnableLocalization = false;
     protected string DefaultLocale = "en";
     protected List<string> SupportedLocales = new() { "en" };
     protected string ContentPath = string.Empty;
+
+    // Flag to track if update is in progress to avoid multiple webhooks hammering the system
+    private bool _updateInProgress = false;
 
     protected BaseContentRepository(
         string providerId,
@@ -41,7 +44,7 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
         try
         {
             await EnsureCacheIsLoaded(cancellationToken);
-            return ItemCache?.Values.ToList() ?? new List<ContentItem>();
+            return ItemCache.Values.ToList();
         }
         catch (Exception ex)
         {
@@ -60,7 +63,7 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
         {
             await EnsureCacheIsLoaded(cancellationToken);
 
-            if (ItemCache != null && ItemCache.TryGetValue(id, out var item))
+            if (ItemCache.TryGetValue(id, out var item))
             {
                 return item;
             }
@@ -76,31 +79,53 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
 
     public async Task RefreshCacheAsync(CancellationToken cancellationToken = default)
     {
+        // Check if an update is already in progress to avoid multiple simultaneous refreshes
+        if (_updateInProgress)
+        {
+            Logger.LogInformation("Cache refresh already in progress for provider {ProviderId}, skipping", ProviderId);
+            return;
+        }
+
         bool lockTaken = false;
         try
         {
-            // Try to acquire the lock with a timeout
-            lockTaken = await CacheLock.WaitAsync(TimeSpan.FromSeconds(30), cancellationToken);
+            // Use a shorter timeout for webhooks - we don't want to block too long
+            lockTaken = await CacheLock.WaitAsync(TimeSpan.FromSeconds(5), cancellationToken);
             if (!lockTaken)
             {
-                Logger.LogWarning("Timeout waiting for cache lock in RefreshCacheAsync");
+                Logger.LogWarning("Could not acquire lock for cache refresh - another operation in progress for provider {ProviderId}", ProviderId);
                 return;
             }
 
-            // Invalidate the cache
-            ItemCache = null;
+            _updateInProgress = true;
+
+            // Log cache status before refresh
+            Logger.LogInformation("Refreshing cache for provider {ProviderId}. Current cache has {ItemCount} items",
+                ProviderId, ItemCache?.Count ?? 0);
+
+            // Invalidate cache (but don't set to null!)
             CacheExpiration = DateTime.MinValue;
 
-            // Force reload by calling EnsureCacheIsLoaded with forceRefresh=true
-            await EnsureCacheIsLoaded(cancellationToken, true);
+            // Immediately reload the cache
+            await LoadAndAssignCache(cancellationToken);
+
+            Logger.LogInformation("Cache refreshed for provider {ProviderId}. New cache has {ItemCount} items",
+                ProviderId, ItemCache.Count);
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error refreshing content cache for provider {ProviderId}", ProviderId);
+
+            // Even if loading fails, ensure we have a valid cache
+            if (ItemCache == null)
+            {
+                ItemCache = new Dictionary<string, ContentItem>();
+            }
         }
         finally
         {
-            // Only release if we acquired the lock
+            _updateInProgress = false;
+
             if (lockTaken)
             {
                 CacheLock.Release();
@@ -108,61 +133,102 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
         }
     }
 
-    //protected async Task EnsureCacheIsLoaded(CancellationToken cancellationToken, bool forceRefresh = false)
-    //{
-    //    // Skip if cache is valid
-    //    if (!forceRefresh && ItemCache != null && DateTime.UtcNow < CacheExpiration)
-    //    {
-    //        return;
-    //    }
-
-    //    await EnsureCacheIsLoadedInternal(cancellationToken, forceRefresh);
-    //}
-
-    private async Task EnsureCacheIsLoaded(CancellationToken cancellationToken, bool forceRefresh = false)
+    /// <summary>
+    /// Helper method to load items into cache and properly assign them
+    /// </summary>
+    private async Task LoadAndAssignCache(CancellationToken cancellationToken)
     {
-        if (!forceRefresh && ItemCache != null)
+        try
         {
+            var startTime = DateTime.UtcNow;
+            Logger.LogInformation("Loading content cache for provider {ProviderId}", ProviderId);
+
+            // Call the abstract method implemented by derived classes
+            var newCache = await LoadItemsIntoCache(cancellationToken);
+
+            // Ensure we always have a non-null cache
+            if (newCache == null)
+            {
+                Logger.LogWarning("LoadItemsIntoCache returned null for provider {ProviderId}, using empty dictionary", ProviderId);
+                newCache = new Dictionary<string, ContentItem>();
+            }
+
+            // Atomically update the cache
+            ItemCache = newCache;
+            CacheExpiration = DateTime.UtcNow.AddMinutes(CacheDurationMinutes);
+
+            Logger.LogInformation("Cache loaded successfully for provider {ProviderId} in {Duration}ms. Items count: {ItemCount}",
+                ProviderId, (DateTime.UtcNow - startTime).TotalMilliseconds, newCache.Count);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to load items into cache for provider {ProviderId}", ProviderId);
+
+            // Always ensure the cache is not null
+            if (ItemCache == null)
+            {
+                ItemCache = new Dictionary<string, ContentItem>();
+            }
+
+            throw; // Rethrow to let the caller handle it
+        }
+    }
+
+    /// <summary>
+    /// Ensures the cache is loaded
+    /// </summary>
+    protected virtual async Task EnsureCacheIsLoaded(CancellationToken cancellationToken, bool forceRefresh = false)
+    {
+        // Skip if we have a valid cache and aren't forcing refresh
+        if (!forceRefresh && ItemCache is not null && ItemCache.Any())
+        {
+            return;
+        }
+
+        // Skip if an update is already in progress
+        if (_updateInProgress)
+        {
+            Logger.LogDebug("Cache update already in progress for provider {ProviderId}, using existing cache", ProviderId);
             return;
         }
 
         bool lockTaken = false;
         try
         {
-            lockTaken = await CacheLock.WaitAsync(TimeSpan.FromSeconds(30), cancellationToken);
+            // Try to acquire the lock with a reasonable timeout
+            lockTaken = await CacheLock.WaitAsync(TimeSpan.FromSeconds(10), cancellationToken);
             if (!lockTaken)
             {
-                Logger.LogWarning("Timeout waiting for cache lock in EnsureCacheIsLoaded");
-                return;
+                Logger.LogWarning("Timeout waiting for cache lock in EnsureCacheIsLoaded for provider {ProviderId}", ProviderId);
+                return; // Use whatever cache we have, even if expired
             }
 
-            // Double-check inside the lock
-            if (!forceRefresh && ItemCache != null)
+            // Mark update as in progress to prevent webhook contention
+            _updateInProgress = true;
+
+            // Double-check cache validity after acquiring lock
+            if (!forceRefresh && ItemCache is not null && ItemCache.Any())
             {
-                return; // Cache was populated while waiting for lock
+                return; // Another thread updated the cache while we were waiting
             }
 
-            var startTime = DateTime.UtcNow;
-            Logger.LogInformation("Loading content cache for provider {ProviderId}", ProviderId);
-
-            // Load all content items - this is implemented by derived classes
-            var cache = await LoadItemsIntoCache(cancellationToken);
-
-            // Update cache
-            ItemCache = cache;
-            CacheExpiration = DateTime.UtcNow.AddMinutes(CacheDurationMinutes);
-
-            Logger.LogInformation("Cache loaded for provider {ProviderId} in {Duration}ms with {Count} items",
-                ProviderId, (DateTime.UtcNow - startTime).TotalMilliseconds, cache.Count);
+            // Load and assign the cache
+            await LoadAndAssignCache(cancellationToken);
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Error loading content cache for provider {ProviderId}", ProviderId);
-            throw;
+            Logger.LogError(ex, "Error ensuring cache is loaded for provider {ProviderId}", ProviderId);
+
+            // Always ensure cache is not null
+            if (ItemCache == null)
+            {
+                ItemCache = new Dictionary<string, ContentItem>();
+            }
         }
         finally
         {
-            // Only release if we acquired the lock
+            _updateInProgress = false;
+
             if (lockTaken)
             {
                 CacheLock.Release();
@@ -181,7 +247,7 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
             await EnsureCacheIsLoaded(cancellationToken);
 
             var normalizedPath = NormalizePath(path);
-            return ItemCache?.Values.FirstOrDefault(c => NormalizePath(c.Path) == normalizedPath);
+            return ItemCache.Values.FirstOrDefault(c => NormalizePath(c.Path) == normalizedPath);
         }
         catch (Exception ex)
         {
@@ -200,7 +266,7 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
         {
             await EnsureCacheIsLoaded(cancellationToken);
 
-            return ItemCache?.Values.FirstOrDefault(c => c.Url == url);
+            return ItemCache.Values.FirstOrDefault(c => c.Url == url);
         }
         catch (Exception ex)
         {
@@ -210,14 +276,11 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
     }
 
     /// <inheritdoc/>
-    public async Task<IReadOnlyList<ContentItem>?> FindByQueryAsync(ContentQuery query, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<ContentItem>> FindByQueryAsync(ContentQuery query, CancellationToken cancellationToken = default)
     {
         try
         {
             await EnsureCacheIsLoaded(cancellationToken);
-
-            if (ItemCache == null)
-                return new List<ContentItem>();
 
             var filteredItems = ItemCache.Values.AsQueryable();
 
@@ -238,7 +301,7 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
                 filteredItems = filteredItems.Take(query.Take.Value);
             }
 
-            return filteredItems is null || !filteredItems.Any() ? null : filteredItems.ToList();
+            return filteredItems.ToList();
         }
         catch (Exception ex)
         {
@@ -253,9 +316,6 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
         try
         {
             await EnsureCacheIsLoaded(cancellationToken);
-
-            if (ItemCache == null)
-                return new List<ContentItem>();
 
             return ItemCache.Values
                 .Where(item => item.Directory != null && item.Directory.Id == directoryId)
@@ -278,9 +338,6 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
         {
             await EnsureCacheIsLoaded(cancellationToken);
 
-            if (ItemCache == null)
-                return new List<ContentItem>();
-
             return ItemCache.Values
                 .Where(item => item.ContentId == contentId)
                 .ToList();
@@ -288,7 +345,8 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
         catch (Exception ex)
         {
             LogError(ex, "getting translations", contentId);
-            return Array.Empty<ContentItem>();            }
+            return Array.Empty<ContentItem>();
+        }
     }
 
     /// <inheritdoc/>
@@ -297,9 +355,6 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
         try
         {
             await EnsureCacheIsLoaded(cancellationToken);
-
-            if (ItemCache == null)
-                return new List<ContentTag>();
 
             return ItemCache.Values
                 .SelectMany(item => item.Tags)
@@ -339,8 +394,6 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
         await DeleteWithCommitMessageAsync(id, commitMessage, cancellationToken);
     }
 
-    #region Abstract methods that derived classes must implement
-
     /// <summary>
     /// Saves a content item with a commit message
     /// </summary>
@@ -350,10 +403,6 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
     /// Deletes a content item with a commit message
     /// </summary>
     public abstract Task DeleteWithCommitMessageAsync(string id, string commitMessage, CancellationToken cancellationToken = default);
-
-    #endregion
-
-    #region Utility methods for derived classes
 
     /// <summary>
     /// Normalizes a path for consistent comparison
@@ -779,9 +828,9 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
             var searchTerms = query.SearchQuery.ToLower().Split(' ', StringSplitOptions.RemoveEmptyEntries);
             filteredItems = filteredItems.Where(item =>
                 searchTerms.Any(term =>
-                    item.Title.ToLower().Contains(term) ||
-                    item.Description.ToLower().Contains(term) ||
-                    item.Content.ToLower().Contains(term) ||
+                    (item.Title != null && item.Title.ToLower().Contains(term)) ||
+                    (item.Description != null && item.Description.ToLower().Contains(term)) ||
+                    (item.Content != null && item.Content.ToLower().Contains(term)) ||
                     item.Categories.Any(c => c.ToLower().Contains(term)) ||
                     item.Tags.Any(t => t.ToLower().Contains(term))
                 )
@@ -1012,6 +1061,4 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
             return slug;
         }
     }
-
-    #endregion
 }
