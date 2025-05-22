@@ -1,5 +1,7 @@
-﻿<!DOCTYPE html>
-<html lang="en" class="osirion-bootstrap-integration">
+﻿@using Osirion.Blazor.Analytics.Components
+@using Osirion.Blazor.Navigation.Components
+<!DOCTYPE html>
+<html lang="en" class="osirion-bootstrap-integration" data-bs-theme="light">
 
 <head>
     <meta charset="utf-8" />
@@ -10,12 +12,17 @@
     <link rel="stylesheet" href="@Assets["Osirion.Blazor.Example.Bootstrap.styles.css"]" />
     <ImportMap />
     <link rel="icon" type="image/png" href="favicon.png" />
+
+    <ClarityTracker />
+    <MatomoTracker />
     <HeadOutlet />
 </head>
 
 <body>
     <Routes />
     <script src="_framework/blazor.web.js"></script>
+
+    <EnhancedNavigation />
 </body>
 
 </html>

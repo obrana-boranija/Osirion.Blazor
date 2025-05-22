@@ -3,7 +3,7 @@
 @using Osirion.Blazor.Navigation.Components
 @inherits OsirionComponentBase
 
-<Menu AriaLabel="Main Navigation" Orientation="MenuOrientation.Horizontal" CollapseOnMobile BrandText="Osirion.Blazor">
+<Menu AriaLabel="Main Navigation" Orientation="MenuOrientation.Horizontal" CollapseOnMobile BrandText="Osirion.Blazor" IsSticky="false">
     <MenuItem Text="Home" Href="/" Icon="home" />
     @foreach (var dir in _directories)
     {

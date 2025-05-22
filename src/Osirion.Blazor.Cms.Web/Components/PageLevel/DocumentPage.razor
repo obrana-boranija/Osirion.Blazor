@@ -1,0 +1,163 @@
+﻿@namespace Osirion.Blazor.Cms.Components
+@inherits OsirionComponentBase
+
+<div class="@GetDocumentPageClass()">
+    @if (IsLoading && IsInteractive)
+    {
+        <div class="osirion-loading">
+            <div class="osirion-spinner"></div>
+            <p>@LoadingText</p>
+        </div>
+    }
+    else if (Content == null && !string.IsNullOrEmpty(ContentPath))
+    {
+        <div class="osirion-not-found">
+            <h2>@NotFoundTitle</h2>
+            <p>@NotFoundText</p>
+            @if (ShowBackLink)
+            {
+                <a href="@BackLinkUrl" class="osirion-back-link">@BackLinkText</a>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="osirion-document-layout">
+            @if (ShowSideNavigation)
+            {
+                <nav class="osirion-document-sidenav" aria-label="Document navigation">
+                    @if (!string.IsNullOrEmpty(NavigationTitle))
+                    {
+                        <h2 class="osirion-sidenav-title">@NavigationTitle</h2>
+                    }
+
+                    @if (NavigationItems != null && NavigationItems.Any())
+                    {
+                        <ul class="osirion-sidenav-list">
+                            @foreach (var item in NavigationItems)
+                            {
+                                <li class="osirion-sidenav-item">
+                                    <a href="@GetNavigationUrl(item)"
+                                       class="@GetNavigationLinkClass(item)"
+                                       aria-current="@(IsCurrentPage(item) ? "page" : null)">
+                                        @item.Title
+                                    </a>
+                                    @if (item.Children != null && item.Children.Any() && (item.IsExpanded || IsParentOfCurrentPage(item)))
+                                    {
+                                        <ul class="osirion-sidenav-sublist">
+                                            @foreach (var child in item.Children)
+                                            {
+                                                <li class="osirion-sidenav-item">
+                                                    <a href="@GetNavigationUrl(child)"
+                                                       class="@GetNavigationLinkClass(child)"
+                                                       aria-current="@(IsCurrentPage(child) ? "page" : null)">
+                                                        @child.Title
+                                                    </a>
+                                                </li>
+                                            }
+                                        </ul>
+                                    }
+                                </li>
+                            }
+                        </ul>
+                    }
+                </nav>
+            }
+
+            <main class="osirion-document-main">
+                @if (ShowBreadcrumbs)
+                {
+                    <ContentBreadcrumbs Content="@Content"
+                                        Directory="@Content?.Directory"
+                                        ShowHome="@ShowBreadcrumbHome"
+                                        HomeUrl="@BreadcrumbHomeUrl"
+                                        HomeText="@BreadcrumbHomeText"
+                                        DirectoryUrlFormatter="@DirectoryUrlFormatter" />
+                }
+
+                @if (Content != null)
+                {
+                    <article class="osirion-document-content" itemscope itemtype="https://schema.org/@SchemaType">
+                        <header class="osirion-document-header">
+                            <h1 class="osirion-document-title">@Content.Title</h1>
+                            @if (ShowMetadata)
+                            {
+                                <div class="osirion-document-meta">
+                                    @if (!string.IsNullOrEmpty(Content.Author))
+                                    {
+                                        <span class="osirion-document-author">
+                                            <svg class="osirion-meta-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                                <circle cx="12" cy="7" r="4"></circle>
+                                            </svg>
+                                            @Content.Author
+                                        </span>
+                                    }
+                                    <span class="osirion-document-date">
+                                        <svg class="osirion-meta-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                                        </svg>
+                                        Last updated: @Content.DateCreated.ToString("MMMM d, yyyy")
+                                    </span>
+                                </div>
+                            }
+                        </header>
+
+                        @if (ShowTableOfContents)
+                        {
+                            <aside class="osirion-document-toc">
+                                <h2 class="osirion-toc-title">@TableOfContentsTitle</h2>
+                                <TableOfContents Content="@Content.Content" MinLevel="@TocMinLevel" MaxLevel="@TocMaxLevel" />
+                            </aside>
+                        }
+
+                        <div class="osirion-document-body">
+                            @((MarkupString)Content.Content)
+                        </div>
+
+                        @if (ShowNavigationLinks && (PreviousItem != null || NextItem != null))
+                        {
+                            <nav class="osirion-document-pagination" aria-label="Document pagination">
+                                @if (PreviousItem != null)
+                                {
+                                    <a href="@GetContentUrl(PreviousItem)" class="osirion-doc-nav-previous">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="15 18 9 12 15 6"></polyline>
+                                        </svg>
+                                        <div class="osirion-doc-nav-text">
+                                            <span class="osirion-doc-nav-label">Previous</span>
+                                            <span class="osirion-doc-nav-title">@PreviousItem.Title</span>
+                                        </div>
+                                    </a>
+                                }
+
+                                @if (NextItem != null)
+                                {
+                                    <a href="@GetContentUrl(NextItem)" class="osirion-doc-nav-next">
+                                        <div class="osirion-doc-nav-text">
+                                            <span class="osirion-doc-nav-label">Next</span>
+                                            <span class="osirion-doc-nav-title">@NextItem.Title</span>
+                                        </div>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="9 18 15 12 9 6"></polyline>
+                                        </svg>
+                                    </a>
+                                }
+                            </nav>
+                        }
+                    </article>
+                }
+
+                @if (!string.IsNullOrEmpty(CustomFooterContent))
+                {
+                    <ContentSection Content="@CustomFooterContent"
+                                    Variant="highlight"
+                                    Padding="normal" />
+                }
+            </main>
+        </div>
+    }
+</div>

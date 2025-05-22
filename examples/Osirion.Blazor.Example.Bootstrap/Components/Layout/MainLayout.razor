@@ -1,4 +1,6 @@
-﻿@inherits LayoutComponentBase
+﻿@using Osirion.Blazor.Navigation.Components
+@using Osirion.Blazor.Theming.Components
+@inherits LayoutComponentBase
 
 <NavMenu />
 
@@ -9,6 +11,9 @@
         </article>
     </main>
 </div>
+
+<OsirionStyles />
+<ScrollToTopProvider />
 
 <div id="blazor-error-ui" data-nosnippet>
     An unhandled error has occurred.

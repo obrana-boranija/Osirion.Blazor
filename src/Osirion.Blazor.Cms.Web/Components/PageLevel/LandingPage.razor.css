@@ -1,0 +1,81 @@
+/* LandingPage Component - Osirion.Blazor.Cms.Web */
+
+.osirion-landing-page {
+    font-family: var(--osirion-font-family-base, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif);
+    color: var(--osirion-text-primary, #374151);
+    background-color: var(--osirion-background-primary, #ffffff);
+    min-height: 100vh;
+}
+
+/* Loading and error states */
+.osirion-loading,
+.osirion-not-found {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 50vh;
+    text-align: center;
+    color: var(--osirion-text-secondary, #6b7280);
+}
+
+.osirion-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--osirion-background-tertiary, #f3f4f6);
+    border-top-color: var(--osirion-action-primary, #2563eb);
+    border-radius: 50%;
+    animation: osirion-spin 0.8s linear infinite;
+    margin-bottom: var(--osirion-spacing-4, 1rem);
+}
+
+@keyframes osirion-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Landing page specific styling */
+.osirion-landing-page .osirion-content-section {
+    margin-bottom: var(--osirion-spacing-8, 2rem);
+}
+
+    .osirion-landing-page .osirion-content-section:last-child {
+        margin-bottom: 0;
+    }
+
+/* Hero section overrides for landing pages */
+.osirion-landing-page .osirion-hero-section {
+    margin-bottom: var(--osirion-spacing-12, 3rem);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .osirion-landing-page .osirion-hero-section {
+        margin-bottom: var(--osirion-spacing-8, 2rem);
+    }
+
+    .osirion-landing-page .osirion-content-section {
+        margin-bottom: var(--osirion-spacing-6, 1.5rem);
+    }
+}
+
+/* Accessibility - reduce motion */
+@media (prefers-reduced-motion: reduce) {
+    .osirion-spinner {
+        animation: none;
+    }
+}
+
+/* Print styles */
+@media print {
+    .osirion-landing-page {
+        background-color: white;
+        color: black;
+    }
+
+    .osirion-loading,
+    .osirion-not-found {
+        display: none;
+    }
+}

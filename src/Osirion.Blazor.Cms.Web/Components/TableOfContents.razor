@@ -1,0 +1,31 @@
+﻿@namespace Osirion.Blazor.Cms.Components
+@inherits OsirionComponentBase
+
+<nav class="@GetTableOfContentsClass()" aria-label="Table of Contents">
+    @if (Headings.Any())
+    {
+        <ol class="osirion-toc-list">
+            @foreach (var heading in Headings)
+            {
+                <li class="osirion-toc-item osirion-toc-level-@heading.Level">
+                    <a href="#@heading.Id" class="osirion-toc-link">@heading.Text</a>
+                    @if (heading.Children.Any())
+                    {
+                        <ol class="osirion-toc-sublist">
+                            @foreach (var child in heading.Children)
+                            {
+                                <li class="osirion-toc-item osirion-toc-level-@child.Level">
+                                    <a href="#@child.Id" class="osirion-toc-link">@child.Text</a>
+                                </li>
+                            }
+                        </ol>
+                    }
+                </li>
+            }
+        </ol>
+    }
+    else
+    {
+        <p class="osirion-toc-empty">@EmptyText</p>
+    }
+</nav>

@@ -1,0 +1,95 @@
+﻿@namespace Osirion.Blazor.Cms.Components
+@inherits OsirionComponentBase
+
+<div class="@GetLandingPageClass()">
+    @if (IsLoading && IsInteractive)
+    {
+        <div class="osirion-loading">
+            <div class="osirion-spinner"></div>
+            <p>@LoadingText</p>
+        </div>
+    }
+    else if (Content == null && !string.IsNullOrEmpty(ContentPath))
+    {
+        <div class="osirion-not-found">
+            <p>@NotFoundText</p>
+        </div>
+    }
+    else
+    {
+        @if (ShowHero)
+        {
+            <HeroSection 
+                Title="@(Content?.Title ?? HeroTitle)"
+                Subtitle="@(Content?.Description ?? HeroSubtitle)"
+                BackgroundImage="@(Content?.FeaturedImageUrl ?? HeroBackgroundImage)"
+                PrimaryButtonText="@HeroPrimaryButtonText"
+                PrimaryButtonUrl="@HeroPrimaryButtonUrl"
+                SecondaryButtonText="@HeroSecondaryButtonText"
+                SecondaryButtonUrl="@HeroSecondaryButtonUrl"
+                ShowButtons="@ShowHeroButtons"
+                Alignment="@HeroAlignment"
+                MinHeight="@HeroHeight" />
+        }
+
+        @if (Content != null)
+        {
+            <ContentSection 
+                Content="@Content.Content"
+                Width="@ContentWidth"
+                TextAlign="@ContentAlign"
+                Variant="@ContentVariant"
+                Padding="@ContentPadding" />
+        }
+
+        @if (ShowTestimonials && TestimonialItems != null && TestimonialItems.Any())
+        {
+            <TestimonialsSection 
+                Title="@TestimonialsSectionTitle"
+                Testimonials="@TestimonialItems"
+                Layout="@TestimonialsLayout"
+                ShowImages="@ShowTestimonialImages" />
+        }
+
+        @if (ShowFeatures && FeatureItems != null && FeatureItems.Any())
+        {
+            <FeaturesSection 
+                Title="@FeaturesSectionTitle"
+                Description="@FeaturesSectionDescription"
+                Features="@FeatureItems"
+                Layout="@FeaturesLayout"
+                Columns="@FeaturesColumns" />
+        }
+
+        @if (ShowCallToAction)
+        {
+            <CallToActionSection 
+                Title="@CtaTitle"
+                Description="@CtaDescription"
+                PrimaryButtonText="@CtaPrimaryButtonText"
+                PrimaryButtonUrl="@CtaPrimaryButtonUrl"
+                SecondaryButtonText="@CtaSecondaryButtonText"
+                SecondaryButtonUrl="@CtaSecondaryButtonUrl"
+                BackgroundColor="@CtaBackgroundColor"
+                Variant="@CtaVariant" />
+        }
+
+        @if (!string.IsNullOrEmpty(CustomContent))
+        {
+            <ContentSection 
+                Content="@CustomContent"
+                Width="wide"
+                Variant="highlight"
+                Padding="large" />
+        }
+
+        @if (ChildContent != null)
+        {
+            <ContentSection 
+                Width="wide"
+                Padding="normal">
+                @ChildContent
+            </ContentSection>
+        }
+    }
+</div>

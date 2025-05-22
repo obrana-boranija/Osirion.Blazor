@@ -20,16 +20,12 @@
                 <div class="osirion-hero-buttons">
                     @if (!string.IsNullOrEmpty(PrimaryButtonText) && !string.IsNullOrEmpty(PrimaryButtonUrl))
                     {
-                        <a href="@PrimaryButtonUrl" class="osirion-hero-button osirion-hero-button-primary">
-                            @PrimaryButtonText
-                        </a>
+                        <button onclick="window.location.href='@PrimaryButtonUrl';" class="@GetButtonClass()">@PrimaryButtonText</button>
                     }
 
                     @if (!string.IsNullOrEmpty(SecondaryButtonText) && !string.IsNullOrEmpty(SecondaryButtonUrl))
                     {
-                        <a href="@SecondaryButtonUrl" class="osirion-hero-button osirion-hero-button-secondary">
-                            @SecondaryButtonText
-                        </a>
+                        <button onclick="window.location.href='@SecondaryButtonUrl';" class="@GetButtonClass()">@SecondaryButtonText</button>
                     }
                 </div>
             }
