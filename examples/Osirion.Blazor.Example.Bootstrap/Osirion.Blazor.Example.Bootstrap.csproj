@@ -7,6 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="compilerconfig.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="compilerconfig.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\src\Osirion.Blazor\Osirion.Blazor.csproj" />
   </ItemGroup>
 

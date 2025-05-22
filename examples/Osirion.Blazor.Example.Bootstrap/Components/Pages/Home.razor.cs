@@ -22,7 +22,7 @@ public partial class Home(IContentProviderManager ContentProviderManager)
         if (provider == null)
             return;
 
-        var result = await provider.GetItemsByQueryAsync(new Cms.Domain.Repositories.ContentQuery { Locale = Locale, Slug = "introduction" });
+        var result = await provider.GetItemsByQueryAsync(new Cms.Domain.Repositories.ContentQuery { Locale = Locale, Url = "blog/analytics-integration-in-blazor" });
         Content = result?.FirstOrDefault();
     }
 }

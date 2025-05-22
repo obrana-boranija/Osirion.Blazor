@@ -18,6 +18,11 @@ public class ContentQuery
     public string? Slug { get; set; }
 
     /// <summary>
+    /// Gets or sets the url to filter by
+    /// </summary>
+    public string? Url { get; set; }
+
+    /// <summary>
     /// Gets or sets the directory ID to filter by
     /// </summary>
     public string? DirectoryId { get; set; }

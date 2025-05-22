@@ -22,77 +22,63 @@
     }
     else if (Content != null)
     {
-        <article class="osirion-article-page-content" itemscope itemtype="https://schema.org/@SchemaType">
+        <article class="osirion-article-page-content">
             @if (ShowBreadcrumbs)
             {
-                <ContentBreadcrumbs 
-                    Content="@Content"
-                    Directory="@Content.Directory"
-                    ShowHome="@ShowBreadcrumbHome"
-                    HomeUrl="@BreadcrumbHomeUrl"
-                    HomeText="@BreadcrumbHomeText"
-                    DirectoryUrlFormatter="@DirectoryUrlFormatter" />
+                <ContentBreadcrumbs Content="@Content"
+                                    Directory="@Content.Directory"
+                                    ShowHome="@ShowBreadcrumbHome"
+                                    HomeUrl="@BreadcrumbHomeUrl"
+                                    HomeText="@BreadcrumbHomeText"
+                                    DirectoryUrlFormatter="@DirectoryUrlFormatter" />
             }
 
             <div class="osirion-article-layout">
-                <div class="osirion-article-main">
-                    <LocalizedContentView 
-                        Item="@Content"
-                        PreviousItem="@PreviousItem"
-                        NextItem="@NextItem"
-                        ShowNavigationLinks="@ShowNavigationLinks"
-                        CategoryUrlFormatter="@CategoryUrlFormatter"
-                        TagUrlFormatter="@TagUrlFormatter"
-                        ContentUrlFormatter="@ContentUrlFormatter" />
-
-                    @if (ShowRelatedContent && RelatedItems != null && RelatedItems.Any())
-                    {
-                        <ContentSection 
-                            Title="@RelatedContentTitle"
-                            Variant="highlight"
-                            Padding="large">
-                            <div class="osirion-related-content-grid">
-                                @foreach (var item in RelatedItems)
-                                {
-                                    <article class="osirion-related-content-item">
-                                        @if (!string.IsNullOrEmpty(item.FeaturedImageUrl))
-                                        {
-                                            <div class="osirion-related-image-container">
-                                                <img src="@item.FeaturedImageUrl" alt="@item.Title" class="osirion-related-image" loading="lazy" />
-                                            </div>
-                                        }
-                                        <div class="osirion-related-content-body">
-                                            <h3 class="osirion-related-title">
-                                                <a href="@GetContentUrl(item)">@item.Title</a>
-                                            </h3>
-                                            <p class="osirion-related-description">@item.Description</p>
-                                            <time class="osirion-related-date" datetime="@item.DateCreated.ToString("yyyy-MM-dd")">
-                                                @item.DateCreated.ToString("MMM d, yyyy")
-                                            </time>
-                                        </div>
-                                    </article>
-                                }
-                            </div>
-                        </ContentSection>
-                    }
-
-                    @if (!string.IsNullOrEmpty(CustomFooterContent))
-                    {
-                        <ContentSection 
-                            Content="@CustomFooterContent"
-                            Variant="bordered"
-                            Padding="normal" />
-                    }
-                </div>
-
-                @if (ShowSidebar)
+                <!-- Left sidebar - Table of Contents only -->
+                @if (ShowSidebar && ShowTableOfContents)
                 {
-                    <aside class="osirion-article-sidebar">
-                        @if (ShowTableOfContents)
+                    <aside class="osirion-article-sidebar osirion-toc-sidebar">
+                        <div class="osirion-sidebar-section">
+                            <h3 class="osirion-sidebar-title">@TableOfContentsTitle</h3>
+                            <TableOfContents Content="@Content.Content" />
+                        </div>
+                    </aside>
+                }
+
+                <!-- Main content area -->
+                <div class="osirion-article-main">
+                    <LocalizedContentView Item="@Content"
+                                          PreviousItem="@PreviousItem"
+                                          NextItem="@NextItem"
+                                          ShowNavigationLinks="@ShowNavigationLinks"
+                                          CategoryUrlFormatter="@CategoryUrlFormatter"
+                                          TagUrlFormatter="@TagUrlFormatter"
+                                          ContentUrlFormatter="@ContentUrlFormatter" />
+
+                </div>
+                <!-- Right sidebar - Author, Categories, Tags -->
+                @if (ShowSidebar && (ShowAuthorSidebar || ShowCategoriesSidebar || ShowTagsSidebar || SidebarContent != null))
+                {
+                    <aside class="osirion-article-sidebar osirion-meta-sidebar">
+                        @if (ShowAuthorSidebar && !string.IsNullOrEmpty(Content.Author))
                         {
                             <div class="osirion-sidebar-section">
-                                <h3 class="osirion-sidebar-title">@TableOfContentsTitle</h3>
-                                <TableOfContents Content="@Content.Content" />
+                                <h3 class="osirion-sidebar-title">@AuthorSectionTitle</h3>
+                                <div class="osirion-author-info">
+                                    <div class="osirion-author-avatar">
+                                        <img src="@GetAuthorAvatarUrl(Content.Author)" alt="@Content.Author" />
+                                    </div>
+                                    <div class="osirion-author-details">
+                                        <p class="osirion-author-name">@Content.Author</p>
+                                        <p class="osirion-article-date">@Content.DateCreated.ToString("MMMM d, yyyy")</p>
+                                        @if (Content.ReadTimeMinutes > 0)
+                                        {
+                                            <p class="osirion-read-time">
+                                                <i class="osirion-icon-clock"></i> @Content.ReadTimeMinutes min read
+                                            </p>
+                                        }
+                                    </div>
+                                </div>
                             </div>
                         }
 
@@ -103,7 +89,10 @@
                                 <div class="osirion-sidebar-categories">
                                     @foreach (var category in Content.Categories)
                                     {
-                                        <a href="@GetCategoryUrl(category)" class="osirion-sidebar-category">@category</a>
+                                        <a href="@GetCategoryUrl(category)" class="osirion-sidebar-category">
+                                            @* <i class="osirion-icon-folder"></i> @category *@
+                                            <img src="@GetShieldsIoUrl(category)" alt="@category" class="osirion-tag-shield" />
+                                        </a>
                                     }
                                 </div>
                             </div>
@@ -116,22 +105,9 @@
                                 <div class="osirion-sidebar-tags">
                                     @foreach (var tag in Content.Tags)
                                     {
-                                        <a href="@GetTagUrl(tag)" class="osirion-sidebar-tag">@tag</a>
-                                    }
-                                </div>
-                            </div>
-                        }
-
-                        @if (ShowAuthorSidebar && !string.IsNullOrEmpty(Content.Author))
-                        {
-                            <div class="osirion-sidebar-section">
-                                <h3 class="osirion-sidebar-title">@AuthorSectionTitle</h3>
-                                <div class="osirion-author-info">
-                                    <p class="osirion-author-name">@Content.Author</p>
-                                    <p class="osirion-article-date">@Content.DateCreated.ToString("MMMM d, yyyy")</p>
-                                    @if (Content.ReadTimeMinutes > 0)
-                                    {
-                                        <p class="osirion-read-time">@Content.ReadTimeMinutes min read</p>
+                                        <a href="@GetTagUrl(tag)" class="osirion-sidebar-tag">
+                                            <img src="@GetShieldsIoUrl(tag)" alt="@tag" class="osirion-tag-shield" />
+                                        </a>
                                     }
                                 </div>
                             </div>
@@ -145,8 +121,46 @@
                         }
                     </aside>
                 }
-            
             </div>
         </article>
+
+        <div>
+            @if (ShowRelatedContent && RelatedItems != null && RelatedItems.Any())
+            {
+                <ContentSection Title="@RelatedContentTitle"
+                                Variant="highlight"
+                                Padding="large">
+                    <div class="osirion-related-content-grid">
+                        @foreach (var item in RelatedItems)
+                        {
+                            <article class="osirion-related-content-item">
+                                @if (!string.IsNullOrEmpty(item.FeaturedImageUrl))
+                                {
+                                    <div class="osirion-related-image-container">
+                                        <img src="@item.FeaturedImageUrl" alt="@item.Title" class="osirion-related-image" loading="lazy" />
+                                    </div>
+                                }
+                                <div class="osirion-related-content-body">
+                                    <h3>
+                                        <a href="@GetContentUrl(item)">@item.Title</a>
+                                    </h3>
+                                    <p class="osirion-related-description">@item.Description</p>
+                                    <time class="osirion-related-date" datetime="@item.DateCreated.ToString("yyyy-MM-dd")">
+                                        @item.DateCreated.ToString("MMM d, yyyy")
+                                    </time>
+                                </div>
+                            </article>
+                        }
+                    </div>
+                </ContentSection>
+            }
+
+            @if (!string.IsNullOrEmpty(CustomFooterContent))
+            {
+                <ContentSection Content="@CustomFooterContent"
+                                Variant="bordered"
+                                Padding="normal" />
+            }
+        </div>
     }
 </div>

@@ -770,6 +770,12 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
                 item.Slug != null && item.Slug == query.Slug);
         }
 
+        if (!string.IsNullOrEmpty(query.Url))
+        {
+            filteredItems = filteredItems.Where(item =>
+                item.Url != null && item.Url.Equals(query.Url, StringComparison.OrdinalIgnoreCase));
+        }
+
         if (!string.IsNullOrEmpty(query.Category))
         {
             filteredItems = filteredItems.Where(item =>

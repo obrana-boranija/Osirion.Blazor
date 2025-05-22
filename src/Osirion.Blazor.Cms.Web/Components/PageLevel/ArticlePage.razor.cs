@@ -12,8 +12,7 @@ namespace Osirion.Blazor.Cms.Components;
 /// </summary>
 public partial class ArticlePage
 {
-    [Inject]
-    private IContentProviderManager ContentProviderManager { get; set; } = default!;
+    [Inject] private IContentProviderManager ContentProviderManager { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the path to the article content
@@ -392,4 +391,32 @@ public partial class ArticlePage
     {
         return ContentUrlFormatter?.Invoke(item) ?? $"/{item.Path}";
     }
+
+    private string GetAuthorAvatarUrl(string author)
+    {
+        // You can implement your own logic to get author avatars
+        // For now, return a placeholder
+        return $"https://ui-avatars.com/api/?name={author}&background=random";
+    }
+
+    private string GetShieldsIoUrl(string tag)
+    {
+        // Generate a deterministic color based on the tag name
+        var tagHash = tag.GetHashCode();
+        var colorIndex = Math.Abs(tagHash % TagColors.Length);
+        var color = TagColors[colorIndex];
+
+        // URL encode the tag
+        var encodedTag = Uri.EscapeDataString(tag);
+
+        return $"https://img.shields.io/badge/{encodedTag}-{color}?style=flat-square&logo=tag&logoColor=white";
+    }
+
+    // Array of colors for the shields.io tags
+    private static readonly string[] TagColors = new[]
+    {
+        "blue", "green", "red", "orange", "yellow", "purple", "lightgrey",
+        "success", "important", "critical", "informational", "inactive",
+        "blueviolet", "ff69b4", "9cf", "brightgreen", "yellowgreen", "orange"
+    };
 }

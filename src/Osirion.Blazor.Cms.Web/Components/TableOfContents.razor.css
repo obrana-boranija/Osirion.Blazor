@@ -43,9 +43,9 @@
 }
 
     .osirion-toc-link:hover {
-        color: var(--osirion-action-primary, #2563eb);
+        /*color: var(--osirion-action-primary, #2563eb);*/
         background-color: var(--osirion-background-secondary, #f3f4f6);
-        border-left-color: var(--osirion-action-primary, #2563eb);
+        /*border-left-color: var(--osirion-action-primary, #2563eb);*/
     }
 
     .osirion-toc-link:focus {
@@ -88,7 +88,7 @@
 
 /* Empty state */
 .osirion-toc-empty {
-    color: var(--osirion-text-tertiary, #9ca3af);
+    /*color: var(--osirion-text-tertiary, #9ca3af);*/
     font-style: italic;
     text-align: center;
     padding: var(--osirion-spacing-4, 1rem);
