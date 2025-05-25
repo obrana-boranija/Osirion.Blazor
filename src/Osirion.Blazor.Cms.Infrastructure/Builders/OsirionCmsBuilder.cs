@@ -45,17 +45,14 @@ public class OsirionCmsBuilder
     //}
 
     /// <summary>
-    /// Adds GitHub provider from configuration
+    /// Adds GitHub provider with optional provider name for multi-provider scenarios
     /// </summary>
-    /// <param name="configSection">Optional configuration section name (default: "Osirion:Cms:GitHub")</param>
+    /// <param name="providerName">Optional provider name</param>
+    /// <param name="configure">Optional delegate to configure GitHub options</param>
     /// <returns>The builder for chaining</returns>
-    public OsirionCmsBuilder AddGitHub(string configSection = GitHubOptions.Section)
+    public OsirionCmsBuilder AddGitHub(string? providerName = null, Action<GitHubOptions>? configure = null)
     {
-        var section = Configuration.GetSection(configSection);
-        if (section.Exists())
-        {
-            Services.AddGitHubContentProvider(Configuration);
-        }
+        Services.AddGitHubContentProvider(Configuration, providerName, configure);
         return this;
     }
 

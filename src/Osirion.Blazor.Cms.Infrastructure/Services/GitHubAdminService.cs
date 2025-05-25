@@ -13,33 +13,47 @@ namespace Osirion.Blazor.Cms.Infrastructure.Services;
 /// </summary>
 public class GitHubAdminService : IGitHubAdminService
 {
-    private readonly IGitHubApiClient _apiClient;
+    private readonly IGitHubApiClientFactory _apiClientFactory;
     private readonly ILogger<GitHubAdminService> _logger;
     private readonly GitHubOptions _options;
+    private IGitHubApiClient _apiClient;
+    private string _currentProviderName = string.Empty;
 
     public GitHubAdminService(
-        IGitHubApiClient apiClient,
+        IGitHubApiClientFactory apiClientFactory,
         IOptions<CmsAdminOptions> options,
         ILogger<GitHubAdminService> logger)
     {
-        _apiClient = apiClient ?? throw new ArgumentNullException(nameof(apiClient));
+        _apiClientFactory = apiClientFactory ?? throw new ArgumentNullException(nameof(apiClientFactory));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _options = options.Value.GitHub;
 
-        // Initialize API client with configuration
-        if (!string.IsNullOrEmpty(_options.Owner) && !string.IsNullOrEmpty(_options.Repository))
-        {
-            _apiClient.SetRepository(_options.Owner, _options.Repository);
-        }
-
-        if (!string.IsNullOrEmpty(_options.Branch))
-        {
-            _apiClient.SetBranch(_options.Branch);
-        }
+        // Get default client
+        _apiClient = _apiClientFactory.GetDefaultClient();
     }
 
     public string CurrentBranch { get; private set; } = "main";
     public string CurrentRepository { get; private set; } = string.Empty;
+    public string CurrentProvider { get; private set; } = string.Empty;
+
+    /// <summary>
+    /// Sets the current provider to use
+    /// </summary>
+    public void SetProvider(string providerName)
+    {
+        if (string.IsNullOrEmpty(providerName))
+        {
+            _apiClient = _apiClientFactory.GetDefaultClient();
+            CurrentProvider = "default";
+        }
+        else
+        {
+            _apiClient = _apiClientFactory.GetClient(providerName);
+            CurrentProvider = providerName;
+        }
+        _currentProviderName = providerName;
+        _logger.LogInformation("Switched to provider: {Provider}", CurrentProvider);
+    }
 
     public async Task<GitHubBranch> CreateBranchAsync(string branchName, string fromBranch)
     {

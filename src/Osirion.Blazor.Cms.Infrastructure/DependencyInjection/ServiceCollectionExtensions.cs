@@ -91,42 +91,70 @@ public static class ServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Adds GitHub content provider
+    /// Adds GitHub content provider with support for multiple providers
     /// </summary>
     /// <param name="services">The service collection</param>
     /// <param name="configuration">The configuration</param>
+    /// <param name="providerName">Optional provider name for multi-provider scenarios</param>
     /// <param name="configureOptions">Optional delegate to configure GitHub options</param>
     /// <returns>The service collection for chaining</returns>
     public static IServiceCollection AddGitHubContentProvider(
         this IServiceCollection services,
         IConfiguration configuration,
+        string? providerName = null,
         Action<GitHubOptions>? configureOptions = null)
     {
         if (services == null) throw new ArgumentNullException(nameof(services));
         if (configuration == null) throw new ArgumentNullException(nameof(configuration));
 
-        // Configure options
-        if (configureOptions != null)
-        {
-            services.Configure<GitHubOptions>(options => {
-                // First apply configuration from settings
-                configuration.GetSection(GitHubOptions.Section).Bind(options);
-                // Then apply custom configuration
-                configureOptions(options);
-            });
-        }
-        else
-        {
-            services.Configure<GitHubOptions>(configuration.GetSection(GitHubOptions.Section));
-        }
+        // Register the factory if not already registered
+        services.TryAddSingleton<IGitHubApiClientFactory, GitHubApiClientFactory>();
 
-        // Register HTTP clients and services
-        services.TryAddHttpClient<IGitHubApiClient, GitHubApiClient>();
+        // Register HTTP client factory for creating named clients
         services.TryAddHttpClient<IGitHubTokenProvider, GitHubTokenProvider>();
         services.TryAddHttpClient<IAuthenticationService, AuthenticationService>();
         services.TryAddHttpClient<IGitHubAdminService, GitHubAdminService>();
 
-        // Register GitHub repositories
+        // If provider name is specified, register as a named provider
+        if (!string.IsNullOrEmpty(providerName))
+        {
+            // Configure options for this specific provider
+            services.Configure<GitHubOptions>($"GitHub_{providerName}", options => {
+                // Try to load from new structure first
+                var providerSection = configuration.GetSection($"Osirion:Cms:Web:GitHub:{providerName}");
+                if (!providerSection.Exists())
+                {
+                    providerSection = configuration.GetSection($"Osirion:Cms:Admin:GitHub:{providerName}");
+                }
+
+                if (providerSection.Exists())
+                {
+                    providerSection.Bind(options);
+                }
+
+                // Apply custom configuration
+                configureOptions?.Invoke(options);
+            });
+        }
+        else
+        {
+            // Legacy registration - configure default options
+            if (configureOptions != null)
+            {
+                services.Configure<GitHubOptions>(options => {
+                    // First apply configuration from settings
+                    configuration.GetSection(GitHubOptions.Section).Bind(options);
+                    // Then apply custom configuration
+                    configureOptions(options);
+                });
+            }
+            else
+            {
+                services.Configure<GitHubOptions>(configuration.GetSection(GitHubOptions.Section));
+            }
+        }
+
+        // Register GitHub repositories (they will use the factory)
         services.TryAddSingleton<GitHubContentRepository>();
         services.TryAddSingleton<GitHubDirectoryRepository>();
         services.TryAddSingleton<IDirectoryRepository, GitHubDirectoryRepository>();

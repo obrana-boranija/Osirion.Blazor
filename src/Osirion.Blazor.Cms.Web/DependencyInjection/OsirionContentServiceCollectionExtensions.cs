@@ -60,14 +60,14 @@ public static class OsirionContentServiceCollectionExtensions
         var cmsSection = configuration.GetSection("Osirion:Cms");
 
         // Configure GitHub provider if present
-        var githubSection = cmsSection.GetSection("GitHub");
+        var githubSection = cmsSection.GetSection("Web:GitHub");
         if (githubSection.Exists())
         {
             services.AddGitHubContentProvider(configuration);
         }
 
         // Configure FileSystem provider if present
-        var fileSystemSection = cmsSection.GetSection("FileSystem");
+        var fileSystemSection = cmsSection.GetSection("Web:FileSystem");
         if (fileSystemSection.Exists())
         {
             services.AddFileSystemContentProvider(configuration);

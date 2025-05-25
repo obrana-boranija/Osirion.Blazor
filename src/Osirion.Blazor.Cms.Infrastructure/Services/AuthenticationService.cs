@@ -18,13 +18,15 @@ public class AuthenticationService : IAuthenticationService
     private readonly ILogger<AuthenticationService> _logger;
     private readonly IStateStorageService _stateStorage;
     private readonly IGitHubTokenProvider _tokenProvider;
-    private readonly IGitHubApiClient _apiClient;
+    private readonly IGitHubApiClientFactory _apiClientFactory;
     private readonly GitHubOptions _githubOptions;
     private readonly AuthenticationOptions _authOptions;
 
+    private IGitHubApiClient _apiClient;
     private string? _accessToken;
     private string? _username;
     private bool _initialized = false;
+    private string _currentProviderName = string.Empty;
 
     /// <summary>
     /// Event raised when authentication state changes
@@ -40,18 +42,43 @@ public class AuthenticationService : IAuthenticationService
         ILogger<AuthenticationService> logger,
         IStateStorageService stateStorage,
         IGitHubTokenProvider tokenProvider,
-        IGitHubApiClient apiClient)
+        IGitHubApiClientFactory apiClientFactory)
     {
         _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _stateStorage = stateStorage ?? throw new ArgumentNullException(nameof(stateStorage));
         _tokenProvider = tokenProvider ?? throw new ArgumentNullException(nameof(tokenProvider));
-        _apiClient = apiClient ?? throw new ArgumentNullException(nameof(apiClient));
+        _apiClientFactory = apiClientFactory ?? throw new ArgumentNullException(nameof(apiClientFactory));
 
         // Get options from the injected CmsAdminOptions
         var options_value = options.Value;
         _githubOptions = options_value.GitHub;
         _authOptions = options_value.Authentication;
+
+        // Get default API client
+        _apiClient = _apiClientFactory.GetDefaultClient();
+    }
+
+    /// <summary>
+    /// Sets the provider to use for authentication
+    /// </summary>
+    public void SetProvider(string providerName)
+    {
+        _currentProviderName = providerName;
+        if (string.IsNullOrEmpty(providerName))
+        {
+            _apiClient = _apiClientFactory.GetDefaultClient();
+        }
+        else
+        {
+            _apiClient = _apiClientFactory.GetClient(providerName);
+        }
+
+        // If we have a token, set it on the new client
+        if (!string.IsNullOrEmpty(_accessToken))
+        {
+            _apiClient.SetAccessToken(_accessToken);
+        }
     }
 
     /// <inheritdoc/>

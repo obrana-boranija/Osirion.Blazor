@@ -1,10 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Octokit;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Models.GitHub;
 using Osirion.Blazor.Cms.Domain.Options;
-using Osirion.Blazor.Cms.Domain.Options.Configuration;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -27,9 +25,9 @@ public class GitHubApiClient : IGitHubApiClient
     private string _apiUrl = "https://api.github.com";
 
     public GitHubApiClient(
-        HttpClient httpClient,
-        IOptions<GitHubOptions> options,
-        ILogger<GitHubApiClient> logger)
+    HttpClient httpClient,
+    IOptions<GitHubOptions> options,
+    ILogger<GitHubApiClient> logger)
     {
         _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -38,10 +36,18 @@ public class GitHubApiClient : IGitHubApiClient
         _owner = githubOptions.Owner;
         _repository = githubOptions.Repository;
         _branch = githubOptions.Branch;
-        _apiUrl = githubOptions.ApiUrl ?? string.Empty;
+        _apiUrl = githubOptions.ApiUrl ?? "https://api.github.com";
 
-        var authOptions = options.Value.Authentication;
-        _accessToken = authOptions.PersonalAccessToken ?? githubOptions.ApiToken ?? string.Empty;
+        // Handle authentication options - check if it's a GitHubProviderOptions with embedded auth
+        if (githubOptions is Domain.Options.Configuration.GitHubProviderOptions providerOptions)
+        {
+            _accessToken = providerOptions.Authentication?.PersonalAccessToken ?? githubOptions.ApiToken ?? string.Empty;
+        }
+        else
+        {
+            // Legacy path - GitHubOptions doesn't have Authentication property
+            _accessToken = githubOptions.ApiToken ?? string.Empty;
+        }
 
         _jsonOptions = new JsonSerializerOptions
         {

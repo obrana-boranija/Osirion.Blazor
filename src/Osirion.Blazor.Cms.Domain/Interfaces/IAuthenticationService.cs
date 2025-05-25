@@ -28,6 +28,12 @@ public interface IAuthenticationService
     event Action<bool> AuthenticationChanged;
 
     /// <summary>
+    /// Sets the provider to use for authentication
+    /// </summary>
+    /// <param name="providerName">Name of the provider</param>
+    void SetProvider(string providerName);
+
+    /// <summary>
     /// Initializes the authentication service and restores authentication state
     /// </summary>
     Task InitializeAsync();

@@ -20,18 +20,29 @@ public class GitHubDirectoryRepository : DirectoryRepositoryBase, IDirectoryRepo
 {
     private readonly IGitHubApiClient _apiClient;
     private readonly GitHubOptions _options;
+    private readonly string? _providerName;
 
     public GitHubDirectoryRepository(
-        IGitHubApiClient apiClient,
+        IGitHubApiClientFactory apiClientFactory,
         IOptions<GitHubOptions> options,
         IDirectoryCacheManager cacheManager,
         IDirectoryMetadataProcessor metadataProcessor,
         IPathUtilities pathUtils,
-        ILogger<GitHubDirectoryRepository> logger)
-        : base(GetProviderId(options.Value), cacheManager, metadataProcessor, pathUtils, options, logger)
+        ILogger<GitHubDirectoryRepository> logger,
+        string? providerName = null)
+        : base(GetProviderId(options.Value, providerName), cacheManager, metadataProcessor, pathUtils, options, logger)
     {
-        _apiClient = apiClient ?? throw new ArgumentNullException(nameof(apiClient));
         _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
+
+        // Get the API client from factory
+        if (!string.IsNullOrEmpty(providerName))
+        {
+            _apiClient = apiClientFactory.GetClient(providerName);
+        }
+        else
+        {
+            _apiClient = apiClientFactory.GetDefaultClient();
+        }
 
         // Configure API client
         _apiClient.SetRepository(_options.Owner, _options.Repository);
@@ -41,11 +52,13 @@ public class GitHubDirectoryRepository : DirectoryRepositoryBase, IDirectoryRepo
         {
             _apiClient.SetAccessToken(_options.ApiToken);
         }
+
+        _providerName = providerName;
     }
 
-    private static string GetProviderId(GitHubOptions options)
+    private static string GetProviderId(GitHubOptions options, string? providerName)
     {
-        return options.ProviderId ?? $"github-{options.Owner}-{options.Repository}";
+        return options.ProviderId ?? $"github-{providerName}-{options.Owner}-{options.Repository}";
     }
 
     /// <inheritdoc/>
@@ -217,7 +230,7 @@ public class GitHubDirectoryRepository : DirectoryRepositoryBase, IDirectoryRepo
             }
 
             // Create directory item with more robust ID generation
-            var directoryId = IdGenerator.GenerateDirectoryId(item.Path, item.Name, GetProviderId(_options));
+            var directoryId = IdGenerator.GenerateDirectoryId(item.Path, item.Name, GetProviderId(_options, _providerName));
 
             // Check if we already have this directory in cache
             if (directoryCache.TryGetValue(directoryId, out var existingDirectory))

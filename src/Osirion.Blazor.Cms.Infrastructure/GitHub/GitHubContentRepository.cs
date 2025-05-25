@@ -21,14 +21,14 @@ public class GitHubContentRepository : BaseContentRepository
     private string _lastKnownCommitSha = string.Empty;
 
     public GitHubContentRepository(
-        IGitHubApiClient apiClient,
+        IGitHubApiClientFactory apiClientFactory,
         IMarkdownProcessor markdownProcessor,
         IOptions<GitHubOptions> options,
         IDirectoryRepository directoryRepository,
-        ILogger<GitHubContentRepository> logger)
-        : base(GetProviderId(options.Value), markdownProcessor, logger)
+        ILogger<GitHubContentRepository> logger,
+        string? providerName = null)
+        : base(GetProviderId(options.Value, providerName), markdownProcessor, logger)
     {
-        _apiClient = apiClient ?? throw new ArgumentNullException(nameof(apiClient));
         _directoryRepository = directoryRepository ?? throw new ArgumentNullException(nameof(directoryRepository));
         _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
 
@@ -37,6 +37,16 @@ public class GitHubContentRepository : BaseContentRepository
         DefaultLocale = _options.DefaultLocale;
         SupportedLocales = _options.SupportedLocales;
         ContentPath = _options.ContentPath;
+
+        // Get the API client from factory
+        if (!string.IsNullOrEmpty(providerName))
+        {
+            _apiClient = apiClientFactory.GetClient(providerName);
+        }
+        else
+        {
+            _apiClient = apiClientFactory.GetDefaultClient();
+        }
 
         // Configure API client
         _apiClient.SetRepository(_options.Owner, _options.Repository);
@@ -48,9 +58,9 @@ public class GitHubContentRepository : BaseContentRepository
         }
     }
 
-    private static string GetProviderId(GitHubOptions options)
+    private static string GetProviderId(GitHubOptions options, string? providerName)
     {
-        return options.ProviderId ?? $"github-{options.Owner}-{options.Repository}";
+        return options.ProviderId ?? $"github-{providerName}-{options.Owner}-{options.Repository}";
     }
 
     /// <inheritdoc/>

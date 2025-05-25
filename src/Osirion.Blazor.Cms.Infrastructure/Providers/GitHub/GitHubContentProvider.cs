@@ -32,15 +32,25 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
         GitHubContentRepository contentRepository,
         GitHubDirectoryRepository directoryRepository,
         IOptions<GitHubOptions> options,
-        IGitHubApiClient apiClient,
+        IGitHubApiClientFactory apiClientFactory,
         IMemoryCache memoryCache,
-        ILogger<GitHubContentProvider> logger)
+        ILogger<GitHubContentProvider> logger,
+        string? providerName = null)
         : base(memoryCache, options, logger)
     {
         _contentRepository = contentRepository ?? throw new ArgumentNullException(nameof(contentRepository));
         _directoryRepository = directoryRepository ?? throw new ArgumentNullException(nameof(directoryRepository));
         _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
-        _apiClient = apiClient ?? throw new ArgumentNullException(nameof(apiClient));
+
+        // Get the API client from factory
+        if (!string.IsNullOrEmpty(providerName))
+        {
+            _apiClient = apiClientFactory.GetClient(providerName);
+        }
+        else
+        {
+            _apiClient = apiClientFactory.GetDefaultClient();
+        }
     }
 
     public override string ProviderId => _options.ProviderId ?? $"github-{_options.Owner}-{_options.Repository}";
