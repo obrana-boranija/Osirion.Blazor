@@ -34,15 +34,14 @@ public class OsirionCmsBuilder
     }
 
     /// <summary>
-    /// Adds GitHub provider
+    /// Adds all GitHub providers from configuration (multi-provider support)
     /// </summary>
-    /// <param name="configure">Optional delegate to configure GitHub options</param>
     /// <returns>The builder for chaining</returns>
-    //public OsirionCmsBuilder AddGitHub(Action<GitHubOptions>? configure = null)
-    //{
-    //    Services.AddGitHubContentProvider(Configuration, configure);
-    //    return this;
-    //}
+    public OsirionCmsBuilder AddGitHubProviders()
+    {
+        Services.AddGitHubProvidersFromConfiguration(Configuration);
+        return this;
+    }
 
     /// <summary>
     /// Adds GitHub provider with optional provider name for multi-provider scenarios
@@ -61,11 +60,11 @@ public class OsirionCmsBuilder
     /// </summary>
     /// <param name="configure">Optional delegate to configure FileSystem options</param>
     /// <returns>The builder for chaining</returns>
-    //public OsirionCmsBuilder AddFileSystem(Action<FileSystemOptions>? configure = null)
-    //{
-    //    Services.AddFileSystemContentProvider(Configuration, configure);
-    //    return this;
-    //}
+    public OsirionCmsBuilder AddFileSystem(Action<FileSystemOptions>? configure = null)
+    {
+        Services.AddFileSystemContentProvider(Configuration, configure);
+        return this;
+    }
 
     /// <summary>
     /// Adds FileSystem provider from configuration
@@ -136,20 +135,32 @@ public class OsirionCmsBuilder
     /// <returns>The builder for chaining</returns>
     public OsirionCmsBuilder AddAllProvidersFromConfiguration()
     {
-        var cmsSection = Configuration.GetSection("Osirion:Cms");
+        // Check for GitHub providers in the new multi-provider format
+        var githubWebSection = Configuration.GetSection("Osirion:Cms:Web:GitHub");
+        var githubAdminSection = Configuration.GetSection("Osirion:Cms:Admin:GitHub");
 
-        // Check for GitHub provider
-        var githubSection = cmsSection.GetSection(GitHubOptions.Section);
-        if (githubSection.Exists())
+        if ((githubWebSection.Exists() && githubWebSection.GetChildren().Any()) ||
+            (githubAdminSection.Exists() && githubAdminSection.GetChildren().Any()))
         {
-            AddGitHub(GitHubOptions.Section); // Pass the section name as a string
+            // Use the new multi-provider registration
+            AddGitHubProviders();
+        }
+        else
+        {
+            // Fallback to legacy single provider
+            var cmsSection = Configuration.GetSection("Osirion:Cms");
+            var githubSection = cmsSection.GetSection("GitHub");
+            if (githubSection.Exists())
+            {
+                AddGitHub(null); // Pass null for default provider
+            }
         }
 
         // Check for FileSystem provider
-        var fileSystemSection = cmsSection.GetSection(FileSystemOptions.Section);
+        var fileSystemSection = Configuration.GetSection(FileSystemOptions.Section);
         if (fileSystemSection.Exists())
         {
-            AddFileSystem(FileSystemOptions.Section); // Pass the section name as a string
+            //AddFileSystem();
         }
 
         return this;

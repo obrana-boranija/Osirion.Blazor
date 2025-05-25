@@ -1,6 +1,6 @@
+using Osirion.Blazor.Cms.Infrastructure.Extensions;
 using Osirion.Blazor.Example.Bootstrap.Components;
 using Osirion.Blazor.Extensions;
-using Osirion.Blazor.Cms.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +10,7 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddOsirion(builder.Configuration);
 builder.Services.AddGitHubWebhookAndPolling();
+builder.Services.AddJSComponents();
 
 var app = builder.Build();
 

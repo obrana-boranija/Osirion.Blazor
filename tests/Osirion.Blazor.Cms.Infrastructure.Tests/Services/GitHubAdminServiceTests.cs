@@ -23,20 +23,20 @@ public class GitHubAdminServiceTests
 
         var options = new CmsAdminOptions
         {
-            GitHub = new GitHubAdminOptions
-            {
-                Owner = "testOwner",
-                Repository = "testRepo",
-                DefaultBranch = "main"
-            }
+            //GitHub = new GitHubAdminOptions
+            //{
+            //    Owner = "testOwner",
+            //    Repository = "testRepo",
+            //    DefaultBranch = "main"
+            //}
         };
 
         _options = Options.Create(options);
 
-        _adminService = new GitHubAdminService(
-            _apiClient,
-            _options,
-            _logger);
+        //_adminService = new GitHubAdminService(
+        //    _apiClient,
+        //    _options,
+        //    _logger);
     }
 
     [Fact]

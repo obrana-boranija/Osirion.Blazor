@@ -856,10 +856,10 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
                 item.ContentId.Equals(query.LocalizationId, StringComparison.OrdinalIgnoreCase));
         }
 
-        if (!string.IsNullOrEmpty(query.ProviderId) && query.ProviderId != ProviderId)
+        if (!string.IsNullOrEmpty(query.ProviderId))
         {
-            // No items match this provider - return empty query
-            filteredItems = filteredItems.Where(i => false);
+            filteredItems = filteredItems.Where(item =>
+                item.ProviderId.Equals(query.ProviderId, StringComparison.OrdinalIgnoreCase));
         }
 
         if (query.IncludeIds != null && query.IncludeIds.Any())

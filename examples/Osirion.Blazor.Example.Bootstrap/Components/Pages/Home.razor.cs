@@ -4,7 +4,7 @@ using Osirion.Blazor.Cms.Domain.Services;
 
 namespace Osirion.Blazor.Example.Bootstrap.Components.Pages;
 
-public partial class Home(IContentProviderManager ContentProviderManager) 
+public partial class Home(IContentProviderManager contentProviderManager) 
 {
     [Parameter]
     public string? Locale { get; set; } = "en";
@@ -18,11 +18,7 @@ public partial class Home(IContentProviderManager ContentProviderManager)
 
     private async Task LoadContentAsync()
     {
-        var provider = ContentProviderManager.GetDefaultProvider();
-        if (provider == null)
-            return;
-
-        var result = await provider.GetItemsByQueryAsync(new Cms.Domain.Repositories.ContentQuery { Locale = Locale, Url = "introduction" });
+        var result = await contentProviderManager.GetContentByQueryAsync(new Cms.Domain.Repositories.ContentQuery { Locale = Locale, Url = "introduction", ProviderId = "github-osirion" });
         Content = result?.FirstOrDefault();
     }
 }

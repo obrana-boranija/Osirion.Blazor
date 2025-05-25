@@ -1,8 +1,11 @@
 ﻿@namespace Osirion.Blazor.Cms.Components
+@inherits OsirionComponentBase
+
+@* @LoadScript("https://cdn.tridesetri.com/tridesetri-storage/js/prism.es5.min.js"); *@
 
 <div class="@GetContentViewClass()">
     <div class="osirion-content-body">
-        @if(Item?.Content is not null)
+        @if (Item?.Content is not null)
         {
             @((MarkupString)Item.Content)
         }

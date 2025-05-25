@@ -34,18 +34,18 @@ public class GitHubContentRepositoryTests
             Branch = "main",
             ContentPath = "content",
             ApiToken = "test-token",
-            CacheDurationMinutes = 5,
+            //CacheDurationMinutes = 5,
             EnableLocalization = false,
             DefaultLocale = "en"
         };
 
         _options = Options.Create(options);
-        _repository = new GitHubContentRepository(
-            _apiClient,
-            _markdownProcessor,
-            _options,
-            _directoryRepository,
-            _logger);
+        //_repository = new GitHubContentRepository(
+        //    _apiClient,
+        //    _markdownProcessor,
+        //    _options,
+        //    _directoryRepository,
+        //    _logger);
 
         SetupMarkdownProcessor();
     }

@@ -36,20 +36,20 @@ public class GitHubDirectoryRepositoryTests
             Branch = "main",
             ContentPath = "content",
             ApiToken = "test-token",
-            CacheDurationMinutes = 5,
+            //CacheDurationMinutes = 5,
             EnableLocalization = false,
             DefaultLocale = "en"
         };
 
         _options = Options.Create(options);
 
-        _repository = new GitHubDirectoryRepository(
-            _apiClient,
-            _options,
-            _cacheManager,
-            _metadataProcessor,
-            _pathUtils,
-            _logger);
+        //_repository = new GitHubDirectoryRepository(
+        //    _apiClient,
+        //    _options,
+        //    _cacheManager,
+        //    _metadataProcessor,
+        //    _pathUtils,
+        //    _logger);
 
         SetupPathUtils();
     }

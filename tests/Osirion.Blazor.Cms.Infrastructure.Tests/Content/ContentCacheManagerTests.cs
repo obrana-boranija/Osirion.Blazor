@@ -15,7 +15,7 @@ public class ContentCacheManagerTests
     public ContentCacheManagerTests()
     {
         _logger = Substitute.For<ILogger<ContentCacheManager>>();
-        _cacheManager = new ContentCacheManager(_logger, _cacheDuration);
+        _cacheManager = new ContentCacheManager(_logger);
     }
 
     [Fact]

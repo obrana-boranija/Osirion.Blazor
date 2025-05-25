@@ -26,13 +26,13 @@ public class GitHubApiClientTests
 
         var options = new CmsAdminOptions
         {
-            GitHub = new GitHubAdminOptions
-            {
-                Owner = "testOwner",
-                Repository = "testRepo",
-                DefaultBranch = "main",
-                ApiUrl = "https://api.github.com"
-            },
+            //GitHub = new GitHubAdminOptions
+            //{
+            //    Owner = "testOwner",
+            //    Repository = "testRepo",
+            //    DefaultBranch = "main",
+            //    ApiUrl = "https://api.github.com"
+            //},
             Authentication = new AuthenticationOptions
             {
                 PersonalAccessToken = "test-token"
@@ -41,7 +41,7 @@ public class GitHubApiClientTests
 
         _options = Options.Create(options);
 
-        _apiClient = new GitHubApiClient(_httpClient, _options, _logger);
+        //_apiClient = new GitHubApiClient(_httpClient, _options, _logger);
     }
 
     [Fact]

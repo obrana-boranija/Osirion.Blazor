@@ -42,7 +42,6 @@ public class FileSystemDirectoryRepositoryTests
             EnableLocalization = false,
             DefaultLocale = "en",
             SupportedExtensions = new List<string> { ".md", ".markdown" },
-            CacheDurationMinutes = 30
         };
         _options = Options.Create(options);
 

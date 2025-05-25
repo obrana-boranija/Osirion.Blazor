@@ -1,5 +1,11 @@
 ﻿using Microsoft.AspNetCore.Components;
 
+#if NET9_0_OR_GREATER
+using BlazorJSComponents;
+#else
+using BlazorPageScript;
+#endif
+
 namespace Osirion.Blazor.Components;
 
 /// <summary>
@@ -54,4 +60,17 @@ public abstract partial class OsirionComponentBase : ComponentBase
         IsInteractive = SetInteractive;
 #endif
     }
+
+    protected RenderFragment LoadScript(string src) => builder =>
+    {
+#if NET9_0_OR_GREATER
+        builder.OpenComponent<JS>(0);
+        builder.AddAttribute(1, "Src", src);
+        builder.CloseComponent();
+#else
+        builder.OpenComponent<PageScript>(0);
+        builder.AddAttribute(1, "Src", src);
+        builder.CloseComponent();
+#endif
+    };
 }

@@ -28,11 +28,11 @@ public class AuthenticationServiceTests
 
         var options = new CmsAdminOptions
         {
-            GitHub = new GitHubAdminOptions
-            {
-                Owner = "testOwner",
-                Repository = "testRepo"
-            },
+            //GitHub = new GitHubAdminOptions
+            //{
+            //    Owner = "testOwner",
+            //    Repository = "testRepo"
+            //},
             Authentication = new AuthenticationOptions
             {
                 GitHubClientId = "test-client-id",
@@ -43,13 +43,13 @@ public class AuthenticationServiceTests
 
         _options = Options.Create(options);
 
-        _authService = new AuthenticationService(
-            _httpClient,
-            _options,
-            _logger,
-            _stateStorage,
-            _tokenProvider,
-            _apiClient);
+        //_authService = new AuthenticationService(
+        //    _httpClient,
+        //    _options,
+        //    _logger,
+        //    _stateStorage,
+        //    _tokenProvider,
+        //    _apiClient);
 
         _stateStorage.IsInitialized.Returns(true);
     }

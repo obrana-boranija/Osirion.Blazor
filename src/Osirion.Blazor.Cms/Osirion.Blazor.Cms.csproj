@@ -39,7 +39,6 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\Osirion.Blazor.Cms.Admin\Osirion.Blazor.Cms.Admin.csproj" />
 		<ProjectReference Include="..\Osirion.Blazor.Cms.Web\Osirion.Blazor.Cms.Web.csproj" />
-		<ProjectReference Include="..\Osirion.Blazor.Cms.Infrastructure\Osirion.Blazor.Cms.Infrastructure.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

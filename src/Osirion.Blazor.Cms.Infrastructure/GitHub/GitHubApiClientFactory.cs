@@ -47,6 +47,10 @@ public class GitHubApiClientFactory : IGitHubApiClientFactory
                 providerSection.Bind(providerOptions);
                 providerOptions.Name = providerSection.Key;
 
+                // Log the loaded configuration for debugging
+                _logger.LogDebug("Loaded Web provider '{Name}': Owner={Owner}, Repository={Repository}, Branch={Branch}",
+                    providerOptions.Name, providerOptions.Owner, providerOptions.Repository, providerOptions.Branch);
+
                 _webProviders[providerSection.Key] = providerOptions;
 
                 if (providerOptions.IsDefault)
@@ -65,6 +69,10 @@ public class GitHubApiClientFactory : IGitHubApiClientFactory
                 var providerOptions = new GitHubProviderOptions();
                 providerSection.Bind(providerOptions);
                 providerOptions.Name = providerSection.Key;
+
+                // Log the loaded configuration for debugging
+                _logger.LogDebug("Loaded Admin provider '{Name}': Owner={Owner}, Repository={Repository}, Branch={Branch}",
+                    providerOptions.Name, providerOptions.Owner, providerOptions.Repository, providerOptions.Branch);
 
                 _adminProviders[providerSection.Key] = providerOptions;
 
@@ -111,10 +119,12 @@ public class GitHubApiClientFactory : IGitHubApiClientFactory
             if (_webProviders.TryGetValue(name, out var webOptions))
             {
                 options = webOptions;
+                _logger.LogInformation("Using Web provider configuration for '{Name}'", name);
             }
             else if (_adminProviders.TryGetValue(name, out var adminOptions))
             {
                 options = adminOptions;
+                _logger.LogInformation("Using Admin provider configuration for '{Name}'", name);
             }
 
             if (options == null)
@@ -122,18 +132,68 @@ public class GitHubApiClientFactory : IGitHubApiClientFactory
                 throw new InvalidOperationException($"GitHub provider '{name}' not found in configuration");
             }
 
-            // Create a new HttpClient and GitHubApiClient instance
+            // Validate the options before creating the client
+            if (string.IsNullOrEmpty(options.Owner))
+            {
+                throw new InvalidOperationException($"GitHub provider '{name}' is missing 'Owner' configuration");
+            }
+
+            if (string.IsNullOrEmpty(options.Repository))
+            {
+                throw new InvalidOperationException($"GitHub provider '{name}' is missing 'Repository' configuration");
+            }
+
+            // Create a new HttpClient
             using var scope = _serviceProvider.CreateScope();
             var httpClientFactory = scope.ServiceProvider.GetRequiredService<IHttpClientFactory>();
             var httpClient = httpClientFactory.CreateClient($"GitHub_{name}");
 
+            // Create a proper GitHubOptions instance (not GitHubProviderOptions)
+            // This ensures compatibility with the GitHubApiClient constructor
+            var githubOptions = new GitHubOptions
+            {
+                Owner = options.Owner,
+                Repository = options.Repository,
+                Branch = options.Branch ?? "main",
+                ApiToken = options.ApiToken,
+                ApiUrl = options.ApiUrl,
+                ProviderId = options.ProviderId,
+                IsDefault = options.IsDefault,
+                ContentPath = options.ContentPath,
+                EnableLocalization = options.EnableLocalization,
+                DefaultLocale = options.DefaultLocale,
+                SupportedLocales = options.SupportedLocales,
+                SupportedExtensions = options.SupportedExtensions,
+                ValidateContent = options.ValidateContent,
+                WebhookSecret = options.WebhookSecret,
+                EnablePolling = options.EnablePolling,
+                PollingIntervalSeconds = options.PollingIntervalSeconds,
+                UseBackgroundCacheUpdate = options.UseBackgroundCacheUpdate,
+                ExcludePatterns = options.ExcludePatterns,
+                Authentication = options.Authentication
+            };
+
             // Create options wrapper
-            var optionsWrapper = Options.Create(options);
+            var optionsWrapper = Options.Create(githubOptions);
 
             // Create logger
             var clientLogger = scope.ServiceProvider.GetRequiredService<ILogger<GitHubApiClient>>();
 
+            // Log before creating the client
+            _logger.LogInformation("Creating GitHub API client for provider '{Name}' with Owner='{Owner}', Repository='{Repository}', Branch='{Branch}'",
+                name, githubOptions.Owner, githubOptions.Repository, githubOptions.Branch);
+
             var client = new GitHubApiClient(httpClient, optionsWrapper, clientLogger);
+
+            // The GitHubApiClient constructor should have already set the repository and branch
+            // but let's ensure they're set correctly
+            client.SetRepository(githubOptions.Owner, githubOptions.Repository);
+            client.SetBranch(githubOptions.Branch);
+
+            if (!string.IsNullOrEmpty(githubOptions.ApiToken))
+            {
+                client.SetAccessToken(githubOptions.ApiToken);
+            }
 
             _logger.LogInformation("Created GitHub API client for provider: {ProviderName}", name);
 
@@ -162,6 +222,7 @@ public class GitHubApiClientFactory : IGitHubApiClientFactory
             }
         }
 
+        _logger.LogInformation("Getting default client for provider: {DefaultProvider}", defaultProvider);
         return GetClient(defaultProvider);
     }
 

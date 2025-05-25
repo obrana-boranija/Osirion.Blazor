@@ -1,5 +1,4 @@
 ﻿using Blazored.LocalStorage;
-using Markdig.Renderers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -74,6 +73,8 @@ public static class ServiceCollectionExtensions
 
         // Register cache decorator factory
         services.TryAddSingleton<CacheDecoratorFactory>();
+
+
 
         // Apply builder configuration if provided
         if (configureCms != null)

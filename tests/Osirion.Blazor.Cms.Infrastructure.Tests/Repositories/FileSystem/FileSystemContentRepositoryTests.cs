@@ -41,7 +41,6 @@ public class FileSystemContentRepositoryTests
             SupportedExtensions = new() { ".md", ".markdown" },
             CreateDirectoriesIfNotExist = true,
             IncludeSubdirectories = true,
-            CacheDurationMinutes = 5,
             EnableLocalization = false,
             DefaultLocale = "en",
             WatchForChanges = false // Disable file watching for tests

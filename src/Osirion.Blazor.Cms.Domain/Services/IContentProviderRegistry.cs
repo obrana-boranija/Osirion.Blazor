@@ -1,5 +1,4 @@
-﻿// src/Osirion.Blazor.Cms.Domain/Services/IContentProviderRegistry.cs
-namespace Osirion.Blazor.Cms.Domain.Services;
+﻿namespace Osirion.Blazor.Cms.Domain.Services;
 
 /// <summary>
 /// Registry for content providers

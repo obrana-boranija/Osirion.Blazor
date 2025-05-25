@@ -15,7 +15,7 @@ public class DirectoryCacheManagerTests
     public DirectoryCacheManagerTests()
     {
         _logger = Substitute.For<ILogger<DirectoryCacheManager>>();
-        _cacheManager = new DirectoryCacheManager(_logger, _cacheDuration);
+        _cacheManager = new DirectoryCacheManager(_logger);
     }
 
     [Fact]
