@@ -22,27 +22,31 @@
                 </div>
             }
 
-            <header class="osirion-content-header">
-                <h1>@Item.Title</h1>
-                <div class="osirion-content-meta">
-                    @if (!string.IsNullOrEmpty(Item.Author))
+            @if(ShowJumbotron)
+            {
+                <div class="osirion-content-header">
+                    <h1>@Item.Title</h1>
+                    <div class="osirion-content-meta">
+                        @if (!string.IsNullOrEmpty(Item.Author))
+                        {
+                            <span class="osirion-content-author">By @Item.Author</span>
+                        }
+                        <span class="osirion-content-date">@Item.DateCreated.ToString("MMMM d, yyyy")</span>
+                        <span class="osirion-content-read-time">@Item.ReadTimeMinutes min read</span>
+                    </div>
+                    @if (!string.IsNullOrEmpty(Item.FeaturedImageUrl))
                     {
-                        <span class="osirion-content-author">By @Item.Author</span>
+                        <img src="@Item.FeaturedImageUrl" alt="@Item.Title" class="osirion-content-featured-image" loading="lazy" />
                     }
-                    <span class="osirion-content-date">@Item.DateCreated.ToString("MMMM d, yyyy")</span>
-                    <span class="osirion-content-read-time">@Item.ReadTimeMinutes min read</span>
                 </div>
-                @if (!string.IsNullOrEmpty(Item.FeaturedImageUrl))
-                {
-                    <img src="@Item.FeaturedImageUrl" alt="@Item.Title" class="osirion-content-featured-image" loading="lazy" />
-                }
-            </header>
+            }
+            
 
             <div class="osirion-content-body">
                 @((MarkupString)Item.Content)
             </div>
 
-            <footer class="osirion-content-footer">
+            <div class="osirion-content-footer">
                 @if (Item.Categories.Any())
                 {
                     <div class="osirion-content-categories">
@@ -64,17 +68,17 @@
                     </div>
                 }
 
-                @if (ShowNavigationLinks && (PreviousItem != null || NextItem != null))
+                @if (ShowNavigationLinks && (PreviousItem is not null || NextItem is not null))
                 {
                     <div class="osirion-content-navigation">
-                        @if (PreviousItem != null)
+                        @if (PreviousItem is not null)
                         {
                             <a href="@GetContentUrl(PreviousItem)" class="osirion-content-previous">
                                 <span class="osirion-content-navigation-label">Previous</span>
                                 <span class="osirion-content-navigation-title">@PreviousItem.Title</span>
                             </a>
                         }
-                        @if (NextItem != null)
+                        @if (NextItem is not null)
                         {
                             <a href="@GetContentUrl(NextItem)" class="osirion-content-next">
                                 <span class="osirion-content-navigation-label">Next</span>
@@ -83,7 +87,7 @@
                         }
                     </div>
                 }
-            </footer>
+            </div>
         </article>
     }
 </div>

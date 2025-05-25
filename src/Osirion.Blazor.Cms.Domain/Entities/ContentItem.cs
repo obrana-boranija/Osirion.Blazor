@@ -47,7 +47,7 @@ public class ContentItem : DomainEntity<string>
 
     // Computed properties
     public int ReadTimeMinutes => CalculateReadTime();
-    public DateTime PublishDate => GetMetadata<DateTime>("publish_date", DateCreated);
+    public DateTime PublishDate => GetMetadata("publish_date", DateCreated);
     public ContentItem() { }
 
     /// <summary>

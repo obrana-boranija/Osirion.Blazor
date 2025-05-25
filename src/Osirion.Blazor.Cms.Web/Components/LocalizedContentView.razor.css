@@ -1,9 +1,7 @@
-/* LocalizedContentView Component - Osirion.Blazor.Cms.Web */
-
 .osirion-localized-content-view {
     font-family: var(--osirion-font-family-base, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif);
     color: var(--osirion-text-primary, #374151);
-    background-color: var(--osirion-background-primary, #ffffff);
+    /*background-color: var(--osirion-background-primary, #ffffff);*/
 }
 
 .osirion-translations {

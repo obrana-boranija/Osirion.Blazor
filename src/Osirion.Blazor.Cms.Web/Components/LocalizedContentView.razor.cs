@@ -56,6 +56,9 @@ public partial class LocalizedContentView
     public bool ShowNavigationLinks { get; set; } = false;
 
     [Parameter]
+    public bool ShowJumbotron { get; set; } = true;
+
+    [Parameter]
     public bool EnableLocalization { get; set; } = true;
 
     private Dictionary<string, string> AvailableTranslations { get; set; } = new();

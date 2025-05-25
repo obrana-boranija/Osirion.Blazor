@@ -6,6 +6,11 @@
 public class CmsAdminOptions
 {
     /// <summary>
+    /// The section name in the configuration file
+    /// </summary>
+    public const string Section = "Osirion:Cms:Github:Admin";
+
+    /// <summary>
     /// Gets or sets the default content provider
     /// </summary>
     public string DefaultContentProvider { get; set; } = "GitHub";

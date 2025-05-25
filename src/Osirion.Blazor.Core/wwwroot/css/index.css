@@ -5,7 +5,7 @@
  */
 
 /* Base styles */
-/*@import './base/reset.css';*/
+@import './base/base-styles.css';
 @import './base/root-variables.css';
 
 /* Utilities */

@@ -131,6 +131,8 @@
     --osirion-width-5xl: 64rem; /* 1024px */
     --osirion-width-6xl: 72rem; /* 1152px */
     --osirion-width-7xl: 80rem; /* 1280px */
+    --osirion-width-8xl: 90rem; /* 1440px */
+    --osirion-width-9xl: 100rem; /* 1600px */
     /* Border radius - WCAG requires consistent identification of interactive elements */
     --osirion-radius-none: 0;
     --osirion-radius-sm: 0.125rem; /* 2px */
@@ -221,4 +223,6 @@
     --osirion-button-radius: var(--osirion-radius-md);
     --osirion-input-radius: var(--osirion-radius-md);
     --osirion-tag-radius: var(--osirion-radius-full);
+    /* Sizing */
+    --osirion-header-height: 2.5rem;
 }

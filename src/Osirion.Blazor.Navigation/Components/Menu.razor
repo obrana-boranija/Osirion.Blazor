@@ -5,7 +5,7 @@
     <!-- Mobile menu toggle button -->
     @if (CollapseOnMobile)
     {
-        <input type="checkbox" id="@ToggleId" class="osirion-navbar-toggler" />
+        <input type="checkbox" id="@ToggleId" class="osirion-navbar-toggler" aria-hidden="true" tabindex="-1" />
         <label for="@ToggleId" class="osirion-navbar-toggle" aria-label="@ToggleAriaLabel">
             <span class="osirion-toggle-icon"></span>
         </label>

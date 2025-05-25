@@ -1,6 +1,10 @@
 ﻿@namespace Osirion.Blazor.Cms.Components
 @inherits OsirionComponentBase
 
+<HeadContent>
+    <SeoMetadataRenderer Content="Content" SiteNameOverride="Osirion Blazor" SchemaType="Components.SchemaType.BlogPosting" />
+</HeadContent>
+
 <div class="@GetArticlePageClass()">
     @if (IsLoading && IsInteractive)
     {
@@ -9,7 +13,7 @@
             <p>@LoadingText</p>
         </div>
     }
-    else if (Content == null && !string.IsNullOrEmpty(ContentPath))
+    else if (Content is null && !string.IsNullOrEmpty(ContentPath))
     {
         <div class="osirion-not-found">
             <h2>@NotFoundTitle</h2>
@@ -20,68 +24,41 @@
             }
         </div>
     }
-    else if (Content != null)
+    else if (Content is not null)
     {
-        <article class="osirion-article-page-content">
+        <ContentJumbotron Item="Content" TextEnhancement BackgroundPattern="BackgroundPatternType.Grid" />
+
+        <div class="osirion-article-page-content">
+
             @if (ShowBreadcrumbs)
             {
-                <ContentBreadcrumbs Content="@Content"
-                                    Directory="@Content.Directory"
+                <OsirionBreadcrumbs Path="@Content?.Url"
                                     ShowHome="@ShowBreadcrumbHome"
                                     HomeUrl="@BreadcrumbHomeUrl"
-                                    HomeText="@BreadcrumbHomeText"
-                                    DirectoryUrlFormatter="@DirectoryUrlFormatter" />
+                                    HomeText="@BreadcrumbHomeText" />
             }
 
             <div class="osirion-article-layout">
                 <!-- Left sidebar - Table of Contents only -->
                 @if (ShowSidebar && ShowTableOfContents)
                 {
-                    <aside class="osirion-article-sidebar osirion-toc-sidebar">
+                    <OsirionStickySidebar CssClass="osirion-article-sidebar osirion-toc-sidebar">
                         <div class="osirion-sidebar-section">
-                            <h3 class="osirion-sidebar-title">@TableOfContentsTitle</h3>
-                            <TableOfContents Content="@Content.Content" />
+                            <h2 class="osirion-sidebar-title">@TableOfContentsTitle</h2>
+                            <TableOfContents Content="@Content?.Content" />
                         </div>
-                    </aside>
+                    </OsirionStickySidebar>
                 }
 
                 <!-- Main content area -->
                 <div class="osirion-article-main">
-                    <LocalizedContentView Item="@Content"
-                                          PreviousItem="@PreviousItem"
-                                          NextItem="@NextItem"
-                                          ShowNavigationLinks="@ShowNavigationLinks"
-                                          CategoryUrlFormatter="@CategoryUrlFormatter"
-                                          TagUrlFormatter="@TagUrlFormatter"
-                                          ContentUrlFormatter="@ContentUrlFormatter" />
-
+                    <ContentRenderer Item="@Content" />
                 </div>
-                <!-- Right sidebar - Author, Categories, Tags -->
-                @if (ShowSidebar && (ShowAuthorSidebar || ShowCategoriesSidebar || ShowTagsSidebar || SidebarContent != null))
-                {
-                    <aside class="osirion-article-sidebar osirion-meta-sidebar">
-                        @if (ShowAuthorSidebar && !string.IsNullOrEmpty(Content.Author))
-                        {
-                            <div class="osirion-sidebar-section">
-                                <h3 class="osirion-sidebar-title">@AuthorSectionTitle</h3>
-                                <div class="osirion-author-info">
-                                    <div class="osirion-author-avatar">
-                                        <img src="@GetAuthorAvatarUrl(Content.Author)" alt="@Content.Author" />
-                                    </div>
-                                    <div class="osirion-author-details">
-                                        <p class="osirion-author-name">@Content.Author</p>
-                                        <p class="osirion-article-date">@Content.DateCreated.ToString("MMMM d, yyyy")</p>
-                                        @if (Content.ReadTimeMinutes > 0)
-                                        {
-                                            <p class="osirion-read-time">
-                                                <i class="osirion-icon-clock"></i> @Content.ReadTimeMinutes min read
-                                            </p>
-                                        }
-                                    </div>
-                                </div>
-                            </div>
-                        }
 
+                <!-- Right sidebar - Author, Categories, Tags -->
+                @if (ShowSidebar && (ShowAuthorSidebar || ShowCategoriesSidebar || ShowTagsSidebar || SidebarContent is not null))
+                {
+                    <OsirionStickySidebar>
                         @if (ShowCategoriesSidebar && Content.Categories.Any())
                         {
                             <div class="osirion-sidebar-section">
@@ -90,8 +67,7 @@
                                     @foreach (var category in Content.Categories)
                                     {
                                         <a href="@GetCategoryUrl(category)" class="osirion-sidebar-category">
-                                            @* <i class="osirion-icon-folder"></i> @category *@
-                                            <img src="@GetShieldsIoUrl(category)" alt="@category" class="osirion-tag-shield" />
+                                            <i class="osirion-icon-folder"></i> @category
                                         </a>
                                     }
                                 </div>
@@ -113,16 +89,16 @@
                             </div>
                         }
 
-                        @if (SidebarContent != null)
+                        @if (SidebarContent is not null)
                         {
                             <div class="osirion-sidebar-section osirion-sidebar-custom">
                                 @SidebarContent
                             </div>
                         }
-                    </aside>
+                    </OsirionStickySidebar>
                 }
             </div>
-        </article>
+        </div>
 
         <div>
             @if (ShowRelatedContent && RelatedItems != null && RelatedItems.Any())
@@ -130,25 +106,28 @@
                 <ContentSection Title="@RelatedContentTitle"
                                 Variant="highlight"
                                 Padding="large">
+
                     <div class="osirion-related-content-grid">
                         @foreach (var item in RelatedItems)
                         {
                             <article class="osirion-related-content-item">
-                                @if (!string.IsNullOrEmpty(item.FeaturedImageUrl))
-                                {
-                                    <div class="osirion-related-image-container">
-                                        <img src="@item.FeaturedImageUrl" alt="@item.Title" class="osirion-related-image" loading="lazy" />
+                                <a href="@item.Url" style="text-decoration: none;">
+                                    @if (!string.IsNullOrEmpty(item.FeaturedImageUrl))
+                                    {
+                                        <div class="osirion-related-image-container">
+                                            <img src="@item.FeaturedImageUrl" alt="@item.Title" class="osirion-related-image" loading="lazy" />
+                                        </div>
+                                    }
+                                    <div class="osirion-related-content-body">
+                                        <h3>
+                                            @item.Title
+                                        </h3>
+                                        <p class="osirion-related-description">@item.Description</p>
+                                        <time class="osirion-related-date" datetime="@item.DateCreated.ToString("yyyy-MM-dd")">
+                                            @item.DateCreated.ToString("MMM d, yyyy")
+                                        </time>
                                     </div>
-                                }
-                                <div class="osirion-related-content-body">
-                                    <h3>
-                                        <a href="@GetContentUrl(item)">@item.Title</a>
-                                    </h3>
-                                    <p class="osirion-related-description">@item.Description</p>
-                                    <time class="osirion-related-date" datetime="@item.DateCreated.ToString("yyyy-MM-dd")">
-                                        @item.DateCreated.ToString("MMM d, yyyy")
-                                    </time>
-                                </div>
+                                </a>
                             </article>
                         }
                     </div>

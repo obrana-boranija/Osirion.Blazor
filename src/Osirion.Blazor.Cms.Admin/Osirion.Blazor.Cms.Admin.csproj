@@ -25,12 +25,16 @@
 	<ItemGroup>
 	  <Compile Remove="Extensions\**" />
 	  <Compile Remove="Internal\**" />
+	  <Compile Remove="wwwroot\**" />
 	  <Content Remove="Extensions\**" />
 	  <Content Remove="Internal\**" />
+	  <Content Remove="wwwroot\**" />
 	  <EmbeddedResource Remove="Extensions\**" />
 	  <EmbeddedResource Remove="Internal\**" />
+	  <EmbeddedResource Remove="wwwroot\**" />
 	  <None Remove="Extensions\**" />
 	  <None Remove="Internal\**" />
+	  <None Remove="wwwroot\**" />
 	</ItemGroup>
 
 	<!--<ItemGroup>
@@ -71,7 +75,6 @@
 	  <Folder Include="Core\Services\" />
 	  <Folder Include="Features\Authentication\Services\" />
 	  <Folder Include="Shared\Events\" />
-	  <Folder Include="wwwroot\css\" />
 	</ItemGroup>
 
 </Project>

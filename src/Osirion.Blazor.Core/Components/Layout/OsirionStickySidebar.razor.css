@@ -1,0 +1,62 @@
+.osirion-sticky-sidebar {
+    position: sticky;
+    top: var(--osirion-header-height, 2.5rem);
+    height: calc(100vh - var(--osirion-header-height, 2.5rem));
+    overflow-y: auto;
+    scrollbar-width: thin;
+    padding-bottom: var(--osirion-spacing-6, 1.5rem);
+    scroll-behavior: smooth;
+    box-sizing: border-box;
+    max-height: calc(100vh - var(--osirion-header-height, 2.5rem));
+}
+
+    .osirion-sticky-sidebar::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .osirion-sticky-sidebar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .osirion-sticky-sidebar::-webkit-scrollbar-thumb {
+        background-color: var(--osirion-scrollbar-thumb, var(--osirion-color-neutral-400, #9ca3af));
+        border-radius: 6px;
+    }
+
+        .osirion-sticky-sidebar::-webkit-scrollbar-thumb:hover {
+            background-color: var(--osirion-scrollbar-thumb-hover, var(--osirion-color-neutral-500, #6b7280));
+        }
+
+/* Hide scrollbar while maintaining functionality */
+.osirion-no-scrollbar {
+    scrollbar-width: none;
+}
+
+    .osirion-no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+
+/* Non-sticky variant */
+.osirion-non-sticky {
+    position: static;
+    height: auto;
+    max-height: none;
+    overflow-y: visible;
+}
+
+/* Responsive behavior */
+@media (max-width: 768px) {
+    .osirion-sticky-sidebar {
+        position: static;
+        height: auto;
+        max-height: none;
+        overflow-y: visible;
+    }
+}
+
+/* Support for reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+    .osirion-sticky-sidebar {
+        scroll-behavior: auto;
+    }
+}

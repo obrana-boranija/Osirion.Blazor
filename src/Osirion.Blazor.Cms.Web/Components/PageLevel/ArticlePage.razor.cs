@@ -3,7 +3,6 @@ using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Enums;
 using Osirion.Blazor.Cms.Domain.Repositories;
 using Osirion.Blazor.Cms.Domain.Services;
-using System.Text.RegularExpressions;
 
 namespace Osirion.Blazor.Cms.Components;
 

@@ -1,39 +1,82 @@
-﻿// Import functions, variables, and mixins
+﻿// blazor-theme.scss
+
+// Import Bootstrap functions first
 @import "lib/bootstrap/scss/functions";
 
+// Define Blazor-inspired color palette (more muted than the previous indigo)
+$blazor-50: #f5f5ff;
+$blazor-100: #e6e6ff;
+$blazor-200: #d1d1f5;
+$blazor-300: #b4b4e6;
+$blazor-400: #9090d6;
+$blazor-500: #7373c4;
+$blazor-600: #5c5cb0;
+$blazor-700: #4a4a96;
+$blazor-800: #3d3d7b;
+$blazor-900: #2c2c5a;
+$blazor-950: #1c1c38;
 
-// Create your entire custom color system
-$custom-theme-colors: ( "primary": #052c65, // blue-700
-"secondary": #5e44b9, // Custom purple
-"success": #28a745, // Green
-"info": #17a2b8, // Cyan
-"warning": #ffc107, // Yellow
-"danger": #dc3545, // Red
-"light": #f8f9fa, // White-ish
-"dark": #031633, // Black-ish
-"indigo": #6610f2, // Custom color
-"navy": #0a1045, // Custom color
-"coral": #ff6b6b // Custom color
+// Create your custom color theme with more subdued tones
+$custom-theme-colors: ( "primary": $blazor-600, "secondary": $blazor-300, "success": #3b9165, // Muted green
+"info": #3987ab, // Muted blue
+"warning": #c99a2e, // Muted amber
+"danger": #b84545, // Muted red
+"light": #f8f9fa, // Light gray
+"dark": $blazor-950 // Very dark blue-purple
 );
 
 // Override $theme-colors entirely
 $theme-colors: $custom-theme-colors;
 
-
-@import "lib/bootstrap/scss/variables";
-@import "lib/bootstrap/scss/mixins";
+// Optional: Define custom shades of the primary blazor color
+$primary-100: $blazor-100;
+$primary-200: $blazor-200;
+$primary-300: $blazor-300;
+$primary-400: $blazor-400;
+$primary-500: $blazor-500;
+$primary-600: $blazor-600;
+$primary-700: $blazor-700;
+$primary-800: $blazor-800;
+$primary-900: $blazor-900;
 
 // Import Bootstrap
+@import "lib/bootstrap/scss/variables";
+@import "lib/bootstrap/scss/mixins";
 @import "lib/bootstrap/scss/bootstrap";
 
-:root {
-    --bs-body-bg: #031633;
-    --bs-secondary-bg: #052c65;
-    --bs-tertiary-bg: #084298;
+// Light theme (default)
+:root,
+[data-bs-theme="light"] {
+/*    --bs-primary-rgb: #{to-rgb($blazor-600)};
+    --bs-primary-bg-subtle: #{$blazor-100};*/
+    --bs-primary-border-subtle: #{$blazor-300};
+    --bs-primary-text-emphasis: #{$blazor-700};
+    --bs-link-color: #{$blazor-600};
+    --bs-link-hover-color: #{$blazor-700};
+    --bs-focus-ring-color: rgba(#{to-rgb($blazor-600)}, 0.4);
+    // More Microsoft/Blazor-like feel with slightly cooler grays
+    --bs-body-bg: #ffffff;
+    --bs-body-color: #343a40;
+    --bs-border-color: #dee2e6;
 }
 
-.content {
-    padding-top: 1.1rem;
+// Dark theme overrides
+[data-bs-theme="dark"] {
+    // More similar to VS Code dark theme
+    --bs-body-bg: #020617;
+    --bs-body-color: #d8d8df;
+    --bs-secondary-bg: #0f172a;
+    /*--bs-tertiary-bg: #2d2d3f;*/
+    /*--bs-primary-rgb: #{to-rgb($blazor-400)};*/
+    /*--bs-primary-bg-subtle: #{rgba($blazor-900, 0.6)};*/
+    --bs-primary-border-subtle: #{$blazor-700};
+    --bs-primary-text-emphasis: #{$blazor-300};
+    --bs-link-color: #{$blazor-400};
+    --bs-link-hover-color: #{$blazor-300};
+    --bs-focus-ring-color: rgba(#{to-rgb($blazor-400)}, 0.5);
+    // Custom elements to make it feel more like Blazor
+    --bs-border-color: #444455;
+    --bs-card-bg: #2a2a3c;
 }
 
 h1:focus {
@@ -144,14 +187,26 @@ a {
     animation: meshMove 20s ease infinite;
 }
 
-/* Neon grid lines */
-.bg-test {
-    justify-self: center;
+/* Grid pattern */
+.bg-grid {
     inset: 0;
     height: 100%;
     width: 100%;
-    background-image: linear-gradient(to right, $indigo-900 1px, transparent 1px), linear-gradient(to bottom, $indigo-900 1px, transparent 1px);
+    background-image: linear-gradient(to right, $primary-900 1px,transparent 1px),linear-gradient(to bottom, $primary-900 1px,transparent 1px);
     background-size: 24px 24px;
+    -webkit-mask-image: linear-gradient(180deg,transparent 5%,rgba(0,0,0,1) 52%,rgba(0,0,0,1) 44%,transparent 95%);
+    mask-image: linear-gradient(180deg,transparent 0%,rgba(0,0,0,1) 0%,rgba(0,0,0,1) 0%,transparent 100%);
+}
+
+/* Dots pattern */
+.bg-dots {
+    inset: 0;
+    height: 100%;
+    width: 100%;
+    background-image: radial-gradient(#8080803f 1px, transparent 1px);
+    background-size: 24px 24px;
+    -webkit-mask-image: linear-gradient(180deg,transparent 5%,rgba(0,0,0,1) 52%,rgba(0,0,0,1) 44%,transparent 95%);
+    mask-image: linear-gradient(180deg,transparent 0%,rgba(0,0,0,1) 0%,rgba(0,0,0,1) 0%,transparent 100%);
 }
 
 /* Animated wave pattern */
@@ -293,29 +348,6 @@ a {
 }
 
 
-
-
-/* Grid pattern */
-.bg-grid {
-    inset: 0;
-    height: 100%;
-    width: 100%;
-    background-image: linear-gradient(to right,#8080803f 1px,transparent 1px),linear-gradient(to bottom,#8080803f 1px,transparent 1px);
-    background-size: 24px 24px;
-    -webkit-mask-image: linear-gradient(180deg,transparent 5%,rgba(0,0,0,1) 52%,rgba(0,0,0,1) 44%,transparent 95%);
-    mask-image: linear-gradient(180deg,transparent 0%,rgba(0,0,0,1) 0%,rgba(0,0,0,1) 0%,transparent 100%);
-}
-
-/* Dots pattern */
-.bg-dots {
-    inset: 0;
-    height: 100%;
-    width: 100%;
-    background-image: radial-gradient(#8080803f 1px, transparent 1px);
-    background-size: 24px 24px;
-    -webkit-mask-image: linear-gradient(180deg, transparent 5%, rgba(0,0,0,1) 95%);
-    mask-image: linear-gradient(180deg, transparent 5%, rgba(0,0,0,1) 95%);
-}
 
 /* Diagonal lines pattern */
 .bg-diagonal {

@@ -20,8 +20,8 @@ public static class ProviderServiceCollectionExtensions
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.Configure<GitHubOptions>(
-            configuration.GetSection(GitHubOptions.Section));
+        services.Configure<CmsAdminOptions>(
+            configuration.GetSection(CmsAdminOptions.Section));
 
         services.AddHttpClient<IGitHubApiClient, GitHubApiClient>();
         services.AddScoped<IGitHubAdminService, GitHubAdminService>();

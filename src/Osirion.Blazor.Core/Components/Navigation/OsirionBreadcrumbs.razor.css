@@ -1,0 +1,62 @@
+/* PathBreadcrumbs Component - Osirion.Blazor.Navigation */
+
+.osirion-breadcrumbs {
+    margin-bottom: var(--osirion-spacing-6, 1.5rem);
+    font-family: var(--osirion-font-family-base, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif);
+}
+
+.osirion-breadcrumbs-list {
+    display: flex;
+    flex-wrap: wrap;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    color: var(--osirion-text-primary, #374151);
+}
+
+.osirion-breadcrumbs-item {
+    display: flex;
+    align-items: center;
+}
+
+    .osirion-breadcrumbs-item:not(:last-child)::after {
+        content: "/";
+        margin: 0 var(--osirion-spacing-2, 0.5rem);
+        color: var(--osirion-text-tertiary, #9ca3af);
+    }
+
+.osirion-breadcrumbs-link {
+    color: var(--osirion-text-primary, #374151);
+    text-decoration: none;
+    transition: color var(--osirion-transition-duration-200, 0.2s) ease;
+}
+
+    .osirion-breadcrumbs-link:hover {
+        color: var(--osirion-action-primary, #2563eb);
+    }
+
+.osirion-breadcrumbs-current {
+    color: var(--osirion-text-secondary, #6b7280);
+}
+
+.osirion-breadcrumbs-text {
+    margin: 0;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .osirion-breadcrumbs {
+        font-size: var(--osirion-font-size-sm, 0.875rem);
+    }
+
+    .osirion-breadcrumbs-item:not(:last-child)::after {
+        margin: 0 var(--osirion-spacing-1, 0.25rem);
+    }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .osirion-breadcrumbs-link {
+        transition: none;
+    }
+}

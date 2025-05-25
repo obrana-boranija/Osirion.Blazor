@@ -3,6 +3,7 @@
 
 <div class="osirion-menu-item-wrapper @(HasSubmenu ? "osirion-menu-item-has-submenu" : "") @(IsActive ? "osirion-menu-item-wrapper-active" : "")" @attributes="AdditionalAttributes">
     <a href="@(Disabled ? "#" : Href)"
+       role="menuitem"
        class="osirion-menu-item @(IsActive ? "osirion-menu-item-active" : "") @(Disabled ? "osirion-menu-item-disabled" : "") @CssClass"
        @onclick="OnClickHandler"
        @onclick:preventDefault="Disabled">
