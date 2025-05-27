@@ -1,10 +1,14 @@
 ﻿[
   {
-    "outputFile": "wwwroot/css/utilities/prism.css",
-    "inputFile": "wwwroot/css/utilities/prism.scss"
+    "outputFile": "wwwroot/js/copy-button.es5.js",
+    "inputFile": "wwwroot/js/copy-button.js"
   },
   {
-    "outputFile": "wwwroot/js/prism.es5.js",
-    "inputFile": "wwwroot/js/prism.js"
+    "outputFile": "wwwroot/js/line-highlighting.es5.js",
+    "inputFile": "wwwroot/js/line-highlighting.js"
+  },
+  {
+    "outputFile": "wwwroot/js/syntax-highlighter.es5.js",
+    "inputFile": "wwwroot/js/syntax-highlighter.js"
   }
 ]

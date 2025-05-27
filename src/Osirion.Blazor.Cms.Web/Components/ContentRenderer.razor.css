@@ -2,7 +2,7 @@
     padding: var(--osirion-spacing-6, 1.5rem);
     font-family: var(--osirion-font-family-base, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif);
     color: var(--osirion-text-primary, #374151);
-    background-color: var(--osirion-background-primary, #ffffff);
+    background-color: var(--osirion-background-secondary, #ffffff);
     line-height: var(--osirion-line-height-relaxed, 1.7);
 }
 
