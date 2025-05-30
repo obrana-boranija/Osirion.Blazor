@@ -16,6 +16,11 @@ public class BlogPost
     public FrontMatter? Metadata { get; set; }
 
     /// <summary>
+    /// Gets or sets the Seo metadata for the post
+    /// </summary>
+    public SeoMetadata? SeoMetadata { get; set; }
+
+    /// <summary>
     /// Gets or sets the markdown content of the post
     /// </summary>
     public string Content { get; set; } = string.Empty;

@@ -1,0 +1,151 @@
+﻿@inherits BaseComponent
+@using Osirion.Blazor.Cms.Admin.Shared.Components
+@using Osirion.Blazor.Cms.Domain.ValueObjects
+
+<div class="basic-metadata-form">
+    <div class="metadata-section">
+        <div class="mb-3">
+            <label for="title" class="form-label">
+                Title <span class="text-danger">*</span>
+            </label>
+            <input type="text"
+                   class="form-control"
+                   id="title"
+                   @bind="Metadata.Title"
+                   @bind:event="oninput"
+                   @bind:after="NotifyMetadataChanged"
+                   placeholder="Enter post title"
+                   maxlength="100"
+                   required />
+            <div class="char-counter @(Metadata.Title.Length > 80 ? "warning" : "")">
+                @Metadata.Title.Length / 100
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea class="form-control"
+                      id="description"
+                      @bind="Metadata.Description"
+                      @bind:event="oninput"
+                      @bind:after="NotifyMetadataChanged"
+                      placeholder="Brief description of the post"
+                      rows="3"
+                      maxlength="300"></textarea>
+            <div class="char-counter @(Metadata.Description.Length > 250 ? "warning" : "")">
+                @Metadata.Description.Length / 300
+            </div>
+            <div class="form-text">This will be used as the excerpt and meta description.</div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="author" class="form-label">Author</label>
+                <input type="text"
+                       class="form-control"
+                       id="author"
+                       @bind="Metadata.Author"
+                       @bind:event="oninput"
+                       @bind:after="NotifyMetadataChanged"
+                       placeholder="Author name" />
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="date" class="form-label">Publish Date</label>
+                <input type="datetime-local"
+                       class="form-control"
+                       id="date"
+                       @bind="PostDate"
+                       @bind:event="onchange"
+                       @bind:after="NotifyMetadataChanged" />
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="featuredImage" class="form-label">Featured Image URL</label>
+            <div class="input-group">
+                <input type="text"
+                       class="form-control"
+                       id="featuredImage"
+                       @bind="Metadata.FeaturedImage"
+                       @bind:event="oninput"
+                       @bind:after="NotifyMetadataChanged"
+                       placeholder="https://example.com/image.jpg" />
+                <button class="btn btn-outline-secondary" type="button" title="Preview image">
+                    <i class="bi bi-eye"></i>
+                </button>
+            </div>
+            @if (!string.IsNullOrEmpty(Metadata.FeaturedImage))
+            {
+                <div class="mt-2">
+                    <img src="@Metadata.FeaturedImage" 
+                         alt="Featured image preview" 
+                         class="img-thumbnail featured-image-preview"
+                         @onerror="@(() => ImageLoadError = true)" />
+                    @if (ImageLoadError)
+                    {
+                        <div class="text-danger small mt-1">
+                            <i class="bi bi-exclamation-triangle"></i> Failed to load image
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="metadata-section">
+        <h6 class="section-title">Organization</h6>
+
+        <div class="mb-3">
+            <label for="categories" class="form-label">Categories</label>
+            <TagInput Tags="@Metadata.Categories.ToList()"
+                      TagsChanged="@OnCategoriesChanged"
+                      Placeholder="Add category and press Enter"
+                      MaxTags="10" />
+            <div class="form-text">Organize your content into categories.</div>
+        </div>
+
+        <div class="mb-3">
+            <label for="tags" class="form-label">Tags</label>
+            <TagInput Tags="@Metadata.Tags.ToList()"
+                      TagsChanged="@OnTagsChanged"
+                      Placeholder="Add tag and press Enter"
+                      MaxTags="20" />
+            <div class="form-text">Add relevant keywords for better discoverability.</div>
+        </div>
+    </div>
+
+    <div class="metadata-section">
+        <h6 class="section-title">Publishing Options</h6>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-check mb-3">
+                    <input class="form-check-input"
+                           type="checkbox"
+                           id="isFeatured"
+                           @bind="Metadata.IsFeatured"
+                           @bind:after="NotifyMetadataChanged" />
+                    <label class="form-check-label" for="isFeatured">
+                        <i class="bi bi-star text-warning"></i> Featured Post
+                    </label>
+                    <div class="form-text">Featured posts appear prominently on the homepage.</div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-check mb-3">
+                    <input class="form-check-input"
+                           type="checkbox"
+                           id="isPublished"
+                           @bind="Metadata.Published"
+                           @bind:after="NotifyMetadataChanged" />
+                    <label class="form-check-label" for="isPublished">
+                        <i class="bi bi-globe text-success"></i> Published
+                    </label>
+                    <div class="form-text">Unpublished posts are saved as drafts.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+</div>

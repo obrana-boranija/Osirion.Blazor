@@ -1,155 +1,101 @@
-﻿@namespace Osirion.Blazor.Cms.Admin.Features.ContentEditor.Components.Shared
-@inherits BaseComponent
+﻿@inherits BaseComponent
 @using Osirion.Blazor.Cms.Admin.Shared.Components
 @using Osirion.Blazor.Cms.Domain.ValueObjects
 
-<div class="metadata-editor h-100 overflow-auto">
-    <div class="sticky-top pt-2 px-3 pb-2 border-bottom d-flex justify-content-between align-items-center">
-        <h6 class="mb-0 fw-semibold">Metadata</h6>
-
-        @if (ShowActions)
-        {
-            <div class="btn-toolbar">
-                <button type="button"
-                        class="btn btn-sm btn-icon"
-                        title="Refresh metadata"
-                        @onclick="RefreshMetadata">
-                    <i class="bi bi-arrow-repeat"></i>
-                </button>
+<div class="metadata-editor h-100">
+    <div class="row h-100 g-0">
+        <!-- Editor Panel -->
+        <div class="col-12 col-lg-7 col-xl-8 h-100 d-flex flex-column">
+            <div class="sticky-top border-bottom">
+                <ul class="nav nav-tabs px-3 pt-2">
+                    <li class="nav-item">
+                        <button class="nav-link @(ActiveSection == MetadataSection.Basic ? "active" : "")"
+                                @onclick="@(() => SetActiveSection(MetadataSection.Basic))">
+                            <i class="bi bi-info-circle me-1"></i>Basic Info
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link @(ActiveSection == MetadataSection.Seo ? "active" : "")"
+                                @onclick="@(() => SetActiveSection(MetadataSection.Seo))">
+                            <i class="bi bi-search me-1"></i>SEO
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link @(ActiveSection == MetadataSection.Social ? "active" : "")"
+                                @onclick="@(() => SetActiveSection(MetadataSection.Social))">
+                            <i class="bi bi-share me-1"></i>Social Media
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link @(ActiveSection == MetadataSection.Advanced ? "active" : "")"
+                                @onclick="@(() => SetActiveSection(MetadataSection.Advanced))">
+                            <i class="bi bi-gear me-1"></i>Advanced
+                        </button>
+                    </li>
+                    <li class="nav-item ms-auto">
+                        <button class="btn btn-sm btn-outline-secondary d-lg-none"
+                                title="Toggle Preview"
+                                @onclick="ToggleMobilePreview">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </li>
+                </ul>
             </div>
-        }
+
+            <div class="flex-grow-1 overflow-auto p-3">
+                @switch (ActiveSection)
+                {
+                    case MetadataSection.Basic:
+                        <BasicMetadataForm Metadata="@Metadata" 
+                                           MetadataChanged="@OnMetadataChanged" />
+                        break;
+
+                    case MetadataSection.Seo:
+                        <SeoMetadataForm SeoMetadata="@SeoData" 
+                                         SeoMetadataChanged="@OnSeoMetadataChanged" />
+                        break;
+
+                    case MetadataSection.Social:
+                        <SocialMetadataForm SeoMetadata="@SeoData" 
+                                            SeoMetadataChanged="@OnSeoMetadataChanged" />
+                        break;
+
+                    case MetadataSection.Advanced:
+                        <AdvancedMetadataForm Metadata="@Metadata" 
+                                              SeoMetadata="@SeoData"
+                                              MetadataChanged="@OnMetadataChanged"
+                                              SeoMetadataChanged="@OnSeoMetadataChanged" />
+                        break;
+                }
+            </div>
+        </div>
+
+        <!-- Preview Panel - Desktop -->
+        <div class="col-lg-5 col-xl-4 d-none d-lg-block h-100 border-start">
+            <MetadataPreview Metadata="@Metadata" 
+                             SeoMetadata="@SeoData" 
+                             ShowActions="@ShowActions" 
+                             OnRefresh="@RefreshMetadata" />
+        </div>
     </div>
 
-    <div class="p-3">
-        <div class="mb-3">
-            <label for="title" class="form-label fw-medium">Title</label>
-            <input type="text"
-                   class="form-control"
-                   id="title"
-                   @bind="Metadata.Title"
-                   @bind:event="oninput"
-                   @bind:after="NotifyMetadataChanged"
-                   placeholder="Enter title" />
-        </div>
-
-        <div class="mb-3">
-            <label for="description" class="form-label fw-medium">Description</label>
-            <textarea class="form-control"
-                      id="description"
-                      @bind="Metadata.Description"
-                      @bind:event="oninput"
-                      @bind:after="NotifyMetadataChanged"
-                      placeholder="Enter description"
-                      rows="3"></textarea>
-        </div>
-
-        <div class="mb-3">
-            <label for="author" class="form-label fw-medium">Author</label>
-            <input type="text"
-                   class="form-control"
-                   id="author"
-                   @bind="Metadata.Author"
-                   @bind:event="oninput"
-                   @bind:after="NotifyMetadataChanged"
-                   placeholder="Enter author" />
-        </div>
-
-        <div class="mb-3">
-            <label for="date" class="form-label fw-medium">Date</label>
-            <input type="date"
-                   class="form-control"
-                   id="date"
-                   @bind="PostDate"
-                   @bind:event="onchange"
-                   @bind:after="NotifyMetadataChanged" />
-        </div>
-
-        <div class="mb-3">
-            <label for="featuredImage" class="form-label fw-medium">Featured Image URL</label>
-            <input type="text"
-                   class="form-control"
-                   id="featuredImage"
-                   @bind="Metadata.FeaturedImage"
-                   @bind:event="oninput"
-                   @bind:after="NotifyMetadataChanged"
-                   placeholder="Enter image URL" />
-        </div>
-
-        <div class="mb-3">
-            <label for="categories" class="form-label fw-medium">Categories</label>
-            <input type="text"
-                   class="form-control"
-                   id="categories"
-                   @bind="CategoriesInput"
-                   @bind:event="oninput"
-                   placeholder="Enter categories (comma separated)" />
-        </div>
-
-        <div class="mb-3">
-            <label for="tags" class="form-label fw-medium">Tags</label>
-            <input type="text"
-                   class="form-control"
-                   id="tags"
-                   @bind="TagsInput"
-                   @bind:event="oninput"
-                   placeholder="Enter tags (comma separated)" />
-        </div>
-
-        <div class="row mb-3">
-            <div class="col-6">
-                <div class="form-check">
-                    <input class="form-check-input"
-                           type="checkbox"
-                           id="isFeatured"
-                           @bind="Metadata.IsFeatured"
-                           @bind:after="NotifyMetadataChanged" />
-                    <label class="form-check-label" for="isFeatured">
-                        Featured
-                    </label>
+    <!-- Mobile Preview Modal -->
+    @if (ShowMobilePreview)
+    {
+        <div class="mobile-preview-overlay d-lg-none" @onclick="ToggleMobilePreview">
+            <div class="mobile-preview-panel" @onclick:stopPropagation="true">
+                <div class="d-flex justify-content-between align-items-center p-3 border-bottom">
+                    <h6 class="mb-0">Preview</h6>
+                    <button class="btn-close" @onclick="ToggleMobilePreview"></button>
                 </div>
-            </div>
-            <div class="col-6">
-                <div class="form-check">
-                    <input class="form-check-input"
-                           type="checkbox"
-                           id="isPublished"
-                           @bind="Metadata.Published"
-                           @bind:after="NotifyMetadataChanged" />
-                    <label class="form-check-label" for="isPublished">
-                        Published
-                    </label>
+                <div class="mobile-preview-content">
+                    <MetadataPreview Metadata="@Metadata" 
+                                     SeoMetadata="@SeoData" 
+                                     ShowActions="@ShowActions" 
+                                     OnRefresh="@RefreshMetadata" />
                 </div>
             </div>
         </div>
-
-        <div class="mb-3">
-            <label for="layout" class="form-label fw-medium">Layout Template</label>
-            <input type="text"
-                   class="form-control"
-                   id="layout"
-                   @bind="Metadata.Layout"
-                   @bind:event="oninput"
-                   @bind:after="NotifyMetadataChanged"
-                   placeholder="Enter layout template name (optional)" />
-        </div>
-
-        <div class="mb-3">
-            <label for="slug" class="form-label fw-medium">Slug</label>
-            <input type="text"
-                   class="form-control"
-                   id="slug"
-                   @bind="Metadata.Slug"
-                   @bind:event="oninput"
-                   @bind:after="NotifyMetadataChanged"
-                   placeholder="Enter URL slug (optional)" />
-        </div>
-
-        @if (ShowPreview)
-        {
-            <div class="mb-3">
-                <label class="form-label fw-medium">Front Matter Preview</label>
-                <pre class="border rounded p-2 font-monospace small">@GetFormattedFrontMatter()</pre>
-            </div>
-        }
-    </div>
+    }
+}
 </div>

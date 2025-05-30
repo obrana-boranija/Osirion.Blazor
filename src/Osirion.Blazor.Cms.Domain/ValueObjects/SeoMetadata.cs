@@ -10,72 +10,72 @@ public class SeoMetadata : ValueObject
     /// <summary>
     /// Gets the meta title (SEO title)
     /// </summary>
-    public string MetaTitle { get; private set; } = string.Empty;
+    public string MetaTitle { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets the meta description
     /// </summary>
-    public string MetaDescription { get; private set; } = string.Empty;
+    public string MetaDescription { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets the canonical URL
     /// </summary>
-    public string CanonicalUrl { get; private set; } = string.Empty;
+    public string CanonicalUrl { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets the robots meta directive
     /// </summary>
-    public string Robots { get; private set; } = "index, follow";
+    public string Robots { get; set; } = "index, follow";
 
     /// <summary>
     /// Gets the Open Graph title
     /// </summary>
-    public string OgTitle { get; private set; } = string.Empty;
+    public string OgTitle { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets the Open Graph description
     /// </summary>
-    public string OgDescription { get; private set; } = string.Empty;
+    public string OgDescription { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets the Open Graph image URL
     /// </summary>
-    public string OgImageUrl { get; private set; } = string.Empty;
+    public string OgImageUrl { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets the Open Graph type
     /// </summary>
-    public string OgType { get; private set; } = "article";
+    public string OgType { get; set; } = "article";
 
     /// <summary>
     /// Gets the JSON-LD structured data
     /// </summary>
-    public string JsonLd { get; private set; } = string.Empty;
+    public string JsonLd { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets the schema.org type
     /// </summary>
-    public string SchemaType { get; private set; } = "Article";
+    public string SchemaType { get; set; } = "Article";
 
     /// <summary>
     /// Gets the Twitter card type
     /// </summary>
-    public string TwitterCard { get; private set; } = "summary_large_image";
+    public string TwitterCard { get; set; } = "summary_large_image";
 
     /// <summary>
     /// Gets the Twitter title
     /// </summary>
-    public string TwitterTitle { get; private set; } = string.Empty;
+    public string TwitterTitle { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets the Twitter description
     /// </summary>
-    public string TwitterDescription { get; private set; } = string.Empty;
+    public string TwitterDescription { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets the Twitter image URL
     /// </summary>
-    public string TwitterImageUrl { get; private set; } = string.Empty;
+    public string TwitterImageUrl { get; set; } = string.Empty;
 
     // Factory method for creating a populated instance
     public static SeoMetadata Create(

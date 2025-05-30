@@ -1,0 +1,99 @@
+﻿@inherits BaseComponent
+@using Osirion.Blazor.Cms.Admin.Shared.Components
+@using Osirion.Blazor.Cms.Domain.ValueObjects
+
+<div class="metadata-preview h-100 d-flex flex-column">
+    <div class="sticky-top border-bottom p-3">
+        <div class="d-flex justify-content-between align-items-center">
+            <h6 class="mb-0 fw-semibold">Preview</h6>
+            @if (ShowActions)
+            {
+                <button type="button"
+                        class="btn btn-sm btn-outline-secondary"
+                        title="Refresh preview"
+                        @onclick="RefreshPreview">
+                    <i class="bi bi-arrow-clockwise"></i>
+                </button>
+            }
+        </div>
+    </div>
+
+    <div class="flex-grow-1 overflow-auto p-3">
+       @*  <!-- Google Search Result Preview -->
+        <div class="preview-section">
+            <h6 class="preview-section-title">
+                <i class="bi bi-google me-1"></i> Search Result Preview
+            </h6>
+            <div class="search-preview">
+                <div class="search-url">@GetPreviewUrl()</div>
+                <h3 class="search-title">@GetSearchTitle()</h3>
+                <div class="search-description">@GetSearchDescription()</div>
+            </div>
+        </div>
+
+        <!-- Facebook Share Preview -->
+        <div class="preview-section">
+            <h6 class="preview-section-title">
+                <i class="bi bi-facebook me-1 text-primary"></i> Facebook Share Preview
+            </h6>
+            <div class="social-preview facebook-preview">
+                @if (!string.IsNullOrEmpty(GetOgImage()))
+                {
+                    <img src="@GetOgImage()" 
+                         alt="Facebook preview" 
+                         class="social-preview-image" />
+                }
+                <div class="social-preview-content">
+                    <div class="social-preview-domain">@GetDomain()</div>
+                    <h4 class="social-preview-title">@GetOgTitle()</h4>
+                    <p class="social-preview-description">@GetOgDescription()</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Twitter Card Preview -->
+        <div class="preview-section">
+            <h6 class="preview-section-title">
+                <i class="bi bi-twitter me-1 text-info"></i> Twitter Card Preview
+            </h6>
+            <div class="social-preview twitter-preview">
+                @if (SeoMetadata.TwitterCard == "summary_large_image" && !string.IsNullOrEmpty(GetTwitterImage()))
+                {
+                    <img src="@GetTwitterImage()" 
+                         alt="Twitter preview" 
+                         class="twitter-large-image" />
+                }
+                <div class="social-preview-content @(SeoMetadata.TwitterCard == "summary" ? "twitter-summary" : "")">
+                    @if (SeoMetadata.TwitterCard == "summary" && !string.IsNullOrEmpty(GetTwitterImage()))
+                    {
+                        <img src="@GetTwitterImage()" 
+                             alt="Twitter preview" 
+                             class="twitter-summary-image" />
+                    }
+                    <div>
+                        <h4 class="social-preview-title">@GetTwitterTitle()</h4>
+                        <p class="social-preview-description">@GetTwitterDescription()</p>
+                        <div class="social-preview-domain">@GetDomain()</div>
+                    </div>
+                </div>
+            </div>
+        </div> *@
+
+        <!-- Front Matter YAML Preview -->
+        <div class="preview-section">
+            <h6 class="preview-section-title">
+                <i class="bi bi-file-code me-1"></i> Front Matter
+            </h6>
+            <pre class="code-preview">@GetFormattedFrontMatter()</pre>
+        </div>
+
+        <!-- Meta Tags Preview -->
+        <div class="preview-section">
+            <h6 class="preview-section-title">
+                <i class="bi bi-code-slash me-1"></i> Generated Meta Tags
+            </h6>
+            <pre class="code-preview">@GetMetaTags()</pre>
+        </div>
+    </div>
+}
+</div>

@@ -1,0 +1,129 @@
+﻿@inherits BaseComponent
+@using Osirion.Blazor.Cms.Admin.Shared.Components
+@using Osirion.Blazor.Cms.Domain.ValueObjects
+
+<div class="advanced-metadata-form">
+    <div class="metadata-section">
+        <h6 class="section-title">
+            <i class="bi bi-gear-fill me-2"></i>Advanced Settings
+        </h6>
+
+        <div class="mb-3">
+            <label for="layout" class="form-label">Layout Template</label>
+            <select class="form-select"
+                    id="layout"
+                    @bind="Metadata.Layout"
+                    @bind:after="NotifyMetadataChanged">
+                <option value="">Default</option>
+                <option value="post">Post Layout</option>
+                <option value="page">Page Layout</option>
+                <option value="full-width">Full Width</option>
+                <option value="sidebar-left">Sidebar Left</option>
+                <option value="sidebar-right">Sidebar Right</option>
+                <option value="landing">Landing Page</option>
+            </select>
+            <div class="form-text">Choose a specific layout template for this content</div>
+        </div>
+
+        <div class="mb-3">
+            <label for="slug" class="form-label">
+                URL Slug
+                <button type="button" 
+                        class="btn btn-sm btn-outline-secondary ms-2"
+                        @onclick="GenerateSlug">
+                    <i class="bi bi-arrow-repeat"></i> Generate
+                </button>
+            </label>
+            <div class="input-group">
+                <span class="input-group-text">/</span>
+                <input type="text"
+                       class="form-control"
+                       id="slug"
+                       @bind="Metadata.Slug"
+                       @bind:event="oninput"
+                       @bind:after="NotifyMetadataChanged"
+                       placeholder="custom-url-slug"
+                       pattern="[a-z0-9-]+" />
+            </div>
+            <div class="form-text">Custom URL path (lowercase letters, numbers, and hyphens only)</div>
+        </div>
+
+        <div class="mb-3">
+            <label for="postId" class="form-label">Post ID</label>
+            <input type="text"
+                   class="form-control"
+                   id="postId"
+                   @bind="Metadata.Id"
+                   @bind:event="oninput"
+                   @bind:after="NotifyMetadataChanged"
+                   placeholder="unique-post-identifier" />
+            <div class="form-text">Unique identifier for this post</div>
+        </div>
+    </div>
+
+    <div class="metadata-section">
+        <h6 class="section-title">
+            <i class="bi bi-code me-2"></i>Custom Fields
+        </h6>
+
+        <div class="custom-fields-container">
+            @foreach (var field in CustomFieldsList)
+            {
+                <div class="custom-field-item mb-3">
+                    <div class="row g-2">
+                        <div class="col-md-4">
+                            <input type="text"
+                                   class="form-control form-control-sm"
+                                   placeholder="Field name"
+                                   @bind="field.Key"
+                                   @bind:event="oninput"
+                                   @bind:after="UpdateCustomFields" />
+                        </div>
+                        <div class="col-md-7">
+                            <input type="text"
+                                   class="form-control form-control-sm"
+                                   placeholder="Field value"
+                                   @bind="field.Value"
+                                   @bind:event="oninput"
+                                   @bind:after="UpdateCustomFields" />
+                        </div>
+                        <div class="col-md-1">
+                            <button type="button"
+                                    class="btn btn-sm btn-outline-danger"
+                                    title="Remove field"
+                                    @onclick="@(() => RemoveCustomField(field))">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <button type="button"
+                class="btn btn-sm btn-outline-primary"
+                @onclick="AddCustomField">
+            <i class="bi bi-plus-circle me-1"></i> Add Custom Field
+        </button>
+    </div>
+
+    <div class="metadata-section">
+        <h6 class="section-title">
+            <i class="bi bi-file-code me-2"></i>Export Options
+        </h6>
+
+        <div class="d-flex gap-2">
+            <button type="button"
+                    class="btn btn-outline-secondary"
+                    @onclick="ExportAsYaml">
+                <i class="bi bi-download me-1"></i> Export Front Matter
+            </button>
+            <button type="button"
+                    class="btn btn-outline-secondary"
+                    @onclick="ExportAsJson">
+                <i class="bi bi-filetype-json me-1"></i> Export as JSON
+            </button>
+        </div>
+    </div>
+}
+</div>

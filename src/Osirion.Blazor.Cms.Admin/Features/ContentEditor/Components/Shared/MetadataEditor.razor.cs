@@ -12,7 +12,10 @@ public partial class MetadataEditor
     public EventCallback<FrontMatter> MetadataChanged { get; set; }
 
     [Parameter]
-    public bool ShowPreview { get; set; } = true;
+    public SeoMetadata SeoData { get; set; } = SeoMetadata.Create("", "");
+
+    [Parameter]
+    public EventCallback<SeoMetadata> SeoMetadataChanged { get; set; }
 
     [Parameter]
     public bool ShowActions { get; set; } = true;
@@ -20,77 +23,62 @@ public partial class MetadataEditor
     [Parameter]
     public EventCallback OnRefresh { get; set; }
 
-    private string CategoriesInput
-    {
-        get => string.Join(", ", Metadata.Categories);
-        set
-        {
-            var updatedMetadata = Metadata.WithCategories(ParseList(value));
-            Metadata = updatedMetadata;
-            NotifyMetadataChanged();
-        }
-    }
-
-    private string TagsInput
-    {
-        get => string.Join(", ", Metadata.Tags);
-        set
-        {
-            var updatedMetadata = Metadata.WithTags(ParseList(value));
-            Metadata = updatedMetadata;
-            NotifyMetadataChanged();
-        }
-    }
-
-    private DateTime PostDate
-    {
-        get
-        {
-            if (DateTime.TryParse(Metadata.Date, out var date))
-            {
-                return date;
-            }
-
-            return DateTime.Now;
-        }
-        set
-        {
-            Metadata = Metadata.WithDate(value);
-            NotifyMetadataChanged();
-        }
-    }
+    private MetadataSection ActiveSection { get; set; } = MetadataSection.Basic;
+    private bool ShowMobilePreview { get; set; } = false;
 
     protected override void OnParametersSet()
     {
-        // Initialize with default empty front matter if null
+        // Initialize with default empty objects if null
         Metadata ??= FrontMatter.Create("New Post");
+        SeoData ??= SeoMetadata.Create("", "");
+
+        // Auto-populate SEO from FrontMatter if SEO is empty
+        if (string.IsNullOrEmpty(SeoData.MetaTitle) && !string.IsNullOrEmpty(Metadata.Title))
+        {
+            SeoData = SeoData
+                .WithMetaTitle(Metadata.Title)
+                .WithMetaDescription(Metadata.Description)
+                .WithOpenGraph(Metadata.Title, Metadata.Description, Metadata.FeaturedImage ?? "")
+                .WithTwitterCard(Metadata.Title, Metadata.Description, Metadata.FeaturedImage ?? "");
+        }
     }
 
-    private List<string> ParseList(string input)
+    private void SetActiveSection(MetadataSection section)
     {
-        if (string.IsNullOrWhiteSpace(input))
+        ActiveSection = section;
+    }
+
+    private void ToggleMobilePreview()
+    {
+        ShowMobilePreview = !ShowMobilePreview;
+    }
+
+    private async Task OnMetadataChanged(FrontMatter newMetadata)
+    {
+        Metadata = newMetadata;
+
+        // Auto-sync to SEO if titles match
+        if (SeoData.MetaTitle == Metadata.Title || string.IsNullOrEmpty(SeoData.MetaTitle))
         {
-            return new List<string>();
+            SeoData = SeoData
+                .WithMetaTitle(newMetadata.Title)
+                .WithMetaDescription(newMetadata.Description);
         }
 
-        return input
-            .Split([',', ';'], StringSplitOptions.RemoveEmptyEntries)
-            .Select(item => item.Trim())
-            .Where(item => !string.IsNullOrWhiteSpace(item))
-            .ToList();
-    }
-
-    private async Task NotifyMetadataChanged()
-    {
         if (MetadataChanged.HasDelegate)
         {
             await MetadataChanged.InvokeAsync(Metadata);
         }
     }
 
-    private string GetFormattedFrontMatter()
+    private async Task OnSeoMetadataChanged(SeoMetadata newSeoData)
     {
-        return Metadata.ToYaml();
+        SeoData = newSeoData;
+
+        if (SeoMetadataChanged.HasDelegate)
+        {
+            await SeoMetadataChanged.InvokeAsync(SeoData);
+        }
     }
 
     private async Task RefreshMetadata()
@@ -99,5 +87,13 @@ public partial class MetadataEditor
         {
             await OnRefresh.InvokeAsync();
         }
+    }
+
+    public enum MetadataSection
+    {
+        Basic,
+        Seo,
+        Social,
+        Advanced
     }
 }

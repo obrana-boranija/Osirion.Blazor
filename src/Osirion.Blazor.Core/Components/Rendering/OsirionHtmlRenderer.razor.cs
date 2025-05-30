@@ -24,19 +24,19 @@ public partial class OsirionHtmlRenderer
     /// Whether to show line numbers for code blocks
     /// </summary>
     [Parameter]
-    public bool ShowLineNumbers { get; set; } = true;
+    public bool ShowLineNumbers { get; set; } = false;
 
     /// <summary>
     /// Whether to enable the copy button for code blocks
     /// </summary>
     [Parameter]
-    public bool EnableCopyButton { get; set; } = true;
+    public bool EnableCopyButton { get; set; } = false;
 
     /// <summary>
     /// Whether to enable line highlighting functionality
     /// </summary>
     [Parameter]
-    public bool EnableLineHighlighting { get; set; } = true;
+    public bool EnableLineHighlighting { get; set; } = false;
 
     /// <summary>
     /// Whether to use the WCAG AAA compliant theme

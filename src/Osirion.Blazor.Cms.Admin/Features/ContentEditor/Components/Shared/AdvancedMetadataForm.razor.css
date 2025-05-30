@@ -1,0 +1,18 @@
+/* AdvancedMetadataForm Component Styles */
+
+::deep .advanced-metadata-form {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+}
+
+::deep .custom-fields-container {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 1rem;
+}
+
+::deep .custom-field-item {
+    background-color: var(--osirion-background-secondary);
+    padding: 0.75rem;
+    border-radius: 6px;
+    border: 1px solid var(--osirion-border-color);
+}

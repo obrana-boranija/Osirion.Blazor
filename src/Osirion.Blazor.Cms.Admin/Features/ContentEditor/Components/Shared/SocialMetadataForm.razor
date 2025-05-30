@@ -1,0 +1,138 @@
+﻿@inherits BaseComponent
+@using Osirion.Blazor.Cms.Admin.Shared.Components
+@using Osirion.Blazor.Cms.Domain.ValueObjects
+
+<div class="social-metadata-form">
+    <div class="metadata-section">
+        <h6 class="section-title">
+            <i class="bi bi-facebook me-2 text-primary"></i>Open Graph (Facebook, LinkedIn)
+        </h6>
+
+        <div class="mb-3">
+            <label for="ogTitle" class="form-label">OG Title</label>
+            <input type="text"
+                   class="form-control"
+                   id="ogTitle"
+                   @bind="SeoMetadata.OgTitle"
+                   @bind:event="oninput"
+                   @bind:after="NotifySeoMetadataChanged"
+                   placeholder="Title for social media sharing"
+                   maxlength="60" />
+            <div class="form-text">Leave blank to use meta title</div>
+        </div>
+
+        <div class="mb-3">
+            <label for="ogDescription" class="form-label">OG Description</label>
+            <textarea class="form-control"
+                      id="ogDescription"
+                      @bind="SeoMetadata.OgDescription"
+                      @bind:event="oninput"
+                      @bind:after="NotifySeoMetadataChanged"
+                      placeholder="Description for social media sharing"
+                      rows="2"
+                      maxlength="200"></textarea>
+            <div class="form-text">Leave blank to use meta description</div>
+        </div>
+
+        <div class="mb-3">
+            <label for="ogImageUrl" class="form-label">OG Image URL</label>
+            <div class="input-group">
+                <input type="url"
+                       class="form-control"
+                       id="ogImageUrl"
+                       @bind="SeoMetadata.OgImageUrl"
+                       @bind:event="oninput"
+                       @bind:after="NotifySeoMetadataChanged"
+                       placeholder="https://example.com/social-image.jpg" />
+                <button class="btn btn-outline-secondary" type="button" title="Preview image">
+                    <i class="bi bi-eye"></i>
+                </button>
+            </div>
+            <div class="form-text">Recommended: 1200x630px for best results</div>
+            @if (!string.IsNullOrEmpty(SeoMetadata.OgImageUrl))
+            {
+                <div class="mt-2">
+                    <img src="@SeoMetadata.OgImageUrl" 
+                         alt="Open Graph image preview" 
+                         class="img-thumbnail social-image-preview" />
+                </div>
+            }
+        </div>
+
+        <div class="mb-3">
+            <label for="ogType" class="form-label">OG Type</label>
+            <select class="form-select"
+                    id="ogType"
+                    @bind="SeoMetadata.OgType"
+                    @bind:after="NotifySeoMetadataChanged">
+                <option value="article">Article</option>
+                <option value="website">Website</option>
+                <option value="blog">Blog</option>
+                <option value="product">Product</option>
+                <option value="video">Video</option>
+                <option value="music">Music</option>
+                <option value="book">Book</option>
+                <option value="profile">Profile</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="metadata-section">
+        <h6 class="section-title">
+            <i class="bi bi-twitter me-2 text-info"></i>Twitter Card
+        </h6>
+
+        <div class="mb-3">
+            <label for="twitterCard" class="form-label">Card Type</label>
+            <select class="form-select"
+                    id="twitterCard"
+                    @bind="SeoMetadata.TwitterCard"
+                    @bind:after="NotifySeoMetadataChanged">
+                <option value="summary">Summary</option>
+                <option value="summary_large_image">Summary with Large Image</option>
+                <option value="app">App</option>
+                <option value="player">Player</option>
+            </select>
+            <div class="form-text">Choose how your content appears on Twitter</div>
+        </div>
+
+        <div class="mb-3">
+            <label for="twitterTitle" class="form-label">Twitter Title</label>
+            <input type="text"
+                   class="form-control"
+                   id="twitterTitle"
+                   @bind="SeoMetadata.TwitterTitle"
+                   @bind:event="oninput"
+                   @bind:after="NotifySeoMetadataChanged"
+                   placeholder="Title for Twitter"
+                   maxlength="70" />
+            <div class="form-text">Leave blank to use OG title</div>
+        </div>
+
+        <div class="mb-3">
+            <label for="twitterDescription" class="form-label">Twitter Description</label>
+            <textarea class="form-control"
+                      id="twitterDescription"
+                      @bind="SeoMetadata.TwitterDescription"
+                      @bind:event="oninput"
+                      @bind:after="NotifySeoMetadataChanged"
+                      placeholder="Description for Twitter"
+                      rows="2"
+                      maxlength="200"></textarea>
+            <div class="form-text">Leave blank to use OG description</div>
+        </div>
+
+        <div class="mb-3">
+            <label for="twitterImageUrl" class="form-label">Twitter Image URL</label>
+            <input type="url"
+                   class="form-control"
+                   id="twitterImageUrl"
+                   @bind="SeoMetadata.TwitterImageUrl"
+                   @bind:event="oninput"
+                   @bind:after="NotifySeoMetadataChanged"
+                   placeholder="https://example.com/twitter-image.jpg" />
+            <div class="form-text">Leave blank to use OG image. Minimum 300x157px</div>
+        </div>
+    </div>
+}
+</div>

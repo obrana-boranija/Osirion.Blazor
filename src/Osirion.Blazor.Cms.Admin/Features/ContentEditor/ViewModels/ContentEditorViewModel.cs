@@ -165,6 +165,29 @@ public class ContentEditorViewModel : IDisposable
         }
     }
 
+    /// <summary>
+    /// Updates the SEO metadata of the editing post
+    /// </summary>
+    public void UpdateSeoMetadata(SeoMetadata seoMetadata)
+    {
+        if (EditingPost != null)
+        {
+            EditingPost.SeoMetadata = seoMetadata;
+            NotifyStateChanged();
+        }
+    }
+
+    /// <summary>
+    /// Reloads the current post from source
+    /// </summary>
+    public async Task ReloadPostAsync()
+    {
+        if (EditingPost != null && !string.IsNullOrEmpty(EditingPost.FilePath))
+        {
+            await LoadPostAsync(EditingPost.FilePath);
+        }
+    }
+
     public void DiscardChanges()
     {
         EditingPost = null;

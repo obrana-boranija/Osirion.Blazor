@@ -3,6 +3,10 @@
 
 @if (!string.IsNullOrEmpty(HtmlContent))
 {
+    <HeadContent>
+        <link rel="stylesheet" href="_content/Osirion.Blazor.Core/css/osirion-html-renderer.css" />
+    </HeadContent>
+
     <div id="syntax-highlighter-config"
          data-enable-copy="@EnableCopyButton.ToString().ToLower()"
          data-enable-line-highlighting="@EnableLineHighlighting.ToString().ToLower()"
@@ -12,7 +16,7 @@
     
      @if (HasCodeBlocks && EnableSyntaxHighlighting)
     {
-@*         <HeadContent>
+        <HeadContent>
             @if (!UseAccessibleTheme)
             {
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" />
@@ -28,7 +32,7 @@
             {
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css" />
             }
-        </HeadContent>  *@
+        </HeadContent> 
 
         @LoadScript("https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js")
         @LoadScript("./_content/Osirion.Blazor.Core/js/osirion-syntax-highlighter.es5.min.js")

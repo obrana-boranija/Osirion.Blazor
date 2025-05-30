@@ -1,0 +1,33 @@
+﻿@using Osirion.Blazor.Cms.Admin.Shared.Components
+@inherits BaseComponent
+
+<div class="tag-input-wrapper">
+    <div class="tag-input-container" @onclick="FocusInput">
+        @foreach (var tag in Tags)
+        {
+            <span class="tag-chip">
+                @tag
+                <button type="button"
+                        class="tag-remove"
+                        @onclick="@(() => RemoveTag(tag))"
+                        @onclick:stopPropagation="true">
+                    <i class="bi bi-x"></i>
+                </button>
+            </span>
+        }
+        <input type="text"
+               class="tag-input"
+               @ref="inputElement"
+               @bind="CurrentInput"
+               @bind:event="oninput"
+               @onkeydown="HandleKeyDown"
+               placeholder="@(Tags.Count == 0 ? Placeholder : "")"
+               maxlength="50" />
+    </div>
+    @if (MaxTags > 0)
+    {
+        <div class="tag-counter">
+            @Tags.Count / @MaxTags tags
+        </div>
+    }
+</div>
