@@ -50,7 +50,7 @@ public static class ServiceCollectionExtensions
 
         // Register provider registry and manager
         services.TryAddSingleton<IContentProviderRegistry, ContentProviderRegistry>();
-        services.TryAddScoped<IContentProviderManager, ContentProviderManager>();
+        services.TryAddSingleton<IContentProviderManager, ContentProviderManager>();
         services.TryAddSingleton<IContentProviderInitializer, ContentProviderInitializer>();
 
         // Register CQRS components

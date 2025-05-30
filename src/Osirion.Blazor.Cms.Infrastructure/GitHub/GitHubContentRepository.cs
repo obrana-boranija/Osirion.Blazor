@@ -217,7 +217,7 @@ public class GitHubContentRepository : BaseContentRepository
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            if (item.IsFile && IsMarkdownFile(item.Name) && !item.Name.Equals("_index.md", StringComparison.OrdinalIgnoreCase))
+            if (item.IsFile && IsSupportedFile(item.Name) && !item.Name.Equals("_index.md", StringComparison.OrdinalIgnoreCase))
             {
                 try
                 {
@@ -244,7 +244,7 @@ public class GitHubContentRepository : BaseContentRepository
 
     private async Task<ContentItem?> ProcessMarkdownFileAsync(GitHubFileContent fileContent, CancellationToken cancellationToken = default)
     {
-        if (fileContent == null || !IsMarkdownFile(fileContent.Name))
+        if (fileContent == null || !IsSupportedFile(fileContent.Name))
             return null;
 
         // Skip _index.md files - they're for directory metadata
@@ -330,9 +330,9 @@ public class GitHubContentRepository : BaseContentRepository
         return contentItem;
     }
 
-    private bool IsMarkdownFile(string fileName)
+    private bool IsSupportedFile(string fileName)
     {
-        return _options.SupportedExtensions.Any(ext =>
-            fileName.EndsWith(ext, StringComparison.OrdinalIgnoreCase));
+        return _options.SupportedExtensions
+            .Any(ext => fileName.EndsWith(ext, StringComparison.OrdinalIgnoreCase));
     }
 }

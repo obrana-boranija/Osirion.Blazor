@@ -260,8 +260,8 @@ public partial class OsirionHtmlRenderer
             <div class=""osirion-code-wrapper"" data-language=""{language}"">
                 <div class=""osirion-code-header"">
                     <span class=""osirion-language-label"">{languageLabel}</span>
-                    <button class=""{GetButtonClass()} osirion-copy-button"" aria-label=""Copy {languageLabel} code to clipboard"" data-code-index=""{index}"">
-                        Copy
+                    <button class=""{GetButtonClass()} osirion-copy-button"" aria-label=""Copy {languageLabel} code to clipboard"" onclick=""osirionCopyCode(this)"">
+                        <span class=""osirion-copy-text"">Copy</span>
                     </button>
                 </div>
                 {codeBlock}

@@ -21,6 +21,7 @@ public class DirectoryItem : DomainEntity<string>
     public string Name { get; private set; } = string.Empty;
     public string Description { get; private set; } = string.Empty;
     public string Url { get; private set; } = string.Empty;
+    public string? FeaturedImageUrl { get; private set; }
     public string Locale { get; private set; } = string.Empty;
     public int Order { get; private set; }
     public DirectoryItem? Parent { get; private set; }
@@ -84,6 +85,11 @@ public class DirectoryItem : DomainEntity<string>
     public void SetUrl(string url)
     {
         Url = url;
+    }
+
+    public void SetFeaturedImage(string? url)
+    {
+        FeaturedImageUrl = url;
     }
 
     public void SetPath(string path)

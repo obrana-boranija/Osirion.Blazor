@@ -61,6 +61,11 @@ public class DirectoryMetadataProcessor : IDirectoryMetadataProcessor
                     case "url":
                         directory.SetUrl(value);
                         break;
+                    case "featured_image":
+                    case "feature_image":
+                    case "image":
+                        directory.SetFeaturedImage(value);
+                        break;
                     default:
                         // Add as custom metadata
                         if (bool.TryParse(value, out var boolVal))

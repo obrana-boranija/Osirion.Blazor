@@ -10,5 +10,17 @@
   {
     "outputFile": "wwwroot/js/syntax-highlighter.es5.js",
     "inputFile": "wwwroot/js/syntax-highlighter.js"
+  },
+  {
+    "outputFile": "wwwroot/js/osirion-copy-button.es5.js",
+    "inputFile": "wwwroot/js/osirion-copy-button.js"
+  },
+  {
+    "outputFile": "wwwroot/js/osirion-line-highlighting.es5.js",
+    "inputFile": "wwwroot/js/osirion-line-highlighting.js"
+  },
+  {
+    "outputFile": "wwwroot/js/osirion-syntax-highlighter.es5.js",
+    "inputFile": "wwwroot/js/osirion-syntax-highlighter.js"
   }
 ]

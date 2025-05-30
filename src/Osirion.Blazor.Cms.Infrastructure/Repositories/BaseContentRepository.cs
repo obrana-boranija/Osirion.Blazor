@@ -28,6 +28,8 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
     // Flag to track if update is in progress to avoid multiple webhooks hammering the system
     private bool _updateInProgress = false;
 
+    private string[] _excludedExtensionsFromMarkdownProcessing = [".txt", ".json", ".yml", ".log", ".bak"];
+
     protected BaseContentRepository(
         string providerId,
         IMarkdownProcessor markdownProcessor,
@@ -466,7 +468,7 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
             contentItem.SetOriginalMarkdown(result.Content);
 
             // Render HTML
-            var html = await MarkdownProcessor.RenderToHtmlAsync(result.Content);
+            var html =  IsExcludedFromMarkdownProcessing(contentItem.Path) ? result.Content : await MarkdownProcessor.RenderToHtmlAsync(result.Content);
             contentItem.SetContent(html);
 
             // Process frontmatter
@@ -1067,5 +1069,10 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
         {
             return slug;
         }
+    }
+
+    private bool IsExcludedFromMarkdownProcessing(string fileName)
+    {
+        return _excludedExtensionsFromMarkdownProcessing.Any(ext => fileName.EndsWith(ext, StringComparison.OrdinalIgnoreCase));
     }
 }

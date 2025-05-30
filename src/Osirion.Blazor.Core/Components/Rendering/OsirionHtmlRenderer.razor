@@ -36,7 +36,7 @@
     }
 
     .osirion-language-label {
-        color: var(--osirion-color-primary-500);
+        color: var(--osirion-color-primary);
         font-family: var(--osirion-font-family-mono, 'Consolas', 'Monaco', monospace);
         font-size: 0.875rem;
         font-weight: 600;
@@ -177,53 +177,51 @@
 
 @if (!string.IsNullOrEmpty(HtmlContent))
 {
-@*     @if (HasCodeBlocks && EnableSyntaxHighlighting)
-    {
-
-        @if (!UseAccessibleTheme)
-        {
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" />
-        }
-        else
-        {
-            <style>
-                @((MarkupString)GetAccessibleThemeCss())
-            </style>
-        }
-
-        @if (ShowLineNumbers)
-        {
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css" />
-        }
-    } *@
-
-    <div class="@GetHtmlRendererClass()" @attributes="AdditionalAttributes">
-        @((MarkupString)ProcessedHtml)
+    <div id="syntax-highlighter-config"
+         data-enable-copy="@EnableCopyButton.ToString().ToLower()"
+         data-enable-line-highlighting="@EnableLineHighlighting.ToString().ToLower()"
+         data-show-line-numbers="@ShowLineNumbers.ToString().ToLower()"
+         style="display: none;">
     </div>
-
+    
     @if (HasCodeBlocks && EnableSyntaxHighlighting)
     {
-        <div id="syntax-highlighter-config"
-             data-enable-copy="@EnableCopyButton.ToString().ToLower()"
-             data-enable-line-highlighting="@EnableLineHighlighting.ToString().ToLower()"
-             data-show-line-numbers="@ShowLineNumbers.ToString().ToLower()"
-             style="display: none;">
-        </div>
+        <head>
+            @if (!UseAccessibleTheme)
+            {
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" />
+            }
+            else
+            {
+                <style>
+                    @((MarkupString)GetAccessibleThemeCss())
+                </style>
+            }
+
+            @if (ShowLineNumbers)
+            {
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css" />
+            }
+        </head>
 
         @LoadScript("https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js")
+        @LoadScript("./_content/Osirion.Blazor.Core/js/osirion-syntax-highlighter.js")
+        @LoadScript("./_content/Osirion.Blazor.Core/js/osirion-copy-button.js")
+        @LoadScript("./_content/Osirion.Blazor.Core/js/osirion-line-highlighting.js")
+        
 
         @foreach (var lang in DetectedLanguages.Where(NeedsLanguageComponent))
         {
-            @LoadScript("https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-@(lang).min.js")
+            @LoadScript($"https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-{(lang)}.min.js")
         }
 
         @if (ShowLineNumbers)
         {
             @LoadScript("https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js")
         }
-
-        @LoadScript("_content/Osirion.Blazor.Core/js/syntax-highlighter.js")
-        @LoadScript("_content/Osirion.Blazor.Core/js/line-highlighting.js")
-        @LoadScript("_content/Osirion.Blazor.Core/js/copy-button.js")
     }
+
+    <div class="@GetHtmlRendererClass()" @attributes="AdditionalAttributes">
+        @((MarkupString)ProcessedHtml)
+    </div>
 }

@@ -1,6 +1,9 @@
 using Osirion.Blazor.Cms.Infrastructure.Extensions;
 using Osirion.Blazor.Example.Bootstrap.Components;
 using Osirion.Blazor.Extensions;
+using Osirion.Blazor.Cms.Web.Middleware;
+using Microsoft.AspNetCore.Rewrite;
+using Microsoft.AspNetCore.ResponseCompression;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +15,15 @@ builder.Services.AddOsirion(builder.Configuration);
 builder.Services.AddGitHubWebhookAndPolling();
 builder.Services.AddJSComponents();
 
+builder.Services.AddResponseCompression(options =>
+{
+    options.EnableForHttps = true; // Enable for HTTPS (be aware of BREACH attacks)
+    options.Providers.Add<BrotliCompressionProvider>();
+    options.Providers.Add<GzipCompressionProvider>();
+    options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+        new[] { "application/json", "application/xml", "text/csv" });
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -22,9 +34,14 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+var rewriteOptions = new RewriteOptions()
+    .AddRedirectToHttpsPermanent() // never include if proxy has redirection
+    .AddRedirectToNonWwwPermanent();
+app.UseRewriter(rewriteOptions);
 
 app.UseGitHubWebhook();
+app.UseOsirionRobotsGenerator();
+app.UseResponseCompression();
 
 
 app.UseAntiforgery();

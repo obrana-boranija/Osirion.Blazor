@@ -29,6 +29,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{B0489088-7C87-4C92-B6D1-73B072183229}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "content", "content", "{81FA36B2-1A35-4FD2-83BD-72E42C747375}"
+	ProjectSection(SolutionItems) = preProject
+		robots.txt = robots.txt
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "blog", "blog", "{926AB9FA-2E20-42C4-A890-92A4D529A26F}"
 	ProjectSection(SolutionItems) = preProject
