@@ -1,122 +1,152 @@
-﻿function initializeCopyButtons() {
+(function() {
     'use strict';
 
-    // Remove any existing event listeners to prevent duplicates
-    document.querySelectorAll('.osirion-copy-button').forEach(button => {
-        const newButton = button.cloneNode(true);
-        button.parentNode.replaceChild(newButton, button);
-    });
+    const config = {
+        buttonSelector: '.osirion-copy-button',
+        wrapperSelector: '.osirion-code-wrapper, .osirion-code-block, pre',
+        codeSelector: 'code',
+        initialized: 'osirion-copy-initialized',
+        copiedClass: 'copied',
+        errorClass: 'error',
+        timeout: 2000
+    };
 
-    // Add event listeners to all copy buttons
-    document.querySelectorAll('.osirion-copy-button').forEach(button => {
-        button.addEventListener('click', handleCopyClick);
+    let initialized = false;
 
-        // Add keyboard support
-        button.addEventListener('keydown', function (e) {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                handleCopyClick.call(this, e);
-            }
-        });
-    });
-}
-
-async function handleCopyClick(event) {
-    const button = event.currentTarget;
-    const wrapper = button.closest('.osirion-code-wrapper');
-
-    if (!wrapper) {
-        console.error('Could not find code wrapper');
-        return;
-    }
-
-    const codeBlock = wrapper.querySelector('code');
-
-    if (!codeBlock) {
-        console.error('Could not find code block');
-        return;
-    }
-
-    const text = codeBlock.textContent || codeBlock.innerText;
-
-    try {
-        // Try modern clipboard API first
+    // Copy text to clipboard with fallback
+    async function copyToClipboard(text) {
+        // Try modern clipboard API
         if (navigator.clipboard && window.isSecureContext) {
-            await navigator.clipboard.writeText(text);
-        } else {
-            // Fallback for older browsers
-            copyTextFallback(text);
+            try {
+                await navigator.clipboard.writeText(text);
+                return true;
+            } catch (err) {
+                console.warn('Clipboard API failed, using fallback:', err);
+            }
         }
 
-        // Success feedback
-        button.textContent = 'Copied!';
-        button.classList.add('copied');
-        button.setAttribute('aria-label', 'Code copied to clipboard');
-
-        // Announce to screen readers
-        announceToScreenReader('Code copied to clipboard');
-
-        // Reset button after delay
-        setTimeout(() => {
-            button.textContent = 'Copy';
-            button.classList.remove('copied');
-            button.setAttribute('aria-label', 'Copy code to clipboard');
-        }, 2000);
-
-    } catch (err) {
-        console.error('Failed to copy:', err);
-
-        // Error feedback
-        button.textContent = 'Error';
-        button.classList.add('error');
-        button.setAttribute('aria-label', 'Failed to copy code');
-
-        announceToScreenReader('Failed to copy code to clipboard');
-
-        setTimeout(() => {
-            button.textContent = 'Copy';
-            button.classList.remove('error');
-            button.setAttribute('aria-label', 'Copy code to clipboard');
-        }, 2000);
+        // Fallback method
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.left = '-999999px';
+        textarea.style.top = '-999999px';
+        document.body.appendChild(textarea);
+        
+        try {
+            textarea.select();
+            document.execCommand('copy');
+            return true;
+        } catch (err) {
+            console.error('Fallback copy failed:', err);
+            return false;
+        } finally {
+            document.body.removeChild(textarea);
+        }
     }
-}
 
-function copyTextFallback(text) {
-    // Create a temporary textarea element
-    const textArea = document.createElement('textarea');
-    textArea.value = text;
-    textArea.style.position = 'fixed';
-    textArea.style.left = '-999999px';
-    textArea.style.top = '-999999px';
-    document.body.appendChild(textArea);
+    // Handle copy button click
+    async function handleCopyClick(event) {
+        const button = event.currentTarget;
+        const wrapper = button.closest(config.wrapperSelector);
+        
+        if (!wrapper) {
+            console.error('Could not find code wrapper');
+            return;
+        }
 
-    // Select and copy
-    textArea.focus();
-    textArea.select();
+        const codeElement = wrapper.querySelector(config.codeSelector);
+        if (!codeElement) {
+            console.error('Could not find code element');
+            return;
+        }
 
-    try {
-        document.execCommand('copy');
-    } catch (err) {
-        throw new Error('Fallback copy failed');
-    } finally {
-        textArea.remove();
+        const text = codeElement.textContent || codeElement.innerText || '';
+        const textSpan = button.querySelector('.osirion-copy-text') || button;
+        const originalText = textSpan.textContent;
+
+        try {
+            const success = await copyToClipboard(text);
+            
+            if (success) {
+                textSpan.textContent = 'Copied!';
+                button.classList.add(config.copiedClass);
+                button.setAttribute('aria-label', 'Code copied to clipboard');
+                
+                setTimeout(() => {
+                    textSpan.textContent = originalText;
+                    button.classList.remove(config.copiedClass);
+                    button.setAttribute('aria-label', 'Copy code to clipboard');
+                }, config.timeout);
+            } else {
+                throw new Error('Copy failed');
+            }
+        } catch (err) {
+            console.error('Failed to copy:', err);
+            textSpan.textContent = 'Error';
+            button.classList.add(config.errorClass);
+            
+            setTimeout(() => {
+                textSpan.textContent = originalText;
+                button.classList.remove(config.errorClass);
+                button.setAttribute('aria-label', 'Copy code to clipboard');
+            }, config.timeout);
+        }
     }
-}
 
-function announceToScreenReader(message) {
-    const announcement = document.createElement('div');
-    announcement.className = 'sr-only';
-    announcement.setAttribute('role', 'status');
-    announcement.setAttribute('aria-live', 'polite');
-    announcement.textContent = message;
+    // Initialize copy buttons using event delegation
+    function init() {
+        if (initialized) return;
+        initialized = true;
 
-    document.body.appendChild(announcement);
+        // Use event delegation on document level
+        document.addEventListener('click', (event) => {
+            const button = event.target.closest(config.buttonSelector);
+            if (!button) return;
+            
+            // Prevent default only for our buttons
+            if (!button.classList.contains(config.initialized)) {
+                event.preventDefault();
+                button.classList.add(config.initialized);
+            }
+            
+            handleCopyClick(event);
+        });
 
-    // Remove after announcement
-    setTimeout(() => {
-        announcement.remove();
-    }, 3000);
-}
+        // Keyboard support
+        document.addEventListener('keydown', (event) => {
+            if (event.key !== 'Enter' && event.key !== ' ') return;
+            
+            const button = event.target.closest(config.buttonSelector);
+            if (!button) return;
+            
+            event.preventDefault();
+            handleCopyClick(event);
+        });
+    }
 
-// Export for use in other scripts
-window.initializeCopyButtons = initializeCopyButtons;
+    // Find and mark new buttons (optional, for specific initialization)
+    function processButtons() {
+        const buttons = document.querySelectorAll(`${config.buttonSelector}:not(.${config.initialized})`);
+        buttons.forEach(button => {
+            button.classList.add(config.initialized);
+            button.setAttribute('aria-label', 'Copy code to clipboard');
+            button.setAttribute('role', 'button');
+            button.setAttribute('tabindex', '0');
+        });
+    }
+
+    // Auto-initialize
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+
+    // Public API
+    window.initializeCopyButtons = processButtons;
+    window.OsirionCopyButtons = {
+        init: init,
+        processButtons: processButtons
+    };
+})();
