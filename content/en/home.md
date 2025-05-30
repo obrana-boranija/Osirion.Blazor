@@ -1,258 +1,59 @@
 ---
 title: "Introduction to Osirion.Blazor"
-date: "2025-05-05"
-author: "Dejan Demonjić"
 description: "An overview of the Osirion.Blazor ecosystem, a modular, high-performance CMS and component library designed for modern Blazor applications with SSR compatibility."
-tags: [blazor, components, ssr, dotnet]
-categories: [overview]
+author: "Dejan Demonjić"
+date: 2025-05-05
 slug: "introduction"
-is_featured: true
-featured_image: "https://th.bing.com/th/id/OIP.YZ0-gBP3yMKk7VZdCGwwgAHaEB"
-seo_metadata:
-  metaTitle: "Osirion.Blazor: Modular, High-Performance Components for Blazor Applications"
-  metaDescription: "Discover Osirion.Blazor, a comprehensive component library for Blazor with Analytics, Navigation, CMS, and Theming modules designed for SSR compatibility."
-  ogTitle: "Osirion.Blazor: Modular Components for Modern Blazor Applications"
-  ogDescription: "A comprehensive library of high-performance Blazor components with SSR compatibility and minimal JavaScript dependencies."
-  ogType: "website"
-  ogImage: "https://th.bing.com/th/id/OIP.YZ0-gBP3yMKk7VZdCGwwgAHaEB"
-  twitterTitle: "Osirion.Blazor: Modern Component Library for Blazor"
-  twitterDescription: "Enhance your Blazor applications with SSR-compatible components for analytics, navigation, content management, and theming."
-  twitterImage: "https://th.bing.com/th/id/OIP.YZ0-gBP3yMKk7VZdCGwwgAHaEB"
-  canonicalUrl: "https://getosirion.com/introduction"
-  schemaType: "SoftwareApplication"
 ---
+Transform the way you manage content for your Blazor applications. With Osirion.Blazor, your GitHub repository becomes a powerful headless CMS that brings together the best of both worlds: the familiarity of Git workflows and the power of modern web applications.
 
-Osirion.Blazor is a comprehensive, modular component library designed to enhance Blazor applications with high-performance, SSR-compatible components. Built with a focus on modern web development practices, Osirion embraces progressive enhancement principles to ensure your applications work seamlessly across all Blazor hosting models.
+## What Is a GitHub-Based Headless CMS?
 
-## Core Principles
+![GitHub-Based Headless CMS](https://storage.googleapis.com/croct-assets-b931d070/blog/Headless_CMS_within_the_React_framework_3_1_da922d2562/Headless_CMS_within_the_React_framework_3_1_da922d2562.png)
 
-Osirion.Blazor is built on five core principles:
+A headless CMS separates your content from your presentation layer, giving you complete freedom over how your content is displayed. When you use GitHub as your headless CMS, you get something even more powerful: a content management system that developers already know and love.
 
-1. **SSR-First Development**: All components are designed for Server-Side Rendering compatibility from the ground up
-2. **Minimal JavaScript Dependencies**: Using JavaScript only when absolutely necessary
-3. **Progressive Enhancement**: Core functionality works without JavaScript, enhanced when available
-4. **Modular Architecture**: Use only what you need with independently packaged modules
-5. **Framework Integration**: Seamless integration with popular CSS frameworks
+Write your content in Markdown files. Organize them in folders. Push to GitHub. That's it. Your Blazor application automatically pulls the content and renders it beautifully. No databases to manage. No complex CMS interfaces to learn. Just Git and Markdown.
 
-## Modules
+## Why GitHub as Your Content Backend?
+![Why GitHub as Your Content Backend](https://1.bp.blogspot.com/-aCbeVVaET5s/XtyIRCd93bI/AAAAAAAANMI/GPdSuhx0QRUbDRlGctco7G6X26X-5tAYwCLcBGAsYHQ/s1600/Setting%2Ba%2BGithub%2Baccount%2Bto%2Bhost%2Bfiles.png)
 
-Osirion.Blazor consists of several specialized modules that can be used independently or together:
+### Version Control Is Content Control
+![Version Control Is Content Control](https://assets.cioinsight.com/uploads/2022/06/What-is-Version-Control.jpeg)
 
-### Analytics
+Every article, every image, every piece of content is version-controlled. Made a mistake? Revert the commit. Need to see what changed? Check the diff. Want to experiment? Create a branch. Your content workflow becomes as powerful as your code workflow.
 
-Implement analytics tracking in your Blazor applications with support for multiple providers:
+### Collaboration Without Complexity
+![Collaboration Without Complexity](https://th.bing.com/th/id/OIP.CSrOgQXlwB31vRdm8slCNgHaEK?rs=1&pid=ImgDetMain
 
-- Microsoft Clarity
-- Matomo
-- Google Analytics 4
-- Yandex Metrica
+Your team already knows how to use GitHub. Writers can submit pull requests. Editors can review changes. Stakeholders can track progress through issues. The tools you use for code collaboration become your content collaboration platform.
 
-Key features:
-- SSR-compatible tracking
-- Provider pattern for extensibility
-- Privacy-focused with consent management
-- Configuration-driven setup
+### Markdown: The Universal Content Format
 
-[Learn more about Osirion.Blazor.Analytics →](/analytics/getting-started)
+Write in plain text that's readable anywhere. Add formatting with simple syntax. Embed images, create tables, include code snippets. Markdown gives you the flexibility to create rich content without the overhead of proprietary formats.
 
-### Navigation
+## How Osirion.Blazor Makes It Seamless
 
-Enhance your application's navigation experience with:
+Our GitHub CMS integration handles all the complexity behind the scenes. Your Blazor application connects to your GitHub repository and transforms your Markdown files into a fully functional website. Real-time updates through webhooks mean your content changes appear instantly. Powerful querying lets you organize and display content exactly how you want.
 
-- Smooth scrolling
-- Scroll restoration for navigation
-- "Back to top" functionality
-- Enhanced navigation interception
+### Content Organization That Makes Sense
 
-Key features:
-- Zero JavaScript for core functionality
-- Customizable through CSS variables
-- Respects reduced motion preferences
-- Works with all Blazor hosting models
+Structure your content repository however you like. Create folders for different content types. Use frontmatter to add metadata. Tag and categorize your content. Osirion.Blazor understands your organization and makes it queryable.
 
-[Learn more about Osirion.Blazor.Navigation →](/navigation/getting-started)
+### SEO and Performance Built In
 
-### Content Management
+Every page gets proper meta tags, structured data, and social media cards automatically generated from your frontmatter. Built-in caching ensures your content loads fast. Static generation support means you can pre-render content for ultimate performance.
 
-Build content-driven websites with integrated CMS capabilities:
+### Multi-Language Content Support
 
-- Multiple content providers (GitHub, FileSystem)
-- Markdown rendering with frontmatter
-- Content organization with tags and categories
-- Directory-based navigation and search
+Organize content by locale. Link translations together. Serve the right content to the right audience. Our localization features make it easy to create multilingual websites without duplicating effort.
 
-Key features:
-- Git-based content workflow
-- SEO optimization built-in
-- Provider pattern for custom sources
-- Full-text search capabilities
+## Perfect For Modern Content Teams
 
-[Learn more about Osirion.Blazor.Cms →](/cms/getting-started)
+Whether you're building a documentation site, a blog, a marketing website, or a full-scale content portal, Osirion.Blazor adapts to your needs. Technical writers love the Markdown workflow. Developers appreciate the Git-based approach. Content managers enjoy the flexibility and control.
 
-### Theming
+## Ready to Transform Your Content Workflow?
 
-Create consistent, themeable applications with:
+Join the growing community of developers who are building content-driven Blazor applications the modern way. With Osirion.Blazor, your GitHub repository isn't just storing code—it's powering your entire content strategy.
 
-- CSS framework integration
-- Dark mode support
-- CSS variables for theming
-- Framework-specific adaptations
-
-Key features:
-- System preference detection
-- User preference persistence
-- Minimal JavaScript with progressive enhancement
-- Integration with popular frameworks (Bootstrap, FluentUI, MudBlazor, Radzen)
-
-[Learn more about Osirion.Blazor.Theming →](/theming/getting-started)
-
-## Getting Started
-
-### Installation
-
-Install the complete package:
-
-```bash
-dotnet add package Osirion.Blazor
-```
-
-Or just the modules you need:
-
-```bash
-dotnet add package Osirion.Blazor.Core
-dotnet add package Osirion.Blazor.Analytics
-dotnet add package Osirion.Blazor.Navigation
-dotnet add package Osirion.Blazor.Cms
-dotnet add package Osirion.Blazor.Theming
-```
-
-### Basic Setup
-
-Register all services at once:
-
-```csharp
-// In Program.cs
-using Osirion.Blazor.Extensions;
-
-builder.Services.AddOsirionBlazor(osirion => {
-    osirion
-        .UseAnalytics(analytics => {
-            analytics.AddClarity(options => {
-                options.SiteId = "your-clarity-site-id";
-            });
-        })
-        .UseNavigation(navigation => {
-            navigation.AddScrollToTop();
-            navigation.AddEnhancedNavigation();
-        })
-        .UseTheming(theming => {
-            theming.UseFramework(CssFramework.Bootstrap);
-            theming.EnableDarkMode();
-        });
-});
-```
-
-Or use configuration-based setup:
-
-```csharp
-// Register from appsettings.json
-builder.Services.AddOsirionBlazor(builder.Configuration);
-```
-
-With corresponding configuration:
-
-```json
-{
-  "Osirion": {
-    "Analytics": {
-      "Clarity": {
-        "SiteId": "your-clarity-site-id",
-        "Enabled": true
-      }
-    },
-    "Navigation": {
-      "Enhanced": {
-        "Behavior": "Smooth",
-        "ResetScrollOnNavigation": true
-      },
-      "ScrollToTop": {
-        "Position": "BottomRight",
-        "Behavior": "Smooth"
-      }
-    },
-    "Theming": {
-      "Framework": "Bootstrap",
-      "EnableDarkMode": true,
-      "UseSystemPreference": true
-    }
-  }
-}
-```
-
-### Using Components
-
-Use Osirion components in your Blazor application:
-
-```razor
-@using Osirion.Blazor.Components
-
-<ClarityTracker />
-<EnhancedNavigation Behavior="ScrollBehavior.Smooth" />
-<ScrollToTop Position="Position.BottomRight" />
-
-<ThemeProvider Framework="CssFramework.Bootstrap">
-    <ThemeToggle />
-    
-    <main>
-        <ContentList Directory="blog" />
-    </main>
-</ThemeProvider>
-```
-
-## Requirements
-
-- .NET 8.0 or higher
-- Blazor (Server, WebAssembly, or Auto)
-
-## Browser Support
-
-Osirion.Blazor supports all modern browsers:
-
-- Chrome (latest)
-- Firefox (latest)
-- Safari (latest)
-- Edge (latest)
-
-Progressive enhancement ensures functionality even in environments with limited JavaScript support.
-
-## Framework Integration
-
-Osirion.Blazor integrates with popular CSS frameworks:
-
-- Bootstrap 5+
-- FluentUI for Blazor
-- MudBlazor
-- Radzen Blazor
-
-Framework integration maps Osirion's CSS variables to the framework's native variables, ensuring consistent styling.
-
-## SSR Compatibility
-
-All Osirion components are designed for Server-Side Rendering (SSR) compatibility:
-
-- Static rendering for build-time generation
-- Hydration for interactive enhancements
-- Progressive enhancement for JavaScript availability
-
-This ensures optimal performance and SEO benefits while maintaining rich interactivity.
-
-## Next Steps
-
-- [Explore the Analytics module →](/analytics/getting-started)
-- [Learn about Navigation components →](/navigation/getting-started)
-- [Discover CMS capabilities →](/cms/getting-started)
-- [Set up theming for your application →](/theming/getting-started)
-- [View examples and demos →](/examples)
-- [Read the API reference →](/api-reference)
-
-Ready to enhance your Blazor applications? Let's get started!
+[Get Started](/docs/getting-started) | [Explore Features](/features) | [View Documentation](/docs)
