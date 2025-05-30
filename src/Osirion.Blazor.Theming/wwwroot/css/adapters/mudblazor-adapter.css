@@ -166,6 +166,31 @@ html.osirion-mudblazor-integration {
     --osirion-shadow-xl: var(--mud-elevation-16, 0px 8px 10px -5px rgba(0, 0, 0, 0.2), 0px 16px 24px 2px rgba(0, 0, 0, 0.14), 0px 6px 30px 5px rgba(0, 0, 0, 0.12));
     --osirion-shadow-2xl: var(--mud-elevation-24, 0px 11px 15px -7px rgba(0, 0, 0, 0.2), 0px 24px 38px 3px rgba(0, 0, 0, 0.14), 0px 9px 46px 8px rgba(0, 0, 0, 0.12));
     --osirion-shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+    /* Breakpoints - Material Design breakpoint system */
+    /* Note: MudBlazor doesn't expose breakpoints as CSS variables by default */
+    /* If you've customized MudBlazor to expose them, you can reference them like: */
+    /* --osirion-breakpoint-sm: var(--mud-breakpoint-sm, 600px); */
+    --osirion-breakpoint-xs: 0;
+    --osirion-breakpoint-sm: 600px; /* Material Design small */
+    --osirion-breakpoint-md: 960px; /* Material Design medium */
+    --osirion-breakpoint-lg: 1280px; /* Material Design large */
+    --osirion-breakpoint-xl: 1920px; /* Material Design extra large */
+    --osirion-breakpoint-xxl: 2560px; /* Extended for ultra-wide */
+    --osirion-breakpoint-xxxl: 3840px; /* 4K displays */
+    /* Max-width breakpoints */
+    --osirion-breakpoint-xs-max: 599.98px;
+    --osirion-breakpoint-sm-max: 959.98px;
+    --osirion-breakpoint-md-max: 1279.98px;
+    --osirion-breakpoint-lg-max: 1919.98px;
+    --osirion-breakpoint-xl-max: 2559.98px;
+    --osirion-breakpoint-xxl-max: 3839.98px;
+    /* Container max-widths */
+    --osirion-container-sm: 540px;
+    --osirion-container-md: 720px;
+    --osirion-container-lg: 960px;
+    --osirion-container-xl: 1140px;
+    --osirion-container-xxl: 1320px;
+    --osirion-container-xxxl: 1800px;
     /* Transitions */
     --osirion-transition-timing-default: cubic-bezier(0.4, 0, 0.2, 1);
     --osirion-transition-timing-in: cubic-bezier(0.4, 0, 1, 1);

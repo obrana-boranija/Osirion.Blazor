@@ -12,6 +12,18 @@ public partial class Menu
     public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
+    /// Gets or sets href
+    /// </summary>
+    [Parameter]
+    public string? Href { get; set; } = "/";
+
+    /// <summary>
+    /// Gets or sets the branding logo to display in the navigation header.
+    /// </summary>
+    [Parameter]
+    public string? BrandLogo { get; set; }
+
+    /// <summary>
     /// Gets or sets the branding text to display in the navigation header.
     /// </summary>
     [Parameter]

@@ -6,7 +6,7 @@
 @inject IJSRuntime JSRuntime
 
 <div class="markdown-editor h-100 d-flex @(EditorMode.ToString().ToLowerInvariant())">
-    <div class="editor-header d-flex align-items-center justify-content-between bg-light border-bottom px-2 py-1">
+    <div class="editor-header d-flex align-items-center justify-content-between border-bottom px-2 py-1">
         <div class="editor-tabs">
             <button class="btn btn-sm @(EditorMode == EditorMode.Edit ? "btn-primary" : "btn-outline-secondary")" @onclick="() => SetEditorMode(EditorMode.Edit)">
                 <i class="bi bi-pencil-square me-1"></i>Edit
@@ -31,7 +31,7 @@
             <div class="editor-pane d-flex flex-column @(EditorMode == EditorMode.Split ? "w-50" : "w-100")">
                 @if (ShowToolbar)
                 {
-                    <div class="editor-toolbar bg-light border-bottom px-2 py-1 sticky-top">
+                    <div class="editor-toolbar border-bottom px-2 py-1 sticky-top">
                         <div class="btn-toolbar">
                             <div class="btn-group me-2">
                                 <button type="button" class="btn btn-sm btn-icon" title="Bold" @onclick="@(() => InsertMarkdown("**", "**", "bold text"))">
@@ -107,7 +107,7 @@
                               @onblur="OnEditorBlur"
                               spellcheck="@SpellCheck">
                         </textarea>
-                    <div class="editor-status-bar small text-muted position-absolute bottom-0 end-0 p-1 bg-light">
+                    <div class="editor-status-bar small text-muted position-absolute bottom-0 end-0 p-1">
                         Line: @CurrentLine Col: @CurrentColumn
                     </div>
                 </div>
@@ -117,16 +117,17 @@
         @if (EditorMode == EditorMode.Preview || EditorMode == EditorMode.Split)
         {
             <div class="preview-pane d-flex flex-column @(EditorMode == EditorMode.Split ? "w-50 border-start" : "w-100")">
-                <div class="preview-header bg-light border-bottom px-3 py-2 sticky-top">
+                <div class="preview-header border-bottom px-3 py-2 sticky-top">
                     <h6 class="mb-0 fw-medium">Preview</h6>
                 </div>
 
                 <div class="preview-container flex-grow-1 overflow-auto p-3" @ref="PreviewRef" @onscroll="OnPreviewScrolled">
                     @if (!string.IsNullOrEmpty(Preview))
                     {
-                        <div class="markdown-preview">
-                            @((MarkupString)Preview)
-                        </div>
+                        @* <div class="markdown-preview"> *@
+                            @* @((MarkupString)Preview) *@
+                            <OsirionHtmlRenderer HtmlContent="@Preview" CssClass="markdown-preview" />
+                        @* </div> *@
                     }
                     else
                     {

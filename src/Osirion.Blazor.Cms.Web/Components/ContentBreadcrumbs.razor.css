@@ -46,13 +46,13 @@
 }
 
 /* Responsive styles */
-@media (max-width: 768px) {
+@media (max-width: var(--osirion-breakpoint-sm-max, 767.98px)) {
     .osirion-breadcrumbs {
         font-size: var(--osirion-font-size-sm, 0.875rem);
     }
 
     .osirion-breadcrumbs-item:not(:last-child)::after {
-        margin: 0 0.25rem;
+        margin: 0 var(--osirion-spacing-1, 0.25rem);
     }
 }
 

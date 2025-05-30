@@ -13,7 +13,7 @@
     transition: box-shadow var(--osirion-transition-duration-300, 0.3s) ease;
 }
 
-    /* Dark theme version of the shadow */
+/* Dark theme version of the shadow */
 :root[data-theme="dark"] .osirion-menu-container,
 [data-bs-theme="dark"] .osirion-menu-container,
 .dark-theme .osirion-menu-container,
@@ -43,9 +43,31 @@
 /* Branding container */
 .osirion-nav-branding {
     display: flex;
+    flex-direction: row; /* Changed to row for inline display */
     align-items: center;
+    justify-content: flex-start; /* Align to the left */
     padding: var(--osirion-spacing-2, 0.5rem) var(--osirion-spacing-4, 1rem);
     color: var(--osirion-text-primary, #f3f4f6);
+}
+
+/* Brand link styling */
+.osirion-brand-link {
+    display: flex;
+    align-items: center;
+    gap: var(--osirion-spacing-2, 0.5rem); /* Space between logo and text */
+    text-decoration: none;
+    color: inherit;
+    transition: opacity var(--osirion-transition-duration-200, 0.2s) ease;
+}
+
+    .osirion-brand-link:hover {
+        opacity: 0.8;
+    }
+
+/* Brand logo styling */
+.osirion-brand-logo {
+    object-fit: contain; /* Maintain aspect ratio */
+    flex-shrink: 0; /* Prevent logo from shrinking */
 }
 
 /* Branding text styling */
@@ -54,6 +76,7 @@
     font-weight: var(--osirion-font-weight-bold, 700);
     color: var(--osirion-text-primary, #f3f4f6);
     white-space: nowrap;
+    line-height: 1;
 }
 
 /* Menu inner container for flex layout */
@@ -297,6 +320,19 @@
 
     .osirion-menu-collapsible .osirion-navbar-toggle {
         display: none; /* Hide toggle on desktop */
+    }
+
+    .osirion-nav-branding {
+        padding: var(--osirion-spacing-2, 0.5rem);
+    }
+
+    .osirion-brand-logo {
+        width: 32px;
+        height: 32px;
+    }
+
+    .osirion-brand-text {
+        font-size: var(--osirion-font-size-lg, 1.125rem);
     }
 }
 /* Accessibility - reduced motion preference */

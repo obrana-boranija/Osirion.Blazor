@@ -167,6 +167,28 @@ html.osirion-bootstrap-integration {
     --osirion-shadow-xl: calc(var(--bs-box-shadow-lg, 0 1rem 3rem rgba(0, 0, 0, 0.175)) * 1.5);
     --osirion-shadow-2xl: calc(var(--bs-box-shadow-lg, 0 1rem 3rem rgba(0, 0, 0, 0.175)) * 2);
     --osirion-shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+    /* Breakpoints - Bootstrap's breakpoint system */
+    --osirion-breakpoint-xs: var(--bs-breakpoint-xs, 0);
+    --osirion-breakpoint-sm: var(--bs-breakpoint-sm, 576px);
+    --osirion-breakpoint-md: var(--bs-breakpoint-md, 768px);
+    --osirion-breakpoint-lg: var(--bs-breakpoint-lg, 992px);
+    --osirion-breakpoint-xl: var(--bs-breakpoint-xl, 1200px);
+    --osirion-breakpoint-xxl: var(--bs-breakpoint-xxl, 1400px);
+    --osirion-breakpoint-xxxl: 1920px; /* Extra for ultra-wide - Bootstrap doesn't have this */
+    /* Max-width breakpoints - calculated from Bootstrap's values */
+    --osirion-breakpoint-xs-max: calc(var(--bs-breakpoint-sm, 576px) - 0.02px);
+    --osirion-breakpoint-sm-max: calc(var(--bs-breakpoint-md, 768px) - 0.02px);
+    --osirion-breakpoint-md-max: calc(var(--bs-breakpoint-lg, 992px) - 0.02px);
+    --osirion-breakpoint-lg-max: calc(var(--bs-breakpoint-xl, 1200px) - 0.02px);
+    --osirion-breakpoint-xl-max: calc(var(--bs-breakpoint-xxl, 1400px) - 0.02px);
+    --osirion-breakpoint-xxl-max: 1919.98px;
+    /* Container max-widths */
+    --osirion-container-sm: var(--bs-container-sm, 540px);
+    --osirion-container-md: var(--bs-container-md, 720px);
+    --osirion-container-lg: var(--bs-container-lg, 960px);
+    --osirion-container-xl: var(--bs-container-xl, 1140px);
+    --osirion-container-xxl: var(--bs-container-xxl, 1320px);
+    --osirion-container-xxxl: 1800px;
     /* Transitions */
     --osirion-transition-timing-default: ease;
     --osirion-transition-timing-in: ease-in;

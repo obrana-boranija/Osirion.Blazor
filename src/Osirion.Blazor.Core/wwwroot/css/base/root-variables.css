@@ -177,6 +177,30 @@
     --osirion-z-index-40: 40;
     --osirion-z-index-50: 50;
     --osirion-z-index-auto: auto;
+    /* ========== BREAKPOINTS ========== */
+    /* Unified breakpoint system compatible with all frameworks */
+    /* Mobile First approach - min-width breakpoints */
+    --osirion-breakpoint-xs: 0; /* Extra small devices */
+    --osirion-breakpoint-sm: 576px; /* Small devices (landscape phones) */
+    --osirion-breakpoint-md: 768px; /* Medium devices (tablets) */
+    --osirion-breakpoint-lg: 992px; /* Large devices (desktops) */
+    --osirion-breakpoint-xl: 1200px; /* Extra large devices (large desktops) */
+    --osirion-breakpoint-xxl: 1400px; /* Extra extra large devices */
+    --osirion-breakpoint-xxxl: 1920px; /* Ultra wide screens */
+    /* Max-width breakpoints for desktop-first queries */
+    --osirion-breakpoint-xs-max: 575.98px;
+    --osirion-breakpoint-sm-max: 767.98px;
+    --osirion-breakpoint-md-max: 991.98px;
+    --osirion-breakpoint-lg-max: 1199.98px;
+    --osirion-breakpoint-xl-max: 1399.98px;
+    --osirion-breakpoint-xxl-max: 1919.98px;
+    /* Container max-widths per breakpoint */
+    --osirion-container-sm: 540px;
+    --osirion-container-md: 720px;
+    --osirion-container-lg: 960px;
+    --osirion-container-xl: 1140px;
+    --osirion-container-xxl: 1320px;
+    --osirion-container-xxxl: 1800px;
     /* ========== COMPONENT TOKENS ========== */
     /* These map our design tokens to semantic UI purposes */
     /* We'll use these in components, not the raw design tokens */

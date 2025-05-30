@@ -8,7 +8,7 @@ public class ThemeOptions
     /// <summary>
     /// Gets or sets the default theme mode
     /// </summary>
-    public string DefaultMode { get; set; } = "light";
+    public string DefaultMode { get; set; } = "dark";
 
     /// <summary>
     /// Gets or sets the primary color
@@ -18,7 +18,7 @@ public class ThemeOptions
     /// <summary>
     /// Gets or sets whether to use dark mode
     /// </summary>
-    public bool UseDarkMode { get; set; } = false;
+    public bool UseDarkMode { get; set; } = true;
 
     /// <summary>
     /// Gets or sets whether to respect system theme preferences

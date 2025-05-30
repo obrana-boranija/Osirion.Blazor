@@ -8,12 +8,12 @@
     border: 1px solid var(--bs-gray-300);
     border-radius: 6px;
     overflow: hidden;
-    background-color: var(--bs-white);
+    /*background-color: var(--bs-white);*/
 }
 
 /* Editor header with tabs */
 .editor-header {
-    background-color: var(--bs-gray-100);
+    /*background-color: var(--bs-gray-100);*/
     border-bottom: 1px solid var(--bs-gray-300);
     padding: 0.5rem;
     z-index: 10;
@@ -53,7 +53,7 @@
 /* Toolbar styling */
 .editor-toolbar {
     padding: 0.5rem;
-    background-color: var(--bs-gray-100);
+    /*background-color: var(--bs-gray-100);*/
     border-bottom: 1px solid var(--bs-gray-300);
     z-index: 3;
 }
@@ -67,18 +67,18 @@
     justify-content: center;
     border-radius: 4px;
     background: transparent;
-    color: var(--bs-gray-700);
+    /*color: var(--bs-gray-700);*/
     border: none;
 }
 
     .btn-icon:hover {
-        background-color: var(--bs-gray-200);
+        /*background-color: var(--bs-gray-200);*/
         color: var(--bs-gray-900);
     }
 
     .btn-icon:focus {
         box-shadow: none;
-        background-color: var(--bs-gray-200);
+        /*background-color: var(--bs-gray-200);*/
     }
 
 /* Editor area styling */
@@ -95,7 +95,7 @@
     font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, "Liberation Mono", monospace !important;
     font-size: 0.875rem !important;
     line-height: 1.6 !important;
-    color: var(--bs-gray-900) !important;
+    /*color: var(--bs-gray-900) !important;*/
     resize: none !important;
     height: 100% !important;
     box-shadow: none !important;
@@ -109,7 +109,7 @@
     }
 
 .editor-status-bar {
-    background-color: var(--bs-gray-100);
+    /*background-color: var(--bs-gray-100);*/
     border-top: 1px solid var(--bs-gray-300);
     border-left: 1px solid var(--bs-gray-300);
     border-top-left-radius: 4px;
@@ -120,7 +120,7 @@
 /* Preview header styling */
 .preview-header {
     padding: 0.5rem 1rem;
-    background-color: var(--bs-gray-100);
+    /*background-color: var(--bs-gray-100);*/
     border-bottom: 1px solid var(--bs-gray-300);
     z-index: 3;
 }
@@ -131,7 +131,7 @@
     padding: 1rem;
     font-size: 0.875rem;
     line-height: 1.6;
-    color: var(--bs-gray-900);
+    /*color: var(--bs-gray-900);*/
 }
 
 /* GitHub-style Markdown preview */
@@ -171,7 +171,7 @@
     }
 
     .markdown-preview a {
-        color: var(--bs-primary);
+        /*color: var(--bs-primary);*/
         text-decoration: none;
     }
 
@@ -181,7 +181,7 @@
 
     .markdown-preview blockquote {
         padding: 0 1em;
-        color: var(--bs-gray-600);
+        /*color: var(--bs-gray-600);*/
         border-left: 0.25em solid var(--bs-gray-300);
         margin: 0 0 16px 0;
     }
@@ -192,7 +192,7 @@
         font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, "Liberation Mono", monospace;
         font-size: 85%;
         line-height: 1.45;
-        background-color: var(--bs-gray-100);
+        /*background-color: var(--bs-gray-100);*/
         border-radius: 6px;
         margin-bottom: 16px;
     }
@@ -202,20 +202,20 @@
         font-size: 85%;
         padding: 0.2em 0.4em;
         margin: 0;
-        background-color: rgba(175, 184, 193, 0.2);
+        /*background-color: rgba(175, 184, 193, 0.2);*/
         border-radius: 6px;
     }
 
     .markdown-preview pre code {
         padding: 0;
         margin: 0;
-        background-color: transparent;
+        /*background-color: transparent;*/
     }
 
     .markdown-preview img {
         max-width: 100%;
         box-sizing: content-box;
-        background-color: var(--bs-white);
+        /*background-color: var(--bs-white);*/
     }
 
     .markdown-preview table {
@@ -232,19 +232,19 @@
         }
 
         .markdown-preview table tr {
-            background-color: var(--bs-white);
+            /*background-color: var(--bs-white);*/
             border-top: 1px solid var(--bs-gray-300);
         }
 
             .markdown-preview table tr:nth-child(2n) {
-                background-color: var(--bs-gray-100);
+                /*background-color: var(--bs-gray-100);*/
             }
 
     .markdown-preview hr {
         height: 0.25em;
         padding: 0;
         margin: 24px 0;
-        background-color: var(--bs-gray-300);
+        /*background-color: var(--bs-gray-300);*/
         border: 0;
     }
 
@@ -293,7 +293,7 @@
 :root[data-bs-theme="dark"] .markdown-editor,
 .osirion-admin-theme-dark .markdown-editor {
     border-color: var(--bs-gray-700);
-    background-color: var(--bs-gray-900);
+    /*background-color: var(--bs-gray-900);*/
 }
 
 :root[data-bs-theme="dark"] .editor-header,
@@ -304,19 +304,19 @@
 .osirion-admin-theme-dark .editor-toolbar,
 .osirion-admin-theme-dark .preview-header,
 .osirion-admin-theme-dark .editor-status-bar {
-    background-color: var(--bs-gray-800);
+    /*background-color: var(--bs-gray-800);*/
     border-color: var(--bs-gray-700);
 }
 
 :root[data-bs-theme="dark"] .editor-textarea,
 .osirion-admin-theme-dark .editor-textarea {
-    background-color: var(--bs-gray-900) !important;
+    /*background-color: var(--bs-gray-900) !important;*/
     color: var(--bs-gray-200) !important;
 }
 
 :root[data-bs-theme="dark"] .preview-container,
 .osirion-admin-theme-dark .preview-container {
-    background-color: var(--bs-gray-900);
+    /*background-color: var(--bs-gray-900);*/
     color: var(--bs-gray-200);
 }
 
@@ -329,18 +329,18 @@
 
 :root[data-bs-theme="dark"] .markdown-preview blockquote,
 .osirion-admin-theme-dark .markdown-preview blockquote {
-    color: var(--bs-gray-500);
+    /*color: var(--bs-gray-500);*/
     border-color: var(--bs-gray-700);
 }
 
 :root[data-bs-theme="dark"] .markdown-preview pre,
 .osirion-admin-theme-dark .markdown-preview pre {
-    background-color: var(--bs-gray-800);
+    /*background-color: var(--bs-gray-800);*/
 }
 
 :root[data-bs-theme="dark"] .markdown-preview code,
 .osirion-admin-theme-dark .markdown-preview code {
-    background-color: rgba(110, 118, 129, 0.4);
+    /*background-color: rgba(110, 118, 129, 0.4);*/
 }
 
 :root[data-bs-theme="dark"] .markdown-preview table th,
@@ -352,28 +352,28 @@
 
 :root[data-bs-theme="dark"] .markdown-preview table tr,
 .osirion-admin-theme-dark .markdown-preview table tr {
-    background-color: var(--bs-gray-900);
+    /*background-color: var(--bs-gray-900);*/
     border-color: var(--bs-gray-700);
 }
 
     :root[data-bs-theme="dark"] .markdown-preview table tr:nth-child(2n),
     .osirion-admin-theme-dark .markdown-preview table tr:nth-child(2n) {
-        background-color: var(--bs-gray-800);
+        /*background-color: var(--bs-gray-800);*/
     }
 
 :root[data-bs-theme="dark"] .markdown-preview hr,
 .osirion-admin-theme-dark .markdown-preview hr {
-    background-color: var(--bs-gray-700);
+    /*background-color: var(--bs-gray-700);*/
 }
 
 :root[data-bs-theme="dark"] .btn-icon,
 .osirion-admin-theme-dark .btn-icon {
-    color: var(--bs-gray-400);
+    /*color: var(--bs-gray-400);*/
 }
 
     :root[data-bs-theme="dark"] .btn-icon:hover,
     .osirion-admin-theme-dark .btn-icon:hover {
-        background-color: var(--bs-gray-700);
+        /*background-color: var(--bs-gray-700);*/
         color: var(--bs-gray-200);
     }
 

@@ -59,7 +59,7 @@ public static class OsirionServiceCollectionExtensions
             }
 
             // CMS Admin configuration
-            var cmsAdminSection = configuration.GetSection("Osirion:Cms:GitHub:Admin");
+            var cmsAdminSection = configuration.GetSection("Osirion:Cms:Admin");
             if (cmsAdminSection.Exists())
             {
                 builder.UseCmsAdmin(configuration);

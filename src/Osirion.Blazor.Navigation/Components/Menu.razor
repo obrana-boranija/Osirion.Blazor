@@ -14,13 +14,23 @@
     <nav class="osirion-menu-nav" aria-label="@AriaLabel">
         <!-- Branding container -->
         <div class="osirion-nav-branding">
-            @if (BrandingTemplate != null)
+            @if (BrandingTemplate is not null)
             {
                 @BrandingTemplate
             }
-            else if (!string.IsNullOrEmpty(BrandText))
+            else if (!string.IsNullOrWhiteSpace(BrandLogo))
             {
-                <div class="osirion-brand-text">@BrandText</div>
+            <a href="@Href" class="osirion-brand-link">
+                <img src="@BrandLogo" alt="@BrandText" class="osirion-brand-logo" width="60" heigth="60" />
+                    @if (!string.IsNullOrWhiteSpace(BrandText))
+                    {
+                        <span class="osirion-brand-text">@BrandText</span>
+                    }
+            </a>
+            }
+            else if (!string.IsNullOrWhiteSpace(BrandText))
+            {
+            <a class="osirion-brand-link osirion-brand-text" href="@Href">@BrandText</a>
             }
         </div>
 

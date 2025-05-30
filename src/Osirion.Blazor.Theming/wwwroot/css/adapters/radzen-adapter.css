@@ -168,6 +168,31 @@ html.osirion-radzen-integration {
     --osirion-shadow-xl: var(--rz-shadow-4, 0 4px 5px -2px rgba(0, 0, 0, .2), 0 7px 10px 1px rgba(0, 0, 0, .14), 0 2px 16px 1px rgba(0, 0, 0, .12));
     --osirion-shadow-2xl: var(--rz-shadow-5, 0 6px 10px -4px rgba(0, 0, 0, .2), 0 9px 12px 1px rgba(0, 0, 0, .14), 0 3px 16px 2px rgba(0, 0, 0, .12));
     --osirion-shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+    /* Breakpoints - Radzen's breakpoint system (similar to Bootstrap) */
+    /* Radzen uses Bootstrap-like breakpoints but doesn't expose them as CSS variables */
+    /* If you've customized Radzen to expose them, you can reference them like: */
+    /* --osirion-breakpoint-sm: var(--rz-breakpoint-sm, 576px); */
+    --osirion-breakpoint-xs: 0;
+    --osirion-breakpoint-sm: 576px;
+    --osirion-breakpoint-md: 768px;
+    --osirion-breakpoint-lg: 992px;
+    --osirion-breakpoint-xl: 1200px;
+    --osirion-breakpoint-xxl: 1400px;
+    --osirion-breakpoint-xxxl: 1920px;
+    /* Max-width breakpoints */
+    --osirion-breakpoint-xs-max: 575.98px;
+    --osirion-breakpoint-sm-max: 767.98px;
+    --osirion-breakpoint-md-max: 991.98px;
+    --osirion-breakpoint-lg-max: 1199.98px;
+    --osirion-breakpoint-xl-max: 1399.98px;
+    --osirion-breakpoint-xxl-max: 1919.98px;
+    /* Container max-widths */
+    --osirion-container-sm: 540px;
+    --osirion-container-md: 720px;
+    --osirion-container-lg: 960px;
+    --osirion-container-xl: 1140px;
+    --osirion-container-xxl: 1320px;
+    --osirion-container-xxxl: 1800px;
     /* Transitions */
     --osirion-transition-timing-default: ease-in-out;
     --osirion-transition-timing-in: ease-in;
