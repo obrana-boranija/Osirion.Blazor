@@ -1,159 +1,136 @@
-﻿function initializeLineHighlighting() {
+(function() {
     'use strict';
 
-    // Store highlighted lines for each code block
-    const highlightedLines = new Map();
+    const config = {
+        containerSelector: '.line-numbers',
+        lineSelector: '.line-numbers-rows > span',
+        highlightClass: 'osirion-line-highlighted',
+        initialized: 'osirion-lines-initialized',
+        activeLines: new WeakMap() // Use WeakMap to prevent memory leaks
+    };
 
-    // Initialize line highlighting for all code blocks with line numbers
-    document.querySelectorAll('.line-numbers pre').forEach((pre, preIndex) => {
-        initializeCodeBlock(pre, preIndex, highlightedLines);
-    });
-}
+    let initialized = false;
 
-function initializeCodeBlock(pre, preIndex, highlightedLines) {
-    const lineElements = pre.querySelectorAll('.line-numbers-rows > span');
+    // Toggle line highlight
+    function toggleLineHighlight(event) {
+        const span = event.target.closest(config.lineSelector);
+        if (!span) return;
 
-    if (!lineElements.length) {
-        return;
-    }
+        const pre = span.closest('pre');
+        if (!pre) return;
 
-    // Calculate line metrics once
-    const lineMetrics = calculateLineMetrics(pre);
+        const isMultiSelect = event.ctrlKey || event.metaKey || event.shiftKey;
+        const lineNumber = Array.from(span.parentElement.children).indexOf(span) + 1;
 
-    lineElements.forEach((span, index) => {
-        const lineNum = index + 1;
+        // Get or create line set for this pre element
+        let activeLines = config.activeLines.get(pre) || new Set();
 
-        // Make line numbers interactive
-        span.setAttribute('role', 'button');
-        span.setAttribute('aria-label', `Toggle highlight for line ${lineNum}`);
-        span.setAttribute('tabindex', '0');
-        span.style.cursor = 'pointer';
-
-        // Remove existing listeners
-        span.replaceWith(span.cloneNode(true));
-        const newSpan = pre.querySelectorAll('.line-numbers-rows > span')[index];
-
-        // Add click handler
-        newSpan.addEventListener('click', function (e) {
-            toggleLineHighlight(e, pre, preIndex, lineNum, highlightedLines, lineMetrics);
-        });
-
-        // Add keyboard handler
-        newSpan.addEventListener('keydown', function (e) {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                toggleLineHighlight(e, pre, preIndex, lineNum, highlightedLines, lineMetrics);
-            }
-        });
-    });
-}
-
-function toggleLineHighlight(event, pre, preIndex, lineNum, highlightedLines, lineMetrics) {
-    const span = event.currentTarget;
-    const isCtrlPressed = event.ctrlKey || event.metaKey;
-
-    let currentHighlights = highlightedLines.get(preIndex) || [];
-
-    if (span.classList.contains('osirion-line-highlighted')) {
-        // Remove highlight
-        span.classList.remove('osirion-line-highlighted');
-        currentHighlights = currentHighlights.filter(n => n !== lineNum);
-        span.setAttribute('aria-pressed', 'false');
-    } else {
-        // Add highlight
-        if (!isCtrlPressed) {
-            // Clear all highlights if Ctrl/Cmd not pressed
-            pre.querySelectorAll('.osirion-line-highlighted').forEach(el => {
-                el.classList.remove('osirion-line-highlighted');
+        if (!isMultiSelect) {
+            // Clear all highlights
+            pre.querySelectorAll(`.${config.highlightClass}`).forEach(el => {
+                el.classList.remove(config.highlightClass);
                 el.setAttribute('aria-pressed', 'false');
             });
-            currentHighlights = [];
+            activeLines.clear();
         }
 
-        span.classList.add('osirion-line-highlighted');
-        span.setAttribute('aria-pressed', 'true');
-
-        if (!currentHighlights.includes(lineNum)) {
-            currentHighlights.push(lineNum);
+        // Toggle current line
+        if (span.classList.contains(config.highlightClass)) {
+            span.classList.remove(config.highlightClass);
+            span.setAttribute('aria-pressed', 'false');
+            activeLines.delete(lineNumber);
+        } else {
+            span.classList.add(config.highlightClass);
+            span.setAttribute('aria-pressed', 'true');
+            activeLines.add(lineNumber);
         }
+
+        // Store updated set
+        config.activeLines.set(pre, activeLines);
+
+        // Announce to screen readers
+        announceChange(lineNumber, span.classList.contains(config.highlightClass), isMultiSelect);
     }
 
-    // Sort line numbers
-    currentHighlights.sort((a, b) => a - b);
-    highlightedLines.set(preIndex, currentHighlights);
+    // Announce changes for accessibility
+    function announceChange(lineNumber, isHighlighted, isMultiSelect) {
+        const message = isHighlighted 
+            ? `Line ${lineNumber} highlighted${isMultiSelect ? '. Hold Ctrl/Cmd for multiple selection.' : ''}`
+            : `Line ${lineNumber} unhighlighted`;
 
-    // Update visual overlays
-    createHighlightOverlays(pre, currentHighlights, lineMetrics);
+        const announcement = document.createElement('div');
+        announcement.className = 'sr-only';
+        announcement.setAttribute('role', 'status');
+        announcement.setAttribute('aria-live', 'polite');
+        announcement.textContent = message;
+        
+        document.body.appendChild(announcement);
+        setTimeout(() => announcement.remove(), 3000);
+    }
 
-    // Announce to screen readers
-    const action = span.classList.contains('osirion-line-highlighted') ? 'highlighted' : 'unhighlighted';
-    announceLineAction(lineNum, action, isCtrlPressed);
-}
+    // Process line numbers
+    function processLineNumbers() {
+        const containers = document.querySelectorAll(`${config.containerSelector}:not(.${config.initialized})`);
+        
+        containers.forEach(container => {
+            container.classList.add(config.initialized);
+            
+            const lines = container.querySelectorAll(config.lineSelector);
+            lines.forEach((span, index) => {
+                span.setAttribute('role', 'button');
+                span.setAttribute('aria-label', `Toggle highlight for line ${index + 1}`);
+                span.setAttribute('aria-pressed', 'false');
+                span.setAttribute('tabindex', '0');
+                span.style.cursor = 'pointer';
+            });
+        });
+    }
 
-function calculateLineMetrics(pre) {
-    const codeElement = pre.querySelector('code');
-    if (!codeElement) return null;
+    // Initialize with event delegation
+    function init() {
+        if (initialized) return;
+        initialized = true;
 
-    const computedStyle = window.getComputedStyle(pre);
-    const codeStyle = window.getComputedStyle(codeElement);
-
-    return {
-        lineHeight: parseFloat(computedStyle.lineHeight) || 20,
-        paddingTop: parseFloat(codeStyle.paddingTop) || 0,
-        paddingLeft: parseFloat(codeStyle.paddingLeft) || 0
-    };
-}
-
-function createHighlightOverlays(pre, highlightedLines, lineMetrics) {
-    // Remove existing overlays
-    pre.querySelectorAll('.osirion-line-highlight-overlay').forEach(el => el.remove());
-
-    if (!lineMetrics || !highlightedLines.length) return;
-
-    highlightedLines.forEach(lineNum => {
-        const overlay = document.createElement('div');
-        overlay.className = 'osirion-line-highlight-overlay';
-
-        // Position the overlay
-        const top = lineMetrics.paddingTop + (lineNum - 1) * lineMetrics.lineHeight;
-
-        Object.assign(overlay.style, {
-            position: 'absolute',
-            top: `${top}px`,
-            left: '0',
-            right: '0',
-            height: `${lineMetrics.lineHeight}px`,
-            backgroundColor: 'rgba(255, 255, 0, 0.1)',
-            pointerEvents: 'none',
-            zIndex: '1'
+        // Click handler with delegation
+        document.addEventListener('click', (event) => {
+            if (!event.target.closest(config.lineSelector)) return;
+            toggleLineHighlight(event);
         });
 
-        pre.appendChild(overlay);
-    });
+        // Keyboard handler with delegation
+        document.addEventListener('keydown', (event) => {
+            if (event.key !== 'Enter' && event.key !== ' ') return;
+            if (!event.target.closest(config.lineSelector)) return;
+            
+            event.preventDefault();
+            toggleLineHighlight(event);
+        });
 
-    // Ensure pre has position relative
-    if (window.getComputedStyle(pre).position === 'static') {
-        pre.style.position = 'relative';
+        // Process existing elements
+        processLineNumbers();
+
+        // Watch for new elements
+        const observer = new MutationObserver(() => {
+            processLineNumbers();
+        });
+
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
     }
-}
 
-function announceLineAction(lineNum, action, isMultiSelect) {
-    const message = isMultiSelect
-        ? `Line ${lineNum} ${action}. Hold Ctrl or Cmd to select multiple lines.`
-        : `Line ${lineNum} ${action}`;
+    // Auto-initialize
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
 
-    const announcement = document.createElement('div');
-    announcement.className = 'sr-only';
-    announcement.setAttribute('role', 'status');
-    announcement.setAttribute('aria-live', 'polite');
-    announcement.textContent = message;
-
-    document.body.appendChild(announcement);
-
-    setTimeout(() => {
-        announcement.remove();
-    }, 3000);
-}
-
-// Export for use in other scripts
-window.initializeLineHighlighting = initializeLineHighlighting;
+    // Public API
+    window.initializeLineHighlighting = processLineNumbers;
+    window.OsirionLineHighlighting = {
+        init: init,
+        processLineNumbers: processLineNumbers
+    };
+})();
