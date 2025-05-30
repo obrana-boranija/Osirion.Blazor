@@ -46,8 +46,13 @@
     }
 
     // Handle copy button click
-    async function handleCopyClick(event) {
-        const button = event.currentTarget;
+    async function handleCopyClick(button) {
+        // Ensure we have a valid button element
+        if (!button || typeof button.closest !== 'function') {
+            console.error('Invalid button element');
+            return;
+        }
+
         const wrapper = button.closest(config.wrapperSelector);
         
         if (!wrapper) {
@@ -100,32 +105,42 @@
         initialized = true;
 
         // Use event delegation on document level
-        document.addEventListener('click', (event) => {
+        document.addEventListener('click', async (event) => {
+            // Find the button element, checking if the click was on the button or its child
             const button = event.target.closest(config.buttonSelector);
             if (!button) return;
             
-            // Prevent default only for our buttons
+            // Prevent default action
+            event.preventDefault();
+            
+            // Mark as initialized if not already
             if (!button.classList.contains(config.initialized)) {
-                event.preventDefault();
                 button.classList.add(config.initialized);
+                button.setAttribute('aria-label', 'Copy code to clipboard');
+                button.setAttribute('role', 'button');
+                button.setAttribute('tabindex', '0');
             }
             
-            handleCopyClick(event);
+            // Handle the copy action
+            await handleCopyClick(button);
         });
 
         // Keyboard support
-        document.addEventListener('keydown', (event) => {
+        document.addEventListener('keydown', async (event) => {
             if (event.key !== 'Enter' && event.key !== ' ') return;
             
             const button = event.target.closest(config.buttonSelector);
             if (!button) return;
             
             event.preventDefault();
-            handleCopyClick(event);
+            await handleCopyClick(button);
         });
+
+        // Process existing buttons
+        processButtons();
     }
 
-    // Find and mark new buttons (optional, for specific initialization)
+    // Find and mark new buttons
     function processButtons() {
         const buttons = document.querySelectorAll(`${config.buttonSelector}:not(.${config.initialized})`);
         buttons.forEach(button => {
