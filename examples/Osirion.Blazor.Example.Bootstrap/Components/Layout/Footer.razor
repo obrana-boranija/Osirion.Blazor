@@ -1,0 +1,305 @@
+﻿@using Osirion.Blazor.Components
+<OsirionFooter CompanyName="Tridesetri"
+               CompanyUrl="https://tridesetri.com"
+               ShowDivider="true"
+               Links="Links"
+               SocialLinks="SocialLinks"
+               BottomLinks="BottomLinks">
+
+    <Logo>
+        <div class="footer-brand">
+            <img src="/favicon.png" width="50" height="50" />
+            <div class="footer-brand-text">
+                <h3 class="footer-brand-name">Osirion</h3>
+                <p class="footer-brand-tagline">Crafted with ❤️ for the Blazor community</p>
+            </div>
+        </div>
+    </Logo>
+
+    @*     <TopContent>
+        <div class="footer-newsletter">
+            <div class="newsletter-container">
+                <h3 class="newsletter-title">Stay Updated</h3>
+                <p class="newsletter-description">
+                    Get the latest updates on Osirion.Blazor components, new features, and best practices delivered to your inbox.
+                </p>
+                <form class="newsletter-form" method="post" action="/api/newsletter">
+                    <div class="newsletter-input-group">
+                        <input type="email"
+                               name="email"
+                               class="newsletter-input"
+                               placeholder="Enter your email address"
+                               required
+                               aria-label="Email address for newsletter" />
+                        <button type="submit" class="newsletter-button">
+                            Subscribe
+                        </button>
+                    </div>
+                    <p class="newsletter-privacy">
+                        By subscribing, you agree to our <a href="/privacy" class="newsletter-link">Privacy Policy</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </TopContent> *@
+
+</OsirionFooter>
+
+@code {
+    private IReadOnlyList<FooterSection>? Links { get; set; }
+    private IReadOnlyList<FooterSocialLink>? SocialLinks { get; set; }
+    private IReadOnlyList<FooterLink>? BottomLinks { get; set; }
+
+    protected override void OnInitialized()
+    {
+        // Product and resource links
+        Links = new[]
+        {
+            new FooterSection
+            {
+                Title = "Products",
+                Links = new[]
+                {
+                    new FooterLink { Text = "Components", Href = "#" },
+                    new FooterLink { Text = "Themes", Href = "#" },
+                    new FooterLink { Text = "Templates", Href = "#" },
+                    new FooterLink { Text = "Extensions", Href = "#" }
+                }
+            },
+            new FooterSection
+            {
+                Title = "Resources",
+                Links = new[]
+                {
+                    new FooterLink { Text = "Documentation", Href = "#" },
+                    new FooterLink { Text = "Quick Start", Href = "#" },
+                    new FooterLink { Text = "Examples", Href = "#" },
+                    new FooterLink { Text = "API Reference", Href = "#" }
+                }
+            },
+            new FooterSection
+            {
+                Title = "Community",
+                Links = new[]
+                {
+                    new FooterLink { Text = "Blog", Href = "/blog" },
+                    new FooterLink { Text = "Forum", Href = "#" },
+                    new FooterLink { Text = "Issues", Href = "https://github.com/obrana-boranija/Osirion.Blazor/issues", OpenInNewTab = true },
+                    new FooterLink { Text = "Roadmap", Href = "https://github.com/obrana-boranija/Osirion.Blazor/wiki", OpenInNewTab = true }
+                }
+            },
+            new FooterSection
+            {
+                Title = "Company",
+                Links = new[]
+                {
+                    new FooterLink { Text = "About", Href = "#" },
+                    new FooterLink { Text = "Contact", Href = "#" },
+                    new FooterLink { Text = "Careers", Href = "#" },
+                    new FooterLink { Text = "Partners", Href = "#" }
+                }
+            }
+        };
+
+        // Social media links with proper icons
+        SocialLinks = new[]
+        {
+            new FooterSocialLink
+            {
+                Href = "https://github.com/obrana-boranija/Osirion.Blazor",
+                AriaLabel = "Osirion.Blazor on GitHub",
+                Icon = @<svg class="social-icon" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+</svg>
+            },
+            new FooterSocialLink
+            {
+                Href = "https://x.com/dejan_demonjic",
+                AriaLabel = "Follow me on Twitter",
+                Icon = @<svg class="social-icon" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z" />
+</svg>
+            },
+            new FooterSocialLink
+            {
+                Href = "https://www.nuget.org/packages/Osirion.Blazor",
+                AriaLabel = "Osirion.Blazor on NuGet",
+                Icon = @<svg class="social-icon" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M17.67 21.29a3.28 3.28 0 01-3.33 3.21H3.09a3.08 3.08 0 01-3.09-3V8.26A3.29 3.29 0 013.33 5h11.25a3.09 3.09 0 013.09 3.09v13.2zm2.33-10.6H8.75a3.09 3.09 0 00-3.09 3.09v11.25a3.29 3.29 0 003.33 3.26h11.25a3.08 3.08 0 003.09-3V13.79a3.28 3.28 0 00-3.33-3.1z" />
+</svg>
+            },
+            new FooterSocialLink
+            {
+                Href = "https://linkedin.com/company/tridesetri",
+                AriaLabel = "Tridesetri company on LinkedIn",
+                Icon = @<svg class="social-icon" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+</svg>
+            }
+        };
+
+        // Legal and important links
+        BottomLinks = new[]
+        {
+            new FooterLink { Text = "Privacy Policy", Href = "#" },
+            new FooterLink { Text = "Terms of Service", Href = "#" },
+            new FooterLink { Text = "License", Href = "https://github.com/obrana-boranija/Osirion.Blazor/blob/master/LICENSE.txt", OpenInNewTab = true },
+            new FooterLink { Text = "Security", Href = "#" },
+            // new FooterLink { Text = "Status", Href = "https://status.osirion.dev", OpenInNewTab = true }
+        };
+    }
+}
+
+<style>
+    /* Custom styles for enhanced footer */
+    .footer-brand {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .footer-logo {
+        flex-shrink: 0;
+        color: var(--osirion-action-primary, #2563eb);
+    }
+
+    .footer-brand-text {
+        flex: 1;
+    }
+
+    .footer-brand-name {
+        margin: 0 0 0.25rem;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--osirion-text-primary);
+    }
+
+    .footer-brand-tagline {
+        margin: 0;
+        font-size: 0.875rem;
+        color: var(--osirion-text-secondary);
+    }
+
+    /* Newsletter section */
+    .footer-newsletter {
+        background-color: var(--osirion-background-tertiary);
+        border-radius: var(--osirion-radius-lg, 0.5rem);
+        padding: 2rem 0;
+        margin: 2rem 0;
+    }
+
+    .newsletter-container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 0 1rem;
+        text-align: center;
+    }
+
+    .newsletter-title {
+        margin: 0 0 0.5rem;
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--osirion-text-primary);
+    }
+
+    .newsletter-description {
+        margin: 0 0 1.5rem;
+        color: var(--osirion-text-secondary);
+        font-size: 0.875rem;
+    }
+
+    .newsletter-form {
+        max-width: 450px;
+        margin: 0 auto;
+    }
+
+    .newsletter-input-group {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .newsletter-input {
+        flex: 1;
+        padding: 0.625rem 1rem;
+        font-size: 0.875rem;
+        border: 1px solid var(--osirion-border-color);
+        border-radius: var(--osirion-radius-md, 0.375rem);
+        background-color: var(--osirion-background-primary);
+        color: var(--osirion-text-primary);
+        transition: all 0.2s ease;
+    }
+
+        .newsletter-input:focus {
+            outline: var(--osirion-focus-ring-width, 3px) solid var(--osirion-focus-ring-color);
+            outline-offset: 0;
+            border-color: var(--osirion-action-primary);
+        }
+
+    .newsletter-button {
+        padding: 0.625rem 1.5rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        border: none;
+        border-radius: var(--osirion-radius-md, 0.375rem);
+        background-color: var(--osirion-action-primary);
+        color: var(--osirion-action-primary-text);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+    }
+
+        .newsletter-button:hover {
+            background-color: var(--osirion-action-primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .newsletter-button:active {
+            transform: translateY(0);
+        }
+
+    .newsletter-privacy {
+        margin: 0;
+        font-size: 0.75rem;
+        color: var(--osirion-text-tertiary);
+    }
+
+    .newsletter-link {
+        color: var(--osirion-action-primary);
+        text-decoration: underline;
+    }
+
+        .newsletter-link:hover {
+            color: var(--osirion-action-primary-hover);
+        }
+
+    /* Social icon styling */
+    .social-icon {
+        width: 20px;
+        height: 20px;
+    }
+
+    /* Dark theme adjustments */
+    :root[data-theme="dark"] .footer-newsletter,
+    .dark-theme .footer-newsletter {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    /* Mobile responsiveness */
+    @@media (max-width: 480px) {
+        .newsletter-input-group {
+            flex-direction: column;
+        }
+
+        .newsletter-button {
+            width: 100%;
+        }
+
+        .footer-brand {
+            flex-direction: column;
+            text-align: center;
+            align-items: center;
+        }
+    }
+</style>

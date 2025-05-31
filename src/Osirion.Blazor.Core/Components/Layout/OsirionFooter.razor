@@ -3,118 +3,141 @@
 
 <footer class="@GetFooterClass()" @attributes="AdditionalAttributes">
     <div class="osirion-footer-container">
-        @if (ShowTopSection && (Logo != null || Links?.Any() == true || SocialLinks?.Any() == true))
+        @if (ShowTopSection && (Logo != null || Links?.Any() == true || SocialLinks?.Any() == true || TopContent != null))
         {
-                <div class="osirion-footer-top">
-                    <div class="osirion-footer-content">
-                    @if (Logo != null)
-                    {
-                                <div class="osirion-footer-logo">
-                            @Logo
-                                </div>
-                    }
-
-                    @if (Links?.Any() == true)
-                    {
-                                <div class="osirion-footer-links">
-                            @foreach (var linkSetion in Links)
-                            {
-                                            <div class="osirion-footer-section">
-                                    @if (!string.IsNullOrEmpty(linkSetion.Title))
-                                    {
-                                        <h3 class="osirion-footer-section-title">@linkSetion.Title</h3>
-                                    }
-                                                <ul class="osirion-footer-list">
-                                        @foreach (var link in linkSetion.Links)
-                                        {
-                                                            <li class="osirion-footer-list-item">
-                                                                <a href="@link.Href" class="osirion-footer-link" target="@(link.OpenInNewTab ? "_blank" : null)" rel="@(link.OpenInNewTab ? "noopener noreferrer" : null)">
-                                                    @link.Text
-                                                                </a>
-                                                            </li>
-                                        }
-                                                </ul>
-                                            </div>
-                            }
-                                </div>
-                    }
-
-                    @if (SocialLinks?.Any() == true && ShowSocialLinks)
-                    {
-                                <div class="osirion-footer-social">
-                            @if (!string.IsNullOrEmpty(SocialTitle))
-                            {
-                                            <h3 class="osirion-footer-section-title">@SocialTitle</h3>
-                            }
-                                    <div class="osirion-footer-social-links">
-                                @foreach (var social in SocialLinks)
+            <div class="osirion-footer-top">
+                <div class="osirion-footer-content">
+                    <div class="osirion-footer-grid">
+                        @if (Logo != null || Description != null)
+                        {
+                            <div class="osirion-footer-brand">
+                                @if (Logo != null)
                                 {
-                                                <a href="@social.Href" 
-                                                   class="osirion-footer-social-link" 
-                                                   aria-label="@social.AriaLabel"
-                                                   target="_blank"
-                                                   rel="noopener noreferrer">
-                                        @if (social.Icon != null)
-                                        {
-                                            @social.Icon
-                                        }
-                                        else
-                                        {
-                                                            <span>@social.Text</span>
-                                        }
-                                                </a>
-                                }
+                                    <div class="osirion-footer-logo">
+                                        @Logo
                                     </div>
+                                }
+                                @if (!string.IsNullOrEmpty(Description))
+                                {
+                                    <p class="osirion-footer-description">@Description</p>
+                                }
+                            </div>
+                        }
+
+                        @if (Links?.Any() == true)
+                        {
+                            <div class="osirion-footer-links">
+                                @foreach (var linkSection in Links)
+                                {
+                                    <div class="osirion-footer-section">
+                                        @if (!string.IsNullOrEmpty(linkSection.Title))
+                                        {
+                                            <h3 class="osirion-footer-section-title">@linkSection.Title</h3>
+                                        }
+                                        <ul class="osirion-footer-list">
+                                            @foreach (var link in linkSection.Links)
+                                            {
+                                                <li class="osirion-footer-list-item">
+                                                    <a href="@link.Href"
+                                                       class="osirion-footer-link"
+                                                       target="@(link.OpenInNewTab ? "_blank" : null)"
+                                                       rel="@(link.OpenInNewTab ? "noopener noreferrer" : null)">
+                                                        @link.Text
+                                                    </a>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </div>
+                                }
+                            </div>
+                        }
+
+                        @if (TopContent != null)
+                        {
+                            <div class="osirion-footer-custom-top">
+                                @TopContent
+                            </div>
+                        }
+
+                        @if (SocialLinks?.Any() == true && ShowSocialLinks)
+                        {
+                            <div class="osirion-footer-social">
+                                @if (!string.IsNullOrEmpty(SocialTitle))
+                                {
+                                    <h3 class="osirion-footer-section-title">@SocialTitle</h3>
+                                }
+                                <div class="osirion-footer-social-links">
+                                    @foreach (var social in SocialLinks)
+                                    {
+                                        <a href="@social.Href"
+                                           class="osirion-footer-social-link"
+                                           aria-label="@social.AriaLabel"
+                                           target="_blank"
+                                           rel="noopener noreferrer">
+                                            @if (social.Icon != null)
+                                            {
+                                                @social.Icon
+                                            }
+                                            else
+                                            {
+                                                <span>@social.Text</span>
+                                            }
+                                        </a>
+                                    }
                                 </div>
-                    }
+                            </div>
+                        }
                     </div>
                 </div>
+            </div>
         }
 
         @if (ShowDivider && ShowTopSection && ShowBottomSection)
         {
-                <div class="osirion-footer-divider"></div>
+            <div class="osirion-footer-divider"></div>
         }
 
         @if (ShowBottomSection)
         {
-                <div class="osirion-footer-bottom">
-                    <div class="osirion-footer-content">
-                        <div class="osirion-footer-bottom-content">
+            <div class="osirion-footer-bottom">
+                <div class="osirion-footer-content">
+                    <div class="osirion-footer-bottom-content">
                         @if (!string.IsNullOrEmpty(Copyright))
                         {
-                                    <div class="osirion-footer-copyright">
+                            <div class="osirion-footer-copyright">
                                 @Copyright
-                                    </div>
+                            </div>
                         }
                         else if (ShowCopyright)
                         {
-                                    <div class="osirion-footer-copyright">
-                                        &copy; @DateTime.Now.Year @CompanyName. All rights reserved.
-                                    </div>
+                            <div class="osirion-footer-copyright">
+                                &copy; @DateTime.Now.Year <a href="@CompanyUrl" target="@(CompanyUrl.StartsWith("http") ? "_blank" : "_self")">@CompanyName</a>. All rights reserved.
+                            </div>
                         }
 
                         @if (BottomLinks?.Any() == true)
                         {
-                                    <nav class="osirion-footer-bottom-links" aria-label="Footer navigation">
+                            <nav class="osirion-footer-bottom-links" aria-label="Footer legal navigation">
                                 @foreach (var link in BottomLinks)
                                 {
-                                                <a href="@link.Href" class="osirion-footer-bottom-link">
+                                    <a href="@link.Href" class="osirion-footer-bottom-link">
                                         @link.Text
-                                                </a>
+                                    </a>
                                 }
-                                    </nav>
+                            </nav>
                         }
-                        </div>
                     </div>
                 </div>
+            </div>
         }
 
         @if (ChildContent != null)
         {
-                <div class="osirion-footer-custom">
-                @ChildContent
+            <div class="osirion-footer-extra">
+                <div class="osirion-footer-content">
+                    @ChildContent
                 </div>
+            </div>
         }
     </div>
 </footer>

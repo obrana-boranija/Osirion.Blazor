@@ -14,6 +14,18 @@ public partial class OsirionFooter
     public string CompanyName { get; set; } = "Company";
 
     /// <summary>
+    /// Gets or sets the company name for the copyright notice
+    /// </summary>
+    [Parameter]
+    public string CompanyUrl { get; set; } = "/";
+
+    /// <summary>
+    /// Gets or sets the company/site description shown below the logo
+    /// </summary>
+    [Parameter]
+    public string? Description { get; set; }
+
+    /// <summary>
     /// Gets or sets custom copyright text. If provided, overrides the default copyright format
     /// </summary>
     [Parameter]
@@ -30,6 +42,12 @@ public partial class OsirionFooter
     /// </summary>
     [Parameter]
     public RenderFragment? Logo { get; set; }
+
+    /// <summary>
+    /// Gets or sets additional content for the top section (e.g., newsletter form)
+    /// </summary>
+    [Parameter]
+    public RenderFragment? TopContent { get; set; }
 
     /// <summary>
     /// Gets or sets the footer link sections
@@ -92,7 +110,13 @@ public partial class OsirionFooter
     public string Theme { get; set; } = "auto";
 
     /// <summary>
-    /// Gets or sets additional child content
+    /// Gets or sets the grid layout for desktop: "auto", "4-column", "3-column", "2-column"
+    /// </summary>
+    [Parameter]
+    public string GridLayout { get; set; } = "auto";
+
+    /// <summary>
+    /// Gets or sets additional child content (shown at the very bottom)
     /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
@@ -106,6 +130,7 @@ public partial class OsirionFooter
 
         classes.Add($"osirion-footer-{Variant}");
         classes.Add($"osirion-footer-theme-{Theme}");
+        classes.Add($"osirion-footer-grid-{GridLayout}");
 
         if (!string.IsNullOrEmpty(CssClass))
         {

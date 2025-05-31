@@ -1,4 +1,5 @@
-﻿@using Osirion.Blazor.Navigation.Components
+﻿@using Osirion.Blazor.Components
+@using Osirion.Blazor.Navigation.Components
 @using Osirion.Blazor.Theming.Components
 @inherits LayoutComponentBase
 
@@ -10,7 +11,8 @@
     </article>
 </main>
 
-<Osirion.Blazor.Components.OsirionFooter />
+<Footer />
+
 <Osirion.Blazor.Components.OsirionCookieConsent ShowBanner IsCustomizing />
 
 <ScrollToTopProvider />

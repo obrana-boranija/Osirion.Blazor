@@ -38,22 +38,41 @@
     padding: var(--osirion-spacing-12, 3rem) 0;
 }
 
-    .osirion-footer-top .osirion-footer-content {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: var(--osirion-spacing-8, 2rem);
-    }
+/* Grid layout */
+.osirion-footer-grid {
+    display: grid;
+    gap: var(--osirion-spacing-8, 2rem);
+    grid-template-columns: 1fr;
+}
+
+/* Brand section */
+.osirion-footer-brand {
+    margin-bottom: var(--osirion-spacing-4, 1rem);
+}
 
 /* Logo section */
 .osirion-footer-logo {
-    margin-bottom: var(--osirion-spacing-4, 1rem);
+    margin-bottom: var(--osirion-spacing-3, 0.75rem);
+}
+
+/* Description */
+.osirion-footer-description {
+    font-size: var(--osirion-font-size-sm, 0.875rem);
+    color: var(--osirion-footer-description-color, var(--osirion-text-primary, #6b7280));
+    margin: 0;
+    max-width: 300px;
 }
 
 /* Links grid */
 .osirion-footer-links {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: var(--osirion-spacing-8, 2rem) var(--osirion-spacing-6, 1.5rem);
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--osirion-spacing-6, 1.5rem);
+}
+
+/* Custom top content */
+.osirion-footer-custom-top {
+    width: 100%;
 }
 
 /* Section styling */
@@ -77,7 +96,7 @@
 
 /* Link styling */
 .osirion-footer-link {
-    color: var(--osirion-footer-link-color, var(--osirion-text-secondary, #6b7280));
+    color: var(--osirion-footer-link-color, var(--osirion-text-primary, #6b7280));
     text-decoration: none;
     font-size: var(--osirion-font-size-sm, 0.875rem);
     transition: color var(--osirion-transition-duration-200, 0.2s) ease;
@@ -94,7 +113,7 @@
 
 /* Social links */
 .osirion-footer-social {
-    margin-top: var(--osirion-spacing-4, 1rem);
+    width: 100%;
 }
 
 .osirion-footer-social-links {
@@ -150,7 +169,7 @@
 /* Copyright */
 .osirion-footer-copyright {
     font-size: var(--osirion-font-size-sm, 0.875rem);
-    color: var(--osirion-footer-copyright-color, var(--osirion-text-secondary, #6b7280));
+    color: var(--osirion-footer-copyright-color, var(--osirion-text-primary, #6b7280));
 }
 
 /* Bottom links */
@@ -161,7 +180,7 @@
 }
 
 .osirion-footer-bottom-link {
-    color: var(--osirion-footer-link-color, var(--osirion-text-secondary, #6b7280));
+    color: var(--osirion-footer-link-color, var(--osirion-text-primary, #6b7280));
     text-decoration: none;
     font-size: var(--osirion-font-size-sm, 0.875rem);
     transition: color var(--osirion-transition-duration-200, 0.2s) ease;
@@ -176,9 +195,10 @@
         outline-offset: var(--osirion-focus-ring-offset, 2px);
     }
 
-/* Custom content */
-.osirion-footer-custom {
-    padding: var(--osirion-spacing-6, 1.5rem) 0;
+/* Extra content section */
+.osirion-footer-extra {
+    padding: var(--osirion-spacing-8, 2rem) 0;
+    background-color: var(--osirion-footer-extra-bg, rgba(0, 0, 0, 0.05));
 }
 
 /* Variant: Minimal */
@@ -195,6 +215,10 @@
     text-align: center;
 }
 
+    .osirion-footer-centered .osirion-footer-grid {
+        justify-items: center;
+    }
+
     .osirion-footer-centered .osirion-footer-links {
         justify-content: center;
     }
@@ -207,6 +231,23 @@
         justify-content: center;
         flex-direction: column;
     }
+
+    .osirion-footer-centered .osirion-footer-description {
+        margin: 0 auto;
+    }
+
+/* Grid layouts */
+.osirion-footer-grid-2-column .osirion-footer-grid {
+    grid-template-columns: 1fr 1fr;
+}
+
+.osirion-footer-grid-3-column .osirion-footer-grid {
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+.osirion-footer-grid-4-column .osirion-footer-grid {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+}
 
 /* Dark theme adjustments */
 .osirion-footer-theme-dark .osirion-footer-link {
@@ -235,25 +276,76 @@
     color: var(--osirion-color-neutral-500, #6b7280);
 }
 
-/* Responsive design */
-@media (min-width: 768px) {
-    .osirion-footer-top .osirion-footer-content {
-        grid-template-columns: 1fr 2fr;
+.osirion-footer-theme-dark .osirion-footer-extra {
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+/* Responsive design using Osirion breakpoint variables */
+@media (min-width: var(--osirion-breakpoint-sm)) {
+    .osirion-footer-content {
+        padding: 0 var(--osirion-spacing-6, 1.5rem);
     }
 }
 
-@media (min-width: 1024px) {
-    .osirion-footer-top .osirion-footer-content {
-        grid-template-columns: 1fr 2fr 1fr;
+@media (min-width: var(--osirion-breakpoint-md)) {
+    .osirion-footer-grid-auto .osirion-footer-grid {
+        grid-template-columns: 1.5fr 2fr;
+        gap: var(--osirion-spacing-10, 2.5rem);
     }
-}
 
-@media (max-width: 640px) {
+    .osirion-footer-brand {
+        margin-bottom: 0;
+    }
+
     .osirion-footer-links {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+}
+
+@media (min-width: var(--osirion-breakpoint-lg)) {
+    .osirion-footer-grid-auto .osirion-footer-grid {
+        grid-template-columns: 1.5fr 2fr 1fr;
+    }
+
+    .osirion-footer-content {
+        padding: 0 var(--osirion-spacing-8, 2rem);
+    }
+}
+
+@media (min-width: var(--osirion-breakpoint-xl)) {
+    .osirion-footer-grid-auto .osirion-footer-grid {
+        grid-template-columns: 1fr 2fr 1fr 1fr;
+    }
+}
+
+@media (max-width: var(--osirion-breakpoint-md-max)) {
+    .osirion-footer-grid {
         gap: var(--osirion-spacing-6, 1.5rem);
     }
 
+    .osirion-footer-links {
+        grid-template-columns: 1fr;
+        gap: var(--osirion-spacing-4, 1rem);
+    }
+
+    .osirion-footer-brand {
+        text-align: center;
+    }
+
+    .osirion-footer-description {
+        margin: 0 auto;
+    }
+
+    .osirion-footer-social {
+        text-align: center;
+    }
+
+    .osirion-footer-social-links {
+        justify-content: center;
+    }
+}
+
+@media (max-width: var(--osirion-breakpoint-sm-max)) {
     .osirion-footer-bottom-content {
         flex-direction: column;
         text-align: center;
@@ -261,6 +353,10 @@
 
     .osirion-footer-bottom-links {
         justify-content: center;
+    }
+
+    .osirion-footer-top {
+        padding: var(--osirion-spacing-8, 2rem) 0;
     }
 }
 
