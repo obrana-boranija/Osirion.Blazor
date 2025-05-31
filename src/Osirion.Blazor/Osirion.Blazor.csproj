@@ -9,7 +9,7 @@
 
 		<!-- NuGet package properties -->
 		<PackageId>Osirion.Blazor</PackageId>
-		<Version>2.1.1</Version>
+		<Version>2.1.2</Version>
 		<Authors>Dejan Demonjić</Authors>
 		<Company>Tridesetri</Company>
 		<Description>Modern, high-performance Blazor components and utilities. Features SSR-compatible components for navigation, analytics, content management, and theming with seamless CSS framework integration.</Description>
