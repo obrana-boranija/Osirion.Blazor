@@ -57,7 +57,7 @@ Write your content in Markdown files. Organize them in folders. Push to GitHub. 
 Every article, every image, every piece of content is version-controlled. Made a mistake? Revert the commit. Need to see what changed? Check the diff. Want to experiment? Create a branch. Your content workflow becomes as powerful as your code workflow.
 
 ### Collaboration Without Complexity
-![Collaboration Without Complexity](https://th.bing.com/th/id/OIP.CSrOgQXlwB31vRdm8slCNgHaEK?rs=1&pid=ImgDetMain
+![Collaboration Without Complexity](https://th.bing.com/th/id/OIP.CSrOgQXlwB31vRdm8slCNgHaEK?rs=1&pid=ImgDetMain)
 
 Your team already knows how to use GitHub. Writers can submit pull requests. Editors can review changes. Stakeholders can track progress through issues. The tools you use for code collaboration become your content collaboration platform.
 
