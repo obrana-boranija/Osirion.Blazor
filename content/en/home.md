@@ -1,21 +1,43 @@
 ---
-title: "Introduction to Osirion.Blazor"
-description: "An overview of the Osirion.Blazor ecosystem, a modular, high-performance CMS and component library designed for modern Blazor applications with SSR compatibility."
-author: "Dejan Demonjić"
+id: ''
+title: Introduction to Osirion.Blazor
+description: An overview of the Osirion.Blazor ecosystem, a modular, high-performance CMS and component library designed for modern Blazor applications with SSR compatibility.
+author: Dejan Demonjić
 date: 2025-05-05
-featuredImage: "https://storage.googleapis.com/croct-assets-b931d070/blog/Headless_CMS_within_the_React_framework_3_1_da922d2562/Headless_CMS_within_the_React_framework_3_1_da922d2562.png"
+featured_image: https://storage.googleapis.com/croct-assets-b931d070/blog/Headless_CMS_within_the_React_framework_3_1_da922d2562/Headless_CMS_within_the_React_framework_3_1_da922d2562.png
 categories:
-  - "Headless CMS"
-  - "GitHub Integration"
+- Headless CMS
+- GitHub Integration
 tags:
-  - "github"
-  - "headless"
-  - "cms"
-  - "blazor"
-  - "markdown"
-  - "git-based-cms"
-slug: "introduction"
+- github
+- headless
+- cms
+- blazor
+- markdown
+- git-based-cms
+is_featured: false
+published: true
+slug: introduction
+lang: en
+custom_fields: {}
+seo_properties:
+  title: ''
+  description: ''
+  canonical: ''
+  robots: index, follow
+  og_title: ''
+  og_description: ''
+  og_image_url: ''
+  og_type: article
+  json_ld: ''
+  type: Article
+  twitter_card: summary_large_image
+  twitter_title: ''
+  twitter_description: ''
+  twitter_image_url: ''
+  meta_tags: {}
 ---
+
 Transform the way you manage content for your Blazor applications. With Osirion.Blazor, your GitHub repository becomes a powerful headless CMS that brings together the best of both worlds: the familiarity of Git workflows and the power of modern web applications.
 
 ## What Is a GitHub-Based Headless CMS?
@@ -68,3 +90,4 @@ Whether you're building a documentation site, a blog, a marketing website, or a 
 Join the growing community of developers who are building content-driven Blazor applications the modern way. With Osirion.Blazor, your GitHub repository isn't just storing code—it's powering your entire content strategy.
 
 [Get Started](/docs/getting-started) | [Explore Features](/features) | [View Documentation](/docs)
+

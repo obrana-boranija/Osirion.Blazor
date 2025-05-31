@@ -1,10 +1,11 @@
 ---
 title: "Blog"
-description: "Here you'll find the latest updates, tutorials, and insights about using Osirion.Blazor components in your projects. Our team regularly posts articles about best practices, new features, and real-world implementation examples."
-order: 2
-url: "blog"
-locale: "en"
+description: "The latest updates, tutorials, and insights about using Osirion.Blazor components in your projects. Our team regularly posts articles about new features."
+date: 2025-05-30
+featuredImage: "https://storage.googleapis.com/croct-assets-b931d070/blog/Headless_CMS_within_the_React_framework_3_1_da922d2562/Headless_CMS_within_the_React_framework_3_1_da922d2562.png"
 featured: true
+layout: "post"
+slug: "blog"
 ---
 
 # Blog
