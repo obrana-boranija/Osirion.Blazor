@@ -1,0 +1,106 @@
+﻿@namespace Osirion.Blazor.Components
+@using Microsoft.AspNetCore.Http
+@inherits OsirionComponentBase
+@inject NavigationManager Navigation
+@inject IHttpContextAccessor HttpContextAccessor
+
+@if (ShowBanner)
+{
+    <div class="@GetCookieConsentClass()" @attributes="AdditionalAttributes">
+        <div class="osirion-cookie-consent-container">
+            <div class="osirion-cookie-consent-content">
+                <div class="osirion-cookie-consent-message">
+                    @if (Icon != null)
+                    {
+                        <div class="osirion-cookie-consent-icon">
+                            @Icon
+                        </div>
+                    }
+                    <div class="osirion-cookie-consent-text">
+                        <h3 class="osirion-cookie-consent-title">@Title</h3>
+                        <p class="osirion-cookie-consent-description">
+                            @Message
+                            @if (!string.IsNullOrEmpty(PolicyLink))
+                            {
+                                <a href="@PolicyLink" class="osirion-cookie-consent-link">@PolicyLinkText</a>
+                            }
+                        </p>
+                    </div>
+                </div>
+
+                <form method="post" action="@ConsentEndpoint" class="osirion-cookie-consent-actions">
+                    <input type="hidden" name="returnUrl" value="@GetCurrentUrl()" />
+
+                    @if (ShowDeclineButton)
+                    {
+                        <button type="submit"
+                                name="consent"
+                                value="declined"
+                                class="osirion-cookie-consent-button osirion-cookie-consent-button-secondary">
+                            @DeclineButtonText
+                        </button>
+                    }
+
+                    @if (ShowCustomizeButton)
+                    {
+                        <button type="submit"
+                                name="consent"
+                                value="customize"
+                                class="osirion-cookie-consent-button osirion-cookie-consent-button-secondary">
+                            @CustomizeButtonText
+                        </button>
+                    }
+
+                    <button type="submit"
+                            name="consent"
+                            value="accepted"
+                            class="osirion-cookie-consent-button osirion-cookie-consent-button-primary">
+                        @AcceptButtonText
+                    </button>
+                </form>
+            </div>
+
+            @if (ShowCustomizationPanel && IsCustomizing)
+            {
+                <div class="osirion-cookie-consent-customize">
+                    <h4 class="osirion-cookie-consent-customize-title">@CustomizePanelTitle</h4>
+
+                    <div class="osirion-cookie-consent-categories">
+                        @foreach (var category in Categories)
+                        {
+                            <div class="osirion-cookie-consent-category">
+                                <label class="osirion-cookie-consent-category-label">
+                                    <input type="checkbox"
+                                           name="category_@category.Id"
+                                           value="true"
+                                           checked="@(category.IsRequired || category.IsEnabled)"
+                                           disabled="@category.IsRequired"
+                                           class="osirion-cookie-consent-checkbox" />
+                                    <div class="osirion-cookie-consent-category-info">
+                                        <span class="osirion-cookie-consent-category-name">
+                                            @category.Name
+                                            @if (category.IsRequired)
+                                            {
+                                                <span class="osirion-cookie-consent-required">(Required)</span>
+                                            }
+                                        </span>
+                                        <p class="osirion-cookie-consent-category-description">@category.Description</p>
+                                    </div>
+                                </label>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="osirion-cookie-consent-customize-actions">
+                        <button type="submit"
+                                name="consent"
+                                value="save-preferences"
+                                class="osirion-cookie-consent-button osirion-cookie-consent-button-primary">
+                            @SavePreferencesButtonText
+                        </button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}

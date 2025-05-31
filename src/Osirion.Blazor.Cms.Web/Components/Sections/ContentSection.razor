@@ -18,9 +18,7 @@
         <div class="osirion-content-section-body">
             @if (!string.IsNullOrEmpty(Content))
             {
-                <div class="osirion-content-section-content">
-                    @((MarkupString)Content)
-                </div>
+                <OsirionHtmlRenderer HtmlContent="@Content" CssClass="osirion-content-section-content" />
             }
 
             @if (ChildContent != null)

@@ -4,6 +4,7 @@ using Osirion.Blazor.Extensions;
 using Osirion.Blazor.Cms.Web.Middleware;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.AspNetCore.ResponseCompression;
+using Osirion.Blazor.Core.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,7 @@ builder.Services.AddRazorComponents()
 builder.Services.AddOsirion(builder.Configuration);
 builder.Services.AddGitHubWebhookAndPolling();
 builder.Services.AddJSComponents();
+builder.Services.AddOsirionCookieConsent();
 
 builder.Services.AddResponseCompression(options =>
 {
@@ -42,6 +44,7 @@ app.UseRewriter(rewriteOptions);
 app.UseGitHubWebhook();
 app.UseOsirionRobotsGenerator();
 app.UseResponseCompression();
+app.MapOsirionCookieConsent();
 
 
 app.UseAntiforgery();
