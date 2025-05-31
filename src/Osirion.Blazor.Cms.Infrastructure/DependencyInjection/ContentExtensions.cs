@@ -22,7 +22,6 @@ public static class ContentExtensions
         // Register content helpers
         services.TryAddSingleton<IContentQueryFilter, ContentQueryFilter>();
         services.TryAddSingleton<IContentSorter, ContentSorter>();
-        services.TryAddSingleton<IContentMetadataProcessor, ContentMetadataProcessor>();
 
         // Register cache managers for repositories - scoped per provider
         services.TryAddScoped<IContentCacheManager>(sp =>

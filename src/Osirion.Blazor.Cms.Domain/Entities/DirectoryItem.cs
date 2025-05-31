@@ -1,6 +1,7 @@
 ﻿using Osirion.Blazor.Cms.Domain.Common;
 using Osirion.Blazor.Cms.Domain.Events;
 using Osirion.Blazor.Cms.Domain.Exceptions;
+using Osirion.Blazor.Cms.Domain.ValueObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,7 +30,7 @@ public class DirectoryItem : DomainEntity<string>
     // Collections and readonly properties
     public IReadOnlyList<DirectoryItem> Children => _children.AsReadOnly();
     public IReadOnlyList<ContentItem> Items => _items.AsReadOnly();
-    public IReadOnlyDictionary<string, object> Metadata => _metadataValues;
+    public FrontMatter? Metadata { get; private set; }
 
     // Computed properties
     public int Depth
@@ -239,6 +240,11 @@ public class DirectoryItem : DomainEntity<string>
         }
 
         return defaultValue;
+    }
+
+    public void SetMetadata(FrontMatter? metadata)
+    {
+        Metadata = metadata;
     }
 
     public void SetMetadata<T>(string key, T value)

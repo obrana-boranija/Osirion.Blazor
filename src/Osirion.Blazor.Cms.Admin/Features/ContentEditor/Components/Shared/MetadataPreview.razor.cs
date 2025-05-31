@@ -36,9 +36,9 @@ public partial class MetadataPreview
 
     private string GetPreviewUrl()
     {
-        if (!string.IsNullOrEmpty(SeoMetadata.CanonicalUrl))
+        if (!string.IsNullOrEmpty(SeoMetadata.Canonical))
         {
-            return SeoMetadata.CanonicalUrl;
+            return SeoMetadata.Canonical;
         }
 
         var slug = !string.IsNullOrEmpty(Metadata.Slug)
@@ -64,8 +64,8 @@ public partial class MetadataPreview
 
     private string GetSearchTitle()
     {
-        var title = !string.IsNullOrEmpty(SeoMetadata.MetaTitle)
-            ? SeoMetadata.MetaTitle
+        var title = !string.IsNullOrEmpty(SeoMetadata.Title)
+            ? SeoMetadata.Title
             : Metadata.Title;
 
         // Google typically truncates at ~60 characters
@@ -79,8 +79,8 @@ public partial class MetadataPreview
 
     private string GetSearchDescription()
     {
-        var description = !string.IsNullOrEmpty(SeoMetadata.MetaDescription)
-            ? SeoMetadata.MetaDescription
+        var description = !string.IsNullOrEmpty(SeoMetadata.Description)
+            ? SeoMetadata.Description
             : Metadata.Description;
 
         // Google typically truncates at ~160 characters
@@ -147,9 +147,9 @@ public partial class MetadataPreview
         sb.AppendLine($"<title>{GetSearchTitle()}</title>");
         sb.AppendLine($"<meta name=\"description\" content=\"{GetSearchDescription()}\" />");
 
-        if (!string.IsNullOrEmpty(SeoMetadata.CanonicalUrl))
+        if (!string.IsNullOrEmpty(SeoMetadata.Canonical))
         {
-            sb.AppendLine($"<link rel=\"canonical\" href=\"{SeoMetadata.CanonicalUrl}\" />");
+            sb.AppendLine($"<link rel=\"canonical\" href=\"{SeoMetadata.Canonical}\" />");
         }
 
         sb.AppendLine($"<meta name=\"robots\" content=\"{SeoMetadata.Robots}\" />");

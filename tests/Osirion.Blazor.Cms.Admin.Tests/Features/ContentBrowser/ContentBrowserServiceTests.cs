@@ -6,6 +6,7 @@ using Osirion.Blazor.Cms.Admin.Core.Events;
 using Osirion.Blazor.Cms.Admin.Features.ContentBrowser.Services;
 using Osirion.Blazor.Cms.Admin.Infrastructure.Adapters;
 using Osirion.Blazor.Cms.Admin.Services.Events;
+using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Models;
 using Osirion.Blazor.Cms.Domain.Models.GitHub;
 using Osirion.Blazor.Cms.Domain.ValueObjects;
@@ -94,9 +95,9 @@ public class ContentBrowserServiceTests
     {
         // Arrange
         var path = "content/blog/post.md";
-        var expectedPost = new BlogPost
+        var expectedPost = new ContentItem
         {
-            FilePath = path,
+            Path = path,
             Content = "# Test Content",
             Metadata = FrontMatter.Create("Test Title", "Test Description", System.DateTime.Now),
             Sha = "test-sha"

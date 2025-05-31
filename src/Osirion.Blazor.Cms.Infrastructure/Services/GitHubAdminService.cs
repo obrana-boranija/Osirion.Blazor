@@ -1,10 +1,12 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Markdig;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Interfaces;
-using Osirion.Blazor.Cms.Domain.Models;
 using Osirion.Blazor.Cms.Domain.Models.GitHub;
 using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Domain.Options.Configuration;
+using System.Text.RegularExpressions;
 
 namespace Osirion.Blazor.Cms.Infrastructure.Services;
 
@@ -14,6 +16,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.Services;
 public class GitHubAdminService : IGitHubAdminService
 {
     private readonly IGitHubApiClientFactory _apiClientFactory;
+    private readonly IMarkdownProcessor _markdownProcessor;
     private readonly ILogger<GitHubAdminService> _logger;
     private readonly GitHubOptions _options;
     private IGitHubApiClient _apiClient;
@@ -22,9 +25,11 @@ public class GitHubAdminService : IGitHubAdminService
     public GitHubAdminService(
         IGitHubApiClientFactory apiClientFactory,
         IOptions<CmsAdminOptions> options,
+        IMarkdownProcessor markdownProcessor,
         ILogger<GitHubAdminService> logger)
     {
         _apiClientFactory = apiClientFactory ?? throw new ArgumentNullException(nameof(apiClientFactory));
+        _markdownProcessor = markdownProcessor;
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _options = options.Value.GitHub;
 
@@ -107,12 +112,12 @@ public class GitHubAdminService : IGitHubAdminService
         }
     }
 
-    public async Task<BlogPost> GetBlogPostAsync(string path)
+    public async Task<ContentItem> GetBlogPostAsync(string path)
     {
         try
         {
             var fileContent = await _apiClient.GetFileContentAsync(path);
-            return BlogPost.FromGitHubFile(fileContent);
+            return FromGitHubFile(fileContent);
         }
         catch (Exception ex)
         {
@@ -230,5 +235,56 @@ public class GitHubAdminService : IGitHubAdminService
         {
             _logger.LogWarning("Invalid repository format: {Repository}. Expected format: owner/repo", repository);
         }
+    }
+
+    /// <summary>
+    /// Creates a blog post from a GitHub file content object
+    /// </summary>
+    /// <param name="fileContent">The GitHub file content</param>
+    /// <returns>A blog post object</returns>
+    private ContentItem FromGitHubFile(GitHubFileContent? fileContent)
+    {
+        var blogPost = new ContentItem();
+
+        if (fileContent is null)
+        {
+            return blogPost;
+        }
+
+        // Set file information
+        blogPost.Path = fileContent.Path;
+        blogPost.Sha = fileContent.Sha;
+
+        if (fileContent.IsMarkdownFile())
+        {
+            // If it's a markdown file, decode and parse the content
+            var content = fileContent.GetDecodedContent();
+            var extracted = _markdownProcessor.ExtractFrontMatterAndContent(content);
+            blogPost.Metadata = extracted.FrontMatter;
+            blogPost.Content = extracted.Content;
+        }
+
+        return blogPost;
+    }
+
+    /// <summary>
+    /// Creates a blog post from markdown with frontmatter
+    /// </summary>
+    /// <param name="markdown">The full markdown content with frontmatter</param>
+    /// <returns>A blog post object</returns>
+    private ContentItem FromMarkdown(string markdown)
+    {
+        var blogPost = new ContentItem();
+
+        if (string.IsNullOrWhiteSpace(markdown))
+        {
+            return blogPost;
+        }
+
+        var extracted = _markdownProcessor.ExtractFrontMatterAndContent(markdown);
+        blogPost.Metadata = extracted.FrontMatter;
+        blogPost.Content = extracted.Content;
+
+        return blogPost;
     }
 }

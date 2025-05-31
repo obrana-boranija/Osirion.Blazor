@@ -4,7 +4,6 @@ using Osirion.Blazor.Cms.Admin.Core.Events;
 using Osirion.Blazor.Cms.Admin.Infrastructure.Adapters;
 using Osirion.Blazor.Cms.Admin.Interfaces;
 using Osirion.Blazor.Cms.Domain.Entities;
-using Osirion.Blazor.Cms.Domain.Models;
 using Osirion.Blazor.Cms.Domain.Models.GitHub;
 using Osirion.Blazor.Cms.Domain.Options.Configuration;
 using Osirion.Blazor.Cms.Domain.ValueObjects;
@@ -40,7 +39,7 @@ public class ContentEditorService : IContentEditorService
     /// <summary>
     /// Gets a blog post by path
     /// </summary>
-    public async Task<BlogPost> GetBlogPostAsync(string path)
+    public async Task<ContentItem> GetBlogPostAsync(string path)
     {
         try
         {
@@ -63,11 +62,11 @@ public class ContentEditorService : IContentEditorService
     /// <summary>
     /// Saves a blog post
     /// </summary>
-    public async Task<GitHubFileCommitResponse> SaveBlogPostAsync(BlogPost post, string commitMessage)
+    public async Task<GitHubFileCommitResponse> SaveBlogPostAsync(ContentItem post, string commitMessage)
     {
         try
         {
-            _logger.LogInformation("Saving blog post: {Path}", post.FilePath);
+            _logger.LogInformation("Saving blog post: {Path}", post.Path);
 
             // Validate the post if front matter validation is enabled
             if (_options.ContentRules.EnforceFrontMatterValidation)
@@ -77,24 +76,24 @@ public class ContentEditorService : IContentEditorService
 
             var content = post.ToMarkdown();
             var message = string.IsNullOrEmpty(commitMessage)
-                ? $"Update {Path.GetFileName(post.FilePath)}"
+                ? $"Update {Path.GetFileName(post.Path)}"
                 : commitMessage;
 
             var response = await _repositoryAdapter.SaveContentAsync(
-                post.FilePath,
+                post.Path,
                 content,
                 message,
                 post.Sha);
 
-            _logger.LogInformation("Blog post saved successfully: {Path}", post.FilePath);
-            _eventPublisher.Publish(new ContentSavedEvent(post.FilePath));
+            _logger.LogInformation("Blog post saved successfully: {Path}", post.Path);
+            _eventPublisher.Publish(new ContentSavedEvent(post.Path));
 
             return response;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error saving blog post: {Path}", post.FilePath);
-            _eventPublisher.Publish(new ErrorOccurredEvent($"Failed to save file: {post.FilePath}", ex));
+            _logger.LogError(ex, "Error saving blog post: {Path}", post.Path);
+            _eventPublisher.Publish(new ErrorOccurredEvent($"Failed to save file: {post.Path}", ex));
             throw;
         }
     }
@@ -135,7 +134,7 @@ public class ContentEditorService : IContentEditorService
     /// <summary>
     /// Creates a new blog post with default content
     /// </summary>
-    public BlogPost CreateNewBlogPost(string path = "", string title = "New Post")
+    public ContentItem CreateNewBlogPost(string path = "", string title = "New Post")
     {
         _logger.LogInformation("Creating new blog post with title: {Title}", title);
 
@@ -152,11 +151,11 @@ public class ContentEditorService : IContentEditorService
             ? fileName
             : $"{path.TrimEnd('/')}/{fileName}";
 
-        return new BlogPost
+        return new ContentItem
         {
             Metadata = metadata,
             Content = content,
-            FilePath = filePath
+            Path = filePath
         };
     }
 
@@ -188,7 +187,7 @@ public class ContentEditorService : IContentEditorService
     /// <summary>
     /// Converts a ContentItem to a BlogPost
     /// </summary>
-    public BlogPost ConvertToBlogPost(ContentItem item)
+    public ContentItem ConvertToBlogPost(ContentItem item)
     {
         var frontMatter = new FrontMatter
         {
@@ -203,11 +202,11 @@ public class ContentEditorService : IContentEditorService
             Published = item.IsPublished
         };
 
-        return new BlogPost
+        return new ContentItem
         {
             Metadata = frontMatter,
             Content = item.Content,
-            FilePath = item.Path,
+            Path = item.Path,
             Sha = item.Sha
         };
     }
@@ -215,7 +214,7 @@ public class ContentEditorService : IContentEditorService
     /// <summary>
     /// Validates a blog post
     /// </summary>
-    private void ValidateBlogPost(BlogPost post)
+    private void ValidateBlogPost(ContentItem post)
     {
         // Check for required front matter fields
         foreach (var field in _options.ContentRules.RequiredFrontMatterFields)
@@ -242,7 +241,7 @@ public class ContentEditorService : IContentEditorService
         }
 
         // Check file extension
-        var extension = Path.GetExtension(post.FilePath);
+        var extension = Path.GetExtension(post.Path);
 
         if (!_options.ContentRules.AllowedFileExtensions.Contains(extension.ToLowerInvariant()))
         {

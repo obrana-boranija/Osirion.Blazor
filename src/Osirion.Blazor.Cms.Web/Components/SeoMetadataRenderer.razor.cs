@@ -48,15 +48,15 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
         _currentUrl = navigationManager.Uri;
 
         _metaTitle = BuildMetaTitle();
-        _metaDescription = GetFirstValue(Content?.Seo?.MetaDescription, Content?.Description);
-        _ogTitle = GetFirstValue(Content?.Seo?.OgTitle, _metaTitle);
-        _ogDescription = GetFirstValue(Content?.Seo?.OgDescription, _metaDescription);
-        _ogImage = NormalizeImageUrl(GetFirstValue(Content?.Seo?.OgImageUrl, Content?.FeaturedImageUrl));
-        _twitterTitle = GetFirstValue(Content?.Seo?.TwitterTitle, _ogTitle);
-        _twitterDescription = GetFirstValue(Content?.Seo?.TwitterDescription, _ogDescription);
-        _twitterImage = NormalizeImageUrl(GetFirstValue(Content?.Seo?.TwitterImageUrl, _ogImage));
+        _metaDescription = GetFirstValue(Content?.Metadata.SeoProperties?.Description, Content?.Description);
+        _ogTitle = GetFirstValue(Content?.Metadata.SeoProperties?.OgTitle, _metaTitle);
+        _ogDescription = GetFirstValue(Content?.Metadata.SeoProperties?.OgDescription, _metaDescription);
+        _ogImage = NormalizeImageUrl(GetFirstValue(Content?.Metadata.SeoProperties?.OgImageUrl, Content?.FeaturedImageUrl));
+        _twitterTitle = GetFirstValue(Content?.Metadata.SeoProperties?.TwitterTitle, _ogTitle);
+        _twitterDescription = GetFirstValue(Content?.Metadata.SeoProperties?.TwitterDescription, _ogDescription);
+        _twitterImage = NormalizeImageUrl(GetFirstValue(Content?.Metadata.SeoProperties?.TwitterImageUrl, _ogImage));
         _canonicalUrl = BuildCanonicalUrl();
-        _schemaType = GetFirstValue(SchemaType?.ToString(), Content?.Seo?.SchemaType) ?? "WebPage";
+        _schemaType = GetFirstValue(SchemaType?.ToString(), Content?.Metadata.SeoProperties?.Type) ?? "WebPage";
         _jsonLdContent = GenerateJsonLd();
 
         base.OnInitialized();
@@ -118,14 +118,14 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
 
     private string BuildMetaTitle()
     {
-        var title = GetFirstValue(Content?.Seo?.MetaTitle, Content?.Title);
+        var title = GetFirstValue(Content?.Metadata.SeoProperties?.Title, Content?.Title);
         return string.IsNullOrWhiteSpace(title) ? _siteName : $"{title} | {_siteName}";
     }
 
     private string? BuildCanonicalUrl()
     {
-        if (!string.IsNullOrWhiteSpace(Content?.Seo?.CanonicalUrl))
-            return Content.Seo.CanonicalUrl;
+        if (!string.IsNullOrWhiteSpace(Content?.Metadata.SeoProperties?.Canonical))
+            return Content.Metadata.SeoProperties.Canonical;
 
         return Content?.Path != null ? _currentUrl : null;
     }
@@ -162,8 +162,8 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
         if (Content == null)
             return null;
 
-        if (!string.IsNullOrWhiteSpace(Content.Seo.JsonLd))
-            return Content.Seo.JsonLd;
+        if (!string.IsNullOrWhiteSpace(Content.Metadata.SeoProperties.JsonLd))
+            return Content.Metadata.SeoProperties.JsonLd;
 
         var jsonLd = _schemaType switch
         {
@@ -259,9 +259,9 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
         return new
         {
             @context = "https://schema.org",
-            @type = Content!.Seo.SchemaType,
-            name = Content.Title,
-            description = Content.Description,
+            @type = Content?.Metadata?.SeoProperties.Type,
+            name = Content?.Title,
+            description = Content?.Description,
             url = _currentUrl
         };
     }

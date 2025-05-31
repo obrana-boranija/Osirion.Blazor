@@ -14,7 +14,7 @@ public interface IContentEditorService
     /// </summary>
     /// <param name="path">The path to the blog post</param>
     /// <returns>The blog post</returns>
-    Task<BlogPost> GetBlogPostAsync(string path);
+    Task<ContentItem> GetBlogPostAsync(string path);
 
     /// <summary>
     /// Saves a blog post
@@ -22,7 +22,7 @@ public interface IContentEditorService
     /// <param name="post">The blog post to save</param>
     /// <param name="commitMessage">Optional commit message</param>
     /// <returns>The commit response</returns>
-    Task<GitHubFileCommitResponse> SaveBlogPostAsync(BlogPost post, string commitMessage);
+    Task<GitHubFileCommitResponse> SaveBlogPostAsync(ContentItem post, string commitMessage);
 
     /// <summary>
     /// Deletes a blog post
@@ -38,7 +38,7 @@ public interface IContentEditorService
     /// <param name="path">Optional directory path</param>
     /// <param name="title">Optional title</param>
     /// <returns>A new blog post</returns>
-    BlogPost CreateNewBlogPost(string path = "", string title = "New Post");
+    ContentItem CreateNewBlogPost(string path = "", string title = "New Post");
 
     /// <summary>
     /// Generates a file name from a title
@@ -52,5 +52,5 @@ public interface IContentEditorService
     /// </summary>
     /// <param name="item">The content item to convert</param>
     /// <returns>A blog post</returns>
-    BlogPost ConvertToBlogPost(ContentItem item);
+    ContentItem ConvertToBlogPost(ContentItem item);
 }

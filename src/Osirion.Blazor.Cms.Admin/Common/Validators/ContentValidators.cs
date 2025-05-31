@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Models;
 using Osirion.Blazor.Cms.Domain.ValueObjects;
 using ValidationResult = System.ComponentModel.DataAnnotations.ValidationResult;
@@ -64,7 +65,7 @@ public static class ContentValidators
         return ValidationResult.Success;
     }
 
-    public static ValidationResult? ValidateBlogPost(BlogPost blogPost, ValidationContext context)
+    public static ValidationResult? ValidateBlogPost(ContentItem blogPost, ValidationContext context)
     {
         if (string.IsNullOrWhiteSpace(blogPost.Content))
         {

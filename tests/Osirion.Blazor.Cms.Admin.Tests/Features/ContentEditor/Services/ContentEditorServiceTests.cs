@@ -6,6 +6,7 @@ using Osirion.Blazor.Cms.Admin.Core.Events;
 using Osirion.Blazor.Cms.Admin.Features.ContentEditor.Services;
 using Osirion.Blazor.Cms.Admin.Infrastructure.Adapters;
 using Osirion.Blazor.Cms.Admin.Interfaces;
+using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Models;
 using Osirion.Blazor.Cms.Domain.Models.GitHub;
 using Osirion.Blazor.Cms.Domain.Options.Configuration;
@@ -55,9 +56,9 @@ public class ContentEditorServiceTests
     {
         // Arrange
         var path = "content/blog/post.md";
-        var expectedPost = new BlogPost
+        var expectedPost = new ContentItem
         {
-            FilePath = path,
+            Path = path,
             Content = "# Test Content",
             Metadata = FrontMatter.Create("Test Title", "Test Description", System.DateTime.Now),
             Sha = "test-sha"
@@ -117,9 +118,9 @@ public class ContentEditorServiceTests
     public async Task SaveBlogPostAsync_ShouldSaveAndPublishEvent()
     {
         // Arrange
-        var post = new BlogPost
+        var post = new ContentItem
         {
-            FilePath = "content/blog/post.md",
+            Path = "content/blog/post.md",
             Content = "# Test Content",
             Metadata = FrontMatter.Create("Test Title", "Test Description", System.DateTime.Now),
             Sha = "existing-sha"
@@ -131,13 +132,13 @@ public class ContentEditorServiceTests
         {
             Content = new GitHubFileContent
             {
-                Path = post.FilePath,
+                Path = post.Path,
                 Sha = "new-sha-123"
             }
         };
 
         _repositoryAdapter
-            .SaveContentAsync(post.FilePath, Arg.Any<string>(), commitMessage, post.Sha)
+            .SaveContentAsync(post.Path, Arg.Any<string>(), commitMessage, post.Sha)
             .Returns(commitResponse);
 
         // Act
@@ -147,7 +148,7 @@ public class ContentEditorServiceTests
         result.ShouldBe(commitResponse);
 
         await _repositoryAdapter.Received(1).SaveContentAsync(
-            post.FilePath,
+            post.Path,
             Arg.Any<string>(),
             commitMessage,
             post.Sha
@@ -155,16 +156,16 @@ public class ContentEditorServiceTests
 
         _logger.Received(1).LogInformation(
             Arg.Is<string>(s => s.Contains("Saving blog post")),
-            Arg.Is(post.FilePath)
+            Arg.Is(post.Path)
         );
 
         _logger.Received(1).LogInformation(
             Arg.Is<string>(s => s.Contains("Blog post saved successfully")),
-            Arg.Is(post.FilePath)
+            Arg.Is(post.Path)
         );
 
         _eventPublisher.Received(1).Publish(
-            Arg.Is<ContentSavedEvent>(e => e.Path == post.FilePath)
+            Arg.Is<ContentSavedEvent>(e => e.Path == post.Path)
         );
     }
 
@@ -172,9 +173,9 @@ public class ContentEditorServiceTests
     public async Task SaveBlogPostAsync_WhenValidationFails_ShouldThrowValidationException()
     {
         // Arrange
-        var post = new BlogPost
+        var post = new ContentItem
         {
-            FilePath = "content/blog/post.md",
+            Path = "content/blog/post.md",
             Content = "# Test Content",
             Metadata = new FrontMatter(), // Missing Title which is required
             Sha = "existing-sha"
@@ -203,9 +204,9 @@ public class ContentEditorServiceTests
     public async Task SaveBlogPostAsync_WithInvalidFileExtension_ShouldThrowValidationException()
     {
         // Arrange
-        var post = new BlogPost
+        var post = new ContentItem
         {
-            FilePath = "content/blog/post.txt", // Not an allowed extension
+            Path = "content/blog/post.txt", // Not an allowed extension
             Content = "# Test Content",
             Metadata = FrontMatter.Create("Test Title", "Test Description", System.DateTime.Now),
             Sha = "existing-sha"
@@ -311,7 +312,7 @@ public class ContentEditorServiceTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.FilePath.ShouldBe("content/blog/new-test-post.md");
+        result.Path.ShouldBe("content/blog/new-test-post.md");
         result.Content.ShouldContain(title);
         result.Metadata.ShouldNotBeNull();
         result.Metadata.Title.ShouldBe(title);
@@ -341,7 +342,7 @@ public class ContentEditorServiceTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.FilePath.ShouldBe(contentItem.Path);
+        result.Path.ShouldBe(contentItem.Path);
         result.Content.ShouldBe(contentItem.Content);
         result.Sha.ShouldBe(contentItem.Sha);
 

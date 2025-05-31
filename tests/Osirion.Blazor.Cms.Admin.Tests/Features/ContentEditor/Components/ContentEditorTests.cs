@@ -12,6 +12,7 @@ using Osirion.Blazor.Cms.Domain.Models;
 using Osirion.Blazor.Cms.Domain.ValueObjects;
 using Shouldly;
 using Osirion.Blazor.Cms.Admin.Features.ContentEditor.Components;
+using Osirion.Blazor.Cms.Domain.Entities;
 
 namespace Osirion.Blazor.Cms.Admin.Tests.Features.ContentEditor.Components;
 
@@ -53,7 +54,7 @@ public class ContentEditorTests : TestContext
     public void ContentEditor_WhenEditingPostIsNull_ShouldShowEmptyState()
     {
         // Arrange - No editing post
-        _viewModel.EditingPost.Returns((BlogPost)null!);
+        _viewModel.EditingPost.Returns((ContentItem)null!);
 
         // Act
         var cut = RenderComponent<Admin.Features.ContentEditor.Components.ContentEditor>();
@@ -66,9 +67,9 @@ public class ContentEditorTests : TestContext
     public void ContentEditor_WithEditingPost_ShouldRenderEditorContent()
     {
         // Arrange
-        var blogPost = new BlogPost
+        var blogPost = new ContentItem
         {
-            FilePath = "content/blog/post.md",
+            Path = "content/blog/post.md",
             Content = "Test content",
             Metadata = FrontMatter.Create("Test Title", "Test Description", System.DateTime.Now)
         };
@@ -90,9 +91,9 @@ public class ContentEditorTests : TestContext
     public void ContentEditor_WhenIsCreatingNew_ShouldShowFileNameInput()
     {
         // Arrange
-        var blogPost = new BlogPost
+        var blogPost = new ContentItem
         {
-            FilePath = "content/blog/post.md",
+            Path = "content/blog/post.md",
             Content = "Test content",
             Metadata = FrontMatter.Create("Test Title", "Test Description", System.DateTime.Now)
         };
@@ -112,9 +113,9 @@ public class ContentEditorTests : TestContext
     public void ContentEditor_WhenIsSaving_ShouldDisableSaveButton()
     {
         // Arrange
-        var blogPost = new BlogPost
+        var blogPost = new ContentItem
         {
-            FilePath = "content/blog/post.md",
+            Path = "content/blog/post.md",
             Content = "Test content",
             Metadata = FrontMatter.Create("Test Title", "Test Description", System.DateTime.Now)
         };
@@ -135,9 +136,9 @@ public class ContentEditorTests : TestContext
     public void ContentEditor_SaveChangesButton_ShouldCallSavePostAsync()
     {
         // Arrange
-        var blogPost = new BlogPost
+        var blogPost = new ContentItem
         {
-            FilePath = "content/blog/post.md",
+            Path = "content/blog/post.md",
             Content = "Test content",
             Metadata = FrontMatter.Create("Test Title", "Test Description", System.DateTime.Now)
         };
@@ -159,9 +160,9 @@ public class ContentEditorTests : TestContext
     public void ContentEditor_DiscardChangesButton_ShouldCallDiscardChanges()
     {
         // Arrange
-        var blogPost = new BlogPost
+        var blogPost = new ContentItem
         {
-            FilePath = "content/blog/post.md",
+            Path = "content/blog/post.md",
             Content = "Test content",
             Metadata = FrontMatter.Create("Test Title", "Test Description", System.DateTime.Now)
         };
@@ -183,9 +184,9 @@ public class ContentEditorTests : TestContext
     public void ContentEditor_ShouldRenderTabsAndAllowSwitching()
     {
         // Arrange
-        var blogPost = new BlogPost
+        var blogPost = new ContentItem
         {
-            FilePath = "content/blog/post.md",
+            Path = "content/blog/post.md",
             Content = "Test content",
             Metadata = FrontMatter.Create("Test Title", "Test Description", System.DateTime.Now)
         };
@@ -221,9 +222,9 @@ public class ContentEditorTests : TestContext
     public void ContentEditor_ShouldRenderPreviewToggleButton()
     {
         // Arrange
-        var blogPost = new BlogPost
+        var blogPost = new ContentItem
         {
-            FilePath = "content/blog/post.md",
+            Path = "content/blog/post.md",
             Content = "Test content",
             Metadata = FrontMatter.Create("Test Title", "Test Description", System.DateTime.Now)
         };

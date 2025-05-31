@@ -1,4 +1,5 @@
 ﻿using Osirion.Blazor.Cms.Admin.Core.State;
+using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Models;
 using Osirion.Blazor.Cms.Domain.Models.GitHub;
 using Osirion.Blazor.Cms.Domain.ValueObjects;
@@ -90,9 +91,9 @@ public class CmsStateTests
         var notificationCount = 0;
         state.StateChanged += () => notificationCount++;
 
-        var blogPost = new BlogPost
+        var blogPost = new ContentItem
         {
-            FilePath = "content/blog/post.md",
+            Path = "content/blog/post.md",
             Content = "Test content",
             Metadata = FrontMatter.Create("Test Title", "Test Description", System.DateTime.Now)
         };
@@ -115,9 +116,9 @@ public class CmsStateTests
         var notificationCount = 0;
         state.StateChanged += () => notificationCount++;
 
-        var blogPost = new BlogPost
+        var blogPost = new ContentItem
         {
-            FilePath = "content/blog/post.md",
+            Path = "content/blog/post.md",
             Content = "Test content",
             Metadata = FrontMatter.Create("Test Title", "Test Description", System.DateTime.Now)
         };
@@ -147,7 +148,7 @@ public class CmsStateTests
         state.SelectRepository(new GitHubRepository { Name = "test-repo" });
         state.SelectBranch(new GitHubBranch { Name = "main" });
         state.SetCurrentPath("content", new List<GitHubItem>());
-        state.SetEditingPost(new BlogPost(), true);
+        state.SetEditingPost(new ContentItem(), true);
         state.SetStatusMessage("Test message");
 
         notificationCount = 0; // Reset counter

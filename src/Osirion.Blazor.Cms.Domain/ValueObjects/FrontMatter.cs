@@ -1,7 +1,7 @@
-﻿using System.Text;
-using System.Text.Json.Serialization;
-using Osirion.Blazor.Cms.Domain.Common;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+﻿using Osirion.Blazor.Cms.Domain.Common;
+using System.Text;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
 
 namespace Osirion.Blazor.Cms.Domain.ValueObjects;
 
@@ -11,27 +11,44 @@ namespace Osirion.Blazor.Cms.Domain.ValueObjects;
 public class FrontMatter : ValueObject
 {
     /// <summary>
-    /// Gets the Id of the post
+    /// Gets the Id
     /// </summary>
     public string Id { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets the title of the post
+    /// Gets the order
+    /// </summary>
+    public int? Order { get; set; }
+
+    /// <summary>
+    /// The layout template to use from the _layouts directory.
+    /// Set to null or "none" to bypass layouts (useful for RSS, JSON feeds).
+    /// </summary>
+    public string? Layout { get; set; }
+
+    /// <summary>
+    /// Gets the title
     /// </summary>
     public string Title { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets the description of the post
+    /// Custom URL for this content. Can use placeholders like :year, :title.
+    /// Example: "/blog/:year/:title/" or "/custom-url/"
+    /// </summary>
+    public string? Permalink { get; set; }
+
+    /// <summary>
+    /// Gets the description
     /// </summary>
     public string Description { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets the author of the post
+    /// Gets the author
     /// </summary>
     public string Author { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets the date of the post in ISO format (yyyy-MM-dd)
+    /// Gets the date in ISO format (yyyy-MM-dd)
     /// </summary>
     public string Date { get; set; } = DateTime.Now.ToString("yyyy-MM-dd");
 
@@ -41,14 +58,14 @@ public class FrontMatter : ValueObject
     public string? FeaturedImage { get; set; }
 
     /// <summary>
-    /// Gets the categories of the post
+    /// Gets the categories
     /// </summary>
-    public IReadOnlyList<string> Categories { get; set; } = new List<string>();
+    public List<string> Categories { get; set; } = new List<string>();
 
     /// <summary>
-    /// Gets the tags of the post
+    /// Gets the tags
     /// </summary>
-    public IReadOnlyList<string> Tags { get; set; } = new List<string>();
+    public List<string> Tags { get; set; } = new List<string>();
 
     /// <summary>
     /// Gets whether the post is featured
@@ -61,19 +78,22 @@ public class FrontMatter : ValueObject
     public bool Published { get; set; } = true;
 
     /// <summary>
-    /// Gets the layout template to use for the post
-    /// </summary>
-    public string? Layout { get; set; }
-
-    /// <summary>
-    /// Gets the URL slug for the post
+    /// Gets the URL slug
     /// </summary>
     public string? Slug { get; set; }
 
     /// <summary>
-    /// Gets custom fields for the post
+    /// Gets the language
     /// </summary>
-    public IReadOnlyDictionary<string, object> CustomFields { get; set; } = new Dictionary<string, object>();
+    public string Lang { get; set; } = "en";
+
+    /// <summary>
+    /// Gets custom fields
+    /// </summary>
+    public Dictionary<string, object> CustomFields { get; set; } = new Dictionary<string, object>();
+
+    // Value objects
+    public SeoMetadata SeoProperties { get; set; } = new SeoMetadata();
 
     // Private constructor to enforce creation through factory method
     public FrontMatter() { }
@@ -278,93 +298,23 @@ public class FrontMatter : ValueObject
     /// </summary>
     public string ToYaml()
     {
-        var yaml = new StringBuilder();
-        yaml.AppendLine("---");
+        // Configure serializer for clean Jekyll-compatible output
+        var serializer = new SerializerBuilder()
+            .WithNamingConvention(UnderscoredNamingConvention.Instance)
+            .ConfigureDefaultValuesHandling(DefaultValuesHandling.OmitNull)
+            .Build();
 
-        // Add title if not empty
-        if (!string.IsNullOrWhiteSpace(Title))
-            yaml.AppendLine($"title: \"{EscapeYamlString(Title)}\"");
+        // Serialize just the frontmatter
+        string yamlContent = serializer.Serialize(this);
 
-        // Add description if not empty
-        if (!string.IsNullOrWhiteSpace(Description))
-            yaml.AppendLine($"description: \"{EscapeYamlString(Description)}\"");
+        // Build the complete Jekyll file with proper structure
+        var jekyllFile = new StringBuilder();
+        jekyllFile.AppendLine("---");
+        jekyllFile.Append(yamlContent); // YAML serializer adds its own final newline
+        jekyllFile.AppendLine("---");
+        jekyllFile.AppendLine(); // Empty line between frontmatter and content
 
-        // Add author if not empty
-        if (!string.IsNullOrWhiteSpace(Author))
-            yaml.AppendLine($"author: \"{EscapeYamlString(Author)}\"");
-
-        // Add date if not empty
-        if (!string.IsNullOrWhiteSpace(Date))
-            yaml.AppendLine($"date: {Date}");
-
-        // Add featured image if not empty
-        if (!string.IsNullOrWhiteSpace(FeaturedImage))
-            yaml.AppendLine($"featuredImage: \"{FeaturedImage}\"");
-
-        // Add categories if any
-        if (Categories.Count > 0)
-        {
-            yaml.AppendLine("categories:");
-            foreach (var category in Categories)
-            {
-                yaml.AppendLine($"  - \"{EscapeYamlString(category)}\"");
-            }
-        }
-
-        // Add tags if any
-        if (Tags.Count > 0)
-        {
-            yaml.AppendLine("tags:");
-            foreach (var tag in Tags)
-            {
-                yaml.AppendLine($"  - \"{EscapeYamlString(tag)}\"");
-            }
-        }
-
-        // Add featured flag if true
-        if (IsFeatured)
-            yaml.AppendLine("featured: true");
-
-        // Add published flag if not true (defaults to true)
-        if (!Published)
-            yaml.AppendLine("published: false");
-
-        // Add layout if specified
-        if (!string.IsNullOrWhiteSpace(Layout))
-            yaml.AppendLine($"layout: \"{Layout}\"");
-
-        // Add slug if specified
-        if (!string.IsNullOrWhiteSpace(Slug))
-            yaml.AppendLine($"slug: \"{Slug}\"");
-
-        // Add custom fields if any
-        foreach (var field in CustomFields)
-        {
-            if (field.Value is string strValue)
-            {
-                yaml.AppendLine($"{field.Key}: \"{EscapeYamlString(strValue)}\"");
-            }
-            else if (field.Value is bool boolValue)
-            {
-                yaml.AppendLine($"{field.Key}: {boolValue.ToString().ToLowerInvariant()}");
-            }
-            else if (field.Value is int || field.Value is double || field.Value is float)
-            {
-                yaml.AppendLine($"{field.Key}: {field.Value}");
-            }
-            else if (field.Value is DateTime dateValue)
-            {
-                yaml.AppendLine($"{field.Key}: {dateValue:yyyy-MM-dd}");
-            }
-            else
-            {
-                // For complex objects, serialize as string representation
-                yaml.AppendLine($"{field.Key}: \"{field.Value}\"");
-            }
-        }
-
-        yaml.AppendLine("---");
-        return yaml.ToString();
+        return jekyllFile.ToString();
     }
 
     /// <summary>
@@ -385,7 +335,8 @@ public class FrontMatter : ValueObject
             Slug = Slug,
             Categories = new List<string>(Categories),
             Tags = new List<string>(Tags),
-            CustomFields = new Dictionary<string, object>(CustomFields)
+            CustomFields = new Dictionary<string, object>(CustomFields),
+            SeoProperties = SeoProperties,
         };
     }
 
@@ -554,141 +505,138 @@ public class FrontMatter : ValueObject
     }
 
     /// <summary>
-    /// Escapes special characters in a YAML string
+    /// Helper method to find Jekyll frontmatter boundaries.
+    /// Frontmatter starts and ends with "---" on its own line.
     /// </summary>
-    private static string EscapeYamlString(string value)
+    private static (int Start, int End, int Length)? FindFrontmatterBoundaries(string content)
     {
-        if (string.IsNullOrEmpty(value))
-            return value;
+        const string delimiter = "---";
 
-        return value
-            .Replace("\\", "\\\\")
-            .Replace("\"", "\\\"")
-            .Replace("\n", "\\n")
-            .Replace("\r", "\\r")
-            .Replace("\t", "\\t");
+        // Must start with delimiter
+        if (!content.StartsWith(delimiter))
+            return null;
+
+        // Find the ending delimiter (after the opening one)
+        int firstDelimiterEnd = content.IndexOf('\n') + 1;
+        int secondDelimiterPos = content.IndexOf($"\n{delimiter}\n", firstDelimiterEnd);
+
+        if (secondDelimiterPos == -1)
+            return null;
+
+        int yamlStart = firstDelimiterEnd;
+        int yamlEnd = secondDelimiterPos;
+        int fullFrontmatterEnd = secondDelimiterPos + delimiter.Length + 2; // Include delimiter and newline
+
+        return (yamlStart, fullFrontmatterEnd, yamlEnd - yamlStart);
     }
 
-    /// <summary>
-    /// Parses YAML frontmatter from a complete markdown document
-    /// </summary>
-    public static FrontMatter FromMarkdown(string markdown)
-    {
-        if (string.IsNullOrWhiteSpace(markdown))
-            return new FrontMatter();
 
-        // Regular expression to extract frontmatter
-        var frontMatterRegex = new System.Text.RegularExpressions.Regex(
-            @"^\s*---\s*\n(.*?)\n\s*---\s*\n",
-            System.Text.RegularExpressions.RegexOptions.Singleline
-        );
-
-        var match = frontMatterRegex.Match(markdown);
-
-        if (match.Success)
-        {
-            // Extract and parse frontmatter
-            var frontMatterYaml = match.Groups[1].Value;
-            var frontMatterDict = frontMatterYaml
-                .Split('\n')
-                .Where(line => !string.IsNullOrWhiteSpace(line))
-                .Select(line => line.Split(new[] { ':' }, 2))
-                .Where(parts => parts.Length == 2)
-                .ToDictionary(
-                    parts => parts[0].Trim(),
-                    parts => parts[1].Trim().Trim('"', '\''),
-                    StringComparer.OrdinalIgnoreCase
-                );
-
-            return FromDictionary(frontMatterDict);
-        }
-
-        // No frontmatter found, return default
-        return new FrontMatter();
-    }
 
     public static FrontMatter FromYaml(string yaml)
     {
-        var frontMatter = new FrontMatter();
 
-        if (string.IsNullOrWhiteSpace(yaml))
-            return frontMatter;
+        var frontmatterBoundaries = FindFrontmatterBoundaries(yaml);
 
-        // Simple line-by-line parsing for common properties
-        var lines = yaml.Split('\n');
+        // Extract the YAML frontmatter
+        string yamlContent = yaml.Substring(
+            frontmatterBoundaries.Value.Start,
+            frontmatterBoundaries.Value.Length
+        );
 
-        string? currentList = null;
-        List<string> currentItems = new();
+        // Extract the markdown content after frontmatter
+        string markdownContent = yaml.Substring(frontmatterBoundaries.Value.End);
 
-        foreach (var line in lines)
-        {
-            var trimmedLine = line.Trim();
+        // Configure deserializer with custom settings for flexibility
+        var deserializer = new DeserializerBuilder()
+            .WithNamingConvention(CamelCaseNamingConvention.Instance)
+            .IgnoreUnmatchedProperties() // Important: Allows YAML to have extra fields
+            .Build();
 
-            // Skip the opening and closing --- lines
-            if (trimmedLine == "---")
-                continue;
+        // Deserialize frontmatter to our comprehensive class
+        var frontmatter = deserializer.Deserialize<FrontMatter>(yamlContent);
 
-            // Check if this is a new list
-            if (trimmedLine.EndsWith(':'))
-            {
-                // Save any previous list
-                if (currentList != null && currentItems.Count > 0)
-                {
-                    AssignList(frontMatter, currentList, currentItems);
-                }
+        return frontmatter;
 
-                // Start a new list
-                currentList = trimmedLine.TrimEnd(':');
-                currentItems = new List<string>();
-                continue;
-            }
+        //var frontMatter = new FrontMatter();
 
-            // Check if this is a list item
-            if (trimmedLine.StartsWith("  - "))
-            {
-                var item = trimmedLine.Substring(4).Trim();
-                // Remove quotes if present
-                if (item.StartsWith("\"") && item.EndsWith("\""))
-                {
-                    item = item.Substring(1, item.Length - 2);
-                }
+        //if (string.IsNullOrWhiteSpace(yaml))
+        //    return frontMatter;
 
-                currentItems.Add(item);
-                continue;
-            }
+        //// Simple line-by-line parsing for common properties
+        //var lines = yaml.Split('\n');
 
-            // Process key-value pair
-            var separatorIndex = trimmedLine.IndexOf(':');
-            if (separatorIndex > 0)
-            {
-                // Save any previous list
-                if (currentList != null && currentItems.Count > 0)
-                {
-                    AssignList(frontMatter, currentList, currentItems);
-                    currentList = null;
-                    currentItems.Clear();
-                }
+        //string? currentList = null;
+        //List<string> currentItems = new();
 
-                var key = trimmedLine.Substring(0, separatorIndex).Trim();
-                var value = trimmedLine.Substring(separatorIndex + 1).Trim();
+        //foreach (var line in lines)
+        //{
+        //    var trimmedLine = line.Trim();
 
-                // Remove quotes if present
-                if (value.StartsWith("\"") && value.EndsWith("\""))
-                {
-                    value = value.Substring(1, value.Length - 2);
-                }
+        //    // Skip the opening and closing --- lines
+        //    if (trimmedLine == "---")
+        //        continue;
 
-                AssignProperty(frontMatter, key, value);
-            }
-        }
+        //    // Check if this is a new list
+        //    if (trimmedLine.EndsWith(':'))
+        //    {
+        //        // Save any previous list
+        //        if (currentList != null && currentItems.Count > 0)
+        //        {
+        //            AssignList(frontMatter, currentList, currentItems);
+        //        }
 
-        // Save any final list
-        if (currentList != null && currentItems.Count > 0)
-        {
-            AssignList(frontMatter, currentList, currentItems);
-        }
+        //        // Start a new list
+        //        currentList = trimmedLine.TrimEnd(':');
+        //        currentItems = new List<string>();
+        //        continue;
+        //    }
 
-        return frontMatter;
+        //    // Check if this is a list item
+        //    if (trimmedLine.StartsWith("  - "))
+        //    {
+        //        var item = trimmedLine.Substring(4).Trim();
+        //        // Remove quotes if present
+        //        if (item.StartsWith("\"") && item.EndsWith("\""))
+        //        {
+        //            item = item.Substring(1, item.Length - 2);
+        //        }
+
+        //        currentItems.Add(item);
+        //        continue;
+        //    }
+
+        //    // Process key-value pair
+        //    var separatorIndex = trimmedLine.IndexOf(':');
+        //    if (separatorIndex > 0)
+        //    {
+        //        // Save any previous list
+        //        if (currentList != null && currentItems.Count > 0)
+        //        {
+        //            AssignList(frontMatter, currentList, currentItems);
+        //            currentList = null;
+        //            currentItems.Clear();
+        //        }
+
+        //        var key = trimmedLine.Substring(0, separatorIndex).Trim();
+        //        var value = trimmedLine.Substring(separatorIndex + 1).Trim();
+
+        //        // Remove quotes if present
+        //        if (value.StartsWith("\"") && value.EndsWith("\""))
+        //        {
+        //            value = value.Substring(1, value.Length - 2);
+        //        }
+
+        //        AssignProperty(frontMatter, key, value);
+        //    }
+        //}
+
+        //// Save any final list
+        //if (currentList != null && currentItems.Count > 0)
+        //{
+        //    AssignList(frontMatter, currentList, currentItems);
+        //}
+
+        //return frontMatter;
     }
 
     private static void AssignList(FrontMatter frontMatter, string listName, List<string> items)

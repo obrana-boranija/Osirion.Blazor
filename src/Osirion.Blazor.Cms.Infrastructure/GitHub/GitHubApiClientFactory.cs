@@ -242,12 +242,47 @@ public class GitHubApiClientFactory : IGitHubApiClientFactory
     /// </summary>
     public GitHubProviderOptions? GetProviderOptions(string providerName)
     {
+        if (string.IsNullOrEmpty(providerName))
+            return null;
+
+        // Check web providers first
         if (_webProviders.TryGetValue(providerName, out var webOptions))
+        {
+            _logger.LogDebug("Found provider options in Web configuration for '{ProviderName}'", providerName);
             return webOptions;
+        }
 
+        // Then check admin providers
         if (_adminProviders.TryGetValue(providerName, out var adminOptions))
+        {
+            _logger.LogDebug("Found provider options in Admin configuration for '{ProviderName}'", providerName);
             return adminOptions;
+        }
 
+        _logger.LogDebug("Provider options not found for '{ProviderName}'", providerName);
         return null;
+    }
+
+    /// <summary>
+    /// Gets all configured provider options
+    /// </summary>
+    public IEnumerable<KeyValuePair<string, GitHubProviderOptions>> GetAllProviderOptions()
+    {
+        // Return all unique providers, preferring web over admin if duplicate names
+        var allProviders = new Dictionary<string, GitHubProviderOptions>();
+
+        // Add admin providers first
+        foreach (var kvp in _adminProviders)
+        {
+            allProviders[kvp.Key] = kvp.Value;
+        }
+
+        // Then add/override with web providers (web takes precedence)
+        foreach (var kvp in _webProviders)
+        {
+            allProviders[kvp.Key] = kvp.Value;
+        }
+
+        return allProviders;
     }
 }

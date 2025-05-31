@@ -2,7 +2,6 @@
 @using Osirion.Blazor.Cms.Admin.Features.ContentEditor.Services
 @using Osirion.Blazor.Cms.Admin.Shared.Components
 @inherits BaseComponent
-@inject IMarkdownEditorService MarkdownService
 @inject IJSRuntime JSRuntime
 
 <div class="markdown-editor h-100 d-flex @(EditorMode.ToString().ToLowerInvariant())">
@@ -16,11 +15,6 @@
             </button>
             <button class="btn btn-sm @(EditorMode == EditorMode.Split ? "btn-primary" : "btn-outline-secondary")" @onclick="() => SetEditorMode(EditorMode.Split)">
                 <i class="bi bi-layout-split me-1"></i>Split
-            </button>
-        </div>
-        <div class="editor-actions">
-            <button class="btn btn-sm btn-outline-secondary" title="Toggle fullscreen" @onclick="ToggleFullscreen">
-                <i class="bi @(IsFullscreen ? "bi-fullscreen-exit" : "bi-fullscreen")"></i>
             </button>
         </div>
     </div>

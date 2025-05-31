@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Models;
 using Osirion.Blazor.Cms.Domain.Models.GitHub;
 using System.Runtime.CompilerServices;
@@ -20,7 +21,7 @@ public abstract class RepositoryAdapterBase : IContentRepositoryAdapter
 
     public abstract Task<List<GitHubItem>> GetContentsAsync(string path);
 
-    public abstract Task<BlogPost> GetBlogPostAsync(string path);
+    public abstract Task<ContentItem> GetBlogPostAsync(string path);
 
     public abstract Task<GitHubFileCommitResponse> SaveContentAsync(
         string path, string content, string message, string? sha = null);

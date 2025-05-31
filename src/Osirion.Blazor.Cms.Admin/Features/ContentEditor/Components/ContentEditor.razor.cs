@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Osirion.Blazor.Cms.Admin.Core.Events;
 using Osirion.Blazor.Cms.Admin.Features.ContentEditor.ViewModels;
+using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Models;
 
 namespace Osirion.Blazor.Cms.Admin.Features.ContentEditor.Components;
@@ -14,7 +15,7 @@ public partial class ContentEditor : IDisposable
     public bool IsPreviewVisible { get; set; } = true;
 
     [Parameter]
-    public EventCallback<BlogPost> OnSaveComplete { get; set; }
+    public EventCallback<ContentItem> OnSaveComplete { get; set; }
 
     [Parameter]
     public EventCallback OnDiscard { get; set; }

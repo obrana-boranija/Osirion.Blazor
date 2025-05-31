@@ -16,13 +16,13 @@
             <input type="text"
                    class="form-control"
                    id="metaTitle"
-                   @bind="SeoMetadata.MetaTitle"
+                   @bind="SeoMetadata.Title"
                    @bind:event="oninput"
                    @bind:after="NotifySeoMetadataChanged"
                    placeholder="Page title for search engines"
                    maxlength="60" />
-            <div class="char-counter @GetCounterClass(SeoMetadata.MetaTitle.Length, 60, 50)">
-                @SeoMetadata.MetaTitle.Length / 60
+            <div class="char-counter @GetCounterClass(SeoMetadata.Title.Length, 60, 50)">
+                @SeoMetadata.Title.Length / 60
             </div>
             <div class="form-text">Recommended: 50-60 characters</div>
         </div>
@@ -34,14 +34,14 @@
             </label>
             <textarea class="form-control"
                       id="metaDescription"
-                      @bind="SeoMetadata.MetaDescription"
+                      @bind="SeoMetadata.Description"
                       @bind:event="oninput"
                       @bind:after="NotifySeoMetadataChanged"
                       placeholder="Description that appears in search results"
                       rows="3"
                       maxlength="160"></textarea>
-            <div class="char-counter @GetCounterClass(SeoMetadata.MetaDescription.Length, 160, 150)">
-                @SeoMetadata.MetaDescription.Length / 160
+            <div class="char-counter @GetCounterClass(SeoMetadata.Description.Length, 160, 150)">
+                @SeoMetadata.Description.Length / 160
             </div>
             <div class="form-text">Recommended: 150-160 characters</div>
         </div>
@@ -51,7 +51,7 @@
             <input type="url"
                    class="form-control"
                    id="canonicalUrl"
-                   @bind="SeoMetadata.CanonicalUrl"
+                   @bind="SeoMetadata.Canonical"
                    @bind:event="oninput"
                    @bind:after="NotifySeoMetadataChanged"
                    placeholder="https://example.com/your-post" />
@@ -83,7 +83,7 @@
             <label for="schemaType" class="form-label">Schema.org Type</label>
             <select class="form-select"
                     id="schemaType"
-                    @bind="SeoMetadata.SchemaType"
+                    @bind="SeoMetadata.Type"
                     @bind:after="NotifySeoMetadataChanged">
                 <option value="Article">Article</option>
                 <option value="BlogPosting">Blog Post</option>
@@ -116,5 +116,4 @@
             <div class="form-text">Custom structured data in JSON-LD format</div>
         </div>
     </div>
-}
 </div>

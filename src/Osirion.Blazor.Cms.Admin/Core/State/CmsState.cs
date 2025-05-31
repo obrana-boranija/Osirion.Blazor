@@ -1,4 +1,5 @@
-﻿using Osirion.Blazor.Cms.Domain.Models;
+﻿using Osirion.Blazor.Cms.Domain.Entities;
+using Osirion.Blazor.Cms.Domain.Models;
 using Osirion.Blazor.Cms.Domain.Models.GitHub;
 using System.Text.Json;
 
@@ -22,7 +23,7 @@ public class CmsState
     public List<GitHubBranch> AvailableBranches { get; private set; } = new();
 
     // Editing state
-    public BlogPost? EditingPost { get; private set; }
+    public ContentItem? EditingPost { get; private set; }
     public bool IsEditing { get; private set; }
     public bool IsSaving { get; private set; }
     public bool IsCreatingNewFile { get; private set; }
@@ -103,7 +104,7 @@ public class CmsState
     /// <summary>
     /// Sets the editing post
     /// </summary>
-    public void SetEditingPost(BlogPost post, bool isNew = false)
+    public void SetEditingPost(ContentItem post, bool isNew = false)
     {
         EditingPost = post;
         IsEditing = true;

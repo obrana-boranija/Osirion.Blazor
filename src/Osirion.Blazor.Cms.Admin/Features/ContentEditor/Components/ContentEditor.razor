@@ -15,7 +15,43 @@
     }
     else
     {
-        <div class="border-bottom">
+        <div class="row gap-0 mb-2">
+            @if (ViewModel.IsCreatingNew)
+            {
+                <div class="input-group col">
+                    <span class="input-group-text">File Name:</span>
+                    <input type="text"
+                           class="form-control"
+                           @bind="ViewModel.FileName"
+                           @bind:event="oninput"
+                           placeholder="Enter file name" />
+                </div>
+            }
+
+            <div class="col">
+                <button type="button"
+                        class="btn btn-outline-secondary"
+                        @onclick="DiscardChanges">
+                    Discard Changes
+                </button>
+
+                <button type="button"
+                        class="btn btn-primary"
+                        @onclick="SaveChanges"
+                        disabled="@(ViewModel.IsSaving || (ViewModel.IsCreatingNew && string.IsNullOrWhiteSpace(ViewModel.FileName)))">
+                    @if (ViewModel.IsSaving)
+                    {
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        <span>Saving...</span>
+                    }
+                    else
+                    {
+                        <span>Save Changes</span>
+                    }
+                </button>
+            </div>
+        </div>
+        <div class="border-bottom mb-2 pb-2">
             <ul class="nav nav-tabs px-3 pt-2">
                 <li class="nav-item">
                     <button class="nav-link @(ActiveTab == "content" ? "active" : "")"
@@ -27,13 +63,6 @@
                     <button class="nav-link @(ActiveTab == "metadata" ? "active" : "")"
                             @onclick="@(() => SetActiveTab("metadata"))">
                         Metadata
-                    </button>
-                </li>
-                <li class="nav-item ms-auto">
-                    <button class="btn btn-sm btn-outline-secondary"
-                            title="Toggle Preview"
-                            @onclick="TogglePreview">
-                        <i class="bi bi-eye"></i>
                     </button>
                 </li>
             </ul>
@@ -68,43 +97,6 @@
                         <span>Changes not saved</span>
                     </span>
                 }
-            </div>
-
-            <div class="align-items-center gap-2">
-                @if (ViewModel.IsCreatingNew)
-                {
-                    <div class="input-group">
-                        <span class="input-group-text">File Name:</span>
-                        <input type="text"
-                               class="form-control"
-                               @bind="ViewModel.FileName"
-                               @bind:event="oninput"
-                               placeholder="Enter file name" />
-                    </div>
-                }
-
-                <div>
-                    <button type="button"
-                            class="btn btn-outline-secondary"
-                            @onclick="DiscardChanges">
-                        Discard Changes
-                    </button>
-
-                    <button type="button"
-                            class="btn btn-primary"
-                            @onclick="SaveChanges"
-                            disabled="@(ViewModel.IsSaving || (ViewModel.IsCreatingNew && string.IsNullOrWhiteSpace(ViewModel.FileName)))">
-                        @if (ViewModel.IsSaving)
-                        {
-                            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                            <span>Saving...</span>
-                        }
-                        else
-                        {
-                            <span>Save Changes</span>
-                        }
-                    </button>
-                </div>
             </div>
         </div>
     }

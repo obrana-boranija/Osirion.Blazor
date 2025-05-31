@@ -1,4 +1,6 @@
-﻿namespace Osirion.Blazor.Cms.Domain.Interfaces;
+﻿using Osirion.Blazor.Cms.Domain.Options.Configuration;
+
+namespace Osirion.Blazor.Cms.Domain.Interfaces;
 
 /// <summary>
 /// Factory for creating GitHub API client instances for different providers
@@ -9,17 +11,17 @@ public interface IGitHubApiClientFactory
     /// Gets a GitHub API client for the specified provider
     /// </summary>
     /// <param name="providerName">The name of the provider</param>
-    /// <returns>The GitHub API client instance</returns>
+    /// <returns>The GitHub API client</returns>
     IGitHubApiClient GetClient(string providerName);
 
     /// <summary>
-    /// Gets a GitHub API client for the default provider
+    /// Gets the default GitHub API client
     /// </summary>
-    /// <returns>The GitHub API client instance</returns>
+    /// <returns>The default GitHub API client</returns>
     IGitHubApiClient GetDefaultClient();
 
     /// <summary>
-    /// Gets all available provider names
+    /// Gets all configured provider names
     /// </summary>
     /// <returns>Collection of provider names</returns>
     IEnumerable<string> GetProviderNames();
@@ -28,6 +30,19 @@ public interface IGitHubApiClientFactory
     /// Checks if a provider exists
     /// </summary>
     /// <param name="providerName">The name of the provider</param>
-    /// <returns>True if the provider exists</returns>
+    /// <returns>True if the provider exists, false otherwise</returns>
     bool ProviderExists(string providerName);
+
+    /// <summary>
+    /// Gets the configuration options for a specific provider
+    /// </summary>
+    /// <param name="providerName">The name of the provider</param>
+    /// <returns>The provider options, or null if not found</returns>
+    GitHubProviderOptions? GetProviderOptions(string providerName);
+
+    /// <summary>
+    /// Gets all configured provider options
+    /// </summary>
+    /// <returns>Collection of all provider options with their names</returns>
+    IEnumerable<KeyValuePair<string, GitHubProviderOptions>> GetAllProviderOptions();
 }

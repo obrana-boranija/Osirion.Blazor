@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Osirion.Blazor.Cms.Admin.Core.Events;
+using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Models;
 using Osirion.Blazor.Cms.Domain.ValueObjects;
@@ -32,7 +33,7 @@ public partial class EditContent : IDisposable
     {
         // Reload content if parameters change and we're already rendered
         if (!string.IsNullOrEmpty(Path) &&
-           (AdminState.EditingPost == null || AdminState.EditingPost.FilePath != Path))
+           (AdminState.EditingPost == null || AdminState.EditingPost.Path != Path))
         {
             await LoadContentAsync();
         }
@@ -68,10 +69,10 @@ public partial class EditContent : IDisposable
         {
             // We already have a post being edited (likely from content browser)
             // Just ensure we're on the right path
-            if (!string.IsNullOrEmpty(AdminState.EditingPost.FilePath) &&
+            if (!string.IsNullOrEmpty(AdminState.EditingPost.Path) &&
                 !AdminState.IsCreatingNewFile)
             {
-                NavigationManager.NavigateTo($"/osirion/content/edit?Path={AdminState.EditingPost.FilePath}");
+                NavigationManager.NavigateTo($"/osirion/content/edit?Path={AdminState.EditingPost.Path}");
             }
         }
     }
@@ -110,11 +111,11 @@ public partial class EditContent : IDisposable
     private void CreateNewPost()
     {
         // Create new blog post with empty content
-        var newPost = new BlogPost
+        var newPost = new ContentItem
         {
             Metadata = FrontMatter.Create("New Post", "Enter description here", DateTime.Now),
             Content = "## New Post\n\nStart writing your content here...",
-            FilePath = string.IsNullOrEmpty(AdminState.CurrentPath) ?
+            Path = string.IsNullOrEmpty(AdminState.CurrentPath) ?
               "new-post.md" :
               $"{AdminState.CurrentPath}/new-post.md"
         };
@@ -130,7 +131,7 @@ public partial class EditContent : IDisposable
         NavigationManager.NavigateTo("/osirion/content");
     }
 
-    private async Task HandleSaveComplete(BlogPost post)
+    private async Task HandleSaveComplete(ContentItem post)
     {
         // Navigate to content listing
         NavigationManager.NavigateTo("/osirion/content");

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
+using Osirion.Blazor.Cms.Domain.Interfaces;
 using System.Text.RegularExpressions;
 
 namespace Osirion.Blazor.Cms.Admin.Features.ContentEditor.Components.Shared;
@@ -40,6 +41,9 @@ public partial class MarkdownEditorWithPreview : IAsyncDisposable
 
     [Parameter]
     public bool SpellCheck { get; set; } = false;
+
+    [Inject]
+    private IMarkdownProcessor MarkdownProcessor { get; set; } = default!;
 
     private string EditorContent
     {
@@ -109,7 +113,7 @@ public partial class MarkdownEditorWithPreview : IAsyncDisposable
     {
         try
         {
-            Preview = await MarkdownService.RenderToHtmlAsync(Content);
+            Preview = await MarkdownProcessor.RenderToHtmlAsync(Content);
             StateHasChanged();
 
             if (SyncScroll && isEditorFocused && jsInteropAvailable && jsModule != null && EditorMode == EditorMode.Split)

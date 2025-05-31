@@ -3,6 +3,7 @@ using NSubstitute.ExceptionExtensions;
 using Osirion.Blazor.Cms.Admin.Core.Events;
 using Osirion.Blazor.Cms.Admin.Features.ContentEditor.Services;
 using Osirion.Blazor.Cms.Admin.Features.ContentEditor.ViewModels;
+using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Models;
 using Osirion.Blazor.Cms.Domain.Models.GitHub;
 using Osirion.Blazor.Cms.Domain.ValueObjects;
@@ -30,9 +31,9 @@ public class ContentEditorViewModelTests
     public void InitializeFromState_ShouldSetPropertiesCorrectly()
     {
         // Arrange
-        var blogPost = new BlogPost
+        var blogPost = new ContentItem
         {
-            FilePath = "content/blog/post.md",
+            Path = "content/blog/post.md",
             Content = "Test content",
             Metadata = FrontMatter.Create("Test Title", "Test Description", System.DateTime.Now),
             Sha = "test-sha"
@@ -53,9 +54,9 @@ public class ContentEditorViewModelTests
     public void InitializeFromState_WhenNotCreatingNew_ShouldSetUpdateCommitMessage()
     {
         // Arrange
-        var blogPost = new BlogPost
+        var blogPost = new ContentItem
         {
-            FilePath = "content/blog/post.md",
+            Path = "content/blog/post.md",
             Content = "Test content",
             Metadata = FrontMatter.Create("Test Title", "Test Description", System.DateTime.Now),
             Sha = "test-sha"
@@ -76,9 +77,9 @@ public class ContentEditorViewModelTests
     {
         // Arrange
         var path = "content/blog/post.md";
-        var blogPost = new BlogPost
+        var blogPost = new ContentItem
         {
-            FilePath = path,
+            Path = path,
             Content = "Test content",
             Metadata = FrontMatter.Create("Test Title", "Test Description", System.DateTime.Now),
             Sha = "test-sha"
@@ -135,9 +136,9 @@ public class ContentEditorViewModelTests
     public async Task SavePostAsync_ShouldSavePostAndPublishEvents()
     {
         // Arrange
-        var blogPost = new BlogPost
+        var blogPost = new ContentItem
         {
-            FilePath = "content/blog/post.md",
+            Path = "content/blog/post.md",
             Content = "Test content",
             Metadata = FrontMatter.Create("Test Title", "Test Description", System.DateTime.Now)
         };
@@ -146,7 +147,7 @@ public class ContentEditorViewModelTests
         {
             Content = new GitHubFileContent
             {
-                Path = blogPost.FilePath,
+                Path = blogPost.Path,
                 Sha = "new-sha-123"
             }
         };
@@ -168,13 +169,13 @@ public class ContentEditorViewModelTests
         await _editorService.Received(1).SaveBlogPostAsync(blogPost, _viewModel.CommitMessage);
 
         _eventPublisher.Received(1).Publish(
-            Arg.Is<ContentSavedEvent>(e => e.Path == blogPost.FilePath)
+            Arg.Is<ContentSavedEvent>(e => e.Path == blogPost.Path)
         );
 
         _eventPublisher.Received(1).Publish(
             Arg.Is<StatusNotificationEvent>(e =>
                 e.Message.Contains("saved") &&
-                e.Message.Contains(System.IO.Path.GetFileName(blogPost.FilePath)) &&
+                e.Message.Contains(System.IO.Path.GetFileName(blogPost.Path)) &&
                 e.Type == StatusType.Success)
         );
     }
@@ -183,9 +184,9 @@ public class ContentEditorViewModelTests
     public async Task SavePostAsync_WhenCreatingNew_ShouldUpdateFilePathAndResetCreatingState()
     {
         // Arrange
-        var blogPost = new BlogPost
+        var blogPost = new ContentItem
         {
-            FilePath = "content/blog",
+            Path = "content/blog",
             Content = "Test content",
             Metadata = FrontMatter.Create("Test Title", "Test Description", System.DateTime.Now)
         };
@@ -203,19 +204,19 @@ public class ContentEditorViewModelTests
         _viewModel.FileName = "test-post.md";
 
         _editorService
-            .SaveBlogPostAsync(Arg.Any<BlogPost>(), _viewModel.CommitMessage)
+            .SaveBlogPostAsync(Arg.Any<ContentItem>(), _viewModel.CommitMessage)
             .Returns(commitResponse);
 
         // Act
         await _viewModel.SavePostAsync();
 
         // Assert
-        _viewModel.EditingPost.FilePath.ShouldBe("content/blog/test-post.md");
+        _viewModel.EditingPost?.Path.ShouldBe("content/blog/test-post.md");
         _viewModel.IsCreatingNew.ShouldBeFalse();
         _viewModel.FileName.ShouldBeEmpty();
 
         await _editorService.Received(1).SaveBlogPostAsync(
-            Arg.Is<BlogPost>(p => p.FilePath == "content/blog/test-post.md"),
+            Arg.Is<ContentItem>(p => p.Path == "content/blog/test-post.md"),
             _viewModel.CommitMessage
         );
     }
@@ -224,9 +225,9 @@ public class ContentEditorViewModelTests
     public async Task SavePostAsync_WhenExceptionThrown_ShouldSetErrorAndPublishEvent()
     {
         // Arrange
-        var blogPost = new BlogPost
+        var blogPost = new ContentItem
         {
-            FilePath = "content/blog/post.md",
+            Path = "content/blog/post.md",
             Content = "Test content",
             Metadata = FrontMatter.Create("Test Title", "Test Description", System.DateTime.Now)
         };
@@ -257,9 +258,9 @@ public class ContentEditorViewModelTests
     public void UpdateContent_ShouldUpdateEditingPostContent()
     {
         // Arrange
-        var blogPost = new BlogPost
+        var blogPost = new ContentItem
         {
-            FilePath = "content/blog/post.md",
+            Path = "content/blog/post.md",
             Content = "Original content",
             Metadata = FrontMatter.Create("Test Title", "Test Description", System.DateTime.Now)
         };
@@ -281,9 +282,9 @@ public class ContentEditorViewModelTests
     public void UpdateMetadata_ShouldUpdateEditingPostMetadata()
     {
         // Arrange
-        var blogPost = new BlogPost
+        var blogPost = new ContentItem
         {
-            FilePath = "content/blog/post.md",
+            Path = "content/blog/post.md",
             Content = "Test content",
             Metadata = FrontMatter.Create("Original Title", "Original Description", System.DateTime.Now)
         };
@@ -307,9 +308,9 @@ public class ContentEditorViewModelTests
     public void DiscardChanges_ShouldResetState()
     {
         // Arrange
-        var blogPost = new BlogPost
+        var blogPost = new ContentItem
         {
-            FilePath = "content/blog/post.md",
+            Path = "content/blog/post.md",
             Content = "Test content",
             Metadata = FrontMatter.Create("Test Title", "Test Description", System.DateTime.Now)
         };
@@ -340,9 +341,9 @@ public class ContentEditorViewModelTests
             System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
 
         var path = "content/blog/post.md";
-        var blogPost = new BlogPost
+        var blogPost = new ContentItem
         {
-            FilePath = path,
+            Path = path,
             Content = "Test content",
             Metadata = FrontMatter.Create("Test Title", "Test Description", System.DateTime.Now)
         };
@@ -365,9 +366,9 @@ public class ContentEditorViewModelTests
             System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
 
         var directory = "content/blog";
-        var newPost = new BlogPost
+        var newPost = new ContentItem
         {
-            FilePath = "content/blog/new-post.md",
+            Path = "content/blog/new-post.md",
             Content = "Start writing your content here...",
             Metadata = FrontMatter.Create("New Post", "Description", System.DateTime.Now)
         };

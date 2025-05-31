@@ -1,5 +1,6 @@
 ﻿using Osirion.Blazor.Cms.Admin.Core.Events;
 using Osirion.Blazor.Cms.Admin.Features.ContentEditor.Services;
+using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Models;
 using Osirion.Blazor.Cms.Domain.ValueObjects;
 
@@ -12,7 +13,7 @@ public class ContentEditorViewModel : IDisposable
     private readonly IEventSubscriber _eventSubscriber;
 
     // State properties
-    public BlogPost? EditingPost { get; private set; }
+    public ContentItem? EditingPost { get; private set; }
     public bool IsCreatingNew { get; private set; }
     public bool IsSaving { get; private set; }
     public string? ErrorMessage { get; private set; }
@@ -37,7 +38,7 @@ public class ContentEditorViewModel : IDisposable
     }
 
     // New method to initialize from AdminState
-    public void InitializeFromState(BlogPost post, bool isCreatingNew)
+    public void InitializeFromState(ContentItem post, bool isCreatingNew)
     {
         EditingPost = post;
         IsCreatingNew = isCreatingNew;
@@ -49,7 +50,7 @@ public class ContentEditorViewModel : IDisposable
         }
         else
         {
-            CommitMessage = $"Update {Path.GetFileName(post.FilePath)}";
+            CommitMessage = $"Update {Path.GetFileName(post.Path)}";
         }
 
         NotifyStateChanged();
@@ -97,8 +98,8 @@ public class ContentEditorViewModel : IDisposable
                 }
 
                 // Combine directory and filename
-                string directory = Path.GetDirectoryName(EditingPost.FilePath) ?? string.Empty;
-                EditingPost.FilePath = string.IsNullOrEmpty(directory)
+                string directory = Path.GetDirectoryName(EditingPost.Path) ?? string.Empty;
+                EditingPost.Path = string.IsNullOrEmpty(directory)
                     ? filename
                     : $"{directory}/{filename}";
             }
@@ -107,8 +108,8 @@ public class ContentEditorViewModel : IDisposable
             if (string.IsNullOrEmpty(CommitMessage))
             {
                 CommitMessage = IsCreatingNew
-                    ? $"Create {Path.GetFileName(EditingPost.FilePath)}"
-                    : $"Update {Path.GetFileName(EditingPost.FilePath)}";
+                    ? $"Create {Path.GetFileName(EditingPost.Path)}"
+                    : $"Update {Path.GetFileName(EditingPost.Path)}";
             }
 
             // Save post
@@ -128,11 +129,11 @@ public class ContentEditorViewModel : IDisposable
             }
 
             // Publish saved event
-            _eventPublisher.Publish(new ContentSavedEvent(EditingPost.FilePath));
+            _eventPublisher.Publish(new ContentSavedEvent(EditingPost.Path));
 
             // Show success message
             _eventPublisher.Publish(new StatusNotificationEvent(
-                $"Saved {Path.GetFileName(EditingPost.FilePath)} successfully.",
+                $"Saved {Path.GetFileName(EditingPost.Path)} successfully.",
                 StatusType.Success));
         }
         catch (Exception ex)
@@ -172,7 +173,7 @@ public class ContentEditorViewModel : IDisposable
     {
         if (EditingPost != null)
         {
-            EditingPost.SeoMetadata = seoMetadata;
+            EditingPost.Metadata.SeoProperties = seoMetadata;
             NotifyStateChanged();
         }
     }
@@ -182,9 +183,9 @@ public class ContentEditorViewModel : IDisposable
     /// </summary>
     public async Task ReloadPostAsync()
     {
-        if (EditingPost != null && !string.IsNullOrEmpty(EditingPost.FilePath))
+        if (EditingPost != null && !string.IsNullOrEmpty(EditingPost.Path))
         {
-            await LoadPostAsync(EditingPost.FilePath);
+            await LoadPostAsync(EditingPost.Path);
         }
     }
 

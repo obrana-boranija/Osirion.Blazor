@@ -3,7 +3,10 @@ using Osirion.Blazor.Cms.Domain.Enums;
 using Osirion.Blazor.Cms.Domain.Events;
 using Osirion.Blazor.Cms.Domain.Exceptions;
 using Osirion.Blazor.Cms.Domain.Extensions;
+using Osirion.Blazor.Cms.Domain.Models.GitHub;
 using Osirion.Blazor.Cms.Domain.ValueObjects;
+using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Osirion.Blazor.Cms.Domain.Entities;
 
@@ -17,33 +20,33 @@ public class ContentItem : DomainEntity<string>
     private readonly List<string> _categories = new();
     private readonly Dictionary<string, object> _metadataValues = new(StringComparer.OrdinalIgnoreCase);
 
-    public string Title { get; private set; } = string.Empty;
-    public string Author { get; private set; } = string.Empty;
-    public DateTime DateCreated { get; private set; }
-    public DateTime? LastModified { get; private set; }
-    public string Content { get; private set; } = string.Empty;
-    public string? OriginalMarkdown { get; private set; }
-    public string Locale { get; private set; } = string.Empty;
-    public string ContentId { get; private set; } = string.Empty;
-    public string Description { get; private set; } = string.Empty;
-    public string Slug { get; private set; } = string.Empty;
-    public string Url { get; private set; } = string.Empty;
-    public string Path { get; private set; } = string.Empty;
-    public string? FeaturedImageUrl { get; private set; }
-    public bool IsFeatured { get; private set; }
-    public bool IsPublished { get; private set; }
-    public ContentStatus Status { get; private set; } = ContentStatus.Published;
-    public int OrderIndex { get; private set; }
-    public string Sha { get; private set; } = string.Empty;
-    public DirectoryItem? Directory { get; private set; }
+    public string Title { get; set; } = string.Empty;
+    public string Author { get; set; } = string.Empty;
+    public DateTime DateCreated { get; set; }
+    public DateTime? LastModified { get; set; }
+    public string Content { get; set; } = string.Empty;
+    public string? OriginalMarkdown { get; set; }
+    public string Locale { get; set; } = string.Empty;
+    public string ContentId { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public string Slug { get; set; } = string.Empty;
+    public string Url { get; set; } = string.Empty;
+    public string Path { get; set; } = string.Empty;
+    public string? FeaturedImageUrl { get; set; }
+    public bool IsFeatured { get; set; }
+    public bool IsPublished { get; set; }
+    public ContentStatus Status { get; set; } = ContentStatus.Published;
+    public int OrderIndex { get; set; }
+    public string Sha { get; set; } = string.Empty;
+    public DirectoryItem? Directory { get; set; }
 
     // Collections
     public IReadOnlyList<string> Tags => _tags.AsReadOnly();
     public IReadOnlyList<string> Categories => _categories.AsReadOnly();
-    public IReadOnlyDictionary<string, object> Metadata => _metadataValues;
+    public FrontMatter? Metadata { get; set; }
 
     // Value objects
-    public SeoMetadata Seo { get; private set; } = new SeoMetadata();
+    //public SeoMetadata Seo { get; set; } = new SeoMetadata();
 
     // Computed properties
     public int ReadTimeMinutes => CalculateReadTime();
@@ -187,7 +190,7 @@ public class ContentItem : DomainEntity<string>
 
     public void SetSeoMetadata(SeoMetadata seo)
     {
-        Seo = seo ?? throw new ArgumentNullException(nameof(seo));
+        Metadata.SeoProperties = seo ?? throw new ArgumentNullException(nameof(seo));
     }
 
     // Collection modifiers
@@ -347,7 +350,7 @@ public class ContentItem : DomainEntity<string>
             ProviderSpecificId = ProviderSpecificId,
             OrderIndex = OrderIndex,
             Directory = Directory,
-            Seo = Seo.Clone()
+            Metadata = Metadata.Clone()
         };
 
         // Clone collections
@@ -368,6 +371,23 @@ public class ContentItem : DomainEntity<string>
         }
 
         return clone;
+    }
+
+    /// <summary>
+    /// Converts the blog post to markdown with frontmatter
+    /// </summary>
+    /// <returns>The full markdown content with frontmatter</returns>
+    public string ToMarkdown()
+    {
+        var markdown = new StringBuilder();
+
+        // Add frontmatter
+        markdown.Append(Metadata.ToYaml());
+
+        // Add content
+        markdown.AppendLine(Content);
+
+        return markdown.ToString();
     }
 
     public void RaiseCreatedEvent()

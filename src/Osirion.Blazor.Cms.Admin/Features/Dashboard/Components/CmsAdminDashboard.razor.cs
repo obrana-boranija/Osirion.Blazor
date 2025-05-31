@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Osirion.Blazor.Cms.Admin.Shared.Components;
+using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Models;
 using Osirion.Blazor.Cms.Domain.Models.GitHub;
 using Osirion.Blazor.Cms.Domain.ValueObjects;
@@ -45,11 +46,11 @@ public partial class CmsAdminDashboard
     private void HandleCreateFile()
     {
         // Create new blog post with empty content
-        var newPost = new BlogPost
+        var newPost = new ContentItem
         {
             Metadata = FrontMatter.Create("", "Enter description here", DateTime.Now),
             Content = "## New Post\n\nStart writing your content here...",
-            FilePath = string.IsNullOrEmpty(AdminState.CurrentPath) ?
+            Path = string.IsNullOrEmpty(AdminState.CurrentPath) ?
                 "new-post.md" :
                 $"{AdminState.CurrentPath}/new-post.md"
         };
@@ -57,7 +58,7 @@ public partial class CmsAdminDashboard
         AdminState.SetEditingPost(newPost, true);
     }
 
-    private async Task HandleSaveComplete(BlogPost post)
+    private async Task HandleSaveComplete(ContentItem post)
     {
         // Reload the directory contents
         if (AdminState.SelectedRepository != null && AdminState.SelectedBranch != null)

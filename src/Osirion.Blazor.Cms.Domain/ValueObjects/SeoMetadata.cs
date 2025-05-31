@@ -10,17 +10,27 @@ public class SeoMetadata : ValueObject
     /// <summary>
     /// Gets the meta title (SEO title)
     /// </summary>
-    public string MetaTitle { get; set; } = string.Empty;
+    public string Title { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets the meta description
     /// </summary>
-    public string MetaDescription { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Open Graph image for social sharing (recommended: 1200x630).
+    /// </summary>
+    public string? Image { get; set; }
 
     /// <summary>
     /// Gets the canonical URL
     /// </summary>
-    public string CanonicalUrl { get; set; } = string.Empty;
+    public string Canonical { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Language code (e.g., "en-US").
+    /// </summary>
+    public string? Lang { get; set; }
 
     /// <summary>
     /// Gets the robots meta directive
@@ -55,7 +65,7 @@ public class SeoMetadata : ValueObject
     /// <summary>
     /// Gets the schema.org type
     /// </summary>
-    public string SchemaType { get; set; } = "Article";
+    public string Type { get; set; } = "Article";
 
     /// <summary>
     /// Gets the Twitter card type
@@ -77,6 +87,11 @@ public class SeoMetadata : ValueObject
     /// </summary>
     public string TwitterImageUrl { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Additional meta tags.
+    /// </summary>
+    public Dictionary<string, string> MetaTags { get; set; } = new Dictionary<string, string>();
+
     // Factory method for creating a populated instance
     public static SeoMetadata Create(
         string metaTitle,
@@ -96,16 +111,16 @@ public class SeoMetadata : ValueObject
     {
         var metadata = new SeoMetadata
         {
-            MetaTitle = metaTitle,
-            MetaDescription = metaDescription,
-            CanonicalUrl = canonicalUrl ?? string.Empty,
+            Title = metaTitle,
+            Description = metaDescription,
+            Canonical = canonicalUrl ?? string.Empty,
             Robots = robots ?? "index, follow",
             OgTitle = ogTitle ?? metaTitle,
             OgDescription = ogDescription ?? metaDescription,
             OgImageUrl = ogImageUrl ?? string.Empty,
             OgType = ogType ?? "article",
             JsonLd = jsonLd ?? string.Empty,
-            SchemaType = schemaType ?? "Article",
+            Type = schemaType ?? "Article",
             TwitterCard = twitterCard ?? "summary_large_image",
             TwitterTitle = twitterTitle ?? metaTitle,
             TwitterDescription = twitterDescription ?? metaDescription,
@@ -119,21 +134,21 @@ public class SeoMetadata : ValueObject
     public SeoMetadata WithMetaTitle(string metaTitle)
     {
         var clone = Clone();
-        clone.MetaTitle = metaTitle;
+        clone.Title = metaTitle;
         return clone;
     }
 
     public SeoMetadata WithMetaDescription(string metaDescription)
     {
         var clone = Clone();
-        clone.MetaDescription = metaDescription;
+        clone.Description = metaDescription;
         return clone;
     }
 
     public SeoMetadata WithCanonicalUrl(string canonicalUrl)
     {
         var clone = Clone();
-        clone.CanonicalUrl = canonicalUrl;
+        clone.Canonical = canonicalUrl;
         return clone;
     }
 
@@ -168,7 +183,7 @@ public class SeoMetadata : ValueObject
     {
         var clone = Clone();
         clone.JsonLd = jsonLd;
-        clone.SchemaType = schemaType;
+        clone.Type = schemaType;
         return clone;
     }
 
@@ -179,16 +194,16 @@ public class SeoMetadata : ValueObject
     {
         return new SeoMetadata
         {
-            MetaTitle = MetaTitle,
-            MetaDescription = MetaDescription,
-            CanonicalUrl = CanonicalUrl,
+            Title = Title,
+            Description = Description,
+            Canonical = Canonical,
             Robots = Robots,
             OgTitle = OgTitle,
             OgDescription = OgDescription,
             OgImageUrl = OgImageUrl,
             OgType = OgType,
             JsonLd = JsonLd,
-            SchemaType = SchemaType,
+            Type = Type,
             TwitterCard = TwitterCard,
             TwitterTitle = TwitterTitle,
             TwitterDescription = TwitterDescription,
@@ -198,16 +213,16 @@ public class SeoMetadata : ValueObject
 
     protected override IEnumerable<object> GetEqualityComponents()
     {
-        yield return MetaTitle;
-        yield return MetaDescription;
-        yield return CanonicalUrl;
+        yield return Title;
+        yield return Description;
+        yield return Canonical;
         yield return Robots;
         yield return OgTitle;
         yield return OgDescription;
         yield return OgImageUrl;
         yield return OgType;
         yield return JsonLd;
-        yield return SchemaType;
+        yield return Type;
         yield return TwitterCard;
         yield return TwitterTitle;
         yield return TwitterDescription;

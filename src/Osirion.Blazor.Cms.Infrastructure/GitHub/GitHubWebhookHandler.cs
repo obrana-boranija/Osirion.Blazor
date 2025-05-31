@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Domain.Interfaces;
-using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Domain.Services;
 using System.Security.Cryptography;
 using System.Text;
@@ -12,241 +10,219 @@ using System.Text.Json.Serialization;
 namespace Osirion.Blazor.Cms.Infrastructure.GitHub;
 
 /// <summary>
-/// Handles GitHub webhook requests to update content when repository changes occur
+/// Simplified webhook handler for GitHub events
 /// </summary>
 public class GitHubWebhookHandler : IGitHubWebhookHandler
 {
     private readonly IContentProviderManager _providerManager;
+    private readonly IGitHubApiClientFactory _apiClientFactory;
     private readonly ILogger<GitHubWebhookHandler> _logger;
-    private readonly GitHubOptions _options;
-
-    // Rate limiting fields
-    private readonly SemaphoreSlim _rateLimiter;
-    private DateTime _lastWebhookProcessed = DateTime.MinValue;
-    private const int MinimumSecondsBetweenWebhooks = 2;
 
     public GitHubWebhookHandler(
         IContentProviderManager providerManager,
-        IOptions<GitHubOptions> options,
+        IGitHubApiClientFactory apiClientFactory,
         ILogger<GitHubWebhookHandler> logger)
     {
         _providerManager = providerManager ?? throw new ArgumentNullException(nameof(providerManager));
+        _apiClientFactory = apiClientFactory ?? throw new ArgumentNullException(nameof(apiClientFactory));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
-
-        // Create a semaphore with a limit of 3 concurrent webhook processes
-        _rateLimiter = new SemaphoreSlim(3, 3);
     }
 
-    /// <summary>
-    /// Handles a GitHub webhook request directly from middleware
-    /// </summary>
     public async Task<bool> HandleWebhookAsync(HttpRequest request)
     {
-        // Apply simple rate limiting
-        if ((DateTime.UtcNow - _lastWebhookProcessed).TotalSeconds < MinimumSecondsBetweenWebhooks)
-        {
-            _logger.LogWarning("Webhook request rejected due to rate limiting. " +
-                             "Minimum {Seconds} seconds between requests required.",
-                             MinimumSecondsBetweenWebhooks);
-            return false;
-        }
-
-        // Read everything from request now, before using it in a Task.Run
-        _lastWebhookProcessed = DateTime.UtcNow;
-
-        // Copy essential data from the request
-        string requestBody;
-        string eventType;
-        string signature;
-
         try
         {
-            eventType = request.Headers["X-GitHub-Event"].ToString();
-            signature = request.Headers["X-Hub-Signature-256"].ToString() ?? string.Empty;
+            var eventType = request.Headers["X-GitHub-Event"].ToString();
+            var signature = request.Headers["X-Hub-Signature-256"].ToString();
 
-            // Make a copy of the request body
-            request.EnableBuffering();
-            using (var reader = new StreamReader(
-                request.Body,
-                Encoding.UTF8,
-                detectEncodingFromByteOrderMarks: false,
-                leaveOpen: true))
+            string payload;
+            using (var reader = new StreamReader(request.Body))
             {
-                requestBody = await reader.ReadToEndAsync();
+                payload = await reader.ReadToEndAsync();
+                //request.Body.Position = 0; // Reset for other middleware
             }
 
-            // Reset the position so other middleware can read it
-            request.Body.Position = 0;
+            _logger.LogInformation("Received GitHub webhook: {EventType}", eventType);
 
-            _logger.LogInformation("Received GitHub webhook event: {EventType}", eventType);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error reading webhook request data");
-            return false;
-        }
-
-        // Queue the actual processing
-        _ = Task.Run(async () =>
-        {
-            try
-            {
-                await ProcessWebhookAsync(eventType, signature, requestBody);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error in background webhook processing");
-            }
-        });
-
-        // Return true immediately to respond to GitHub
-        return true;
-    }
-
-    /// <summary>
-    /// Processes webhook data after the request has been read
-    /// </summary>
-    public async Task<bool> ProcessWebhookAsync(string eventType, string signature, string payload)
-    {
-        // Acquire rate limiting permit or timeout after 5 seconds
-        bool rateLimitPermitAcquired = false;
-        try
-        {
-            rateLimitPermitAcquired = await _rateLimiter.WaitAsync(TimeSpan.FromSeconds(5));
-            if (!rateLimitPermitAcquired)
-            {
-                _logger.LogWarning("Too many concurrent webhook requests. Request rejected.");
-                return false;
-            }
-
-            _logger.LogInformation("Processing GitHub webhook event: {EventType}", eventType);
-
-            // Validate the signature if we have a webhook secret
-            //if (!string.IsNullOrEmpty(_options.WebhookSecret) &&
-            //    !ValidateSignature(signature, payload))
-            //{
-            //    _logger.LogWarning("Invalid webhook signature");
-            //    return false;
-            //}
-
-            // Process the event based on its type
             return eventType switch
             {
-                "ping" => HandlePingEvent(payload),
-                "push" => await HandlePushEventAsync(payload),
-                _ => false
+                "ping" => true, // Just acknowledge ping
+                "push" => await HandlePushEventAsync(payload, signature),
+                _ => true // Ignore other events
             };
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error processing GitHub webhook payload");
+            _logger.LogError(ex, "Error processing webhook");
             return false;
         }
-        finally
-        {
-            if (rateLimitPermitAcquired)
-            {
-                _rateLimiter.Release();
-            }
-        }
     }
 
-    /// <summary>
-    /// Validates the signature of webhook payload
-    /// </summary>
-    private bool ValidateSignature(string signature, string payload)
+    public Task<bool> ProcessWebhookAsync(string eventType, string signature, string payload)
     {
-        if (string.IsNullOrEmpty(_options.WebhookSecret))
-            return true; // Skip validation if secret not configured
-
-        if (string.IsNullOrEmpty(signature) || !signature.StartsWith("sha256="))
-            return false;
-
-        // Compute the expected signature
-        var secretBytes = Encoding.UTF8.GetBytes(_options.WebhookSecret);
-        var bodyBytes = Encoding.UTF8.GetBytes(payload);
-
-        using var hasher = new HMACSHA256(secretBytes);
-        var hash = hasher.ComputeHash(bodyBytes);
-        var expectedSignature = "sha256=" + BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
-
-        // Compare signatures
-        var isValid = string.Equals(signature, expectedSignature, StringComparison.OrdinalIgnoreCase);
-        if (!isValid)
-        {
-            _logger.LogWarning("Signature validation failed. Expected: {Expected}, Actual: {Actual}",
-                expectedSignature, signature);
-        }
-
-        return isValid;
+        return Task.FromResult(true);
     }
 
-    /// <summary>
-    /// Handles a ping event from GitHub
-    /// </summary>
-    private bool HandlePingEvent(string requestBody)
-    {
-        _logger.LogInformation("Successfully received ping from GitHub webhook");
-        return true;
-    }
-
-    /// <summary>
-    /// Handles a push event from GitHub
-    /// </summary>
-    private async Task<bool> HandlePushEventAsync(string requestBody)
+    private async Task<bool> HandlePushEventAsync(string payload, string signature)
     {
         try
         {
-            // Parse the push event payload
-            var pushEvent = JsonSerializer.Deserialize<GitHubPushEvent>(requestBody);
-            if (pushEvent == null)
+            using var doc = JsonDocument.Parse(payload);
+            var root = doc.RootElement;
+
+            var owner = root.GetProperty("repository").GetProperty("owner").GetProperty("login").GetString();
+            var repo = root.GetProperty("repository").GetProperty("name").GetString();
+            var branch = root.GetProperty("ref").GetString()?.Split('/').LastOrDefault();
+            var commitSha = root.GetProperty("after").GetString();
+
+            _logger.LogInformation("Push event: {Owner}/{Repo} branch {Branch} commit {Sha}",
+                owner, repo, branch, commitSha);
+
+            string? matchingProvider = null;
+            foreach (var providerName in _apiClientFactory.GetProviderNames())
             {
-                _logger.LogWarning("Failed to parse push event payload");
+                var options = _apiClientFactory.GetProviderOptions(providerName);
+                if (options != null &&
+                    string.Equals(options.Owner, owner, StringComparison.OrdinalIgnoreCase) &&
+                    string.Equals(options.Repository, repo, StringComparison.OrdinalIgnoreCase))
+                {
+                    // Validate signature if configured
+                    //if (!string.IsNullOrEmpty(options.WebhookSecret))
+                    //{
+                    //    if (!ValidateSignature(signature, payload, options.WebhookSecret))
+                    //    {
+                    //        _logger.LogWarning("Invalid webhook signature for {Provider}", providerName);
+                    //        return false;
+                    //    }
+                    //}
+
+                    // Check branch
+                    if (!string.IsNullOrEmpty(options.Branch) && branch != options.Branch)
+                    {
+                        _logger.LogInformation("Ignoring push to branch {Branch}, expected {Expected}",
+                            branch, options.Branch);
+                        return true;
+                    }
+
+                    matchingProvider = options.ProviderId;
+                    break;
+                }
+            }
+
+            if (matchingProvider == null)
+            {
+                _logger.LogWarning("No provider found for {Owner}/{Repo}", owner, repo);
                 return false;
             }
 
-            // Check if this push is for the branch we're interested in
-            if (!string.IsNullOrEmpty(_options.Branch) &&
-                !pushEvent.Ref.EndsWith($"/{_options.Branch}"))
-            {
-                _logger.LogInformation("Ignoring push event for branch {Branch} (configured branch: {ConfiguredBranch})",
-                    pushEvent.Ref, _options.Branch);
-                return true; // Not an error, just not our branch
-            }
-
-            // Check if this is for the repository we're monitoring
-            var repoFullName = $"{_options.Owner}/{_options.Repository}";
-            if (pushEvent.Repository?.FullName != repoFullName)
-            {
-                _logger.LogInformation("Ignoring push event for repository {Repository} (configured repository: {ConfiguredRepository})",
-                    pushEvent.Repository?.FullName, repoFullName);
-                return true; // Not an error, just not our repo
-            }
-
-            _logger.LogInformation("Processing push event for repository {Repository}, branch {Branch}, commit {Sha}",
-                pushEvent.Repository?.FullName, pushEvent.Ref, pushEvent.After);
-
-            // Refresh the content cache for all affected providers
             var providers = _providerManager.GetAllProviders()
                 .OfType<IContentCacheUpdater>()
-                .Where(p => p.ProviderId.Contains(_options.ProviderId ?? $"github-{_options.Owner}-{_options.Repository}"));
+                .Where(p => p.ProviderId.Contains(matchingProvider));
 
             foreach (var provider in providers)
             {
-                // Always force background updates for webhook calls
-                await provider.UpdateCacheAsync(pushEvent.After, true);
-                _logger.LogInformation("Queued background cache update for provider: {ProviderId}", provider.ProviderId);
+                _logger.LogInformation("Updating cache for provider {ProviderId}", provider.ProviderId);
+                await provider.UpdateCacheAsync(commitSha, true);
             }
 
             return true;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error processing push event");
+            _logger.LogError(ex, "Error handling push event");
             return false;
         }
     }
+
+    private bool ValidateSignature(string signature, string payload, string secret)
+    {
+        if (string.IsNullOrEmpty(signature) || !signature.StartsWith("sha256="))
+            return false;
+
+        var secretBytes = Encoding.UTF8.GetBytes(secret);
+        var payloadBytes = Encoding.UTF8.GetBytes(payload);
+
+        using var hmac = new HMACSHA256(secretBytes);
+        var hash = hmac.ComputeHash(payloadBytes);
+        var expected = "sha256=" + BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
+
+        return signature.Equals(expected, StringComparison.OrdinalIgnoreCase);
+    }
+}
+
+/// <summary>
+/// Model for GitHub ping event
+/// </summary>
+public class GitHubPingEvent
+{
+    [JsonPropertyName("zen")]
+    public string? Zen { get; set; }
+
+    [JsonPropertyName("hook_id")]
+    public int HookId { get; set; }
+
+    [JsonPropertyName("hook")]
+    public GitHubWebhook? Hook { get; set; }
+
+    [JsonPropertyName("repository")]
+    public Repository? Repository { get; set; }
+
+    [JsonPropertyName("sender")]
+    public Sender? Sender { get; set; }
+}
+
+/// <summary>
+/// Model for GitHub webhook configuration
+/// </summary>
+public class GitHubWebhook
+{
+    [JsonPropertyName("type")]
+    public string? Type { get; set; }
+
+    [JsonPropertyName("id")]
+    public int Id { get; set; }
+
+    [JsonPropertyName("name")]
+    public string? Name { get; set; }
+
+    [JsonPropertyName("active")]
+    public bool Active { get; set; }
+
+    [JsonPropertyName("events")]
+    public List<string>? Events { get; set; }
+
+    [JsonPropertyName("config")]
+    public GitHubWebhookConfig? Config { get; set; }
+}
+
+/// <summary>
+/// Model for GitHub webhook configuration details
+/// </summary>
+public class GitHubWebhookConfig
+{
+    [JsonPropertyName("content_type")]
+    public string? ContentType { get; set; }
+
+    [JsonPropertyName("insecure_ssl")]
+    public string? InsecureSsl { get; set; }
+
+    [JsonPropertyName("url")]
+    public string? Url { get; set; }
+}
+
+/// <summary>
+/// Model for GitHub repository events
+/// </summary>
+public class GitHubRepositoryEvent
+{
+    [JsonPropertyName("action")]
+    public string? Action { get; set; }
+
+    [JsonPropertyName("repository")]
+    public Repository? Repository { get; set; }
+
+    [JsonPropertyName("sender")]
+    public Sender? Sender { get; set; }
 }
 
 /// <summary>

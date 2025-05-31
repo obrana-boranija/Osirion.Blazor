@@ -35,7 +35,7 @@ public partial class SeoMetadataForm
     private async Task GenerateJsonLd()
     {
         // Generate basic JSON-LD based on schema type and available metadata
-        var jsonLd = SeoMetadata.SchemaType switch
+        var jsonLd = SeoMetadata.Type switch
         {
             "Article" or "BlogPosting" => GenerateArticleJsonLd(),
             "Product" => GenerateProductJsonLd(),
@@ -54,11 +54,11 @@ public partial class SeoMetadataForm
         var article = new
         {
             @context = "https://schema.org",
-            @type = SeoMetadata.SchemaType,
-            headline = SeoMetadata.MetaTitle,
-            description = SeoMetadata.MetaDescription,
+            @type = SeoMetadata.Type,
+            headline = SeoMetadata.Title,
+            description = SeoMetadata.Description,
             image = SeoMetadata.OgImageUrl,
-            url = SeoMetadata.CanonicalUrl,
+            url = SeoMetadata.Canonical,
             datePublished = DateTime.Now.ToString("yyyy-MM-dd"),
             dateModified = DateTime.Now.ToString("yyyy-MM-dd"),
             author = new
@@ -91,10 +91,10 @@ public partial class SeoMetadataForm
         {
             @context = "https://schema.org",
             @type = "Product",
-            name = SeoMetadata.MetaTitle,
-            description = SeoMetadata.MetaDescription,
+            name = SeoMetadata.Title,
+            description = SeoMetadata.Description,
             image = SeoMetadata.OgImageUrl,
-            url = SeoMetadata.CanonicalUrl,
+            url = SeoMetadata.Canonical,
             offers = new
             {
                 @type = "Offer",
@@ -117,10 +117,10 @@ public partial class SeoMetadataForm
         {
             @context = "https://schema.org",
             @type = "Event",
-            name = SeoMetadata.MetaTitle,
-            description = SeoMetadata.MetaDescription,
+            name = SeoMetadata.Title,
+            description = SeoMetadata.Description,
             image = SeoMetadata.OgImageUrl,
-            url = SeoMetadata.CanonicalUrl,
+            url = SeoMetadata.Canonical,
             startDate = DateTime.Now.ToString("yyyy-MM-dd"),
             endDate = DateTime.Now.AddDays(1).ToString("yyyy-MM-dd"),
             location = new
@@ -152,9 +152,9 @@ public partial class SeoMetadataForm
         {
             @context = "https://schema.org",
             @type = "Organization",
-            name = SeoMetadata.MetaTitle,
-            description = SeoMetadata.MetaDescription,
-            url = SeoMetadata.CanonicalUrl,
+            name = SeoMetadata.Title,
+            description = SeoMetadata.Description,
+            url = SeoMetadata.Canonical,
             logo = SeoMetadata.OgImageUrl,
             sameAs = new[]
             {
@@ -177,9 +177,9 @@ public partial class SeoMetadataForm
         {
             @context = "https://schema.org",
             @type = "Person",
-            name = SeoMetadata.MetaTitle,
-            description = SeoMetadata.MetaDescription,
-            url = SeoMetadata.CanonicalUrl,
+            name = SeoMetadata.Title,
+            description = SeoMetadata.Description,
+            url = SeoMetadata.Canonical,
             image = SeoMetadata.OgImageUrl,
             sameAs = new[]
             {
@@ -201,9 +201,9 @@ public partial class SeoMetadataForm
         {
             @context = "https://schema.org",
             @type = "WebPage",
-            name = SeoMetadata.MetaTitle,
-            description = SeoMetadata.MetaDescription,
-            url = SeoMetadata.CanonicalUrl
+            name = SeoMetadata.Title,
+            description = SeoMetadata.Description,
+            url = SeoMetadata.Canonical
         };
 
         return JsonSerializer.Serialize(webPage, new JsonSerializerOptions

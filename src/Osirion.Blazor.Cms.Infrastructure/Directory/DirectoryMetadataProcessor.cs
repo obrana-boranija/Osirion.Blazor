@@ -2,8 +2,10 @@
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Interfaces.Directory;
+using Osirion.Blazor.Cms.Domain.ValueObjects;
 using System.Text;
-using System.Text.RegularExpressions;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
 
 namespace Osirion.Blazor.Cms.Infrastructure.Directory;
 
@@ -13,14 +15,17 @@ namespace Osirion.Blazor.Cms.Infrastructure.Directory;
 public class DirectoryMetadataProcessor : IDirectoryMetadataProcessor
 {
     private readonly IFrontMatterExtractor _frontMatterExtractor;
+    private readonly IMarkdownProcessor _markdownProcessor;
     private readonly ILogger<DirectoryMetadataProcessor> _logger;
 
     public DirectoryMetadataProcessor(
         IFrontMatterExtractor frontMatterExtractor,
+        IMarkdownProcessor markdownProcessor,
         ILogger<DirectoryMetadataProcessor> logger)
     {
-        _frontMatterExtractor = frontMatterExtractor ?? throw new ArgumentNullException(nameof(frontMatterExtractor));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _frontMatterExtractor = frontMatterExtractor;
+        _markdownProcessor = markdownProcessor;
+        _logger = logger;
     }
 
     /// <inheritdoc/>
@@ -34,52 +39,15 @@ public class DirectoryMetadataProcessor : IDirectoryMetadataProcessor
 
         try
         {
-            // Extract front matter
-            var frontMatter = _frontMatterExtractor.ExtractFrontMatter(metadataContent);
+            var frontmatter = _markdownProcessor.ExtractFrontMatterAndContent(metadataContent).FrontMatter;
 
-            // Apply metadata to directory
-            foreach (var kvp in frontMatter)
-            {
-                var key = kvp.Key.ToLowerInvariant();
-                var value = kvp.Value;
-
-                switch (key)
-                {
-                    case "title":
-                        directory.SetName(value);
-                        break;
-                    case "description":
-                        directory.SetDescription(value);
-                        break;
-                    case "order":
-                        if (int.TryParse(value, out var order))
-                            directory.SetOrder(order);
-                        break;
-                    case "locale":
-                        directory.SetLocale(value);
-                        break;
-                    case "url":
-                        directory.SetUrl(value);
-                        break;
-                    case "featured_image":
-                    case "feature_image":
-                    case "image":
-                        directory.SetFeaturedImage(value);
-                        break;
-                    default:
-                        // Add as custom metadata
-                        if (bool.TryParse(value, out var boolVal))
-                            directory.SetMetadata(key, boolVal);
-                        else if (int.TryParse(value, out var intVal))
-                            directory.SetMetadata(key, intVal);
-                        else if (double.TryParse(value, out var doubleVal))
-                            directory.SetMetadata(key, doubleVal);
-                        else
-                            directory.SetMetadata(key, value);
-                        break;
-                }
-            }
-
+            directory.SetMetadata(frontmatter);
+            directory.SetName(frontmatter?.Title ?? directory.Name);
+            directory.SetDescription(frontmatter?.Description ?? directory.Description);
+            directory.SetOrder(frontmatter?.Order ?? directory.Order);
+            directory.SetLocale(frontmatter?.Lang ?? directory.Locale);
+            directory.SetUrl(frontmatter?.Slug ?? directory.Url);
+            directory.SetFeaturedImage(frontmatter?.FeaturedImage ?? directory.FeaturedImageUrl);
             return directory;
         }
         catch (Exception ex)
@@ -114,22 +82,23 @@ public class DirectoryMetadataProcessor : IDirectoryMetadataProcessor
             frontMatter.AppendLine($"url: \"{directory.Url}\"");
 
         // Add custom metadata
-        foreach (var meta in directory.Metadata)
-        {
-            if (meta.Value is string strValue)
-                frontMatter.AppendLine($"{meta.Key}: \"{EscapeYamlString(strValue)}\"");
-            else if (meta.Value is bool boolValue)
-                frontMatter.AppendLine($"{meta.Key}: {boolValue.ToString().ToLowerInvariant()}");
-            else if (meta.Value is int intValue)
-                frontMatter.AppendLine($"{meta.Key}: {intValue}");
-            else if (meta.Value is double doubleValue)
-                frontMatter.AppendLine($"{meta.Key}: {doubleValue}");
-            else
-                frontMatter.AppendLine($"{meta.Key}: \"{meta.Value}\"");
-        }
+        //foreach (var meta in directory.Metadata)
+        //{
+        //    if (meta.Value is string strValue)
+        //        frontMatter.AppendLine($"{meta.Key}: \"{EscapeYamlString(strValue)}\"");
+        //    else if (meta.Value is bool boolValue)
+        //        frontMatter.AppendLine($"{meta.Key}: {boolValue.ToString().ToLowerInvariant()}");
+        //    else if (meta.Value is int intValue)
+        //        frontMatter.AppendLine($"{meta.Key}: {intValue}");
+        //    else if (meta.Value is double doubleValue)
+        //        frontMatter.AppendLine($"{meta.Key}: {doubleValue}");
+        //    else
+        //        frontMatter.AppendLine($"{meta.Key}: \"{meta.Value}\"");
+        //}
 
         frontMatter.AppendLine("---");
         frontMatter.AppendLine();
+
         frontMatter.AppendLine($"# {directory.Name}");
         frontMatter.AppendLine();
 

@@ -2,6 +2,7 @@
 using Osirion.Blazor.Cms.Admin.Core.Events;
 using Osirion.Blazor.Cms.Admin.Infrastructure.Adapters;
 using Osirion.Blazor.Cms.Admin.Services.Events;
+using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Models;
 using Osirion.Blazor.Cms.Domain.Models.GitHub;
 
@@ -40,7 +41,7 @@ public class ContentBrowserService
         }
     }
 
-    public async Task<BlogPost> GetBlogPostAsync(string path)
+    public async Task<ContentItem> GetBlogPostAsync(string path)
     {
         try
         {

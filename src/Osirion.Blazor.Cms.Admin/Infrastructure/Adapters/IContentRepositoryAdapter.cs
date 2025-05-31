@@ -1,4 +1,5 @@
-﻿using Osirion.Blazor.Cms.Domain.Models;
+﻿using Osirion.Blazor.Cms.Domain.Entities;
+using Osirion.Blazor.Cms.Domain.Models;
 using Osirion.Blazor.Cms.Domain.Models.GitHub;
 
 namespace Osirion.Blazor.Cms.Admin.Infrastructure.Adapters;
@@ -11,7 +12,7 @@ public interface IContentRepositoryAdapter
     Task<List<GitHubRepository>> GetRepositoriesAsync();
     Task<List<GitHubBranch>> GetBranchesAsync(string repositoryName);
     Task<List<GitHubItem>> GetContentsAsync(string path);
-    Task<BlogPost> GetBlogPostAsync(string path);
+    Task<ContentItem> GetBlogPostAsync(string path);
     Task<GitHubFileCommitResponse> SaveContentAsync(string path, string content, string message, string? sha = null);
     Task<GitHubFileCommitResponse> DeleteFileAsync(string path, string message, string sha);
     Task<GitHubBranch> CreateBranchAsync(string name, string baseBranch);

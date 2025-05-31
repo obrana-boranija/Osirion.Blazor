@@ -1,32 +1,33 @@
-﻿namespace Osirion.Blazor.Cms.Domain.Interfaces;
+﻿using Osirion.Blazor.Cms.Domain.ValueObjects;
+
+namespace Osirion.Blazor.Cms.Domain.Interfaces;
 
 public interface IMarkdownProcessor
 {
     /// <summary>
     /// Renders markdown to HTML
     /// </summary>
-    string RenderToHtml(string markdown, bool sanitizeHtml = true);
+    string RenderToHtml(string markdown, bool sanitizeHtml = false);
 
     /// <summary>
     /// Renders markdown to HTML asynchronously
     /// </summary>
-    Task<string> RenderToHtmlAsync(string markdown, bool sanitizeHtml = true);
+    Task<string> RenderToHtmlAsync(string markdown, bool sanitizeHtml = false);
 
     /// <summary>
     /// Sanitizes markdown to remove potentially harmful content
     /// </summary>
     string SanitizeMarkdown(string markdown);
 
-    /// <summary>
-    /// Extracts front matter from markdown content
-    /// </summary>
-    Dictionary<string, string> ExtractFrontMatter(string content);
+    ///// <summary>
+    ///// Extracts front matter from markdown content
+    ///// </summary>
+    //Dictionary<string, string> ExtractFrontMatter(string content);
 
     /// <summary>
-    /// Extracts front matter from markdown content asynchronously
+    /// Extracts front matter from and content markdown
     /// </summary>
-    Task<(Dictionary<string, string> FrontMatter, string Content)> ExtractFrontMatterAsync(
-        string markdown, CancellationToken cancellationToken = default);
+    public (FrontMatter? FrontMatter, string Content) ExtractFrontMatterAndContent(string markdown);
 
     /// <summary>
     /// Converts HTML content to markdown
