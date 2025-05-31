@@ -46,7 +46,7 @@ public partial class AdvancedMetadataForm
 
     private async Task GenerateSlug()
     {
-        if (!string.IsNullOrEmpty(Metadata.Title))
+        if (!string.IsNullOrWhiteSpace(Metadata.Title))
         {
             var slug = Metadata.Title.ToLower()
                 .Replace(" ", "-")

@@ -16,7 +16,7 @@ public partial class CmsAdminDashboard
     public string Theme { get; set; } = "light";
 
     private bool IsEditing => AdminState.IsEditing;
-    private bool IsViewingContent => AdminState.SelectedRepository != null && AdminState.SelectedBranch != null;
+    private bool IsViewingContent => AdminState.SelectedRepository is not null && AdminState.SelectedBranch is not null;
 
     protected override void OnInitialized()
     {
@@ -50,7 +50,7 @@ public partial class CmsAdminDashboard
         {
             Metadata = FrontMatter.Create("", "Enter description here", DateTime.Now),
             Content = "## New Post\n\nStart writing your content here...",
-            Path = string.IsNullOrEmpty(AdminState.CurrentPath) ?
+            Path = string.IsNullOrWhiteSpace(AdminState.CurrentPath) ?
                 "new-post.md" :
                 $"{AdminState.CurrentPath}/new-post.md"
         };
@@ -61,7 +61,7 @@ public partial class CmsAdminDashboard
     private async Task HandleSaveComplete(ContentItem post)
     {
         // Reload the directory contents
-        if (AdminState.SelectedRepository != null && AdminState.SelectedBranch != null)
+        if (AdminState.SelectedRepository is not null && AdminState.SelectedBranch is not null)
         {
             try
             {

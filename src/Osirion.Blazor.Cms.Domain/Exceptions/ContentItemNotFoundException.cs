@@ -9,7 +9,7 @@ public class ContentItemNotFoundException : DomainException
     public string? ProviderType { get; }
 
     public ContentItemNotFoundException(string contentId, string? providerType = null)
-        : base($"Content item with ID '{contentId}' was not found{(providerType != null ? $" in provider '{providerType}'" : "")}.")
+        : base($"Content item with ID '{contentId}' was not found{(providerType is not null ? $" in provider '{providerType}'" : "")}.")
     {
         ContentId = contentId;
         ProviderType = providerType;

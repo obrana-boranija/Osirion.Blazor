@@ -35,7 +35,7 @@ public class ContentApplicationService : IContentApplicationService
     public async Task<ContentDto> GetContentByPathAsync(string path)
     {
         var content = await _repository.GetByPathAsync(path);
-        if (content == null)
+        if (content is null)
         {
             _logger.LogWarning("Content not found for path: {Path}", path);
             throw new ContentNotFoundException(path);
@@ -81,7 +81,7 @@ public class ContentQueryValidator : AbstractValidator<ContentQueryDto>
     {
         RuleFor(x => x.Path)
             .NotEmpty()
-            .When(x => x.Directory == null && x.Tag == null && x.Category == null);
+            .When(x => x.Directory is null && x.Tag is null && x.Category is null);
         
         RuleFor(x => x.Skip)
             .GreaterThanOrEqualTo(0);

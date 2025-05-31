@@ -22,7 +22,7 @@ public class PlaywrightFixture : IAsyncLifetime
     public PlaywrightFixture()
     {
         // Environment override for CI/CD scenarios
-        if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("TEST_BASE_URL")))
+        if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("TEST_BASE_URL")))
         {
             BaseUrl = Environment.GetEnvironmentVariable("TEST_BASE_URL");
         }
@@ -34,7 +34,7 @@ public class PlaywrightFixture : IAsyncLifetime
         Playwright = await Microsoft.Playwright.Playwright.CreateAsync();
 
         // Launch browser (headless in CI, headful locally for debugging)
-        bool isCI = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("CI"));
+        bool isCI = !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("CI"));
         Browser = await Playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
         {
             Headless = isCI,

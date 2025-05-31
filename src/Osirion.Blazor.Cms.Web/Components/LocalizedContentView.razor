@@ -27,14 +27,14 @@
                 <div class="osirion-content-header">
                     <h1>@Item.Title</h1>
                     <div class="osirion-content-meta">
-                        @if (!string.IsNullOrEmpty(Item.Author))
+                        @if (!string.IsNullOrWhiteSpace(Item.Author))
                         {
                             <span class="osirion-content-author">By @Item.Author</span>
                         }
                         <span class="osirion-content-date">@Item.DateCreated.ToString("MMMM d, yyyy")</span>
                         <span class="osirion-content-read-time">@Item.ReadTimeMinutes min read</span>
                     </div>
-                    @if (!string.IsNullOrEmpty(Item.FeaturedImageUrl))
+                    @if (!string.IsNullOrWhiteSpace(Item.FeaturedImageUrl))
                     {
                         <img src="@Item.FeaturedImageUrl" alt="@Item.Title" class="osirion-content-featured-image" loading="lazy" />
                     }

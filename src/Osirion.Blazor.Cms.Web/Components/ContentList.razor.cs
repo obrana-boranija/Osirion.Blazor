@@ -187,7 +187,7 @@ public partial class ContentList : IDisposable
         try
         {
             var provider = ContentProviderManager.GetDefaultProvider();
-            if (provider != null)
+            if (provider is not null)
             {
                 var query = new ContentQuery
                 {
@@ -250,7 +250,7 @@ public partial class ContentList : IDisposable
     /// </summary>
     protected string GetContentUrl(ContentItem item)
     {
-        if (ContentUrlFormatter != null)
+        if (ContentUrlFormatter is not null)
         {
             return ContentUrlFormatter(item);
         }

@@ -61,7 +61,7 @@ public partial class MarkdownPreview : IAsyncDisposable
 
         try
         {
-            if (Pipeline != null)
+            if (Pipeline is not null)
             {
                 return Markdig.Markdown.ToHtml(markdown, Pipeline);
             }

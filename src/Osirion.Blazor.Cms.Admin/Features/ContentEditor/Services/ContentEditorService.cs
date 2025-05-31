@@ -75,7 +75,7 @@ public class ContentEditorService : IContentEditorService
             }
 
             var content = post.ToMarkdown();
-            var message = string.IsNullOrEmpty(commitMessage)
+            var message = string.IsNullOrWhiteSpace(commitMessage)
                 ? $"Update {Path.GetFileName(post.Path)}"
                 : commitMessage;
 
@@ -147,7 +147,7 @@ public class ContentEditorService : IContentEditorService
 
         var fileName = GenerateFileNameFromTitle(title);
 
-        var filePath = string.IsNullOrEmpty(path)
+        var filePath = string.IsNullOrWhiteSpace(path)
             ? fileName
             : $"{path.TrimEnd('/')}/{fileName}";
 
@@ -164,7 +164,7 @@ public class ContentEditorService : IContentEditorService
     /// </summary>
     public string GenerateFileNameFromTitle(string title)
     {
-        if (string.IsNullOrEmpty(title))
+        if (string.IsNullOrWhiteSpace(title))
         {
             return "new-post.md";
         }
@@ -221,14 +221,14 @@ public class ContentEditorService : IContentEditorService
         {
             var propertyInfo = typeof(FrontMatter).GetProperty(field, System.Reflection.BindingFlags.IgnoreCase | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
 
-            if (propertyInfo == null)
+            if (propertyInfo is null)
             {
                 continue;
             }
 
             var value = propertyInfo.GetValue(post.Metadata);
 
-            if (value == null || (value is string strValue && string.IsNullOrWhiteSpace(strValue)))
+            if (value is null || (value is string strValue && string.IsNullOrWhiteSpace(strValue)))
             {
                 throw new ValidationException($"Required field '{field}' is missing or empty in front matter");
             }
@@ -260,7 +260,7 @@ public class ContentEditorService : IContentEditorService
     /// </summary>
     private string GenerateSlugFromTitle(string title)
     {
-        if (string.IsNullOrEmpty(title))
+        if (string.IsNullOrWhiteSpace(title))
         {
             return "post";
         }

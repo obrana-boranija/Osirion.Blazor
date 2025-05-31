@@ -36,12 +36,12 @@ public abstract class BaseDirectoryRepository<TOptions> : IDirectoryRepository w
         {
             await EnsureCacheIsLoaded(cancellationToken);
 
-            if (DirectoryCache == null)
+            if (DirectoryCache is null)
                 return new List<DirectoryItem>();
 
             // Return only root directories (no parent)
             return DirectoryCache.Values
-                .Where(d => d.Parent == null)
+                .Where(d => d.Parent is null)
                 .ToList();
         }
         catch (Exception ex)
@@ -53,14 +53,14 @@ public abstract class BaseDirectoryRepository<TOptions> : IDirectoryRepository w
 
     public async Task<DirectoryItem?> GetByIdAsync(string id, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrEmpty(id))
+        if (string.IsNullOrWhiteSpace(id))
             throw new ArgumentException("Directory ID cannot be empty", nameof(id));
 
         try
         {
             await EnsureCacheIsLoaded(cancellationToken);
 
-            if (DirectoryCache != null && DirectoryCache.TryGetValue(id, out var directory))
+            if (DirectoryCache is not null && DirectoryCache.TryGetValue(id, out var directory))
             {
                 return directory;
             }
@@ -76,14 +76,14 @@ public abstract class BaseDirectoryRepository<TOptions> : IDirectoryRepository w
 
     public async Task<DirectoryItem?> GetByPathAsync(string path, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrEmpty(path))
+        if (string.IsNullOrWhiteSpace(path))
             throw new ArgumentException("Directory path cannot be empty", nameof(path));
 
         try
         {
             await EnsureCacheIsLoaded(cancellationToken);
 
-            if (DirectoryCache == null)
+            if (DirectoryCache is null)
                 return null;
 
             var normalizedPath = NormalizePath(path);
@@ -102,21 +102,21 @@ public abstract class BaseDirectoryRepository<TOptions> : IDirectoryRepository w
         {
             await EnsureCacheIsLoaded(cancellationToken);
 
-            if (DirectoryCache == null)
+            if (DirectoryCache is null)
                 return new List<DirectoryItem>();
 
-            if (string.IsNullOrEmpty(locale))
+            if (string.IsNullOrWhiteSpace(locale))
             {
                 // Return all root directories
                 return DirectoryCache.Values
-                    .Where(d => d.Parent == null)
+                    .Where(d => d.Parent is null)
                     .ToList();
             }
             else
             {
                 // Return directories for the specified locale
                 return DirectoryCache.Values
-                    .Where(d => d.Locale == locale && d.Parent == null)
+                    .Where(d => d.Locale == locale && d.Parent is null)
                     .ToList();
             }
         }
@@ -129,14 +129,14 @@ public abstract class BaseDirectoryRepository<TOptions> : IDirectoryRepository w
 
     public async Task<IReadOnlyList<DirectoryItem>> GetChildrenAsync(string parentId, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrEmpty(parentId))
+        if (string.IsNullOrWhiteSpace(parentId))
             throw new ArgumentException("Parent ID cannot be empty", nameof(parentId));
 
         try
         {
             await EnsureCacheIsLoaded(cancellationToken);
 
-            if (DirectoryCache == null)
+            if (DirectoryCache is null)
                 return new List<DirectoryItem>();
 
             // Find the parent directory
@@ -155,14 +155,14 @@ public abstract class BaseDirectoryRepository<TOptions> : IDirectoryRepository w
 
     public async Task DeleteRecursiveAsync(string id, string? commitMessage = null, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrEmpty(id))
+        if (string.IsNullOrWhiteSpace(id))
             throw new ArgumentException("Directory ID cannot be empty", nameof(id));
 
         try
         {
             // Get directory to ensure it exists
             var directory = await GetByIdAsync(id, cancellationToken);
-            if (directory == null)
+            if (directory is null)
                 throw new DirectoryNotFoundException(id);
 
             // Delete directory and all its contents
@@ -188,14 +188,14 @@ public abstract class BaseDirectoryRepository<TOptions> : IDirectoryRepository w
 
     public async Task<DirectoryItem?> GetByUrlAsync(string url, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrEmpty(url))
+        if (string.IsNullOrWhiteSpace(url))
             throw new ArgumentException("URL cannot be empty", nameof(url));
 
         try
         {
             await EnsureCacheIsLoaded(cancellationToken);
 
-            if (DirectoryCache == null)
+            if (DirectoryCache is null)
                 return null;
 
             return DirectoryCache.Values.FirstOrDefault(d => d.Url == url);
@@ -212,14 +212,14 @@ public abstract class BaseDirectoryRepository<TOptions> : IDirectoryRepository w
     /// </summary>
     public async Task<DirectoryItem?> GetByNameAsync(string? name, string? locale = null, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrEmpty(name))
+        if (string.IsNullOrWhiteSpace(name))
             return null;
 
         try
         {
             await EnsureCacheIsLoaded(cancellationToken);
 
-            if (DirectoryCache == null)
+            if (DirectoryCache is null)
                 return null;
 
             return DirectoryCache.Values.FirstOrDefault(d => d.Name == name && (locale is not null ? d.Locale == locale : true));
@@ -233,22 +233,22 @@ public abstract class BaseDirectoryRepository<TOptions> : IDirectoryRepository w
 
     public async Task<DirectoryItem> MoveAsync(string id, string? newParentId, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrEmpty(id))
+        if (string.IsNullOrWhiteSpace(id))
             throw new ArgumentException("Directory ID cannot be empty", nameof(id));
 
         try
         {
             // Get directory to move
             var directory = await GetByIdAsync(id, cancellationToken);
-            if (directory == null)
+            if (directory is null)
                 throw new DirectoryNotFoundException(id);
 
             // Get new parent directory if specified
             DirectoryItem? newParent = null;
-            if (!string.IsNullOrEmpty(newParentId))
+            if (!string.IsNullOrWhiteSpace(newParentId))
             {
                 newParent = await GetByIdAsync(newParentId, cancellationToken);
-                if (newParent == null)
+                if (newParent is null)
                     throw new DirectoryNotFoundException(newParentId);
 
                 // Check for circular reference
@@ -262,7 +262,7 @@ public abstract class BaseDirectoryRepository<TOptions> : IDirectoryRepository w
 
             // Calculate new path based on parent
             string newPath;
-            if (newParent == null)
+            if (newParent is null)
             {
                 // Moving to root
                 newPath = Path.GetFileName(directory.Path);
@@ -328,7 +328,7 @@ public abstract class BaseDirectoryRepository<TOptions> : IDirectoryRepository w
 
     public async Task<DirectoryItem> SaveAsync(DirectoryItem entity, CancellationToken cancellationToken = default)
     {
-        if (entity == null)
+        if (entity is null)
             throw new ArgumentNullException(nameof(entity));
 
         try
@@ -340,7 +340,7 @@ public abstract class BaseDirectoryRepository<TOptions> : IDirectoryRepository w
             await RefreshCacheAsync(cancellationToken);
 
             // Raise the appropriate domain event
-            if (string.IsNullOrEmpty(entity.ProviderSpecificId))
+            if (string.IsNullOrWhiteSpace(entity.ProviderSpecificId))
             {
                 // This was a new directory
                 result.RaiseCreatedEvent();
@@ -362,14 +362,14 @@ public abstract class BaseDirectoryRepository<TOptions> : IDirectoryRepository w
 
     public async Task DeleteAsync(string id, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrEmpty(id))
+        if (string.IsNullOrWhiteSpace(id))
             throw new ArgumentException("Directory ID cannot be empty", nameof(id));
 
         try
         {
             // Get directory to ensure it exists
             var directory = await GetByIdAsync(id, cancellationToken);
-            if (directory == null)
+            if (directory is null)
                 throw new DirectoryNotFoundException(id);
 
             // Delete directory (non-recursive)

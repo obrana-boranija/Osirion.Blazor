@@ -15,7 +15,7 @@ public class MarkdownSanitizer : IMarkdownSanitizer
     /// <inheritdoc/>
     public string SanitizeMarkdown(string? markdown)
     {
-        if (string.IsNullOrEmpty(markdown))
+        if (string.IsNullOrWhiteSpace(markdown))
             return string.Empty;
 
         // Remove potential script blocks

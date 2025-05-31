@@ -52,7 +52,7 @@ public class InMemoryContentCacheService : IContentCacheService
         {
             var result = await factory(cancellationToken);
 
-            if (result != null)
+            if (result is not null)
             {
                 var cacheExpiration = expiration ?? TimeSpan.FromMinutes(_options.MaxAgeMinutes);
 
@@ -101,7 +101,7 @@ public class InMemoryContentCacheService : IContentCacheService
 
     public async Task SetAsync<T>(string key, T value, TimeSpan? expiration = null, CancellationToken cancellationToken = default)
     {
-        if (!_options.Enabled || value == null)
+        if (!_options.Enabled || value is null)
         {
             return;
         }

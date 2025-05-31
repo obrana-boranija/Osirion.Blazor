@@ -22,32 +22,32 @@ public class ContentQueryFilter : IContentQueryFilter
     {
         var filteredItems = items;
 
-        if (!string.IsNullOrEmpty(query.Directory))
+        if (!string.IsNullOrWhiteSpace(query.Directory))
         {
             var normalizedDirectory = _pathUtils.NormalizePath(query.Directory);
             filteredItems = filteredItems.Where(item =>
                 _pathUtils.NormalizePath(GetDirectoryPath(item.Path)).StartsWith(normalizedDirectory, StringComparison.OrdinalIgnoreCase));
         }
 
-        if (!string.IsNullOrEmpty(query.DirectoryId))
+        if (!string.IsNullOrWhiteSpace(query.DirectoryId))
         {
             filteredItems = filteredItems.Where(item =>
                 item.Directory != null && item.Directory.Id == query.DirectoryId);
         }
 
-        if (!string.IsNullOrEmpty(query.Slug))
+        if (!string.IsNullOrWhiteSpace(query.Slug))
         {
             filteredItems = filteredItems.Where(item =>
                 item.Slug != null && item.Slug == query.Slug);
         }
 
-        if (!string.IsNullOrEmpty(query.Category))
+        if (!string.IsNullOrWhiteSpace(query.Category))
         {
             filteredItems = filteredItems.Where(item =>
                 item.Categories.Any(c => c.Equals(query.Category, StringComparison.OrdinalIgnoreCase)));
         }
 
-        if (query.Categories != null && query.Categories.Any())
+        if (query.Categories is not null && query.Categories.Any())
         {
             filteredItems = filteredItems.Where(item =>
                 query.Categories.All(c =>
@@ -55,13 +55,13 @@ public class ContentQueryFilter : IContentQueryFilter
                         itemCat.Equals(c, StringComparison.OrdinalIgnoreCase))));
         }
 
-        if (!string.IsNullOrEmpty(query.Tag))
+        if (!string.IsNullOrWhiteSpace(query.Tag))
         {
             filteredItems = filteredItems.Where(item =>
                 item.Tags.Any(t => t.Equals(query.Tag, StringComparison.OrdinalIgnoreCase)));
         }
 
-        if (query.Tags != null && query.Tags.Any())
+        if (query.Tags is not null && query.Tags.Any())
         {
             filteredItems = filteredItems.Where(item =>
                 query.Tags.All(t =>
@@ -74,7 +74,7 @@ public class ContentQueryFilter : IContentQueryFilter
             filteredItems = filteredItems.Where(item => item.IsFeatured == query.IsFeatured.Value);
         }
 
-        if (!string.IsNullOrEmpty(query.Author))
+        if (!string.IsNullOrWhiteSpace(query.Author))
         {
             filteredItems = filteredItems.Where(item =>
                 item.Author.Equals(query.Author, StringComparison.OrdinalIgnoreCase));
@@ -95,7 +95,7 @@ public class ContentQueryFilter : IContentQueryFilter
             filteredItems = filteredItems.Where(item => item.DateCreated <= query.DateTo.Value);
         }
 
-        if (!string.IsNullOrEmpty(query.SearchQuery))
+        if (!string.IsNullOrWhiteSpace(query.SearchQuery))
         {
             var searchTerms = query.SearchQuery.ToLower().Split(' ', StringSplitOptions.RemoveEmptyEntries);
             filteredItems = filteredItems.Where(item =>
@@ -109,31 +109,31 @@ public class ContentQueryFilter : IContentQueryFilter
             );
         }
 
-        if (!string.IsNullOrEmpty(query.Locale))
+        if (!string.IsNullOrWhiteSpace(query.Locale))
         {
             filteredItems = filteredItems.Where(item =>
                 item.Locale.Equals(query.Locale, StringComparison.OrdinalIgnoreCase));
         }
 
-        if (!string.IsNullOrEmpty(query.LocalizationId))
+        if (!string.IsNullOrWhiteSpace(query.LocalizationId))
         {
             filteredItems = filteredItems.Where(item =>
                 item.ContentId.Equals(query.LocalizationId, StringComparison.OrdinalIgnoreCase));
         }
 
-        if (!string.IsNullOrEmpty(query.ProviderId) && query.ProviderId != items.FirstOrDefault()?.ProviderId)
+        if (!string.IsNullOrWhiteSpace(query.ProviderId) && query.ProviderId != items.FirstOrDefault()?.ProviderId)
         {
             // No items match this provider - return empty query
             filteredItems = filteredItems.Where(i => false);
         }
 
-        if (query.IncludeIds != null && query.IncludeIds.Any())
+        if (query.IncludeIds is not null && query.IncludeIds.Any())
         {
             filteredItems = filteredItems.Where(item =>
                 query.IncludeIds.Contains(item.Id));
         }
 
-        if (query.ExcludeIds != null && query.ExcludeIds.Any())
+        if (query.ExcludeIds is not null && query.ExcludeIds.Any())
         {
             filteredItems = filteredItems.Where(item =>
                 !query.ExcludeIds.Contains(item.Id));

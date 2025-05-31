@@ -59,7 +59,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
         /// <inheritdoc/>
         protected async Task EnsureCacheIsLoaded(CancellationToken cancellationToken, bool forceRefresh = false)
         {
-            if (!forceRefresh && ItemCache != null)
+            if (!forceRefresh && ItemCache is not null)
             {
                 return; // Cache is still valid
             }
@@ -68,7 +68,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
             try
             {
                 // Double-check inside the lock
-                if (!forceRefresh && ItemCache != null)
+                if (!forceRefresh && ItemCache is not null)
                 {
                     return; // Cache was populated while waiting for lock
                 }
@@ -107,7 +107,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
                         cancellationToken.ThrowIfCancellationRequested();
 
                         var contentItem = await ProcessMarkdownFileAsync(file, cancellationToken);
-                        if (contentItem != null)
+                        if (contentItem is not null)
                         {
                             cache[contentItem.Id] = contentItem;
                         }
@@ -165,7 +165,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
                         cancellationToken.ThrowIfCancellationRequested();
 
                         var contentItem = await ProcessMarkdownFileAsync(file, cancellationToken);
-                        if (contentItem != null)
+                        if (contentItem is not null)
                         {
                             cache[contentItem.Id] = contentItem;
                         }
@@ -191,10 +191,10 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
         /// <inheritdoc/>
         public override async Task<ContentItem> SaveWithCommitMessageAsync(ContentItem entity, string commitMessage, CancellationToken cancellationToken = default)
         {
-            if (entity == null)
+            if (entity is null)
                 throw new ArgumentNullException(nameof(entity));
 
-            if (string.IsNullOrEmpty(entity.Path))
+            if (string.IsNullOrWhiteSpace(entity.Path))
                 throw new ArgumentException("Path cannot be empty", nameof(entity));
 
             LogOperation("saving", entity.Id);
@@ -207,7 +207,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
 
                 // Ensure directory exists
                 var directoryPath = Path.GetDirectoryName(fullPath);
-                if (!string.IsNullOrEmpty(directoryPath) && !_fileSystem.Directory.Exists(directoryPath))
+                if (!string.IsNullOrWhiteSpace(directoryPath) && !_fileSystem.Directory.Exists(directoryPath))
                 {
                     if (_options.CreateDirectoriesIfNotExist)
                     {
@@ -243,7 +243,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
         /// <inheritdoc/>
         public override async Task DeleteWithCommitMessageAsync(string id, string commitMessage, CancellationToken cancellationToken = default)
         {
-            if (string.IsNullOrEmpty(id))
+            if (string.IsNullOrWhiteSpace(id))
                 throw new ArgumentException("ID cannot be empty", nameof(id));
 
             LogOperation("deleting", id);
@@ -252,11 +252,11 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
             {
                 // Get item to get path
                 var item = await GetByIdAsync(id, cancellationToken);
-                if (item == null)
+                if (item is null)
                     throw new ContentItemNotFoundException(id, ProviderId);
 
                 var fullPath = item.ProviderSpecificId;
-                if (string.IsNullOrEmpty(fullPath))
+                if (string.IsNullOrWhiteSpace(fullPath))
                 {
                     // If provider-specific ID is not set, try using path
                     fullPath = Path.Combine(_options.BasePath, item.Path);
@@ -346,7 +346,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
                 contentItem.SetUrl(url);
 
                 // Set content ID if localization is enabled
-                if (_options.EnableLocalization && string.IsNullOrEmpty(contentItem.ContentId))
+                if (_options.EnableLocalization && string.IsNullOrWhiteSpace(contentItem.ContentId))
                 {
                     var pathWithoutLocale = RemoveLocaleFromPath(contentItem.Path);
                     var pathWithoutExtension = Path.ChangeExtension(pathWithoutLocale, null);

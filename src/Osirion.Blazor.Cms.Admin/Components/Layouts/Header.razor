@@ -12,13 +12,13 @@
 
         <h1 class="h3 mb-1">@Title</h1>
 
-        @if (!string.IsNullOrEmpty(Subtitle))
+        @if (!string.IsNullOrWhiteSpace(Subtitle))
         {
             <p class="text-muted mb-0">@Subtitle</p>
         }
     </div>
 
-    @if (ActionContent != null)
+    @if (ActionContent is not null)
     {
         <div class="d-flex align-items-center gap-2">
             @ActionContent

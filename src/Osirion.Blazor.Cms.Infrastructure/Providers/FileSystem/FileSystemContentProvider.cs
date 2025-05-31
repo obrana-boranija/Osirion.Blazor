@@ -47,7 +47,7 @@ public class FileSystemContentProvider : ContentProviderBase
 
     public override async Task<ContentItem?> GetItemByIdAsync(string id, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrEmpty(id))
+        if (string.IsNullOrWhiteSpace(id))
             throw new ArgumentException("ID cannot be empty", nameof(id));
 
         return await _contentRepository.GetByIdAsync(id, cancellationToken);
@@ -55,7 +55,7 @@ public class FileSystemContentProvider : ContentProviderBase
 
     public override async Task<ContentItem?> GetItemByPathAsync(string path, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrEmpty(path))
+        if (string.IsNullOrWhiteSpace(path))
             throw new ArgumentException("Path cannot be empty", nameof(path));
 
         return await _contentRepository.GetByPathAsync(path, cancellationToken);
@@ -63,7 +63,7 @@ public class FileSystemContentProvider : ContentProviderBase
 
     public override async Task<ContentItem?> GetItemByUrlAsync(string url, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrEmpty(url))
+        if (string.IsNullOrWhiteSpace(url))
             throw new ArgumentException("URL cannot be empty", nameof(url));
 
         return await _contentRepository.GetByUrlAsync(url, cancellationToken);
@@ -81,7 +81,7 @@ public class FileSystemContentProvider : ContentProviderBase
 
     public override async Task<DirectoryItem?> GetDirectoryByPathAsync(string path, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrEmpty(path))
+        if (string.IsNullOrWhiteSpace(path))
             throw new ArgumentException("Path cannot be empty", nameof(path));
 
         return await _directoryRepository.GetByPathAsync(path, cancellationToken);
@@ -89,7 +89,7 @@ public class FileSystemContentProvider : ContentProviderBase
 
     public override async Task<DirectoryItem?> GetDirectoryByIdAsync(string id, string? locale = null, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrEmpty(id))
+        if (string.IsNullOrWhiteSpace(id))
             throw new ArgumentException("ID cannot be empty", nameof(id));
 
         return await _directoryRepository.GetByIdAsync(id, cancellationToken);
@@ -97,7 +97,7 @@ public class FileSystemContentProvider : ContentProviderBase
 
     public override async Task<DirectoryItem?> GetDirectoryByUrlAsync(string url, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrEmpty(url))
+        if (string.IsNullOrWhiteSpace(url))
             throw new ArgumentException("URL cannot be empty", nameof(url));
 
         return await _directoryRepository.GetByUrlAsync(url, cancellationToken);

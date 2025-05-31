@@ -9,11 +9,11 @@
             </a>
         </li>
 
-        @if (Items != null && Items.Count > 0)
+        @if (Items is not null && Items.Count > 0)
         {
             @foreach (var item in Items)
             {
-                if (string.IsNullOrEmpty(item.Url) || item == Items.Last())
+                if (string.IsNullOrWhiteSpace(item.Url) || item == Items.Last())
                 {
                     <li class="breadcrumb-item active" aria-current="page">@item.Text</li>
                 }
@@ -23,7 +23,7 @@
                 }
             }
         }
-        else if (!string.IsNullOrEmpty(CurrentPage))
+        else if (!string.IsNullOrWhiteSpace(CurrentPage))
         {
             <li class="breadcrumb-item active" aria-current="page">@CurrentPage</li>
         }

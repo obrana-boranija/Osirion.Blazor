@@ -108,8 +108,8 @@ public class EntityTests
 
         // Act & Assert
         Assert.False(entity.Equals(null));
-        Assert.False(entity == null);
-        Assert.True(entity != null);
+        Assert.False(entity is null);
+        Assert.True(entity is not null);
     }
 
     [Fact]

@@ -9,7 +9,7 @@
     <TwoColumnLayout SidebarOnRight="@SidebarOnRight">
         <SidebarContent>
             <div class="osirion-doc-tree-container">
-                @if (DocTreeTitle != null)
+                @if (DocTreeTitle is not null)
                 {
                         <h3 class="osirion-doc-tree-title">@DocTreeTitle</h3>
                 }

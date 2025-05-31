@@ -17,7 +17,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.Directory
 
         public PathUtilities(IOptions<FileSystemOptions> options)
         {
-            if (options == null) throw new ArgumentNullException(nameof(options));
+            if (options is null) throw new ArgumentNullException(nameof(options));
 
             _contentPath = options.Value.ContentRoot ?? string.Empty;
             _enableLocalization = options.Value.EnableLocalization;
@@ -91,7 +91,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.Directory
             path = RemoveContentPathPrefix(path);
 
             // If using localization, check if the first segment is a locale and remove it
-            if (_enableLocalization && !string.IsNullOrEmpty(path))
+            if (_enableLocalization && !string.IsNullOrWhiteSpace(path))
             {
                 path = RemoveLocaleFromPath(path);
             }
@@ -125,7 +125,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.Directory
             }
 
             // Append slug
-            if (!string.IsNullOrEmpty(path))
+            if (!string.IsNullOrWhiteSpace(path))
             {
                 return path + "/" + slug;
             }
@@ -138,7 +138,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.Directory
         private string RemoveContentPathPrefix(string path)
         {
             var contentPath = NormalizePath(_contentPath);
-            if (!string.IsNullOrEmpty(contentPath) && path.StartsWith(contentPath))
+            if (!string.IsNullOrWhiteSpace(contentPath) && path.StartsWith(contentPath))
             {
                 // Only remove if it's followed by a slash or is the entire path
                 if (path.Length == contentPath.Length || path[contentPath.Length] == '/')

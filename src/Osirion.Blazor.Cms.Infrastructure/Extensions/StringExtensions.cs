@@ -86,7 +86,7 @@ public static class StringExtensions
     private static string GenerateRandomLetters(uint length)
     {
         // Use ThreadStatic Random for better performance in multithreaded environments
-        if (_random == null)
+        if (_random is null)
             _random = new Random();
 
         const string chars = "abcdefghijklmnopqrstuvwxyz";

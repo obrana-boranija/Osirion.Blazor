@@ -79,7 +79,7 @@ public class LocalStorageService : IStateStorageService, IDisposable
                 if (await _localStorage.ContainKeyAsync(key))
                 {
                     var value = await _localStorage.GetItemAsStringAsync(key);
-                    if (!string.IsNullOrEmpty(value))
+                    if (!string.IsNullOrWhiteSpace(value))
                     {
                         _memoryStore[key] = value;
                         _logger.LogDebug("Preloaded key from localStorage: {Key}", key);
@@ -95,7 +95,7 @@ public class LocalStorageService : IStateStorageService, IDisposable
 
     public async Task SaveStateAsync<T>(string key, T value)
     {
-        if (string.IsNullOrEmpty(key)) return;
+        if (string.IsNullOrWhiteSpace(key)) return;
 
         var json = System.Text.Json.JsonSerializer.Serialize(value);
 
@@ -120,7 +120,7 @@ public class LocalStorageService : IStateStorageService, IDisposable
 
     public async Task<T?> GetStateAsync<T>(string key)
     {
-        if (string.IsNullOrEmpty(key)) return default;
+        if (string.IsNullOrWhiteSpace(key)) return default;
 
         // Try to get from memory first
         if (_memoryStore.TryGetValue(key, out var memoryJson))
@@ -145,7 +145,7 @@ public class LocalStorageService : IStateStorageService, IDisposable
                 if (exists)
                 {
                     var json = await _localStorage.GetItemAsStringAsync(key);
-                    if (!string.IsNullOrEmpty(json))
+                    if (!string.IsNullOrWhiteSpace(json))
                     {
                         // Save to memory for future use
                         _memoryStore[key] = json;
@@ -165,7 +165,7 @@ public class LocalStorageService : IStateStorageService, IDisposable
 
     public async Task RemoveStateAsync(string key)
     {
-        if (string.IsNullOrEmpty(key)) return;
+        if (string.IsNullOrWhiteSpace(key)) return;
 
         // Remove from memory
         _memoryStore.Remove(key);

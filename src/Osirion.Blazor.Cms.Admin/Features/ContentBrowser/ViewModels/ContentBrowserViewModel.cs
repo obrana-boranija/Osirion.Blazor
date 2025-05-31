@@ -120,7 +120,7 @@ public class ContentBrowserViewModel
 
     public bool IsValidState()
     {
-        return _appState.SelectedRepository != null && _appState.SelectedBranch != null;
+        return _appState.SelectedRepository is not null && _appState.SelectedBranch is not null;
     }
 
     private void OnAppStateChanged()

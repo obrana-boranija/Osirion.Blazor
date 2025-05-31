@@ -42,7 +42,7 @@ public class GitHubContentRepository : IContentRepository
         
         _client = new GitHubClient(new ProductHeaderValue("Osirion.Blazor.Cms"));
         
-        if (!string.IsNullOrEmpty(_options.PersonalAccessToken))
+        if (!string.IsNullOrWhiteSpace(_options.PersonalAccessToken))
         {
             _client.Credentials = new Credentials(_options.PersonalAccessToken);
         }
@@ -66,7 +66,7 @@ public class GitHubContentRepository : IContentRepository
                 
             var content = contentResponse.FirstOrDefault();
             
-            if (content == null)
+            if (content is null)
             {
                 return null;
             }

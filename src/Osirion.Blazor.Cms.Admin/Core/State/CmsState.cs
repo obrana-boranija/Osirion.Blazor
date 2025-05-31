@@ -190,10 +190,10 @@ public class CmsState
     {
         var state = new Dictionary<string, object?>();
 
-        if (SelectedRepository != null)
+        if (SelectedRepository is not null)
             state["SelectedRepository"] = SelectedRepository;
 
-        if (SelectedBranch != null)
+        if (SelectedBranch is not null)
             state["SelectedBranch"] = SelectedBranch;
 
         state["CurrentPath"] = CurrentPath;
@@ -207,13 +207,13 @@ public class CmsState
     /// </summary>
     public void DeserializeFrom(string serializedState)
     {
-        if (string.IsNullOrEmpty(serializedState))
+        if (string.IsNullOrWhiteSpace(serializedState))
             return;
 
         try
         {
             var state = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(serializedState);
-            if (state == null) return;
+            if (state is null) return;
 
             if (state.TryGetValue("SelectedRepository", out var repoElement))
             {

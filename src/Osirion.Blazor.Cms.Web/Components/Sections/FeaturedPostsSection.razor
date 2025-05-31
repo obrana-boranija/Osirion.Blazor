@@ -2,11 +2,11 @@
 @inherits OsirionComponentBase
 
 <section class="@GetSectionClass()">
-    @if (!string.IsNullOrEmpty(Title))
+    @if (!string.IsNullOrWhiteSpace(Title))
     {
         <div class="osirion-section-header">
             <h2 class="osirion-section-title">@Title</h2>
-            @if (!string.IsNullOrEmpty(Description))
+            @if (!string.IsNullOrWhiteSpace(Description))
             {
                 <p class="osirion-section-description">@Description</p>
             }
@@ -33,7 +33,7 @@
             {
                 <div class="osirion-featured-post">
                     <a href="@GetPostUrl(post)" class="osirion-featured-post-image-link">
-                        @if (!string.IsNullOrEmpty(post.FeaturedImageUrl))
+                        @if (!string.IsNullOrWhiteSpace(post.FeaturedImageUrl))
                         {
                             <div class="osirion-featured-post-image-container">
                                 <img src="@post.FeaturedImageUrl" alt="@post.Title" class="osirion-featured-post-image" loading="lazy" />
@@ -72,7 +72,7 @@
 
                         @if (ShowExcerpt)
                         {
-                            <p class="osirion-featured-post-excerpt">@(!string.IsNullOrEmpty(post.Description) ? post.Description : GetExcerpt(post.Content, ExcerptLength))</p>
+                            <p class="osirion-featured-post-excerpt">@(!string.IsNullOrWhiteSpace(post.Description) ? post.Description : GetExcerpt(post.Content, ExcerptLength))</p>
                         }
 
                         @if (ShowAuthor)
@@ -97,7 +97,7 @@
             }
         </div>
 
-        @if (ShowViewAllLink && !string.IsNullOrEmpty(ViewAllUrl))
+        @if (ShowViewAllLink && !string.IsNullOrWhiteSpace(ViewAllUrl))
         {
             <div class="osirion-view-all-container">
                 <a href="@ViewAllUrl" class="osirion-view-all-link">

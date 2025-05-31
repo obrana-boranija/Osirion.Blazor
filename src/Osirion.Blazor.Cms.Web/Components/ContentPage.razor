@@ -6,7 +6,7 @@
             <p>@LoadingText</p>
         </div>
     }
-    else if (ContentItem == null)
+    else if (ContentItem is null)
     {
         <div class="osirion-content-not-found">
             <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -16,7 +16,7 @@
             </svg>
             <h2>@NotFoundTitle</h2>
             <p>@NotFoundText</p>
-            @if (ShowBackLink && !string.IsNullOrEmpty(BackLinkUrl))
+            @if (ShowBackLink && !string.IsNullOrWhiteSpace(BackLinkUrl))
             {
                 <a href="@BackLinkUrl" class="osirion-content-back-link">@BackLinkText</a>
             }
@@ -40,7 +40,7 @@
                                           PreviousItem="@PreviousItem"
                                           NextItem="@NextItem"
                                           ShowNavigationLinks="@ShowNavigationLinks"/>
-                    @*                     @if (UseLocalizedView && AvailableTranslations != null && AvailableTranslations.Any())
+                    @*                     @if (UseLocalizedView && AvailableTranslations is not null && AvailableTranslations.Any())
                     {
                         <LocalizedContentView 
                             Item="@ContentItem"
@@ -67,7 +67,7 @@
                                  ShowNavigationLinks="@ShowNavigationLinks" /> *@
                     @* } *@
 
-                    @if (ShowShareLinks && ShareLinks != null && ShareLinks.Any())
+                    @if (ShowShareLinks && ShareLinks is not null && ShareLinks.Any())
                     {
                         <div class="osirion-content-share">
                             <h3 class="osirion-content-section-title">@ShareLinksTitle</h3>
@@ -84,7 +84,7 @@
                         </div>
                     }
 
-                    @if (!string.IsNullOrEmpty(FooterContent))
+                    @if (!string.IsNullOrWhiteSpace(FooterContent))
                     {
                         <div class="osirion-content-custom-footer">
                             @((MarkupString)FooterContent)
@@ -109,7 +109,7 @@
                 </div>
             </div>
 
-            @if (ShowRelatedContent && RelatedItems != null && RelatedItems.Any())
+            @if (ShowRelatedContent && RelatedItems is not null && RelatedItems.Any())
             {
                 <div class="osirion-content-related">
                     <h2 class="osirion-content-related-title">@RelatedContentTitle</h2>
@@ -117,7 +117,7 @@
                         @foreach (var item in RelatedItems)
                         {
                             <article class="osirion-content-related-item">
-                                @if (!string.IsNullOrEmpty(item.FeaturedImageUrl))
+                                @if (!string.IsNullOrWhiteSpace(item.FeaturedImageUrl))
                                 {
                                     <div class="osirion-content-related-image-container">
                                         <img src="@item.FeaturedImageUrl" alt="@item.Title" class="osirion-content-related-image" loading="lazy" />

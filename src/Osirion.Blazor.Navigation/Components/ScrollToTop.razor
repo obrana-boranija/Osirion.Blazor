@@ -11,7 +11,7 @@
             aria-label="@EffectiveOptions.Title"
             id="osirion-scroll-to-top"
             style="display: none;">
-        @if (!string.IsNullOrEmpty(EffectiveOptions.CustomIcon))
+        @if (!string.IsNullOrWhiteSpace(EffectiveOptions.CustomIcon))
         {
             @((MarkupString)EffectiveOptions.CustomIcon)
         }
@@ -22,7 +22,7 @@
             </svg>
         }
 
-        @if (!string.IsNullOrEmpty(EffectiveOptions.Text))
+        @if (!string.IsNullOrWhiteSpace(EffectiveOptions.Text))
         {
             <span class="scroll-text">@EffectiveOptions.Text</span>
         }

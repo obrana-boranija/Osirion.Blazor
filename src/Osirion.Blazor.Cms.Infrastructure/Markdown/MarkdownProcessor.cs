@@ -26,7 +26,7 @@ public class MarkdownProcessor : IMarkdownProcessor
 
     public string RenderToHtml(string markdown, bool sanitizeHtml = false)
     {
-        if (string.IsNullOrEmpty(markdown))
+        if (string.IsNullOrWhiteSpace(markdown))
             return string.Empty;
 
         // Apply sanitization if requested
@@ -39,7 +39,7 @@ public class MarkdownProcessor : IMarkdownProcessor
 
     public Task<string> RenderToHtmlAsync(string markdown, bool sanitizeHtml = false)
     {
-        if (string.IsNullOrEmpty(markdown))
+        if (string.IsNullOrWhiteSpace(markdown))
             return Task.FromResult(string.Empty);
 
         // Apply sanitization if requested

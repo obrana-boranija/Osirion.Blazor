@@ -116,7 +116,7 @@ public partial class MarkdownEditorWithPreview : IAsyncDisposable
             Preview = await MarkdownProcessor.RenderToHtmlAsync(Content);
             StateHasChanged();
 
-            if (SyncScroll && isEditorFocused && jsInteropAvailable && jsModule != null && EditorMode == EditorMode.Split)
+            if (SyncScroll && isEditorFocused && jsInteropAvailable && jsModule is not null && EditorMode == EditorMode.Split)
             {
                 await SyncScrollPositionAsync(true);
             }
@@ -129,7 +129,7 @@ public partial class MarkdownEditorWithPreview : IAsyncDisposable
 
     private void CalculateLineAndColumn(string text)
     {
-        if (string.IsNullOrEmpty(text) || caretPosition == 0)
+        if (string.IsNullOrWhiteSpace(text) || caretPosition == 0)
         {
             CurrentLine = 1;
             CurrentColumn = 1;
@@ -160,7 +160,7 @@ public partial class MarkdownEditorWithPreview : IAsyncDisposable
     {
         try
         {
-            if (jsInteropAvailable && jsModule != null)
+            if (jsInteropAvailable && jsModule is not null)
             {
                 await jsModule.InvokeVoidAsync("focusElement", TextAreaRef);
             }
@@ -175,7 +175,7 @@ public partial class MarkdownEditorWithPreview : IAsyncDisposable
     {
         try
         {
-            if (jsInteropAvailable && jsModule != null)
+            if (jsInteropAvailable && jsModule is not null)
             {
                 var result = await jsModule.InvokeAsync<InsertionResult>(
                     "insertTextAtCursor", TextAreaRef, prefix, suffix, placeholder);
@@ -213,7 +213,7 @@ public partial class MarkdownEditorWithPreview : IAsyncDisposable
 
     private async Task OnEditorScrolled(EventArgs args)
     {
-        if (SyncScroll && isEditorFocused && jsInteropAvailable && jsModule != null && EditorMode == EditorMode.Split)
+        if (SyncScroll && isEditorFocused && jsInteropAvailable && jsModule is not null && EditorMode == EditorMode.Split)
         {
             await SyncScrollPositionAsync(true);
         }
@@ -221,7 +221,7 @@ public partial class MarkdownEditorWithPreview : IAsyncDisposable
 
     private async Task OnPreviewScrolled(EventArgs args)
     {
-        if (SyncScroll && !isEditorFocused && jsInteropAvailable && jsModule != null && EditorMode == EditorMode.Split)
+        if (SyncScroll && !isEditorFocused && jsInteropAvailable && jsModule is not null && EditorMode == EditorMode.Split)
         {
             await SyncScrollPositionAsync(false);
         }
@@ -231,7 +231,7 @@ public partial class MarkdownEditorWithPreview : IAsyncDisposable
     {
         try
         {
-            if (!jsInteropAvailable || jsModule == null) return;
+            if (!jsInteropAvailable || jsModule is null) return;
 
             if (fromEditor)
             {
@@ -264,7 +264,7 @@ public partial class MarkdownEditorWithPreview : IAsyncDisposable
         // Get current caret position after any key press
         try
         {
-            if (jsInteropAvailable && jsModule != null)
+            if (jsInteropAvailable && jsModule is not null)
             {
                 caretPosition = await jsModule.InvokeAsync<int>("getCaretPosition", TextAreaRef);
                 CalculateLineAndColumn(Content);
@@ -278,7 +278,7 @@ public partial class MarkdownEditorWithPreview : IAsyncDisposable
         // Handle tab key for indentation
         if (e.Key == "Tab")
         {
-            if (jsInteropAvailable && jsModule != null)
+            if (jsInteropAvailable && jsModule is not null)
             {
                 try
                 {
@@ -303,7 +303,7 @@ public partial class MarkdownEditorWithPreview : IAsyncDisposable
 
     private async Task ToggleFullscreen()
     {
-        if (jsInteropAvailable && jsModule != null)
+        if (jsInteropAvailable && jsModule is not null)
         {
             try
             {
@@ -327,7 +327,7 @@ public partial class MarkdownEditorWithPreview : IAsyncDisposable
     {
         try
         {
-            if (jsModule != null)
+            if (jsModule is not null)
             {
                 await jsModule.DisposeAsync();
             }

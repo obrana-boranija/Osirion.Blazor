@@ -92,7 +92,7 @@ public class GitHubPollingService : BackgroundService
                 {
                     // Get the latest commit SHA for the branch
                     var latestSha = await GetLatestCommitShaAsync(apiClient, stoppingToken);
-                    if (string.IsNullOrEmpty(latestSha))
+                    if (string.IsNullOrWhiteSpace(latestSha))
                     {
                         continue;
                     }
@@ -140,7 +140,7 @@ public class GitHubPollingService : BackgroundService
             var branches = await apiClient.GetBranchesAsync(cancellationToken);
             var branch = branches.FirstOrDefault(b => b.Name == _options.Branch);
 
-            if (branch == null)
+            if (branch is null)
             {
                 _logger.LogWarning("Branch {Branch} not found in repository {Owner}/{Repository}",
                     _options.Branch, _options.Owner, _options.Repository);

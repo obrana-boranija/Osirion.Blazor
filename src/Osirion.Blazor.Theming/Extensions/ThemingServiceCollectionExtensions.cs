@@ -21,8 +21,8 @@ public static class ThemingServiceCollectionExtensions
         this IServiceCollection services,
         Action<IThemingBuilder> configure)
     {
-        if (services == null) throw new ArgumentNullException(nameof(services));
-        if (configure == null) throw new ArgumentNullException(nameof(configure));
+        if (services is null) throw new ArgumentNullException(nameof(services));
+        if (configure is null) throw new ArgumentNullException(nameof(configure));
 
         services.AddSingleton<IThemeService, ThemeService>();
 
@@ -43,8 +43,8 @@ public static class ThemingServiceCollectionExtensions
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        if (services == null) throw new ArgumentNullException(nameof(services));
-        if (configuration == null) throw new ArgumentNullException(nameof(configuration));
+        if (services is null) throw new ArgumentNullException(nameof(services));
+        if (configuration is null) throw new ArgumentNullException(nameof(configuration));
 
         return services.AddOsirionTheming(builder =>
         {
@@ -104,7 +104,7 @@ public static class ThemingServiceCollectionExtensions
     /// <returns>The service collection for chaining</returns>
     public static IServiceCollection AddOsirionTheming(this IServiceCollection services)
     {
-        if (services == null) throw new ArgumentNullException(nameof(services));
+        if (services is null) throw new ArgumentNullException(nameof(services));
 
         // Register default options
         services.Configure<ThemingOptions>(options =>

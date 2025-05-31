@@ -73,7 +73,7 @@ public partial class MarkdownEditor : IAsyncDisposable
         _currentContent = Content;
 
         // Use default toolbar actions if none provided
-        if (ToolbarActions == null)
+        if (ToolbarActions is null)
         {
             ToolbarActions = _defaultToolbarActions;
         }
@@ -142,7 +142,7 @@ public partial class MarkdownEditor : IAsyncDisposable
     /// </summary>
     private async Task ExecuteToolbarAction(ToolbarAction action)
     {
-        if (action.Action != null)
+        if (action.Action is not null)
         {
             switch (action.ActionType)
             {

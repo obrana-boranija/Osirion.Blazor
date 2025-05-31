@@ -38,8 +38,8 @@ public class ValueObjectTests
 
         // Act & Assert
         Assert.False(obj.Equals(null));
-        Assert.False(obj == null);
-        Assert.True(obj != null);
+        Assert.False(obj is null);
+        Assert.True(obj is not null);
     }
 
     [Fact]

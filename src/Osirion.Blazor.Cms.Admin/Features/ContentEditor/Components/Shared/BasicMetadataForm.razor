@@ -75,7 +75,7 @@
                     <i class="bi bi-eye"></i>
                 </button>
             </div>
-            @if (!string.IsNullOrEmpty(Metadata.FeaturedImage))
+            @if (!string.IsNullOrWhiteSpace(Metadata.FeaturedImage))
             {
                 <div class="mt-2">
                     <img src="@Metadata.FeaturedImage" 

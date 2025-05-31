@@ -43,14 +43,14 @@ public class FileSystemDirectoryRepository : DirectoryRepositoryBase, IDirectory
     /// <inheritdoc/>
     public override async Task<DirectoryItem> SaveAsync(DirectoryItem entity, CancellationToken cancellationToken = default)
     {
-        if (entity == null)
+        if (entity is null)
             throw new ArgumentNullException(nameof(entity));
 
         try
         {
             // Check if directory exists
             var existingDirectory = await GetByIdAsync(entity.Id, cancellationToken);
-            if (existingDirectory == null)
+            if (existingDirectory is null)
             {
                 // Create new directory
                 return await CreateDirectoryAsync(entity, cancellationToken);
@@ -77,7 +77,7 @@ public class FileSystemDirectoryRepository : DirectoryRepositoryBase, IDirectory
     /// <inheritdoc/>
     public async Task<DirectoryItem> MoveAsync(string id, string? newParentId, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrEmpty(id))
+        if (string.IsNullOrWhiteSpace(id))
             throw new ArgumentException("ID cannot be empty", nameof(id));
 
         LogOperation("moving", id);
@@ -86,15 +86,15 @@ public class FileSystemDirectoryRepository : DirectoryRepositoryBase, IDirectory
         {
             // Get directory to move
             var directory = await GetByIdAsync(id, cancellationToken);
-            if (directory == null)
+            if (directory is null)
                 throw new DirectoryNotFoundException(id);
 
             // Get new parent directory if specified
             DirectoryItem? newParent = null;
-            if (!string.IsNullOrEmpty(newParentId))
+            if (!string.IsNullOrWhiteSpace(newParentId))
             {
                 newParent = await GetByIdAsync(newParentId, cancellationToken);
-                if (newParent == null)
+                if (newParent is null)
                     throw new DirectoryNotFoundException(newParentId);
 
                 // Check for circular reference
@@ -105,7 +105,7 @@ public class FileSystemDirectoryRepository : DirectoryRepositoryBase, IDirectory
             // Build physical paths
             var sourcePhysicalPath = Path.Combine(_options.BasePath, directory.Path);
 
-            var newPath = string.IsNullOrEmpty(newParentId)
+            var newPath = string.IsNullOrWhiteSpace(newParentId)
                 ? Path.GetFileName(directory.Path) // Move to root
                 : Path.Combine(newParent!.Path, Path.GetFileName(directory.Path));
 
@@ -177,7 +177,7 @@ public class FileSystemDirectoryRepository : DirectoryRepositoryBase, IDirectory
     {
         // Get directory to get path
         var directory = await GetByIdAsync(id, cancellationToken);
-        if (directory == null)
+        if (directory is null)
             throw new DirectoryNotFoundException(id);
 
         // Get the full physical path
@@ -223,7 +223,7 @@ public class FileSystemDirectoryRepository : DirectoryRepositoryBase, IDirectory
                 ProviderId);
 
             // Set parent if available
-            if (parentDirectory != null)
+            if (parentDirectory is not null)
             {
                 directory.SetParent(parentDirectory);
                 parentDirectory.AddChild(directory);

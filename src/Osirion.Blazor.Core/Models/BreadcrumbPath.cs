@@ -43,7 +43,7 @@ public class BreadcrumbPath
     /// </summary>
     private static IReadOnlyList<BreadcrumbSegment> ParsePath(string path)
     {
-        if (string.IsNullOrEmpty(path))
+        if (string.IsNullOrWhiteSpace(path))
             return Array.Empty<BreadcrumbSegment>();
 
         var segments = path.Split('/', StringSplitOptions.RemoveEmptyEntries);

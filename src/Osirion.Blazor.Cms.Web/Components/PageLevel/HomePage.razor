@@ -9,7 +9,7 @@
             <p>@LoadingText</p>
         </div>
     }
-    else if (Content == null && !string.IsNullOrEmpty(ContentPath))
+    else if (Content is null && !string.IsNullOrWhiteSpace(ContentPath))
     {
         <div class="osirion-not-found">
             <p>@NotFoundText</p>
@@ -17,12 +17,12 @@
     }
     else
     {
-        @if (ShowHero && (HeroContent != null || !string.IsNullOrEmpty(HeroTitle)))
+        @if (ShowHero && (HeroContent is not null || !string.IsNullOrWhiteSpace(HeroTitle)))
         {
             <HeroSection 
                 Title="@(HeroContent?.Title ?? HeroTitle)"
                 Subtitle="@(HeroContent?.Description ?? HeroSubtitle)"
-                BackgroundImage="@(HeroContent?.FeaturedImageUrl ?? HeroBackgroundImage)"
+                ImageUrl="@(HeroContent?.FeaturedImageUrl ?? HeroBackgroundImage)"
                 PrimaryButtonText="@HeroPrimaryButtonText"
                 PrimaryButtonUrl="@HeroPrimaryButtonUrl"
                 SecondaryButtonText="@HeroSecondaryButtonText"
@@ -31,7 +31,7 @@
                 Alignment="@HeroAlignment" />
         }
 
-        @if (ShowFeaturedContent && FeaturedItems != null && FeaturedItems.Any())
+        @if (ShowFeaturedContent && FeaturedItems is not null && FeaturedItems.Any())
         {
             <FeaturedPostsSection
                 Title="@FeaturedSectionTitle"
@@ -47,14 +47,14 @@
                 ShowViewAllLink="@ShowFeaturedViewAll" />
         }
 
-        @if (Content != null)
+        @if (Content is not null)
         {
             <ContentSection 
                 Content="@Content.Content"
                 CssClass="osirion-homepage-content" />
         }
 
-        @if (ShowRecentContent && RecentItems != null && RecentItems.Any())
+        @if (ShowRecentContent && RecentItems is not null && RecentItems.Any())
         {
             <ContentSection Title="@RecentSectionTitle">
                 <ContentList 
@@ -93,14 +93,14 @@
             </ContentSection>
         }
 
-        @if (!string.IsNullOrEmpty(CustomContent))
+        @if (!string.IsNullOrWhiteSpace(CustomContent))
         {
             <ContentSection CssClass="osirion-homepage-custom">
                 @((MarkupString)CustomContent)
             </ContentSection>
         }
 
-        @if (ChildContent != null)
+        @if (ChildContent is not null)
         {
             <ContentSection CssClass="osirion-homepage-additional">
                 @ChildContent

@@ -172,7 +172,7 @@ public static class GitHubProviderRegistrationExtensions
         if (isDefault)
         {
             var providerId = providerSection.GetValue<string>("ProviderId");
-            if (string.IsNullOrEmpty(providerId))
+            if (string.IsNullOrWhiteSpace(providerId))
             {
                 var owner = providerSection.GetValue<string>("Owner");
                 var repository = providerSection.GetValue<string>("Repository");

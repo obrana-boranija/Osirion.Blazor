@@ -196,11 +196,11 @@ public partial class DocumentPage
     /// <inheritdoc/>
     protected override async Task OnParametersSetAsync()
     {
-        if (Content == null && !string.IsNullOrEmpty(ContentPath))
+        if (Content is null && !string.IsNullOrWhiteSpace(ContentPath))
         {
             await LoadContentAsync();
         }
-        else if (Content != null)
+        else if (Content is not null)
         {
             await LoadNavigationItemsAsync();
             IsLoading = false;
@@ -211,7 +211,7 @@ public partial class DocumentPage
         }
 
         // Set current path for navigation highlighting
-        if (string.IsNullOrEmpty(CurrentPath) && Content != null)
+        if (string.IsNullOrWhiteSpace(CurrentPath) && Content is not null)
         {
             CurrentPath = Content.Path;
         }
@@ -223,11 +223,11 @@ public partial class DocumentPage
         try
         {
             var provider = ContentProviderManager.GetDefaultProvider();
-            if (provider != null)
+            if (provider is not null)
             {
                 Content = await provider.GetItemByPathAsync(ContentPath);
 
-                if (Content != null)
+                if (Content is not null)
                 {
                     CurrentPath = Content.Path;
                     await LoadNavigationItemsAsync();
@@ -247,13 +247,13 @@ public partial class DocumentPage
 
     private async Task LoadNavigationItemsAsync()
     {
-        if (!ShowNavigationLinks || Content == null || (PreviousItem != null && NextItem != null))
+        if (!ShowNavigationLinks || Content is null || (PreviousItem is not null && NextItem is not null))
             return;
 
         try
         {
             var provider = ContentProviderManager.GetDefaultProvider();
-            if (provider != null)
+            if (provider is not null)
             {
                 var query = new ContentQuery
                 {
@@ -300,7 +300,7 @@ public partial class DocumentPage
             classes.Add("osirion-document-with-sidenav");
         }
 
-        if (!string.IsNullOrEmpty(CssClass))
+        if (!string.IsNullOrWhiteSpace(CssClass))
         {
             classes.Add(CssClass);
         }
@@ -328,7 +328,7 @@ public partial class DocumentPage
 
     private bool IsCurrentPage(DocumentNavigationItem item)
     {
-        if (string.IsNullOrEmpty(CurrentPath))
+        if (string.IsNullOrWhiteSpace(CurrentPath))
             return false;
 
         return item.Path?.Equals(CurrentPath, StringComparison.OrdinalIgnoreCase) == true ||
@@ -337,7 +337,7 @@ public partial class DocumentPage
 
     private bool IsParentOfCurrentPage(DocumentNavigationItem item)
     {
-        if (string.IsNullOrEmpty(CurrentPath) || item.Children == null)
+        if (string.IsNullOrWhiteSpace(CurrentPath) || item.Children is null)
             return false;
 
         return item.Children.Any(child => IsCurrentPage(child));

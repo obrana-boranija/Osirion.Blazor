@@ -39,7 +39,7 @@ public class DirectoryItem : DomainEntity<string>
         {
             int depth = 0;
             var current = Parent;
-            while (current != null)
+            while (current is not null)
             {
                 depth++;
                 current = current.Parent;
@@ -54,10 +54,10 @@ public class DirectoryItem : DomainEntity<string>
     // Factory method
     public static DirectoryItem Create(string id, string path, string name, string providerId)
     {
-        if (string.IsNullOrEmpty(path))
+        if (string.IsNullOrWhiteSpace(path))
             throw new ContentValidationException("Path", "Directory path cannot be empty");
 
-        if (string.IsNullOrEmpty(name))
+        if (string.IsNullOrWhiteSpace(name))
             throw new ContentValidationException("Name", "Directory name cannot be empty");
 
         return new DirectoryItem
@@ -72,7 +72,7 @@ public class DirectoryItem : DomainEntity<string>
     // Modifier methods
     public void SetName(string name)
     {
-        if (string.IsNullOrEmpty(name))
+        if (string.IsNullOrWhiteSpace(name))
             throw new ContentValidationException("Name", "Directory name cannot be empty");
 
         Name = name;
@@ -95,7 +95,7 @@ public class DirectoryItem : DomainEntity<string>
 
     public void SetPath(string path)
     {
-        if (string.IsNullOrEmpty(path))
+        if (string.IsNullOrWhiteSpace(path))
             throw new ContentValidationException("Path", "Directory path cannot be empty");
 
         Path = path;
@@ -117,7 +117,7 @@ public class DirectoryItem : DomainEntity<string>
     public void SetParent(DirectoryItem? parent, bool skipCircularCheck = false)
     {
         // If parent is null, just clear the parent reference
-        if (parent == null)
+        if (parent is null)
         {
             Parent = null;
             return;
@@ -147,7 +147,7 @@ public class DirectoryItem : DomainEntity<string>
     /// </summary>
     public void AddChild(DirectoryItem child)
     {
-        if (child == null)
+        if (child is null)
             throw new ArgumentNullException(nameof(child));
 
         // Don't add self as child
@@ -173,7 +173,7 @@ public class DirectoryItem : DomainEntity<string>
 
     public void RemoveChild(DirectoryItem child)
     {
-        if (child != null && _children.Contains(child))
+        if (child is not null && _children.Contains(child))
         {
             _children.Remove(child);
             child.SetParent(null);
@@ -191,7 +191,7 @@ public class DirectoryItem : DomainEntity<string>
     // Content item operations
     public void AddItem(ContentItem item)
     {
-        if (item == null)
+        if (item is null)
             throw new ArgumentNullException(nameof(item));
 
         if (!_items.Contains(item))
@@ -203,7 +203,7 @@ public class DirectoryItem : DomainEntity<string>
 
     public void RemoveItem(ContentItem item)
     {
-        if (item != null && _items.Contains(item))
+        if (item is not null && _items.Contains(item))
         {
             _items.Remove(item);
             item.SetDirectory(null);
@@ -249,10 +249,10 @@ public class DirectoryItem : DomainEntity<string>
 
     public void SetMetadata<T>(string key, T value)
     {
-        if (string.IsNullOrEmpty(key))
+        if (string.IsNullOrWhiteSpace(key))
             throw new ArgumentException("Metadata key cannot be empty", nameof(key));
 
-        if (value == null)
+        if (value is null)
         {
             _metadataValues.Remove(key);
         }
@@ -267,7 +267,7 @@ public class DirectoryItem : DomainEntity<string>
     /// </summary>
     public bool IsAncestorOf(DirectoryItem directory)
     {
-        if (directory == null)
+        if (directory is null)
             return false;
 
         // More robust equality check
@@ -280,7 +280,7 @@ public class DirectoryItem : DomainEntity<string>
         var visited = new HashSet<string>(); // Track visited IDs to detect loops
         var current = directory.Parent;
 
-        while (current != null && depth < maxDepth)
+        while (current is not null && depth < maxDepth)
         {
             depth++;
 
@@ -310,7 +310,7 @@ public class DirectoryItem : DomainEntity<string>
         var path = new List<DirectoryItem>();
         var current = this;
 
-        while (current != null)
+        while (current is not null)
         {
             path.Insert(0, current);
             current = current.Parent;

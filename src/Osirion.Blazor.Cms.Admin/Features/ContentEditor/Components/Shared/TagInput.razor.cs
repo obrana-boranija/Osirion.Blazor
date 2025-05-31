@@ -26,7 +26,7 @@ public partial class TagInput
         {
             await AddTag();
         }
-        else if (e.Key == "Backspace" && string.IsNullOrEmpty(CurrentInput) && Tags.Count > 0)
+        else if (e.Key == "Backspace" && string.IsNullOrWhiteSpace(CurrentInput) && Tags.Count > 0)
         {
             await RemoveTag(Tags.Last());
         }

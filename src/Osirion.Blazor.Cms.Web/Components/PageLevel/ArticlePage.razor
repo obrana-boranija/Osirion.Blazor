@@ -13,7 +13,7 @@
             <p>@LoadingText</p>
         </div>
     }
-    else if (Content is null && !string.IsNullOrEmpty(ContentPath))
+    else if (Content is null && !string.IsNullOrWhiteSpace(ContentPath))
     {
         <div class="osirion-not-found">
             <h2>@NotFoundTitle</h2>
@@ -101,7 +101,7 @@
         </div>
 
         <div>
-            @if (ShowRelatedContent && RelatedItems != null && RelatedItems.Any())
+            @if (ShowRelatedContent && RelatedItems is not null && RelatedItems.Any())
             {
                 <ContentSection Title="@RelatedContentTitle"
                                 Variant="highlight"
@@ -115,7 +115,7 @@
                         {
                             <article class="osirion-related-content-item">
                                 <a href="@item.Url" style="text-decoration: none;">
-                                    @if (!string.IsNullOrEmpty(item.FeaturedImageUrl))
+                                    @if (!string.IsNullOrWhiteSpace(item.FeaturedImageUrl))
                                     {
                                         <div class="osirion-related-image-container">
                                             <img src="@item.FeaturedImageUrl" alt="@item.Title" class="osirion-related-image" loading="lazy" />
@@ -137,7 +137,7 @@
                 </ContentSection>
             }
 
-            @if (!string.IsNullOrEmpty(CustomFooterContent))
+            @if (!string.IsNullOrWhiteSpace(CustomFooterContent))
             {
                 <ContentSection Content="@CustomFooterContent"
                                 Variant="bordered"

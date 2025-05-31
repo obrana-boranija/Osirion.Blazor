@@ -40,7 +40,7 @@ public abstract class RepositoryAdapterBase : IContentRepositoryAdapter
     protected void LogOperation(string operation, string? details = null, [CallerMemberName] string? methodName = null)
     {
         var message = $"{GetType().Name}: {methodName} - {operation}";
-        if (!string.IsNullOrEmpty(details))
+        if (!string.IsNullOrWhiteSpace(details))
         {
             message += $" ({details})";
         }

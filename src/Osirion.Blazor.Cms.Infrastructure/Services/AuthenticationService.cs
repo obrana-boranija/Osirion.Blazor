@@ -65,7 +65,7 @@ public class AuthenticationService : IAuthenticationService
     public void SetProvider(string providerName)
     {
         _currentProviderName = providerName;
-        if (string.IsNullOrEmpty(providerName))
+        if (string.IsNullOrWhiteSpace(providerName))
         {
             _apiClient = _apiClientFactory.GetDefaultClient();
         }
@@ -75,14 +75,14 @@ public class AuthenticationService : IAuthenticationService
         }
 
         // If we have a token, set it on the new client
-        if (!string.IsNullOrEmpty(_accessToken))
+        if (!string.IsNullOrWhiteSpace(_accessToken))
         {
             _apiClient.SetAccessToken(_accessToken);
         }
     }
 
     /// <inheritdoc/>
-    public bool IsAuthenticated => !string.IsNullOrEmpty(_accessToken);
+    public bool IsAuthenticated => !string.IsNullOrWhiteSpace(_accessToken);
 
     /// <inheritdoc/>
     public string? AccessToken => _accessToken;
@@ -103,7 +103,7 @@ public class AuthenticationService : IAuthenticationService
         await RestoreAuthStateAsync();
 
         // If not authenticated and PAT is configured, use it
-        if (!IsAuthenticated && !string.IsNullOrEmpty(_authOptions.PersonalAccessToken))
+        if (!IsAuthenticated && !string.IsNullOrWhiteSpace(_authOptions.PersonalAccessToken))
         {
             _logger.LogInformation("Using configured PersonalAccessToken for automatic authentication");
             await SetAccessTokenAsync(_authOptions.PersonalAccessToken);
@@ -128,7 +128,7 @@ public class AuthenticationService : IAuthenticationService
                 _authOptions.GitHubClientId,
                 _authOptions.GitHubClientSecret);
 
-            if (string.IsNullOrEmpty(_accessToken))
+            if (string.IsNullOrWhiteSpace(_accessToken))
                 return false;
 
             // Set the token on the API client immediately
@@ -162,7 +162,7 @@ public class AuthenticationService : IAuthenticationService
     {
         try
         {
-            if (string.IsNullOrEmpty(token))
+            if (string.IsNullOrWhiteSpace(token))
             {
                 _logger.LogWarning("Attempted to set empty token");
                 return false;
@@ -215,8 +215,8 @@ public class AuthenticationService : IAuthenticationService
     /// </summary>
     private bool AreCredentialsConfigured()
     {
-        if (string.IsNullOrEmpty(_authOptions.GitHubClientId) ||
-            string.IsNullOrEmpty(_authOptions.GitHubClientSecret))
+        if (string.IsNullOrWhiteSpace(_authOptions.GitHubClientId) ||
+            string.IsNullOrWhiteSpace(_authOptions.GitHubClientSecret))
         {
             _logger.LogError("GitHub client ID or secret is missing. Cannot authenticate.");
             return false;
@@ -230,7 +230,7 @@ public class AuthenticationService : IAuthenticationService
     /// </summary>
     private async Task<bool> GetUserInfoAsync()
     {
-        if (string.IsNullOrEmpty(_accessToken))
+        if (string.IsNullOrWhiteSpace(_accessToken))
         {
             _logger.LogWarning("Cannot get user info - access token is empty");
             return false;
@@ -253,7 +253,7 @@ public class AuthenticationService : IAuthenticationService
             _username = userInfo?.Login;
 
             _logger.LogInformation("Retrieved user info: {Username}", _username);
-            return !string.IsNullOrEmpty(_username);
+            return !string.IsNullOrWhiteSpace(_username);
         }
         catch (Exception ex)
         {
@@ -296,7 +296,7 @@ public class AuthenticationService : IAuthenticationService
             // Also store auth_status and last_login_method for consistency with LoginViewModel
             await _stateStorage.SaveStateAsync("auth_status", true);
             await _stateStorage.SaveStateAsync("last_login_method", "pat");
-            _logger.LogDebug("Auth state persisted to storage. Token exists: {HasToken}", !string.IsNullOrEmpty(_accessToken));
+            _logger.LogDebug("Auth state persisted to storage. Token exists: {HasToken}", !string.IsNullOrWhiteSpace(_accessToken));
         }
         else
         {
@@ -320,7 +320,7 @@ public class AuthenticationService : IAuthenticationService
             _accessToken = await _stateStorage.GetStateAsync<string>("github_auth_token");
 
             // If not found, try alternative keys that LoginViewModel might have used
-            if (string.IsNullOrEmpty(_accessToken))
+            if (string.IsNullOrWhiteSpace(_accessToken))
             {
                 var authStatus = await _stateStorage.GetStateAsync<bool>("auth_status");
                 if (authStatus)
@@ -331,10 +331,10 @@ public class AuthenticationService : IAuthenticationService
 
             _username = await _stateStorage.GetStateAsync<string>("github_username");
 
-            _logger.LogDebug("Auth state restored from storage. Token exists: {HasToken}", !string.IsNullOrEmpty(_accessToken));
+            _logger.LogDebug("Auth state restored from storage. Token exists: {HasToken}", !string.IsNullOrWhiteSpace(_accessToken));
 
             // Validate restored token
-            if (!string.IsNullOrEmpty(_accessToken))
+            if (!string.IsNullOrWhiteSpace(_accessToken))
             {
                 // Set the token on the API client
                 _apiClient.SetAccessToken(_accessToken);

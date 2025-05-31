@@ -47,7 +47,7 @@ public class StaleWhileRevalidateCacheDecorator : IContentRepository
 
     public async Task<ContentItem?> GetByIdAsync(string id, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrEmpty(id))
+        if (string.IsNullOrWhiteSpace(id))
             throw new ArgumentException("ID cannot be empty", nameof(id));
 
         var cacheKey = $"content:{id}:{_providerIdentifier}";
@@ -60,7 +60,7 @@ public class StaleWhileRevalidateCacheDecorator : IContentRepository
 
     public async Task<ContentItem?> GetByPathAsync(string path, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrEmpty(path))
+        if (string.IsNullOrWhiteSpace(path))
             throw new ArgumentException("Path cannot be empty", nameof(path));
 
         var cacheKey = $"content:path:{path}:{_providerIdentifier}";
@@ -73,7 +73,7 @@ public class StaleWhileRevalidateCacheDecorator : IContentRepository
 
     public async Task<ContentItem?> GetByUrlAsync(string url, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrEmpty(url))
+        if (string.IsNullOrWhiteSpace(url))
             throw new ArgumentException("URL cannot be empty", nameof(url));
 
         var cacheKey = $"content:url:{url}:{_providerIdentifier}";
@@ -180,7 +180,7 @@ public class StaleWhileRevalidateCacheDecorator : IContentRepository
         CancellationToken cancellationToken)
     {
         // Try to get the value from the cache
-        if (_cache.TryGetValue(cacheKey, out CacheEntry<T>? cacheEntry) && cacheEntry != null)
+        if (_cache.TryGetValue(cacheKey, out CacheEntry<T>? cacheEntry) && cacheEntry is not null)
         {
             // Check if the entry is stale and needs background refresh
             if (DateTime.UtcNow - cacheEntry.LastUpdated > _staleTime && !cacheEntry.IsRefreshing)
@@ -216,7 +216,7 @@ public class StaleWhileRevalidateCacheDecorator : IContentRepository
         try
         {
             // Double check if another thread already created it
-            if (_cache.TryGetValue(cacheKey, out CacheEntry<T>? existingEntry) && existingEntry != null)
+            if (_cache.TryGetValue(cacheKey, out CacheEntry<T>? existingEntry) && existingEntry is not null)
             {
                 return existingEntry.Value;
             }
@@ -255,7 +255,7 @@ public class StaleWhileRevalidateCacheDecorator : IContentRepository
         {
             // Check if the entry is still in the cache and not being refreshed
             if (_cache.TryGetValue(cacheKey, out CacheEntry<T>? currentEntry) &&
-                currentEntry != null &&
+                currentEntry is not null &&
                 !currentEntry.IsRefreshing)
             {
                 // Mark as refreshing
@@ -281,7 +281,7 @@ public class StaleWhileRevalidateCacheDecorator : IContentRepository
         catch (Exception ex)
         {
             // If refresh fails, mark the entry as not refreshing so it can be tried again
-            if (_cache.TryGetValue(cacheKey, out CacheEntry<T>? currentEntry) && currentEntry != null)
+            if (_cache.TryGetValue(cacheKey, out CacheEntry<T>? currentEntry) && currentEntry is not null)
             {
                 currentEntry.IsRefreshing = false;
             }
@@ -302,22 +302,22 @@ public class StaleWhileRevalidateCacheDecorator : IContentRepository
         keyBuilder.Append($"query:{_providerIdentifier}:");
 
         // Add significant query parameters
-        if (!string.IsNullOrEmpty(query.Directory))
+        if (!string.IsNullOrWhiteSpace(query.Directory))
             keyBuilder.Append($"dir:{query.Directory}:");
 
-        if (!string.IsNullOrEmpty(query.DirectoryId))
+        if (!string.IsNullOrWhiteSpace(query.DirectoryId))
             keyBuilder.Append($"dirid:{query.DirectoryId}:");
 
-        if (!string.IsNullOrEmpty(query.Slug))
+        if (!string.IsNullOrWhiteSpace(query.Slug))
             keyBuilder.Append($"slug:{query.Slug}:");
 
-        if (!string.IsNullOrEmpty(query.Category))
+        if (!string.IsNullOrWhiteSpace(query.Category))
             keyBuilder.Append($"cat:{query.Category}:");
 
-        if (!string.IsNullOrEmpty(query.Tag))
+        if (!string.IsNullOrWhiteSpace(query.Tag))
             keyBuilder.Append($"tag:{query.Tag}:");
 
-        if (!string.IsNullOrEmpty(query.SearchQuery))
+        if (!string.IsNullOrWhiteSpace(query.SearchQuery))
             keyBuilder.Append($"search:{query.SearchQuery}:");
 
         if (query.IsFeatured.HasValue)
@@ -326,7 +326,7 @@ public class StaleWhileRevalidateCacheDecorator : IContentRepository
         if (query.Status.HasValue)
             keyBuilder.Append($"status:{query.Status}:");
 
-        if (!string.IsNullOrEmpty(query.Author))
+        if (!string.IsNullOrWhiteSpace(query.Author))
             keyBuilder.Append($"author:{query.Author}:");
 
         if (query.DateFrom.HasValue)
@@ -335,7 +335,7 @@ public class StaleWhileRevalidateCacheDecorator : IContentRepository
         if (query.DateTo.HasValue)
             keyBuilder.Append($"to:{query.DateTo.Value:yyyyMMdd}:");
 
-        if (!string.IsNullOrEmpty(query.Locale))
+        if (!string.IsNullOrWhiteSpace(query.Locale))
             keyBuilder.Append($"locale:{query.Locale}:");
 
         // Add sort parameters

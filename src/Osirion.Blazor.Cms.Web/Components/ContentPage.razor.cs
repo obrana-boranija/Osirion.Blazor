@@ -257,7 +257,7 @@ public partial class ContentPage
     /// </summary>
     protected override async Task OnParametersSetAsync()
     {
-        if (ContentItem is null && !string.IsNullOrEmpty(Path))
+        if (ContentItem is null && !string.IsNullOrWhiteSpace(Path))
         {
             await LoadContentAsync();
         }
@@ -280,19 +280,19 @@ public partial class ContentPage
         try
         {
             var provider = ContentProviderManager.GetDefaultProvider();
-            if (provider != null)
+            if (provider is not null)
             {
                 // Clean up the path if needed
                 var searchPath = Path;
 
                 // If ignore path segment is specified, add it back before querying
-                if (!string.IsNullOrEmpty(IgnorePathSegment) && !searchPath.Contains(IgnorePathSegment))
+                if (!string.IsNullOrWhiteSpace(IgnorePathSegment) && !searchPath.Contains(IgnorePathSegment))
                 {
                     searchPath = $"{IgnorePathSegment}/{searchPath}";
                 }
 
                 // Apply custom regex replacement if specified
-                if (!string.IsNullOrEmpty(PathReplacePattern))
+                if (!string.IsNullOrWhiteSpace(PathReplacePattern))
                 {
                     var parts = PathReplacePattern.Split('|');
                     if (parts.Length == 2)
@@ -303,17 +303,17 @@ public partial class ContentPage
 
                 ContentItem = await provider.GetItemByUrlAsync(searchPath);
 
-                if (ContentItem != null && ShowNavigationLinks && (PreviousItem == null || NextItem == null))
+                if (ContentItem is not null && ShowNavigationLinks && (PreviousItem is null || NextItem is null))
                 {
                     await LoadNavigationItemsAsync(provider, ContentItem);
                 }
 
-                if (ContentItem != null && ShowRelatedContent && (RelatedItems == null || !RelatedItems.Any()))
+                if (ContentItem is not null && ShowRelatedContent && (RelatedItems is null || !RelatedItems.Any()))
                 {
                     await LoadRelatedItemsAsync(provider, ContentItem);
                 }
 
-                if (ContentItem != null && OnContentLoaded.HasDelegate)
+                if (ContentItem is not null && OnContentLoaded.HasDelegate)
                 {
                     await OnContentLoaded.InvokeAsync(ContentItem);
                 }
@@ -496,7 +496,7 @@ public partial class ContentPage
     /// </summary>
     protected string GetContentUrl(ContentItem item)
     {
-        if (ContentUrlFormatter != null)
+        if (ContentUrlFormatter is not null)
         {
             return ContentUrlFormatter(item);
         }
@@ -504,13 +504,13 @@ public partial class ContentPage
         var path = item.Path;
 
         // Remove the IgnorePathSegment if specified
-        if (!string.IsNullOrEmpty(IgnorePathSegment) && path.Contains(IgnorePathSegment))
+        if (!string.IsNullOrWhiteSpace(IgnorePathSegment) && path.Contains(IgnorePathSegment))
         {
             path = path.Replace($"{IgnorePathSegment}/", "");
         }
 
         // Apply custom regex replace pattern if specified
-        if (!string.IsNullOrEmpty(PathReplacePattern))
+        if (!string.IsNullOrWhiteSpace(PathReplacePattern))
         {
             var parts = PathReplacePattern.Split('|');
             if (parts.Length == 2)

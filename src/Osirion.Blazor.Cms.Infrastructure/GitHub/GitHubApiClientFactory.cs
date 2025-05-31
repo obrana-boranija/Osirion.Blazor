@@ -108,7 +108,7 @@ public class GitHubApiClientFactory : IGitHubApiClientFactory
 
     public IGitHubApiClient GetClient(string providerName)
     {
-        if (string.IsNullOrEmpty(providerName))
+        if (string.IsNullOrWhiteSpace(providerName))
             throw new ArgumentException("Provider name cannot be empty", nameof(providerName));
 
         return _clients.GetOrAdd(providerName, name =>
@@ -127,18 +127,18 @@ public class GitHubApiClientFactory : IGitHubApiClientFactory
                 _logger.LogInformation("Using Admin provider configuration for '{Name}'", name);
             }
 
-            if (options == null)
+            if (options is null)
             {
                 throw new InvalidOperationException($"GitHub provider '{name}' not found in configuration");
             }
 
             // Validate the options before creating the client
-            if (string.IsNullOrEmpty(options.Owner))
+            if (string.IsNullOrWhiteSpace(options.Owner))
             {
                 throw new InvalidOperationException($"GitHub provider '{name}' is missing 'Owner' configuration");
             }
 
-            if (string.IsNullOrEmpty(options.Repository))
+            if (string.IsNullOrWhiteSpace(options.Repository))
             {
                 throw new InvalidOperationException($"GitHub provider '{name}' is missing 'Repository' configuration");
             }
@@ -190,7 +190,7 @@ public class GitHubApiClientFactory : IGitHubApiClientFactory
             client.SetRepository(githubOptions.Owner, githubOptions.Repository);
             client.SetBranch(githubOptions.Branch);
 
-            if (!string.IsNullOrEmpty(githubOptions.ApiToken))
+            if (!string.IsNullOrWhiteSpace(githubOptions.ApiToken))
             {
                 client.SetAccessToken(githubOptions.ApiToken);
             }
@@ -206,7 +206,7 @@ public class GitHubApiClientFactory : IGitHubApiClientFactory
         // Try web default first, then admin default
         var defaultProvider = _defaultWebProvider ?? _defaultAdminProvider;
 
-        if (string.IsNullOrEmpty(defaultProvider))
+        if (string.IsNullOrWhiteSpace(defaultProvider))
         {
             if (_webProviders.Any())
             {
@@ -242,7 +242,7 @@ public class GitHubApiClientFactory : IGitHubApiClientFactory
     /// </summary>
     public GitHubProviderOptions? GetProviderOptions(string providerName)
     {
-        if (string.IsNullOrEmpty(providerName))
+        if (string.IsNullOrWhiteSpace(providerName))
             return null;
 
         // Check web providers first

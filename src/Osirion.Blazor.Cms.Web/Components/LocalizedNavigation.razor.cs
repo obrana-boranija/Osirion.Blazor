@@ -64,7 +64,7 @@ public partial class LocalizedNavigation
 
     protected override async Task OnParametersSetAsync()
     {
-        if (string.IsNullOrEmpty(CurrentLocale) && AvailableLocales.Any())
+        if (string.IsNullOrWhiteSpace(CurrentLocale) && AvailableLocales.Any())
         {
             CurrentLocale = AvailableLocales.First();
         }
@@ -78,7 +78,7 @@ public partial class LocalizedNavigation
         try
         {
             var provider = ContentProviderManager.GetDefaultProvider();
-            if (provider != null)
+            if (provider is not null)
             {
                 // Get available locales
                 //var localizationInfo = await provider.GetLocalizationInfoAsync();
@@ -86,7 +86,7 @@ public partial class LocalizedNavigation
                 //    ? localizationInfo.AvailableLocales.Select(locale => locale.Code).ToList()
                 //    : new List<string> { localizationInfo.DefaultLocale };
 
-                //if (string.IsNullOrEmpty(CurrentLocale) && AvailableLocales.Any())
+                //if (string.IsNullOrWhiteSpace(CurrentLocale) && AvailableLocales.Any())
                 //{
                 //    CurrentLocale = localizationInfo.DefaultLocale;
                 //}

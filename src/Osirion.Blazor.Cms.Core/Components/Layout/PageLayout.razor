@@ -5,14 +5,14 @@
     @if (ShowHeader)
     {
             <header class="osirion-page-header">
-            @if (HeaderTemplate != null)
+            @if (HeaderTemplate is not null)
             {
                 @HeaderTemplate
             }
             else
             {
                         <h1 class="osirion-page-title">@Title</h1>
-                @if (!string.IsNullOrEmpty(Description))
+                @if (!string.IsNullOrWhiteSpace(Description))
                 {
                                 <p class="osirion-page-description">@Description</p>
                 }

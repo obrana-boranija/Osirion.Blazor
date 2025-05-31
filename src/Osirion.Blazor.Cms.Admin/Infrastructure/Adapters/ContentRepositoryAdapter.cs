@@ -212,7 +212,7 @@ public class ContentRepositoryAdapter : IContentRepositoryAdapter
 
     private async void OnAuthenticationChanged(bool isAuthenticated)
     {
-        if (isAuthenticated && !string.IsNullOrEmpty(_authService.AccessToken))
+        if (isAuthenticated && !string.IsNullOrWhiteSpace(_authService.AccessToken))
         {
             await _gitHubService.SetAuthTokenAsync(_authService.AccessToken);
         }

@@ -32,11 +32,11 @@ public class MarkdigRenderer : IMarkdownRenderer
     /// <inheritdoc/>
     public string RenderToHtml(string markdown, Action<object>? configureOptions = null)
     {
-        if (string.IsNullOrEmpty(markdown))
+        if (string.IsNullOrWhiteSpace(markdown))
             return string.Empty;
 
         var pipeline = _defaultPipeline;
-        if (configureOptions != null)
+        if (configureOptions is not null)
         {
             var pipelineBuilder = new MarkdownPipelineBuilder()
                 .UseAdvancedExtensions()

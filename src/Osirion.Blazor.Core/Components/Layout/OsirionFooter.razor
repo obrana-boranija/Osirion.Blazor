@@ -3,21 +3,21 @@
 
 <footer class="@GetFooterClass()" @attributes="AdditionalAttributes">
     <div class="osirion-footer-container">
-        @if (ShowTopSection && (Logo != null || Links?.Any() == true || SocialLinks?.Any() == true || TopContent != null))
+        @if (ShowTopSection && (Logo is not null || Links?.Any() == true || SocialLinks?.Any() == true || TopContent is not null))
         {
             <div class="osirion-footer-top">
                 <div class="osirion-footer-content">
                     <div class="osirion-footer-grid">
-                        @if (Logo != null || Description != null)
+                        @if (Logo is not null || Description is not null)
                         {
                             <div class="osirion-footer-brand">
-                                @if (Logo != null)
+                                @if (Logo is not null)
                                 {
                                     <div class="osirion-footer-logo">
                                         @Logo
                                     </div>
                                 }
-                                @if (!string.IsNullOrEmpty(Description))
+                                @if (!string.IsNullOrWhiteSpace(Description))
                                 {
                                     <p class="osirion-footer-description">@Description</p>
                                 }
@@ -30,7 +30,7 @@
                                 @foreach (var linkSection in Links)
                                 {
                                     <div class="osirion-footer-section">
-                                        @if (!string.IsNullOrEmpty(linkSection.Title))
+                                        @if (!string.IsNullOrWhiteSpace(linkSection.Title))
                                         {
                                             <h3 class="osirion-footer-section-title">@linkSection.Title</h3>
                                         }
@@ -52,7 +52,7 @@
                             </div>
                         }
 
-                        @if (TopContent != null)
+                        @if (TopContent is not null)
                         {
                             <div class="osirion-footer-custom-top">
                                 @TopContent
@@ -62,7 +62,7 @@
                         @if (SocialLinks?.Any() == true && ShowSocialLinks)
                         {
                             <div class="osirion-footer-social">
-                                @if (!string.IsNullOrEmpty(SocialTitle))
+                                @if (!string.IsNullOrWhiteSpace(SocialTitle))
                                 {
                                     <h3 class="osirion-footer-section-title">@SocialTitle</h3>
                                 }
@@ -74,7 +74,7 @@
                                            aria-label="@social.AriaLabel"
                                            target="_blank"
                                            rel="noopener noreferrer">
-                                            @if (social.Icon != null)
+                                            @if (social.Icon is not null)
                                             {
                                                 @social.Icon
                                             }
@@ -102,7 +102,7 @@
             <div class="osirion-footer-bottom">
                 <div class="osirion-footer-content">
                     <div class="osirion-footer-bottom-content">
-                        @if (!string.IsNullOrEmpty(Copyright))
+                        @if (!string.IsNullOrWhiteSpace(Copyright))
                         {
                             <div class="osirion-footer-copyright">
                                 @Copyright
@@ -131,7 +131,7 @@
             </div>
         }
 
-        @if (ChildContent != null)
+        @if (ChildContent is not null)
         {
             <div class="osirion-footer-extra">
                 <div class="osirion-footer-content">

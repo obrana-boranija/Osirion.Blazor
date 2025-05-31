@@ -36,12 +36,12 @@ public partial class MetadataPreview
 
     private string GetPreviewUrl()
     {
-        if (!string.IsNullOrEmpty(SeoMetadata.Canonical))
+        if (!string.IsNullOrWhiteSpace(SeoMetadata.Canonical))
         {
             return SeoMetadata.Canonical;
         }
 
-        var slug = !string.IsNullOrEmpty(Metadata.Slug)
+        var slug = !string.IsNullOrWhiteSpace(Metadata.Slug)
             ? Metadata.Slug
             : Metadata.Title.ToLower().Replace(" ", "-");
 
@@ -64,7 +64,7 @@ public partial class MetadataPreview
 
     private string GetSearchTitle()
     {
-        var title = !string.IsNullOrEmpty(SeoMetadata.Title)
+        var title = !string.IsNullOrWhiteSpace(SeoMetadata.Title)
             ? SeoMetadata.Title
             : Metadata.Title;
 
@@ -79,7 +79,7 @@ public partial class MetadataPreview
 
     private string GetSearchDescription()
     {
-        var description = !string.IsNullOrEmpty(SeoMetadata.Description)
+        var description = !string.IsNullOrWhiteSpace(SeoMetadata.Description)
             ? SeoMetadata.Description
             : Metadata.Description;
 
@@ -94,42 +94,42 @@ public partial class MetadataPreview
 
     private string GetOgTitle()
     {
-        return !string.IsNullOrEmpty(SeoMetadata.OgTitle)
+        return !string.IsNullOrWhiteSpace(SeoMetadata.OgTitle)
             ? SeoMetadata.OgTitle
             : GetSearchTitle();
     }
 
     private string GetOgDescription()
     {
-        return !string.IsNullOrEmpty(SeoMetadata.OgDescription)
+        return !string.IsNullOrWhiteSpace(SeoMetadata.OgDescription)
             ? SeoMetadata.OgDescription
             : GetSearchDescription();
     }
 
     private string GetOgImage()
     {
-        return !string.IsNullOrEmpty(SeoMetadata.OgImageUrl)
+        return !string.IsNullOrWhiteSpace(SeoMetadata.OgImageUrl)
             ? SeoMetadata.OgImageUrl
             : Metadata.FeaturedImage ?? "";
     }
 
     private string GetTwitterTitle()
     {
-        return !string.IsNullOrEmpty(SeoMetadata.TwitterTitle)
+        return !string.IsNullOrWhiteSpace(SeoMetadata.TwitterTitle)
             ? SeoMetadata.TwitterTitle
             : GetOgTitle();
     }
 
     private string GetTwitterDescription()
     {
-        return !string.IsNullOrEmpty(SeoMetadata.TwitterDescription)
+        return !string.IsNullOrWhiteSpace(SeoMetadata.TwitterDescription)
             ? SeoMetadata.TwitterDescription
             : GetOgDescription();
     }
 
     private string GetTwitterImage()
     {
-        return !string.IsNullOrEmpty(SeoMetadata.TwitterImageUrl)
+        return !string.IsNullOrWhiteSpace(SeoMetadata.TwitterImageUrl)
             ? SeoMetadata.TwitterImageUrl
             : GetOgImage();
     }
@@ -147,7 +147,7 @@ public partial class MetadataPreview
         sb.AppendLine($"<title>{GetSearchTitle()}</title>");
         sb.AppendLine($"<meta name=\"description\" content=\"{GetSearchDescription()}\" />");
 
-        if (!string.IsNullOrEmpty(SeoMetadata.Canonical))
+        if (!string.IsNullOrWhiteSpace(SeoMetadata.Canonical))
         {
             sb.AppendLine($"<link rel=\"canonical\" href=\"{SeoMetadata.Canonical}\" />");
         }
@@ -160,7 +160,7 @@ public partial class MetadataPreview
         sb.AppendLine($"<meta property=\"og:type\" content=\"{SeoMetadata.OgType}\" />");
         sb.AppendLine($"<meta property=\"og:url\" content=\"{GetPreviewUrl()}\" />");
 
-        if (!string.IsNullOrEmpty(GetOgImage()))
+        if (!string.IsNullOrWhiteSpace(GetOgImage()))
         {
             sb.AppendLine($"<meta property=\"og:image\" content=\"{GetOgImage()}\" />");
         }
@@ -170,13 +170,13 @@ public partial class MetadataPreview
         sb.AppendLine($"<meta name=\"twitter:title\" content=\"{GetTwitterTitle()}\" />");
         sb.AppendLine($"<meta name=\"twitter:description\" content=\"{GetTwitterDescription()}\" />");
 
-        if (!string.IsNullOrEmpty(GetTwitterImage()))
+        if (!string.IsNullOrWhiteSpace(GetTwitterImage()))
         {
             sb.AppendLine($"<meta name=\"twitter:image\" content=\"{GetTwitterImage()}\" />");
         }
 
         // Schema.org structured data
-        if (!string.IsNullOrEmpty(SeoMetadata.JsonLd))
+        if (!string.IsNullOrWhiteSpace(SeoMetadata.JsonLd))
         {
             sb.AppendLine($"<script type=\"application/ld+json\">");
             sb.AppendLine(SeoMetadata.JsonLd);

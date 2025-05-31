@@ -49,7 +49,7 @@ public partial class CategoriesList(IContentProviderManager contentProviderManag
         try
         {
             var provider = contentProviderManager.GetDefaultProvider();
-            if (provider != null)
+            if (provider is not null)
             {
                 var allCategories = await provider.GetCategoriesAsync();
 
@@ -91,7 +91,7 @@ public partial class CategoriesList(IContentProviderManager contentProviderManag
 
     private string GetCategoryLinkClass(ContentCategory category)
     {
-        var isActive = !string.IsNullOrEmpty(ActiveCategory) &&
+        var isActive = !string.IsNullOrWhiteSpace(ActiveCategory) &&
                      (category.Slug.Equals(ActiveCategory, StringComparison.OrdinalIgnoreCase) ||
                       category.Name.Equals(ActiveCategory, StringComparison.OrdinalIgnoreCase));
 

@@ -101,7 +101,7 @@ Add the `MarkdownEditorInitializer` component to your `App.razor` file:
     
     private async Task SyncPreviewScroll(double position)
     {
-        if (!isScrolling && PreviewRef != null)
+        if (!isScrolling && PreviewRef is not null)
         {
             isScrolling = true;
             await PreviewRef.SetScrollPositionAsync(position);
@@ -111,7 +111,7 @@ Add the `MarkdownEditorInitializer` component to your `App.razor` file:
     
     private async Task SyncEditorScroll(double position)
     {
-        if (!isScrolling && EditorRef != null)
+        if (!isScrolling && EditorRef is not null)
         {
             isScrolling = true;
             await EditorRef.SetScrollPositionAsync(position);

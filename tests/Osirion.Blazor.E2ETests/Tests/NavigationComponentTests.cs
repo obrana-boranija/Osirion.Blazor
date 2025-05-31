@@ -76,7 +76,7 @@ public class NavigationComponentTests : IClassFixture<PlaywrightFixture>
 
         // Assert - Button should not be visible
         var scrollButton = await _fixture.Page.QuerySelectorAsync(".osirion-scroll-to-top");
-        if (scrollButton != null)
+        if (scrollButton is not null)
         {
             var isVisible = await scrollButton.IsVisibleAsync();
             Assert.False(isVisible);

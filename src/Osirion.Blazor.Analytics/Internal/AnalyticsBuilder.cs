@@ -138,7 +138,7 @@ public class AnalyticsBuilder : IAnalyticsBuilder
     public IAnalyticsBuilder AddProvider<TProvider>(Action<TProvider>? configure = null)
         where TProvider : class, IAnalyticsProvider
     {
-        if (configure != null)
+        if (configure is not null)
         {
             Services.AddSingleton(sp => {
                 var provider = ActivatorUtilities.CreateInstance<TProvider>(sp);

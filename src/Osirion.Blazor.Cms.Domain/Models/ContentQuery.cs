@@ -161,22 +161,22 @@ public class ContentQuery
             IncludeSubdirectories = IncludeSubdirectories
         };
 
-        if (IncludeIds != null)
+        if (IncludeIds is not null)
         {
             clone.IncludeIds = [.. IncludeIds];
         }
 
-        if (ExcludeIds != null)
+        if (ExcludeIds is not null)
         {
             clone.ExcludeIds = [.. ExcludeIds];
         }
 
-        if (Tags != null)
+        if (Tags is not null)
         {
             clone.Tags = [.. Tags];
         }
 
-        if (Categories != null)
+        if (Categories is not null)
         {
             clone.Categories = [.. Categories];
         }

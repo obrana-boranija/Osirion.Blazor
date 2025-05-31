@@ -32,8 +32,8 @@ public partial class EditContent : IDisposable
     protected override async Task OnParametersSetAsync()
     {
         // Reload content if parameters change and we're already rendered
-        if (!string.IsNullOrEmpty(Path) &&
-           (AdminState.EditingPost == null || AdminState.EditingPost.Path != Path))
+        if (!string.IsNullOrWhiteSpace(Path) &&
+           (AdminState.EditingPost is null || AdminState.EditingPost.Path != Path))
         {
             await LoadContentAsync();
         }
@@ -55,21 +55,21 @@ public partial class EditContent : IDisposable
     /// </summary>
     private async Task LoadContentBasedOnParameters()
     {
-        if (!string.IsNullOrEmpty(Path))
+        if (!string.IsNullOrWhiteSpace(Path))
         {
             // Path parameter takes precedence
             await LoadContentAsync();
         }
-        else if (AdminState.SelectedItem != null && AdminState.SelectedItem.IsMarkdownFile)
+        else if (AdminState.SelectedItem is not null && AdminState.SelectedItem.IsMarkdownFile)
         {
             // Redirect to proper route if we have a selected item
             NavigationManager.NavigateTo($"/osirion/content/edit?Path={AdminState.SelectedItem.Path}");
         }
-        else if (AdminState.EditingPost != null && AdminState.IsEditing)
+        else if (AdminState.EditingPost is not null && AdminState.IsEditing)
         {
             // We already have a post being edited (likely from content browser)
             // Just ensure we're on the right path
-            if (!string.IsNullOrEmpty(AdminState.EditingPost.Path) &&
+            if (!string.IsNullOrWhiteSpace(AdminState.EditingPost.Path) &&
                 !AdminState.IsCreatingNewFile)
             {
                 NavigationManager.NavigateTo($"/osirion/content/edit?Path={AdminState.EditingPost.Path}");
@@ -79,7 +79,7 @@ public partial class EditContent : IDisposable
 
     private async Task LoadContentAsync()
     {
-        if (string.IsNullOrEmpty(Path))
+        if (string.IsNullOrWhiteSpace(Path))
         {
             return;
         }
@@ -115,7 +115,7 @@ public partial class EditContent : IDisposable
         {
             Metadata = FrontMatter.Create("New Post", "Enter description here", DateTime.Now),
             Content = "## New Post\n\nStart writing your content here...",
-            Path = string.IsNullOrEmpty(AdminState.CurrentPath) ?
+            Path = string.IsNullOrWhiteSpace(AdminState.CurrentPath) ?
               "new-post.md" :
               $"{AdminState.CurrentPath}/new-post.md"
         };
@@ -148,7 +148,7 @@ public partial class EditContent : IDisposable
 
     private string GetPageTitle()
     {
-        if (AdminState.EditingPost == null)
+        if (AdminState.EditingPost is null)
         {
             return "Edit Content";
         }
@@ -160,7 +160,7 @@ public partial class EditContent : IDisposable
 
     private string GetPageSubtitle()
     {
-        if (AdminState.EditingPost == null)
+        if (AdminState.EditingPost is null)
         {
             return "Edit your markdown content";
         }

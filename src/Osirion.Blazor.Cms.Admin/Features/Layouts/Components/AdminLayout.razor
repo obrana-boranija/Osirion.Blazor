@@ -12,14 +12,14 @@
                 <i class="bi bi-house-fill me-2"></i>
                 <span class="sidebar-brand-text">@Title</span>
             </a>
-            @if (!string.IsNullOrEmpty(Subtitle))
+            @if (!string.IsNullOrWhiteSpace(Subtitle))
             {
                 <div class="sidebar-subtitle text-secondary small mt-1">@Subtitle</div>
             }
         </div>
 
         <div class="sidebar-nav p-2">
-            @if (NavigationTemplate != null)
+            @if (NavigationTemplate is not null)
             {
                 @NavigationTemplate
             }
@@ -30,7 +30,7 @@
         </div>
 
         <div class="sidebar-footer border-top p-3 mt-auto">
-            @if (SidebarFooterTemplate != null)
+            @if (SidebarFooterTemplate is not null)
             {
                 @SidebarFooterTemplate
             }
@@ -58,7 +58,7 @@
         <header class="main-header border-bottom p-3">
             <div class="d-flex align-items-center justify-content-between">
                 <div class="d-flex align-items-center">
-                    @if (HeaderTemplate != null)
+                    @if (HeaderTemplate is not null)
                     {
                         @HeaderTemplate
                     }
@@ -73,11 +73,11 @@
                                     </a>
                                 </li>
 
-                                @if (BreadcrumbItems != null && BreadcrumbItems.Count > 0)
+                                @if (BreadcrumbItems is not null && BreadcrumbItems.Count > 0)
                                 {
                                     foreach (var item in BreadcrumbItems)
                                     {
-                                        if (string.IsNullOrEmpty(item.Url) || item == BreadcrumbItems.Last())
+                                        if (string.IsNullOrWhiteSpace(item.Url) || item == BreadcrumbItems.Last())
                                         {
                                             <li class="breadcrumb-item active" aria-current="page">@item.Text</li>
                                         }
@@ -87,7 +87,7 @@
                                         }
                                     }
                                 }
-                                else if (!string.IsNullOrEmpty(CurrentPage))
+                                else if (!string.IsNullOrWhiteSpace(CurrentPage))
                                 {
                                     <li class="breadcrumb-item active" aria-current="page">@CurrentPage</li>
                                 }
@@ -97,7 +97,7 @@
                 </div>
 
                 <div class="d-flex align-items-center">
-                    @if (ActionsTemplate != null)
+                    @if (ActionsTemplate is not null)
                     {
                         @ActionsTemplate
                     }
@@ -119,7 +119,7 @@
         </header>
 
         <div class="main-container flex-grow-1 overflow-auto p-4">
-            @if (!string.IsNullOrEmpty(StatusMessage))
+            @if (!string.IsNullOrWhiteSpace(StatusMessage))
             {
                 <div class="alert alert-success d-flex align-items-center alert-dismissible fade show" role="alert">
                     <i class="bi bi-check-circle-fill me-2"></i>
@@ -128,7 +128,7 @@
                 </div>
             }
 
-            @if (!string.IsNullOrEmpty(ErrorMessage))
+            @if (!string.IsNullOrWhiteSpace(ErrorMessage))
             {
                 <div class="alert alert-danger d-flex align-items-center alert-dismissible fade show" role="alert">
                     <i class="bi bi-exclamation-circle-fill me-2"></i>

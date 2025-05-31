@@ -22,11 +22,11 @@ public class DefaultMarkdownRenderer : IMarkdownRendererService
     /// <inheritdoc/>
     public string RenderToHtml(string markdown, Action<MarkdownPipelineBuilder>? configureOptions = null)
     {
-        if (string.IsNullOrEmpty(markdown))
+        if (string.IsNullOrWhiteSpace(markdown))
             return string.Empty;
 
         var pipeline = _defaultPipeline;
-        if (configureOptions != null)
+        if (configureOptions is not null)
         {
             var pipelineBuilder = new MarkdownPipelineBuilder()
                 .UseAdvancedExtensions()

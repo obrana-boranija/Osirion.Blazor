@@ -194,7 +194,7 @@ public class GitHubRepositoryAdapter : IContentRepositoryAdapter
     private void LogMethodCall([CallerMemberName] string? methodName = null, string? details = null)
     {
         var message = $"GitHub repository adapter: {methodName}";
-        if (!string.IsNullOrEmpty(details))
+        if (!string.IsNullOrWhiteSpace(details))
         {
             message += $" - {details}";
         }
@@ -206,12 +206,12 @@ public class GitHubRepositoryAdapter : IContentRepositoryAdapter
     {
         var message = $"Error in GitHub repository adapter";
 
-        if (methodName != null)
+        if (methodName is not null)
         {
             message += $": {methodName}";
         }
 
-        if (context != null)
+        if (context is not null)
         {
             message += $" ({context})";
         }

@@ -13,7 +13,7 @@
                             <p class="text-muted mb-4">Sign in to manage your content</p>
                         </div>
 
-                        @if (!string.IsNullOrEmpty(ErrorMessage))
+                        @if (!string.IsNullOrWhiteSpace(ErrorMessage))
                         {
                                 <div class="alert alert-danger d-flex align-items-center" role="alert">
                                     <i class="bi bi-exclamation-circle-fill me-2"></i>
@@ -39,7 +39,7 @@
                                     <button type="button"
                                             class="btn btn-primary"
                                             @onclick="LoginWithToken"
-                                            disabled="@(string.IsNullOrEmpty(AccessToken) || IsLoggingIn)">
+                                            disabled="@(string.IsNullOrWhiteSpace(AccessToken) || IsLoggingIn)">
                                     @if (IsLoggingIn)
                                     {
                                                 <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>

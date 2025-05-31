@@ -9,7 +9,7 @@
             <p>@LoadingText</p>
         </div>
     }
-    else if (Content == null && !string.IsNullOrEmpty(ContentPath))
+    else if (Content is null && !string.IsNullOrWhiteSpace(ContentPath))
     {
         <div class="osirion-not-found">
             <p>@NotFoundText</p>
@@ -22,7 +22,7 @@
             <HeroSection 
                 Title="@(Content?.Title ?? HeroTitle)"
                 Subtitle="@(Content?.Description ?? HeroSubtitle)"
-                BackgroundImage="@(Content?.FeaturedImageUrl ?? HeroBackgroundImage)"
+                ImageUrl="@(Content?.FeaturedImageUrl ?? HeroBackgroundImage)"
                 PrimaryButtonText="@HeroPrimaryButtonText"
                 PrimaryButtonUrl="@HeroPrimaryButtonUrl"
                 SecondaryButtonText="@HeroSecondaryButtonText"
@@ -32,7 +32,7 @@
                 MinHeight="@HeroHeight" />
         }
 
-        @if (Content != null)
+        @if (Content is not null)
         {
             <ContentSection 
                 Content="@Content.Content"
@@ -42,7 +42,7 @@
                 Padding="@ContentPadding" />
         }
 
-        @if (ShowTestimonials && TestimonialItems != null && TestimonialItems.Any())
+        @if (ShowTestimonials && TestimonialItems is not null && TestimonialItems.Any())
         {
             <TestimonialsSection 
                 Title="@TestimonialsSectionTitle"
@@ -51,7 +51,7 @@
                 ShowImages="@ShowTestimonialImages" />
         }
 
-        @if (ShowFeatures && FeatureItems != null && FeatureItems.Any())
+        @if (ShowFeatures && FeatureItems is not null && FeatureItems.Any())
         {
             <FeaturesSection 
                 Title="@FeaturesSectionTitle"
@@ -74,7 +74,7 @@
                 Variant="@CtaVariant" />
         }
 
-        @if (!string.IsNullOrEmpty(CustomContent))
+        @if (!string.IsNullOrWhiteSpace(CustomContent))
         {
             <ContentSection 
                 Content="@CustomContent"
@@ -83,7 +83,7 @@
                 Padding="large" />
         }
 
-        @if (ChildContent != null)
+        @if (ChildContent is not null)
         {
             <ContentSection 
                 Width="wide"

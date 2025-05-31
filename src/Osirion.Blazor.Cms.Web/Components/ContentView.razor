@@ -27,7 +27,7 @@
                 <div class="osirion-content-title-container">
                     <h1 class="osirion-content-title">@Item.Title</h1>
                     <div class="osirion-content-meta">
-                        @if (!string.IsNullOrEmpty(Item.Author))
+                        @if (!string.IsNullOrWhiteSpace(Item.Author))
                         {
                             <span class="osirion-content-meta-item osirion-content-author">
                                 <svg class="osirion-content-meta-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -68,7 +68,7 @@
                 </div>
 
                 <!-- Featured image if present -->
-                @if (!string.IsNullOrEmpty(Item.FeaturedImageUrl))
+                @if (!string.IsNullOrWhiteSpace(Item.FeaturedImageUrl))
                 {
                     <figure class="osirion-content-featured-image-container">
                         <img src="@Item.FeaturedImageUrl" alt="@Item.Title" class="osirion-content-featured-image" loading="lazy" />
@@ -114,10 +114,10 @@
                 </div>
 
                 <!-- Navigation between content items -->
-                @if (ShowNavigationLinks && (PreviousItem != null || NextItem != null))
+                @if (ShowNavigationLinks && (PreviousItem is not null || NextItem is not null))
                 {
                     <nav class="osirion-content-navigation" aria-label="Content navigation">
-                        @if (PreviousItem != null)
+                        @if (PreviousItem is not null)
                         {
                             <a href="@GetContentUrl(PreviousItem)" class="osirion-content-previous">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -130,7 +130,7 @@
                             </a>
                         }
 
-                        @if (NextItem != null)
+                        @if (NextItem is not null)
                         {
                             <a href="@GetContentUrl(NextItem)" class="osirion-content-next">
                                 <div class="osirion-content-navigation-text">

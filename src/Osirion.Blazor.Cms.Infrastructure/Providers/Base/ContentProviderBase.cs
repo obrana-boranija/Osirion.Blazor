@@ -77,7 +77,7 @@ public abstract class ContentProviderBase : IContentProvider, IDisposable
     /// <inheritdoc/>
     public virtual async Task<IReadOnlyList<ContentItem>?> GetContentTranslationsAsync(string localizationId, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrEmpty(localizationId))
+        if (string.IsNullOrWhiteSpace(localizationId))
             return Array.Empty<ContentItem>();
 
         try
@@ -95,7 +95,7 @@ public abstract class ContentProviderBase : IContentProvider, IDisposable
     /// <inheritdoc/>
     public virtual async Task<Dictionary<string, ContentItem>> GetContentTranslationsAsync(string localizationId)
     {
-        if (string.IsNullOrEmpty(localizationId))
+        if (string.IsNullOrWhiteSpace(localizationId))
         {
             return new Dictionary<string, ContentItem>();
         }
@@ -103,7 +103,7 @@ public abstract class ContentProviderBase : IContentProvider, IDisposable
         try
         {
             var translations = await GetContentTranslationsAsync(localizationId, CancellationToken.None);
-            if (translations == null)
+            if (translations is null)
                 return new Dictionary<string, ContentItem>();
 
             return translations.ToDictionary(item => item.Locale, item => item);

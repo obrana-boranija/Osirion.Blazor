@@ -22,7 +22,7 @@ public static class OsirionServiceCollectionExtensions
         this IServiceCollection services,
         Action<IOsirionBuilder>? configure = null)
     {
-        if (services == null) throw new ArgumentNullException(nameof(services));
+        if (services is null) throw new ArgumentNullException(nameof(services));
 
         // Create the builder
         var builder = new OsirionBuilder(services);
@@ -46,8 +46,8 @@ public static class OsirionServiceCollectionExtensions
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        if (services == null) throw new ArgumentNullException(nameof(services));
-        if (configuration == null) throw new ArgumentNullException(nameof(configuration));
+        if (services is null) throw new ArgumentNullException(nameof(services));
+        if (configuration is null) throw new ArgumentNullException(nameof(configuration));
 
         return services.AddOsirion(builder =>
         {

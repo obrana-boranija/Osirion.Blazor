@@ -46,7 +46,7 @@ public partial class TableOfContents
     /// <inheritdoc/>
     protected override void OnParametersSet()
     {
-        if (!string.IsNullOrEmpty(Content))
+        if (!string.IsNullOrWhiteSpace(Content))
         {
             Headings = ExtractHeadings(Content);
         }
@@ -76,7 +76,7 @@ public partial class TableOfContents
             var text = StripHtmlTags(match.Groups[3].Value);
 
             // Generate ID if not present
-            if (string.IsNullOrEmpty(id))
+            if (string.IsNullOrWhiteSpace(id))
             {
                 id = GenerateId(text);
             }
@@ -144,7 +144,7 @@ public partial class TableOfContents
         id = Regex.Replace(id, @"\s+", "-");
         id = id.Trim('-');
 
-        return string.IsNullOrEmpty(id) ? "heading" : id;
+        return string.IsNullOrWhiteSpace(id) ? "heading" : id;
     }
 
     /// <summary>

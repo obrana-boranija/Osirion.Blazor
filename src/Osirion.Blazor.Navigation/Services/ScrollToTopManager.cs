@@ -155,7 +155,7 @@ public class ScrollToTopManager
     /// <param name="options">The options to apply</param>
     public void ApplyOptions(ScrollToTopOptions options)
     {
-        if (options == null) throw new ArgumentNullException(nameof(options));
+        if (options is null) throw new ArgumentNullException(nameof(options));
 
         Position = options.Position;
         Behavior = options.Behavior;

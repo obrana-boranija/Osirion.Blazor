@@ -16,14 +16,14 @@ public static class IdGenerator
     /// <returns>A stable, collision-resistant ID string</returns>
     public static string GenerateStableId(string path, params string[] additionalComponents)
     {
-        if (string.IsNullOrEmpty(path))
+        if (string.IsNullOrWhiteSpace(path))
             throw new ArgumentException("Path cannot be empty", nameof(path));
 
         // Combine path with additional components
         var builder = new StringBuilder(path);
         foreach (var component in additionalComponents)
         {
-            if (!string.IsNullOrEmpty(component))
+            if (!string.IsNullOrWhiteSpace(component))
             {
                 builder.Append('|');
                 builder.Append(component);

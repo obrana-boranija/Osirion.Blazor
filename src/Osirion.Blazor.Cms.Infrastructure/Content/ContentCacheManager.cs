@@ -27,7 +27,7 @@ public class ContentCacheManager : IContentCacheManager
         CancellationToken cancellationToken = default,
         bool forceRefresh = false)
     {
-        if (!forceRefresh && _contentCache != null && DateTime.UtcNow < _cacheExpiration)
+        if (!forceRefresh && _contentCache is not null && DateTime.UtcNow < _cacheExpiration)
         {
             return _contentCache;
         }
@@ -36,7 +36,7 @@ public class ContentCacheManager : IContentCacheManager
         try
         {
             // Double-check inside the lock
-            if (!forceRefresh && _contentCache != null && DateTime.UtcNow < _cacheExpiration)
+            if (!forceRefresh && _contentCache is not null && DateTime.UtcNow < _cacheExpiration)
             {
                 return _contentCache;
             }
@@ -55,7 +55,7 @@ public class ContentCacheManager : IContentCacheManager
             _logger.LogError(ex, "Error refreshing content cache");
 
             // If we have an existing cache, return it even if expired
-            if (_contentCache != null)
+            if (_contentCache is not null)
             {
                 _logger.LogWarning("Returning stale content cache after refresh error");
                 return _contentCache;

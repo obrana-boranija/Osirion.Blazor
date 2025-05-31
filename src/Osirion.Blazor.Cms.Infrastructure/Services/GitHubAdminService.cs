@@ -46,7 +46,7 @@ public class GitHubAdminService : IGitHubAdminService
     /// </summary>
     public void SetProvider(string providerName)
     {
-        if (string.IsNullOrEmpty(providerName))
+        if (string.IsNullOrWhiteSpace(providerName))
         {
             _apiClient = _apiClientFactory.GetDefaultClient();
             CurrentProvider = "default";
@@ -194,7 +194,7 @@ public class GitHubAdminService : IGitHubAdminService
 
     public async Task SetAuthTokenAsync(string token)
     {
-        if (string.IsNullOrEmpty(token))
+        if (string.IsNullOrWhiteSpace(token))
         {
             _logger.LogWarning("Attempted to set empty auth token");
             return;

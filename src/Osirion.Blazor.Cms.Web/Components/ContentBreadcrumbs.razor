@@ -7,12 +7,12 @@
             </li>
         }
 
-        @if (Directory != null)
+        @if (Directory is not null)
         {
             @RenderDirectoryPath(Directory)
         }
 
-        @if (Content != null && !HideCurrentItem)
+        @if (Content is not null && !HideCurrentItem)
         {
             <li class="osirion-breadcrumbs-item osirion-breadcrumbs-current">
                 <span class="osirion-breadcrumbs-text">@Content.Title</span>

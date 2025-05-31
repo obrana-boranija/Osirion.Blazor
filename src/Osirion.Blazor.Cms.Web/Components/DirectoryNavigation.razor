@@ -1,5 +1,5 @@
 ﻿<nav class="@GetDirectoryNavClass()">
-    @if (Title != null)
+    @if (Title is not null)
     {
         <h3 class="osirion-directory-title">@Title</h3>
     }
@@ -8,7 +8,7 @@
     {
         <div class="osirion-loading">@LoadingText</div>
     }
-    else if (Directories == null || !Directories.Any())
+    else if (Directories is null || !Directories.Any())
     {
         <div class="osirion-no-directories">@NoContentText</div>
     }
@@ -29,7 +29,7 @@
                         }
                     </a>
 
-                    @if (ShowSubdirectories && directory.Children != null && directory.Children.Any()
+                    @if (ShowSubdirectories && directory.Children is not null && directory.Children.Any()
                    && (ExpandedDirectory == directory.Path || ExpandAllSubdirectories))
                     {
                         <ul class="osirion-subdirectory-list">

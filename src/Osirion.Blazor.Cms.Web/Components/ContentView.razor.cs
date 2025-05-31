@@ -42,7 +42,7 @@ public partial class ContentView(IContentProviderManager contentProviderManager)
 
     protected override async Task OnParametersSetAsync()
     {
-        if (Item is null && !string.IsNullOrEmpty(Path))
+        if (Item is null && !string.IsNullOrWhiteSpace(Path))
         {
             await LoadContentAsync();
         }
@@ -58,11 +58,11 @@ public partial class ContentView(IContentProviderManager contentProviderManager)
         try
         {
             var provider = contentProviderManager.GetDefaultProvider();
-            if (provider != null)
+            if (provider is not null)
             {
                 Item = await provider.GetItemByPathAsync(Path);
 
-                if (Item != null && ShowNavigationLinks)
+                if (Item is not null && ShowNavigationLinks)
                 {
                     // If we need previous and next items, load them
                     var allItems = await provider.GetItemsByQueryAsync(new ContentQuery

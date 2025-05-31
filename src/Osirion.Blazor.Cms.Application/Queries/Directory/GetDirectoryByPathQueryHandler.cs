@@ -24,11 +24,11 @@ public class GetDirectoryByPathQueryHandler : IQueryHandler<GetDirectoryByPathQu
     {
         _logger.LogDebug("Getting directory by path: {Path}", query.Path);
 
-        var provider = query.ProviderId != null
+        var provider = query.ProviderId is not null
             ? _providerManager.GetProvider(query.ProviderId)
             : _providerManager.GetDefaultProvider();
 
-        if (provider == null)
+        if (provider is null)
         {
             _logger.LogWarning("Provider not found: {ProviderId}", query.ProviderId ?? "default");
             return null;

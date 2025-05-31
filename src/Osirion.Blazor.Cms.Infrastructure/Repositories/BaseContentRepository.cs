@@ -60,7 +60,7 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
     /// <inheritdoc/>
     public override async Task<ContentItem?> GetByIdAsync(string id, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrEmpty(id))
+        if (string.IsNullOrWhiteSpace(id))
             throw new ArgumentException("ID cannot be empty", nameof(id));
 
         try
@@ -118,7 +118,7 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
             Logger.LogError(ex, "Error refreshing content cache for provider {ProviderId}", ProviderId);
 
             // Even if loading fails, ensure we have a valid cache
-            if (ItemCache == null)
+            if (ItemCache is null)
             {
                 ItemCache = new Dictionary<string, ContentItem>();
             }
@@ -148,7 +148,7 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
             var newCache = await LoadItemsIntoCache(cancellationToken);
 
             // Ensure we always have a non-null cache
-            if (newCache == null)
+            if (newCache is null)
             {
                 Logger.LogWarning("LoadItemsIntoCache returned null for provider {ProviderId}, using empty dictionary", ProviderId);
                 newCache = new Dictionary<string, ContentItem>();
@@ -166,7 +166,7 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
             Logger.LogError(ex, "Failed to load items into cache for provider {ProviderId}", ProviderId);
 
             // Always ensure the cache is not null
-            if (ItemCache == null)
+            if (ItemCache is null)
             {
                 ItemCache = new Dictionary<string, ContentItem>();
                 CacheLoaded = true; // Mark as loaded even if empty to avoid infinite loading attempts
@@ -222,7 +222,7 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
             Logger.LogError(ex, "Error ensuring cache is loaded for provider {ProviderId}", ProviderId);
 
             // Always ensure cache is not null
-            if (ItemCache == null)
+            if (ItemCache is null)
             {
                 ItemCache = new Dictionary<string, ContentItem>();
                 CacheLoaded = true; // Mark as loaded to avoid infinite retry
@@ -242,7 +242,7 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
     /// <inheritdoc/>
     public async Task<ContentItem?> GetByPathAsync(string path, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrEmpty(path))
+        if (string.IsNullOrWhiteSpace(path))
             throw new ArgumentException("Path cannot be empty", nameof(path));
 
         try
@@ -262,7 +262,7 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
     /// <inheritdoc/>
     public async Task<ContentItem?> GetByUrlAsync(string url, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrEmpty(url))
+        if (string.IsNullOrWhiteSpace(url))
             throw new ArgumentException("URL cannot be empty", nameof(url));
 
         try
@@ -321,7 +321,7 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
             await EnsureCacheIsLoaded(cancellationToken);
 
             return ItemCache.Values
-                .Where(item => item.Directory != null && item.Directory.Id == directoryId)
+                .Where(item => item.Directory is not null && item.Directory.Id == directoryId)
                 .ToList();
         }
         catch (Exception ex)
@@ -334,7 +334,7 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
     /// <inheritdoc/>
     public async Task<IReadOnlyList<ContentItem>> GetTranslationsAsync(string contentId, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrEmpty(contentId))
+        if (string.IsNullOrWhiteSpace(contentId))
             return new List<ContentItem>();
 
         try
@@ -379,11 +379,11 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
     /// <inheritdoc/>
     public override async Task<ContentItem> SaveAsync(ContentItem entity, CancellationToken cancellationToken = default)
     {
-        if (entity == null)
+        if (entity is null)
             throw new ArgumentNullException(nameof(entity));
 
         // Use default commit message for compatibility with version-controlled systems
-        var commitMessage = string.IsNullOrEmpty(entity.ProviderSpecificId)
+        var commitMessage = string.IsNullOrWhiteSpace(entity.ProviderSpecificId)
             ? $"Create {Path.GetFileName(entity.Path)}"
             : $"Update {Path.GetFileName(entity.Path)}";
 
@@ -434,7 +434,7 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
     /// </summary>
     protected string GenerateSlug(string text)
     {
-        if (string.IsNullOrEmpty(text))
+        if (string.IsNullOrWhiteSpace(text))
             return "untitled";
 
         // Convert to lowercase
@@ -513,13 +513,13 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
         markdown.AppendLine("---");
 
         // Basic metadata
-        if (!string.IsNullOrEmpty(entity.Title))
+        if (!string.IsNullOrWhiteSpace(entity.Title))
             markdown.AppendLine($"title: \"{EscapeYamlString(entity.Title)}\"");
 
-        if (!string.IsNullOrEmpty(entity.Author))
+        if (!string.IsNullOrWhiteSpace(entity.Author))
             markdown.AppendLine($"author: \"{EscapeYamlString(entity.Author)}\"");
 
-        if (!string.IsNullOrEmpty(entity.Description))
+        if (!string.IsNullOrWhiteSpace(entity.Description))
             markdown.AppendLine($"description: \"{EscapeYamlString(entity.Description)}\"");
 
         // Date created (in ISO format)
@@ -530,21 +530,21 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
             markdown.AppendLine($"last_modified: {entity.LastModified.Value:yyyy-MM-dd}");
 
         // Content ID for localization
-        if (!string.IsNullOrEmpty(entity.ContentId))
+        if (!string.IsNullOrWhiteSpace(entity.ContentId))
             markdown.AppendLine($"content_id: \"{entity.ContentId}\"");
 
-        if (!string.IsNullOrEmpty(entity.Locale))
+        if (!string.IsNullOrWhiteSpace(entity.Locale))
             markdown.AppendLine($"locale: \"{entity.Locale}\"");
 
         // Slug
-        if (!string.IsNullOrEmpty(entity.Slug))
+        if (!string.IsNullOrWhiteSpace(entity.Slug))
             markdown.AppendLine($"slug: \"{entity.Slug}\"");
 
         // Featured status and image
         if (entity.IsFeatured)
             markdown.AppendLine("featured: true");
 
-        if (!string.IsNullOrEmpty(entity.FeaturedImageUrl))
+        if (!string.IsNullOrWhiteSpace(entity.FeaturedImageUrl))
             markdown.AppendLine($"featured_image: \"{entity.FeaturedImageUrl}\"");
 
         // Categories
@@ -592,12 +592,12 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
         markdown.AppendLine();
 
         // Add original markdown content if available
-        if (!string.IsNullOrEmpty(entity.OriginalMarkdown))
+        if (!string.IsNullOrWhiteSpace(entity.OriginalMarkdown))
         {
             markdown.Append(entity.OriginalMarkdown);
         }
         // Otherwise try to convert HTML to markdown
-        else if (!string.IsNullOrEmpty(entity.Content))
+        else if (!string.IsNullOrWhiteSpace(entity.Content))
         {
             var plainText = MarkdownProcessor.ConvertHtmlToMarkdownAsync(entity.Content, CancellationToken.None)
                 .GetAwaiter().GetResult();
@@ -643,38 +643,38 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
     {
         var filteredItems = items;
 
-        if (!string.IsNullOrEmpty(query.Directory))
+        if (!string.IsNullOrWhiteSpace(query.Directory))
         {
             var normalizedDirectory = NormalizePath(query.Directory);
             filteredItems = filteredItems.Where(item =>
                 item.Directory != null && item.Directory.Name.ToLower() == query.Directory.ToLower());
         }
 
-        if (!string.IsNullOrEmpty(query.DirectoryId))
+        if (!string.IsNullOrWhiteSpace(query.DirectoryId))
         {
             filteredItems = filteredItems.Where(item =>
                 item.Directory != null && item.Directory.Id == query.DirectoryId);
         }
 
-        if (!string.IsNullOrEmpty(query.Slug))
+        if (!string.IsNullOrWhiteSpace(query.Slug))
         {
             filteredItems = filteredItems.Where(item =>
                 item.Slug != null && item.Slug == query.Slug);
         }
 
-        if (!string.IsNullOrEmpty(query.Url))
+        if (!string.IsNullOrWhiteSpace(query.Url))
         {
             filteredItems = filteredItems.Where(item =>
                 item.Url != null && item.Url.Equals(query.Url, StringComparison.OrdinalIgnoreCase));
         }
 
-        if (!string.IsNullOrEmpty(query.Category))
+        if (!string.IsNullOrWhiteSpace(query.Category))
         {
             filteredItems = filteredItems.Where(item =>
                 item.Categories.Any(c => c.Equals(query.Category, StringComparison.OrdinalIgnoreCase)));
         }
 
-        if (query.Categories != null && query.Categories.Any())
+        if (query.Categories is not null && query.Categories.Any())
         {
             filteredItems = filteredItems.Where(item =>
                 query.Categories.All(c =>
@@ -682,13 +682,13 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
                         itemCat.Equals(c, StringComparison.OrdinalIgnoreCase))));
         }
 
-        if (!string.IsNullOrEmpty(query.Tag))
+        if (!string.IsNullOrWhiteSpace(query.Tag))
         {
             filteredItems = filteredItems.Where(item =>
                 item.Tags.Any(t => t.Equals(query.Tag, StringComparison.OrdinalIgnoreCase)));
         }
 
-        if (query.Tags != null && query.Tags.Any())
+        if (query.Tags is not null && query.Tags.Any())
         {
             filteredItems = filteredItems.Where(item =>
                 query.Tags.All(t =>
@@ -701,7 +701,7 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
             filteredItems = filteredItems.Where(item => item.IsFeatured == query.IsFeatured.Value);
         }
 
-        if (!string.IsNullOrEmpty(query.Author))
+        if (!string.IsNullOrWhiteSpace(query.Author))
         {
             filteredItems = filteredItems.Where(item =>
                 item.Author.Equals(query.Author, StringComparison.OrdinalIgnoreCase));
@@ -722,7 +722,7 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
             filteredItems = filteredItems.Where(item => item.DateCreated <= query.DateTo.Value);
         }
 
-        if (!string.IsNullOrEmpty(query.SearchQuery))
+        if (!string.IsNullOrWhiteSpace(query.SearchQuery))
         {
             var searchTerms = query.SearchQuery.ToLower().Split(' ', StringSplitOptions.RemoveEmptyEntries);
             filteredItems = filteredItems.Where(item =>
@@ -736,31 +736,31 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
             );
         }
 
-        if (!string.IsNullOrEmpty(query.Locale))
+        if (!string.IsNullOrWhiteSpace(query.Locale))
         {
             filteredItems = filteredItems.Where(item =>
                 item.Locale.Equals(query.Locale, StringComparison.OrdinalIgnoreCase));
         }
 
-        if (!string.IsNullOrEmpty(query.LocalizationId))
+        if (!string.IsNullOrWhiteSpace(query.LocalizationId))
         {
             filteredItems = filteredItems.Where(item =>
                 item.ContentId.Equals(query.LocalizationId, StringComparison.OrdinalIgnoreCase));
         }
 
-        if (!string.IsNullOrEmpty(query.ProviderId))
+        if (!string.IsNullOrWhiteSpace(query.ProviderId))
         {
             filteredItems = filteredItems.Where(item =>
                 item.ProviderId.Equals(query.ProviderId, StringComparison.OrdinalIgnoreCase));
         }
 
-        if (query.IncludeIds != null && query.IncludeIds.Any())
+        if (query.IncludeIds is not null && query.IncludeIds.Any())
         {
             filteredItems = filteredItems.Where(item =>
                 query.IncludeIds.Contains(item.Id));
         }
 
-        if (query.ExcludeIds != null && query.ExcludeIds.Any())
+        if (query.ExcludeIds is not null && query.ExcludeIds.Any())
         {
             filteredItems = filteredItems.Where(item =>
                 !query.ExcludeIds.Contains(item.Id));
@@ -830,7 +830,7 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
 
         // Check if content path is set and remove it from the beginning
         var contentPath = NormalizePath(ContentPath);
-        if (!string.IsNullOrEmpty(contentPath) && path.StartsWith(contentPath))
+        if (!string.IsNullOrWhiteSpace(contentPath) && path.StartsWith(contentPath))
         {
             // Only remove if it's followed by a slash or is the entire path
             if (path.Length == contentPath.Length || path[contentPath.Length] == '/')
@@ -881,7 +881,7 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
 
         // Check if content path is set and remove it
         var contentPath = NormalizePath(ContentPath);
-        if (!string.IsNullOrEmpty(contentPath) && path.StartsWith(contentPath))
+        if (!string.IsNullOrWhiteSpace(contentPath) && path.StartsWith(contentPath))
         {
             // Only remove if it's followed by a slash or is the entire path
             if (path.Length == contentPath.Length || path[contentPath.Length] == '/')
@@ -951,7 +951,7 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
         }
 
         // Step 3: Append slug, with a slash if path is not empty
-        if (!string.IsNullOrEmpty(path))
+        if (!string.IsNullOrWhiteSpace(path))
         {
             return path + "/" + slug;
         }

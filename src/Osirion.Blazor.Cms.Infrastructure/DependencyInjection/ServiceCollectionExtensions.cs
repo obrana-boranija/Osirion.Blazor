@@ -34,8 +34,8 @@ public static class ServiceCollectionExtensions
         IConfiguration configuration,
         Action<OsirionCmsBuilder>? configureCms = null)
     {
-        if (services == null) throw new ArgumentNullException(nameof(services));
-        if (configuration == null) throw new ArgumentNullException(nameof(configuration));
+        if (services is null) throw new ArgumentNullException(nameof(services));
+        if (configuration is null) throw new ArgumentNullException(nameof(configuration));
 
         // Register options
         services.Configure<CacheOptions>(configuration.GetSection(CacheOptions.Section));
@@ -77,7 +77,7 @@ public static class ServiceCollectionExtensions
 
 
         // Apply builder configuration if provided
-        if (configureCms != null)
+        if (configureCms is not null)
         {
             var builder = new OsirionCmsBuilder(services, configuration);
             configureCms(builder);
@@ -105,8 +105,8 @@ public static class ServiceCollectionExtensions
         string? providerName = null,
         Action<GitHubOptions>? configureOptions = null)
     {
-        if (services == null) throw new ArgumentNullException(nameof(services));
-        if (configuration == null) throw new ArgumentNullException(nameof(configuration));
+        if (services is null) throw new ArgumentNullException(nameof(services));
+        if (configuration is null) throw new ArgumentNullException(nameof(configuration));
 
         // Register the factory if not already registered
         services.TryAddSingleton<IGitHubApiClientFactory, GitHubApiClientFactory>();
@@ -117,7 +117,7 @@ public static class ServiceCollectionExtensions
         services.TryAddHttpClient<IGitHubAdminService, GitHubAdminService>();
 
         // If provider name is specified, register as a named provider
-        if (!string.IsNullOrEmpty(providerName))
+        if (!string.IsNullOrWhiteSpace(providerName))
         {
             // Configure options for this specific provider
             services.Configure<GitHubOptions>($"GitHub_{providerName}", options => {
@@ -140,7 +140,7 @@ public static class ServiceCollectionExtensions
         else
         {
             // Legacy registration - configure default options
-            if (configureOptions != null)
+            if (configureOptions is not null)
             {
                 services.Configure<GitHubOptions>(options => {
                     // First apply configuration from settings
@@ -192,7 +192,7 @@ public static class ServiceCollectionExtensions
     Action<FileSystemOptions>? configureOptions = null)
     {
         // Configure options
-        if (configureOptions != null)
+        if (configureOptions is not null)
         {
             services.Configure<FileSystemOptions>(options => {
                 // First apply configuration from settings
@@ -240,7 +240,7 @@ public static class ServiceCollectionExtensions
         bool isDefault = false)
         where TProvider : class, IContentProvider
     {
-        if (services == null) throw new ArgumentNullException(nameof(services));
+        if (services is null) throw new ArgumentNullException(nameof(services));
 
         // Register the provider
         services.TryAddScoped<TProvider>();
@@ -277,8 +277,8 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        if (services == null) throw new ArgumentNullException(nameof(services));
-        if (configuration == null) throw new ArgumentNullException(nameof(configuration));
+        if (services is null) throw new ArgumentNullException(nameof(services));
+        if (configuration is null) throw new ArgumentNullException(nameof(configuration));
 
         // Add core CMS services
         services.AddCms(configuration);

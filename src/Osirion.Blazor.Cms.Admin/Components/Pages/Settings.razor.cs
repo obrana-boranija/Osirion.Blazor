@@ -23,7 +23,7 @@ public partial class Settings : IDisposable
     protected override void OnParametersSet()
     {
         // Set default theme
-        if (string.IsNullOrEmpty(Theme))
+        if (string.IsNullOrWhiteSpace(Theme))
         {
             Theme = "light";
         }

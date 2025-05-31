@@ -75,7 +75,7 @@ public abstract class DirectoryRepositoryBase : RepositoryBase<DirectoryItem, st
 
             // Return only root directories (no parent)
             return cache.Values
-                .Where(d => d.Parent == null)
+                .Where(d => d.Parent is null)
                 .ToList();
         }
         catch (Exception ex)
@@ -88,7 +88,7 @@ public abstract class DirectoryRepositoryBase : RepositoryBase<DirectoryItem, st
     /// <inheritdoc/>
     public override async Task<DirectoryItem?> GetByIdAsync(string id, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrEmpty(id))
+        if (string.IsNullOrWhiteSpace(id))
             throw new ArgumentException("ID cannot be empty", nameof(id));
 
         try
@@ -114,7 +114,7 @@ public abstract class DirectoryRepositoryBase : RepositoryBase<DirectoryItem, st
     /// </summary>
     public virtual async Task<DirectoryItem?> GetByPathAsync(string path, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrEmpty(path))
+        if (string.IsNullOrWhiteSpace(path))
             throw new ArgumentException("Path cannot be empty", nameof(path));
 
         try
@@ -137,7 +137,7 @@ public abstract class DirectoryRepositoryBase : RepositoryBase<DirectoryItem, st
     /// </summary>
     public virtual async Task<DirectoryItem?> GetByUrlAsync(string url, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrEmpty(url))
+        if (string.IsNullOrWhiteSpace(url))
             throw new ArgumentException("URL cannot be empty", nameof(url));
 
         try
@@ -158,7 +158,7 @@ public abstract class DirectoryRepositoryBase : RepositoryBase<DirectoryItem, st
     /// </summary>
     public virtual async Task<DirectoryItem?> GetByNameAsync(string? name, string? locale = default, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrEmpty(name))
+        if (string.IsNullOrWhiteSpace(name))
             return null;
 
         try
@@ -187,11 +187,11 @@ public abstract class DirectoryRepositoryBase : RepositoryBase<DirectoryItem, st
             if (cache.Count == 0)
                 return new List<DirectoryItem>();
 
-            if (string.IsNullOrEmpty(locale))
+            if (string.IsNullOrWhiteSpace(locale))
             {
                 // Return all root directories
                 return cache.Values
-                    .Where(d => d.Parent == null)
+                    .Where(d => d.Parent is null)
                     .ToList();
             }
             else
@@ -214,7 +214,7 @@ public abstract class DirectoryRepositoryBase : RepositoryBase<DirectoryItem, st
     /// </summary>
     public virtual async Task<IReadOnlyList<DirectoryItem>> GetChildrenAsync(string parentId, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrEmpty(parentId))
+        if (string.IsNullOrWhiteSpace(parentId))
             throw new ArgumentException("Parent ID cannot be empty", nameof(parentId));
 
         try
@@ -266,7 +266,7 @@ public abstract class DirectoryRepositoryBase : RepositoryBase<DirectoryItem, st
     /// </summary>
     public virtual async Task DeleteRecursiveAsync(string id, string? commitMessage = null, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrEmpty(id))
+        if (string.IsNullOrWhiteSpace(id))
             throw new ArgumentException("ID cannot be empty", nameof(id));
 
         LogOperation("deleting", id);
@@ -275,7 +275,7 @@ public abstract class DirectoryRepositoryBase : RepositoryBase<DirectoryItem, st
         {
             // Get directory to confirm it exists
             var directory = await GetByIdAsync(id, cancellationToken);
-            if (directory == null)
+            if (directory is null)
                 throw new DirectoryNotFoundException(id);
 
             // Implementation-specific delete logic

@@ -39,7 +39,7 @@ public class ThemeService : IThemeService
         var variables = new List<string>();
 
         // Custom variables
-        if (!string.IsNullOrEmpty(_options.CustomVariables))
+        if (!string.IsNullOrWhiteSpace(_options.CustomVariables))
         {
             variables.Add(_options.CustomVariables);
         }

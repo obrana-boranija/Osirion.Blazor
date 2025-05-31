@@ -22,7 +22,7 @@ public class MatomoProvider : IAnalyticsProvider
     public string ProviderId => "matomo";
 
     /// <inheritdoc/>
-    public bool IsEnabled => _options.Enabled && !string.IsNullOrEmpty(_options.SiteId) && !string.IsNullOrEmpty(_options.TrackerUrl);
+    public bool IsEnabled => _options.Enabled && !string.IsNullOrWhiteSpace(_options.SiteId) && !string.IsNullOrWhiteSpace(_options.TrackerUrl);
 
     /// <inheritdoc/>
     public bool ShouldRender => IsEnabled;

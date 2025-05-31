@@ -48,7 +48,7 @@ public partial class CmsLayoutEditor : BaseComponent
 
     private void ClearStatusMessage()
     {
-        if (StatusMessage != null)
+        if (StatusMessage is not null)
         {
             StatusMessage = null;
         }
@@ -60,7 +60,7 @@ public partial class CmsLayoutEditor : BaseComponent
 
     private void ClearErrorMessage()
     {
-        if (ErrorMessage != null)
+        if (ErrorMessage is not null)
         {
             ErrorMessage = null;
         }

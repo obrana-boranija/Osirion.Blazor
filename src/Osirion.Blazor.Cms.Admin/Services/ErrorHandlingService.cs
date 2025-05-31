@@ -33,7 +33,7 @@ public class ErrorHandlingService
     private void HandleError(ErrorOccurredEvent errorEvent)
     {
         // Log the error
-        if (errorEvent.Exception != null)
+        if (errorEvent.Exception is not null)
         {
             _logger.LogError(
                 errorEvent.Exception,

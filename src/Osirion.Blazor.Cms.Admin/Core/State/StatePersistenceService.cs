@@ -40,7 +40,7 @@ public class StatePersistenceService : IDisposable
             {
                 var serializedState = await _storageService.GetStateAsync<string>(STATE_KEY);
 
-                if (!string.IsNullOrEmpty(serializedState))
+                if (!string.IsNullOrWhiteSpace(serializedState))
                 {
                     _state.DeserializeFrom(serializedState);
                     _logger.LogInformation("State loaded from storage successfully");

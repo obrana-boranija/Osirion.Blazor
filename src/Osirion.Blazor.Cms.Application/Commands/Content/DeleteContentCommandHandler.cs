@@ -25,7 +25,7 @@ public class DeleteContentCommandHandler : ICommandHandler<DeleteContentCommand>
         _logger.LogInformation("Deleting content: {Id}", command.Id);
 
         // Create UnitOfWork for the specified provider or default
-        using var unitOfWork = command.ProviderId != null
+        using var unitOfWork = command.ProviderId is not null
             ? _unitOfWorkFactory.Create(command.ProviderId)
             : _unitOfWorkFactory.CreateForDefaultProvider();
 
@@ -35,7 +35,7 @@ public class DeleteContentCommandHandler : ICommandHandler<DeleteContentCommand>
         {
             // First, verify the content exists to get its path for event publishing later
             var existingContent = await unitOfWork.ContentRepository.GetByIdAsync(command.Id, cancellationToken);
-            if (existingContent == null)
+            if (existingContent is null)
             {
                 throw new ContentItemNotFoundException(command.Id, unitOfWork.ProviderId);
             }

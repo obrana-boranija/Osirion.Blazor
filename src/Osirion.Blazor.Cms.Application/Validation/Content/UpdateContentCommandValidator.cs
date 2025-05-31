@@ -25,13 +25,13 @@ public class UpdateContentCommandValidator : AbstractValidator<UpdateContentComm
             .Must(BeValidPath).WithMessage("Path contains invalid characters");
 
         RuleFor(x => x.Slug)
-            .Must(BeValidSlug).When(x => !string.IsNullOrEmpty(x.Slug))
+            .Must(BeValidSlug).When(x => !string.IsNullOrWhiteSpace(x.Slug))
             .WithMessage("Slug must contain only lowercase letters, numbers, and hyphens");
     }
 
     private bool BeValidPath(string path)
     {
-        return !string.IsNullOrEmpty(path) && !path.Contains("..") &&
+        return !string.IsNullOrWhiteSpace(path) && !path.Contains("..") &&
                !path.Contains("\\") && !path.Contains("?") &&
                !path.Contains("*") && !path.Contains(":") &&
                !path.Contains("<") && !path.Contains(">");

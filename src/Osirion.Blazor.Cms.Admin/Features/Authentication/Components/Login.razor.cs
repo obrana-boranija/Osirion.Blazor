@@ -35,14 +35,14 @@ public partial class Login
         ViewModel.ReturnUrl = ReturnUrl;
 
         // Check if GitHub OAuth is configured
-        EnableGitHubAuth = !string.IsNullOrEmpty(Options.Value.Authentication.GitHubClientId) &&
-                         !string.IsNullOrEmpty(Options.Value.Authentication.GitHubClientSecret);
+        EnableGitHubAuth = !string.IsNullOrWhiteSpace(Options.Value.Authentication.GitHubClientId) &&
+                         !string.IsNullOrWhiteSpace(Options.Value.Authentication.GitHubClientSecret);
     }
 
     protected override async Task OnInitializedAsync()
     {
         // Check if we have a configured PAT in options
-        if (!string.IsNullOrEmpty(Options.Value.Authentication.PersonalAccessToken))
+        if (!string.IsNullOrWhiteSpace(Options.Value.Authentication.PersonalAccessToken))
         {
             // If we have a PAT in the options, try to use it directly
             ViewModel.AccessToken = Options.Value.Authentication.PersonalAccessToken;
@@ -97,7 +97,7 @@ public partial class Login
 
             if (OnLoginResult.HasDelegate)
             {
-                await OnLoginResult.InvokeAsync(string.IsNullOrEmpty(ViewModel.ErrorMessage));
+                await OnLoginResult.InvokeAsync(string.IsNullOrWhiteSpace(ViewModel.ErrorMessage));
             }
         });
     }
@@ -110,7 +110,7 @@ public partial class Login
 
             if (OnLoginResult.HasDelegate)
             {
-                await OnLoginResult.InvokeAsync(string.IsNullOrEmpty(ViewModel.ErrorMessage));
+                await OnLoginResult.InvokeAsync(string.IsNullOrWhiteSpace(ViewModel.ErrorMessage));
             }
         });
     }

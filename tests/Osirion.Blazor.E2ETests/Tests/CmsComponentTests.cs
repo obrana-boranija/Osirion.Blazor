@@ -38,15 +38,15 @@ public class CmsComponentTests : IClassFixture<PlaywrightFixture>
         var firstItem = contentItems[0];
         var title = await firstItem.QuerySelectorAsync(".osirion-content-title");
         Assert.NotNull(title);
-        Assert.True(title != null, "Content item should have a title");
+        Assert.True(title is not null, "Content item should have a title");
 
         var description = await firstItem.QuerySelectorAsync(".osirion-content-description");
         Assert.NotNull(description);
-        Assert.True(description != null, "Content item should have a description");
+        Assert.True(description is not null, "Content item should have a description");
 
         var readMoreLink = await firstItem.QuerySelectorAsync(".osirion-content-read-more");
         Assert.NotNull(readMoreLink);
-        Assert.True(readMoreLink != null, "Content item should have a read more link");
+        Assert.True(readMoreLink is not null, "Content item should have a read more link");
 
         // Take screenshot
         await _app.TakeScreenshotAsync("ContentList_Rendered");
@@ -69,16 +69,16 @@ public class CmsComponentTests : IClassFixture<PlaywrightFixture>
         // Check if content is properly rendered
         var article = await _fixture.Page.QuerySelectorAsync(".osirion-content-article");
         Assert.NotNull(article);
-        Assert.True(article != null, "ContentView should render an article element");
+        Assert.True(article is not null, "ContentView should render an article element");
 
         // Check content structure
         var title = await article.QuerySelectorAsync("h1");
         Assert.NotNull(title);
-        Assert.True(title != null, "Article should have a title (h1)");
+        Assert.True(title is not null, "Article should have a title (h1)");
 
         var content = await article.QuerySelectorAsync("p");
         Assert.NotNull(content);
-        Assert.True(content != null, "Article should have content paragraphs");
+        Assert.True(content is not null, "Article should have content paragraphs");
 
         // Take screenshot
         await _app.TakeScreenshotAsync("ContentView_Rendered");
@@ -111,7 +111,7 @@ public class CmsComponentTests : IClassFixture<PlaywrightFixture>
         // Check if tag is selected
         var activeTag = await _fixture.Page.QuerySelectorAsync(".osirion-tag-active");
         Assert.NotNull(activeTag);
-        Assert.True(activeTag != null, "A tag should be activated after clicking");
+        Assert.True(activeTag is not null, "A tag should be activated after clicking");
 
         // Take screenshot
         await _app.TakeScreenshotAsync("TagCloud_WithSelection");
@@ -144,7 +144,7 @@ public class CmsComponentTests : IClassFixture<PlaywrightFixture>
         // Check if category is selected
         var activeCategory = await _fixture.Page.QuerySelectorAsync(".osirion-active");
         Assert.NotNull(activeCategory);
-        Assert.True(activeCategory != null, "A category should be activated after clicking");
+        Assert.True(activeCategory is not null, "A category should be activated after clicking");
 
         // Take screenshot
         await _app.TakeScreenshotAsync("CategoriesList_WithSelection");
@@ -204,7 +204,7 @@ public class CmsComponentTests : IClassFixture<PlaywrightFixture>
         // Check if directory is selected
         var activeDirectory = await _fixture.Page.QuerySelectorAsync(".osirion-directory-link.osirion-active");
         Assert.NotNull(activeDirectory);
-        Assert.True(activeDirectory != null, "A directory should be activated after clicking");
+        Assert.True(activeDirectory is not null, "A directory should be activated after clicking");
 
         // Take screenshot
         await _app.TakeScreenshotAsync("DirectoryNavigation_Selected");

@@ -104,7 +104,7 @@ public partial class Menu
     {
         base.OnInitialized();
 
-        if (AdditionalAttributes == null)
+        if (AdditionalAttributes is null)
         {
             AdditionalAttributes = new Dictionary<string, object>();
         }
@@ -125,10 +125,10 @@ public partial class Menu
         // Combine all classes
         var classes = new List<string> { orientationClass };
 
-        if (!string.IsNullOrEmpty(alignmentClass))
+        if (!string.IsNullOrWhiteSpace(alignmentClass))
             classes.Add(alignmentClass);
 
-        if (!string.IsNullOrEmpty(expandClass))
+        if (!string.IsNullOrWhiteSpace(expandClass))
             classes.Add(expandClass);
 
         // Add collapsible class if needed - this is critical for mobile behavior
@@ -140,7 +140,7 @@ public partial class Menu
             classes.Add("osirion-menu-sticky");
 
         // Combine with existing CssClass
-        CssClass = string.IsNullOrEmpty(CssClass)
+        CssClass = string.IsNullOrWhiteSpace(CssClass)
             ? string.Join(" ", classes)
             : $"{CssClass} {string.Join(" ", classes)}";
 

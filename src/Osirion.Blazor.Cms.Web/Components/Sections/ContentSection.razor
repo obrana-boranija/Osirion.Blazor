@@ -4,11 +4,11 @@
 <section class="@GetSectionClass()">
     <div class="osirion-content-section-container">
         @* <OsirionBackgroundPattern BackgroundPattern="BackgroundPatternType.Grid" /> *@
-        @if (!string.IsNullOrEmpty(Title))
+        @if (!string.IsNullOrWhiteSpace(Title))
         {
             <header class="osirion-content-section-header">
                 <h2 class="osirion-content-section-title">@Title</h2>
-                @if (!string.IsNullOrEmpty(Subtitle))
+                @if (!string.IsNullOrWhiteSpace(Subtitle))
                 {
                     <p class="osirion-content-section-subtitle">@Subtitle</p>
                 }
@@ -16,12 +16,12 @@
         }
 
         <div class="osirion-content-section-body">
-            @if (!string.IsNullOrEmpty(Content))
+            @if (!string.IsNullOrWhiteSpace(Content))
             {
                 <OsirionHtmlRenderer HtmlContent="@Content" CssClass="osirion-content-section-content" />
             }
 
-            @if (ChildContent != null)
+            @if (ChildContent is not null)
             {
                 <div class="osirion-content-section-children">
                     @ChildContent
@@ -29,7 +29,7 @@
             }
         </div>
 
-        @if (!string.IsNullOrEmpty(ActionText) && !string.IsNullOrEmpty(ActionUrl))
+        @if (!string.IsNullOrWhiteSpace(ActionText) && !string.IsNullOrWhiteSpace(ActionUrl))
         {
             <footer class="osirion-content-section-footer">
                 <a href="@ActionUrl" class="osirion-content-section-action">

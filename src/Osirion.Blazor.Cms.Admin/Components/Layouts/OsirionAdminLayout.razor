@@ -13,14 +13,14 @@
     <NavMenu User="@GetUserInfo()" OnSignOut="SignOut" />
 
     <div class="container-fluid flex-grow-1 p-3 p-lg-4">
-        @if (!string.IsNullOrEmpty(AdminState.StatusMessage))
+        @if (!string.IsNullOrWhiteSpace(AdminState.StatusMessage))
         {
             <StatusAlert Message="@AdminState.StatusMessage"
                          Type="StatusAlert.AlertType.Success"
                          OnDismiss="@(() => AdminState.ClearMessages())" />
         }
 
-        @if (!string.IsNullOrEmpty(AdminState.ErrorMessage))
+        @if (!string.IsNullOrWhiteSpace(AdminState.ErrorMessage))
         {
             <StatusAlert Message="@AdminState.ErrorMessage"
                          Type="StatusAlert.AlertType.Error"

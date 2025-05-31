@@ -60,7 +60,7 @@
         </div>
     </div>
 
-    @if (!string.IsNullOrEmpty(ErrorMessage))
+    @if (!string.IsNullOrWhiteSpace(ErrorMessage))
     {
         <div class="commit-panel-footer commit-panel-error">
             <span>@ErrorMessage</span>

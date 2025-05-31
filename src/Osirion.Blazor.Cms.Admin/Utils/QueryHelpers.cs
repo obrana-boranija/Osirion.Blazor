@@ -5,7 +5,7 @@ public static class QueryHelpers
     public static Dictionary<string, string[]> ParseQuery(string queryString)
     {
         var result = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);
-        if (string.IsNullOrEmpty(queryString))
+        if (string.IsNullOrWhiteSpace(queryString))
             return result;
 
         int scanIndex = 0;

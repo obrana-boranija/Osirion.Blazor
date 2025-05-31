@@ -22,7 +22,7 @@ public class ClarityProvider : IAnalyticsProvider
     public string ProviderId => "clarity";
 
     /// <inheritdoc/>
-    public bool IsEnabled => _options.Enabled && !string.IsNullOrEmpty(_options.SiteId);
+    public bool IsEnabled => _options.Enabled && !string.IsNullOrWhiteSpace(_options.SiteId);
 
     /// <inheritdoc/>
     public bool ShouldRender => IsEnabled;

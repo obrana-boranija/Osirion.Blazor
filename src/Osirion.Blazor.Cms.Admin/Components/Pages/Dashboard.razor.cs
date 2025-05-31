@@ -12,7 +12,7 @@ public partial class Dashboard
     /// Checks if both repository and branch are configured
     /// </summary>
     private bool IsRepositoryConfigured =>
-        AdminState.SelectedRepository != null && AdminState.SelectedBranch != null;
+        AdminState.SelectedRepository is not null && AdminState.SelectedBranch is not null;
 
     protected override void OnInitialized()
     {
@@ -37,7 +37,7 @@ public partial class Dashboard
         {
             Metadata = FrontMatter.Create("New Post", "Enter description here", DateTime.Now),
             Content = "## New Post\n\nStart writing your content here...",
-            Path = string.IsNullOrEmpty(AdminState.CurrentPath) ?
+            Path = string.IsNullOrWhiteSpace(AdminState.CurrentPath) ?
                 "new-post.md" :
                 $"{AdminState.CurrentPath}/new-post.md"
         };

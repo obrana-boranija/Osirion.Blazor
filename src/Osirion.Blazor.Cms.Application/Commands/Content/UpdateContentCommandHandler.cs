@@ -25,7 +25,7 @@ public class UpdateContentCommandHandler : ICommandHandler<UpdateContentCommand>
         _logger.LogInformation("Updating content: {Id}", command.Id);
 
         // Create UnitOfWork for the specified provider or default
-        using var unitOfWork = command.ProviderId != null
+        using var unitOfWork = command.ProviderId is not null
             ? _unitOfWorkFactory.Create(command.ProviderId)
             : _unitOfWorkFactory.CreateForDefaultProvider();
 
@@ -35,7 +35,7 @@ public class UpdateContentCommandHandler : ICommandHandler<UpdateContentCommand>
         {
             // Get existing content
             var existingContent = await unitOfWork.ContentRepository.GetByIdAsync(command.Id, cancellationToken);
-            if (existingContent == null)
+            if (existingContent is null)
             {
                 throw new ContentItemNotFoundException(command.Id, unitOfWork.ProviderId);
             }
@@ -44,28 +44,28 @@ public class UpdateContentCommandHandler : ICommandHandler<UpdateContentCommand>
             existingContent.SetTitle(command.Title);
             existingContent.SetContent(command.Content);
 
-            if (!string.IsNullOrEmpty(command.Path) && existingContent.Path != command.Path)
+            if (!string.IsNullOrWhiteSpace(command.Path) && existingContent.Path != command.Path)
                 existingContent.SetPath(command.Path);
 
-            if (!string.IsNullOrEmpty(command.Author))
+            if (!string.IsNullOrWhiteSpace(command.Author))
                 existingContent.SetAuthor(command.Author);
 
-            if (!string.IsNullOrEmpty(command.Description))
+            if (!string.IsNullOrWhiteSpace(command.Description))
                 existingContent.SetDescription(command.Description);
 
-            if (!string.IsNullOrEmpty(command.Slug))
+            if (!string.IsNullOrWhiteSpace(command.Slug))
                 existingContent.SetSlug(command.Slug);
 
-            if (!string.IsNullOrEmpty(command.Locale))
+            if (!string.IsNullOrWhiteSpace(command.Locale))
                 existingContent.SetLocale(command.Locale);
 
-            if (!string.IsNullOrEmpty(command.ContentId))
+            if (!string.IsNullOrWhiteSpace(command.ContentId))
                 existingContent.SetContentId(command.ContentId);
 
             existingContent.SetFeatured(command.IsFeatured);
 
             // Update provider-specific ID if provided
-            if (!string.IsNullOrEmpty(command.ProviderSpecificId))
+            if (!string.IsNullOrWhiteSpace(command.ProviderSpecificId))
                 existingContent.SetProviderSpecificId(command.ProviderSpecificId);
 
             // Update tags and categories

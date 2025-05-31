@@ -48,7 +48,7 @@ public partial class BranchSelector : IDisposable
         {
             await ViewModel.SelectBranchAsync(branchName);
 
-            if (OnBranchChange.HasDelegate && ViewModel.SelectedBranch != null)
+            if (OnBranchChange.HasDelegate && ViewModel.SelectedBranch is not null)
             {
                 await OnBranchChange.InvokeAsync(ViewModel.SelectedBranch);
             }
@@ -61,7 +61,7 @@ public partial class BranchSelector : IDisposable
         {
             await ViewModel.CreateBranchAsync();
 
-            if (OnBranchChange.HasDelegate && ViewModel.SelectedBranch != null)
+            if (OnBranchChange.HasDelegate && ViewModel.SelectedBranch is not null)
             {
                 await OnBranchChange.InvokeAsync(ViewModel.SelectedBranch);
             }

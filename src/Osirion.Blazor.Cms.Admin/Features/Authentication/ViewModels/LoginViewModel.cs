@@ -59,7 +59,7 @@ public class LoginViewModel
 
     public async Task LoginWithGitHubAsync(string code)
     {
-        if (string.IsNullOrEmpty(code))
+        if (string.IsNullOrWhiteSpace(code))
             return;
 
         IsLoggingIn = true;
@@ -73,7 +73,7 @@ public class LoginViewModel
             if (result)
             {
                 // Update repository adapter with token
-                if (!string.IsNullOrEmpty(_authService.AccessToken))
+                if (!string.IsNullOrWhiteSpace(_authService.AccessToken))
                 {
                     await _repositoryAdapter.SetAccessTokenAsync(_authService.AccessToken);
                 }
@@ -107,7 +107,7 @@ public class LoginViewModel
 
     public async Task LoginWithTokenAsync()
     {
-        if (string.IsNullOrEmpty(AccessToken))
+        if (string.IsNullOrWhiteSpace(AccessToken))
         {
             ErrorMessage = "Please enter an access token.";
             NotifyStateChanged();
@@ -176,7 +176,7 @@ public class LoginViewModel
         }
 
         // Use PAT from settings if available
-        if (!string.IsNullOrEmpty(_authOptions.PersonalAccessToken))
+        if (!string.IsNullOrWhiteSpace(_authOptions.PersonalAccessToken))
         {
             _logger.LogInformation("Using configured PAT for authentication");
             AccessToken = _authOptions.PersonalAccessToken;
@@ -201,7 +201,7 @@ public class LoginViewModel
         {
             var token = await _stateStorage.GetStateAsync<string>("github_auth_token");
 
-            if (!string.IsNullOrEmpty(token))
+            if (!string.IsNullOrWhiteSpace(token))
             {
                 _logger.LogInformation("Found stored PAT, attempting login");
                 AccessToken = token;

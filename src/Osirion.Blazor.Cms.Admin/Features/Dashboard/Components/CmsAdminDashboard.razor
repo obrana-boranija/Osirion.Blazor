@@ -33,17 +33,17 @@
         <div class="osirion-admin-header">
             <div class="osirion-admin-breadcrumb">
                 <span class="osirion-admin-breadcrumb-item">Dashboard</span>
-                @if (AdminState.SelectedRepository != null)
+                @if (AdminState.SelectedRepository is not null)
                 {
                     <span class="osirion-admin-breadcrumb-separator">/</span>
                     <span class="osirion-admin-breadcrumb-item">@AdminState.SelectedRepository.Name</span>
 
-                    @if (AdminState.SelectedBranch != null)
+                    @if (AdminState.SelectedBranch is not null)
                     {
                         <span class="osirion-admin-breadcrumb-separator">/</span>
                         <span class="osirion-admin-breadcrumb-item">@AdminState.SelectedBranch.Name</span>
 
-                        @if (!string.IsNullOrEmpty(AdminState.CurrentPath))
+                        @if (!string.IsNullOrWhiteSpace(AdminState.CurrentPath))
                         {
                             <span class="osirion-admin-breadcrumb-separator">/</span>
                             <span class="osirion-admin-breadcrumb-item">@AdminState.CurrentPath</span>
@@ -73,7 +73,7 @@
         </div>
 
         <div class="osirion-admin-content">
-            @if (AdminState.StatusMessage != null)
+            @if (AdminState.StatusMessage is not null)
             {
                 <div class="osirion-admin-alert osirion-admin-alert-success">
                     <span class="osirion-admin-alert-icon">
@@ -92,7 +92,7 @@
                 </div>
             }
 
-            @if (AdminState.ErrorMessage != null)
+            @if (AdminState.ErrorMessage is not null)
             {
                 <div class="osirion-admin-alert osirion-admin-alert-error">
                     <span class="osirion-admin-alert-icon">

@@ -62,14 +62,14 @@ public class RepositorySelectorViewModel
 
     public async Task SelectRepositoryAsync(string repositoryName)
     {
-        if (string.IsNullOrEmpty(repositoryName))
+        if (string.IsNullOrWhiteSpace(repositoryName))
         {
             _state.SelectRepository(null);
             return;
         }
 
         var repository = Repositories.FirstOrDefault(r => r.Name == repositoryName);
-        if (repository != null)
+        if (repository is not null)
         {
             IsLoading = true;
             NotifyStateChanged();
@@ -112,7 +112,7 @@ public class RepositorySelectorViewModel
             var defaultBranch = branches.FirstOrDefault(b =>
                 b.Name == (_state.SelectedRepository?.DefaultBranch ?? "main"));
 
-            if (defaultBranch != null)
+            if (defaultBranch is not null)
             {
                 _state.SelectBranch(defaultBranch);
                 _repositoryService.SetBranch(defaultBranch.Name);

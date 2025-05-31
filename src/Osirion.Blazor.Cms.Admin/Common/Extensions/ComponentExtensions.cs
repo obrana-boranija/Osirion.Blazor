@@ -12,7 +12,7 @@ public static class ComponentExtensions
         var componentName = ToKebabCase(component.GetType().Name.Replace("Base", ""));
 
         // Combine with provided CSS class if any
-        return string.IsNullOrEmpty(cssClass)
+        return string.IsNullOrWhiteSpace(cssClass)
             ? $"osirion-{componentName}"
             : $"osirion-{componentName} {cssClass}";
     }
@@ -29,7 +29,7 @@ public static class ComponentExtensions
         {
             await enterAction();
         }
-        else if (e.Key.Equals("Escape", StringComparison.OrdinalIgnoreCase) && escapeAction != null)
+        else if (e.Key.Equals("Escape", StringComparison.OrdinalIgnoreCase) && escapeAction is not null)
         {
             await escapeAction();
         }
@@ -37,7 +37,7 @@ public static class ComponentExtensions
 
     public static string ToKebabCase(string input)
     {
-        if (string.IsNullOrEmpty(input)) return input;
+        if (string.IsNullOrWhiteSpace(input)) return input;
 
         var result = new System.Text.StringBuilder();
 

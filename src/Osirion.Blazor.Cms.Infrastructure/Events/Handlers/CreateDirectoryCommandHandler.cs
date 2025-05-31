@@ -29,7 +29,7 @@ public class CreateDirectoryCommandHandler : ICommandHandler<CreateDirectoryComm
         _logger.LogInformation("Creating directory: {Name}", command.Name);
 
         // Create UnitOfWork for the specified provider or default
-        using var unitOfWork = command.ProviderId != null
+        using var unitOfWork = command.ProviderId is not null
             ? _unitOfWorkFactory.Create(command.ProviderId)
             : _unitOfWorkFactory.CreateForDefaultProvider();
 
@@ -39,13 +39,13 @@ public class CreateDirectoryCommandHandler : ICommandHandler<CreateDirectoryComm
         {
             // Get parent directory if specified
             DirectoryItem? parentDirectory = null;
-            if (!string.IsNullOrEmpty(command.ParentId))
+            if (!string.IsNullOrWhiteSpace(command.ParentId))
             {
                 parentDirectory = await unitOfWork.DirectoryRepository.GetByIdAsync(
                     command.ParentId,
                     cancellationToken);
 
-                if (parentDirectory == null)
+                if (parentDirectory is null)
                 {
                     throw new DirectoryNotFoundException(command.ParentId);
                 }
@@ -53,7 +53,7 @@ public class CreateDirectoryCommandHandler : ICommandHandler<CreateDirectoryComm
 
             // Determine full path
             string path;
-            if (parentDirectory != null)
+            if (parentDirectory is not null)
             {
                 path = Path.Combine(parentDirectory.Path, command.Name).Replace('\\', '/');
             }
@@ -61,7 +61,7 @@ public class CreateDirectoryCommandHandler : ICommandHandler<CreateDirectoryComm
             {
                 path = command.Path.Replace('\\', '/');
 
-                if (string.IsNullOrEmpty(path))
+                if (string.IsNullOrWhiteSpace(path))
                 {
                     path = command.Name;
                 }
@@ -79,10 +79,10 @@ public class CreateDirectoryCommandHandler : ICommandHandler<CreateDirectoryComm
             directory.SetParent(parentDirectory);
 
             // Set additional properties
-            if (!string.IsNullOrEmpty(command.Description))
+            if (!string.IsNullOrWhiteSpace(command.Description))
                 directory.SetDescription(command.Description);
 
-            if (!string.IsNullOrEmpty(command.Locale))
+            if (!string.IsNullOrWhiteSpace(command.Locale))
                 directory.SetLocale(command.Locale);
 
             directory.SetOrder(command.Order);

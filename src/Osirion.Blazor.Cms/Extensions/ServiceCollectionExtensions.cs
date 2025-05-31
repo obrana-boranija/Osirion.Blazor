@@ -35,7 +35,7 @@ public static class ServiceCollectionExtensions
     {
         //services.AddGitHubContentProvider(configure);
         //// Allow additional configuration
-        //if (configure != null)
+        //if (configure is not null)
         //{
         //    services.Configure(configure);
         //}
@@ -52,7 +52,7 @@ public static class ServiceCollectionExtensions
     {
         //services.AddFileSystemContentProvider(configure);
         // Allow additional configuration
-        if (configure != null)
+        if (configure is not null)
         {
             services.Configure(configure);
         }

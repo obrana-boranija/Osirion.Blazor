@@ -8,11 +8,11 @@
             HeaderTemplate="@HeaderTemplate">
 
     <article class="osirion-blog-article">
-        @if (!string.IsNullOrEmpty(ImageUrl))
+        @if (!string.IsNullOrWhiteSpace(ImageUrl))
         {
             <figure class="osirion-blog-featured-image-container">
                 <img src="@ImageUrl" alt="@ImageAlt" class="osirion-blog-featured-image" />
-                @if (!string.IsNullOrEmpty(ImageCaption))
+                @if (!string.IsNullOrWhiteSpace(ImageCaption))
                 {
                     <figcaption class="osirion-blog-image-caption">@ImageCaption</figcaption>
                 }
@@ -23,7 +23,7 @@
             @ChildContent
         </div>
 
-        @if (FooterContent != null)
+        @if (FooterContent is not null)
         {
             <footer class="osirion-blog-footer">
                 @FooterContent

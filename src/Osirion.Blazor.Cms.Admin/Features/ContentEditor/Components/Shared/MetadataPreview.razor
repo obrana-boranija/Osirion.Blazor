@@ -37,7 +37,7 @@
                 <i class="bi bi-facebook me-1 text-primary"></i> Facebook Share Preview
             </h6>
             <div class="social-preview facebook-preview">
-                @if (!string.IsNullOrEmpty(GetOgImage()))
+                @if (!string.IsNullOrWhiteSpace(GetOgImage()))
                 {
                     <img src="@GetOgImage()" 
                          alt="Facebook preview" 
@@ -57,14 +57,14 @@
                 <i class="bi bi-twitter me-1 text-info"></i> Twitter Card Preview
             </h6>
             <div class="social-preview twitter-preview">
-                @if (SeoMetadata.TwitterCard == "summary_large_image" && !string.IsNullOrEmpty(GetTwitterImage()))
+                @if (SeoMetadata.TwitterCard == "summary_large_image" && !string.IsNullOrWhiteSpace(GetTwitterImage()))
                 {
                     <img src="@GetTwitterImage()" 
                          alt="Twitter preview" 
                          class="twitter-large-image" />
                 }
                 <div class="social-preview-content @(SeoMetadata.TwitterCard == "summary" ? "twitter-summary" : "")">
-                    @if (SeoMetadata.TwitterCard == "summary" && !string.IsNullOrEmpty(GetTwitterImage()))
+                    @if (SeoMetadata.TwitterCard == "summary" && !string.IsNullOrWhiteSpace(GetTwitterImage()))
                     {
                         <img src="@GetTwitterImage()" 
                              alt="Twitter preview" 

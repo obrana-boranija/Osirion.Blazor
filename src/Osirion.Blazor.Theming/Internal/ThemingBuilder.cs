@@ -22,7 +22,7 @@ internal class ThemingBuilder : IThemingBuilder
     /// <inheritdoc/>
     public IThemingBuilder Configure(Action<ThemingOptions> configure)
     {
-        if (configure == null) throw new ArgumentNullException(nameof(configure));
+        if (configure is null) throw new ArgumentNullException(nameof(configure));
 
         Services.Configure(configure);
         return this;

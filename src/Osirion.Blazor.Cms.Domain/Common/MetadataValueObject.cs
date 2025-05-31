@@ -15,7 +15,7 @@ public abstract class MetadataValueObject : ValueObject
     /// </summary>
     protected MetadataValueObject(Dictionary<string, object>? initialMetadata = null)
     {
-        Metadata = initialMetadata != null
+        Metadata = initialMetadata is not null
             ? new Dictionary<string, object>(initialMetadata)
             : new Dictionary<string, object>();
     }

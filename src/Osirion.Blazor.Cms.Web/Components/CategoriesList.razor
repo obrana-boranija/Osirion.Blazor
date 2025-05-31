@@ -1,5 +1,5 @@
 ﻿<div class="@GetCategoriesListClass()">
-    @if (Title != null)
+    @if (Title is not null)
     {
         <h3 class="osirion-categories-title">@Title</h3>
     }
@@ -8,7 +8,7 @@
     {
         <div class="osirion-loading">@LoadingText</div>
     }
-    else if (Categories == null || !Categories.Any())
+    else if (Categories is null || !Categories.Any())
     {
         <div class="osirion-no-categories">@NoContentText</div>
     }

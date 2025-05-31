@@ -51,7 +51,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.UnitOfWork
 
         protected override async Task OnCommitTransactionAsync(CancellationToken cancellationToken)
         {
-            if (_temporaryBranch == null)
+            if (_temporaryBranch is null)
                 throw new InvalidOperationException("No temporary branch created");
 
             // Create a pull request to merge changes

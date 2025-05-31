@@ -26,7 +26,7 @@ public class CreateContentCommandHandler : ICommandHandler<CreateContentCommand>
         _logger.LogInformation("Creating content with title: {Title}", command.Title);
 
         // Create UnitOfWork for the specified provider or default
-        using var unitOfWork = command.ProviderId != null
+        using var unitOfWork = command.ProviderId is not null
             ? _unitOfWorkFactory.Create(command.ProviderId)
             : _unitOfWorkFactory.CreateForDefaultProvider();
 
@@ -43,19 +43,19 @@ public class CreateContentCommandHandler : ICommandHandler<CreateContentCommand>
                 providerId: unitOfWork.ProviderId);
 
             // Set additional properties
-            if (!string.IsNullOrEmpty(command.Author))
+            if (!string.IsNullOrWhiteSpace(command.Author))
                 contentItem.SetAuthor(command.Author);
 
-            if (!string.IsNullOrEmpty(command.Description))
+            if (!string.IsNullOrWhiteSpace(command.Description))
                 contentItem.SetDescription(command.Description);
 
-            if (!string.IsNullOrEmpty(command.Slug))
+            if (!string.IsNullOrWhiteSpace(command.Slug))
                 contentItem.SetSlug(command.Slug);
 
-            if (!string.IsNullOrEmpty(command.Locale))
+            if (!string.IsNullOrWhiteSpace(command.Locale))
                 contentItem.SetLocale(command.Locale);
 
-            if (!string.IsNullOrEmpty(command.ContentId))
+            if (!string.IsNullOrWhiteSpace(command.ContentId))
                 contentItem.SetContentId(command.ContentId);
 
             contentItem.SetFeatured(command.IsFeatured);

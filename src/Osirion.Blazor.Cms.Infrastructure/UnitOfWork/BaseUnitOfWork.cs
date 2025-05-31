@@ -69,7 +69,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.UnitOfWork
 
                 _logger.LogInformation("Committed transaction for provider {ProviderId}", ProviderId);
 
-                if (_eventDispatcher != null)
+                if (_eventDispatcher is not null)
                 {
                     await DispatchDomainEventsAsync(domainEvents);
                 }
@@ -113,7 +113,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.UnitOfWork
             if (!_transactionStarted)
                 throw new InvalidOperationException("No transaction in progress");
 
-            if (string.IsNullOrEmpty(savePointName))
+            if (string.IsNullOrWhiteSpace(savePointName))
                 throw new ArgumentException("Savepoint name cannot be empty", nameof(savePointName));
 
             if (_savePoints.ContainsKey(savePointName))
@@ -257,7 +257,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.UnitOfWork
         /// </summary>
         protected async Task DispatchDomainEventsAsync(IEnumerable<IDomainEvent> domainEvents)
         {
-            if (_eventDispatcher == null)
+            if (_eventDispatcher is null)
                 return;
 
             foreach (var domainEvent in domainEvents)

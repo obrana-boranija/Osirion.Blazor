@@ -31,7 +31,7 @@ public class DirectoryMetadataProcessor : IDirectoryMetadataProcessor
     /// <inheritdoc/>
     public DirectoryItem ProcessMetadata(DirectoryItem directory, string metadataContent)
     {
-        if (directory == null)
+        if (directory is null)
             throw new ArgumentNullException(nameof(directory));
 
         if (string.IsNullOrWhiteSpace(metadataContent))
@@ -60,7 +60,7 @@ public class DirectoryMetadataProcessor : IDirectoryMetadataProcessor
     /// <inheritdoc/>
     public string GenerateMetadataContent(DirectoryItem directory)
     {
-        if (directory == null)
+        if (directory is null)
             throw new ArgumentNullException(nameof(directory));
 
         var frontMatter = new StringBuilder();
@@ -69,16 +69,16 @@ public class DirectoryMetadataProcessor : IDirectoryMetadataProcessor
         // Add metadata
         frontMatter.AppendLine($"title: \"{EscapeYamlString(directory.Name)}\"");
 
-        if (!string.IsNullOrEmpty(directory.Description))
+        if (!string.IsNullOrWhiteSpace(directory.Description))
             frontMatter.AppendLine($"description: \"{EscapeYamlString(directory.Description)}\"");
 
         if (directory.Order != 0)
             frontMatter.AppendLine($"order: {directory.Order}");
 
-        if (!string.IsNullOrEmpty(directory.Locale))
+        if (!string.IsNullOrWhiteSpace(directory.Locale))
             frontMatter.AppendLine($"locale: \"{directory.Locale}\"");
 
-        if (!string.IsNullOrEmpty(directory.Url))
+        if (!string.IsNullOrWhiteSpace(directory.Url))
             frontMatter.AppendLine($"url: \"{directory.Url}\"");
 
         // Add custom metadata
@@ -102,7 +102,7 @@ public class DirectoryMetadataProcessor : IDirectoryMetadataProcessor
         frontMatter.AppendLine($"# {directory.Name}");
         frontMatter.AppendLine();
 
-        if (!string.IsNullOrEmpty(directory.Description))
+        if (!string.IsNullOrWhiteSpace(directory.Description))
         {
             frontMatter.AppendLine(directory.Description);
         }

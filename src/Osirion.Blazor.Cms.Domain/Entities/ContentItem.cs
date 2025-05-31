@@ -212,7 +212,7 @@ public class ContentItem : DomainEntity<string>
             return;
 
         var matchingTag = _tags.FirstOrDefault(t => t.Equals(tag, StringComparison.OrdinalIgnoreCase));
-        if (matchingTag != null)
+        if (matchingTag is not null)
         {
             _tags.Remove(matchingTag);
             LastModified = DateTime.UtcNow;
@@ -246,7 +246,7 @@ public class ContentItem : DomainEntity<string>
             return;
 
         var matchingCategory = _categories.FirstOrDefault(c => c.Equals(category, StringComparison.OrdinalIgnoreCase));
-        if (matchingCategory != null)
+        if (matchingCategory is not null)
         {
             _categories.Remove(matchingCategory);
             LastModified = DateTime.UtcNow;
@@ -288,10 +288,10 @@ public class ContentItem : DomainEntity<string>
 
     public void SetMetadata<T>(string key, T value)
     {
-        if (string.IsNullOrEmpty(key))
+        if (string.IsNullOrWhiteSpace(key))
             throw new ArgumentException("Metadata key cannot be empty", nameof(key));
 
-        if (value == null)
+        if (value is null)
         {
             _metadataValues.Remove(key);
         }

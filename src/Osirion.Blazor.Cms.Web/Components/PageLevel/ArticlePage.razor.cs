@@ -231,11 +231,11 @@ public partial class ArticlePage
     /// <inheritdoc/>
     protected override async Task OnParametersSetAsync()
     {
-        if (Content == null && !string.IsNullOrEmpty(ContentPath))
+        if (Content is null && !string.IsNullOrWhiteSpace(ContentPath))
         {
             await LoadContentAsync();
         }
-        else if (Content != null)
+        else if (Content is not null)
         {
             await LoadRelatedContentAsync();
             IsLoading = false;
@@ -252,11 +252,11 @@ public partial class ArticlePage
         try
         {
             var provider = ContentProviderManager.GetDefaultProvider();
-            if (provider != null)
+            if (provider is not null)
             {
                 Content = await provider.GetItemByPathAsync(ContentPath);
 
-                if (Content != null)
+                if (Content is not null)
                 {
                     await LoadNavigationItemsAsync(provider, Content);
                     await LoadRelatedContentAsync();
@@ -276,7 +276,7 @@ public partial class ArticlePage
 
     private async Task LoadNavigationItemsAsync(IContentProvider provider, ContentItem item)
     {
-        if (!ShowNavigationLinks || PreviousItem != null || NextItem != null)
+        if (!ShowNavigationLinks || PreviousItem is not null || NextItem is not null)
             return;
 
         try
@@ -318,13 +318,13 @@ public partial class ArticlePage
 
     private async Task LoadRelatedContentAsync()
     {
-        if (!ShowRelatedContent || RelatedItems != null || Content == null)
+        if (!ShowRelatedContent || RelatedItems is not null || Content is null)
             return;
 
         try
         {
             var provider = ContentProviderManager.GetDefaultProvider();
-            if (provider != null)
+            if (provider is not null)
             {
                 if (!Content.Tags.Any() && !Content.Categories.Any())
                 {
@@ -368,7 +368,7 @@ public partial class ArticlePage
             classes.Add("osirion-article-with-sidebar");
         }
 
-        if (!string.IsNullOrEmpty(CssClass))
+        if (!string.IsNullOrWhiteSpace(CssClass))
         {
             classes.Add(CssClass);
         }

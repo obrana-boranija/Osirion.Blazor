@@ -1,6 +1,6 @@
 ﻿@namespace Osirion.Blazor.Cms.Admin.Components.Layouts.Alerts
 
-@if (!string.IsNullOrEmpty(Message))
+@if (!string.IsNullOrWhiteSpace(Message))
 {
     <div class="alert @AlertClass alert-dismissible fade show d-flex align-items-center" role="alert">
         <div class="d-flex align-items-center">

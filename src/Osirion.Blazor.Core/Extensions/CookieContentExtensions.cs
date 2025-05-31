@@ -65,7 +65,7 @@ public class CookieConsentMiddleware
         context.Items["CookieConsent"] = consentData;
 
         // Set response headers based on consent
-        if (consentData != null)
+        if (consentData is not null)
         {
             // Example: Set feature policy based on consent
             var features = new List<string> { "camera 'none'", "microphone 'none'" };

@@ -24,11 +24,11 @@ public class SearchContentQueryHandler : IQueryHandler<SearchContentQuery, IRead
     {
         _logger.LogDebug("Searching content with query criteria");
 
-        var provider = query.ProviderId != null
+        var provider = query.ProviderId is not null
             ? _providerManager.GetProvider(query.ProviderId)
             : _providerManager.GetDefaultProvider();
 
-        if (provider == null)
+        if (provider is null)
         {
             _logger.LogWarning("Provider not found: {ProviderId}", query.ProviderId ?? "default");
             return Array.Empty<ContentItem>();

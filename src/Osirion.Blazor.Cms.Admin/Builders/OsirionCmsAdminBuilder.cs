@@ -47,7 +47,7 @@ public class OsirionCmsAdminBuilder : IOsirionCmsAdminBuilder
         // Register GitHub services from Infrastructure
         Services.AddGitHubAdminServices(_configuration);
 
-        if (configure != null)
+        if (configure is not null)
         {
             Services.Configure<CmsAdminOptions>(options =>
             {
@@ -69,7 +69,7 @@ public class OsirionCmsAdminBuilder : IOsirionCmsAdminBuilder
         // Register FileSystem services from Infrastructure
         Services.AddFileSystemAdminServices(_configuration);
 
-        if (configure != null)
+        if (configure is not null)
         {
             Services.Configure<CmsAdminOptions>(options =>
             {
@@ -86,7 +86,7 @@ public class OsirionCmsAdminBuilder : IOsirionCmsAdminBuilder
     /// </summary>
     public IOsirionCmsAdminBuilder ConfigureAuthentication(Action<AuthenticationOptions> configure)
     {
-        if (configure == null)
+        if (configure is null)
             throw new ArgumentNullException(nameof(configure));
 
         _logger.LogInformation("Configuring authentication for CMS admin");
@@ -104,7 +104,7 @@ public class OsirionCmsAdminBuilder : IOsirionCmsAdminBuilder
     /// </summary>
     public IOsirionCmsAdminBuilder ConfigureTheme(Action<ThemeOptions> configure)
     {
-        if (configure == null)
+        if (configure is null)
             throw new ArgumentNullException(nameof(configure));
 
         _logger.LogInformation("Configuring theme for CMS admin");
@@ -122,7 +122,7 @@ public class OsirionCmsAdminBuilder : IOsirionCmsAdminBuilder
     /// </summary>
     public IOsirionCmsAdminBuilder ConfigureContentRules(Action<ContentRulesOptions> configure)
     {
-        if (configure == null)
+        if (configure is null)
             throw new ArgumentNullException(nameof(configure));
 
         _logger.LogInformation("Configuring content rules for CMS admin");
@@ -140,7 +140,7 @@ public class OsirionCmsAdminBuilder : IOsirionCmsAdminBuilder
     /// </summary>
     public IOsirionCmsAdminBuilder UseLocalization(Action<LocalizationOptions> configure)
     {
-        if (configure == null)
+        if (configure is null)
             throw new ArgumentNullException(nameof(configure));
 
         _logger.LogInformation("Configuring localization for CMS admin");

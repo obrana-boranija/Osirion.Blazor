@@ -9,13 +9,13 @@
         <div class="card-body p-4">
             <div class="text-center mb-4">
                 <h3 class="card-title mb-2">@Title</h3>
-                @if (!string.IsNullOrEmpty(Description))
+                @if (!string.IsNullOrWhiteSpace(Description))
                 {
                     <p class="text-secondary small">@Description</p>
                 }
             </div>
 
-            @if (!string.IsNullOrEmpty(ViewModel.ErrorMessage))
+            @if (!string.IsNullOrWhiteSpace(ViewModel.ErrorMessage))
             {
                 <div class="alert alert-danger d-flex align-items-center alert-dismissible fade show mb-3" role="alert">
                     <i class="bi bi-exclamation-circle-fill me-2"></i>
@@ -51,7 +51,7 @@
                     <button type="button"
                             class="btn btn-primary flex-grow-1"
                             @onclick="LoginWithToken"
-                            disabled="@(string.IsNullOrEmpty(ViewModel.AccessToken) || ViewModel.IsLoggingIn)">
+                            disabled="@(string.IsNullOrWhiteSpace(ViewModel.AccessToken) || ViewModel.IsLoggingIn)">
                         @if (ViewModel.IsLoggingIn)
                         {
                             <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>

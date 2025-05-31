@@ -132,7 +132,7 @@ public partial class OsirionFooter
         classes.Add($"osirion-footer-theme-{Theme}");
         classes.Add($"osirion-footer-grid-{GridLayout}");
 
-        if (!string.IsNullOrEmpty(CssClass))
+        if (!string.IsNullOrWhiteSpace(CssClass))
         {
             classes.Add(CssClass);
         }

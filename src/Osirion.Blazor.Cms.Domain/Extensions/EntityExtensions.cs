@@ -10,7 +10,7 @@ public static class EntityExtensions
     /// </summary>
     public static string GenerateSlug(this string text)
     {
-        if (string.IsNullOrEmpty(text))
+        if (string.IsNullOrWhiteSpace(text))
             return "untitled";
 
         // Convert to lowercase
@@ -44,7 +44,7 @@ public static class EntityExtensions
     /// </summary>
     public static string EscapeYamlString(this string value)
     {
-        if (string.IsNullOrEmpty(value))
+        if (string.IsNullOrWhiteSpace(value))
             return value;
 
         return value

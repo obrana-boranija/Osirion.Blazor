@@ -15,7 +15,7 @@
 }
 
 @* Apply custom variables *@
-@if (!string.IsNullOrEmpty(CustomVariables))
+@if (!string.IsNullOrWhiteSpace(CustomVariables))
 {
     <style>
         :root {
@@ -25,7 +25,7 @@
 }
 
 @* Apply generated theme variables *@
-@if (!string.IsNullOrEmpty(GeneratedVariables))
+@if (!string.IsNullOrWhiteSpace(GeneratedVariables))
 {
     <style>
         :root {

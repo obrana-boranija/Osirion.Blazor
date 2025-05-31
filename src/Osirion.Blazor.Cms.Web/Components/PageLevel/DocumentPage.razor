@@ -9,7 +9,7 @@
             <p>@LoadingText</p>
         </div>
     }
-    else if (Content == null && !string.IsNullOrEmpty(ContentPath))
+    else if (Content is null && !string.IsNullOrWhiteSpace(ContentPath))
     {
         <div class="osirion-not-found">
             <h2>@NotFoundTitle</h2>
@@ -26,12 +26,12 @@
             @if (ShowSideNavigation)
             {
                 <nav class="osirion-document-sidenav" aria-label="Document navigation">
-                    @if (!string.IsNullOrEmpty(NavigationTitle))
+                    @if (!string.IsNullOrWhiteSpace(NavigationTitle))
                     {
                         <h2 class="osirion-sidenav-title">@NavigationTitle</h2>
                     }
 
-                    @if (NavigationItems != null && NavigationItems.Any())
+                    @if (NavigationItems is not null && NavigationItems.Any())
                     {
                         <ul class="osirion-sidenav-list">
                             @foreach (var item in NavigationItems)
@@ -42,7 +42,7 @@
                                        aria-current="@(IsCurrentPage(item) ? "page" : null)">
                                         @item.Title
                                     </a>
-                                    @if (item.Children != null && item.Children.Any() && (item.IsExpanded || IsParentOfCurrentPage(item)))
+                                    @if (item.Children is not null && item.Children.Any() && (item.IsExpanded || IsParentOfCurrentPage(item)))
                                     {
                                         <ul class="osirion-sidenav-sublist">
                                             @foreach (var child in item.Children)
@@ -75,7 +75,7 @@
                                         DirectoryUrlFormatter="@DirectoryUrlFormatter" />
                 }
 
-                @if (Content != null)
+                @if (Content is not null)
                 {
                     <article class="osirion-document-content" itemscope itemtype="https://schema.org/@SchemaType">
                         <header class="osirion-document-header">
@@ -83,7 +83,7 @@
                             @if (ShowMetadata)
                             {
                                 <div class="osirion-document-meta">
-                                    @if (!string.IsNullOrEmpty(Content.Author))
+                                    @if (!string.IsNullOrWhiteSpace(Content.Author))
                                     {
                                         <span class="osirion-document-author">
                                             <svg class="osirion-meta-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -118,10 +118,10 @@
                             @((MarkupString)Content.Content)
                         </div>
 
-                        @if (ShowNavigationLinks && (PreviousItem != null || NextItem != null))
+                        @if (ShowNavigationLinks && (PreviousItem is not null || NextItem is not null))
                         {
                             <nav class="osirion-document-pagination" aria-label="Document pagination">
-                                @if (PreviousItem != null)
+                                @if (PreviousItem is not null)
                                 {
                                     <a href="@GetContentUrl(PreviousItem)" class="osirion-doc-nav-previous">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -134,7 +134,7 @@
                                     </a>
                                 }
 
-                                @if (NextItem != null)
+                                @if (NextItem is not null)
                                 {
                                     <a href="@GetContentUrl(NextItem)" class="osirion-doc-nav-next">
                                         <div class="osirion-doc-nav-text">
@@ -151,7 +151,7 @@
                     </article>
                 }
 
-                @if (!string.IsNullOrEmpty(CustomFooterContent))
+                @if (!string.IsNullOrWhiteSpace(CustomFooterContent))
                 {
                     <ContentSection Content="@CustomFooterContent"
                                     Variant="highlight"

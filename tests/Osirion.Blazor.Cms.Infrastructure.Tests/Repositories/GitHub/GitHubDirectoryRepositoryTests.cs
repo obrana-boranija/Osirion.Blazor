@@ -107,7 +107,7 @@ public class GitHubDirectoryRepositoryTests
             Arg.Is<string>(s => s == "content/newdir/.gitkeep"),
             Arg.Any<string>(),
             Arg.Any<string>(),
-            Arg.Is<string>(s => s == null),
+            Arg.Is<string>(s => s is null),
             Arg.Any<CancellationToken>())
             .Returns(new GitHubFileCommitResponse
             {
@@ -120,7 +120,7 @@ public class GitHubDirectoryRepositoryTests
             Arg.Is<string>(s => s == "content/newdir/_index.md"),
             Arg.Any<string>(),
             Arg.Any<string>(),
-            Arg.Is<string>(s => s == null),
+            Arg.Is<string>(s => s is null),
             Arg.Any<CancellationToken>())
             .Returns(new GitHubFileCommitResponse
             {

@@ -49,7 +49,7 @@ public class TestApp
     public async Task<bool> IsComponentPresentAsync(string selector)
     {
         var element = await Page.QuerySelectorAsync(selector);
-        return element != null;
+        return element is not null;
     }
 
     /// <summary>

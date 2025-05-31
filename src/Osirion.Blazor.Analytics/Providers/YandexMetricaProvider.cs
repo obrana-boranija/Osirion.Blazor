@@ -23,7 +23,7 @@ public class YandexMetricaProvider : IAnalyticsProvider
     public string ProviderId => "yandex-metrica";
 
     /// <inheritdoc/>
-    public bool IsEnabled => _options.Enabled && !string.IsNullOrEmpty(_options.CounterId);
+    public bool IsEnabled => _options.Enabled && !string.IsNullOrWhiteSpace(_options.CounterId);
 
     /// <inheritdoc/>
     public bool ShouldRender => IsEnabled;
@@ -68,10 +68,10 @@ public class YandexMetricaProvider : IAnalyticsProvider
         if (_options.EcommerceEnabled)
             initOptions["ecommerce"] = _options.EcommerceContainerName;
 
-        if (_options.Params != null && _options.Params.Count > 0)
+        if (_options.Params is not null && _options.Params.Count > 0)
             initOptions["params"] = _options.Params;
 
-        if (_options.UserParams != null && _options.UserParams.Count > 0)
+        if (_options.UserParams is not null && _options.UserParams.Count > 0)
             initOptions["userParams"] = _options.UserParams;
 
         var initOptionsJson = JsonSerializer.Serialize(initOptions);

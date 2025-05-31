@@ -28,7 +28,7 @@ public partial class ContentBreadcrumbs
 
     protected override void OnInitialized()
     {
-        if (Directory == null && Content?.Directory != null)
+        if (Directory is null && Content?.Directory is not null)
         {
             Directory = Content.Directory;
         }
@@ -50,7 +50,7 @@ public partial class ContentBreadcrumbs
         var path = new List<DirectoryItem>();
         var current = directory;
 
-        while (current != null)
+        while (current is not null)
         {
             path.Add(current);
             current = current.Parent;

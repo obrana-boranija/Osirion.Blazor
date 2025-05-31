@@ -53,7 +53,7 @@ public class AdminContentService : IAdminContentService
 
             var result = await _queryDispatcher.DispatchAsync<GetContentByIdQuery, ContentItem?>(query, cancellationToken);
 
-            if (result != null)
+            if (result is not null)
             {
                 _logger.LogInformation("Content found with ID: {Id}", id);
             }
@@ -237,7 +237,7 @@ public class AdminContentService : IAdminContentService
 
             _logger.LogInformation("Content with ID: {Id} deleted successfully", id);
 
-            if (content != null)
+            if (content is not null)
             {
                 _eventMediator.Publish(new ContentDeletedEvent(content.Path));
             }

@@ -100,7 +100,7 @@ public class ContentCategory : ValueObject
     public ContentCategory WithParent(ContentCategory? parent)
     {
         // Prevent circular references
-        if (parent != null && IsAncestorOf(parent))
+        if (parent is not null && IsAncestorOf(parent))
             throw new ArgumentException("Cannot set a child category as parent", nameof(parent));
 
         var clone = Clone();
@@ -111,7 +111,7 @@ public class ContentCategory : ValueObject
     public ContentCategory WithChildren(IEnumerable<ContentCategory> children)
     {
         var clone = Clone();
-        clone.Children = children != null
+        clone.Children = children is not null
             ? children.ToList()
             : new List<ContentCategory>();
         return clone;
@@ -154,7 +154,7 @@ public class ContentCategory : ValueObject
 
     public ContentCategory WithMetadata(string key, object value)
     {
-        if (string.IsNullOrEmpty(key))
+        if (string.IsNullOrWhiteSpace(key))
             throw new ArgumentException("Metadata key cannot be empty", nameof(key));
 
         var clone = Clone();
@@ -190,12 +190,12 @@ public class ContentCategory : ValueObject
     /// </summary>
     public bool IsAncestorOf(ContentCategory category)
     {
-        if (category == null)
+        if (category is null)
             return false;
 
         var current = category.Parent;
 
-        while (current != null)
+        while (current is not null)
         {
             if (current.Equals(this))
                 return true;

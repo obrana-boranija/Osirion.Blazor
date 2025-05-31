@@ -51,12 +51,12 @@ public class MetadataContainer
     /// <exception cref="ArgumentException">Thrown when key is null or empty</exception>
     public void SetValue<T>(string key, T value)
     {
-        if (string.IsNullOrEmpty(key))
+        if (string.IsNullOrWhiteSpace(key))
         {
             throw new ArgumentException("Metadata key cannot be null or empty", nameof(key));
         }
 
-        if (value == null)
+        if (value is null)
         {
             _metadata.Remove(key);
         }
@@ -72,12 +72,12 @@ public class MetadataContainer
     /// <param name="values">Dictionary of values to add</param>
     public void AddRange(IDictionary<string, object> values)
     {
-        if (values == null)
+        if (values is null)
             return;
 
         foreach (var kvp in values)
         {
-            if (!string.IsNullOrEmpty(kvp.Key))
+            if (!string.IsNullOrWhiteSpace(kvp.Key))
             {
                 _metadata[kvp.Key] = kvp.Value;
             }
@@ -118,7 +118,7 @@ public class MetadataContainer
 
     public void SetPropertyValue<T>(string propertyName, T value)
     {
-        if (string.IsNullOrEmpty(propertyName))
+        if (string.IsNullOrWhiteSpace(propertyName))
             throw new ArgumentException("Property name cannot be empty", nameof(propertyName));
 
         SetValue(propertyName, value);

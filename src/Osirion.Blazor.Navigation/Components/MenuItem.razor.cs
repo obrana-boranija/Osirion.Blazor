@@ -94,7 +94,7 @@ public partial class MenuItem
     {
         base.OnInitialized();
 
-        if (AdditionalAttributes == null)
+        if (AdditionalAttributes is null)
         {
             AdditionalAttributes = new Dictionary<string, object>();
         }

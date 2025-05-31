@@ -116,7 +116,7 @@
                 </div>
 
                 <div class="preview-container flex-grow-1 overflow-auto p-3" @ref="PreviewRef" @onscroll="OnPreviewScrolled">
-                    @if (!string.IsNullOrEmpty(Preview))
+                    @if (!string.IsNullOrWhiteSpace(Preview))
                     {
                         <OsirionHtmlRenderer HtmlContent="@Preview" CssClass="markdown-preview" />
                     }

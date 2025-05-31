@@ -28,7 +28,7 @@ public class LocalizationInfo
     public string GetBestMatchingLocale(string requestedLocale)
     {
         requestedLocale.ToLower();
-        if (string.IsNullOrEmpty(requestedLocale))
+        if (string.IsNullOrWhiteSpace(requestedLocale))
             return DefaultLocale;
 
         // Exact match

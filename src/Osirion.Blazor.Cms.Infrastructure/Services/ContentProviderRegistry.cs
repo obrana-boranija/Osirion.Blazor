@@ -31,7 +31,7 @@ public class ContentProviderRegistry : IContentProviderRegistry
 
     public IContentProvider? GetDefaultProvider()
     {
-        if (string.IsNullOrEmpty(_defaultProviderId))
+        if (string.IsNullOrWhiteSpace(_defaultProviderId))
         {
             return _providers.FirstOrDefault();
         }
@@ -41,12 +41,12 @@ public class ContentProviderRegistry : IContentProviderRegistry
 
     public IContentProvider? GetProvider(string providerId)
     {
-        if (string.IsNullOrEmpty(providerId))
+        if (string.IsNullOrWhiteSpace(providerId))
             throw new ArgumentException("Provider ID cannot be empty", nameof(providerId));
 
         var provider = _providers.FirstOrDefault(p => p.ProviderId == providerId);
 
-        if (provider == null)
+        if (provider is null)
         {
             _logger.LogWarning("Provider not found: {ProviderId}", providerId);
         }
@@ -56,7 +56,7 @@ public class ContentProviderRegistry : IContentProviderRegistry
 
     public void SetDefaultProvider(string providerId)
     {
-        if (string.IsNullOrEmpty(providerId))
+        if (string.IsNullOrWhiteSpace(providerId))
             throw new ArgumentException("Provider ID cannot be empty", nameof(providerId));
 
         if (!_providers.Any(p => p.ProviderId == providerId))

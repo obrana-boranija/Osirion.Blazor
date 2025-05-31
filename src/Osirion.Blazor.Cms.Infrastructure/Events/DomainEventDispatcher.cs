@@ -22,7 +22,7 @@ public class DomainEventDispatcher : IDomainEventDispatcher
 
     public async Task DispatchAsync<T>(T domainEvent) where T : IDomainEvent
     {
-        if (domainEvent == null)
+        if (domainEvent is null)
             throw new ArgumentNullException(nameof(domainEvent));
 
         _logger.LogDebug("Dispatching domain event {EventType}", typeof(T).Name);

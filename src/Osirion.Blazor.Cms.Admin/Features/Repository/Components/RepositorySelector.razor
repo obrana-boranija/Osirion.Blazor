@@ -29,7 +29,7 @@
             <span class="text-secondary">Loading repositories...</span>
         </div>
     }
-    else if (ViewModel.ErrorMessage != null)
+    else if (ViewModel.ErrorMessage is not null)
     {
         <div class="card-body">
             <div class="alert alert-danger d-flex align-items-center" role="alert">
@@ -64,12 +64,12 @@
             </select>
         </div>
 
-        @if (ViewModel.SelectedRepository != null)
+        @if (ViewModel.SelectedRepository is not null)
         {
             <div class="card-footer">
                 <div class="mb-2">
                     <span class="fw-semibold">@ViewModel.SelectedRepository.Name</span>
-                    @if (!string.IsNullOrEmpty(ViewModel.SelectedRepository.Description))
+                    @if (!string.IsNullOrWhiteSpace(ViewModel.SelectedRepository.Description))
                     {
                         <p class="text-secondary small mb-1">@ViewModel.SelectedRepository.Description</p>
                     }

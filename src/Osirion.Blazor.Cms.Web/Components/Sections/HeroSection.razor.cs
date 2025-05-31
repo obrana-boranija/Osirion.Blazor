@@ -23,7 +23,13 @@ public partial class HeroSection
     /// Gets or sets the background image URL
     /// </summary>
     [Parameter]
-    public string? BackgroundImage { get; set; }
+    public string? ImageUrl { get; set; }
+
+    /// <summary>
+    /// Gets or sets if image should be displayed as a background image
+    /// </summary>
+    [Parameter]
+    public bool BackgroundImage { get; set; }
 
     /// <summary>
     /// Gets or sets the hero alignment: "left", "center", "right"
@@ -41,25 +47,25 @@ public partial class HeroSection
     /// Gets or sets the primary button text
     /// </summary>
     [Parameter]
-    public string? PrimaryButtonText { get; set; }
+    public string? PrimaryButtonText { get; set; } = "Primary Button";
 
     /// <summary>
     /// Gets or sets the primary button URL
     /// </summary>
     [Parameter]
-    public string? PrimaryButtonUrl { get; set; }
+    public string? PrimaryButtonUrl { get; set; } = "#";
 
     /// <summary>
     /// Gets or sets the secondary button text
     /// </summary>
     [Parameter]
-    public string? SecondaryButtonText { get; set; }
+    public string? SecondaryButtonText { get; set; } = "Primary Button";
 
     /// <summary>
     /// Gets or sets the secondary button URL
     /// </summary>
     [Parameter]
-    public string? SecondaryButtonUrl { get; set; }
+    public string? SecondaryButtonUrl { get; set; } = "#";
 
     /// <summary>
     /// Gets or sets the background color (fallback if no image)
@@ -94,12 +100,12 @@ public partial class HeroSection
 
         classes.Add($"osirion-hero-align-{Alignment}");
 
-        if (!string.IsNullOrEmpty(BackgroundImage))
+        if (!string.IsNullOrWhiteSpace(ImageUrl))
         {
             classes.Add("osirion-hero-with-image");
         }
 
-        if (!string.IsNullOrEmpty(CssClass))
+        if (!string.IsNullOrWhiteSpace(CssClass))
         {
             classes.Add(CssClass);
         }
@@ -114,17 +120,17 @@ public partial class HeroSection
     {
         var styles = new List<string>();
 
-        if (!string.IsNullOrEmpty(BackgroundImage))
+        if (BackgroundImage && !string.IsNullOrWhiteSpace(ImageUrl))
         {
-            styles.Add($"background-image: url('{BackgroundImage}')");
+            styles.Add($"background-image: url('{ImageUrl}')");
         }
 
-        if (!string.IsNullOrEmpty(BackgroundColor))
+        if (!string.IsNullOrWhiteSpace(BackgroundColor))
         {
             styles.Add($"background-color: {BackgroundColor}");
         }
 
-        if (!string.IsNullOrEmpty(TextColor))
+        if (!string.IsNullOrWhiteSpace(TextColor))
         {
             styles.Add($"color: {TextColor}");
         }

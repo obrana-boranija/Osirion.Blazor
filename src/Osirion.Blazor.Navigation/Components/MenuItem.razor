@@ -8,13 +8,13 @@
        @onclick="OnClickHandler"
        @onclick:preventDefault="Disabled">
 
-        @if (IconTemplate != null)
+        @if (IconTemplate is not null)
         {
             <span class="osirion-menu-item-icon">
                 @IconTemplate
             </span>
         }
-        else if (!string.IsNullOrEmpty(Icon))
+        else if (!string.IsNullOrWhiteSpace(Icon))
         {
             <span class="osirion-menu-item-icon">
                 @switch (Icon?.ToLowerInvariant())

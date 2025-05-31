@@ -38,12 +38,12 @@ public class UnitOfWorkFactory : IUnitOfWorkFactory
 
     public IUnitOfWork Create(string providerId)
     {
-        if (string.IsNullOrEmpty(providerId))
+        if (string.IsNullOrWhiteSpace(providerId))
             throw new ArgumentException("Provider ID cannot be empty", nameof(providerId));
 
         // Get provider to determine provider type
         var provider = _providerRegistry.GetProvider(providerId);
-        if (provider == null)
+        if (provider is null)
             throw new InvalidOperationException($"Provider not found with ID: {providerId}");
 
         // Create appropriate unit of work based on provider type
@@ -77,7 +77,7 @@ public class UnitOfWorkFactory : IUnitOfWorkFactory
     public IUnitOfWork CreateForDefaultProvider()
     {
         var defaultProvider = _providerRegistry.GetDefaultProvider();
-        if (defaultProvider == null)
+        if (defaultProvider is null)
             throw new InvalidOperationException("No default provider is configured");
 
         return Create(defaultProvider.ProviderId);

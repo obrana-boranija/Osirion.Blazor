@@ -88,7 +88,7 @@ public partial class OsirionHtmlRenderer
     /// </summary>
     private void ProcessHtmlContent()
     {
-        if (string.IsNullOrEmpty(HtmlContent))
+        if (string.IsNullOrWhiteSpace(HtmlContent))
         {
             ProcessedHtml = string.Empty;
             HasCodeBlocks = false;
@@ -130,7 +130,7 @@ public partial class OsirionHtmlRenderer
             // Map common language aliases
             language = MapLanguageAlias(language);
 
-            if (!string.IsNullOrEmpty(language) && language != "plaintext")
+            if (!string.IsNullOrWhiteSpace(language) && language != "plaintext")
             {
                 DetectedLanguages.Add(language);
             }
@@ -164,7 +164,7 @@ public partial class OsirionHtmlRenderer
                     var existingClasses = m.Groups[2].Value;
                     var attrs2 = m.Groups[3].Value;
 
-                    if (string.IsNullOrEmpty(existingClasses))
+                    if (string.IsNullOrWhiteSpace(existingClasses))
                     {
                         return $"<pre{attrs1} class=\"line-numbers\"{attrs2}>";
                     }
@@ -223,7 +223,7 @@ public partial class OsirionHtmlRenderer
     private string SanitizeHtmlContent(string html)
     {
         // Use custom sanitizer if provided
-        if (HtmlSanitizer != null)
+        if (HtmlSanitizer is not null)
         {
             return HtmlSanitizer(html);
         }
@@ -304,7 +304,7 @@ public partial class OsirionHtmlRenderer
             classes.Add("osirion-wcag-theme");
         }
 
-        if (!string.IsNullOrEmpty(CssClass))
+        if (!string.IsNullOrWhiteSpace(CssClass))
         {
             classes.Add(CssClass);
         }

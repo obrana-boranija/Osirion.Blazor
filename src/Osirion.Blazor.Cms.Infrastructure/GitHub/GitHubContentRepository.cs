@@ -39,7 +39,7 @@ public class GitHubContentRepository : BaseContentRepository
         ContentPath = _options.ContentPath;
 
         // Get the API client from factory
-        if (!string.IsNullOrEmpty(providerName))
+        if (!string.IsNullOrWhiteSpace(providerName))
         {
             _apiClient = apiClientFactory.GetClient(providerName);
         }
@@ -52,7 +52,7 @@ public class GitHubContentRepository : BaseContentRepository
         _apiClient.SetRepository(_options.Owner, _options.Repository);
         _apiClient.SetBranch(_options.Branch);
 
-        if (!string.IsNullOrEmpty(_options.ApiToken))
+        if (!string.IsNullOrWhiteSpace(_options.ApiToken))
         {
             _apiClient.SetAccessToken(_options.ApiToken);
         }
@@ -82,7 +82,7 @@ public class GitHubContentRepository : BaseContentRepository
             {
                 var branches = await _apiClient.GetBranchesAsync(cancellationToken);
                 var branch = branches.FirstOrDefault(b => b.Name == _options.Branch);
-                if (branch != null)
+                if (branch is not null)
                 {
                     _lastKnownCommitSha = branch.Commit.Sha;
                     Logger.LogInformation("Updated commit SHA to {Sha}", _lastKnownCommitSha);
@@ -114,10 +114,10 @@ public class GitHubContentRepository : BaseContentRepository
     /// <inheritdoc/>
     public override async Task<ContentItem> SaveWithCommitMessageAsync(ContentItem entity, string commitMessage, CancellationToken cancellationToken = default)
     {
-        if (entity == null)
+        if (entity is null)
             throw new ArgumentNullException(nameof(entity));
 
-        if (string.IsNullOrEmpty(entity.Path))
+        if (string.IsNullOrWhiteSpace(entity.Path))
             throw new ArgumentException("Path cannot be empty", nameof(entity));
 
         LogOperation("saving", entity.Id);
@@ -161,7 +161,7 @@ public class GitHubContentRepository : BaseContentRepository
     /// <inheritdoc/>
     public override async Task DeleteWithCommitMessageAsync(string id, string commitMessage, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrEmpty(id))
+        if (string.IsNullOrWhiteSpace(id))
             throw new ArgumentException("ID cannot be empty", nameof(id));
 
         LogOperation("deleting", id);
@@ -170,10 +170,10 @@ public class GitHubContentRepository : BaseContentRepository
         {
             // Get item to get path and SHA
             var item = await GetByIdAsync(id, cancellationToken);
-            if (item == null)
+            if (item is null)
                 throw new ContentItemNotFoundException(id, ProviderId);
 
-            if (string.IsNullOrEmpty(item.ProviderSpecificId))
+            if (string.IsNullOrWhiteSpace(item.ProviderSpecificId))
                 throw new ContentProviderException($"Content has no SHA; cannot delete", ProviderId);
 
             // Delete file
@@ -224,7 +224,7 @@ public class GitHubContentRepository : BaseContentRepository
                     var fileContent = await _apiClient.GetFileContentAsync(item.Path, cancellationToken);
                     var contentItem = await ProcessMarkdownFileAsync(fileContent, cancellationToken);
 
-                    if (contentItem != null)
+                    if (contentItem is not null)
                     {
                         contentItems[contentItem.Id] = contentItem;
                     }
@@ -244,7 +244,7 @@ public class GitHubContentRepository : BaseContentRepository
 
     private async Task<ContentItem?> ProcessMarkdownFileAsync(GitHubFileContent fileContent, CancellationToken cancellationToken = default)
     {
-        if (fileContent == null || !IsSupportedFile(fileContent.Name))
+        if (fileContent is null || !IsSupportedFile(fileContent.Name))
             return null;
 
         // Skip _index.md files - they're for directory metadata
@@ -274,7 +274,7 @@ public class GitHubContentRepository : BaseContentRepository
         //try
         //{
         //    var commit = await _apiClient.GetCommitForPathAsync(fileContent.Path, cancellationToken);
-        //    if (commit != null)
+        //    if (commit is not null)
         //    {
         //        contentItem.SetLastModifiedDate(commit.Committer.Date);
         //        contentItem.SetCreatedDate(commit.Author.Date);
@@ -302,7 +302,7 @@ public class GitHubContentRepository : BaseContentRepository
         {
             var directoryPath = GetDirectoryPath(fileContent.Path);
             var directory = await _directoryRepository.GetByPathAsync(directoryPath, cancellationToken);
-            if (directory != null)
+            if (directory is not null)
             {
                 contentItem.SetDirectory(directory);
             }
@@ -320,7 +320,7 @@ public class GitHubContentRepository : BaseContentRepository
         contentItem.SetUrl(url);
 
         // Set content ID if localization is enabled
-        if (_options.EnableLocalization && string.IsNullOrEmpty(contentItem.ContentId))
+        if (_options.EnableLocalization && string.IsNullOrWhiteSpace(contentItem.ContentId))
         {
             var pathWithoutLocale = RemoveLocaleFromPath(contentItem.Path);
             var pathWithoutExtension = Path.ChangeExtension(pathWithoutLocale, null);

@@ -140,10 +140,10 @@ public partial class OsirionCookieConsent
     private void CheckConsentStatus()
     {
         var httpContext = HttpContextAccessor.HttpContext;
-        if (httpContext != null)
+        if (httpContext is not null)
         {
             var consentCookie = httpContext.Request.Cookies[ConsentCookieName];
-            ShowBanner = string.IsNullOrEmpty(consentCookie);
+            ShowBanner = string.IsNullOrWhiteSpace(consentCookie);
 
             // Check if we're in customize mode from query string
             if (httpContext.Request.Query.ContainsKey("customize-cookies"))
@@ -176,7 +176,7 @@ public partial class OsirionCookieConsent
             classes.Add("osirion-cookie-consent-customizing");
         }
 
-        if (!string.IsNullOrEmpty(CssClass))
+        if (!string.IsNullOrWhiteSpace(CssClass))
         {
             classes.Add(CssClass);
         }

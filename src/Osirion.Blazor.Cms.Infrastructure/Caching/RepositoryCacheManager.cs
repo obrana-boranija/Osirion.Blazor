@@ -35,7 +35,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.Caching
             CancellationToken cancellationToken = default,
             bool forceRefresh = false)
         {
-            if (!forceRefresh && _cache != null && DateTime.UtcNow < _cacheExpiration)
+            if (!forceRefresh && _cache is not null && DateTime.UtcNow < _cacheExpiration)
             {
                 return _cache;
             }
@@ -44,7 +44,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.Caching
             try
             {
                 // Double-check inside the lock
-                if (!forceRefresh && _cache != null && DateTime.UtcNow < _cacheExpiration)
+                if (!forceRefresh && _cache is not null && DateTime.UtcNow < _cacheExpiration)
                 {
                     return _cache;
                 }
@@ -66,7 +66,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.Caching
                 _logger.LogError(ex, "Error refreshing cache for {Provider}", _providerIdentifier);
 
                 // If we have an existing cache, return it even if expired
-                if (_cache != null)
+                if (_cache is not null)
                 {
                     _logger.LogWarning("Returning stale cache after refresh error for {Provider}",
                         _providerIdentifier);

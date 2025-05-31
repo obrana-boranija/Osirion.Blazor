@@ -22,8 +22,8 @@ public static class OsirionContentServiceCollectionExtensions
         this IServiceCollection services,
         Action<IContentBuilder> configure)
     {
-        if (services == null) throw new ArgumentNullException(nameof(services));
-        if (configure == null) throw new ArgumentNullException(nameof(configure));
+        if (services is null) throw new ArgumentNullException(nameof(services));
+        if (configure is null) throw new ArgumentNullException(nameof(configure));
 
         // Add core CMS services
         services.AddCms(services.BuildServiceProvider().GetRequiredService<IConfiguration>());
@@ -50,8 +50,8 @@ public static class OsirionContentServiceCollectionExtensions
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        if (services == null) throw new ArgumentNullException(nameof(services));
-        if (configuration == null) throw new ArgumentNullException(nameof(configuration));
+        if (services is null) throw new ArgumentNullException(nameof(services));
+        if (configuration is null) throw new ArgumentNullException(nameof(configuration));
 
         // Add core CMS services
         services.AddCms(configuration);

@@ -13,7 +13,7 @@
                         class="osirion-markdown-toolbar-button"
                         @onclick="() => ExecuteToolbarAction(action)"
                         title="@action.Title">
-                    @if (!string.IsNullOrEmpty(action.Icon))
+                    @if (!string.IsNullOrWhiteSpace(action.Icon))
                     {
                         <span class="osirion-markdown-toolbar-icon">@((MarkupString)action.Icon)</span>
                     }

@@ -33,7 +33,7 @@ public partial class MetadataEditor
         SeoData ??= SeoMetadata.Create("", "");
 
         // Auto-populate SEO from FrontMatter if SEO is empty
-        if (string.IsNullOrEmpty(SeoData.Title) && !string.IsNullOrEmpty(Metadata.Title))
+        if (string.IsNullOrWhiteSpace(SeoData.Title) && !string.IsNullOrWhiteSpace(Metadata.Title))
         {
             SeoData = SeoData
                 .WithMetaTitle(Metadata.Title)
@@ -58,7 +58,7 @@ public partial class MetadataEditor
         Metadata = newMetadata;
 
         // Auto-sync to SEO if titles match
-        if (SeoData.Title == Metadata.Title || string.IsNullOrEmpty(SeoData.Title))
+        if (SeoData.Title == Metadata.Title || string.IsNullOrWhiteSpace(SeoData.Title))
         {
             SeoData = SeoData
                 .WithMetaTitle(newMetadata.Title)

@@ -69,7 +69,7 @@ public class DirectoryCacheManager : IDirectoryCacheManager
                 var directories = await loadFunc(cancellationToken);
 
                 // Ensure we never have a null cache
-                if (directories == null)
+                if (directories is null)
                 {
                     _logger.LogWarning("Load function returned null directory cache, using empty dictionary");
                     directories = new Dictionary<string, DirectoryItem>();
@@ -85,7 +85,7 @@ public class DirectoryCacheManager : IDirectoryCacheManager
                 _logger.LogError(ex, "Error loading directory cache");
 
                 // If we have an existing cache, keep it
-                if (_directoryCache == null)
+                if (_directoryCache is null)
                 {
                     _directoryCache = new Dictionary<string, DirectoryItem>();
                 }

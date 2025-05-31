@@ -186,7 +186,7 @@ public partial class FeaturedPostsSection
     /// </summary>
     protected override async Task OnParametersSetAsync()
     {
-        if (Posts == null)
+        if (Posts is null)
         {
             await LoadPostsAsync();
         }
@@ -205,7 +205,7 @@ public partial class FeaturedPostsSection
         try
         {
             var provider = ContentProviderManager.GetDefaultProvider();
-            if (provider != null)
+            if (provider is not null)
             {
                 var query = new ContentQuery
                 {
@@ -262,7 +262,7 @@ public partial class FeaturedPostsSection
     /// </summary>
     private string GetExcerpt(string content, int length)
     {
-        if (string.IsNullOrEmpty(content))
+        if (string.IsNullOrWhiteSpace(content))
             return string.Empty;
 
         // Strip HTML tags

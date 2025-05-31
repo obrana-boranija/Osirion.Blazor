@@ -302,11 +302,11 @@ public partial class HomePage
     /// <inheritdoc/>
     protected override async Task OnParametersSetAsync()
     {
-        if (Content == null && !string.IsNullOrEmpty(ContentPath))
+        if (Content is null && !string.IsNullOrWhiteSpace(ContentPath))
         {
             await LoadContentAsync();
         }
-        else if (Content != null)
+        else if (Content is not null)
         {
             await LoadRelatedContentAsync();
         }
@@ -322,7 +322,7 @@ public partial class HomePage
         try
         {
             var provider = ContentProviderManager.GetDefaultProvider();
-            if (provider != null)
+            if (provider is not null)
             {
                 Content = await provider.GetItemByPathAsync(ContentPath);
                 await LoadRelatedContentAsync();
@@ -344,7 +344,7 @@ public partial class HomePage
         try
         {
             var provider = ContentProviderManager.GetDefaultProvider();
-            if (provider != null)
+            if (provider is not null)
             {
                 // Load featured content
                 if (ShowFeaturedContent)

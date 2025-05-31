@@ -68,11 +68,11 @@ public partial class LocalizedContentView
 
     //protected override async Task OnInitializedAsync()
     //{
-    //    if (Item == null && !string.IsNullOrEmpty(Path))
+    //    if (Item is null && !string.IsNullOrWhiteSpace(Path))
     //    {
     //        await LoadContentAsync();
     //    }
-    //    else if (Item != null)
+    //    else if (Item is not null)
     //    {
     //        LocalizationId = Item.ContentId;
     //        await LoadTranslationsAsync();
@@ -81,11 +81,11 @@ public partial class LocalizedContentView
 
     protected override async Task OnParametersSetAsync()
     {
-        if (Item == null && !string.IsNullOrEmpty(Path))
+        if (Item is null && !string.IsNullOrWhiteSpace(Path))
         {
             await LoadContentAsync();
         }
-        else if (Item != null && LocalizationId != Item.ContentId)
+        else if (Item is not null && LocalizationId != Item.ContentId)
         {
             LocalizationId = Item.ContentId;
             await LoadContentAsync();
@@ -109,7 +109,7 @@ public partial class LocalizedContentView
         try
         {
             var provider = ContentProviderManager.GetDefaultProvider();
-            if (provider != null)
+            if (provider is not null)
             {
                 if(Item is null)
                 {
@@ -170,7 +170,7 @@ public partial class LocalizedContentView
 
     private async Task LoadTranslationsAsync()
     {
-        if (string.IsNullOrEmpty(LocalizationId) || !EnableLocalization)
+        if (string.IsNullOrWhiteSpace(LocalizationId) || !EnableLocalization)
         {
             AvailableTranslations.Clear();
             return;
@@ -179,7 +179,7 @@ public partial class LocalizedContentView
         try
         {
             var provider = ContentProviderManager.GetDefaultProvider();
-            if (provider != null)
+            if (provider is not null)
             {
                 var translations = await provider.GetContentTranslationsAsync(LocalizationId);
 

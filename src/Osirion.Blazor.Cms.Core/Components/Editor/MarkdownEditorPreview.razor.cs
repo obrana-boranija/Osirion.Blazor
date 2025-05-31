@@ -67,7 +67,7 @@ public partial class MarkdownEditorPreview
     /// </summary>
     private async Task HandleEditorScroll(double position)
     {
-        if (!SyncScroll || _isSyncing || PreviewRef == null || !ShowPreview)
+        if (!SyncScroll || _isSyncing || PreviewRef is null || !ShowPreview)
             return;
 
         try
@@ -86,7 +86,7 @@ public partial class MarkdownEditorPreview
     /// </summary>
     private async Task HandlePreviewScroll(double position)
     {
-        if (!SyncScroll || _isSyncing || EditorRef == null || !ShowPreview)
+        if (!SyncScroll || _isSyncing || EditorRef is null || !ShowPreview)
             return;
 
         try
@@ -118,7 +118,7 @@ public partial class MarkdownEditorPreview
     /// </summary>
     public async Task FocusEditorAsync()
     {
-        if (EditorRef != null)
+        if (EditorRef is not null)
         {
             await EditorRef.FocusAsync();
         }
@@ -129,7 +129,7 @@ public partial class MarkdownEditorPreview
     /// </summary>
     public async Task InsertTextAsync(string text)
     {
-        if (EditorRef != null)
+        if (EditorRef is not null)
         {
             await EditorRef.InsertTextAsync(text);
         }
@@ -140,7 +140,7 @@ public partial class MarkdownEditorPreview
     /// </summary>
     public async Task WrapTextAsync(string prefix, string suffix, string defaultText)
     {
-        if (EditorRef != null)
+        if (EditorRef is not null)
         {
             await EditorRef.WrapTextAsync(prefix, suffix, defaultText);
         }

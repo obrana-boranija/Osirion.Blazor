@@ -35,7 +35,7 @@ public class GitHubDirectoryRepository : DirectoryRepositoryBase, IDirectoryRepo
         _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
 
         // Get the API client from factory
-        if (!string.IsNullOrEmpty(providerName))
+        if (!string.IsNullOrWhiteSpace(providerName))
         {
             _apiClient = apiClientFactory.GetClient(providerName);
         }
@@ -48,7 +48,7 @@ public class GitHubDirectoryRepository : DirectoryRepositoryBase, IDirectoryRepo
         _apiClient.SetRepository(_options.Owner, _options.Repository);
         _apiClient.SetBranch(_options.Branch);
 
-        if (!string.IsNullOrEmpty(_options.ApiToken))
+        if (!string.IsNullOrWhiteSpace(_options.ApiToken))
         {
             _apiClient.SetAccessToken(_options.ApiToken);
         }
@@ -64,11 +64,11 @@ public class GitHubDirectoryRepository : DirectoryRepositoryBase, IDirectoryRepo
     /// <inheritdoc/>
     public override async Task<DirectoryItem> SaveAsync(DirectoryItem entity, CancellationToken cancellationToken = default)
     {
-        if (entity == null)
+        if (entity is null)
             throw new ArgumentNullException(nameof(entity));
 
         // Use default commit message
-        var commitMessage = string.IsNullOrEmpty(entity.ProviderSpecificId)
+        var commitMessage = string.IsNullOrWhiteSpace(entity.ProviderSpecificId)
             ? $"Create directory {entity.Name}"
             : $"Update directory {entity.Name}";
 
@@ -76,7 +76,7 @@ public class GitHubDirectoryRepository : DirectoryRepositoryBase, IDirectoryRepo
         {
             // Check if directory exists
             var existingDirectory = await GetByIdAsync(entity.Id, cancellationToken);
-            if (existingDirectory == null)
+            if (existingDirectory is null)
             {
                 // Create new directory
                 return await CreateDirectoryAsync(entity, commitMessage, cancellationToken);
@@ -103,7 +103,7 @@ public class GitHubDirectoryRepository : DirectoryRepositoryBase, IDirectoryRepo
     /// <inheritdoc/>
     public async Task<DirectoryItem> MoveAsync(string id, string? newParentId, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrEmpty(id))
+        if (string.IsNullOrWhiteSpace(id))
             throw new ArgumentException("ID cannot be empty", nameof(id));
 
         LogOperation("moving", id);
@@ -112,15 +112,15 @@ public class GitHubDirectoryRepository : DirectoryRepositoryBase, IDirectoryRepo
         {
             // Get directory to move
             var directory = await GetByIdAsync(id, cancellationToken);
-            if (directory == null)
+            if (directory is null)
                 throw new DirectoryNotFoundException(id);
 
             // Get new parent directory if specified
             DirectoryItem? newParent = null;
-            if (!string.IsNullOrEmpty(newParentId))
+            if (!string.IsNullOrWhiteSpace(newParentId))
             {
                 newParent = await GetByIdAsync(newParentId, cancellationToken);
-                if (newParent == null)
+                if (newParent is null)
                     throw new DirectoryNotFoundException(newParentId);
 
                 // Check for circular reference
@@ -130,7 +130,7 @@ public class GitHubDirectoryRepository : DirectoryRepositoryBase, IDirectoryRepo
 
             // Determine old and new paths
             var oldPath = directory.Path;
-            var newPath = string.IsNullOrEmpty(newParentId)
+            var newPath = string.IsNullOrWhiteSpace(newParentId)
                 ? Path.GetFileName(directory.Path) // Move to root
                 : Path.Combine(newParent!.Path, Path.GetFileName(directory.Path)).Replace('\\', '/');
 
@@ -185,7 +185,7 @@ public class GitHubDirectoryRepository : DirectoryRepositoryBase, IDirectoryRepo
     {
         // Get directory to get path and metadata
         var directory = await GetByIdAsync(id, cancellationToken);
-        if (directory == null)
+        if (directory is null)
             throw new DirectoryNotFoundException(id);
 
         // Generate a default commit message if not provided
@@ -236,7 +236,7 @@ public class GitHubDirectoryRepository : DirectoryRepositoryBase, IDirectoryRepo
             if (directoryCache.TryGetValue(directoryId, out var existingDirectory))
             {
                 // If this directory already exists with a different parent, we have a problem
-                if (parentDirectory != null && existingDirectory.Parent != null &&
+                if (parentDirectory is not null && existingDirectory.Parent is not null &&
                     existingDirectory.Parent.Id != parentDirectory.Id)
                 {
                     Logger.LogWarning(
@@ -251,7 +251,7 @@ public class GitHubDirectoryRepository : DirectoryRepositoryBase, IDirectoryRepo
                 var directory = existingDirectory;
 
                 // Update parent if needed
-                if (parentDirectory != null && directory.Parent == null)
+                if (parentDirectory is not null && directory.Parent is null)
                 {
                     try
                     {
@@ -276,7 +276,7 @@ public class GitHubDirectoryRepository : DirectoryRepositoryBase, IDirectoryRepo
                     providerId: ProviderId);
 
                 // Set parent if available
-                if (parentDirectory != null)
+                if (parentDirectory is not null)
                 {
                     try
                     {
@@ -334,7 +334,7 @@ public class GitHubDirectoryRepository : DirectoryRepositoryBase, IDirectoryRepo
 
                 // Find the directory
                 var directory = directoryCache.Values.FirstOrDefault(d => d.Path == directoryPath);
-                if (directory != null)
+                if (directory is not null)
                 {
                     // Process metadata
                     MetadataProcessor.ProcessMetadata(directory, decodedContent);
@@ -397,7 +397,7 @@ public class GitHubDirectoryRepository : DirectoryRepositoryBase, IDirectoryRepo
 
         // Check if _index.md already exists
         string? sha = directory.ProviderSpecificId;
-        if (string.IsNullOrEmpty(sha))
+        if (string.IsNullOrWhiteSpace(sha))
         {
             try
             {

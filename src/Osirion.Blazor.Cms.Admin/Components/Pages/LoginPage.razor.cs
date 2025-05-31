@@ -31,8 +31,8 @@ public partial class LoginPage
     private bool IsLoggingIn => ViewModel.IsLoggingIn;
     private bool IsShowingTokenInput => ViewModel.IsShowingTokenInput;
 
-    private bool EnableGitHubAuth => !string.IsNullOrEmpty(Options.Value.Authentication.GitHubClientId) &&
-                                   !string.IsNullOrEmpty(Options.Value.Authentication.GitHubClientSecret);
+    private bool EnableGitHubAuth => !string.IsNullOrWhiteSpace(Options.Value.Authentication.GitHubClientId) &&
+                                   !string.IsNullOrWhiteSpace(Options.Value.Authentication.GitHubClientSecret);
 
     private string GitHubAuthUrl => $"https://github.com/login/oauth/authorize?client_id={Options.Value.Authentication.GitHubClientId}&redirect_uri={Uri.EscapeDataString(GetRedirectUri())}&scope=repo";
 
@@ -45,7 +45,7 @@ public partial class LoginPage
     protected override async Task OnInitializedAsync()
     {
         // Check if we have a configured PAT in options
-        if (!string.IsNullOrEmpty(Options.Value.Authentication.PersonalAccessToken))
+        if (!string.IsNullOrWhiteSpace(Options.Value.Authentication.PersonalAccessToken))
         {
             // If we have a PAT in the options, try to use it directly
             ViewModel.AccessToken = Options.Value.Authentication.PersonalAccessToken;
@@ -116,7 +116,7 @@ public partial class LoginPage
     private string GetSanitizedReturnUrl()
     {
         // Sanitize and validate return URL to prevent open redirect
-        if (string.IsNullOrEmpty(ReturnUrl))
+        if (string.IsNullOrWhiteSpace(ReturnUrl))
         {
             return "/osirion";
         }

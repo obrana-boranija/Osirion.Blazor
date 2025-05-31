@@ -28,7 +28,7 @@ public class CmsAdminBuilder : CmsBuilderBase, ICmsAdminBuilder
     /// <inheritdoc/>
     public ICmsAdminBuilder Configure(Action<GitHubOptions> configure)
     {
-        if (configure == null)
+        if (configure is null)
             throw new ArgumentNullException(nameof(configure));
 
         // Configure GitHub options
@@ -50,7 +50,7 @@ public class CmsAdminBuilder : CmsBuilderBase, ICmsAdminBuilder
     /// <inheritdoc/>
     public ICmsAdminBuilder AddGitHubAuth(Action<GithubAuthorizationOptions> configure)
     {
-        if (configure == null)
+        if (configure is null)
             throw new ArgumentNullException(nameof(configure));
 
         // Configure GitHub auth options

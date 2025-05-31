@@ -21,8 +21,8 @@ public static class OsirionCmsAdminServiceCollectionExtensions
         this IServiceCollection services,
         Action<IOsirionCmsAdminBuilder> configure)
     {
-        if (services == null) throw new ArgumentNullException(nameof(services));
-        if (configure == null) throw new ArgumentNullException(nameof(configure));
+        if (services is null) throw new ArgumentNullException(nameof(services));
+        if (configure is null) throw new ArgumentNullException(nameof(configure));
 
         // Add core services
         services.AddOsirionCmsAdminDI();
@@ -48,8 +48,8 @@ public static class OsirionCmsAdminServiceCollectionExtensions
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        if (services == null) throw new ArgumentNullException(nameof(services));
-        if (configuration == null) throw new ArgumentNullException(nameof(configuration));
+        if (services is null) throw new ArgumentNullException(nameof(services));
+        if (configuration is null) throw new ArgumentNullException(nameof(configuration));
 
         // Add core services
         services.AddOsirionCmsAdminDI();

@@ -30,7 +30,7 @@ public partial class ContentEditor : IDisposable
 
         // If ViewModel.EditingPost is null but AdminState has a post,
         // we need to initialize ViewModel from AdminState
-        if (ViewModel.EditingPost == null && AdminState.EditingPost != null)
+        if (ViewModel.EditingPost is null && AdminState.EditingPost is not null)
         {
             ViewModel.InitializeFromState(AdminState.EditingPost, AdminState.IsCreatingNewFile);
         }
@@ -52,7 +52,7 @@ public partial class ContentEditor : IDisposable
     // Handle content selection event
     private void OnContentSelected(ContentSelectedEvent e)
     {
-        if (!string.IsNullOrEmpty(e.Path))
+        if (!string.IsNullOrWhiteSpace(e.Path))
         {
             ViewModel.LoadPostAsync(e.Path).ConfigureAwait(false);
         }
@@ -61,7 +61,7 @@ public partial class ContentEditor : IDisposable
     // Handle create new content event
     private void OnCreateNewContent(CreateNewContentEvent e)
     {
-        if (AdminState.EditingPost != null && AdminState.IsCreatingNewFile)
+        if (AdminState.EditingPost is not null && AdminState.IsCreatingNewFile)
         {
             // Initialize from AdminState
             ViewModel.InitializeFromState(AdminState.EditingPost, true);
@@ -85,7 +85,7 @@ public partial class ContentEditor : IDisposable
             await ViewModel.SavePostAsync();
             IsDirty = false;
 
-            if (OnSaveComplete.HasDelegate && ViewModel.EditingPost != null)
+            if (OnSaveComplete.HasDelegate && ViewModel.EditingPost is not null)
             {
                 await OnSaveComplete.InvokeAsync(ViewModel.EditingPost);
             }

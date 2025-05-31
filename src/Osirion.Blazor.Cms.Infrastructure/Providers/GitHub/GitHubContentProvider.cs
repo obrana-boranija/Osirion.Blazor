@@ -43,7 +43,7 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
         _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
 
         // Get the API client from factory
-        if (!string.IsNullOrEmpty(providerName))
+        if (!string.IsNullOrWhiteSpace(providerName))
         {
             _apiClient = apiClientFactory.GetClient(providerName);
         }
@@ -55,7 +55,7 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
 
     public override string ProviderId => _options.ProviderId ?? $"github-{_options.Owner}-{_options.Repository}";
     public override string DisplayName => $"GitHub: {_options.Owner}/{_options.Repository}";
-    public override bool IsReadOnly => string.IsNullOrEmpty(_options.ApiToken);
+    public override bool IsReadOnly => string.IsNullOrWhiteSpace(_options.ApiToken);
 
     public override async Task<IReadOnlyList<ContentItem>> GetAllItemsAsync(CancellationToken cancellationToken = default)
     {
@@ -65,7 +65,7 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
 
     public override async Task<ContentItem?> GetItemByIdAsync(string id, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrEmpty(id))
+        if (string.IsNullOrWhiteSpace(id))
             throw new ArgumentException("ID cannot be empty", nameof(id));
 
         await EnsureInitializedAsync(cancellationToken);
@@ -74,7 +74,7 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
 
     public override async Task<ContentItem?> GetItemByPathAsync(string path, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrEmpty(path))
+        if (string.IsNullOrWhiteSpace(path))
             throw new ArgumentException("Path cannot be empty", nameof(path));
 
         await EnsureInitializedAsync(cancellationToken);
@@ -83,7 +83,7 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
 
     public override async Task<ContentItem?> GetItemByUrlAsync(string url, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrEmpty(url))
+        if (string.IsNullOrWhiteSpace(url))
             throw new ArgumentException("URL cannot be empty", nameof(url));
 
         await EnsureInitializedAsync(cancellationToken);
@@ -104,7 +104,7 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
 
     public override async Task<DirectoryItem?> GetDirectoryByPathAsync(string path, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrEmpty(path))
+        if (string.IsNullOrWhiteSpace(path))
             throw new ArgumentException("Path cannot be empty", nameof(path));
 
         await EnsureInitializedAsync(cancellationToken);
@@ -113,7 +113,7 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
 
     public override async Task<DirectoryItem?> GetDirectoryByIdAsync(string id, string? locale = null, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrEmpty(id))
+        if (string.IsNullOrWhiteSpace(id))
             throw new ArgumentException("ID cannot be empty", nameof(id));
 
         await EnsureInitializedAsync(cancellationToken);
@@ -122,7 +122,7 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
 
     public override async Task<DirectoryItem?> GetDirectoryByUrlAsync(string url, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrEmpty(url))
+        if (string.IsNullOrWhiteSpace(url))
             throw new ArgumentException("URL cannot be empty", nameof(url));
 
         await EnsureInitializedAsync(cancellationToken);
@@ -196,7 +196,7 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
             _apiClient.SetRepository(_options.Owner, _options.Repository);
             _apiClient.SetBranch(_options.Branch);
 
-            if (!string.IsNullOrEmpty(_options.ApiToken))
+            if (!string.IsNullOrWhiteSpace(_options.ApiToken))
             {
                 _apiClient.SetAccessToken(_options.ApiToken);
             }
@@ -206,7 +206,7 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
             {
                 var branches = await _apiClient.GetBranchesAsync(cancellationToken);
                 var branch = branches.FirstOrDefault(b => b.Name == _options.Branch);
-                if (branch != null)
+                if (branch is not null)
                 {
                     _lastKnownSha = branch.Commit.Sha;
                     Logger.LogInformation("Latest commit SHA for branch {Branch}: {Sha}",
@@ -274,8 +274,8 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
     public async Task UpdateCacheAsync(string? latestSha = null, bool forceBackground = false)
     {
         // Skip if the SHA hasn't changed and not forcing update
-        if (!string.IsNullOrEmpty(latestSha) &&
-            !string.IsNullOrEmpty(_lastKnownSha) &&
+        if (!string.IsNullOrWhiteSpace(latestSha) &&
+            !string.IsNullOrWhiteSpace(_lastKnownSha) &&
             latestSha == _lastKnownSha &&
             !forceBackground)
         {
@@ -284,7 +284,7 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
         }
 
         // Add to queue instead of processing immediately
-        if (!string.IsNullOrEmpty(latestSha))
+        if (!string.IsNullOrWhiteSpace(latestSha))
         {
             _pendingShaTasks.Enqueue(latestSha);
             Logger.LogInformation("Added SHA {Sha} to update queue for provider: {ProviderId}",
@@ -390,7 +390,7 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
             latestSha = sha;
         }
 
-        if (!string.IsNullOrEmpty(latestSha))
+        if (!string.IsNullOrWhiteSpace(latestSha))
         {
             try
             {
@@ -435,7 +435,7 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
     {
         Logger.LogInformation("Received webhook for commit SHA: {Sha}", commitSha);
 
-        if (string.IsNullOrEmpty(commitSha))
+        if (string.IsNullOrWhiteSpace(commitSha))
         {
             Logger.LogWarning("Received webhook with empty commit SHA");
             return;

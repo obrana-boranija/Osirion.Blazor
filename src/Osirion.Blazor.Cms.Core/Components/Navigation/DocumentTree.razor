@@ -6,7 +6,7 @@
         @foreach (var sect in Sections)
         {
             <li class="osirion-doc-tree-section">
-                @if (!string.IsNullOrEmpty(sect.Title))
+                @if (!string.IsNullOrWhiteSpace(sect.Title))
                 {
                     <div class="osirion-doc-tree-section-title">@sect.Title</div>
                 }
@@ -18,7 +18,7 @@
                                 @item.Title
                             </a>
 
-                            @if (item.Children != null && item.Children.Any())
+                            @if (item.Children is not null && item.Children.Any())
                             {
                                 <ul class="osirion-doc-tree-children">
                                     @foreach (var child in item.Children)

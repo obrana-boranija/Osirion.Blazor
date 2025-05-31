@@ -23,7 +23,7 @@ public class FileExplorerViewModel
     public string? ErrorMessage { get; private set; }
 
     public bool IsValidRepositoryAndBranch =>
-        _state.SelectedRepository != null && _state.SelectedBranch != null;
+        _state.SelectedRepository is not null && _state.SelectedBranch is not null;
 
     // For delete confirmation
     public bool IsShowingDeleteConfirmation { get; private set; }
@@ -98,7 +98,7 @@ public class FileExplorerViewModel
     /// </summary>
     public async Task NavigateToParentDirectoryAsync()
     {
-        if (string.IsNullOrEmpty(CurrentPath))
+        if (string.IsNullOrWhiteSpace(CurrentPath))
             return;
 
         string parentPath = string.Empty;
@@ -119,7 +119,7 @@ public class FileExplorerViewModel
     /// </summary>
     public async Task HandleItemClickAsync(GitHubItem item)
     {
-        if (item == null)
+        if (item is null)
             return;
 
         SelectItem(item);
@@ -140,7 +140,7 @@ public class FileExplorerViewModel
     /// </summary>
     public async Task OpenFileAsync(GitHubItem item)
     {
-        if (item == null || !item.IsFile)
+        if (item is null || !item.IsFile)
             return;
 
         IsLoading = true;
@@ -210,7 +210,7 @@ public class FileExplorerViewModel
 
     public async Task DeleteFileAsync()
     {
-        if (FileToDelete == null)
+        if (FileToDelete is null)
         {
             CancelDelete();
             return;

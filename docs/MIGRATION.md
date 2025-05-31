@@ -291,12 +291,12 @@ This version introduces analytics components:
    @inject IOptions<ClarityOptions>? ClarityOptions
    @inject IOptions<MatomoOptions>? MatomoOptions
 
-   @if (ClarityOptions?.Value != null)
+   @if (ClarityOptions?.Value is not null)
    {
        <ClarityTracker Options="@ClarityOptions.Value" />
    }
 
-   @if (MatomoOptions?.Value != null)
+   @if (MatomoOptions?.Value is not null)
    {
        <MatomoTracker Options="@MatomoOptions.Value" />
    }

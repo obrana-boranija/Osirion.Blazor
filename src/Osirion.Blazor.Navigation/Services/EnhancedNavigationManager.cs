@@ -45,7 +45,7 @@ public class EnhancedNavigationManager
     /// <param name="options">The new options</param>
     public void UpdateOptions(EnhancedNavigationOptions options)
     {
-        if (options == null) throw new ArgumentNullException(nameof(options));
+        if (options is null) throw new ArgumentNullException(nameof(options));
 
         _options.Behavior = options.Behavior;
         _options.ResetScrollOnNavigation = options.ResetScrollOnNavigation;

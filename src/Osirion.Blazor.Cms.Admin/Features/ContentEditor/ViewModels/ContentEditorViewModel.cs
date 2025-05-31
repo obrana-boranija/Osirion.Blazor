@@ -78,7 +78,7 @@ public class ContentEditorViewModel : IDisposable
 
     public async Task SavePostAsync()
     {
-        if (EditingPost == null)
+        if (EditingPost is null)
             return;
 
         try
@@ -99,13 +99,13 @@ public class ContentEditorViewModel : IDisposable
 
                 // Combine directory and filename
                 string directory = Path.GetDirectoryName(EditingPost.Path) ?? string.Empty;
-                EditingPost.Path = string.IsNullOrEmpty(directory)
+                EditingPost.Path = string.IsNullOrWhiteSpace(directory)
                     ? filename
                     : $"{directory}/{filename}";
             }
 
             // Create commit message if empty
-            if (string.IsNullOrEmpty(CommitMessage))
+            if (string.IsNullOrWhiteSpace(CommitMessage))
             {
                 CommitMessage = IsCreatingNew
                     ? $"Create {Path.GetFileName(EditingPost.Path)}"
@@ -116,7 +116,7 @@ public class ContentEditorViewModel : IDisposable
             var result = await _editorService.SaveBlogPostAsync(EditingPost, CommitMessage);
 
             // Update post with new SHA
-            if (result != null)
+            if (result is not null)
             {
                 EditingPost.Sha = result.Content.Sha;
 
@@ -150,7 +150,7 @@ public class ContentEditorViewModel : IDisposable
 
     public void UpdateContent(string content)
     {
-        if (EditingPost != null)
+        if (EditingPost is not null)
         {
             EditingPost.Content = content;
             NotifyStateChanged();
@@ -159,7 +159,7 @@ public class ContentEditorViewModel : IDisposable
 
     public void UpdateMetadata(FrontMatter metadata)
     {
-        if (EditingPost != null)
+        if (EditingPost is not null)
         {
             EditingPost.Metadata = metadata;
             NotifyStateChanged();
@@ -171,7 +171,7 @@ public class ContentEditorViewModel : IDisposable
     /// </summary>
     public void UpdateSeoMetadata(SeoMetadata seoMetadata)
     {
-        if (EditingPost != null)
+        if (EditingPost is not null)
         {
             EditingPost.Metadata.SeoProperties = seoMetadata;
             NotifyStateChanged();
@@ -183,7 +183,7 @@ public class ContentEditorViewModel : IDisposable
     /// </summary>
     public async Task ReloadPostAsync()
     {
-        if (EditingPost != null && !string.IsNullOrEmpty(EditingPost.Path))
+        if (EditingPost is not null && !string.IsNullOrWhiteSpace(EditingPost.Path))
         {
             await LoadPostAsync(EditingPost.Path);
         }

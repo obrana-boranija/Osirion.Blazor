@@ -24,7 +24,7 @@ public class GA4Provider : IAnalyticsProvider
     public string ProviderId => "ga4";
 
     /// <inheritdoc/>
-    public bool IsEnabled => _options.Enabled && !string.IsNullOrEmpty(_options.MeasurementId);
+    public bool IsEnabled => _options.Enabled && !string.IsNullOrWhiteSpace(_options.MeasurementId);
 
     /// <inheritdoc/>
     public bool ShouldRender => IsEnabled;
@@ -119,12 +119,12 @@ public class GA4Provider : IAnalyticsProvider
             config["anonymize_ip"] = true;
         }
 
-        if (!string.IsNullOrEmpty(_options.CookieFlags))
+        if (!string.IsNullOrWhiteSpace(_options.CookieFlags))
         {
             config["cookie_flags"] = _options.CookieFlags;
         }
 
-        if (!string.IsNullOrEmpty(_options.CookieDomain))
+        if (!string.IsNullOrWhiteSpace(_options.CookieDomain))
         {
             config["cookie_domain"] = _options.CookieDomain;
         }
@@ -147,7 +147,7 @@ public class GA4Provider : IAnalyticsProvider
         }
 
         // Add any custom configuration parameters
-        if (_options.ConfigParameters != null)
+        if (_options.ConfigParameters is not null)
         {
             foreach (var param in _options.ConfigParameters)
             {

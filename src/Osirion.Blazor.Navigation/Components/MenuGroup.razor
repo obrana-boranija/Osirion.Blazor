@@ -2,7 +2,7 @@
 @inherits OsirionComponentBase
 
 <div class="@CombineCssClasses("osirion-menu-group")" @attributes="AdditionalAttributes">
-    @if (!string.IsNullOrEmpty(Label))
+    @if (!string.IsNullOrWhiteSpace(Label))
     {
         <div class="osirion-menu-group-label" id="@LabelId">
             <span class="osirion-menu-group-text">@Label</span>
@@ -17,7 +17,7 @@
         </div>
     }
 
-    <div class="osirion-menu-group-items" id="@ItemsId" role="group" aria-labelledby="@(string.IsNullOrEmpty(Label) ? null : LabelId)">
+    <div class="osirion-menu-group-items" id="@ItemsId" role="group" aria-labelledby="@(string.IsNullOrWhiteSpace(Label) ? null : LabelId)">
         @ChildContent
     </div>
 </div>

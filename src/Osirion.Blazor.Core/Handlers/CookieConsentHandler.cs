@@ -95,7 +95,7 @@ public static class CookieConsentHandler
     public static CookieConsentData? GetConsentData(HttpContext context)
     {
         var consentCookie = context.Request.Cookies[ConsentCookieName];
-        if (string.IsNullOrEmpty(consentCookie))
+        if (string.IsNullOrWhiteSpace(consentCookie))
             return null;
 
         try
@@ -115,7 +115,7 @@ public static class CookieConsentHandler
     public static bool IsCategoryConsented(HttpContext context, string category)
     {
         var consentData = GetConsentData(context);
-        if (consentData == null)
+        if (consentData is null)
             return false;
 
         return consentData.Categories.TryGetValue(category, out var consented) && consented;

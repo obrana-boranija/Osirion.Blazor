@@ -42,7 +42,7 @@ public class NavigationBuilder : INavigationBuilder
     /// <inheritdoc/>
     public INavigationBuilder AddEnhancedNavigation(IConfiguration configuration)
     {
-        if (configuration == null)
+        if (configuration is null)
         {
             throw new ArgumentNullException(nameof(configuration));
         }
@@ -98,7 +98,7 @@ public class NavigationBuilder : INavigationBuilder
     /// <inheritdoc/>
     public INavigationBuilder AddScrollToTop(IConfiguration configuration)
     {
-        if (configuration == null)
+        if (configuration is null)
         {
             throw new ArgumentNullException(nameof(configuration));
         }

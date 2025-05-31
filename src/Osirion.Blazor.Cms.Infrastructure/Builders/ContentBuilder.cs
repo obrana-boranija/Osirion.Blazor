@@ -32,7 +32,7 @@ public class ContentBuilder : CmsBuilderBase, IContentBuilder
     public IContentBuilder AddGitHub(Action<GitHubOptions>? configure = null)
     {
         // Configure GitHub options
-        if (configure != null)
+        if (configure is not null)
         {
             Services.Configure<GitHubOptions>(options => {
                 // First apply configuration from appsettings
@@ -72,7 +72,7 @@ public class ContentBuilder : CmsBuilderBase, IContentBuilder
     public IContentBuilder AddFileSystem(Action<FileSystemOptions>? configure = null)
     {
         // Configure FileSystem options
-        if (configure != null)
+        if (configure is not null)
         {
             Services.Configure<FileSystemOptions>(options => {
                 // First apply configuration from appsettings
@@ -120,7 +120,7 @@ public class ContentBuilder : CmsBuilderBase, IContentBuilder
             var provider = sp.GetRequiredService<TProvider>();
 
             // Apply configuration if provided
-            if (configure != null)
+            if (configure is not null)
             {
                 configure(provider);
             }

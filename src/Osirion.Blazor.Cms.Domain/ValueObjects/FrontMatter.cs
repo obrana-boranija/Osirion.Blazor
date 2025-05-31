@@ -158,19 +158,19 @@ public class FrontMatter : ValueObject
         };
 
         // Set categories if provided
-        if (categories != null)
+        if (categories is not null)
         {
             frontMatter = frontMatter.WithCategories(categories);
         }
 
         // Set tags if provided
-        if (tags != null)
+        if (tags is not null)
         {
             frontMatter = frontMatter.WithTags(tags);
         }
 
         // Set custom fields if provided
-        if (customFields != null)
+        if (customFields is not null)
         {
             frontMatter = frontMatter.WithCustomFields(customFields);
         }
@@ -217,7 +217,7 @@ public class FrontMatter : ValueObject
     public FrontMatter WithCategories(IEnumerable<string> categories)
     {
         var clone = Clone();
-        clone.Categories = categories != null
+        clone.Categories = categories is not null
             ? new List<string>(categories)
             : new List<string>();
         return clone;
@@ -226,7 +226,7 @@ public class FrontMatter : ValueObject
     public FrontMatter WithTags(IEnumerable<string> tags)
     {
         var clone = Clone();
-        clone.Tags = tags != null
+        clone.Tags = tags is not null
             ? new List<string>(tags)
             : new List<string>();
         return clone;
@@ -262,7 +262,7 @@ public class FrontMatter : ValueObject
 
     public FrontMatter WithCustomFields(IDictionary<string, object> customFields)
     {
-        if (customFields == null)
+        if (customFields is null)
             throw new ArgumentNullException(nameof(customFields));
 
         var clone = Clone();
@@ -280,7 +280,7 @@ public class FrontMatter : ValueObject
 
     public FrontMatter WithCustomField(string key, object value)
     {
-        if (string.IsNullOrEmpty(key))
+        if (string.IsNullOrWhiteSpace(key))
             throw new ArgumentException("Key cannot be null or empty", nameof(key));
 
         var clone = Clone();
@@ -345,7 +345,7 @@ public class FrontMatter : ValueObject
     /// </summary>
     public static FrontMatter FromDictionary(IDictionary<string, string> values)
     {
-        if (values == null)
+        if (values is null)
             throw new ArgumentNullException(nameof(values));
 
         // Extract required title or use empty string
@@ -480,7 +480,7 @@ public class FrontMatter : ValueObject
                 trimmedItem = trimmedItem.Substring(1, trimmedItem.Length - 2);
             }
 
-            if (!string.IsNullOrEmpty(trimmedItem))
+            if (!string.IsNullOrWhiteSpace(trimmedItem))
             {
                 result.Add(trimmedItem);
             }
@@ -580,7 +580,7 @@ public class FrontMatter : ValueObject
         //    if (trimmedLine.EndsWith(':'))
         //    {
         //        // Save any previous list
-        //        if (currentList != null && currentItems.Count > 0)
+        //        if (currentList is not null && currentItems.Count > 0)
         //        {
         //            AssignList(frontMatter, currentList, currentItems);
         //        }
@@ -610,7 +610,7 @@ public class FrontMatter : ValueObject
         //    if (separatorIndex > 0)
         //    {
         //        // Save any previous list
-        //        if (currentList != null && currentItems.Count > 0)
+        //        if (currentList is not null && currentItems.Count > 0)
         //        {
         //            AssignList(frontMatter, currentList, currentItems);
         //            currentList = null;
@@ -631,7 +631,7 @@ public class FrontMatter : ValueObject
         //}
 
         //// Save any final list
-        //if (currentList != null && currentItems.Count > 0)
+        //if (currentList is not null && currentItems.Count > 0)
         //{
         //    AssignList(frontMatter, currentList, currentItems);
         //}

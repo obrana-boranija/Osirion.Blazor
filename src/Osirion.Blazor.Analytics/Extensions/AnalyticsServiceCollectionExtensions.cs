@@ -21,8 +21,8 @@ public static class AnalyticsServiceCollectionExtensions
         this IServiceCollection services,
         Action<IAnalyticsBuilder> configure)
     {
-        if (services == null) throw new ArgumentNullException(nameof(services));
-        if (configure == null) throw new ArgumentNullException(nameof(configure));
+        if (services is null) throw new ArgumentNullException(nameof(services));
+        if (configure is null) throw new ArgumentNullException(nameof(configure));
 
         // Create builder and apply configuration
         var builder = new AnalyticsBuilder(services);
@@ -44,8 +44,8 @@ public static class AnalyticsServiceCollectionExtensions
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        if (services == null) throw new ArgumentNullException(nameof(services));
-        if (configuration == null) throw new ArgumentNullException(nameof(configuration));
+        if (services is null) throw new ArgumentNullException(nameof(services));
+        if (configuration is null) throw new ArgumentNullException(nameof(configuration));
 
         return services.AddOsirionAnalytics(builder =>
         {

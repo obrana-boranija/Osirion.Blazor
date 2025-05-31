@@ -53,7 +53,7 @@ public partial class TagCloud(IContentProviderManager contentProviderManager)
             try
             {
                 var provider = contentProviderManager.GetDefaultProvider();
-                if (provider != null)
+                if (provider is not null)
                 {
                     var allTags = await provider.GetTagsAsync();
 
@@ -89,7 +89,7 @@ public partial class TagCloud(IContentProviderManager contentProviderManager)
 
     private string GetTagLinkClass(ContentTag tag)
     {
-        bool isActive = !string.IsNullOrEmpty(ActiveTag) &&
+        bool isActive = !string.IsNullOrWhiteSpace(ActiveTag) &&
                        (tag.Slug.Equals(ActiveTag, StringComparison.OrdinalIgnoreCase) ||
                         tag.Name.Equals(ActiveTag, StringComparison.OrdinalIgnoreCase));
 

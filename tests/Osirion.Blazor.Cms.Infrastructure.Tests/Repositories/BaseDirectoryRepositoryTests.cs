@@ -283,7 +283,7 @@ public class BaseDirectoryRepositoryTests
 
         protected override Task EnsureCacheIsLoaded(CancellationToken cancellationToken, bool forceRefresh = false)
         {
-            if (forceRefresh || DirectoryCache == null)
+            if (forceRefresh || DirectoryCache is null)
             {
                 CacheRefreshCount++;
                 DirectoryCache = new Dictionary<string, DirectoryItem>(_items);

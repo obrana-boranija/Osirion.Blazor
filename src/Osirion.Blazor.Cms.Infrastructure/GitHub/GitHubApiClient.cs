@@ -65,7 +65,7 @@ public class GitHubApiClient : IGitHubApiClient
         try
         {
             // Check if we have an access token
-            if (string.IsNullOrEmpty(_accessToken))
+            if (string.IsNullOrWhiteSpace(_accessToken))
             {
                 throw new UnauthorizedAccessException("Access token is required to list repositories");
             }
@@ -74,7 +74,7 @@ public class GitHubApiClient : IGitHubApiClient
             string endpoint;
 
             // If _owner is set, try to get repositories for that organization/user
-            if (!string.IsNullOrEmpty(_owner))
+            if (!string.IsNullOrWhiteSpace(_owner))
             {
                 endpoint = $"/users/{_owner}/repos";
 
@@ -155,7 +155,7 @@ public class GitHubApiClient : IGitHubApiClient
             }
 
             var endpoint = $"/repos/{_owner}/{_repository}/contents/{path}";
-            if (!string.IsNullOrEmpty(_branch))
+            if (!string.IsNullOrWhiteSpace(_branch))
             {
                 endpoint += $"?ref={_branch}";
             }
@@ -176,7 +176,7 @@ public class GitHubApiClient : IGitHubApiClient
             {
                 // If that fails, try to deserialize as a single item
                 var item = JsonSerializer.Deserialize<GitHubItem>(content, _jsonOptions);
-                return item != null ? new List<GitHubItem> { item } : new List<GitHubItem>();
+                return item is not null ? new List<GitHubItem> { item } : new List<GitHubItem>();
             }
         }
         catch (Exception ex)
@@ -199,7 +199,7 @@ public class GitHubApiClient : IGitHubApiClient
             }
 
             var endpoint = $"/repos/{_owner}/{_repository}/contents/{path}";
-            if (!string.IsNullOrEmpty(_branch))
+            if (!string.IsNullOrWhiteSpace(_branch))
             {
                 endpoint += $"?ref={_branch}";
             }
@@ -210,7 +210,7 @@ public class GitHubApiClient : IGitHubApiClient
             var content = await response.Content.ReadAsStringAsync();
             var fileContent = JsonSerializer.Deserialize<GitHubFileContent>(content, _jsonOptions);
 
-            if (fileContent == null)
+            if (fileContent is null)
             {
                 _logger.LogError($"Failed to deserialize file content for {path}");
             }
@@ -260,7 +260,7 @@ public class GitHubApiClient : IGitHubApiClient
             var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
             var commitResponse = JsonSerializer.Deserialize<GitHubFileCommitResponse>(responseContent, _jsonOptions);
 
-            if (commitResponse == null)
+            if (commitResponse is null)
             {
                 throw new Exception($"Failed to deserialize commit response for {path}");
             }
@@ -307,7 +307,7 @@ public class GitHubApiClient : IGitHubApiClient
             var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
             var commitResponse = JsonSerializer.Deserialize<GitHubFileCommitResponse>(responseContent, _jsonOptions);
 
-            if (commitResponse == null)
+            if (commitResponse is null)
             {
                 throw new Exception($"Failed to deserialize commit response for {path}");
             }
@@ -340,7 +340,7 @@ public class GitHubApiClient : IGitHubApiClient
             var refContent = await refResponse.Content.ReadAsStringAsync(cancellationToken);
             var refData = JsonSerializer.Deserialize<GitHubRef>(refContent, _jsonOptions);
 
-            if (refData == null || refData.Object == null)
+            if (refData is null || refData.Object is null)
             {
                 throw new Exception($"Failed to get reference for branch {baseBranch}");
             }
@@ -365,7 +365,7 @@ public class GitHubApiClient : IGitHubApiClient
             var branchContent = await branchResponse.Content.ReadAsStringAsync(cancellationToken);
             var branch = JsonSerializer.Deserialize<GitHubBranch>(branchContent, _jsonOptions);
 
-            if (branch == null)
+            if (branch is null)
             {
                 throw new Exception($"Failed to get details for new branch {branchName}");
             }
@@ -408,7 +408,7 @@ public class GitHubApiClient : IGitHubApiClient
             var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
             var pullRequest = JsonSerializer.Deserialize<GitHubPullRequest>(responseContent, _jsonOptions);
 
-            if (pullRequest == null)
+            if (pullRequest is null)
             {
                 throw new Exception("Failed to deserialize pull request response");
             }
@@ -437,12 +437,12 @@ public class GitHubApiClient : IGitHubApiClient
             // Construct the search query
             var searchQuery = $"repo:{_owner}/{_repository}";
 
-            if (!string.IsNullOrEmpty(_branch))
+            if (!string.IsNullOrWhiteSpace(_branch))
             {
                 searchQuery += $"+branch:{_branch}";
             }
 
-            if (!string.IsNullOrEmpty(query))
+            if (!string.IsNullOrWhiteSpace(query))
             {
                 searchQuery += $"+{Uri.EscapeDataString(query)}";
             }
@@ -497,7 +497,7 @@ public class GitHubApiClient : IGitHubApiClient
         _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github.v3+json"));
         _httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("OsirionBlogCMS", "2.0"));
 
-        if (!string.IsNullOrEmpty(_accessToken))
+        if (!string.IsNullOrWhiteSpace(_accessToken))
         {
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("token", _accessToken);
         }
@@ -508,13 +508,13 @@ public class GitHubApiClient : IGitHubApiClient
     /// </summary>
     private bool ValidateRepositoryConfig()
     {
-        if (string.IsNullOrEmpty(_owner) || string.IsNullOrEmpty(_repository))
+        if (string.IsNullOrWhiteSpace(_owner) || string.IsNullOrWhiteSpace(_repository))
         {
             _logger.LogError("Repository owner and name must be set before making requests");
             return false;
         }
 
-        if (string.IsNullOrEmpty(_accessToken))
+        if (string.IsNullOrWhiteSpace(_accessToken))
         {
             _logger.LogError("Access token is required for GitHub API requests");
             return false;

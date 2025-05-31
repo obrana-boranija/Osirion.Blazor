@@ -538,13 +538,13 @@ namespace Osirion.Blazor.Cms.Tests.Providers
 
             public override Task<IReadOnlyList<DirectoryItem>> GetDirectoriesAsync(string? locale = null, CancellationToken cancellationToken = default)
             {
-                if (string.IsNullOrEmpty(locale))
+                if (string.IsNullOrWhiteSpace(locale))
                 {
                     return Task.FromResult<IReadOnlyList<DirectoryItem>>(_testDirectories);
                 }
 
                 var filteredDirectories = _testDirectories
-                    .Where(d => string.IsNullOrEmpty(d.Locale) || d.Locale == locale)
+                    .Where(d => string.IsNullOrWhiteSpace(d.Locale) || d.Locale == locale)
                     .ToList();
 
                 return Task.FromResult<IReadOnlyList<DirectoryItem>>(filteredDirectories);
@@ -554,8 +554,8 @@ namespace Osirion.Blazor.Cms.Tests.Providers
             {
                 var directory = _testDirectories.FirstOrDefault(d => d.Id == id);
 
-                if (directory != null && !string.IsNullOrEmpty(locale) &&
-                    !string.IsNullOrEmpty(directory.Locale) && directory.Locale != locale)
+                if (directory is not null && !string.IsNullOrWhiteSpace(locale) &&
+                    !string.IsNullOrWhiteSpace(directory.Locale) && directory.Locale != locale)
                 {
                     return Task.FromResult<DirectoryItem?>(null);
                 }

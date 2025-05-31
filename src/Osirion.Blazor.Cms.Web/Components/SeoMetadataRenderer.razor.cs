@@ -127,7 +127,7 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
         if (!string.IsNullOrWhiteSpace(Content?.Metadata.SeoProperties?.Canonical))
             return Content.Metadata.SeoProperties.Canonical;
 
-        return Content?.Path != null ? _currentUrl : null;
+        return Content?.Path is not null ? _currentUrl : null;
     }
 
     private string? NormalizeImageUrl(string? url)
@@ -159,7 +159,7 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
 
     private string? GenerateJsonLd()
     {
-        if (Content == null)
+        if (Content is null)
             return null;
 
         if (!string.IsNullOrWhiteSpace(Content.Metadata.SeoProperties.JsonLd))

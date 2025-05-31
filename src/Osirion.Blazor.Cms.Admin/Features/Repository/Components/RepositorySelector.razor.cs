@@ -47,7 +47,7 @@ public partial class RepositorySelector : IDisposable
         {
             await ViewModel.SelectRepositoryAsync(repositoryName);
 
-            if (OnRepositoryChange.HasDelegate && ViewModel.SelectedRepository != null)
+            if (OnRepositoryChange.HasDelegate && ViewModel.SelectedRepository is not null)
             {
                 await OnRepositoryChange.InvokeAsync(ViewModel.SelectedRepository);
             }

@@ -40,7 +40,7 @@
                     <div class="mb-3">
                         <label class="form-label fw-semibold mb-1">Selected Repository</label>
                         <div>
-                            @if (AdminState.SelectedRepository != null)
+                            @if (AdminState.SelectedRepository is not null)
                             {
                                 <div class="d-flex align-items-center">
                                     <i class="bi bi-github me-2"></i>
@@ -57,7 +57,7 @@
                     <div class="mb-3">
                         <label class="form-label fw-semibold mb-1">Selected Branch</label>
                         <div>
-                            @if (AdminState.SelectedBranch != null)
+                            @if (AdminState.SelectedBranch is not null)
                             {
                                 <div class="d-flex align-items-center">
                                     <i class="bi bi-git me-2"></i>

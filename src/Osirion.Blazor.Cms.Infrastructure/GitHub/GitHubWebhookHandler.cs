@@ -82,12 +82,12 @@ public class GitHubWebhookHandler : IGitHubWebhookHandler
             foreach (var providerName in _apiClientFactory.GetProviderNames())
             {
                 var options = _apiClientFactory.GetProviderOptions(providerName);
-                if (options != null &&
+                if (options is not null &&
                     string.Equals(options.Owner, owner, StringComparison.OrdinalIgnoreCase) &&
                     string.Equals(options.Repository, repo, StringComparison.OrdinalIgnoreCase))
                 {
                     // Validate signature if configured
-                    //if (!string.IsNullOrEmpty(options.WebhookSecret))
+                    //if (!string.IsNullOrWhiteSpace(options.WebhookSecret))
                     //{
                     //    if (!ValidateSignature(signature, payload, options.WebhookSecret))
                     //    {
@@ -97,7 +97,7 @@ public class GitHubWebhookHandler : IGitHubWebhookHandler
                     //}
 
                     // Check branch
-                    if (!string.IsNullOrEmpty(options.Branch) && branch != options.Branch)
+                    if (!string.IsNullOrWhiteSpace(options.Branch) && branch != options.Branch)
                     {
                         _logger.LogInformation("Ignoring push to branch {Branch}, expected {Expected}",
                             branch, options.Branch);
@@ -109,7 +109,7 @@ public class GitHubWebhookHandler : IGitHubWebhookHandler
                 }
             }
 
-            if (matchingProvider == null)
+            if (matchingProvider is null)
             {
                 _logger.LogWarning("No provider found for {Owner}/{Repo}", owner, repo);
                 return false;
@@ -136,7 +136,7 @@ public class GitHubWebhookHandler : IGitHubWebhookHandler
 
     private bool ValidateSignature(string signature, string payload, string secret)
     {
-        if (string.IsNullOrEmpty(signature) || !signature.StartsWith("sha256="))
+        if (string.IsNullOrWhiteSpace(signature) || !signature.StartsWith("sha256="))
             return false;
 
         var secretBytes = Encoding.UTF8.GetBytes(secret);

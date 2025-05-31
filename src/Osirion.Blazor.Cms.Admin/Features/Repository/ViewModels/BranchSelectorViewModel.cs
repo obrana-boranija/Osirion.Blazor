@@ -40,7 +40,7 @@ public class BranchSelectorViewModel
 
     public async Task RefreshBranchesAsync()
     {
-        if (_appState.SelectedRepository == null)
+        if (_appState.SelectedRepository is null)
             return;
 
         IsLoading = true;
@@ -51,7 +51,7 @@ public class BranchSelectorViewModel
         {
             Branches = await _repositoryService.GetBranchesAsync(_appState.SelectedRepository.Name);
 
-            if (Branches.Count > 0 && string.IsNullOrEmpty(BaseBranchName))
+            if (Branches.Count > 0 && string.IsNullOrWhiteSpace(BaseBranchName))
             {
                 // Set default base branch
                 BaseBranchName = _appState.SelectedRepository.DefaultBranch;
@@ -71,14 +71,14 @@ public class BranchSelectorViewModel
 
     public async Task SelectBranchAsync(string branchName)
     {
-        if (string.IsNullOrEmpty(branchName))
+        if (string.IsNullOrWhiteSpace(branchName))
         {
             _appState.SelectBranch(null);
             return;
         }
 
         var branch = Branches.Find(b => b.Name == branchName);
-        if (branch != null)
+        if (branch is not null)
         {
             IsLoading = true;
             NotifyStateChanged();
@@ -111,7 +111,7 @@ public class BranchSelectorViewModel
     {
         IsCreatingNewBranch = isCreating;
 
-        if (isCreating && _appState.SelectedRepository != null)
+        if (isCreating && _appState.SelectedRepository is not null)
         {
             // Set default base branch
             BaseBranchName = _appState.SelectedRepository.DefaultBranch;

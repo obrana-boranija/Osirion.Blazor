@@ -47,7 +47,7 @@ public partial class AdminPage : BaseComponent
         AdminState.StateChanged += StateHasChanged;
 
         // If no current page specified but we have a URL, extract the page name
-        if (string.IsNullOrEmpty(CurrentPage))
+        if (string.IsNullOrWhiteSpace(CurrentPage))
         {
             try
             {
@@ -56,7 +56,7 @@ public partial class AdminPage : BaseComponent
 
                 // Extract the last segment of the path as the page name
                 var lastSegment = path.Split('/', StringSplitOptions.RemoveEmptyEntries).LastOrDefault();
-                if (!string.IsNullOrEmpty(lastSegment))
+                if (!string.IsNullOrWhiteSpace(lastSegment))
                 {
                     CurrentPage = char.ToUpper(lastSegment[0]) + lastSegment.Substring(1);
                 }

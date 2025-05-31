@@ -55,7 +55,7 @@ public partial class MenuGroup
     {
         base.OnInitialized();
 
-        if (AdditionalAttributes == null)
+        if (AdditionalAttributes is null)
         {
             AdditionalAttributes = new Dictionary<string, object>();
         }
@@ -73,7 +73,7 @@ public partial class MenuGroup
         if (Collapsible && Expanded)
             cssClasses.Add("osirion-menu-group-expanded");
 
-        if (!string.IsNullOrEmpty(CssClass))
+        if (!string.IsNullOrWhiteSpace(CssClass))
             cssClasses.Add(CssClass);
 
         CssClass = string.Join(" ", cssClasses);

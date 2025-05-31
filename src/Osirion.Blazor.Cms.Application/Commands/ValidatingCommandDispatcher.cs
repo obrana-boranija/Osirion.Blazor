@@ -31,7 +31,7 @@ public class ValidatingCommandDispatcher : ICommandDispatcher
         // Get validator if exists
         var validator = _serviceProvider.GetService<IValidator<TCommand>>();
 
-        if (validator != null)
+        if (validator is not null)
         {
             var validationResult = await validator.ValidateAsync(command, cancellationToken);
 

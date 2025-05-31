@@ -31,7 +31,7 @@ public class TestOsirionBuilder : IOsirionBuilder
 
     public IOsirionBuilder UseContent(Action<IContentBuilder> configure)
     {
-        if (configure == null) throw new ArgumentNullException(nameof(configure));
+        if (configure is null) throw new ArgumentNullException(nameof(configure));
 
         UseContentCalled = true;
         Services.AddOsirionContent(configure);
@@ -40,7 +40,7 @@ public class TestOsirionBuilder : IOsirionBuilder
 
     public IOsirionBuilder UseContent(IConfiguration configuration)
     {
-        if (configuration == null) throw new ArgumentNullException(nameof(configuration));
+        if (configuration is null) throw new ArgumentNullException(nameof(configuration));
 
         UseContentCalled = true;
         Services.AddOsirionContent(builder =>
@@ -53,7 +53,7 @@ public class TestOsirionBuilder : IOsirionBuilder
 
     public IOsirionBuilder UseAnalytics(Action<IAnalyticsBuilder> configure)
     {
-        if (configure == null) throw new ArgumentNullException(nameof(configure));
+        if (configure is null) throw new ArgumentNullException(nameof(configure));
 
         UseAnalyticsCalled = true;
         Services.AddOsirionAnalytics(configure);
@@ -62,7 +62,7 @@ public class TestOsirionBuilder : IOsirionBuilder
 
     public IOsirionBuilder UseAnalytics(IConfiguration configuration)
     {
-        if (configuration == null) throw new ArgumentNullException(nameof(configuration));
+        if (configuration is null) throw new ArgumentNullException(nameof(configuration));
 
         UseAnalyticsCalled = true;
         Services.AddOsirionAnalytics(builder =>
@@ -75,7 +75,7 @@ public class TestOsirionBuilder : IOsirionBuilder
 
     public IOsirionBuilder UseNavigation(Action<INavigationBuilder> configure)
     {
-        if (configure == null) throw new ArgumentNullException(nameof(configure));
+        if (configure is null) throw new ArgumentNullException(nameof(configure));
 
         UseNavigationCalled = true;
         Services.AddOsirionNavigation(configure);
@@ -84,7 +84,7 @@ public class TestOsirionBuilder : IOsirionBuilder
 
     public IOsirionBuilder UseNavigation(IConfiguration configuration)
     {
-        if (configuration == null) throw new ArgumentNullException(nameof(configuration));
+        if (configuration is null) throw new ArgumentNullException(nameof(configuration));
 
         UseNavigationCalled = true;
         Services.AddOsirionNavigation(builder =>
@@ -97,7 +97,7 @@ public class TestOsirionBuilder : IOsirionBuilder
 
     public IOsirionBuilder UseTheming(Action<IThemingBuilder> configure)
     {
-        if (configure == null) throw new ArgumentNullException(nameof(configure));
+        if (configure is null) throw new ArgumentNullException(nameof(configure));
 
         UseThemingCalled = true;
         Services.AddOsirionTheming(configure);
@@ -106,7 +106,7 @@ public class TestOsirionBuilder : IOsirionBuilder
 
     public IOsirionBuilder UseTheming(IConfiguration configuration)
     {
-        if (configuration == null) throw new ArgumentNullException(nameof(configuration));
+        if (configuration is null) throw new ArgumentNullException(nameof(configuration));
 
         UseThemingCalled = true;
         Services.AddOsirionTheming(builder =>

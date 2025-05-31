@@ -1,7 +1,7 @@
 ﻿@inherits OsirionComponentBase
 
 <div class="@GetWrapperClass()">
-    @if (Title != null)
+    @if (Title is not null)
     {
         <h2 class="osirion-search-title">@Title</h2>
     }

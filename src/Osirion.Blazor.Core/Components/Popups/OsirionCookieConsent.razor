@@ -12,7 +12,7 @@
             <div class="osirion-cookie-consent-container">
                 <div class="osirion-cookie-consent-content">
                     <div class="osirion-cookie-consent-message">
-                        @if (Icon != null)
+                        @if (Icon is not null)
                         {
                             <div class="osirion-cookie-consent-icon">
                                 @Icon
@@ -22,7 +22,7 @@
                             <h3 class="osirion-cookie-consent-title">@Title</h3>
                             <p class="osirion-cookie-consent-description">
                                 @Message
-                                @if (!string.IsNullOrEmpty(PolicyLink))
+                                @if (!string.IsNullOrWhiteSpace(PolicyLink))
                                 {
                                     <a href="@PolicyLink" class="osirion-cookie-consent-link">@PolicyLinkText</a>
                                 }
@@ -37,7 +37,7 @@
                         <button type="submit"
                                 name="consent"
                                 value="declined"
-                                class="osirion-cookie-consent-button osirion-cookie-consent-button-secondary">
+                                class="@GetOutlinedSecondaryButtonClass()">
                             @DeclineButtonText
                         </button>
                     }
@@ -47,7 +47,7 @@
                         <button type="submit"
                                 name="consent"
                                 value="customize"
-                                class="osirion-cookie-consent-button osirion-cookie-consent-button-secondary">
+                                class="@GetOutlinedSecondaryButtonClass()">
                             @CustomizeButtonText
                         </button>
                     }
@@ -76,7 +76,7 @@
                                                value="true"
                                                checked="@(category.IsRequired || category.IsEnabled)"
                                                disabled="@category.IsRequired"
-                                               class="osirion-cookie-consent-checkbox" />
+                                               class="@GetCheckboxClass()" />
                                         <div class="osirion-cookie-consent-category-info">
                                             <span class="osirion-cookie-consent-category-name">
                                                 @category.Name
@@ -96,7 +96,7 @@
                             <button type="submit"
                                     name="consent"
                                     value="save-preferences"
-                                    class="@GetButtonClass()">
+                                    class="@GetOutlinedPrimaryButtonClass()">
                                 @SavePreferencesButtonText
                             </button>
                         </div>

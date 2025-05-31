@@ -105,7 +105,7 @@ public class OsirionCmsBuilder
     /// <returns>The builder for chaining</returns>
     public OsirionCmsBuilder SetDefaultProvider(string providerId)
     {
-        if (string.IsNullOrEmpty(providerId))
+        if (string.IsNullOrWhiteSpace(providerId))
             throw new ArgumentException("Provider ID cannot be empty", nameof(providerId));
 
         // Register a startup hook to set the default provider
@@ -122,7 +122,7 @@ public class OsirionCmsBuilder
     /// <returns>The builder for chaining</returns>
     public OsirionCmsBuilder ConfigureCache(Action<CacheOptions> configure)
     {
-        if (configure == null)
+        if (configure is null)
             throw new ArgumentNullException(nameof(configure));
 
         Services.Configure(configure);

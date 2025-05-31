@@ -14,7 +14,7 @@
             </a>
 
             <div class="osirion-editor-breadcrumb">
-                @if (BreadcrumbItems != null && BreadcrumbItems.Count > 0)
+                @if (BreadcrumbItems is not null && BreadcrumbItems.Count > 0)
                 {
                     foreach (var item in BreadcrumbItems)
                     {
@@ -23,7 +23,7 @@
                             <span class="osirion-editor-breadcrumb-separator">/</span>
                         }
 
-                        @if (string.IsNullOrEmpty(item.Url) || item == BreadcrumbItems.Last())
+                        @if (string.IsNullOrWhiteSpace(item.Url) || item == BreadcrumbItems.Last())
                         {
                             <span class="osirion-editor-breadcrumb-current">@item.Text</span>
                         }
@@ -41,7 +41,7 @@
         </div>
 
         <div class="osirion-editor-header-right">
-            @if (ActionsTemplate != null)
+            @if (ActionsTemplate is not null)
             {
                 @ActionsTemplate
             }
@@ -49,7 +49,7 @@
     </header>
 
     <main class="osirion-editor-main">
-        @if (StatusMessage != null)
+        @if (StatusMessage is not null)
         {
             <div class="osirion-admin-alert osirion-admin-alert-success">
                 <span class="osirion-admin-alert-icon">
@@ -68,7 +68,7 @@
             </div>
         }
 
-        @if (ErrorMessage != null)
+        @if (ErrorMessage is not null)
         {
             <div class="osirion-admin-alert osirion-admin-alert-error">
                 <span class="osirion-admin-alert-icon">
