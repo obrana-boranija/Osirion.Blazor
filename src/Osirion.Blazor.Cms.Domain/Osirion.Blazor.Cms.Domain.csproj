@@ -9,7 +9,7 @@
 
 		<!-- NuGet package properties -->
 		<PackageId>Osirion.Blazor.Cms.Domain</PackageId>
-		<Version>2.1.0</Version>
+		<Version>2.1.2</Version>
 		<Authors>Dejan Demonjić</Authors>
 		<Company>Tridesetri</Company>
 		<Description>Domain layer for the Osirion.Blazor CMS ecosystem, containing core entity definitions, value objects, enums, and domain services.</Description>
