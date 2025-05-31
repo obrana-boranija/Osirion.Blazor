@@ -3,7 +3,7 @@ title: "Introduction to Osirion.Blazor"
 description: "An overview of the Osirion.Blazor ecosystem, a modular, high-performance CMS and component library designed for modern Blazor applications with SSR compatibility."
 author: "Dejan Demonjić"
 date: 2025-05-05
-featuredImage: "https://storage.googleapis.com/croct-assets-b931d070/blog/Headless_CMS_within_the_React_framework_3_1_da922d2562/Headless_CMS_within_the_React_framework_3_1_da922d2562.png"
+featured_image: "https://storage.googleapis.com/croct-assets-b931d070/blog/Headless_CMS_within_the_React_framework_3_1_da922d2562/Headless_CMS_within_the_React_framework_3_1_da922d2562.png"
 categories:
   - "Headless CMS"
   - "GitHub Integration"
