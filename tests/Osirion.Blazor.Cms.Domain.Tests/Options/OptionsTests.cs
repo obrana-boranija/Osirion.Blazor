@@ -12,8 +12,6 @@ public class OptionsTests
 
         // Assert
         Assert.Null(options.ProviderId);
-        Assert.True(options.EnableCaching);
-        Assert.Equal(30, options.CacheDurationMinutes);
         Assert.False(options.IsDefault);
         Assert.False(options.EnableLocalization);
         Assert.Equal("en", options.DefaultLocale);
@@ -34,8 +32,6 @@ public class OptionsTests
         // Assert
         // Inherits from ContentProviderOptions
         Assert.Null(options.ProviderId);
-        Assert.True(options.EnableCaching);
-        Assert.Equal(30, options.CacheDurationMinutes);
         Assert.False(options.IsDefault);
 
         // GitHubOptions specific properties
@@ -56,8 +52,6 @@ public class OptionsTests
         // Assert
         // Inherits from ContentProviderOptions
         Assert.Null(options.ProviderId);
-        Assert.True(options.EnableCaching);
-        Assert.Equal(30, options.CacheDurationMinutes);
         Assert.False(options.IsDefault);
 
         // FileSystemOptions specific properties

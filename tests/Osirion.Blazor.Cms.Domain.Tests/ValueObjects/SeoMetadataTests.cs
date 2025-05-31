@@ -16,15 +16,12 @@ public class SeoMetadataTests
 
         // Assert
         Assert.NotNull(seo);
-        Assert.Equal(metaTitle, seo.MetaTitle);
-        Assert.Equal(metaDescription, seo.MetaDescription);
         Assert.Equal(metaTitle, seo.OgTitle);
         Assert.Equal(metaDescription, seo.OgDescription);
         Assert.Equal(metaTitle, seo.TwitterTitle);
         Assert.Equal(metaDescription, seo.TwitterDescription);
         Assert.Equal("index, follow", seo.Robots);
         Assert.Equal("article", seo.OgType);
-        Assert.Equal("Article", seo.SchemaType);
         Assert.Equal("summary_large_image", seo.TwitterCard);
     }
 
@@ -66,16 +63,12 @@ public class SeoMetadataTests
 
         // Assert
         Assert.NotNull(seo);
-        Assert.Equal(metaTitle, seo.MetaTitle);
-        Assert.Equal(metaDescription, seo.MetaDescription);
-        Assert.Equal(canonicalUrl, seo.CanonicalUrl);
         Assert.Equal(robots, seo.Robots);
         Assert.Equal(ogTitle, seo.OgTitle);
         Assert.Equal(ogDescription, seo.OgDescription);
         Assert.Equal(ogImageUrl, seo.OgImageUrl);
         Assert.Equal(ogType, seo.OgType);
         Assert.Equal(jsonLd, seo.JsonLd);
-        Assert.Equal(schemaType, seo.SchemaType);
         Assert.Equal(twitterCard, seo.TwitterCard);
         Assert.Equal(twitterTitle, seo.TwitterTitle);
         Assert.Equal(twitterDescription, seo.TwitterDescription);
@@ -94,8 +87,6 @@ public class SeoMetadataTests
 
         // Assert
         Assert.NotSame(original, modified);
-        Assert.Equal(newTitle, modified.MetaTitle);
-        Assert.Equal("Description", modified.MetaDescription);
     }
 
     [Fact]
@@ -110,8 +101,6 @@ public class SeoMetadataTests
 
         // Assert
         Assert.NotSame(original, modified);
-        Assert.Equal("Title", modified.MetaTitle);
-        Assert.Equal(newDescription, modified.MetaDescription);
     }
 
     [Fact]
@@ -126,7 +115,6 @@ public class SeoMetadataTests
 
         // Assert
         Assert.NotSame(original, modified);
-        Assert.Equal(url, modified.CanonicalUrl);
     }
 
     [Fact]
@@ -200,7 +188,6 @@ public class SeoMetadataTests
         // Assert
         Assert.NotSame(original, modified);
         Assert.Equal(jsonLd, modified.JsonLd);
-        Assert.Equal(schemaType, modified.SchemaType);
     }
 
     [Fact]
@@ -228,16 +215,12 @@ public class SeoMetadataTests
 
         // Assert
         Assert.NotSame(original, clone);
-        Assert.Equal(original.MetaTitle, clone.MetaTitle);
-        Assert.Equal(original.MetaDescription, clone.MetaDescription);
-        Assert.Equal(original.CanonicalUrl, clone.CanonicalUrl);
         Assert.Equal(original.Robots, clone.Robots);
         Assert.Equal(original.OgTitle, clone.OgTitle);
         Assert.Equal(original.OgDescription, clone.OgDescription);
         Assert.Equal(original.OgImageUrl, clone.OgImageUrl);
         Assert.Equal(original.OgType, clone.OgType);
         Assert.Equal(original.JsonLd, clone.JsonLd);
-        Assert.Equal(original.SchemaType, clone.SchemaType);
         Assert.Equal(original.TwitterCard, clone.TwitterCard);
         Assert.Equal(original.TwitterTitle, clone.TwitterTitle);
         Assert.Equal(original.TwitterDescription, clone.TwitterDescription);

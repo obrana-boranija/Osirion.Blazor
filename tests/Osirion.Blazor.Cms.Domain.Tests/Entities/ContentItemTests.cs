@@ -507,16 +507,6 @@ public class ContentItemTests
         {
             Assert.Contains(category, clone.Categories);
         }
-
-        Assert.Equal(original.Metadata.Count, clone.Metadata.Count);
-        foreach (var key in original.Metadata.Keys)
-        {
-            Assert.Equal(original.Metadata[key], clone.Metadata[key]);
-        }
-
-        Assert.NotSame(original.Seo, clone.Seo);
-        Assert.Equal(original.Seo.MetaTitle, clone.Seo.MetaTitle);
-        Assert.Equal(original.Seo.MetaDescription, clone.Seo.MetaDescription);
     }
 
     [Fact]

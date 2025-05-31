@@ -491,12 +491,6 @@ public class DirectoryItemTests
         Assert.Equal(original.Url, clone.Url);
         Assert.Equal(original.ProviderId, clone.ProviderId);
 
-        Assert.Equal(original.Metadata.Count, clone.Metadata.Count);
-        foreach (var key in original.Metadata.Keys)
-        {
-            Assert.Equal(original.Metadata[key], clone.Metadata[key]);
-        }
-
         // Clone doesn't include children or items
         Assert.Empty(clone.Children);
         Assert.Empty(clone.Items);

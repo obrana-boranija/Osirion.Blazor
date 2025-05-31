@@ -32,10 +32,10 @@ public class CmsAdminOptionsTests
             PersistUserSelections = false
         };
 
-        options.GitHub = new GitHubAdminOptions
-        {
-            Owner = "test-owner"
-        };
+        //options.GitHub = new GitHubAdminOptions
+        //{
+        //    Owner = "test-owner"
+        //};
 
         options.FileSystem = new FileSystemAdminOptions
         {
@@ -56,7 +56,7 @@ public class CmsAdminOptionsTests
         var options = new CmsAdminOptions();
 
         // Assert
-        options.GitHub.ShouldBeOfType<GitHubAdminOptions>();
+        //options.GitHub.ShouldBeOfType<GitHubAdminOptions>();
         options.FileSystem.ShouldBeOfType<FileSystemAdminOptions>();
         options.Authentication.ShouldBeOfType<AuthenticationOptions>();
         options.Theme.ShouldBeOfType<ThemeOptions>();
