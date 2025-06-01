@@ -1,0 +1,54 @@
+﻿@namespace Osirion.Blazor.Cms.Web.Components
+
+@if (ShowNavigation && (PreviousItem is not null || NextItem is not null) && Item is not null)
+{
+    <nav class="@GetNavigationClass()" aria-label="@AriaLabel" @attributes="AdditionalAttributes">
+        @if (PreviousItem is not null)
+        {
+            <a href="@GetNavigationUrl(PreviousItem)" class="osirion-content-previous" @onclick:preventDefault="@PreventDefault">
+                <span class="osirion-content-navigation-label">
+                    @if (ShowIcons && PreviousIcon is not null)
+                    {
+                        <span class="osirion-content-navigation-icon">
+                            @PreviousIcon
+                        </span>
+                    }
+                    @PreviousLabel
+                </span>
+                <span class="osirion-content-navigation-title">@GetItemTitle(PreviousItem)</span>
+                @if (!string.IsNullOrWhiteSpace(GetItemDescription(PreviousItem)) && ShowDescription)
+                {
+                    <span class="osirion-content-navigation-description">@GetItemDescription(PreviousItem)</span>
+                }
+            </a>
+        }
+        else if (ShowPlaceholder)
+        {
+            <div class="osirion-content-navigation-placeholder"></div>
+        }
+
+        @if (NextItem is not null)
+        {
+            <a href="@GetNavigationUrl(NextItem)" class="osirion-content-next" @onclick:preventDefault="@PreventDefault">
+                <span class="osirion-content-navigation-label">
+                    @NextLabel
+                    @if (ShowIcons && NextIcon is not null)
+                    {
+                        <span class="osirion-content-navigation-icon">
+                            @NextIcon
+                        </span>
+                    }
+                </span>
+                <span class="osirion-content-navigation-title">@GetItemTitle(NextItem)</span>
+                @if (!string.IsNullOrWhiteSpace(GetItemDescription(NextItem)) && ShowDescription)
+                {
+                    <span class="osirion-content-navigation-description">@GetItemDescription(NextItem)</span>
+                }
+            </a>
+        }
+        else if (ShowPlaceholder)
+        {
+            <div class="osirion-content-navigation-placeholder"></div>
+        }
+    </nav>
+}

@@ -37,7 +37,7 @@
 
 /* Homepage content section */
 .osirion-homepage-content {
-    max-width: var(--osirion-width-content, 65ch);
+    max-width: var(--osirion-container-xxl, 1320px);
     margin: 0 auto;
     padding: var(--osirion-spacing-8, 2rem) var(--osirion-spacing-4, 1rem);
     line-height: var(--osirion-line-height-relaxed, 1.7);

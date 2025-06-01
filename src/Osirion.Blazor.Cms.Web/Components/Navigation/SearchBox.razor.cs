@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Components;
-using Osirion.Blazor.Components;
 
-namespace Osirion.Blazor.Cms.Components;
+namespace Osirion.Blazor.Cms.Web.Components;
 
 public partial class SearchBox
 {

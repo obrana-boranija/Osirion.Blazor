@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Components;
 using Osirion.Blazor.Cms.Domain.Repositories;
 using Osirion.Blazor.Cms.Domain.Services;
 
-namespace Osirion.Blazor.Cms.Components;
+namespace Osirion.Blazor.Cms.Web.Components;
 
 public partial class TagCloud(IContentProviderManager contentProviderManager)
 {

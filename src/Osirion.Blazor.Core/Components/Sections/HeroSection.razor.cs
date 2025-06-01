@@ -166,11 +166,6 @@ public partial class HeroSection
     private Alignment _alignment => Alignment == Alignment.Justify ? Alignment.Left : Alignment;
 
     /// <summary>
-    /// Gets whether any metadata should be shown
-    /// </summary>
-    private bool HasMetadata => ShowMetadata && (!string.IsNullOrWhiteSpace(Author) || PublishDate.HasValue || !string.IsNullOrWhiteSpace(ReadTime));
-
-    /// <summary>
     /// Gets the CSS class for the hero section
     /// </summary>
     private string GetHeroSectionClass()

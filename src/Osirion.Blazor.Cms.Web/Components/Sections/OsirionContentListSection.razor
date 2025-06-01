@@ -1,0 +1,213 @@
+﻿@namespace Osirion.Blazor.Cms.Components
+@inherits OsirionComponentBase
+@attribute [StreamRendering]
+
+<style>
+    /* Grid Layout */
+    .osirion-featured-posts.osirion-layout-grid {
+        display: grid;
+        gap: var(--osirion-grid-gap, 1.5rem);
+    }
+
+    .osirion-layout-grid.osirion-cols-1 {
+        grid-template-columns: 1fr;
+    }
+
+    .osirion-layout-grid.osirion-cols-2 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .osirion-layout-grid.osirion-cols-3 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .osirion-layout-grid.osirion-cols-4 {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    /* List Layout */
+    .osirion-featured-posts.osirion-layout-list {
+        display: flex;
+        flex-direction: column;
+        gap: var(--osirion-spacing-6, 1.5rem);
+    }
+
+    .osirion-layout-list .osirion-featured-post {
+        display: flex;
+        gap: var(--osirion-spacing-6, 1.5rem);
+        align-items: start;
+    }
+
+    .osirion-layout-list .osirion-featured-post-image-container,
+    .osirion-layout-list .osirion-featured-post-image-placeholder {
+        flex: 0 0 var(--osirion-list-image-width, 200px);
+    }
+
+    /* Featured First Layout */
+    .osirion-layout-featured-first {
+        display: flex;
+        flex-direction: column;
+        gap: var(--osirion-spacing-8, 2rem);
+    }
+
+        /* First featured post - large and spans full width */
+        .osirion-layout-featured-first .osirion-featured-post:first-child {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--osirion-spacing-8, 2rem);
+            align-items: center;
+        }
+
+        /* Container for all posts after the first one */
+        .osirion-layout-featured-first .osirion-featured-post {
+            display: grid;
+            gap: var(--osirion-grid-gap, 1.5rem);
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+    /* Carousel Layout */
+    .osirion-layout-carousel {
+        display: flex;
+        overflow-x: auto;
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+        scroll-snap-type: x mandatory;
+        gap: var(--osirion-spacing-6, 1.5rem);
+        padding-bottom: var(--osirion-spacing-4, 1rem);
+    }
+
+        .osirion-layout-carousel .osirion-featured-post {
+            flex: 0 0 var(--osirion-carousel-item-width, 300px);
+            scroll-snap-align: start;
+        }
+
+    .osirion-featured-post-categories {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--osirion-spacing-1, .25rem);
+        align-items: start;
+    }
+
+    .osirion-featured-post-category {
+        display: flex;
+        width: fit-content;
+        padding: 0.25rem 0.75rem;
+        background-color: var(--osirion-category-background, var(--osirion-accent-background, rgba(37, 99, 235, 0.1)));
+        color: var(--osirion-text-primary);
+        border-radius: var(--osirion-radius-sm);
+        text-decoration: none;
+        font-weight: var(--osirion-font-weight-medium, 500);
+        transition: background-color var(--osirion-transition-duration-200, 0.2s) ease;
+    }
+
+        .osirion-featured-post-category:hover {
+            background-color: var(--osirion-category-background-hover, var(--osirion-accent-background-hover, rgba(37, 99, 235, 0.2)));
+            text-decoration: none;
+        }
+</style>
+
+<section class="@GetSectionClass()">
+    @if (!string.IsNullOrWhiteSpace(Title))
+    {
+        <div class="osirion-section-header">
+            <h2 class="osirion-section-title">@Title</h2>
+            @if (!string.IsNullOrWhiteSpace(Description))
+            {
+                <p class="osirion-section-description">@Description</p>
+            }
+        </div>
+    }
+
+    @if (IsLoading)
+    {
+        <OsirionPageLoading Text="@LoadingText" />
+    }
+    else if (Items is null || !Items.Any())
+    {
+        <OsirionContentNotFound />
+    }
+    else
+    {
+        <div class="osirion-featured-posts @LayoutClass">
+            @foreach (var item in Items)
+            {
+                <div class="osirion-featured-post">
+                    @* <a href="@item.Url" class="osirion-featured-post-image-link"> *@
+                        @if (!string.IsNullOrWhiteSpace(item.FeaturedImageUrl))
+                        {
+                            <div class="osirion-featured-post-image-container">
+                                <img src="@item.FeaturedImageUrl" alt="@item.Title" class="osirion-featured-post-image" loading="lazy" />
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="osirion-featured-post-image-placeholder">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                    <polyline points="21 15 16 10 5 21"></polyline>
+                                </svg>
+                            </div>
+                        }
+                    @* </a> *@
+
+                    <div class="osirion-featured-post-content">
+                        <a href="@item.Url" class="osirion-featured-post-title-link">
+                            <h3 class="osirion-featured-post-title">
+                                @item.Title
+                            </h3>
+
+                            @if (ShowExcerpt)
+                            {
+                                <p class="osirion-featured-post-excerpt">@(!string.IsNullOrWhiteSpace(item.Description) ? item.Description : GetExcerpt(item.Content, ExcerptLength))</p>
+                            }
+                        </a>
+
+                        @if (ShowMetadata)
+                        {
+                            @if (ShowMetadata)
+                            {
+                                <OsirionArticleMetdata Author="@item.Author" PublishDate="item.PublishDate" ReadTime="@item.ReadTimeMinutes.ToString()" />
+                                @if (item.Categories.Any() && ShowCategories)
+                                {
+                                    <div class="osirion-featured-post-categories">
+                                        @foreach (var category in item.Categories)
+                                        {
+                                            <a href="@GetCategoryUrl(category)" class="osirion-featured-post-category">
+                                                <small>@category</small>
+                                            </a>
+                                        }
+                                    </div>
+                                }
+                            }
+                        }
+
+                        @if (ShowReadMoreLink)
+                        {
+                            <a href="@item.Url" class="osirion-featured-post-read-more">
+                                @ReadMoreText
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    <polyline points="12 5 19 12 12 19"></polyline>
+                                </svg>
+                            </a>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+
+        @if (ShowViewAllLink && !string.IsNullOrWhiteSpace(ViewAllUrl))
+        {
+            <div class="osirion-view-all-container">
+                <a href="@ViewAllUrl" class="osirion-view-all-link">
+                    @ViewAllText
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </a>
+            </div>
+        }
+    }
+</section>

@@ -1,8 +1,5 @@
 using Microsoft.AspNetCore.Components;
 using Osirion.Blazor.Cms.Domain.Entities;
-using Osirion.Blazor.Cms.Domain.Enums;
-using Osirion.Blazor.Cms.Domain.Repositories;
-using Osirion.Blazor.Cms.Domain.Services;
 
 namespace Osirion.Blazor.Cms.Components;
 
@@ -11,8 +8,6 @@ namespace Osirion.Blazor.Cms.Components;
 /// </summary>
 public partial class HomePage
 {
-    [Inject]
-    private IContentProviderManager ContentProviderManager { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the path to the homepage content item
@@ -25,78 +20,6 @@ public partial class HomePage
     /// </summary>
     [Parameter]
     public ContentItem? Content { get; set; }
-
-    /// <summary>
-    /// Gets or sets the locale for content filtering
-    /// </summary>
-    [Parameter]
-    public string? Locale { get; set; }
-
-    /// <summary>
-    /// Gets or sets whether to show the hero section
-    /// </summary>
-    [Parameter]
-    public bool ShowHero { get; set; } = true;
-
-    /// <summary>
-    /// Gets or sets the hero content item
-    /// </summary>
-    [Parameter]
-    public ContentItem? HeroContent { get; set; }
-
-    /// <summary>
-    /// Gets or sets the hero title (used if HeroContent is null)
-    /// </summary>
-    [Parameter]
-    public string? HeroTitle { get; set; }
-
-    /// <summary>
-    /// Gets or sets the hero subtitle (used if HeroContent is null)
-    /// </summary>
-    [Parameter]
-    public string? HeroSubtitle { get; set; }
-
-    /// <summary>
-    /// Gets or sets the hero background image URL
-    /// </summary>
-    [Parameter]
-    public string? HeroBackgroundImage { get; set; }
-
-    /// <summary>
-    /// Gets or sets the hero alignment
-    /// </summary>
-    [Parameter]
-    public string HeroAlignment { get; set; } = "center";
-
-    /// <summary>
-    /// Gets or sets whether to show hero buttons
-    /// </summary>
-    [Parameter]
-    public bool ShowHeroButtons { get; set; } = true;
-
-    /// <summary>
-    /// Gets or sets the primary button text
-    /// </summary>
-    [Parameter]
-    public string? HeroPrimaryButtonText { get; set; }
-
-    /// <summary>
-    /// Gets or sets the primary button URL
-    /// </summary>
-    [Parameter]
-    public string? HeroPrimaryButtonUrl { get; set; }
-
-    /// <summary>
-    /// Gets or sets the secondary button text
-    /// </summary>
-    [Parameter]
-    public string? HeroSecondaryButtonText { get; set; }
-
-    /// <summary>
-    /// Gets or sets the secondary button URL
-    /// </summary>
-    [Parameter]
-    public string? HeroSecondaryButtonUrl { get; set; }
 
     /// <summary>
     /// Gets or sets whether to show featured content section
@@ -201,18 +124,6 @@ public partial class HomePage
     public string BrowseSectionTitle { get; set; } = "Browse Content";
 
     /// <summary>
-    /// Gets or sets the categories section title
-    /// </summary>
-    [Parameter]
-    public string CategoriesSectionTitle { get; set; } = "Categories";
-
-    /// <summary>
-    /// Gets or sets the tags section title
-    /// </summary>
-    [Parameter]
-    public string TagsSectionTitle { get; set; } = "Tags";
-
-    /// <summary>
     /// Gets or sets the maximum number of categories to show
     /// </summary>
     [Parameter]
@@ -243,34 +154,10 @@ public partial class HomePage
     public string? CustomContent { get; set; }
 
     /// <summary>
-    /// Gets or sets the category URL formatter
-    /// </summary>
-    [Parameter]
-    public Func<ContentCategory, string>? CategoryUrlFormatter { get; set; }
-
-    /// <summary>
-    /// Gets or sets the tag URL formatter
-    /// </summary>
-    [Parameter]
-    public Func<ContentTag, string>? TagUrlFormatter { get; set; }
-
-    /// <summary>
     /// Gets or sets the content URL formatter
     /// </summary>
     [Parameter]
     public Func<ContentItem, string>? ContentUrlFormatter { get; set; }
-
-    /// <summary>
-    /// Gets or sets the loading text
-    /// </summary>
-    [Parameter]
-    public string LoadingText { get; set; } = "Loading homepage...";
-
-    /// <summary>
-    /// Gets or sets the not found text
-    /// </summary>
-    [Parameter]
-    public string NotFoundText { get; set; } = "Homepage content not found.";
 
     /// <summary>
     /// Gets or sets the read more text
@@ -293,96 +180,6 @@ public partial class HomePage
     /// Gets or sets the recent content items
     /// </summary>
     private IReadOnlyList<ContentItem>? RecentItems { get; set; }
-
-    /// <summary>
-    /// Gets or sets whether the component is loading
-    /// </summary>
-    private bool IsLoading { get; set; } = true;
-
-    /// <inheritdoc/>
-    protected override async Task OnParametersSetAsync()
-    {
-        if (Content is null && !string.IsNullOrWhiteSpace(ContentPath))
-        {
-            await LoadContentAsync();
-        }
-        else if (Content is not null)
-        {
-            await LoadRelatedContentAsync();
-        }
-        else
-        {
-            await LoadRelatedContentAsync();
-        }
-    }
-
-    private async Task LoadContentAsync()
-    {
-        IsLoading = true;
-        try
-        {
-            var provider = ContentProviderManager.GetDefaultProvider();
-            if (provider is not null)
-            {
-                Content = await provider.GetItemByPathAsync(ContentPath);
-                await LoadRelatedContentAsync();
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.Error.WriteLine($"Error loading homepage content: {ex.Message}");
-            Content = null;
-        }
-        finally
-        {
-            IsLoading = false;
-        }
-    }
-
-    private async Task LoadRelatedContentAsync()
-    {
-        try
-        {
-            var provider = ContentProviderManager.GetDefaultProvider();
-            if (provider is not null)
-            {
-                // Load featured content
-                if (ShowFeaturedContent)
-                {
-                    var featuredQuery = new ContentQuery
-                    {
-                        IsFeatured = true,
-                        Locale = Locale,
-                        Take = FeaturedCount,
-                        SortBy = SortField.Date,
-                        SortDirection = SortDirection.Descending
-                    };
-                    FeaturedItems = await provider.GetItemsByQueryAsync(featuredQuery);
-                }
-
-                // Load recent content
-                if (ShowRecentContent)
-                {
-                    var recentQuery = new ContentQuery
-                    {
-                        Locale = Locale,
-                        Take = RecentCount,
-                        SortBy = SortField.Date,
-                        SortDirection = SortDirection.Descending
-                    };
-                    RecentItems = await provider.GetItemsByQueryAsync(recentQuery);
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.Error.WriteLine($"Error loading related content: {ex.Message}");
-        }
-        finally
-        {
-            IsLoading = false;
-        }
-    }
 
     private string GetHomePageClass()
     {

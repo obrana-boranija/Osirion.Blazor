@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using System.Text.RegularExpressions;
 
-namespace Osirion.Blazor.Cms.Components;
+namespace Osirion.Blazor.Cms.Web.Components;
 
 /// <summary>
 /// TableOfContents component for extracting and displaying headings from HTML content

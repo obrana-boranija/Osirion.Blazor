@@ -3,18 +3,18 @@
     <PageTitle>@_metaTitle</PageTitle>
 
     @((MarkupString)RenderMetaTag("description", _metaDescription))
-    @((MarkupString)RenderMetaTag("author", Content.Author))
-    @((MarkupString)RenderMetaTag("robots", Content.Metadata.SeoProperties.Robots ?? "index,follow"))
-    @((MarkupString)RenderMetaTag("googlebot", Content.Metadata.SeoProperties.Robots ?? "index,follow"))
+    @((MarkupString)RenderMetaTag("author", Content?.Author))
+    @((MarkupString)RenderMetaTag("robots", Content?.Metadata?.SeoProperties?.Robots ?? "index,follow"))
+    @((MarkupString)RenderMetaTag("googlebot", Content?.Metadata?.SeoProperties.Robots ?? "index,follow"))
     @((MarkupString)RenderMetaTag("generator", "Osirion Blazor CMS"))
 
     <!-- Keywords and Categories -->
-    @((MarkupString)RenderMetaTag("keywords", Content.Tags))
-    @((MarkupString)RenderMetaTag("article:section", Content.Categories))
+    @((MarkupString)RenderMetaTag("keywords", Content?.Tags))
+    @((MarkupString)RenderMetaTag("article:section", Content?.Categories))
 
     <!-- Dates -->
-    @((MarkupString)RenderMetaTag("publish_date", Content.PublishDate))
-    @((MarkupString)RenderMetaTag("last_modified", Content.LastModified))
+    @((MarkupString)RenderMetaTag("publish_date", Content?.PublishDate))
+    @((MarkupString)RenderMetaTag("last_modified", Content?.LastModified))
 
     @if(AllowAiDiscovery)
     {
@@ -35,30 +35,33 @@
     <!-- Open Graph Tags -->
     @((MarkupString)RenderMetaTag("og:title", _ogTitle))
     @((MarkupString)RenderMetaTag("og:description", _ogDescription))
-    @((MarkupString)RenderMetaTag("og:type", Content.Metadata.SeoProperties.OgType))
+    @((MarkupString)RenderMetaTag("og:type", Content?.Metadata?.SeoProperties?.OgType))
     @((MarkupString)RenderMetaTag("og:url", _currentUrl))
     @((MarkupString)RenderMetaTag("og:site_name", _siteName))
-    @((MarkupString)RenderMetaTag("og:locale", string.IsNullOrWhiteSpace(Content.Locale) ? Content.Locale : "en"))
+    @((MarkupString)RenderMetaTag("og:locale", string.IsNullOrWhiteSpace(Content?.Locale) ? Content?.Locale : "en"))
     @((MarkupString)RenderMetaTag("og:image", _ogImage))
     @((MarkupString)RenderMetaTag("og:image:alt", _ogTitle))
 
-    @if (Content.Metadata.SeoProperties.OgType.Equals("article", StringComparison.OrdinalIgnoreCase)
-            || _schemaType.Equals("Article", StringComparison.OrdinalIgnoreCase) 
-            || _schemaType.Equals("BlogPosting", StringComparison.OrdinalIgnoreCase))
+    @if(!string.IsNullOrWhiteSpace(Content?.Metadata?.SeoProperties?.OgType))
     {
-        @((MarkupString)RenderMetaTag("article:published_time", Content.PublishDate))
-        @((MarkupString)RenderMetaTag("article:modified_time", Content.LastModified))
-        @((MarkupString)RenderMetaTag("article:author", Content.Author))
-        @((MarkupString)RenderMetaTag("article:tag", Content.Author))
-
-        @foreach (var tag in Content.Tags)
+        @if (Content.Metadata.SeoProperties.OgType.Equals("article", StringComparison.OrdinalIgnoreCase)
+           || _schemaType.Equals("Article", StringComparison.OrdinalIgnoreCase)
+           || _schemaType.Equals("BlogPosting", StringComparison.OrdinalIgnoreCase))
         {
-            @((MarkupString)RenderMetaTag("article:tag", tag))
+            @((MarkupString)RenderMetaTag("article:published_time", Content.PublishDate))
+            @((MarkupString)RenderMetaTag("article:modified_time", Content.LastModified))
+            @((MarkupString)RenderMetaTag("article:author", Content.Author))
+            @((MarkupString)RenderMetaTag("article:tag", Content.Author))
+
+            @foreach (var tag in Content.Tags)
+            {
+                @((MarkupString)RenderMetaTag("article:tag", tag))
+            }
         }
     }
 
     <!-- Twitter Card Tags -->
-    @((MarkupString)RenderMetaTag("twitter:card", Content.Metadata.SeoProperties.TwitterCard ?? "summary_large_image"))
+    @((MarkupString)RenderMetaTag("twitter:card", Content?.Metadata?.SeoProperties?.TwitterCard ?? "summary_large_image"))
     @((MarkupString)RenderMetaTag("twitter:title", _twitterTitle))
     @((MarkupString)RenderMetaTag("twitter:description", _twitterDescription))
     @((MarkupString)RenderMetaTag("twitter:image", _twitterImage))

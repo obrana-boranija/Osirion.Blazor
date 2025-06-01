@@ -1,0 +1,10 @@
+﻿@namespace Osirion.Blazor.Components
+@inherits OsirionComponentBase
+
+<div class="osirion-loading">
+    <div class="osirion-spinner"></div>
+    @if (ShowText && string.IsNullOrWhiteSpace(Text) == false)
+    {
+        <p>@Text</p>
+    }
+</div>

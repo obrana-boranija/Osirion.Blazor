@@ -122,6 +122,19 @@ public partial class OsirionFooter
     public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
+    /// Gets or sets whether the footer should be docked to the bottom of the viewport
+    /// </summary>
+    [Parameter]
+    public bool Docked { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets the docking mode: "fixed" or "sticky"
+    /// Fixed: Always visible at bottom. Sticky: Sticks to bottom when page is short
+    /// </summary>
+    [Parameter]
+    public string DockingMode { get; set; } = "sticky";
+
+    /// <summary>
     /// Gets the CSS class for the footer
     /// </summary>
     private string GetFooterClass()
@@ -131,6 +144,11 @@ public partial class OsirionFooter
         classes.Add($"osirion-footer-{Variant}");
         classes.Add($"osirion-footer-theme-{Theme}");
         classes.Add($"osirion-footer-grid-{GridLayout}");
+
+        if (Docked)
+        {
+            classes.Add($"osirion-footer-docked-{DockingMode}");
+        }
 
         if (!string.IsNullOrWhiteSpace(CssClass))
         {

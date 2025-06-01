@@ -101,24 +101,6 @@
             color: var(--osirion-text-secondary, #6b7280);
         }
 
-    /* ========== LINKS ========== */
-    .osirion-html-renderer a {
-        color: var(--osirion-action-primary, #2563eb);
-        text-decoration: underline;
-        text-decoration-thickness: 0.1em;
-        text-underline-offset: 0.15em;
-        transition: color var(--osirion-transition-duration-200, 0.2s) ease;
-    }
-
-        .osirion-html-renderer a:hover {
-            color: var(--osirion-action-primary-hover, #1d4ed8);
-        }
-
-        .osirion-html-renderer a:focus {
-            outline: var(--osirion-focus-ring-width, 3px) solid var(--osirion-focus-ring-color, rgba(59, 130, 246, 0.5));
-            outline-offset: var(--osirion-focus-ring-offset, 2px);
-        }
-
     /* ========== LISTS ========== */
     .osirion-html-renderer ul,
     .osirion-html-renderer ol {
@@ -174,14 +156,56 @@
         color: var(--osirion-text-primary, #111827);
     }
 
+    /* ========== LINKS ========== */
+    .osirion-html-renderer a:not(:has(img)):not(:has(svg)):not(:has(span)):not(:has(div)):not(:has(i)) {
+        display: inline-block;
+        background-color: var(--osirion-code-background, rgba(107, 114, 128, 0.1));
+        color: var(--osirion-text-primary, #111827);
+        border-radius: var(--osirion-radius-sm, 0.125rem);
+        /*border: 1px solid var(--osirion-action-primary);*/
+        text-decoration: none;
+        padding: 0.125rem 0.5rem;
+        padding-right: 2rem; /* Extra padding for the icon */
+        position: relative;
+    }
+
+    .osirion-html-renderer a:hover {
+        color: var(--osirion-action-primary, #1d4ed8);
+    }
+
+    /* Trailing link icon */
+    .osirion-html-renderer a:not(:has(img)):not(:has(svg)):not(:has(span)):not(:has(div)):not(:has(i))::after {
+        content: '';
+        position: absolute;
+        right: 0.25rem;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 1.2rem; /* Increased from 0.75em */
+        height: 1.2rem; /* Increased from 0.75em */
+        /* Use mask to inherit text color */
+        -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='black'%3E%3Cpath d='M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z'/%3E%3Cpath d='M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z'/%3E%3C/svg%3E");
+        mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='black'%3E%3Cpath d='M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z'/%3E%3Cpath d='M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z'/%3E%3C/svg%3E");
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        mask-position: center;
+        background-color: currentColor; /* This will use the link's text color */
+        opacity: 0.6; /* Slightly adjusted opacity */
+        transition: opacity var(--osirion-transition-duration-200, 0.2s) ease;
+    }
+
     /* ========== CODE (INLINE) ========== */
     .osirion-html-renderer code:not([class*="language-"]) {
-        padding: 0.125em 0.25em;
+        display: inline-block;
+        padding: 0.125em 0.5em;
         font-family: var(--osirion-font-family-mono, ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace);
+        background-color: var(--osirion-code-background, rgba(107, 114, 128, 0.1));
+        color: var(--osirion-text-primary, #dc2626);
+        border-radius: var(--osirion-radius-base);
+        border: 1px solid var(--osirion-background-primary);
+        font-family: var(--osirion-font-family-mono);
         font-size: 0.875em;
-        color: var(--osirion-color-danger-700, #b91c1c);
-        background-color: var(--osirion-background-secondary, #f3f4f6);
-        border-radius: var(--osirion-radius-sm, 0.125rem);
+        font-weight: var(--osirion-font-weight-medium, 500);
     }
 
     /* ========== TABLES ========== */

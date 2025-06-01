@@ -3,7 +3,7 @@
 
 public static class OsirionPattern
 {
-    public static string? BackgroundPattern(BackgroundPatternType? type)
+    public static string BackgroundPattern(BackgroundPatternType? type)
     {
         return type switch
         {
@@ -16,7 +16,7 @@ public static class OsirionPattern
             BackgroundPatternType.TechWave => "osirion-bg-tech-wave",
             BackgroundPatternType.Circuit => "osirion-bg-circuit",
             BackgroundPatternType.DotsFade => "osirion-bg-dots-fade",
-            _ => null,
+            _ => string.Empty,
         };
     }
 }

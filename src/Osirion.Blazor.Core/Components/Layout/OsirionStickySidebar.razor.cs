@@ -23,7 +23,7 @@ public partial class OsirionStickySidebar
     /// Gets or sets whether to hide the scrollbar
     /// </summary>
     [Parameter]
-    public bool HideScrollbar { get; set; } = false;
+    public bool HideScrollbar { get; set; } = true;
 
     /// <summary>
     /// Gets or sets whether the sidebar should stick to the top

@@ -4,7 +4,7 @@ using Osirion.Blazor.Cms.Domain.Enums;
 using Osirion.Blazor.Cms.Domain.Repositories;
 using Osirion.Blazor.Cms.Domain.Services;
 
-namespace Osirion.Blazor.Cms.Components;
+namespace Osirion.Blazor.Cms.Web.Components;
 
 public partial class ContentView(IContentProviderManager contentProviderManager)
 {

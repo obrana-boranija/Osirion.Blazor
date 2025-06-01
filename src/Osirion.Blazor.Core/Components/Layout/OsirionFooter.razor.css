@@ -3,21 +3,22 @@
     font-family: var(--osirion-font-family-base, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif);
     font-size: var(--osirion-font-size-base, 1rem);
     line-height: var(--osirion-line-height-normal, 1.5);
+    border-top: 1px solid var(--osirion-border-color);
 }
 
 /* Theme variants */
 .osirion-footer-theme-light {
-    background-color: var(--osirion-footer-background, var(--osirion-background-secondary, #f9fafb));
+    background-color: var(--osirion-footer-background, var(--osirion-background-primary));
     color: var(--osirion-footer-text, var(--osirion-text-primary, #374151));
 }
 
 .osirion-footer-theme-dark {
-    background-color: var(--osirion-footer-background-dark, var(--osirion-color-neutral-900, #111827));
+    background-color: var(--osirion-footer-background-dark, var(--osirion-background-primary));
     color: var(--osirion-footer-text-dark, var(--osirion-color-neutral-100, #f3f4f6));
 }
 
 .osirion-footer-theme-auto {
-    background-color: var(--osirion-footer-background, var(--osirion-background-secondary, #f9fafb));
+    background-color: var(--osirion-footer-background, var(--osirion-background-primary));
     color: var(--osirion-footer-text, var(--osirion-text-primary, #374151));
 }
 
@@ -278,6 +279,25 @@
 
 .osirion-footer-theme-dark .osirion-footer-extra {
     background-color: rgba(255, 255, 255, 0.03);
+}
+
+/* Docked footer styles */
+.osirion-footer-docked-fixed {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: var(--osirion-z-index-20, 20);
+}
+
+/* Add padding to body when using fixed footer */
+body:has(.osirion-footer-docked-fixed) {
+    padding-bottom: var(--osirion-footer-height, 300px);
+}
+
+/* Sticky footer - requires proper page layout */
+.osirion-footer-docked-sticky {
+    margin-top: auto;
 }
 
 /* Responsive design using Osirion breakpoint variables */

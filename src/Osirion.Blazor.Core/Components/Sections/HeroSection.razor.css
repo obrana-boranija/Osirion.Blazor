@@ -45,7 +45,7 @@
     width: 100%;
     max-width: var(--osirion-container-xxl, 1320px);
     margin: 0 auto;
-    padding: var(--osirion-spacing-8, 2rem) var(--osirion-spacing-4, 1rem);
+    padding: var(--osirion-spacing-8, 2rem) 0;
 }
 
 /* Grid layout for side-by-side image */
@@ -86,7 +86,7 @@
 }
 
     .osirion-hero-variant-jumbotron .osirion-hero-container {
-        padding: var(--osirion-spacing-10, 2.5rem) var(--osirion-spacing-4, 1rem);
+        padding: var(--osirion-spacing-10, 2.5rem) 0;
     }
 
 .osirion-hero-variant-minimal {
@@ -95,7 +95,7 @@
 }
 
     .osirion-hero-variant-minimal .osirion-hero-container {
-        padding: var(--osirion-spacing-6, 1.5rem) var(--osirion-spacing-4, 1rem);
+        padding: var(--osirion-spacing-6, 1.5rem) 0;
     }
 
 /* Alignment variations */
@@ -142,29 +142,6 @@
     margin: 0 0 var(--osirion-spacing-6, 1.5rem);
 }
 
-/* Metadata styling */
-.osirion-hero-metadata {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--osirion-spacing-4, 1rem);
-    font-size: var(--osirion-font-size-sm, 0.875rem);
-    margin-bottom: var(--osirion-spacing-6, 1.5rem);
-    opacity: 0.8;
-}
-
-.osirion-hero-author,
-.osirion-hero-date,
-.osirion-hero-read-time {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--osirion-spacing-2, 0.5rem);
-}
-
-.osirion-hero-meta-icon {
-    flex-shrink: 0;
-    opacity: 0.7;
-}
-
 /* Buttons */
 .osirion-hero-buttons {
     display: flex;
@@ -199,7 +176,7 @@
     overflow: hidden;
     box-shadow: var(--osirion-shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1));
     position: relative;
-    background-color: var(--osirion-background-tertiary, #e5e7eb);
+    background-color: var(--osirion-background-secondary, #e5e7eb);
 }
 
 /* Featured image styling */
@@ -246,7 +223,7 @@
 
 @media (min-width: 992px) {
     .osirion-hero-container {
-        padding: var(--osirion-spacing-12, 3rem) var(--osirion-spacing-6, 1.5rem);
+        padding: var(--osirion-spacing-12, 3rem) 0;
     }
 
     .osirion-hero-with-side-image .osirion-hero-grid {
@@ -274,7 +251,7 @@
     }
 
     .osirion-hero-container {
-        padding: var(--osirion-spacing-6, 1.5rem) var(--osirion-spacing-4, 1rem);
+        padding: var(--osirion-spacing-6, 1.5rem) 0;
     }
 
     /* Stack image and content on mobile */

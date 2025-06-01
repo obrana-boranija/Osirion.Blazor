@@ -3,7 +3,7 @@
 
 @if (!string.IsNullOrWhiteSpace(HtmlContent))
 {
-        <link rel="stylesheet" href="_content/Osirion.Blazor.Core/css/osirion-html-renderer.css" />
+    <link rel="stylesheet" href="_content/Osirion.Blazor.Core/css/osirion-html-renderer.css" />
 
     <div id="syntax-highlighter-config"
          data-enable-copy="@EnableCopyButton.ToString().ToLower()"
@@ -11,32 +11,32 @@
          data-show-line-numbers="@ShowLineNumbers.ToString().ToLower()"
          style="display: none;">
     </div>
-    
-     @if (HasCodeBlocks && EnableSyntaxHighlighting)
+
+    @if (HasCodeBlocks && EnableSyntaxHighlighting)
     {
 
-            @if (!UseAccessibleTheme)
-            {
-                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" />
-            }
-            else
-            {
-                <style>
-                    @((MarkupString)GetAccessibleThemeCss())
-                </style>
-            }
+        @if (!UseAccessibleTheme)
+        {
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" />
+        }
+        else
+        {
+            <style>
+                @((MarkupString)GetAccessibleThemeCss())
+            </style>
+        }
 
-            @if (ShowLineNumbers)
-            {
-                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css" />
-            }
+        @if (ShowLineNumbers)
+        {
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css" />
+        }
 
 
         @LoadScript("https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js")
         @LoadScript("./_content/Osirion.Blazor.Core/js/osirion-syntax-highlighter.es5.min.js")
         @LoadScript("./_content/Osirion.Blazor.Core/js/osirion-copy-button.es5.min.js")
         @LoadScript("./_content/Osirion.Blazor.Core/js/osirion-line-highlighting.es5.min.js")
-        
+
 
         @foreach (var lang in DetectedLanguages.Where(NeedsLanguageComponent))
         {
@@ -49,7 +49,7 @@
         }
     }
 
-    <div class="@GetHtmlRendererClass()" @attributes="AdditionalAttributes">
+    <article class="@GetHtmlRendererClass()" @attributes="AdditionalAttributes">
         @((MarkupString)ProcessedHtml)
-    </div>
+    </article>
 }

@@ -6,7 +6,7 @@ using Osirion.Blazor.Cms.Domain.Repositories;
 using Osirion.Blazor.Cms.Domain.Services;
 using System.Text.RegularExpressions;
 
-namespace Osirion.Blazor.Cms.Components;
+namespace Osirion.Blazor.Cms.Web.Components;
 
 public partial class ContentPage
 {

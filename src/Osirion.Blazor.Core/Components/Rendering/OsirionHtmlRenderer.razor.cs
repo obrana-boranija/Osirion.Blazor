@@ -297,7 +297,7 @@ public partial class OsirionHtmlRenderer
     /// </summary>
     private string GetHtmlRendererClass()
     {
-        var classes = new List<string> { "osirion-html-renderer" };
+        var classes = new List<string> { "osirion-html-renderer osirion-content" };
 
         if (UseAccessibleTheme && HasCodeBlocks)
         {

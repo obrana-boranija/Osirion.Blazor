@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Services;
 
-namespace Osirion.Blazor.Cms.Components;
+namespace Osirion.Blazor.Cms.Web.Components;
 
 public partial class LocalizedNavigation
 {

@@ -3,7 +3,21 @@
 @using Osirion.Blazor.Theming.Components
 @inherits LayoutComponentBase
 
-<NavMenu />
+<OsirionPageLayout StickyFooter="true">
+    <Header>
+        <NavMenu />
+    </Header>
+
+    <Body>
+        @Body
+    </Body>
+
+    <Footer>
+        <Footer />
+    </Footer>
+</OsirionPageLayout>
+
+@* <NavMenu />
 
 <main>
     <article>
@@ -11,9 +25,9 @@
     </article>
 </main>
 
-<Footer />
+<Footer /> *@
 
-<Osirion.Blazor.Components.OsirionCookieConsent ShowBanner IsCustomizing />
+<Osirion.Blazor.Components.OsirionCookieConsent />
 
 <ScrollToTopProvider />
 

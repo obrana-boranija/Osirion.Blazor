@@ -1,10 +1,9 @@
 using Microsoft.AspNetCore.Components;
-using Octokit;
 using Osirion.Blazor.Cms.Domain.Entities;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Osirion.Blazor.Cms.Components;
+namespace Osirion.Blazor.Cms.Web.Components;
 
 public partial class SeoMetadataRenderer(NavigationManager navigationManager)
 {
@@ -48,15 +47,15 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
         _currentUrl = navigationManager.Uri;
 
         _metaTitle = BuildMetaTitle();
-        _metaDescription = GetFirstValue(Content?.Metadata.SeoProperties?.Description, Content?.Description);
-        _ogTitle = GetFirstValue(Content?.Metadata.SeoProperties?.OgTitle, _metaTitle);
-        _ogDescription = GetFirstValue(Content?.Metadata.SeoProperties?.OgDescription, _metaDescription);
-        _ogImage = NormalizeImageUrl(GetFirstValue(Content?.Metadata.SeoProperties?.OgImageUrl, Content?.FeaturedImageUrl));
-        _twitterTitle = GetFirstValue(Content?.Metadata.SeoProperties?.TwitterTitle, _ogTitle);
-        _twitterDescription = GetFirstValue(Content?.Metadata.SeoProperties?.TwitterDescription, _ogDescription);
-        _twitterImage = NormalizeImageUrl(GetFirstValue(Content?.Metadata.SeoProperties?.TwitterImageUrl, _ogImage));
+        _metaDescription = GetFirstValue(Content?.Metadata?.SeoProperties?.Description, Content?.Description);
+        _ogTitle = GetFirstValue(Content?.Metadata?.SeoProperties?.OgTitle, _metaTitle);
+        _ogDescription = GetFirstValue(Content?.Metadata?.SeoProperties?.OgDescription, _metaDescription);
+        _ogImage = NormalizeImageUrl(GetFirstValue(Content?.Metadata?.SeoProperties?.OgImageUrl, Content?.FeaturedImageUrl));
+        _twitterTitle = GetFirstValue(Content?.Metadata?.SeoProperties?.TwitterTitle, _ogTitle);
+        _twitterDescription = GetFirstValue(Content?.Metadata?.SeoProperties?.TwitterDescription, _ogDescription);
+        _twitterImage = NormalizeImageUrl(GetFirstValue(Content?.Metadata?.SeoProperties?.TwitterImageUrl, _ogImage));
         _canonicalUrl = BuildCanonicalUrl();
-        _schemaType = GetFirstValue(SchemaType?.ToString(), Content?.Metadata.SeoProperties?.Type) ?? "WebPage";
+        _schemaType = GetFirstValue(SchemaType?.ToString(), Content?.Metadata?.SeoProperties?.Type) ?? "WebPage";
         _jsonLdContent = GenerateJsonLd();
 
         base.OnInitialized();
@@ -102,7 +101,7 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
         return $"<meta name=\"{name}\" content=\"{content.Value.ToString("yyyy-MM-dd")}\" />";
     }
 
-    private string RenderMetaTag(string name, IReadOnlyList<string> content)
+    private string RenderMetaTag(string name, IReadOnlyList<string>? content)
     {
         if (string.IsNullOrWhiteSpace(name))
         {
@@ -118,13 +117,13 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
 
     private string BuildMetaTitle()
     {
-        var title = GetFirstValue(Content?.Metadata.SeoProperties?.Title, Content?.Title);
+        var title = GetFirstValue(Content?.Metadata?.SeoProperties?.Title, Content?.Title);
         return string.IsNullOrWhiteSpace(title) ? _siteName : $"{title} | {_siteName}";
     }
 
     private string? BuildCanonicalUrl()
     {
-        if (!string.IsNullOrWhiteSpace(Content?.Metadata.SeoProperties?.Canonical))
+        if (!string.IsNullOrWhiteSpace(Content?.Metadata?.SeoProperties?.Canonical))
             return Content.Metadata.SeoProperties.Canonical;
 
         return Content?.Path is not null ? _currentUrl : null;
@@ -162,7 +161,7 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
         if (Content is null)
             return null;
 
-        if (!string.IsNullOrWhiteSpace(Content.Metadata.SeoProperties.JsonLd))
+        if (!string.IsNullOrWhiteSpace(Content?.Metadata?.SeoProperties?.JsonLd))
             return Content.Metadata.SeoProperties.JsonLd;
 
         var jsonLd = _schemaType switch
@@ -259,7 +258,7 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
         return new
         {
             @context = "https://schema.org",
-            @type = Content?.Metadata?.SeoProperties.Type,
+            @type = Content?.Metadata?.SeoProperties?.Type,
             name = Content?.Title,
             description = Content?.Description,
             url = _currentUrl

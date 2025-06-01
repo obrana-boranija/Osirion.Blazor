@@ -1,5 +1,17 @@
-﻿@page "/blog/{*pageRoute}"
-@page "/{locale}/blog/{*pageRoute}"
+﻿@page "/blog"
+@page "/{locale}/blog"
+@page "/blog/{slug}"
+@page "/{locale}/blog/{slug}"
 @using Osirion.Blazor.Cms.Components
+@using Osirion.Blazor.Cms.Web.Components
 
-<ArticlePage Content="Content" />
+@if (string.IsNullOrWhiteSpace(Slug))
+{
+    <p>
+        The blog slug is not specified. Please provide a valid slug in the URL.
+    </p>
+}
+else
+{
+    <ArticlePage Locale="@Locale" DirectoryName="blog" ItemSlug="@Slug" />
+}
