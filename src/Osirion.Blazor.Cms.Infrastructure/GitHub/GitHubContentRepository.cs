@@ -7,6 +7,7 @@ using Osirion.Blazor.Cms.Domain.Models.GitHub;
 using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Domain.Repositories;
 using Osirion.Blazor.Cms.Infrastructure.Repositories;
+using Osirion.Blazor.Cms.Infrastructure.Utilities;
 
 namespace Osirion.Blazor.Cms.Infrastructure.GitHub;
 
@@ -67,7 +68,7 @@ public class GitHubContentRepository : BaseContentRepository
     protected override async Task<Dictionary<string, ContentItem>> LoadItemsIntoCache(CancellationToken cancellationToken)
     {
         var cache = new Dictionary<string, ContentItem>();
-        var contentPath = NormalizePath(_options.ContentPath);
+        var contentPath = UrlGenerator.NormalizePath(ContentPath);
 
         try
         {
@@ -289,7 +290,7 @@ public class GitHubContentRepository : BaseContentRepository
         // Extract locale from path if enabled
         if (_options.EnableLocalization)
         {
-            var locale = ExtractLocaleFromPath(fileContent.Path);
+            var locale = UrlGenerator.ExtractLocaleFromPath(fileContent.Path, ContentPath, EnableLocalization, SupportedLocales, DefaultLocale);
             contentItem.SetLocale(locale);
         }
         else
@@ -300,7 +301,7 @@ public class GitHubContentRepository : BaseContentRepository
         // Set directory if found
         try
         {
-            var directoryPath = GetDirectoryPath(fileContent.Path);
+            var directoryPath = UrlGenerator.GetDirectoryPath(fileContent.Path);
             var directory = await _directoryRepository.GetByPathAsync(directoryPath, cancellationToken);
             if (directory is not null)
             {
@@ -316,13 +317,13 @@ public class GitHubContentRepository : BaseContentRepository
         await ProcessMarkdownAsync(markdownContent, contentItem, cancellationToken);
 
         // Set URL
-        var url = GenerateUrl(contentItem.Path, contentItem.Slug, _options.ContentPath);
+        var url = UrlGenerator.GenerateUrl(contentItem.Path, contentItem.Slug, EnableLocalization, SupportedLocales, ContentPath);
         contentItem.SetUrl(url);
 
         // Set content ID if localization is enabled
         if (_options.EnableLocalization && string.IsNullOrWhiteSpace(contentItem.ContentId))
         {
-            var pathWithoutLocale = RemoveLocaleFromPath(contentItem.Path);
+            var pathWithoutLocale = UrlGenerator.RemoveLocaleFromPath(contentItem.Path, ContentPath, EnableLocalization, SupportedLocales);
             var pathWithoutExtension = Path.ChangeExtension(pathWithoutLocale, null);
             contentItem.SetContentId(pathWithoutExtension.GetHashCode().ToString("x"));
         }

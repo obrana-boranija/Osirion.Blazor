@@ -301,7 +301,7 @@ public class FrontMatter : ValueObject
         // Configure serializer for clean Jekyll-compatible output
         var serializer = new SerializerBuilder()
             .WithNamingConvention(UnderscoredNamingConvention.Instance)
-            .ConfigureDefaultValuesHandling(DefaultValuesHandling.OmitNull)
+            //.ConfigureDefaultValuesHandling(DefaultValuesHandling.OmitNull)
             .Build();
 
         // Serialize just the frontmatter

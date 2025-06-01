@@ -3,6 +3,7 @@ using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Repositories;
 using Osirion.Blazor.Cms.Domain.ValueObjects;
+using Osirion.Blazor.Cms.Infrastructure.Utilities;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -23,8 +24,8 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
     // Configuration properties set by derived classes
     protected bool EnableLocalization = false;
     protected string DefaultLocale = "en";
-    protected List<string> SupportedLocales = new() { "en" };
     protected string ContentPath = string.Empty;
+    protected List<string> SupportedLocales = new() { "en" };
 
     // Flag to track if update is in progress to avoid multiple webhooks hammering the system
     private bool _updateInProgress = false;
@@ -249,8 +250,8 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
         {
             await EnsureCacheIsLoaded(cancellationToken);
 
-            var normalizedPath = NormalizePath(path);
-            return ItemCache.Values.FirstOrDefault(c => NormalizePath(c.Path) == normalizedPath);
+            var normalizedPath = UrlGenerator.NormalizePath(path);
+            return ItemCache.Values.FirstOrDefault(c => UrlGenerator.NormalizePath(c.Path) == normalizedPath);
         }
         catch (Exception ex)
         {
@@ -364,7 +365,7 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
                 .GroupBy(tag => tag.ToLowerInvariant())
                 .Select(group => ContentTag.Create(
                     name: group.First(),
-                    slug: GenerateSlug(group.First()),
+                    slug: UrlGenerator.GenerateSlug(group.First()),
                     count: group.Count()))
                 .OrderBy(tag => tag.Name)
                 .ToList();
@@ -406,54 +407,6 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
     /// Deletes a content item with a commit message
     /// </summary>
     public abstract Task DeleteWithCommitMessageAsync(string id, string commitMessage, CancellationToken cancellationToken = default);
-
-
-    /// <summary>
-    /// Normalizes a path for consistent comparison
-    /// </summary>
-    protected string NormalizePath(string path)
-    {
-        return path.Replace('\\', '/').Trim('/');
-    }
-
-    /// <summary>
-    /// Gets the directory path from a file path
-    /// </summary>
-    protected string GetDirectoryPath(string filePath)
-    {
-        var lastSlashIndex = filePath.LastIndexOf('/');
-        if (lastSlashIndex >= 0)
-        {
-            return filePath.Substring(0, lastSlashIndex);
-        }
-        return string.Empty;
-    }
-
-    /// <summary>
-    /// Generates a URL-friendly slug from text
-    /// </summary>
-    protected string GenerateSlug(string text)
-    {
-        if (string.IsNullOrWhiteSpace(text))
-            return "untitled";
-
-        // Convert to lowercase
-        var slug = text.ToLowerInvariant();
-
-        // Remove special characters
-        slug = Regex.Replace(slug, @"[^a-z0-9\s-]", "");
-
-        // Replace spaces with hyphens
-        slug = Regex.Replace(slug, @"\s+", "-");
-
-        // Remove consecutive hyphens
-        slug = Regex.Replace(slug, @"-{2,}", "-");
-
-        // Trim hyphens from ends
-        slug = slug.Trim('-');
-
-        return slug;
-    }
 
     /// <summary>
     /// Processes a markdown file to create a content item
@@ -645,7 +598,7 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
 
         if (!string.IsNullOrWhiteSpace(query.Directory))
         {
-            var normalizedDirectory = NormalizePath(query.Directory);
+            var normalizedDirectory = UrlGenerator.NormalizePath(query.Directory);
             filteredItems = filteredItems.Where(item =>
                 item.Directory != null && item.Directory.Name.ToLower() == query.Directory.ToLower());
         }
@@ -815,150 +768,6 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
                 items.OrderBy(item => item.DateCreated) :
                 items.OrderByDescending(item => item.DateCreated)
         };
-    }
-
-    /// <summary>
-    /// Extracts locale from a path
-    /// </summary>
-    protected string ExtractLocaleFromPath(string path)
-    {
-        // If localization is disabled, always return default locale
-        if (!EnableLocalization)
-        {
-            return DefaultLocale;
-        }
-
-        // Check if content path is set and remove it from the beginning
-        var contentPath = NormalizePath(ContentPath);
-        if (!string.IsNullOrWhiteSpace(contentPath) && path.StartsWith(contentPath))
-        {
-            // Only remove if it's followed by a slash or is the entire path
-            if (path.Length == contentPath.Length || path[contentPath.Length] == '/')
-            {
-                // Remove content path prefix
-                path = path.Length > contentPath.Length
-                    ? path.Substring(contentPath.Length + 1)
-                    : "";
-            }
-        }
-
-        // Try to extract locale from path format like "en/blog" or "es/articles"
-        var segments = path.Split('/', StringSplitOptions.RemoveEmptyEntries);
-        if (segments.Length > 0 && IsValidLocale(segments[0]))
-        {
-            return segments[0];
-        }
-
-        // No valid locale found, return default
-        return DefaultLocale;
-    }
-
-    /// <summary>
-    /// Checks if a string is a valid locale
-    /// </summary>
-    protected bool IsValidLocale(string locale)
-    {
-        // Check against supported locales list if defined
-        if (SupportedLocales.Count > 0)
-        {
-            return SupportedLocales.Contains(locale, StringComparer.OrdinalIgnoreCase);
-        }
-
-        // Fallback to simple validation: 2-letter language code or language-region format
-        return (locale.Length == 2 && locale.All(char.IsLetter)) ||
-               (locale.Length == 5 && locale[2] == '-' &&
-                locale.Substring(0, 2).All(char.IsLetter) &&
-                locale.Substring(3, 2).All(char.IsLetter));
-    }
-
-    /// <summary>
-    /// Removes locale prefix from a path
-    /// </summary>
-    protected string RemoveLocaleFromPath(string path)
-    {
-        if (!EnableLocalization)
-            return path;
-
-        // Check if content path is set and remove it
-        var contentPath = NormalizePath(ContentPath);
-        if (!string.IsNullOrWhiteSpace(contentPath) && path.StartsWith(contentPath))
-        {
-            // Only remove if it's followed by a slash or is the entire path
-            if (path.Length == contentPath.Length || path[contentPath.Length] == '/')
-            {
-                // Remove content path prefix
-                path = path.Length > contentPath.Length
-                    ? path.Substring(contentPath.Length + 1)
-                    : "";
-            }
-        }
-
-        // Check if first segment is a locale
-        var segments = path.Split('/', StringSplitOptions.RemoveEmptyEntries);
-        if (segments.Length > 0 && IsValidLocale(segments[0]))
-        {
-            // Remove locale segment
-            return string.Join("/", segments.Skip(1));
-        }
-
-        return path;
-    }
-
-    /// <summary>
-    /// Generates a URL for content
-    /// </summary>
-    protected string GenerateUrl(string path, string slug, string? skipSegment = null)
-    {
-        // Check if pathToTrim is null, whitespace, or just "/"
-        bool skipPrefixRemoval = string.IsNullOrWhiteSpace(skipSegment) || skipSegment == "/";
-
-        // Normalize path
-        path = NormalizePath(path);
-
-        // Step 1: Remove skipSegment from the beginning of the path if present
-        if (!skipPrefixRemoval && path.StartsWith(skipSegment!))
-        {
-            // Only remove 'skipSegment' if it's followed by a slash or is the entire string
-            if (path.Length == skipSegment.Length || path[skipSegment.Length] == '/')
-            {
-                // If skipSegment is followed by a slash, remove both skipSegment and the slash
-                // If skipSegment is the entire string, this will result in an empty string
-                path = path.Length > skipSegment.Length ? path.Substring(skipSegment.Length + 1) : "";
-            }
-        }
-
-        // Step 2: Remove the filename from the path
-        int lastSlashIndex = path.LastIndexOf('/');
-        if (lastSlashIndex >= 0)
-        {
-            path = path.Substring(0, lastSlashIndex);
-        }
-        else
-        {
-            // If there's no slash, path is a single segment, so clear it
-            path = "";
-        }
-
-        // If using localization, check if the first segment is a locale and remove it
-        if (EnableLocalization && path.Length > 0)
-        {
-            var segments = path.Split('/', StringSplitOptions.RemoveEmptyEntries);
-            if (segments.Length > 0 && IsValidLocale(segments[0]))
-            {
-                // Remove the locale segment
-                path = string.Join("/", segments.Skip(1));
-            }
-        }
-
-        // Step 3: Append slug, with a slash if path is not empty
-        if (!string.IsNullOrWhiteSpace(path))
-        {
-            return path + "/" + slug;
-        }
-        else
-        {
-            return slug;
-        }
     }
 
     private bool IsExcludedFromMarkdownProcessing(string fileName)

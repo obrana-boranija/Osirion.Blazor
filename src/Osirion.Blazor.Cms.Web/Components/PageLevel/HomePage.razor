@@ -10,7 +10,7 @@
     }
     else if (Content is null && !string.IsNullOrWhiteSpace(ContentPath))
     {
-            <OsirionContentNotFound ErrorCode="404" />
+        <OsirionContentNotFound ErrorCode="404" />
     }
     else
     {
@@ -32,27 +32,9 @@
         }
 
         <div class="osirion-homepage-content">
-            @if (ShowFeaturedContent)
-            {
-                <FeaturedPostsSection Title="@FeaturedSectionTitle"
-                                      Description="@FeaturedSectionDescription"
-                                      Posts="@FeaturedItems"
-                                      Layout="@FeaturedLayout"
-                                      Columns="@FeaturedColumns"
-                                      PostCount="@FeaturedCount"
-                                      ShowExcerpt="@ShowFeaturedExcerpt"
-                                      ShowAuthor="@ShowFeaturedAuthor"
-                                      ShowCategories="@ShowFeaturedCategories"
-                                      ViewAllUrl="@FeaturedViewAllUrl"
-                                      ShowViewAllLink="@ShowFeaturedViewAll" />
-            }
-
-
             @if (Content is not null && ChildContent is null)
             {
-
                 <OsirionHtmlRenderer HtmlContent="@Content.Content" />
-
             }
 
 
@@ -61,6 +43,21 @@
                 <div class="osirion-homepage-content">
                     @ChildContent
                 </div>
+            }
+
+            @if (ShowFeaturedContent)
+            {
+                <OsirionContentListSection Title="@FeaturedSectionTitle"
+                                           Description="@FeaturedSectionDescription"
+                                           Items="@FeaturedItems"
+                                           Layout="@FeaturedLayout"
+                                           Columns="@FeaturedColumns"
+                                           PostCount="@FeaturedCount"
+                                           ShowExcerpt="@ShowFeaturedExcerpt"
+                                           ShowAuthor="@ShowFeaturedAuthor"
+                                           ShowCategories="@ShowFeaturedCategories"
+                                           ViewAllUrl="@FeaturedViewAllUrl"
+                                           ShowViewAllLink="@ShowFeaturedViewAll" />
             }
 
 

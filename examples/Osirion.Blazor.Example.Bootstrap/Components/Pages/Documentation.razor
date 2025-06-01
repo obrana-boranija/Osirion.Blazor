@@ -1,0 +1,16 @@
+﻿@page "/docs"
+@page "/{locale}/docs"
+@page "/docs/{slug}"
+@page "/{locale}/docs/{slug}"
+@using Osirion.Blazor.Cms.Web.Components
+
+
+<ArticlePage Locale="@Locale" DirectoryName="Documentation" ItemSlug="@(Slug ?? "getting-started")" />
+
+@code {
+    [Parameter]
+    public string? Locale { get; set; } = "en";
+
+    [Parameter]
+    public string? Slug { get; set; }
+}

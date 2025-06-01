@@ -5,6 +5,7 @@ using Osirion.Blazor.Cms.Domain.Exceptions;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Infrastructure.Repositories;
+using Osirion.Blazor.Cms.Infrastructure.Utilities;
 using System.IO.Abstractions;
 using DirectoryNotFoundException = Osirion.Blazor.Cms.Domain.Exceptions.DirectoryNotFoundException;
 
@@ -330,7 +331,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
                 // Extract locale from path if enabled
                 if (_options.EnableLocalization)
                 {
-                    var locale = ExtractLocaleFromPath(relativePath);
+                    var locale = UrlGenerator.ExtractLocaleFromPath(relativePath, ContentPath, EnableLocalization, SupportedLocales, DefaultLocale);
                     contentItem.SetLocale(locale);
                 }
                 else
@@ -342,13 +343,13 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
                 await ProcessMarkdownAsync(content, contentItem, cancellationToken);
 
                 // Set URL
-                var url = GenerateUrl(contentItem.Path, contentItem.Slug, _options.ContentRoot);
+                var url = UrlGenerator.GenerateUrl(contentItem.Path, contentItem.Slug, EnableLocalization, SupportedLocales, ContentPath);
                 contentItem.SetUrl(url);
 
                 // Set content ID if localization is enabled
                 if (_options.EnableLocalization && string.IsNullOrWhiteSpace(contentItem.ContentId))
                 {
-                    var pathWithoutLocale = RemoveLocaleFromPath(contentItem.Path);
+                    var pathWithoutLocale = UrlGenerator.RemoveLocaleFromPath(contentItem.Path, ContentPath, EnableLocalization, SupportedLocales);
                     var pathWithoutExtension = Path.ChangeExtension(pathWithoutLocale, null);
                     contentItem.SetContentId(pathWithoutExtension.GetHashCode().ToString("x"));
                 }

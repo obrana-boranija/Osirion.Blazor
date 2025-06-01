@@ -18,7 +18,7 @@ public partial class Home(IContentProviderManager contentProviderManager)
 
     private async Task LoadContentAsync()
     {
-        var result = await contentProviderManager.GetContentByQueryAsync(new Cms.Domain.Repositories.ContentQuery { Locale = Locale, Slug = "introduction", ProviderId = "github-osirion" });
+        var result = await contentProviderManager.GetContentByQueryAsync(new Cms.Domain.Repositories.ContentQuery { Locale = Locale, Slug = "homepage", ProviderId = "github-osirion" });
         Content = result?.FirstOrDefault();
     }
 }
