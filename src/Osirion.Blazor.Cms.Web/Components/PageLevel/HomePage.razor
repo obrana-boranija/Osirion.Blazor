@@ -27,8 +27,11 @@
                 PrimaryButtonUrl="@HeroPrimaryButtonUrl"
                 SecondaryButtonText="@HeroSecondaryButtonText"
                 SecondaryButtonUrl="@HeroSecondaryButtonUrl"
-                ShowButtons="@ShowHeroButtons"
-                Alignment="@HeroAlignment" />
+                BackgroundPattern="BackgroundPatternType.DotsFade"
+                ShowMetadata
+                Author="dejan demonjić"
+                PublishDate="@DateTime.Today"
+                ReadTime="15"/>
         }
 
         @if (ShowFeaturedContent && FeaturedItems is not null && FeaturedItems.Any())
