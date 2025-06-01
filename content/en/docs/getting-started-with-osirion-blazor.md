@@ -451,7 +451,7 @@ osirion.UseContent(content =>
 
 Content structure with localization:
 
-```
+```markdown
 content/
 ├── en/
 │   ├── blog/
