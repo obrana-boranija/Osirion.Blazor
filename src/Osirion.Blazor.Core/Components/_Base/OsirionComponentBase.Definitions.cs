@@ -9,18 +9,13 @@ public abstract partial class OsirionComponentBase : ComponentBase
     /// Gets or sets the CSS class(es) for the component.
     /// </summary>
     [Parameter]
-    public string? CssClass { get; set; }
+    public string? Class { get; set; }
 
     /// <summary>
-    /// Gets or sets the theming options.
+    /// Gets or sets the inline style(s) for the component.
     /// </summary>
-    [Inject]
-    protected IOptions<ThemingOptions> ThemingOptions { get; set; } = default!;
-
-    /// <summary>
-    /// Gets the current theme mode.
-    /// </summary>
-    protected CssFramework Framework => ThemingOptions.Value.Framework;
+    [Parameter]
+    public string? Style { get; set; }
 
     protected virtual string GetButtonClass()
     {
@@ -646,8 +641,8 @@ public abstract partial class OsirionComponentBase : ComponentBase
     /// <returns>Combined CSS class string</returns>
     protected string CombineCssClasses(string baseClass)
     {
-        return string.IsNullOrWhiteSpace(CssClass)
+        return string.IsNullOrWhiteSpace(Class)
             ? baseClass
-            : $"{baseClass} {CssClass}";
+            : $"{baseClass} {Class}";
     }
 }

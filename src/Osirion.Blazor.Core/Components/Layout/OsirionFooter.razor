@@ -1,7 +1,7 @@
 ﻿@namespace Osirion.Blazor.Components
 @inherits OsirionComponentBase
 
-<footer class="@GetFooterClass()" @attributes="AdditionalAttributes">
+<footer class="@GetFooterClass()" style="@Style" @attributes="Attributes">
     <div class="osirion-footer-container">
         @if (ShowTopSection && (Logo is not null || Links?.Any() == true || SocialLinks?.Any() == true || TopContent is not null))
         {

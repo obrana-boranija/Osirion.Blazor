@@ -53,9 +53,9 @@ public partial class OsirionStickySidebar
             baseClass += " osirion-no-scrollbar";
         }
 
-        if (!string.IsNullOrWhiteSpace(CssClass))
+        if (!string.IsNullOrWhiteSpace(Class))
         {
-            baseClass += $" {CssClass}";
+            baseClass += $" {Class}";
         }
 
         return baseClass;

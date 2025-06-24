@@ -1,0 +1,145 @@
+// ================================================
+// Osirion Theming System - Mixins
+// ================================================
+
+@use 'sass:map';
+@use 'variables' as *;
+@use 'functions' as *;
+
+// Media query mixin
+@mixin media($breakpoint) {
+    @if map.has-key($breakpoints, $breakpoint) {
+        @media (min-width: map.get($breakpoints, $breakpoint)) {
+            @content;
+        }
+    }
+    @else {
+        @warn "Breakpoint '#{$breakpoint}' not found.";
+    }
+}
+
+// Dark mode mixin
+@mixin dark-mode {
+    :root[data-theme="dark"] &,
+    [data-theme="dark"] &,
+    .dark-theme &,
+    .theme-dark &,
+    .osirion-theme-dark & {
+        @content;
+    }
+}
+
+// High contrast mode mixin
+@mixin high-contrast {
+    @media (prefers-contrast: more) {
+        @content;
+    }
+}
+
+// Reduced motion mixin
+@mixin reduced-motion {
+    @media (prefers-reduced-motion: reduce) {
+        @content;
+    }
+}
+
+// Focus visible mixin
+@mixin focus-visible {
+    &:focus-visible {
+        outline: 2px solid var(--osirion-focus-ring-color, #{color('primary', 600)});
+        outline-offset: 2px;
+    }
+}
+
+// Generate color CSS variables
+@mixin generate-color-vars($color-name) {
+    @each $shade, $value in map.get($colors, $color-name) {
+        #{css-var('color-#{$color-name}-#{$shade}')}: #{$value};
+    }
+}
+
+// Generate all CSS variables
+@mixin generate-css-vars {
+    // Colors
+    @each $color-name, $shades in $colors {
+        @include generate-color-vars($color-name);
+    }
+    // Typography
+    @each $family-name, $family-value in $font-families {
+        #{css-var('font-family-#{$family-name}')}: #{$family-value};
+    }
+
+    @each $size-name, $size-value in $font-sizes {
+        #{css-var('font-size-#{$size-name}')}: #{$size-value};
+    }
+
+    @each $weight-name, $weight-value in $font-weights {
+        #{css-var('font-weight-#{$weight-name}')}: #{$weight-value};
+    }
+
+    @each $height-name, $height-value in $line-heights {
+        #{css-var('line-height-#{$height-name}')}: #{$height-value};
+    }
+    // Spacing
+    @each $space-name, $space-value in $spacings {
+        #{css-var('spacing-#{$space-name}')}: #{$space-value};
+    }
+    // Border radius
+    @each $radius-name, $radius-value in $radii {
+        #{css-var('radius-#{$radius-name}')}: #{$radius-value};
+    }
+    // Shadows
+    @each $shadow-name, $shadow-value in $shadows {
+        #{css-var('shadow-#{$shadow-name}')}: #{$shadow-value};
+    }
+}
+
+// Smooth transitions mixin
+@mixin smooth-transitions {
+    @if $enable-smooth-transitions {
+        transition-property: color, background-color, border-color, outline-color, fill, stroke, opacity, box-shadow, transform;
+        transition-duration: 0.3s;
+        transition-timing-function: ease;
+
+        @include reduced-motion {
+            transition: none !important;
+        }
+    }
+}
+
+// Button base styles mixin
+@mixin button-base {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--osirion-spacing-2) var(--osirion-spacing-4);
+    font-family: var(--osirion-font-family-base);
+    font-size: var(--osirion-font-size-base);
+    font-weight: var(--osirion-font-weight-medium);
+    line-height: var(--osirion-line-height-normal);
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    border: 1px solid transparent;
+    border-radius: var(--osirion-radius-md);
+
+    @include smooth-transitions;
+    @include focus-visible;
+
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+}
+
+// Card base styles mixin
+@mixin card-base {
+    background-color: var(--osirion-background-primary);
+    border: 1px solid var(--osirion-border-color);
+    border-radius: var(--osirion-radius-lg);
+    box-shadow: var(--osirion-shadow-base);
+    padding: var(--osirion-spacing-4);
+
+    @include smooth-transitions;
+}

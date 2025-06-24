@@ -79,9 +79,9 @@ public partial class ContentSection
         classes.Add($"osirion-section-align-{TextAlign}");
         classes.Add($"osirion-section-padding-{Padding}");
 
-        if (!string.IsNullOrWhiteSpace(CssClass))
+        if (!string.IsNullOrWhiteSpace(Class))
         {
-            classes.Add(CssClass);
+            classes.Add(Class);
         }
 
         return string.Join(" ", classes);

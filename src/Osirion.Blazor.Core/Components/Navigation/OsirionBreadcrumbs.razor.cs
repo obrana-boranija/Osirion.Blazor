@@ -60,7 +60,7 @@ public partial class OsirionBreadcrumbs
     /// </summary>
     private string GetBreadcrumbsClass()
     {
-        return $"osirion-breadcrumbs {CssClass}".Trim();
+        return $"osirion-breadcrumbs {Class}".Trim();
     }
 
     /// <summary>

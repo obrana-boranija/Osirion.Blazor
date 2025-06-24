@@ -55,7 +55,7 @@ public class MarkdownPreviewTests : TestContext, IDisposable
             .Add(p => p.Title, "Custom Preview")
             .Add(p => p.ShowHeader, false)
             .Add(p => p.Placeholder, "Custom placeholder")
-            .Add(p => p.CssClass, "custom-class")
+            .Add(p => p.Class, "custom-class")
             .Add(p => p.ContentCssClass, "custom-content-class")
         );
 

@@ -40,7 +40,7 @@ public partial class Menu
     /// Only applies to horizontal menus.
     /// </summary>
     [Parameter]
-    public bool IsSticky { get; set; } = true;
+    public bool Sticky { get; set; } = true;
 
     /// <summary>
     /// Gets or sets the z-index to use when the menu is sticky.
@@ -104,11 +104,6 @@ public partial class Menu
     {
         base.OnInitialized();
 
-        if (AdditionalAttributes is null)
-        {
-            AdditionalAttributes = new Dictionary<string, object>();
-        }
-
         // Set menu orientation class
         var orientationClass = $"osirion-menu-{Orientation.ToString().ToLowerInvariant()}";
 
@@ -136,27 +131,27 @@ public partial class Menu
             classes.Add("osirion-menu-collapsible");
 
         // Add sticky class if enabled (only for horizontal menus)
-        if (IsSticky && Orientation == MenuOrientation.Horizontal)
+        if (Sticky && Orientation == MenuOrientation.Horizontal)
             classes.Add("osirion-menu-sticky");
 
         // Combine with existing CssClass
-        CssClass = string.IsNullOrWhiteSpace(CssClass)
+        Class = string.IsNullOrWhiteSpace(Class)
             ? string.Join(" ", classes)
-            : $"{CssClass} {string.Join(" ", classes)}";
+            : $"{Class} {string.Join(" ", classes)}";
 
         // Apply z-index as inline style for sticky menu
-        if (IsSticky && Orientation == MenuOrientation.Horizontal && !AdditionalAttributes.ContainsKey("style"))
+        if (Sticky && Orientation == MenuOrientation.Horizontal && !Attributes.ContainsKey("style"))
         {
-            AdditionalAttributes["style"] = $"z-index: {StickyZIndex};";
+            Attributes["style"] = $"z-index: {StickyZIndex};";
         }
-        else if (IsSticky && Orientation == MenuOrientation.Horizontal)
+        else if (Sticky && Orientation == MenuOrientation.Horizontal)
         {
-            AdditionalAttributes["style"] = $"{AdditionalAttributes["style"]} z-index: {StickyZIndex};";
+            Attributes["style"] = $"{Attributes["style"]} z-index: {StickyZIndex};";
         }
 
         // Set ID attribute
-        if (!AdditionalAttributes.ContainsKey("id"))
-            AdditionalAttributes["id"] = MenuId;
+        if (!Attributes.ContainsKey("id"))
+            Attributes["id"] = MenuId;
     }
 }
 

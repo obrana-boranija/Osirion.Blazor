@@ -29,8 +29,8 @@
 /* Main content area - Glass effect */
 .osirion-article-main {
     min-width: 0; /* Prevents grid blowout */
-    box-shadow: var(--osirion-shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1));
-    backdrop-filter: blur(12px);
+/*    box-shadow: var(--osirion-shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1));
+    backdrop-filter: blur(12px);*/
     position: relative;
     z-index: 2;
 }
@@ -42,12 +42,12 @@
     height: fit-content;
     max-height: calc(100vh - 6rem);
     overflow-y: auto;
-    padding: var(--osirion-spacing-5, 1.25rem);
+/*    padding: var(--osirion-spacing-5, 1.25rem);
     border-radius: var(--osirion-radius-lg, 0.5rem);
     background-color: var(--osirion-background-secondary);
     border: 1px solid rgba(var(--osirion-border-color-rgb, 229, 231, 235), 0.3);
     backdrop-filter: blur(8px);
-    box-shadow: var(--osirion-shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.05));
+    box-shadow: var(--osirion-shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.05));*/
     scrollbar-width: thin;
     z-index: 1;
 }
@@ -233,7 +233,7 @@
 
     /* Add a TOC to the top of the content on medium screens */
     .osirion-article-main {
-        padding-top: var(--osirion-spacing-4, 1rem);
+        padding: var(--osirion-spacing-4, 1rem), 0;
     }
 
     .osirion-medium-toc {
@@ -259,7 +259,7 @@
     }
 
     .osirion-article-main {
-        padding: var(--osirion-spacing-4, 1rem);
+        padding: var(--osirion-spacing-4, 1rem), 0;
     }
 
     .osirion-mobile-tags-categories {
@@ -284,7 +284,7 @@
 
 @media (max-width: 640px) {
     .osirion-article-sidebar {
-        padding: var(--osirion-spacing-3, 0.75rem);
+        /*padding: var(--osirion-spacing-3, 0.75rem);*/
     }
 
     .osirion-toc {

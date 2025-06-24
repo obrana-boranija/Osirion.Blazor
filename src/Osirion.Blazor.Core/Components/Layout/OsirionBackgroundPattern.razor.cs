@@ -27,9 +27,9 @@ public partial class OsirionBackgroundPattern
             classes.Add(OsirionPattern.BackgroundPattern(BackgroundPattern));
         }
 
-        if (!string.IsNullOrWhiteSpace(CssClass))
+        if (!string.IsNullOrWhiteSpace(Class))
         {
-            classes.Add(CssClass);
+            classes.Add(Class);
         }
 
         return string.Join(" ", classes);

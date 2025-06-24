@@ -53,7 +53,7 @@ public class MarkdownEditorPreviewTests : TestContext, IDisposable
             .Add(p => p.ShowToolbar, false)
             .Add(p => p.ShowEditorHeader, false)
             .Add(p => p.ShowPreviewHeader, false)
-            .Add(p => p.CssClass, "custom-class")
+            .Add(p => p.Class, "custom-class")
             .Add(p => p.EditorCssClass, "custom-editor-class")
             .Add(p => p.PreviewCssClass, "custom-preview-class")
         );

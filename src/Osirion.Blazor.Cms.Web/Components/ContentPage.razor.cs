@@ -464,7 +464,7 @@ public partial class ContentPage
     /// </summary>
     protected string GetContentPageClass()
     {
-        return $"osirion-content-page-container {CssClass}".Trim();
+        return $"osirion-content-page-container {Class}".Trim();
     }
 
     /// <summary>

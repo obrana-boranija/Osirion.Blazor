@@ -23,6 +23,6 @@ public partial class DocumentTree
 
     private string GetDocTreeClass()
     {
-        return $"osirion-doc-tree-nav {CssClass}".Trim();
+        return $"osirion-doc-tree-nav {Class}".Trim();
     }
 }

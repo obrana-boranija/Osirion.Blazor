@@ -1,0 +1,87 @@
+// ================================================
+// Osirion Theming System - Main Entry Point
+// ================================================
+
+// 1. Abstract utilities (variables, functions, mixins)
+@use 'abstracts';
+
+// 2. Base styles (reset, root variables)
+@use 'base/reset';
+@use 'base/root';
+
+// 3. Theme definitions
+@use 'themes/light-theme';
+@use 'themes/dark-theme';
+
+// 4. Framework adapters (conditionally loaded)
+@use 'adapters/bootstrap';
+@use 'adapters/fluentui';
+@use 'adapters/mudblazor';
+@use 'adapters/radzen';
+
+// 5. Core theme mechanism
+.osirion-theme-provider {
+    height: 100%;
+    width: 100%;
+    display: contents;
+}
+
+// Theme class assignments
+:root[data-theme="light"],
+[data-theme="light"],
+.light-theme,
+.theme-light,
+.osirion-theme-light {
+    color-scheme: light;
+    --osirion-theme-mode: light;
+}
+
+:root[data-theme="dark"],
+[data-theme="dark"],
+.dark-theme,
+.theme-dark,
+.osirion-theme-dark {
+    color-scheme: dark;
+    --osirion-theme-mode: dark;
+}
+
+.theme-system,
+.osirion-theme-system {
+    --osirion-theme-mode: system;
+}
+
+// System preference handling without JavaScript
+@media (prefers-color-scheme: dark) {
+    .theme-system,
+    .osirion-theme-system {
+        color-scheme: dark;
+    }
+}
+
+@media (prefers-color-scheme: light) {
+    .theme-system,
+    .osirion-theme-system {
+        color-scheme: light;
+    }
+}
+
+// Smooth transitions between themes
+.osirion-theme-transitions-enabled {
+    @include abstracts.smooth-transitions;
+}
+
+// Accessibility improvements
+@include abstracts.high-contrast {
+    // Ensure sufficient contrast in high contrast mode
+    * {
+        forced-color-adjust: none;
+    }
+}
+
+// Print styles
+@media print {
+    .osirion-theme-provider {
+        color-scheme: light;
+        --osirion-theme-mode: light;
+    }
+}

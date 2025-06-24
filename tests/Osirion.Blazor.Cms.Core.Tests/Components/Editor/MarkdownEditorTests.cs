@@ -55,7 +55,7 @@ public class MarkdownEditorTests : TestContext, IDisposable
             .Add(p => p.ShowToolbar, false)
             .Add(p => p.ShowHeader, false)
             .Add(p => p.Placeholder, "Custom placeholder")
-            .Add(p => p.CssClass, "custom-class")
+            .Add(p => p.Class, "custom-class")
         );
 
         // Assert

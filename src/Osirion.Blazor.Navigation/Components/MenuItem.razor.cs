@@ -94,9 +94,9 @@ public partial class MenuItem
     {
         base.OnInitialized();
 
-        if (AdditionalAttributes is null)
+        if (Attributes is null)
         {
-            AdditionalAttributes = new Dictionary<string, object>();
+            Attributes = new Dictionary<string, object>();
         }
 
         // Add CSS classes for state
@@ -109,26 +109,26 @@ public partial class MenuItem
             cssClasses.Add("osirion-menu-item-disabled");
 
         // Add role and accessibility attributes
-        if (!AdditionalAttributes.ContainsKey("id"))
-            AdditionalAttributes["id"] = ItemId;
+        if (!Attributes.ContainsKey("id"))
+            Attributes["id"] = ItemId;
 
-        if (!AdditionalAttributes.ContainsKey("role"))
-            AdditionalAttributes["role"] = "menuitem";
+        if (!Attributes.ContainsKey("role"))
+            Attributes["role"] = "menuitem";
 
-        if (HasSubmenu && !AdditionalAttributes.ContainsKey("aria-haspopup"))
-            AdditionalAttributes["aria-haspopup"] = "true";
+        if (HasSubmenu && !Attributes.ContainsKey("aria-haspopup"))
+            Attributes["aria-haspopup"] = "true";
 
-        if (HasSubmenu && !AdditionalAttributes.ContainsKey("aria-expanded"))
-            AdditionalAttributes["aria-expanded"] = IsActive.ToString().ToLowerInvariant();
+        if (HasSubmenu && !Attributes.ContainsKey("aria-expanded"))
+            Attributes["aria-expanded"] = IsActive.ToString().ToLowerInvariant();
 
-        if (HasSubmenu && !AdditionalAttributes.ContainsKey("aria-controls"))
-            AdditionalAttributes["aria-controls"] = SubmenuId;
+        if (HasSubmenu && !Attributes.ContainsKey("aria-controls"))
+            Attributes["aria-controls"] = SubmenuId;
 
-        if (Disabled && !AdditionalAttributes.ContainsKey("aria-disabled"))
-            AdditionalAttributes["aria-disabled"] = "true";
+        if (Disabled && !Attributes.ContainsKey("aria-disabled"))
+            Attributes["aria-disabled"] = "true";
 
-        if (Target == "_blank" && !AdditionalAttributes.ContainsKey("rel"))
-            AdditionalAttributes["rel"] = "noopener noreferrer";
+        if (Target == "_blank" && !Attributes.ContainsKey("rel"))
+            Attributes["rel"] = "noopener noreferrer";
     }
 
     /// <summary>

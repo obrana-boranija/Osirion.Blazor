@@ -238,7 +238,7 @@ public partial class FeaturedPostsSection
     /// </summary>
     private string GetSectionClass()
     {
-        return $"osirion-featured-posts-section {CssClass}".Trim();
+        return $"osirion-featured-posts-section {Class}".Trim();
     }
 
     /// <summary>

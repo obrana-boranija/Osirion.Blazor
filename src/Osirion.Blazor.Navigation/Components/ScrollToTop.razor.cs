@@ -64,7 +64,7 @@ public partial class ScrollToTop
                 VisibilityThreshold = VisibilityThreshold != 300 ? VisibilityThreshold : options.VisibilityThreshold,
                 Text = Text ?? options.Text,
                 Title = Title != "Scroll to top" ? Title : options.Title,
-                CssClass = CssClass ?? options.CssClass,
+                CssClass = Class ?? options.CssClass,
                 CustomIcon = CustomIcon ?? options.CustomIcon,
                 Enabled = (bool)(Enabled is null ? options.Enabled : Enabled)
             };

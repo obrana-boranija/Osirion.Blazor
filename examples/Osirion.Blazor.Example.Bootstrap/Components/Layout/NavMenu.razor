@@ -4,13 +4,20 @@
 @using Osirion.Blazor.Navigation.Components
 @inherits OsirionComponentBase
 
-<Menu AriaLabel="Main Navigation" Orientation="MenuOrientation.Horizontal" Alignment="MenuAlignment.Right" CollapseOnMobile BrandLogo="/favicon.png" BrandText="Osirion.Blazor" IsSticky="true">
-        <MenuItem Text="Home" Href="/" Icon="home" />
-        @foreach (var dir in _directories)
-        {
-            <MenuItem Text="@dir.Name" Href="@dir.Url" Icon="@dir.Name.ToLower()" />
-        }
+<Menu AriaLabel="Main Navigation"
+      Orientation="MenuOrientation.Horizontal"
+      Theme="ThemeMode.Dark"
+      Alignment="MenuAlignment.Right"
+      CollapseOnMobile
+      BrandLogo="/favicon.png"
+      BrandText="Osirion.Blazor"
+      Sticky>
+    <MenuItem Text="Home" Href="/" Icon="home" />
+    @foreach (var dir in _directories)
+    {
+        <MenuItem Text="@dir.Name" Href="@dir.Url" Icon="@dir.Name.ToLower()" />
+    }
 
-        <MenuDivider />
-        <SearchBox CssClass="p-3" />    
+    <MenuDivider />
+    <SearchBox Class="p-3" />
 </Menu>

@@ -72,6 +72,6 @@ public partial class CmsLayoutEditor : BaseComponent
 
     private string GetEditorLayoutClass()
     {
-        return $"osirion-editor-layout osirion-admin-theme-{Theme} {CssClass}".Trim();
+        return $"osirion-editor-layout osirion-admin-theme-{Theme} {Class}".Trim();
     }
 }

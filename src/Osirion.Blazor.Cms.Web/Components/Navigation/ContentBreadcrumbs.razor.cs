@@ -36,7 +36,7 @@ public partial class ContentBreadcrumbs
 
     private string GetBreadcrumbsClass()
     {
-        return $"osirion-breadcrumbs {CssClass}".Trim();
+        return $"osirion-breadcrumbs {Class}".Trim();
     }
 
     private string GetDirectoryUrl(DirectoryItem directory)

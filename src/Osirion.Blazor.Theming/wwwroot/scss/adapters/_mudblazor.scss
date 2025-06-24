@@ -1,0 +1,52 @@
+// ================================================
+// MudBlazor Adapter for Osirion
+// ================================================
+
+@use '../abstracts' as *;
+
+// Apply when MudBlazor is loaded
+html.osirion-mudblazor-integration {
+    // Map MudBlazor palette to Osirion variables
+    // Primary colors
+    --osirion-color-primary-600: var(--mud-palette-primary, #{color('primary', 600)});
+    --osirion-color-primary-700: var(--mud-palette-primary-darken, #{color('primary', 700)});
+    --osirion-color-primary-500: var(--mud-palette-primary-lighten, #{color('primary', 500)});
+    // Component mappings
+    --osirion-background-primary: var(--mud-palette-background, #{color('neutral', 50)});
+    --osirion-background-secondary: var(--mud-palette-surface, #{color('neutral', 100)});
+    --osirion-text-primary: var(--mud-palette-text-primary, #{color('neutral', 900)});
+    --osirion-text-secondary: var(--mud-palette-text-secondary, #{color('neutral', 600)});
+    // MudBlazor uses Material Design elevation
+    --osirion-shadow-sm: var(--mud-elevation-1);
+    --osirion-shadow-base: var(--mud-elevation-2);
+    --osirion-shadow-md: var(--mud-elevation-4);
+    --osirion-shadow-lg: var(--mud-elevation-8);
+    --osirion-shadow-xl: var(--mud-elevation-16);
+    // Typography
+    --osirion-font-family-base: var(--mud-typography-default-family, #{map.get($font-families, base)});
+    --osirion-font-size-base: var(--mud-typography-default-size, #{font-size('base')});
+    // Dark mode
+    &.mud-dark-theme {
+        --osirion-background-primary: var(--mud-palette-background-dark, #{color('neutral', 900)});
+        --osirion-text-primary: var(--mud-palette-text-primary-dark, #{color('neutral', 50)});
+    }
+    // MudBlazor component integration
+    .osirion-button {
+        @include button-base;
+
+        &.osirion-button-primary {
+            background-color: var(--mud-palette-primary);
+            color: var(--mud-palette-primary-text);
+
+            &:hover {
+                background-color: var(--mud-palette-primary-darken);
+            }
+        }
+    }
+
+    .osirion-card {
+        @include card-base;
+        background-color: var(--mud-palette-surface);
+        box-shadow: var(--mud-elevation-1);
+    }
+}

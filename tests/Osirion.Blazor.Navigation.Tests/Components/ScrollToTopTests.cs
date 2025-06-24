@@ -36,7 +36,7 @@ public class ScrollToTopTests : TestContext
             .Add(p => p.VisibilityThreshold, 500)
             .Add(p => p.Text, "Back to top")
             .Add(p => p.Title, "Go up")
-            .Add(p => p.CssClass, "custom-class"));
+            .Add(p => p.Class, "custom-class"));
 
         // Assert
         cut.Instance.Position.ShouldBe(Position.TopLeft);
@@ -44,6 +44,6 @@ public class ScrollToTopTests : TestContext
         cut.Instance.VisibilityThreshold.ShouldBe(500);
         cut.Instance.Text.ShouldBe("Back to top");
         cut.Instance.Title.ShouldBe("Go up");
-        cut.Instance.CssClass.ShouldBe("custom-class");
+        cut.Instance.Class.ShouldBe("custom-class");
     }
 }

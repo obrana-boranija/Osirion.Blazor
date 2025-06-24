@@ -110,7 +110,7 @@ public partial class LocalizedNavigation
 
     private string GetNavClass()
     {
-        return $"osirion-localized-navigation {CssClass}".Trim();
+        return $"osirion-localized-navigation {Class}".Trim();
     }
 
     private string GetDirectoryUrl(DirectoryItem directory)

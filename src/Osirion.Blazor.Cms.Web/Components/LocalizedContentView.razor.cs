@@ -198,7 +198,7 @@ public partial class LocalizedContentView
 
     private string GetContentViewClass()
     {
-        return $"osirion-localized-content-view {CssClass}".Trim();
+        return $"osirion-localized-content-view {Class}".Trim();
     }
 
     private string GetLocaleName(string locale)

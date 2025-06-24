@@ -178,7 +178,7 @@ public partial class MarkdownEditor : IAsyncDisposable
     /// </summary>
     private string GetCssClass()
     {
-        return $"osirion-markdown-editor {CssClass}".Trim();
+        return $"osirion-markdown-editor {Class}".Trim();
     }
 
     #region JavaScript Interop Methods

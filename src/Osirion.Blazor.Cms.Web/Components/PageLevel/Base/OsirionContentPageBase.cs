@@ -93,6 +93,12 @@ public abstract partial class OsirionContentPageBase : OsirionComponentBase
     public bool UseHeroBackgroundImage { get; set; }
 
     /// <summary>
+    /// Gets or sets the hero theme: "Light", "Dark", "System". Defaults "System".
+    /// </summary>
+    [Parameter]
+    public ThemeMode HeroTheme { get; set; } = ThemeMode.System;
+
+    /// <summary>
     /// Gets or sets the hero alignment: "left", "center", "right". Defaults to "left" or if justified is used, otherwise uses the specified alignment.
     /// </summary>
     [Parameter]

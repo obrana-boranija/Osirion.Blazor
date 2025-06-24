@@ -1,0 +1,68 @@
+// ================================================
+// Bootstrap Adapter for Osirion
+// ================================================
+
+@use '../abstracts' as *;
+
+// Apply when Bootstrap is loaded
+html.osirion-bootstrap-integration {
+    // Map Bootstrap variables to Osirion variables
+    // Primary colors
+    --osirion-color-primary-50: var(--bs-primary-bg-subtle, #{color('primary', 50)});
+    --osirion-color-primary-400: var(--bs-primary-border-subtle, #{color('primary', 400)});
+    --osirion-color-primary-500: var(--bs-primary-text-emphasis, #{color('primary', 500)});
+    --osirion-color-primary-600: var(--bs-primary, #{color('primary', 600)});
+    --osirion-color-primary-700: var(--bs-primary-dark, #{color('primary', 700)});
+    // Neutral colors from Bootstrap grays
+    @for $i from 1 through 9 {
+        --osirion-color-neutral-#{$i * 100}: var(--bs-gray-#{$i * 100}, #{color('neutral', $i * 100)});
+    }
+    // Component mappings
+    --osirion-background-primary: var(--bs-body-bg, #{color('neutral', 50)});
+    --osirion-background-secondary: var(--bs-secondary-bg, #{color('neutral', 100)});
+    --osirion-text-primary: var(--bs-body-color, #{color('neutral', 900)});
+    --osirion-text-secondary: var(--bs-secondary-color, #{color('neutral', 600)});
+    --osirion-border-color: var(--bs-border-color, #{color('neutral', 300)});
+    // Action colors
+    --osirion-action-primary: var(--bs-primary, #{color('primary', 600)});
+    --osirion-action-secondary: var(--bs-secondary, #{color('neutral', 600)});
+    // Status colors
+    --osirion-status-success: var(--bs-success, #{color('success', 600)});
+    --osirion-status-warning: var(--bs-warning, #{color('warning', 600)});
+    --osirion-status-danger: var(--bs-danger, #{color('danger', 600)});
+    --osirion-status-info: var(--bs-info, #{color('info', 600)});
+    // Typography
+    --osirion-font-family-base: var(--bs-font-sans-serif, #{map.get($font-families, base)});
+    --osirion-font-family-mono: var(--bs-font-monospace, #{map.get($font-families, mono)});
+    // Spacing - Bootstrap uses rem-based spacing
+    @for $i from 0 through 5 {
+        --osirion-spacing-#{$i}: var(--bs-spacing-#{$i}, #{space($i)});
+    }
+    // Border radius
+    --osirion-radius-sm: var(--bs-border-radius-sm, #{radius('sm')});
+    --osirion-radius-base: var(--bs-border-radius, #{radius('base')});
+    --osirion-radius-lg: var(--bs-border-radius-lg, #{radius('lg')});
+    // Dark mode support
+    &[data-bs-theme="dark"] {
+        @include dark-mode {
+            --osirion-background-primary: var(--bs-body-bg, #{color('neutral', 900)});
+            --osirion-text-primary: var(--bs-body-color, #{color('neutral', 50)});
+        }
+    }
+    // Bootstrap component integration
+    .osirion-button {
+        @extend .btn;
+
+        &.osirion-button-primary {
+            @extend .btn-primary;
+        }
+
+        &.osirion-button-secondary {
+            @extend .btn-secondary;
+        }
+    }
+
+    .osirion-card {
+        @extend .card;
+    }
+}

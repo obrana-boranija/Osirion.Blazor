@@ -152,7 +152,7 @@ public partial class TableOfContents
     /// </summary>
     private string GetTableOfContentsClass()
     {
-        return $"osirion-table-of-contents {CssClass}".Trim();
+        return $"osirion-table-of-contents {Class}".Trim();
     }
 }
 

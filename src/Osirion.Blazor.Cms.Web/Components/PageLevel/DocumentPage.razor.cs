@@ -300,9 +300,9 @@ public partial class DocumentPage
             classes.Add("osirion-document-with-sidenav");
         }
 
-        if (!string.IsNullOrWhiteSpace(CssClass))
+        if (!string.IsNullOrWhiteSpace(Class))
         {
-            classes.Add(CssClass);
+            classes.Add(Class);
         }
 
         return string.Join(" ", classes);

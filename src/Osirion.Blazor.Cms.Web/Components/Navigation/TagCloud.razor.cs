@@ -84,7 +84,7 @@ public partial class TagCloud(IContentProviderManager contentProviderManager)
 
     private string GetTagCloudClass()
     {
-        return $"osirion-tags-container osirion-tag-cloud {CssClass}".Trim();
+        return $"osirion-tags-container osirion-tag-cloud {Class}".Trim();
     }
 
     private string GetTagLinkClass(ContentTag tag)

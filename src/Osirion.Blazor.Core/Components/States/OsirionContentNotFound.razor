@@ -1,7 +1,7 @@
 ﻿@namespace Osirion.Blazor.Components
 @inherits OsirionComponentBase
 
-<div class="@GetContentNotFoundClass()" @attributes="AdditionalAttributes">
+<div class="@GetContentNotFoundClass()" @attributes="Attributes">
     @if (ShowIcon && Icon is not null)
     {
         <div class="osirion-content-not-found-icon">
@@ -104,6 +104,6 @@
 
     @if (BackgroundPattern is not null)
     {
-        <OsirionBackgroundPattern BackgroundPattern="@BackgroundPattern" CssClass="osirion-content-not-found-background" />
+        <OsirionBackgroundPattern BackgroundPattern="@BackgroundPattern" Class="osirion-content-not-found-background" />
     }
 </div>

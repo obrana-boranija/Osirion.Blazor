@@ -51,9 +51,9 @@ public partial class OsirionPageLayout
 
         classes.Add($"osirion-min-height-{MinHeightStrategy}");
 
-        if (!string.IsNullOrWhiteSpace(CssClass))
+        if (!string.IsNullOrWhiteSpace(Class))
         {
-            classes.Add(CssClass);
+            classes.Add(Class);
         }
 
         return string.Join(" ", classes);

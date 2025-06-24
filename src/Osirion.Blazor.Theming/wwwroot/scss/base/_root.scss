@@ -1,0 +1,45 @@
+// ================================================
+// Osirion Theming System - Root Variables
+// ================================================
+
+@use '../abstracts' as *;
+
+:root {
+    // Generate all CSS custom properties
+    @include generate-css-vars;
+    // Component semantic tokens - Light theme defaults
+    --osirion-background-primary: #{color('neutral', 50)};
+    --osirion-background-secondary: #{color('neutral', 100)};
+    --osirion-background-tertiary: #{color('neutral', 200)};
+    --osirion-background-muted: #{color('neutral', 100)};
+    --osirion-background-inverted: #{color('neutral', 900)};
+    --osirion-text-primary: #{color('neutral', 900)};
+    --osirion-text-secondary: #{color('neutral', 600)};
+    --osirion-text-tertiary: #{color('neutral', 500)};
+    --osirion-text-inverted: #{color('neutral', 50)};
+    --osirion-border-color: #{color('neutral', 300)};
+    --osirion-border-color-hover: #{color('neutral', 400)};
+    --osirion-action-primary: #{color('primary', 600)};
+    --osirion-action-primary-hover: #{color('primary', 700)};
+    --osirion-action-primary-active: #{color('primary', 800)};
+    --osirion-action-primary-text: white;
+    --osirion-action-secondary: #{color('neutral', 200)};
+    --osirion-action-secondary-hover: #{color('neutral', 300)};
+    --osirion-action-secondary-active: #{color('neutral', 400)};
+    --osirion-action-secondary-text: #{color('neutral', 900)};
+    --osirion-status-success: #{color('success', 600)};
+    --osirion-status-warning: #{color('warning', 600)};
+    --osirion-status-danger: #{color('danger', 600)};
+    --osirion-status-info: #{color('info', 600)};
+    --osirion-focus-ring-color: #{color('primary', 600)};
+    --osirion-focus-ring-width: 2px;
+    // System preferences
+    --osirion-theme-mode: light;
+    color-scheme: light;
+}
+
+// Pure black/white for maximum contrast
+:root {
+    --osirion-color-white: #ffffff;
+    --osirion-color-black: #000000;
+}

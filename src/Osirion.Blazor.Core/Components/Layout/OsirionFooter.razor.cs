@@ -104,12 +104,6 @@ public partial class OsirionFooter
     public string Variant { get; set; } = "default";
 
     /// <summary>
-    /// Gets or sets the footer theme: "light", "dark", "auto"
-    /// </summary>
-    [Parameter]
-    public string Theme { get; set; } = "auto";
-
-    /// <summary>
     /// Gets or sets the grid layout for desktop: "auto", "4-column", "3-column", "2-column"
     /// </summary>
     [Parameter]
@@ -142,7 +136,7 @@ public partial class OsirionFooter
         var classes = new List<string> { "osirion-footer" };
 
         classes.Add($"osirion-footer-{Variant}");
-        classes.Add($"osirion-footer-theme-{Theme}");
+        //classes.Add($"osirion-footer-theme-{Theme}");
         classes.Add($"osirion-footer-grid-{GridLayout}");
 
         if (Docked)
@@ -150,9 +144,9 @@ public partial class OsirionFooter
             classes.Add($"osirion-footer-docked-{DockingMode}");
         }
 
-        if (!string.IsNullOrWhiteSpace(CssClass))
+        if (!string.IsNullOrWhiteSpace(Class))
         {
-            classes.Add(CssClass);
+            classes.Add(Class);
         }
 
         return string.Join(" ", classes);

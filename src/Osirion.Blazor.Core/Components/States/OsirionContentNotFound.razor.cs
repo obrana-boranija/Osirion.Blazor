@@ -177,9 +177,9 @@ public partial class OsirionContentNotFound
             classes.Add("osirion-content-not-found-with-background");
         }
 
-        if (!string.IsNullOrWhiteSpace(CssClass))
+        if (!string.IsNullOrWhiteSpace(Class))
         {
-            classes.Add(CssClass);
+            classes.Add(Class);
         }
 
         return string.Join(" ", classes);

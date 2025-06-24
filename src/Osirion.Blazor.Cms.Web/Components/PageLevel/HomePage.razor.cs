@@ -183,6 +183,6 @@ public partial class HomePage
 
     private string GetHomePageClass()
     {
-        return $"osirion-homepage {CssClass}".Trim();
+        return $"osirion-homepage {Class}".Trim();
     }
 }

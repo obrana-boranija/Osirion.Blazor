@@ -159,7 +159,7 @@
     /* ========== LINKS ========== */
     .osirion-html-renderer a:not(:has(img)):not(:has(svg)):not(:has(span)):not(:has(div)):not(:has(i)) {
         display: inline-block;
-        background-color: var(--osirion-code-background, rgba(107, 114, 128, 0.1));
+        /*background-color: var(--osirion-code-background, rgba(107, 114, 128, 0.1));*/
         color: var(--osirion-text-primary, #111827);
         border-radius: var(--osirion-radius-sm, 0.125rem);
         /*border: 1px solid var(--osirion-action-primary);*/
@@ -189,7 +189,7 @@
         -webkit-mask-repeat: no-repeat;
         mask-repeat: no-repeat;
         mask-position: center;
-        background-color: currentColor; /* This will use the link's text color */
+        background-color: var(--osirion-text-primary, #111827); /* This will use the link's text color */
         opacity: 0.6; /* Slightly adjusted opacity */
         transition: opacity var(--osirion-transition-duration-200, 0.2s) ease;
     }

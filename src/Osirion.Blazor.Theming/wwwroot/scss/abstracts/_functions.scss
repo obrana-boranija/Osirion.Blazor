@@ -1,0 +1,100 @@
+// ================================================
+// Osirion Theming System - Utility Functions
+// ================================================
+
+@use 'sass:map';
+@use 'sass:color';
+@use 'sass:math';
+@use 'variables' as *;
+
+// Get color from the color map
+@function color($color-name, $shade: 500) {
+    @if map.has-key($colors, $color-name) {
+        $color-map: map.get($colors, $color-name);
+
+        @if map.has-key($color-map, $shade) {
+            @return map.get($color-map, $shade);
+        }
+    }
+
+    @warn "Color '#{$color-name}' with shade '#{$shade}' not found.";
+    @return null;
+}
+
+// Get spacing value
+@function space($size) {
+    @if map.has-key($spacings, $size) {
+        @return map.get($spacings, $size);
+    }
+
+    @warn "Spacing '#{$size}' not found.";
+    @return null;
+}
+
+// Get font size
+@function font-size($size) {
+    @if map.has-key($font-sizes, $size) {
+        @return map.get($font-sizes, $size);
+    }
+
+    @warn "Font size '#{$size}' not found.";
+    @return null;
+}
+
+// Get border radius
+@function radius($size) {
+    @if map.has-key($radii, $size) {
+        @return map.get($radii, $size);
+    }
+
+    @warn "Radius '#{$size}' not found.";
+    @return null;
+}
+
+// Get shadow
+@function shadow($size) {
+    @if map.has-key($shadows, $size) {
+        @return map.get($shadows, $size);
+    }
+
+    @warn "Shadow '#{$size}' not found.";
+    @return null;
+}
+
+// Calculate WCAG contrast ratio
+@function contrast-ratio($color1, $color2) {
+    $luminance1: luminance($color1) + 0.05;
+    $luminance2: luminance($color2) + 0.05;
+
+    @if $luminance1 > $luminance2 {
+        @return math.div($luminance1, $luminance2);
+    }
+    @else {
+        @return math.div($luminance2, $luminance1);
+    }
+}
+
+// Calculate relative luminance for WCAG
+@function luminance($color) {
+    $rgb: ( 'r': color.red($color), 'g': color.green($color), 'b': color.blue($color) );
+
+    @each $channel, $value in $rgb {
+        $value: math.div($value, 255);
+
+        @if $value < 0.03928 {
+            $value: math.div($value, 12.92);
+        }
+        @else {
+            $value: math.pow(math.div($value + 0.055, 1.055), 2.4);
+        }
+
+        $rgb: map.set($rgb, $channel, $value);
+    }
+
+    @return map.get($rgb, 'r') * 0.2126 + map.get($rgb, 'g') * 0.7152 + map.get($rgb, 'b') * 0.0722;
+}
+
+// Generate CSS custom property name
+@function css-var($name) {
+    @return --osirion-#{$name};
+}

@@ -59,7 +59,7 @@ public class MenuGroupTests : TestContext
     {
         // Act
         var cut = RenderComponent<MenuGroup>(parameters => parameters
-            .Add(p => p.CssClass, "custom-group")
+            .Add(p => p.Class, "custom-group")
             .AddChildContent("MenuGroup Content"));
 
         // Assert
@@ -76,7 +76,7 @@ public class MenuGroupTests : TestContext
     {
         // Act
         var cut = RenderComponent<MenuGroup>(parameters => parameters
-            .Add(p => p.AdditionalAttributes, new Dictionary<string, object>
+            .Add(p => p.Attributes, new Dictionary<string, object>
             {
                 { "data-testid", "main-group" }
             })

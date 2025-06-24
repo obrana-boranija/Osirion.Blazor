@@ -90,6 +90,6 @@ public partial class CmsAdminDashboard
 
     private string GetAdminDashboardClass()
     {
-        return $"osirion-admin-dashboard osirion-admin-theme-{Theme} {CssClass}".Trim();
+        return $"osirion-admin-dashboard osirion-admin-theme-{Theme} {Class}".Trim();
     }
 }

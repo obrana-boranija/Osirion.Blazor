@@ -7,6 +7,10 @@
 		<LangVersion>latest</LangVersion>
 		<IsPackable>true</IsPackable>
 
+		<!-- XML Documentation -->
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+
 		<!-- NuGet package properties -->
 		<PackageId>Osirion.Blazor.Cms.Admin</PackageId>
 		<Version>2.1.4</Version>
@@ -14,7 +18,7 @@
 		<Company>Tridesetri</Company>
 		<Description>Content Management System (CMS) Administration module for Osirion.Blazor, providing a robust, flexible admin interface for managing content across different providers.</Description>
 		<PackageTags>blazor;components;content;cms;markdown;github;osirion</PackageTags>
-		<PackageProjectUrl>https://github.com/obrana-boranija/Osirion.Blazor</PackageProjectUrl>
+		<PackageProjectUrl>https://getosirion.com</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/obrana-boranija/Osirion.Blazor</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>

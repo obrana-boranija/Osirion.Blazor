@@ -3,7 +3,11 @@
  * Maps Bootstrap variables to Osirion variables (not vice versa)
  */
 
-html.osirion-bootstrap-integration {
+html.osirion-bootstrap-integration,
+html.osirion-bootstrap-integration[data-bs-theme="light"],
+[data-bs-theme="light"] html.osirion-bootstrap-integration,
+html.osirion-bootstrap-integration[data-theme="light"],
+[data-theme="light"] html.osirion-bootstrap-integration {
     /* Map Bootstrap's design tokens to our semantic tokens */
     /* Primary color scale mapping */
     --osirion-color-primary-50: var(--bs-primary-bg-subtle, #cfe2ff);
@@ -237,7 +241,9 @@ html.osirion-bootstrap-integration {
 
     /* Bootstrap Dark Mode Integration */
     html.osirion-bootstrap-integration[data-bs-theme="dark"],
-    [data-bs-theme="dark"] html.osirion-bootstrap-integration {
+    [data-bs-theme="dark"] html.osirion-bootstrap-integration,
+    html.osirion-bootstrap-integration[data-theme="dark"],
+    [data-theme="dark"] html.osirion-bootstrap-integration {
         /* Primary color scale for dark mode */
         --osirion-color-primary-50: #172b4d; /* Derived - darkest background */
         --osirion-color-primary-100: #1e3a61; /* Derived */

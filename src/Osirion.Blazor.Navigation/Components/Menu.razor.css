@@ -13,12 +13,7 @@
     transition: box-shadow var(--osirion-transition-duration-300, 0.3s) ease;
 }
 
-/* Dark theme version of the shadow */
-:root[data-theme="dark"] .osirion-menu-container,
-[data-bs-theme="dark"] .osirion-menu-container,
-.dark-theme .osirion-menu-container,
-.theme-dark .osirion-menu-container,
-.osirion-theme-dark .osirion-menu-container {
+.osirion-menu-container {
     box-shadow: 0 2px 2px rgba(from var(--osirion-color-primary-500) r g b / 0.3), 0 4px 12px rgba(from var(--osirion-color-primary-500) r g b / 0.2), 0 8px 24px rgba(from var(--osirion-color-primary-500) r g b / 0.08);
 }
 

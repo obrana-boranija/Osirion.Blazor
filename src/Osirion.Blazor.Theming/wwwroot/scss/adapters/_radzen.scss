@@ -1,0 +1,59 @@
+// ================================================
+// Radzen Adapter for Osirion
+// ================================================
+
+@use '../abstracts' as *;
+
+// Apply when Radzen is loaded
+html.osirion-radzen-integration {
+    // Map Radzen variables to Osirion variables
+    // Primary colors
+    --osirion-color-primary-600: var(--rz-primary, #{color('primary', 600)});
+    --osirion-color-primary-700: var(--rz-primary-dark, #{color('primary', 700)});
+    --osirion-color-primary-800: var(--rz-primary-darker, #{color('primary', 800)});
+    // Base colors
+    --osirion-background-primary: var(--rz-base-background-color, #{color('neutral', 50)});
+    --osirion-background-secondary: var(--rz-base-100, #{color('neutral', 100)});
+    --osirion-text-primary: var(--rz-text-color, #{color('neutral', 900)});
+    --osirion-text-secondary: var(--rz-text-secondary-color, #{color('neutral', 600)});
+    --osirion-border-color: var(--rz-border, #{color('neutral', 300)});
+    // Status colors
+    --osirion-status-success: var(--rz-success, #{color('success', 600)});
+    --osirion-status-warning: var(--rz-warning, #{color('warning', 600)});
+    --osirion-status-danger: var(--rz-danger, #{color('danger', 600)});
+    --osirion-status-info: var(--rz-info, #{color('info', 600)});
+    // Typography
+    --osirion-font-family-base: var(--rz-text-font-family, #{map.get($font-families, base)});
+    --osirion-font-size-base: var(--rz-body-font-size, #{font-size('base')});
+    --osirion-font-weight-normal: var(--rz-text-font-weight, #{map.get($font-weights, normal)});
+    --osirion-line-height-normal: var(--rz-body-line-height, #{map.get($line-heights, normal)});
+    // Spacing
+    --osirion-spacing-4: var(--rz-spacing, #{space(4)});
+    // Border radius
+    --osirion-radius-base: var(--rz-border-radius, #{radius('base')});
+    --osirion-radius-sm: var(--rz-border-radius-sm, #{radius('sm')});
+    --osirion-radius-lg: var(--rz-border-radius-lg, #{radius('lg')});
+    // Shadows
+    @for $i from 1 through 5 {
+        --osirion-shadow-#{$i}: var(--rz-shadow-#{$i});
+    }
+    // Dark mode
+    &.dark-theme {
+        --osirion-background-primary: var(--rz-base-900, #{color('neutral', 900)});
+        --osirion-background-secondary: var(--rz-base-800, #{color('neutral', 800)});
+    }
+    // Radzen component integration
+    .osirion-button {
+        @include button-base;
+        min-height: 2.25rem;
+        font-family: var(--rz-text-font-family);
+        font-size: var(--rz-button-font-size, 1rem);
+        border-radius: var(--rz-border-radius);
+    }
+
+    .osirion-card {
+        @include card-base;
+        border-radius: var(--rz-border-radius);
+        box-shadow: var(--rz-shadow-2);
+    }
+}

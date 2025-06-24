@@ -3,7 +3,7 @@
 @inherits OsirionContentDetailPageBase
 @attribute [StreamRendering]
 
-<div class="@GetHomePageClass()">
+<div class="@GetHomePageClass() @Class" style="@Style" @attributes="Attributes">
     @if (IsLoading)
     {
         <OsirionPageLoading ShowText="ShowLoadingText" Text="@LoadingText" />
@@ -28,7 +28,8 @@
                          PrimaryButtonText="@HeroPrimaryButtonText"
                          PrimaryButtonUrl="@HeroPrimaryButtonUrl"
                          SecondaryButtonText="@HeroSecondaryButtonText"
-                         SecondaryButtonUrl="@HeroSecondaryButtonUrl" />
+                         SecondaryButtonUrl="@HeroSecondaryButtonUrl"
+                         Theme="HeroTheme" />
         }
 
         <div class="osirion-homepage-content">
@@ -72,7 +73,7 @@
 
             @if (ShowCategories || ShowTags)
             {
-                <ContentSection Title="@BrowseSectionTitle" CssClass="osirion-homepage-browse">
+                <ContentSection Title="@BrowseSectionTitle" Class="osirion-homepage-browse">
                     <div class="osirion-browse-content">
                         @if (ShowCategories)
                         {
@@ -100,7 +101,7 @@
 
             @if (!string.IsNullOrWhiteSpace(CustomContent))
             {
-                <ContentSection CssClass="osirion-homepage-custom">
+                <ContentSection Class="osirion-homepage-custom">
                     <OsirionHtmlRenderer HtmlContent="@CustomContent" />
                 </ContentSection>
             }

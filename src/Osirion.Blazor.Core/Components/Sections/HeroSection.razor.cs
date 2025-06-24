@@ -165,6 +165,12 @@ public partial class HeroSection
     private Alignment _imageposition => ImagePosition == Alignment.Left || ImagePosition == Alignment.Justify ? Alignment.Right : ImagePosition;
     private Alignment _alignment => Alignment == Alignment.Justify ? Alignment.Left : Alignment;
 
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        var att = Attributes;
+    }
+
     /// <summary>
     /// Gets the CSS class for the hero section
     /// </summary>
@@ -188,9 +194,9 @@ public partial class HeroSection
             }
         }
 
-        if (!string.IsNullOrWhiteSpace(CssClass))
+        if (!string.IsNullOrWhiteSpace(Class))
         {
-            classes.Add(CssClass);
+            classes.Add(Class);
         }
 
         if (HasDivider)
@@ -199,7 +205,7 @@ public partial class HeroSection
         }
 
 
-        return string.Join(" ", classes);
+        return string.Join(" ", classes) + Class;
     }
 
     /// <summary>
@@ -226,7 +232,18 @@ public partial class HeroSection
 
         styles.Add($"min-height: {MinHeight}");
 
-        return string.Join("; ", styles);
+        return string.Join("; ", styles) + ";" + Style;
+    }
+
+    private (string Width, string Heigth) GetImageSize()
+    {
+        return Variant switch
+        {
+            HeroVariant.Hero => ("600", "315"),
+            HeroVariant.Jumbotron => ("600", "600"),
+            HeroVariant.Minimal => ("315", "315"),
+            _ => ("600", "315"),
+        };
     }
 
     /// <summary>

@@ -48,7 +48,7 @@ public partial class MarkdownPreview : IAsyncDisposable
     /// </summary>
     private string GetCssClass()
     {
-        return $"osirion-markdown-preview {CssClass}".Trim();
+        return $"osirion-markdown-preview {Class}".Trim();
     }
 
     /// <summary>

@@ -29,7 +29,7 @@ public class MenuDividerTests : TestContext
     {
         // Act
         var cut = RenderComponent<MenuDivider>(parameters => parameters
-            .Add(p => p.CssClass, "custom-divider"));
+            .Add(p => p.Class, "custom-divider"));
 
         // Assert
         cut.MarkupMatches(@"<div class=""osirion-menu-divider custom-divider"" role=""separator""></div>");
@@ -40,7 +40,7 @@ public class MenuDividerTests : TestContext
     {
         // Act
         var cut = RenderComponent<MenuDivider>(parameters => parameters
-            .Add(p => p.AdditionalAttributes, new Dictionary<string, object>
+            .Add(p => p.Attributes, new Dictionary<string, object>
             {
                 { "data-testid", "main-divider" },
                 { "aria-orientation", "horizontal" }

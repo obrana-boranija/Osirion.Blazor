@@ -3,7 +3,7 @@
 @inherits OsirionContentDetailPageBase
 @attribute [StreamRendering]
 
-<div class="@GetArticlePageClass()">
+<div class="@GetArticlePageClass() + @Class" style="@Style">
     @if (IsLoading)
     {
         <OsirionPageLoading ShowText="ShowLoadingText" Text="@LoadingText" />
@@ -23,6 +23,7 @@
             <HeroSection Title="@Item?.Title"
                          Subtitle="@Item?.Description"
                          BackgroundPattern="HeroBackgroundPattern"
+                         Theme="HeroTheme"
                          UseBackgroundImage="UseHeroBackgroundImage"
                          ImageUrl="@Item?.FeaturedImageUrl"
                          ImageAlt="@Item?.Title"

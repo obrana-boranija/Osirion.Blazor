@@ -242,7 +242,7 @@ public partial class ContentList : IDisposable
     /// </summary>
     protected string GetContentListClass()
     {
-        return $"osirion-content-list {CssClass}".Trim();
+        return $"osirion-content-list {Class}".Trim();
     }
 
     /// <summary>

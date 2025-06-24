@@ -81,7 +81,7 @@ public partial class CategoriesList(IContentProviderManager contentProviderManag
 
     private string GetCategoriesListClass()
     {
-        return $"osirion-categories-list-container {CssClass}".Trim();
+        return $"osirion-categories-list-container {Class}".Trim();
     }
 
     private string GetCategoryUrl(ContentCategory category)

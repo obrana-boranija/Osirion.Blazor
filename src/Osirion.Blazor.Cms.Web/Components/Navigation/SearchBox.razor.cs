@@ -24,7 +24,7 @@ public partial class SearchBox
 
     private string GetWrapperClass()
     {
-        return $"osirion-search-container {CssClass}".Trim();
+        return $"osirion-search-container {Class}".Trim();
     }
 
     private string GetSearchBoxClass()

@@ -6,9 +6,9 @@
 
 @if (ShowBanner)
 {
-    <form method="post" action="@ConsentEndpoint" class="osirion-cookie-consent-actions">
+    <form method="post" action="@ConsentEndpoint" class="osirion-cookie-consent-actions" @attributes="Attributes">
         <input type="hidden" name="returnUrl" value="@GetCurrentUrl()" />
-        <div class="@GetCookieConsentClass()" @attributes="AdditionalAttributes">
+        <div class="@GetCookieConsentClass()" @attributes="Attributes">
             <div class="osirion-cookie-consent-container">
                 <div class="osirion-cookie-consent-content">
                     <div class="osirion-cookie-consent-message">
@@ -30,14 +30,12 @@
                         </div>
                     </div>
 
-
-
                     @if (ShowDeclineButton)
                     {
                         <button type="submit"
                                 name="consent"
                                 value="declined"
-                                class="@GetOutlinedSecondaryButtonClass()">
+                                class="@GetDangerButtonClass()">
                             @DeclineButtonText
                         </button>
                     }
@@ -47,7 +45,7 @@
                         <button type="submit"
                                 name="consent"
                                 value="customize"
-                                class="@GetOutlinedSecondaryButtonClass()">
+                                class="@BuildButtonClass(variant: ButtonVariant.OutlinedPrimary)" style="color:inherit; border-color:inherit;">
                             @CustomizeButtonText
                         </button>
                     }
@@ -55,7 +53,7 @@
                     <button type="submit"
                             name="consent"
                             value="accepted"
-                            class="@GetButtonClass()">
+                            class="@GetPrimaryButtonClass()">
                         @AcceptButtonText
                     </button>
 

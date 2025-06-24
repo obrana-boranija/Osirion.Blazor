@@ -7,6 +7,10 @@
 		<LangVersion>latest</LangVersion>
 		<IsPackable>true</IsPackable>
 
+		<!-- XML Documentation -->
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+
 		<!-- NuGet package properties -->
 		<PackageId>Osirion.Blazor.Navigation</PackageId>
 		<Version>2.1.4</Version>
@@ -14,7 +18,7 @@
 		<Company>Tridesetri</Company>
 		<Description>Navigation module for Osirion.Blazor - Provides enhanced navigation and scroll components.</Description>
 		<PackageTags>blazor;components;navigation;scroll;enhanced;osirion</PackageTags>
-		<PackageProjectUrl>https://github.com/obrana-boranija/Osirion.Blazor</PackageProjectUrl>
+		<PackageProjectUrl>https://getosirion.com</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/obrana-boranija/Osirion.Blazor</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>

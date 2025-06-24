@@ -107,12 +107,6 @@ public partial class OsirionCookieConsent
     public string Position { get; set; } = "bottom";
 
     /// <summary>
-    /// Gets or sets the theme: "light", "dark", "auto"
-    /// </summary>
-    [Parameter]
-    public string Theme { get; set; } = "auto";
-
-    /// <summary>
     /// Gets or sets the consent expiry in days
     /// </summary>
     [Parameter]
@@ -169,16 +163,16 @@ public partial class OsirionCookieConsent
         var classes = new List<string> { "osirion-cookie-consent" };
 
         classes.Add($"osirion-cookie-consent-{Position}");
-        classes.Add($"osirion-cookie-consent-theme-{Theme}");
+        //classes.Add($"osirion-cookie-consent-theme-{Theme}");
 
         if (IsCustomizing)
         {
             classes.Add("osirion-cookie-consent-customizing");
         }
 
-        if (!string.IsNullOrWhiteSpace(CssClass))
+        if (!string.IsNullOrWhiteSpace(Class))
         {
-            classes.Add(CssClass);
+            classes.Add(Class);
         }
 
         return string.Join(" ", classes);

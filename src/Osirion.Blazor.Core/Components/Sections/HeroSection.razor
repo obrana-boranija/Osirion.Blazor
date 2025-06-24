@@ -1,7 +1,7 @@
 ﻿@namespace Osirion.Blazor.Components
 @inherits OsirionComponentBase
 
-<section class="@GetHeroSectionClass()" style="@GetBackgroundStyle()">
+<section class="@GetHeroSectionClass()" style="@GetBackgroundStyle()" @attributes="@Attributes">
 
     @if (!UseBackgroundImage)
     {
@@ -49,7 +49,7 @@
 
                         @if (ShowSecondaryButton && !string.IsNullOrWhiteSpace(SecondaryButtonText) && !string.IsNullOrWhiteSpace(SecondaryButtonUrl))
                         {
-                            <a href="@SecondaryButtonUrl" class="@BuildButtonClass(ButtonVariant.OutlinedSecondary, ButtonSize.Large) osirion-hero-button osirion-hero-button-secondary">
+                                    <a href="@SecondaryButtonUrl" class="@BuildButtonClass(ButtonVariant.OutlinedPrimary, ButtonSize.Large) osirion-hero-button osirion-hero-button-primary">
                                 @SecondaryButtonText
                             </a>
                         }
@@ -71,8 +71,8 @@
                     <img src="@ImageUrl"
                          alt="@(ImageAlt ?? Title ?? "Hero image")"
                          class="osirion-hero-featured-image"
-                         width="600"
-                         height="315"/>
+                         width="@GetImageSize().Width"
+                         height="@GetImageSize().Heigth"/>
                 </div>
             }
         </div>

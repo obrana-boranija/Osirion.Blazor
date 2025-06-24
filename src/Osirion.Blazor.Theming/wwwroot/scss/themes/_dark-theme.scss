@@ -1,0 +1,60 @@
+// ================================================
+// Osirion Dark Theme
+// ================================================
+
+@use '../abstracts' as *;
+
+// Dark theme selectors
+:root[data-theme="dark"],
+[data-theme="dark"],
+.dark-theme,
+.theme-dark,
+.osirion-theme-dark {
+    // Invert color scheme
+    color-scheme: dark;
+    --osirion-theme-mode: dark;
+    // Background colors
+    --osirion-background-primary: #{color('neutral', 900)};
+    --osirion-background-secondary: #{color('neutral', 800)};
+    --osirion-background-tertiary: #{color('neutral', 700)};
+    --osirion-background-muted: #{color('neutral', 800)};
+    --osirion-background-inverted: #{color('neutral', 50)};
+    // Text colors
+    --osirion-text-primary: #{color('neutral', 50)};
+    --osirion-text-secondary: #{color('neutral', 300)};
+    --osirion-text-tertiary: #{color('neutral', 400)};
+    --osirion-text-inverted: #{color('neutral', 900)};
+    // Border colors
+    --osirion-border-color: #{color('neutral', 700)};
+    --osirion-border-color-hover: #{color('neutral', 600)};
+    // Action colors - adjusted for dark mode
+    --osirion-action-primary: #{color('primary', 500)};
+    --osirion-action-primary-hover: #{color('primary', 400)};
+    --osirion-action-primary-active: #{color('primary', 300)};
+    --osirion-action-primary-text: var(--osirion-color-black);
+    --osirion-action-secondary: #{color('neutral', 700)};
+    --osirion-action-secondary-hover: #{color('neutral', 600)};
+    --osirion-action-secondary-active: #{color('neutral', 500)};
+    --osirion-action-secondary-text: #{color('neutral', 100)};
+    // Status colors - adjusted for dark mode
+    --osirion-status-success: #{color('success', 500)};
+    --osirion-status-warning: #{color('warning', 500)};
+    --osirion-status-danger: #{color('danger', 500)};
+    --osirion-status-info: #{color('info', 500)};
+    // Focus ring - adjusted for dark mode
+    --osirion-focus-ring-color: #{color('primary', 400)};
+    // Shadow adjustments for dark mode
+    @each $shadow-name, $shadow-value in $shadows {
+        --osirion-shadow-#{$shadow-name}: #{$shadow-value};
+    }
+    // High contrast mode adjustments
+    @include high-contrast {
+        --osirion-text-primary: var(--osirion-color-white);
+        --osirion-text-secondary: #{color('neutral', 200)};
+        --osirion-border-color: #{color('neutral', 500)};
+        --osirion-action-primary: #{color('primary', 300)};
+        --osirion-action-primary-hover: #{color('primary', 200)};
+        --osirion-focus-ring-color: rgba(255, 255, 255, 0.9);
+        --osirion-focus-ring-width: 4px;
+    }
+}

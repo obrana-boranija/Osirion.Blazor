@@ -4,8 +4,8 @@
  */
 
 /* Base themes */
-@import './themes/light-theme.css'; /* Light theme is default */
-@import './themes/dark-theme.css'; /* Applied via selectors */
+/*@import './themes/light-theme.css';*/ /* Light theme is default */
+/*@import './themes/dark-theme.css';*/ /* Applied via selectors */
 
 /* Framework Adapters */
 @import './adapters/bootstrap-adapter.css';

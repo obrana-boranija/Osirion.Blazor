@@ -54,9 +54,9 @@ public partial class ArticlePage
             classes.Add("osirion-article-with-sidebar");
         }
 
-        if (!string.IsNullOrWhiteSpace(CssClass))
+        if (!string.IsNullOrWhiteSpace(Class))
         {
-            classes.Add(CssClass);
+            classes.Add(Class);
         }
 
         return string.Join(" ", classes);

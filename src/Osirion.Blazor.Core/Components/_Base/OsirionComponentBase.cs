@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Options;
+
 
 #if NET9_0_OR_GREATER
 using BlazorJSComponents;
@@ -17,7 +19,13 @@ public abstract partial class OsirionComponentBase : ComponentBase
     /// Gets or sets additional attributes that will be applied to the component.
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)]
-    public IDictionary<string, object>? AdditionalAttributes { get; set; }
+    public IDictionary<string, object> Attributes { get; set; } = new Dictionary<string, object>();
+
+    /// <summary>
+    /// Gets or sets the component theme: "Light", "Dark", "System". Defaults "System".
+    /// </summary>
+    [Parameter]
+    public ThemeMode Theme { get; set; } = ThemeMode.System;
 
     /// <summary>
     /// Gets or sets whether the component should be considered interactive.
@@ -31,6 +39,9 @@ public abstract partial class OsirionComponentBase : ComponentBase
 #endif
     [Parameter]
     public bool SetInteractive { get; set; }
+
+    [Inject]
+    private IOptions<ThemingOptions> ThemingOptions { get; set; } = default!;
 
     /// <summary>
     /// Indicates whether the component is being rendered on the server rather than WebAssembly.
@@ -47,11 +58,21 @@ public abstract partial class OsirionComponentBase : ComponentBase
     protected bool IsInteractive { get; private set; }
 
     /// <summary>
+    /// Gets the current theme mode.
+    /// </summary>
+    protected CssFramework Framework => ThemingOptions.Value.Framework;
+
+    /// <summary>
     /// Initializes the component and determines its interactivity mode.
     /// </summary>
     protected override void OnInitialized()
     {
         base.OnInitialized();
+
+        if (Theme != ThemeMode.System)
+        {
+            Attributes[Framework == CssFramework.Bootstrap ? "data-bs-theme" : "data-theme"] = Theme.ToString().ToLower();
+        }
 
         // Determine interactivity based on framework version
 #if NET9_0_OR_GREATER

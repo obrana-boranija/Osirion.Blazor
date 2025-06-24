@@ -9,6 +9,6 @@ public partial class ContentRenderer
 
     private string GetContentViewClass()
     {
-        return $"osirion-content-view {CssClass}".Trim();
+        return $"osirion-content-view {Class}".Trim();
     }
 }

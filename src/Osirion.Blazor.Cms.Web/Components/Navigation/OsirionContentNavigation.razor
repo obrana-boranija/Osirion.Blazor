@@ -2,7 +2,7 @@
 
 @if (ShowNavigation && (PreviousItem is not null || NextItem is not null) && Item is not null)
 {
-    <nav class="@GetNavigationClass()" aria-label="@AriaLabel" @attributes="AdditionalAttributes">
+    <nav class="@GetNavigationClass()" aria-label="@AriaLabel" @attributes="Attributes">
         @if (PreviousItem is not null)
         {
             <a href="@GetNavigationUrl(PreviousItem)" class="osirion-content-previous" @onclick:preventDefault="@PreventDefault">

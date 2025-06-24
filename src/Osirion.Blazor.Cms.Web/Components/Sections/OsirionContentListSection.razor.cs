@@ -250,7 +250,7 @@ public partial class OsirionContentListSection(IContentProviderManager ContentPr
     /// </summary>
     private string GetSectionClass()
     {
-        return $"osirion-featured-posts-section {CssClass}".Trim();
+        return $"osirion-featured-posts-section {Class}".Trim();
     }
 
     /// <summary>

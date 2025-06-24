@@ -300,7 +300,7 @@ public partial class LandingPage
 
     private string GetLandingPageClass()
     {
-        return $"osirion-landing-page {CssClass}".Trim();
+        return $"osirion-landing-page {Class}".Trim();
     }
 }
 

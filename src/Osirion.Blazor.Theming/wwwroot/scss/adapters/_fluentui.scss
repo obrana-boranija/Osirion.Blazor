@@ -1,0 +1,50 @@
+// ================================================
+// FluentUI Adapter for Osirion
+// ================================================
+
+@use '../abstracts' as *;
+
+// Apply when FluentUI is loaded
+html.osirion-fluent-integration {
+    // Map FluentUI tokens to Osirion variables
+    // Primary colors from FluentUI accent
+    --osirion-color-primary-600: var(--accent-fill-rest, #{color('primary', 600)});
+    --osirion-color-primary-700: var(--accent-fill-hover, #{color('primary', 700)});
+    --osirion-color-primary-800: var(--accent-fill-active, #{color('primary', 800)});
+    // Neutral colors from FluentUI neutrals
+    --osirion-color-neutral-100: var(--neutral-fill-stealth-rest, #{color('neutral', 100)});
+    --osirion-color-neutral-200: var(--neutral-fill-stealth-hover, #{color('neutral', 200)});
+    --osirion-color-neutral-300: var(--neutral-fill-stealth-active, #{color('neutral', 300)});
+    // Component mappings
+    --osirion-background-primary: var(--neutral-layer-1, #{color('neutral', 50)});
+    --osirion-background-secondary: var(--neutral-layer-2, #{color('neutral', 100)});
+    --osirion-text-primary: var(--neutral-foreground-rest, #{color('neutral', 900)});
+    --osirion-border-color: var(--neutral-stroke-rest, #{color('neutral', 300)});
+    // Typography from FluentUI
+    --osirion-font-family-base: var(--body-font, #{map.get($font-families, base)});
+    --osirion-font-size-base: var(--type-ramp-base-font-size, #{font-size('base')});
+    --osirion-line-height-normal: var(--type-ramp-base-line-height, #{map.get($line-heights, normal)});
+    // Focus styles
+    --osirion-focus-ring-color: var(--focus-stroke-outer, #{color('primary', 600)});
+    --osirion-focus-ring-width: var(--focus-stroke-width, 2px);
+    // FluentUI component styles
+    .osirion-button {
+        @include button-base;
+        background: var(--accent-fill-rest);
+        color: var(--neutral-foreground-on-accent-rest);
+
+        &:hover {
+            background: var(--accent-fill-hover);
+        }
+
+        &:active {
+            background: var(--accent-fill-active);
+        }
+    }
+
+    .osirion-card {
+        @include card-base;
+        background: var(--neutral-layer-card);
+        border-color: var(--neutral-stroke-rest);
+    }
+}

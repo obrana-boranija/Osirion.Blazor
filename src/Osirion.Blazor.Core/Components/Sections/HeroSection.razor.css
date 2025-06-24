@@ -1,5 +1,3 @@
-/* HeroSection Component - Osirion.Blazor.Cms.Web */
-
 .osirion-hero-section {
     position: relative;
     display: flex;
@@ -10,7 +8,6 @@
     background-repeat: no-repeat;
     background-color: var(--osirion-background-primary, #f3f4f6);
     color: var(--osirion-text-primary, #374151);
-    font-family: var(--osirion-font-family-base, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif);
     overflow: hidden;
 }
 
@@ -81,16 +78,22 @@
 
 /* Variant styles */
 .osirion-hero-variant-jumbotron {
-    background-color: var(--osirion-background-primary, #ffffff);
     min-height: auto;
 }
 
     .osirion-hero-variant-jumbotron .osirion-hero-container {
-        padding: var(--osirion-spacing-10, 2.5rem) 0;
+        padding: var(--osirion-spacing-12, 2.5rem) 0;
+    }
+
+.osirion-hero-variant-hero {
+    min-height: auto;
+}
+
+    .osirion-hero-variant-hero .osirion-hero-container {
+        padding: var(--osirion-spacing-8, 1.5rem) 0;
     }
 
 .osirion-hero-variant-minimal {
-    background-color: transparent;
     min-height: auto;
 }
 
@@ -117,7 +120,7 @@
 
 /* Typography */
 .osirion-hero-title {
-    font-size: var(--osirion-font-size-4xl, 2.25rem);
+    /*font-size: var(--osirion-font-size-4xl, 2.25rem);*/
     font-weight: var(--osirion-font-weight-bold, 700);
     line-height: var(--osirion-line-height-tight, 1.25);
     margin: 0 0 var(--osirion-spacing-4, 1rem);
@@ -126,7 +129,7 @@
 }
 
 .osirion-hero-subtitle {
-    font-size: var(--osirion-font-size-lg, 1.125rem);
+    /*font-size: var(--osirion-font-size-lg, 1.125rem);*/
     font-weight: var(--osirion-font-weight-normal, 400);
     line-height: var(--osirion-line-height-relaxed, 1.625);
     margin: 0 0 var(--osirion-spacing-6, 1.5rem);
@@ -135,7 +138,7 @@
 }
 
 .osirion-hero-summary {
-    font-size: var(--osirion-font-size-lg, 1.125rem);
+    /*font-size: var(--osirion-font-size-lg, 1.125rem);*/
     line-height: var(--osirion-line-height-relaxed, 1.625);
     color: inherit;
     opacity: 0.8;
@@ -176,7 +179,7 @@
     overflow: hidden;
     box-shadow: var(--osirion-shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1));
     position: relative;
-    background-color: var(--osirion-background-secondary, #e5e7eb);
+    background-color: var(--osirion-background-tertiary, #e5e7eb);
 }
 
 /* Featured image styling */
@@ -197,22 +200,6 @@
 /* Additional content */
 .osirion-hero-additional {
     margin-top: var(--osirion-spacing-6, 1.5rem);
-}
-
-/* Dark theme adjustments */
-:root[data-theme="dark"] .osirion-hero-section,
-:root[data-bs-theme="dark"] .osirion-hero-section,
-[data-theme="dark"] .osirion-hero-section,
-.dark-theme .osirion-hero-section {
-    background-color: var(--osirion-background-primary, #1f2937);
-    color: var(--osirion-text-primary, #f3f4f6);
-}
-
-:root[data-theme="dark"] .osirion-hero-image-container,
-[data-theme="dark"] .osirion-hero-image-container,
-:root[data-bs-theme="dark"] .osirion-hero-image-container,
-.dark-theme .osirion-hero-image-container {
-    background-color: var(--osirion-background-tertiary, #374151);
 }
 
 @media (min-width: 768px) {

@@ -1,0 +1,30 @@
+// ================================================
+// Osirion Light Theme
+// ================================================
+
+@use '../abstracts' as *;
+
+// Light theme selectors
+:root,
+:root[data-theme="light"],
+[data-theme="light"],
+.light-theme,
+.theme-light,
+.osirion-theme-light {
+    // Already defined in _root.scss as defaults
+    // Add any light-theme specific overrides here
+    // High contrast mode adjustments
+    @include high-contrast {
+        --osirion-text-primary: var(--osirion-color-black);
+        --osirion-text-secondary: #{color('neutral', 800)};
+        --osirion-border-color: #{color('neutral', 400)};
+        --osirion-action-primary: #{color('primary', 800)};
+        --osirion-action-primary-hover: #{color('primary', 900)};
+        --osirion-status-success: #{color('success', 800)};
+        --osirion-status-warning: #{color('warning', 800)};
+        --osirion-status-danger: #{color('danger', 800)};
+        --osirion-status-info: #{color('info', 800)};
+        --osirion-focus-ring-color: rgba(0, 0, 0, 0.8);
+        --osirion-focus-ring-width: 4px;
+    }
+}

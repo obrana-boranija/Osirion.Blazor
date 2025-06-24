@@ -108,7 +108,7 @@ public partial class ContentView(IContentProviderManager contentProviderManager)
 
     private string GetContentViewClass()
     {
-        return $"osirion-content-view {CssClass}".Trim();
+        return $"osirion-content-view {Class}".Trim();
     }
 
     private string GetCategoryUrl(string category)

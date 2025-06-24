@@ -1,7 +1,7 @@
 ﻿@namespace Osirion.Blazor.Navigation.Components
 @inherits OsirionComponentBase
 
-<div class="@CombineCssClasses("osirion-menu-group")" @attributes="AdditionalAttributes">
+<div class="@CombineCssClasses("osirion-menu-group")" @attributes="Attributes">
     @if (!string.IsNullOrWhiteSpace(Label))
     {
         <div class="osirion-menu-group-label" id="@LabelId">

@@ -43,7 +43,7 @@ public partial class MarkdownEditorPreview
         {
             "osirion-markdown-editor-preview",
             ShowPreview ? "preview-visible" : "preview-hidden",
-            CssClass ?? string.Empty
+            Class ?? string.Empty
         };
 
         return string.Join(" ", classes).Trim();

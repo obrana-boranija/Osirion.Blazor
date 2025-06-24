@@ -1,0 +1,41 @@
+/* Custom styles for enhanced footer */
+.footer-brand {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.footer-logo {
+    flex-shrink: 0;
+}
+
+.footer-brand-text {
+    flex: 1;
+}
+
+.footer-brand-name {
+    margin: 0 0 0.25rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.footer-brand-tagline {
+    margin: 0;
+    font-size: 0.875rem;
+}
+
+/* Social icon styling */
+.social-icon {
+    width: 20px;
+    height: 20px;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 480px) {
+    .footer-brand {
+        flex-direction: column;
+        text-align: center;
+        align-items: center;
+    }
+}

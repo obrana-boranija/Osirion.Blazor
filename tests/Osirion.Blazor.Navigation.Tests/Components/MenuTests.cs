@@ -54,7 +54,7 @@ public class MenuTests : TestContext
     {
         // Act
         var cut = RenderComponent<Menu>(parameters => parameters
-            .Add(p => p.IsSticky, true)
+            .Add(p => p.Sticky, true)
             .Add(p => p.StickyZIndex, 999)
             .AddChildContent("Menu Content"));
 
@@ -106,7 +106,7 @@ public class MenuTests : TestContext
     {
         // Act
         var cut = RenderComponent<Menu>(parameters => parameters
-            .Add(p => p.CssClass, "custom-menu")
+            .Add(p => p.Class, "custom-menu")
             .AddChildContent("Menu Content"));
 
         // Assert
@@ -123,7 +123,7 @@ public class MenuTests : TestContext
     {
         // Act
         var cut = RenderComponent<Menu>(parameters => parameters
-            .Add(p => p.AdditionalAttributes, new Dictionary<string, object>
+            .Add(p => p.Attributes, new Dictionary<string, object>
             {
                 { "data-testid", "main-menu" },
                 { "aria-expanded", "true" }
