@@ -54,11 +54,11 @@ public interface IContentRepository : IRepository<ContentItem, string>
     /// <returns>List of content tags</returns>
     Task<IReadOnlyList<ContentTag>> GetTagsAsync(CancellationToken cancellationToken = default);
 
-    /// <summary>
-    /// Gets all content categories
-    /// </summary>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>List of content categories</returns>
+    ///// <summary>
+    ///// Gets all content categories
+    ///// </summary>
+    ///// <param name="cancellationToken">Cancellation token</param>
+    ///// <returns>List of content categories</returns>
     //Task<IReadOnlyList<ContentCategory>> GetCategoriesAsync(CancellationToken cancellationToken = default);
 
     /// <summary>

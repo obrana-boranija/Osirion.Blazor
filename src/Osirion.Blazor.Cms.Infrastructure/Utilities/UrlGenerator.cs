@@ -2,6 +2,9 @@
 
 namespace Osirion.Blazor.Cms.Infrastructure.Utilities;
 
+/// <summary>
+/// Utility class for generating URLs and slugs
+/// </summary>
 public static class UrlGenerator
 {
     /// <summary>

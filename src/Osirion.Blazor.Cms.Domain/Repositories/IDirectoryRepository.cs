@@ -16,11 +16,12 @@ public interface IDirectoryRepository : IRepository<DirectoryItem, string>
     Task<DirectoryItem?> GetByPathAsync(string path, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Gets a directory by its path
+    /// Gets a directory by its name
     /// </summary>
-    /// <param name="path">Directory path</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>Found directory or null if not found</returns>
+    /// <param name="name"></param>
+    /// <param name="locale"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     Task<DirectoryItem?> GetByNameAsync(string? name, string? locale = null, CancellationToken cancellationToken = default);
 
     /// <summary>

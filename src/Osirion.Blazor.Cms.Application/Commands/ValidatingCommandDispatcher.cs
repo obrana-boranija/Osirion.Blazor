@@ -11,11 +11,22 @@ public class ValidatingCommandDispatcher : ICommandDispatcher
 {
     private readonly IServiceProvider _serviceProvider;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ValidatingCommandDispatcher"/> class.
+    /// </summary>
+    /// <param name="serviceProvider"></param>
     public ValidatingCommandDispatcher(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
     }
 
+    /// <summary>
+    /// Dispatches a command to its handler after validating it.
+    /// </summary>
+    /// <typeparam name="TCommand"></typeparam>
+    /// <param name="command"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     public async Task DispatchAsync<TCommand>(TCommand command, CancellationToken cancellationToken = default)
         where TCommand : ICommand
     {

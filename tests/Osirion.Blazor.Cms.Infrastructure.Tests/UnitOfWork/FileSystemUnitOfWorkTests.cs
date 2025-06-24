@@ -83,8 +83,8 @@ public class FileSystemUnitOfWorkTests
             .GetField("_modifiedFiles", BindingFlags.NonPublic | BindingFlags.Instance);
         modifiedFilesField.ShouldNotBeNull();
 
-        var modifiedFiles = (List<string>)modifiedFilesField.GetValue(_unitOfWork);
-        modifiedFiles.ShouldContain(testFilePath);
+        var modifiedFiles = (List<string>?)modifiedFilesField.GetValue(_unitOfWork);
+        modifiedFiles?.ShouldContain(testFilePath);
 
         // Verify backup was created
         var backupPath = Path.Combine(_backupDirectory, "test-file.txt.bak");

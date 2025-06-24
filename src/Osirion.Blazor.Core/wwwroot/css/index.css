@@ -9,7 +9,7 @@
 @import './base/root-variables.css';
 
 /* Utilities */
-@import './utilities/a11y.css';
+/*@import './utilities/a11y.css';*/
 @import './utilities/layout.css';
 @import './utilities/motion.css';
 @import './utilities/buttons.css';

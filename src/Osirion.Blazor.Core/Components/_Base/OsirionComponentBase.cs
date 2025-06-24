@@ -31,8 +31,8 @@ public abstract partial class OsirionComponentBase : ComponentBase
     /// Gets or sets whether the component should be considered interactive.
     /// </summary>
     /// <remarks>
-    /// Only applicable in .NET 8. In .NET 9+, interactivity is automatically determined 
-    /// via <see cref="RendererInfo.IsInteractive"/>.
+    /// In .NET 9+, this is determined by <c>RendererInfo?.IsInteractive</c>.
+    /// In .NET 8, this is determined by the <see cref="SetInteractive"/> parameter.
     /// </remarks>
 #if NET9_0_OR_GREATER
     [Obsolete("This parameter is ignored in .NET 9+ as interactivity is automatically determined.", true)]
@@ -52,7 +52,7 @@ public abstract partial class OsirionComponentBase : ComponentBase
     /// Indicates whether the component is in an interactive rendering mode.
     /// </summary>
     /// <remarks>
-    /// In .NET 9+, this is determined by <see cref="RendererInfo.IsInteractive"/>.
+    /// In .NET 9+, this is determined by <c>RendererInfo?.IsInteractive</c>.
     /// In .NET 8, this is determined by the <see cref="SetInteractive"/> parameter.
     /// </remarks>
     protected bool IsInteractive { get; private set; }

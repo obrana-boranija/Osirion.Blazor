@@ -7,9 +7,9 @@ namespace Osirion.Blazor.Cms.Domain.Interfaces.Content;
 /// </summary>
 public interface IContentLocalization
 {
-    /// <summary>
-    /// Gets localization information for the provider
-    /// </summary>
+    ///// <summary>
+    ///// Gets localization information for the provider
+    ///// </summary>
     //Task<LocalizationInfo> GetLocalizationInfoAsync(CancellationToken cancellationToken = default);
 
     /// <summary>

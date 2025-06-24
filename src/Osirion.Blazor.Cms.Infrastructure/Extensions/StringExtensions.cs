@@ -2,6 +2,9 @@
 
 namespace Osirion.Blazor.Cms.Infrastructure.Extensions;
 
+/// <summary>
+/// 
+/// </summary>
 public static class StringExtensions
 {
     /// <summary>

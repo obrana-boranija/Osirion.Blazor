@@ -23,6 +23,7 @@ public interface IGitHubApiClient
     /// Gets the contents of the repository at the specified path
     /// </summary>
     /// <param name="path">Path in the repository</param>
+    /// <param name="cancellationToken">Cancellation Token</param>
     /// <returns>List of GitHub items (files and directories)</returns>
     Task<List<GitHubItem>?> GetRepositoryContentsAsync(string path, CancellationToken cancellationToken = default!);
 
@@ -30,6 +31,7 @@ public interface IGitHubApiClient
     /// Gets the content of a file in the repository
     /// </summary>
     /// <param name="path">Path to the file</param>
+    /// <param name="cancellationToken">Cancellation Token</param>
     /// <returns>File content</returns>
     Task<GitHubFileContent?> GetFileContentAsync(string path, CancellationToken cancellationToken = default!);
 
@@ -40,6 +42,7 @@ public interface IGitHubApiClient
     /// <param name="content">Content of the file</param>
     /// <param name="message">Commit message</param>
     /// <param name="sha">SHA of the file to update (null for new files)</param>
+    /// <param name="cancellationToken">Cancellation Token</param>
     /// <returns>Commit response</returns>
     Task<GitHubFileCommitResponse?> CreateOrUpdateFileAsync(string path, string content, string message, string? sha = null, CancellationToken cancellationToken = default!);
 
@@ -49,6 +52,7 @@ public interface IGitHubApiClient
     /// <param name="path">Path to the file</param>
     /// <param name="message">Commit message</param>
     /// <param name="sha">SHA of the file to delete</param>
+    /// <param name="cancellationToken">Cancellation Token</param>
     /// <returns>Commit response</returns>
     Task<GitHubFileCommitResponse> DeleteFileAsync(string path, string message, string sha, CancellationToken cancellationToken = default!);
 
@@ -57,6 +61,7 @@ public interface IGitHubApiClient
     /// </summary>
     /// <param name="branchName">Name of the new branch</param>
     /// <param name="baseBranch">Name of the base branch</param>
+    /// <param name="cancellationToken">Cancellation Token</param>
     /// <returns>The created branch</returns>
     Task<GitHubBranch?> CreateBranchAsync(string branchName, string baseBranch, CancellationToken cancellationToken = default!);
 
@@ -66,15 +71,17 @@ public interface IGitHubApiClient
     /// <param name="title">Title of the pull request</param>
     /// <param name="body">Body of the pull request</param>
     /// <param name="head">Head branch name</param>
+    /// <param name="cancellationToken">Cancellation Token</param>
     /// <param name="baseBranch">Base branch name</param>
     /// <returns>The created pull request</returns>
     Task<GitHubPullRequest?> CreatePullRequestAsync(string title, string body, string head, string baseBranch, CancellationToken cancellationToken = default!);
 
     /// <summary>
-    /// Searches for files in the repository
+    /// Searches for files in the repository using a query
     /// </summary>
-    /// <param name="query">Search query</param>
-    /// <returns>Search results</returns>
+    /// <param name="query"></param>
+    /// <param name="cancellationToken">Cancellation Token</param>
+    /// <returns></returns>
     Task<GitHubSearchResult?> SearchFilesAsync(string query, CancellationToken cancellationToken = default!);
 
     /// <summary>

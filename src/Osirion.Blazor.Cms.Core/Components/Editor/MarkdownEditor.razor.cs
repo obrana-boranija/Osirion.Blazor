@@ -470,6 +470,14 @@ public class ToolbarAction
     /// </summary>
     public string? Icon { get; set; }
 
+    /// <summary>
+    /// Creates a new toolbar action
+    /// </summary>
+    /// <param name="label"></param>
+    /// <param name="actionType"></param>
+    /// <param name="action"></param>
+    /// <param name="title"></param>
+    /// <param name="icon"></param>
     public ToolbarAction(string label, ToolbarActionType actionType, string? action, string title, string? icon = null)
     {
         Label = label;

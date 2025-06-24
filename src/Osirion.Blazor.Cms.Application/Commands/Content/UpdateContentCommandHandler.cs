@@ -12,6 +12,11 @@ public class UpdateContentCommandHandler : ICommandHandler<UpdateContentCommand>
     private readonly IUnitOfWorkFactory _unitOfWorkFactory;
     private readonly ILogger<UpdateContentCommandHandler> _logger;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="UpdateContentCommandHandler"/> class.
+    /// </summary>
+    /// <param name="unitOfWorkFactory"></param>
+    /// <param name="logger"></param>
     public UpdateContentCommandHandler(
         IUnitOfWorkFactory unitOfWorkFactory,
         ILogger<UpdateContentCommandHandler> logger)
@@ -20,6 +25,12 @@ public class UpdateContentCommandHandler : ICommandHandler<UpdateContentCommand>
         _logger = logger;
     }
 
+    /// <summary>
+    /// Handles the UpdateContentCommand to update existing content in the repository.
+    /// </summary>
+    /// <param name="command"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     public async Task HandleAsync(UpdateContentCommand command, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Updating content: {Id}", command.Id);

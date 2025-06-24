@@ -280,6 +280,10 @@ public class ContentEditorService : IContentEditorService
 /// </summary>
 public class ValidationException : Exception
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ValidationException"/> class with a specified error message.
+    /// </summary>
+    /// <param name="message"></param>
     public ValidationException(string message) : base(message)
     {
     }

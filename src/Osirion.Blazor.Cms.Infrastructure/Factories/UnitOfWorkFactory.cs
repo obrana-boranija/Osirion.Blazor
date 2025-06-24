@@ -22,6 +22,15 @@ public class UnitOfWorkFactory : IUnitOfWorkFactory
     private readonly IDomainEventDispatcher _eventDispatcher;
     private readonly ILoggerFactory _loggerFactory;
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="serviceProvider"></param>
+    /// <param name="providerRegistry"></param>
+    /// <param name="configuration"></param>
+    /// <param name="eventDispatcher"></param>
+    /// <param name="loggerFactory"></param>
+    /// <exception cref="ArgumentNullException"></exception>
     public UnitOfWorkFactory(
         IServiceProvider serviceProvider,
         IContentProviderRegistry providerRegistry,
@@ -36,6 +45,13 @@ public class UnitOfWorkFactory : IUnitOfWorkFactory
         _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
     }
 
+    /// <summary>
+    /// Creates a unit of work for the specified provider ID.
+    /// </summary>
+    /// <param name="providerId"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="InvalidOperationException"></exception>
     public IUnitOfWork Create(string providerId)
     {
         if (string.IsNullOrWhiteSpace(providerId))
@@ -74,6 +90,11 @@ public class UnitOfWorkFactory : IUnitOfWorkFactory
         }
     }
 
+    /// <summary>
+    /// Creates a unit of work for the default provider configured in the registry.
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="InvalidOperationException"></exception>
     public IUnitOfWork CreateForDefaultProvider()
     {
         var defaultProvider = _providerRegistry.GetDefaultProvider();

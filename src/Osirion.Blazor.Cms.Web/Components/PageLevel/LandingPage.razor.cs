@@ -309,11 +309,34 @@ public partial class LandingPage
 /// </summary>
 public class TestimonialItem
 {
+    /// <summary>
+    /// Gets or sets the name of the person giving the testimonial
+    /// </summary>
     public string? Name { get; set; }
+
+    /// <summary>
+    /// Gets or sets the role of the person giving the testimonial
+    /// </summary>
     public string? Role { get; set; }
+
+    /// <summary>
+    /// Gets or sets the company of the person giving the testimonial
+    /// </summary>
     public string? Company { get; set; }
+
+    /// <summary>
+    /// Gets or sets the quote text of the testimonial
+    /// </summary>
     public string? Quote { get; set; }
+
+    /// <summary>
+    /// Gets or sets the image URL for the testimonial
+    /// </summary>
     public string? ImageUrl { get; set; }
+
+    /// <summary>
+    /// Gets or sets the image alt text for accessibility
+    /// </summary>
     public int Rating { get; set; } = 5;
 }
 
@@ -322,9 +345,28 @@ public class TestimonialItem
 /// </summary>
 public class FeatureItem
 {
+    /// <summary>
+    /// Gets or sets the title of the feature
+    /// </summary>
     public string? Title { get; set; }
+
+    /// <summary>
+    /// Gets or sets the description of the feature
+    /// </summary>
     public string? Description { get; set; }
+
+    /// <summary>
+    /// Gets or sets the icon for the feature
+    /// </summary>
     public string? Icon { get; set; }
+
+    /// <summary>
+    /// Gets or sets the URL for the feature icon
+    /// </summary>
     public string? IconUrl { get; set; }
+
+    /// <summary>
+    /// Gets or sets the link URL for the feature
+    /// </summary>
     public string? LinkUrl { get; set; }
 }

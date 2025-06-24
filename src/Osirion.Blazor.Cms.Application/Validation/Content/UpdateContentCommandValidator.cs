@@ -8,6 +8,9 @@ namespace Osirion.Blazor.Cms.Application.Validation.Content;
 /// </summary>
 public class UpdateContentCommandValidator : AbstractValidator<UpdateContentCommand>
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="UpdateContentCommandValidator"/> class.
+    /// </summary>
     public UpdateContentCommandValidator()
     {
         RuleFor(x => x.Id)
