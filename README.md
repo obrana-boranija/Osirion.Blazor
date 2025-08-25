@@ -11,6 +11,18 @@ A modular, high-performance component library for Blazor applications with SSR c
 
 Osirion.Blazor is composed of specialized modules that can be used independently or together:
 
+### 🎯 Core Components
+
+[![Docs](https://img.shields.io/badge/docs-Core_README.md-blue)](src/Osirion.Blazor.Core/README.md)
+
+- **Layout Components**: HeroSection, PageLayout, Footer, Sticky Sidebar
+- **Navigation Components**: Breadcrumbs, Article Metadata
+- **Content Components**: HTML Renderer, Background Patterns
+- **State Components**: Loading indicators, 404 pages
+- **Interactive Components**: Cookie Consent, Logo Carousel
+- **SSR Compatible**: All components work without JavaScript
+- **Framework Integration**: Bootstrap, FluentUI, MudBlazor, Radzen support
+
 ### 📊 Analytics
 
 [![Docs](https://img.shields.io/badge/docs-ANALYTICS.md-blue)](docs/ANALYTICS.md)
@@ -26,6 +38,7 @@ Osirion.Blazor is composed of specialized modules that can be used independently
 
 - Enhanced navigation with scroll restoration
 - Smooth scrolling and "back to top" functionality
+- Menu components with hierarchical support
 - Works without JavaScript through progressive enhancement
 - Fully customizable appearance
 
@@ -38,6 +51,8 @@ Osirion.Blazor is composed of specialized modules that can be used independently
 - Content organization with categories and tags
 - Directory-based navigation and search
 - SEO optimization out of the box
+- Localization support with multi-language content
+- Admin interface for content editing
 
 ### 🎨 Theming
 
@@ -74,7 +89,7 @@ dotnet add package Osirion.Blazor.Theming
 // In Program.cs
 using Osirion.Blazor.Extensions;
 
-// Register all services at once
+// Register all services at once with fluent API
 builder.Services.AddOsirionBlazor(osirion => {
     osirion
         .AddGitHubCms(options => {
@@ -103,21 +118,53 @@ builder.Services.AddOsirionBlazor(builder.Configuration);
 <ScrollToTop Position="Position.BottomRight" />
 <ClarityTracker />
 
-<!-- In your pages -->
+<!-- Hero section for landing pages -->
+<HeroSection 
+    Title="Welcome to Our Platform"
+    Subtitle="Build amazing applications with ease"
+    Summary="Experience the power of modern web development."
+    PrimaryButtonText="Get Started"
+    PrimaryButtonUrl="/getting-started"
+    ImageUrl="/images/hero.jpg"
+    UseBackgroundImage="true" />
+
+<!-- Breadcrumb navigation -->
+<OsirionBreadcrumbs Path="@Navigation.Uri" />
+
+<!-- Content management -->
 <ContentList Directory="blog" />
 <ContentView Path="blog/my-post.md" />
 <SearchBox />
 <TagCloud />
+
+<!-- Cookie consent (GDPR compliant) -->
+<OsirionCookieConsent 
+    PolicyLink="/privacy-policy"
+    ShowCustomizeButton="true" />
+
+<!-- Logo carousel -->
+<InfiniteLogoCarousel 
+    Title="Our Partners"
+    CustomLogos="@partnerLogos" />
 ```
 
 ## 📚 Documentation
 
 - [Quick Reference](docs/QUICK_REFERENCE.md) - Quick overview of all components
+- [Core Components](src/Osirion.Blazor.Core/README.md) - Layout, navigation, and content components
 - [Analytics](docs/ANALYTICS.md) - Analytics integration documentation
 - [Navigation](docs/NAVIGATION.md) - Navigation components documentation
 - [GitHub CMS](docs/GITHUB_CMS.md) - Content management documentation
 - [Styling](docs/STYLING.md) - Theming and styling documentation
 - [Migration Guide](docs/MIGRATION.md) - Guide for upgrading between versions
+
+### Component-Specific Documentation
+
+- [HeroSection](src/Osirion.Blazor.Core/Components/Sections/HeroSection.md) - Comprehensive hero section component
+- [OsirionBreadcrumbs](src/Osirion.Blazor.Core/Components/Navigation/OsirionBreadcrumbs.md) - Automatic breadcrumb navigation
+- [OsirionCookieConsent](src/Osirion.Blazor.Core/Components/Popups/OsirionCookieConsent.md) - GDPR-compliant cookie consent
+- [InfiniteLogoCarousel](src/Osirion.Blazor.Core/Components/InfiniteLogoCarousel.md) - Self-contained logo carousel
+- [Markdown Editor](src/Osirion.Blazor.Cms.Core/Components/Editor/MARKDOWN_EDITOR.md) - Admin markdown editor components
 
 ## 🌟 Key Principles
 
@@ -127,11 +174,31 @@ builder.Services.AddOsirionBlazor(builder.Configuration);
 - **Framework Integration**: Seamless integration with popular CSS frameworks
 - **Multi-Platform**: Supports .NET 8 and .NET 9 (and future versions)
 - **Provider Pattern**: Easily extend with your own providers for analytics, content, etc.
+- **Accessibility**: WCAG 2.1 compliant components with full keyboard and screen reader support
+- **GDPR Compliance**: Built-in privacy and consent management features
 
 ## 📋 Requirements
 
 - .NET 8.0 or higher
 - Blazor (Server, WebAssembly, or Auto)
+
+## 🆕 What's New in v1.5.0
+
+### Major Features
+
+- **Fluent API**: New `AddOsirionBlazor()` method for streamlined service registration
+- **CSS Framework Integration**: Automatic integration with Bootstrap, FluentUI, MudBlazor, and Radzen
+- **Comprehensive Core Components**: HeroSection, Breadcrumbs, Cookie Consent, and more
+- **Enhanced Documentation**: Component-specific documentation with examples
+- **Improved Styling**: Renamed `osirion-cms.css` to `osirion.css` for broader scope
+
+### Breaking Changes
+
+- `osirion-cms.css` renamed to `osirion.css`
+- Styling options moved from `GitHubCmsOptions` to dedicated `OsirionStyleOptions`
+- Service registration methods updated (legacy methods still supported)
+
+See [Migration Guide](docs/MIGRATION.md) for upgrade instructions.
 
 ## 🧪 Features Coming Soon
 
@@ -140,11 +207,37 @@ builder.Services.AddOsirionBlazor(builder.Configuration);
 - Authentication integration
 - Enhanced SEO components with structured data
 - Performance optimizations for large content repositories
+- Visual component editor for admin interface
+- Multi-tenant content management
 
 ## 🤝 Contributing
 
 Contributions are welcome! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
 
+### Current Focus Areas
+
+- Additional CSS framework integrations
+- Performance optimizations
+- Accessibility improvements
+- Documentation enhancements
+- Test coverage expansion
+
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE.txt) file for details.
+
+## 🙏 Acknowledgments
+
+- Built with [Blazor](https://blazor.net/) and [ASP.NET Core](https://asp.net/)
+- Markdown processing by [Markdig](https://github.com/xoofx/markdig)
+- Testing with [bUnit](https://bunit.dev/) and [Shouldly](https://shouldly.io/)
+- Icons and examples use resources from various open-source projects
+
+## 📊 Project Stats
+
+- **Components**: 15+ production-ready components
+- **Packages**: 10+ NuGet packages
+- **Frameworks**: .NET 8 & .NET 9 support
+- **CSS Frameworks**: 4 major frameworks supported
+- **Test Coverage**: 85%+ code coverage
+- **Documentation**: Comprehensive guides and examples
