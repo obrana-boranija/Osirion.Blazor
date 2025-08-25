@@ -17,17 +17,29 @@
         <div class="osirion-hero-grid">
             <!-- Content Column -->
             <div class="osirion-hero-content">
-                @if (!string.IsNullOrWhiteSpace(Title))
+                @if (TitleContent is not null)
+                {
+                    @TitleContent
+                }
+                else if (!string.IsNullOrWhiteSpace(Title))
                 {
                     <h1 class="osirion-hero-title">@Title</h1>
                 }
 
-                @if (!string.IsNullOrWhiteSpace(Subtitle))
+                @if (SubtitleContent is not null)
+                {
+                    @SubtitleContent
+                }
+                else if (!string.IsNullOrWhiteSpace(Subtitle))
                 {
                     <p class="osirion-hero-subtitle">@Subtitle</p>
                 }
 
-                @if (!string.IsNullOrWhiteSpace(Summary))
+                @if (SummaryContent is not null)
+                {
+                    @SummaryContent
+                }
+                else if (!string.IsNullOrWhiteSpace(Summary))
                 {
                     <p class="osirion-hero-summary">@Summary</p>
                 }

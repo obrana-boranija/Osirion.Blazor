@@ -24,6 +24,7 @@ public static class ThemingServiceCollectionExtensions
         if (services is null) throw new ArgumentNullException(nameof(services));
         if (configure is null) throw new ArgumentNullException(nameof(configure));
 
+        services.AddHttpContextAccessor();
         services.AddSingleton<IThemeService, ThemeService>();
 
         // Create builder and apply configuration
@@ -45,6 +46,8 @@ public static class ThemingServiceCollectionExtensions
     {
         if (services is null) throw new ArgumentNullException(nameof(services));
         if (configuration is null) throw new ArgumentNullException(nameof(configuration));
+
+        services.AddHttpContextAccessor();
 
         return services.AddOsirionTheming(builder =>
         {
@@ -68,12 +71,6 @@ public static class ThemingServiceCollectionExtensions
                     builder.UseFramework(framework);
                 }
 
-                //var defaultMode = themingSection.GetValue<bool>("DefaultMode");
-                //if (defaultMode)
-                //{
-                //    builder.EnableDarkMode(defaultMode);
-                //}
-
                 var darkMode = themingSection.GetValue<bool>("EnableDarkMode");
                 if (darkMode)
                 {
@@ -87,14 +84,6 @@ public static class ThemingServiceCollectionExtensions
                 }
             }
         });
-
-        //// Bind configuration to ThemingOptions
-        //services.Configure<ThemingOptions>(configuration.GetSection(ThemingOptions.Section));
-
-        //// Register theme service
-        //services.AddSingleton<IThemeService, ThemeService>();
-
-        //return services;
     }
 
     /// <summary>
@@ -115,6 +104,8 @@ public static class ThemingServiceCollectionExtensions
             options.EnableDarkMode = true;
             options.FollowSystemPreference = false;
         });
+
+        services.AddHttpContextAccessor();
 
         // Register theme service
         services.AddSingleton<IThemeService, ThemeService>();

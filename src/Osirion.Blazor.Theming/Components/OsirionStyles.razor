@@ -34,11 +34,8 @@
     </style>
 }
 
-@* Framework integration script *@
-@if (EffectiveOptions.Framework != CssFramework.None)
-{
-    @((MarkupString)script)
-}
+@* Framework-agnostic theme + optional framework integration script (always included for SSR static sites) *@
+@((MarkupString)script)
 
 @functions {
     private MarkupString script => (MarkupString)GetScript();

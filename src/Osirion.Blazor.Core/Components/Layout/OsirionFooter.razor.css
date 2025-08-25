@@ -1,3 +1,97 @@
+/* Component-specific theme overrides - these take priority over ALL other styles including Bootstrap integration */
+[data-osirion-component-theme="light"].osirion-footer,
+.osirion-footer[data-osirion-component-theme="light"],
+.osirion-bootstrap-integration [data-osirion-component-theme="light"].osirion-footer,
+.osirion-bootstrap-integration .osirion-footer[data-osirion-component-theme="light"],
+html.osirion-bootstrap-integration [data-osirion-component-theme="light"].osirion-footer,
+html.osirion-bootstrap-integration .osirion-footer[data-osirion-component-theme="light"] {
+    /* Force Osirion light theme colors regardless of Bootstrap */
+    --osirion-background-primary: #ffffff !important;
+    --osirion-text-primary: #374151 !important;
+    --osirion-text-secondary: #6b7280 !important;
+    --osirion-border-color: #e5e7eb !important;
+    --osirion-action-primary: #2563eb !important;
+    background-color: #ffffff !important;
+    color: #374151 !important;
+    border-top-color: #e5e7eb !important;
+    
+    /* Override Bootstrap variables locally within this component */
+    --bs-body-bg: #ffffff !important;
+    --bs-body-color: #374151 !important;
+    --bs-border-color: #e5e7eb !important;
+}
+
+[data-osirion-component-theme="dark"].osirion-footer,
+.osirion-footer[data-osirion-component-theme="dark"],
+.osirion-bootstrap-integration [data-osirion-component-theme="dark"].osirion-footer,
+.osirion-bootstrap-integration .osirion-footer[data-osirion-component-theme="dark"],
+html.osirion-bootstrap-integration [data-osirion-component-theme="dark"].osirion-footer,
+html.osirion-bootstrap-integration .osirion-footer[data-osirion-component-theme="dark"] {
+    /* Force Osirion dark theme colors regardless of Bootstrap */
+    --osirion-background-primary: #1f2937 !important;
+    --osirion-text-primary: #f3f4f6 !important;
+    --osirion-text-secondary: #9ca3af !important;
+    --osirion-border-color: #374151 !important;
+    --osirion-action-primary: #60a5fa !important;
+    background-color: #1f2937 !important;
+    color: #f3f4f6 !important;
+    border-top-color: #374151 !important;
+    
+    /* Override Bootstrap variables locally within this component */
+    --bs-body-bg: #1f2937 !important;
+    --bs-body-color: #f3f4f6 !important;
+    --bs-border-color: #374151 !important;
+}
+
+/* Make all footer elements respect component theme with high specificity */
+[data-osirion-component-theme="light"] .osirion-footer-section-title,
+[data-osirion-component-theme="light"] .osirion-footer-description,
+[data-osirion-component-theme="light"] .osirion-footer-copyright,
+.osirion-bootstrap-integration [data-osirion-component-theme="light"] .osirion-footer-section-title,
+.osirion-bootstrap-integration [data-osirion-component-theme="light"] .osirion-footer-description,
+.osirion-bootstrap-integration [data-osirion-component-theme="light"] .osirion-footer-copyright {
+    color: #374151 !important;
+}
+
+[data-osirion-component-theme="light"] .osirion-footer-link,
+.osirion-bootstrap-integration [data-osirion-component-theme="light"] .osirion-footer-link {
+    color: #6b7280 !important;
+}
+
+[data-osirion-component-theme="light"] .osirion-footer-link:hover,
+.osirion-bootstrap-integration [data-osirion-component-theme="light"] .osirion-footer-link:hover {
+    color: #2563eb !important;
+}
+
+[data-osirion-component-theme="dark"] .osirion-footer-section-title,
+[data-osirion-component-theme="dark"] .osirion-footer-description,
+[data-osirion-component-theme="dark"] .osirion-footer-copyright,
+.osirion-bootstrap-integration [data-osirion-component-theme="dark"] .osirion-footer-section-title,
+.osirion-bootstrap-integration [data-osirion-component-theme="dark"] .osirion-footer-description,
+.osirion-bootstrap-integration [data-osirion-component-theme="dark"] .osirion-footer-copyright {
+    color: #f3f4f6 !important;
+}
+
+[data-osirion-component-theme="dark"] .osirion-footer-link,
+.osirion-bootstrap-integration [data-osirion-component-theme="dark"] .osirion-footer-link {
+    color: #9ca3af !important;
+}
+
+[data-osirion-component-theme="dark"] .osirion-footer-link:hover,
+.osirion-bootstrap-integration [data-osirion-component-theme="dark"] .osirion-footer-link:hover {
+    color: #60a5fa !important;
+}
+
+[data-osirion-component-theme="dark"] .osirion-footer-divider,
+.osirion-bootstrap-integration [data-osirion-component-theme="dark"] .osirion-footer-divider {
+    background-color: #374151 !important;
+}
+
+[data-osirion-component-theme="light"] .osirion-footer-divider,
+.osirion-bootstrap-integration [data-osirion-component-theme="light"] .osirion-footer-divider {
+    background-color: #e5e7eb !important;
+}
+
 .osirion-footer {
     width: 100%;
     font-size: var(--osirion-font-size-base, 1rem);

@@ -1,7 +1,7 @@
 ﻿@namespace Osirion.Blazor.Navigation.Components
 @inherits OsirionComponentBase
 
-<div class="@CombineCssClasses("osirion-menu-container")" @attributes="Attributes">
+<div class="@CombineCssClasses("osirion-menu-container")" data-osirion-component-theme="@GetComponentTheme()" @attributes="Attributes">
     <!-- Mobile menu toggle button -->
     @if (CollapseOnMobile)
     {

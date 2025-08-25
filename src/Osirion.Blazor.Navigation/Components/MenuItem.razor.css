@@ -3,6 +3,48 @@
  * Pure CSS menu item with SSR compatibility
  */
 
+/* Child component theme inheritance - MenuItem inherits parent Menu's component theme */
+[data-osirion-component-theme="light"] .osirion-menu-item,
+[data-osirion-component-theme="light"] .osirion-menu-item-wrapper,
+.osirion-bootstrap-integration [data-osirion-component-theme="light"] .osirion-menu-item,
+.osirion-bootstrap-integration [data-osirion-component-theme="light"] .osirion-menu-item-wrapper {
+    /* Force light theme colors */
+    --osirion-text-primary: #1f2937 !important;
+    --osirion-background-primary: #ffffff !important;
+    --osirion-background-secondary: #f8f9fa !important;
+    --osirion-border-color: rgba(0, 0, 0, 0.1) !important;
+    --osirion-action-primary: #2563eb !important;
+    --osirion-text-inverted: #ffffff !important;
+    color: #1f2937 !important;
+}
+
+[data-osirion-component-theme="dark"] .osirion-menu-item,
+[data-osirion-component-theme="dark"] .osirion-menu-item-wrapper,
+.osirion-bootstrap-integration [data-osirion-component-theme="dark"] .osirion-menu-item,
+.osirion-bootstrap-integration [data-osirion-component-theme="dark"] .osirion-menu-item-wrapper {
+    /* Force dark theme colors */
+    --osirion-text-primary: #f3f4f6 !important;
+    --osirion-background-primary: #111827 !important;
+    --osirion-background-secondary: #1f2937 !important;
+    --osirion-border-color: rgba(255, 255, 255, 0.1) !important;
+    --osirion-action-primary: #60a5fa !important;
+    --osirion-text-inverted: #ffffff !important;
+    color: #f3f4f6 !important;
+}
+
+/* Submenu inheritance */
+[data-osirion-component-theme="light"] .osirion-submenu,
+.osirion-bootstrap-integration [data-osirion-component-theme="light"] .osirion-submenu {
+    background-color: #ffffff !important;
+    border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+[data-osirion-component-theme="dark"] .osirion-submenu,
+.osirion-bootstrap-integration [data-osirion-component-theme="dark"] .osirion-submenu {
+    background-color: #111827 !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
 /* Base menu item wrapper - allows for proper hover detection and submenu positioning */
 .osirion-menu-item-wrapper {
     position: relative;
@@ -20,7 +62,7 @@
     align-items: center;
     padding: var(--osirion-spacing-3, 0.75rem) var(--osirion-spacing-4, 1rem);
     color: var(--osirion-text-primary, #f3f4f6);
-    font-size: var(--osirion-font-size-sm, 0.875rem);
+    font-size: var(--osirion-font-size-base, 1rem);
     cursor: pointer;
     text-decoration: none;
     transition: all var(--osirion-transition-duration-150, 150ms) var(--osirion-transition-timing-default, ease);

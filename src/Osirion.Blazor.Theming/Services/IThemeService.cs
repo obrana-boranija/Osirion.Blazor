@@ -39,4 +39,10 @@ public interface IThemeService
     /// </summary>
     /// <returns>CSS class for the current framework</returns>
     string GetFrameworkClass();
+
+    /// <summary>
+    /// Toggles between light and dark theme and returns the new theme as string ("light" or "dark").
+    /// </summary>
+    /// <returns>The new theme as string</returns>
+    string ToggleTheme();
 }

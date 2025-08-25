@@ -2,6 +2,73 @@
  * Osirion Menu Component
  * Pure CSS navigation menu with SSR compatibility
  */
+
+/* Component-specific theme overrides - these take priority over ALL other styles including Bootstrap integration */
+[data-osirion-component-theme="light"].osirion-menu-container,
+.osirion-menu-container[data-osirion-component-theme="light"],
+.osirion-bootstrap-integration [data-osirion-component-theme="light"].osirion-menu-container,
+.osirion-bootstrap-integration .osirion-menu-container[data-osirion-component-theme="light"],
+html.osirion-bootstrap-integration [data-osirion-component-theme="light"].osirion-menu-container,
+html.osirion-bootstrap-integration .osirion-menu-container[data-osirion-component-theme="light"] {
+    /* Force Osirion light theme colors regardless of Bootstrap */
+    --osirion-background-primary: #ffffff !important;
+    --osirion-text-primary: #1f2937 !important;
+    --osirion-text-secondary: #6b7280 !important;
+    --osirion-border-color: rgba(0, 0, 0, 0.1) !important;
+    --osirion-color-primary-500: #2563eb !important;
+    background-color: #ffffff !important;
+    color: #1f2937 !important;
+    border-color: rgba(0, 0, 0, 0.1) !important;
+    
+    /* Override Bootstrap variables locally within this component */
+    --bs-body-bg: #ffffff !important;
+    --bs-body-color: #1f2937 !important;
+    --bs-border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+[data-osirion-component-theme="dark"].osirion-menu-container,
+.osirion-menu-container[data-osirion-component-theme="dark"],
+.osirion-bootstrap-integration [data-osirion-component-theme="dark"].osirion-menu-container,
+.osirion-bootstrap-integration .osirion-menu-container[data-osirion-component-theme="dark"],
+html.osirion-bootstrap-integration [data-osirion-component-theme="dark"].osirion-menu-container,
+html.osirion-bootstrap-integration .osirion-menu-container[data-osirion-component-theme="dark"] {
+    /* Force Osirion dark theme colors regardless of Bootstrap */
+    --osirion-background-primary: #111827 !important;
+    --osirion-text-primary: #f3f4f6 !important;
+    --osirion-text-secondary: #9ca3af !important;
+    --osirion-border-color: rgba(255, 255, 255, 0.1) !important;
+    --osirion-color-primary-500: #60a5fa !important;
+    background-color: #111827 !important;
+    color: #f3f4f6 !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    
+    /* Override Bootstrap variables locally within this component */
+    --bs-body-bg: #111827 !important;
+    --bs-body-color: #f3f4f6 !important;
+    --bs-border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Make all child elements of component-themed menu respect the fixed theme */
+[data-osirion-component-theme="light"] .osirion-nav-branding,
+[data-osirion-component-theme="light"] .osirion-brand-text,
+[data-osirion-component-theme="light"] .osirion-brand-link,
+[data-osirion-component-theme="light"] .osirion-toggle-icon,
+[data-osirion-component-theme="light"] .osirion-toggle-icon::before,
+[data-osirion-component-theme="light"] .osirion-toggle-icon::after {
+    color: #1f2937 !important;
+    background-color: #1f2937 !important;
+}
+
+[data-osirion-component-theme="dark"] .osirion-nav-branding,
+[data-osirion-component-theme="dark"] .osirion-brand-text,
+[data-osirion-component-theme="dark"] .osirion-brand-link,
+[data-osirion-component-theme="dark"] .osirion-toggle-icon,
+[data-osirion-component-theme="dark"] .osirion-toggle-icon::before,
+[data-osirion-component-theme="dark"] .osirion-toggle-icon::after {
+    color: #f3f4f6 !important;
+    background-color: #f3f4f6 !important;
+}
+
 /* Menu container */
 .osirion-menu-container {
     position: relative;

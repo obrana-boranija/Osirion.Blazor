@@ -3,6 +3,29 @@
  * Visual separator for menu sections
  */
 
+/* Child component theme inheritance - MenuDivider inherits parent component's theme */
+[data-osirion-component-theme="light"] .osirion-menu-divider,
+[data-osirion-component-theme="light"] .osirion-menu-divider-label,
+.osirion-bootstrap-integration [data-osirion-component-theme="light"] .osirion-menu-divider,
+.osirion-bootstrap-integration [data-osirion-component-theme="light"] .osirion-menu-divider-label {
+    /* Force light theme colors */
+    --osirion-border-color: rgba(0, 0, 0, 0.1) !important;
+    --osirion-text-tertiary: #9ca3af !important;
+    --osirion-background-primary: #ffffff !important;
+    background-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+[data-osirion-component-theme="dark"] .osirion-menu-divider,
+[data-osirion-component-theme="dark"] .osirion-menu-divider-label,
+.osirion-bootstrap-integration [data-osirion-component-theme="dark"] .osirion-menu-divider,
+.osirion-bootstrap-integration [data-osirion-component-theme="dark"] .osirion-menu-divider-label {
+    /* Force dark theme colors */
+    --osirion-border-color: rgba(255, 255, 255, 0.1) !important;
+    --osirion-text-tertiary: #6b7280 !important;
+    --osirion-background-primary: #111827 !important;
+    background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
 /* Base divider */
 .osirion-menu-divider {
     height: 1px;

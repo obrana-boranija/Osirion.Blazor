@@ -13,16 +13,34 @@ public partial class HeroSection
     public string? Title { get; set; }
 
     /// <summary>
+    /// Gets or sets custom title content. When provided, this overrides the Title parameter.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? TitleContent { get; set; }
+
+    /// <summary>
     /// Gets or sets the hero subtitle
     /// </summary>
     [Parameter]
     public string? Subtitle { get; set; }
 
     /// <summary>
+    /// Gets or sets custom subtitle content. When provided, this overrides the Subtitle parameter.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? SubtitleContent { get; set; }
+
+    /// <summary>
     /// Gets or sets the hero summary/description
     /// </summary>
     [Parameter]
     public string? Summary { get; set; }
+
+    /// <summary>
+    /// Gets or sets custom summary content. When provided, this overrides the Summary parameter.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? SummaryContent { get; set; }
 
     /// <summary>
     /// Gets or sets the image URL
@@ -165,6 +183,7 @@ public partial class HeroSection
     private Alignment _imageposition => ImagePosition == Alignment.Left || ImagePosition == Alignment.Justify ? Alignment.Right : ImagePosition;
     private Alignment _alignment => Alignment == Alignment.Justify ? Alignment.Left : Alignment;
 
+    /// <inheritdoc/>
     protected override void OnInitialized()
     {
         base.OnInitialized();

@@ -1,5 +1,40 @@
 /* SearchBox Component - Osirion.Blazor.Cms.Web */
 
+/* Child component theme inheritance - SearchBox inherits parent component's theme */
+[data-osirion-component-theme="light"] .osirion-search-wrapper,
+[data-osirion-component-theme="light"] .osirion-search-input,
+[data-osirion-component-theme="light"] .osirion-search-button,
+.osirion-bootstrap-integration [data-osirion-component-theme="light"] .osirion-search-wrapper,
+.osirion-bootstrap-integration [data-osirion-component-theme="light"] .osirion-search-input,
+.osirion-bootstrap-integration [data-osirion-component-theme="light"] .osirion-search-button {
+    /* Force light theme colors */
+    --osirion-text-primary: #374151 !important;
+    --osirion-text-tertiary: #9ca3af !important;
+    --osirion-background-primary: #ffffff !important;
+    --osirion-border-color: #e5e7eb !important;
+    --osirion-action-primary: #2563eb !important;
+    --osirion-action-primary-hover: #1d4ed8 !important;
+    --osirion-action-primary-text: #ffffff !important;
+    --osirion-focus-ring-color: rgba(59, 130, 246, 0.3) !important;
+}
+
+[data-osirion-component-theme="dark"] .osirion-search-wrapper,
+[data-osirion-component-theme="dark"] .osirion-search-input,
+[data-osirion-component-theme="dark"] .osirion-search-button,
+.osirion-bootstrap-integration [data-osirion-component-theme="dark"] .osirion-search-wrapper,
+.osirion-bootstrap-integration [data-osirion-component-theme="dark"] .osirion-search-input,
+.osirion-bootstrap-integration [data-osirion-component-theme="dark"] .osirion-search-button {
+    /* Force dark theme colors */
+    --osirion-text-primary: #f3f4f6 !important;
+    --osirion-text-tertiary: #6b7280 !important;
+    --osirion-background-primary: #1f2937 !important;
+    --osirion-border-color: rgba(255, 255, 255, 0.1) !important;
+    --osirion-action-primary: #60a5fa !important;
+    --osirion-action-primary-hover: #3b82f6 !important;
+    --osirion-action-primary-text: #ffffff !important;
+    --osirion-focus-ring-color: rgba(96, 165, 250, 0.3) !important;
+}
+
 .osirion-search-wrapper {
     font-family: var(--osirion-font-family-base, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif);
     margin-bottom: var(--osirion-spacing-4, 1rem);

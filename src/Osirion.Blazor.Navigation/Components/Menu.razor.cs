@@ -100,6 +100,21 @@ public partial class Menu
     /// </summary>
     private string ToggleId => $"{MenuId}-toggle";
 
+    /// <summary>
+    /// Gets the component theme for the data attribute.
+    /// Returns the component's specific theme if set, otherwise null to use global theme.
+    /// </summary>
+    private string? GetComponentTheme()
+    {
+        return Theme switch
+        {
+            ThemeMode.Light => "light",
+            ThemeMode.Dark => "dark",
+            ThemeMode.System => null, // Use global theme
+            _ => null
+        };
+    }
+
     protected override void OnInitialized()
     {
         base.OnInitialized();

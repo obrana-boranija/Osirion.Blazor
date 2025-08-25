@@ -77,75 +77,151 @@ namespace Osirion.Blazor.Theming.Components
         {
             var frameworkClass = GetFrameworkClass;
             var currentTheme = ThemeService.CurrentMode.ToString().ToLowerInvariant();
+            var framework = EffectiveOptions.Framework.ToString();
 
-            return $@"
-        <script id=""osirion-framework-script"">
-            (function() {{
-                // Store these values in variables with proper scope
-                const FRAMEWORK_CLASS = ""{frameworkClass}"";
-                const CURRENT_THEME = ""{currentTheme}"";
-                const FRAMEWORK = ""{EffectiveOptions.Framework}"";
-                
-                function applyFrameworkIntegration() {{
-                    const htmlElement = document.documentElement || document.querySelector('html');
+            // Use C# raw interpolated string literal to avoid escaping braces in JS
+            return $$"""
+        <script id="osirion-framework-script">
+            (function() {
+                const HTML = document.documentElement || document.querySelector('html');
+                const FRAMEWORK_CLASS = '{{frameworkClass}}';
+                const SELECTED_FRAMEWORK = '{{framework}}';
+                let CURRENT_THEME = '{{currentTheme}}';
+                let isInitialized = false;
+                let lastAppliedTheme = null;
 
-                    if (htmlElement && FRAMEWORK_CLASS && !htmlElement.classList.contains(FRAMEWORK_CLASS)) {{
-                        htmlElement.classList.add(FRAMEWORK_CLASS);
-                    }}
+                function normalizeTheme(value) {
+                    const t = (value || '').toLowerCase();
+                    return (t === 'dark' || t === 'light') ? t : 'light';
+                }
 
-                    // Framework-specific theme handling
-                    if (FRAMEWORK === ""Bootstrap"") {{
-                        if (CURRENT_THEME === ""dark"" || CURRENT_THEME === ""light"") {{
-                            htmlElement.setAttribute(""data-bs-theme"", CURRENT_THEME);
-                        }}
-                    }}
-                    else if (FRAMEWORK === ""MudBlazor"") {{
-                        if (CURRENT_THEME === ""dark"") {{
-                            htmlElement.classList.add(""mud-theme-dark"");
-                        }} else if (CURRENT_THEME === ""light"") {{
-                            htmlElement.classList.remove(""mud-theme-dark"");
-                        }}
-                    }}
-                    else if (FRAMEWORK === ""FluentUI"") {{
-                        if (CURRENT_THEME === ""dark"") {{
-                            htmlElement.classList.add(""fluent-dark-theme"");
-                            htmlElement.classList.remove(""fluent-light-theme"");
-                        }} else if (CURRENT_THEME === ""light"") {{
-                            htmlElement.classList.add(""fluent-light-theme"");
-                            htmlElement.classList.remove(""fluent-dark-theme"");
-                        }}
-                    }}
-                    else if (FRAMEWORK === ""Radzen"") {{
-                        if (CURRENT_THEME === ""dark"") {{
-                            htmlElement.classList.add(""rz-dark-theme"");
-                        }} else if (CURRENT_THEME === ""light"") {{
-                            htmlElement.classList.remove(""rz-dark-theme"");
-                        }}
-                    }}
-                }}
+                function readCookie(name) {
+                    const m = document.cookie.match(new RegExp('(?:^|; )' + name.replace(/([.$?*|{}()\[\]\\/+^])/g, '\\$1') + '=([^;]*)'));
+                    return m ? decodeURIComponent(m[1]) : null;
+                }
 
-                // Apply immediately
-                applyFrameworkIntegration();
+                function clearFrameworkMarkers() {
+                    if (!HTML) return;
+                    HTML.removeAttribute('data-bs-theme');
+                    HTML.classList.remove('mud-theme-dark');
+                    HTML.classList.remove('fluent-dark-theme');
+                    HTML.classList.remove('fluent-light-theme');
+                    HTML.classList.remove('rz-dark-theme');
+                }
+
+                function resolveTheme() {
+                    // Only read osirion cookie (no legacy fallback)
+                    const osirionCookie = readCookie('osirion-preferred-theme');
+                    if (osirionCookie) return normalizeTheme(osirionCookie);
+                    
+                    // Fallback to existing attribute or server value
+                    const attr = HTML?.getAttribute('data-osirion-theme');
+                    return normalizeTheme(attr || CURRENT_THEME || 'light');
+                }
+
+                function applyTheme(theme) {
+                    if (!HTML) return;
+                    const t = normalizeTheme(theme);
+
+                    // Skip if already applied this theme to prevent excessive re-application
+                    if (lastAppliedTheme === t && isInitialized) {
+                        return;
+                    }
+
+                    lastAppliedTheme = t;
+
+                    // Generic attribute for all frameworks/consumers
+                    HTML.setAttribute('data-osirion-theme', t);
+
+                    // Save selected framework for other components
+                    HTML.setAttribute('data-osirion-framework', SELECTED_FRAMEWORK);
+
+                    // Framework class for CSS variable mapping
+                    if (FRAMEWORK_CLASS && !HTML.classList.contains(FRAMEWORK_CLASS)) {
+                        HTML.classList.add(FRAMEWORK_CLASS);
+                    }
+
+                    // Remove any previous framework markers to prevent conflicts
+                    clearFrameworkMarkers();
+
+                    // Optional framework-specific mirroring (only for the selected framework)
+                    if (SELECTED_FRAMEWORK === 'Bootstrap') {
+                        HTML.setAttribute('data-bs-theme', t);
+                    } else if (SELECTED_FRAMEWORK === 'MudBlazor') {
+                        HTML.classList.toggle('mud-theme-dark', t === 'dark');
+                    } else if (SELECTED_FRAMEWORK === 'FluentUI') {
+                        HTML.classList.toggle('fluent-dark-theme', t === 'dark');
+                        HTML.classList.toggle('fluent-light-theme', t === 'light');
+                    } else if (SELECTED_FRAMEWORK === 'Radzen') {
+                        HTML.classList.toggle('rz-dark-theme', t === 'dark');
+                    }
+                }
+
+                // Throttled function to prevent excessive calls
+                let reapplyTimeout = null;
+                function reapplyFromCookies() {
+                    if (reapplyTimeout) {
+                        clearTimeout(reapplyTimeout);
+                    }
+                    reapplyTimeout = setTimeout(() => {
+                        const currentTheme = resolveTheme();
+                        applyTheme(currentTheme);
+                        reapplyTimeout = null;
+                    }, 16); // ~60fps throttling
+                }
+
+                // Apply immediately on script load
+                const initialTheme = resolveTheme();
+                applyTheme(initialTheme);
+                isInitialized = true;
+
+                // Enhanced Navigation support for Blazor (.NET 8+)
+                if (typeof Blazor !== 'undefined' && Blazor.addEventListener) {
+                    // Listen for enhanced load events (Blazor enhanced navigation)
+                    Blazor.addEventListener('enhancedload', reapplyFromCookies);
+                }
+
+                // Standard navigation events (throttled)
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', reapplyFromCookies);
+                }
+                window.addEventListener('load', reapplyFromCookies);
+                window.addEventListener('popstate', reapplyFromCookies);
+                window.addEventListener('hashchange', reapplyFromCookies);
                 
-                // Apply on page load events
-                if (document.readyState === ""loading"") {{
-                    document.addEventListener(""DOMContentLoaded"", applyFrameworkIntegration);
-                }}
+                // Custom event for theme updates (immediate, not throttled)
+                window.addEventListener('osirion-theme-update', () => {
+                    const currentTheme = resolveTheme();
+                    applyTheme(currentTheme);
+                });
                 
-                // Register event handlers that reapply on navigation
-                window.addEventListener(""load"", applyFrameworkIntegration);
-                window.addEventListener(""hashchange"", applyFrameworkIntegration);
-                window.addEventListener(""popstate"", applyFrameworkIntegration);
-                
-                // Check periodically if class was removed (like during navigation)
-                setInterval(function() {{
-                    const html = document.documentElement;
-                    if (html && !html.classList.contains(FRAMEWORK_CLASS)) {{
-                        applyFrameworkIntegration();
-                    }}
-                }}, 1000);
-            }})();
-        </script>";
+                // Reduced mutation observer frequency
+                if (typeof MutationObserver !== 'undefined') {
+                    let mutationTimeout = null;
+                    const observer = new MutationObserver(function(mutations) {
+                        let needsReapply = false;
+                        mutations.forEach(function(mutation) {
+                            if (mutation.type === 'attributes' && 
+                                (mutation.attributeName === 'data-osirion-theme' || 
+                                 mutation.attributeName === 'data-bs-theme')) {
+                                needsReapply = true;
+                            }
+                        });
+                        if (needsReapply) {
+                          if (mutationTimeout) {
+                            clearTimeout(mutationTimeout);
+                          }
+                          mutationTimeout = setTimeout(reapplyFromCookies, 100);
+                        }
+                    });
+                    observer.observe(HTML, { 
+                        attributes: true, 
+                        attributeFilter: ['data-osirion-theme', 'data-bs-theme'] 
+                    });
+                }
+            })();
+        </script>
+        """;
         }
 
         public void Dispose()
