@@ -1,40 +1,45 @@
 ---
-id: ''
-title: Introduction to Osirion.Blazor
-description: An overview of the Osirion.Blazor ecosystem, a modular, high-performance CMS and component library designed for modern Blazor applications with SSR compatibility.
+id: 'homepage'
+order: 1
+layout: landing
+title: Build Modern Blazor Websites with GitHub as Your CMS
+permalink: /
+description: Osirion.Blazor is a modular, SSR-compatible component library that transforms GitHub into a powerful headless CMS for your Blazor applications. Build portfolios, blogs, and documentation sites in minutes.
 author: Dejan Demonjić
 date: 2025-05-05
-featured_image: https://storage.googleapis.com/croct-assets-b931d070/blog/Headless_CMS_within_the_React_framework_3_1_da922d2562/Headless_CMS_within_the_React_framework_3_1_da922d2562.png
+featured_image: https://cdn.sanity.io/images/81pocpw8/production/d1b5556078c47c11bef6f52e652bef6aca5e5fb7-5472x3078.jpg?w=2160&h=1215&fit=crop&auto=format
 categories:
 - Headless CMS
-- GitHub Integration
+- Blazor Components
 tags:
-- github
-- headless
-- cms
+- github-cms
 - blazor
-- markdown
-- git-based-cms
-is_featured: false
+- headless-cms
+- portfolio
+- documentation
+- blog
+is_featured: true
 published: true
-slug: introduction
+slug: homepage
 lang: en
 custom_fields: {}
 seo_properties:
-  title: ''
-  description: ''
-  canonical: ''
+  title: 'Osirion.Blazor - GitHub-Powered CMS for Modern Blazor Applications'
+  description: 'Transform GitHub into a powerful headless CMS for your Blazor applications. Build portfolios, blogs, and documentation sites with SSR support and modular components.'
+  image: https://cdn.sanity.io/images/81pocpw8/production/d1b5556078c47c11bef6f52e652bef6aca5e5fb7-5472x3078.jpg?w=2160&h=1215&fit=crop&auto=format
+  canonical: 'https://getosirion.com'
+  lang: en
   robots: index, follow
-  og_title: ''
-  og_description: ''
-  og_image_url: ''
-  og_type: article
+  og_title: 'Osirion.Blazor - GitHub-Powered CMS for Blazor'
+  og_description: 'Build modern Blazor websites with GitHub as your headless CMS. Perfect for portfolios, blogs, and documentation.'
+  og_image_url: 'https://cdn.sanity.io/images/81pocpw8/production/d1b5556078c47c11bef6f52e652bef6aca5e5fb7-5472x3078.jpg?w=2160&h=1215&fit=crop&auto=format'
+  og_type: website
   json_ld: ''
-  type: Article
+  type: WebSite
   twitter_card: summary_large_image
-  twitter_title: ''
-  twitter_description: ''
-  twitter_image_url: ''
+  twitter_title: 'Osirion.Blazor - GitHub-Powered CMS'
+  twitter_description: 'Transform GitHub into a headless CMS for your Blazor applications'
+  twitter_image_url: 'https://cdn.sanity.io/images/81pocpw8/production/d1b5556078c47c11bef6f52e652bef6aca5e5fb7-5472x3078.jpg?w=2160&h=1215&fit=crop&auto=format'
   meta_tags: {}
 ---
 
@@ -90,4 +95,5 @@ Whether you're building a documentation site, a blog, a marketing website, or a 
 Join the growing community of developers who are building content-driven Blazor applications the modern way. With Osirion.Blazor, your GitHub repository isn't just storing code—it's powering your entire content strategy.
 
 [Get Started](/docs/getting-started) | [Explore Features](/features) | [View Documentation](/docs)
+
 
