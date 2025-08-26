@@ -61,7 +61,7 @@
 
                         @if (ShowSecondaryButton && !string.IsNullOrWhiteSpace(SecondaryButtonText) && !string.IsNullOrWhiteSpace(SecondaryButtonUrl))
                         {
-                                    <a href="@SecondaryButtonUrl" class="@BuildButtonClass(ButtonVariant.OutlinedPrimary, ButtonSize.Large) osirion-hero-button osirion-hero-button-primary">
+                            <a href="@SecondaryButtonUrl" class="@BuildButtonClass(ButtonVariant.OutlinedPrimary, ButtonSize.Large) osirion-hero-button osirion-hero-button-primary">
                                 @SecondaryButtonText
                             </a>
                         }
@@ -84,7 +84,7 @@
                          alt="@(ImageAlt ?? Title ?? "Hero image")"
                          class="osirion-hero-featured-image"
                          width="@GetImageSize().Width"
-                         height="@GetImageSize().Heigth"/>
+                         height="@GetImageSize().Heigth" />
                 </div>
             }
         </div>

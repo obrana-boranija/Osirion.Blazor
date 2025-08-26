@@ -1,0 +1,16 @@
+﻿@namespace Osirion.Blazor.Components
+@inherits OsirionComponentBase
+
+@if (Show)
+{
+    <div class="@CssClasses"
+         @attributes="AosAttributes">
+        @ChildContent
+    </div>
+
+    @LoadScript("./_content/Osirion.Blazor.Animation/js/osirion-animation.es5.min.js")
+}
+else
+{
+    @ChildContent
+}

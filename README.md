@@ -143,7 +143,7 @@ builder.Services.AddOsirionBlazor(builder.Configuration);
     ShowCustomizeButton="true" />
 
 <!-- Logo carousel -->
-<InfiniteLogoCarousel 
+<OsirionInfiniteLogoCarousel 
     Title="Our Partners"
     CustomLogos="@partnerLogos" />
 ```
@@ -163,7 +163,7 @@ builder.Services.AddOsirionBlazor(builder.Configuration);
 - [HeroSection](src/Osirion.Blazor.Core/Components/Sections/HeroSection.md) - Comprehensive hero section component
 - [OsirionBreadcrumbs](src/Osirion.Blazor.Core/Components/Navigation/OsirionBreadcrumbs.md) - Automatic breadcrumb navigation
 - [OsirionCookieConsent](src/Osirion.Blazor.Core/Components/Popups/OsirionCookieConsent.md) - GDPR-compliant cookie consent
-- [InfiniteLogoCarousel](src/Osirion.Blazor.Core/Components/InfiniteLogoCarousel.md) - Self-contained logo carousel
+- [OsirionInfiniteLogoCarousel](src/Osirion.Blazor.Core/Components/OsirionInfiniteLogoCarousel.md) - Self-contained logo carousel
 - [Markdown Editor](src/Osirion.Blazor.Cms.Core/Components/Editor/MARKDOWN_EDITOR.md) - Admin markdown editor components
 
 ## 🌟 Key Principles

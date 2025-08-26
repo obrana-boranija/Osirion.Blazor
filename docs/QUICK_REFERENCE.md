@@ -172,13 +172,13 @@ builder.Services.AddOsirionBlazor(osirion => {
     SanitizeHtml="true" />
 ```
 
-#### InfiniteLogoCarousel
+#### OsirionInfiniteLogoCarousel
 **Purpose**: Self-contained logo carousel with zero dependencies  
 **Package**: `Osirion.Blazor.Core`  
 **Documentation**: [Logo Carousel Guide](INFINITE_LOGO_CAROUSEL.md)
 
 ```razor
-<InfiniteLogoCarousel 
+<OsirionInfiniteLogoCarousel 
     Title="Our Partners"
     CustomLogos="@partnerLogos"
     AnimationDuration="60"
@@ -492,7 +492,7 @@ builder.Services.AddOsirionStyle(CssFramework.Bootstrap);
     UseBackgroundImage="true" />
 
 <!-- Partner logos -->
-<InfiniteLogoCarousel 
+<OsirionInfiniteLogoCarousel 
     Title="Trusted by Industry Leaders"
     CustomLogos="@partnerLogos" />
 

@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+	<PropertyGroup>
+		<TargetFrameworks>net8.0;net9.0</TargetFrameworks>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<LangVersion>latest</LangVersion>
+		<IsPackable>true</IsPackable>
+
+		<!-- XML Documentation -->
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+
+		<!-- NuGet package properties -->
+		<PackageId>Osirion.Blazor.Components</PackageId>
+		<Version>2.1.7</Version>
+		<Authors>Dejan Demonjić</Authors>
+		<Company>Tridesetri</Company>
+		<Description>Animation module for Osirion.Blazor - Provides animation effects with provider pattern.</Description>
+		<PackageTags>blazor;components;animation;effects;osirion</PackageTags>
+		<PackageProjectUrl>https://getosirion.com</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/obrana-boranija/Osirion.Blazor</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageIcon>icon.png</PackageIcon>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Content Remove="compilerconfig.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<SupportedPlatform Include="browser" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Osirion.Blazor.Core\Osirion.Blazor.Core.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="..\..\icon.png" Pack="true" PackagePath="\" />
+	</ItemGroup>
+
+</Project>

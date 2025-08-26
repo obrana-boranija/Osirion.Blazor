@@ -1,0 +1,243 @@
+﻿@page "/examples/animation"
+@using Osirion.Blazor.Components
+
+<PageTitle>Animation Examples - Osirion.Blazor</PageTitle>
+
+<div class="examples-container">
+    <!-- Basic Usage -->
+    <section class="example-section">
+        <h2>Basic Usage</h2>
+        
+        <!-- Simple fade up -->
+        <OsirionAnimation Effect="AnimationEffect.FadeUp">
+            <div class="example-card">
+                <h3>Simple Fade Up</h3>
+                <p>This card fades up from the bottom with default settings.</p>
+            </div>
+        </OsirionAnimation>
+
+        <!-- With delay -->
+        <OsirionAnimation Effect="AnimationEffect.FadeLeft" Delay="200">
+            <div class="example-card">
+                <h3>Delayed Fade Left</h3>
+                <p>This card fades in from the left with a 200ms delay.</p>
+            </div>
+        </OsirionAnimation>
+    </section>
+
+    <!-- Speed Variations -->
+    <section class="example-section">
+        <h2>Speed Variations</h2>
+        
+        <div class="grid-3">
+            <OsirionAnimation Effect="AnimationEffect.FadeUp" Speed="AnimationSpeed.Fast" Delay="100">
+                <div class="example-card fast">
+                    <h4>Fast (400ms)</h4>
+                    <p>Quick animation</p>
+                </div>
+            </OsirionAnimation>
+
+            <OsirionAnimation Effect="AnimationEffect.FadeUp" Speed="AnimationSpeed.Normal" Delay="200">
+                <div class="example-card normal">
+                    <h4>Normal (600ms)</h4>
+                    <p>Standard animation</p>
+                </div>
+            </OsirionAnimation>
+
+            <OsirionAnimation Effect="AnimationEffect.FadeUp" Speed="AnimationSpeed.Slow" Delay="300">
+                <div class="example-card slow">
+                    <h4>Slow (1000ms)</h4>
+                    <p>Leisurely animation</p>
+                </div>
+            </OsirionAnimation>
+        </div>
+    </section>
+
+    <!-- Different Effects -->
+    <section class="example-section">
+        <h2>Animation Effects</h2>
+        
+        <div class="grid-2">
+            @foreach (var (effect, delay) in AnimationEffects)
+            {
+                <OsirionAnimation Effect="@effect" Delay="@(delay * 100)">
+                    <div class="example-card effect-demo">
+                        <h4>@effect.ToString()</h4>
+                        <p>@GetEffectDescription(effect)</p>
+                    </div>
+                </OsirionAnimation>
+            }
+        </div>
+    </section>
+
+    <!-- Easing Examples -->
+    <section class="example-section">
+        <h2>Easing Functions</h2>
+        
+        <div class="grid-2">
+            <OsirionAnimation Effect="AnimationEffect.FadeRight" Easing="AnimationEasing.Bounce" Delay="100">
+                <div class="example-card bounce">
+                    <h4>Bounce</h4>
+                    <p>Bouncy animation effect</p>
+                </div>
+            </OsirionAnimation>
+
+            <OsirionAnimation Effect="AnimationEffect.FadeLeft" Easing="AnimationEasing.Elastic" Delay="200">
+                <div class="example-card elastic">
+                    <h4>Elastic</h4>
+                    <p>Elastic spring effect</p>
+                </div>
+            </OsirionAnimation>
+
+            <OsirionAnimation Effect="AnimationEffect.FadeUp" Easing="AnimationEasing.EaseInOut" Delay="300">
+                <div class="example-card ease-in-out">
+                    <h4>Ease In-Out</h4>
+                    <p>Slow start and end</p>
+                </div>
+            </OsirionAnimation>
+
+            <OsirionAnimation Effect="AnimationEffect.FadeUp" Easing="AnimationEasing.Linear" Delay="400">
+                <div class="example-card linear">
+                    <h4>Linear</h4>
+                    <p>Constant speed</p>
+                </div>
+            </OsirionAnimation>
+        </div>
+    </section>
+
+    <!-- Staggered Cards Example -->
+    <section class="example-section">
+        <h2>Staggered Animation Pattern</h2>
+        
+        <div class="grid-3">
+            @for (int i = 0; i < 6; i++)
+            {
+                var effect = GetAlternatingEffect(i);
+                var delay = ((i % 3) + 1) * 100;
+                
+                <OsirionAnimation Effect="@effect" Delay="@delay" Speed="AnimationSpeed.Fast">
+                    <div class="example-card staggered">
+                        <h4>Card @(i + 1)</h4>
+                        <p>@effect.ToString() with @delay ms delay</p>
+                    </div>
+                </OsirionAnimation>
+            }
+        </div>
+    </section>
+
+    <!-- Custom Parameters -->
+    <section class="example-section">
+        <h2>Custom Parameters</h2>
+        
+        <OsirionAnimation 
+            Effect="AnimationEffect.FadeUp"
+            Duration="800"
+            Distance="50"
+            Class="custom-animated-element"
+            Style="border-radius: 15px;">
+            <div class="example-card custom">
+                <h4>Custom Animation</h4>
+                <p>800ms duration, 50px distance, custom styling</p>
+            </div>
+        </OsirionAnimation>
+
+        <OsirionAnimation 
+            Effect="AnimationEffect.ZoomIn"
+            Once="true"
+            Speed="AnimationSpeed.Slow"
+            Delay="200">
+            <div class="example-card no-scroll">
+                <h4>Animate Once</h4>
+                <p>Animation happens only once (AOS once parameter)</p>
+            </div>
+        </OsirionAnimation>
+    </section>
+
+    <!-- Hero Section Example -->
+    <section class="hero-example">
+        <OsirionAnimation Effect="AnimationEffect.Fade" Speed="AnimationSpeed.Slow">
+            <h1>Welcome to Osirion.Blazor</h1>
+        </OsirionAnimation>
+        
+        <OsirionAnimation Effect="AnimationEffect.FadeUp" Delay="200">
+            <p class="hero-subtitle">A modular, high-performance component library powered by AOS.js</p>
+        </OsirionAnimation>
+        
+        <div class="hero-actions">
+            <OsirionAnimation Effect="AnimationEffect.FadeLeft" Delay="300">
+                <button class="btn-primary">Get Started</button>
+            </OsirionAnimation>
+            
+            <OsirionAnimation Effect="AnimationEffect.FadeRight" Delay="400">
+                <button class="btn-secondary">Learn More</button>
+            </OsirionAnimation>
+        </div>
+    </section>
+
+    <!-- Feature List Example -->
+    <section class="example-section">
+        <h2>Feature List with Mixed Effects</h2>
+        
+        @foreach (var (feature, index) in Features.Select((f, i) => (f, i)))
+        {
+            <OsirionAnimation 
+                Effect="@GetFeatureEffect(index)"
+                Speed="AnimationSpeed.Fast"
+                Delay="@(((index % 4) + 1) * 100)"
+                Easing="AnimationEasing.EaseOut">
+                <div class="feature-item">
+                    <div class="feature-icon">@feature.Icon</div>
+                    <h3>@feature.Title</h3>
+                    <p>@feature.Description</p>
+                </div>
+            </OsirionAnimation>
+        }
+    </section>
+
+    <!-- AOS-specific Features -->
+    <section class="example-section">
+        <h2>AOS-Specific Features</h2>
+        
+        <div class="grid-2">
+            <OsirionAnimation 
+                Effect="AnimationEffect.FadeUp"
+                Once="true"
+                Delay="100">
+                <div class="example-card aos-once">
+                    <h4>Once Only</h4>
+                    <p>This animation happens only once when scrolled into view</p>
+                </div>
+            </OsirionAnimation>
+
+            <OsirionAnimation 
+                Effect="AnimationEffect.FadeDown"
+                Mirror="true"
+                Delay="200">
+                <div class="example-card aos-mirror">
+                    <h4>Mirror Effect</h4>
+                    <p>This animation reverses when scrolling past</p>
+                </div>
+            </OsirionAnimation>
+
+            <OsirionAnimation 
+                Effect="AnimationEffect.SlideLeft"
+                Offset="200"
+                Delay="300">
+                <div class="example-card aos-offset">
+                    <h4>Custom Offset</h4>
+                    <p>Animation triggers 200px before the default point</p>
+                </div>
+            </OsirionAnimation>
+
+            <OsirionAnimation 
+                Effect="AnimationEffect.ZoomIn"
+                Anchor="#hero-example"
+                Delay="400">
+                <div class="example-card aos-anchor">
+                    <h4>Custom Anchor</h4>
+                    <p>Animation anchored to the hero section above</p>
+                </div>
+            </OsirionAnimation>
+        </div>
+    </section>
+</div>

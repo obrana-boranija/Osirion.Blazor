@@ -198,11 +198,11 @@ A GDPR-compliant cookie consent banner with customizable categories.
 - Configurable consent expiry
 - Privacy policy integration
 
-#### `InfiniteLogoCarousel`
+#### `OsirionInfiniteLogoCarousel`
 Self-contained logo carousel with zero external dependencies.
 
 ```razor
-<InfiniteLogoCarousel 
+<OsirionInfiniteLogoCarousel 
     Title="Our Partners"
     CustomLogos="@logoList"
     AnimationDuration="60"
@@ -211,7 +211,7 @@ Self-contained logo carousel with zero external dependencies.
     EnableGrayscale="true" />
 ```
 
-Detailed documentation: [InfiniteLogoCarousel.md](Components/InfiniteLogoCarousel.md)
+Detailed documentation: [OsirionInfiniteLogoCarousel.md](Components/OsirionInfiniteLogoCarousel.md)
 
 ## Installation
 

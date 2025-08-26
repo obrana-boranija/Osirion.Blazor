@@ -96,6 +96,7 @@ jobs:
           echo "Building and packing feature modules..."
           # Run a combined pack operation for all modules that depend on Core
           dotnet pack src/Osirion.Blazor.Analytics/Osirion.Blazor.Analytics.csproj -c Release -o ${{ env.NuGetDirectory }} &
+          dotnet pack src/Osirion.Blazor.Animation/Osirion.Blazor.Animation.csproj -c Release -o ${{ env.NuGetDirectory }} &
           dotnet pack src/Osirion.Blazor.Navigation/Osirion.Blazor.Navigation.csproj -c Release -o ${{ env.NuGetDirectory }} &
           dotnet pack src/Osirion.Blazor.Theming/Osirion.Blazor.Theming.csproj -c Release -o ${{ env.NuGetDirectory }} &
           

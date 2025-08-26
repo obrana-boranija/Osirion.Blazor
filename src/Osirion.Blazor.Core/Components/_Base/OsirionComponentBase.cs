@@ -82,7 +82,12 @@ public abstract partial class OsirionComponentBase : ComponentBase
 #endif
     }
 
-    protected RenderFragment LoadScript(string src) => builder =>
+    /// <summary>
+    /// Returns a <see cref="RenderFragment"/> that loads a script from the specified source URL.
+    /// </summary>
+    /// <param name="src">The source URL of the script to load.</param>
+    /// <returns>A <see cref="RenderFragment"/> that renders the script loader component.</returns>
+    protected static RenderFragment LoadScript(string src) => builder =>
     {
 #if NET9_0_OR_GREATER
         builder.OpenComponent<JS>(0);

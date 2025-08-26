@@ -6,7 +6,7 @@ namespace Osirion.Blazor.Components;
 /// Infinite logo carousel component that displays client logos in a continuous scrolling animation
 /// Works in Static SSR without JavaScript requirements
 /// </summary>
-public partial class InfiniteLogoCarousel : OsirionComponentBase
+public partial class OsirionInfiniteLogoCarousel : OsirionComponentBase
 {
     /// <summary>
     /// Optional title to display above the logos
