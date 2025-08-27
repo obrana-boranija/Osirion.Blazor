@@ -1,0 +1,46 @@
+@namespace Osirion.Blazor.Components
+@inherits OsirionComponentBase
+
+<section id="@Id" class="@GetSectionClass()" style="@GetSectionStyle()" @attributes="@Attributes">
+    @if (ShowPattern)
+    {
+        <OsirionBackgroundPattern BackgroundPattern="@BackgroundPattern" />
+    }
+
+    @if (ShowOverlay && !string.IsNullOrWhiteSpace(BackgroundImageUrl))
+    {
+        <div class="osirion-section-overlay"></div>
+    }
+
+    <div class="@GetContainerClass()">
+        @if (!string.IsNullOrWhiteSpace(Title) || TitleContent is not null)
+        {
+            <div class="@GetHeaderClass()">
+                @if (TitleContent is not null)
+                {
+                    @TitleContent
+                }
+                else if (!string.IsNullOrWhiteSpace(Title))
+                {
+                    <h2 class="osirion-section-title">@((MarkupString)Title!)</h2>
+                }
+
+                @if (DescriptionContent is not null)
+                {
+                    @DescriptionContent
+                }
+                else if (!string.IsNullOrWhiteSpace(Description))
+                {
+                    <p class="osirion-section-description">@((MarkupString)Description!)</p>
+                }
+            </div>
+        }
+
+        @if (ChildContent is not null)
+        {
+            <div class="osirion-section-content">
+                @ChildContent
+            </div>
+        }
+    </div>
+</section>

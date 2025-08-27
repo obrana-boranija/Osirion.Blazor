@@ -53,9 +53,9 @@
 
         <!-- Twitter Card Preview -->
         <div class="preview-section">
-            <h6 class="preview-section-title">
+            <h3 class="preview-section-title">
                 <i class="bi bi-twitter me-1 text-info"></i> Twitter Card Preview
-            </h6>
+            </h3>
             <div class="social-preview twitter-preview">
                 @if (SeoMetadata.TwitterCard == "summary_large_image" && !string.IsNullOrWhiteSpace(GetTwitterImage()))
                 {
@@ -81,17 +81,17 @@
 
         <!-- Front Matter YAML Preview -->
         <div class="preview-section">
-            <h6 class="preview-section-title">
+            <h3 class="preview-section-title">
                 <i class="bi bi-file-code me-1"></i> Front Matter
-            </h6>
+            </h3>
             <pre class="code-preview">@GetFormattedFrontMatter()</pre>
         </div>
 
         <!-- Meta Tags Preview -->
         <div class="preview-section">
-            <h6 class="preview-section-title">
+            <h3 class="preview-section-title">
                 <i class="bi bi-code-slash me-1"></i> Generated Meta Tags
-            </h6>
+            </h3>
             <pre class="code-preview">@GetMetaTags()</pre>
         </div>
     </div>

@@ -1,0 +1,48 @@
+@namespace Osirion.Blazor.Components
+@inherits OsirionComponentBase
+
+<a href="@Href" 
+   class="@GetLinkClass()" 
+   aria-label="@AriaLabel" 
+   style="@GetLinkStyle()" 
+   target="@Target"
+   @attributes="@Attributes">
+    
+    @if (ShowIcon && IconPosition == IconPosition.Left)
+    {
+        <span class="osirion-read-more-icon osirion-read-more-icon-left" aria-hidden="true">
+            @if (IconContent is not null)
+            {
+                @IconContent
+            }
+            else
+            {
+                @GetDefaultIcon()
+            }
+        </span>
+    }
+    
+    @if (ShowText)
+    {
+        <span class="osirion-read-more-text">@Text</span>
+    }
+    
+    @if (ShowIcon && IconPosition == IconPosition.Right)
+    {
+        <span class="osirion-read-more-icon osirion-read-more-icon-right" aria-hidden="true">
+            @if (IconContent is not null)
+            {
+                @IconContent
+            }
+            else
+            {
+                @GetDefaultIcon()
+            }
+        </span>
+    }
+    
+    @if (ChildContent is not null)
+    {
+        @ChildContent
+    }
+</a>

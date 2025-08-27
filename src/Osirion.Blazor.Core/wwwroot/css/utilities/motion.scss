@@ -1,0 +1,228 @@
+﻿/* 
+ * Osirion Utilities: Motion
+ * Animation utilities with reduced-motion support
+ */
+
+/* Text alignment */
+.osirion-text-left {
+    text-align: left;
+}
+
+.osirion-text-center {
+    text-align: center;
+}
+
+.osirion-text-right {
+    text-align: right;
+}
+
+.osirion-text-justify {
+    text-align: justify;
+}
+
+/* Font sizes */
+.osirion-text-xs {
+    font-size: var(--osirion-font-size-xs);
+}
+
+.osirion-text-sm {
+    font-size: var(--osirion-font-size-sm);
+}
+
+.osirion-text-base {
+    font-size: var(--osirion-font-size-base);
+}
+
+.osirion-text-lg {
+    font-size: var(--osirion-font-size-lg);
+}
+
+.osirion-text-xl {
+    font-size: var(--osirion-font-size-xl);
+}
+
+.osirion-text-2xl {
+    font-size: var(--osirion-font-size-2xl);
+}
+
+.osirion-text-3xl {
+    font-size: var(--osirion-font-size-3xl);
+}
+
+.osirion-text-4xl {
+    font-size: var(--osirion-font-size-4xl);
+}
+
+.osirion-text-5xl {
+    font-size: var(--osirion-font-size-5xl);
+}
+
+/* Font weights */
+.osirion-font-light {
+    font-weight: var(--osirion-font-weight-light);
+}
+
+.osirion-font-normal {
+    font-weight: var(--osirion-font-weight-normal);
+}
+
+.osirion-font-medium {
+    font-weight: var(--osirion-font-weight-medium);
+}
+
+.osirion-font-semibold {
+    font-weight: var(--osirion-font-weight-semibold);
+}
+
+.osirion-font-bold {
+    font-weight: var(--osirion-font-weight-bold);
+}
+
+/* Line heights */
+.osirion-leading-none {
+    line-height: var(--osirion-line-height-none);
+}
+
+.osirion-leading-tight {
+    line-height: var(--osirion-line-height-tight);
+}
+
+.osirion-leading-snug {
+    line-height: var(--osirion-line-height-snug);
+}
+
+.osirion-leading-normal {
+    line-height: var(--osirion-line-height-normal);
+}
+
+.osirion-leading-relaxed {
+    line-height: var(--osirion-line-height-relaxed);
+}
+
+.osirion-leading-loose {
+    line-height: var(--osirion-line-height-loose);
+}
+
+/* Text colors - adaptive to theme */
+.osirion-text-primary {
+    color: var(--osirion-text-primary);
+}
+
+.osirion-text-secondary {
+    color: var(--osirion-text-secondary);
+}
+
+.osirion-text-tertiary {
+    color: var(--osirion-text-tertiary);
+}
+
+.osirion-text-disabled {
+    color: var(--osirion-text-disabled);
+}
+
+.osirion-text-inverse {
+    color: var(--osirion-text-inverse);
+}
+
+/* Text overflow */
+.osirion-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.osirion-text-ellipsis {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.osirion-text-clip {
+    text-overflow: clip;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+/* Text decoration */
+.osirion-no-underline {
+    text-decoration: none;
+}
+
+.osirion-underline {
+    text-decoration: underline;
+}
+
+.osirion-line-through {
+    text-decoration: line-through;
+}
+
+/* Text transform */
+.osirion-uppercase {
+    text-transform: uppercase;
+}
+
+.osirion-lowercase {
+    text-transform: lowercase;
+}
+
+.osirion-capitalize {
+    text-transform: capitalize;
+}
+
+.osirion-normal-case {
+    text-transform: none;
+}
+
+/* Whitespace */
+.osirion-whitespace-normal {
+    white-space: normal;
+}
+
+.osirion-whitespace-nowrap {
+    white-space: nowrap;
+}
+
+.osirion-whitespace-pre {
+    white-space: pre;
+}
+
+.osirion-whitespace-pre-line {
+    white-space: pre-line;
+}
+
+.osirion-whitespace-pre-wrap {
+    white-space: pre-wrap;
+}
+
+/* Word Break */
+.osirion-break-normal {
+    overflow-wrap: normal;
+    word-break: normal;
+}
+
+.osirion-break-words {
+    overflow-wrap: break-word;
+}
+
+.osirion-break-all {
+    word-break: break-all;
+}
+
+/* WCAG 2.2 compliant utilities */
+.osirion-text-readable {
+    line-height: var(--osirion-line-height-relaxed, 1.625);
+    letter-spacing: 0.12em;
+    word-spacing: 0.16em;
+}
+
+/* High contrast text */
+.osirion-text-high-contrast {
+    color: var(--osirion-neutral-900);
+    text-shadow: 0 0 1px rgba(0, 0, 0, 0.5);
+}
+
+/* Make emphasis visible not just with color */
+.osirion-text-emphasis {
+    font-weight: var(--osirion-font-weight-bold);
+    text-decoration: underline;
+}

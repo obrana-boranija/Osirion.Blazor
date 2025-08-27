@@ -21,19 +21,19 @@ public class ThemingOptions
     public CssFramework Framework { get; set; } = CssFramework.None;
 
     /// <summary>
-    /// Gets or sets the default theme mode
+    /// Gets or sets the default theme mode. Defaults to System to follow user's OS preference.
     /// </summary>
-    public ThemeMode DefaultMode { get; set; } = ThemeMode.Light;
+    public ThemeMode DefaultMode { get; set; } = ThemeMode.System;
 
     /// <summary>
     /// Gets or sets whether dark mode is enabled
     /// </summary>
-    public bool EnableDarkMode { get; set; } = false;
+    public bool EnableDarkMode { get; set; } = true;
 
     /// <summary>
     /// Gets or sets whether to follow system theme preference
     /// </summary>
-    public bool FollowSystemPreference { get; set; } = false;
+    public bool FollowSystemPreference { get; set; } = true;
 
     /// <summary>
     /// Gets or sets custom CSS variables

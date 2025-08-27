@@ -5,12 +5,17 @@
     {
         <h2 class="osirion-search-title">@Title</h2>
     }
-    <form class="@GetSearchBoxClass()" method="get" action="@ActionUrl">
-        <input name="@QueryParameterName"
+    <form class="@GetSearchBoxClass()" method="get" action="@ActionUrl" role="search">
+        <label for="search-input-@GetHashCode()" class="visually-hidden">Search</label>
+        <input id="search-input-@GetHashCode()"
+               name="@QueryParameterName"
                value="@SearchQuery"
-               type="text"
+               type="search"
                placeholder="@Placeholder"
-               class="osirion-search-input" />
-        <button type="submit" class="@GetButtonClass()">@SearchButtonText</button>
+               class="osirion-search-input"
+               aria-label="@Placeholder" />
+        <button type="submit" class="@GetButtonClass()" aria-label="Submit search">
+            <span aria-hidden="true">@SearchButtonText</span>
+        </button>
     </form>
 </div>

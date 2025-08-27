@@ -1,0 +1,846 @@
+/* Base testimonial card styles - Matching requested format */
+.osirion-testimonial-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--osirion-spacing-4);
+    padding: var(--osirion-spacing-6);
+    background: var(--osirion-background-primary);
+    border-radius: var(--osirion-radius-xl);
+    border: 1px solid var(--osirion-border-color);
+    transition: all var(--osirion-transition-duration-300) var(--osirion-transition-timing-default);
+    overflow: hidden;
+    /* WCAG 2.2 focus indicators */
+    outline: transparent solid 2px;
+    outline-offset: 2px;
+    /* Optimized card height */
+    min-height: 280px;
+    max-height: 320px;
+}
+
+/* WCAG 2.2 compliant focus styles */
+.osirion-testimonial-card:focus-within {
+    outline: 2px solid var(--osirion-color-primary-600);
+    outline-offset: 4px;
+}
+
+/* Elevated card effect using root variables */
+.osirion-testimonial-elevated {
+    box-shadow: var(--osirion-shadow-base);
+}
+
+.osirion-testimonial-elevated:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--osirion-shadow-lg);
+}
+
+/* Borderless variant */
+.osirion-testimonial-borderless {
+    border: none;
+    background: transparent;
+}
+
+/* Content area - testimonial text and rating at top */
+.osirion-testimonial-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--osirion-spacing-3);
+    text-align: left;
+}
+
+/* Rating stars - left aligned as per image */
+.osirion-testimonial-rating {
+    display: flex;
+    justify-content: flex-start;
+    gap: var(--osirion-spacing-1);
+    margin-bottom: var(--osirion-spacing-2);
+}
+
+.osirion-testimonial-star {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    min-height: 18px;
+    transition: all var(--osirion-transition-duration-200) ease;
+}
+
+.osirion-testimonial-star svg {
+    width: 16px;
+    height: 16px;
+}
+
+.osirion-testimonial-star-filled {
+    color: #fbbf24; /* Golden yellow for filled stars */
+}
+
+.osirion-testimonial-star-empty {
+    color: var(--osirion-text-secondary);
+}
+
+/* Quote styling - clean text without decorations */
+.osirion-testimonial-quote {
+    margin: 0;
+    flex: 1;
+    position: relative;
+}
+
+.osirion-testimonial-text {
+    margin: 0;
+    font-size: var(--osirion-font-size-base); /* Increased from sm to base */
+    line-height: var(--osirion-line-height-relaxed);
+    color: var(--osirion-text-primary);
+    font-style: normal;
+    font-weight: var(--osirion-font-weight-normal);
+    text-align: left;
+    hyphens: auto;
+    word-break: break-word;
+    /* Limit text to prevent overflow */
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Footer - horizontal layout with profile and details */
+.osirion-testimonial-footer {
+    display: flex;
+    flex-direction: column;
+    gap: var(--osirion-spacing-3);
+    margin-top: auto;
+    padding-top: var(--osirion-spacing-4);
+}
+
+/* Person row - horizontal layout like the image */
+.osirion-testimonial-person-row {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--osirion-spacing-3);
+}
+
+/* Avatar container - left side of person row */
+.osirion-testimonial-avatar {
+    flex-shrink: 0;
+}
+
+.osirion-testimonial-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: center;
+    border: 2px solid var(--osirion-text-secondary);
+    background-color: var(--osirion-background-secondary);
+    transition: all var(--osirion-transition-duration-200) ease;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.osirion-testimonial-card:hover .osirion-testimonial-image {
+    transform: scale(1.05);
+    border-color: var(--osirion-color-primary-400);
+}
+
+/* Person details - right side of person row - more compact spacing */
+.osirion-testimonial-person-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--osirion-spacing-0-5); /* Reduced from 1.5 to 0.5 for denser layout */
+}
+
+/* Name row - name and LinkedIn icon as integrated unit - tighter spacing */
+.osirion-testimonial-name-row {
+    display: flex;
+    align-items: center;
+    gap: var(--osirion-spacing-0-5); /* Reduced from 1 for tighter spacing */
+}
+
+.osirion-testimonial-name {
+    font-size: var(--osirion-font-size-lg); /* Increased from base to lg */
+    font-weight: var(--osirion-font-weight-semibold);
+    color: var(--osirion-text-primary);
+    font-style: normal;
+    line-height: var(--osirion-line-height-tight);
+    margin: 0;
+}
+
+/* LinkedIn name link wrapper - more compact when LinkedIn URL exists */
+.osirion-testimonial-name-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px; /* Reduced from 1 for tighter spacing */
+    text-decoration: none;
+}
+
+/* LinkedIn icon - more compact integration with name */
+.osirion-testimonial-linkedin-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px; /* Slightly smaller for denser look */
+    height: 16px;
+    color: #0077b5; /* Official LinkedIn blue */
+    transition: all var(--osirion-transition-duration-200) ease;
+    flex-shrink: 0;
+}
+
+.osirion-testimonial-name-link:hover .osirion-testimonial-linkedin-icon {
+    transform: scale(1.05);
+}
+
+.osirion-testimonial-linkedin-icon svg {
+    width: 12px; /* Smaller icon for denser look */
+    height: 12px;
+    fill: currentColor;
+}
+
+/* Position and company details - WCAG 2.2 compliant - more compact */
+.osirion-testimonial-details {
+    display: flex;
+    align-items: center;
+    gap: var(--osirion-spacing-1); /* Maintain readable spacing for text */
+    font-size: var(--osirion-font-size-sm); /* Increased from xs to sm for WCAG 2.2 */
+    color: var(--osirion-text-secondary);
+    line-height: var(--osirion-line-height-tight); /* Tighter line height */
+    flex-wrap: wrap;
+    /* WCAG 2.2 - minimum 12px font size for readability */
+    margin-top: 1px; /* Minimal space above position/company */
+}
+
+/* Read more actions - bottom of card */
+.osirion-testimonial-actions {
+    align-self: flex-start;
+    margin-top: var(--osirion-spacing-3);
+}
+
+/* Size variations - consistent with new layout and larger fonts */
+.osirion-testimonial-small {
+    padding: var(--osirion-spacing-4);
+    gap: var(--osirion-spacing-3);
+    min-height: 200px;
+    max-height: 240px;
+    border-radius: var(--osirion-radius-lg);
+}
+
+.osirion-testimonial-small .osirion-testimonial-image {
+    width: 32px;
+    height: 32px;
+    border-width: 1px;
+}
+
+.osirion-testimonial-small .osirion-testimonial-text {
+    font-size: var(--osirion-font-size-sm); /* Increased from xs to sm */
+    -webkit-line-clamp: 2;
+    line-height: var(--osirion-line-height-normal);
+}
+
+.osirion-testimonial-small .osirion-testimonial-name {
+    font-size: var(--osirion-font-size-base); /* Increased from sm to base */
+}
+
+.osirion-testimonial-small .osirion-testimonial-details {
+    font-size: var(--osirion-font-size-xs); /* Increased from 10px to xs */
+}
+
+.osirion-testimonial-small .osirion-testimonial-star svg {
+    width: 14px;
+    height: 14px;
+}
+
+.osirion-testimonial-small .osirion-testimonial-star {
+    min-width: 16px;
+    min-height: 16px;
+}
+
+.osirion-testimonial-small .osirion-testimonial-person-details {
+    gap: var(--osirion-spacing-0-5);
+}
+
+.osirion-testimonial-small .osirion-testimonial-name-link {
+    padding: 0;
+    margin: 0;
+    gap: 0;
+}
+
+.osirion-testimonial-small .osirion-testimonial-linkedin-icon {
+    width: 14px;
+    height: 14px;
+}
+
+.osirion-testimonial-small .osirion-testimonial-linkedin-icon svg {
+    width: 10px;
+    height: 10px;
+}
+
+.osirion-testimonial-small .osirion-testimonial-details {
+    margin-top: 1px;
+    line-height: var(--osirion-line-height-tight);
+}
+
+.osirion-testimonial-large {
+    padding: var(--osirion-spacing-8);
+    gap: var(--osirion-spacing-5);
+    min-height: 400px;
+    max-height: 460px;
+    border-radius: var(--osirion-radius-2xl);
+}
+
+.osirion-testimonial-large .osirion-testimonial-image {
+    width: 56px;
+    height: 56px;
+    border-width: 2px;
+}
+
+.osirion-testimonial-large .osirion-testimonial-text {
+    font-size: var(--osirion-font-size-lg); /* Increased from base to lg */
+    -webkit-line-clamp: 5;
+    line-height: var(--osirion-line-height-relaxed);
+}
+
+.osirion-testimonial-large .osirion-testimonial-name {
+    font-size: var(--osirion-font-size-xl); /* Increased from lg to xl */
+}
+
+.osirion-testimonial-large .osirion-testimonial-details {
+    font-size: var(--osirion-font-size-base); /* Increased from sm to base */
+}
+
+.osirion-testimonial-large .osirion-testimonial-star svg {
+    width: 18px;
+    height: 18px;
+}
+
+.osirion-testimonial-large .osirion-testimonial-star {
+    min-width: 22px;
+    min-height: 22px;
+}
+
+.osirion-testimonial-large .osirion-testimonial-person-details {
+    gap: var(--osirion-spacing-1); /* Slightly more space in large variant */
+}
+
+.osirion-testimonial-large .osirion-testimonial-name-link {
+    padding: 0;
+    margin: 0;
+    gap: 0;
+}
+
+.osirion-testimonial-large .osirion-testimonial-linkedin-icon {
+    width: 18px;
+    height: 18px;
+}
+
+.osirion-testimonial-large .osirion-testimonial-linkedin-icon svg {
+    width: 14px;
+    height: 14px;
+}
+
+.osirion-testimonial-large .osirion-testimonial-details {
+    margin-top: 2px;
+    line-height: var(--osirion-line-height-tight);
+}
+
+/* Variant styles - adapted to new layout */
+.osirion-testimonial-minimal {
+    background: transparent;
+    border: 1px solid var(--osirion-text-secondary);
+    padding: var(--osirion-spacing-4);
+    min-height: 160px;
+    max-height: 200px;
+    border-radius: var(--osirion-radius-lg);
+}
+
+.osirion-testimonial-minimal .osirion-testimonial-image {
+    width: 28px;
+    height: 28px;
+    border-width: 1px;
+}
+
+.osirion-testimonial-minimal .osirion-testimonial-text {
+    font-size: var(--osirion-font-size-sm); /* Increased from xs to sm */
+    -webkit-line-clamp: 2;
+    font-style: normal;
+    line-height: var(--osirion-line-height-normal);
+}
+
+.osirion-testimonial-minimal .osirion-testimonial-name {
+    font-size: var(--osirion-font-size-sm); /* Increased from xs to sm */
+}
+
+.osirion-testimonial-minimal .osirion-testimonial-details {
+    font-size: var(--osirion-font-size-xs); /* Increased from 9px to xs */
+}
+
+.osirion-testimonial-minimal .osirion-testimonial-star svg {
+    width: 12px;
+    height: 12px;
+}
+
+.osirion-testimonial-minimal .osirion-testimonial-star {
+    min-width: 14px;
+    min-height: 14px;
+}
+
+.osirion-testimonial-minimal .osirion-testimonial-person-details {
+    gap: var(--osirion-spacing-0-5);
+}
+
+.osirion-testimonial-minimal .osirion-testimonial-name-link {
+    padding: 0;
+    margin: 0;
+    gap: 0;
+}
+
+.osirion-testimonial-minimal .osirion-testimonial-linkedin-icon {
+    width: 12px;
+    height: 12px;
+}
+
+.osirion-testimonial-minimal .osirion-testimonial-linkedin-icon svg {
+    width: 8px;
+    height: 8px;
+}
+
+.osirion-testimonial-minimal .osirion-testimonial-details {
+    margin-top: 1px;
+    line-height: var(--osirion-line-height-tight);
+}
+
+.osirion-testimonial-minimal:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--osirion-shadow-base);
+}
+
+.osirion-testimonial-highlighted {
+    background: linear-gradient(135deg, 
+        var(--osirion-background-primary) 0%, 
+        var(--osirion-color-primary-50) 100%);
+    border: 1px solid var(--osirion-color-primary-200);
+    position: relative;
+    overflow: hidden;
+}
+
+.osirion-testimonial-highlighted::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, 
+        var(--osirion-color-primary-500) 0%, 
+        var(--osirion-color-primary-400) 100%);
+}
+
+.osirion-testimonial-compact {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--osirion-spacing-4);
+    padding: var(--osirion-spacing-5);
+    text-align: left;
+    min-height: 160px;
+    max-height: 200px;
+    border-radius: var(--osirion-radius-lg);
+}
+
+.osirion-testimonial-compact .osirion-testimonial-content {
+    text-align: left;
+    gap: var(--osirion-spacing-2);
+}
+
+.osirion-testimonial-compact .osirion-testimonial-text {
+    -webkit-line-clamp: 2;
+    text-align: left;
+    font-size: var(--osirion-font-size-sm); /* Increased from xs to sm */
+    line-height: var(--osirion-line-height-normal);
+}
+
+.osirion-testimonial-compact .osirion-testimonial-name {
+    font-size: var(--osirion-font-size-base); /* Increased from sm to base */
+}
+
+.osirion-testimonial-compact .osirion-testimonial-details {
+    font-size: var(--osirion-font-size-xs); /* Increased from 10px to xs */
+}
+
+.osirion-testimonial-compact .osirion-testimonial-star svg {
+    width: 14px;
+    height: 14px;
+}
+
+.osirion-testimonial-compact .osirion-testimonial-star {
+    min-width: 16px;
+    min-height: 16px;
+}
+
+.osirion-testimonial-compact .osirion-testimonial-person-details {
+    gap: var(--osirion-spacing-0-5);
+}
+
+/*.osirion-testimonial-compact .osirion-testimonial-name-link {
+    padding: 0;
+    margin: 0;
+    gap: 0;
+}*/
+
+.osirion-testimonial-compact .osirion-testimonial-linkedin-icon {
+    width: 14px;
+    height: 14px;
+}
+
+.osirion-testimonial-compact .osirion-testimonial-linkedin-icon svg {
+    width: 11px;
+    height: 11px;
+}
+
+.osirion-testimonial-compact .osirion-testimonial-details {
+    margin-top: 1px;
+    line-height: var(--osirion-line-height-tight);
+}
+
+/* Theme Mode Support - Clean theme implementation */
+/* Light theme (explicit) */
+.osirion-testimonial-theme-light {
+    background: var(--osirion-color-white);
+    border-color: var(--osirion-text-secondary);
+    color: var(--osirion-text-secondary);
+}
+
+.osirion-testimonial-theme-light .osirion-testimonial-text {
+    color: var(--osirion-text-secondary);
+}
+
+.osirion-testimonial-theme-light .osirion-testimonial-name {
+    color: var(--osirion-text-secondary);
+}
+
+.osirion-testimonial-theme-light .osirion-testimonial-details {
+    color: var(--osirion-text-secondary); /* Improved contrast for WCAG 2.2 */
+}
+
+.osirion-testimonial-theme-light .osirion-testimonial-position {
+    color: var(--osirion-text-secondary); /* Improved contrast */
+}
+
+    .osirion-testimonial-theme-light .osirion-testimonial-company {
+        color: var(--osirion-text-secondary); /* Improved contrast */
+    }
+
+.osirion-testimonial-theme-light .osirion-testimonial-image {
+    border-color: var(--osirion-text-secondary);
+    background-color: var(--osirion-color-neutral-50);
+}
+
+.osirion-testimonial-theme-light .osirion-testimonial-star-empty {
+    color: var(--osirion-text-secondary);
+}
+
+/* Dark theme (explicit) */
+.osirion-testimonial-theme-dark {
+    background: var(--osirion-text-secondary);
+    border-color: var(--osirion-text-secondary);
+    color: var(--osirion-text-secondary);
+}
+
+.osirion-testimonial-theme-dark .osirion-testimonial-text {
+    color: var(--osirion-text-secondary);
+}
+
+.osirion-testimonial-theme-dark .osirion-testimonial-name {
+    color: var(--osirion-text-secondary);
+}
+
+.osirion-testimonial-theme-dark .osirion-testimonial-details {
+    color: var(--osirion-text-secondary); /* Improved contrast for WCAG 2.2 */
+}
+
+.osirion-testimonial-theme-dark .osirion-testimonial-position {
+    color: var(--osirion-text-secondary); /* Improved contrast */
+}
+
+    .osirion-testimonial-theme-dark .osirion-testimonial-company {
+        color: var(--osirion-text-secondary); /* Improved contrast */
+    }
+
+.osirion-testimonial-theme-dark .osirion-testimonial-image {
+    border-color: var(--osirion-text-secondary);
+    background-color: var(--osirion-text-secondary);
+}
+
+.osirion-testimonial-theme-dark .osirion-testimonial-highlighted {
+    background: linear-gradient(135deg, 
+        var(--osirion-text-secondary) 0%, 
+        var(--osirion-text-secondary) 100%);
+    border-color: var(--osirion-color-primary-700);
+}
+
+.osirion-testimonial-theme-dark .osirion-testimonial-star-empty {
+    color: var(--osirion-text-secondary);
+}
+
+.osirion-testimonial-theme-dark .osirion-testimonial-minimal {
+    background: transparent;
+    border-color: var(--osirion-text-secondary);
+}
+
+/* System theme - inherits from parent/global theme via CSS custom properties */
+.osirion-testimonial-theme-system {
+    /* Uses inherited CSS variables that change based on parent theme */
+    background: var(--osirion-background-primary);
+    border-color: var(--osirion-border-color);
+    color: var(--osirion-text-primary);
+}
+
+.osirion-testimonial-theme-system .osirion-testimonial-text {
+    color: var(--osirion-text-secondary);
+}
+
+.osirion-testimonial-theme-system .osirion-testimonial-name {
+    color: var(--osirion-text-primary);
+}
+
+.osirion-testimonial-theme-system .osirion-testimonial-details {
+    color: var(--osirion-text-secondary); /* Better contrast */
+}
+
+.osirion-testimonial-theme-system .osirion-testimonial-position {
+    color: var(--osirion-text-secondary);
+}
+
+    .osirion-testimonial-theme-system .osirion-testimonial-company {
+        color: var(--osirion-text-secondary);
+    }
+
+.osirion-testimonial-theme-system .osirion-testimonial-image {
+    border-color: var(--osirion-border-color);
+    background-color: var(--osirion-background-secondary);
+}
+
+.osirion-testimonial-theme-system .osirion-testimonial-star-empty {
+    color: var(--osirion-text-secondary);
+}
+
+/* Inverted theme */
+.osirion-testimonial-theme-inverted {
+    /* Default to dark in light mode */
+    background: var(--osirion-text-secondary);
+    border-color: var(--osirion-text-secondary);
+    color: var(--osirion-text-secondary);
+}
+
+.osirion-testimonial-theme-inverted .osirion-testimonial-text {
+    color: var(--osirion-text-secondary);
+}
+
+.osirion-testimonial-theme-inverted .osirion-testimonial-name {
+    color: var(--osirion-text-secondary);
+}
+
+.osirion-testimonial-theme-inverted .osirion-testimonial-details {
+    color: var(--osirion-text-secondary); /* Improved contrast */
+}
+
+.osirion-testimonial-theme-inverted .osirion-testimonial-position {
+    color: var(--osirion-text-secondary);
+}
+
+.osirion-testimonial-theme-inverted .osirion-testimonial-company {
+    color: var(--osirion-text-secondary);
+}
+
+.osirion-testimonial-theme-inverted .osirion-testimonial-image {
+    border-color: var(--osirion-text-secondary);
+    background-color: var(--osirion-text-secondary);
+}
+
+.osirion-testimonial-theme-inverted .osirion-testimonial-star-empty {
+    color: var(--osirion-text-secondary);
+}
+
+/* Inverted theme in dark mode becomes light */
+@media (prefers-color-scheme: dark) {
+    .osirion-testimonial-theme-inverted {
+        background: var(--osirion-color-white);
+        border-color: var(--osirion-text-secondary);
+        color: var(--osirion-text-secondary);
+    }
+    
+    .osirion-testimonial-theme-inverted .osirion-testimonial-text {
+        color: var(--osirion-text-secondary);
+    }
+    
+    .osirion-testimonial-theme-inverted .osirion-testimonial-name {
+        color: var(--osirion-text-secondary);
+    }
+    
+    .osirion-testimonial-theme-inverted .osirion-testimonial-details {
+        color: var(--osirion-text-secondary);
+    }
+    
+    .osirion-testimonial-theme-inverted .osirion-testimonial-position {
+        color: var(--osirion-text-secondary);
+    }
+    
+    .osirion-testimonial-theme-inverted .osirion-testimonial-company {
+        color: var(--osirion-text-secondary);
+    }
+    
+    .osirion-testimonial-theme-inverted .osirion-testimonial-image {
+        border-color: var(--osirion-text-secondary);
+        background-color: var(--osirion-color-neutral-50);
+    }
+    
+    .osirion-testimonial-theme-inverted .osirion-testimonial-star-empty {
+        color: var(--osirion-text-secondary);
+    }
+}
+
+/* Framework integration */
+.card.osirion-testimonial-card {
+    border: 1px solid var(--osirion-border-color);
+}
+
+/* Enhanced responsive design with WCAG 2.2 compliance */
+@media (max-width: 767.98px) {
+    .osirion-testimonial-card {
+        padding: var(--osirion-spacing-5);
+        gap: var(--osirion-spacing-3);
+        min-height: 260px;
+        max-height: 300px;
+    }
+    
+    .osirion-testimonial-image {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .osirion-testimonial-text {
+        font-size: var(--osirion-font-size-sm); /* Increased for mobile */
+        -webkit-line-clamp: 3;
+    }
+    
+    .osirion-testimonial-name {
+        font-size: var(--osirion-font-size-base); /* Increased for mobile */
+    }
+    
+    .osirion-testimonial-details {
+        font-size: var(--osirion-font-size-xs); /* Increased for mobile */
+    }
+    
+    /* Stack person row vertically on mobile */
+    .osirion-testimonial-person-row {
+        align-items: center;
+        gap: var(--osirion-spacing-2);
+    }
+    
+    .osirion-testimonial-linkedin-link {
+        width: 18px;
+        height: 18px;
+        padding: var(--osirion-spacing-1-5);
+        background: none;
+        border: none;
+        border-radius: 0;
+    }
+    
+    .osirion-testimonial-linkedin-link svg {
+        width: 11px;
+        height: 11px;
+    }
+}
+
+/* WCAG 2.2 - Reduced motion compliance */
+@media (prefers-reduced-motion: reduce) {
+    .osirion-testimonial-card,
+    .osirion-testimonial-image,
+    .osirion-testimonial-star,
+    .osirion-testimonial-linkedin-link {
+        transition: none;
+        animation: none;
+    }
+    
+    .osirion-testimonial-elevated:hover,
+    .osirion-testimonial-minimal:hover {
+        transform: none;
+    }
+    
+    .osirion-testimonial-card:hover .osirion-testimonial-image {
+        transform: none;
+    }
+    
+    .osirion-testimonial-linkedin-link:hover {
+        transform: none;
+    }
+}
+
+/* WCAG 2.2 - High contrast mode support */
+@media (prefers-contrast: high) {
+    .osirion-testimonial-card {
+        border-width: 2px;
+        border-color: currentColor;
+        background: var(--osirion-background-primary);
+    }
+    
+    .osirion-testimonial-image {
+        border-width: 3px;
+        border-color: currentColor;
+    }
+    
+    .osirion-testimonial-linkedin-link:focus {
+        outline: 3px solid currentColor;
+        outline-offset: 2px;
+        box-shadow: none;
+    }
+    
+    /* Ensure sufficient contrast for all text */
+    .osirion-testimonial-star-filled {
+        color: currentColor;
+    }
+    
+    .osirion-testimonial-linkedin-link {
+        color: #0077b5 !important;
+    }
+    
+    /* WCAG 2.2 - enhanced contrast for position and company */
+    .osirion-testimonial-details,
+    .osirion-testimonial-position,
+    .osirion-testimonial-company {
+        color: var(--osirion-text-secondary);
+        opacity: 0.8;
+    }
+}
+
+/* Print styles */
+@media print {
+    .osirion-testimonial-card {
+        break-inside: avoid;
+        background: white !important;
+        border: 1px solid black !important;
+        box-shadow: none !important;
+        color: black !important;
+        page-break-inside: avoid;
+        min-height: auto;
+        max-height: none;
+    }
+    
+    .osirion-testimonial-linkedin-link,
+    .osirion-testimonial-actions {
+        display: none;
+    }
+    
+    .osirion-testimonial-star {
+        color: black !important;
+    }
+    
+    .osirion-testimonial-image {
+        border: 2px solid black !important;
+        filter: grayscale(100%);
+    }
+    
+    .osirion-testimonial-text {
+        -webkit-line-clamp: unset;
+        display: block;
+        overflow: visible;
+    }
+}

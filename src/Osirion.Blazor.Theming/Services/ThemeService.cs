@@ -32,7 +32,7 @@ public class ThemeService : IThemeService
     }
 
     /// <inheritdoc/>
-    public CssFramework CurrentFramework => _options.Framework;
+    public virtual CssFramework CurrentFramework => _options.Framework;
 
     /// <inheritdoc/>
     public ThemeMode CurrentMode
@@ -105,6 +105,7 @@ public class ThemeService : IThemeService
 
     /// <summary>
     /// Toggle between light and dark mode, returns the new mode string ("light" or "dark").
+    /// System mode is treated as the resolved system preference for toggling.
     /// </summary>
     public string ToggleTheme()
     {
@@ -118,8 +119,9 @@ public class ThemeService : IThemeService
     {
         if (_currentMode == ThemeMode.System)
         {
-            // In Static SSR we cannot detect system preference reliably server-side; use DefaultMode as fallback
-            return _options.DefaultMode;
+            // Server-side fallback when System is configured but no client preference is set
+            // Client-side JavaScript will resolve this to actual system preference
+            return ThemeMode.Light; // Safe fallback for SSR
         }
         return _currentMode;
     }
@@ -151,6 +153,7 @@ public class ThemeService : IThemeService
         {
             "light" => ThemeMode.Light,
             "dark" => ThemeMode.Dark,
+            "system" => ThemeMode.System,
             _ => null
         };
     }
@@ -172,7 +175,14 @@ public class ThemeService : IThemeService
                 Path = "/"
             };
 
-            var value = mode == ThemeMode.Dark ? "dark" : mode == ThemeMode.Light ? "light" : string.Empty;
+            var value = mode switch
+            {
+                ThemeMode.Dark => "dark",
+                ThemeMode.Light => "light",
+                ThemeMode.System => "system",
+                _ => string.Empty
+            };
+
             if (!string.IsNullOrEmpty(value))
             {
                 // Write only the osirion cookie

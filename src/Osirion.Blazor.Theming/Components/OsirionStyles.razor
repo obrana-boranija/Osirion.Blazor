@@ -6,7 +6,8 @@
 @inject IOptions<ThemingOptions>? Options
 @inject IThemeService ThemeService
 
-@* Include core stylesheets *@
+@LoadScript("./_content/Osirion.Blazor.Theming/js/osirion-styles.js")
+
 <link rel="stylesheet" href="_content/Osirion.Blazor.Core/css/index.css" />
 
 @if (!EffectiveOptions.UseDefaultStyles)
@@ -14,7 +15,6 @@
     <link rel="stylesheet" href="_content/Osirion.Blazor.Theming/css/index.css" />
 }
 
-@* Apply custom variables *@
 @if (!string.IsNullOrWhiteSpace(CustomVariables))
 {
     <style>
@@ -24,7 +24,6 @@
     </style>
 }
 
-@* Apply generated theme variables *@
 @if (!string.IsNullOrWhiteSpace(GeneratedVariables))
 {
     <style>
@@ -34,9 +33,23 @@
     </style>
 }
 
-@* Framework-agnostic theme + optional framework integration script (always included for SSR static sites) *@
-@((MarkupString)script)
-
-@functions {
-    private MarkupString script => (MarkupString)GetScript();
-}
+<script>
+    (function(){
+        const config = {
+            frameworkClass: '@GetFrameworkClass',
+            selectedFramework: '@EffectiveOptions.Framework',
+            defaultTheme: '@EffectiveOptions.DefaultMode.ToString().ToLowerInvariant()',
+            currentTheme: '@ThemeService.CurrentMode.ToString().ToLowerInvariant()'
+        };
+               
+        function init(){
+            if(typeof window.initializeOsirionStyles === 'function'){
+                window.initializeOsirionStyles(config);
+            } else {
+                setTimeout(init, 10);
+            }
+        }
+        
+        init();
+    })();
+</script>

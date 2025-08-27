@@ -18,4 +18,11 @@
     <ProjectReference Include="..\..\src\Osirion.Blazor\Osirion.Blazor.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\css\" />
+  </ItemGroup>
+
+  <!-- Integrate CSS tree-shaking MSBuild target -->
+  <Import Project="..\..\..\build\MyBlazorLibrary.targets" Condition="Exists('..\..\..\build\MyBlazorLibrary.targets')" />
+
 </Project>

@@ -1,0 +1,23 @@
+<Project>
+  <PropertyGroup>
+    <CssTreeShakerScript>$(MSBuildThisFileDirectory)tools\css-tree-shaker.js</CssTreeShakerScript>
+    <CssMinifierScript>$(MSBuildThisFileDirectory)tools\minify-css.js</CssMinifierScript>
+    <CssTreeShakerOutput>$(ProjectDir)wwwroot\css\optimized\</CssTreeShakerOutput>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <CssFilesToShake Include="$(ProjectDir)wwwroot\css\*.css" />
+    <CssFilesToShake Include="$(ProjectDir)wwwroot\lib\**\*.css" />
+    <SourceFilesToScan Include="$(ProjectDir)**\*.razor" />
+    <SourceFilesToScan Include="$(ProjectDir)**\*.cs" />
+    <SourceFilesToScan Include="$(ProjectDir)**\*.html" />
+  </ItemGroup>
+
+  <Target Name="TreeShakeCss" BeforeTargets="Build">
+    <Message Text="Running CSS tree-shaking..." Importance="high" />
+    <Exec Command="node &quot;$(CssTreeShakerScript)&quot; &quot;@(CssFilesToShake, ';')&quot; &quot;@(SourceFilesToScan, ';')&quot; &quot;$(CssTreeShakerOutput)&quot;" />
+    <Message Text="Minifying optimized CSS..." Importance="high" />
+    <Exec Command="node &quot;$(CssMinifierScript)&quot; &quot;$(CssTreeShakerOutput)&quot;" />
+    <Message Text="CSS tree-shaking and minification complete." Importance="high" />
+  </Target>
+</Project>

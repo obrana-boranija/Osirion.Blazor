@@ -1,0 +1,82 @@
+@namespace Osirion.Blazor.Components
+@inherits OsirionComponentBase
+
+<section class="@GetCarouselClass()" 
+         aria-label="@SectionTitle"
+         style="@Style"
+         @attributes="Attributes">
+    
+    @if (!string.IsNullOrEmpty(Title))
+    {
+        <div class="osirion-testimonial-carousel-header">
+            <h2 class="osirion-testimonial-carousel-title">@Title</h2>
+        </div>
+    }
+    
+    <div class="osirion-testimonial-carousel-container">
+        <div class="osirion-testimonial-carousel-wrapper">
+            <div class="osirion-testimonial-carousel-track" 
+                 role="list" 
+                 style="@GetCarouselTrackStyle()">
+                
+                @* First set of testimonials with priority loading for first 2 *@
+                @{int cardIndex = 0;}
+                @foreach (var testimonial in VisibleTestimonials)
+                {
+                    <div class="osirion-testimonial-carousel-slide" role="listitem">
+                        <OsirionTestimonialCard 
+                            Name="@testimonial.Name"
+                            Position="@testimonial.Position"
+                            Company="@testimonial.Company"
+                            TestimonialText="@testimonial.TestimonialText"
+                            ProfileImageUrl="@testimonial.ProfileImageUrl"
+                            LinkedInUrl="@testimonial.LinkedInUrl"
+                            ShowRating="@(ShowRating && testimonial.ShowRating)"
+                            Rating="@testimonial.Rating"
+                            ReadMoreHref="@testimonial.ReadMoreHref"
+                            ReadMoreText="@testimonial.ReadMoreText"
+                            ReadMoreVariant="@testimonial.ReadMoreVariant"
+                            ReadMoreTarget="@testimonial.ReadMoreTarget"
+                            Variant="@CardVariant"
+                            Size="@CardSize"
+                            Theme="@GetCardTheme()"
+                            Elevated="@CardElevated"
+                            Borderless="@CardBorderless"
+                            IsHiddenFromAssistiveTech="false"
+                            IsFirstVisible="@(cardIndex < 2)"
+                            Class="@testimonial.AdditionalCssClass" />
+                    </div>
+                    cardIndex++;
+                }
+
+                @* Duplicate set for seamless looping - all lazy loaded *@
+                @foreach (var testimonial in VisibleTestimonials)
+                {
+                    <div class="osirion-testimonial-carousel-slide" role="listitem" aria-hidden="true">
+                        <OsirionTestimonialCard 
+                            Name="@testimonial.Name"
+                            Position="@testimonial.Position"
+                            Company="@testimonial.Company"
+                            TestimonialText="@testimonial.TestimonialText"
+                            ProfileImageUrl="@testimonial.ProfileImageUrl"
+                            LinkedInUrl="@testimonial.LinkedInUrl"
+                            ShowRating="@(ShowRating && testimonial.ShowRating)"
+                            Rating="@testimonial.Rating"
+                            ReadMoreHref="@testimonial.ReadMoreHref"
+                            ReadMoreText="@testimonial.ReadMoreText"
+                            ReadMoreVariant="@testimonial.ReadMoreVariant"
+                            ReadMoreTarget="@testimonial.ReadMoreTarget"
+                            Variant="@CardVariant"
+                            Size="@CardSize"
+                            Theme="@GetCardTheme()"
+                            Elevated="@CardElevated"
+                            Borderless="@CardBorderless"
+                            IsHiddenFromAssistiveTech="true"
+                            IsFirstVisible="false"
+                            Class="@testimonial.AdditionalCssClass" />
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>

@@ -11,7 +11,7 @@
         </label>
     }
 
-    <nav class="osirion-menu-nav" aria-label="@AriaLabel">
+    <nav class="osirion-menu-nav" aria-label="@AriaLabel" role="navigation">
         <!-- Branding container -->
         <div class="osirion-nav-branding">
             @if (BrandingTemplate is not null)
@@ -21,7 +21,7 @@
             else if (!string.IsNullOrWhiteSpace(BrandLogo))
             {
             <a href="@Href" class="osirion-brand-link">
-                <img src="@BrandLogo" alt="@BrandText brand logo" class="osirion-brand-logo" width="60" heigth="60" />
+                <img src="@BrandLogo" alt="@BrandText brand logo" class="osirion-brand-logo" width="60" height="60" />
                     @if (!string.IsNullOrWhiteSpace(BrandText))
                     {
                         <span class="osirion-brand-text">@BrandText</span>
@@ -35,7 +35,7 @@
         </div>
 
         <!-- Main menu content -->
-        <div class="osirion-menu" role="menubar">
+        <div class="osirion-menu">
             <div class="osirion-menu-inner">
                 @ChildContent
             </div>

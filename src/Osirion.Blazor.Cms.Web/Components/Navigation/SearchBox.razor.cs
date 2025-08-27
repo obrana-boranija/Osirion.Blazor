@@ -31,4 +31,9 @@ public partial class SearchBox
     {
         return "osirion-search-box";
     }
+
+    private string GetButtonClass()
+    {
+        return "osirion-search-button";
+    }
 }

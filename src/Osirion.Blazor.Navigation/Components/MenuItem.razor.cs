@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.AspNetCore.Components.Web;
-using System;
-using System.Collections.Generic;
 
 namespace Osirion.Blazor.Navigation.Components;
 
@@ -81,52 +79,33 @@ public partial class MenuItem
     public string? Id { get; set; }
 
     /// <summary>
-    /// Gets the unique identifier for the menu item.
+    /// Gets the unique identifier for the submenu.
     /// </summary>
-    private string ItemId => Id ?? $"osirion-menu-item-{Guid.NewGuid():N}";
-
-    /// <summary>
-    /// Gets the submenu identifier.
-    /// </summary>
-    private string SubmenuId => $"{ItemId}-submenu";
+    internal string SubmenuId => $"submenu-{Id ?? Guid.NewGuid().ToString("N")[..8]}";
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
+
+        // Automatically detect active state based on navigation if not manually set
+        if (!IsActive && !string.IsNullOrWhiteSpace(Href) && Href != "#")
+        {
+            // This would require NavigationManager injection for automatic active detection
+            // For now, users need to set IsActive manually
+        }
+
+        // Detect if item has submenu based on ChildContent
+        if (!HasSubmenu && ChildContent is not null)
+        {
+            HasSubmenu = true;
+        }
 
         if (Attributes is null)
         {
             Attributes = new Dictionary<string, object>();
         }
 
-        // Add CSS classes for state
-        var cssClasses = new List<string>();
-
-        if (IsActive)
-            cssClasses.Add("osirion-menu-item-active");
-
-        if (Disabled)
-            cssClasses.Add("osirion-menu-item-disabled");
-
-        // Add role and accessibility attributes
-        if (!Attributes.ContainsKey("id"))
-            Attributes["id"] = ItemId;
-
-        if (!Attributes.ContainsKey("role"))
-            Attributes["role"] = "menuitem";
-
-        if (HasSubmenu && !Attributes.ContainsKey("aria-haspopup"))
-            Attributes["aria-haspopup"] = "true";
-
-        if (HasSubmenu && !Attributes.ContainsKey("aria-expanded"))
-            Attributes["aria-expanded"] = IsActive.ToString().ToLowerInvariant();
-
-        if (HasSubmenu && !Attributes.ContainsKey("aria-controls"))
-            Attributes["aria-controls"] = SubmenuId;
-
-        if (Disabled && !Attributes.ContainsKey("aria-disabled"))
-            Attributes["aria-disabled"] = "true";
-
+        // Add rel attribute for external links
         if (Target == "_blank" && !Attributes.ContainsKey("rel"))
             Attributes["rel"] = "noopener noreferrer";
     }

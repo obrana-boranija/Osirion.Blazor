@@ -1,0 +1,318 @@
+/* Base read more link styles */
+.osirion-read-more {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--osirion-spacing-2, 0.5rem);
+    text-decoration: none;
+    color: var(--osirion-action-primary, #007b31);
+    font-weight: var(--osirion-font-weight-medium, 500);
+    line-height: var(--osirion-line-height-normal, 1.5);
+    border-radius: var(--osirion-radius-sm, 0.25rem);
+    transition: all var(--osirion-transition-duration-200, 0.2s) ease;
+    cursor: pointer;
+}
+
+/* Hover states */
+.osirion-read-more:hover {
+    color: var(--osirion-color-primary-700, #006b2a);
+    text-decoration: none;
+}
+
+.osirion-read-more:focus {
+    outline: 2px solid var(--osirion-color-primary-500, #008a35);
+    outline-offset: 2px;
+}
+
+/* Block display */
+.osirion-read-more-block {
+    display: flex;
+    width: 100%;
+}
+
+/* Stretched link for cards */
+.osirion-read-more-stretched {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+    padding: var(--osirion-spacing-4, 1rem);
+}
+
+/* When stretched, the text and icon should remain visible and properly positioned */
+.osirion-read-more-stretched .osirion-read-more-text,
+.osirion-read-more-stretched .osirion-read-more-icon {
+    position: relative;
+    z-index: 2;
+}
+
+/* Stretched link content positioning */
+.osirion-read-more-stretched {
+    gap: var(--osirion-spacing-2, 0.5rem);
+}
+
+/* Size variations */
+.osirion-read-more-small {
+    font-size: var(--osirion-font-size-sm, 0.875rem);
+    gap: var(--osirion-spacing-1, 0.25rem);
+}
+
+.osirion-read-more-small .osirion-read-more-icon svg {
+    width: 14px;
+    height: 14px;
+}
+
+.osirion-read-more-normal {
+    font-size: var(--osirion-font-size-base, 1rem);
+}
+
+.osirion-read-more-normal .osirion-read-more-icon svg {
+    width: 16px;
+    height: 16px;
+}
+
+.osirion-read-more-large {
+    font-size: var(--osirion-font-size-lg, 1.125rem);
+    gap: var(--osirion-spacing-3, 0.75rem);
+}
+
+.osirion-read-more-large .osirion-read-more-icon svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* Icon styles */
+.osirion-read-more-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: transform var(--osirion-transition-duration-200, 0.2s) ease;
+}
+
+/* Icon positioning */
+.osirion-read-more-icon-left .osirion-read-more-icon-left {
+    order: -1;
+}
+
+.osirion-read-more-icon-right .osirion-read-more-icon-right {
+    order: 1;
+}
+
+/* Animation effects */
+.osirion-read-more-animated:hover .osirion-read-more-icon-right {
+    transform: translateX(var(--osirion-spacing-1, 0.25rem));
+}
+
+.osirion-read-more-animated:hover .osirion-read-more-icon-left {
+    transform: translateX(calc(-1 * var(--osirion-spacing-1, 0.25rem)));
+}
+
+/* Variant styles */
+.osirion-read-more-default {
+    /* Uses base styles with primary color */
+}
+
+.osirion-read-more-arrow {
+    font-weight: var(--osirion-font-weight-semibold, 600);
+}
+
+.osirion-read-more-external {
+    color: var(--osirion-action-primary, #007b31);
+}
+
+.osirion-read-more-external:hover {
+    color: var(--osirion-color-primary-700, #006b2a);
+}
+
+.osirion-read-more-download {
+    color: var(--osirion-action-primary, #007b31);
+}
+
+.osirion-read-more-download:hover {
+    color: var(--osirion-color-primary-700, #006b2a);
+}
+
+.osirion-read-more-plain {
+    color: var(--osirion-text-primary, #374151);
+    font-weight: var(--osirion-font-weight-normal, 400);
+}
+
+    .osirion-read-more-plain:hover {
+        color: var(--osirion-color-primary-700, #006b2a);
+    }
+
+.osirion-read-more-button {
+    padding: var(--osirion-spacing-2, 0.5rem) var(--osirion-spacing-4, 1rem);
+    background-color: var(--osirion-action-primary, #007b31);
+    color: white;
+    border-radius: var(--osirion-radius-md, 0.375rem);
+    font-weight: var(--osirion-font-weight-medium, 500);
+    border: 1px solid var(--osirion-action-primary, #007b31);
+}
+
+.osirion-read-more-button:hover {
+    background-color: var(--osirion-color-primary-700, #006b2a);
+    border-color: var(--osirion-color-primary-700, #006b2a);
+    color: white;
+}
+
+.osirion-read-more-button:focus {
+    box-shadow: 0 0 0 3px rgba(0, 123, 49, 0.25);
+}
+
+/* Framework-specific adjustments */
+
+/* Bootstrap integration */
+.icon-link .osirion-read-more-icon {
+    /* Bootstrap icon-link already handles spacing */
+    margin: 0;
+}
+
+/* Bootstrap stretched link should not use icon-link classes */
+.osirion-read-more-stretched.stretched-link {
+    color: var(--osirion-action-primary, #007b31);
+    text-decoration: none;
+}
+
+.osirion-read-more-stretched.stretched-link:hover {
+    color: var(--osirion-color-primary-700, #006b2a);
+}
+
+/* FluentUI integration */
+.osirion-fluent-link {
+    border: none;
+    background: transparent;
+}
+
+/* MudBlazor integration */
+.mud-link.osirion-read-more {
+    text-decoration: none;
+}
+
+/* Radzen integration */
+.rz-link.osirion-read-more {
+    display: inline-flex;
+}
+
+/* Text content */
+.osirion-read-more-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Responsive adjustments */
+@media (max-width: 767.98px) {
+    .osirion-read-more {
+        font-size: var(--osirion-font-size-sm, 0.875rem);
+    }
+    
+    .osirion-read-more-large {
+        font-size: var(--osirion-font-size-base, 1rem);
+    }
+    
+    .osirion-read-more-text {
+        white-space: normal;
+    }
+    
+    /* Make block links more touch-friendly */
+    .osirion-read-more-block {
+        min-height: 44px;
+        padding: var(--osirion-spacing-2, 0.5rem);
+    }
+
+    /* Adjust stretched link positioning on mobile */
+    .osirion-read-more-stretched {
+        padding: var(--osirion-spacing-3, 0.75rem);
+    }
+}
+
+/* Print styles */
+@media print {
+    .osirion-read-more {
+        color: black !important;
+        text-decoration: underline !important;
+    }
+    
+    .osirion-read-more-icon {
+        display: none;
+    }
+    
+    .osirion-read-more-button {
+        background: transparent !important;
+        border: 1px solid black !important;
+        color: black !important;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .osirion-read-more {
+        border: 1px solid transparent;
+    }
+    
+    .osirion-read-more:hover,
+    .osirion-read-more:focus {
+        border-color: currentColor;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .osirion-read-more,
+    .osirion-read-more-icon {
+        transition: none;
+    }
+    
+    .osirion-read-more-animated:hover .osirion-read-more-icon-right,
+    .osirion-read-more-animated:hover .osirion-read-more-icon-left {
+        transform: none;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .osirion-read-more {
+        color: var(--osirion-action-primary, #22c55e);
+    }
+    
+    .osirion-read-more:hover {
+        color: var(--osirion-action-primary-hover, #4ade80);
+    }
+    
+    .osirion-read-more-external {
+        color: var(--osirion-action-primary, #22c55e);
+    }
+    
+    .osirion-read-more-external:hover {
+        color: var(--osirion-action-primary-hover, #4ade80);
+    }
+    
+    .osirion-read-more-download {
+        color: var(--osirion-action-primary, #22c55e);
+    }
+    
+    .osirion-read-more-download:hover {
+        color: var(--osirion-action-primary-hover, #4ade80);
+    }
+    
+    .osirion-read-more-plain {
+        color: var(--osirion-text-primary, #e5e7eb);
+    }
+    
+    .osirion-read-more-plain:hover {
+        color: var(--osirion-text-secondary-dark, #d1d5db);
+    }
+
+    /* Dark mode stretched link */
+    .osirion-read-more-stretched.stretched-link {
+        color: var(--osirion-action-primary, #22c55e);
+    }
+
+    .osirion-read-more-stretched.stretched-link:hover {
+        color: var(--osirion-action-primary-hover, #4ade80);
+    }
+}

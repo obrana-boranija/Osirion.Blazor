@@ -1,0 +1,118 @@
+@namespace Osirion.Blazor.Components
+@inherits OsirionComponentBase
+
+<div class="@GetTestimonialCardClass()" style="@Style" @attributes="@Attributes">
+    <div class="osirion-testimonial-content">
+        @if (ShowRating && Rating > 0)
+        {
+            <div class="osirion-testimonial-rating" aria-label="@GetRatingAriaLabel()" role="img">
+                @for (int i = 1; i <= 5; i++)
+                {
+                    <span class="osirion-testimonial-star @(i <= Rating ? "osirion-testimonial-star-filled" : "osirion-testimonial-star-empty")">
+                        @if (i <= Rating)
+                        {
+                            @GetFilledStarIcon()
+                        }
+                        else
+                        {
+                            @GetEmptyStarIcon()
+                        }
+                    </span>
+                }
+            </div>
+        }
+
+        <blockquote class="osirion-testimonial-quote">
+            @if (TestimonialContent is not null)
+            {
+                @TestimonialContent
+            }
+            else if (!string.IsNullOrWhiteSpace(TestimonialText))
+            {
+                <p class="osirion-testimonial-text">@TestimonialText</p>
+            }
+        </blockquote>
+    </div>
+
+    <footer class="osirion-testimonial-footer">
+        <div class="osirion-testimonial-person-row">
+            <!-- Profile Image with LCP optimization -->
+            @if (!string.IsNullOrWhiteSpace(ProfileImageUrl))
+            {
+                <div class="osirion-testimonial-avatar">
+                    <img src="@ProfileImageUrl" 
+                         alt="@GetImageAltText()" 
+                         class="osirion-testimonial-image"
+                         loading="@(IsFirstVisible ? "eager" : "lazy")"
+                         fetchpriority="@(IsFirstVisible ? "high" : "auto")"
+                         decoding="async"
+                         width="@ImageSize" 
+                         height="@ImageSize" />
+                </div>
+            }
+
+            <!-- Name and Details -->
+            <div class="osirion-testimonial-person-details">
+                <!-- Name with optional LinkedIn wrapper -->
+                @if (!string.IsNullOrWhiteSpace(LinkedInUrl))
+                {
+                    <a href="@LinkedInUrl" 
+                       class="osirion-testimonial-name-link" 
+                       target="_blank" 
+                       rel="noopener noreferrer"
+                       aria-label="@GetLinkedInAriaLabel()"
+                       tabindex="@(IsHiddenFromAssistiveTech ? -1 : 0)">
+                        <cite class="osirion-testimonial-name">@Name</cite>
+                        <span class="osirion-testimonial-linkedin-icon">
+                            @GetLinkedInIcon()
+                        </span>
+                    </a>
+                }
+                else
+                {
+                    <cite class="osirion-testimonial-name">@Name</cite>
+                }
+
+                @if (!string.IsNullOrWhiteSpace(Position) || !string.IsNullOrWhiteSpace(Company))
+                {
+                    <div class="osirion-testimonial-details">
+                        @if (!string.IsNullOrWhiteSpace(Position) && !string.IsNullOrWhiteSpace(Company))
+                        {
+                            <span class="osirion-testimonial-position">@Position</span>
+                            <span class="osirion-testimonial-separator">at</span>
+                            <span class="osirion-testimonial-company">@Company</span>
+                        }
+                        else if (!string.IsNullOrWhiteSpace(Position))
+                        {
+                            <span class="osirion-testimonial-position">@Position</span>
+                        }
+                        else if (!string.IsNullOrWhiteSpace(Company))
+                        {
+                            <span class="osirion-testimonial-company">@Company</span>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(ReadMoreHref))
+        {
+            <div class="osirion-testimonial-actions">
+                <OsirionReadMoreLink 
+                    Href="@ReadMoreHref"
+                    Text="@ReadMoreText"
+                    Size="LinkSize.Small"
+                    Variant="@ReadMoreVariant"
+                    Target="@ReadMoreTarget"
+                    tabindex="@(IsHiddenFromAssistiveTech ? -1 : 0)" />
+            </div>
+        }
+    </footer>
+
+    @if (ChildContent is not null)
+    {
+        <div class="osirion-testimonial-additional">
+            @ChildContent
+        </div>
+    }
+</div>

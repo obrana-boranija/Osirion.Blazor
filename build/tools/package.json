@@ -1,0 +1,13 @@
+{
+  "name": "osirion-blazor-css-tree-shaker",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Build-time CSS tree-shaking for Osirion.Blazor component library.",
+  "main": "css-tree-shaker.js",
+  "scripts": {},
+  "author": "Osirion.Blazor Team",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^9.34.0"
+  }
+}

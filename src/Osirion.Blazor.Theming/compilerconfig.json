@@ -1,0 +1,38 @@
+﻿[
+  {
+    "outputFile": "wwwroot/css/adapters/bootstrap-adapter.css",
+    "inputFile": "wwwroot/css/adapters/bootstrap-adapter.scss"
+  },
+  {
+    "outputFile": "wwwroot/css/adapters/fluentui-adapter.css",
+    "inputFile": "wwwroot/css/adapters/fluentui-adapter.scss"
+  },
+  {
+    "outputFile": "wwwroot/css/adapters/mudblazor-adapter.css",
+    "inputFile": "wwwroot/css/adapters/mudblazor-adapter.scss"
+  },
+  {
+    "outputFile": "wwwroot/css/adapters/radzen-adapter.css",
+    "inputFile": "wwwroot/css/adapters/radzen-adapter.scss"
+  },
+  {
+    "outputFile": "wwwroot/css/themes/dark-theme.css",
+    "inputFile": "wwwroot/css/themes/dark-theme.scss"
+  },
+  {
+    "outputFile": "wwwroot/css/themes/light-theme.css",
+    "inputFile": "wwwroot/css/themes/light-theme.scss"
+  },
+  {
+    "outputFile": "wwwroot/css/index.css",
+    "inputFile": "wwwroot/css/index.scss"
+  },
+  {
+    "outputFile": "wwwroot/js/osirion-theme-toggle.es5.js",
+    "inputFile": "wwwroot/js/osirion-theme-toggle.js"
+  },
+  {
+    "outputFile": "wwwroot/js/osirion-theme-manager.es5.js",
+    "inputFile": "wwwroot/js/osirion-theme-manager.js"
+  }
+]

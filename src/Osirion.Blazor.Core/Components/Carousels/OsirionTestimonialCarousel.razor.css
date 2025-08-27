@@ -1,0 +1,332 @@
+/* Base testimonial carousel styles - Using root variables */
+.osirion-testimonial-carousel {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    background: transparent;
+    padding: var(--osirion-spacing-12) 0;
+}
+
+/* Header styles - using root variables */
+.osirion-testimonial-carousel-header {
+    text-align: center;
+    margin-bottom: var(--osirion-spacing-10);
+}
+
+.osirion-testimonial-carousel-title {
+    font-size: var(--osirion-font-size-4xl);
+    font-weight: var(--osirion-font-weight-bold);
+    line-height: var(--osirion-line-height-tight);
+    margin: 0;
+    color: var(--osirion-text-primary);
+    letter-spacing: -0.02em;
+}
+
+/* Container and wrapper */
+.osirion-testimonial-carousel-container {
+    position: relative;
+    width: 100%;
+}
+
+.osirion-testimonial-carousel-wrapper {
+    position: relative;
+    overflow: hidden;
+    /* Optimized gradient mask using root variables */
+    mask-image: linear-gradient(
+        to right,
+        transparent 0%,
+        rgba(0, 0, 0, 0.8) 8%,
+        black 15%,
+        black 85%,
+        rgba(0, 0, 0, 0.8) 92%,
+        transparent 100%
+    );
+    -webkit-mask-image: linear-gradient(
+        to right,
+        transparent 0%,
+        rgba(0, 0, 0, 0.8) 8%,
+        black 15%,
+        black 85%,
+        rgba(0, 0, 0, 0.8) 92%,
+        transparent 100%
+    );
+}
+
+/* Track that holds all testimonials - optimized sizing */
+.osirion-testimonial-carousel-track {
+    display: flex;
+    gap: var(--osirion-testimonial-card-gap, 24px);
+    width: fit-content;
+    animation: osirion-testimonial-scroll var(--osirion-testimonial-carousel-duration, 60s) linear infinite;
+    will-change: transform;
+    backface-visibility: hidden;
+    perspective: 1000px;
+}
+
+/* Individual slide container - optimized card width */
+.osirion-testimonial-carousel-slide {
+    flex: 0 0 var(--osirion-testimonial-card-width, 320px);
+    width: var(--osirion-testimonial-card-width, 320px);
+    transform: translateZ(0);
+}
+
+/* Animation keyframes */
+@keyframes osirion-testimonial-scroll {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(calc(-50% - var(--osirion-testimonial-card-gap, 24px) / 2));
+    }
+}
+
+@keyframes osirion-testimonial-scroll-reverse {
+    0% {
+        transform: translateX(calc(-50% - var(--osirion-testimonial-card-gap, 24px) / 2));
+    }
+    100% {
+        transform: translateX(0);
+    }
+}
+
+/* Reverse animation for left direction */
+.osirion-testimonial-carousel-reverse .osirion-testimonial-carousel-track {
+    animation-name: osirion-testimonial-scroll-reverse;
+}
+
+/* Enhanced pause on hover */
+.osirion-testimonial-carousel-pausable .osirion-testimonial-carousel-track {
+    animation-play-state: running;
+    transition: animation-play-state var(--osirion-transition-duration-300) ease;
+}
+
+.osirion-testimonial-carousel-pausable:hover .osirion-testimonial-carousel-track {
+    animation-play-state: paused;
+}
+
+/* Speed variations */
+.osirion-testimonial-carousel-slow .osirion-testimonial-carousel-track {
+    animation-duration: calc(var(--osirion-testimonial-carousel-duration, 60s) + 40s);
+}
+
+.osirion-testimonial-carousel-fast .osirion-testimonial-carousel-track {
+    animation-duration: calc(var(--osirion-testimonial-carousel-duration, 60s) - 20s);
+}
+
+/* Ensure testimonial cards are optimally sized */
+.osirion-testimonial-carousel-slide .osirion-testimonial-card {
+    height: 100%;
+    width: 100%;
+}
+
+/* Responsive card sizing using root variables */
+@media (min-width: 1400px) {
+    .osirion-testimonial-carousel-track {
+        --osirion-testimonial-card-width: 360px;
+        --osirion-testimonial-card-gap: 32px;
+    }
+}
+
+@media (min-width: 1200px) and (max-width: 1399.98px) {
+    .osirion-testimonial-carousel-track {
+        --osirion-testimonial-card-width: 340px;
+        --osirion-testimonial-card-gap: 28px;
+    }
+}
+
+@media (min-width: 992px) and (max-width: 1199.98px) {
+    .osirion-testimonial-carousel-track {
+        --osirion-testimonial-card-width: 320px;
+        --osirion-testimonial-card-gap: 24px;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .osirion-testimonial-carousel {
+        padding: var(--osirion-spacing-10) 0;
+    }
+    
+    .osirion-testimonial-carousel-track {
+        --osirion-testimonial-card-width: 300px;
+        --osirion-testimonial-card-gap: 20px;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .osirion-testimonial-carousel {
+        padding: var(--osirion-spacing-8) 0;
+    }
+    
+    .osirion-testimonial-carousel-header {
+        margin-bottom: var(--osirion-spacing-6);
+    }
+    
+    .osirion-testimonial-carousel-title {
+        font-size: var(--osirion-font-size-3xl);
+    }
+    
+    .osirion-testimonial-carousel-track {
+        --osirion-testimonial-card-width: 280px;
+        --osirion-testimonial-card-gap: 16px;
+    }
+    
+    /* Adjust mask for mobile */
+    .osirion-testimonial-carousel-wrapper {
+        mask-image: linear-gradient(
+            to right,
+            transparent 0%,
+            rgba(0, 0, 0, 0.9) 5%,
+            black 12%,
+            black 88%,
+            rgba(0, 0, 0, 0.9) 95%,
+            transparent 100%
+        );
+        -webkit-mask-image: linear-gradient(
+            to right,
+            transparent 0%,
+            rgba(0, 0, 0, 0.9) 5%,
+            black 12%,
+            black 88%,
+            rgba(0, 0, 0, 0.9) 95%,
+            transparent 100%
+        );
+    }
+}
+
+@media (max-width: 479.98px) {
+    .osirion-testimonial-carousel-track {
+        --osirion-testimonial-card-width: 260px;
+        --osirion-testimonial-card-gap: 12px;
+    }
+}
+
+/* Reduced motion support with graceful degradation */
+@media (prefers-reduced-motion: reduce) {
+    .osirion-testimonial-carousel-track {
+        animation: none;
+        transform: none;
+        justify-content: center;
+        flex-wrap: wrap;
+        max-width: 1200px;
+        margin: 0 auto;
+        gap: var(--osirion-spacing-4);
+    }
+    
+    .osirion-testimonial-carousel-wrapper {
+        mask-image: none;
+        -webkit-mask-image: none;
+    }
+    
+    /* Show optimal number of testimonials when motion is reduced */
+    .osirion-testimonial-carousel-slide:nth-child(n+5) {
+        display: none;
+    }
+    
+    .osirion-testimonial-carousel-slide {
+        flex: 0 1 calc(50% - var(--osirion-spacing-2));
+        max-width: 400px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) and (max-width: 767.98px) {
+    .osirion-testimonial-carousel-slide {
+        flex: 0 1 100%;
+        max-width: 100%;
+    }
+    
+    .osirion-testimonial-carousel-slide:nth-child(n+4) {
+        display: none;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .osirion-testimonial-carousel {
+        border-top: 3px solid currentColor;
+        border-bottom: 3px solid currentColor;
+    }
+    
+    .osirion-testimonial-carousel-wrapper {
+        mask-image: none;
+        -webkit-mask-image: none;
+    }
+    
+    .osirion-testimonial-carousel-title {
+        color: currentColor;
+    }
+}
+
+/* Print styles */
+@media print {
+    .osirion-testimonial-carousel-track {
+        animation: none;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        gap: var(--osirion-spacing-3);
+    }
+    
+    .osirion-testimonial-carousel-wrapper {
+        mask-image: none;
+        -webkit-mask-image: none;
+        overflow: visible;
+    }
+    
+    .osirion-testimonial-carousel-slide {
+        flex: 0 1 calc(50% - var(--osirion-spacing-1-5));
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+    
+    /* Limit testimonials in print to save space */
+    .osirion-testimonial-carousel-slide:nth-child(n+5) {
+        display: none;
+    }
+    
+    .osirion-testimonial-carousel-title {
+        color: black;
+    }
+}
+
+/* Dark mode support - using root variables */
+@media (prefers-color-scheme: dark) {
+    .osirion-testimonial-carousel-title {
+        color: var(--osirion-color-neutral-100);
+    }
+}
+
+/* Focus management for accessibility */
+.osirion-testimonial-carousel-slide:focus-within {
+    z-index: 10;
+    position: relative;
+}
+
+/* Performance optimizations */
+.osirion-testimonial-carousel-track {
+    transform: translateZ(0);
+}
+
+.osirion-testimonial-carousel-slide {
+    contain: layout style paint;
+}
+
+/* Container query support for future-proofing */
+@supports (container-type: inline-size) {
+    .osirion-testimonial-carousel {
+        container-type: inline-size;
+        container-name: testimonial-carousel;
+    }
+    
+    @container testimonial-carousel (max-width: 768px) {
+        .osirion-testimonial-carousel-track {
+            --osirion-testimonial-card-width: 280px;
+            --osirion-testimonial-card-gap: 16px;
+        }
+    }
+    
+    @container testimonial-carousel (min-width: 1400px) {
+        .osirion-testimonial-carousel-track {
+            --osirion-testimonial-card-width: 380px;
+            --osirion-testimonial-card-gap: 36px;
+        }
+    }
+}

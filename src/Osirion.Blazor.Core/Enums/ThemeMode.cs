@@ -18,5 +18,10 @@ public enum ThemeMode
     /// <summary>
     /// Follow system preference
     /// </summary>
-    System
+    System,
+
+    /// <summary>
+    /// Inverted theme (dark if system is light, light if system is dark)
+    /// </summary>
+    Inverted
 }

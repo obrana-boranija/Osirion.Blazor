@@ -17,6 +17,9 @@ public abstract partial class OsirionComponentBase : ComponentBase
     [Parameter]
     public string? Style { get; set; }
 
+    /// <summary>
+    /// Gets the CSS class for a default button based on the current CSS framework.
+    /// </summary>
     protected virtual string GetButtonClass()
     {
         switch (Framework)

@@ -1,0 +1,234 @@
+/* Base section container */
+.osirion-section {
+    position: relative;
+    overflow: hidden;
+    scroll-margin-top: 3rem;
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-color: var(--osirion-background-primary, #ffffff);
+    color: var(--osirion-text-primary, #374151);
+    transition: all var(--osirion-transition-duration-300, 0.3s) ease;
+}
+
+/* Section with divider/shadow */
+.osirion-section-divider {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Section with background image */
+.osirion-section-with-background {
+    color: white;
+}
+
+/* Overlay for better text readability on background images */
+.osirion-section-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1;
+}
+
+.osirion-section-with-pattern {
+    position: relative;
+}
+
+/* Container positioning for overlay */
+.osirion-section-with-background > div,
+.osirion-section-with-pattern > div {
+    position: relative;
+    z-index: 2;
+}
+
+/* Padding variations */
+.osirion-section-padding-none {
+    padding: 0;
+}
+
+.osirion-section-padding-small {
+    padding: var(--osirion-spacing-8, 2rem) 0;
+}
+
+.osirion-section-padding-medium {
+    padding: var(--osirion-spacing-12, 3rem) 0;
+}
+
+.osirion-section-padding-large {
+    padding: var(--osirion-spacing-16, 4rem) 0;
+}
+
+/* Header styles */
+.osirion-section-header {
+    margin-bottom: var(--osirion-spacing-8, 2rem);
+}
+
+.osirion-section-header-left {
+    text-align: left;
+}
+
+.osirion-section-header-center {
+    text-align: center;
+}
+
+.osirion-section-header-right {
+    text-align: right;
+}
+
+.osirion-section-header-justify {
+    text-align: justify;
+}
+
+/* Title styles */
+.osirion-section-title {
+    font-size: clamp(1.875rem, 4vw, 2.5rem);
+    font-weight: var(--osirion-font-weight-bold, 700);
+    line-height: var(--osirion-line-height-tight, 1.25);
+    margin: 0 0 var(--osirion-spacing-4, 1rem);
+    color: inherit;
+    letter-spacing: -0.025em;
+    position: relative;
+}
+
+/* Title underline for centered alignment */
+.osirion-section-header-center .osirion-section-title::after {
+    content: "";
+    position: absolute;
+    display: block;
+    width: 3rem;
+    height: 0.2rem;
+    background: var(--osirion-action-primary, #007b31);
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: -0.75rem;
+    margin: auto;
+}
+
+/* Title underline for left alignment */
+.osirion-section-header-left .osirion-section-title::after {
+    content: "";
+    position: absolute;
+    display: block;
+    width: 3rem;
+    height: 0.2rem;
+    background: var(--osirion-action-primary, #007b31);
+    left: 0;
+    bottom: -0.75rem;
+}
+
+/* Title underline for right alignment */
+.osirion-section-header-right .osirion-section-title::after {
+    content: "";
+    position: absolute;
+    display: block;
+    width: 3rem;
+    height: 0.2rem;
+    background: var(--osirion-action-primary, #007b31);
+    right: 0;
+    bottom: -0.75rem;
+}
+
+/* Description styles */
+.osirion-section-description {
+    font-size: clamp(1rem, 2vw, 1.125rem);
+    line-height: var(--osirion-line-height-relaxed, 1.65);
+    margin: 0 0 var(--osirion-spacing-6, 1.5rem);
+    color: inherit;
+    opacity: 0.85;
+    font-weight: var(--osirion-font-weight-normal, 400);
+}
+
+/* Content area */
+.osirion-section-content {
+    position: relative;
+}
+
+/* Text alignment variations */
+.osirion-section-align-left {
+    text-align: left;
+}
+
+.osirion-section-align-center {
+    text-align: center;
+}
+
+.osirion-section-align-right {
+    text-align: right;
+}
+
+.osirion-section-align-justify {
+    text-align: justify;
+}
+
+/* Responsive adjustments */
+@media (max-width: 767.98px) {
+    .osirion-section-padding-small {
+        padding: var(--osirion-spacing-6, 1.5rem) 0;
+    }
+
+    .osirion-section-padding-medium {
+        padding: var(--osirion-spacing-8, 2rem) 0;
+    }
+
+    .osirion-section-padding-large {
+        padding: var(--osirion-spacing-12, 3rem) 0;
+    }
+
+    .osirion-section-header {
+        margin-bottom: var(--osirion-spacing-6, 1.5rem);
+    }
+
+    .osirion-section-title {
+        margin-bottom: var(--osirion-spacing-3, 0.75rem);
+    }
+
+    .osirion-section-description {
+        margin-bottom: var(--osirion-spacing-4, 1rem);
+    }
+
+    /* Mobile text alignment defaults to center for better presentation */
+    .osirion-section-align-left,
+    .osirion-section-align-right,
+    .osirion-section-align-justify {
+        text-align: center;
+    }
+
+    .osirion-section-header-left,
+    .osirion-section-header-right,
+    .osirion-section-header-justify {
+        text-align: center;
+    }
+
+    /* Adjust title underline for mobile center alignment */
+    .osirion-section-header-left .osirion-section-title::after,
+    .osirion-section-header-right .osirion-section-title::after {
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%);
+    }
+}
+
+/* Accessibility - reduce motion */
+@media (prefers-reduced-motion: reduce) {
+    .osirion-section {
+        transition: none;
+    }
+}
+
+/* Print styles */
+@media print {
+    .osirion-section {
+        background-image: none !important;
+        color: black !important;
+        box-shadow: none !important;
+    }
+
+    .osirion-section-overlay {
+        display: none;
+    }
+
+    .osirion-section-padding-small,
+    .osirion-section-padding-medium,
+    .osirion-section-padding-large {
+        padding: var(--osirion-spacing-4, 1rem) 0;
+    }
+}

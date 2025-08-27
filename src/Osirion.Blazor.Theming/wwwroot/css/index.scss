@@ -1,0 +1,35 @@
+﻿/* 
+* Osirion Theming System
+* Main entry point for Osirion's theming
+*/
+/* Base themes */
+@import './themes/light-theme';
+@import './themes/dark-theme';
+
+/* Framework Adapters */
+/* Uncomment to include a specific adapter */
+/* @import '../adapters/bootstrap-adapter'; */
+/* @import '../adapters/fluentui-adapter'; */
+/* @import '../adapters/mudblazor-adapter'; */
+/* @import '../adapters/radzen-adapter'; */
+
+/* Core theme-toggle mechanism */
+.osirion-theme-provider {
+    display: contents;
+}
+
+/* Smooth transitions between themes */
+.osirion-theme-transitions-enabled,
+.osirion-theme-transitions-enabled * {
+    transition-property: color, background-color, border-color, outline-color, fill, stroke, opacity, box-shadow, transform;
+    transition-duration: 0.2s;
+    transition-timing-function: ease-in-out;
+}
+
+/* Respect user preferences for reduced motion */
+@media (prefers-reduced-motion) {
+    .osirion-theme-transitions-enabled,
+    .osirion-theme-transitions-enabled * {
+        transition: none !important;
+    }
+}
