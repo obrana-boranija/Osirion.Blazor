@@ -1,0 +1,177 @@
+/* 
+ * Osirion Background Patterns
+ * Provides decorative background options
+ */
+
+/* Base background wrapper - applies to all background patterns */
+.osirion-bg-wrapper {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.osirion-bg-image-mask {
+    -webkit-mask-image: linear-gradient(180deg,transparent 5%,rgba(0,0,0,1) 52%,rgba(0,0,0,1) 44%,transparent 95%);
+    mask-image: linear-gradient(180deg,transparent 0%,rgba(0,0,0,1) 0%,rgba(0,0,0,1) 0%,transparent 100%);
+}
+
+/* Element that needs to appear above the background */
+.osirion-bg-content {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    margin: 0 auto;
+}
+
+/* 
+ * Background Pattern Options 
+ */
+
+/* 1. Dots pattern - subtle and professional */
+.osirion-bg-dots {
+    background-image: radial-gradient(var(--osirion-action-primary, #d1d5db) 1px, transparent 1px);
+    background-size: 24px 24px;
+    opacity: 0.2;
+}
+
+/* 2. Grid pattern - clean and structured */
+.osirion-bg-grid {
+    background-image: linear-gradient(to right, var(--osirion-action-primary, #d1d5db) 1px, transparent 1px), linear-gradient(to bottom, var(--osirion-action-primary, #d1d5db) 1px, transparent 1px);
+    background-size: 24px 24px;
+    opacity: 0.2;
+}
+
+/* 3. Diagonal lines - dynamic and professional */
+.osirion-bg-diagonal {
+    background-image: repeating-linear-gradient( 45deg, var(--osirion-action-primary, #d1d5db) 0, var(--osirion-action-primary, #d1d5db) 1px, transparent 1px, transparent 24px );
+    opacity: 0.15;
+}
+
+/* 4. Honeycomb - unique and modern */
+.osirion-bg-honeycomb {
+    background-image: linear-gradient(30deg, var(--osirion-action-primary, #d1d5db) 12%, transparent 12.5%, transparent 87%, var(--osirion-action-primary, #d1d5db) 87.5%, var(--osirion-action-primary, #d1d5db)), linear-gradient(150deg, var(--osirion-action-primary, #d1d5db) 12%, transparent 12.5%, transparent 87%, var(--osirion-action-primary, #d1d5db) 87.5%, var(--osirion-action-primary, #d1d5db)), linear-gradient(30deg, var(--osirion-action-primary, #d1d5db) 12%, transparent 12.5%, transparent 87%, var(--osirion-action-primary, #d1d5db) 87.5%, var(--osirion-action-primary, #d1d5db)), linear-gradient(150deg, var(--osirion-action-primary, #d1d5db) 12%, transparent 12.5%, transparent 87%, var(--osirion-action-primary, #d1d5db) 87.5%, var(--osirion-action-primary, #d1d5db));
+    background-size: 40px 70px;
+    background-position: 0 0, 0 0, 20px 35px, 20px 35px;
+    opacity: 0.15;
+}
+
+/* 5. Gradient mesh - modern and subtle */
+.osirion-bg-gradient-mesh {
+    background: radial-gradient(circle at 0% 0%, var(--osirion-action-primary, #93c5fd) 0%, transparent 50%), radial-gradient(circle at 100% 0%, var(--osirion-color-success-300, #86efac) 0%, transparent 50%), radial-gradient(circle at 100% 100%, var(--osirion-color-primary-600, #2563eb) 0%, transparent 50%), radial-gradient(circle at 0% 100%, var(--osirion-color-danger-300, #fca5a5) 0%, transparent 50%);
+    filter: blur(60px);
+    opacity: 0.1;
+}
+
+/* 6. Animated grid - subtle movement */
+.osirion-bg-grid-animated {
+    background-image: linear-gradient(to right, var(--osirion-action-primary, #bfdbfe) 1px, transparent 1px), linear-gradient(to bottom, var(--osirion-action-primary, #bfdbfe) 1px, transparent 1px);
+    background-size: 24px 24px;
+    opacity: 0.15;
+    animation: osirion-grid-pulse 8s ease-in-out infinite;
+}
+
+/* 7. Tech wave - subtle tech-inspired pattern */
+.osirion-bg-tech-wave {
+    background: linear-gradient( 60deg, rgba(var(--osirion-action-primary, #1e40af), 0.05) 0%, rgba(var(--osirion-color-primary-400, #60a5fa), 0.05) 100% );
+    position: relative;
+}
+
+    .osirion-bg-tech-wave::before {
+        content: "";
+        position: absolute;
+        width: 200%;
+        height: 200%;
+        top: -50%;
+        left: -50%;
+        background: radial-gradient(circle, transparent 30%, rgba(255, 255, 255, 0.03) 70%);
+        animation: osirion-wave-rotate 20s linear infinite;
+    }
+
+/* 8. Circuit board pattern for tech themes */
+.osirion-bg-circuit {
+    background-color: transparent;
+    background-image: radial-gradient(rgba(var(--osirion-action-primary, #93c5fd), 0.1) 2px, transparent 2px), linear-gradient(90deg, transparent 0, transparent 4px, rgba(var(--osirion-action-primary, #93c5fd), 0.1) 4px, transparent 5px), linear-gradient(0deg, transparent 0, transparent 4px, rgba(var(--osirion-color-primary-300, #93c5fd), 0.1) 4px, transparent 5px);
+    background-size: 20px 20px, 40px 40px, 40px 40px;
+    opacity: 0.3;
+}
+
+/* 9. Subtle dots with radial fade */
+.osirion-bg-dots-fade {
+    background-image: radial-gradient(var(--osirion-action-primary, #9ca3af) 1px, transparent 1px);
+    background-size: 16px 16px;
+    opacity: 0.2;
+    -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 60%, transparent 100%);
+    mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 60%, transparent 100%);
+}
+
+/* Dark theme overrides */
+:root[data-theme="dark"] .osirion-bg-dots,
+:root[data-theme="dark"] .osirion-bg-grid,
+:root[data-theme="dark"] .osirion-bg-diagonal,
+:root[data-theme="dark"] .osirion-bg-honeycomb,
+:root[data-theme="dark"] .osirion-bg-grid-animated,
+:root[data-theme="dark"] .osirion-bg-circuit,
+:root[data-theme="dark"] .osirion-bg-dots-fade,
+[data-theme="dark"] .osirion-bg-dots,
+[data-theme="dark"] .osirion-bg-grid,
+[data-theme="dark"] .osirion-bg-diagonal,
+[data-theme="dark"] .osirion-bg-honeycomb,
+[data-theme="dark"] .osirion-bg-grid-animated,
+[data-theme="dark"] .osirion-bg-circuit,
+[data-theme="dark"] .osirion-bg-dots-fade {
+    opacity: 0.15;
+    background-image: radial-gradient(var(--osirion-action-primary, #4b5563) 1px, transparent 1px);
+}
+
+:root[data-theme="dark"] .osirion-bg-gradient-mesh,
+[data-theme="dark"] .osirion-bg-gradient-mesh {
+    opacity: 0.15;
+}
+
+/* Animations */
+@keyframes osirion-grid-pulse {
+    0%, 100% {
+        background-size: 24px 24px;
+        opacity: 0.1;
+    }
+
+    50% {
+        background-size: 28px 28px;
+        opacity: 0.2;
+    }
+}
+
+@keyframes osirion-wave-rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Ensure text readability with text shadow */
+.osirion-bg-enhance-text {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Add subtle shadow to ensure text readability on light backgrounds */
+.osirion-bg-light-text {
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+/* High contrast mode adjustments */
+@media (prefers-contrast: more) {
+    .osirion-bg-wrapper {
+        opacity: 0.05 !important;
+    }
+
+    .osirion-bg-enhance-text,
+    .osirion-bg-light-text {
+        text-shadow: none !important;
+    }
+}

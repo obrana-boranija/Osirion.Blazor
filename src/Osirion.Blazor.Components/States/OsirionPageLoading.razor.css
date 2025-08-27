@@ -1,0 +1,31 @@
+.osirion-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 50vh;
+    text-align: center;
+    color: var(--osirion-text-secondary, #6b7280);
+    padding: var(--osirion-spacing-8, 2rem);
+    background-color: var(--osirion-background-primary, #ffffff);
+    backdrop-filter: blur(8px);
+    border-radius: var(--osirion-radius-lg, 0.5rem);
+    margin: 2rem auto;
+    max-width: 500px;
+}
+
+.osirion-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(var(--osirion-background-tertiary-rgb, 243, 244, 246), 0.5);
+    border-top-color: var(--osirion-action-primary, #2563eb);
+    border-radius: 50%;
+    animation: osirion-spin 0.8s linear infinite;
+    margin-bottom: var(--osirion-spacing-4, 1rem);
+}
+
+@keyframes osirion-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

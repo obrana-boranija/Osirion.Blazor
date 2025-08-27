@@ -1,0 +1,66 @@
+/* OsirionPageLayout Component Styles */
+
+/* Base layout structure */
+.osirion-page-layout {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+    /* Minimum height strategies */
+    .osirion-page-layout.osirion-min-height-viewport {
+        min-height: 100vh;
+    }
+
+    .osirion-page-layout.osirion-min-height-content {
+        min-height: 100%;
+    }
+
+/* Header section */
+.osirion-page-header {
+    flex-shrink: 0;
+}
+
+/* Main content section */
+.osirion-page-main {
+    flex: 1 0 auto;
+    width: 100%;
+}
+
+/* Footer section */
+.osirion-page-footer {
+    flex-shrink: 0;
+}
+
+/* Sticky footer layout - ensures footer sticks to bottom */
+.osirion-sticky-footer-layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+    .osirion-sticky-footer-layout .osirion-page-main {
+        flex: 1 0 auto;
+    }
+
+    .osirion-sticky-footer-layout .osirion-page-footer {
+        flex-shrink: 0;
+        margin-top: auto;
+    }
+
+/* Support for nested flex containers */
+.osirion-page-layout > * {
+    width: 100%;
+}
+
+/* Print styles */
+@media print {
+    .osirion-page-layout {
+        min-height: auto;
+        display: block;
+    }
+
+    .osirion-page-main {
+        flex: none;
+    }
+}

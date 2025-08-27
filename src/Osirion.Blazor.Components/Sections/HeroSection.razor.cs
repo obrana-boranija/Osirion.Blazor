@@ -175,12 +175,6 @@ public partial class HeroSection
     public bool HasDivider { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets whether to animate the hero section.
-    /// </summary>
-    [Parameter]
-    public bool Animate { get; set; } = true;
-
-    /// <summary>
     /// Gets whether any buttons should be shown
     /// </summary>
     private bool HasButtons => (ShowPrimaryButton && !string.IsNullOrWhiteSpace(PrimaryButtonText) && !string.IsNullOrWhiteSpace(PrimaryButtonUrl)) ||

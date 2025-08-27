@@ -1,0 +1,260 @@
+/* AOS Animation Component Styles - Enhanced for proper scroll behavior */
+
+/* Ensure elements start hidden until AOS is ready */
+[data-aos] {
+    /* Initial hidden state - prevent flash of visible content */
+    opacity: 0;
+    transform: translateY(20px);
+    transition-property: opacity, transform;
+    transition-duration: 0.6s;
+    transition-timing-function: ease-out;
+    
+    /* Performance optimizations */
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    transform-style: preserve-3d;
+}
+
+/* Show elements when AOS is ready and they're not yet animated */
+.aos-init [data-aos] {
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+/* Elements that are being animated */
+[data-aos].aos-animate {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Accessibility - Reduced motion support */
+.osirion-respect-motion {
+    /* This class allows for additional styling when respecting reduced motion */
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .osirion-respect-motion,
+    [data-aos] {
+        /* Override any animations if reduced motion is preferred */
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+        animation: none !important;
+    }
+}
+
+/* Mobile optimization - disable animations on small screens */
+@media (max-width: 767px) {
+    [data-aos] {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+        animation: none !important;
+    }
+}
+
+/* Enhanced AOS integration styles */
+[data-aos][data-aos-duration="250"] {
+    transition-duration: 250ms;
+}
+
+[data-aos][data-aos-duration="400"] {
+    transition-duration: 400ms;
+}
+
+[data-aos][data-aos-duration="600"] {
+    transition-duration: 600ms;
+}
+
+[data-aos][data-aos-duration="1000"] {
+    transition-duration: 1000ms;
+}
+
+/* Custom easing functions that enhance AOS defaults */
+[data-aos][data-aos-easing="ease-out-back"] {
+    transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+[data-aos][data-aos-easing="ease-in-back"] {
+    transition-timing-function: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Loading state styles to prevent FOUC (Flash of Unstyled Content) */
+.osirion-animation-loading {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.osirion-animation-ready {
+    opacity: 1;
+}
+
+/* High contrast mode adjustments */
+@media (prefers-contrast: high) {
+    [data-aos] {
+        border: 1px solid transparent;
+    }
+}
+
+/* Print styles - disable animations */
+@media print {
+    [data-aos] {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+        animation: none !important;
+    }
+}
+
+/* Focus management for accessibility */
+[data-aos]:focus-visible {
+    outline: 2px solid var(--osirion-color-primary-500, #3b82f6);
+    outline-offset: 2px;
+}
+
+/* Enhanced visibility for elements that contain interactive content */
+[data-aos] a,
+[data-aos] button,
+[data-aos] input,
+[data-aos] select,
+[data-aos] textarea {
+    /* Ensure interactive elements are accessible even during animation */
+    position: relative;
+    z-index: 1;
+}
+
+/* Support for dark/light theme switching */
+:root[data-theme="dark"] [data-aos],
+[data-theme="dark"] [data-aos] {
+    /* Any dark theme specific adjustments */
+}
+
+:root[data-theme="light"] [data-aos],
+[data-theme="light"] [data-aos] {
+    /* Any light theme specific adjustments */
+}
+
+/* Bootstrap theme integration */
+[data-bs-theme="dark"] [data-aos] {
+    /* Bootstrap dark theme integration */
+}
+
+[data-bs-theme="light"] [data-aos] {
+    /* Bootstrap light theme integration */
+}
+
+/* Performance optimizations for better animation smoothness */
+[data-aos] {
+    /* GPU acceleration for smoother animations */
+    transform: translateZ(0);
+}
+
+/* Ensure proper stacking context for animated elements */
+.osirion-animation-container {
+    position: relative;
+    z-index: 0;
+}
+
+.osirion-animation-container [data-aos] {
+    position: relative;
+    z-index: 1;
+}
+
+/* Additional utility classes for enhanced functionality */
+.osirion-aos-once [data-aos] {
+    /* Elements that should animate only once */
+}
+
+.osirion-aos-mirror [data-aos] {
+    /* Elements that should animate on scroll out as well */
+}
+
+/* Fallback styles for when AOS is not loaded */
+.no-aos [data-aos] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+}
+
+/* Enhanced accessibility for screen readers */
+[data-aos][aria-hidden="true"] {
+    /* Elements that are hidden from screen readers during animation */
+    position: absolute;
+    left: -10000px;
+    top: auto;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
+/* Ensure proper focus management during animations */
+[data-aos].aos-animate:focus {
+    /* Maintain focus styles during animation */
+    outline: 2px solid var(--osirion-color-primary-500, #3b82f6);
+    outline-offset: 2px;
+}
+
+/* Support for custom CSS properties */
+[data-aos] {
+    --osirion-aos-duration: var(--osirion-animation-duration, 600ms);
+    --osirion-aos-delay: var(--osirion-animation-delay, 0ms);
+    --osirion-aos-distance: var(--osirion-animation-distance, 20px);
+}
+
+/* Specific styles for different animation types to ensure consistent initial states */
+[data-aos="fade"] {
+    opacity: 0;
+    transform: none;
+}
+
+[data-aos="fade-up"] {
+    opacity: 0;
+    transform: translateY(var(--osirion-aos-distance, 20px));
+}
+
+[data-aos="fade-down"] {
+    opacity: 0;
+    transform: translateY(calc(-1 * var(--osirion-aos-distance, 20px)));
+}
+
+[data-aos="fade-left"] {
+    opacity: 0;
+    transform: translateX(calc(-1 * var(--osirion-aos-distance, 20px)));
+}
+
+[data-aos="fade-right"] {
+    opacity: 0;
+    transform: translateX(var(--osirion-aos-distance, 20px));
+}
+
+[data-aos="zoom-in"] {
+    opacity: 0;
+    transform: scale(0.8);
+}
+
+[data-aos="zoom-out"] {
+    opacity: 0;
+    transform: scale(1.2);
+}
+
+[data-aos="slide-up"] {
+    transform: translateY(var(--osirion-aos-distance, 20px));
+}
+
+[data-aos="slide-down"] {
+    transform: translateY(calc(-1 * var(--osirion-aos-distance, 20px)));
+}
+
+[data-aos="slide-left"] {
+    transform: translateX(calc(-1 * var(--osirion-aos-distance, 20px)));
+}
+
+[data-aos="slide-right"] {
+    transform: translateX(var(--osirion-aos-distance, 20px));
+}
+
+/* Animate to visible state */
+[data-aos].aos-animate {
+    opacity: 1;
+    transform: none;
+}

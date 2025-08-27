@@ -1,0 +1,152 @@
+@namespace Osirion.Blazor.Components
+@inherits OsirionComponentBase
+
+<section class="@GetCarouselClass()" 
+         aria-label="@SectionTitle"
+         style="@Style"
+         @attributes="Attributes">
+    
+    @if (!string.IsNullOrEmpty(Title))
+    {
+        <div class="osirion-carousel-header">
+            <h2 class="osirion-carousel-title">@Title</h2>
+        </div>
+    }
+    
+    <div class="osirion-carousel-container">
+        <div class="osirion-carousel-wrapper">
+            <ul class="osirion-carousel-list" 
+                role="list" 
+                style="@GetCarouselListStyle()">
+                
+                @* First set of logos *@
+                @foreach (var logo in VisibleLogos)
+                {
+                    <li class="@GetLogoClass(logo)" role="listitem">
+                        @if (!string.IsNullOrWhiteSpace(logo.Url))
+                        {
+                            <a @attributes="GetLogoLinkAttributes(logo)">
+                                @if (logo.HasDualLogos)
+                                {
+                                    <img src="@logo.LightImageUrl" 
+                                         width="@LogoWidth" 
+                                         height="@LogoHeight" 
+                                         alt="@logo.AltText" 
+                                         loading="lazy"
+                                         class="osirion-logo-light">
+                                    <img src="@logo.DarkImageUrl" 
+                                         width="@LogoWidth" 
+                                         height="@LogoHeight" 
+                                         alt="@logo.AltText" 
+                                         loading="lazy"
+                                         class="osirion-logo-dark">
+                                }
+                                else
+                                {
+                                    <img src="@GetLogoUrl(logo)" 
+                                         width="@LogoWidth" 
+                                         height="@LogoHeight" 
+                                         alt="@logo.AltText" 
+                                         loading="lazy">
+                                }
+                            </a>
+                        }
+                        else
+                        {
+                            @if (logo.HasDualLogos)
+                            {
+                                <img src="@logo.LightImageUrl" 
+                                     width="@LogoWidth" 
+                                     height="@LogoHeight" 
+                                     alt="@logo.AltText" 
+                                     loading="lazy"
+                                     class="osirion-logo-light">
+                                <img src="@logo.DarkImageUrl" 
+                                     width="@LogoWidth" 
+                                     height="@LogoHeight" 
+                                     alt="@logo.AltText" 
+                                     loading="lazy"
+                                     class="osirion-logo-dark">
+                            }
+                            else
+                            {
+                                <img src="@GetLogoUrl(logo)" 
+                                     width="@LogoWidth" 
+                                     height="@LogoHeight" 
+                                     alt="@logo.AltText" 
+                                     loading="lazy">
+                            }
+                        }
+                    </li>
+                }
+
+                @* Duplicate set for seamless looping *@
+                @foreach (var logo in VisibleLogos)
+                {
+                    <li class="@GetLogoClass(logo)" role="listitem">
+                        @if (!string.IsNullOrWhiteSpace(logo.Url))
+                        {
+                            <a @attributes="GetLogoLinkAttributes(logo)" tabindex="-1" aria-hidden="true">
+                                @if (logo.HasDualLogos)
+                                {
+                                    <img src="@logo.LightImageUrl" 
+                                         width="@LogoWidth" 
+                                         height="@LogoHeight" 
+                                         alt="" 
+                                         loading="lazy"
+                                         aria-hidden="true"
+                                         class="osirion-logo-light">
+                                    <img src="@logo.DarkImageUrl" 
+                                         width="@LogoWidth" 
+                                         height="@LogoHeight" 
+                                         alt="" 
+                                         loading="lazy"
+                                         aria-hidden="true"
+                                         class="osirion-logo-dark">
+                                }
+                                else
+                                {
+                                    <img src="@GetLogoUrl(logo)" 
+                                         width="@LogoWidth" 
+                                         height="@LogoHeight" 
+                                         alt="" 
+                                         loading="lazy"
+                                         aria-hidden="true">
+                                }
+                            </a>
+                        }
+                        else
+                        {
+                            @if (logo.HasDualLogos)
+                            {
+                                <img src="@logo.LightImageUrl" 
+                                     width="@LogoWidth" 
+                                     height="@LogoHeight" 
+                                     alt="" 
+                                     loading="lazy"
+                                     aria-hidden="true"
+                                     class="osirion-logo-light">
+                                <img src="@logo.DarkImageUrl" 
+                                     width="@LogoWidth" 
+                                     height="@LogoHeight" 
+                                     alt="" 
+                                     loading="lazy"
+                                     aria-hidden="true"
+                                     class="osirion-logo-dark">
+                            }
+                            else
+                            {
+                                <img src="@GetLogoUrl(logo)" 
+                                     width="@LogoWidth" 
+                                     height="@LogoHeight" 
+                                     alt="" 
+                                     loading="lazy"
+                                     aria-hidden="true">
+                            }
+                        }
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,22 @@
+﻿@namespace Osirion.Blazor.Components
+@inherits OsirionComponentBase
+
+<div class="@GetPageLayoutClass()" @attributes="Attributes">
+    @if (Header is not null)
+    {
+        <header class="osirion-page-header">
+            @Header
+        </header>
+    }
+
+    <main class="osirion-page-main">
+        @Body
+    </main>
+
+    @if (Footer is not null)
+    {
+        <footer class="osirion-page-footer">
+            @Footer
+        </footer>
+    }
+</div>

@@ -1,0 +1,109 @@
+﻿@namespace Osirion.Blazor.Components
+@inherits OsirionComponentBase
+
+<div class="@GetContentNotFoundClass()" @attributes="Attributes">
+    @if (ShowIcon && Icon is not null)
+    {
+        <div class="osirion-content-not-found-icon">
+            @Icon
+        </div>
+    }
+    else if (ShowIcon && !string.IsNullOrWhiteSpace(IconUrl))
+    {
+        <img src="@IconUrl" alt="@IconAlt" class="osirion-content-not-found-image" />
+    }
+    else if (ShowIcon && UseDefaultIcon)
+    {
+        <div class="osirion-content-not-found-icon osirion-content-not-found-default-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+                <path d="M11 8v3"></path>
+                <path d="M11 14h.01"></path>
+            </svg>
+        </div>
+    }
+
+    <div class="osirion-content-not-found-content">
+        @if (!string.IsNullOrWhiteSpace(ErrorCode))
+        {
+            <div class="osirion-content-not-found-code">@ErrorCode</div>
+        }
+
+        <h1 class="osirion-content-not-found-title">@Title</h1>
+
+        @if (!string.IsNullOrWhiteSpace(Message))
+        {
+            <p class="osirion-content-not-found-message">@Message</p>
+        }
+
+        @if (Suggestions?.Any() == true && ShowSuggestions)
+        {
+            <div class="osirion-content-not-found-suggestions">
+                <p class="osirion-content-not-found-suggestions-title">@SuggestionsTitle</p>
+                <ul class="osirion-content-not-found-suggestions-list">
+                    @foreach (var suggestion in Suggestions)
+                    {
+                        <li class="osirion-content-not-found-suggestion-item">
+                            <a href="@suggestion.Url" class="osirion-content-not-found-suggestion-link" target="@suggestion.Target">
+                                @suggestion.Text
+                            </a>
+                            <p>
+                                <small>
+                                    @suggestion.Description
+                                </small>
+                            </p>
+                        </li>
+                    }
+                </ul>
+            </div>
+        }
+
+        @if (ShowSearchBox && SearchContent is not null)
+        {
+            <div class="osirion-content-not-found-search">
+                @SearchContent
+            </div>
+        }
+
+        @if (ChildContent is not null)
+        {
+            <div class="osirion-content-not-found-custom">
+                @ChildContent
+            </div>
+        }
+
+        <div class="osirion-content-not-found-actions">
+            @if (!string.IsNullOrWhiteSpace(PrimaryButtonText))
+            {
+                <a href="@PrimaryButtonUrl" class="@BuildButtonClass(ButtonVariant.Primary, ButtonSize.Normal)" style="text-decoration: none;">
+                    @PrimaryButtonText
+                </a>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(SecondaryButtonText))
+            {
+                <a href="@SecondaryButtonUrl" class="@BuildButtonClass(ButtonVariant.OutlinedSecondary, ButtonSize.Normal)" style="text-decoration: none;">
+                    @SecondaryButtonText
+                </a>
+            }
+
+            @if (Actions is not null)
+            {
+                @Actions
+            }
+        </div>
+
+        @if (ShowContactInfo && !string.IsNullOrWhiteSpace(ContactEmail))
+        {
+            <div class="osirion-content-not-found-contact">
+                <p>@ContactMessage <a href="mailto:@ContactEmail" class="osirion-content-not-found-contact-link">@ContactEmail</a></p>
+            </div>
+        }
+    </div>
+
+    @if (BackgroundPattern is not null)
+    {
+        <OsirionBackgroundPattern BackgroundPattern="@BackgroundPattern" Class="osirion-content-not-found-background" />
+    }
+</div>

@@ -53,7 +53,6 @@
 		<ProjectReference Include="..\Osirion.Blazor.Cms\Osirion.Blazor.Cms.csproj" />
 		<ProjectReference Include="..\Osirion.Blazor.Core\Osirion.Blazor.Core.csproj" />
 		<ProjectReference Include="..\Osirion.Blazor.Analytics\Osirion.Blazor.Analytics.csproj" />
-		<ProjectReference Include="..\Osirion.Blazor.Animation\Osirion.Blazor.Animation.csproj" />
 		<ProjectReference Include="..\Osirion.Blazor.Navigation\Osirion.Blazor.Navigation.csproj" />
 		<ProjectReference Include="..\Osirion.Blazor.Theming\Osirion.Blazor.Theming.csproj" />
 	</ItemGroup>

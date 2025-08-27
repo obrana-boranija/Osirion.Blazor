@@ -49,7 +49,6 @@ jobs:
           projects=(
             "src/Osirion.Blazor.Core/Osirion.Blazor.Core.csproj"
             "src/Osirion.Blazor.Analytics/Osirion.Blazor.Analytics.csproj"
-            "src/Osirion.Blazor.Animation/Osirion.Blazor.Animation.csproj"
             "src/Osirion.Blazor.Navigation/Osirion.Blazor.Navigation.csproj"
             "src/Osirion.Blazor.Cms/Osirion.Blazor.Cms.csproj"
             "src/Osirion.Blazor.Cms.Core/Osirion.Blazor.Cms.Core.csproj"

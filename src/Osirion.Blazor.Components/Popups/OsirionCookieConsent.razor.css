@@ -1,0 +1,274 @@
+/* OsirionCookieConsent Component Styles */
+
+.osirion-cookie-consent {
+    position: fixed;
+    left: 0;
+    right: 0;
+    z-index: var(--osirion-z-index-50, 50);
+    font-family: var(--osirion-font-family-base, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif);
+    font-size: var(--osirion-font-size-base, 1rem);
+    line-height: var(--osirion-line-height-normal, 1.5);
+    animation: osirion-slide-in 0.3s ease-out;
+    /* Theme-aware styling */
+    background-color: var(--osirion-background-primary);
+    color: var(--osirion-text-primary);
+    border-top: 1px solid var(--osirion-border-color);
+    box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1), 0 -2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Position variants */
+.osirion-cookie-consent-bottom {
+    bottom: 0;
+}
+
+.osirion-cookie-consent-top {
+    top: 0;
+    border-top: none;
+    border-bottom: 1px solid var(--osirion-border-color);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Container */
+.osirion-cookie-consent-container {
+    max-width: var(--osirion-container-xl, 1200px);
+    margin: 0 auto;
+    padding: var(--osirion-spacing-4, 1rem);
+}
+
+/* Content layout */
+.osirion-cookie-consent-content {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--osirion-spacing-4, 1rem);
+}
+
+/* Message section */
+.osirion-cookie-consent-message {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: flex-start;
+    gap: var(--osirion-spacing-3, 0.75rem);
+}
+
+/* Icon */
+.osirion-cookie-consent-icon {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    color: var(--osirion-action-primary);
+}
+
+/* Text content */
+.osirion-cookie-consent-text {
+    flex: 1;
+}
+
+.osirion-cookie-consent-title {
+    font-size: var(--osirion-font-size-lg, 1.125rem);
+    font-weight: var(--osirion-font-weight-semibold, 600);
+    margin: 0 0 var(--osirion-spacing-1, 0.25rem);
+}
+
+.osirion-cookie-consent-description {
+    font-size: var(--osirion-font-size-sm, 0.875rem);
+    color: var(--osirion-text-primary);
+    margin: 0;
+}
+
+/* Link in description */
+.osirion-cookie-consent-link {
+    color: var(--osirion-action-primary);
+    text-decoration: underline;
+    transition: color var(--osirion-transition-duration-200, 0.2s) ease;
+}
+
+    .osirion-cookie-consent-link:hover {
+        color: var(--osirion-action-primary-hover);
+    }
+
+    .osirion-cookie-consent-link:focus {
+        outline: var(--osirion-focus-ring-width, 3px) solid var(--osirion-focus-ring-color, rgba(59, 130, 246, 0.5));
+        outline-offset: var(--osirion-focus-ring-offset, 2px);
+    }
+
+/* Action buttons */
+.osirion-cookie-consent-actions {
+    flex-shrink: 0;
+    display: flex;
+    gap: var(--osirion-spacing-2, 0.5rem);
+    align-items: center;
+}
+
+/* Button styles */
+.osirion-cookie-consent-button {
+    padding: var(--osirion-spacing-2, 0.5rem) var(--osirion-spacing-4, 1rem);
+    border: none;
+    border-radius: var(--osirion-button-radius, var(--osirion-radius-md, 0.375rem));
+    font-size: var(--osirion-font-size-sm, 0.875rem);
+    font-weight: var(--osirion-font-weight-medium, 500);
+    cursor: pointer;
+    transition: all var(--osirion-transition-duration-200, 0.2s) ease;
+    white-space: nowrap;
+}
+
+    .osirion-cookie-consent-button:focus {
+        outline: var(--osirion-focus-ring-width, 3px) solid var(--osirion-focus-ring-color, rgba(59, 130, 246, 0.5));
+        outline-offset: var(--osirion-focus-ring-offset, 2px);
+    }
+
+/* Primary button */
+.osirion-cookie-consent-button-primary {
+    background-color: var(--osirion-action-primary);
+    color: var(--osirion-action-primary-text);
+}
+
+    .osirion-cookie-consent-button-primary:hover {
+        background-color: var(--osirion-action-primary-hover);
+    }
+
+/* Secondary button */
+.osirion-cookie-consent-button-secondary {
+    background-color: var(--osirion-action-secondary);
+    color: var(--osirion-action-secondary-text);
+    border: 1px solid var(--osirion-border-color);
+}
+
+    .osirion-cookie-consent-button-secondary:hover {
+        background-color: var(--osirion-action-secondary-hover);
+    }
+
+/* Customization panel */
+.osirion-cookie-consent-customize {
+    margin-top: var(--osirion-spacing-4, 1rem);
+    padding-top: var(--osirion-spacing-4, 1rem);
+    border-top: 1px solid var(--osirion-border-color);
+}
+
+.osirion-cookie-consent-customize-title {
+    font-size: var(--osirion-font-size-base, 1rem);
+    font-weight: var(--osirion-font-weight-semibold, 600);
+    margin: 0 0 var(--osirion-spacing-3, 0.75rem);
+}
+
+/* Cookie categories */
+.osirion-cookie-consent-categories {
+    display: grid;
+    gap: var(--osirion-spacing-3, 0.75rem);
+    margin-bottom: var(--osirion-spacing-4, 1rem);
+}
+
+.osirion-cookie-consent-category {
+    display: flex;
+    align-items: flex-start;
+}
+
+.osirion-cookie-consent-category-label {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--osirion-spacing-2, 0.5rem);
+    cursor: pointer;
+}
+
+.osirion-cookie-consent-checkbox {
+    margin-top: 0.125rem;
+    flex-shrink: 0;
+}
+
+.osirion-cookie-consent-category-info {
+    flex: 1;
+}
+
+.osirion-cookie-consent-category-name {
+    font-size: var(--osirion-font-size-sm, 0.875rem);
+    font-weight: var(--osirion-font-weight-medium, 500);
+    display: block;
+    margin-bottom: var(--osirion-spacing-1, 0.25rem);
+}
+
+.osirion-cookie-consent-required {
+    font-size: var(--osirion-font-size-xs, 0.75rem);
+    color: var(--osirion-text-secondary);
+    font-weight: var(--osirion-font-weight-normal, 400);
+}
+
+.osirion-cookie-consent-category-description {
+    font-size: var(--osirion-font-size-xs, 0.75rem);
+    color: var(--osirion-text-secondary);
+    margin: 0;
+}
+
+.osirion-cookie-consent-customize-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Animation */
+@keyframes osirion-slide-in {
+    from {
+        transform: translateY(100%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
+
+.osirion-cookie-consent-top {
+    animation-name: osirion-slide-in-top;
+}
+
+@keyframes osirion-slide-in-top {
+    from {
+        transform: translateY(-100%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
+
+/* Responsive design using CSS variable breakpoints */
+@media (max-width: var(--osirion-breakpoint-md-max, 767.98px)) {
+    .osirion-cookie-consent-container {
+        padding: var(--osirion-spacing-3, 0.75rem);
+    }
+
+    .osirion-cookie-consent-content {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .osirion-cookie-consent-actions {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .osirion-cookie-consent-button {
+        width: 100%;
+    }
+
+    .osirion-cookie-consent-message {
+        margin-bottom: var(--osirion-spacing-3, 0.75rem);
+    }
+}
+
+/* Print styles */
+@media print {
+    .osirion-cookie-consent {
+        display: none;
+    }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .osirion-cookie-consent {
+        animation: none;
+    }
+
+    .osirion-cookie-consent-button,
+    .osirion-cookie-consent-link {
+        transition: none;
+    }
+}

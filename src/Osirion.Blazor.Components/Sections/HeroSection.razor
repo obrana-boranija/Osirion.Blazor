@@ -1,0 +1,92 @@
+﻿@namespace Osirion.Blazor.Components
+@inherits OsirionComponentBase
+
+<section class="@GetHeroSectionClass()" style="@GetBackgroundStyle()" @attributes="@Attributes">
+
+    @if (!UseBackgroundImage)
+    {
+        <OsirionBackgroundPattern BackgroundPattern="@BackgroundPattern" />
+    }
+
+    @if (UseBackgroundImage && !string.IsNullOrWhiteSpace(ImageUrl))
+    {
+        <div class="osirion-hero-overlay"></div>
+    }
+
+    <div class="osirion-hero-container">
+        <div class="osirion-hero-grid">
+            <!-- Content Column -->
+            <div class="osirion-hero-content">
+                @if (TitleContent is not null)
+                {
+                    @TitleContent
+                }
+                else if (!string.IsNullOrWhiteSpace(Title))
+                {
+                    <h1 class="osirion-hero-title">@Title</h1>
+                }
+
+                @if (SubtitleContent is not null)
+                {
+                    @SubtitleContent
+                }
+                else if (!string.IsNullOrWhiteSpace(Subtitle))
+                {
+                    <p class="osirion-hero-subtitle">@Subtitle</p>
+                }
+
+                @if (SummaryContent is not null)
+                {
+                    @SummaryContent
+                }
+                else if (!string.IsNullOrWhiteSpace(Summary))
+                {
+                    <p class="osirion-hero-summary">@Summary</p>
+                }
+
+                @if (ShowMetadata)
+                {
+                    <OsirionArticleMetdata Author="@Author" PublishDate="PublishDate" ReadTime="@ReadTime" />
+                }
+
+                @if (HasButtons)
+                {
+                    <div class="osirion-hero-buttons">
+                        @if (ShowPrimaryButton && !string.IsNullOrWhiteSpace(PrimaryButtonText) && !string.IsNullOrWhiteSpace(PrimaryButtonUrl))
+                        {
+                            <a href="@PrimaryButtonUrl" class="@BuildButtonClass(ButtonVariant.Primary, ButtonSize.Large) osirion-hero-button osirion-hero-button-primary">
+                                @PrimaryButtonText
+                            </a>
+                        }
+
+                        @if (ShowSecondaryButton && !string.IsNullOrWhiteSpace(SecondaryButtonText) && !string.IsNullOrWhiteSpace(SecondaryButtonUrl))
+                        {
+                            <a href="@SecondaryButtonUrl" class="@BuildButtonClass(ButtonVariant.OutlinedPrimary, ButtonSize.Large) osirion-hero-button osirion-hero-button-primary">
+                                @SecondaryButtonText
+                            </a>
+                        }
+                    </div>
+                }
+
+                @if (ChildContent is not null)
+                {
+                    <div class="osirion-hero-additional">
+                        @ChildContent
+                    </div>
+                }
+            </div>
+
+            <!-- Side Image Column (when not using background) -->
+            @if (!UseBackgroundImage && !string.IsNullOrWhiteSpace(ImageUrl))
+            {
+                <div class="osirion-hero-image-container">
+                    <img src="@ImageUrl"
+                         alt="@(ImageAlt ?? Title ?? "Hero image")"
+                         class="osirion-hero-featured-image"
+                         width="@GetImageSize().Width"
+                         height="@GetImageSize().Heigth" />
+                </div>
+            }
+        </div>
+    </div>
+</section>

@@ -22,5 +22,9 @@
   {
     "outputFile": "wwwroot/js/osirion-syntax-highlighter.es5.js",
     "inputFile": "wwwroot/js/osirion-syntax-highlighter.js"
+  },
+  {
+    "outputFile": "wwwroot/js/osirion-animation.es5.js",
+    "inputFile": "wwwroot/js/osirion-animation.js"
   }
 ]

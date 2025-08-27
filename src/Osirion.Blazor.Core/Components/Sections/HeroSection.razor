@@ -17,75 +17,91 @@
         <div class="osirion-hero-grid">
             <!-- Content Column -->
             <div class="osirion-hero-content">
-                @if (TitleContent is not null)
-                {
-                    @TitleContent
-                }
-                else if (!string.IsNullOrWhiteSpace(Title))
-                {
-                    <h1 class="osirion-hero-title">@Title</h1>
-                }
+                <OsirionAnimation Show="@(Animate && (TitleContent is not null || !string.IsNullOrWhiteSpace(Title)))" Effect="AnimationEffect.FadeRight">
+                    @if (TitleContent is not null)
+                    {
+                        @TitleContent
+                    }
+                    else if (!string.IsNullOrWhiteSpace(Title))
+                    {
+                        <h1 class="osirion-hero-title">@Title</h1>
+                    }
+                </OsirionAnimation>
 
-                @if (SubtitleContent is not null)
-                {
-                    @SubtitleContent
-                }
-                else if (!string.IsNullOrWhiteSpace(Subtitle))
-                {
-                    <p class="osirion-hero-subtitle">@Subtitle</p>
-                }
+                <OsirionAnimation Show="@(Animate && (SubtitleContent is not null || !string.IsNullOrWhiteSpace(Subtitle)))" Delay="200" Effect="AnimationEffect.FadeRight">
+                    @if (SubtitleContent is not null)
+                    {
+                        @SubtitleContent
+                    }
+                    else if (!string.IsNullOrWhiteSpace(Subtitle))
+                    {
+                        <p class="osirion-hero-subtitle">@Subtitle</p>
+                    }
+                </OsirionAnimation>
 
-                @if (SummaryContent is not null)
-                {
-                    @SummaryContent
-                }
-                else if (!string.IsNullOrWhiteSpace(Summary))
-                {
-                    <p class="osirion-hero-summary">@Summary</p>
-                }
+                <OsirionAnimation Show="@(Animate && (SummaryContent is not null || !string.IsNullOrWhiteSpace(Summary)))" Delay="400" Effect="AnimationEffect.FadeRight">
+                    @if (SummaryContent is not null)
+                    {
+                        @SummaryContent
+                    }
+                    else if (!string.IsNullOrWhiteSpace(Summary))
+                    {
+                        <p class="osirion-hero-summary">@Summary</p>
+                    }
+                </OsirionAnimation>
+
+
 
                 @if (ShowMetadata)
                 {
-                    <OsirionArticleMetdata Author="@Author" PublishDate="PublishDate" ReadTime="@ReadTime" />
+                    <OsirionAnimation Show="@(Animate)" Delay="600" Effect="AnimationEffect.FadeRight">
+                        <OsirionArticleMetdata Author="@Author" PublishDate="PublishDate" ReadTime="@ReadTime" />
+                    </OsirionAnimation>
                 }
 
                 @if (HasButtons)
                 {
-                    <div class="osirion-hero-buttons">
-                        @if (ShowPrimaryButton && !string.IsNullOrWhiteSpace(PrimaryButtonText) && !string.IsNullOrWhiteSpace(PrimaryButtonUrl))
-                        {
-                            <a href="@PrimaryButtonUrl" class="@BuildButtonClass(ButtonVariant.Primary, ButtonSize.Large) osirion-hero-button osirion-hero-button-primary">
-                                @PrimaryButtonText
-                            </a>
-                        }
+                    <OsirionAnimation Show="@(Animate)" Delay="800" Effect="AnimationEffect.FadeRight">
+                        <div class="osirion-hero-buttons">
+                            @if (ShowPrimaryButton && !string.IsNullOrWhiteSpace(PrimaryButtonText) && !string.IsNullOrWhiteSpace(PrimaryButtonUrl))
+                            {
+                                <a href="@PrimaryButtonUrl" class="@BuildButtonClass(ButtonVariant.Primary, ButtonSize.Large) osirion-hero-button osirion-hero-button-primary">
+                                    @PrimaryButtonText
+                                </a>
+                            }
 
-                        @if (ShowSecondaryButton && !string.IsNullOrWhiteSpace(SecondaryButtonText) && !string.IsNullOrWhiteSpace(SecondaryButtonUrl))
-                        {
-                            <a href="@SecondaryButtonUrl" class="@BuildButtonClass(ButtonVariant.OutlinedPrimary, ButtonSize.Large) osirion-hero-button osirion-hero-button-primary">
-                                @SecondaryButtonText
-                            </a>
-                        }
-                    </div>
+                            @if (ShowSecondaryButton && !string.IsNullOrWhiteSpace(SecondaryButtonText) && !string.IsNullOrWhiteSpace(SecondaryButtonUrl))
+                            {
+                                <a href="@SecondaryButtonUrl" class="@BuildButtonClass(ButtonVariant.OutlinedPrimary, ButtonSize.Large) osirion-hero-button osirion-hero-button-primary">
+                                    @SecondaryButtonText
+                                </a>
+                            }
+                        </div>
+                    </OsirionAnimation>
                 }
 
                 @if (ChildContent is not null)
                 {
-                    <div class="osirion-hero-additional">
-                        @ChildContent
-                    </div>
+                    <OsirionAnimation Show="@(Animate)" Delay="100" Effect="AnimationEffect.FadeRight">
+                        <div class="osirion-hero-additional">
+                            @ChildContent
+                        </div>
+                    </OsirionAnimation>
                 }
             </div>
 
             <!-- Side Image Column (when not using background) -->
             @if (!UseBackgroundImage && !string.IsNullOrWhiteSpace(ImageUrl))
             {
-                <div class="osirion-hero-image-container">
-                    <img src="@ImageUrl"
-                         alt="@(ImageAlt ?? Title ?? "Hero image")"
-                         class="osirion-hero-featured-image"
-                         width="@GetImageSize().Width"
-                         height="@GetImageSize().Heigth" />
-                </div>
+                <OsirionAnimation Show="@(Animate)" Delay="500" Effect="AnimationEffect.FadeLeft">
+                    <div class="osirion-hero-image-container">
+                        <img src="@ImageUrl"
+                             alt="@(ImageAlt ?? Title ?? "Hero image")"
+                             class="osirion-hero-featured-image"
+                             width="@GetImageSize().Width"
+                             height="@GetImageSize().Heigth" />
+                    </div>
+                </OsirionAnimation>
             }
         </div>
     </div>

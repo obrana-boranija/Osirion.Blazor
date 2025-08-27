@@ -142,10 +142,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "en", "en", "{C283FF5E-3298-
 		content\en\home.md = content\en\home.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Osirion.Blazor.Animation", "src\Osirion.Blazor.Animation\Osirion.Blazor.Animation.csproj", "{B1988630-7947-4B07-BE40-07E6AE3A6070}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Osirion.Blazor.Components", "src\Osirion.Blazor.Components\Osirion.Blazor.Components.csproj", "{9DB5388B-FB52-4909-9BF0-DFA8C925187D}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -256,14 +252,6 @@ Global
 		{430F1EE9-D0B1-420C-A834-E104B0E2F58F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{430F1EE9-D0B1-420C-A834-E104B0E2F58F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{430F1EE9-D0B1-420C-A834-E104B0E2F58F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B1988630-7947-4B07-BE40-07E6AE3A6070}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B1988630-7947-4B07-BE40-07E6AE3A6070}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B1988630-7947-4B07-BE40-07E6AE3A6070}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B1988630-7947-4B07-BE40-07E6AE3A6070}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9DB5388B-FB52-4909-9BF0-DFA8C925187D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9DB5388B-FB52-4909-9BF0-DFA8C925187D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9DB5388B-FB52-4909-9BF0-DFA8C925187D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9DB5388B-FB52-4909-9BF0-DFA8C925187D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -302,8 +290,6 @@ Global
 		{373A9659-0254-4125-A34C-A23E55651EBB} = {4037E724-65A5-40CC-988A-4E31A55DA039}
 		{430F1EE9-D0B1-420C-A834-E104B0E2F58F} = {B0489088-7C87-4C92-B6D1-73B072183229}
 		{C283FF5E-3298-4D01-B0B1-275522B42B50} = {81FA36B2-1A35-4FD2-83BD-72E42C747375}
-		{B1988630-7947-4B07-BE40-07E6AE3A6070} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
-		{9DB5388B-FB52-4909-9BF0-DFA8C925187D} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {42605F7F-9786-49E4-AAB7-7D8A913C42D8}
