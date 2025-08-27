@@ -7,7 +7,7 @@ permalink: /
 description: Osirion.Blazor is a modular, SSR-compatible component library that transforms GitHub into a powerful headless CMS for your Blazor applications. Build portfolios, blogs, and documentation sites in minutes.
 author: Dejan Demonjić
 date: 2025-05-05
-featured_image: https://cdn.sanity.io/images/81pocpw8/production/d1b5556078c47c11bef6f52e652bef6aca5e5fb7-5472x3078.jpg?w=2160&h=1215&fit=crop&auto=format
+featured_image: https://cdn.jsdelivr.net/gh/obrana-boranija/hexavera-blog@main/Content/Images/Processed/hexavera-ai-cover-630x630.webp
 categories:
 - Headless CMS
 - Blazor Components
@@ -169,6 +169,7 @@ Stop wrestling with complex CMS platforms. Start building beautiful, performant 
 *Osirion.Blazor is crafted with ❤️ by developers who understand the pain of traditional CMS platforms. We believe content management should be as simple as `git push`.*
 
 [Get Started](/docs/getting-started) | [Explore Features](/features) | [View Documentation](/docs)
+
 
 
 
