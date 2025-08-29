@@ -1,0 +1,87 @@
+﻿<div class="osirion-responsive-showcase">
+    <div class="showcase-header">
+        <h3 class="showcase-title">@Title</h3>
+        <div class="viewport-controls">
+            <button class="viewport-btn @(CurrentViewport == ViewportMode.Desktop ? "active" : "")"
+                    type="button"
+                    @onclick="() => SetViewport(ViewportMode.Desktop)"
+                    aria-pressed="@(CurrentViewport == ViewportMode.Desktop)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M21 2H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h7l-2 3v1h8v-1l-2-3h7c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 12H3V4h18v10z" />
+                </svg>
+            </button>
+            <button class="viewport-btn @(CurrentViewport == ViewportMode.Tablet ? "active" : "")"
+                    type="button"
+                    @onclick="() => SetViewport(ViewportMode.Tablet)"
+                    aria-pressed="@(CurrentViewport == ViewportMode.Tablet)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M19 1H5c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V3c0-1.1-.9-2-2-2zm0 18H5V5h14v14z" />
+                </svg>
+            </button>
+            <button class="viewport-btn @(CurrentViewport == ViewportMode.Mobile ? "active" : "")"
+                    type="button"
+                    @onclick="() => SetViewport(ViewportMode.Mobile)"
+                    aria-pressed="@(CurrentViewport == ViewportMode.Mobile)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M17 1H7c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-2-2-2zm0 18H7V5h10v14z" />
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <div class="showcase-body">
+        <div class="viewport-container @GetViewportClass()" style="@GetViewportStyle()">
+            <div class="viewport-chrome">
+                <div class="chrome-dots">
+                    <span class="dot dot-red"></span>
+                    <span class="dot dot-yellow"></span>
+                    <span class="dot dot-green"></span>
+                </div>
+                <div class="chrome-address">@GetViewportTitle()</div>
+            </div>
+            <div class="component-wrapper">
+                @if (ChildContent != null)
+                {
+                    @ChildContent
+                }
+                else
+                {
+                    <div class="placeholder">
+                        <div class="placeholder-icon">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
+                            </svg>
+                        </div>
+                        <p>No component provided</p>
+                        <small>Add content to the ChildContent parameter</small>
+                    </div>
+                }
+            </div>
+        </div>
+
+        @if (ShowDimensions)
+        {
+            <div class="dimensions-info">
+                <small>@GetCurrentDimensions()</small>
+            </div>
+        }
+
+        @if (ShowCode && !string.IsNullOrWhiteSpace(CodeSnippet))
+        {
+            <div class="code-section">
+                <button class="code-toggle" type="button" @onclick="ToggleCode">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z" />
+                    </svg>
+                    @(ShowCodeContent ? "Hide Code" : "Show Code")
+                </button>
+                @if (ShowCodeContent)
+                {
+                    <div class="code-content">
+                        <pre><code>@CodeSnippet</code></pre>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>

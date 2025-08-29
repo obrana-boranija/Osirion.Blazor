@@ -37,7 +37,7 @@
         }
 
         <div class="osirion-homepage-content">
-            @if (Content is not null && ChildContent is null)
+            @if (Content is not null)
             {
                 <OsirionHtmlRenderer HtmlContent="@Content.Content" />
             }

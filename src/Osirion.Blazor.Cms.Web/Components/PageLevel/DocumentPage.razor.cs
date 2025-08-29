@@ -11,9 +11,6 @@ namespace Osirion.Blazor.Cms.Components;
 /// </summary>
 public partial class DocumentPage
 {
-    [Inject]
-    private IContentProviderManager ContentProviderManager { get; set; } = default!;
-
     /// <summary>
     /// Gets or sets the path to the document content
     /// </summary>
@@ -25,18 +22,6 @@ public partial class DocumentPage
     /// </summary>
     [Parameter]
     public ContentItem? Content { get; set; }
-
-    /// <summary>
-    /// Gets or sets the previous content item for navigation
-    /// </summary>
-    [Parameter]
-    public ContentItem? PreviousItem { get; set; }
-
-    /// <summary>
-    /// Gets or sets the next content item for navigation
-    /// </summary>
-    [Parameter]
-    public ContentItem? NextItem { get; set; }
 
     /// <summary>
     /// Gets or sets whether to show side navigation
@@ -61,30 +46,6 @@ public partial class DocumentPage
     /// </summary>
     [Parameter]
     public string? CurrentPath { get; set; }
-
-    /// <summary>
-    /// Gets or sets whether to show breadcrumbs
-    /// </summary>
-    [Parameter]
-    public bool ShowBreadcrumbs { get; set; } = true;
-
-    /// <summary>
-    /// Gets or sets whether to show the home link in breadcrumbs
-    /// </summary>
-    [Parameter]
-    public bool ShowBreadcrumbHome { get; set; } = true;
-
-    /// <summary>
-    /// Gets or sets the home link URL in breadcrumbs
-    /// </summary>
-    [Parameter]
-    public string BreadcrumbHomeUrl { get; set; } = "/";
-
-    /// <summary>
-    /// Gets or sets the home link text in breadcrumbs
-    /// </summary>
-    [Parameter]
-    public string BreadcrumbHomeText { get; set; } = "Home";
 
     /// <summary>
     /// Gets or sets whether to show metadata
@@ -123,40 +84,10 @@ public partial class DocumentPage
     public bool ShowNavigationLinks { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets whether to show a back link when not found
-    /// </summary>
-    [Parameter]
-    public bool ShowBackLink { get; set; } = true;
-
-    /// <summary>
-    /// Gets or sets the back link URL
-    /// </summary>
-    [Parameter]
-    public string BackLinkUrl { get; set; } = "/";
-
-    /// <summary>
-    /// Gets or sets the back link text
-    /// </summary>
-    [Parameter]
-    public string BackLinkText { get; set; } = "Back to Documentation";
-
-    /// <summary>
-    /// Gets or sets the schema.org type
-    /// </summary>
-    [Parameter]
-    public string SchemaType { get; set; } = "TechArticle";
-
-    /// <summary>
     /// Gets or sets custom footer content
     /// </summary>
     [Parameter]
     public string? CustomFooterContent { get; set; }
-
-    /// <summary>
-    /// Gets or sets the directory URL formatter
-    /// </summary>
-    [Parameter]
-    public Func<DirectoryItem, string>? DirectoryUrlFormatter { get; set; }
 
     /// <summary>
     /// Gets or sets the content URL formatter
@@ -169,29 +100,6 @@ public partial class DocumentPage
     /// </summary>
     [Parameter]
     public Func<DocumentNavigationItem, string>? NavigationUrlFormatter { get; set; }
-
-    /// <summary>
-    /// Gets or sets the loading text
-    /// </summary>
-    [Parameter]
-    public string LoadingText { get; set; } = "Loading document...";
-
-    /// <summary>
-    /// Gets or sets the not found title
-    /// </summary>
-    [Parameter]
-    public string NotFoundTitle { get; set; } = "Document Not Found";
-
-    /// <summary>
-    /// Gets or sets the not found text
-    /// </summary>
-    [Parameter]
-    public string NotFoundText { get; set; } = "The requested document could not be found.";
-
-    /// <summary>
-    /// Gets or sets whether the component is loading
-    /// </summary>
-    private bool IsLoading { get; set; } = true;
 
     /// <inheritdoc/>
     protected override async Task OnParametersSetAsync()

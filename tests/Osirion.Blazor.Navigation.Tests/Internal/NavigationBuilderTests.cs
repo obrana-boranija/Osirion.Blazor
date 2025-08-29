@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Osirion.Blazor.Components;
 using Osirion.Blazor.Navigation.Internal;
 using Osirion.Blazor.Navigation.Options;
 using Osirion.Blazor.Navigation.Services;

@@ -1,24 +1,16 @@
 ﻿@namespace Osirion.Blazor.Cms.Components
-@inherits OsirionComponentBase
+@using Osirion.Blazor.Cms.Web.Components
+@inherits OsirionContentDetailPageBase
+@attribute [StreamRendering]
 
-<div class="@GetDocumentPageClass()">
-    @if (IsLoading && IsInteractive)
+<div class="@GetDocumentPageClass() @Class" style="@Style" @attributes="Attributes">
+    @if (IsLoading)
     {
-        <div class="osirion-loading">
-            <div class="osirion-spinner"></div>
-            <p>@LoadingText</p>
-        </div>
+        <OsirionPageLoading ShowText="ShowLoadingText" Text="@LoadingText" />
     }
     else if (Content is null && !string.IsNullOrWhiteSpace(ContentPath))
     {
-        <div class="osirion-not-found">
-            <h2>@NotFoundTitle</h2>
-            <p>@NotFoundText</p>
-            @if (ShowBackLink)
-            {
-                <a href="@BackLinkUrl" class="osirion-back-link">@BackLinkText</a>
-            }
-        </div>
+        <OsirionContentNotFound ErrorCode="404" />
     }
     else
     {

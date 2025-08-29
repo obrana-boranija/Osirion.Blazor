@@ -1,6 +1,7 @@
 ﻿using Bunit;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
+using Osirion.Blazor.Components;
 using Osirion.Blazor.Navigation.Components;
 using Osirion.Blazor.Navigation.Options;
 using Shouldly;
