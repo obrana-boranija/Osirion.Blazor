@@ -623,7 +623,7 @@
 /* Responsive Design - Enhanced */
 /* ================================================ */
 
-@@media (max-width: 768px) {
+@media (max-width: 768px) {
     /* Convert left/right layouts to top/bottom on mobile */
     .osirion-feature-card-image-left, .osirion-feature-card-image-right {
         grid-template-rows: auto 1fr;
@@ -673,7 +673,7 @@
 /* Accessibility and Motion */
 /* ================================================ */
 
-@@media (prefers-reduced-motion: reduce) {
+@media (prefers-reduced-motion: reduce) {
     .osirion-feature-card, .osirion-feature-card-image, .osirion-feature-card-pillow {
         transition: none;
         }
@@ -692,7 +692,7 @@
     }
     }
 
-@@media (prefers-contrast: high) {
+@media (prefers-contrast: high) {
     .osirion-feature-card {
         border: 2px solid;
     }
