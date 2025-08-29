@@ -13,7 +13,7 @@
 
 		<!-- NuGet package properties -->
 		<PackageId>Osirion.Blazor.Theming</PackageId>
-		<Version>2.1.7</Version>
+		<Version>2.1.9</Version>
 		<Authors>Dejan Demonjić</Authors>
 		<Company>Tridesetri</Company>
 		<Description>Theming module for Osirion.Blazor - Provides theme management and CSS framework integration.</Description>
