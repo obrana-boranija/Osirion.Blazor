@@ -8,7 +8,7 @@
     {
         <OsirionPageLoading ShowText="ShowLoadingText" Text="@LoadingText" />
     }
-    else if (Content is null && !string.IsNullOrWhiteSpace(ContentPath))
+    else if (NoContent() && !IsLoading)
     {
         <OsirionContentNotFound ErrorCode="404" />
     }
