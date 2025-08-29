@@ -1,4 +1,6 @@
-﻿namespace Osirion.Blazor.Navigation.Options;
+﻿using Osirion.Blazor.Components;
+
+namespace Osirion.Blazor.Navigation.Options;
 
 /// <summary>
 /// Configuration options for enhanced navigation

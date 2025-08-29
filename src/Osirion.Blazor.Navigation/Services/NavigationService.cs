@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Osirion.Blazor.Components;
 using Osirion.Blazor.Navigation.Options;
 
 namespace Osirion.Blazor.Navigation.Services;

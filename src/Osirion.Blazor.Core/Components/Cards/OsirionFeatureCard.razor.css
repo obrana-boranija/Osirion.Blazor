@@ -1,0 +1,333 @@
+/* Base Featured Post */
+.osirion-featured-post {
+    background-color: var(--osirion-card-background, var(--osirion-background-primary, #ffffff));
+    border-radius: var(--osirion-radius-lg, 0.5rem);
+    overflow: hidden;
+    transition: transform var(--osirion-transition-duration-200, 0.2s) ease, box-shadow var(--osirion-transition-duration-200, 0.2s) ease;
+    border: var(--osirion-card-border-width, 1px) solid var(--osirion-card-border-color, var(--osirion-border-color, #e5e7eb));
+    display: grid;
+    gap: var(--osirion-spacing-4, 1rem);
+}
+
+    .osirion-featured-post:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--osirion-shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06));
+    }
+
+        .osirion-featured-post:hover .osirion-featured-post-image {
+            transform: scale(1.05);
+        }
+
+/* Post Content */
+.osirion-featured-post-content {
+    padding: var(--osirion-card-padding, 1.5rem);
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.osirion-featured-post-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--osirion-spacing-3, 0.75rem);
+    margin-bottom: var(--osirion-spacing-3, 0.75rem);
+    font-size: var(--osirion-font-size-sm, 0.875rem);
+}
+
+.osirion-featured-post-category {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background-color: var(--osirion-category-background, var(--osirion-accent-background, rgba(37, 99, 235, 0.1)));
+    color: var(--osirion-category-color, var(--osirion-accent-color, #2563eb));
+    border-radius: var(--osirion-radius-full, 9999px);
+    text-decoration: none;
+    font-weight: var(--osirion-font-weight-medium, 500);
+    transition: background-color var(--osirion-transition-duration-200, 0.2s) ease;
+}
+
+    .osirion-featured-post-category:hover {
+        background-color: var(--osirion-category-background-hover, var(--osirion-accent-background-hover, rgba(37, 99, 235, 0.2)));
+    }
+
+.osirion-featured-post-date {
+    color: var(--osirion-text-secondary, #6b7280);
+}
+
+.osirion-featured-post-title {
+    font-size: var(--osirion-card-title-size, var(--osirion-font-size-xl, 1.25rem));
+    font-weight: var(--osirion-font-weight-bold, 700);
+    margin-top: 0;
+    margin-bottom: var(--osirion-spacing-3, 0.75rem);
+    line-height: 1.3;
+}
+
+.osirion-featured-post-title-link {
+    color: var(--osirion-heading-color, var(--osirion-text-primary, #111827));
+    text-decoration: none;
+    transition: color var(--osirion-transition-duration-200, 0.2s) ease;
+}
+
+    .osirion-featured-post-title-link:hover {
+        color: var(--osirion-action-primary, #2563eb);
+    }
+
+.osirion-featured-post-excerpt {
+    color: var(--osirion-text-secondary, #6b7280);
+    font-size: var(--osirion-font-size-base, 1rem);
+    line-height: 1.6;
+    margin-top: 0;
+    margin-bottom: var(--osirion-spacing-4, 1rem);
+    flex: 1;
+}
+
+.osirion-featured-post-author {
+    margin-top: var(--osirion-spacing-2, 0.5rem);
+    margin-bottom: var(--osirion-spacing-4, 1rem);
+    font-size: var(--osirion-font-size-sm, 0.875rem);
+    color: var(--osirion-text-secondary, #6b7280);
+    font-weight: var(--osirion-font-weight-medium, 500);
+}
+
+.osirion-featured-post-read-more {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--osirion-spacing-2, 0.5rem);
+    color: var(--osirion-action-primary, #2563eb);
+    text-decoration: none;
+    font-weight: var(--osirion-font-weight-medium, 500);
+    transition: color var(--osirion-transition-duration-200, 0.2s) ease;
+    margin-top: auto;
+    padding-top: var(--osirion-spacing-4, 1rem);
+}
+
+    .osirion-featured-post-read-more svg {
+        transition: transform var(--osirion-transition-duration-200, 0.2s) ease;
+    }
+
+    .osirion-featured-post-read-more:hover {
+        color: var(--osirion-action-primary-hover, #1d4ed8);
+    }
+
+        .osirion-featured-post-read-more:hover svg {
+            transform: translateX(4px);
+        }
+
+/* Image Position Layouts */
+.osirion-featured-post-image-top,
+.osirion-featured-post-image-bottom {
+    grid-template-rows: auto 1fr;
+    grid-template-columns: 1fr;
+}
+
+.osirion-featured-post-image-bottom {
+    grid-template-rows: 1fr auto;
+}
+
+.osirion-featured-post-image-left {
+    grid-template-rows: 1fr;
+    grid-template-columns: auto 1fr;
+}
+
+.osirion-featured-post-image-right {
+    grid-template-rows: 1fr;
+    grid-template-columns: 1fr auto;
+}
+
+/* Content */
+.osirion-featured-post-content {
+    padding: var(--osirion-spacing-4, 1rem);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* Image containers */
+.osirion-featured-post-image-container,
+.osirion-featured-post-image-placeholder {
+    overflow: hidden;
+    background-color: var(--osirion-background-secondary, #f3f4f6);
+}
+
+/* Force image container to respect card height in left/right layouts */
+.osirion-featured-post-image-left .osirion-featured-post-image-container,
+.osirion-featured-post-image-right .osirion-featured-post-image-container,
+.osirion-featured-post-image-left .osirion-featured-post-image-placeholder,
+.osirion-featured-post-image-right .osirion-featured-post-image-placeholder {
+    height: 100%;
+    width: auto;
+}
+
+.osirion-featured-post-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* CARD SIZES - Simple and Direct */
+
+/* Normal Size (450px) */
+.osirion-featured-post-md.osirion-featured-post-image-top,
+.osirion-featured-post-md.osirion-featured-post-image-bottom {
+    width: 450px;
+    height: auto;
+}
+
+.osirion-featured-post-md.osirion-featured-post-image-left,
+.osirion-featured-post-md.osirion-featured-post-image-right {
+    height: 450px;
+    width: 100%;
+}
+
+/* Extra Extra Large (1200px) */
+.osirion-featured-post-xxl.osirion-featured-post-image-top,
+.osirion-featured-post-xxl.osirion-featured-post-image-bottom {
+    width: 1200px;
+    height: auto;
+}
+
+.osirion-featured-post-xxl.osirion-featured-post-image-left,
+.osirion-featured-post-xxl.osirion-featured-post-image-right {
+    height: 1200px;
+    width: 100%;
+}
+
+/* Extra Large (900px) */
+.osirion-featured-post-xl.osirion-featured-post-image-top,
+.osirion-featured-post-xl.osirion-featured-post-image-bottom {
+    width: 900px;
+    height: auto;
+}
+
+.osirion-featured-post-xl.osirion-featured-post-image-left,
+.osirion-featured-post-xl.osirion-featured-post-image-right {
+    height: 900px;
+    width: 100%;
+}
+
+/* Large (600px) */
+.osirion-featured-post-lg.osirion-featured-post-image-top,
+.osirion-featured-post-lg.osirion-featured-post-image-bottom {
+    width: 600px;
+    height: auto;
+}
+
+.osirion-featured-post-lg.osirion-featured-post-image-left,
+.osirion-featured-post-lg.osirion-featured-post-image-right {
+    height: 600px;
+    width: 100%;
+}
+
+/* Small (300px) */
+.osirion-featured-post-sm.osirion-featured-post-image-top,
+.osirion-featured-post-sm.osirion-featured-post-image-bottom {
+    width: 300px;
+    height: auto;
+}
+
+.osirion-featured-post-sm.osirion-featured-post-image-left,
+.osirion-featured-post-sm.osirion-featured-post-image-right {
+    height: 300px;
+    width: 100%;
+}
+
+/* Extra Small (150px) */
+.osirion-featured-post-xs.osirion-featured-post-image-top,
+.osirion-featured-post-xs.osirion-featured-post-image-bottom {
+    width: 150px;
+    height: auto;
+}
+
+.osirion-featured-post-xs.osirion-featured-post-image-left,
+.osirion-featured-post-xs.osirion-featured-post-image-right {
+    height: 150px;
+    width: 100%;
+}
+
+/* Extra Extra Small (75px) */
+.osirion-featured-post-xxs.osirion-featured-post-image-top,
+.osirion-featured-post-xxs.osirion-featured-post-image-bottom {
+    width: 75px;
+    height: auto;
+}
+
+.osirion-featured-post-xxs.osirion-featured-post-image-left,
+.osirion-featured-post-xxs.osirion-featured-post-image-right {
+    height: 75px;
+    width: 100%;
+}
+
+/* Responsive Media Queries */
+@media (max-width: 768px) {
+    /* Convert left/right layouts to top/bottom on small screens */
+    .osirion-featured-post-image-left,
+    .osirion-featured-post-image-right {
+        grid-template-rows: auto 1fr;
+        grid-template-columns: 1fr;
+    }
+
+        /* Override image container sizing for left/right on small screens */
+        .osirion-featured-post-image-left .osirion-featured-post-image-container,
+        .osirion-featured-post-image-right .osirion-featured-post-image-container,
+        .osirion-featured-post-image-left .osirion-featured-post-image-placeholder,
+        .osirion-featured-post-image-right .osirion-featured-post-image-placeholder {
+            height: auto;
+            width: 100%;
+        }
+
+    /* Override card dimensions - use width constraints instead of height */
+    .osirion-featured-post-xxl.osirion-featured-post-image-left,
+    .osirion-featured-post-xxl.osirion-featured-post-image-right {
+        height: auto;
+        width: 100%;
+        max-width: 600px;
+    }
+
+    .osirion-featured-post-xl.osirion-featured-post-image-left,
+    .osirion-featured-post-xl.osirion-featured-post-image-right {
+        height: auto;
+        width: 100%;
+        max-width: 500px;
+    }
+
+    .osirion-featured-post-lg.osirion-featured-post-image-left,
+    .osirion-featured-post-lg.osirion-featured-post-image-right {
+        height: auto;
+        width: 100%;
+        max-width: 400px;
+    }
+
+    .osirion-featured-post-md.osirion-featured-post-image-left,
+    .osirion-featured-post-md.osirion-featured-post-image-right {
+        height: auto;
+        width: 100%;
+        max-width: 350px;
+    }
+
+    .osirion-featured-post-sm.osirion-featured-post-image-left,
+    .osirion-featured-post-sm.osirion-featured-post-image-right {
+        height: auto;
+        width: 100%;
+        max-width: 250px;
+    }
+
+    .osirion-featured-post-xs.osirion-featured-post-image-left,
+    .osirion-featured-post-xs.osirion-featured-post-image-right {
+        height: auto;
+        width: 100%;
+        max-width: 150px;
+    }
+
+    .osirion-featured-post-xxs.osirion-featured-post-image-left,
+    .osirion-featured-post-xxs.osirion-featured-post-image-right {
+        height: auto;
+        width: 100%;
+        max-width: 100px;
+    }
+
+    /* Center content for converted layouts */
+    .osirion-featured-post-image-left .osirion-featured-post-content,
+    .osirion-featured-post-image-right .osirion-featured-post-content {
+        text-align: center;
+        align-items: center;
+    }
+}
