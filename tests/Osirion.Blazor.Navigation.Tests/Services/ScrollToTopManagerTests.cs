@@ -1,4 +1,5 @@
-﻿using Osirion.Blazor.Navigation.Options;
+﻿using Osirion.Blazor.Components;
+using Osirion.Blazor.Navigation.Options;
 using Osirion.Blazor.Navigation.Services;
 using Shouldly;
 

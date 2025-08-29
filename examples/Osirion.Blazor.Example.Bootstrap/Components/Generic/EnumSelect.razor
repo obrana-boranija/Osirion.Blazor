@@ -1,0 +1,24 @@
+﻿@typeparam TEnum
+@using System.ComponentModel
+@using Osirion.Blazor.Components
+@inherits InputBase<TEnum>
+
+<div class="osirion-form-field enum-select">
+    @if (!string.IsNullOrEmpty(Label))
+    {
+        <label class="osirion-form-label">@Label</label>
+    }
+    <div class="osirion-select-wrapper">
+        <InputSelect @bind-Value="CurrentValueAsString" class="osirion-select">
+            @if (IncludeEmptyOption)
+            {
+                <option value="">@Placeholder</option>
+            }
+            @foreach (var value in Enum.GetValues(typeof(TEnum)).Cast<TEnum>())
+            {
+                <option value="@value">@GetDescription(value)</option>
+            }
+        </InputSelect>
+        <span class="osirion-select-arrow" aria-hidden="true">▾</span>
+    </div>
+</div>

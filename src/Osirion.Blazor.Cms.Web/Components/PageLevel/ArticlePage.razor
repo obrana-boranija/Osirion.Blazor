@@ -3,7 +3,7 @@
 @inherits OsirionContentDetailPageBase
 @attribute [StreamRendering]
 
-<div class="@GetArticlePageClass() + @Class" style="@Style">
+<div class="@GetArticlePageClass() @Class" style="@Style" @attributes="Attributes">
     @if (IsLoading)
     {
         <OsirionPageLoading ShowText="ShowLoadingText" Text="@LoadingText" />

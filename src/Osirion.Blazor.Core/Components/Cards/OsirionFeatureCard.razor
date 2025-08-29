@@ -1,67 +1,183 @@
+@* src/Osirion.Blazor.Core/Components/Cards/OsirionFeatureCard.razor *@
 @namespace Osirion.Blazor.Components
 @inherits OsirionComponentBase
 
-<div class="osirion-featured-post @GetImagePositionClass() @GetCardSizeClass()">
-    @if (ImagePosition == ImagePosition.Top)
-    {
-        @ImageBlock()
-        @ContentBlock("center")
-    }
-    else if (ImagePosition == ImagePosition.Bottom)
-    {
-        @ContentBlock("center")
-        @ImageBlock()
-    }
-    else if (ImagePosition == ImagePosition.Right)
-    {
-        @ContentBlock("right")
-        @ImageBlock()
-    }
-    else // Left (default)
-    {
-        @ImageBlock()
-        @ContentBlock("left")
-    }
+<div class="@GetCardClasses()" style="@Style" @attributes="Attributes">
+    @RenderCardContent()
 </div>
 
 @code {
-    private RenderFragment ImageBlock() => __builder =>
+
+    #region Rendering Logic
+
+    /// <summary>
+    /// Renders the card content based on image position.
+    /// </summary>
+    private RenderFragment RenderCardContent() => ImagePosition switch
     {
-        <a href="@Url" class="osirion-featured-post-image-link">
-            @if (!string.IsNullOrWhiteSpace(ImageUrl))
-            {
-                <div class="osirion-featured-post-image-container">
-                    <img src="@ImageUrl"
-                         alt="@(ImageAlt ?? Title)"
-                         class="osirion-featured-post-image"
-                         loading="@(ImageLazyLoading ? "lazy" : "eager")"
-                         onerror="this.onerror=null;this.src='@NoImageUrl()';" />
-                </div>
-            }
-            else
-            {
-                <div class="osirion-featured-post-image-placeholder">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                        <polyline points="21 15 16 10 5 21"></polyline>
-                    </svg>
-                </div>
-            }
-        </a>
+        ImagePosition.Top => __builder => { RenderImageBlock(__builder); RenderContentBlock(__builder); },
+        ImagePosition.Bottom => __builder => { RenderContentBlock(__builder); RenderImageBlock(__builder); },
+        ImagePosition.Right => __builder => { RenderContentBlock(__builder); RenderImageBlock(__builder); },
+        ImagePosition.Left => __builder => { RenderImageBlock(__builder); RenderContentBlock(__builder); },
+        _ => __builder => { RenderImageBlock(__builder); RenderContentBlock(__builder); }
     };
 
-    private RenderFragment ContentBlock(string justify) => __builder =>
+    /// <summary>
+    /// Renders the image block with optional link wrapper.
+    /// </summary>
+    private void RenderImageBlock(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder __builder)
     {
-        <div class="osirion-featured-post-content" style="justify-content:@justify; text-align:@justify;">
-            @ChildContent
-            <h3 class="osirion-featured-post-title">
-                <a href="@Url" class="osirion-featured-post-title-link">@Title</a>
-            </h3>
-            @if (ShowDescription && string.IsNullOrWhiteSpace(Description) == false)
-            {
-                <p class="osirion-featured-post-excerpt">@Description</p>
-            }
-        </div>
+        if (!string.IsNullOrWhiteSpace(Url))
+        {
+            <a href="@Url" class="osirion-feature-card-image-link">
+                @RenderImageContent()
+            </a>
+        }
+        else
+        {
+            @RenderImageContent()
+        }
+    }
+
+    /// <summary>
+    /// Renders the actual image content or placeholder.
+    /// </summary>
+    private RenderFragment RenderImageContent() => __builder =>
+    {
+        if (HasImage())
+        {
+            <div class="osirion-feature-card-image-container">
+                <img src="@ImageUrl"
+                     alt="@GetImageAltText()"
+                     class="osirion-feature-card-image"
+                     loading="@(ImageLazyLoading ? "lazy" : "eager")"
+                     onerror="this.onerror=null;this.src='@GetPlaceholderImageUrl()';" />
+            </div>
+        }
+        else
+        {
+            <div class="osirion-feature-card-image-placeholder">
+                @RenderPlaceholderIcon()
+            </div>
+        }
     };
+
+    /// <summary>
+    /// Renders the placeholder icon for missing images.
+    /// </summary>
+    private RenderFragment RenderPlaceholderIcon() => __builder =>
+    {
+        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+            <polyline points="21 15 16 10 5 21"></polyline>
+        </svg>
+    };
+
+    /// <summary>
+    /// Renders the content block with all text and actions.
+    /// </summary>
+    private void RenderContentBlock(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder __builder)
+    {
+        <div class="osirion-feature-card-content">
+            @RenderTitle()
+            @RenderDescription()
+
+            @RenderChildContent()
+
+            @RenderReadMoreLink()
+
+            @RenderPillowButtons()
+        </div>
+        
+    }
+
+    #endregion
+
+    #region Content Rendering Methods
+
+    /// <summary>
+    /// Renders pillow buttons if present.
+    /// </summary>
+    private RenderFragment RenderPillowButtons() => __builder =>
+    {
+        if (HasPillowButtons())
+        {
+            <div class="osirion-feature-card-pillows">
+                @foreach (var button in PillowButtons!)
+                {
+                    <a href="@button.Href"
+                       class="osirion-feature-card-pillow osirion-feature-card-pillow-@GetPillowButtonColorClass(button.Color)"
+                       target="@button.Target"
+                       aria-label="@button.AriaLabel">
+                        @button.Text
+                    </a>
+                }
+            </div>
+        }
+    };
+
+    /// <summary>
+    /// Renders child content if present.
+    /// </summary>
+    private RenderFragment RenderChildContent() => ChildContent ?? (__builder => { });
+
+    /// <summary>
+    /// Renders the title with optional link wrapper.
+    /// </summary>
+    private RenderFragment RenderTitle() => __builder =>
+    {
+        if (!string.IsNullOrWhiteSpace(Title))
+        {
+            <p class="osirion-feature-card-title">
+                @Title
+            </p>
+        }
+    };
+
+    /// <summary>
+    /// Renders the description if enabled and present.
+    /// </summary>
+    private RenderFragment RenderDescription() => __builder =>
+    {
+        if (!ShowDescription || string.IsNullOrWhiteSpace(Description)) return;
+
+        <p class="osirion-feature-card-description">@Description</p>
+    };
+
+    /// <summary>
+    /// Renders the read more link if enabled and configured.
+    /// </summary>
+    private RenderFragment RenderReadMoreLink() => __builder =>
+    {
+        if (HasReadMoreLink() && ShowReadMoreLink)
+        {
+            <OsirionReadMoreLink Href="@(GetReadMoreHref()!)" Style="@GetReadMoreStyles()"
+                                 Text="@ReadMoreText"
+                                 Variant="ReadMoreVariant.Default"
+                                 Size="LinkSize.Normal"
+                                 Stretched />
+        }
+    };
+
+    #endregion
+
+    #region Helper Methods
+
+    /// <summary>
+    /// Gets the CSS class name for pillow button colors.
+    /// </summary>
+    /// <param name="color">The theme color.</param>
+    /// <returns>CSS class name.</returns>
+    private string GetPillowButtonColorClass(ThemeColor color) => color switch
+    {
+        ThemeColor.Primary => "primary",
+        ThemeColor.Secondary => "secondary",
+        ThemeColor.Tertiary => "tertiary",
+        _ => "primary"
+    };
+
+    #endregion
+
 }

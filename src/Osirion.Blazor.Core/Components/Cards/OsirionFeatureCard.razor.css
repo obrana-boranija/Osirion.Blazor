@@ -1,333 +1,728 @@
-/* Base Featured Post */
-.osirion-featured-post {
+/* ================================================ */
+/* OsirionFeatureCard Styles */
+/* ================================================ */
+
+/* ================================================ */
+/* Base Card Structure */
+/* ================================================ */
+
+.osirion-feature-card {
     background-color: var(--osirion-card-background, var(--osirion-background-primary, #ffffff));
     border-radius: var(--osirion-radius-lg, 0.5rem);
     overflow: hidden;
-    transition: transform var(--osirion-transition-duration-200, 0.2s) ease, box-shadow var(--osirion-transition-duration-200, 0.2s) ease;
-    border: var(--osirion-card-border-width, 1px) solid var(--osirion-card-border-color, var(--osirion-border-color, #e5e7eb));
+    transition: transform var(--osirion-transition-duration-200, 0.2s) ease, box-shadow var(--osirion-transition-duration-200, 0.2s) ease, border-color var(--osirion-transition-duration-200, 0.2s) ease;
     display: grid;
     gap: var(--osirion-spacing-4, 1rem);
+    position: relative;
+    min-height: 0;
 }
 
-    .osirion-featured-post:hover {
-        transform: translateY(-4px);
-        box-shadow: var(--osirion-shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06));
+/* ================================================ */
+/* Image Layout Configurations */
+/* ================================================ */
+
+.osirion-feature-card-image-top {
+    grid-template-rows: auto 1fr;
+}
+
+.osirion-feature-card-image-bottom {
+    grid-template-rows: 1fr auto;
+}
+
+.osirion-feature-card-image-left {
+    grid-template-columns: auto 1fr;
+}
+
+.osirion-feature-card-image-right {
+    grid-template-columns: 1fr auto;
+}
+
+/* ================================================ */
+/* Card Size System - Proper Dimensions */
+/* ================================================ */
+
+/* Extra Extra Small (75px) */
+.osirion-feature-card-xxs.osirion-feature-card-image-left,
+.osirion-feature-card-xxs.osirion-feature-card-image-right {
+    height: 75px;
+    width: 100%;
+}
+
+.osirion-feature-card-xxs.osirion-feature-card-image-top,
+.osirion-feature-card-xxs.osirion-feature-card-image-bottom {
+    width: 75px;
+    height: auto;
+}
+
+.osirion-feature-card-xxs.osirion-feature-card-image-left .osirion-feature-card-image-container,
+.osirion-feature-card-xxs.osirion-feature-card-image-right .osirion-feature-card-image-container {
+    height: 75px;
+    width: auto;
+}
+
+.osirion-feature-card-xxs.osirion-feature-card-image-top .osirion-feature-card-image-container,
+.osirion-feature-card-xxs.osirion-feature-card-image-bottom .osirion-feature-card-image-container {
+    width: 75px;
+    height: auto;
+}
+
+/* Extra Small (150px) */
+.osirion-feature-card-xs.osirion-feature-card-image-left,
+.osirion-feature-card-xs.osirion-feature-card-image-right {
+    height: 150px;
+    width: 100%;
+}
+
+.osirion-feature-card-xs.osirion-feature-card-image-top,
+.osirion-feature-card-xs.osirion-feature-card-image-bottom {
+    width: 150px;
+    height: auto;
+}
+
+.osirion-feature-card-xs.osirion-feature-card-image-left .osirion-feature-card-image-container,
+.osirion-feature-card-xs.osirion-feature-card-image-right .osirion-feature-card-image-container {
+    height: 150px;
+    width: auto;
+}
+
+.osirion-feature-card-xs.osirion-feature-card-image-top .osirion-feature-card-image-container,
+.osirion-feature-card-xs.osirion-feature-card-image-bottom .osirion-feature-card-image-container {
+    width: 150px;
+    height: auto;
+}
+
+/* Small (300px) */
+.osirion-feature-card-sm.osirion-feature-card-image-left,
+.osirion-feature-card-sm.osirion-feature-card-image-right {
+    height: 300px;
+    width: 100%;
+}
+
+.osirion-feature-card-sm.osirion-feature-card-image-top,
+.osirion-feature-card-sm.osirion-feature-card-image-bottom {
+    width: 300px;
+    height: auto;
+}
+
+.osirion-feature-card-sm.osirion-feature-card-image-left .osirion-feature-card-image-container,
+.osirion-feature-card-sm.osirion-feature-card-image-right .osirion-feature-card-image-container {
+    height: 300px;
+    width: auto;
+}
+
+.osirion-feature-card-sm.osirion-feature-card-image-top .osirion-feature-card-image-container,
+.osirion-feature-card-sm.osirion-feature-card-image-bottom .osirion-feature-card-image-container {
+    width: 300px;
+    height: auto;
+}
+
+/* Normal (450px) - Default */
+.osirion-feature-card-md.osirion-feature-card-image-left,
+.osirion-feature-card-md.osirion-feature-card-image-right {
+    height: 450px;
+    width: 100%;
+}
+
+.osirion-feature-card-md.osirion-feature-card-image-top,
+.osirion-feature-card-md.osirion-feature-card-image-bottom {
+    width: 450px;
+    height: auto;
+}
+
+.osirion-feature-card-md.osirion-feature-card-image-left .osirion-feature-card-image-container,
+.osirion-feature-card-md.osirion-feature-card-image-right .osirion-feature-card-image-container {
+    height: 450px;
+    width: auto;
+}
+
+.osirion-feature-card-md.osirion-feature-card-image-top .osirion-feature-card-image-container,
+.osirion-feature-card-md.osirion-feature-card-image-bottom .osirion-feature-card-image-container {
+    width: 450px;
+    height: auto;
+}
+
+/* Large (600px) */
+.osirion-feature-card-lg.osirion-feature-card-image-left,
+.osirion-feature-card-lg.osirion-feature-card-image-right {
+    height: 600px;
+    width: 100%;
+}
+
+.osirion-feature-card-lg.osirion-feature-card-image-top,
+.osirion-feature-card-lg.osirion-feature-card-image-bottom {
+    width: 600px;
+    height: auto;
+}
+
+.osirion-feature-card-lg.osirion-feature-card-image-left .osirion-feature-card-image-container,
+.osirion-feature-card-lg.osirion-feature-card-image-right .osirion-feature-card-image-container {
+    height: 600px;
+    width: auto;
+}
+
+.osirion-feature-card-lg.osirion-feature-card-image-top .osirion-feature-card-image-container,
+.osirion-feature-card-lg.osirion-feature-card-image-bottom .osirion-feature-card-image-container {
+    width: 600px;
+    height: auto;
+}
+
+/* Extra Large (900px) */
+.osirion-feature-card-xl.osirion-feature-card-image-left,
+.osirion-feature-card-xl.osirion-feature-card-image-right {
+    height: 900px;
+    width: 100%;
+}
+
+.osirion-feature-card-xl.osirion-feature-card-image-top,
+.osirion-feature-card-xl.osirion-feature-card-image-bottom {
+    width: 900px;
+    height: auto;
+}
+
+.osirion-feature-card-xl.osirion-feature-card-image-left .osirion-feature-card-image-container,
+.osirion-feature-card-xl.osirion-feature-card-image-right .osirion-feature-card-image-container {
+    height: 900px;
+    width: auto;
+}
+
+.osirion-feature-card-xl.osirion-feature-card-image-top .osirion-feature-card-image-container,
+.osirion-feature-card-xl.osirion-feature-card-image-bottom .osirion-feature-card-image-container {
+    max-width: 900px;
+    height: auto;
+}
+
+/* Extra Extra Large (1200px) */
+.osirion-feature-card-xxl.osirion-feature-card-image-left,
+.osirion-feature-card-xxl.osirion-feature-card-image-right {
+    height: 1200px;
+    width: 100%;
+}
+
+.osirion-feature-card-xxl.osirion-feature-card-image-top,
+.osirion-feature-card-xxl.osirion-feature-card-image-bottom {
+    width: 1200px;
+    height: auto;
+}
+
+.osirion-feature-card-xxl.osirion-feature-card-image-left .osirion-feature-card-image-container,
+.osirion-feature-card-xxl.osirion-feature-card-image-right .osirion-feature-card-image-container {
+    height: 1200px;
+    width: auto;
+}
+
+.osirion-feature-card-xxl.osirion-feature-card-image-top .osirion-feature-card-image-container,
+.osirion-feature-card-xxl.osirion-feature-card-image-bottom .osirion-feature-card-image-container {
+    width: 1200px;
+    height: auto;
+}
+
+/* ================================================ */
+/* Border Effects */
+/* ================================================ */
+
+.osirion-feature-card-border-always {
+    border: var(--osirion-card-border-width, 2px) solid var(--osirion-border-color, #e5e7eb);
+}
+
+.osirion-feature-card-border-hover {
+    border: var(--osirion-card-border-width, 2px) solid transparent;
+}
+
+    .osirion-feature-card-border-hover:hover {
+        border-color: var(--osirion-border-color, #e5e7eb);
     }
 
-        .osirion-featured-post:hover .osirion-featured-post-image {
-            transform: scale(1.05);
-        }
+.osirion-feature-card-border-primary.osirion-feature-card-border-always,
+.osirion-feature-card-border-primary.osirion-feature-card-border-hover:hover {
+    border-color: var(--osirion-action-primary, #2563eb);
+}
 
-/* Post Content */
-.osirion-featured-post-content {
-    padding: var(--osirion-card-padding, 1.5rem);
+.osirion-feature-card-border-secondary.osirion-feature-card-border-always,
+.osirion-feature-card-border-secondary.osirion-feature-card-border-hover:hover {
+    border-color: var(--osirion-action-secondary, #6c757d);
+}
+
+.osirion-feature-card-border-tertiary.osirion-feature-card-border-always,
+.osirion-feature-card-border-tertiary.osirion-feature-card-border-hover:hover {
+    border-color: var(--osirion-background-tertiary, #e5e7eb);
+}
+
+/* ================================================ */
+/* Shadow Effects */
+/* ================================================ */
+
+.osirion-feature-card-shadow-always {
+    box-shadow: var(--osirion-shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06));
+}
+
+.osirion-feature-card-shadow-hover:hover {
+    box-shadow: var(--osirion-shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06));
+}
+
+.osirion-feature-card-shadow-primary.osirion-feature-card-shadow-always,
+.osirion-feature-card-shadow-primary.osirion-feature-card-shadow-hover:hover {
+    box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2), 0 2px 4px -1px rgba(37, 99, 235, 0.1);
+}
+
+.osirion-feature-card-shadow-secondary.osirion-feature-card-shadow-always,
+.osirion-feature-card-shadow-secondary.osirion-feature-card-shadow-hover:hover {
+    box-shadow: 0 4px 6px -1px rgba(108, 117, 125, 0.2), 0 2px 4px -1px rgba(108, 117, 125, 0.1);
+}
+
+.osirion-feature-card-shadow-tertiary.osirion-feature-card-shadow-always,
+.osirion-feature-card-shadow-tertiary.osirion-feature-card-shadow-hover:hover {
+    box-shadow: 0 4px 6px -1px rgba(229, 231, 235, 0.3), 0 2px 4px -1px rgba(229, 231, 235, 0.2);
+}
+
+/* ================================================ */
+/* Transform Effects */
+/* ================================================ */
+
+.osirion-feature-card-transform-always {
+    transform: translateY(-4px);
+}
+
+.osirion-feature-card-transform-hover:hover {
+    transform: translateY(-4px);
+}
+
+.osirion-feature-card-image-transform:hover .osirion-feature-card-image {
+    transform: scale(1.05);
+}
+
+/* ================================================ */
+/* Content Layout and Alignment - FIXED VERSION */
+/* ================================================ */
+
+.osirion-feature-card-content {
+    padding: var(--osirion-spacing-4, 1rem);
     display: flex;
     flex-direction: column;
     flex: 1;
+    box-sizing: border-box;
+    position: relative;
 }
 
-.osirion-featured-post-meta {
-    display: flex;
-    align-items: center;
-    gap: var(--osirion-spacing-3, 0.75rem);
-    margin-bottom: var(--osirion-spacing-3, 0.75rem);
-    font-size: var(--osirion-font-size-sm, 0.875rem);
-}
-
-.osirion-featured-post-category {
-    display: inline-block;
-    padding: 0.25rem 0.75rem;
-    background-color: var(--osirion-category-background, var(--osirion-accent-background, rgba(37, 99, 235, 0.1)));
-    color: var(--osirion-category-color, var(--osirion-accent-color, #2563eb));
-    border-radius: var(--osirion-radius-full, 9999px);
-    text-decoration: none;
-    font-weight: var(--osirion-font-weight-medium, 500);
-    transition: background-color var(--osirion-transition-duration-200, 0.2s) ease;
-}
-
-    .osirion-featured-post-category:hover {
-        background-color: var(--osirion-category-background-hover, var(--osirion-accent-background-hover, rgba(37, 99, 235, 0.2)));
+    /* Reset child margins that interfere with flexbox alignment */
+    .osirion-feature-card-content > * {
+        margin-top: 0;
+        margin-bottom: 0;
+        flex-shrink: 0;
     }
 
-.osirion-featured-post-date {
-    color: var(--osirion-text-secondary, #6b7280);
+        /* Add consistent spacing between elements */
+        .osirion-feature-card-content > * + * {
+            margin-top: var(--osirion-spacing-3, 0.75rem);
+        }
+
+/* ================================================ */
+/* SIZE-SPECIFIC CONTENT HEIGHTS - Critical for alignment */
+/* ================================================ */
+
+.osirion-feature-card-xxs .osirion-feature-card-content {
+    min-height: 75px;
+    height: 75px;
 }
 
-.osirion-featured-post-title {
-    font-size: var(--osirion-card-title-size, var(--osirion-font-size-xl, 1.25rem));
+.osirion-feature-card-xs .osirion-feature-card-content {
+    min-height: 150px;
+    height: 150px;
+}
+
+.osirion-feature-card-sm .osirion-feature-card-content {
+    min-height: 300px;
+    height: 300px;
+}
+
+.osirion-feature-card-md .osirion-feature-card-content {
+    min-height: 450px;
+    height: 450px;
+}
+
+.osirion-feature-card-lg .osirion-feature-card-content {
+    min-height: 600px;
+    height: 600px;
+}
+
+.osirion-feature-card-xl .osirion-feature-card-content {
+    min-height: 900px;
+    height: 900px;
+}
+
+.osirion-feature-card-xxl .osirion-feature-card-content {
+    min-height: 1200px;
+    height: 1200px;
+}
+
+/* ================================================ */
+/* ALIGNMENT CLASSES - Enhanced with proper specificity */
+/* ================================================ */
+
+.osirion-feature-card.osirion-feature-card-content-top-left .osirion-feature-card-content {
+    justify-content: flex-start !important;
+    align-items: flex-start !important;
+    text-align: left !important;
+}
+
+.osirion-feature-card.osirion-feature-card-content-top-center .osirion-feature-card-content {
+    justify-content: flex-start !important;
+    align-items: center !important;
+    text-align: center !important;
+}
+
+.osirion-feature-card.osirion-feature-card-content-top-right .osirion-feature-card-content {
+    justify-content: flex-start !important;
+    align-items: flex-end !important;
+    text-align: right !important;
+}
+
+.osirion-feature-card.osirion-feature-card-content-center-left .osirion-feature-card-content {
+    justify-content: center !important;
+    align-items: flex-start !important;
+    text-align: left !important;
+}
+
+.osirion-feature-card.osirion-feature-card-content-center .osirion-feature-card-content {
+    justify-content: center !important;
+    align-items: center !important;
+    text-align: center !important;
+}
+
+.osirion-feature-card.osirion-feature-card-content-center-right .osirion-feature-card-content {
+    justify-content: center !important;
+    align-items: flex-end !important;
+    text-align: right !important;
+}
+
+.osirion-feature-card.osirion-feature-card-content-bottom-left .osirion-feature-card-content {
+    justify-content: flex-end !important;
+    align-items: flex-start !important;
+    text-align: left !important;
+}
+
+.osirion-feature-card.osirion-feature-card-content-bottom-center .osirion-feature-card-content {
+    justify-content: flex-end !important;
+    align-items: center !important;
+    text-align: center !important;
+}
+
+.osirion-feature-card.osirion-feature-card-content-bottom-right .osirion-feature-card-content {
+    justify-content: flex-end !important;
+    align-items: flex-end !important;
+    text-align: right !important;
+}
+
+/* ================================================ */
+/* IMPROVED FLEX BEHAVIOR FOR DIFFERENT ALIGNMENTS */
+/* ================================================ */
+
+/* Top alignments: description grows to push content down */
+.osirion-feature-card.osirion-feature-card-content-top-left .osirion-feature-card-description,
+.osirion-feature-card.osirion-feature-card-content-top-center .osirion-feature-card-description,
+.osirion-feature-card.osirion-feature-card-content-top-right .osirion-feature-card-description {
+    flex: 1 1 auto !important;
+}
+
+/* Center alignments: description doesn't grow, stays centered */
+.osirion-feature-card.osirion-feature-card-content-center-left .osirion-feature-card-description,
+.osirion-feature-card.osirion-feature-card-content-center .osirion-feature-card-description,
+.osirion-feature-card.osirion-feature-card-content-center-right .osirion-feature-card-description {
+    flex: 0 1 auto !important;
+}
+
+/* Bottom alignments: description doesn't grow */
+.osirion-feature-card.osirion-feature-card-content-bottom-left .osirion-feature-card-description,
+.osirion-feature-card.osirion-feature-card-content-bottom-center .osirion-feature-card-description,
+.osirion-feature-card.osirion-feature-card-content-bottom-right .osirion-feature-card-description {
+    flex: 0 1 auto !important;
+}
+
+/* ================================================ */
+/* Typography and Font Scaling */
+/* ================================================ */
+
+.osirion-feature-card-font-xxs .osirion-feature-card-description {
+    font-size: clamp(0.8125rem, 1.5vw, 0.9375rem);
+}
+
+.osirion-feature-card-font-xs .osirion-feature-card-description {
+    font-size: clamp(0.875rem, 1.75vw, 1rem);
+}
+
+.osirion-feature-card-font-sm .osirion-feature-card-description {
+    font-size: clamp(0.9375rem, 2vw, 1.125rem);
+}
+
+.osirion-feature-card-font-md .osirion-feature-card-description {
+    font-size: clamp(1rem, 2.25vw, 1.25rem);
+}
+
+.osirion-feature-card-font-lg .osirion-feature-card-description {
+    font-size: clamp(1.125rem, 2.5vw, 1.375rem);
+}
+
+.osirion-feature-card-font-xl .osirion-feature-card-description {
+    font-size: clamp(1.25rem, 2.75vw, 1.5rem);
+}
+
+.osirion-feature-card-font-xxl .osirion-feature-card-description {
+    font-size: clamp(1.375rem, 3vw, 1.75rem);
+}
+
+/* Title hierarchy scaling */
+.osirion-feature-card-font-xxs .osirion-feature-card-title {
+    font-size: clamp(0.875rem, 2vw, 1.25rem);
+}
+
+.osirion-feature-card-font-xs .osirion-feature-card-title {
+    font-size: clamp(1rem, 2.5vw, 1.5rem);
+}
+
+.osirion-feature-card-font-sm .osirion-feature-card-title {
+    font-size: clamp(1.25rem, 3vw, 2rem);
+}
+
+.osirion-feature-card-font-md .osirion-feature-card-title {
+    font-size: clamp(1.5rem, 3.5vw, 2.5rem);
+}
+
+.osirion-feature-card-font-lg .osirion-feature-card-title {
+    font-size: clamp(1.75rem, 4vw, 3rem);
+}
+
+.osirion-feature-card-font-xl .osirion-feature-card-title {
+    font-size: clamp(2rem, 4.5vw, 3.5rem);
+}
+
+.osirion-feature-card-font-xxl .osirion-feature-card-title {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+}
+
+/* ================================================ */
+/* Content Elements */
+/* ================================================ */
+
+.osirion-feature-card-title {
     font-weight: var(--osirion-font-weight-bold, 700);
-    margin-top: 0;
-    margin-bottom: var(--osirion-spacing-3, 0.75rem);
+    margin: 0 0 var(--osirion-spacing-3, 0.75rem) 0;
     line-height: 1.3;
 }
 
-.osirion-featured-post-title-link {
+.osirion-feature-card-title-link {
     color: var(--osirion-heading-color, var(--osirion-text-primary, #111827));
     text-decoration: none;
     transition: color var(--osirion-transition-duration-200, 0.2s) ease;
 }
 
-    .osirion-featured-post-title-link:hover {
+    .osirion-feature-card-title-link:hover {
         color: var(--osirion-action-primary, #2563eb);
     }
 
-.osirion-featured-post-excerpt {
+.osirion-feature-card-description {
     color: var(--osirion-text-secondary, #6b7280);
-    font-size: var(--osirion-font-size-base, 1rem);
     line-height: 1.6;
-    margin-top: 0;
-    margin-bottom: var(--osirion-spacing-4, 1rem);
+    margin: 0 0 var(--osirion-spacing-4, 1rem) 0;
     flex: 1;
 }
 
-.osirion-featured-post-author {
-    margin-top: var(--osirion-spacing-2, 0.5rem);
-    margin-bottom: var(--osirion-spacing-4, 1rem);
-    font-size: var(--osirion-font-size-sm, 0.875rem);
-    color: var(--osirion-text-secondary, #6b7280);
-    font-weight: var(--osirion-font-weight-medium, 500);
-}
+/* ================================================ */
+/* Image Handling */
+/* ================================================ */
 
-.osirion-featured-post-read-more {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--osirion-spacing-2, 0.5rem);
-    color: var(--osirion-action-primary, #2563eb);
-    text-decoration: none;
-    font-weight: var(--osirion-font-weight-medium, 500);
-    transition: color var(--osirion-transition-duration-200, 0.2s) ease;
-    margin-top: auto;
-    padding-top: var(--osirion-spacing-4, 1rem);
-}
-
-    .osirion-featured-post-read-more svg {
-        transition: transform var(--osirion-transition-duration-200, 0.2s) ease;
-    }
-
-    .osirion-featured-post-read-more:hover {
-        color: var(--osirion-action-primary-hover, #1d4ed8);
-    }
-
-        .osirion-featured-post-read-more:hover svg {
-            transform: translateX(4px);
-        }
-
-/* Image Position Layouts */
-.osirion-featured-post-image-top,
-.osirion-featured-post-image-bottom {
-    grid-template-rows: auto 1fr;
-    grid-template-columns: 1fr;
-}
-
-.osirion-featured-post-image-bottom {
-    grid-template-rows: 1fr auto;
-}
-
-.osirion-featured-post-image-left {
-    grid-template-rows: 1fr;
-    grid-template-columns: auto 1fr;
-}
-
-.osirion-featured-post-image-right {
-    grid-template-rows: 1fr;
-    grid-template-columns: 1fr auto;
-}
-
-/* Content */
-.osirion-featured-post-content {
-    padding: var(--osirion-spacing-4, 1rem);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-/* Image containers */
-.osirion-featured-post-image-container,
-.osirion-featured-post-image-placeholder {
+.osirion-feature-card-image-container,
+.osirion-feature-card-image-placeholder {
     overflow: hidden;
     background-color: var(--osirion-background-secondary, #f3f4f6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
 }
 
-/* Force image container to respect card height in left/right layouts */
-.osirion-featured-post-image-left .osirion-featured-post-image-container,
-.osirion-featured-post-image-right .osirion-featured-post-image-container,
-.osirion-featured-post-image-left .osirion-featured-post-image-placeholder,
-.osirion-featured-post-image-right .osirion-featured-post-image-placeholder {
-    height: 100%;
-    width: auto;
-}
-
-.osirion-featured-post-image {
+.osirion-feature-card-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform var(--osirion-transition-duration-300, 0.3s) ease;
+    display: block;
 }
 
-/* CARD SIZES - Simple and Direct */
-
-/* Normal Size (450px) */
-.osirion-featured-post-md.osirion-featured-post-image-top,
-.osirion-featured-post-md.osirion-featured-post-image-bottom {
-    width: 450px;
-    height: auto;
+.osirion-feature-card-image-placeholder {
+    color: var(--osirion-text-secondary, #6b7280);
+    min-height: 100px;
 }
 
-.osirion-featured-post-md.osirion-featured-post-image-left,
-.osirion-featured-post-md.osirion-featured-post-image-right {
-    height: 450px;
-    width: 100%;
+.osirion-feature-card-image-link {
+    display: block;
+    height: 100%;
+    flex-shrink: 0;
 }
 
-/* Extra Extra Large (1200px) */
-.osirion-featured-post-xxl.osirion-featured-post-image-top,
-.osirion-featured-post-xxl.osirion-featured-post-image-bottom {
-    width: 1200px;
-    height: auto;
+/* ================================================ */
+/* Pillow Buttons */
+/* ================================================ */
+
+.osirion-feature-card-pillows {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--osirion-spacing-2, 0.5rem);
+    margin-top: var(--osirion-spacing-3, 0.75rem);
+    margin-bottom: var(--osirion-spacing-3, 0.75rem);
+    position: relative;
+    z-index: 2;
+    pointer-events: auto;
 }
 
-.osirion-featured-post-xxl.osirion-featured-post-image-left,
-.osirion-featured-post-xxl.osirion-featured-post-image-right {
-    height: 1200px;
-    width: 100%;
+.osirion-feature-card-pillow {
+    display: inline-block;
+    position: relative;
+    z-index: 3;
+    pointer-events: auto;
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--osirion-radius-full, 9999px);
+    text-decoration: none;
+    font-weight: var(--osirion-font-weight-medium, 500);
+    font-size: var(--osirion-font-size-sm, 0.875rem);
+    transition: background-color var(--osirion-transition-duration-200, 0.2s) ease, transform var(--osirion-transition-duration-200, 0.2s) ease;
 }
 
-/* Extra Large (900px) */
-.osirion-featured-post-xl.osirion-featured-post-image-top,
-.osirion-featured-post-xl.osirion-featured-post-image-bottom {
-    width: 900px;
-    height: auto;
+    .osirion-feature-card-pillow:hover {
+        transform: translateY(-1px);
+    }
+
+.osirion-feature-card-pillow-primary {
+    background-color: var(--osirion-color-primary-100, rgba(37, 99, 235, 0.1));
+    color: var(--osirion-color-primary-800, #1e40af);
 }
 
-.osirion-featured-post-xl.osirion-featured-post-image-left,
-.osirion-featured-post-xl.osirion-featured-post-image-right {
-    height: 900px;
-    width: 100%;
+    .osirion-feature-card-pillow-primary:hover {
+        background-color: var(--osirion-color-primary-200, rgba(37, 99, 235, 0.2));
+    }
+
+.osirion-feature-card-pillow-secondary {
+    background-color: var(--osirion-color-neutral-100, #f3f4f6);
+    color: var(--osirion-color-neutral-800, #1f2937);
 }
 
-/* Large (600px) */
-.osirion-featured-post-lg.osirion-featured-post-image-top,
-.osirion-featured-post-lg.osirion-featured-post-image-bottom {
-    width: 600px;
-    height: auto;
+    .osirion-feature-card-pillow-secondary:hover {
+        background-color: var(--osirion-color-neutral-200, #e5e7eb);
+    }
+
+.osirion-feature-card-pillow-tertiary {
+    background-color: var(--osirion-background-tertiary, #e5e7eb);
+    color: var(--osirion-text-secondary, #6b7280);
 }
 
-.osirion-featured-post-lg.osirion-featured-post-image-left,
-.osirion-featured-post-lg.osirion-featured-post-image-right {
-    height: 600px;
-    width: 100%;
-}
+    .osirion-feature-card-pillow-tertiary:hover {
+        background-color: var(--osirion-color-neutral-300, #d1d5db);
+    }
 
-/* Small (300px) */
-.osirion-featured-post-sm.osirion-featured-post-image-top,
-.osirion-featured-post-sm.osirion-featured-post-image-bottom {
-    width: 300px;
-    height: auto;
-}
+/* ================================================ */
+/* Responsive Design - Enhanced */
+/* ================================================ */
 
-.osirion-featured-post-sm.osirion-featured-post-image-left,
-.osirion-featured-post-sm.osirion-featured-post-image-right {
-    height: 300px;
-    width: 100%;
-}
-
-/* Extra Small (150px) */
-.osirion-featured-post-xs.osirion-featured-post-image-top,
-.osirion-featured-post-xs.osirion-featured-post-image-bottom {
-    width: 150px;
-    height: auto;
-}
-
-.osirion-featured-post-xs.osirion-featured-post-image-left,
-.osirion-featured-post-xs.osirion-featured-post-image-right {
-    height: 150px;
-    width: 100%;
-}
-
-/* Extra Extra Small (75px) */
-.osirion-featured-post-xxs.osirion-featured-post-image-top,
-.osirion-featured-post-xxs.osirion-featured-post-image-bottom {
-    width: 75px;
-    height: auto;
-}
-
-.osirion-featured-post-xxs.osirion-featured-post-image-left,
-.osirion-featured-post-xxs.osirion-featured-post-image-right {
-    height: 75px;
-    width: 100%;
-}
-
-/* Responsive Media Queries */
-@media (max-width: 768px) {
-    /* Convert left/right layouts to top/bottom on small screens */
-    .osirion-featured-post-image-left,
-    .osirion-featured-post-image-right {
+@@media (max-width: 768px) {
+    /* Convert left/right layouts to top/bottom on mobile */
+    .osirion-feature-card-image-left, .osirion-feature-card-image-right {
         grid-template-rows: auto 1fr;
         grid-template-columns: 1fr;
     }
-
-        /* Override image container sizing for left/right on small screens */
-        .osirion-featured-post-image-left .osirion-featured-post-image-container,
-        .osirion-featured-post-image-right .osirion-featured-post-image-container,
-        .osirion-featured-post-image-left .osirion-featured-post-image-placeholder,
-        .osirion-featured-post-image-right .osirion-featured-post-image-placeholder {
-            height: auto;
-            width: 100%;
+        /* Reset image container sizing for mobile */
+        .osirion-feature-card-image-left .osirion-feature-card-image-container,
+        .osirion-feature-card-image-right .osirion-feature-card-image-container {
+            height: auto !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            min-height: 120px;
         }
-
-    /* Override card dimensions - use width constraints instead of height */
-    .osirion-featured-post-xxl.osirion-featured-post-image-left,
-    .osirion-featured-post-xxl.osirion-featured-post-image-right {
-        height: auto;
-        width: 100%;
-        max-width: 600px;
-    }
-
-    .osirion-featured-post-xl.osirion-featured-post-image-left,
-    .osirion-featured-post-xl.osirion-featured-post-image-right {
-        height: auto;
-        width: 100%;
+    /* Adjust card dimensions for mobile */
+    .osirion-feature-card-image-left,
+    .osirion-feature-card-image-right {
+        height: auto !important;
+        width: 100% !important;
         max-width: 500px;
     }
-
-    .osirion-featured-post-lg.osirion-featured-post-image-left,
-    .osirion-featured-post-lg.osirion-featured-post-image-right {
-        height: auto;
-        width: 100%;
-        max-width: 400px;
+    /* FIXED: Reset content heights on mobile for better UX */
+    .osirion-feature-card-content {
+        height: auto !important;
+        min-height: 200px !important;
     }
-
-    .osirion-featured-post-md.osirion-featured-post-image-left,
-    .osirion-featured-post-md.osirion-featured-post-image-right {
-        height: auto;
-        width: 100%;
-        max-width: 350px;
+    /* Center content on mobile for converted layouts */
+    .osirion-feature-card-image-left .osirion-feature-card-content,
+    .osirion-feature-card-image-right .osirion-feature-card-content {
+        text-align: center !important;
+        align-items: center !important;
+        justify-content: center !important;
+        height: auto !important;
+        min-height: 200px !important;
     }
-
-    .osirion-featured-post-sm.osirion-featured-post-image-left,
-    .osirion-featured-post-sm.osirion-featured-post-image-right {
-        height: auto;
-        width: 100%;
-        max-width: 250px;
+    /* Reduce pillow button size on mobile */
+    .osirion-feature-card-pillow {
+        font-size: var(--osirion-font-size-xs, 0.75rem);
+        padding: 0.2rem 0.6rem;
     }
-
-    .osirion-featured-post-xs.osirion-featured-post-image-left,
-    .osirion-featured-post-xs.osirion-featured-post-image-right {
-        height: auto;
-        width: 100%;
-        max-width: 150px;
-    }
-
-    .osirion-featured-post-xxs.osirion-featured-post-image-left,
-    .osirion-featured-post-xxs.osirion-featured-post-image-right {
-        height: auto;
-        width: 100%;
-        max-width: 100px;
-    }
-
-    /* Center content for converted layouts */
-    .osirion-featured-post-image-left .osirion-featured-post-content,
-    .osirion-featured-post-image-right .osirion-featured-post-content {
-        text-align: center;
-        align-items: center;
+    /* Ensure mobile spacing works */
+    .osirion-feature-card-content > * + * {
+        margin-top: var(--osirion-spacing-2, 0.5rem) !important;
     }
 }
+
+/* ================================================ */
+/* Accessibility and Motion */
+/* ================================================ */
+
+@@media (prefers-reduced-motion: reduce) {
+    .osirion-feature-card, .osirion-feature-card-image, .osirion-feature-card-pillow {
+        transition: none;
+    }
+
+    .osirion-feature-card-transform-hover:hover,
+    .osirion-feature-card-transform-always {
+        transform: none;
+    }
+
+    .osirion-feature-card-image-transform:hover .osirion-feature-card-image {
+        transform: none;
+    }
+
+    .osirion-feature-card-pillow:hover {
+        transform: none;
+    }
+}
+
+@@media (prefers-contrast: high) {
+    .osirion-feature-card {
+        border: 2px solid;
+    }
+
+    .osirion-feature-card-pillow {
+        border: 1px solid;
+    }
+}
+
+/* ================================================ */
+/* Focus States */
+/* ================================================ */
+
+.osirion-feature-card-image-link:focus,
+.osirion-feature-card-title-link:focus,
+.osirion-feature-card-pillow:focus {
+    outline: var(--osirion-focus-ring-width, 2px) solid var(--osirion-focus-ring-color, #2563eb);
+    outline-offset: var(--osirion-focus-ring-offset, 2px);
+}
+
+/* ================================================ */
+/* DEBUGGING - Uncomment to troubleshoot alignment */
+/* ================================================ */
+
+/*
+    .osirion-feature-card .osirion-feature-card-content {
+        border: 2px solid red !important;
+        background: rgba(255, 0, 0, 0.05) !important;
+    }
+
+    .osirion-feature-card .osirion-feature-card-content > * {
+        border: 1px solid blue !important;
+        background: rgba(0, 0, 255, 0.05) !important;
+    }
+    */
