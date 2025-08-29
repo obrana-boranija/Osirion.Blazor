@@ -1,0 +1,67 @@
+@namespace Osirion.Blazor.Components
+@inherits OsirionComponentBase
+
+<div class="osirion-featured-post @GetImagePositionClass() @GetCardSizeClass()">
+    @if (ImagePosition == ImagePosition.Top)
+    {
+        @ImageBlock()
+        @ContentBlock("center")
+    }
+    else if (ImagePosition == ImagePosition.Bottom)
+    {
+        @ContentBlock("center")
+        @ImageBlock()
+    }
+    else if (ImagePosition == ImagePosition.Right)
+    {
+        @ContentBlock("right")
+        @ImageBlock()
+    }
+    else // Left (default)
+    {
+        @ImageBlock()
+        @ContentBlock("left")
+    }
+</div>
+
+@code {
+    private RenderFragment ImageBlock() => __builder =>
+    {
+        <a href="@Url" class="osirion-featured-post-image-link">
+            @if (!string.IsNullOrWhiteSpace(ImageUrl))
+            {
+                <div class="osirion-featured-post-image-container">
+                    <img src="@ImageUrl"
+                         alt="@(ImageAlt ?? Title)"
+                         class="osirion-featured-post-image"
+                         loading="@(ImageLazyLoading ? "lazy" : "eager")"
+                         onerror="this.onerror=null;this.src='@NoImageUrl()';" />
+                </div>
+            }
+            else
+            {
+                <div class="osirion-featured-post-image-placeholder">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <polyline points="21 15 16 10 5 21"></polyline>
+                    </svg>
+                </div>
+            }
+        </a>
+    };
+
+    private RenderFragment ContentBlock(string justify) => __builder =>
+    {
+        <div class="osirion-featured-post-content" style="justify-content:@justify; text-align:@justify;">
+            @ChildContent
+            <h3 class="osirion-featured-post-title">
+                <a href="@Url" class="osirion-featured-post-title-link">@Title</a>
+            </h3>
+            @if (ShowDescription && string.IsNullOrWhiteSpace(Description) == false)
+            {
+                <p class="osirion-featured-post-excerpt">@Description</p>
+            }
+        </div>
+    };
+}

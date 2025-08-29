@@ -1,4 +1,6 @@
-﻿namespace Osirion.Blazor.Navigation.Services;
+﻿using Osirion.Blazor.Components;
+
+namespace Osirion.Blazor.Navigation.Services;
 
 /// <summary>
 /// Service for managing navigation functionality

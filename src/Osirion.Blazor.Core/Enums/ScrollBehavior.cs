@@ -1,4 +1,4 @@
-﻿namespace Osirion.Blazor;
+﻿namespace Osirion.Blazor.Components;
 
 /// <summary>
 /// Defines the behavior of scrolling animations

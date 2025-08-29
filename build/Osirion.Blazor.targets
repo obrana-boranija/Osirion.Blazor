@@ -6,15 +6,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <CssFilesToShake Include="$(ProjectDir)wwwroot\css\*.css" />
-    <CssFilesToShake Include="$(ProjectDir)wwwroot\lib\**\*.css" />
+    <CssFilesToShake Include="$(ProjectDir)wwwroot\**\*.css" Exclude="$(CssTreeShakerOutput)**\*.*" />
     <SourceFilesToScan Include="$(ProjectDir)**\*.razor" />
     <SourceFilesToScan Include="$(ProjectDir)**\*.cs" />
     <SourceFilesToScan Include="$(ProjectDir)**\*.html" />
   </ItemGroup>
 
   <Target Name="TreeShakeCss" BeforeTargets="Build">
-    <Message Text="Running CSS tree-shaking..." Importance="high" />
+    <Message Text="=== Osirion.Blazor Tree-shaking Target Invoked ===" Importance="high" />
+    <Exec Command="echo TREE-SHAKER-TARGET-RAN" />
     <Exec Command="node &quot;$(CssTreeShakerScript)&quot; &quot;@(CssFilesToShake, ';')&quot; &quot;@(SourceFilesToScan, ';')&quot; &quot;$(CssTreeShakerOutput)&quot;" />
     <Message Text="Minifying optimized CSS..." Importance="high" />
     <Exec Command="node &quot;$(CssMinifierScript)&quot; &quot;$(CssTreeShakerOutput)&quot;" />

@@ -23,6 +23,6 @@
   </ItemGroup>
 
   <!-- Integrate CSS tree-shaking MSBuild target -->
-  <Import Project="..\..\..\build\MyBlazorLibrary.targets" Condition="Exists('..\..\..\build\MyBlazorLibrary.targets')" />
+  <Import Project="..\..\..\build\Osirion.Blazor.targets" Condition="Exists('..\..\..\build\Osirion.Blazor.targets')" />
 
 </Project>

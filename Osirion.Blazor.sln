@@ -18,9 +18,16 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{A0B979F7-918D-4A47-ABD1-A564E98807F7}"
 	ProjectSection(SolutionItems) = preProject
 		docs\ANALYTICS.md = docs\ANALYTICS.md
+		docs\BREADCRUMBS.md = docs\BREADCRUMBS.md
+		docs\COOKIE_CONSENT.md = docs\COOKIE_CONSENT.md
 		GITHUB_CMS.md = GITHUB_CMS.md
+		docs\GITHUB_CMS.md = docs\GITHUB_CMS.md
+		docs\HERO_SECTION.md = docs\HERO_SECTION.md
+		docs\INFINITE_LOGO_CAROUSEL.md = docs\INFINITE_LOGO_CAROUSEL.md
+		docs\MARKDOWN_EDITOR.md = docs\MARKDOWN_EDITOR.md
 		docs\MIGRATION.md = docs\MIGRATION.md
 		docs\NAVIGATION.md = docs\NAVIGATION.md
+		docs\performance-optimizations.md = docs\performance-optimizations.md
 		docs\QUICK_REFERENCE.md = docs\QUICK_REFERENCE.md
 		docs\STYLING.md = docs\STYLING.md
 		THEMING.md = THEMING.md
@@ -31,6 +38,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "content", "content", "{81FA36B2-1A35-4FD2-83BD-72E42C747375}"
 	ProjectSection(SolutionItems) = preProject
 		robots.txt = robots.txt
+		content\robots.txt = content\robots.txt
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "blog", "blog", "{926AB9FA-2E20-42C4-A890-92A4D529A26F}"
@@ -141,6 +149,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "en", "en", "{C283FF5E-3298-
 	ProjectSection(SolutionItems) = preProject
 		content\en\home.md = content\en\home.md
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{50798ADA-D546-47B4-973E-EDC005FFE345}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{4A94A3E4-8B03-4308-BD96-835621D9CD2A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -290,6 +302,7 @@ Global
 		{373A9659-0254-4125-A34C-A23E55651EBB} = {4037E724-65A5-40CC-988A-4E31A55DA039}
 		{430F1EE9-D0B1-420C-A834-E104B0E2F58F} = {B0489088-7C87-4C92-B6D1-73B072183229}
 		{C283FF5E-3298-4D01-B0B1-275522B42B50} = {81FA36B2-1A35-4FD2-83BD-72E42C747375}
+		{4A94A3E4-8B03-4308-BD96-835621D9CD2A} = {50798ADA-D546-47B4-973E-EDC005FFE345}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {42605F7F-9786-49E4-AAB7-7D8A913C42D8}
