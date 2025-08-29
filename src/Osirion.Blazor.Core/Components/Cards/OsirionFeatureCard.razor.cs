@@ -187,13 +187,13 @@ public partial class OsirionFeatureCard : OsirionComponentBase
     protected string GetCardClasses()
     {
         var classes = new List<string>
-        {
+    {
             "osirion-feature-card",
             GetImagePositionClass(),
             GetCardSizeClass(),
             GetContentAlignmentClass(),
             GetContentFontSizeClass()
-        };
+    };
 
         AddBorderClasses(classes);
         AddShadowClasses(classes);

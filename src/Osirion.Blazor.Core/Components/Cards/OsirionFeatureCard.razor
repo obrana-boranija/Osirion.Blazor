@@ -1,4 +1,3 @@
-@* src/Osirion.Blazor.Core/Components/Cards/OsirionFeatureCard.razor *@
 @namespace Osirion.Blazor.Components
 @inherits OsirionComponentBase
 
@@ -28,15 +27,15 @@
     private void RenderImageBlock(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder __builder)
     {
         if (!string.IsNullOrWhiteSpace(Url))
-        {
+    {
             <a href="@Url" class="osirion-feature-card-image-link">
                 @RenderImageContent()
             </a>
-        }
+    }
         else
-        {
+    {
             @RenderImageContent()
-        }
+    }
     }
 
     /// <summary>
@@ -45,17 +44,17 @@
     private RenderFragment RenderImageContent() => __builder =>
     {
         if (HasImage())
-        {
+            {
             <div class="osirion-feature-card-image-container">
-                <img src="@ImageUrl"
+                    <img src="@ImageUrl"
                      alt="@GetImageAltText()"
                      class="osirion-feature-card-image"
-                     loading="@(ImageLazyLoading ? "lazy" : "eager")"
+                         loading="@(ImageLazyLoading ? "lazy" : "eager")"
                      onerror="this.onerror=null;this.src='@GetPlaceholderImageUrl()';" />
-            </div>
-        }
-        else
-        {
+                </div>
+            }
+            else
+            {
             <div class="osirion-feature-card-image-placeholder">
                 @RenderPlaceholderIcon()
             </div>
@@ -69,10 +68,10 @@
     {
         <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24"
              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-            <circle cx="8.5" cy="8.5" r="1.5"></circle>
-            <polyline points="21 15 16 10 5 21"></polyline>
-        </svg>
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <polyline points="21 15 16 10 5 21"></polyline>
+                    </svg>
     };
 
     /// <summary>
@@ -89,9 +88,9 @@
             @RenderReadMoreLink()
 
             @RenderPillowButtons()
-        </div>
+                </div>
         
-    }
+            }
 
     #endregion
 
@@ -112,7 +111,7 @@
                        target="@button.Target"
                        aria-label="@button.AriaLabel">
                         @button.Text
-                    </a>
+        </a>
                 }
             </div>
         }
@@ -152,13 +151,13 @@
     private RenderFragment RenderReadMoreLink() => __builder =>
     {
         if (HasReadMoreLink() && ShowReadMoreLink)
-        {
+            {
             <OsirionReadMoreLink Href="@(GetReadMoreHref()!)" Style="@GetReadMoreStyles()"
                                  Text="@ReadMoreText"
                                  Variant="ReadMoreVariant.Default"
                                  Size="LinkSize.Normal"
                                  Stretched />
-        }
+            }
     };
 
     #endregion
