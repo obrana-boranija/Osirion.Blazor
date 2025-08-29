@@ -13,7 +13,7 @@
 
 		<!-- NuGet package properties -->
 		<PackageId>Osirion.Blazor.Cms.Application</PackageId>
-		<Version>2.1.9</Version>
+		<Version>2.1.10</Version>
 		<Authors>Dejan Demonjić</Authors>
 		<Company>Tridesetri</Company>
 		<Description>Application layer for the Osirion.Blazor CMS ecosystem, implementing core business logic, use cases, and application services for content management.</Description>
