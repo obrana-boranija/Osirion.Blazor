@@ -185,4 +185,6 @@ public partial class HomePage
     {
         return $"osirion-homepage {Class}".Trim();
     }
+
+    private bool NoContent() => Content is null && ChildContent is null;
 }
