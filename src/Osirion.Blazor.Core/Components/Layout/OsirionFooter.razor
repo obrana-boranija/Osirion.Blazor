@@ -3,30 +3,31 @@
 
 <footer class="@GetFooterClass()" style="@Style" data-osirion-component-theme="@GetComponentTheme()" @attributes="Attributes">
     <div class="osirion-footer-container">
-        @if (Logo is not null || Description is not null)
-        {
-            <div class="osirion-footer-brand">
-                @if (Logo is not null)
-                {
-                    <div class="osirion-footer-logo">
-                        @Logo
-                    </div>
-                }
-                @if (!string.IsNullOrWhiteSpace(Description))
-                {
-                    <p class="osirion-footer-description">@((MarkupString)Description)</p>
-                }
-            </div>
-        }
-
         @if (ShowTopSection && (Logo is not null || Links?.Any() == true || SocialLinks?.Any() == true || LeftContent is not null || RightContent is not null))
         {
             <div class="osirion-footer-main">
-                <div class="osirion-footer-main-left-content">
-                    @if (LeftContent is not null)
+                <div class="osirion-footer-main-left-content @(Logo is not null ? "osirion-footer-main-left-content-has-child" : "")">
+                    @if (LeftContent is not null || Logo is not null || Description is not null)
                     {
                         @LeftContent
+
+                        @if (Logo is not null || Description is not null)
+                        {
+                            <div class="osirion-footer-brand" style="bottom: 0;">
+                                @if (Logo is not null)
+                                {
+                                    <div class="osirion-footer-logo">
+                                        @Logo
+                                    </div>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(Description))
+                                {
+                                    <p class="osirion-footer-description">@((MarkupString)Description)</p>
+                                }
+                            </div>
+                        }
                     }
+
                 </div>
 
                 <div class="osirion-footer-main-middle-content">

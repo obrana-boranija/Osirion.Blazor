@@ -78,7 +78,7 @@ public partial class OsirionSubscriptionCard : OsirionComponentBase
     /// If null or empty, the privacy policy checkbox will not be shown.
     /// </summary>
     [Parameter]
-    public string? PrivacyPolicyText { get; set; } = "I agree to the <a href=\"/privacy-policy\" target=\"_blank\">privacy policy</a>";
+    public string? PrivacyPolicyText { get; set; } = "I agree to the <a class=\"osirion-subscribtion-link\" href=\"/privacy-policy\" target=\"_blank\">privacy policy</a>";
 
     /// <summary>
     /// Gets or sets whether to show subscription categories for user selection.

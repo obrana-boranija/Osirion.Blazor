@@ -88,10 +88,10 @@ html.osirion-bootstrap-integration .osirion-footer[data-osirion-component-theme=
 }
 
 .osirion-footer-main {
-    padding: var(--osirion-spacing-12, 3rem) 0;
+    padding: var(--osirion-spacing-4, 1rem) 0;
     display: grid;
     width: 100%;
-    gap: 20px;
+    gap: var(--osirion-spacing-5, 1.25rem);
     grid-template-columns: 1fr;
     grid-template-areas:
         "middle"
@@ -102,6 +102,12 @@ html.osirion-bootstrap-integration .osirion-footer[data-osirion-component-theme=
 .osirion-footer-main-left-content {
     padding: 0 var(--osirion-spacing-4, 1rem);
     width: 100%;
+}
+
+.osirion-footer-main-left-content-has-child {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .osirion-footer-main-middle-content {
@@ -127,12 +133,11 @@ html.osirion-bootstrap-integration .osirion-footer[data-osirion-component-theme=
 
 .osirion-footer-grid {
     display: grid;
-    gap: var(--osirion-spacing-8, 2rem);
+    gap: var(--osirion-spacing-4, 1rem);
     grid-template-columns: 1fr;
 }
 
 .osirion-footer-brand {
-    padding: 8px;
     width: 100%;
 }
 
@@ -144,13 +149,12 @@ html.osirion-bootstrap-integration .osirion-footer[data-osirion-component-theme=
     font-size: var(--osirion-font-size-sm, 0.875rem);
     color: var(--osirion-text-secondary);
     margin: 0;
-    max-width: 300px;
 }
 
 .osirion-footer-links {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: var(--osirion-spacing-6, 1.5rem);
+    gap: var(--osirion-spacing-4, 1rem);
 }
 
 .osirion-footer-section-title {
@@ -224,8 +228,8 @@ html.osirion-bootstrap-integration .osirion-footer[data-osirion-component-theme=
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
+    width: var(--osirion-spacing-10, 2.5rem);
+    height: var(--osirion-spacing-10, 2.5rem);
     border-radius: var(--osirion-radius-full, 9999px);
     background-color: var(--osirion-background-secondary);
     color: var(--osirion-text-primary);
@@ -255,7 +259,7 @@ html.osirion-bootstrap-integration .osirion-footer[data-osirion-component-theme=
 }
 
 .osirion-footer-bottom {
-    padding: var(--osirion-spacing-6, 1.5rem) 0;
+    padding: var(--osirion-spacing-4, 1rem) 0;
 }
 
 .osirion-footer-bottom-content {
@@ -278,7 +282,7 @@ html.osirion-bootstrap-integration .osirion-footer[data-osirion-component-theme=
 }
 
 .osirion-footer-extra {
-    padding: var(--osirion-spacing-8, 2rem) 0;
+    padding: var(--osirion-spacing-4, 1rem) 0;
     background-color: var(--osirion-background-tertiary);
 }
 
@@ -288,7 +292,7 @@ html.osirion-bootstrap-integration .osirion-footer[data-osirion-component-theme=
 
 /* Minimal variant */
 .osirion-footer-minimal .osirion-footer-main {
-    padding: var(--osirion-spacing-6, 1.5rem) 0;
+    padding: var(--osirion-spacing-4, 1rem) 0;
 }
 
 .osirion-footer-minimal .osirion-footer-bottom {
@@ -364,16 +368,6 @@ body:has(.osirion-footer-docked-fixed) {
         grid-template-areas: "left middle right";
     }
 
-    .osirion-footer-brand {
-        max-width: var(--osirion-container-xxl, 1320px);
-        width: var(--osirion-container-xxl, 1320px);
-    }
-
-    .osirion-footer-main-left-content {
-        justify-items: end;
-        padding: 0;
-    }
-
     .osirion-footer-main-right-content {
         justify-items: start;
         padding: 0;
@@ -388,43 +382,47 @@ body:has(.osirion-footer-docked-fixed) {
 
     .osirion-footer-main-left-content {
         width: 100%;
-        justify-items: end;
-        padding: 0 0 0 8px;
+        justify-items: start;
+        padding: 0 0 0 var(--osirion-spacing-2, 0.5rem);
     }
 
     .osirion-footer-main-right-content {
         width: 100%;
         justify-items: start;
-        padding: 0 8px 0 0;
+        padding: 0 var(--osirion-spacing-2, 0.5rem) 0 0;
+    }
+}
+
+@media (min-width: 1441px) {
+    .osirion-footer-main-middle-content {
+        border-left: 1px solid var(--osirion-border-color);
+        border-right: 1px solid var(--osirion-border-color);
+        padding: 0 16px;
     }
 }
 
 @media (max-width: 1440.97px) {
     .osirion-footer-main {
-        padding: 0 32px;
+        padding: 0 var(--osirion-spacing-8, 2rem);
         grid-template-columns: 1fr 1fr;
         grid-template-areas:
             "middle middle"
             "left right";
     }
 
-    .osirion-footer-main-left-content {
+    .osirion-footer-main-left-content,
+    .osirion-footer-brand {
         justify-items: start;
         padding: 0;
     }
 
     .osirion-footer-main-middle-content {
-        padding: 8px 0;
+        padding: var(--osirion-spacing-2, 0.5rem) 0;
     }
 
     .osirion-footer-main-right-content {
         justify-items: end;
         padding: 0;
-    }
-
-    .osirion-footer-brand {
-        width: 100%;
-        padding: 8px 32px;
     }
 }
 

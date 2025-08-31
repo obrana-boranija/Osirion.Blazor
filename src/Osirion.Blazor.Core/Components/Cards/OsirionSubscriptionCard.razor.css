@@ -328,6 +328,17 @@
     line-height: 1.4;
 }
 
+.osirion-subscribtion-link {
+    color: inherit;
+    text-decoration: underline;
+    transition: color 0.2s ease-in-out;
+}
+
+    .osirion-subscribtion-link:hover {
+        color: var(--osirion-contact-accent);
+        text-decoration: underline;
+    }
+
 .osirion-subscription-card-dark .osirion-input,
 .osirion-subscription-card-dark .form-control,
 .osirion-subscription-card-dark .osirion-dropdown-button {
@@ -354,7 +365,7 @@
 
 @media (min-width: 640px) {
     .osirion-subscription-card {
-        max-width: 440px;
+        max-width: var(--osirion-width-4xl), 56rem;
     }
 }
 
