@@ -1,0 +1,449 @@
+/* 
+ * OsirionContactForm Component Styles
+ * Framework-agnostic contact form with comprehensive styling
+ * Based on the dark-themed design from the provided image
+ */
+
+/* ========== CONTAINER AND LAYOUT ========== */
+.osirion-contact-form-container {
+    --osirion-contact-bg: var(--osirion-color-neutral-800, #1f2937);
+    --osirion-contact-form-bg: var(--osirion-color-neutral-800, #1f2937);
+    --osirion-contact-text: var(--osirion-color-white, #ffffff);
+    --osirion-contact-text-muted: var(--osirion-color-neutral-400, #9ca3af);
+    --osirion-contact-border: var(--osirion-color-neutral-600, #4b5563);
+    --osirion-contact-accent: var(--osirion-color-warning-500, #f59e0b);
+    --osirion-contact-radius: var(--osirion-radius-lg, 0.5rem);
+    --osirion-contact-spacing: var(--osirion-spacing-6, 1.5rem);
+    
+    display: block;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: var(--osirion-contact-bg);
+    border-radius: var(--osirion-contact-radius);
+    overflow: hidden;
+    box-shadow: var(--osirion-shadow-xl, 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04));
+}
+
+.osirion-contact-form-wrapper {
+    display: grid;
+    min-height: 600px;
+}
+
+/* Side by side layout */
+.osirion-contact-form-side-by-side .osirion-contact-form-wrapper {
+    grid-template-columns: 1fr 400px;
+}
+
+/* Stacked layout */
+.osirion-contact-form-stacked .osirion-contact-form-wrapper {
+    grid-template-columns: 1fr;
+}
+
+/* ========== FORM SECTION ========== */
+.osirion-contact-form-section {
+    padding: var(--osirion-contact-spacing);
+    background-color: var(--osirion-contact-form-bg);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.osirion-contact-form-title {
+    font-size: var(--osirion-font-size-2xl, 1.875rem);
+    font-weight: var(--osirion-font-weight-bold, 700);
+    color: var(--osirion-contact-text);
+    margin: 0 0 var(--osirion-spacing-2, 0.5rem);
+    line-height: 1.2;
+}
+
+.osirion-contact-form-description {
+    color: var(--osirion-contact-text-muted);
+    margin: 0 0 var(--osirion-spacing-6, 1.5rem);
+    font-size: var(--osirion-font-size-base, 1rem);
+    line-height: 1.5;
+}
+
+/* ========== FORM STYLES ========== */
+.osirion-contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--osirion-spacing-4, 1rem);
+}
+
+.osirion-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--osirion-spacing-1, 0.25rem);
+    margin-bottom: var(--osirion-spacing-5, 1.25rem);
+    ;
+}
+
+.osirion-form-label {
+    font-size: var(--osirion-font-size-sm, 0.875rem);
+    font-weight: var(--osirion-font-weight-medium, 500);
+    color: var(--osirion-contact-text);
+    margin: 0;
+    line-height: 1.4;
+}
+
+.osirion-required {
+    color: darkred;
+    margin-left: var(--osirion-spacing-1, 0.25rem);
+}
+
+/* ========== INPUT STYLES ========== */
+.osirion-contact-input,
+.osirion-contact-textarea {
+    width: 100%;
+    padding: var(--osirion-spacing-3, 0.75rem);
+    background-color: transparent;
+    border: none;
+    border-bottom: 2px solid var(--osirion-contact-border);
+    color: var(--osirion-contact-text);
+    font-size: var(--osirion-font-size-base, 1rem);
+    line-height: 1.5;
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    border-radius: 0;
+    outline: none;
+}
+
+.osirion-contact-input::placeholder,
+.osirion-contact-textarea::placeholder {
+    color: var(--osirion-contact-text-muted);
+    opacity: 0.7;
+}
+
+.osirion-contact-input:focus,
+.osirion-contact-textarea:focus {
+    border-bottom-color: var(--osirion-contact-accent);
+    box-shadow: 0 1px 0 0 var(--osirion-contact-accent);
+}
+
+.osirion-contact-input:disabled,
+.osirion-contact-textarea:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.osirion-contact-textarea {
+    resize: vertical;
+    min-height: 120px;
+    font-family: inherit;
+}
+
+/* ========== CHECKBOX STYLES ========== */
+.osirion-form-checkbox-group {
+    margin-top: var(--osirion-spacing-2, 0.5rem);
+}
+
+.osirion-form-checkbox-label {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--osirion-spacing-2, 0.5rem);
+    cursor: pointer;
+    font-size: var(--osirion-font-size-sm, 0.875rem);
+    line-height: 1.4;
+    color: var(--osirion-contact-text-muted);
+}
+
+.osirion-contact-checkbox {
+    flex-shrink: 0;
+    width: 1rem;
+    height: 1rem;
+    margin: 0;
+    accent-color: var(--osirion-contact-accent);
+}
+
+.osirion-checkbox-text {
+    flex: 1;
+}
+
+.osirion-checkbox-text a {
+    color: var(--osirion-contact-accent);
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    transition: text-decoration-color 0.2s ease-in-out;
+}
+
+.osirion-checkbox-text a:hover {
+    text-decoration-color: var(--osirion-contact-accent);
+}
+
+/* ========== BUTTON STYLES ========== */
+.osirion-form-actions {
+    display: flex;
+    gap: var(--osirion-spacing-3, 0.75rem);
+    margin-top: var(--osirion-spacing-4, 1rem);
+}
+
+.osirion-contact-submit {
+    background-color: var(--osirion-contact-accent);
+    color: var(--osirion-color-white, #ffffff);
+    border: none;
+    padding: var(--osirion-spacing-3, 0.75rem) var(--osirion-spacing-6, 1.5rem);
+    font-size: var(--osirion-font-size-base, 1rem);
+    font-weight: var(--osirion-font-weight-medium, 500);
+    border-radius: var(--osirion-radius-md, 0.375rem);
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    display: flex;
+    align-items: center;
+    gap: var(--osirion-spacing-2, 0.5rem);
+    min-width: 140px;
+    justify-content: center;
+}
+
+.osirion-contact-submit:hover:not(:disabled) {
+    background-color: var(--osirion-color-warning-600, #d97706);
+    transform: translateY(-1px);
+    box-shadow: var(--osirion-shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05));
+}
+
+.osirion-contact-submit:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.osirion-contact-submit:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.osirion-contact-reset {
+    background-color: transparent;
+    color: var(--osirion-contact-text-muted);
+    border: 1px solid var(--osirion-contact-border);
+    padding: var(--osirion-spacing-3, 0.75rem) var(--osirion-spacing-6, 1.5rem);
+    font-size: var(--osirion-font-size-base, 1rem);
+    border-radius: var(--osirion-radius-md, 0.375rem);
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.osirion-contact-reset:hover {
+    color: var(--osirion-contact-text);
+    border-color: var(--osirion-contact-text-muted);
+}
+
+/* ========== LOADING SPINNER ========== */
+.osirion-button-spinner {
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: osirion-spin 1s linear infinite;
+}
+
+@keyframes osirion-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.osirion-button-loading {
+    position: relative;
+    pointer-events: none;
+}
+
+/* ========== VALIDATION STYLES ========== */
+.osirion-validation-message {
+    font-size: var(--osirion-font-size-sm, 0.875rem);
+    color: red;
+    margin-top: var(--osirion-spacing-1, 0.25rem);
+    line-height: 1.4;
+}
+
+.osirion-contact-input:invalid,
+.osirion-contact-textarea:invalid {
+    border-bottom-color: var(--osirion-status-danger, #ef4444);
+}
+
+/* ========== STATUS MESSAGES ========== */
+/* Minimal alert styling - normal height like Bootstrap alerts */
+.osirion-status-icon {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+    margin-right: 0.5rem;
+}
+
+/* Custom alert styles for non-framework usage - normal height */
+.osirion-alert {
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid transparent;
+    border-radius: 0.375rem;
+    display: flex;
+    align-items: center;
+}
+
+.osirion-alert-success {
+    background-color: #d1fae5;
+    color: #065f46;
+    border-color: #a7f3d0;
+}
+
+.osirion-alert-error {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border-color: #fecaca;
+}
+
+.osirion-alert-warning {
+    background-color: #fef3c7;
+    color: #92400e;
+    border-color: #fde68a;
+}
+
+.osirion-alert-info {
+    background-color: #dbeafe;
+    color: #1e40af;
+    border-color: #93c5fd;
+}
+
+/* Dark theme overrides for custom alerts */
+.osirion-contact-form-dark .osirion-alert-success {
+    background-color: rgba(34, 197, 94, 0.1);
+    color: #4ade80;
+    border-color: rgba(34, 197, 94, 0.2);
+}
+
+.osirion-contact-form-dark .osirion-alert-error {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: #f87171;
+    border-color: rgba(239, 68, 68, 0.2);
+}
+
+.osirion-contact-form-dark .osirion-alert-warning {
+    background-color: rgba(245, 158, 11, 0.1);
+    color: #fbbf24;
+    border-color: rgba(245, 158, 11, 0.2);
+}
+
+.osirion-contact-form-dark .osirion-alert-info {
+    background-color: rgba(59, 130, 246, 0.1);
+    color: #60a5fa;
+    border-color: rgba(59, 130, 246, 0.2);
+}
+
+/* ========== HONEYPOT (ANTI-SPAM) ========== */
+.osirion-honeypot {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+/* ========== LIGHT THEME OVERRIDES ========== */
+.osirion-contact-form-container:not(.osirion-contact-form-dark) {
+    --osirion-contact-bg: var(--osirion-background-primary, #ffffff);
+    --osirion-contact-form-bg: var(--osirion-background-primary, #ffffff);
+    --osirion-contact-text: var(--osirion-text-primary, #111827);
+    --osirion-contact-text-muted: var(--osirion-text-secondary, #6b7280);
+    --osirion-contact-border: var(--osirion-border-color, #e5e7eb);
+    --osirion-contact-accent: var(--osirion-action-primary, #2563eb);
+}
+
+/* ========== RESPONSIVE DESIGN ========== */
+@media (max-width: 768px) {
+    .osirion-contact-form-side-by-side .osirion-contact-form-wrapper {
+        grid-template-columns: 1fr;
+    }
+    
+    .osirion-contact-form-section {
+        padding: var(--osirion-spacing-4, 1rem);
+    }
+    
+    .osirion-contact-form-container {
+        margin: 0 var(--osirion-spacing-4, 1rem);
+    }
+    
+    .osirion-form-actions {
+        flex-direction: column;
+    }
+    
+    .osirion-contact-submit,
+    .osirion-contact-reset {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .osirion-contact-form-title {
+        font-size: var(--osirion-font-size-xl, 1.25rem);
+    }
+    
+    .osirion-contact-form-section {
+        padding: var(--osirion-spacing-3, 0.75rem);
+    }
+}
+
+/* ========== ACCESSIBILITY ENHANCEMENTS ========== */
+@media (prefers-reduced-motion: reduce) {
+    .osirion-contact-input,
+    .osirion-contact-textarea,
+    .osirion-contact-submit,
+    .osirion-contact-reset {
+        transition: none;
+    }
+    
+    .osirion-button-spinner {
+        animation: none;
+    }
+    
+    .osirion-contact-submit:hover:not(:disabled) {
+        transform: none;
+    }
+}
+
+@media (prefers-contrast: high) {
+    .osirion-contact-form-container {
+        --osirion-contact-border: #000000;
+        --osirion-contact-accent: #0000ff;
+    }
+    
+    .osirion-contact-input,
+    .osirion-contact-textarea {
+        border-bottom-width: 3px;
+    }
+    
+    .osirion-status-message {
+        border-width: 2px;
+    }
+}
+
+/* ========== FOCUS STYLES ========== */
+.osirion-contact-input:focus-visible,
+.osirion-contact-textarea:focus-visible,
+.osirion-contact-checkbox:focus-visible,
+.osirion-contact-submit:focus-visible,
+.osirion-contact-reset:focus-visible {
+    outline: 2px solid var(--osirion-focus-ring-color, rgba(59, 130, 246, 0.5));
+    outline-offset: 2px;
+}
+
+/* ========== PRINT STYLES ========== */
+@media print {
+    .osirion-contact-form-container {
+        box-shadow: none;
+        border: 1px solid #000;
+    }
+    
+    .osirion-contact-submit,
+    .osirion-contact-reset {
+        display: none;
+    }
+    
+    .osirion-status-message {
+        border: 1px solid #000;
+        background: transparent !important;
+        color: #000 !important;
+    }
+}

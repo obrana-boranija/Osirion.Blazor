@@ -1,0 +1,160 @@
+﻿@namespace Osirion.Blazor.Components
+@inherits OsirionComponentBase
+@attribute [StreamRendering(true)]
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Components.Forms
+@using Osirion.Blazor.Core.Models
+
+<div class="@GetContactFormContainerClass()" style="@Style" @attributes="Attributes">
+    <div class="osirion-contact-form-wrapper">
+        <!-- Form Section -->
+        <div class="osirion-contact-form-section">
+            @if (!string.IsNullOrWhiteSpace(FormTitle))
+            {
+                <h2 class="osirion-contact-form-title">@FormTitle</h2>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(FormDescription))
+            {
+                <p class="osirion-contact-form-description">@FormDescription</p>
+            }
+
+            <!-- Submission Status Messages -->
+            @if (SubmissionResult.HasValue && SubmissionResult != ContactFormSubmissionResult.None && SubmissionResult != ContactFormSubmissionResult.Processing)
+            {
+                <div class="@GetStatusMessageClass()">
+                    @GetStatusIcon()
+                    <span>@GetStatusMessage()</span>
+                </div>
+            }
+
+            <!-- Contact Form -->
+            <EditForm Enhance Model="@FormModel" OnValidSubmit="@HandleValidSubmit" class="osirion-contact-form" FormName="@Id">
+                <DataAnnotationsValidator />
+
+                <!-- Honeypot for spam protection (hidden) -->
+                <div class="osirion-honeypot" aria-hidden="true">
+                    <InputText @bind-Value="FormModel.Website" tabindex="-1" autocomplete="off" />
+                </div>
+
+                <!-- Name Field -->
+                <div class="osirion-form-group">
+                    <label for="@($"contact-name-{Id}")" class="@GetLabelClass()">
+                        Name @if (ShowRequiredIndicators) {
+                        <span class="osirion-required">*</span>
+                                                }
+                    </label>
+                    <InputText id="@($"contact-name-{Id}")"
+                               @bind-Value="FormModel.Name"
+                               class="@GetInputClass()"
+                               placeholder="@NamePlaceholder"
+                               aria-describedby="@($"name-error-{Id}")" />
+                    <ValidationMessage For="@(() => FormModel.Name)" class="osirion-validation-message" id="@($"name-error-{Id}")" />
+                </div>
+
+                <!-- Email Field -->
+                <div class="osirion-form-group">
+                    <label for="@($"contact-email-{Id}")" class="@GetLabelClass()">
+                        Email @if (ShowRequiredIndicators) 
+                        {
+                        <span class="osirion-required">*</span>
+                        }
+                    </label>
+                    <InputText id="@($"contact-email-{Id}")"
+                               @bind-Value="FormModel.Email"
+                               type="email"
+                               class="@GetInputClass()"
+                               placeholder="@EmailPlaceholder"
+                               aria-describedby="@($"email-error-{Id}")" />
+                    <ValidationMessage For="@(() => FormModel.Email)" class="osirion-validation-message" id="@($"email-error-{Id}")" />
+                </div>
+
+                <!-- Subject Field -->
+                <div class="osirion-form-group">
+                    <label for="@($"contact-subject-{Id}")" class="@GetLabelClass()">
+                        Subject @if (ShowRequiredIndicators) {
+                        <span class="osirion-required">*</span>
+                                                }
+                    </label>
+                    <InputText id="@($"contact-subject-{Id}")"
+                               @bind-Value="FormModel.Subject"
+                               class="@GetInputClass()"
+                               placeholder="@SubjectPlaceholder"
+                               aria-describedby="@($"subject-error-{Id}")" />
+                    <ValidationMessage For="@(() => FormModel.Subject)" class="osirion-validation-message" id="@($"subject-error-{Id}")" />
+                </div>
+
+                <!-- Message Field -->
+                <div class="osirion-form-group">
+                    <label for="@($"contact-message-{Id}")" class="@GetLabelClass()">
+                        Message @if (ShowRequiredIndicators) {
+                        <span class="osirion-required">*</span>
+                                                }
+                    </label>
+                    <InputTextArea id="@($"contact-message-{Id}")"
+                                   @bind-Value="FormModel.Message"
+                                   class="@GetTextAreaClass()"
+                                   placeholder="@MessagePlaceholder"
+                                   rows="@MessageRows"
+                                   aria-describedby="@($"message-error-{Id}")" />
+                    <ValidationMessage For="@(() => FormModel.Message)" class="osirion-validation-message" id="@($"message-error-{Id}")" />
+                </div>
+
+                <!-- Privacy Policy Checkbox -->
+                @if (!string.IsNullOrWhiteSpace(PrivacyPolicyText))
+                {
+                    <div class="osirion-form-group osirion-form-checkbox-group">
+                        <label class="osirion-form-checkbox-label">
+                            <InputCheckbox @bind-Value="FormModel.AgreeToPrivacyPolicy"
+                                           class="@GetCheckboxClass()"
+                                           aria-describedby="@($"privacy-error-{Id}")" />
+                            <span class="osirion-checkbox-text">
+                                @((MarkupString)PrivacyPolicyText)
+                                @if (ShowRequiredIndicators)
+                                {
+                                    <span class="osirion-required">*</span>
+                                }
+                            </span>
+                        </label>
+                        <ValidationMessage For="@(() => FormModel.AgreeToPrivacyPolicy)" class="osirion-validation-message" id="@($"privacy-error-{Id}")" />
+                    </div>
+                }
+
+                <!-- Subscribe to Updates Checkbox -->
+                @if (ShowSubscribeOption)
+                {
+                    <div class="osirion-form-group osirion-form-checkbox-group">
+                        <label class="osirion-form-checkbox-label">
+                            <InputCheckbox @bind-Value="FormModel.SubscribeToUpdates"
+                                           class="@GetCheckboxClass()" />
+                            <span class="osirion-checkbox-text">@SubscribeText</span>
+                        </label>
+                    </div>
+                }
+
+                <!-- Submit Button -->
+                <div class="osirion-form-actions">
+                    <button type="submit"
+                            class="@GetPrimaryButtonClass()">
+                        <span>@SubmitButtonText</span>
+                    </button>
+
+                    @if (ShowResetButton)
+                    {
+                        <button type="reset"
+                                class="@GetOutlinedPrimaryButtonClass()">
+                            @ResetButtonText
+                        </button>
+                    }
+                </div>
+            </EditForm>
+        </div>
+
+        <!-- Contact Information Section -->
+        @if (ShowContactInformation && ContactInfo != null)
+        {
+            <OsirionContactInfoSection Style="background-color: var(--osirion-background-secondary); padding: 1.5rem;" Title="@ContactInfoTitle"
+                                       ContactInfo="@ContactInfo" />
+        }
+    </div>
+</div>

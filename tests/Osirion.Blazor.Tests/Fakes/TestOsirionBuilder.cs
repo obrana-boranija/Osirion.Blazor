@@ -5,6 +5,7 @@ using Osirion.Blazor.Analytics.Extensions;
 using Osirion.Blazor.Cms.Admin.Interfaces;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Web.DependencyInjection;
+using Osirion.Blazor.Core.Configuration;
 using Osirion.Blazor.Navigation;
 using Osirion.Blazor.Navigation.Extensions;
 using Osirion.Blazor.Theming;
@@ -122,6 +123,16 @@ public class TestOsirionBuilder : IOsirionBuilder
     }
 
     public IOsirionBuilder UseCmsAdmin(IConfiguration configuration)
+    {
+        throw new NotImplementedException();
+    }
+
+    public IOsirionBuilder UseEmailServices(Action<EmailOptions> configure)
+    {
+        throw new NotImplementedException();
+    }
+
+    public IOsirionBuilder UseEmailServices(IConfiguration configuration)
     {
         throw new NotImplementedException();
     }

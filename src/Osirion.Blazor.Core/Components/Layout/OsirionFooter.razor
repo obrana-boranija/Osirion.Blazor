@@ -3,26 +3,35 @@
 
 <footer class="@GetFooterClass()" style="@Style" data-osirion-component-theme="@GetComponentTheme()" @attributes="Attributes">
     <div class="osirion-footer-container">
-        @if (ShowTopSection && (Logo is not null || Links?.Any() == true || SocialLinks?.Any() == true || TopContent is not null))
+        @if (Logo is not null || Description is not null)
         {
-            <div class="osirion-footer-top">
-                <div class="osirion-footer-content">
+            <div class="osirion-footer-brand">
+                @if (Logo is not null)
+                {
+                    <div class="osirion-footer-logo">
+                        @Logo
+                    </div>
+                }
+                @if (!string.IsNullOrWhiteSpace(Description))
+                {
+                    <p class="osirion-footer-description">@((MarkupString)Description)</p>
+                }
+            </div>
+        }
+
+        @if (ShowTopSection && (Logo is not null || Links?.Any() == true || SocialLinks?.Any() == true || LeftContent is not null || RightContent is not null))
+        {
+            <div class="osirion-footer-main">
+                <div class="osirion-footer-main-left-content">
+                    @if (LeftContent is not null)
+                    {
+                        @LeftContent
+                    }
+                </div>
+
+                <div class="osirion-footer-main-middle-content">
                     <div class="osirion-footer-grid">
-                        @if (Logo is not null || Description is not null)
-                        {
-                            <div class="osirion-footer-brand">
-                                @if (Logo is not null)
-                                {
-                                    <div class="osirion-footer-logo">
-                                        @Logo
-                                    </div>
-                                }
-                                @if (!string.IsNullOrWhiteSpace(Description))
-                                {
-                                    <p class="osirion-footer-description">@Description</p>
-                                }
-                            </div>
-                        }
+
 
                         @if (Links?.Any() == true)
                         {
@@ -49,13 +58,6 @@
                                         </ul>
                                     </div>
                                 }
-                            </div>
-                        }
-
-                        @if (TopContent is not null)
-                        {
-                            <div class="osirion-footer-custom-top">
-                                @TopContent
                             </div>
                         }
 
@@ -89,6 +91,13 @@
                         }
                     </div>
                 </div>
+
+                <div class="osirion-footer-main-right-content">
+                    @if (RightContent is not null)
+                    {
+                        @RightContent
+                    }
+                </div>
             </div>
         }
 
@@ -100,41 +109,39 @@
         @if (ShowBottomSection)
         {
             <div class="osirion-footer-bottom">
-                <div class="osirion-footer-content">
-                    <div class="osirion-footer-bottom-content">
-                        @if (!string.IsNullOrWhiteSpace(Copyright))
-                        {
-                            <div class="osirion-footer-copyright">
-                                @Copyright
-                            </div>
-                        }
-                        else if (ShowCopyright)
-                        {
-                            <div class="osirion-footer-copyright">
-                                &copy; @DateTime.Now.Year <a class="osirion-footer-bottom-link" href="@CompanyUrl" target="@(CompanyUrl.StartsWith("http") ? "_blank" : "_self")">@CompanyName</a>. All rights reserved.
-                            </div>
-                        }
-
-                        @if (BottomLinks?.Any() == true)
-                        {
-                            <nav class="osirion-footer-bottom-links" aria-label="Footer legal navigation">
-                                @foreach (var link in BottomLinks)
-                                {
-                                    <a href="@link.Href" class="osirion-footer-bottom-link">
-                                        @link.Text
-                                    </a>
-                                }
-                            </nav>
-                        }
-                    </div>
+                <div class="osirion-footer-bottom-content">
+                    @if (!string.IsNullOrWhiteSpace(Copyright))
+                    {
+                        <div class="osirion-footer-copyright">
+                            @((MarkupString)Copyright)
+                        </div>
+                    }
+                    else if (ShowCopyright)
+                    {
+                        <div class="osirion-footer-copyright">
+                            &copy; @DateTime.Now.Year <a class="osirion-footer-bottom-link" href="@CompanyUrl" target="@(CompanyUrl.StartsWith("http") ? "_blank" : "_self")">@CompanyName</a> - All rights reserved.
+                        </div>
+                    }
                 </div>
+
+                @if (BottomLinks?.Any() == true)
+                {
+                    <nav class="osirion-footer-bottom-links" aria-label="Footer legal navigation">
+                        @foreach (var link in BottomLinks)
+                        {
+                            <a href="@link.Href" class="osirion-footer-bottom-link">
+                                @link.Text
+                            </a>
+                        }
+                    </nav>
+                }
             </div>
         }
 
         @if (ChildContent is not null)
         {
             <div class="osirion-footer-extra">
-                <div class="osirion-footer-content">
+                <div class="osirion-footer-bottom-content">
                     @ChildContent
                 </div>
             </div>

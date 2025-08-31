@@ -4,6 +4,7 @@ using Osirion.Blazor.Analytics.Options;
 using Osirion.Blazor.Components;
 using Osirion.Blazor.Internal;
 using Osirion.Blazor.Navigation.Options;
+using Osirion.Blazor.Core.Configuration;
 
 namespace Osirion.Blazor.Extensions;
 
@@ -80,6 +81,12 @@ public static class OsirionServiceCollectionExtensions
             if (configuration.GetSection(ThemingOptions.Section).Exists())
             {
                 builder.UseTheming(configuration);
+            }
+
+            // Email services configuration
+            if (configuration.GetSection(EmailOptions.Section).Exists())
+            {
+                builder.UseEmailServices(configuration);
             }
         });
     }

@@ -1,0 +1,196 @@
+﻿@namespace Osirion.Blazor.Components
+@inherits OsirionComponentBase
+@attribute [StreamRendering(true)]
+@using Microsoft.AspNetCore.Components.Forms
+@using Osirion.Blazor.Core.Models
+
+<div class="@GetSubscriptionCardContainerClass()" style="@Style" @attributes="Attributes">
+    <div class="osirion-subscription-card-wrapper">
+        <div class="osirion-subscription-card-header">
+            @if (!string.IsNullOrWhiteSpace(Title))
+            {
+                <h3 class="osirion-subscription-card-title">@((MarkupString)Title)</h3>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(Description))
+            {
+                <p class="osirion-subscription-card-description">@((MarkupString)Description)</p>
+            }
+        </div>
+
+        @if (SubmissionResult.HasValue && SubmissionResult != SubscriptionSubmissionResult.None && SubmissionResult != SubscriptionSubmissionResult.Processing)
+        {
+            <div class="@GetStatusMessageClass()">
+                @GetStatusIcon()
+                <span>@GetStatusMessage()</span>
+            </div>
+        }
+
+        <EditForm Enhance Model="@FormModel" OnValidSubmit="@HandleValidSubmit" class="osirion-subscription-form" FormName="@Id">
+            <DataAnnotationsValidator />
+
+            <div class="osirion-honeypot" aria-hidden="true">
+                <InputText @bind-Value="FormModel.Website" tabindex="-1" autocomplete="off" />
+            </div>
+
+            @if (ShowNameField)
+            {
+                <div class="osirion-form-group">
+                    <label for="@($"subscription-name-{Id}")" class="@GetLabelClass()">
+                        Name
+                    </label>
+                    <InputText id="@($"subscription-name-{Id}")"
+                               @bind-Value="FormModel.Name"
+                               class="@GetInputClass()"
+                               placeholder="@NamePlaceholder"
+                               aria-describedby="@($"name-error-{Id}")" />
+                    <ValidationMessage For="@(() => FormModel.Name)" class="osirion-validation-message" id="@($"name-error-{Id}")" />
+                </div>
+            }
+
+            <div class="osirion-form-group">
+                <label for="@($"subscription-email-{Id}")" class="@GetLabelClass()">
+                    Email @if (ShowRequiredIndicators)
+                    {
+                        <span class="osirion-required">*</span>
+                    }
+                </label>
+                <InputText id="@($"subscription-email-{Id}")"
+                           @bind-Value="FormModel.Email"
+                           type="email"
+                           class="@GetInputClass()"
+                           placeholder="@EmailPlaceholder"
+                           aria-describedby="@($"email-error-{Id}")" />
+                <ValidationMessage For="@(() => FormModel.Email)" class="osirion-validation-message" id="@($"email-error-{Id}")" />
+            </div>
+
+            @if (ShowSubscriptionCategories && SubscriptionCategories != null && SubscriptionCategories.Any())
+            {
+                <div class="osirion-form-group osirion-subscription-categories">
+                    @if (ShowCategoriesAsDropdown)
+                    {
+                        <div class="osirion-subscription-categories-dropdown">
+                            <label class="@GetLabelClass()">@CategoriesText</label>
+                            <details class="osirion-custom-dropdown">
+                                <summary class="osirion-dropdown-button">
+                                    <span class="osirion-dropdown-text">@CategoriesDropdownText</span>
+                                    <svg class="osirion-dropdown-chevron" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                    </svg>
+                                </summary>
+                                
+                                <div class="osirion-dropdown-panel">
+                                    <div class="osirion-dropdown-header">
+                                        <span class="osirion-dropdown-instruction">Select your preferences:</span>
+                                    </div>
+                                    @foreach (var category in SubscriptionCategories)
+                                    {
+                                        <div class="osirion-dropdown-option">
+                                            <label class="osirion-checkbox-option">
+                                                <input type="checkbox"
+                                                       id="@($"subscription-category-{category.Id}-{Id}")"
+                                                       name="SubscriptionCategories"
+                                                       value="@category.Id"
+                                                       checked="@IsCategorySelected(category.Id)"
+                                                       disabled="@IsCategoryRequired(category.Id)"
+                                                       class="osirion-checkbox-input" />
+                                                <span class="osirion-checkbox-indicator"></span>
+                                                <span class="osirion-checkbox-label-content">
+                                                    <span class="osirion-option-name">
+                                                        @category.Name
+                                                        @if (IsCategoryRequired(category.Id))
+                                                        {
+                                                            <span class="osirion-required-badge">Required</span>
+                                                        }
+                                                    </span>
+                                                    @if (!string.IsNullOrWhiteSpace(category.Description))
+                                                    {
+                                                        <span class="osirion-option-description">@category.Description</span>
+                                                    }
+                                                </span>
+                                            </label>
+                                        </div>
+                                    }
+                                </div>
+                            </details>
+                            <ValidationMessage For="@(() => FormModel.SubscriptionCategories)" class="osirion-validation-message" id="@($"categories-error-{Id}")" />
+                        </div>
+                    }
+                    else
+                    {
+                        <fieldset>
+                            <legend class="@GetLabelClass()">@CategoriesText</legend>
+                            
+                            @foreach (var category in SubscriptionCategories)
+                            {
+                                <div class="osirion-form-checkbox-group osirion-subscription-category-item">
+                                    <label class="osirion-form-checkbox-label">
+                                        <input type="checkbox"
+                                               id="@($"subscription-category-{category.Id}-{Id}")"
+                                               name="SubscriptionCategories"
+                                               value="@category.Id"
+                                               checked="@IsCategorySelected(category.Id)"
+                                               disabled="@IsCategoryRequired(category.Id)"
+                                               class="@GetCheckboxClass()" />
+                                        <span class="osirion-checkbox-content">
+                                            <span class="osirion-checkbox-text">
+                                                @category.Name
+                                                @if (IsCategoryRequired(category.Id))
+                                                {
+                                                    <span class="osirion-required">*</span>
+                                                }
+                                            </span>
+                                            @if (!string.IsNullOrWhiteSpace(category.Description))
+                                            {
+                                                <span class="osirion-checkbox-description">@category.Description</span>
+                                            }
+                                        </span>
+                                    </label>
+                                </div>
+                            }
+                        </fieldset>
+                    }
+                </div>
+            }
+
+            <div class="osirion-form-actions">
+                <button type="submit"
+                        class="@GetPrimaryButtonClass() osirion-subscription-button">
+                    <span>@SubscribeButtonText</span>
+                </button>
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(PrivacyPolicyText))
+            {
+                <div class="osirion-form-group osirion-form-checkbox-group">
+                    <label class="osirion-form-checkbox-label">
+                        <InputCheckbox @bind-Value="FormModel.AgreeToPrivacyPolicy"
+                                       class="@GetCheckboxClass()"
+                                       aria-describedby="@($"privacy-error-{Id}")" />
+                        <span class="osirion-checkbox-text">
+                            @((MarkupString)PrivacyPolicyText)
+                            @if (ShowRequiredIndicators)
+                            {
+                                <span class="osirion-required">*</span>
+                            }
+                        </span>
+                    </label>
+                    <ValidationMessage For="@(() => FormModel.AgreeToPrivacyPolicy)" class="osirion-validation-message" id="@($"privacy-error-{Id}")" />
+                </div>
+            }
+
+        </EditForm>
+
+        @if (ChildContent != null)
+        {
+            <div class="osirion-subscription-card-footer">
+                @ChildContent
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}
