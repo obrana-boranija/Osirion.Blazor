@@ -1,390 +1,388 @@
 ﻿/* 
- * Bootstrap Adapter for Osirion 
- * Maps Bootstrap variables to Osirion variables (not vice versa)
- */
-
+* Bootstrap Adapter for Osirion 
+* Maps Bootstrap variables to Osirion variables (not vice versa)
+*/
 html.osirion-bootstrap-integration,
-html.osirion-bootstrap-integration[data-bs-theme="light"],
-[data-bs-theme="light"] html.osirion-bootstrap-integration,
-html.osirion-bootstrap-integration[data-theme="light"],
-[data-theme="light"] html.osirion-bootstrap-integration {
-    /* Map Bootstrap's design tokens to our semantic tokens */
-    /* Primary color scale mapping */
-    --osirion-color-primary-50: var(--bs-primary-bg-subtle, #cfe2ff);
-    --osirion-color-primary-100: #d0e0ff; /* Derived */
-    --osirion-color-primary-200: #b1c9fd; /* Derived */
-    --osirion-color-primary-300: #93b4fd; /* Derived */
-    --osirion-color-primary-400: var(--bs-primary-border-subtle, #9ec5fe);
-    --osirion-color-primary-500: var(--bs-primary-text-emphasis, #084298);
-    --osirion-color-primary-600: var(--bs-primary, #0d6efd);
-    --osirion-color-primary-700: var(--bs-primary-dark, #0a58ca);
-    --osirion-color-primary-800: var(--bs-primary-text-emphasis, #084298);
-    --osirion-color-primary-900: #052c65; /* Derived from Bootstrap's emphasis */
-    --osirion-color-primary-950: #041e46; /* Derived */
-    /* Neutral/Gray color scale mapping */
-    --osirion-color-neutral-50: var(--bs-gray-100, #f8f9fa);
-    --osirion-color-neutral-100: var(--bs-gray-200, #e9ecef);
-    --osirion-color-neutral-200: var(--bs-gray-300, #dee2e6);
-    --osirion-color-neutral-300: var(--bs-gray-400, #ced4da);
-    --osirion-color-neutral-400: var(--bs-gray-500, #adb5bd);
-    --osirion-color-neutral-500: var(--bs-gray-600, #6c757d);
-    --osirion-color-neutral-600: var(--bs-gray-700, #495057);
-    --osirion-color-neutral-700: var(--bs-gray-800, #343a40);
-    --osirion-color-neutral-800: var(--bs-gray-900, #212529);
-    --osirion-color-neutral-900: #0f1419; /* Derived - darker than Bootstrap's darkest gray */
-    --osirion-color-neutral-950: #080a0c; /* Derived */
-    /* Success color scale mapping */
-    --osirion-color-success-50: var(--bs-success-bg-subtle, #d1e7dd);
-    --osirion-color-success-100: #c3e0d1; /* Derived */
-    --osirion-color-success-200: var(--bs-success-border-subtle, #a3cfbb);
-    --osirion-color-success-300: #75c687; /* Derived */
-    --osirion-color-success-400: #5cb85c; /* Derived */
-    --osirion-color-success-500: #48a748; /* Derived */
-    --osirion-color-success-600: var(--bs-success, #198754);
-    --osirion-color-success-700: var(--bs-success-text-emphasis, #0f5132);
-    --osirion-color-success-800: #0a3b24; /* Derived */
-    --osirion-color-success-900: #072f1c; /* Derived */
-    --osirion-color-success-950: #041b10; /* Derived */
-    /* Warning color scale mapping */
-    --osirion-color-warning-50: var(--bs-warning-bg-subtle, #fff3cd);
-    --osirion-color-warning-100: var(--bs-warning-border-subtle, #ffe69c);
-    --osirion-color-warning-200: #ffdb6d; /* Derived */
-    --osirion-color-warning-300: #ffcf3e; /* Derived */
-    --osirion-color-warning-400: #ffc107; /* Same as warning-500 in Bootstrap */
-    --osirion-color-warning-500: #e0a800; /* Derived */
-    --osirion-color-warning-600: #ba8b00; /* Derived */
-    --osirion-color-warning-700: var(--bs-warning-text-emphasis, #664d03);
-    --osirion-color-warning-800: #523e02; /* Derived */
-    --osirion-color-warning-900: #3d2e02; /* Derived */
-    --osirion-color-warning-950: #291f01; /* Derived */
-    /* Danger color scale mapping */
-    --osirion-color-danger-50: var(--bs-danger-bg-subtle, #f8d7da);
-    --osirion-color-danger-100: var(--bs-danger-border-subtle, #f1aeb5);
-    --osirion-color-danger-200: #ea868f; /* Derived */
-    --osirion-color-danger-300: #e35d6a; /* Derived */
-    --osirion-color-danger-400: #dc3545; /* Same as danger-600 in Bootstrap */
-    --osirion-color-danger-500: #c82333; /* Derived */
-    --osirion-color-danger-600: var(--bs-danger, #dc3545);
-    --osirion-color-danger-700: var(--bs-danger-text-emphasis, #58151c);
-    --osirion-color-danger-800: #4c1319; /* Derived */
-    --osirion-color-danger-900: #3f1016; /* Derived */
-    --osirion-color-danger-950: #2c0b0f; /* Derived */
-    /* Background and text colors */
-    --osirion-background-primary: var(--bs-body-bg, #ffffff);
-    --osirion-background-secondary: var(--bs-secondary-bg, #f8f9fa);
-    --osirion-background-tertiary: var(--bs-tertiary-bg, #e9ecef);
-    --osirion-background-muted: var(--bs-border-color-subtle, #dee2e6);
-    --osirion-background-inverted: var(--bs-dark, #212529);
-    --osirion-text-primary: var(--bs-body-color, #212529);
-    --osirion-text-secondary: var(--bs-secondary-color, #6c757d);
-    --osirion-text-tertiary: var(--bs-tertiary-color, #6c757d);
-    --osirion-text-inverted: var(--bs-white, #ffffff);
-    --osirion-text-disabled: var(--bs-secondary-color, #6c757d);
-    /* Border colors */
-    --osirion-border-color: var(--bs-border-color, #dee2e6);
-    --osirion-border-color-hover: var(--bs-border-color-translucent, rgba(0, 0, 0, 0.175));
-    --osirion-border-width: var(--bs-border-width, 1px);
-    /* Border radius */
-    --osirion-radius-none: 0;
-    --osirion-radius-sm: var(--bs-border-radius-sm, 0.25rem);
-    --osirion-radius-base: var(--bs-border-radius, 0.375rem);
-    --osirion-radius-md: var(--bs-border-radius, 0.375rem);
-    --osirion-radius-lg: var(--bs-border-radius-lg, 0.5rem);
-    --osirion-radius-xl: var(--bs-border-radius-xl, 0.75rem);
-    --osirion-radius-2xl: var(--bs-border-radius-2xl, 1rem);
-    --osirion-radius-3xl: calc(var(--bs-border-radius-2xl, 1rem) * 1.5);
-    --osirion-radius-pill: var(--bs-border-radius-pill, 50rem);
-    --osirion-radius-full: var(--bs-border-radius-pill, 50rem);
-    /* Action colors (map Bootstrap's buttons) */
-    --osirion-action-primary: var(--bs-primary, #0d6efd);
-    --osirion-action-primary-hover: var(--bs-primary-dark, #0a58ca);
-    --osirion-action-primary-active: var(--bs-primary-text-emphasis, #052c65);
-    --osirion-action-primary-text: var(--bs-white, #ffffff);
-    --osirion-action-secondary: var(--bs-secondary, #6c757d);
-    --osirion-action-secondary-hover: var(--bs-secondary-dark, #5c636a);
-    --osirion-action-secondary-active: var(--bs-secondary-text-emphasis, #2b2f32);
-    --osirion-action-secondary-text: var(--bs-white, #ffffff);
-    /* Status colors */
-    --osirion-status-success: var(--bs-success, #198754);
-    --osirion-status-success-bg: var(--bs-success-bg-subtle, #d1e7dd);
-    --osirion-status-success-border: var(--bs-success-border-subtle, #a3cfbb);
-    --osirion-status-success-text: var(--bs-success-text-emphasis, #0a3622);
-    --osirion-status-warning: var(--bs-warning, #ffc107);
-    --osirion-status-warning-bg: var(--bs-warning-bg-subtle, #fff3cd);
-    --osirion-status-warning-border: var(--bs-warning-border-subtle, #ffe69c);
-    --osirion-status-warning-text: var(--bs-warning-text-emphasis, #664d03);
-    --osirion-status-danger: var(--bs-danger, #dc3545);
-    --osirion-status-danger-bg: var(--bs-danger-bg-subtle, #f8d7da);
-    --osirion-status-danger-border: var(--bs-danger-border-subtle, #f1aeb5);
-    --osirion-status-danger-text: var(--bs-danger-text-emphasis, #58151c);
-    --osirion-status-info: var(--bs-info, #0dcaf0);
-    --osirion-status-info-bg: var(--bs-info-bg-subtle, #cff4fc);
-    --osirion-status-info-border: var(--bs-info-border-subtle, #9eeaf9);
-    --osirion-status-info-text: var(--bs-info-text-emphasis, #055160);
-    /* Typography */
-    --osirion-font-family-base: var(--bs-font-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif);
-    --osirion-font-family-mono: var(--bs-font-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace);
-    --osirion-font-size-2xs: calc(var(--bs-body-font-size, 1rem) * 0.625); /* 10px */
-    --osirion-font-size-xs: calc(var(--bs-body-font-size, 1rem) * 0.75); /* 12px */
-    --osirion-font-size-sm: calc(var(--bs-body-font-size, 1rem) * 0.875); /* 14px */
-    --osirion-font-size-base: var(--bs-body-font-size, 1rem); /* 16px */
-    --osirion-font-size-lg: calc(var(--bs-body-font-size, 1rem) * 1.125); /* 18px */
-    --osirion-font-size-xl: calc(var(--bs-body-font-size, 1rem) * 1.25); /* 20px */
-    --osirion-font-size-2xl: calc(var(--bs-body-font-size, 1rem) * 1.5); /* 24px */
-    --osirion-font-size-3xl: calc(var(--bs-body-font-size, 1rem) * 1.875); /* 30px */
-    --osirion-font-size-4xl: calc(var(--bs-body-font-size, 1rem) * 2.25); /* 36px */
-    --osirion-font-size-5xl: calc(var(--bs-body-font-size, 1rem) * 3); /* 48px */
-
-    --osirion-font-weight-light: 300;
-    --osirion-font-weight-normal: var(--bs-font-weight-normal, 400);
-    --osirion-font-weight-medium: var(--bs-font-weight-medium, 500);
-    --osirion-font-weight-semibold: 600;
-    --osirion-font-weight-bold: var(--bs-font-weight-bold, 700);
-    --osirion-line-height-none: 1;
-    --osirion-line-height-tight: 1.25;
-    --osirion-line-height-snug: 1.375;
-    --osirion-line-height-normal: var(--bs-body-line-height, 1.5);
-    --osirion-line-height-relaxed: 1.625;
-    --osirion-line-height-loose: 2;
-    /* Spacing - map Bootstrap's spacer scale */
-    --osirion-spacing-0: 0;
-    --osirion-spacing-px: 1px;
-    --osirion-spacing-0-5: calc(var(--bs-spacer, 1rem) * 0.125); /* 2px */
-    --osirion-spacing-1: calc(var(--bs-spacer, 1rem) * 0.25); /* 4px */
-    --osirion-spacing-1-5: calc(var(--bs-spacer, 1rem) * 0.375); /* 6px */
-    --osirion-spacing-2: calc(var(--bs-spacer, 1rem) * 0.5); /* 8px */
-    --osirion-spacing-2-5: calc(var(--bs-spacer, 1rem) * 0.625); /* 10px */
-    --osirion-spacing-3: calc(var(--bs-spacer, 1rem) * 0.75); /* 12px */
-    --osirion-spacing-3-5: calc(var(--bs-spacer, 1rem) * 0.875); /* 14px */
-    --osirion-spacing-4: var(--bs-spacer, 1rem); /* 16px */
-    --osirion-spacing-5: calc(var(--bs-spacer, 1rem) * 1.25); /* 20px */
-    --osirion-spacing-6: calc(var(--bs-spacer, 1rem) * 1.5); /* 24px */
-    --osirion-spacing-8: calc(var(--bs-spacer, 1rem) * 2); /* 32px */
-    --osirion-spacing-10: calc(var(--bs-spacer, 1rem) * 2.5); /* 40px */
-    --osirion-spacing-12: calc(var(--bs-spacer, 1rem) * 3); /* 48px */
-    --osirion-spacing-16: calc(var(--bs-spacer, 1rem) * 4); /* 64px */
-    /* Shadow */
-    --osirion-shadow-sm: var(--bs-box-shadow-sm, 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075));
-    --osirion-shadow-base: var(--bs-box-shadow, 0 0.5rem 1rem rgba(0, 0, 0, 0.15));
-    --osirion-shadow-md: var(--bs-box-shadow, 0 0.5rem 1rem rgba(0, 0, 0, 0.15));
-    --osirion-shadow-lg: var(--bs-box-shadow-lg, 0 1rem 3rem rgba(0, 0, 0, 0.175));
-    --osirion-shadow-xl: calc(var(--bs-box-shadow-lg, 0 1rem 3rem rgba(0, 0, 0, 0.175)) * 1.5);
-    --osirion-shadow-2xl: calc(var(--bs-box-shadow-lg, 0 1rem 3rem rgba(0, 0, 0, 0.175)) * 2);
-    --osirion-shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
-    /* Breakpoints - Bootstrap's breakpoint system */
-    --osirion-breakpoint-xs: var(--bs-breakpoint-xs, 0);
-    --osirion-breakpoint-sm: var(--bs-breakpoint-sm, 576px);
-    --osirion-breakpoint-md: var(--bs-breakpoint-md, 768px);
-    --osirion-breakpoint-lg: var(--bs-breakpoint-lg, 992px);
-    --osirion-breakpoint-xl: var(--bs-breakpoint-xl, 1200px);
-    --osirion-breakpoint-xxl: var(--bs-breakpoint-xxl, 1400px);
-    --osirion-breakpoint-xxxl: 1920px; /* Extra for ultra-wide - Bootstrap doesn't have this */
-    /* Max-width breakpoints - calculated from Bootstrap's values */
-    --osirion-breakpoint-xs-max: calc(var(--bs-breakpoint-sm, 576px) - 0.02px);
-    --osirion-breakpoint-sm-max: calc(var(--bs-breakpoint-md, 768px) - 0.02px);
-    --osirion-breakpoint-md-max: calc(var(--bs-breakpoint-lg, 992px) - 0.02px);
-    --osirion-breakpoint-lg-max: calc(var(--bs-breakpoint-xl, 1200px) - 0.02px);
-    --osirion-breakpoint-xl-max: calc(var(--bs-breakpoint-xxl, 1400px) - 0.02px);
-    --osirion-breakpoint-xxl-max: 1919.98px;
-    /* Container max-widths */
-    --osirion-container-sm: var(--bs-container-sm, 540px);
-    --osirion-container-md: var(--bs-container-md, 720px);
-    --osirion-container-lg: var(--bs-container-lg, 960px);
-    --osirion-container-xl: var(--bs-container-xl, 1140px);
-    --osirion-container-xxl: var(--bs-container-xxl, 1320px);
-    --osirion-container-xxxl: 1800px;
-    /* Transitions */
-    --osirion-transition-timing-default: ease;
-    --osirion-transition-timing-in: ease-in;
-    --osirion-transition-timing-out: ease-out;
-    --osirion-transition-timing-linear: linear;
-    --osirion-transition-duration-150: 0.15s;
-    --osirion-transition-duration-300: 0.3s;
-    /* Z-index - map to Bootstrap's standard z-indices */
-    --osirion-z-index-0: 0;
-    --osirion-z-index-10: 10;
-    --osirion-z-index-20: 1020; /* Bootstrap's sticky z-index */
-    --osirion-z-index-30: 1030; /* Bootstrap's fixed z-index */
-    --osirion-z-index-40: 1040; /* Bootstrap's modal backdrop */
-    --osirion-z-index-50: 1050; /* Bootstrap's modal */
-    /* Component specific mappings */
-    --osirion-button-radius: var(--bs-btn-border-radius, 0.375rem);
-    --osirion-input-radius: var(--bs-border-radius, 0.375rem);
-    --osirion-card-background: var(--bs-card-bg, var(--bs-body-bg));
-    --osirion-card-border-color: var(--bs-card-border-color, var(--bs-border-color));
-    --osirion-card-border-radius: var(--bs-card-border-radius, var(--bs-border-radius));
-    --osirion-card-padding: var(--bs-card-spacer-y, 1rem) var(--bs-card-spacer-x, 1rem);
-    --osirion-card-shadow: var(--bs-box-shadow, 0 0.5rem 1rem rgba(0, 0, 0, 0.15));
-    --osirion-tag-radius: var(--bs-border-radius-pill, 50rem);
-    /* Focus states - using Bootstrap's focus ring styles */
-    --osirion-focus-ring-width: var(--bs-focus-ring-width, 0.25rem);
-    --osirion-focus-ring-color: var(--bs-focus-ring-color, rgba(13, 110, 253, 0.25));
-    --osirion-focus-ring-offset: var(--bs-focus-ring-width, 0);
-    /* ScrollToTop specific mappings */
-    --osirion-scroll-background: var(--bs-primary, #0d6efd);
-    --osirion-scroll-hover-background: var(--bs-primary-dark, #0a58ca);
-    --osirion-scroll-color: var(--bs-white, #ffffff);
-    --osirion-scroll-hover-color: var(--bs-white, #ffffff);
-    --osirion-scroll-box-shadow: var(--bs-box-shadow-sm, 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075));
-    --osirion-scroll-hover-box-shadow: var(--bs-box-shadow, 0 0.5rem 1rem rgba(0, 0, 0, 0.15));
-    /* Backward compatibility support */
-    --osirion-content-max-width: 800px;
-    --osirion-color-border: var(--osirion-border-color);
-    --osirion-color-active: var(--osirion-action-primary);
-    --osirion-content-text-color: var(--osirion-text-primary);
-    --osirion-content-light-text-color: var(--osirion-text-secondary);
-    --osirion-color-background: var(--osirion-background-primary);
-    --osirion-color-background-light: var(--osirion-background-secondary);
-    --osirion-active-text: var(--osirion-action-primary);
-    --osirion-active-background: var(--osirion-status-primary-bg);
+html.osirion-bootstrap-integration[data-bs-theme=light],
+[data-bs-theme=light] html.osirion-bootstrap-integration,
+html.osirion-bootstrap-integration[data-theme=light],
+[data-theme=light] html.osirion-bootstrap-integration {
+  /* Map Bootstrap's design tokens to our semantic tokens */
+  /* Primary color scale mapping */
+  --osirion-color-primary-50: var(--bs-primary-bg-subtle, #cfe2ff);
+  --osirion-color-primary-100: #d0e0ff; /* Derived */
+  --osirion-color-primary-200: #b1c9fd; /* Derived */
+  --osirion-color-primary-300: #93b4fd; /* Derived */
+  --osirion-color-primary-400: var(--bs-primary-border-subtle, #9ec5fe);
+  --osirion-color-primary-500: var(--bs-primary-text-emphasis, #084298);
+  --osirion-color-primary-600: var(--bs-primary, #0d6efd);
+  --osirion-color-primary-700: var(--bs-primary-dark, #0a58ca);
+  --osirion-color-primary-800: var(--bs-primary-text-emphasis, #084298);
+  --osirion-color-primary-900: #052c65; /* Derived from Bootstrap's emphasis */
+  --osirion-color-primary-950: #041e46; /* Derived */
+  /* Neutral/Gray color scale mapping */
+  --osirion-color-neutral-50: var(--bs-gray-100, #f8f9fa);
+  --osirion-color-neutral-100: var(--bs-gray-200, #e9ecef);
+  --osirion-color-neutral-200: var(--bs-gray-300, #dee2e6);
+  --osirion-color-neutral-300: var(--bs-gray-400, #ced4da);
+  --osirion-color-neutral-400: var(--bs-gray-500, #adb5bd);
+  --osirion-color-neutral-500: var(--bs-gray-600, #6c757d);
+  --osirion-color-neutral-600: var(--bs-gray-700, #495057);
+  --osirion-color-neutral-700: var(--bs-gray-800, #343a40);
+  --osirion-color-neutral-800: var(--bs-gray-900, #212529);
+  --osirion-color-neutral-900: #0f1419; /* Derived - darker than Bootstrap's darkest gray */
+  --osirion-color-neutral-950: #080a0c; /* Derived */
+  /* Success color scale mapping */
+  --osirion-color-success-50: var(--bs-success-bg-subtle, #d1e7dd);
+  --osirion-color-success-100: #c3e0d1; /* Derived */
+  --osirion-color-success-200: var(--bs-success-border-subtle, #a3cfbb);
+  --osirion-color-success-300: #75c687; /* Derived */
+  --osirion-color-success-400: #5cb85c; /* Derived */
+  --osirion-color-success-500: #48a748; /* Derived */
+  --osirion-color-success-600: var(--bs-success, #198754);
+  --osirion-color-success-700: var(--bs-success-text-emphasis, #0f5132);
+  --osirion-color-success-800: #0a3b24; /* Derived */
+  --osirion-color-success-900: #072f1c; /* Derived */
+  --osirion-color-success-950: #041b10; /* Derived */
+  /* Warning color scale mapping */
+  --osirion-color-warning-50: var(--bs-warning-bg-subtle, #fff3cd);
+  --osirion-color-warning-100: var(--bs-warning-border-subtle, #ffe69c);
+  --osirion-color-warning-200: #ffdb6d; /* Derived */
+  --osirion-color-warning-300: #ffcf3e; /* Derived */
+  --osirion-color-warning-400: #ffc107; /* Same as warning-500 in Bootstrap */
+  --osirion-color-warning-500: #e0a800; /* Derived */
+  --osirion-color-warning-600: #ba8b00; /* Derived */
+  --osirion-color-warning-700: var(--bs-warning-text-emphasis, #664d03);
+  --osirion-color-warning-800: #523e02; /* Derived */
+  --osirion-color-warning-900: #3d2e02; /* Derived */
+  --osirion-color-warning-950: #291f01; /* Derived */
+  /* Danger color scale mapping */
+  --osirion-color-danger-50: var(--bs-danger-bg-subtle, #f8d7da);
+  --osirion-color-danger-100: var(--bs-danger-border-subtle, #f1aeb5);
+  --osirion-color-danger-200: #ea868f; /* Derived */
+  --osirion-color-danger-300: #e35d6a; /* Derived */
+  --osirion-color-danger-400: #dc3545; /* Same as danger-600 in Bootstrap */
+  --osirion-color-danger-500: #c82333; /* Derived */
+  --osirion-color-danger-600: var(--bs-danger, #dc3545);
+  --osirion-color-danger-700: var(--bs-danger-text-emphasis, #58151c);
+  --osirion-color-danger-800: #4c1319; /* Derived */
+  --osirion-color-danger-900: #3f1016; /* Derived */
+  --osirion-color-danger-950: #2c0b0f; /* Derived */
+  /* Background and text colors */
+  --osirion-background-primary: var(--bs-body-bg, #ffffff);
+  --osirion-background-secondary: var(--bs-secondary-bg, #f8f9fa);
+  --osirion-background-tertiary: var(--bs-tertiary-bg, #e9ecef);
+  --osirion-background-muted: var(--bs-border-color-subtle, #dee2e6);
+  --osirion-background-inverted: var(--bs-dark, #212529);
+  --osirion-text-primary: var(--bs-body-color, #212529);
+  --osirion-text-secondary: var(--bs-secondary-color, #6c757d);
+  --osirion-text-tertiary: var(--bs-tertiary-color, #6c757d);
+  --osirion-text-inverted: var(--bs-white, #ffffff);
+  --osirion-text-disabled: var(--bs-secondary-color, #6c757d);
+  /* Border colors */
+  --osirion-border-color: var(--bs-border-color, #dee2e6);
+  --osirion-border-color-hover: var(--bs-border-color-translucent, rgba(0, 0, 0, 0.175));
+  --osirion-border-width: var(--bs-border-width, 1px);
+  /* Border radius */
+  --osirion-radius-none: 0;
+  --osirion-radius-sm: var(--bs-border-radius-sm, 0.25rem);
+  --osirion-radius-base: var(--bs-border-radius, 0.375rem);
+  --osirion-radius-md: var(--bs-border-radius, 0.375rem);
+  --osirion-radius-lg: var(--bs-border-radius-lg, 0.5rem);
+  --osirion-radius-xl: var(--bs-border-radius-xl, 0.75rem);
+  --osirion-radius-2xl: var(--bs-border-radius-2xl, 1rem);
+  --osirion-radius-3xl: calc(var(--bs-border-radius-2xl, 1rem) * 1.5);
+  --osirion-radius-pill: var(--bs-border-radius-pill, 50rem);
+  --osirion-radius-full: var(--bs-border-radius-pill, 50rem);
+  /* Action colors (map Bootstrap's buttons) */
+  --osirion-action-primary: var(--bs-primary, #0d6efd);
+  --osirion-action-primary-hover: var(--bs-primary-dark, #0a58ca);
+  --osirion-action-primary-active: var(--bs-primary-text-emphasis, #052c65);
+  --osirion-action-primary-text: var(--bs-white, #ffffff);
+  --osirion-action-secondary: var(--bs-secondary, #6c757d);
+  --osirion-action-secondary-hover: var(--bs-secondary-dark, #5c636a);
+  --osirion-action-secondary-active: var(--bs-secondary-text-emphasis, #2b2f32);
+  --osirion-action-secondary-text: var(--bs-white, #ffffff);
+  /* Status colors */
+  --osirion-status-success: var(--bs-success, #198754);
+  --osirion-status-success-bg: var(--bs-success-bg-subtle, #d1e7dd);
+  --osirion-status-success-border: var(--bs-success-border-subtle, #a3cfbb);
+  --osirion-status-success-text: var(--bs-success-text-emphasis, #0a3622);
+  --osirion-status-warning: var(--bs-warning, #ffc107);
+  --osirion-status-warning-bg: var(--bs-warning-bg-subtle, #fff3cd);
+  --osirion-status-warning-border: var(--bs-warning-border-subtle, #ffe69c);
+  --osirion-status-warning-text: var(--bs-warning-text-emphasis, #664d03);
+  --osirion-status-danger: var(--bs-danger, #dc3545);
+  --osirion-status-danger-bg: var(--bs-danger-bg-subtle, #f8d7da);
+  --osirion-status-danger-border: var(--bs-danger-border-subtle, #f1aeb5);
+  --osirion-status-danger-text: var(--bs-danger-text-emphasis, #58151c);
+  --osirion-status-info: var(--bs-info, #0dcaf0);
+  --osirion-status-info-bg: var(--bs-info-bg-subtle, #cff4fc);
+  --osirion-status-info-border: var(--bs-info-border-subtle, #9eeaf9);
+  --osirion-status-info-text: var(--bs-info-text-emphasis, #055160);
+  /* Typography */
+  --osirion-font-family-base: var(--bs-font-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif);
+  --osirion-font-family-mono: var(--bs-font-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace);
+  --osirion-font-size-2xs: calc(var(--bs-body-font-size, 1rem) * 0.625); /* 10px */
+  --osirion-font-size-xs: calc(var(--bs-body-font-size, 1rem) * 0.75); /* 12px */
+  --osirion-font-size-sm: calc(var(--bs-body-font-size, 1rem) * 0.875); /* 14px */
+  --osirion-font-size-base: var(--bs-body-font-size, 1rem); /* 16px */
+  --osirion-font-size-lg: calc(var(--bs-body-font-size, 1rem) * 1.125); /* 18px */
+  --osirion-font-size-xl: calc(var(--bs-body-font-size, 1rem) * 1.25); /* 20px */
+  --osirion-font-size-2xl: calc(var(--bs-body-font-size, 1rem) * 1.5); /* 24px */
+  --osirion-font-size-3xl: calc(var(--bs-body-font-size, 1rem) * 1.875); /* 30px */
+  --osirion-font-size-4xl: calc(var(--bs-body-font-size, 1rem) * 2.25); /* 36px */
+  --osirion-font-size-5xl: calc(var(--bs-body-font-size, 1rem) * 3); /* 48px */
+  --osirion-font-weight-light: 300;
+  --osirion-font-weight-normal: var(--bs-font-weight-normal, 400);
+  --osirion-font-weight-medium: var(--bs-font-weight-medium, 500);
+  --osirion-font-weight-semibold: 600;
+  --osirion-font-weight-bold: var(--bs-font-weight-bold, 700);
+  --osirion-line-height-none: 1;
+  --osirion-line-height-tight: 1.25;
+  --osirion-line-height-snug: 1.375;
+  --osirion-line-height-normal: var(--bs-body-line-height, 1.5);
+  --osirion-line-height-relaxed: 1.625;
+  --osirion-line-height-loose: 2;
+  /* Spacing - map Bootstrap's spacer scale */
+  --osirion-spacing-0: 0;
+  --osirion-spacing-px: 1px;
+  --osirion-spacing-0-5: calc(var(--bs-spacer, 1rem) * 0.125); /* 2px */
+  --osirion-spacing-1: calc(var(--bs-spacer, 1rem) * 0.25); /* 4px */
+  --osirion-spacing-1-5: calc(var(--bs-spacer, 1rem) * 0.375); /* 6px */
+  --osirion-spacing-2: calc(var(--bs-spacer, 1rem) * 0.5); /* 8px */
+  --osirion-spacing-2-5: calc(var(--bs-spacer, 1rem) * 0.625); /* 10px */
+  --osirion-spacing-3: calc(var(--bs-spacer, 1rem) * 0.75); /* 12px */
+  --osirion-spacing-3-5: calc(var(--bs-spacer, 1rem) * 0.875); /* 14px */
+  --osirion-spacing-4: var(--bs-spacer, 1rem); /* 16px */
+  --osirion-spacing-5: calc(var(--bs-spacer, 1rem) * 1.25); /* 20px */
+  --osirion-spacing-6: calc(var(--bs-spacer, 1rem) * 1.5); /* 24px */
+  --osirion-spacing-8: calc(var(--bs-spacer, 1rem) * 2); /* 32px */
+  --osirion-spacing-10: calc(var(--bs-spacer, 1rem) * 2.5); /* 40px */
+  --osirion-spacing-12: calc(var(--bs-spacer, 1rem) * 3); /* 48px */
+  --osirion-spacing-16: calc(var(--bs-spacer, 1rem) * 4); /* 64px */
+  /* Shadow */
+  --osirion-shadow-sm: var(--bs-box-shadow-sm, 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075));
+  --osirion-shadow-base: var(--bs-box-shadow, 0 0.5rem 1rem rgba(0, 0, 0, 0.15));
+  --osirion-shadow-md: var(--bs-box-shadow, 0 0.5rem 1rem rgba(0, 0, 0, 0.15));
+  --osirion-shadow-lg: var(--bs-box-shadow-lg, 0 1rem 3rem rgba(0, 0, 0, 0.175));
+  --osirion-shadow-xl: calc(var(--bs-box-shadow-lg, 0 1rem 3rem rgba(0, 0, 0, 0.175)) * 1.5);
+  --osirion-shadow-2xl: calc(var(--bs-box-shadow-lg, 0 1rem 3rem rgba(0, 0, 0, 0.175)) * 2);
+  --osirion-shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+  /* Breakpoints - Bootstrap's breakpoint system */
+  --osirion-breakpoint-xs: var(--bs-breakpoint-xs, 0);
+  --osirion-breakpoint-sm: var(--bs-breakpoint-sm, 576px);
+  --osirion-breakpoint-md: var(--bs-breakpoint-md, 768px);
+  --osirion-breakpoint-lg: var(--bs-breakpoint-lg, 992px);
+  --osirion-breakpoint-xl: var(--bs-breakpoint-xl, 1200px);
+  --osirion-breakpoint-xxl: var(--bs-breakpoint-xxl, 1400px);
+  --osirion-breakpoint-xxxl: 1920px; /* Extra for ultra-wide - Bootstrap doesn't have this */
+  /* Max-width breakpoints - calculated from Bootstrap's values */
+  --osirion-breakpoint-xs-max: calc(var(--bs-breakpoint-sm, 576px) - 0.02px);
+  --osirion-breakpoint-sm-max: calc(var(--bs-breakpoint-md, 768px) - 0.02px);
+  --osirion-breakpoint-md-max: calc(var(--bs-breakpoint-lg, 992px) - 0.02px);
+  --osirion-breakpoint-lg-max: calc(var(--bs-breakpoint-xl, 1200px) - 0.02px);
+  --osirion-breakpoint-xl-max: calc(var(--bs-breakpoint-xxl, 1400px) - 0.02px);
+  --osirion-breakpoint-xxl-max: 1919.98px;
+  /* Container max-widths */
+  --osirion-container-sm: var(--bs-container-sm, 540px);
+  --osirion-container-md: var(--bs-container-md, 720px);
+  --osirion-container-lg: var(--bs-container-lg, 960px);
+  --osirion-container-xl: var(--bs-container-xl, 1140px);
+  --osirion-container-xxl: var(--bs-container-xxl, 1320px);
+  --osirion-container-xxxl: 1800px;
+  /* Transitions */
+  --osirion-transition-timing-default: ease;
+  --osirion-transition-timing-in: ease-in;
+  --osirion-transition-timing-out: ease-out;
+  --osirion-transition-timing-linear: linear;
+  --osirion-transition-duration-150: 0.15s;
+  --osirion-transition-duration-300: 0.3s;
+  /* Z-index - map to Bootstrap's standard z-indices */
+  --osirion-z-index-0: 0;
+  --osirion-z-index-10: 10;
+  --osirion-z-index-20: 1020; /* Bootstrap's sticky z-index */
+  --osirion-z-index-30: 1030; /* Bootstrap's fixed z-index */
+  --osirion-z-index-40: 1040; /* Bootstrap's modal backdrop */
+  --osirion-z-index-50: 1050; /* Bootstrap's modal */
+  /* Component specific mappings */
+  --osirion-button-radius: var(--bs-btn-border-radius, 0.375rem);
+  --osirion-input-radius: var(--bs-border-radius, 0.375rem);
+  --osirion-card-background: var(--bs-card-bg, var(--bs-body-bg));
+  --osirion-card-border-color: var(--bs-card-border-color, var(--bs-border-color));
+  --osirion-card-border-radius: var(--bs-card-border-radius, var(--bs-border-radius));
+  --osirion-card-padding: var(--bs-card-spacer-y, 1rem) var(--bs-card-spacer-x, 1rem);
+  --osirion-card-shadow: var(--bs-box-shadow, 0 0.5rem 1rem rgba(0, 0, 0, 0.15));
+  --osirion-tag-radius: var(--bs-border-radius-pill, 50rem);
+  /* Focus states - using Bootstrap's focus ring styles */
+  --osirion-focus-ring-width: var(--bs-focus-ring-width, 0.25rem);
+  --osirion-focus-ring-color: var(--bs-focus-ring-color, rgba(13, 110, 253, 0.25));
+  --osirion-focus-ring-offset: var(--bs-focus-ring-width, 0);
+  /* ScrollToTop specific mappings */
+  --osirion-scroll-background: var(--bs-primary, #0d6efd);
+  --osirion-scroll-hover-background: var(--bs-primary-dark, #0a58ca);
+  --osirion-scroll-color: var(--bs-white, #ffffff);
+  --osirion-scroll-hover-color: var(--bs-white, #ffffff);
+  --osirion-scroll-box-shadow: var(--bs-box-shadow-sm, 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075));
+  --osirion-scroll-hover-box-shadow: var(--bs-box-shadow, 0 0.5rem 1rem rgba(0, 0, 0, 0.15));
+  /* Backward compatibility support */
+  --osirion-content-max-width: 800px;
+  --osirion-color-border: var(--osirion-border-color);
+  --osirion-color-active: var(--osirion-action-primary);
+  --osirion-content-text-color: var(--osirion-text-primary);
+  --osirion-content-light-text-color: var(--osirion-text-secondary);
+  --osirion-color-background: var(--osirion-background-primary);
+  --osirion-color-background-light: var(--osirion-background-secondary);
+  --osirion-active-text: var(--osirion-action-primary);
+  --osirion-active-background: var(--osirion-status-primary-bg);
 }
 
-    /* Bootstrap Dark Mode Integration */
-    html.osirion-bootstrap-integration[data-bs-theme="dark"],
-    [data-bs-theme="dark"] html.osirion-bootstrap-integration,
-    html.osirion-bootstrap-integration[data-theme="dark"],
-    [data-theme="dark"] html.osirion-bootstrap-integration {
-        /* Primary color scale for dark mode */
-        --osirion-color-primary-50: #172b4d; /* Derived - darkest background */
-        --osirion-color-primary-100: #1e3a61; /* Derived */
-        --osirion-color-primary-200: #264b7c; /* Derived */
-        --osirion-color-primary-300: #2f5c97; /* Derived */
-        --osirion-color-primary-400: #3a6db2; /* Derived */
-        --osirion-color-primary-500: var(--bs-primary, #0d6efd);
-        --osirion-color-primary-600: var(--bs-primary-text-emphasis, #6ea8fe);
-        --osirion-color-primary-700: #8ab9fe; /* Derived */
-        --osirion-color-primary-800: #a7caff; /* Derived */
-        --osirion-color-primary-900: #c3daff; /* Derived */
-        --osirion-color-primary-950: #e0eaff; /* Derived - lightest foreground */
-        /* Neutral/Gray color scale for dark mode */
-        --osirion-color-neutral-50: #1a1d20; /* Derived from bs-dark */
-        --osirion-color-neutral-100: #212529; /* Derived from bs-dark */
-        --osirion-color-neutral-200: #2c3034; /* Derived */
-        --osirion-color-neutral-300: #373b3e; /* Derived */
-        --osirion-color-neutral-400: #495057; /* Bootstrap gray-700 */
-        --osirion-color-neutral-500: #6c757d; /* Bootstrap gray-600 */
-        --osirion-color-neutral-600: #adb5bd; /* Bootstrap gray-500 */
-        --osirion-color-neutral-700: #ced4da; /* Bootstrap gray-400 */
-        --osirion-color-neutral-800: #dee2e6; /* Bootstrap gray-300 */
-        --osirion-color-neutral-900: #e9ecef; /* Bootstrap gray-200 */
-        --osirion-color-neutral-950: #f8f9fa; /* Bootstrap gray-100 */
-        /* Success color scale for dark mode */
-        --osirion-color-success-50: #051b11; /* Derived from bs-success-bg-subtle in dark */
-        --osirion-color-success-100: #0a2f1d; /* Derived */
-        --osirion-color-success-200: #0f4429; /* Derived */
-        --osirion-color-success-300: #146034; /* Derived */
-        --osirion-color-success-400: #198754; /* Bootstrap success */
-        --osirion-color-success-500: #20ab68; /* Derived */
-        --osirion-color-success-600: #2dbd76; /* Derived */
-        --osirion-color-success-700: #3dcc84; /* Derived */
-        --osirion-color-success-800: #5bd795; /* Derived */
-        --osirion-color-success-900: #79e1a6; /* Derived */
-        --osirion-color-success-950: #98eabb; /* Derived */
-        /* Warning color scale for dark mode */
-        --osirion-color-warning-50: #332701; /* Derived from bs-warning-bg-subtle in dark */
-        --osirion-color-warning-100: #4d3b01; /* Derived */
-        --osirion-color-warning-200: #664f02; /* Derived */
-        --osirion-color-warning-300: #997603; /* Derived */
-        --osirion-color-warning-400: #cc9e04; /* Derived */
-        --osirion-color-warning-500: #ffc107; /* Bootstrap warning */
-        --osirion-color-warning-600: #ffcb38; /* Derived */
-        --osirion-color-warning-700: #ffd55f; /* Derived */
-        --osirion-color-warning-800: #ffdf86; /* Derived */
-        --osirion-color-warning-900: #ffecb0; /* Derived */
-        --osirion-color-warning-950: #fff6d7; /* Derived */
-        /* Danger color scale for dark mode */
-        --osirion-color-danger-50: #2c0b0e; /* Derived from bs-danger-bg-subtle in dark */
-        --osirion-color-danger-100: #410f15; /* Derived */
-        --osirion-color-danger-200: #58151c; /* Bootstrap danger-text-emphasis in dark */
-        --osirion-color-danger-300: #7d1f28; /* Derived */
-        --osirion-color-danger-400: #a02a33; /* Derived */
-        --osirion-color-danger-500: #c8343f; /* Derived */
-        --osirion-color-danger-600: #dc3545; /* Bootstrap danger */
-        --osirion-color-danger-700: #e35d6a; /* Derived */
-        --osirion-color-danger-800: #ea868f; /* Derived */
-        --osirion-color-danger-900: #f1aeb5; /* Derived */
-        --osirion-color-danger-950: #f8d7da; /* Bootstrap danger-bg-subtle in light */
-        /* Dark mode mappings from Bootstrap's dark theme */
-        --osirion-background-primary: var(--bs-body-bg, #212529);
-        --osirion-background-secondary: var(--bs-secondary-bg, #2b3035);
-        --osirion-background-tertiary: var(--bs-tertiary-bg, #343a40);
-        --osirion-background-muted: var(--bs-border-color-subtle, #495057);
-        --osirion-background-inverted: var(--bs-white, #ffffff);
-        --osirion-text-primary: var(--bs-body-color, #dee2e6);
-        --osirion-text-secondary: var(--bs-secondary-color, #adb5bd);
-        --osirion-text-tertiary: var(--bs-tertiary-color, #adb5bd);
-        --osirion-text-disabled: var(--bs-secondary-color, #adb5bd);
-        --osirion-border-color: var(--bs-border-color, #495057);
-        --osirion-border-color-hover: var(--bs-border-color-translucent, rgba(255, 255, 255, 0.15));
-        /* Action colors - brighter for dark mode */
-        --osirion-action-primary: var(--bs-primary, #0d6efd);
-        --osirion-action-primary-hover: var(--bs-primary-text-emphasis, #6ea8fe);
-        /* Status colors for dark themes */
-        --osirion-status-success-bg: var(--bs-success-bg-subtle, #051b11);
-        --osirion-status-success-border: var(--bs-success-border-subtle, #0f5132);
-        --osirion-status-warning-bg: var(--bs-warning-bg-subtle, #332701);
-        --osirion-status-warning-border: var(--bs-warning-border-subtle, #997404);
-        --osirion-status-danger-bg: var(--bs-danger-bg-subtle, #2c0b0e);
-        --osirion-status-danger-border: var(--bs-danger-border-subtle, #842029);
-        --osirion-status-info-bg: var(--bs-info-bg-subtle, #032830);
-        --osirion-status-info-border: var(--bs-info-border-subtle, #087990);
-        /* Shadow adjustments for dark mode */
-        --osirion-shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.2);
-        --osirion-shadow-base: 0 0.5rem 1rem rgba(0, 0, 0, 0.25);
-        --osirion-shadow-md: 0 0.5rem 1rem rgba(0, 0, 0, 0.25);
-        --osirion-shadow-lg: 0 1rem 3rem rgba(0, 0, 0, 0.3);
-        --osirion-shadow-xl: 0 1.5rem 4rem rgba(0, 0, 0, 0.35);
-        --osirion-shadow-2xl: 0 2rem 5rem rgba(0, 0, 0, 0.4);
-        --osirion-shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.15);
-        /* Component specific */
-        --osirion-card-background: var(--bs-dark, #212529);
-        --osirion-card-border-color: var(--bs-border-color, #495057);
-        /* Focus ring adjustments */
-        --osirion-focus-ring-color: rgba(13, 110, 253, 0.5);
-        /* Backward compatibility */
-        --osirion-color-background: var(--bs-body-bg, #212529);
-        --osirion-color-background-light: var(--bs-tertiary-bg, #2b3035);
-        --osirion-color: var(--bs-body-color, #dee2e6);
-        --osirion-color-light: var(--bs-secondary-color, #adb5bd);
-    }
+/* Bootstrap Dark Mode Integration */
+html.osirion-bootstrap-integration[data-bs-theme=dark],
+[data-bs-theme=dark] html.osirion-bootstrap-integration,
+html.osirion-bootstrap-integration[data-theme=dark],
+[data-theme=dark] html.osirion-bootstrap-integration {
+  /* Primary color scale for dark mode */
+  --osirion-color-primary-50: #172b4d; /* Derived - darkest background */
+  --osirion-color-primary-100: #1e3a61; /* Derived */
+  --osirion-color-primary-200: #264b7c; /* Derived */
+  --osirion-color-primary-300: #2f5c97; /* Derived */
+  --osirion-color-primary-400: #3a6db2; /* Derived */
+  --osirion-color-primary-500: var(--bs-primary, #0d6efd);
+  --osirion-color-primary-600: var(--bs-primary-text-emphasis, #6ea8fe);
+  --osirion-color-primary-700: #8ab9fe; /* Derived */
+  --osirion-color-primary-800: #a7caff; /* Derived */
+  --osirion-color-primary-900: #c3daff; /* Derived */
+  --osirion-color-primary-950: #e0eaff; /* Derived - lightest foreground */
+  /* Neutral/Gray color scale for dark mode */
+  --osirion-color-neutral-50: #1a1d20; /* Derived from bs-dark */
+  --osirion-color-neutral-100: #212529; /* Derived from bs-dark */
+  --osirion-color-neutral-200: #2c3034; /* Derived */
+  --osirion-color-neutral-300: #373b3e; /* Derived */
+  --osirion-color-neutral-400: #495057; /* Bootstrap gray-700 */
+  --osirion-color-neutral-500: #6c757d; /* Bootstrap gray-600 */
+  --osirion-color-neutral-600: #adb5bd; /* Bootstrap gray-500 */
+  --osirion-color-neutral-700: #ced4da; /* Bootstrap gray-400 */
+  --osirion-color-neutral-800: #dee2e6; /* Bootstrap gray-300 */
+  --osirion-color-neutral-900: #e9ecef; /* Bootstrap gray-200 */
+  --osirion-color-neutral-950: #f8f9fa; /* Bootstrap gray-100 */
+  /* Success color scale for dark mode */
+  --osirion-color-success-50: #051b11; /* Derived from bs-success-bg-subtle in dark */
+  --osirion-color-success-100: #0a2f1d; /* Derived */
+  --osirion-color-success-200: #0f4429; /* Derived */
+  --osirion-color-success-300: #146034; /* Derived */
+  --osirion-color-success-400: #198754; /* Bootstrap success */
+  --osirion-color-success-500: #20ab68; /* Derived */
+  --osirion-color-success-600: #2dbd76; /* Derived */
+  --osirion-color-success-700: #3dcc84; /* Derived */
+  --osirion-color-success-800: #5bd795; /* Derived */
+  --osirion-color-success-900: #79e1a6; /* Derived */
+  --osirion-color-success-950: #98eabb; /* Derived */
+  /* Warning color scale for dark mode */
+  --osirion-color-warning-50: #332701; /* Derived from bs-warning-bg-subtle in dark */
+  --osirion-color-warning-100: #4d3b01; /* Derived */
+  --osirion-color-warning-200: #664f02; /* Derived */
+  --osirion-color-warning-300: #997603; /* Derived */
+  --osirion-color-warning-400: #cc9e04; /* Derived */
+  --osirion-color-warning-500: #ffc107; /* Bootstrap warning */
+  --osirion-color-warning-600: #ffcb38; /* Derived */
+  --osirion-color-warning-700: #ffd55f; /* Derived */
+  --osirion-color-warning-800: #ffdf86; /* Derived */
+  --osirion-color-warning-900: #ffecb0; /* Derived */
+  --osirion-color-warning-950: #fff6d7; /* Derived */
+  /* Danger color scale for dark mode */
+  --osirion-color-danger-50: #2c0b0e; /* Derived from bs-danger-bg-subtle in dark */
+  --osirion-color-danger-100: #410f15; /* Derived */
+  --osirion-color-danger-200: #58151c; /* Bootstrap danger-text-emphasis in dark */
+  --osirion-color-danger-300: #7d1f28; /* Derived */
+  --osirion-color-danger-400: #a02a33; /* Derived */
+  --osirion-color-danger-500: #c8343f; /* Derived */
+  --osirion-color-danger-600: #dc3545; /* Bootstrap danger */
+  --osirion-color-danger-700: #e35d6a; /* Derived */
+  --osirion-color-danger-800: #ea868f; /* Derived */
+  --osirion-color-danger-900: #f1aeb5; /* Derived */
+  --osirion-color-danger-950: #f8d7da; /* Bootstrap danger-bg-subtle in light */
+  /* Dark mode mappings from Bootstrap's dark theme */
+  --osirion-background-primary: var(--bs-body-bg, #212529);
+  --osirion-background-secondary: var(--bs-secondary-bg, #2b3035);
+  --osirion-background-tertiary: var(--bs-tertiary-bg, #343a40);
+  --osirion-background-muted: var(--bs-border-color-subtle, #495057);
+  --osirion-background-inverted: var(--bs-white, #ffffff);
+  --osirion-text-primary: var(--bs-body-color, #dee2e6);
+  --osirion-text-secondary: var(--bs-secondary-color, #adb5bd);
+  --osirion-text-tertiary: var(--bs-tertiary-color, #adb5bd);
+  --osirion-text-disabled: var(--bs-secondary-color, #adb5bd);
+  --osirion-border-color: var(--bs-border-color, #495057);
+  --osirion-border-color-hover: var(--bs-border-color-translucent, rgba(255, 255, 255, 0.15));
+  /* Action colors - brighter for dark mode */
+  --osirion-action-primary: var(--bs-primary, #0d6efd);
+  --osirion-action-primary-hover: var(--bs-primary-text-emphasis, #6ea8fe);
+  /* Status colors for dark themes */
+  --osirion-status-success-bg: var(--bs-success-bg-subtle, #051b11);
+  --osirion-status-success-border: var(--bs-success-border-subtle, #0f5132);
+  --osirion-status-warning-bg: var(--bs-warning-bg-subtle, #332701);
+  --osirion-status-warning-border: var(--bs-warning-border-subtle, #997404);
+  --osirion-status-danger-bg: var(--bs-danger-bg-subtle, #2c0b0e);
+  --osirion-status-danger-border: var(--bs-danger-border-subtle, #842029);
+  --osirion-status-info-bg: var(--bs-info-bg-subtle, #032830);
+  --osirion-status-info-border: var(--bs-info-border-subtle, #087990);
+  /* Shadow adjustments for dark mode */
+  --osirion-shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.2);
+  --osirion-shadow-base: 0 0.5rem 1rem rgba(0, 0, 0, 0.25);
+  --osirion-shadow-md: 0 0.5rem 1rem rgba(0, 0, 0, 0.25);
+  --osirion-shadow-lg: 0 1rem 3rem rgba(0, 0, 0, 0.3);
+  --osirion-shadow-xl: 0 1.5rem 4rem rgba(0, 0, 0, 0.35);
+  --osirion-shadow-2xl: 0 2rem 5rem rgba(0, 0, 0, 0.4);
+  --osirion-shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.15);
+  /* Component specific */
+  --osirion-card-background: var(--bs-dark, #212529);
+  --osirion-card-border-color: var(--bs-border-color, #495057);
+  /* Focus ring adjustments */
+  --osirion-focus-ring-color: rgba(13, 110, 253, 0.5);
+  /* Backward compatibility */
+  --osirion-color-background: var(--bs-body-bg, #212529);
+  --osirion-color-background-light: var(--bs-tertiary-bg, #2b3035);
+  --osirion-color: var(--bs-body-color, #dee2e6);
+  --osirion-color-light: var(--bs-secondary-color, #adb5bd);
+}
 
-    /* Bootstrap Integration Helper Classes */
-    html.osirion-bootstrap-integration .osirion-button {
-        padding: var(--bs-btn-padding-y, 0.375rem) var(--bs-btn-padding-x, 0.75rem);
-        font-size: var(--bs-btn-font-size, 1rem);
-        font-weight: var(--bs-btn-font-weight, 400);
-        line-height: var(--bs-btn-line-height, 1.5);
-        border-radius: var(--bs-btn-border-radius, 0.375rem);
-    }
+/* Bootstrap Integration Helper Classes */
+html.osirion-bootstrap-integration .osirion-button {
+  padding: var(--bs-btn-padding-y, 0.375rem) var(--bs-btn-padding-x, 0.75rem);
+  font-size: var(--bs-btn-font-size, 1rem);
+  font-weight: var(--bs-btn-font-weight, 400);
+  line-height: var(--bs-btn-line-height, 1.5);
+  border-radius: var(--bs-btn-border-radius, 0.375rem);
+}
 
-    html.osirion-bootstrap-integration .osirion-card {
-        border-radius: var(--bs-border-radius, 0.375rem);
-        border: var(--bs-border-width, 1px) solid var(--bs-border-color, #dee2e6);
-        background-color: var(--bs-body-bg, #ffffff);
-        padding: var(--bs-card-spacer-y, 1rem) var(--bs-card-spacer-x, 1rem);
-    }
+html.osirion-bootstrap-integration .osirion-card {
+  border-radius: var(--bs-border-radius, 0.375rem);
+  border: var(--bs-border-width, 1px) solid var(--bs-border-color, #dee2e6);
+  background-color: var(--bs-body-bg, #ffffff);
+  padding: var(--bs-card-spacer-y, 1rem) var(--bs-card-spacer-x, 1rem);
+}
 
-    html.osirion-bootstrap-integration .osirion-input {
-        display: block;
-        width: 100%;
-        padding: var(--bs-input-padding-y, 0.375rem) var(--bs-input-padding-x, 0.75rem);
-        font-size: var(--bs-input-font-size, 1rem);
-        font-weight: var(--bs-input-font-weight, 400);
-        line-height: var(--bs-input-line-height, 1.5);
-        border: var(--bs-input-border-width, 1px) solid var(--bs-input-border-color, #dee2e6);
-        border-radius: var(--bs-input-border-radius, 0.375rem);
-        background-color: var(--bs-input-bg, #ffffff);
-        color: var(--bs-input-color, #212529);
-    }
+html.osirion-bootstrap-integration .osirion-input {
+  display: block;
+  width: 100%;
+  padding: var(--bs-input-padding-y, 0.375rem) var(--bs-input-padding-x, 0.75rem);
+  font-size: var(--bs-input-font-size, 1rem);
+  font-weight: var(--bs-input-font-weight, 400);
+  line-height: var(--bs-input-line-height, 1.5);
+  border: var(--bs-input-border-width, 1px) solid var(--bs-input-border-color, #dee2e6);
+  border-radius: var(--bs-input-border-radius, 0.375rem);
+  background-color: var(--bs-input-bg, #ffffff);
+  color: var(--bs-input-color, #212529);
+}
 
-    html.osirion-bootstrap-integration .osirion-tag {
-        display: inline-flex;
-        align-items: center;
-        padding: 0.25em 0.75em;
-        font-size: 0.75em;
-        font-weight: 600;
-        line-height: 1;
-        color: var(--bs-primary-text, #084298);
-        background-color: var(--bs-primary-bg-subtle, #cfe2ff);
-        border-radius: var(--bs-border-radius-pill, 50rem);
-    }
+html.osirion-bootstrap-integration .osirion-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25em 0.75em;
+  font-size: 0.75em;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--bs-primary-text, #084298);
+  background-color: var(--bs-primary-bg-subtle, #cfe2ff);
+  border-radius: var(--bs-border-radius-pill, 50rem);
+}

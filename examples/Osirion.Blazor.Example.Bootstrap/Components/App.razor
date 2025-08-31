@@ -13,17 +13,8 @@
     <link rel="preconnect" href="https://images.unsplash.com">
     <link rel="dns-prefetch" href="https://images.unsplash.com">
     
-    <!-- Critical: Optimized, minified CSS for above-the-fold and main UI -->
-    <link rel="stylesheet" href="@Assets["css/optimized/app.optimized.min.css"]" />
-    <link rel="stylesheet" href="@Assets["css/optimized/bootstrap.optimized.min.css"]" />
-
-    <!-- Blazor component styles: must keep for correct rendering -->
-    <link rel="preload" href="@Assets["Osirion.Blazor.Example.Bootstrap.styles.css"]" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="@Assets["Osirion.Blazor.Example.Bootstrap.styles.css"]" /></noscript>
-
-    <!-- If you still need app.min.css for legacy or extra styles, load it non-blocking -->
-    <link rel="preload" href="@Assets["app.min.css"]" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="@Assets["app.min.css"]" /></noscript>
+    <link rel="stylesheet" href="@Assets["Osirion.Blazor.Example.Bootstrap.styles.css"]" />
+    <link rel="stylesheet" href="@Assets["app.min.css"]" />
 
     <link rel="icon" type="image/png" href="favicon.png" />
 

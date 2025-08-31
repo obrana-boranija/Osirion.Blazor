@@ -34,5 +34,9 @@
   {
     "outputFile": "wwwroot/js/osirion-theme-manager.es5.js",
     "inputFile": "wwwroot/js/osirion-theme-manager.js"
+  },
+  {
+    "outputFile": "wwwroot/js/osirion-styles.es5.js",
+    "inputFile": "wwwroot/js/osirion-styles.js"
   }
 ]

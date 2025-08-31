@@ -22,5 +22,41 @@
   {
     "outputFile": "wwwroot/js/osirion-syntax-highlighter.es5.js",
     "inputFile": "wwwroot/js/osirion-syntax-highlighter.js"
+  },
+  {
+    "outputFile": "wwwroot/css/index.css",
+    "inputFile": "wwwroot/css/index.scss"
+  },
+  {
+    "outputFile": "wwwroot/css/base/base-styles.css",
+    "inputFile": "wwwroot/css/base/base-styles.scss"
+  },
+  {
+    "outputFile": "wwwroot/css/base/reset.css",
+    "inputFile": "wwwroot/css/base/reset.scss"
+  },
+  {
+    "outputFile": "wwwroot/css/base/root-variables.css",
+    "inputFile": "wwwroot/css/base/root-variables.scss"
+  },
+  {
+    "outputFile": "wwwroot/css/utilities/a11y.css",
+    "inputFile": "wwwroot/css/utilities/a11y.scss"
+  },
+  {
+    "outputFile": "wwwroot/css/utilities/buttons.css",
+    "inputFile": "wwwroot/css/utilities/buttons.scss"
+  },
+  {
+    "outputFile": "wwwroot/css/utilities/layout.css",
+    "inputFile": "wwwroot/css/utilities/layout.scss"
+  },
+  {
+    "outputFile": "wwwroot/css/utilities/motion.css",
+    "inputFile": "wwwroot/css/utilities/motion.scss"
+  },
+  {
+    "outputFile": "wwwroot/css/osirion-html-renderer.css",
+    "inputFile": "wwwroot/css/osirion-html-renderer.scss"
   }
 ]

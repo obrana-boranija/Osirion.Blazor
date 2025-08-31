@@ -119,7 +119,7 @@
                     else if (ShowCopyright)
                     {
                         <div class="osirion-footer-copyright">
-                            &copy; @DateTime.Now.Year <a class="osirion-footer-bottom-link" href="@CompanyUrl" target="@(CompanyUrl.StartsWith("http") ? "_blank" : "_self")">@CompanyName</a> - All rights reserved.
+                            &copy; @DateTime.Now.Year <a class="osirion-footer-bottom-link" href="@CompanyUrl" target="@(CompanyUrl.StartsWith("http") ? "_blank" : "_self")">@CompanyName</a> &mdash; All rights reserved.
                         </div>
                     }
                 </div>
@@ -148,3 +148,12 @@
         }
     </div>
 </footer>
+
+<style>
+    .osirion-footer-bottom-links {
+        display: flex;
+        margin-top: var(--osirion-spacing-2, .5rem);
+        gap: var(--osirion-spacing-4, 1rem);
+        flex-wrap: wrap;
+    }
+</style>

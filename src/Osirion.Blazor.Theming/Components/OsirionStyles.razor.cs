@@ -29,6 +29,16 @@ namespace Osirion.Blazor.Theming.Components
             }
         }
 
+        private string ThemeAdapter() => EffectiveOptions.Framework switch
+        {
+            CssFramework.Bootstrap => "_content/Osirion.Blazor.Theming/css/adapters/bootstrap-adapter.min.css",
+            CssFramework.FluentUI => "_content/Osirion.Blazor.Theming/css/adapters/fluentui-adapter.min.css",
+            CssFramework.MudBlazor => "_content/Osirion.Blazor.Theming/css/adapters/mudblazor-adapter.min.css",
+            CssFramework.Radzen => "_content/Osirion.Blazor.Theming/css/adapters/radzen-adapter.min.css",
+            CssFramework.None => string.Empty,
+            _ => string.Empty
+        };
+
         private string GeneratedVariables => ThemeService.GenerateThemeVariables();
         private string GetFrameworkClass => ThemeService.GetFrameworkClass();
 

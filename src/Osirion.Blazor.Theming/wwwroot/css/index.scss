@@ -3,15 +3,8 @@
 * Main entry point for Osirion's theming
 */
 /* Base themes */
-@import './themes/light-theme';
-@import './themes/dark-theme';
-
-/* Framework Adapters */
-/* Uncomment to include a specific adapter */
-/* @import '../adapters/bootstrap-adapter'; */
-/* @import '../adapters/fluentui-adapter'; */
-/* @import '../adapters/mudblazor-adapter'; */
-/* @import '../adapters/radzen-adapter'; */
+@import './themes/light-theme.scss';
+@import './themes/dark-theme.scss';
 
 /* Core theme-toggle mechanism */
 .osirion-theme-provider {

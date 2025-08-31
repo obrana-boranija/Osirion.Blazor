@@ -6,20 +6,19 @@
 @inject IOptions<ThemingOptions>? Options
 @inject IThemeService ThemeService
 
-@LoadScript("./_content/Osirion.Blazor.Theming/js/osirion-styles.js")
-
-<link rel="stylesheet" href="_content/Osirion.Blazor.Core/css/index.css" />
+<link rel="stylesheet" href="_content/Osirion.Blazor.Core/css/index.min.css" />
 
 @if (!EffectiveOptions.UseDefaultStyles)
 {
-    <link rel="stylesheet" href="_content/Osirion.Blazor.Theming/css/index.css" />
+    <link rel="stylesheet" href="@ThemeAdapter()" />
+    <link rel="stylesheet" href="_content/Osirion.Blazor.Theming/css/index.min.css" />
 }
 
 @if (!string.IsNullOrWhiteSpace(CustomVariables))
 {
     <style>
         :root {
-        @((MarkupString)CustomVariables)
+            @((MarkupString)CustomVariables)
         }
     </style>
 }
@@ -28,10 +27,12 @@
 {
     <style>
         :root {
-        @((MarkupString)GeneratedVariables)
+            @((MarkupString)GeneratedVariables)
         }
     </style>
 }
+
+@LoadScript("./_content/Osirion.Blazor.Theming/js/osirion-styles.js")
 
 <script>
     (function(){
