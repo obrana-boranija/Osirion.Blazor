@@ -10,6 +10,7 @@ using Osirion.Blazor.Theming;
 using Osirion.Blazor.Theming.Extensions;
 using Osirion.Blazor.Navigation.Extensions;
 using Osirion.Blazor.Cms.Admin.DependencyInjection;
+using Osirion.Blazor.Core.Extensions;
 
 namespace Osirion.Blazor.Internal;
 
@@ -91,6 +92,20 @@ internal class OsirionBuilder : IOsirionBuilder
     public IOsirionBuilder UseTheming(IConfiguration configuration)
     {
         Services.AddOsirionTheming(configuration);
+        return this;
+    }
+
+    /// <inheritdoc/>
+    public IOsirionBuilder UseEmailServices(Action<Core.Configuration.EmailOptions> configure)
+    {
+        Services.AddOsirionEmailServices(configure);
+        return this;
+    }
+
+    /// <inheritdoc/>
+    public IOsirionBuilder UseEmailServices(IConfiguration configuration)
+    {
+        Services.AddOsirionEmailServices(configuration);
         return this;
     }
 

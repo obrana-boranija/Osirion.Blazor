@@ -87,4 +87,18 @@ public interface IOsirionBuilder
     /// <param name="configuration">The configuration</param>
     /// <returns>The builder for chaining</returns>
     IOsirionBuilder UseTheming(IConfiguration configuration);
+
+    /// <summary>
+    /// Configures email services with specified configuration action
+    /// </summary>
+    /// <param name="configure">Action to configure email options</param>
+    /// <returns>The builder for chaining</returns>
+    IOsirionBuilder UseEmailServices(Action<Osirion.Blazor.Core.Configuration.EmailOptions> configure);
+
+    /// <summary>
+    /// Configures email services using an IConfiguration instance
+    /// </summary>
+    /// <param name="configuration">The configuration</param>
+    /// <returns>The builder for chaining</returns>
+    IOsirionBuilder UseEmailServices(IConfiguration configuration);
 }

@@ -1,0 +1,28 @@
+{
+  "Osirion": {
+    "Email": {
+      "Provider": "Smtp", // Options: "Smtp", "SendGrid", "Infobip"
+      "ToEmail": "contact@yoursite.com",
+      "FromName": "Contact Form",
+      "SubjectTemplate": "Contact Form: {subject}",
+      "Smtp": {
+        "Host": "smtp.gmail.com",
+        "Port": 587,
+        "EnableSsl": true,
+        "Username": "your-email@gmail.com",
+        "Password": "your-app-password",
+        "FromEmail": "your-email@gmail.com"
+      },
+      "SendGrid": {
+        "ApiKey": "SG.your-sendgrid-api-key",
+        "FromEmail": "noreply@yoursite.com",
+        "TemplateId": null // Optional: use SendGrid templates
+      },
+      "Infobip": {
+        "BaseUrl": "https://api.infobip.com",
+        "ApiKey": "your-infobip-api-key",
+        "FromEmail": "noreply@yoursite.com"
+      }
+    }
+  }
+}

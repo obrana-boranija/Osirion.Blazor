@@ -1,4 +1,5 @@
 ﻿@using Osirion.Blazor.Components
+@using Osirion.Blazor.Core.Models
 <OsirionFooter CompanyName="Dejan Demonjić"
                CompanyUrl="https://demonjic.com"
                ShowDivider="true"
@@ -16,32 +17,20 @@
         </div>
     </Logo>
 
-    @*     <TopContent>
-        <div class="footer-newsletter">
-            <div class="newsletter-container">
-                <h3 class="newsletter-title">Stay Updated</h3>
-                <p class="newsletter-description">
-                    Get the latest updates on Osirion.Blazor components, new features, and best practices delivered to your inbox.
-                </p>
-                <form class="newsletter-form" method="post" action="/api/newsletter">
-                    <div class="newsletter-input-group">
-                        <input type="email"
-                               name="email"
-                               class="newsletter-input"
-                               placeholder="Enter your email address"
-                               required
-                               aria-label="Email address for newsletter" />
-                        <button type="submit" class="newsletter-button">
-                            Subscribe
-                        </button>
-                    </div>
-                    <p class="newsletter-privacy">
-                        By subscribing, you agree to our <a href="/privacy" class="newsletter-link">Privacy Policy</a>
-                    </p>
-                </form>
-            </div>
-        </div>
-    </TopContent> *@
+    <LeftContent>
+        <OsirionContactInfoSection Title="Contact information"
+                                   ContactInfo="@contactInfo" />
+    </LeftContent>
+
+    <RightContent>
+        <OsirionSubscriptionCard Id="footer-newsletter-signup"
+                                 Title="Join Our Community"
+                                 Description="Choose what you'd like to receive from us."
+                                 ShowNameField="false"
+                                 ShowSubscriptionCategories="false"
+                                 ShowCategoriesAsDropdown="false"
+                                 CategoriesDropdownText="Choose your interests" />
+    </RightContent>
 
 </OsirionFooter>
 
@@ -49,6 +38,13 @@
     private IReadOnlyList<FooterSection>? Links { get; set; }
     private IReadOnlyList<FooterSocialLink>? SocialLinks { get; set; }
     private IReadOnlyList<FooterLink>? BottomLinks { get; set; }
+
+    private ContactInformation contactInfo = new()
+    {
+        Address = "Belgrade, Serbia",
+        Phone = "+381 65 248 38 33",
+        Message = "We're here to help you build amazing Blazor applications!"
+    };
 
     protected override void OnInitialized()
     {

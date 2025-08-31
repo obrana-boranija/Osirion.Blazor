@@ -1,5 +1,8 @@
 ﻿namespace Osirion.Blazor.Components;
 
+/// <summary>
+/// Specifies the available background pattern types for UI components.
+/// </summary>
 public enum BackgroundPatternType
 {
     /// <summary>

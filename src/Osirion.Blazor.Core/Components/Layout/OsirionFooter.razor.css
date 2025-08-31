@@ -1,96 +1,73 @@
-/* Component-specific theme overrides - these take priority over ALL other styles including Bootstrap integration */
+/* ===================================================================
+   Component-specific theme overrides
+   =================================================================== */
+
+/* Light theme overrides */
 [data-osirion-component-theme="light"].osirion-footer,
 .osirion-footer[data-osirion-component-theme="light"],
 .osirion-bootstrap-integration [data-osirion-component-theme="light"].osirion-footer,
 .osirion-bootstrap-integration .osirion-footer[data-osirion-component-theme="light"],
 html.osirion-bootstrap-integration [data-osirion-component-theme="light"].osirion-footer,
 html.osirion-bootstrap-integration .osirion-footer[data-osirion-component-theme="light"] {
-    /* Force Osirion light theme colors regardless of Bootstrap */
-    --osirion-background-primary: #ffffff !important;
-    --osirion-text-primary: #374151 !important;
-    --osirion-text-secondary: #6b7280 !important;
-    --osirion-border-color: #e5e7eb !important;
-    --osirion-action-primary: #2563eb !important;
-    background-color: #ffffff !important;
-    color: #374151 !important;
-    border-top-color: #e5e7eb !important;
+    --osirion-background-primary: var(--osirion-color-white) !important;
+    --osirion-text-primary: var(--osirion-color-neutral-700) !important;
+    --osirion-text-secondary: var(--osirion-color-neutral-500) !important;
+    --osirion-border-color: var(--osirion-color-neutral-200) !important;
+    --osirion-action-primary: var(--osirion-color-primary-600) !important;
+    background-color: var(--osirion-background-primary) !important;
+    color: var(--osirion-text-primary) !important;
+    border-top-color: var(--osirion-border-color) !important;
     
-    /* Override Bootstrap variables locally within this component */
-    --bs-body-bg: #ffffff !important;
-    --bs-body-color: #374151 !important;
-    --bs-border-color: #e5e7eb !important;
+    /* Bootstrap variable overrides */
+    --bs-body-bg: var(--osirion-background-primary) !important;
+    --bs-body-color: var(--osirion-text-primary) !important;
+    --bs-border-color: var(--osirion-border-color) !important;
 }
 
+/* Dark theme overrides */
 [data-osirion-component-theme="dark"].osirion-footer,
 .osirion-footer[data-osirion-component-theme="dark"],
 .osirion-bootstrap-integration [data-osirion-component-theme="dark"].osirion-footer,
 .osirion-bootstrap-integration .osirion-footer[data-osirion-component-theme="dark"],
 html.osirion-bootstrap-integration [data-osirion-component-theme="dark"].osirion-footer,
 html.osirion-bootstrap-integration .osirion-footer[data-osirion-component-theme="dark"] {
-    /* Force Osirion dark theme colors regardless of Bootstrap */
-    --osirion-background-primary: #1f2937 !important;
-    --osirion-text-primary: #f3f4f6 !important;
-    --osirion-text-secondary: #9ca3af !important;
-    --osirion-border-color: #374151 !important;
-    --osirion-action-primary: #60a5fa !important;
-    background-color: #1f2937 !important;
-    color: #f3f4f6 !important;
-    border-top-color: #374151 !important;
+    --osirion-background-primary: var(--osirion-color-neutral-800) !important;
+    --osirion-text-primary: var(--osirion-color-neutral-100) !important;
+    --osirion-text-secondary: var(--osirion-color-neutral-400) !important;
+    --osirion-border-color: var(--osirion-color-neutral-700) !important;
+    --osirion-action-primary: var(--osirion-color-primary-400) !important;
+    background-color: var(--osirion-background-primary) !important;
+    color: var(--osirion-text-primary) !important;
+    border-top-color: var(--osirion-border-color) !important;
     
-    /* Override Bootstrap variables locally within this component */
-    --bs-body-bg: #1f2937 !important;
-    --bs-body-color: #f3f4f6 !important;
-    --bs-border-color: #374151 !important;
+    /* Bootstrap variable overrides */
+    --bs-body-bg: var(--osirion-background-primary) !important;
+    --bs-body-color: var(--osirion-text-primary) !important;
+    --bs-border-color: var(--osirion-border-color) !important;
 }
 
-/* Make all footer elements respect component theme with high specificity */
-[data-osirion-component-theme="light"] .osirion-footer-section-title,
-[data-osirion-component-theme="light"] .osirion-footer-description,
-[data-osirion-component-theme="light"] .osirion-footer-copyright,
-.osirion-bootstrap-integration [data-osirion-component-theme="light"] .osirion-footer-section-title,
-.osirion-bootstrap-integration [data-osirion-component-theme="light"] .osirion-footer-description,
-.osirion-bootstrap-integration [data-osirion-component-theme="light"] .osirion-footer-copyright {
-    color: #374151 !important;
+/* Theme-specific element styles */
+[data-osirion-component-theme] .osirion-footer-section-title,
+[data-osirion-component-theme] .osirion-footer-description,
+[data-osirion-component-theme] .osirion-footer-copyright {
+    color: var(--osirion-text-primary) !important;
 }
 
-[data-osirion-component-theme="light"] .osirion-footer-link,
-.osirion-bootstrap-integration [data-osirion-component-theme="light"] .osirion-footer-link {
-    color: #6b7280 !important;
+[data-osirion-component-theme] .osirion-footer-link {
+    color: var(--osirion-text-secondary) !important;
 }
 
-[data-osirion-component-theme="light"] .osirion-footer-link:hover,
-.osirion-bootstrap-integration [data-osirion-component-theme="light"] .osirion-footer-link:hover {
-    color: #2563eb !important;
+[data-osirion-component-theme] .osirion-footer-link:hover {
+    color: var(--osirion-action-primary) !important;
 }
 
-[data-osirion-component-theme="dark"] .osirion-footer-section-title,
-[data-osirion-component-theme="dark"] .osirion-footer-description,
-[data-osirion-component-theme="dark"] .osirion-footer-copyright,
-.osirion-bootstrap-integration [data-osirion-component-theme="dark"] .osirion-footer-section-title,
-.osirion-bootstrap-integration [data-osirion-component-theme="dark"] .osirion-footer-description,
-.osirion-bootstrap-integration [data-osirion-component-theme="dark"] .osirion-footer-copyright {
-    color: #f3f4f6 !important;
+[data-osirion-component-theme] .osirion-footer-divider {
+    background-color: var(--osirion-border-color) !important;
 }
 
-[data-osirion-component-theme="dark"] .osirion-footer-link,
-.osirion-bootstrap-integration [data-osirion-component-theme="dark"] .osirion-footer-link {
-    color: #9ca3af !important;
-}
-
-[data-osirion-component-theme="dark"] .osirion-footer-link:hover,
-.osirion-bootstrap-integration [data-osirion-component-theme="dark"] .osirion-footer-link:hover {
-    color: #60a5fa !important;
-}
-
-[data-osirion-component-theme="dark"] .osirion-footer-divider,
-.osirion-bootstrap-integration [data-osirion-component-theme="dark"] .osirion-footer-divider {
-    background-color: #374151 !important;
-}
-
-[data-osirion-component-theme="light"] .osirion-footer-divider,
-.osirion-bootstrap-integration [data-osirion-component-theme="light"] .osirion-footer-divider {
-    background-color: #e5e7eb !important;
-}
+/* ===================================================================
+   Base component styles
+   =================================================================== */
 
 .osirion-footer {
     width: 100%;
@@ -98,72 +75,91 @@ html.osirion-bootstrap-integration .osirion-footer[data-osirion-component-theme=
     line-height: var(--osirion-line-height-normal, 1.5);
     border-top: 1px solid var(--osirion-border-color);
     background-color: var(--osirion-background-primary);
-    color: var(--osirion-text-primary, #374151);
+    color: var(--osirion-text-primary);
 }
 
-/* Container */
+/* ===================================================================
+   Layout structure
+   =================================================================== */
+
 .osirion-footer-container {
+    width: 100%;
+    justify-items: center;
+}
+
+.osirion-footer-main {
+    padding: var(--osirion-spacing-12, 3rem) 0;
+    display: grid;
+    width: 100%;
+    gap: 20px;
+    grid-template-columns: 1fr;
+    grid-template-areas:
+        "middle"
+        "right"
+        "left";
+}
+
+.osirion-footer-main-left-content {
+    padding: 0 var(--osirion-spacing-4, 1rem);
     width: 100%;
 }
 
-/* Content wrapper */
-.osirion-footer-content {
-    max-width: var(--osirion-container-xxl, 1320px);
+.osirion-footer-main-middle-content {
+    grid-area: middle;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.osirion-footer-main-right-content {
+    padding: 0 var(--osirion-spacing-4, 1rem);
+    width: 100%;
+}
+
+.osirion-footer-bottom-content {
+    max-width: var(--osirion-container-xl, 1140px);
     margin: 0 auto;
     padding: 0 var(--osirion-spacing-4, 1rem);
 }
 
-/* Top section */
-.osirion-footer-top {
-    padding: var(--osirion-spacing-12, 3rem) 0;
-}
+/* ===================================================================
+   Content sections
+   =================================================================== */
 
-/* Grid layout */
 .osirion-footer-grid {
     display: grid;
     gap: var(--osirion-spacing-8, 2rem);
     grid-template-columns: 1fr;
 }
 
-/* Brand section */
 .osirion-footer-brand {
-    margin-bottom: var(--osirion-spacing-4, 1rem);
+    padding: 8px;
+    width: 100%;
 }
 
-/* Logo section */
 .osirion-footer-logo {
     margin-bottom: var(--osirion-spacing-3, 0.75rem);
 }
 
-/* Description */
 .osirion-footer-description {
     font-size: var(--osirion-font-size-sm, 0.875rem);
-    color: var(--osirion-text-primary, #6b7280);
+    color: var(--osirion-text-secondary);
     margin: 0;
     max-width: 300px;
 }
 
-/* Links grid */
 .osirion-footer-links {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: var(--osirion-spacing-6, 1.5rem);
 }
 
-/* Custom top content */
-.osirion-footer-custom-top {
-    width: 100%;
-}
-
-/* Section styling */
 .osirion-footer-section-title {
     font-size: var(--osirion-font-size-base, 1rem);
     font-weight: var(--osirion-font-weight-semibold, 600);
     margin: 0 0 var(--osirion-spacing-4, 1rem);
-    color: var(--osirion-text-primary, inherit);
+    color: var(--osirion-text-primary);
 }
 
-/* List styling */
 .osirion-footer-list {
     list-style: none;
     padding: 0;
@@ -174,24 +170,46 @@ html.osirion-bootstrap-integration .osirion-footer[data-osirion-component-theme=
     margin-bottom: var(--osirion-spacing-2, 0.5rem);
 }
 
-/* Link styling */
+/* ===================================================================
+   Links and interactions
+   =================================================================== */
+
 .osirion-footer-link {
-    color: var(--osirion-text-primary, #6b7280);
+    color: var(--osirion-text-secondary);
     text-decoration: none;
     font-size: var(--osirion-font-size-sm, 0.875rem);
     transition: color var(--osirion-transition-duration-200, 0.2s) ease;
 }
 
-    .osirion-footer-link:hover {
-        color: var(--osirion-action-primary, #2563eb);
-    }
+.osirion-footer-link:hover {
+    color: var(--osirion-action-primary);
+}
 
-    .osirion-footer-link:focus {
-        outline: var(--osirion-focus-ring-width, 3px) solid var(--osirion-focus-ring-color, rgba(59, 130, 246, 0.5));
-        outline-offset: var(--osirion-focus-ring-offset, 2px);
-    }
+.osirion-footer-link:focus {
+    outline: var(--osirion-focus-ring-width, 3px) solid var(--osirion-focus-ring-color, rgba(59, 130, 246, 0.5));
+    outline-offset: var(--osirion-focus-ring-offset, 2px);
+}
 
-/* Social links */
+.osirion-footer-bottom-link {
+    color: var(--osirion-text-secondary);
+    text-decoration: none;
+    font-size: var(--osirion-font-size-sm, 0.875rem);
+    transition: color var(--osirion-transition-duration-200, 0.2s) ease;
+}
+
+.osirion-footer-bottom-link:hover {
+    color: var(--osirion-action-primary);
+}
+
+.osirion-footer-bottom-link:focus {
+    outline: var(--osirion-focus-ring-width, 3px) solid var(--osirion-focus-ring-color, rgba(59, 130, 246, 0.5));
+    outline-offset: var(--osirion-focus-ring-offset, 2px);
+}
+
+/* ===================================================================
+   Social links
+   =================================================================== */
+
 .osirion-footer-social {
     width: 100%;
 }
@@ -209,30 +227,33 @@ html.osirion-bootstrap-integration .osirion-footer[data-osirion-component-theme=
     width: 40px;
     height: 40px;
     border-radius: var(--osirion-radius-full, 9999px);
-    background-color: var(--osirion-background-primary, #e5e7eb);
-    color: var(--osirion-text-primary, #374151);
+    background-color: var(--osirion-background-secondary);
+    color: var(--osirion-text-primary);
     text-decoration: none;
     transition: all var(--osirion-transition-duration-200, 0.2s) ease;
 }
 
-    .osirion-footer-social-link:hover {
-        background-color: var(--osirion-action-primary, #2563eb);
-        transform: translateY(-2px);
-    }
+.osirion-footer-social-link:hover {
+    background-color: var(--osirion-action-primary);
+    color: var(--osirion-action-primary-text);
+    transform: translateY(-2px);
+}
 
-    .osirion-footer-social-link:focus {
-        outline: var(--osirion-focus-ring-width, 3px) solid var(--osirion-focus-ring-color, rgba(59, 130, 246, 0.5));
-        outline-offset: var(--osirion-focus-ring-offset, 2px);
-    }
+.osirion-footer-social-link:focus {
+    outline: var(--osirion-focus-ring-width, 3px) solid var(--osirion-focus-ring-color, rgba(59, 130, 246, 0.5));
+    outline-offset: var(--osirion-focus-ring-offset, 2px);
+}
 
-/* Divider */
+/* ===================================================================
+   Footer sections
+   =================================================================== */
+
 .osirion-footer-divider {
     height: 1px;
-    background-color: var(--osirion-border-color, #e5e7eb);
+    background-color: var(--osirion-border-color);
     margin: 0;
 }
 
-/* Bottom section */
 .osirion-footer-bottom {
     padding: var(--osirion-spacing-6, 1.5rem) 0;
 }
@@ -245,43 +266,28 @@ html.osirion-bootstrap-integration .osirion-footer[data-osirion-component-theme=
     gap: var(--osirion-spacing-4, 1rem);
 }
 
-/* Copyright */
 .osirion-footer-copyright {
     font-size: var(--osirion-font-size-sm, 0.875rem);
-    color: var(--osirion-text-primary, #6b7280);
+    color: var(--osirion-text-secondary);
 }
 
-/* Bottom links */
 .osirion-footer-bottom-links {
     display: flex;
     gap: var(--osirion-spacing-4, 1rem);
     flex-wrap: wrap;
 }
 
-.osirion-footer-bottom-link {
-    color: var(--osirion-text-primary, #6b7280);
-    text-decoration: none;
-    font-size: var(--osirion-font-size-sm, 0.875rem);
-    transition: color var(--osirion-transition-duration-200, 0.2s) ease;
-}
-
-    .osirion-footer-bottom-link:hover {
-        color: var(--osirion-action-primary, #2563eb);
-    }
-
-    .osirion-footer-bottom-link:focus {
-        outline: var(--osirion-focus-ring-width, 3px) solid var(--osirion-focus-ring-color, rgba(59, 130, 246, 0.5));
-        outline-offset: var(--osirion-focus-ring-offset, 2px);
-    }
-
-/* Extra content section */
 .osirion-footer-extra {
     padding: var(--osirion-spacing-8, 2rem) 0;
-    background-color: rgba(0, 0, 0, 0.05);
+    background-color: var(--osirion-background-tertiary);
 }
 
-/* Variant: Minimal */
-.osirion-footer-minimal .osirion-footer-top {
+/* ===================================================================
+   Component variants
+   =================================================================== */
+
+/* Minimal variant */
+.osirion-footer-minimal .osirion-footer-main {
     padding: var(--osirion-spacing-6, 1.5rem) 0;
 }
 
@@ -289,33 +295,33 @@ html.osirion-bootstrap-integration .osirion-footer[data-osirion-component-theme=
     padding: var(--osirion-spacing-4, 1rem) 0;
 }
 
-/* Variant: Centered */
+/* Centered variant */
 .osirion-footer-centered {
     text-align: center;
 }
 
-    .osirion-footer-centered .osirion-footer-grid {
-        justify-items: center;
-    }
+.osirion-footer-centered .osirion-footer-grid {
+    justify-items: center;
+}
 
-    .osirion-footer-centered .osirion-footer-links {
-        justify-content: center;
-    }
+.osirion-footer-centered .osirion-footer-links {
+    justify-content: center;
+}
 
-    .osirion-footer-centered .osirion-footer-social-links {
-        justify-content: center;
-    }
+.osirion-footer-centered .osirion-footer-social-links {
+    justify-content: center;
+}
 
-    .osirion-footer-centered .osirion-footer-bottom-content {
-        justify-content: center;
-        flex-direction: column;
-    }
+.osirion-footer-centered .osirion-footer-bottom-content {
+    justify-content: center;
+    flex-direction: column;
+}
 
-    .osirion-footer-centered .osirion-footer-description {
-        margin: 0 auto;
-    }
+.osirion-footer-centered .osirion-footer-description {
+    margin: 0 auto;
+}
 
-/* Grid layouts */
+/* Grid column variants */
 .osirion-footer-grid-2-column .osirion-footer-grid {
     grid-template-columns: 1fr 1fr;
 }
@@ -328,38 +334,10 @@ html.osirion-bootstrap-integration .osirion-footer[data-osirion-component-theme=
     grid-template-columns: 1fr 1fr 1fr 1fr;
 }
 
-/* Dark theme adjustments */
-.osirion-footer-theme-dark .osirion-footer-link {
-    color: var(--osirion-color-neutral-400, #9ca3af);
-}
+/* ===================================================================
+   Positioning variants
+   =================================================================== */
 
-    .osirion-footer-theme-dark .osirion-footer-link:hover {
-        color: var(--osirion-color-primary-400, #60a5fa);
-    }
-
-.osirion-footer-theme-dark .osirion-footer-social-link {
-    background-color: var(--osirion-color-neutral-800, #1f2937);
-    color: var(--osirion-color-neutral-300, #d1d5db);
-}
-
-    .osirion-footer-theme-dark .osirion-footer-social-link:hover {
-        background-color: var(--osirion-color-primary-500, #2563eb);
-        color: white;
-    }
-
-.osirion-footer-theme-dark .osirion-footer-divider {
-    background-color: var(--osirion-color-neutral-800, #1f2937);
-}
-
-.osirion-footer-theme-dark .osirion-footer-copyright {
-    color: var(--osirion-color-neutral-500, #6b7280);
-}
-
-.osirion-footer-theme-dark .osirion-footer-extra {
-    background-color: rgba(255, 255, 255, 0.03);
-}
-
-/* Docked footer styles */
 .osirion-footer-docked-fixed {
     position: fixed;
     bottom: 0;
@@ -368,82 +346,102 @@ html.osirion-bootstrap-integration .osirion-footer[data-osirion-component-theme=
     z-index: var(--osirion-z-index-20, 20);
 }
 
-/* Add padding to body when using fixed footer */
 body:has(.osirion-footer-docked-fixed) {
     padding-bottom: var(--osirion-footer-height, 300px);
 }
 
-/* Sticky footer - requires proper page layout */
 .osirion-footer-docked-sticky {
     margin-top: auto;
 }
 
-/* Responsive design using Osirion breakpoint variables */
-@media (min-width: var(--osirion-breakpoint-sm)) {
-    .osirion-footer-content {
-        padding: 0 var(--osirion-spacing-6, 1.5rem);
-    }
-}
+/* ===================================================================
+   Responsive design
+   =================================================================== */
 
-@media (min-width: var(--osirion-breakpoint-md)) {
-    .osirion-footer-grid-auto .osirion-footer-grid {
-        grid-template-columns: 1.5fr 2fr;
-        gap: var(--osirion-spacing-10, 2.5rem);
+@media (min-width: 1921px) {
+    .osirion-footer-main {
+        grid-template-columns: 1fr var(--osirion-container-xxl, 1320px) 1fr;
+        grid-template-areas: "left middle right";
     }
 
     .osirion-footer-brand {
-        margin-bottom: 0;
+        max-width: var(--osirion-container-xxl, 1320px);
+        width: var(--osirion-container-xxl, 1320px);
     }
 
-    .osirion-footer-links {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    }
-}
-
-@media (min-width: var(--osirion-breakpoint-lg)) {
-    .osirion-footer-grid-auto .osirion-footer-grid {
-        grid-template-columns: 1.5fr 2fr 1fr;
+    .osirion-footer-main-left-content {
+        justify-items: end;
+        padding: 0;
     }
 
-    .osirion-footer-content {
-        padding: 0 var(--osirion-spacing-8, 2rem);
+    .osirion-footer-main-right-content {
+        justify-items: start;
+        padding: 0;
     }
 }
 
-@media (min-width: var(--osirion-breakpoint-xl)) {
-    .osirion-footer-grid-auto .osirion-footer-grid {
-        grid-template-columns: 1fr 2fr 1fr 1fr;
+@media (max-width: 1920.97px) {
+    .osirion-footer-main {
+        grid-template-columns: 1fr var(--osirion-container-xl, 1440px) 1fr;
+        grid-template-areas: "left middle right";
+    }
+
+    .osirion-footer-main-left-content {
+        width: 100%;
+        justify-items: end;
+        padding: 0 0 0 8px;
+    }
+
+    .osirion-footer-main-right-content {
+        width: 100%;
+        justify-items: start;
+        padding: 0 8px 0 0;
     }
 }
 
-@media (max-width: var(--osirion-breakpoint-md-max)) {
-    .osirion-footer-grid {
-        gap: var(--osirion-spacing-6, 1.5rem);
+@media (max-width: 1440.97px) {
+    .osirion-footer-main {
+        padding: 0 32px;
+        grid-template-columns: 1fr 1fr;
+        grid-template-areas:
+            "middle middle"
+            "left right";
     }
 
-    .osirion-footer-links {
+    .osirion-footer-main-left-content {
+        justify-items: start;
+        padding: 0;
+    }
+
+    .osirion-footer-main-middle-content {
+        padding: 8px 0;
+    }
+
+    .osirion-footer-main-right-content {
+        justify-items: end;
+        padding: 0;
+    }
+
+    .osirion-footer-brand {
+        width: 100%;
+        padding: 8px 32px;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .osirion-footer-main {
         grid-template-columns: 1fr;
-        gap: var(--osirion-spacing-4, 1rem);
+        grid-template-areas:
+            "middle"
+            "right"
+            "left";
     }
 
-    .osirion-footer-brand {
-        text-align: center;
+    .osirion-footer-main-left-content,
+    .osirion-footer-main-right-content {
+        justify-items: start;
     }
 
-    .osirion-footer-description {
-        margin: 0 auto;
-    }
-
-    .osirion-footer-social {
-        text-align: center;
-    }
-
-    .osirion-footer-social-links {
-        justify-content: center;
-    }
-}
-
-@media (max-width: var(--osirion-breakpoint-sm-max)) {
     .osirion-footer-bottom-content {
         flex-direction: column;
         text-align: center;
@@ -452,20 +450,18 @@ body:has(.osirion-footer-docked-fixed) {
     .osirion-footer-bottom-links {
         justify-content: center;
     }
-
-    .osirion-footer-top {
-        padding: var(--osirion-spacing-8, 2rem) 0;
-    }
 }
 
-/* Print styles */
+/* ===================================================================
+   Accessibility and preferences
+   =================================================================== */
+
 @media print {
     .osirion-footer {
         display: none;
     }
 }
 
-/* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
     .osirion-footer-link,
     .osirion-footer-social-link,
@@ -473,7 +469,7 @@ body:has(.osirion-footer-docked-fixed) {
         transition: none;
     }
 
-        .osirion-footer-social-link:hover {
-            transform: none;
-        }
+    .osirion-footer-social-link:hover {
+        transform: none;
+    }
 }

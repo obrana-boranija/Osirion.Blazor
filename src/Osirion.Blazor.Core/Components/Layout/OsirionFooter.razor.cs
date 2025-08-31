@@ -44,10 +44,16 @@ public partial class OsirionFooter
     public RenderFragment? Logo { get; set; }
 
     /// <summary>
-    /// Gets or sets additional content for the top section (e.g., newsletter form)
+    /// Gets or sets additional content for the left section (e.g., newsletter form)
     /// </summary>
     [Parameter]
-    public RenderFragment? TopContent { get; set; }
+    public RenderFragment? LeftContent { get; set; }
+
+    /// <summary>
+    /// Gets or sets additional content for the left section (e.g., contact info)
+    /// </summary>
+    [Parameter]
+    public RenderFragment? RightContent { get; set; }
 
     /// <summary>
     /// Gets or sets the footer link sections

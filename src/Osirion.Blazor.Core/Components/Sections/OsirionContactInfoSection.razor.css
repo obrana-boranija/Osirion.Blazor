@@ -1,0 +1,142 @@
+/* 
+ * OsirionContactInfoSection Component Styles
+ * Dedicated component for displaying contact information
+ */
+
+/* ========== CONTAINER ========== */
+.osirion-contact-info-section {
+    --osirion-contact-accent: var(--osirion-action-primary, #d1d5db);
+    --osirion-contact-spacing: 0;
+    --osirion-contact-text: inherit;
+    --osirion-contact-text-muted: inherit;
+    padding: var(--osirion-contact-spacing);
+    background-color: var(--osirion-contact-bg);
+    display: flex;
+    flex-direction: column;
+}
+
+/* ========== TITLE AND DESCRIPTION ========== */
+.osirion-contact-info-title {
+    font-size: var(--osirion-font-size-xl, 1.25rem);
+    font-weight: var(--osirion-font-weight-semibold, 600);
+    color: var(--osirion-contact-text);
+    margin: 0 0 var(--osirion-spacing-2, 0.5rem);
+    line-height: 1.2;
+}
+
+.osirion-contact-info-description {
+    color: var(--osirion-contact-text-muted);
+    margin: 0 0 var(--osirion-spacing-6, 1.5rem);
+    font-size: var(--osirion-font-size-base, 1rem);
+    line-height: 1.5;
+}
+
+/* ========== CONTACT INFO LIST ========== */
+.osirion-contact-info-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--osirion-spacing-4, 1rem);
+}
+
+.osirion-contact-info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--osirion-spacing-3, 0.75rem);
+}
+
+.osirion-contact-info-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: var(--osirion-contact-accent);
+    flex-shrink: 0;
+    margin-top: 0.125rem;
+}
+
+.osirion-contact-info-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.osirion-contact-info-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--osirion-spacing-1, 0.25rem);
+}
+
+.osirion-contact-info-label {
+    font-size: var(--osirion-font-size-sm, 0.875rem);
+    font-weight: var(--osirion-font-weight-medium, 500);
+    color: var(--osirion-contact-text);
+    line-height: 1.4;
+}
+
+.osirion-contact-info-value {
+    color: var(--osirion-contact-text-muted);
+    font-size: var(--osirion-font-size-sm, 0.875rem);
+    line-height: 1.4;
+}
+
+.osirion-contact-link {
+    color: var(--osirion-contact-text-muted);
+    text-decoration: none;
+    transition: color 0.2s ease-in-out;
+}
+
+.osirion-contact-link:hover {
+    color: var(--osirion-contact-accent);
+    text-decoration: underline;
+}
+
+/* ========== RESPONSIVE DESIGN ========== */
+@media (max-width: 768px) {
+    .osirion-contact-info-section {
+        padding: var(--osirion-spacing-4, 1rem);
+    }
+}
+
+@media (max-width: 480px) {
+    .osirion-contact-info-title {
+        font-size: var(--osirion-font-size-lg, 1.125rem);
+    }
+    
+    .osirion-contact-info-section {
+        padding: var(--osirion-spacing-3, 0.75rem);
+    }
+}
+
+/* ========== ACCESSIBILITY ENHANCEMENTS ========== */
+@media (prefers-reduced-motion: reduce) {
+    .osirion-contact-link {
+        transition: none;
+    }
+}
+
+@media (prefers-contrast: high) {
+    .osirion-contact-info-section {
+        --osirion-contact-accent: #0000ff;
+    }
+}
+
+/* ========== FOCUS STYLES ========== */
+.osirion-contact-link:focus-visible {
+    outline: 2px solid var(--osirion-focus-ring-color, rgba(59, 130, 246, 0.5));
+    outline-offset: 2px;
+}
+
+/* ========== PRINT STYLES ========== */
+@media print {
+    .osirion-contact-info-section {
+        background: transparent !important;
+        color: #000 !important;
+    }
+    
+    .osirion-contact-info-title,
+    .osirion-contact-info-label {
+        color: #000 !important;
+    }
+    
+    .osirion-contact-info-value,
+    .osirion-contact-link {
+        color: #333 !important;
+    }
+}

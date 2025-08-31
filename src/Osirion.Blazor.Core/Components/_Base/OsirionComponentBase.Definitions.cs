@@ -404,9 +404,9 @@ public abstract partial class OsirionComponentBase : ComponentBase
         return Framework switch
         {
             CssFramework.Bootstrap => "form-check-input",
-            CssFramework.FluentUI => "osirion-checkbox",
-            CssFramework.MudBlazor => "mud-checkbox",
-            CssFramework.Radzen => "rz-chkbox",
+            CssFramework.FluentUI => "osirion-checkbox osirion-fluent-checkbox",
+            CssFramework.MudBlazor => "mud-checkbox mud-checkbox-input",
+            CssFramework.Radzen => "rz-chkbox rz-chkbox-box",
             _ => "osirion-checkbox"
         };
     }
@@ -514,6 +514,61 @@ public abstract partial class OsirionComponentBase : ComponentBase
             CssFramework.Radzen => "rz-message",
             _ => "osirion-alert"
         };
+    }
+
+    /// <summary>
+    /// Gets the CSS class for an alert with a specific variant
+    /// </summary>
+    /// <param name="variant">The alert variant</param>
+    /// <returns>CSS class string for the alert with variant</returns>
+    protected virtual string GetAlertClass(Severity variant)
+    {
+        var baseClass = GetAlertClass();
+        var variantClass = Framework switch
+        {
+            CssFramework.Bootstrap => variant switch
+            {
+                Severity.Success => "alert-success",
+                Severity.Error => "alert-danger",
+                Severity.Warning => "alert-warning",
+                Severity.Info => "alert-info",
+                _ => "alert-info"
+            },
+            CssFramework.FluentUI => variant switch
+            {
+                Severity.Success => "osirion-alert-success",
+                Severity.Error => "osirion-alert-error",
+                Severity.Warning => "osirion-alert-warning",
+                Severity.Info => "osirion-alert-info",
+                _ => "osirion-alert-info"
+            },
+            CssFramework.MudBlazor => variant switch
+            {
+                Severity.Success => "mud-alert-text-success",
+                Severity.Error => "mud-alert-text-error",
+                Severity.Warning => "mud-alert-text-warning",
+                Severity.Info => "mud-alert-text-info",
+                _ => "mud-alert-text-info"
+            },
+            CssFramework.Radzen => variant switch
+            {
+                Severity.Success => "rz-message-success",
+                Severity.Error => "rz-message-error",
+                Severity.Warning => "rz-message-warning",
+                Severity.Info => "rz-message-info",
+                _ => "rz-message-info"
+            },
+            _ => variant switch
+            {
+                Severity.Success => "osirion-alert-success",
+                Severity.Error => "osirion-alert-error",
+                Severity.Warning => "osirion-alert-warning",
+                Severity.Info => "osirion-alert-info",
+                _ => "osirion-alert-info"
+            }
+        };
+
+        return $"{baseClass} {variantClass}";
     }
 
     /// <summary>
@@ -634,6 +689,23 @@ public abstract partial class OsirionComponentBase : ComponentBase
             CssFramework.Radzen => "rz-accordion",
             _ => "osirion-accordion"
         };
+    }
+
+    /// <summary>
+    /// Gets the CSS class for a text area
+    /// </summary>
+    protected virtual string GetTextAreaClass()
+    {
+        var baseClass = Framework switch
+        {
+            CssFramework.Bootstrap => "form-control",
+            CssFramework.FluentUI => "osirion-textarea osirion-fluent-textarea",
+            CssFramework.MudBlazor => "mud-input-control",
+            CssFramework.Radzen => "rz-textbox",
+            _ => "osirion-textarea"
+        };
+
+        return $"{baseClass} osirion-contact-textarea";
     }
 
 
