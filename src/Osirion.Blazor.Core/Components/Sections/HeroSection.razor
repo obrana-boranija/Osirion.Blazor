@@ -84,7 +84,8 @@
                          alt="@(ImageAlt ?? Title ?? "Hero image")"
                          class="osirion-hero-featured-image"
                          width="@GetImageSize().Width"
-                         height="@GetImageSize().Heigth"/>
+                         height="@GetImageSize().Heigth"
+                         fetchpriority="high" />
                 </div>
             }
         </div>
