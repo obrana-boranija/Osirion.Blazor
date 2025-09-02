@@ -18,8 +18,15 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{A0B979F7-918D-4A47-ABD1-A564E98807F7}"
 	ProjectSection(SolutionItems) = preProject
 		docs\ANALYTICS.md = docs\ANALYTICS.md
+		docs\API_REFERENCE.md = docs\API_REFERENCE.md
+		docs\ARCHITECTURE.md = docs\ARCHITECTURE.md
 		docs\BREADCRUMBS.md = docs\BREADCRUMBS.md
+		docs\CONTACT_FORM.md = docs\CONTACT_FORM.md
+		docs\CONTACT_FORM_EMAIL.md = docs\CONTACT_FORM_EMAIL.md
+		docs\CONTACT_INFO_SECTION.md = docs\CONTACT_INFO_SECTION.md
 		docs\COOKIE_CONSENT.md = docs\COOKIE_CONSENT.md
+		docs\EXAMPLES.md = docs\EXAMPLES.md
+		docs\GETTING_STARTED.md = docs\GETTING_STARTED.md
 		GITHUB_CMS.md = GITHUB_CMS.md
 		docs\GITHUB_CMS.md = docs\GITHUB_CMS.md
 		docs\HERO_SECTION.md = docs\HERO_SECTION.md
@@ -28,33 +35,58 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{A0B979F7-9
 		docs\MIGRATION.md = docs\MIGRATION.md
 		docs\NAVIGATION.md = docs\NAVIGATION.md
 		docs\performance-optimizations.md = docs\performance-optimizations.md
+		docs\PERFORMANCE.md = docs\PERFORMANCE.md
 		docs\QUICK_REFERENCE.md = docs\QUICK_REFERENCE.md
+		docs\README.md = docs\README.md
 		docs\STYLING.md = docs\STYLING.md
+		docs\SUBSCRIPTION_CARD.md = docs\SUBSCRIPTION_CARD.md
 		THEMING.md = THEMING.md
+		docs\TROUBLESHOOTING.md = docs\TROUBLESHOOTING.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{B0489088-7C87-4C92-B6D1-73B072183229}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "content", "content", "{81FA36B2-1A35-4FD2-83BD-72E42C747375}"
 	ProjectSection(SolutionItems) = preProject
-		robots.txt = robots.txt
 		content\robots.txt = content\robots.txt
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "blog", "blog", "{926AB9FA-2E20-42C4-A890-92A4D529A26F}"
 	ProjectSection(SolutionItems) = preProject
 		examples\content\blog\analytics-integration-in-blazor.md = examples\content\blog\analytics-integration-in-blazor.md
+		content\en\blog\analytics-integration-in-blazor.md = content\en\blog\analytics-integration-in-blazor.md
+		content\en\blog\blazor-seo-ssr-ssg-checklist.md = content\en\blog\blazor-seo-ssr-ssg-checklist.md
 		examples\content\blog\enhanced-navigation-interceptor.md = examples\content\blog\enhanced-navigation-interceptor.md
+		content\en\blog\enhanced-navigation-interceptor.md = content\en\blog\enhanced-navigation-interceptor.md
+		content\en\blog\gdpr-cookie-consent-blazor.md = content\en\blog\gdpr-cookie-consent-blazor.md
 		examples\content\blog\github-cms-components.md = examples\content\blog\github-cms-components.md
+		content\en\blog\github-cms-components.md = content\en\blog\github-cms-components.md
 		examples\content\blog\github-cms-with-blazor.md = examples\content\blog\github-cms-with-blazor.md
+		content\en\blog\github-cms-with-blazor.md = content\en\blog\github-cms-with-blazor.md
+		content\en\blog\localization-for-blazor-content-sites.md = content\en\blog\localization-for-blazor-content-sites.md
+		content\en\blog\modern-hero-sections-blazor.md = content\en\blog\modern-hero-sections-blazor.md
 		examples\content\blog\navigation-components.md = examples\content\blog\navigation-components.md
+		content\en\blog\navigation-components.md = content\en\blog\navigation-components.md
+		content\en\blog\osirion-blazor-v1-5-release-notes.md = content\en\blog\osirion-blazor-v1-5-release-notes.md
+		content\en\blog\performance-tuning-content-heavy-blazor-sites.md = content\en\blog\performance-tuning-content-heavy-blazor-sites.md
+		content\en\blog\structuring-content-repositories.md = content\en\blog\structuring-content-repositories.md
 		content\en\docs\_index.md = content\en\docs\_index.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{05C1A178-E91A-4900-8CEC-17550109C491}"
 	ProjectSection(SolutionItems) = preProject
+		content\en\docs\component-architecture-design-principles.md = content\en\docs\component-architecture-design-principles.md
+		content\en\docs\content-structure-and-frontmatter.md = content\en\docs\content-structure-and-frontmatter.md
 		examples\content\docs\getting-started-with-osirion-blazor.md = examples\content\docs\getting-started-with-osirion-blazor.md
+		content\en\docs\getting-started-with-osirion-blazor.md = content\en\docs\getting-started-with-osirion-blazor.md
 		examples\content\docs\github-cms-documentation.md = examples\content\docs\github-cms-documentation.md
+		content\en\docs\github-cms-documentation.md = content\en\docs\github-cms-documentation.md
+		content\en\docs\github-cms-getting-started.md = content\en\docs\github-cms-getting-started.md
+		content\en\docs\localization-in-osirion.md = content\en\docs\localization-in-osirion.md
+		content\en\docs\migration-v1-5.md = content\en\docs\migration-v1-5.md
+		content\en\docs\osirion-analytics.md = content\en\docs\osirion-analytics.md
+		content\en\docs\osirion-styling-theming.md = content\en\docs\osirion-styling-theming.md
+		content\en\docs\_index.md = content\en\docs\_index.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Osirion.Blazor.Core.Tests", "tests\Osirion.Blazor.Core.Tests\Osirion.Blazor.Core.Tests.csproj", "{5DBBB779-0C53-448B-ABD5-5973DCBE8BB8}"
@@ -153,6 +185,19 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{50798ADA-D546-47B4-973E-EDC005FFE345}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{4A94A3E4-8B03-4308-BD96-835621D9CD2A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "components", "components", "{897BE918-1F2C-4BA2-88CE-F273821C4C2E}"
+	ProjectSection(SolutionItems) = preProject
+		docs\components\README.md = docs\components\README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "testing", "testing", "{A39CE82F-4CE5-4B05-BE21-8092D508086F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "analytics", "analytics", "{BF539E60-BD06-4955-B23E-A0F3C8CB1C4E}"
+	ProjectSection(SolutionItems) = preProject
+		docs\components\analytics\AnalyticsComponents.md = docs\components\analytics\AnalyticsComponents.md
+		docs\components\analytics\Trackers.md = docs\components\analytics\Trackers.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -303,6 +348,9 @@ Global
 		{430F1EE9-D0B1-420C-A834-E104B0E2F58F} = {B0489088-7C87-4C92-B6D1-73B072183229}
 		{C283FF5E-3298-4D01-B0B1-275522B42B50} = {81FA36B2-1A35-4FD2-83BD-72E42C747375}
 		{4A94A3E4-8B03-4308-BD96-835621D9CD2A} = {50798ADA-D546-47B4-973E-EDC005FFE345}
+		{897BE918-1F2C-4BA2-88CE-F273821C4C2E} = {05C1A178-E91A-4900-8CEC-17550109C491}
+		{A39CE82F-4CE5-4B05-BE21-8092D508086F} = {05C1A178-E91A-4900-8CEC-17550109C491}
+		{BF539E60-BD06-4955-B23E-A0F3C8CB1C4E} = {897BE918-1F2C-4BA2-88CE-F273821C4C2E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {42605F7F-9786-49E4-AAB7-7D8A913C42D8}
