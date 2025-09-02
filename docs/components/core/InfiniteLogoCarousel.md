@@ -1,17 +1,38 @@
 # InfiniteLogoCarousel
 
-Purpose
-Showcase partner/client logos in an infinite, CSS-only marquee with optional grayscale and direction.
+CSS-only continuous logo carousel. SSR-safe, no JavaScript required. Supports dual light/dark logos, pause on hover, and performance controls.
+
+Basic usage
+
+```razor
+@using Osirion.Blazor.Components
+
+<InfiniteLogoCarousel Title="Our Partners" />
+```
+
+Custom logos
+
+```razor
+<InfiniteLogoCarousel 
+    Title="Technology Stack"
+    AnimationDuration="45"
+    Direction="AnimationDirection.Left"
+    CustomLogos="@logos" />
+
+@code {
+    private List<LogoItem> logos = new()
+    {
+        new("/img/a.svg", "Brand A", Url: "https://a.example"),
+        new("/img/b.svg", "Brand B", Url: "https://b.example", EnableGrayscale: false)
+    };
+}
+```
 
 Key parameters
-- Title, SectionTitle (aria-label)
-- CustomLogos: List<LogoItem> with ImageUrl, AltText, optional LightImageUrl/DarkImageUrl, Url, Target, rel flags
-- AnimationDuration (seconds), Direction (Left/Right), PauseOnHover
-- EnableGrayscale (default true)
-- LogoWidth, LogoHeight, LogoGap
-- MaxVisibleLogos (performance)
 
-Notes
-- Emits osirion-infinite-carousel plus modifiers for grayscale, direction and hover pause
-- Provide dual logos for light/dark themes using LightImageUrl/DarkImageUrl
-- Link attributes default to nofollow and noopener for external URLs.
+- AnimationDuration: int = 60.
+- Direction: AnimationDirection (Right|Left).
+- PauseOnHover: bool = true.
+- LogoWidth, LogoHeight, LogoGap: sizing.
+- MaxVisibleLogos: int? limit for performance.
+- CustomLogos: List<LogoItem>.
