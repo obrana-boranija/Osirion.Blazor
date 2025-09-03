@@ -1,0 +1,146 @@
+﻿[
+    {
+        "Component":  "_Imports",
+        "RazorPath":  "C:\\Users\\dejan\\source\\repos\\obrana-boranija\\Osirion.Blazor\\src\\Osirion.Blazor\\_Imports.razor"
+    },
+    {
+        "Component":  "ClarityTracker",
+        "RazorPath":  "C:\\Users\\dejan\\source\\repos\\obrana-boranija\\Osirion.Blazor\\src\\Osirion.Blazor.Analytics\\Components\\ClarityTracker.razor"
+    },
+    {
+        "Component":  "GA4Tracker",
+        "RazorPath":  "C:\\Users\\dejan\\source\\repos\\obrana-boranija\\Osirion.Blazor\\src\\Osirion.Blazor.Analytics\\Components\\GA4Tracker.razor"
+    },
+    {
+        "Component":  "MatomoTracker",
+        "RazorPath":  "C:\\Users\\dejan\\source\\repos\\obrana-boranija\\Osirion.Blazor\\src\\Osirion.Blazor.Analytics\\Components\\MatomoTracker.razor"
+    },
+    {
+        "Component":  "YandexMetricaTracker",
+        "RazorPath":  "C:\\Users\\dejan\\source\\repos\\obrana-boranija\\Osirion.Blazor\\src\\Osirion.Blazor.Analytics\\Components\\YandexMetricaTracker.razor"
+    },
+    {
+        "Component":  "_Imports",
+        "RazorPath":  "C:\\Users\\dejan\\source\\repos\\obrana-boranija\\Osirion.Blazor\\src\\Osirion.Blazor.Analytics\\_Imports.razor"
+    },
+    {
+        "Component":  "_Imports",
+        "RazorPath":  "C:\\Users\\dejan\\source\\repos\\obrana-boranija\\Osirion.Blazor\\src\\Osirion.Blazor.Cms\\_Imports.razor"
+    },
+    {
+        "Component":  "_Imports",
+        "RazorPath":  "C:\\Users\\dejan\\source\\repos\\obrana-boranija\\Osirion.Blazor\\src\\Osirion.Blazor.Cms.Admin\\Components\\Pages\\_Imports.razor"
+    },
+    {
+        "Component":  "_Imports",
+        "RazorPath":  "C:\\Users\\dejan\\source\\repos\\obrana-boranija\\Osirion.Blazor\\src\\Osirion.Blazor.Cms.Admin\\Components\\_Imports.razor"
+    },
+    {
+        "Component":  "_Imports",
+        "RazorPath":  "C:\\Users\\dejan\\source\\repos\\obrana-boranija\\Osirion.Blazor\\src\\Osirion.Blazor.Cms.Admin\\_Imports.razor"
+    },
+    {
+        "Component":  "MarkdownEditorPreview",
+        "RazorPath":  "C:\\Users\\dejan\\source\\repos\\obrana-boranija\\Osirion.Blazor\\src\\Osirion.Blazor.Cms.Core\\Components\\Editor\\MarkdownEditorPreview.razor"
+    },
+    {
+        "Component":  "MarkdownPreview",
+        "RazorPath":  "C:\\Users\\dejan\\source\\repos\\obrana-boranija\\Osirion.Blazor\\src\\Osirion.Blazor.Cms.Core\\Components\\Editor\\MarkdownPreview.razor"
+    },
+    {
+        "Component":  "BlogLayout",
+        "RazorPath":  "C:\\Users\\dejan\\source\\repos\\obrana-boranija\\Osirion.Blazor\\src\\Osirion.Blazor.Cms.Core\\Components\\Layout\\BlogLayout.razor"
+    },
+    {
+        "Component":  "DocumentationLayout",
+        "RazorPath":  "C:\\Users\\dejan\\source\\repos\\obrana-boranija\\Osirion.Blazor\\src\\Osirion.Blazor.Cms.Core\\Components\\Layout\\DocumentationLayout.razor"
+    },
+    {
+        "Component":  "TwoColumnLayout",
+        "RazorPath":  "C:\\Users\\dejan\\source\\repos\\obrana-boranija\\Osirion.Blazor\\src\\Osirion.Blazor.Cms.Core\\Components\\Layout\\TwoColumnLayout.razor"
+    },
+    {
+        "Component":  "DocumentTree",
+        "RazorPath":  "C:\\Users\\dejan\\source\\repos\\obrana-boranija\\Osirion.Blazor\\src\\Osirion.Blazor.Cms.Core\\Components\\Navigation\\DocumentTree.razor"
+    },
+    {
+        "Component":  "_Imports",
+        "RazorPath":  "C:\\Users\\dejan\\source\\repos\\obrana-boranija\\Osirion.Blazor\\src\\Osirion.Blazor.Cms.Core\\Components\\_Imports.razor"
+    },
+    {
+        "Component":  "_Imports",
+        "RazorPath":  "C:\\Users\\dejan\\source\\repos\\obrana-boranija\\Osirion.Blazor\\src\\Osirion.Blazor.Cms.Core\\_Imports.razor"
+    },
+    {
+        "Component":  "_Imports",
+        "RazorPath":  "C:\\Users\\dejan\\source\\repos\\obrana-boranija\\Osirion.Blazor\\src\\Osirion.Blazor.Cms.Infrastructure\\_Imports.razor"
+    },
+    {
+        "Component":  "LocalizedNavigation",
+        "RazorPath":  "C:\\Users\\dejan\\source\\repos\\obrana-boranija\\Osirion.Blazor\\src\\Osirion.Blazor.Cms.Web\\Components\\Navigation\\LocalizedNavigation.razor"
+    },
+    {
+        "Component":  "ArticlePage",
+        "RazorPath":  "C:\\Users\\dejan\\source\\repos\\obrana-boranija\\Osirion.Blazor\\src\\Osirion.Blazor.Cms.Web\\Components\\PageLevel\\ArticlePage.razor"
+    },
+    {
+        "Component":  "DocumentPage",
+        "RazorPath":  "C:\\Users\\dejan\\source\\repos\\obrana-boranija\\Osirion.Blazor\\src\\Osirion.Blazor.Cms.Web\\Components\\PageLevel\\DocumentPage.razor"
+    },
+    {
+        "Component":  "HomePage",
+        "RazorPath":  "C:\\Users\\dejan\\source\\repos\\obrana-boranija\\Osirion.Blazor\\src\\Osirion.Blazor.Cms.Web\\Components\\PageLevel\\HomePage.razor"
+    },
+    {
+        "Component":  "LandingPage",
+        "RazorPath":  "C:\\Users\\dejan\\source\\repos\\obrana-boranija\\Osirion.Blazor\\src\\Osirion.Blazor.Cms.Web\\Components\\PageLevel\\LandingPage.razor"
+    },
+    {
+        "Component":  "_Imports",
+        "RazorPath":  "C:\\Users\\dejan\\source\\repos\\obrana-boranija\\Osirion.Blazor\\src\\Osirion.Blazor.Cms.Web\\Components\\_Imports.razor"
+    },
+    {
+        "Component":  "_Imports",
+        "RazorPath":  "C:\\Users\\dejan\\source\\repos\\obrana-boranija\\Osirion.Blazor\\src\\Osirion.Blazor.Cms.Web\\_Imports.razor"
+    },
+    {
+        "Component":  "OsirionContactInfoSection",
+        "RazorPath":  "C:\\Users\\dejan\\source\\repos\\obrana-boranija\\Osirion.Blazor\\src\\Osirion.Blazor.Core\\Components\\Sections\\OsirionContactInfoSection.razor"
+    },
+    {
+        "Component":  "OsirionArticleMetdata",
+        "RazorPath":  "C:\\Users\\dejan\\source\\repos\\obrana-boranija\\Osirion.Blazor\\src\\Osirion.Blazor.Core\\Components\\OsirionArticleMetdata.razor"
+    },
+    {
+        "Component":  "_Imports",
+        "RazorPath":  "C:\\Users\\dejan\\source\\repos\\obrana-boranija\\Osirion.Blazor\\src\\Osirion.Blazor.Core\\_Imports.razor"
+    },
+    {
+        "Component":  "MenuDivider",
+        "RazorPath":  "C:\\Users\\dejan\\source\\repos\\obrana-boranija\\Osirion.Blazor\\src\\Osirion.Blazor.Navigation\\Components\\MenuDivider.razor"
+    },
+    {
+        "Component":  "MenuGroup",
+        "RazorPath":  "C:\\Users\\dejan\\source\\repos\\obrana-boranija\\Osirion.Blazor\\src\\Osirion.Blazor.Navigation\\Components\\MenuGroup.razor"
+    },
+    {
+        "Component":  "ScrollToTopProvider",
+        "RazorPath":  "C:\\Users\\dejan\\source\\repos\\obrana-boranija\\Osirion.Blazor\\src\\Osirion.Blazor.Navigation\\Components\\ScrollToTopProvider.razor"
+    },
+    {
+        "Component":  "_Imports",
+        "RazorPath":  "C:\\Users\\dejan\\source\\repos\\obrana-boranija\\Osirion.Blazor\\src\\Osirion.Blazor.Navigation\\_Imports.razor"
+    },
+    {
+        "Component":  "OsirionStyles",
+        "RazorPath":  "C:\\Users\\dejan\\source\\repos\\obrana-boranija\\Osirion.Blazor\\src\\Osirion.Blazor.Theming\\Components\\OsirionStyles.razor"
+    },
+    {
+        "Component":  "ThemeToggle",
+        "RazorPath":  "C:\\Users\\dejan\\source\\repos\\obrana-boranija\\Osirion.Blazor\\src\\Osirion.Blazor.Theming\\Components\\ThemeToggle.razor"
+    },
+    {
+        "Component":  "_Imports",
+        "RazorPath":  "C:\\Users\\dejan\\source\\repos\\obrana-boranija\\Osirion.Blazor\\src\\Osirion.Blazor.Theming\\_Imports.razor"
+    }
+]

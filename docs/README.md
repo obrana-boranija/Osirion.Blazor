@@ -24,11 +24,9 @@ Welcome to the comprehensive documentation for Osirion.Blazor. This index provid
 - [**Styling and Theming**](STYLING.md) - CSS customization and framework integration
 
 ### ?? Component Documentation
-- [**Hero Section**](HERO_SECTION.md) - Comprehensive hero section component
-- [**Breadcrumbs**](BREADCRUMBS.md) - Automatic breadcrumb navigation
-- [**Cookie Consent**](COOKIE_CONSENT.md) - GDPR-compliant cookie management
-- [**Logo Carousel**](INFINITE_LOGO_CAROUSEL.md) - Self-contained logo carousel
-- [**Markdown Editor**](MARKDOWN_EDITOR.md) - Admin markdown editor components
+- [**Core Components**](components/core-components.md) - Complete documentation for all Core module components
+- [**CMS Web Components**](components/cms-web-components.md) - Documentation for Web module components
+- [**CMS Admin Components**](components/cms-admin-components.md) - Documentation for Admin module components
 
 ### ? Performance and Operations
 - [**Performance Guide**](PERFORMANCE.md) - Optimization strategies and best practices
@@ -56,7 +54,7 @@ Welcome to the comprehensive documentation for Osirion.Blazor. This index provid
 
 #### **For Content Managers**
 1. [GitHub CMS Guide](GITHUB_CMS.md) - Content management
-2. [Markdown Editor](MARKDOWN_EDITOR.md) - Editor features
+2. [Markdown Editor](components/cms-admin-components.md#markdowneditorwithpreview) - Editor features
 3. [SEO and Metadata](GITHUB_CMS.md#seo-and-metadata) - SEO optimization
 
 #### **For DevOps/Site Reliability**
@@ -68,8 +66,7 @@ Welcome to the comprehensive documentation for Osirion.Blazor. This index provid
 
 #### **Core Components**
 - [API Reference - Core Components](API_REFERENCE.md#core-components)
-- [Hero Section Guide](HERO_SECTION.md)
-- [Breadcrumbs Guide](BREADCRUMBS.md)
+- [Core Components Guide](components/core-components.md)
 - [Layout Examples](EXAMPLES.md#landing-page-tutorial)
 
 #### **Content Management**
@@ -82,7 +79,7 @@ Welcome to the comprehensive documentation for Osirion.Blazor. This index provid
 - [Analytics Integration Guide](ANALYTICS.md)
 - [Analytics API Reference](API_REFERENCE.md#analytics)
 - [Performance Monitoring](PERFORMANCE.md#monitoring-and-diagnostics)
-- [Cookie Consent](COOKIE_CONSENT.md)
+- [Cookie Consent](components/core-components.md#osirioncookieconsent)
 
 #### **Navigation and UX**
 - [Navigation Components Guide](NAVIGATION.md)

@@ -1,0 +1,14 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "dotnet",
+			"task": "watch Osirion.Blazor.Example.Bootstrap",
+			"file": "C:\\Users\\dejan\\source\\repos\\obrana-boranija\\Osirion.Blazor\\examples\\Osirion.Blazor.Example.Bootstrap\\Osirion.Blazor.Example.Bootstrap.csproj",
+			"problemMatcher": [
+				"$eslint-compact"
+			],
+			"label": "dotnet: watch Osirion.Blazor.Example.Bootstrap"
+		}
+	]
+}

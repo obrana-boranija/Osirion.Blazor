@@ -77,7 +77,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{05C1A178-E
 	ProjectSection(SolutionItems) = preProject
 		content\en\docs\component-architecture-design-principles.md = content\en\docs\component-architecture-design-principles.md
 		content\en\docs\content-structure-and-frontmatter.md = content\en\docs\content-structure-and-frontmatter.md
-		examples\content\docs\getting-started-with-osirion-blazor.md = examples\content\docs\getting-started-with-osirion-blazor.md
 		content\en\docs\getting-started-with-osirion-blazor.md = content\en\docs\getting-started-with-osirion-blazor.md
 		examples\content\docs\github-cms-documentation.md = examples\content\docs\github-cms-documentation.md
 		content\en\docs\github-cms-documentation.md = content\en\docs\github-cms-documentation.md
