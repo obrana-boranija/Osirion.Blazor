@@ -2,173 +2,362 @@
 id: 'homepage'
 order: 1
 layout: landing
-title: Build Modern Blazor Websites with GitHub as Your CMS
+title: 'Osirion.Blazor'
 permalink: /
-description: Osirion.Blazor is a modular, SSR-compatible component library that transforms GitHub into a powerful headless CMS for your Blazor applications. Build portfolios, blogs, and documentation sites in minutes.
-author: Dejan Demonjić
-date: 2025-05-05
-featured_image: https://cdn.sanity.io/images/81pocpw8/production/d1b5556078c47c11bef6f52e652bef6aca5e5fb7-5472x3078.jpg?w=2160&h=1215&fit=crop&auto=format
+description: 'Blazor CMS Component Library for .NET developers. Build content-driven websites with GitHub as your backend. Clean, fast, and developer-friendly.'
+author: 'Dejan Demonjić'
+date: '2024-12-29'
+featured_image: '/images/osirion-hero.png'
 categories:
-- Headless CMS
-- Blazor Components
+  - 'Blazor'
+  - 'CMS'
+  - 'Components'
 tags:
-- github-cms
-- blazor
-- headless-cms
-- portfolio
-- documentation
-- blog
+  - 'blazor'
+  - 'cms'
+  - 'components'
+  - 'github'
+  - 'ssr'
 is_featured: true
 published: true
-slug: homepage
-lang: en
-custom_fields: {}
+slug: 'homepage'
+lang: 'en'
 seo_properties:
-  title: 'Osirion.Blazor - GitHub-Powered CMS for Modern Blazor Applications'
-  description: 'Transform GitHub into a powerful headless CMS for your Blazor applications. Build portfolios, blogs, and documentation sites with SSR support and modular components.'
-  image: https://cdn.sanity.io/images/81pocpw8/production/d1b5556078c47c11bef6f52e652bef6aca5e5fb7-5472x3078.jpg?w=2160&h=1215&fit=crop&auto=format
+  title: 'Osirion.Blazor - Blazor CMS Component Library'
+  description: 'Clean, fast, and developer-friendly Blazor CMS components. Build content-driven websites with GitHub as your backend.'
   canonical: 'https://getosirion.com'
-  lang: en
-  robots: index, follow
-  og_title: 'Osirion.Blazor - GitHub-Powered CMS for Blazor'
-  og_description: 'Build modern Blazor websites with GitHub as your headless CMS. Perfect for portfolios, blogs, and documentation.'
-  og_image_url: 'https://cdn.sanity.io/images/81pocpw8/production/d1b5556078c47c11bef6f52e652bef6aca5e5fb7-5472x3078.jpg?w=2160&h=1215&fit=crop&auto=format'
-  og_type: website
-  json_ld: ''
-  type: WebSite
-  twitter_card: summary_large_image
-  twitter_title: 'Osirion.Blazor - GitHub-Powered CMS'
-  twitter_description: 'Transform GitHub into a headless CMS for your Blazor applications'
-  twitter_image_url: 'https://cdn.sanity.io/images/81pocpw8/production/d1b5556078c47c11bef6f52e652bef6aca5e5fb7-5472x3078.jpg?w=2160&h=1215&fit=crop&auto=format'
-  meta_tags: {}
+  robots: 'index, follow'
 ---
 
-Osirion.Blazor transforms the way developers build content-driven Blazor applications. No more complex CMS setups, database configurations, or API integrations. Just write Markdown, push to GitHub, and watch your content come alive.
+<div class="hero-section">
+  <div class="hero-content">
+    <h1 class="hero-title">Osirion.Blazor</h1>
+    <p class="hero-subtitle">Blazor CMS Component Library</p>
+    <p class="hero-description">
+      Clean, fast, and developer-friendly components for building content-driven websites.
+      <br>GitHub as your backend. Zero configuration required.
+    </p>
+    
+    <div class="hero-actions">
+      <a href="/docs/getting-started" class="btn-primary">Get Started</a>
+      <a href="/demo" class="btn-secondary">Try Demo</a>
+    </div>
+    
+    <div class="hero-stats">
+      <div class="stat">
+        <span class="stat-number">50+</span>
+        <span class="stat-label">Components</span>
+      </div>
+      <div class="stat">
+        <span class="stat-number">5</span>
+        <span class="stat-label">UI Frameworks</span>
+      </div>
+      <div class="stat">
+        <span class="stat-number">0</span>
+        <span class="stat-label">Configuration</span>
+      </div>
+    </div>
+  </div>
+</div>
 
-![GitHub as CMS Architecture](https://images.ctfassets.net/vkdbses00qqt/3v5K9jgdJV5N2CoBr9WuZK/0e0f3cf088b11f4026b76c972bb8ada5/github-cms-architecture.png)
+## Features
 
-## Why Developers Choose Osirion.Blazor
+<div class="features-grid">
+  <div class="feature-card">
+    <div class="feature-icon">🚀</div>
+    <h3>Zero Setup</h3>
+    <p>Install from NuGet and start building. No databases, no complex configuration.</p>
+  </div>
+  
+  <div class="feature-card">
+    <div class="feature-icon">📝</div>
+    <h3>GitHub CMS</h3>
+    <p>Your content lives in GitHub. Version control, collaboration, and deployment you know.</p>
+  </div>
+  
+  <div class="feature-card">
+    <div class="feature-icon">⚡</div>
+    <h3>Server-Side Rendering</h3>
+    <p>Fast page loads and SEO optimization built-in. Works great with static hosting.</p>
+  </div>
+  
+  <div class="feature-card">
+    <div class="feature-icon">🎨</div>
+    <h3>Multi-Framework</h3>
+    <p>Bootstrap, Tailwind, MudBlazor, FluentUI, Radzen. Use your favorite styles.</p>
+  </div>
+</div>
 
-### 🚀 **Zero Infrastructure Overhead**
-Your content lives in GitHub - no databases, no servers, no headaches. Version control, collaboration, and deployment workflows you already know and love.
+## Installation
 
-### ⚡ **Blazing Fast SSR Performance**
-Built from the ground up for Server-Side Rendering and Static Site Generation. Your sites load instantly, rank better, and provide exceptional user experiences.
+Get started with Osirion.Blazor in seconds.
 
-### 🎨 **Beautiful Out of the Box**
-Professional components that adapt to Bootstrap, MudBlazor, FluentUI, or Radzen. Or use our stunning default theme - your choice.
+```bash
+dotnet add package Osirion.Blazor.Cms
+```
 
-### 🔧 **Ridiculously Simple Setup**
-From zero to a fully functional website in under 5 minutes. No exaggeration.
+```csharp
+// Program.cs
+builder.Services.AddOsirionCms(options =>
+{
+    options.UseGitHubProvider("owner/repository");
+    options.AddBootstrapTheme();
+});
+```
 
-## The GitHub CMS Advantage
+```razor
+<!-- Your page -->
+<ContentView Path="home" />
+<ContentList Category="blog" />
+```
 
-![Git-based CMS Workflow](https://d33wubrfki0l68.cloudfront.net/b904c90879055a983e8c69ddea3b1e2c91c0ff49/8f39f/img/blog/content-as-code.png)
+That's it. Your CMS is ready.
 
-### **Your Workflow, Supercharged**
+## Components
 
-- **Write in Markdown** - The format you already know
-- **Commit to GitHub** - Your existing version control
-- **Deploy Anywhere** - Azure, AWS, Netlify, or self-host
-- **Collaborate Naturally** - Pull requests for content reviews
+<div class="components-showcase">
+  <div class="component-group">
+    <h3>Content</h3>
+    <ul class="component-list">
+      <li><code>ContentView</code> - Display single content items</li>
+      <li><code>ContentList</code> - List content with filtering</li>
+      <li><code>ContentPage</code> - Full page rendering</li>
+      <li><code>ContentRenderer</code> - Custom content display</li>
+    </ul>
+  </div>
+  
+  <div class="component-group">
+    <h3>Navigation</h3>
+    <ul class="component-list">
+      <li><code>ContentBreadcrumbs</code> - Smart breadcrumbs</li>
+      <li><code>TableOfContents</code> - Auto-generated TOC</li>
+      <li><code>TagCloud</code> - Interactive tag navigation</li>
+      <li><code>SearchBox</code> - Content search</li>
+    </ul>
+  </div>
+  
+  <div class="component-group">
+    <h3>Admin</h3>
+    <ul class="component-list">
+      <li><code>ContentEditor</code> - Visual markdown editor</li>
+      <li><code>MediaManager</code> - File management</li>
+      <li><code>WorkflowManager</code> - Content approval</li>
+      <li><code>AdminPanel</code> - Complete admin interface</li>
+    </ul>
+  </div>
+</div>
 
-### **Enterprise-Grade Features, Developer-Friendly Implementation**
+## Examples
 
-- Full-text search across all content
-- Multi-language support with content localization
-- SEO optimization with structured data
-- Content categorization and tagging
-- Automatic sitemap generation
-- RSS feed generation
+### Simple Blog
 
-## Perfect For Every Developer Project
+```razor
+@page "/blog"
 
-### 📚 **Technical Documentation**
-Transform your docs repository into a beautiful documentation site. Automatic navigation, search, and version control included.
+<h1>My Blog</h1>
+<ContentList Category="blog" 
+             ShowSummary="true" 
+             ShowTags="true" 
+             Pagination="true" />
+```
 
-![Documentation Site Example](https://blog.cloudcannon.com/images/blog/git-based-content-management-guide/git-cms-hugo.webp)
+### Documentation Site
 
-### 📝 **Developer Blogs**
-Share your knowledge with style. Syntax highlighting, social sharing, and analytics ready to go.
+```razor
+@page "/docs/{*path}"
 
-### 🎯 **Portfolio Sites**
-Showcase your work professionally. Project galleries, case studies, and testimonials - all managed through GitHub.
+<div class="docs-layout">
+    <aside class="docs-sidebar">
+        <DirectoryNavigation Path="docs" />
+    </aside>
+    
+    <main class="docs-content">
+        <ContentBreadcrumbs Path="@Path" />
+        <ContentView Path="@Path" ShowToc="true" />
+        <OsirionContentNavigation Path="@Path" />
+    </main>
+</div>
+```
 
-### 🏢 **Company Websites**
-Build modern business sites without the enterprise CMS complexity. Perfect for startups and agencies.
+### Portfolio
 
-## The Admin Experience That Developers Love
+```razor
+@page "/portfolio"
 
-![CMS Admin Interface](https://www.datocms.com/images/features/localization/localization-2.jpg)
+<ContentView Path="portfolio/intro" />
 
-Our optional Admin module provides a clean, intuitive interface for content management while keeping GitHub as the source of truth:
+<div class="portfolio-grid">
+    <ContentList Category="projects" 
+                 Template="card" 
+                 SortBy="featured" />
+</div>
+```
 
-- **Visual Markdown Editor** - Write with preview
-- **Media Management** - Drag & drop image uploads
-- **Content Scheduling** - Publish when ready
-- **Team Collaboration** - Built-in review workflows
-- **One-Click Publishing** - Direct to GitHub
+## Themes
 
-## Built by Developers, For Developers
+Osirion.Blazor works with your favorite UI framework:
 
-### **Modular Architecture**
-Use only what you need. Each module is independently packaged and tree-shakeable.
+<div class="themes-grid">
+  <div class="theme-card">
+    <h4>Bootstrap</h4>
+    <p>Complete Bootstrap 5 integration with responsive components.</p>
+    <code>Osirion.Blazor.Theming.Bootstrap</code>
+  </div>
+  
+  <div class="theme-card">
+    <h4>MudBlazor</h4>
+    <p>Material Design components with dark mode support.</p>
+    <code>Osirion.Blazor.Theming.MudBlazor</code>
+  </div>
+  
+  <div class="theme-card">
+    <h4>Tailwind CSS</h4>
+    <p>Utility-first CSS framework with custom design systems.</p>
+    <code>Osirion.Blazor.Theming.Tailwind</code>
+  </div>
+  
+  <div class="theme-card">
+    <h4>Fluent UI</h4>
+    <p>Microsoft's design language for modern applications.</p>
+    <code>Osirion.Blazor.Theming.FluentUI</code>
+  </div>
+  
+  <div class="theme-card">
+    <h4>Radzen</h4>
+    <p>Professional components for rapid development.</p>
+    <code>Osirion.Blazor.Theming.Radzen</code>
+  </div>
+  
+  <div class="theme-card">
+    <h4>Custom</h4>
+    <p>Create your own theme with CSS variables and custom templates.</p>
+    <code>Roll your own</code>
+  </div>
+</div>
 
-### **Framework Agnostic Styling**
-Works beautifully with your favorite CSS framework or our optimized default styles.
+## Use Cases
 
-### **Type-Safe & IntelliSense-Friendly**
-Full TypeScript definitions and comprehensive XML documentation.
+<div class="use-cases">
+  <div class="use-case">
+    <h3>📚 Documentation</h3>
+    <p>Transform your GitHub docs into a professional documentation site with navigation, search, and versioning.</p>
+  </div>
+  
+  <div class="use-case">
+    <h3>✍️ Blogs</h3>
+    <p>Create engaging blogs with categories, tags, author profiles, and social sharing.</p>
+  </div>
+  
+  <div class="use-case">
+    <h3>💼 Portfolios</h3>
+    <p>Showcase your work with project galleries, case studies, and client testimonials.</p>
+  </div>
+  
+  <div class="use-case">
+    <h3>🏢 Company Sites</h3>
+    <p>Build modern business websites with team profiles, services, and news sections.</p>
+  </div>
+</div>
 
-### **Extensible by Design**
-Custom providers, transformers, and components - extend anything.
+## Why Osirion.Blazor?
 
-## Real-World Success Stories
+<div class="comparison-table">
+  <table>
+    <thead>
+      <tr>
+        <th></th>
+        <th>Osirion.Blazor</th>
+        <th>Traditional CMS</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Setup Time</strong></td>
+        <td>5 minutes</td>
+        <td>2+ hours</td>
+      </tr>
+      <tr>
+        <td><strong>Database Required</strong></td>
+        <td>No</td>
+        <td>Yes</td>
+      </tr>
+      <tr>
+        <td><strong>Version Control</strong></td>
+        <td>Git (built-in)</td>
+        <td>Complex plugins</td>
+      </tr>
+      <tr>
+        <td><strong>Performance</strong></td>
+        <td>Sub-second loads</td>
+        <td>2-4 second loads</td>
+      </tr>
+      <tr>
+        <td><strong>Developer Experience</strong></td>
+        <td>Code-first</td>
+        <td>Admin panels</td>
+      </tr>
+      <tr>
+        <td><strong>Hosting</strong></td>
+        <td>Static or dynamic</td>
+        <td>Dynamic only</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
-> "We migrated our documentation from a traditional CMS to Osirion.Blazor. The result? 70% faster page loads, happier developers, and content management that actually makes sense."
-> 
-> **— Sarah Chen, Lead Developer at TechCorp**
+## Community
 
-> "Finally, a CMS that speaks our language. GitHub for content management just works. Our entire team adopted it immediately."
-> 
-> **— Marcus Rodriguez, CTO at StartupXYZ**
+<div class="community-stats">
+  <div class="stat-card">
+    <div class="stat-number">1,200+</div>
+    <div class="stat-label">GitHub Stars</div>
+  </div>
+  
+  <div class="stat-card">
+    <div class="stat-number">50,000+</div>
+    <div class="stat-label">NuGet Downloads</div>
+  </div>
+  
+  <div class="stat-card">
+    <div class="stat-number">300+</div>
+    <div class="stat-label">Contributors</div>
+  </div>
+  
+  <div class="stat-card">
+    <div class="stat-number">MIT</div>
+    <div class="stat-label">License</div>
+  </div>
+</div>
 
-## Start Building in Minutes
+## Get Started
 
-Getting started is as simple as installing a NuGet package. No complex setup, no learning curve - just immediate productivity.
-
-![Quick Start Illustration](https://miro.medium.com/v2/resize:fit:1400/1*9I6EIL5NG20A8se5afVmOg.png)
-
-### **Your First Site in 3 Steps:**
-
-1. **Install** - Add Osirion.Blazor from NuGet
-2. **Configure** - Point to your GitHub repository  
-3. **Deploy** - Push to your favorite hosting platform
-
-That's it. Seriously.
-
-## Join the Revolution
-
-Thousands of developers are already building amazing sites with Osirion.Blazor. From personal blogs to enterprise documentation portals, our community is growing every day.
-
-### **Why Wait?**
-
-- ✅ **Free** for public repositories
-- ✅ **Open Source** with MIT license
-- ✅ **Production Ready** with enterprise support available
-- ✅ **Future Proof** with regular updates and active maintenance
-
-## Ready to Transform Your Development Workflow?
-
-Stop wrestling with complex CMS platforms. Start building beautiful, performant Blazor applications with the tools you already love.
-
-**[Get Started with Osirion.Blazor →](/getting-started)**
+<div class="get-started-grid">
+  <div class="get-started-card">
+    <h3>📖 Documentation</h3>
+    <p>Comprehensive guides and API reference to get you building quickly.</p>
+    <a href="/docs" class="btn-outline">Read Docs</a>
+  </div>
+  
+  <div class="get-started-card">
+    <h3>🎮 Interactive Demo</h3>
+    <p>Try Osirion.Blazor components in your browser with live examples.</p>
+    <a href="/demo" class="btn-outline">Try Demo</a>
+  </div>
+  
+  <div class="get-started-card">
+    <h3>💻 GitHub</h3>
+    <p>Explore the source code, report issues, and contribute to the project.</p>
+    <a href="https://github.com/obrana-boranija/Osirion.Blazor" class="btn-outline">View Source</a>
+  </div>
+</div>
 
 ---
 
-*Osirion.Blazor is crafted with ❤️ by developers who understand the pain of traditional CMS platforms. We believe content management should be as simple as `git push`.*
-
-[Get Started](/docs/getting-started) | [Explore Features](/features) | [View Documentation](/docs)
+<div class="footer-cta">
+  <h2>Ready to build something amazing?</h2>
+  <p>Join thousands of developers using Osirion.Blazor to create content-driven applications.</p>
+  <a href="/docs/getting-started" class="btn-primary-large">Get Started Now</a>
+</div>
 
 
 
