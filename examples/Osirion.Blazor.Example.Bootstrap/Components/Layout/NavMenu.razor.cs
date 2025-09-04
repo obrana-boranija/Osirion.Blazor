@@ -12,7 +12,12 @@ public partial class NavMenu(IContentProviderManager contentProviderManager)
     {
         var locale = CultureInfo.CurrentUICulture;
 
-        _directories = await contentProviderManager.GetDirectoryTreeAsync("en"/*locale.Name*/);
+        // Get the full directory tree for the locale
+        var allDirectories = await contentProviderManager.GetDirectoryTreeAsync("en"/*locale.Name*/);
+
+        // Filter to only root directories (directories with no parent) 
+        // because we only want top-level directories in the navigation
+        _directories = allDirectories.Where(d => d.Parent?.Parent == null).ToList();
 
         await base.OnInitializedAsync();
     }

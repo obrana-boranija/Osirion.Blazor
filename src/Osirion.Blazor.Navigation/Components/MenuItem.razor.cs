@@ -58,7 +58,7 @@ public partial class MenuItem
     /// Gets or sets the match behavior for automatic active state detection.
     /// </summary>
     [Parameter]
-    public NavLinkMatch Match { get; set; } = NavLinkMatch.Prefix;
+    public NavLinkMatch Match { get; set; } = NavLinkMatch.All;
 
     /// <summary>
     /// Gets or sets how to open the link (useful for external links).
@@ -79,25 +79,65 @@ public partial class MenuItem
     public string? Id { get; set; }
 
     /// <summary>
+    /// Gets or sets whether to enable automatic active state detection.
+    /// When true, the component will automatically detect if the current URL matches this menu item's href.
+    /// </summary>
+    [Parameter]
+    public bool AutoDetectActive { get; set; } = true;
+
+    /// <summary>
+    /// Navigation manager for URL matching and navigation.
+    /// </summary>
+    [Inject]
+    private NavigationManager NavigationManager { get; set; } = default!;
+
+    /// <summary>
     /// Gets the unique identifier for the submenu.
     /// </summary>
     internal string SubmenuId => $"submenu-{Id ?? Guid.NewGuid().ToString("N")[..8]}";
+
+    /// <summary>
+    /// Gets whether this menu item should be considered active based on the current URL.
+    /// </summary>
+    private bool ShouldBeActive
+    {
+        get
+        {
+            // If IsActive is explicitly set, respect that setting
+            if (IsActive)
+                return true;
+
+            // Skip auto-detection if disabled or if AutoDetectActive is false
+            if (!AutoDetectActive || string.IsNullOrWhiteSpace(Href) || Href == "#")
+                return false;
+
+            var currentUri = NavigationManager.Uri;
+            var baseUri = NavigationManager.BaseUri;
+            
+            // Get the relative path from current URI
+            var relativePath = NavigationManager.ToBaseRelativePath(currentUri);
+            
+            // Normalize the href (remove leading slash if present)
+            var normalizedHref = Href.TrimStart('/');
+            
+            // Handle different matching modes
+            return Match switch
+            {
+                NavLinkMatch.All => string.Equals(relativePath, normalizedHref, StringComparison.OrdinalIgnoreCase),
+                NavLinkMatch.Prefix => relativePath.StartsWith(normalizedHref, StringComparison.OrdinalIgnoreCase),
+                _ => false
+            };
+        }
+    }
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
 
-        // Automatically detect active state based on navigation if not manually set
-        if (!IsActive && !string.IsNullOrWhiteSpace(Href) && Href != "#")
+        // Update IsActive based on automatic detection
+        if (AutoDetectActive && !IsActive)
         {
-            // This would require NavigationManager injection for automatic active detection
-            // For now, users need to set IsActive manually
-        }
-
-        // Detect if item has submenu based on ChildContent
-        if (!HasSubmenu && ChildContent is not null)
-        {
-            HasSubmenu = true;
+            IsActive = ShouldBeActive;
         }
 
         if (Attributes is null)
@@ -108,6 +148,17 @@ public partial class MenuItem
         // Add rel attribute for external links
         if (Target == "_blank" && !Attributes.ContainsKey("rel"))
             Attributes["rel"] = "noopener noreferrer";
+    }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        
+        // Update active state on parameter changes (for example, when navigation occurs)
+        if (AutoDetectActive && !IsActive)
+        {
+            IsActive = ShouldBeActive;
+        }
     }
 
     /// <summary>

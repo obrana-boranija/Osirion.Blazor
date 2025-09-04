@@ -10,8 +10,9 @@ public static class UrlGenerator
     /// <summary>
     /// Generates a URL for content
     /// </summary>
-    public static string GenerateUrl(string path, string slug, bool enableLocalization, List<string>? supportedLocales, string? skipSegment = null)
+    public static string GenerateUrl(string permalink, string path, string slug, bool enableLocalization, List<string>? supportedLocales, string? skipSegment = null)
     {
+
         // Check if pathToTrim is null, whitespace, or just "/"
         bool skipPrefixRemoval = string.IsNullOrWhiteSpace(skipSegment) || skipSegment == "/";
 

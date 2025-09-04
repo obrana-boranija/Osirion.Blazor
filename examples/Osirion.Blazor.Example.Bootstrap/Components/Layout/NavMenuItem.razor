@@ -1,0 +1,45 @@
+@using Osirion.Blazor.Navigation.Components
+@using Osirion.Blazor.Cms.Domain.Entities
+
+<MenuItem Text="@Directory.Name" 
+          Href="@GetDirectoryUrl()" 
+          Icon="@Directory.Name.ToLower()"
+          HasSubmenu="@HasChildren()">
+    @if (HasChildren())
+    {
+        @foreach (var child in Directory.Children.OrderBy(c => c.Order).ThenBy(c => c.Name))
+        {
+            <NavMenuItem Directory="@child" />
+        }
+    }
+</MenuItem>
+
+@code {
+    [Parameter, EditorRequired]
+    public DirectoryItem Directory { get; set; } = default!;
+
+    private bool HasChildren()
+    {
+        return Directory.Children?.Any() == true;
+    }
+
+    private string GetDirectoryUrl()
+    {
+        return string.IsNullOrWhiteSpace(Directory.Url) 
+            ? $"/{Directory.Name.ToLower()}" 
+            : Directory.Url;
+    }
+    
+    private string GetDirectoryIcon()
+    {
+        return Directory.Name.ToLowerInvariant() switch
+        {
+            "blog" => "blog",
+            "docs" or "documentation" => "docs",
+            "components" => "settings",
+            "about" => "about",
+            "contact" => "contact",
+            _ => "document"
+        };
+    }
+}

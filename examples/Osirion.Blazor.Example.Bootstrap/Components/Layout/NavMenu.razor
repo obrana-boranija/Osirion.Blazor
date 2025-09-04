@@ -11,10 +11,12 @@
       BrandLogo="/favicon.png"
       BrandText="Osirion.Blazor"
       Sticky>
+    
     <MenuItem Text="Home" Href="/" Icon="home" />
+    
     @foreach (var dir in _directories)
     {
-        <MenuItem Text="@dir.Name" Href="@dir.Url" Icon="@dir.Name.ToLower()" />
+        <NavMenuItem Directory="@dir" />
     }
 
     <MenuItem Text="Contact" Href="/contact" Icon="contact" />

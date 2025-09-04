@@ -317,7 +317,7 @@ public class GitHubContentRepository : BaseContentRepository
         await ProcessMarkdownAsync(markdownContent, contentItem, cancellationToken);
 
         // Set URL
-        var url = UrlGenerator.GenerateUrl(contentItem.Path, contentItem.Slug, EnableLocalization, SupportedLocales, ContentPath);
+        var url = UrlGenerator.GenerateUrl(contentItem.Url, contentItem.Path, contentItem.Slug, EnableLocalization, SupportedLocales, ContentPath);
         contentItem.SetUrl(url);
 
         // Set content ID if localization is enabled

@@ -206,7 +206,7 @@ public class GitHubDirectoryRepository : DirectoryRepositoryBase, IDirectoryRepo
     }
 
     /// <summary>
-    /// Process directories recursively with additional safety checks
+    /// Process directories recursively with improved parent-child relationship handling
     /// </summary>
     private async Task ProcessDirectoriesRecursivelyAsync(
         List<GitHubItem> contents,
@@ -232,25 +232,14 @@ public class GitHubDirectoryRepository : DirectoryRepositoryBase, IDirectoryRepo
             // Create directory item with more robust ID generation
             var directoryId = IdGenerator.GenerateDirectoryId(item.Path, item.Name, GetProviderId(_options, _providerName));
 
+            DirectoryItem directory;
+
             // Check if we already have this directory in cache
             if (directoryCache.TryGetValue(directoryId, out var existingDirectory))
             {
-                // If this directory already exists with a different parent, we have a problem
-                if (parentDirectory is not null && existingDirectory.Parent is not null &&
-                    existingDirectory.Parent.Id != parentDirectory.Id)
-                {
-                    Logger.LogWarning(
-                        "Directory '{Name}' ({Id}) already exists with different parent. Path: {Path}",
-                        item.Name, directoryId, item.Path);
+                directory = existingDirectory;
 
-                    // Skip this to avoid circular references
-                    continue;
-                }
-
-                // Use existing directory
-                var directory = existingDirectory;
-
-                // Update parent if needed
+                // Only set parent if the directory doesn't already have one
                 if (parentDirectory is not null && directory.Parent is null)
                 {
                     try
@@ -262,14 +251,13 @@ public class GitHubDirectoryRepository : DirectoryRepositoryBase, IDirectoryRepo
                         Logger.LogWarning(ex,
                             "Cannot set parent-child relationship between '{Parent}' and '{Child}'",
                             parentDirectory.Name, directory.Name);
-                        // Continue processing other directories
                     }
                 }
             }
             else
             {
                 // Create new directory
-                var directory = DirectoryItem.Create(
+                directory = DirectoryItem.Create(
                     id: directoryId,
                     path: item.Path,
                     name: item.Name,
@@ -287,7 +275,6 @@ public class GitHubDirectoryRepository : DirectoryRepositoryBase, IDirectoryRepo
                         Logger.LogWarning(ex,
                             "Cannot set parent-child relationship between '{Parent}' and '{Child}'",
                             parentDirectory.Name, directory.Name);
-                        // Still add to cache but without parent relationship
                     }
                 }
 
@@ -305,15 +292,12 @@ public class GitHubDirectoryRepository : DirectoryRepositoryBase, IDirectoryRepo
                 directoryCache[directoryId] = directory;
             }
 
-            // Get an updated reference to the directory from cache
-            var dirForProcessing = directoryCache[directoryId];
-
-            // Process subdirectories with safety tracking
+            // Process subdirectories
             var subContents = await _apiClient.GetRepositoryContentsAsync(item.Path, cancellationToken);
             await ProcessDirectoriesRecursivelyAsync(
                 subContents,
                 directoryCache,
-                dirForProcessing,
+                directory, // Use the directory we just processed
                 cancellationToken,
                 processedPaths);
         }
