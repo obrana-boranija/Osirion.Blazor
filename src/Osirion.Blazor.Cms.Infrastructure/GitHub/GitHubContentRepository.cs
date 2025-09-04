@@ -218,7 +218,7 @@ public class GitHubContentRepository : BaseContentRepository
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            if (item.IsFile && IsSupportedFile(item.Name) && !item.Name.Equals("_index.md", StringComparison.OrdinalIgnoreCase))
+            if (item.IsFile && IsSupportedFile(item.Name) /*&& !item.Name.Equals("_index.md", StringComparison.OrdinalIgnoreCase)*/)
             {
                 try
                 {
@@ -243,14 +243,14 @@ public class GitHubContentRepository : BaseContentRepository
         }
     }
 
-    private async Task<ContentItem?> ProcessMarkdownFileAsync(GitHubFileContent fileContent, CancellationToken cancellationToken = default)
+    private async Task<ContentItem?> ProcessMarkdownFileAsync(GitHubFileContent? fileContent, CancellationToken cancellationToken = default)
     {
         if (fileContent is null || !IsSupportedFile(fileContent.Name))
             return null;
 
-        // Skip _index.md files - they're for directory metadata
-        if (fileContent.Name.Equals("_index.md", StringComparison.OrdinalIgnoreCase))
-            return null;
+        //// Skip _index.md files - they're for directory metadata
+        //if (fileContent.Name.Equals("_index.md", StringComparison.OrdinalIgnoreCase))
+        //    return null;
 
         // Get file content
         string markdownContent = fileContent.GetDecodedContent();

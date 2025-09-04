@@ -194,8 +194,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "testing", "testing", "{A39C
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "analytics", "analytics", "{BF539E60-BD06-4955-B23E-A0F3C8CB1C4E}"
 	ProjectSection(SolutionItems) = preProject
-		docs\components\analytics\AnalyticsComponents.md = docs\components\analytics\AnalyticsComponents.md
-		docs\components\analytics\Trackers.md = docs\components\analytics\Trackers.md
+		content\en\docs\components\core\sections\hero-section.md = content\en\docs\components\core\sections\hero-section.md
 	EndProjectSection
 EndProject
 Global

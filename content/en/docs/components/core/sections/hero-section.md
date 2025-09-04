@@ -1,4 +1,4 @@
-examples---
+---
 id: 'hero-section'
 order: 1
 layout: docs

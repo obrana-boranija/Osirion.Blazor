@@ -8,6 +8,11 @@ namespace Osirion.Blazor.Cms.Domain.Repositories;
 public class ContentQuery
 {
     /// <summary>
+    /// Gets or sets the  path to filter by
+    /// </summary>
+    public string? Path { get; set; }
+
+    /// <summary>
     /// Gets or sets the directory path to filter by
     /// </summary>
     public string? Directory { get; set; }
@@ -158,7 +163,8 @@ public class ContentQuery
             LocalizationId = LocalizationId,
             ProviderId = ProviderId,
             IncludeUnpublished = IncludeUnpublished,
-            IncludeSubdirectories = IncludeSubdirectories
+            IncludeSubdirectories = IncludeSubdirectories,
+            Path = Path,
         };
 
         if (IncludeIds is not null)

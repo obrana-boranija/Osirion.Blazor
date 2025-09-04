@@ -1,10 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Interfaces.Directory;
-using Osirion.Blazor.Cms.Domain.Options;
-using Osirion.Blazor.Cms.Infrastructure.Utilities;
 using System.Text;
 
 namespace Osirion.Blazor.Cms.Infrastructure.Directory;
@@ -46,7 +43,7 @@ public class DirectoryMetadataProcessor : IDirectoryMetadataProcessor
             directory.SetDescription(frontmatter?.Description ?? directory.Description);
             directory.SetOrder(frontmatter?.Order ?? directory.Order);
             directory.SetLocale(frontmatter?.Lang ?? directory.Locale);
-            directory.SetUrl(frontmatter?.Slug ?? directory.Url);
+            directory.SetUrl(directory.Url);
             directory.SetFeaturedImage(frontmatter?.FeaturedImage ?? directory.FeaturedImageUrl);
             return directory;
         }

@@ -30,6 +30,13 @@ public static class UrlGenerator
             }
         }
 
+        var isIndexFile = false;
+
+        if (path.Contains("_index.md", StringComparison.OrdinalIgnoreCase))
+        {
+            isIndexFile = true;
+        }
+
         // Step 2: Remove the filename from the path
         int lastSlashIndex = path.LastIndexOf('/');
         if (lastSlashIndex >= 0)
@@ -56,7 +63,7 @@ public static class UrlGenerator
         // Step 3: Append slug, with a slash if path is not empty
         if (!string.IsNullOrWhiteSpace(path))
         {
-            return path + "/" + slug;
+            return isIndexFile ? path : $"{path}/{slug}";
         }
         else
         {

@@ -6,6 +6,7 @@ using Osirion.Blazor.Cms.Domain.ValueObjects;
 using Osirion.Blazor.Cms.Infrastructure.Utilities;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Transactions;
 
 namespace Osirion.Blazor.Cms.Infrastructure.Repositories;
 
@@ -287,6 +288,7 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
             await EnsureCacheIsLoaded(cancellationToken);
 
             var filteredItems = ItemCache.Values.AsQueryable();
+            var someList = filteredItems.ToList();
 
             // Apply query filters
             filteredItems = ApplyQueryFilters(filteredItems, query);
@@ -596,11 +598,17 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
     {
         var filteredItems = items;
 
+        if (!string.IsNullOrWhiteSpace(query.Path))
+        {
+            filteredItems = filteredItems.Where(item => UrlGenerator.NormalizePath(item.Path).Contains(UrlGenerator.NormalizePath(query.Path), StringComparison.OrdinalIgnoreCase));
+        }
+
+
         if (!string.IsNullOrWhiteSpace(query.Directory))
         {
             var normalizedDirectory = UrlGenerator.NormalizePath(query.Directory);
             filteredItems = filteredItems.Where(item =>
-                item.Directory != null && item.Directory.Name.ToLower() == query.Directory.ToLower());
+                item.Directory != null && UrlGenerator.NormalizePath(item.Directory.Name).Equals(UrlGenerator.NormalizePath(query.Directory), StringComparison.OrdinalIgnoreCase));
         }
 
         if (!string.IsNullOrWhiteSpace(query.DirectoryId))
@@ -612,13 +620,13 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
         if (!string.IsNullOrWhiteSpace(query.Slug))
         {
             filteredItems = filteredItems.Where(item =>
-                item.Slug != null && item.Slug == query.Slug);
+                item.Slug != null && UrlGenerator.NormalizePath(item.Slug).Equals(UrlGenerator.NormalizePath(query.Slug), StringComparison.OrdinalIgnoreCase));
         }
 
         if (!string.IsNullOrWhiteSpace(query.Url))
         {
             filteredItems = filteredItems.Where(item =>
-                item.Url != null && item.Url.Equals(query.Url, StringComparison.OrdinalIgnoreCase));
+                item.Url != null && UrlGenerator.NormalizePath(item.Url).Equals(UrlGenerator.NormalizePath(query.Url), StringComparison.OrdinalIgnoreCase));
         }
 
         if (!string.IsNullOrWhiteSpace(query.Category))

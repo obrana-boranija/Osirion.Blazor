@@ -113,10 +113,12 @@ public abstract partial class OsirionContentDetailPageBase : OsirionContentPageB
                 var result = await ContentProviderManager
                     .GetContentByQueryAsync(Query ?? new ContentQuery
                     {
+                        Path = ItemPath,
                         Directory = DirectoryName,
                         Url = ItemUrl,
                         Slug = ItemSlug,
                         Locale = Locale,
+                        
                     });
 
                 Item = result?.FirstOrDefault();

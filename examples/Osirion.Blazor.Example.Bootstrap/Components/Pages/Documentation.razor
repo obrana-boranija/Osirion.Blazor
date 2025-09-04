@@ -1,13 +1,15 @@
-﻿@page "/docs"
-@page "/{locale}/docs"
-@page "/docs/{slug}"
+﻿@page "/docs/{*slug}"
+@page "/{locale}/docs/{*slug}"
+@* @page "/docs/{slug}"
 @page "/{locale}/docs/{slug}"
 @page "/docs/components/{slug}"
-@page "/{locale}/docs/components/{slug}"
+@page "/{locale}/docs/components/{slug}" *@
 @using Osirion.Blazor.Cms.Web.Components
 
 
-<ArticlePage Locale="@Locale" DirectoryName="Documentation" ItemSlug="@(Slug ?? "getting-started")" />
+@* <ArticlePage Locale="@(Locale ?? "en")" DirectoryName="docs" ItemSlug="@(Slug ?? "getting-started")" /> *@
+
+<ArticlePage ItemUrl="@($"/docs/{Slug}")" Locale="@Locale" />
 
 @code {
     [Parameter]

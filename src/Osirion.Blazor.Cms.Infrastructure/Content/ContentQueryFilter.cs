@@ -22,6 +22,11 @@ public class ContentQueryFilter : IContentQueryFilter
     {
         var filteredItems = items;
 
+        if (!string.IsNullOrWhiteSpace(query.Path))
+        {
+            filteredItems = filteredItems.Where(item => item.Path.Contains(_pathUtils.NormalizePath(GetDirectoryPath(item.Path))));
+        }
+
         if (!string.IsNullOrWhiteSpace(query.Directory))
         {
             var normalizedDirectory = _pathUtils.NormalizePath(query.Directory);
