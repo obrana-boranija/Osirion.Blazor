@@ -20,7 +20,7 @@ tags:
 - content-rendering
 is_featured: true
 published: true
-slug: components/cms-web/core
+slug: core
 lang: en
 custom_fields: {}
 seo_properties:

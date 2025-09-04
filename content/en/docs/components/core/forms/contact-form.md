@@ -22,7 +22,7 @@ tags:
 - user-input
 is_featured: true
 published: true
-slug: components/core/forms/contact-form
+slug: contact-form
 lang: en
 custom_fields: {}
 seo_properties:

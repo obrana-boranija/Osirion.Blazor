@@ -23,7 +23,7 @@ tags:
 - navigation
 is_featured: true
 published: true
-slug: components/core/states/content-not-found
+slug: content-not-found
 lang: en
 custom_fields: {}
 seo_properties:

@@ -21,7 +21,7 @@ tags:
 - compliance
 is_featured: true
 published: true
-slug: components/core/popups
+slug: popups
 lang: en
 custom_fields: {}
 seo_properties:

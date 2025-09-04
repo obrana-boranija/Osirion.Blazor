@@ -23,7 +23,7 @@ tags:
 - validation
 is_featured: true
 published: true
-slug: components/core/cards/subscription-card
+slug: subscription-card
 lang: en
 custom_fields: {}
 seo_properties:

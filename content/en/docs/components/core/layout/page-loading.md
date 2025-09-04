@@ -23,7 +23,7 @@ tags:
 - user-experience
 is_featured: true
 published: true
-slug: components/core/layout/page-loading
+slug: page-loading
 lang: en
 custom_fields: {}
 seo_properties:

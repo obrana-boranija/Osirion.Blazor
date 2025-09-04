@@ -21,7 +21,7 @@ tags:
 - design-tokens
 is_featured: true
 published: true
-slug: components/theming/osirion-styles
+slug: osirion-styles
 lang: en
 custom_fields: {}
 seo_properties:

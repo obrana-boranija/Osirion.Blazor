@@ -20,7 +20,7 @@ tags:
 - articles
 is_featured: true
 published: true
-slug: components/core/content
+slug: content
 lang: en
 custom_fields: {}
 seo_properties:

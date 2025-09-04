@@ -23,7 +23,7 @@ tags:
 - animation
 is_featured: true
 published: true
-slug: components/core/carousels/infinite-logo-carousel
+slug: infinite-logo-carousel
 lang: en
 custom_fields: {}
 seo_properties:

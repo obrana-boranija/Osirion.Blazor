@@ -21,7 +21,7 @@ tags:
 - user-interface
 is_featured: true
 published: true
-slug: components/core/navigation/read-more-link
+slug: read-more-link
 lang: en
 custom_fields: {}
 seo_properties:

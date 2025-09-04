@@ -22,7 +22,7 @@ tags:
 - user-interface
 is_featured: true
 published: true
-slug: components/core/cards/testimonial-card
+slug: testimonial-card
 lang: en
 custom_fields: {}
 seo_properties:

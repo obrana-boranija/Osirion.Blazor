@@ -21,7 +21,7 @@ tags:
 - user-interface
 is_featured: true
 published: true
-slug: components/theming/theme-toggle
+slug: theme-toggle
 lang: en
 custom_fields: {}
 seo_properties:

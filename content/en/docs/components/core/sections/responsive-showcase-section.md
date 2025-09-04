@@ -25,7 +25,7 @@ tags:
 - desktop
 is_featured: true
 published: true
-slug: components/core/sections/responsive-showcase-section
+slug: responsive-showcase-section
 lang: en
 custom_fields: {}
 seo_properties:

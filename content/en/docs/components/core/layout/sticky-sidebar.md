@@ -22,7 +22,7 @@ tags:
 - responsive
 is_featured: true
 published: true
-slug: components/core/layout/sticky-sidebar
+slug: sticky-sidebar
 lang: en
 custom_fields: {}
 seo_properties:

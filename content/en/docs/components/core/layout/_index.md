@@ -20,7 +20,7 @@ tags:
 - ui-components
 is_featured: true
 published: true
-slug: components/core/layout
+slug: layout
 lang: en
 custom_fields: {}
 seo_properties:

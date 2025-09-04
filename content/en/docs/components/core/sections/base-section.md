@@ -21,7 +21,7 @@ tags:
 - container
 is_featured: true
 published: true
-slug: components/core/sections/base-section
+slug: base-section
 lang: en
 custom_fields: {}
 seo_properties:

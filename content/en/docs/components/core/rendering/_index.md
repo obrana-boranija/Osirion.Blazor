@@ -20,7 +20,7 @@ tags:
 - dynamic-content
 is_featured: true
 published: true
-slug: components/core/rendering
+slug: rendering
 lang: en
 custom_fields: {}
 seo_properties:

@@ -21,7 +21,7 @@ tags:
 - user-interface
 is_featured: true
 published: true
-slug: components/core/navigation/breadcrumbs
+slug: breadcrumbs
 lang: en
 custom_fields: {}
 seo_properties:

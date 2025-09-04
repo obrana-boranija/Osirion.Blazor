@@ -23,7 +23,7 @@ tags:
 - performance
 is_featured: true
 published: true
-slug: components/analytics
+slug: analytics
 lang: en
 custom_fields: {}
 seo_properties:

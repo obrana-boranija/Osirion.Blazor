@@ -25,7 +25,7 @@ tags:
 - legal
 is_featured: true
 published: true
-slug: components/core/popups/cookie-consent
+slug: cookie-consent
 lang: en
 custom_fields: {}
 seo_properties:

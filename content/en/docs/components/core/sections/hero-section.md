@@ -22,7 +22,7 @@ tags:
 - background
 is_featured: true
 published: true
-slug: components/core/sections/hero-section
+slug: hero-section
 lang: en
 custom_fields: {}
 seo_properties:

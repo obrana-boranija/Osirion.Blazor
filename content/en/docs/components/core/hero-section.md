@@ -20,7 +20,7 @@ tags:
 - components
 is_featured: true
 published: true
-slug: components/core/hero-section
+slug: hero-section
 lang: en
 custom_fields: {}
 seo_properties:

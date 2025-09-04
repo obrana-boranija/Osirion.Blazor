@@ -22,7 +22,7 @@ tags:
 - design-systems
 is_featured: true
 published: true
-slug: components/theming
+slug: theming
 lang: en
 custom_fields: {}
 seo_properties:

@@ -22,7 +22,7 @@ tags:
 - website
 is_featured: true
 published: true
-slug: components/core/sections/contact-info-section
+slug: contact-info-section
 lang: en
 custom_fields: {}
 seo_properties:

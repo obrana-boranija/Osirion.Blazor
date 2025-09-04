@@ -21,7 +21,7 @@ tags:
 - 404-pages
 is_featured: true
 published: true
-slug: components/core/states
+slug: states
 lang: en
 custom_fields: {}
 seo_properties:

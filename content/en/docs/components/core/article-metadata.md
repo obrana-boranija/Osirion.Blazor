@@ -19,7 +19,7 @@ tags:
 - components
 is_featured: false
 published: true
-slug: components/core/article-metadata
+slug: article-metadata
 lang: en
 custom_fields: {}
 seo_properties:

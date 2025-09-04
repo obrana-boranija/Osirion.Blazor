@@ -21,7 +21,7 @@ tags:
 - search
 is_featured: true
 published: true
-slug: components/cms-web/navigation
+slug: navigation
 lang: en
 custom_fields: {}
 seo_properties:

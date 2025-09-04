@@ -21,7 +21,7 @@ tags:
 - content-display
 is_featured: true
 published: true
-slug: components/core/cards/feature-card
+slug: feature-card
 lang: en
 custom_fields: {}
 seo_properties:

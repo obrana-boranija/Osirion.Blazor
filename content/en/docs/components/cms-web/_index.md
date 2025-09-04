@@ -20,7 +20,7 @@ tags:
 - headless-cms
 is_featured: true
 published: true
-slug: components/cms-web
+slug: cms-web
 lang: en
 custom_fields: {}
 seo_properties:

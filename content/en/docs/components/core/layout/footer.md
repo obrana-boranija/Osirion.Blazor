@@ -22,7 +22,7 @@ tags:
 - responsive
 is_featured: true
 published: true
-slug: components/core/layout/footer
+slug: footer
 lang: en
 custom_fields: {}
 seo_properties:

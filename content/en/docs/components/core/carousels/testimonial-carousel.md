@@ -23,7 +23,7 @@ tags:
 - customers
 is_featured: true
 published: true
-slug: components/core/carousels/testimonial-carousel
+slug: testimonial-carousel
 lang: en
 custom_fields: {}
 seo_properties:
