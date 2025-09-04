@@ -13,7 +13,7 @@
 
 		<!-- NuGet package properties -->
 		<PackageId>Osirion.Blazor.Cms.Admin</PackageId>
-		<Version>2.1.11</Version>
+		<Version>2.1.12</Version>
 		<Authors>Dejan Demonjić</Authors>
 		<Company>Tridesetri</Company>
 		<Description>Content Management System (CMS) Administration module for Osirion.Blazor, providing a robust, flexible admin interface for managing content across different providers.</Description>
