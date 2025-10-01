@@ -61,7 +61,7 @@ jobs:
     
     - name: Generate HTML report
       if: env.COVERAGE_EXISTS == 'true'
-      uses: danielpalme/ReportGenerator-GitHub-Action@5.4.7
+      uses: danielpalme/ReportGenerator-GitHub-Action@5.4.16
       with:
         reports: './coverage/**/coverage.cobertura.xml'
         targetdir: 'coveragereport'
