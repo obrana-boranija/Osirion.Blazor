@@ -61,7 +61,7 @@
 		<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.0" />
 		<PackageReference Include="Octokit" Version="14.0.0" />
 		<PackageReference Include="Scrutor" Version="6.1.0" />
-		<PackageReference Include="System.IO.Abstractions" Version="22.0.14" />
+		<PackageReference Include="System.IO.Abstractions" Version="22.0.16" />
 	</ItemGroup>
 
 	<ItemGroup>
