@@ -39,7 +39,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="FluentValidation" Version="12.0.0" />
-		<PackageReference Include="Markdig" Version="0.41.3" />
+		<PackageReference Include="Markdig" Version="0.43.0" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
