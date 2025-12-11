@@ -1,0 +1,23 @@
+﻿@page "/category"
+@page "/{locale}/category"
+@page "/category/{CategorySlug?}"
+@page "/{locale}/category/{CategorySlug?}"
+@using Osirion.Blazor.Cms.Components
+@using Osirion.Blazor.Cms.Web.Components
+
+<PageTitle>@(string.IsNullOrWhiteSpace(CategorySlug) ? "Categories" : $"Category: {CategorySlug}")</PageTitle>
+
+@if (string.IsNullOrWhiteSpace(CategorySlug))
+{
+    <div class="alert alert-info">
+        Select a category to view content.
+    </div>
+}
+else
+{
+    <ContentList Locale="@Locale"
+                 Directory="blog"
+                 Category="@CategorySlug"
+                 ShowPagination
+                 ItemsPerPage="12" />
+}

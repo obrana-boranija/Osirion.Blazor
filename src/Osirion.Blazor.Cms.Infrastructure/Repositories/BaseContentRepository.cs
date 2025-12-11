@@ -4,6 +4,7 @@ using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Repositories;
 using Osirion.Blazor.Cms.Domain.ValueObjects;
 using Osirion.Blazor.Cms.Infrastructure.Utilities;
+using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Transactions;
@@ -433,6 +434,21 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
             contentItem.SetFeatured(contentItem.Metadata?.IsFeatured ?? contentItem.IsFeatured);
             contentItem.SetOrderIndex(contentItem.Metadata?.Order ?? contentItem.OrderIndex);
 
+            var createdDate = contentItem.DateCreated;
+            var metadataDate = contentItem.Metadata?.Date;
+
+            if (!string.IsNullOrWhiteSpace(metadataDate) &&
+                DateTime.TryParse(
+                    metadataDate,
+                    CultureInfo.InvariantCulture,
+                    DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal,
+                    out var parsedDate))
+            {
+                createdDate = parsedDate;
+            }
+
+            contentItem.SetCreatedDate(createdDate);
+
             if (contentItem.Metadata?.Categories is not null && contentItem.Metadata.Categories.Any())
             {
                 foreach (var category in contentItem.Metadata.Categories)
@@ -646,7 +662,7 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
         if (!string.IsNullOrWhiteSpace(query.Tag))
         {
             filteredItems = filteredItems.Where(item =>
-                item.Tags.Any(t => t.Equals(query.Tag, StringComparison.OrdinalIgnoreCase)));
+                item.Tags.Any(t => t.Equals(query.Tag.Replace("-", " "), StringComparison.OrdinalIgnoreCase)));
         }
 
         if (query.Tags is not null && query.Tags.Any())

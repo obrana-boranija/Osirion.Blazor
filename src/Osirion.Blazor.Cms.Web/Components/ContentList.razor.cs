@@ -11,6 +11,9 @@ public partial class ContentList : IDisposable
     [Inject]
     private IContentProviderManager ContentProviderManager { get; set; } = default!;
 
+    [Inject]
+    private NavigationManager NavigationManager { get; set; } = default!;
+
     /// <summary>
     /// Gets or sets the content directory path.
     /// </summary>
@@ -80,7 +83,7 @@ public partial class ContentList : IDisposable
     /// <summary>
     /// Gets or sets the current page number.
     /// </summary>
-    [Parameter]
+    [SupplyParameterFromQuery(Name = "page")]
     public int CurrentPage { get; set; } = 1;
 
     /// <summary>
@@ -162,6 +165,8 @@ public partial class ContentList : IDisposable
     /// </summary>
     private IDisposable? _contentProviderSubscription;
 
+    private string CurrentUrl { get; set; } = "/";
+
     ///// <summary>
     ///// Initializes the component.
     ///// </summary>
@@ -175,6 +180,9 @@ public partial class ContentList : IDisposable
     /// </summary>
     protected override async Task OnParametersSetAsync()
     {
+        var uri = new Uri(NavigationManager.Uri);
+        CurrentUrl = uri.AbsolutePath;
+
         await LoadContentAsync();
     }
 
@@ -214,7 +222,7 @@ public partial class ContentList : IDisposable
                 {
                     // Get total count first (without pagination)
                     var allItems = await provider.GetItemsByQueryAsync(query);
-                    TotalItems = allItems.Count;
+                    TotalItems = allItems?.Count ?? 0;
 
                     // Then apply pagination
                     query.Skip = (CurrentPage - 1) * ItemsPerPage;
@@ -263,7 +271,8 @@ public partial class ContentList : IDisposable
     /// </summary>
     protected string GetPaginationUrl(int page)
     {
-        return PaginationUrlFormatter?.Invoke(page) ?? $"?page={page}";
+
+        return PaginationUrlFormatter?.Invoke(page) ?? $"{CurrentUrl}?page={page}";
     }
 
     /// <summary>

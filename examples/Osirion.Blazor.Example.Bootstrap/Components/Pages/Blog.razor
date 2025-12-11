@@ -7,9 +7,7 @@
 
 @if (string.IsNullOrWhiteSpace(Slug))
 {
-    <p>
-        The blog slug is not specified. Please provide a valid slug in the URL.
-    </p>
+    <ContentList Locale="@Locale" Directory="blog" ShowPagination ItemsPerPage="12" />
 }
 else
 {

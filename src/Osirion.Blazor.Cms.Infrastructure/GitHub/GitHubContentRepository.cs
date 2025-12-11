@@ -8,6 +8,7 @@ using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Domain.Repositories;
 using Osirion.Blazor.Cms.Infrastructure.Repositories;
 using Osirion.Blazor.Cms.Infrastructure.Utilities;
+using System.IO;
 
 namespace Osirion.Blazor.Cms.Infrastructure.GitHub;
 
@@ -270,6 +271,7 @@ public class GitHubContentRepository : BaseContentRepository
 
         // Store the provider-specific ID (SHA)
         contentItem.SetProviderSpecificId(fileContent.Sha);
+
 
         // Get file history for dates (if needed)
         //try

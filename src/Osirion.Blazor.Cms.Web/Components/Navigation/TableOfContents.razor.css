@@ -61,7 +61,6 @@
         color: var(--osirion-text-tertiary, #9ca3af);
         font-weight: var(--osirion-font-weight-medium, 500);
         margin-right: var(--osirion-spacing-1, 0.25rem);
-        border: none;
     }
 
 .osirion-toc-sublist .osirion-toc-link::before {
