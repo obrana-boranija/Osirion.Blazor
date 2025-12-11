@@ -9,21 +9,21 @@ namespace Osirion.Blazor.Cms.Infrastructure.Caching;
 /// <summary>
 /// Factory for creating cache decorators for repositories
 /// </summary>
-public class CacheDecoratorFactory
+/// <remarks>
+/// Initializes a new instance of the <see cref="CacheDecoratorFactory"/> class
+/// </remarks>
+/// <param name="memoryCache">The memory cache instance</param>
+/// <param name="loggerFactory">The logger factory</param>
+/// <param name="cacheOptions">The cache configuration options</param>
+/// <exception cref="ArgumentNullException">Thrown when required dependencies are null</exception>
+public class CacheDecoratorFactory(
+    IMemoryCache memoryCache,
+    ILoggerFactory loggerFactory,
+    IOptions<CacheOptions> cacheOptions)
 {
-    private readonly IMemoryCache _memoryCache;
-    private readonly ILoggerFactory _loggerFactory;
-    private readonly CacheOptions _cacheOptions;
-
-    public CacheDecoratorFactory(
-        IMemoryCache memoryCache,
-        ILoggerFactory loggerFactory,
-        IOptions<CacheOptions> cacheOptions)
-    {
-        _memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
-        _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
-        _cacheOptions = cacheOptions?.Value ?? new CacheOptions();
-    }
+    private readonly IMemoryCache _memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
+    private readonly ILoggerFactory _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
+    private readonly CacheOptions _cacheOptions = cacheOptions?.Value ?? new CacheOptions();
 
     /// <summary>
     /// Creates a cache decorator for content repositories

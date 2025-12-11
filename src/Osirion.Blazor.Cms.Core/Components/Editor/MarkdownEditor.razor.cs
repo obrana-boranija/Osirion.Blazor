@@ -5,20 +5,93 @@ using System.Text.Json;
 
 namespace Osirion.Blazor.Cms;
 
+/// <summary>
+/// Markdown editor component with toolbar and content editing features.
+/// </summary>
 public partial class MarkdownEditor : IAsyncDisposable
 {
+
     [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
 
-    [Parameter] public string Content { get; set; } = string.Empty;
-    [Parameter] public EventCallback<string> ContentChanged { get; set; }
-    [Parameter] public string Placeholder { get; set; } = "Enter markdown here...";
-    [Parameter] public bool ShowToolbar { get; set; } = true;
-    [Parameter] public bool ShowHeader { get; set; } = true;
-    [Parameter] public string Title { get; set; } = "Editor";
-    [Parameter] public bool AutoFocus { get; set; } = false;
-    [Parameter] public bool SyncScroll { get; set; } = true;
-    [Parameter] public EventCallback<double> OnScroll { get; set; }
-    [Parameter] public List<ToolbarAction>? ToolbarActions { get; set; }
+    /// <summary>
+    /// Gets or sets the markdown content.
+    /// </summary>
+        /// <summary>
+        /// Gets or sets the markdown content.
+        /// </summary>
+        [Parameter] public string Content { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Event callback for when the content changes.
+    /// </summary>
+        /// <summary>
+        /// Event callback for when the content changes.
+        /// </summary>
+        [Parameter] public EventCallback<string> ContentChanged { get; set; }
+
+    /// <summary>
+    /// Gets or sets the placeholder text for the editor.
+    /// </summary>
+        /// <summary>
+        /// Gets or sets the placeholder text for the editor.
+        /// </summary>
+        [Parameter] public string Placeholder { get; set; } = "Enter markdown here...";
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the toolbar is shown.
+    /// </summary>
+        /// <summary>
+        /// Gets or sets a value indicating whether the toolbar is shown.
+        /// </summary>
+        [Parameter] public bool ShowToolbar { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the header is shown.
+    /// </summary>
+        /// <summary>
+        /// Gets or sets a value indicating whether the header is shown.
+        /// </summary>
+        [Parameter] public bool ShowHeader { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets the title of the editor.
+    /// </summary>
+        /// <summary>
+        /// Gets or sets the title of the editor.
+        /// </summary>
+        [Parameter] public string Title { get; set; } = "Editor";
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the editor should autofocus.
+    /// </summary>
+        /// <summary>
+        /// Gets or sets a value indicating whether the editor should autofocus.
+        /// </summary>
+        [Parameter] public bool AutoFocus { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether scroll is synchronized.
+    /// </summary>
+        /// <summary>
+        /// Gets or sets a value indicating whether scroll synchronization is enabled.
+        /// </summary>
+        [Parameter] public bool SyncScroll { get; set; } = true;
+
+    /// <summary>
+    /// Event callback for scroll events.
+    /// </summary>
+        /// <summary>
+        /// Event callback for scroll events.
+        /// </summary>
+        [Parameter] public EventCallback<double> OnScroll { get; set; }
+
+    /// <summary>
+    /// Gets or sets the toolbar actions.
+    /// </summary>
+        /// <summary>
+        /// Gets or sets the toolbar actions.
+        /// </summary>
+        [Parameter] public List<ToolbarAction>? ToolbarActions { get; set; }
 
     private ElementReference TextAreaRef;
     private ElementReference EditorContainer;
@@ -27,6 +100,12 @@ public partial class MarkdownEditor : IAsyncDisposable
     private DotNetObjectReference<MarkdownEditor>? _dotNetReference;
     private List<ToolbarAction> _defaultToolbarActions;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MarkdownEditor"/> class.
+    /// </summary>
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MarkdownEditor"/> class.
+    /// </summary>
     public MarkdownEditor()
     {
         // Initialize default toolbar actions in constructor
@@ -68,6 +147,10 @@ public partial class MarkdownEditor : IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Called when the component is initialized.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     protected override async Task OnInitializedAsync()
     {
         _currentContent = Content;
@@ -81,6 +164,10 @@ public partial class MarkdownEditor : IAsyncDisposable
         await base.OnInitializedAsync();
     }
 
+    /// <summary>
+    /// Called when parameters are set.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     protected override async Task OnParametersSetAsync()
     {
         // Update local content if external content changes
@@ -95,6 +182,11 @@ public partial class MarkdownEditor : IAsyncDisposable
         await base.OnParametersSetAsync();
     }
 
+    /// <summary>
+    /// Called after the component has rendered.
+    /// </summary>
+    /// <param name="firstRender">Indicates if this is the first render.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -200,6 +292,11 @@ public partial class MarkdownEditor : IAsyncDisposable
     }
 
     // Update the InsertTextAsync method
+    /// <summary>
+    /// Inserts text at the current cursor position.
+    /// </summary>
+    /// <param name="text">The text to insert.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     public async Task InsertTextAsync(string text)
     {
         try
@@ -237,6 +334,13 @@ public partial class MarkdownEditor : IAsyncDisposable
     }
 
     // Update the WrapTextAsync method
+    /// <summary>
+    /// Wraps the selected text with the specified prefix and suffix.
+    /// </summary>
+    /// <param name="prefix">The prefix to add.</param>
+    /// <param name="suffix">The suffix to add.</param>
+    /// <param name="defaultText">The default text if nothing is selected.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     public async Task WrapTextAsync(string prefix, string suffix, string defaultText)
     {
         try
@@ -427,6 +531,10 @@ public partial class MarkdownEditor : IAsyncDisposable
     /// <summary>
     /// Clean up resources
     /// </summary>
+    /// <summary>
+    /// Disposes resources used by the editor.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     public async ValueTask DisposeAsync()
     {
         try

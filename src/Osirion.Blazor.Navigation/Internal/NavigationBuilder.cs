@@ -6,7 +6,7 @@ using Osirion.Blazor.Navigation.Services;
 namespace Osirion.Blazor.Navigation.Internal;
 
 /// <summary>
-/// Implementation of the navigation builder
+/// Implementation of the navigation builder.
 /// </summary>
 public class NavigationBuilder : INavigationBuilder
 {

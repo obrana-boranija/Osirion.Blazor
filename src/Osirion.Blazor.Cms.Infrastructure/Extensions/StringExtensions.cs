@@ -3,7 +3,7 @@
 namespace Osirion.Blazor.Cms.Infrastructure.Extensions;
 
 /// <summary>
-/// 
+/// Extension methods for string operations
 /// </summary>
 public static class StringExtensions
 {
@@ -63,7 +63,7 @@ public static class StringExtensions
         // Add random suffix if requested
         if (suffixLength > 0)
         {
-            string lastChar = slugBuilder[slugBuilder.Length - 1].ToString();
+            string lastChar = slugBuilder[^1].ToString();
             if (!char.IsLetter(lastChar, 0))
                 slugBuilder.Append('-');
 
@@ -72,7 +72,7 @@ public static class StringExtensions
         else
         {
             // If no suffix, ensure slug ends with a letter
-            if (slugBuilder.Length > 1 && !char.IsLetter(slugBuilder[slugBuilder.Length - 1]))
+            if (slugBuilder.Length > 1 && !char.IsLetter(slugBuilder[^1]))
                 slugBuilder.Append('z');
         }
 
@@ -86,11 +86,15 @@ public static class StringExtensions
     [ThreadStatic]
     private static Random _random = default!;
 
+    /// <summary>
+    /// Generates a random string of lowercase letters
+    /// </summary>
+    /// <param name="length">The desired length of the random string</param>
+    /// <returns>A string of random lowercase letters</returns>
     private static string GenerateRandomLetters(uint length)
     {
         // Use ThreadStatic Random for better performance in multithreaded environments
-        if (_random is null)
-            _random = new Random();
+        _random ??= new Random();
 
         const string chars = "abcdefghijklmnopqrstuvwxyz";
         char[] result = new char[length];

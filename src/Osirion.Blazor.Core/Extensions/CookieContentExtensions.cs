@@ -53,11 +53,20 @@ public class CookieConsentMiddleware
 {
     private readonly RequestDelegate _next;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CookieConsentMiddleware"/> class.
+    /// </summary>
+    /// <param name="next">The next request delegate in the pipeline.</param>
     public CookieConsentMiddleware(RequestDelegate next)
     {
         _next = next;
     }
 
+    /// <summary>
+    /// Processes the HTTP request to add cookie consent information.
+    /// </summary>
+    /// <param name="context">The HTTP context for the current request.</param>
+    /// <returns>A task that represents the completion of request processing.</returns>
     public async Task InvokeAsync(HttpContext context)
     {
         // Add consent status to HttpContext.Items for easy access

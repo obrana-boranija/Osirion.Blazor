@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 using Osirion.Blazor.Cms.Domain.Options;
+using Osirion.Blazor.Cms.Infrastructure.Services;
 using Shouldly;
 
 namespace Osirion.Blazor.Cms.Infrastructure.Tests.Services;

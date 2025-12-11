@@ -7,6 +7,10 @@ using Osirion.Blazor.Components;
 
 namespace Osirion.Blazor.Cms.Web.Components;
 
+/// <summary>
+/// Base class for content page components in the Osirion CMS.
+/// Provides common parameters and properties for displaying content, hero sections, breadcrumbs, categories, tags, and loading states.
+/// </summary>
 public abstract partial class OsirionContentPageBase : OsirionComponentBase
 {
     /// <summary>
@@ -32,7 +36,7 @@ public abstract partial class OsirionContentPageBase : OsirionComponentBase
     /// <summary>
     /// Gets or sets whether the component is loading
     /// </summary>
-    protected bool IsLoading { get; set; } = true;
+    protected bool IsLoading { get; set; } = false;
 
     /// <summary>
     /// Gets or sets the loading text
@@ -91,6 +95,12 @@ public abstract partial class OsirionContentPageBase : OsirionComponentBase
     /// </summary>
     [Parameter]
     public bool UseHeroBackgroundImage { get; set; }
+
+    /// <summary>
+    /// Gets or sets an overlay if UseHeroBackgroundImage is set to true
+    /// </summary>
+    [Parameter]
+    public bool HasOverlay { get; set; }
 
     /// <summary>
     /// Gets or sets the hero theme: "Light", "Dark", "System". Defaults "System".

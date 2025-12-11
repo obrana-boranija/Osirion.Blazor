@@ -1,11 +1,17 @@
+using Microsoft.AspNetCore.Components;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Services;
+using Osirion.Blazor.Navigation.Components;
 using System.Globalization;
 
 namespace Osirion.Blazor.Example.Bootstrap.Components.Layout;
 
 public partial class NavMenu(IContentProviderManager contentProviderManager)
 {
+    [Parameter]
+    public MenuOrientation Orientation { get; set; } = MenuOrientation.Horizontal;
+
+
     private IReadOnlyList<DirectoryItem> _directories = [];
 
     protected override async Task OnInitializedAsync()

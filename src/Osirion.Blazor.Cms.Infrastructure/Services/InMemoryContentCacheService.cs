@@ -4,22 +4,28 @@ using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Options;
 
-public class InMemoryContentCacheService : IContentCacheService
+namespace Osirion.Blazor.Cms.Infrastructure.Services;
+
+/// <summary>
+/// In-memory implementation of <see cref="IContentCacheService"/> using <see cref="IMemoryCache"/>
+/// </summary>
+/// <remarks>
+/// Initializes a new instance of the <see cref="InMemoryContentCacheService"/> class
+/// </remarks>
+/// <param name="memoryCache">The memory cache service</param>
+/// <param name="logger">The logger instance</param>
+/// <param name="options">Cache configuration options</param>
+/// <exception cref="ArgumentNullException">Thrown when required dependencies are null</exception>
+public class InMemoryContentCacheService(
+    IMemoryCache memoryCache,
+    ILogger<InMemoryContentCacheService> logger,
+    IOptions<CacheOptions> options) : IContentCacheService
 {
-    private readonly IMemoryCache _memoryCache;
-    private readonly ILogger<InMemoryContentCacheService> _logger;
-    private readonly CacheOptions _options;
+    private readonly IMemoryCache _memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
+    private readonly ILogger<InMemoryContentCacheService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    private readonly CacheOptions _options = options?.Value ?? new CacheOptions();
 
-    public InMemoryContentCacheService(
-        IMemoryCache memoryCache,
-        ILogger<InMemoryContentCacheService> logger,
-        IOptions<CacheOptions> options)
-    {
-        _memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _options = options?.Value ?? new CacheOptions();
-    }
-
+    /// <inheritdoc />
     public async Task<T?> GetAsync<T>(string key, CancellationToken cancellationToken = default)
     {
         if (_memoryCache.TryGetValue(key, out T? cachedValue))
@@ -29,6 +35,7 @@ public class InMemoryContentCacheService : IContentCacheService
         return default;
     }
 
+    /// <inheritdoc />
     public async Task<T?> GetOrCreateAsync<T>(
         string key,
         Func<CancellationToken, Task<T>> factory,
@@ -73,12 +80,14 @@ public class InMemoryContentCacheService : IContentCacheService
         }
     }
 
+    /// <inheritdoc />
     public async Task RemoveAsync(string key, CancellationToken cancellationToken = default)
     {
         _memoryCache.Remove(key);
         _logger.LogDebug("Removed {Key} from cache", key);
     }
 
+    /// <inheritdoc />
     public async Task RemoveByPrefixAsync(string prefix, CancellationToken cancellationToken = default)
     {
         // Unfortunately, MemoryCache doesn't support prefix-based removal directly
@@ -90,6 +99,7 @@ public class InMemoryContentCacheService : IContentCacheService
         }
     }
 
+    /// <inheritdoc />
     public async Task ClearAsync(CancellationToken cancellationToken = default)
     {
         if (_memoryCache is MemoryCache cache)
@@ -99,6 +109,7 @@ public class InMemoryContentCacheService : IContentCacheService
         }
     }
 
+    /// <inheritdoc />
     public async Task SetAsync<T>(string key, T value, TimeSpan? expiration = null, CancellationToken cancellationToken = default)
     {
         if (!_options.Enabled || value is null)

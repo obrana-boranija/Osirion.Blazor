@@ -5,6 +5,10 @@ using Osirion.Blazor.Cms.Domain.Repositories;
 
 namespace Osirion.Blazor.Cms.Web.Components;
 
+/// <summary>
+/// Represents the base class for a content detail page in the Osirion CMS.
+/// Provides properties and methods for displaying a single content item, navigation, and related content.
+/// </summary>
 public abstract partial class OsirionContentDetailPageBase : OsirionContentPageBase
 {
     #region Content

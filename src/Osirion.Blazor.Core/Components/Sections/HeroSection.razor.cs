@@ -61,6 +61,12 @@ public partial class HeroSection
     public bool UseBackgroundImage { get; set; } = false;
 
     /// <summary>
+    /// Gets or sets if image has overlay if displayed as a background image
+    /// </summary>
+    [Parameter]
+    public bool HasOverlay { get; set; } = false;
+
+    /// <summary>
     /// 
     /// </summary>
     [Parameter]
@@ -202,11 +208,11 @@ public partial class HeroSection
 
         if (!string.IsNullOrWhiteSpace(ImageUrl))
         {
-            if (UseBackgroundImage)
+            if (UseBackgroundImage && HasOverlay)
             {
                 classes.Add("osirion-hero-with-background");
             }
-            else
+            else if(!UseBackgroundImage)
             {
                 classes.Add("osirion-hero-with-side-image");
                 classes.Add($"osirion-hero-image-{_imageposition.ToString().ToLower()}");

@@ -13,6 +13,12 @@ public class ContentProviderRegistry : IContentProviderRegistry
     private readonly ILogger<ContentProviderRegistry> _logger;
     private string? _defaultProviderId;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ContentProviderRegistry"/> class
+    /// </summary>
+    /// <param name="providers">The collection of content providers</param>
+    /// <param name="logger">The logger instance</param>
+    /// <exception cref="ArgumentNullException">Thrown when required dependencies are null</exception>
     public ContentProviderRegistry(
         IEnumerable<IContentProvider> providers,
         ILogger<ContentProviderRegistry> logger)
@@ -27,8 +33,10 @@ public class ContentProviderRegistry : IContentProviderRegistry
         }
     }
 
+    /// <inheritdoc />
     public IEnumerable<IContentProvider> GetAllProviders() => _providers;
 
+    /// <inheritdoc />
     public IContentProvider? GetDefaultProvider()
     {
         if (string.IsNullOrWhiteSpace(_defaultProviderId))
@@ -39,6 +47,7 @@ public class ContentProviderRegistry : IContentProviderRegistry
         return _providers.FirstOrDefault(p => p.ProviderId == _defaultProviderId);
     }
 
+    /// <inheritdoc />
     public IContentProvider? GetProvider(string providerId)
     {
         if (string.IsNullOrWhiteSpace(providerId))
@@ -54,6 +63,7 @@ public class ContentProviderRegistry : IContentProviderRegistry
         return provider;
     }
 
+    /// <inheritdoc />
     public void SetDefaultProvider(string providerId)
     {
         if (string.IsNullOrWhiteSpace(providerId))

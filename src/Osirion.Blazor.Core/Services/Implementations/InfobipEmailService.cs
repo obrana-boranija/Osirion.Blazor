@@ -17,6 +17,12 @@ public class InfobipEmailService : IEmailService
     private readonly ILogger<InfobipEmailService> _logger;
     private readonly HttpClient _httpClient;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="InfobipEmailService"/> class.
+    /// </summary>
+    /// <param name="emailOptions">The email options configuration.</param>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="httpClient">The HTTP client for API requests.</param>
     public InfobipEmailService(EmailOptions emailOptions, ILogger<InfobipEmailService> logger, HttpClient httpClient)
     {
         _emailOptions = emailOptions;
@@ -59,6 +65,11 @@ public class InfobipEmailService : IEmailService
         }
     }
 
+    /// <summary>
+    /// Creates the Infobip API payload from the contact form data.
+    /// </summary>
+    /// <param name="contactForm">The contact form data.</param>
+    /// <returns>An object representing the Infobip API payload.</returns>
     private object CreateInfobipPayload(ContactFormModel contactForm)
     {
         var infobip = _emailOptions.Infobip;
@@ -103,6 +114,11 @@ public class InfobipEmailService : IEmailService
         return payload;
     }
 
+    /// <summary>
+    /// Creates the HTML email body from the contact form data.
+    /// </summary>
+    /// <param name="contactForm">The contact form data.</param>
+    /// <returns>A formatted HTML string for the email body.</returns>
     private static string CreateEmailBody(ContactFormModel contactForm)
     {
         var body = new StringBuilder();

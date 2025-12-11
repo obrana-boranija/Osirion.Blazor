@@ -17,6 +17,12 @@ public class SendGridEmailService : IEmailService
     private readonly ILogger<SendGridEmailService> _logger;
     private readonly HttpClient _httpClient;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SendGridEmailService"/> class.
+    /// </summary>
+    /// <param name="emailOptions">The email options configuration.</param>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="httpClient">The HTTP client for API requests.</param>
     public SendGridEmailService(EmailOptions emailOptions, ILogger<SendGridEmailService> logger, HttpClient httpClient)
     {
         _emailOptions = emailOptions;
@@ -58,6 +64,11 @@ public class SendGridEmailService : IEmailService
         }
     }
 
+    /// <summary>
+    /// Creates the SendGrid API payload from the contact form data.
+    /// </summary>
+    /// <param name="contactForm">The contact form data.</param>
+    /// <returns>An object representing the SendGrid API payload.</returns>
     private object CreateSendGridPayload(ContactFormModel contactForm)
     {
         var sendGrid = _emailOptions.SendGrid;
@@ -102,6 +113,11 @@ public class SendGridEmailService : IEmailService
         return payload;
     }
 
+    /// <summary>
+    /// Creates the HTML email body from the contact form data.
+    /// </summary>
+    /// <param name="contactForm">The contact form data.</param>
+    /// <returns>A formatted HTML string for the email body.</returns>
     private static string CreateEmailBody(ContactFormModel contactForm)
     {
         var body = new StringBuilder();

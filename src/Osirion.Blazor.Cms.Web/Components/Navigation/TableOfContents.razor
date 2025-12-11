@@ -14,7 +14,7 @@
                             @foreach (var child in heading.Children)
                             {
                                 <li class="osirion-toc-item osirion-toc-level-@child.Level">
-                                    <a href="#@child.Id" class="osirion-toc-link">@child.Text</a>
+                                    <a href="@CurrentUrl#@child.Id" class="osirion-toc-link">@child.Text</a>
                                 </li>
                             }
                         </ol>

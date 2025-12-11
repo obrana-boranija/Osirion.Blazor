@@ -5,6 +5,7 @@
     color: var(--osirion-text-primary, #374151);
     font-size: var(--osirion-font-size-sm, 0.875rem);
     line-height: var(--osirion-line-height-normal, 1.5);
+    padding: var(--osirion-spacing-2, 0.5rem);
 }
 
 .osirion-toc-list {
@@ -60,6 +61,7 @@
         color: var(--osirion-text-tertiary, #9ca3af);
         font-weight: var(--osirion-font-weight-medium, 500);
         margin-right: var(--osirion-spacing-1, 0.25rem);
+        border: none;
     }
 
 .osirion-toc-sublist .osirion-toc-link::before {

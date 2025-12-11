@@ -6,17 +6,27 @@ using System.Threading.Tasks;
 using Osirion.Blazor.Components;
 
 namespace Osirion.Blazor.Theming.Services;
-
+/// <summary>
+/// Detects CSS frameworks used in the application.
+/// </summary>
 public class CssFrameworkDetector : ICssFrameworkDetector
 {
     private readonly string _wwwrootPath;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CssFrameworkDetector"/> class.
+    /// </summary>
+    /// <param name="wwwrootPath">Optional path to wwwroot for testing.</param>
     public CssFrameworkDetector(string? wwwrootPath = null)
     {
         // Allow override for testing
         _wwwrootPath = wwwrootPath ?? Path.Combine(AppContext.BaseDirectory, "wwwroot");
     }
 
+    /// <summary>
+    /// Detects the primary CSS framework used in the application.
+    /// </summary>
+    /// <returns>The detected CSS framework.</returns>
     public async Task<CssFramework> DetectFrameworkAsync()
     {
         var detected = await GetDetectedFrameworksAsync();
@@ -26,6 +36,10 @@ public class CssFrameworkDetector : ICssFrameworkDetector
         return CssFramework.None;
     }
 
+    /// <summary>
+    /// Gets all detected CSS frameworks in the application.
+    /// </summary>
+    /// <returns>List of detected CSS frameworks.</returns>
     public async Task<List<CssFramework>> GetDetectedFrameworksAsync()
     {
         var result = new List<CssFramework>();

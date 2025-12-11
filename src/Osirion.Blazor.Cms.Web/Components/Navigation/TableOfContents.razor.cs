@@ -6,7 +6,7 @@ namespace Osirion.Blazor.Cms.Web.Components;
 /// <summary>
 /// TableOfContents component for extracting and displaying headings from HTML content
 /// </summary>
-public partial class TableOfContents
+public partial class TableOfContents(NavigationManager navigationManager)
 {
     /// <summary>
     /// Gets or sets the HTML content to extract headings from
@@ -43,6 +43,8 @@ public partial class TableOfContents
     /// </summary>
     private IReadOnlyList<HeadingItem> Headings { get; set; } = Array.Empty<HeadingItem>();
 
+    private string CurrentUrl { get; set; } = "/";
+
     /// <inheritdoc/>
     protected override void OnParametersSet()
     {
@@ -54,6 +56,9 @@ public partial class TableOfContents
         {
             Headings = Array.Empty<HeadingItem>();
         }
+
+        var uri = new Uri(navigationManager.Uri);
+        CurrentUrl = uri.AbsolutePath;
     }
 
     /// <summary>

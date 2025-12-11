@@ -24,6 +24,13 @@ public class GitHubApiClient : IGitHubApiClient
     private string _accessToken = string.Empty;
     private string _apiUrl = "https://api.github.com";
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GitHubApiClient"/> class
+    /// </summary>
+    /// <param name="httpClient">The HTTP client to use for API requests</param>
+    /// <param name="options">GitHub API configuration options</param>
+    /// <param name="logger">The logger instance</param>
+    /// <exception cref="ArgumentNullException">Thrown if required dependencies are null</exception>
     public GitHubApiClient(
     HttpClient httpClient,
     IOptions<GitHubOptions> options,
@@ -105,7 +112,7 @@ public class GitHubApiClient : IGitHubApiClient
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
             var repositories = JsonSerializer.Deserialize<List<GitHubRepository>>(content, _jsonOptions);
 
-            return repositories ?? new List<GitHubRepository>();
+            return repositories ?? [];
         }
         catch (Exception ex)
         {
@@ -133,7 +140,7 @@ public class GitHubApiClient : IGitHubApiClient
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
             var branches = JsonSerializer.Deserialize<List<GitHubBranch>>(content, _jsonOptions);
 
-            return branches ?? new List<GitHubBranch>();
+            return branches ?? [];
         }
         catch (Exception ex)
         {
@@ -170,13 +177,13 @@ public class GitHubApiClient : IGitHubApiClient
             {
                 // Try to deserialize as array first
                 var items = JsonSerializer.Deserialize<List<GitHubItem>>(content, _jsonOptions);
-                return items ?? new List<GitHubItem>();
+                return items ?? [];
             }
             catch
             {
                 // If that fails, try to deserialize as a single item
                 var item = JsonSerializer.Deserialize<GitHubItem>(content, _jsonOptions);
-                return item is not null ? new List<GitHubItem> { item } : new List<GitHubItem>();
+                return item is not null ? [item] : [];
             }
         }
         catch (Exception ex)
@@ -260,12 +267,7 @@ public class GitHubApiClient : IGitHubApiClient
             var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
             var commitResponse = JsonSerializer.Deserialize<GitHubFileCommitResponse>(responseContent, _jsonOptions);
 
-            if (commitResponse is null)
-            {
-                throw new Exception($"Failed to deserialize commit response for {path}");
-            }
-
-            return commitResponse;
+            return commitResponse is null ? throw new Exception($"Failed to deserialize commit response for {path}") : commitResponse;
         }
         catch (Exception ex)
         {
@@ -307,12 +309,7 @@ public class GitHubApiClient : IGitHubApiClient
             var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
             var commitResponse = JsonSerializer.Deserialize<GitHubFileCommitResponse>(responseContent, _jsonOptions);
 
-            if (commitResponse is null)
-            {
-                throw new Exception($"Failed to deserialize commit response for {path}");
-            }
-
-            return commitResponse;
+            return commitResponse is null ? throw new Exception($"Failed to deserialize commit response for {path}") : commitResponse;
         }
         catch (Exception ex)
         {
@@ -365,12 +362,7 @@ public class GitHubApiClient : IGitHubApiClient
             var branchContent = await branchResponse.Content.ReadAsStringAsync(cancellationToken);
             var branch = JsonSerializer.Deserialize<GitHubBranch>(branchContent, _jsonOptions);
 
-            if (branch is null)
-            {
-                throw new Exception($"Failed to get details for new branch {branchName}");
-            }
-
-            return branch;
+            return branch is null ? throw new Exception($"Failed to get details for new branch {branchName}") : branch;
         }
         catch (Exception ex)
         {
@@ -408,12 +400,7 @@ public class GitHubApiClient : IGitHubApiClient
             var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
             var pullRequest = JsonSerializer.Deserialize<GitHubPullRequest>(responseContent, _jsonOptions);
 
-            if (pullRequest is null)
-            {
-                throw new Exception("Failed to deserialize pull request response");
-            }
-
-            return pullRequest;
+            return pullRequest is null ? throw new Exception("Failed to deserialize pull request response") : pullRequest;
         }
         catch (Exception ex)
         {
@@ -453,7 +440,7 @@ public class GitHubApiClient : IGitHubApiClient
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
             var searchResult = JsonSerializer.Deserialize<GitHubSearchResult>(content, _jsonOptions);
 
-            return searchResult ?? new GitHubSearchResult { Items = new List<GitHubItem>() };
+            return searchResult ?? new GitHubSearchResult { Items = [] };
         }
         catch (Exception ex)
         {
@@ -529,8 +516,19 @@ public class GitHubApiClient : IGitHubApiClient
 /// </summary>
 public class GitHubRef
 {
+    /// <summary>
+    /// Gets or sets the reference name
+    /// </summary>
     public string Ref { get; set; } = string.Empty;
+    
+    /// <summary>
+    /// Gets or sets the reference URL
+    /// </summary>
     public string Url { get; set; } = string.Empty;
+    
+    /// <summary>
+    /// Gets or sets the reference object
+    /// </summary>
     public GitHubRefObject? Object { get; set; }
 }
 
@@ -539,7 +537,18 @@ public class GitHubRef
 /// </summary>
 public class GitHubRefObject
 {
+    /// <summary>
+    /// Gets or sets the SHA hash
+    /// </summary>
     public string Sha { get; set; } = string.Empty;
+    
+    /// <summary>
+    /// Gets or sets the object type
+    /// </summary>
     public string Type { get; set; } = string.Empty;
+    
+    /// <summary>
+    /// Gets or sets the object URL
+    /// </summary>
     public string Url { get; set; } = string.Empty;
 }

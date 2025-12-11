@@ -1,0 +1,41 @@
+﻿@using Osirion.Blazor.Components
+@using Osirion.Blazor.Navigation.Components
+@using Osirion.Blazor.Theming.Components
+@inherits LayoutComponentBase
+
+<link href="css/documentation-layout.css" rel="stylesheet" />
+
+<OsirionPageLayout StickyFooter>
+    <Body>
+        <div class="documentation-layout">
+            <input type="checkbox" id="sidebar-toggle-input" class="sidebar-toggle-input" />
+            <div class="sidebar-container compact-sidebar">
+                <div class="sidebar-header">
+                    <h4>Documentation</h4>
+                    <label for="sidebar-toggle-input" class="sidebar-toggle" aria-label="Toggle sidebar">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/>
+                        </svg>
+                    </label>
+                </div>
+                <div class="sidebar-content">
+                    <NavMenu Orientation="MenuOrientation.Vertical" />
+                </div>
+            </div>
+            <div class="content-container">
+                @Body
+            </div>
+        </div>
+    </Body>
+
+    <Footer>
+        <Footer />
+    </Footer>
+</OsirionPageLayout>
+
+<style>
+    /* Local overrides for compact layout */
+    .compact-sidebar {
+        font-size: 0.9rem;
+    }
+</style>

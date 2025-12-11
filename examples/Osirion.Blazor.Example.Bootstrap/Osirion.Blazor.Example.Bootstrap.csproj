@@ -18,6 +18,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="wwwroot\css\documentation-layout.css" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="compilerconfig.json" />
   </ItemGroup>
 

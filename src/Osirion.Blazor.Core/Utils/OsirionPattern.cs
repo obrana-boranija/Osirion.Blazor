@@ -1,8 +1,15 @@
 ﻿namespace Osirion.Blazor.Components;
 
-
+/// <summary>
+/// Utility class for generating CSS class names for various pattern types.
+/// </summary>
 public static class OsirionPattern
 {
+    /// <summary>
+    /// Gets the CSS class name for a specific background pattern type.
+    /// </summary>
+    /// <param name="type">The background pattern type.</param>
+    /// <returns>A CSS class name corresponding to the pattern type, or an empty string if null.</returns>
     public static string BackgroundPattern(BackgroundPatternType? type)
     {
         return type switch

@@ -11,16 +11,14 @@ namespace Osirion.Blazor.Core.Services.Implementations;
 /// <summary>
 /// SMTP email service implementation
 /// </summary>
-public class SmtpEmailService : IEmailService
+/// <remarks>
+/// Initializes a new instance of the <see cref="SmtpEmailService"/> class.
+/// </remarks>
+/// <param name="emailOptions">The email options configuration.</param>
+/// <param name="logger">The logger instance.</param>
+public class SmtpEmailService(IOptions<EmailOptions> emailOptions, ILogger<SmtpEmailService> logger) : IEmailService
 {
-    private readonly EmailOptions _emailOptions;
-    private readonly ILogger<SmtpEmailService> _logger;
-
-    public SmtpEmailService(IOptions<EmailOptions> emailOptions, ILogger<SmtpEmailService> logger)
-    {
-        _emailOptions = emailOptions.Value;
-        _logger = logger;
-    }
+    private readonly EmailOptions _emailOptions = emailOptions.Value;
 
     /// <inheritdoc />
     public async Task<EmailResult> SendEmailAsync(ContactFormModel contactForm, CancellationToken cancellationToken = default)
@@ -30,20 +28,24 @@ public class SmtpEmailService : IEmailService
             using var client = CreateSmtpClient();
             using var message = CreateMailMessage(contactForm);
 
-            _logger.LogInformation("Sending email via SMTP to {ToEmail}", _emailOptions.ToEmail);
+            logger.LogInformation("Sending email via SMTP to {ToEmail}", _emailOptions.ToEmail);
             
             await client.SendMailAsync(message, cancellationToken);
             
-            _logger.LogInformation("Email sent successfully via SMTP");
+            logger.LogInformation("Email sent successfully via SMTP");
             return EmailResult.Success("Email sent via SMTP");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to send email via SMTP");
+            logger.LogError(ex, "Failed to send email via SMTP");
             return EmailResult.Failure($"SMTP error: {ex.Message}", ex.ToString());
         }
     }
 
+    /// <summary>
+    /// Creates an SMTP client with configuration from email options.
+    /// </summary>
+    /// <returns>A configured SMTP client.</returns>
     private SmtpClient CreateSmtpClient()
     {
         var smtp = _emailOptions.Smtp;
@@ -58,6 +60,11 @@ public class SmtpEmailService : IEmailService
         return client;
     }
 
+    /// <summary>
+    /// Creates a mail message from the contact form data.
+    /// </summary>
+    /// <param name="contactForm">The contact form data.</param>
+    /// <returns>A configured mail message.</returns>
     private MailMessage CreateMailMessage(ContactFormModel contactForm)
     {
         var smtp = _emailOptions.Smtp;
@@ -77,6 +84,11 @@ public class SmtpEmailService : IEmailService
         return message;
     }
 
+    /// <summary>
+    /// Creates the HTML email body from the contact form data.
+    /// </summary>
+    /// <param name="contactForm">The contact form data.</param>
+    /// <returns>A formatted HTML string for the email body.</returns>
     private static string CreateEmailBody(ContactFormModel contactForm)
     {
         var body = new StringBuilder();

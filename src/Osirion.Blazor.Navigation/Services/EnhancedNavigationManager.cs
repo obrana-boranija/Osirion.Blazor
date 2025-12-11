@@ -5,7 +5,7 @@ using Osirion.Blazor.Navigation.Options;
 namespace Osirion.Blazor.Navigation.Services;
 
 /// <summary>
-/// Manages enhanced navigation behavior
+/// Manages enhanced navigation behavior.
 /// </summary>
 public class EnhancedNavigationManager
 {
