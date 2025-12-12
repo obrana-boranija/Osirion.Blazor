@@ -4,20 +4,31 @@
 @page "/{locale}/category/{CategorySlug?}"
 @using Osirion.Blazor.Cms.Components
 @using Osirion.Blazor.Cms.Web.Components
+@using Osirion.Blazor.Components
 
-<PageTitle>@(string.IsNullOrWhiteSpace(CategorySlug) ? "Categories" : $"Category: {CategorySlug}")</PageTitle>
+<PageTitle>@(string.IsNullOrWhiteSpace(CategorySlug) ? "Categories" : $"Category: {Title}")</PageTitle>
 
-@if (string.IsNullOrWhiteSpace(CategorySlug))
-{
-    <div class="alert alert-info">
-        Select a category to view content.
-    </div>
-}
-else
-{
-    <ContentList Locale="@Locale"
-                 Directory="blog"
-                 Category="@CategorySlug"
-                 ShowPagination
-                 ItemsPerPage="12" />
-}
+<HeroSection Title="@($"Category: {Title}")"
+             Subtitle="@($"All related articles for category \"{Title}\"")"
+             ImageUrl="assets/images/blazor-cover.png"
+             BackgroundPattern="BackgroundPatternType.Grid"
+             Alignment="Alignment.Right"
+             Variant="HeroVariant.Hero" />
+
+<div class="container-xxl">
+
+    @if (string.IsNullOrWhiteSpace(CategorySlug))
+    {
+        <div class="alert alert-info">
+            Select a category to view content.
+        </div>
+    }
+    else
+    {
+        <ContentList Locale="@Locale"
+                     Directory="blog"
+                     Category="@CategorySlug"
+                     ShowPagination
+                     ItemsPerPage="12" />
+    }
+</div>

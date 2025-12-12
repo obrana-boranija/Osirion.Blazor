@@ -103,6 +103,12 @@ public abstract partial class OsirionContentPageBase : OsirionComponentBase
     public bool HasOverlay { get; set; }
 
     /// <summary>
+    /// Gets or sets hero image. If not set, it will use Item?.FeaturedImageUrl property value. 
+    /// </summary>
+    [Parameter]
+    public string? HeroImageUrl { get; set; }
+
+    /// <summary>
     /// Gets or sets the hero theme: "Light", "Dark", "System". Defaults "System".
     /// </summary>
     [Parameter]

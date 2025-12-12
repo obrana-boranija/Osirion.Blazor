@@ -30,16 +30,17 @@
     position: absolute;
     inset: 0;
     background: rgba(0, 0, 0, 0.4);
-    opacity: 0;
-    transition: opacity var(--osirion-transition-duration-300, 0.3s) ease;
+    z-index: 0;
 }
 
-.osirion-hero-section.osirion-hero-with-background .osirion-hero-overlay {
-    opacity: 1;
-}
-
-.osirion-hero-section.osirion-hero-with-background {
+/* White text only when overlay is enabled */
+.osirion-hero-section.osirion-hero-with-overlay {
     color: white;
+}
+
+/* Background image without overlay keeps default colors */
+.osirion-hero-section.osirion-hero-with-background:not(.osirion-hero-with-overlay) {
+    color: var(--osirion-text-primary, #374151);
 }
 /* Container */
 .osirion-hero-container {
@@ -49,6 +50,7 @@
     max-width: var(--osirion-container-xxl, 1320px);
     margin: 0 auto;
     padding: var(--osirion-spacing-8, 2rem) var(--osirion-spacing-4, 1rem);
+    box-sizing: border-box;
 }
 /* Grid layout */
 .osirion-hero-grid {
@@ -61,6 +63,16 @@
 /* Grid areas */
 .osirion-hero-content {
     grid-area: content;
+    max-width: 100%;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+}
+
+/* Constrain content width when using background image */
+.osirion-hero-section.osirion-hero-with-background .osirion-hero-content {
+    max-width: 100%;
+    width: 100%;
+    margin: 0 auto;
 }
 
 .osirion-hero-image-container {
@@ -70,6 +82,12 @@
 .osirion-hero-with-side-image .osirion-hero-grid {
     grid-template-columns: 1fr 1fr;
     grid-template-areas: "content image";
+}
+
+/* Ensure background image layouts stay single column - must come after side-image */
+.osirion-hero-section.osirion-hero-with-background .osirion-hero-grid {
+    grid-template-columns: 1fr !important;
+    grid-template-areas: "content" !important;
 }
 /* Image on the left variant */
 .osirion-hero-with-side-image.osirion-hero-image-left .osirion-hero-grid {
@@ -296,27 +314,42 @@
     .osirion-hero-with-side-image .osirion-hero-grid {
         gap: var(--osirion-spacing-8, 2rem);
     }
+    
+    /* Keep background images single column */
+    .osirion-hero-section.osirion-hero-with-background .osirion-hero-grid {
+        grid-template-columns: 1fr !important;
+    }
 }
 
 @media (min-width: 992px) {
     .osirion-hero-container {
-        padding: var(--osirion-spacing-12, 3rem) 0;
+        padding: var(--osirion-spacing-12, 3rem) var(--osirion-spacing-8, 2rem);
     }
 
     .osirion-hero-variant-jumbotron .osirion-hero-container {
-        padding: var(--osirion-spacing-12, 2.5rem) 0;
+        padding: var(--osirion-spacing-12, 2.5rem) var(--osirion-spacing-8, 2rem);
     }
 
     .osirion-hero-variant-hero .osirion-hero-container {
-        padding: var(--osirion-spacing-8, 1.5rem) 0;
+        padding: var(--osirion-spacing-8, 1.5rem) var(--osirion-spacing-8, 2rem);
     }
 
     .osirion-hero-variant-minimal .osirion-hero-container {
-        padding: var(--osirion-spacing-6, 1.5rem) 0;
+        padding: var(--osirion-spacing-6, 1.5rem) var(--osirion-spacing-8, 2rem);
     }
 
     .osirion-hero-with-side-image .osirion-hero-grid {
         gap: var(--osirion-spacing-10, 2.5rem);
+    }
+    
+    /* Keep background images single column */
+    .osirion-hero-section.osirion-hero-with-background .osirion-hero-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    /* Constrain content on larger screens for readability with background images */
+    .osirion-hero-section.osirion-hero-with-background .osirion-hero-content {
+        max-width: 900px;
     }
 }
 
@@ -326,7 +359,12 @@
     }
 
     .osirion-hero-container {
-        padding: var(--osirion-spacing-6, 1.5rem) var(--osirion-spacing-5, 1.25rem);
+        padding: var(--osirion-spacing-6, 1.5rem) var(--osirion-spacing-4, 1rem);
+    }
+    
+    /* Full width content on mobile for background images */
+    .osirion-hero-section.osirion-hero-with-background .osirion-hero-content {
+        max-width: 100%;
     }
 
     .osirion-hero-variant-jumbotron .osirion-hero-container {

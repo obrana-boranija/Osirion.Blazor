@@ -7,7 +7,7 @@ namespace Osirion.Blazor.Components;
 /// A dedicated contact information section component that displays contact details
 /// such as address, phone, email, and website with consistent styling and accessibility.
 /// </summary>
-public partial class OsirionContactInfoSection : OsirionComponentBase
+public partial class OsirionContactInfoSection(NavigationManager navigationManager) : OsirionComponentBase
 {
     /// <summary>
     /// Gets or sets the title for the contact information section.
@@ -47,17 +47,13 @@ public partial class OsirionContactInfoSection : OsirionComponentBase
 
     #region Helper Methods
 
-    private string GetWebsiteDisplayText()
+    private string GetWebsiteDisplayText(string website)
     {
-        if (string.IsNullOrWhiteSpace(ContactInfo?.Website))
+        if (string.IsNullOrWhiteSpace(website))
             return string.Empty;
 
-        var url = ContactInfo.Website;
-        if (url.StartsWith("http://") || url.StartsWith("https://"))
-        {
-            return url.Replace("http://", "").Replace("https://", "");
-        }
-        return url;
+        var baseUrl = website.Replace("http://", "").Replace("https://", "").Split("/", StringSplitOptions.RemoveEmptyEntries);
+        return baseUrl is not null ? baseUrl[0] : "/";
     }
 
     private string GetContactInfoSectionClass()
@@ -65,6 +61,34 @@ public partial class OsirionContactInfoSection : OsirionComponentBase
         var classes = new List<string> { "osirion-contact-info-section" };
 
         return CombineCssClasses(string.Join(" ", classes));
+    }
+
+    private string[] Phones()
+    {
+        if (string.IsNullOrWhiteSpace(ContactInfo?.Phone))
+        {
+            return Array.Empty<string>();
+        }
+
+        return ContactInfo.Phone.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+    }
+
+    private string[] Emails()
+    {
+        if (string.IsNullOrWhiteSpace(ContactInfo?.Email))
+        {
+            return Array.Empty<string>();
+        }
+        return ContactInfo.Email.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+    }
+
+    private string[] Websites()
+    {
+        if (string.IsNullOrWhiteSpace(ContactInfo?.Website))
+        {
+            return Array.Empty<string>();
+        }
+        return ContactInfo.Website.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
     }
 
     #endregion

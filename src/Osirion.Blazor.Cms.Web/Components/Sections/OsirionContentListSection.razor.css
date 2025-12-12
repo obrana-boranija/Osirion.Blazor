@@ -28,7 +28,7 @@
 }
 
 /* Grid Layout */
-/*.osirion-featured-posts.osirion-layout-grid {
+.osirion-featured-posts.osirion-layout-grid {
     display: grid;
     gap: var(--osirion-grid-gap, 1.5rem);
 }
@@ -47,10 +47,10 @@
 
 .osirion-layout-grid.osirion-cols-4 {
     grid-template-columns: repeat(4, 1fr);
-}*/
+}
 
 /* List Layout */
-/*.osirion-featured-posts.osirion-layout-list {
+.osirion-featured-posts.osirion-layout-list {
     display: flex;
     flex-direction: column;
     gap: var(--osirion-spacing-6, 1.5rem);
@@ -65,32 +65,32 @@
 .osirion-layout-list .osirion-featured-post-image-container,
 .osirion-layout-list .osirion-featured-post-image-placeholder {
     flex: 0 0 var(--osirion-list-image-width, 200px);
-}*/
+}
 
 /* Featured First Layout */
-/*.osirion-layout-featured-first {
-    display: grid;
-    grid-template-columns: 1fr;
+.osirion-layout-featured-first {
+    display: flex;
+    flex-direction: column;
     gap: var(--osirion-spacing-8, 2rem);
 }
 
+    /* First featured post - large and spans full width */
     .osirion-layout-featured-first .osirion-featured-post:first-child {
-        grid-column: 1 / -1;
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: var(--osirion-spacing-8, 2rem);
         align-items: center;
     }
 
-    .osirion-layout-featured-first .osirion-featured-post:not(:first-child) {
-        display: grid;*/
-        /*grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));*/
-        /*grid-template-columns: repeat(4, 1fr);
-        gap: var(--osirion-spacing-6, 1.5rem);
-    }*/
+    /* Container for all posts after the first one */
+    .osirion-layout-featured-first .osirion-featured-post {
+        display: grid;
+        gap: var(--osirion-grid-gap, 1.5rem);
+        grid-template-columns: repeat(3, 1fr);
+    }
 
 /* Carousel Layout */
-/*.osirion-layout-carousel {
+.osirion-layout-carousel {
     display: flex;
     overflow-x: auto;
     scroll-behavior: smooth;
@@ -103,7 +103,31 @@
     .osirion-layout-carousel .osirion-featured-post {
         flex: 0 0 var(--osirion-carousel-item-width, 300px);
         scroll-snap-align: start;
-    }*/
+    }
+
+.osirion-featured-post-categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--osirion-spacing-1, .25rem);
+    align-items: start;
+}
+
+.osirion-featured-post-category {
+    display: flex;
+    width: fit-content;
+    padding: 0.25rem 0.75rem;
+    background-color: var(--osirion-category-background, var(--osirion-accent-background, rgba(37, 99, 235, 0.1)));
+    color: var(--osirion-text-primary);
+    border-radius: var(--osirion-radius-sm);
+    text-decoration: none;
+    font-weight: var(--osirion-font-weight-medium, 500);
+    transition: background-color var(--osirion-transition-duration-200, 0.2s) ease;
+}
+
+    .osirion-featured-post-category:hover {
+        background-color: var(--osirion-category-background-hover, var(--osirion-accent-background-hover, rgba(37, 99, 235, 0.2)));
+        text-decoration: none;
+    }
 
 /* Featured Post Card */
 .osirion-featured-post {

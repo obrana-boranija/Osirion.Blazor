@@ -11,17 +11,17 @@ public class ContactInformation
     public string Address { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the phone number.
+    /// Gets or sets the phone number(s). Multiple values can be separated by commas.
     /// </summary>
     public string Phone { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the email address.
+    /// Gets or sets the email address. Multiple values can be separated by commas.
     /// </summary>
     public string Email { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the website URL.
+    /// Gets or sets the website URL. Multiple values can be separated by commas.
     /// </summary>
     public string Website { get; set; } = string.Empty;
 

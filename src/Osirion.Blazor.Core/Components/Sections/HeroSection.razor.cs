@@ -208,11 +208,15 @@ public partial class HeroSection
 
         if (!string.IsNullOrWhiteSpace(ImageUrl))
         {
-            if (UseBackgroundImage && HasOverlay)
+            if (UseBackgroundImage)
             {
                 classes.Add("osirion-hero-with-background");
+                if (HasOverlay)
+                {
+                    classes.Add("osirion-hero-with-overlay");
+                }
             }
-            else if(!UseBackgroundImage)
+            else
             {
                 classes.Add("osirion-hero-with-side-image");
                 classes.Add($"osirion-hero-image-{_imageposition.ToString().ToLower()}");

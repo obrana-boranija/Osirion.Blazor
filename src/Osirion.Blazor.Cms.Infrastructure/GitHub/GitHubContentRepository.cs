@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Exceptions;
 using Osirion.Blazor.Cms.Domain.Interfaces;
+using Osirion.Blazor.Cms.Domain.Interfaces.Content;
 using Osirion.Blazor.Cms.Domain.Models.GitHub;
 using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Domain.Repositories;
@@ -25,11 +26,12 @@ public class GitHubContentRepository : BaseContentRepository
     public GitHubContentRepository(
         IGitHubApiClientFactory apiClientFactory,
         IMarkdownProcessor markdownProcessor,
+        IContentQueryFilter queryFilter,
         IOptions<GitHubOptions> options,
         IDirectoryRepository directoryRepository,
         ILogger<GitHubContentRepository> logger,
         string? providerName = null)
-        : base(GetProviderId(options.Value, providerName), markdownProcessor, logger)
+        : base(GetProviderId(options.Value, providerName), markdownProcessor, queryFilter, logger)
     {
         _directoryRepository = directoryRepository ?? throw new ArgumentNullException(nameof(directoryRepository));
         _options = options?.Value ?? throw new ArgumentNullException(nameof(options));

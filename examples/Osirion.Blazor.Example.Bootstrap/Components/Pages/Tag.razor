@@ -5,35 +5,10 @@
 @using Osirion.Blazor.Cms.Components
 @using Osirion.Blazor.Cms.Web.Components
 
-<PageTitle>@(string.IsNullOrWhiteSpace(TagSlug) ? "Tags" : $"Tag: {TagDisplayName}")</PageTitle>
+<PageTitle>@(string.IsNullOrWhiteSpace(TagSlug) ? "Tags" : $"Tag: {TagSlug}")</PageTitle>
 
-@if (string.IsNullOrWhiteSpace(TagSlug))
-{
-    <div class="alert alert-info">
-        Select a tag to view content.
-    </div>
-
-    <TagCloud Title="Browse Tags"
-              TagUrlFormatter="FormatTagUrl" />
-}
-else if (!TagExists)
-{
-    <div class="alert alert-warning">
-        The tag '@TagSlug' could not be found.
-    </div>
-
-    <TagCloud Title="Browse Tags"
-              ActiveTag="@TagSlug"
-              TagUrlFormatter="FormatTagUrl" />
-}
-else
-{
-    <ContentList Locale="@Locale"
-                 Tag="@ResolvedTagName"
-                 ShowPagination
-                 ItemsPerPage="12" />
-
-    <TagCloud Title="Browse More Tags"
-              ActiveTag="@TagSlug"
-              TagUrlFormatter="FormatTagUrl" />
-}
+<ContentList Locale="@Locale"
+             Directory="blog"
+             Tag="@TagSlug"
+             ShowPagination
+             ItemsPerPage="12" />

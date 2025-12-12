@@ -26,7 +26,7 @@
                          Theme="HeroTheme"
                          UseBackgroundImage="UseHeroBackgroundImage"
                          HasOverlay="HasOverlay"
-                         ImageUrl="@Item?.FeaturedImageUrl"
+                         ImageUrl="@(HeroImageUrl ?? Item?.FeaturedImageUrl)"
                          ImageAlt="@Item?.Title"
                          ImagePosition="HeroImagePosition"
                          Alignment="HeroAlignment"

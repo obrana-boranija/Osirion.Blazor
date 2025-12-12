@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Domain.Interfaces;
+using Osirion.Blazor.Cms.Domain.Interfaces.Content;
 using Osirion.Blazor.Cms.Domain.Interfaces.Directory;
 using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Domain.Services;
@@ -113,6 +114,7 @@ public static class GitHubProviderRegistrationExtensions
             var markdownProcessor = serviceProvider.GetRequiredService<IMarkdownProcessor>();
             var directoryRepo = serviceProvider.GetRequiredKeyedService<GitHubDirectoryRepository>(directoryRepoKey);
             var logger = serviceProvider.GetRequiredService<ILogger<GitHubContentRepository>>();
+            var queryFilter = serviceProvider.GetRequiredService<IContentQueryFilter>();
 
             // Create provider-specific options
             var options = new GitHubOptions();
@@ -122,6 +124,7 @@ public static class GitHubProviderRegistrationExtensions
             return new GitHubContentRepository(
                 apiClientFactory,
                 markdownProcessor,
+                queryFilter,
                 optionsWrapper,
                 directoryRepo,
                 logger,

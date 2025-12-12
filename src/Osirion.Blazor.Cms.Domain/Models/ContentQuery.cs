@@ -115,6 +115,7 @@ public class ContentQuery
     /// <summary>
     /// Gets or sets whether to include content items from subdirectories
     /// </summary>
+    [Obsolete("Not properly implemented")]
     public bool IncludeSubdirectories { get; set; }
 
     /// <summary>

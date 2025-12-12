@@ -1,13 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Interfaces;
+using Osirion.Blazor.Cms.Domain.Interfaces.Content;
 using Osirion.Blazor.Cms.Domain.Repositories;
-using Osirion.Blazor.Cms.Domain.ValueObjects;
 using Osirion.Blazor.Cms.Infrastructure.Utilities;
 using System.Globalization;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Transactions;
 
 namespace Osirion.Blazor.Cms.Infrastructure.Repositories;
 
@@ -17,6 +15,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.Repositories;
 public abstract class BaseContentRepository : RepositoryBase<ContentItem, string>, IContentRepository
 {
     protected readonly IMarkdownProcessor MarkdownProcessor;
+    protected readonly IContentQueryFilter QueryFilter;
     protected readonly SemaphoreSlim CacheLock = new(1, 1);
 
     // Simplified cache - no time-based expiration
@@ -37,10 +36,12 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
     protected BaseContentRepository(
         string providerId,
         IMarkdownProcessor markdownProcessor,
+        IContentQueryFilter queryFilter,
         ILogger logger)
         : base(providerId, logger)
     {
         MarkdownProcessor = markdownProcessor ?? throw new ArgumentNullException(nameof(markdownProcessor));
+        QueryFilter = queryFilter ?? throw new ArgumentNullException(nameof(queryFilter));
     }
 
     protected abstract Task<Dictionary<string, ContentItem>> LoadItemsIntoCache(CancellationToken cancellationToken);
@@ -289,24 +290,9 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
             await EnsureCacheIsLoaded(cancellationToken);
 
             var filteredItems = ItemCache.Values.AsQueryable();
-            var someList = filteredItems.ToList();
 
-            // Apply query filters
-            filteredItems = ApplyQueryFilters(filteredItems, query);
-
-            // Apply sorting
-            filteredItems = ApplySorting(filteredItems, query.SortBy, query.SortDirection);
-
-            // Apply pagination
-            if (query.Skip.HasValue)
-            {
-                filteredItems = filteredItems.Skip(query.Skip.Value);
-            }
-
-            if (query.Take.HasValue)
-            {
-                filteredItems = filteredItems.Take(query.Take.Value);
-            }
+            // Apply query filters, sorting, and pagination - all handled by QueryFilter
+            filteredItems = QueryFilter.ApplyFilters(filteredItems, query);
 
             return filteredItems.ToList();
         }
@@ -605,193 +591,6 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
             .Replace("\n", "\\n")
             .Replace("\r", "\\r")
             .Replace("\t", "\\t");
-    }
-
-    /// <summary>
-    /// Applies query filters to a queryable collection of content items
-    /// </summary>
-    protected IQueryable<ContentItem> ApplyQueryFilters(IQueryable<ContentItem> items, ContentQuery query)
-    {
-        var filteredItems = items;
-
-        if (!string.IsNullOrWhiteSpace(query.Path))
-        {
-            filteredItems = filteredItems.Where(item => UrlGenerator.NormalizePath(item.Path).Contains(UrlGenerator.NormalizePath(query.Path), StringComparison.OrdinalIgnoreCase));
-        }
-
-
-        if (!string.IsNullOrWhiteSpace(query.Directory))
-        {
-            var normalizedDirectory = UrlGenerator.NormalizePath(query.Directory);
-            filteredItems = filteredItems.Where(item =>
-                item.Directory != null && UrlGenerator.NormalizePath(item.Directory.Name).Equals(UrlGenerator.NormalizePath(query.Directory), StringComparison.OrdinalIgnoreCase));
-        }
-
-        if (!string.IsNullOrWhiteSpace(query.DirectoryId))
-        {
-            filteredItems = filteredItems.Where(item =>
-                item.Directory != null && item.Directory.Id == query.DirectoryId);
-        }
-
-        if (!string.IsNullOrWhiteSpace(query.Slug))
-        {
-            filteredItems = filteredItems.Where(item =>
-                item.Slug != null && UrlGenerator.NormalizePath(item.Slug).Equals(UrlGenerator.NormalizePath(query.Slug), StringComparison.OrdinalIgnoreCase));
-        }
-
-        if (!string.IsNullOrWhiteSpace(query.Url))
-        {
-            filteredItems = filteredItems.Where(item =>
-                item.Url != null && UrlGenerator.NormalizePath(item.Url).Equals(UrlGenerator.NormalizePath(query.Url), StringComparison.OrdinalIgnoreCase));
-        }
-
-        if (!string.IsNullOrWhiteSpace(query.Category))
-        {
-            filteredItems = filteredItems.Where(item =>
-                item.Categories.Any(c => c.Equals(query.Category, StringComparison.OrdinalIgnoreCase)));
-        }
-
-        if (query.Categories is not null && query.Categories.Any())
-        {
-            filteredItems = filteredItems.Where(item =>
-                query.Categories.All(c =>
-                    item.Categories.Any(itemCat =>
-                        itemCat.Equals(c, StringComparison.OrdinalIgnoreCase))));
-        }
-
-        if (!string.IsNullOrWhiteSpace(query.Tag))
-        {
-            filteredItems = filteredItems.Where(item =>
-                item.Tags.Any(t => t.Equals(query.Tag.Replace("-", " "), StringComparison.OrdinalIgnoreCase)));
-        }
-
-        if (query.Tags is not null && query.Tags.Any())
-        {
-            filteredItems = filteredItems.Where(item =>
-                query.Tags.All(t =>
-                    item.Tags.Any(itemTag =>
-                        itemTag.Equals(t, StringComparison.OrdinalIgnoreCase))));
-        }
-
-        if (query.IsFeatured.HasValue)
-        {
-            filteredItems = filteredItems.Where(item => item.IsFeatured == query.IsFeatured.Value);
-        }
-
-        if (!string.IsNullOrWhiteSpace(query.Author))
-        {
-            filteredItems = filteredItems.Where(item =>
-                item.Author.Equals(query.Author, StringComparison.OrdinalIgnoreCase));
-        }
-
-        if (query.Status.HasValue)
-        {
-            filteredItems = filteredItems.Where(item => item.Status == query.Status.Value);
-        }
-
-        if (query.DateFrom.HasValue)
-        {
-            filteredItems = filteredItems.Where(item => item.DateCreated >= query.DateFrom.Value);
-        }
-
-        if (query.DateTo.HasValue)
-        {
-            filteredItems = filteredItems.Where(item => item.DateCreated <= query.DateTo.Value);
-        }
-
-        if (!string.IsNullOrWhiteSpace(query.SearchQuery))
-        {
-            var searchTerms = query.SearchQuery.ToLower().Split(' ', StringSplitOptions.RemoveEmptyEntries);
-            filteredItems = filteredItems.Where(item =>
-                searchTerms.Any(term =>
-                    (item.Title != null && item.Title.ToLower().Contains(term)) ||
-                    (item.Description != null && item.Description.ToLower().Contains(term)) ||
-                    (item.Content != null && item.Content.ToLower().Contains(term)) ||
-                    item.Categories.Any(c => c.ToLower().Contains(term)) ||
-                    item.Tags.Any(t => t.ToLower().Contains(term))
-                )
-            );
-        }
-
-        if (!string.IsNullOrWhiteSpace(query.Locale))
-        {
-            filteredItems = filteredItems.Where(item =>
-                item.Locale.Equals(query.Locale, StringComparison.OrdinalIgnoreCase));
-        }
-
-        if (!string.IsNullOrWhiteSpace(query.LocalizationId))
-        {
-            filteredItems = filteredItems.Where(item =>
-                item.ContentId.Equals(query.LocalizationId, StringComparison.OrdinalIgnoreCase));
-        }
-
-        if (!string.IsNullOrWhiteSpace(query.ProviderId))
-        {
-            filteredItems = filteredItems.Where(item =>
-                item.ProviderId.Equals(query.ProviderId, StringComparison.OrdinalIgnoreCase));
-        }
-
-        if (query.IncludeIds is not null && query.IncludeIds.Any())
-        {
-            filteredItems = filteredItems.Where(item =>
-                query.IncludeIds.Contains(item.Id));
-        }
-
-        if (query.ExcludeIds is not null && query.ExcludeIds.Any())
-        {
-            filteredItems = filteredItems.Where(item =>
-                !query.ExcludeIds.Contains(item.Id));
-        }
-
-        return filteredItems;
-    }
-
-    /// <summary>
-    /// Applies sorting to a queryable collection of content items
-    /// </summary>
-    protected IQueryable<ContentItem> ApplySorting(
-        IQueryable<ContentItem> items,
-        Domain.Enums.SortField sortField,
-        Domain.Enums.SortDirection direction)
-    {
-        return sortField switch
-        {
-            Domain.Enums.SortField.Title => direction == Domain.Enums.SortDirection.Ascending ?
-                items.OrderBy(item => item.Title) :
-                items.OrderByDescending(item => item.Title),
-
-            Domain.Enums.SortField.Author => direction == Domain.Enums.SortDirection.Ascending ?
-                items.OrderBy(item => item.Author) :
-                items.OrderByDescending(item => item.Author),
-
-            Domain.Enums.SortField.LastModified => direction == Domain.Enums.SortDirection.Ascending ?
-                items.OrderBy(item => item.LastModified ?? item.DateCreated) :
-                items.OrderByDescending(item => item.LastModified ?? item.DateCreated),
-
-            Domain.Enums.SortField.Created => direction == Domain.Enums.SortDirection.Ascending ?
-                items.OrderBy(item => item.DateCreated) :
-                items.OrderByDescending(item => item.DateCreated),
-
-            Domain.Enums.SortField.Order => direction == Domain.Enums.SortDirection.Ascending ?
-                items.OrderBy(item => item.OrderIndex) :
-                items.OrderByDescending(item => item.OrderIndex),
-
-            Domain.Enums.SortField.PublishDate => direction == Domain.Enums.SortDirection.Ascending ?
-                items.OrderBy(item => item.PublishDate) :
-                items.OrderByDescending(item => item.PublishDate),
-
-            Domain.Enums.SortField.Slug => direction == Domain.Enums.SortDirection.Ascending ?
-                items.OrderBy(item => item.Slug) :
-                items.OrderByDescending(item => item.Slug),
-
-            Domain.Enums.SortField.ReadTime => direction == Domain.Enums.SortDirection.Ascending ?
-                items.OrderBy(item => item.ReadTimeMinutes) :
-                items.OrderByDescending(item => item.ReadTimeMinutes),
-
-            _ => direction == Domain.Enums.SortDirection.Ascending ?
-                items.OrderBy(item => item.DateCreated) :
-                items.OrderByDescending(item => item.DateCreated)
-        };
     }
 
     private bool IsExcludedFromMarkdownProcessing(string fileName)

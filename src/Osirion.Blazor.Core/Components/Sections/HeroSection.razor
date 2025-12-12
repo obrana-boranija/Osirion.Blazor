@@ -8,7 +8,7 @@
         <OsirionBackgroundPattern BackgroundPattern="@BackgroundPattern" />
     }
 
-    @if (UseBackgroundImage && !string.IsNullOrWhiteSpace(ImageUrl))
+    @if (UseBackgroundImage && HasOverlay && !string.IsNullOrWhiteSpace(ImageUrl))
     {
         <div class="osirion-hero-overlay"></div>
     }

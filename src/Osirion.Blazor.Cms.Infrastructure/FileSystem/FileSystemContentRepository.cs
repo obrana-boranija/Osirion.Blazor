@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Exceptions;
 using Osirion.Blazor.Cms.Domain.Interfaces;
+using Osirion.Blazor.Cms.Domain.Interfaces.Content;
 using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Infrastructure.Repositories;
 using Osirion.Blazor.Cms.Infrastructure.Utilities;
@@ -23,10 +24,11 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
 
         public FileSystemContentRepository(
             IMarkdownProcessor markdownProcessor,
+            IContentQueryFilter queryFilter,
             IOptions<FileSystemOptions> options,
             ILogger<FileSystemContentRepository> logger,
             IFileSystem fileSystem)
-            : base(GetProviderId(options.Value), markdownProcessor, logger)
+            : base(GetProviderId(options.Value), markdownProcessor, queryFilter, logger)
         {
             _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
             _fileSystem = fileSystem;
