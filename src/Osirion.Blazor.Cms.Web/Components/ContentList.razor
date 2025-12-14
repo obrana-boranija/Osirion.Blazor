@@ -1,6 +1,19 @@
 ﻿@using Osirion.Blazor.Cms.Components
 @using Osirion.Blazor.Cms.Domain.Repositories
 <div class="@GetContentListClass()">
+    @if (EnableSeoMetadata && ContentItems is not null && ContentItems.Any())
+    {
+        <HeadContent>
+            <SeoMetadataRenderer ContentItems="ContentItems"
+                                 CollectionTitle="@GetComputedPageTitle()"
+                                 CollectionDescription="@GetComputedPageDescription()"
+                                 SiteNameOverride="@WebsiteName"
+                                 SchemaTypes="@(SchemaTypes ?? new[] { SchemaType.CollectionPage, SchemaType.BreadcrumbList })"
+                                 PrevPageUrl="@(ShowPagination && CurrentPage > 1 ? GetPaginationUrl(CurrentPage - 1) : null)"
+                                 NextPageUrl="@(ShowPagination && CurrentPage < TotalPages ? GetPaginationUrl(CurrentPage + 1) : null)" />
+        </HeadContent>
+    }
+
     @if (IsLoading && IsInteractive)
     {
         <div class="osirion-content-loading">

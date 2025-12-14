@@ -101,4 +101,18 @@ public interface IOsirionBuilder
     /// <param name="configuration">The configuration</param>
     /// <returns>The builder for chaining</returns>
     IOsirionBuilder UseEmailServices(IConfiguration configuration);
+
+    /// <summary>
+    /// Configures SEO metadata services
+    /// </summary>
+    /// <param name="configure">Action to configure SEO metadata options</param>
+    /// <returns>The builder for chaining</returns>
+    IOsirionBuilder UseSeoMetadata(Action<Osirion.Blazor.Cms.Web.Options.SeoMetadataOptions> configure);
+
+    /// <summary>
+    /// Configures SEO metadata services using an IConfiguration instance
+    /// </summary>
+    /// <param name="configuration">The configuration</param>
+    /// <returns>The builder for chaining</returns>
+    IOsirionBuilder UseSeoMetadata(IConfiguration configuration);
 }

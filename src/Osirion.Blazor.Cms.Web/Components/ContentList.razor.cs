@@ -33,6 +33,13 @@ public partial class ContentList : IDisposable
     public string? Tag { get; set; }
 
     /// <summary>
+    /// Gets or sets the search query for filtering content.
+    /// </summary>
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "q")]
+    public string? SearchQuery { get; set; }
+
+    /// <summary>
     /// Gets or sets whether to show only featured content.
     /// </summary>
     [Parameter]
@@ -140,6 +147,40 @@ public partial class ContentList : IDisposable
     [Parameter]
     public EventCallback<ContentItem> OnItemSelected { get; set; }
 
+    #region SEO Parameters
+
+    /// <summary>
+    /// Gets or sets the page title for SEO (used in CollectionPage schema).
+    /// </summary>
+    [Parameter]
+    public string? PageTitle { get; set; }
+
+    /// <summary>
+    /// Gets or sets the page description for SEO.
+    /// </summary>
+    [Parameter]
+    public string? PageDescription { get; set; }
+
+    /// <summary>
+    /// Gets or sets the website name override for SEO.
+    /// </summary>
+    [Parameter]
+    public string? WebsiteName { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether to enable SEO metadata rendering (default: true).
+    /// </summary>
+    [Parameter]
+    public bool EnableSeoMetadata { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets custom schema types to generate. If not set, defaults to CollectionPage.
+    /// </summary>
+    [Parameter]
+    public SchemaType[]? SchemaTypes { get; set; }
+
+    #endregion
+
     /// <summary>
     /// Gets or sets a value indicating whether the component is currently loading content.
     /// </summary>
@@ -202,6 +243,7 @@ public partial class ContentList : IDisposable
                     Directory = Directory,
                     Category = Category,
                     Tag = Tag,
+                    SearchQuery = SearchQuery,
                     Locale = Locale,
                     DirectoryId = DirectoryId,
                     SortBy = SortBy,
@@ -273,6 +315,74 @@ public partial class ContentList : IDisposable
     {
 
         return PaginationUrlFormatter?.Invoke(page) ?? $"{CurrentUrl}?page={page}";
+    }
+
+    /// <summary>
+    /// Gets the computed page title for SEO based on filters and pagination.
+    /// </summary>
+    protected string GetComputedPageTitle()
+    {
+        if (!string.IsNullOrWhiteSpace(PageTitle))
+            return PageTitle!;
+
+        var title = "";
+        
+        if (!string.IsNullOrWhiteSpace(Category))
+            title = $"Category: {Category}";
+        else if (!string.IsNullOrWhiteSpace(Tag))
+            title = $"Tag: {Tag}";
+        else if (!string.IsNullOrWhiteSpace(Directory))
+            title = FormatDirectoryName(Directory);
+        else
+            title = "Blog";
+
+        // Add page number if paginated and not first page
+        if (ShowPagination && CurrentPage > 1)
+            title += $" - Page {CurrentPage}";
+
+        return title;
+    }
+
+    /// <summary>
+    /// Formats a directory name for display (converts slug-case to Title Case).
+    /// </summary>
+    private string FormatDirectoryName(string directory)
+    {
+        // Remove leading/trailing slashes
+        directory = directory.Trim('/');
+        
+        // Get last segment
+        var lastSegment = directory.Split('/').LastOrDefault() ?? directory;
+        
+        // Convert slug-case to Title Case
+        var words = lastSegment.Split('-', '_');
+        var titleCased = string.Join(" ", words.Select(word => 
+        {
+            if (string.IsNullOrEmpty(word)) return word;
+            return char.ToUpper(word[0]) + (word.Length > 1 ? word[1..].ToLower() : "");
+        }));
+        
+        return titleCased;
+    }
+
+    /// <summary>
+    /// Gets the computed page description for SEO.
+    /// </summary>
+    protected string? GetComputedPageDescription()
+    {
+        if (!string.IsNullOrWhiteSpace(PageDescription))
+            return PageDescription;
+
+        if (!string.IsNullOrWhiteSpace(Category))
+            return $"Browse all articles in the {Category} category.";
+        
+        if (!string.IsNullOrWhiteSpace(Tag))
+            return $"Browse all articles tagged with {Tag}.";
+        
+        if (!string.IsNullOrWhiteSpace(Directory))
+            return $"Browse all articles in {FormatDirectoryName(Directory)}.";
+
+        return "Browse our collection of articles and blog posts.";
     }
 
     /// <summary>

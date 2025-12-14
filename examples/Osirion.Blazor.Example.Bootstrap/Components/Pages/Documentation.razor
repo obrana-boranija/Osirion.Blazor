@@ -9,7 +9,9 @@
 
 @* <ArticlePage Locale="@(Locale ?? "en")" DirectoryName="docs" ItemSlug="@(Slug ?? "getting-started")" /> *@
 
-<ArticlePage ItemUrl="@($"/docs/{Slug}")" Locale="@Locale" />
+<ArticlePage ItemUrl="@($"/docs/{Slug}")" 
+             Locale="@Locale" 
+             SchemaTypes="@(new[] { SchemaType.Article, SchemaType.BreadcrumbList })" />
 
 @code {
     [Parameter]

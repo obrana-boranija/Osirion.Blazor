@@ -109,6 +109,20 @@ internal class OsirionBuilder : IOsirionBuilder
         return this;
     }
 
+    /// <inheritdoc/>
+    public IOsirionBuilder UseSeoMetadata(Action<Cms.Web.Options.SeoMetadataOptions> configure)
+    {
+        Services.AddOsirionSeoMetadata(configure);
+        return this;
+    }
+
+    /// <inheritdoc/>
+    public IOsirionBuilder UseSeoMetadata(IConfiguration configuration)
+    {
+        Services.AddOsirionSeoMetadata(configuration);
+        return this;
+    }
+
     //public IOsirionBuilder UseTheming(IConfiguration configuration)
     //{
     //    Services.AddOsirionTheming(configuration);

@@ -25,6 +25,8 @@ public abstract partial class OsirionContentPageBase : OsirionComponentBase
     [Parameter]
     public ContentQuery? Query { get; set; }
 
+    #region SEO Metadata
+
     /// <summary>
     /// Gets or sets the schema.org type
     /// </summary>
@@ -42,6 +44,116 @@ public abstract partial class OsirionContentPageBase : OsirionComponentBase
     /// </summary>
     [Parameter]
     public string? WebsiteName { get; set; }
+
+    /// <summary>
+    /// Site-wide description used for organization schema.
+    /// </summary>
+    [Parameter]
+    public string? SiteDescription { get; set; }
+
+    /// <summary>
+    /// URL to the site logo (recommended: square format, min 112x112px).
+    /// </summary>
+    [Parameter]
+    public string? SiteLogoUrl { get; set; }
+
+    /// <summary>
+    /// Twitter handle for the site (e.g., "@yoursite").
+    /// </summary>
+    [Parameter]
+    public string? TwitterSite { get; set; }
+
+    /// <summary>
+    /// Twitter handle for the content creator (e.g., "@author").
+    /// </summary>
+    [Parameter]
+    public string? TwitterCreator { get; set; }
+
+    /// <summary>
+    /// Facebook App ID for Facebook Insights.
+    /// </summary>
+    [Parameter]
+    public string? FacebookAppId { get; set; }
+
+    /// <summary>
+    /// Allow AI systems to discover and index this content.
+    /// </summary>
+    [Parameter]
+    public bool AllowAiDiscovery { get; set; } = true;
+
+    /// <summary>
+    /// Allow AI systems to use this content for training purposes.
+    /// </summary>
+    [Parameter]
+    public bool AllowAiTraining { get; set; } = true;
+
+    /// <summary>
+    /// Allow traditional search engines to index this content.
+    /// </summary>
+    [Parameter]
+    public bool AllowSearchIndexing { get; set; } = true;
+
+    /// <summary>
+    /// Enable Generative Engine Optimization (GEO) meta tags.
+    /// </summary>
+    [Parameter]
+    public bool EnableGeoOptimization { get; set; } = true;
+
+    /// <summary>
+    /// Enable Answer Engine Optimization (AEO) structured answers.
+    /// </summary>
+    [Parameter]
+    public bool EnableAeoOptimization { get; set; } = true;
+
+    /// <summary>
+    /// Default fallback image URL when content has no featured image.
+    /// </summary>
+    [Parameter]
+    public string? DefaultImageUrl { get; set; }
+
+    /// <summary>
+    /// Default image width for Open Graph (recommended: 1200px).
+    /// </summary>
+    [Parameter]
+    public int DefaultImageWidth { get; set; } = 1200;
+
+    /// <summary>
+    /// Default image height for Open Graph (recommended: 630px).
+    /// </summary>
+    [Parameter]
+    public int DefaultImageHeight { get; set; } = 630;
+
+    /// <summary>
+    /// Organization name for structured data.
+    /// </summary>
+    [Parameter]
+    public string? OrganizationName { get; set; }
+
+    /// <summary>
+    /// Gets or sets custom breadcrumb items to override automatic generation
+    /// </summary>
+    [Parameter]
+    public List<(string Name, string Url)>? CustomBreadcrumbs { get; set; }
+
+    /// <summary>
+    /// Gets or sets the URL to the previous page in a series or pagination
+    /// </summary>
+    [Parameter]
+    public string? PrevPageUrl { get; set; }
+
+    /// <summary>
+    /// Gets or sets the URL to the next page in a series or pagination
+    /// </summary>
+    [Parameter]
+    public string? NextPageUrl { get; set; }
+
+    /// <summary>
+    /// Gets or sets alternate language versions of this page for hreflang tags
+    /// </summary>
+    [Parameter]
+    public List<string>? AlternateLanguageUrls { get; set; }
+
+    #endregion
 
     #region Loading and Fetching
 

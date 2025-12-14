@@ -15,7 +15,13 @@
     else
     {
         <HeadContent>
-            <SeoMetadataRenderer Content="Content" SiteNameOverride="@WebsiteName" SchemaTypes="@SchemaTypes" />
+            <SeoMetadataRenderer Content="Content" 
+                                 SiteNameOverride="@WebsiteName" 
+                                 SchemaTypes="@SchemaTypes"
+                                 CustomBreadcrumbs="@CustomBreadcrumbs"
+                                 PrevPageUrl="@PrevPageUrl"
+                                 NextPageUrl="@NextPageUrl"
+                                 AlternateLanguageUrls="@AlternateLanguageUrls" />
         </HeadContent>
 
         @if (ShowHero)

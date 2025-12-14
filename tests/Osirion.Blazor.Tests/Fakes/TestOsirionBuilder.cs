@@ -5,6 +5,7 @@ using Osirion.Blazor.Analytics.Extensions;
 using Osirion.Blazor.Cms.Admin.Interfaces;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Web.DependencyInjection;
+using Osirion.Blazor.Cms.Web.Options;
 using Osirion.Blazor.Core.Configuration;
 using Osirion.Blazor.Navigation;
 using Osirion.Blazor.Navigation.Extensions;
@@ -135,5 +136,21 @@ public class TestOsirionBuilder : IOsirionBuilder
     public IOsirionBuilder UseEmailServices(IConfiguration configuration)
     {
         throw new NotImplementedException();
+    }
+
+    public IOsirionBuilder UseSeoMetadata(Action<SeoMetadataOptions> configure)
+    {
+        if (configure is null) throw new ArgumentNullException(nameof(configure));
+
+        Services.AddOsirionSeoMetadata(configure);
+        return this;
+    }
+
+    public IOsirionBuilder UseSeoMetadata(IConfiguration configuration)
+    {
+        if (configuration is null) throw new ArgumentNullException(nameof(configuration));
+
+        Services.AddOsirionSeoMetadata(configuration);
+        return this;
     }
 }

@@ -2,6 +2,7 @@ using Osirion.Blazor.Cms.Infrastructure.Extensions;
 using Osirion.Blazor.Example.Bootstrap.Components;
 using Osirion.Blazor.Extensions;
 using Osirion.Blazor.Cms.Web.Middleware;
+using Osirion.Blazor.Cms.Web.DependencyInjection;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.AspNetCore.ResponseCompression;
 using Osirion.Blazor.Core.Extensions;
@@ -12,10 +13,29 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+// SEO metadata is automatically loaded from appsettings.json (Osirion:Seo section)
 builder.Services.AddOsirion(builder.Configuration);
 builder.Services.AddGitHubWebhookAndPolling();
 builder.Services.AddJSComponents();
 builder.Services.AddOsirionCookieConsent();
+
+// Optional: Override SEO metadata configuration programmatically
+// Uncomment below to override values from appsettings.json
+/*
+builder.Services.AddOsirionSeoMetadata(seo =>
+{
+    seo.SiteName = "Osirion Blazor";
+    seo.SiteDescription = "A modular, high-performance component library for Blazor applications";
+    seo.OrganizationName = "Osirion";
+    seo.TwitterSite = "@osirionblazor";
+    seo.DefaultImageUrl = "/images/og-default.png";
+    seo.SiteLogoUrl = "/images/logo.png";
+    seo.AllowAiDiscovery = true;
+    seo.AllowAiTraining = true;
+    seo.EnableGeoOptimization = true;
+    seo.EnableAeoOptimization = true;
+});
+*/
 
 builder.Services.AddResponseCompression(options =>
 {

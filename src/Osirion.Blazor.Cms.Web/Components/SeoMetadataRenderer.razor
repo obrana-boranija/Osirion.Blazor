@@ -2,14 +2,21 @@
 @*
     Advanced SEO Metadata Renderer Component
     Supports traditional SEO, GEO (Generative Engine Optimization), and AEO (Answer Engine Optimization)
+    
+    Handles both single content pages (Content parameter) and collection pages (ContentItems parameter)
 *@
 
-@if (Content is not null)
+<PageTitle>@_metaTitle</PageTitle>
+
+@if (_hasContent)
 {
     <!-- ===== Core SEO Meta Tags ===== -->
     @((MarkupString)RenderMetaTag("description", _metaDescription))
     @((MarkupString)RenderMetaTag("keywords", _metaKeywords))
-    @((MarkupString)RenderMetaTag("author", Content.Author))
+    @if (!string.IsNullOrWhiteSpace(_author))
+    {
+        @((MarkupString)RenderMetaTag("author", _author))
+    }
     @((MarkupString)RenderMetaTag("generator", "Osirion Blazor CMS"))
     
     <!-- Language and Locale -->
@@ -70,20 +77,26 @@
     }
 
     <!-- Article-specific Open Graph Tags -->
-    @if (_ogType?.Equals("article", StringComparison.OrdinalIgnoreCase) == true)
+    @if (_isArticle)
     {
-        @((MarkupString)RenderPropertyTag("article:published_time", Content.PublishDate.ToString("yyyy-MM-ddTHH:mm:ssZ")))
-        @((MarkupString)RenderPropertyTag("article:modified_time", (Content.LastModified ?? Content.PublishDate).ToString("yyyy-MM-ddTHH:mm:ssZ")))
-        @((MarkupString)RenderPropertyTag("article:author", Content.Author))
-        
-        @if (Content.Categories.Any())
+        @((MarkupString)RenderPropertyTag("article:published_time", _publishDate?.ToString("yyyy-MM-ddTHH:mm:ssZ")))
+        @((MarkupString)RenderPropertyTag("article:modified_time", _modifiedDate?.ToString("yyyy-MM-ddTHH:mm:ssZ")))
+        @if (!string.IsNullOrWhiteSpace(_author))
         {
-            @((MarkupString)RenderPropertyTag("article:section", Content.Categories.FirstOrDefault()))
+            @((MarkupString)RenderPropertyTag("article:author", _author))
         }
         
-        @foreach (var tag in Content.Tags)
+        @if (_categories?.Any() == true)
         {
-            @((MarkupString)RenderPropertyTag("article:tag", tag))
+            @((MarkupString)RenderPropertyTag("article:section", _categories.FirstOrDefault()))
+        }
+        
+        @if (_tags?.Any() == true)
+        {
+            foreach (var tag in _tags)
+            {
+                @((MarkupString)RenderPropertyTag("article:tag", tag))
+            }
         }
     }
 
@@ -103,22 +116,31 @@
     @((MarkupString)RenderMetaTag("twitter:creator", TwitterCreator))
 
     <!-- ===== Content Metadata ===== -->
-    @((MarkupString)RenderMetaTag("publish_date", Content.PublishDate))
-    @((MarkupString)RenderMetaTag("last_modified", Content.LastModified))
-    
-    @if (Content.Tags.Any())
+    @if (_publishDate.HasValue)
     {
-        @((MarkupString)RenderMetaTag("keywords", Content.Tags))
+        @((MarkupString)RenderMetaTag("publish_date", _publishDate.Value))
+    }
+    @if (_modifiedDate.HasValue)
+    {
+        @((MarkupString)RenderMetaTag("last_modified", _modifiedDate.Value))
     }
     
-    @if (Content.Categories.Any())
+    @if (_tags?.Any() == true)
     {
-        @((MarkupString)RenderMetaTag("article:section", Content.Categories))
+        @((MarkupString)RenderMetaTag("keywords", _tags))
+    }
+    
+    @if (_categories?.Any() == true)
+    {
+        @((MarkupString)RenderMetaTag("article:section", _categories))
     }
 
     <!-- Reading Time (for user experience and GEO) -->
-    <meta name="reading_time" content="@Content.ReadTimeMinutes minutes" />
-    <meta name="estimated_reading_time" content="@Content.ReadTimeMinutes" />
+    @if (_readTimeMinutes.HasValue && _readTimeMinutes.Value > 0)
+    {
+        <meta name="reading_time" content="@_readTimeMinutes.Value minutes" />
+        <meta name="estimated_reading_time" content="@_readTimeMinutes.Value" />
+    }
 
     <!-- ===== GEO (Generative Engine Optimization) Meta Tags ===== -->
     @if (EnableGeoOptimization && !string.IsNullOrWhiteSpace(_entitySummary))
@@ -128,15 +150,21 @@
         <meta name="content-type" content="@(SchemaTypes?.FirstOrDefault().ToString() ?? Content?.Metadata?.SeoProperties?.Type ?? "WebPage")" />
         
         <!-- Content classification for better AI categorization -->
-        @if (Content.Categories.Any())
+        @if (_categories?.Any() == true)
         {
-            <meta name="primary-category" content="@Content.Categories.FirstOrDefault()" />
+            <meta name="primary-category" content="@_categories.FirstOrDefault()" />
         }
         
         <!-- Expertise indicators -->
-        <meta name="content-author" content="@Content.Author" />
+        @if (!string.IsNullOrWhiteSpace(_author))
+        {
+            <meta name="content-author" content="@_author" />
+        }
         <meta name="content-expertise-level" content="professional" />
-        <meta name="content-freshness" content="@((DateTime.UtcNow - Content.PublishDate).TotalDays < 30 ? "recent" : "evergreen")" />
+        @if (_publishDate.HasValue)
+        {
+            <meta name="content-freshness" content="@((DateTime.UtcNow - _publishDate.Value).TotalDays < 30 ? "recent" : "evergreen")" />
+        }
     }
 
     <!-- ===== AEO (Answer Engine Optimization) Meta Tags ===== -->

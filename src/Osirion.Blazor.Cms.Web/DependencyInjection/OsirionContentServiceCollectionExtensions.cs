@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Infrastructure.Builders;
 using Osirion.Blazor.Cms.Infrastructure.DependencyInjection;
+using Osirion.Blazor.Cms.Web.Options;
 
 namespace Osirion.Blazor.Cms.Web.DependencyInjection;
 
@@ -74,6 +75,40 @@ public static class OsirionContentServiceCollectionExtensions
             services.AddFileSystemContentProvider(configuration);
         }
 
+        return services;
+    }
+
+    /// <summary>
+    /// Configures SEO metadata options for the Osirion CMS
+    /// </summary>
+    /// <param name="services">The service collection</param>
+    /// <param name="configure">Action to configure SEO metadata options</param>
+    /// <returns>The service collection for chaining</returns>
+    public static IServiceCollection AddOsirionSeoMetadata(
+        this IServiceCollection services,
+        Action<SeoMetadataOptions> configure)
+    {
+        if (services is null) throw new ArgumentNullException(nameof(services));
+        if (configure is null) throw new ArgumentNullException(nameof(configure));
+
+        services.Configure(configure);
+        return services;
+    }
+
+    /// <summary>
+    /// Configures SEO metadata options for the Osirion CMS using configuration
+    /// </summary>
+    /// <param name="services">The service collection</param>
+    /// <param name="configuration">The configuration section containing SEO metadata options</param>
+    /// <returns>The service collection for chaining</returns>
+    public static IServiceCollection AddOsirionSeoMetadata(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        if (services is null) throw new ArgumentNullException(nameof(services));
+        if (configuration is null) throw new ArgumentNullException(nameof(configuration));
+
+        services.Configure<SeoMetadataOptions>(configuration);
         return services;
     }
 }

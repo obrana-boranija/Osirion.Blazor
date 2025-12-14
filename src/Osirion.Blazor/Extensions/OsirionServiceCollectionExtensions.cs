@@ -88,6 +88,13 @@ public static class OsirionServiceCollectionExtensions
             {
                 builder.UseEmailServices(configuration);
             }
+
+            // SEO metadata configuration
+            var seoSection = configuration.GetSection("Osirion:Seo");
+            if (seoSection.Exists())
+            {
+                builder.UseSeoMetadata(seoSection);
+            }
         });
     }
 

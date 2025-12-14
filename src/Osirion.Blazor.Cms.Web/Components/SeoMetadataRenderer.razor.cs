@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Domain.Entities;
+using Osirion.Blazor.Cms.Web.Options;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -11,6 +13,11 @@ namespace Osirion.Blazor.Cms.Web.Components;
 /// </summary>
 public partial class SeoMetadataRenderer(NavigationManager navigationManager)
 {
+    /// <summary>
+    /// Injected SEO metadata options providing site-wide defaults
+    /// </summary>
+    [Inject]
+    private IOptions<SeoMetadataOptions>? SeoOptions { get; set; }
     // Core properties
     private string _siteName = string.Empty;
     private string _baseUrl = string.Empty;
@@ -50,14 +57,45 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
     private string? _entitySummary;
     private List<string>? _answersTo;
     private Dictionary<string, string>? _structuredAnswers;
+    private string? _mainQuestion;
+    private string? _quickAnswer;
+
+    // Helper properties for defensive programming (Content or ContentItems scenarios)
+    private bool _hasContent;
+    private string? _author;
+    private bool _isArticle;
+    private DateTime? _publishDate;
+    private DateTime? _modifiedDate;
+    private int? _readTimeMinutes;
+    private IReadOnlyList<string>? _tags;
+    private IReadOnlyList<string>? _categories;
 
     #region Parameters
 
     /// <summary>
-    /// The content item to render metadata for (required).
+    /// The content item to render metadata for (required for single content pages).
     /// </summary>
-    [Parameter, EditorRequired]
+    [Parameter]
     public ContentItem? Content { get; set; }
+
+    /// <summary>
+    /// Collection of content items for collection pages (Blog, Category, Tag pages).
+    /// Used to generate CollectionPage schema with itemListElement.
+    /// </summary>
+    [Parameter]
+    public IReadOnlyList<ContentItem>? ContentItems { get; set; }
+
+    /// <summary>
+    /// Title for the collection page (used when ContentItems is provided).
+    /// </summary>
+    [Parameter]
+    public string? CollectionTitle { get; set; }
+
+    /// <summary>
+    /// Description for the collection page (used when ContentItems is provided).
+    /// </summary>
+    [Parameter]
+    public string? CollectionDescription { get; set; }
 
     /// <summary>
     /// Override the default site name extracted from the domain.
@@ -200,14 +238,21 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
     /// </summary>
     protected override void OnInitialized()
     {
-        if (Content is null) return;
+        // Require either Content or ContentItems
+        if (Content is null && (ContentItems is null || !ContentItems.Any())) return;
+
+        // Apply defaults from options if available
+        ApplyDefaultsFromOptions();
+
+        // Initialize helper properties based on whether we have single Content or ContentItems
+        InitializeHelperProperties();
 
         // Core setup
         _siteName = SiteNameOverride ?? OrganizationName ?? ExtractSiteName(navigationManager.BaseUri);
         _baseUrl = navigationManager.BaseUri.TrimEnd('/');
         _currentUrl = navigationManager.Uri;
-        _locale = GetLocaleCode(Content.Locale);
-        _languageCode = Content.Locale ?? "en";
+        _locale = GetLocaleCode(Content?.Locale);
+        _languageCode = Content?.Locale ?? "en";
 
         // Build all metadata
         BuildMetadata();
@@ -232,51 +277,150 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
         base.OnInitialized();
     }
 
+    /// <summary>
+    /// Applies default values from injected SeoMetadataOptions if parameters are not explicitly set.
+    /// </summary>
+    private void ApplyDefaultsFromOptions()
+    {
+        var options = SeoOptions?.Value;
+        if (options is null) return;
+
+        // Apply site-wide defaults only if parameters are not set
+        SiteNameOverride ??= options.SiteName;
+        SiteDescription ??= options.SiteDescription;
+        SiteLogoUrl ??= options.SiteLogoUrl;
+        TwitterSite ??= options.TwitterSite;
+        TwitterCreator ??= options.TwitterCreator;
+        FacebookAppId ??= options.FacebookAppId;
+        DefaultImageUrl ??= options.DefaultImageUrl;
+        OrganizationName ??= options.OrganizationName;
+        BreadcrumbHomeText = string.IsNullOrWhiteSpace(BreadcrumbHomeText) ? options.BreadcrumbHomeText : BreadcrumbHomeText;
+        
+        // Apply default settings if not explicitly overridden
+        if (DefaultImageWidth == 1200) DefaultImageWidth = options.DefaultImageWidth;
+        if (DefaultImageHeight == 630) DefaultImageHeight = options.DefaultImageHeight;
+        
+        // Apply schema types if not set
+        SchemaTypes ??= options.DefaultSchemaTypes;
+    }
+
+    /// <summary>
+    /// Initializes helper properties based on whether we have single Content or ContentItems.
+    /// Provides defensive programming to avoid null reference exceptions in markup.
+    /// </summary>
+    private void InitializeHelperProperties()
+    {
+        _hasContent = Content is not null || (ContentItems?.Any() == true);
+
+        if (Content is not null)
+        {
+            // Single content page
+            _author = Content.Author;
+            _isArticle = Content.Metadata?.SeoProperties?.Type == "article";
+            _publishDate = Content.PublishDate;
+            _modifiedDate = Content.LastModified;
+            _readTimeMinutes = Content.ReadTimeMinutes;
+            _tags = Content.Tags;
+            _categories = Content.Categories;
+        }
+        else if (ContentItems?.Any() == true)
+        {
+            // Collection page - extract from first item or use defaults
+            var firstItem = ContentItems.First();
+            _author = firstItem.Author;
+            _isArticle = false; // Collections are not articles
+            _publishDate = firstItem.PublishDate;
+            _modifiedDate = ContentItems.Max(c => c.LastModified);
+            _readTimeMinutes = null; // Collections don't have read time
+            _tags = ContentItems.SelectMany(c => c.Tags).Distinct().ToList();
+            _categories = ContentItems.SelectMany(c => c.Categories).Distinct().ToList();
+        }
+    }
+
     #region Metadata Builders
 
     private void BuildMetadata()
     {
         _metaTitle = BuildMetaTitle();
-        _metaDescription = TruncateDescription(
-            GetFirstValue(Content?.Metadata?.SeoProperties?.Description, Content?.Description),
-            160
-        );
-        _metaKeywords = Content?.Tags.Any() == true ? string.Join(", ", Content.Tags) : null;
+        
+        if (ContentItems?.Any() == true)
+        {
+            // Collection page metadata
+            _metaDescription = TruncateDescription(CollectionDescription, 160);
+            // Aggregate all unique tags from collection
+            var allTags = ContentItems.SelectMany(c => c.Tags).Distinct().ToList();
+            _metaKeywords = allTags.Any() ? string.Join(", ", allTags) : null;
+        }
+        else
+        {
+            // Single content page metadata
+            _metaDescription = TruncateDescription(
+                GetFirstValue(Content?.Metadata?.SeoProperties?.Description, Content?.Description),
+                160
+            );
+            _metaKeywords = Content?.Tags.Any() == true ? string.Join(", ", Content.Tags) : null;
+        }
     }
 
     private void BuildOpenGraphMetadata()
     {
-        _ogTitle = TruncateTitle(
-            GetFirstValue(Content?.Metadata?.SeoProperties?.OgTitle, Content?.Title, _metaTitle),
-            60
-        );
-        _ogDescription = TruncateDescription(
-            GetFirstValue(Content?.Metadata?.SeoProperties?.OgDescription, _metaDescription),
-            200
-        );
-        _ogImage = NormalizeImageUrl(
-            GetFirstValue(Content?.Metadata?.SeoProperties?.OgImageUrl, Content?.FeaturedImageUrl, DefaultImageUrl)
-        );
-        _ogType = GetFirstValue(Content?.Metadata?.SeoProperties?.OgType, DetermineOgType());
+        if (ContentItems?.Any() == true)
+        {
+            // Collection page Open Graph metadata
+            _ogTitle = TruncateTitle(CollectionTitle ?? _metaTitle, 60);
+            _ogDescription = TruncateDescription(CollectionDescription ?? _metaDescription, 200);
+            _ogImage = NormalizeImageUrl(ContentItems.FirstOrDefault()?.FeaturedImageUrl ?? DefaultImageUrl);
+            _ogType = "website";
+            _ogImageAlt = CollectionTitle ?? _siteName;
+        }
+        else
+        {
+            // Single content page Open Graph metadata
+            _ogTitle = TruncateTitle(
+                GetFirstValue(Content?.Metadata?.SeoProperties?.OgTitle, Content?.Title, _metaTitle),
+                60
+            );
+            _ogDescription = TruncateDescription(
+                GetFirstValue(Content?.Metadata?.SeoProperties?.OgDescription, _metaDescription),
+                200
+            );
+            _ogImage = NormalizeImageUrl(
+                GetFirstValue(Content?.Metadata?.SeoProperties?.OgImageUrl, Content?.FeaturedImageUrl, DefaultImageUrl)
+            );
+            _ogType = GetFirstValue(Content?.Metadata?.SeoProperties?.OgType, DetermineOgType());
+            _ogImageAlt = GetFirstValue(Content?.Title, _siteName);
+        }
+        
         _ogImageWidth = DefaultImageWidth;
         _ogImageHeight = DefaultImageHeight;
-        _ogImageAlt = GetFirstValue(Content?.Title, _siteName);
     }
 
     private void BuildTwitterCardMetadata()
     {
-        _twitterCard = GetFirstValue(Content?.Metadata?.SeoProperties?.TwitterCard, "summary_large_image");
-        _twitterTitle = TruncateTitle(
-            GetFirstValue(Content?.Metadata?.SeoProperties?.TwitterTitle, _ogTitle, _metaTitle),
-            70
-        );
-        _twitterDescription = TruncateDescription(
-            GetFirstValue(Content?.Metadata?.SeoProperties?.TwitterDescription, _metaDescription),
-            200
-        );
-        _twitterImage = NormalizeImageUrl(
-            GetFirstValue(Content?.Metadata?.SeoProperties?.TwitterImageUrl, _ogImage)
-        );
+        if (ContentItems?.Any() == true)
+        {
+            // Collection page Twitter Card metadata
+            _twitterCard = "summary_large_image";
+            _twitterTitle = TruncateTitle(_ogTitle ?? _metaTitle, 70);
+            _twitterDescription = TruncateDescription(_metaDescription, 200);
+            _twitterImage = NormalizeImageUrl(_ogImage);
+        }
+        else
+        {
+            // Single content page Twitter Card metadata
+            _twitterCard = GetFirstValue(Content?.Metadata?.SeoProperties?.TwitterCard, "summary_large_image");
+            _twitterTitle = TruncateTitle(
+                GetFirstValue(Content?.Metadata?.SeoProperties?.TwitterTitle, _ogTitle, _metaTitle),
+                70
+            );
+            _twitterDescription = TruncateDescription(
+                GetFirstValue(Content?.Metadata?.SeoProperties?.TwitterDescription, _metaDescription),
+                200
+            );
+            _twitterImage = NormalizeImageUrl(
+                GetFirstValue(Content?.Metadata?.SeoProperties?.TwitterImageUrl, _ogImage)
+            );
+        }
     }
 
     private void BuildSeoEssentials()
@@ -288,35 +432,188 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
     private void BuildGeoOptimization()
     {
         // GEO: Create concise entity summary for AI engines
-        if (!string.IsNullOrWhiteSpace(Content?.Description))
+        var description = Content?.Description ?? CollectionDescription;
+        
+        if (!string.IsNullOrWhiteSpace(description))
         {
-            _entitySummary = TruncateDescription(Content.Description, 280);
+            _entitySummary = TruncateDescription(description, 280);
         }
     }
 
     private void BuildAeoOptimization()
     {
-        // AEO: Identify potential questions this content answers
+        // AEO: Identify potential questions this content answers (multi-language support)
         _answersTo = new List<string>();
         _structuredAnswers = new Dictionary<string, string>();
 
-        if (!string.IsNullOrWhiteSpace(Content?.Title))
+        var title = Content?.Title ?? CollectionTitle;
+        var description = Content?.Description ?? CollectionDescription;
+
+        if (!string.IsNullOrWhiteSpace(title))
         {
-            // Extract question patterns from title
-            if (Content.Title.StartsWith("How", StringComparison.OrdinalIgnoreCase) ||
-                Content.Title.StartsWith("What", StringComparison.OrdinalIgnoreCase) ||
-                Content.Title.StartsWith("Why", StringComparison.OrdinalIgnoreCase) ||
-                Content.Title.StartsWith("When", StringComparison.OrdinalIgnoreCase) ||
-                Content.Title.StartsWith("Where", StringComparison.OrdinalIgnoreCase))
+            // Multi-language question word patterns
+            var questionWords = GetQuestionWordsForLanguage(_languageCode);
+            
+            // Check if title starts with any question word
+            var isQuestion = questionWords.Any(qw => 
+                title.StartsWith(qw, StringComparison.OrdinalIgnoreCase));
+
+            if (isQuestion)
             {
-                _answersTo.Add(Content.Title);
+                _answersTo.Add(title);
                 
-                if (!string.IsNullOrWhiteSpace(Content.Description))
+                if (!string.IsNullOrWhiteSpace(description))
                 {
-                    _structuredAnswers[Content.Title] = TruncateDescription(Content.Description, 320) ?? string.Empty;
+                    _structuredAnswers[title] = TruncateDescription(description, 320) ?? string.Empty;
+                }
+            }
+            
+            // Generate implicit questions for non-question titles (e.g., "Guide to X" → "How to X?")
+            else
+            {
+                var implicitQuestion = GenerateImplicitQuestion(title, _languageCode);
+                if (!string.IsNullOrWhiteSpace(implicitQuestion))
+                {
+                    _answersTo.Add(implicitQuestion);
+                    _mainQuestion = implicitQuestion;
+                    
+                    if (!string.IsNullOrWhiteSpace(description))
+                    {
+                        _structuredAnswers[implicitQuestion] = TruncateDescription(description, 320) ?? string.Empty;
+                        _quickAnswer = TruncateDescription(description, 160);
+                    }
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// Returns question words for the specified language code.
+    /// Supports English, Serbian (Latin & Cyrillic), German, French, Spanish, Italian, Portuguese, and more.
+    /// </summary>
+    private static string[] GetQuestionWordsForLanguage(string? languageCode)
+    {
+        return languageCode?.ToLowerInvariant() switch
+        {
+            // English
+            "en" or "en-us" or "en-gb" => new[] { "how", "what", "why", "when", "where", "who", "which", "can", "does", "is", "are", "should" },
+            
+            // Serbian (Latin)
+            "sr" or "sr-latn" or "sr-latn-rs" => new[] { "kako", "šta", "zašto", "kada", "gde", "ko", "koji", "da li", "može", "treba" },
+            
+            // Serbian (Cyrillic)
+            "sr-cyrl" or "sr-cyrl-rs" => new[] { "како", "шта", "зашто", "када", "где", "ко", "који", "да ли", "може", "треба" },
+            
+            // German
+            "de" or "de-de" or "de-at" or "de-ch" => new[] { "wie", "was", "warum", "wann", "wo", "wer", "welche", "kann", "ist", "sind", "soll" },
+            
+            // French
+            "fr" or "fr-fr" or "fr-ca" => new[] { "comment", "quoi", "pourquoi", "quand", "où", "qui", "quel", "quelle", "peut", "est", "sont" },
+            
+            // Spanish
+            "es" or "es-es" or "es-mx" => new[] { "cómo", "qué", "por qué", "cuándo", "dónde", "quién", "cuál", "puede", "es", "son", "debe" },
+            
+            // Italian
+            "it" or "it-it" => new[] { "come", "cosa", "perché", "quando", "dove", "chi", "quale", "può", "è", "sono", "deve" },
+            
+            // Portuguese
+            "pt" or "pt-pt" or "pt-br" => new[] { "como", "o que", "por que", "quando", "onde", "quem", "qual", "pode", "é", "são", "deve" },
+            
+            // Dutch
+            "nl" or "nl-nl" or "nl-be" => new[] { "hoe", "wat", "waarom", "wanneer", "waar", "wie", "welke", "kan", "is", "zijn", "moet" },
+            
+            // Russian
+            "ru" or "ru-ru" => new[] { "как", "что", "почему", "когда", "где", "кто", "который", "может", "является" },
+            
+            // Default to English
+            _ => new[] { "how", "what", "why", "when", "where", "who", "which", "can", "does", "is", "are", "should" }
+        };
+    }
+
+    /// <summary>
+    /// Generates an implicit question from a title based on language (e.g., "Guide to X" → "How to X?").
+    /// </summary>
+    private static string? GenerateImplicitQuestion(string title, string? languageCode)
+    {
+        if (string.IsNullOrWhiteSpace(title)) return null;
+
+        return languageCode?.ToLowerInvariant() switch
+        {
+            // English patterns
+            "en" or "en-us" or "en-gb" => title switch
+            {
+                var t when t.StartsWith("guide to", StringComparison.OrdinalIgnoreCase) => 
+                    $"How to {t[9..].Trim()}?",
+                var t when t.Contains("tutorial", StringComparison.OrdinalIgnoreCase) => 
+                    $"How to {t.Replace("tutorial", "", StringComparison.OrdinalIgnoreCase).Trim()}?",
+                var t when t.Contains("introduction to", StringComparison.OrdinalIgnoreCase) => 
+                    $"What is {t.Replace("introduction to", "", StringComparison.OrdinalIgnoreCase).Trim()}?",
+                _ => null
+            },
+            
+            // Serbian (Latin) patterns
+            "sr" or "sr-latn" or "sr-latn-rs" => title switch
+            {
+                var t when t.StartsWith("vodič za", StringComparison.OrdinalIgnoreCase) => 
+                    $"Kako {t[8..].Trim()}?",
+                var t when t.Contains("tutorijal", StringComparison.OrdinalIgnoreCase) => 
+                    $"Kako {t.Replace("tutorijal", "", StringComparison.OrdinalIgnoreCase).Trim()}?",
+                var t when t.StartsWith("uvod u", StringComparison.OrdinalIgnoreCase) => 
+                    $"Šta je {t[6..].Trim()}?",
+                _ => null
+            },
+            
+            // Serbian (Cyrillic) patterns
+            "sr-cyrl" or "sr-cyrl-rs" => title switch
+            {
+                var t when t.StartsWith("водич за", StringComparison.OrdinalIgnoreCase) => 
+                    $"Како {t[8..].Trim()}?",
+                var t when t.Contains("туторијал", StringComparison.OrdinalIgnoreCase) => 
+                    $"Како {t.Replace("туторијал", "", StringComparison.OrdinalIgnoreCase).Trim()}?",
+                var t when t.StartsWith("увод у", StringComparison.OrdinalIgnoreCase) => 
+                    $"Шта је {t[6..].Trim()}?",
+                _ => null
+            },
+            
+            // German patterns
+            "de" or "de-de" or "de-at" or "de-ch" => title switch
+            {
+                var t when t.StartsWith("anleitung zu", StringComparison.OrdinalIgnoreCase) => 
+                    $"Wie {t[12..].Trim()}?",
+                var t when t.Contains("tutorial", StringComparison.OrdinalIgnoreCase) => 
+                    $"Wie {t.Replace("tutorial", "", StringComparison.OrdinalIgnoreCase).Trim()}?",
+                var t when t.StartsWith("einführung in", StringComparison.OrdinalIgnoreCase) => 
+                    $"Was ist {t[13..].Trim()}?",
+                _ => null
+            },
+            
+            // French patterns
+            "fr" or "fr-fr" or "fr-ca" => title switch
+            {
+                var t when t.StartsWith("guide de", StringComparison.OrdinalIgnoreCase) => 
+                    $"Comment {t[8..].Trim()}?",
+                var t when t.Contains("tutoriel", StringComparison.OrdinalIgnoreCase) => 
+                    $"Comment {t.Replace("tutoriel", "", StringComparison.OrdinalIgnoreCase).Trim()}?",
+                var t when t.StartsWith("introduction à", StringComparison.OrdinalIgnoreCase) => 
+                    $"Qu'est-ce que {t[14..].Trim()}?",
+                _ => null
+            },
+            
+            // Spanish patterns
+            "es" or "es-es" or "es-mx" => title switch
+            {
+                var t when t.StartsWith("guía de", StringComparison.OrdinalIgnoreCase) => 
+                    $"Cómo {t[8..].Trim()}?",
+                var t when t.Contains("tutorial", StringComparison.OrdinalIgnoreCase) => 
+                    $"Cómo {t.Replace("tutorial", "", StringComparison.OrdinalIgnoreCase).Trim()}?",
+                var t when t.StartsWith("introducción a", StringComparison.OrdinalIgnoreCase) => 
+                    $"Qué es {t[14..].Trim()}?",
+                _ => null
+            },
+            
+            // Default: no implicit question generation
+            _ => null
+        };
     }
 
     #endregion
@@ -381,6 +678,12 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
 
     private string BuildMetaTitle()
     {
+        if (ContentItems?.Any() == true && !string.IsNullOrWhiteSpace(CollectionTitle))
+        {
+            // Collection page title
+            return $"{CollectionTitle} | {_siteName}";
+        }
+        
         var title = GetFirstValue(Content?.Metadata?.SeoProperties?.Title, Content?.Title);
         
         if (string.IsNullOrWhiteSpace(title))
@@ -520,6 +823,32 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
 
     private void GenerateAllJsonLdSchemas()
     {
+        // Handle collection pages (ContentItems without Content)
+        if (Content is null && ContentItems?.Any() == true)
+        {
+            _additionalJsonLdSchemas = new List<string>();
+            
+            // Generate collection page schema
+            if (SchemaTypes?.Contains(Cms.Web.Components.SchemaType.CollectionPage) == true)
+            {
+                var collectionSchema = GenerateCollectionPageSchema();
+                if (collectionSchema != null)
+                {
+                    var serialized = JsonSerializer.Serialize(collectionSchema, new JsonSerializerOptions
+                    {
+                        WriteIndented = true,
+                        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+                    });
+                    _jsonLdContent = serialized;
+                }
+            }
+            
+            // Generate individual BlogPosting schemas for collection items
+            GenerateCollectionItemSchemas();
+            return;
+        }
+        
+        // Early return if no content at all
         if (Content is null)
             return;
 
@@ -592,6 +921,66 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
                 _additionalJsonLdSchemas.AddRange(generatedSchemas.Skip(1));
             }
         }
+        
+        // Generate individual BlogPosting schemas for collection items
+        GenerateCollectionItemSchemas();
+    }
+    
+    /// <summary>
+    /// Generates individual BlogPosting schemas for each item in a collection (Blog/Category/Tag pages).
+    /// </summary>
+    private void GenerateCollectionItemSchemas()
+    {
+        if (ContentItems?.Any() != true)
+            return;
+            
+        foreach (var item in ContentItems)
+        {
+            var articleSchema = new Dictionary<string, object?>
+            {
+                ["@context"] = "https://schema.org",
+                ["@type"] = "BlogPosting",
+                ["headline"] = item.Title,
+                ["description"] = item.Description,
+                ["image"] = NormalizeImageUrl(item.FeaturedImageUrl) ?? _ogImage,
+                ["datePublished"] = item.PublishDate.ToString("yyyy-MM-ddTHH:mm:ssZ"),
+                ["dateModified"] = (item.LastModified ?? item.PublishDate).ToString("yyyy-MM-ddTHH:mm:ssZ"),
+                ["author"] = new Dictionary<string, object?>
+                {
+                    ["@type"] = "Person",
+                    ["name"] = item.Author ?? _author ?? "Anonymous"
+                },
+                ["publisher"] = new Dictionary<string, object?>
+                {
+                    ["@type"] = "Organization",
+                    ["name"] = _siteName,
+                    ["logo"] = new Dictionary<string, object?>
+                    {
+                        ["@type"] = "ImageObject",
+                        ["url"] = NormalizeImageUrl(SiteLogoUrl) ?? $"{_baseUrl}/logo.png"
+                    }
+                },
+                ["url"] = $"{_baseUrl.TrimEnd('/')}{item.Url}",
+                ["mainEntityOfPage"] = new Dictionary<string, object?>
+                {
+                    ["@type"] = "WebPage",
+                    ["@id"] = $"{_baseUrl.TrimEnd('/')}{item.Url}"
+                },
+                ["keywords"] = item.Tags?.Any() == true ? string.Join(", ", item.Tags) : null,
+                ["articleSection"] = item.Categories?.FirstOrDefault(),
+                ["inLanguage"] = item.Locale ?? _languageCode,
+                ["timeRequired"] = item.ReadTimeMinutes > 0 ? $"PT{item.ReadTimeMinutes}M" : null
+            };
+            
+            var serialized = JsonSerializer.Serialize(articleSchema, new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+            });
+            
+            _additionalJsonLdSchemas ??= new List<string>();
+            _additionalJsonLdSchemas.Add(serialized);
+        }
     }
 
     private object? GenerateSchemaByType(SchemaType schemaType)
@@ -614,6 +1003,7 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
             Cms.Web.Components.SchemaType.Review => GenerateReviewSchema(),
             Cms.Web.Components.SchemaType.BreadcrumbList => GenerateBreadcrumbSchema(),
             Cms.Web.Components.SchemaType.WebSite => GenerateWebSiteSchema(),
+            Cms.Web.Components.SchemaType.CollectionPage => GenerateCollectionPageSchema(),
             _ => GenerateDefaultSchema()
         };
     }
@@ -1136,6 +1526,77 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
         };
     }
 
+    private object GenerateCollectionPageSchema()
+    {
+        var itemListElements = new List<Dictionary<string, object?>>();
+        
+        if (ContentItems?.Any() == true)
+        {
+            var position = 1;
+            foreach (var item in ContentItems)
+            {
+                itemListElements.Add(new Dictionary<string, object?>
+                {
+                    ["@type"] = "ListItem",
+                    ["position"] = position++,
+                    ["url"] = $"{_baseUrl}{item.Url}",
+                    ["name"] = item.Title,
+                    ["description"] = item.Description,
+                    ["datePublished"] = item.PublishDate.ToString("yyyy-MM-ddTHH:mm:ssZ"),
+                    ["image"] = NormalizeImageUrl(item.FeaturedImageUrl)
+                });
+            }
+        }
+
+        return new Dictionary<string, object?>
+        {
+            ["@context"] = "https://schema.org",
+            ["@type"] = "CollectionPage",
+            ["name"] = CollectionTitle ?? _metaTitle,
+            ["description"] = CollectionDescription ?? _metaDescription,
+            ["url"] = _currentUrl,
+            ["inLanguage"] = _languageCode,
+            ["mainEntity"] = new Dictionary<string, object?>
+            {
+                ["@type"] = "ItemList",
+                ["numberOfItems"] = ContentItems?.Count ?? 0,
+                ["itemListElement"] = itemListElements
+            },
+            ["breadcrumb"] = new Dictionary<string, object?>
+            {
+                ["@type"] = "BreadcrumbList",
+                ["itemListElement"] = new[]
+                {
+                    new Dictionary<string, object?>
+                    {
+                        ["@type"] = "ListItem",
+                        ["position"] = 1,
+                        ["name"] = BreadcrumbHomeText,
+                        ["item"] = _baseUrl
+                    },
+                    new Dictionary<string, object?>
+                    {
+                        ["@type"] = "ListItem",
+                        ["position"] = 2,
+                        ["name"] = CollectionTitle ?? "Collection",
+                        ["item"] = _currentUrl
+                    }
+                }
+            },
+            ["publisher"] = new Dictionary<string, object?>
+            {
+                ["@type"] = "Organization",
+                ["name"] = _siteName,
+                ["url"] = _baseUrl,
+                ["logo"] = new Dictionary<string, object?>
+                {
+                    ["@type"] = "ImageObject",
+                    ["url"] = NormalizeImageUrl(SiteLogoUrl) ?? $"{_baseUrl}/logo.png"
+                }
+            }
+        };
+    }
+
     #endregion
 }
 
@@ -1222,5 +1683,10 @@ public enum SchemaType
     /// <summary>
     /// Schema.org WebSite type with SearchAction for homepages and main site pages.
     /// </summary>
-    WebSite
+    WebSite,
+
+    /// <summary>
+    /// Schema.org CollectionPage type for pages listing multiple items (blog index, category, tag pages).
+    /// </summary>
+    CollectionPage
 }

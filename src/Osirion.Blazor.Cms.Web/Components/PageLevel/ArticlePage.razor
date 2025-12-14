@@ -15,7 +15,13 @@
     else if (Item is not null)
     {
         <HeadContent>
-            <SeoMetadataRenderer Content="Item" SiteNameOverride="@WebsiteName" SchemaTypes="@SchemaTypes" />
+            <SeoMetadataRenderer Content="Item" 
+                                 SiteNameOverride="@WebsiteName" 
+                                 SchemaTypes="@SchemaTypes"
+                                 CustomBreadcrumbs="@CustomBreadcrumbs"
+                                 PrevPageUrl="@PrevPageUrl"
+                                 NextPageUrl="@NextPageUrl"
+                                 AlternateLanguageUrls="@AlternateLanguageUrls" />
         </HeadContent>
 
         @if (ShowHero)
