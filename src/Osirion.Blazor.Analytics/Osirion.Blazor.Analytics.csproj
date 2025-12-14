@@ -13,7 +13,7 @@
 
 		<!-- NuGet package properties -->
 		<PackageId>Osirion.Blazor.Analytics</PackageId>
-		<Version>2.1.15</Version>
+		<Version>2.1.16</Version>
 		<Authors>Dejan Demonjić</Authors>
 		<Company>Tridesetri</Company>
 		<Description>Analytics module for Osirion.Blazor - Provides analytics tracking with provider pattern.</Description>
