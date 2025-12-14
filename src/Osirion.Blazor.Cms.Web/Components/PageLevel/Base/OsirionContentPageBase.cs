@@ -29,7 +29,19 @@ public abstract partial class OsirionContentPageBase : OsirionComponentBase
     /// Gets or sets the schema.org type
     /// </summary>
     [Parameter]
-    public SchemaType SchemaType { get; set; }
+    public SchemaType[]? SchemaTypes { get; set; }
+
+    /// <summary>
+    /// Generate multiple schema types when applicable (e.g., Article + BreadcrumbList).
+    /// </summary>
+    [Parameter]
+    public bool GenerateMultipleSchemas { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets the website name
+    /// </summary>
+    [Parameter]
+    public string? WebsiteName { get; set; }
 
     #region Loading and Fetching
 

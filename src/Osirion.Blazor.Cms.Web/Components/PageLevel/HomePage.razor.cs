@@ -109,13 +109,13 @@ public partial class HomePage
     /// Gets or sets whether to show categories section
     /// </summary>
     [Parameter]
-    public bool ShowCategories { get; set; } = true;
+    public bool ShowCategories { get; set; } = false;
 
     /// <summary>
     /// Gets or sets whether to show tags section
     /// </summary>
     [Parameter]
-    public bool ShowTags { get; set; } = true;
+    public bool ShowTags { get; set; } = false;
 
     /// <summary>
     /// Gets or sets the browse section title

@@ -15,7 +15,7 @@
     else if (Item is not null)
     {
         <HeadContent>
-            <SeoMetadataRenderer Content="Item" SiteNameOverride="Osirion Blazor" SchemaType="@SchemaType" />
+            <SeoMetadataRenderer Content="Item" SiteNameOverride="@WebsiteName" SchemaTypes="@SchemaTypes" />
         </HeadContent>
 
         @if (ShowHero)

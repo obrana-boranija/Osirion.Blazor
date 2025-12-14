@@ -1,6 +1,7 @@
 ﻿@page "/"
 @page "/{locale}"
 @using Osirion.Blazor.Cms.Components
+@using Osirion.Blazor.Cms.Web.Components
 @using Osirion.Blazor.Components
 @using Osirion.Blazor.Core.Models
 
@@ -12,5 +13,6 @@
           HeroSecondaryButtonText="Star on GitHub"
           HeroSecondaryButtonUrl="https://github.com/obrana-boranija/Osirion.Blazor"
           ShowCategories="false"
+          SchemaTypes="[ SchemaType.WebSite ]"
           ShowTags="false">
 </HomePage>
