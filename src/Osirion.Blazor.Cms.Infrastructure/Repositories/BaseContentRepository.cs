@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Entities;
+using Osirion.Blazor.Cms.Domain.Enums;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Interfaces.Content;
 using Osirion.Blazor.Cms.Domain.Repositories;
@@ -405,21 +406,34 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
         try
         {
             var result = MarkdownProcessor.ExtractFrontMatterAndContent(markdown);
-            var html =  IsExcludedFromMarkdownProcessing(contentItem.Path) ? result.Content : await MarkdownProcessor.RenderToHtmlAsync(result.Content);
+            var html = IsExcludedFromMarkdownProcessing(contentItem.Path) 
+                ? result.Content 
+                : await MarkdownProcessor.RenderToHtmlAsync(result.Content);
 
             contentItem.Metadata = result.FrontMatter;
             contentItem.SetOriginalMarkdown(result.Content);
             contentItem.SetContent(html);
-            contentItem.SetTitle(contentItem.Metadata?.Title ?? contentItem.Title);
-            contentItem.SetAuthor(contentItem.Metadata?.Author ?? contentItem.Author);
-            contentItem.SetDescription(contentItem.Metadata?.Description ?? contentItem.Description);
-            contentItem.SetLocale(contentItem.Metadata?.Lang ?? contentItem.Locale);
+            
+            // Map all FrontMatter properties to ContentItem (in order of FrontMatter class)
             contentItem.SetContentId(contentItem.Metadata?.Id ?? contentItem.ContentId);
-            contentItem.SetSlug(contentItem.Metadata?.Slug ?? contentItem.Slug);
+            contentItem.SetOrderIndex(contentItem.Metadata?.Order ?? contentItem.OrderIndex);
+            // Layout and Permalink are stored in Metadata only
+            contentItem.SetTitle(contentItem.Metadata?.Title ?? contentItem.Title);
+            contentItem.SetDescription(contentItem.Metadata?.Description ?? contentItem.Description);
+            contentItem.SetAuthor(contentItem.Metadata?.Author ?? contentItem.Author);
             contentItem.SetFeaturedImage(contentItem.Metadata?.FeaturedImage ?? contentItem.FeaturedImageUrl);
             contentItem.SetFeatured(contentItem.Metadata?.IsFeatured ?? contentItem.IsFeatured);
-            contentItem.SetOrderIndex(contentItem.Metadata?.Order ?? contentItem.OrderIndex);
+            contentItem.SetSlug(contentItem.Metadata?.Slug ?? contentItem.Slug);
+            contentItem.SetLocale(contentItem.Metadata?.Lang ?? contentItem.Locale);
+            
+            // Map Published to Status and IsPublished
+            var isPublished = contentItem.Metadata?.Published ?? true;
+            contentItem.IsPublished = isPublished;
+            contentItem.SetStatus(isPublished ? ContentStatus.Published : ContentStatus.Draft);
+            
+            // CustomFields and SeoProperties are stored in Metadata only
 
+            // Parse and set date
             var createdDate = contentItem.DateCreated;
             var metadataDate = contentItem.Metadata?.Date;
 
@@ -434,7 +448,9 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
             }
 
             contentItem.SetCreatedDate(createdDate);
+            contentItem.SetLastModifiedDate(contentItem.LastModified ?? createdDate);
 
+            // Add categories
             if (contentItem.Metadata?.Categories is not null && contentItem.Metadata.Categories.Any())
             {
                 foreach (var category in contentItem.Metadata.Categories)
@@ -443,6 +459,7 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
                 }
             }
 
+            // Add tags
             if (contentItem.Metadata?.Tags is not null && contentItem.Metadata.Tags.Any())
             {
                 foreach (var tag in contentItem.Metadata.Tags)
@@ -450,7 +467,6 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
                     contentItem.AddTag(tag);
                 }
             }
-            
         }
         catch (Exception ex)
         {
@@ -466,87 +482,81 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
     {
         var markdown = new StringBuilder();
 
-        // Add front matter
-        markdown.AppendLine("---");
-
-        // Basic metadata
-        if (!string.IsNullOrWhiteSpace(entity.Title))
-            markdown.AppendLine($"title: \"{EscapeYamlString(entity.Title)}\"");
-
-        if (!string.IsNullOrWhiteSpace(entity.Author))
-            markdown.AppendLine($"author: \"{EscapeYamlString(entity.Author)}\"");
-
-        if (!string.IsNullOrWhiteSpace(entity.Description))
-            markdown.AppendLine($"description: \"{EscapeYamlString(entity.Description)}\"");
-
-        // Date created (in ISO format)
-        markdown.AppendLine($"date: {entity.DateCreated:yyyy-MM-dd}");
-
-        // Last modified date
-        if (entity.LastModified.HasValue)
-            markdown.AppendLine($"last_modified: {entity.LastModified.Value:yyyy-MM-dd}");
-
-        // Content ID for localization
-        if (!string.IsNullOrWhiteSpace(entity.ContentId))
-            markdown.AppendLine($"content_id: \"{entity.ContentId}\"");
-
-        if (!string.IsNullOrWhiteSpace(entity.Locale))
-            markdown.AppendLine($"locale: \"{entity.Locale}\"");
-
-        // Slug
-        if (!string.IsNullOrWhiteSpace(entity.Slug))
-            markdown.AppendLine($"slug: \"{entity.Slug}\"");
-
-        // Featured status and image
-        if (entity.IsFeatured)
-            markdown.AppendLine("featured: true");
-
-        if (!string.IsNullOrWhiteSpace(entity.FeaturedImageUrl))
-            markdown.AppendLine($"featured_image: \"{entity.FeaturedImageUrl}\"");
-
-        // Categories
-        if (entity.Categories.Count > 0)
+        // Use FrontMatter.ToYaml() if Metadata exists, otherwise build manually
+        if (entity.Metadata is not null)
         {
-            markdown.AppendLine("categories:");
-            foreach (var category in entity.Categories)
-            {
-                markdown.AppendLine($"  - \"{EscapeYamlString(category)}\"");
-            }
-        }
+            // Update metadata with current entity values
+            entity.Metadata.Id = entity.ContentId;
+            entity.Metadata.Order = entity.OrderIndex;
+            entity.Metadata.Title = entity.Title;
+            entity.Metadata.Description = entity.Description;
+            entity.Metadata.Author = entity.Author;
+            entity.Metadata.Date = entity.DateCreated.ToString("yyyy-MM-dd");
+            entity.Metadata.FeaturedImage = entity.FeaturedImageUrl;
+            entity.Metadata.IsFeatured = entity.IsFeatured;
+            entity.Metadata.Slug = entity.Slug;
+            entity.Metadata.Lang = entity.Locale;
+            entity.Metadata.Published = entity.IsPublished;
+            entity.Metadata.Categories = entity.Categories.ToList();
+            entity.Metadata.Tags = entity.Tags.ToList();
 
-        // Tags
-        if (entity.Tags.Count > 0)
+            // Generate YAML using FrontMatter's built-in method
+            markdown.Append(entity.Metadata.ToYaml());
+        }
+        else
         {
-            markdown.AppendLine("tags:");
-            foreach (var tag in entity.Tags)
+            // Fallback: Build frontmatter manually
+            markdown.AppendLine("---");
+            
+            if (!string.IsNullOrWhiteSpace(entity.ContentId))
+                markdown.AppendLine($"id: \"{entity.ContentId}\"");
+            
+            if (entity.OrderIndex > 0)
+                markdown.AppendLine($"order: {entity.OrderIndex}");
+            
+            if (!string.IsNullOrWhiteSpace(entity.Title))
+                markdown.AppendLine($"title: \"{EscapeYamlString(entity.Title)}\"");
+            
+            if (!string.IsNullOrWhiteSpace(entity.Description))
+                markdown.AppendLine($"description: \"{EscapeYamlString(entity.Description)}\"");
+            
+            if (!string.IsNullOrWhiteSpace(entity.Author))
+                markdown.AppendLine($"author: \"{EscapeYamlString(entity.Author)}\"");
+            
+            markdown.AppendLine($"date: {entity.DateCreated:yyyy-MM-dd}");
+            
+            if (!string.IsNullOrWhiteSpace(entity.FeaturedImageUrl))
+                markdown.AppendLine($"featured_image: \"{entity.FeaturedImageUrl}\"");
+            
+            if (entity.Categories.Count > 0)
             {
-                markdown.AppendLine($"  - \"{EscapeYamlString(tag)}\"");
+                markdown.AppendLine("categories:");
+                foreach (var category in entity.Categories)
+                    markdown.AppendLine($"  - \"{EscapeYamlString(category)}\"");
             }
+            
+            if (entity.Tags.Count > 0)
+            {
+                markdown.AppendLine("tags:");
+                foreach (var tag in entity.Tags)
+                    markdown.AppendLine($"  - \"{EscapeYamlString(tag)}\"");
+            }
+            
+            if (entity.IsFeatured)
+                markdown.AppendLine("is_featured: true");
+            
+            if (!entity.IsPublished)
+                markdown.AppendLine("published: false");
+            
+            if (!string.IsNullOrWhiteSpace(entity.Slug))
+                markdown.AppendLine($"slug: \"{entity.Slug}\"");
+            
+            if (!string.IsNullOrWhiteSpace(entity.Locale))
+                markdown.AppendLine($"lang: \"{entity.Locale}\"");
+            
+            markdown.AppendLine("---");
+            markdown.AppendLine();
         }
-
-        // Add custom metadata
-        //foreach (var kvp in entity.Metadata)
-        //{
-        //    // Skip properties we've already handled
-        //    if (IsStandardFrontMatterKey(kvp.Key))
-        //        continue;
-
-        //    if (kvp.Value is string strValue)
-        //        markdown.AppendLine($"{kvp.Key}: \"{EscapeYamlString(strValue)}\"");
-        //    else if (kvp.Value is bool boolValue)
-        //        markdown.AppendLine($"{kvp.Key}: {boolValue.ToString().ToLowerInvariant()}");
-        //    else if (kvp.Value is int intValue)
-        //        markdown.AppendLine($"{kvp.Key}: {intValue}");
-        //    else if (kvp.Value is double doubleValue)
-        //        markdown.AppendLine($"{kvp.Key}: {doubleValue}");
-        //    else if (kvp.Value is DateTime dateValue)
-        //        markdown.AppendLine($"{kvp.Key}: {dateValue:yyyy-MM-dd}");
-        //    else
-        //        markdown.AppendLine($"{kvp.Key}: \"{kvp.Value}\"");
-        //}
-
-        markdown.AppendLine("---");
-        markdown.AppendLine();
 
         // Add original markdown content if available
         if (!string.IsNullOrWhiteSpace(entity.OriginalMarkdown))

@@ -185,8 +185,8 @@ public class ContentQueryFilter : IContentQueryFilter
                 : filteredItems.OrderByDescending(item => item.Author),
             
             SortField.LastModified => query.SortDirection == SortDirection.Ascending
-                ? filteredItems.OrderBy(item => item.LastModified ?? item.DateCreated)
-                : filteredItems.OrderByDescending(item => item.LastModified ?? item.DateCreated),
+                ? filteredItems.OrderBy(item => item.LastModified ?? item.PublishDate)
+                : filteredItems.OrderByDescending(item => item.LastModified ?? item.PublishDate),
             
             SortField.Created => query.SortDirection == SortDirection.Ascending
                 ? filteredItems.OrderBy(item => item.DateCreated)

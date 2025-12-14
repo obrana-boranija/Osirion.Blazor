@@ -275,21 +275,8 @@ public class GitHubContentRepository : BaseContentRepository
         contentItem.SetProviderSpecificId(fileContent.Sha);
 
 
-        // Get file history for dates (if needed)
-        //try
-        //{
-        //    var commit = await _apiClient.GetCommitForPathAsync(fileContent.Path, cancellationToken);
-        //    if (commit is not null)
-        //    {
-        //        contentItem.SetLastModifiedDate(commit.Committer.Date);
-        //        contentItem.SetCreatedDate(commit.Author.Date);
-        //    }
-        //}
-        //catch (Exception ex)
-        //{
-        //    Logger.LogWarning(ex, "Failed to get file history for {Path}, using current date", fileContent.Path);
-        //    contentItem.SetCreatedDate(DateTime.UtcNow);
-        //}
+        // Note: File history dates are set from frontmatter in ProcessMarkdownAsync
+        // GitHub commit dates could be fetched here if needed for audit trails
 
         // Extract locale from path if enabled
         if (_options.EnableLocalization)

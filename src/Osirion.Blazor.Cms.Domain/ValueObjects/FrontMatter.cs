@@ -53,6 +53,11 @@ public class FrontMatter : ValueObject
     public string Date { get; set; } = DateTime.Now.ToString("yyyy-MM-dd");
 
     /// <summary>
+    /// Gets the last modified date in ISO format (yyyy-MM-dd)
+    /// </summary>
+    public string? LastModified { get; set; }
+
+    /// <summary>
     /// Gets the URL for the featured image
     /// </summary>
     public string? FeaturedImage { get; set; }
@@ -75,7 +80,7 @@ public class FrontMatter : ValueObject
     /// <summary>
     /// Gets whether the post is published
     /// </summary>
-    public bool Published { get; set; } = true;
+    public bool Published { get; set; } = false;
 
     /// <summary>
     /// Gets the URL slug
@@ -135,6 +140,7 @@ public class FrontMatter : ValueObject
         string? description = null,
         string? author = null,
         DateTime? date = null,
+        DateTime? lastModified = null,
         string? featuredImage = null,
         IEnumerable<string>? categories = null,
         IEnumerable<string>? tags = null,
@@ -150,6 +156,7 @@ public class FrontMatter : ValueObject
             Description = description ?? string.Empty,
             Author = author ?? string.Empty,
             Date = (date ?? DateTime.Now).ToString("yyyy-MM-dd"),
+            LastModified = lastModified?.ToString("yyyy-MM-dd"),
             FeaturedImage = featuredImage,
             IsFeatured = isFeatured,
             Published = published,
@@ -204,6 +211,13 @@ public class FrontMatter : ValueObject
     {
         var clone = Clone();
         clone.Date = date.ToString("yyyy-MM-dd");
+        return clone;
+    }
+
+    public FrontMatter WithLastModified(DateTime? lastModified)
+    {
+        var clone = Clone();
+        clone.LastModified = lastModified?.ToString("yyyy-MM-dd");
         return clone;
     }
 
@@ -328,6 +342,7 @@ public class FrontMatter : ValueObject
             Description = Description,
             Author = Author,
             Date = Date,
+            LastModified = LastModified,
             FeaturedImage = FeaturedImage,
             IsFeatured = IsFeatured,
             Published = Published,
@@ -363,6 +378,11 @@ public class FrontMatter : ValueObject
 
         if (values.TryGetValue("date", out var dateStr) && DateTime.TryParse(dateStr, out var date))
             frontMatter = frontMatter.WithDate(date);
+
+        if ((values.TryGetValue("lastModified", out var lastModifiedStr) ||
+             values.TryGetValue("last_modified", out lastModifiedStr)) &&
+            DateTime.TryParse(lastModifiedStr, out var lastModified))
+            frontMatter = frontMatter.WithLastModified(lastModified);
 
         if (values.TryGetValue("featuredImage", out var featuredImage) ||
             values.TryGetValue("featured_image", out featuredImage))
@@ -429,6 +449,7 @@ public class FrontMatter : ValueObject
         yield return Description;
         yield return Author;
         yield return Date;
+        yield return LastModified ?? string.Empty;
         yield return FeaturedImage ?? string.Empty;
         yield return IsFeatured;
         yield return Published;
@@ -496,215 +517,11 @@ public class FrontMatter : ValueObject
     {
         var standardKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
-            "title", "description", "author", "date", "featuredimage", "featured_image",
-            "featured", "isFeatured", "published", "layout", "slug", "categories",
-            "category", "tags", "tag"
+            "title", "description", "author", "date", "lastmodified", "last_modified",
+            "featuredimage", "featured_image", "featured", "isFeatured", "published",
+            "layout", "slug", "categories", "category", "tags", "tag"
         };
 
         return standardKeys.Contains(key);
-    }
-
-    /// <summary>
-    /// Helper method to find Jekyll frontmatter boundaries.
-    /// Frontmatter starts and ends with "---" on its own line.
-    /// </summary>
-    private static (int Start, int End, int Length)? FindFrontmatterBoundaries(string content)
-    {
-        const string delimiter = "---";
-
-        // Must start with delimiter
-        if (!content.StartsWith(delimiter))
-            return null;
-
-        // Find the ending delimiter (after the opening one)
-        int firstDelimiterEnd = content.IndexOf('\n') + 1;
-        int secondDelimiterPos = content.IndexOf($"\n{delimiter}\n", firstDelimiterEnd);
-
-        if (secondDelimiterPos == -1)
-            return null;
-
-        int yamlStart = firstDelimiterEnd;
-        int yamlEnd = secondDelimiterPos;
-        int fullFrontmatterEnd = secondDelimiterPos + delimiter.Length + 2; // Include delimiter and newline
-
-        return (yamlStart, fullFrontmatterEnd, yamlEnd - yamlStart);
-    }
-
-
-
-    public static FrontMatter FromYaml(string yaml)
-    {
-
-        var frontmatterBoundaries = FindFrontmatterBoundaries(yaml);
-
-        // Extract the YAML frontmatter
-        string yamlContent = yaml.Substring(
-            frontmatterBoundaries.Value.Start,
-            frontmatterBoundaries.Value.Length
-        );
-
-        // Extract the markdown content after frontmatter
-        string markdownContent = yaml.Substring(frontmatterBoundaries.Value.End);
-
-        // Configure deserializer with custom settings for flexibility
-        var deserializer = new DeserializerBuilder()
-            .WithNamingConvention(CamelCaseNamingConvention.Instance)
-            .IgnoreUnmatchedProperties() // Important: Allows YAML to have extra fields
-            .Build();
-
-        // Deserialize frontmatter to our comprehensive class
-        var frontmatter = deserializer.Deserialize<FrontMatter>(yamlContent);
-
-        return frontmatter;
-
-        //var frontMatter = new FrontMatter();
-
-        //if (string.IsNullOrWhiteSpace(yaml))
-        //    return frontMatter;
-
-        //// Simple line-by-line parsing for common properties
-        //var lines = yaml.Split('\n');
-
-        //string? currentList = null;
-        //List<string> currentItems = new();
-
-        //foreach (var line in lines)
-        //{
-        //    var trimmedLine = line.Trim();
-
-        //    // Skip the opening and closing --- lines
-        //    if (trimmedLine == "---")
-        //        continue;
-
-        //    // Check if this is a new list
-        //    if (trimmedLine.EndsWith(':'))
-        //    {
-        //        // Save any previous list
-        //        if (currentList is not null && currentItems.Count > 0)
-        //        {
-        //            AssignList(frontMatter, currentList, currentItems);
-        //        }
-
-        //        // Start a new list
-        //        currentList = trimmedLine.TrimEnd(':');
-        //        currentItems = new List<string>();
-        //        continue;
-        //    }
-
-        //    // Check if this is a list item
-        //    if (trimmedLine.StartsWith("  - "))
-        //    {
-        //        var item = trimmedLine.Substring(4).Trim();
-        //        // Remove quotes if present
-        //        if (item.StartsWith("\"") && item.EndsWith("\""))
-        //        {
-        //            item = item.Substring(1, item.Length - 2);
-        //        }
-
-        //        currentItems.Add(item);
-        //        continue;
-        //    }
-
-        //    // Process key-value pair
-        //    var separatorIndex = trimmedLine.IndexOf(':');
-        //    if (separatorIndex > 0)
-        //    {
-        //        // Save any previous list
-        //        if (currentList is not null && currentItems.Count > 0)
-        //        {
-        //            AssignList(frontMatter, currentList, currentItems);
-        //            currentList = null;
-        //            currentItems.Clear();
-        //        }
-
-        //        var key = trimmedLine.Substring(0, separatorIndex).Trim();
-        //        var value = trimmedLine.Substring(separatorIndex + 1).Trim();
-
-        //        // Remove quotes if present
-        //        if (value.StartsWith("\"") && value.EndsWith("\""))
-        //        {
-        //            value = value.Substring(1, value.Length - 2);
-        //        }
-
-        //        AssignProperty(frontMatter, key, value);
-        //    }
-        //}
-
-        //// Save any final list
-        //if (currentList is not null && currentItems.Count > 0)
-        //{
-        //    AssignList(frontMatter, currentList, currentItems);
-        //}
-
-        //return frontMatter;
-    }
-
-    private static void AssignList(FrontMatter frontMatter, string listName, List<string> items)
-    {
-        switch (listName.ToLowerInvariant())
-        {
-            case "categories":
-                frontMatter = frontMatter.WithCategories(items);
-                break;
-            case "tags":
-                frontMatter = frontMatter.WithTags(items);
-                break;
-            default:
-                // For custom list properties, add as a custom field
-                frontMatter = frontMatter.WithCustomField(listName, items);
-                break;
-        }
-    }
-
-    private static void AssignProperty(FrontMatter frontMatter, string key, string value)
-    {
-        switch (key.ToLowerInvariant())
-        {
-            case "title":
-                frontMatter.Title = value;
-                break;
-            case "description":
-                frontMatter.Description = value;
-                break;
-            case "author":
-                frontMatter.Author = value;
-                break;
-            case "date":
-                frontMatter.Date = value;
-                break;
-            case "featuredimage":
-                frontMatter.FeaturedImage = value;
-                break;
-            case "featured":
-                frontMatter.IsFeatured = bool.TryParse(value, out var featured) && featured;
-                break;
-            case "published":
-                frontMatter.Published = !bool.TryParse(value, out var published) || published;
-                break;
-            case "layout":
-                frontMatter.Layout = value;
-                break;
-            case "slug":
-                frontMatter.Slug = value;
-                break;
-            default:
-                if (bool.TryParse(value, out var boolValue))
-                {
-                    frontMatter = frontMatter.WithCustomField(key, boolValue);
-                }
-                else if (int.TryParse(value, out var intValue))
-                {
-                    frontMatter = frontMatter.WithCustomField(key, intValue);
-                }
-                else if (double.TryParse(value, out var doubleValue))
-                {
-                    frontMatter = frontMatter.WithCustomField(key, doubleValue);
-                }
-                else
-                {
-                    frontMatter = frontMatter.WithCustomField(key, value);
-                }
-                break;
-        }
     }
 }

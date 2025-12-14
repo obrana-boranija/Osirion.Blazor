@@ -25,9 +25,9 @@ public class ContentSorter : IContentSorter
                 items.OrderBy(item => item.Author) :
                 items.OrderByDescending(item => item.Author),
 
-            SortField.LastModified => direction == SortDirection.Ascending ?
-                items.OrderBy(item => item.LastModified ?? item.DateCreated) :
-                items.OrderByDescending(item => item.LastModified ?? item.DateCreated),
+            SortField.LastModified => sortDirection == SortDirection.Ascending ?
+                items.OrderBy(item => item.LastModified ?? item.PublishDate) :
+                items.OrderByDescending(item => item.LastModified ?? item.PublishDate),
 
             SortField.Created => direction == SortDirection.Ascending ?
                 items.OrderBy(item => item.DateCreated) :
