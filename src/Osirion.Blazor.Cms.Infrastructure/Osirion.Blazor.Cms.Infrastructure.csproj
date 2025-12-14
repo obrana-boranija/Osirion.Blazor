@@ -13,7 +13,7 @@
 
 		<!-- NuGet package properties -->
 		<PackageId>Osirion.Blazor.Cms.Infrastructure</PackageId>
-		<Version>2.1.16</Version>
+		<Version>2.1.17</Version>
 		<Authors>Dejan Demonjić</Authors>
 		<Company>Tridesetri</Company>
 		<Description>Infrastructure layer for the Osirion.Blazor CMS ecosystem, implementing repositories, external service integrations, and infrastructure concerns.</Description>
