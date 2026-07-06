@@ -38,6 +38,7 @@ jobs:
           dotnet-version: |
             8.0.x
             9.0.x
+            10.0.x
       
       - name: Determine Version
         id: get_version
@@ -160,7 +161,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: '10.0.x'
       
       # Check if version exists
       - name: Check for existing packages
@@ -209,7 +210,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: '10.0.x'
       
       # Publish to NuGet
       - name: Publish NuGet packages
