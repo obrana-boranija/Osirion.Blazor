@@ -1,0 +1,11 @@
+@namespace Osirion.Blazor.Components
+@inherits OsirionComponentBase
+
+<div class="osirion-reveal osirion-reveal-@CssAnimation" data-osirion-reveal="@Animate" @attributes="Attributes">
+    @ChildContent
+</div>
+
+@if (Animate)
+{
+    @LoadScript("./_content/Osirion.Blazor.Core/Components/Rendering/OsirionReveal.razor.js")
+}

@@ -1,0 +1,24 @@
+@namespace Osirion.Blazor.Components
+@inherits OsirionComponentBase
+
+<article class="osirion-metric-card osirion-metric-card-@Accent @(Elevated ? "osirion-metric-card-elevated" : "") @CssClass"
+         @attributes="Attributes">
+    @if (!string.IsNullOrWhiteSpace(Kicker))
+    {
+        <span class="osirion-metric-card-kicker">@Kicker</span>
+    }
+    <div class="osirion-metric-card-value" data-osirion-metric="@Animate" data-count="@NumericValue" data-prefix="@Prefix" data-suffix="@Suffix">@Value</div>
+    @if (!string.IsNullOrWhiteSpace(Label))
+    {
+        <div class="osirion-metric-card-label">@Label</div>
+    }
+    @if (!string.IsNullOrWhiteSpace(Description))
+    {
+        <div class="osirion-metric-card-description">@Description</div>
+    }
+</article>
+
+@if (Animate)
+{
+    @LoadScript("./_content/Osirion.Blazor.Core/Components/Cards/OsirionMetricCard.razor.js")
+}

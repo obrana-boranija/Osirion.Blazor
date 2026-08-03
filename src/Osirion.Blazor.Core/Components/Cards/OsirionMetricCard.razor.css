@@ -1,0 +1,50 @@
+.osirion-metric-card {
+    height: 100%;
+    padding: 1.5rem;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 0.5rem;
+    background: #fff;
+    text-align: center;
+}
+
+.osirion-metric-card-elevated {
+    box-shadow: 0 0.75rem 2rem rgba(0, 0, 0, 0.12);
+}
+
+.osirion-metric-card-value {
+    margin-bottom: 0.5rem;
+    color: #176b45;
+    font-size: clamp(1.875rem, 3.5vw, 2.75rem);
+    font-weight: 800;
+    line-height: 1.1;
+}
+
+.osirion-metric-card-teal .osirion-metric-card-value { color: #0d766f; }
+.osirion-metric-card-blue .osirion-metric-card-value { color: #2563a9; }
+.osirion-metric-card-amber .osirion-metric-card-value { color: #9a6700; }
+.osirion-metric-card-purple .osirion-metric-card-value { color: #7040a5; }
+.osirion-metric-card-indigo .osirion-metric-card-value { color: #4f46a5; }
+
+.osirion-metric-card-kicker {
+    display: block;
+    margin-bottom: 0.75rem;
+    color: #666;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.osirion-metric-card-label {
+    color: #123b2b;
+    font-size: 0.95rem;
+    font-weight: 700;
+    line-height: 1.35;
+}
+
+.osirion-metric-card-description {
+    margin-top: 0.25rem;
+    color: #666;
+    font-size: 0.82rem;
+    line-height: 1.55;
+}

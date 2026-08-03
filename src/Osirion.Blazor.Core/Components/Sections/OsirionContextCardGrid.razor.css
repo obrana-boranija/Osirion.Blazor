@@ -1,0 +1,74 @@
+.osirion-context-card-grid {
+    padding: var(--osirion-context-card-grid-padding, 4rem) 0;
+    background: var(--osirion-context-card-grid-background, transparent);
+}
+
+.osirion-context-card-grid-container {
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.osirion-context-card-grid-heading {
+    max-width: 52rem;
+    margin: 0 auto 2.5rem;
+    text-align: center;
+}
+
+.osirion-context-card-grid-heading h2 {
+    margin: 0 0 0.75rem;
+    color: var(--osirion-context-card-grid-heading-color, #123b2b);
+    font-size: clamp(1.75rem, 3vw, 2.5rem);
+    line-height: 1.15;
+}
+
+.osirion-context-card-grid-heading p {
+    margin: 0;
+    color: var(--osirion-context-card-grid-description-color, #666);
+    line-height: 1.6;
+}
+
+.osirion-context-card-grid-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+    gap: 1rem;
+}
+
+.osirion-context-card-grid-item {
+    height: 100%;
+    padding: 1.25rem;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-top: 0.25rem solid var(--osirion-context-card-grid-accent, #176b45);
+    border-radius: 0.5rem;
+    background: var(--osirion-context-card-grid-card-background, #fff);
+    box-shadow: var(--osirion-context-card-grid-card-shadow, 0 0.5rem 1.5rem rgba(0, 0, 0, 0.06));
+}
+
+.osirion-context-card-grid-item h3 {
+    margin: 0 0 0.65rem;
+    color: var(--osirion-context-card-grid-accent, #176b45);
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.osirion-context-card-grid-item p {
+    margin: 0;
+    color: var(--osirion-context-card-grid-item-color, #555);
+    line-height: 1.55;
+}
+
+.osirion-context-card-grid-item-blue { border-top-color: #2563a9; }
+.osirion-context-card-grid-item-blue h3 { color: #2563a9; }
+.osirion-context-card-grid-item-purple { border-top-color: #7040a5; }
+.osirion-context-card-grid-item-purple h3 { color: #7040a5; }
+.osirion-context-card-grid-item-indigo { border-top-color: #4f46a5; }
+.osirion-context-card-grid-item-indigo h3 { color: #4f46a5; }
+.osirion-context-card-grid-item-teal { border-top-color: #0d766f; }
+.osirion-context-card-grid-item-teal h3 { color: #0d766f; }
+.osirion-context-card-grid-item-amber { border-top-color: #9a6700; }
+.osirion-context-card-grid-item-amber h3 { color: #9a6700; }
+
+@media (min-width: 768px) {
+    .osirion-context-card-grid-container {
+        padding: 0 1.5rem;
+    }
+}

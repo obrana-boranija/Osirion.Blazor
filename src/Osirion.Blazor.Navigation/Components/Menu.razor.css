@@ -397,6 +397,58 @@ html.osirion-bootstrap-integration .osirion-menu-container[data-osirion-componen
         font-size: var(--osirion-font-size-lg, 1.125rem);
     }
 }
+
+/* Opt-in collapse behavior for dense horizontal menus. */
+@media (max-width: 1439.98px) {
+    .osirion-menu-collapse-extra-large .osirion-navbar-toggle {
+        display: block !important;
+    }
+
+    .osirion-menu-collapse-extra-large .osirion-menu-nav {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .osirion-menu-collapse-extra-large .osirion-menu {
+        display: none !important;
+    }
+
+    .osirion-menu-collapse-extra-large .osirion-navbar-toggler:checked ~ .osirion-menu-nav .osirion-menu {
+        display: flex !important;
+    }
+
+    .osirion-menu-collapse-extra-large.osirion-menu-horizontal .osirion-menu {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .osirion-menu-collapse-extra-large.osirion-menu-horizontal .osirion-menu-inner {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .osirion-menu-collapse-extra-large.osirion-menu-align-left .osirion-menu-inner,
+    .osirion-menu-collapse-extra-large.osirion-menu-align-center .osirion-menu-inner,
+    .osirion-menu-collapse-extra-large.osirion-menu-align-right .osirion-menu-inner {
+        justify-content: flex-start;
+    }
+
+    .osirion-menu-collapse-extra-large .osirion-submenu {
+        position: static !important;
+        width: 100%;
+        box-shadow: none;
+        border: none;
+        display: block;
+        border-left: 1px solid var(--osirion-border-color, rgba(255, 255, 255, 0.1));
+        margin-left: var(--osirion-spacing-5, 1.25rem);
+        padding-left: var(--osirion-spacing-2, 0.5rem);
+    }
+
+    .osirion-menu-collapse-extra-large.osirion-menu-horizontal .osirion-menu-item-chevron svg {
+        transform: rotate(0deg) !important;
+    }
+}
+
 /* Accessibility - reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
     .osirion-menu *,

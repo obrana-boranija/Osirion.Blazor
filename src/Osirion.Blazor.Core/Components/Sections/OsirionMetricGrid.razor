@@ -1,0 +1,21 @@
+@namespace Osirion.Blazor.Components
+@inherits OsirionComponentBase
+
+@if (Metrics.Count > 0)
+{
+    <ul class="osirion-metric-grid osirion-metric-grid-columns-@((int)Columns) @CssClass" aria-label="@AriaLabel" @attributes="Attributes">
+        @foreach (var metric in Metrics)
+        {
+            <li @key="metric">
+                <OsirionMetricCard Value="@metric.Value"
+                                   Label="@metric.Label"
+                                   Description="@metric.Description"
+                                   Accent="@metric.Accent"
+                                   Kicker="@metric.Kicker"
+                                   Elevated="@metric.Elevated"
+                                   Animate="@metric.Animate"
+                                   CssClass="h-100" />
+            </li>
+        }
+    </ul>
+}

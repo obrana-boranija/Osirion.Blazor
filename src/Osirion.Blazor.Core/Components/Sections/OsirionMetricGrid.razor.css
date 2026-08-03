@@ -1,0 +1,30 @@
+.osirion-metric-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--osirion-metric-grid-gap, 1rem);
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.osirion-metric-grid > li {
+    min-width: 0;
+}
+
+@media (min-width: 576px) {
+    .osirion-metric-grid-columns-2,
+    .osirion-metric-grid-columns-3,
+    .osirion-metric-grid-columns-4 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 992px) {
+    .osirion-metric-grid-columns-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .osirion-metric-grid-columns-4 {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}

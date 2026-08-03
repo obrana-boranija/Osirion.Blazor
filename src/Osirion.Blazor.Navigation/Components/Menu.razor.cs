@@ -67,6 +67,12 @@ public partial class Menu
     public bool CollapseOnMobile { get; set; } = true;
 
     /// <summary>
+    /// Gets or sets the viewport breakpoint at which a collapsible menu is displayed as a toggle.
+    /// </summary>
+    [Parameter]
+    public MenuCollapseBreakpoint CollapseBreakpoint { get; set; } = MenuCollapseBreakpoint.Mobile;
+
+    /// <summary>
     /// Gets or sets whether to auto-expand active items in vertical mode.
     /// </summary>
     [Parameter]
@@ -145,6 +151,9 @@ public partial class Menu
         if (CollapseOnMobile)
             classes.Add("osirion-menu-collapsible");
 
+        if (CollapseOnMobile && CollapseBreakpoint == MenuCollapseBreakpoint.ExtraLarge)
+            classes.Add("osirion-menu-collapse-extra-large");
+
         // Add sticky class if enabled (only for horizontal menus)
         if (Sticky && Orientation == MenuOrientation.Horizontal)
             classes.Add("osirion-menu-sticky");
@@ -184,6 +193,22 @@ public enum MenuOrientation
     /// Vertical menu layout
     /// </summary>
     Vertical
+}
+
+/// <summary>
+/// Defines the viewport breakpoints for a collapsible menu.
+/// </summary>
+public enum MenuCollapseBreakpoint
+{
+    /// <summary>
+    /// Collapses at the mobile breakpoint (768px and below).
+    /// </summary>
+    Mobile,
+
+    /// <summary>
+    /// Collapses below the extra-large breakpoint (1440px).
+    /// </summary>
+    ExtraLarge
 }
 
 /// <summary>

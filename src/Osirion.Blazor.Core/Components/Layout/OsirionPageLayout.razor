@@ -4,7 +4,7 @@
 <div class="@GetPageLayoutClass()" @attributes="Attributes">
     @if (Header is not null)
     {
-        <header class="osirion-page-header">
+        <header class="osirion-page-header @(EnableHeaderScrollBehavior ? "osirion-page-header-scroll" : null)">
             @Header
         </header>
     }
@@ -20,3 +20,5 @@
         </footer>
     }
 </div>
+
+@HeaderScrollScript

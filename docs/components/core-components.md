@@ -26,6 +26,11 @@ The Core module contains the following components:
 - OsirionBaseSection
 - OsirionContactInfoSection
 - OsirionBackgroundPattern
+- OsirionImageGallery
+- OsirionMetricCard
+- OsirionMetricGrid
+- OsirionContextCardGrid
+- OsirionReveal
 - InfiniteLogoCarousel
 
 Each component is described below with usage examples.
@@ -416,4 +421,127 @@ The `InfiniteLogoCarousel` component displays a carousel of logos.
 
 ```razor
 <InfiniteLogoCarousel Logos="@logoUrls" />
+```
+
+## OsirionImageGallery
+
+The `OsirionImageGallery` component renders an SSR-friendly responsive image grid with an optional lightbox enhancement.
+
+### Parameters
+
+- `Items`: IReadOnlyList<GalleryItem> - Images with source, alt text, caption, and dimensions
+- `Columns`: int - Large-screen column count, clamped from 1 to 4 (default: 2)
+- `GapSize`: int - Gap scale, clamped from 0 to 5 (default: 4)
+- `Dark`: bool - Uses dark-surface caption styling
+
+### Example
+
+```razor
+<OsirionImageGallery Items="@images" Columns="3" />
+
+@code {
+    private readonly IReadOnlyList<OsirionImageGallery.GalleryItem> images =
+    [
+        new("/images/overview.webp", "Product overview", "Overview")
+    ];
+}
+```
+
+## OsirionMetricCard
+
+The `OsirionMetricCard` component displays a prominent value with optional supporting text and viewport-triggered count-up animation.
+
+### Parameters
+
+- `Value`: string - Display value such as `99.99%`, `18-32%`, or `<100ms`
+- `Label`: string - Text below the value
+- `Description`: string - Supporting text below the label
+- `Accent`: string - Accent token used by the component styles
+- `Kicker`: string - Optional text above the value
+- `Elevated`: bool - Applies elevated styling
+- `CssClass`: string - Additional CSS classes
+- `Animate`: bool - Enables progressive count-up enhancement
+
+### Example
+
+```razor
+<OsirionMetricCard Value="18-32%"
+                   Label="Labor variance reduction"
+                   Description="Measured against the approved baseline"
+                   Accent="green"
+                   Animate="true" />
+```
+
+## OsirionMetricGrid
+
+The `OsirionMetricGrid` component renders metric cards as a responsive, semantic list. Place it in a parent section with a visible heading, provide an `AriaLabel` that identifies the metric group, and keep values and claims in the consuming application.
+
+### Parameters
+
+- `Metrics`: IReadOnlyList<MetricGridItem> - Metric values and optional card content
+- `Columns`: MetricGridColumns - Two, three, or four large-screen columns
+- `AriaLabel`: string - Accessible name for the metric list
+- `CssClass`: string - Additional grid classes
+
+### Example
+
+```razor
+<OsirionMetricGrid Columns="MetricGridColumns.Three"
+                    AriaLabel="Service reliability metrics"
+                    Metrics="@[
+                        new("99.9%", "Availability"),
+                        new("24/7", "Monitoring"),
+                        new("15 min", "Response target")
+                    ]" />
+```
+
+## OsirionContextCardGrid
+
+The `OsirionContextCardGrid` component presents labeled detail cards in a responsive, accessible section.
+
+### Parameters
+
+- `Title`: string - Panel heading
+- `Description`: string - Optional supporting text
+- `Items`: ContextCardItem[] - Label and detail values to display
+- `Id`: string - Optional section id for in-page navigation
+- `HeadingId`: string - Id shared by the section landmark and heading
+- `SectionClass`: string - Additional section classes
+- `ContainerClass`: string - Content container classes
+
+### Example
+
+```razor
+<OsirionContextCardGrid
+    Title="Context by category"
+    Description="Connect each category's priorities to the same operating view."
+    Id="operating-context"
+    HeadingId="operating-context-heading"
+    Items="@RoleItems" />
+
+@code {
+    private readonly OsirionContextCardGrid.ContextCardItem[] RoleItems =
+    [
+        new("Finance", "Cost variance and forecast predictability.", "blue"),
+        new("Operations", "Coverage reliability and exception response.", "green")
+    ];
+}
+```
+
+## OsirionReveal
+
+The `OsirionReveal` component keeps content visible during SSR and adds an optional viewport reveal animation when browser enhancement is available.
+
+### Parameters
+
+- `ChildContent`: RenderFragment - Content to render
+- `Animate`: bool - Enables the viewport enhancement (default: true)
+- `Animation`: RevealAnimation - `Up`, `Down`, `Left`, `Right`, or `Fade`
+
+### Example
+
+```razor
+<OsirionReveal Animation="RevealAnimation.Left">
+    <section>Progressively enhanced content</section>
+</OsirionReveal>
 ```

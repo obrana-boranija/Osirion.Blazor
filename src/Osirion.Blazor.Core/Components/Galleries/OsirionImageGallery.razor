@@ -1,0 +1,53 @@
+@namespace Osirion.Blazor.Components
+@inherits OsirionComponentBase
+
+<div class="osirion-image-gallery @(Dark ? "osirion-image-gallery-dark" : "")"
+     data-osirion-gallery
+     @attributes="Attributes">
+    <div class="osirion-image-gallery-grid" style="--osirion-gallery-columns: @SafeColumns; --osirion-gallery-gap: @SafeGapSize;">
+        @for (var index = 0; index < Items.Count; index++)
+        {
+            var item = Items[index];
+            <figure class="osirion-image-gallery-item" data-gallery-index="@index">
+                <button type="button"
+                        class="osirion-image-gallery-trigger"
+                        aria-label="View full size: @item.Caption">
+                    <span class="osirion-image-gallery-image-wrap">
+                        <img src="@item.Src"
+                             alt="@item.Alt"
+                             width="@item.Width"
+                             height="@item.Height"
+                             loading="lazy"
+                             class="osirion-image-gallery-image" />
+                        <span class="osirion-image-gallery-zoom" aria-hidden="true">+</span>
+                    </span>
+                    @if (!string.IsNullOrWhiteSpace(item.Caption))
+                    {
+                        <figcaption>@item.Caption</figcaption>
+                    }
+                </button>
+            </figure>
+        }
+    </div>
+
+    <div class="osirion-image-gallery-lightbox"
+         data-gallery-lightbox
+         role="dialog"
+         aria-modal="true"
+         aria-label="Image viewer"
+         hidden>
+        <button type="button" class="osirion-image-gallery-backdrop" data-gallery-close aria-label="Close image viewer"></button>
+        <button type="button" class="osirion-image-gallery-close" data-gallery-close aria-label="Close image viewer">&times;</button>
+        <div class="osirion-image-gallery-viewer">
+            <button type="button" class="osirion-image-gallery-nav" data-gallery-previous aria-label="Previous image">&#8249;</button>
+            <img class="osirion-image-gallery-lightbox-image" data-gallery-image alt="" />
+            <button type="button" class="osirion-image-gallery-nav" data-gallery-next aria-label="Next image">&#8250;</button>
+        </div>
+        <div class="osirion-image-gallery-footer">
+            <span data-gallery-caption></span>
+            <span data-gallery-counter></span>
+        </div>
+    </div>
+</div>
+
+@LoadScript("./_content/Osirion.Blazor.Core/Components/Galleries/OsirionImageGallery.razor.js")
