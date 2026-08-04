@@ -1,4 +1,4 @@
-﻿using System.Text.RegularExpressions;
+using System.Text.RegularExpressions;
 
 namespace Osirion.Blazor.Cms.Infrastructure.Utilities;
 
@@ -20,7 +20,7 @@ public static class UrlGenerator
         path = NormalizePath(path);
 
         // Step 1: Remove skipSegment from the beginning of the path if present
-        if (!skipPrefixRemoval && path.StartsWith(skipSegment!))
+        if (!skipPrefixRemoval && skipSegment is not null && path.StartsWith(skipSegment))
         {
             // Only remove 'skipSegment' if it's followed by a slash or is the entire string
             if (path.Length == skipSegment.Length || path[skipSegment.Length] == '/')

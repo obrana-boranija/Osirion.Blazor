@@ -28,9 +28,9 @@ public class ContentEventHandlersTests
         logger.Received(1).Log(
             LogLevel.Information,
             Arg.Any<EventId>(),
-            Arg.Is<object>(o => o.ToString().Contains("Content item created: ID content-id")),
+            Arg.Is<object>(o => o == null ? false : o.ToString()!.Contains("Content item created: ID content-id")),
             Arg.Any<Exception>(),
-            Arg.Any<Func<object, Exception, string>>());
+            Arg.Any<Func<object, Exception?, string>>());
     }
 
     [Fact]
@@ -52,9 +52,9 @@ public class ContentEventHandlersTests
         logger.Received(1).Log(
             LogLevel.Information,
             Arg.Any<EventId>(),
-            Arg.Is<object>(o => o.ToString().Contains("Content item deleted: ID content-id")),
+            Arg.Is<object>(o => o == null ? false : o.ToString()!.Contains("Content item deleted: ID content-id")),
             Arg.Any<Exception>(),
-            Arg.Any<Func<object, Exception, string>>());
+            Arg.Any<Func<object, Exception?, string>>());
     }
 
     [Fact]
@@ -78,9 +78,9 @@ public class ContentEventHandlersTests
         logger.Received(1).Log(
             LogLevel.Information,
             Arg.Any<EventId>(),
-            Arg.Is<object>(o => o.ToString().Contains("Content item status changed: ID content-id")),
+            Arg.Is<object>(o => o == null ? false : o.ToString()!.Contains("Content item status changed: ID content-id")),
             Arg.Any<Exception>(),
-            Arg.Any<Func<object, Exception, string>>());
+            Arg.Any<Func<object, Exception?, string>>());
     }
 
     [Fact]
@@ -103,16 +103,16 @@ public class ContentEventHandlersTests
         logger.Received(1).Log(
             LogLevel.Information,
             Arg.Any<EventId>(),
-            Arg.Is<object>(o => o.ToString().Contains("Content item updated: ID content-id")),
+            Arg.Is<object>(o => o == null ? false : o.ToString()!.Contains("Content item updated: ID content-id")),
             Arg.Any<Exception>(),
-            Arg.Any<Func<object, Exception, string>>());
+            Arg.Any<Func<object, Exception?, string>>());
     }
 
     [Fact]
     public void ContentCreatedEventHandler_WithNullLogger_ThrowsArgumentNullException()
     {
         // Act & Assert
-        Should.Throw<ArgumentNullException>(() => new ContentCreatedEventHandler(null))
+        Should.Throw<ArgumentNullException>(() => new ContentCreatedEventHandler(null!))
             .ParamName.ShouldBe("logger");
     }
 
@@ -120,7 +120,7 @@ public class ContentEventHandlersTests
     public void ContentDeletedEventHandler_WithNullLogger_ThrowsArgumentNullException()
     {
         // Act & Assert
-        Should.Throw<ArgumentNullException>(() => new ContentDeletedEventHandler(null))
+        Should.Throw<ArgumentNullException>(() => new ContentDeletedEventHandler(null!))
             .ParamName.ShouldBe("logger");
     }
 
@@ -128,7 +128,7 @@ public class ContentEventHandlersTests
     public void ContentStatusChangedEventHandler_WithNullLogger_ThrowsArgumentNullException()
     {
         // Act & Assert
-        Should.Throw<ArgumentNullException>(() => new ContentStatusChangedEventHandler(null))
+        Should.Throw<ArgumentNullException>(() => new ContentStatusChangedEventHandler(null!))
             .ParamName.ShouldBe("logger");
     }
 
@@ -136,7 +136,7 @@ public class ContentEventHandlersTests
     public void ContentUpdatedEventHandler_WithNullLogger_ThrowsArgumentNullException()
     {
         // Act & Assert
-        Should.Throw<ArgumentNullException>(() => new ContentUpdatedEventHandler(null))
+        Should.Throw<ArgumentNullException>(() => new ContentUpdatedEventHandler(null!))
             .ParamName.ShouldBe("logger");
     }
 }

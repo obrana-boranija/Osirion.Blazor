@@ -1,15 +1,17 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Enums;
 using Osirion.Blazor.Cms.Domain.Interfaces.Content;
 using Osirion.Blazor.Cms.Domain.Repositories;
 using Osirion.Blazor.Cms.Domain.Services;
 
+/// <summary>Defines the ContentProviderManager API contract.</summary>
 public class ContentProviderManager : IContentProviderManager
 {
     private readonly IContentProviderRegistry _registry;
     private readonly ILogger<ContentProviderManager> _logger;
 
+    /// <summary>Performs the ContentProviderManager operation.</summary>
     public ContentProviderManager(
         IContentProviderRegistry registry,
         ILogger<ContentProviderManager> logger)
@@ -18,8 +20,11 @@ public class ContentProviderManager : IContentProviderManager
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
+    /// <summary>Performs the GetDefaultProvider operation.</summary>
     public IContentProvider? GetDefaultProvider() => _registry.GetDefaultProvider();
+    /// <summary>Gets or sets the GetProvider value.</summary>
     public IContentProvider? GetProvider(string providerId) => _registry.GetProvider(providerId);
+    /// <summary>Gets or sets the GetAllProviders value.</summary>
     public IEnumerable<IContentProvider> GetAllProviders() => _registry.GetAllProviders();
 
     #region Directory Methods

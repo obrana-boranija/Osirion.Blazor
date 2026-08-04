@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Services;
 
@@ -12,12 +12,14 @@ public class DefaultProviderSetter : IDefaultProviderSetter
     private readonly string _providerId;
     private readonly bool _isDefault;
 
+    /// <summary>Gets or sets the DefaultProviderSetter value.</summary>
     public DefaultProviderSetter(string providerId, bool isDefault)
     {
         _providerId = providerId ?? throw new ArgumentNullException(nameof(providerId));
         _isDefault = isDefault;
     }
 
+    /// <summary>Performs the SetDefault operation.</summary>
     public void SetDefault(IServiceProvider serviceProvider)
     {
         if (!_isDefault) return;

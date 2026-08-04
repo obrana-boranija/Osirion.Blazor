@@ -1,4 +1,4 @@
-﻿using Osirion.Blazor.Cms.Domain.Interfaces;
+using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.ValueObjects;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
@@ -14,6 +14,7 @@ public class MarkdownProcessor : IMarkdownProcessor
     private readonly IMarkdownSanitizer _sanitizer;
     private readonly IHtmlToMarkdownConverter _htmlToMarkdownConverter;
 
+    /// <summary>Performs the MarkdownProcessor operation.</summary>
     public MarkdownProcessor(
         IMarkdownRendererService renderer,
         IMarkdownSanitizer sanitizer,
@@ -24,6 +25,7 @@ public class MarkdownProcessor : IMarkdownProcessor
         _htmlToMarkdownConverter = htmlToMarkdownConverter ?? throw new ArgumentNullException(nameof(htmlToMarkdownConverter));
     }
 
+    /// <summary>Gets or sets the RenderToHtml value.</summary>
     public string RenderToHtml(string markdown, bool sanitizeHtml = false)
     {
         if (string.IsNullOrWhiteSpace(markdown))
@@ -37,6 +39,7 @@ public class MarkdownProcessor : IMarkdownProcessor
         return _renderer.RenderToHtml(markdown);
     }
 
+    /// <summary>Performs the RenderToHtml operation asynchronously.</summary>
     public Task<string> RenderToHtmlAsync(string markdown, bool sanitizeHtml = false)
     {
         if (string.IsNullOrWhiteSpace(markdown))
@@ -50,11 +53,13 @@ public class MarkdownProcessor : IMarkdownProcessor
         return _renderer.RenderToHtmlAsync(markdown);
     }
 
+    /// <summary>Gets or sets the SanitizeMarkdown value.</summary>
     public string SanitizeMarkdown(string markdown)
     {
         return _sanitizer.SanitizeMarkdown(markdown);
     }
 
+    /// <summary>Gets or sets the ExtractFrontMatterAndContent value.</summary>
     public (FrontMatter? FrontMatter, string Content) ExtractFrontMatterAndContent(string markdown)
     {
         var frontmatterBoundaries = FindFrontmatterBoundaries(markdown);
@@ -83,11 +88,13 @@ public class MarkdownProcessor : IMarkdownProcessor
         return (frontmatter, markdownContent);
     }
 
+    /// <summary>Performs the ConvertHtmlToMarkdown operation asynchronously.</summary>
     public Task<string> ConvertHtmlToMarkdownAsync(string html, CancellationToken cancellationToken = default)
     {
         return _htmlToMarkdownConverter.ConvertHtmlToMarkdownAsync(html, cancellationToken);
     }
 
+    /// <summary>Performs the ConvertHtmlToMarkdown operation asynchronously.</summary>
     public async Task<string> ConvertHtmlToMarkdownAsync(string html)
     {
         return await _htmlToMarkdownConverter.ConvertHtmlToMarkdownAsync(html);

@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Admin.Core.Events;
 
 namespace Osirion.Blazor.Cms.Admin.Services.Events;
@@ -12,6 +12,7 @@ public class CmsEventMediator : IEventPublisher, IEventSubscriber
     private readonly Dictionary<Type, List<Delegate>> _handlers = new();
     private readonly ILogger<CmsEventMediator> _logger;
 
+    /// <summary>Performs the CmsEventMediator operation.</summary>
     public CmsEventMediator(ILogger<CmsEventMediator> logger)
     {
         _logger = logger;

@@ -1,4 +1,4 @@
-﻿namespace Osirion.Blazor.Cms.Domain.Interfaces.Directory;
+namespace Osirion.Blazor.Cms.Domain.Interfaces.Directory;
 
 /// <summary>
 /// Utilities for path manipulation

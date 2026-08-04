@@ -230,7 +230,9 @@ public partial class InfiniteLogoCarousel : OsirionComponentBase
 /// </summary>
 public enum AnimationDirection
 {
+    /// <summary>Moves logos from right to left.</summary>
     Right,
+    /// <summary>Moves logos from left to right.</summary>
     Left
 }
 
@@ -248,5 +250,6 @@ public record LogoItem(
     bool? NoOpener = null,
     bool? EnableGrayscale = null)
 {
+    /// <summary>Gets whether both light and dark logo variants are available.</summary>
     public bool HasDualLogos => !string.IsNullOrWhiteSpace(LightImageUrl) && !string.IsNullOrWhiteSpace(DarkImageUrl);
 }

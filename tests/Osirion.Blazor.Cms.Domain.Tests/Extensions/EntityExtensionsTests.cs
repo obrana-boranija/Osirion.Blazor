@@ -86,7 +86,7 @@ public class EntityExtensionsTests
     public void GenerateSlug_WithNullString_ReturnsUntitled()
     {
         // Arrange
-        string text = null;
+        string text = null!;
 
         // Act
         string slug = text.GenerateSlug();
@@ -223,7 +223,7 @@ public class EntityExtensionsTests
     public void EscapeYamlString_WithNullString_ReturnsNull()
     {
         // Arrange
-        string input = null;
+        string input = null!;
 
         // Act
         string result = input.EscapeYamlString();

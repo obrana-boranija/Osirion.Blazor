@@ -12,10 +12,10 @@ namespace Osirion.Blazor.Cms.Infrastructure.Tests.Utilities
         [InlineData("Special@#Characters!", "specialcharacters")]
         [InlineData("", "/untitled")]
         [InlineData(null, "/untitled")]
-        public void ToUrlSlug_WithVariousInputs_ReturnsExpectedSlug(string input, string expected)
+        public void ToUrlSlug_WithVariousInputs_ReturnsExpectedSlug(string? input, string expected)
         {
             // Act
-            var result = input.ToUrlSlug();
+            var result = input!.ToUrlSlug();
 
             // Assert
             result.ShouldBe(expected);

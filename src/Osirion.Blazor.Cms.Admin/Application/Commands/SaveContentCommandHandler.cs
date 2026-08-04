@@ -1,14 +1,16 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Admin.Infrastructure.Adapters;
 using Osirion.Blazor.Cms.Application.Commands;
 
 namespace Osirion.Blazor.Cms.Admin.Application.Commands;
 
+    /// <summary>Defines the public member API contract.</summary>
 public class SaveContentCommandHandler : ICommandHandler<SaveContentCommand, SaveContentResult>
 {
     private readonly IContentRepositoryAdapter _repositoryAdapter;
     private readonly ILogger<SaveContentCommandHandler> _logger;
 
+    /// <summary>Performs the SaveContentCommandHandler operation.</summary>
     public SaveContentCommandHandler(
         IContentRepositoryAdapter repositoryAdapter,
         ILogger<SaveContentCommandHandler> logger)
@@ -17,6 +19,7 @@ public class SaveContentCommandHandler : ICommandHandler<SaveContentCommand, Sav
         _logger = logger;
     }
 
+    /// <summary>Performs the Handle operation asynchronously.</summary>
     public async Task<SaveContentResult> HandleAsync(SaveContentCommand command, CancellationToken cancellationToken)
     {
         try

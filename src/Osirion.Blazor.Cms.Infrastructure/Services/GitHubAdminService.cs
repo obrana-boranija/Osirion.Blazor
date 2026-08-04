@@ -1,4 +1,4 @@
-﻿using Markdig;
+using Markdig;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Domain.Entities;
@@ -22,6 +22,7 @@ public class GitHubAdminService : IGitHubAdminService
     private IGitHubApiClient _apiClient;
     private string _currentProviderName = string.Empty;
 
+    /// <summary>Performs the GitHubAdminService operation.</summary>
     public GitHubAdminService(
         IGitHubApiClientFactory apiClientFactory,
         IOptions<CmsAdminOptions> options,
@@ -37,8 +38,11 @@ public class GitHubAdminService : IGitHubAdminService
         _apiClient = _apiClientFactory.GetDefaultClient();
     }
 
+    /// <inheritdoc />
     public string CurrentBranch { get; private set; } = "main";
+    /// <inheritdoc />
     public string CurrentRepository { get; private set; } = string.Empty;
+    /// <inheritdoc />
     public string CurrentProvider { get; private set; } = string.Empty;
 
     /// <summary>
@@ -60,11 +64,13 @@ public class GitHubAdminService : IGitHubAdminService
         _logger.LogInformation("Switched to provider: {Provider}", CurrentProvider);
     }
 
+    /// <inheritdoc />
     public async Task<GitHubBranch> CreateBranchAsync(string branchName, string fromBranch)
     {
         try
         {
-            return await _apiClient.CreateBranchAsync(branchName, fromBranch);
+            return await _apiClient.CreateBranchAsync(branchName, fromBranch)
+                ?? throw new InvalidOperationException("GitHub did not return the created branch.");
         }
         catch (Exception ex)
         {
@@ -73,11 +79,13 @@ public class GitHubAdminService : IGitHubAdminService
         }
     }
 
+    /// <inheritdoc />
     public async Task<GitHubFileCommitResponse> CreateOrUpdateFileAsync(string path, string content, string commitMessage, string? existingSha = null)
     {
         try
         {
-            return await _apiClient.CreateOrUpdateFileAsync(path, content, commitMessage, existingSha);
+            return await _apiClient.CreateOrUpdateFileAsync(path, content, commitMessage, existingSha)
+                ?? throw new InvalidOperationException("GitHub did not return the file commit response.");
         }
         catch (Exception ex)
         {
@@ -86,11 +94,13 @@ public class GitHubAdminService : IGitHubAdminService
         }
     }
 
+    /// <inheritdoc />
     public async Task<GitHubPullRequest> CreatePullRequestAsync(string title, string body, string head, string baseBranch)
     {
         try
         {
-            return await _apiClient.CreatePullRequestAsync(title, body, head, baseBranch);
+            return await _apiClient.CreatePullRequestAsync(title, body, head, baseBranch)
+                ?? throw new InvalidOperationException("GitHub did not return the created pull request.");
         }
         catch (Exception ex)
         {
@@ -99,6 +109,7 @@ public class GitHubAdminService : IGitHubAdminService
         }
     }
 
+    /// <inheritdoc />
     public async Task<GitHubFileCommitResponse> DeleteFileAsync(string path, string commitMessage, string sha)
     {
         try
@@ -112,6 +123,7 @@ public class GitHubAdminService : IGitHubAdminService
         }
     }
 
+    /// <inheritdoc />
     public async Task<ContentItem> GetBlogPostAsync(string path)
     {
         try
@@ -126,11 +138,12 @@ public class GitHubAdminService : IGitHubAdminService
         }
     }
 
+    /// <inheritdoc />
     public async Task<List<GitHubBranch>> GetBranchesAsync(string repository)
     {
         try
         {
-            return await _apiClient.GetBranchesAsync();
+            return await _apiClient.GetBranchesAsync() ?? [];
         }
         catch (Exception ex)
         {
@@ -139,11 +152,13 @@ public class GitHubAdminService : IGitHubAdminService
         }
     }
 
+    /// <inheritdoc />
     public async Task<GitHubFileContent> GetFileContentAsync(string path)
     {
         try
         {
-            return await _apiClient.GetFileContentAsync(path);
+            return await _apiClient.GetFileContentAsync(path)
+                ?? throw new InvalidOperationException($"GitHub did not return file content for '{path}'.");
         }
         catch (Exception ex)
         {
@@ -152,11 +167,12 @@ public class GitHubAdminService : IGitHubAdminService
         }
     }
 
+    /// <inheritdoc />
     public async Task<List<GitHubRepository>> GetRepositoriesAsync()
     {
         try
         {
-            return await _apiClient.GetRepositoriesAsync();
+            return await _apiClient.GetRepositoriesAsync() ?? [];
         }
         catch (Exception ex)
         {
@@ -165,11 +181,12 @@ public class GitHubAdminService : IGitHubAdminService
         }
     }
 
+    /// <inheritdoc />
     public async Task<List<GitHubItem>> GetRepositoryContentsAsync(string path = "")
     {
         try
         {
-            return await _apiClient.GetRepositoryContentsAsync(path);
+            return await _apiClient.GetRepositoryContentsAsync(path) ?? [];
         }
         catch (Exception ex)
         {
@@ -178,12 +195,13 @@ public class GitHubAdminService : IGitHubAdminService
         }
     }
 
+    /// <inheritdoc />
     public async Task<List<GitHubItem>> SearchFilesAsync(string query)
     {
         try
         {
             var result = await _apiClient.SearchFilesAsync(query);
-            return result.Items;
+            return result?.Items ?? [];
         }
         catch (Exception ex)
         {
@@ -192,6 +210,7 @@ public class GitHubAdminService : IGitHubAdminService
         }
     }
 
+    /// <inheritdoc />
     public async Task SetAuthTokenAsync(string token)
     {
         if (string.IsNullOrWhiteSpace(token))
@@ -215,12 +234,14 @@ public class GitHubAdminService : IGitHubAdminService
         }
     }
 
+    /// <inheritdoc />
     public void SetBranch(string branch)
     {
         CurrentBranch = branch;
         _apiClient.SetBranch(branch);
     }
 
+    /// <inheritdoc />
     public void SetRepository(string repository)
     {
         CurrentRepository = repository;

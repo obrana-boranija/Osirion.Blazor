@@ -17,5 +17,17 @@ public partial class OsirionReveal : OsirionComponentBase
     private string CssAnimation => Animation.ToString().ToLowerInvariant();
 
     /// <summary>Supported reveal directions.</summary>
-    public enum RevealAnimation { Up, Down, Left, Right, Fade }
+    public enum RevealAnimation
+    {
+        /// <summary>Reveals content upward.</summary>
+        Up,
+        /// <summary>Reveals content downward.</summary>
+        Down,
+        /// <summary>Reveals content from the left.</summary>
+        Left,
+        /// <summary>Reveals content from the right.</summary>
+        Right,
+        /// <summary>Fades content into view.</summary>
+        Fade
+    }
 }

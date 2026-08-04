@@ -489,7 +489,7 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
 
     /// <summary>
     /// Returns question words for the specified language code.
-    /// Supports English, Serbian (Latin & Cyrillic), German, French, Spanish, Italian, Portuguese, and more.
+    /// Supports English, Serbian (Latin &amp; Cyrillic), German, French, Spanish, Italian, Portuguese, and more.
     /// </summary>
     private static string[] GetQuestionWordsForLanguage(string? languageCode)
     {

@@ -18,10 +18,10 @@ namespace Osirion.Blazor.Cms.Core.Tests.TestFixtures
             Services.AddSingleton(MarkdownRenderer);
 
             // Configure default behavior for the markdown renderer
-            MarkdownRenderer.RenderToHtml(default).ReturnsForAnyArgs(callInfo => $"<p>{callInfo.Arg<string>()}</p>");
+            MarkdownRenderer.RenderToHtml(default!).ReturnsForAnyArgs(callInfo => $"<p>{callInfo.Arg<string>()}</p>");
         }
 
-        public IJSRuntime JSInterop { get; }
+        public new IJSRuntime JSInterop { get; }
         public IMarkdownRendererService MarkdownRenderer { get; }
 
         /// <summary>

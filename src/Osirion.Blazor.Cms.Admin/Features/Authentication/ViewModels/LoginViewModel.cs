@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Admin.Core.Events;
@@ -9,6 +9,7 @@ using Osirion.Blazor.Cms.Domain.Options.Configuration;
 
 namespace Osirion.Blazor.Cms.Admin.Features.Authentication.ViewModels;
 
+/// <summary>Coordinates CMS authentication and login state.</summary>
 public class LoginViewModel
 {
     private readonly IAuthenticationService _authService;
@@ -19,14 +20,21 @@ public class LoginViewModel
     private readonly ILogger<LoginViewModel> _logger;
     private readonly AuthenticationOptions _authOptions;
 
+    /// <summary>Gets or sets the personal access token.</summary>
     public string AccessToken { get; set; } = string.Empty;
+    /// <summary>Gets whether a login operation is in progress.</summary>
     public bool IsLoggingIn { get; private set; }
+    /// <summary>Gets whether the token input is visible.</summary>
     public bool IsShowingTokenInput { get; private set; }
+    /// <summary>Gets or sets the current error message.</summary>
     public string? ErrorMessage { get; set; }
+    /// <summary>Gets or sets the URL to navigate to after login.</summary>
     public string ReturnUrl { get; set; } = "/admin";
 
+    /// <summary>Occurs when the view-model state changes.</summary>
     public event Action? StateChanged;
 
+    /// <summary>Initializes a new login view-model.</summary>
     public LoginViewModel(
         IAuthenticationService authService,
         IContentRepositoryAdapter repositoryAdapter,
@@ -51,12 +59,14 @@ public class LoginViewModel
         _authService.AuthenticationChanged += OnAuthenticationChanged;
     }
 
+    /// <summary>Toggles visibility of the token input.</summary>
     public void ToggleTokenInput()
     {
         IsShowingTokenInput = !IsShowingTokenInput;
         NotifyStateChanged();
     }
 
+    /// <summary>Authenticates using a GitHub authorization code.</summary>
     public async Task LoginWithGitHubAsync(string code)
     {
         if (string.IsNullOrWhiteSpace(code))
@@ -105,6 +115,7 @@ public class LoginViewModel
         }
     }
 
+    /// <summary>Authenticates using the configured personal access token.</summary>
     public async Task LoginWithTokenAsync()
     {
         if (string.IsNullOrWhiteSpace(AccessToken))
@@ -164,6 +175,7 @@ public class LoginViewModel
         }
     }
 
+    /// <summary>Initializes the view-model and restores persisted authentication.</summary>
     public async Task InitializeAsync()
     {
         _logger.LogInformation("Initializing login view model");
@@ -214,6 +226,7 @@ public class LoginViewModel
         }
     }
 
+    /// <summary>Signs out and clears persisted authentication state.</summary>
     public async Task SignOutAsync()
     {
         await _authService.SignOutAsync();
@@ -235,6 +248,7 @@ public class LoginViewModel
         _eventMediator.Publish(new AuthenticationChangedEvent(isAuthenticated));
     }
 
+    /// <summary>Performs the NotifyStateChanged operation.</summary>
     protected void NotifyStateChanged()
     {
         StateChanged?.Invoke();

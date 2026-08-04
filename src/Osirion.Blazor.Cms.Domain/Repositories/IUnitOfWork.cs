@@ -1,4 +1,4 @@
-﻿namespace Osirion.Blazor.Cms.Domain.Repositories;
+namespace Osirion.Blazor.Cms.Domain.Repositories;
 
 /// <summary>
 /// Interface for the Unit of Work pattern

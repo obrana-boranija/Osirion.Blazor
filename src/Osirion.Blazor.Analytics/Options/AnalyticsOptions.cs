@@ -1,4 +1,4 @@
-﻿namespace Osirion.Blazor.Analytics.Options;
+namespace Osirion.Blazor.Analytics.Options;
 
 /// <summary>
 /// Base options for analytics providers

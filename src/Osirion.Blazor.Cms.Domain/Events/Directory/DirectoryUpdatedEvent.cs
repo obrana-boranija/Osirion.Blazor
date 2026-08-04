@@ -1,4 +1,4 @@
-﻿namespace Osirion.Blazor.Cms.Domain.Events;
+namespace Osirion.Blazor.Cms.Domain.Events;
 
 /// <summary>
 /// Event raised when a directory is updated
@@ -25,6 +25,7 @@ public class DirectoryUpdatedEvent : DomainEvent
     /// </summary>
     public string ProviderId { get; }
 
+    /// <summary>Gets or sets the DirectoryUpdatedEvent value.</summary>
     public DirectoryUpdatedEvent(string directoryId, string name, string path, string providerId)
     {
         DirectoryId = directoryId ?? throw new ArgumentNullException(nameof(directoryId));

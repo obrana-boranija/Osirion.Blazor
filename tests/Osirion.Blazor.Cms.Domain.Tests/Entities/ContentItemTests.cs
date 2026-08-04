@@ -116,7 +116,7 @@ public class ContentItemTests
 
         // Act & Assert
         var exception = Assert.Throws<ContentValidationException>(() =>
-            contentItem.SetContent(null));
+            contentItem.SetContent(null!));
         Assert.Equal("Content", exception.Errors.Keys.First());
     }
 
@@ -219,7 +219,7 @@ public class ContentItemTests
         contentItem.AddTag(tag);
 
         // Assert
-        Assert.Single(contentItem.Tags.Where(t => t == tag));
+        Assert.Single(contentItem.Tags, t => t == tag);
         Assert.Equal(initialModifiedDate, contentItem.LastModified);
     }
 
@@ -316,7 +316,7 @@ public class ContentItemTests
         contentItem.AddCategory(category);
 
         // Assert
-        Assert.Single(contentItem.Categories.Where(c => c == category));
+        Assert.Single(contentItem.Categories, c => c == category);
         Assert.Equal(initialModifiedDate, contentItem.LastModified);
     }
 
@@ -403,7 +403,7 @@ public class ContentItemTests
     {
         // Arrange
         var contentItem = CreateTestContentItem();
-        string key = null;
+        string key = null!;
         string value = "test-value";
 
         // Act & Assert

@@ -1,4 +1,4 @@
-﻿using Markdig;
+using Markdig;
 
 namespace Osirion.Blazor.Cms.Domain.Interfaces;
 

@@ -266,7 +266,7 @@ public partial class LandingPage
     /// <inheritdoc/>
     protected override async Task OnParametersSetAsync()
     {
-        if (Content is null && !string.IsNullOrWhiteSpace(ContentPath))
+        if (Content is null && ContentPath is { } contentPath && !string.IsNullOrWhiteSpace(contentPath))
         {
             await LoadContentAsync();
         }
@@ -282,9 +282,9 @@ public partial class LandingPage
         try
         {
             var provider = ContentProviderManager.GetDefaultProvider();
-            if (provider is not null)
+            if (provider is not null && ContentPath is { } contentPath && !string.IsNullOrWhiteSpace(contentPath))
             {
-                Content = await provider.GetItemByPathAsync(ContentPath);
+                Content = await provider.GetItemByPathAsync(contentPath);
             }
         }
         catch (Exception ex)

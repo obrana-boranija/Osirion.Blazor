@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Repositories;
 
 namespace Osirion.Blazor.Cms.Infrastructure.Repositories;
@@ -11,9 +11,12 @@ namespace Osirion.Blazor.Cms.Infrastructure.Repositories;
 public abstract class RepositoryBase<T, TId> : IRepository<T, TId>, IDisposable where T : class
 {
     private bool _disposed;
+    /// <summary>Performs the Logger operation.</summary>
     protected readonly ILogger Logger;
+    /// <summary>Gets or sets the ProviderId value.</summary>
     protected readonly string ProviderId;
 
+    /// <summary>Gets or sets the RepositoryBase value.</summary>
     protected RepositoryBase(string providerId, ILogger logger)
     {
         ProviderId = providerId;
@@ -58,12 +61,14 @@ public abstract class RepositoryBase<T, TId> : IRepository<T, TId>, IDisposable 
             operation, typeof(T).Name, id, ProviderId, exception.Message);
     }
 
+    /// <summary>Releases resources held by the component or service.</summary>
     public void Dispose()
     {
         Dispose(true);
         GC.SuppressFinalize(this);
     }
 
+    /// <summary>Releases resources held by the component or service.</summary>
     protected virtual void Dispose(bool disposing)
     {
         if (_disposed) return;

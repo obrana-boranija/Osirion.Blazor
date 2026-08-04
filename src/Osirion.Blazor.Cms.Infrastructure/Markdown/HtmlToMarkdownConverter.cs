@@ -1,4 +1,4 @@
-﻿using Osirion.Blazor.Cms.Domain.Interfaces;
+using Osirion.Blazor.Cms.Domain.Interfaces;
 using System.Text.RegularExpressions;
 
 namespace Osirion.Blazor.Cms.Infrastructure.Markdown;

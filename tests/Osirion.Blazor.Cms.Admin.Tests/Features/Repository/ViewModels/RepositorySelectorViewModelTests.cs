@@ -197,7 +197,8 @@ public class RepositorySelectorViewModelTests
         // Arrange - Access the private method through reflection
         var method = typeof(RepositorySelectorViewModel).GetMethod(
             "LoadBranchesForRepositoryAsync",
-            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+            ?? throw new InvalidOperationException("Expected the private branch-loading method to exist.");
 
         var repository = new GitHubRepository { Name = "repo1", FullName = "owner/repo1", DefaultBranch = "main" };
         var branches = new List<GitHubBranch>
@@ -210,10 +211,12 @@ public class RepositorySelectorViewModelTests
         _repositoryService.GetBranchesAsync("repo1").Returns(branches);
 
         // Act
-        await (Task)method.Invoke(_viewModel, new object[] { "repo1" });
+        var invocationResult = method.Invoke(_viewModel, new object[] { "repo1" })
+            ?? throw new InvalidOperationException("Expected the private method to return a task.");
+        await (Task)invocationResult;
 
         // Assert
-        _state.SelectedBranch.ShouldBe(branches[0]); // Should select "main" as it's the default branch
+        _state.SelectedBranch!.ShouldBe(branches[0]); // Should select "main" as it's the default branch
         _repositoryService.Received(1).SetBranch("main");
     }
 }

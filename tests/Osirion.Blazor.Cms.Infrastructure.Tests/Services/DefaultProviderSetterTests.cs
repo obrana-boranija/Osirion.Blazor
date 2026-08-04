@@ -31,7 +31,7 @@ public class DefaultProviderSetterTests
     public void Constructor_WithNullProviderId_ThrowsArgumentNullException()
     {
         // Act & Assert
-        Should.Throw<ArgumentNullException>(() => new DefaultProviderSetter(null, true));
+        Should.Throw<ArgumentNullException>(() => new DefaultProviderSetter(null!, true));
     }
 
     [Fact]

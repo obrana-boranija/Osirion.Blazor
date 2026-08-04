@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Interfaces.Directory;
 
@@ -16,6 +16,7 @@ public class DirectoryCacheManager : IDirectoryCacheManager
     private Dictionary<string, DirectoryItem> _directoryCache = new();
     private bool _updateInProgress = false;
 
+    /// <summary>Performs the DirectoryCacheManager operation.</summary>
     public DirectoryCacheManager(ILogger<DirectoryCacheManager> logger)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -30,7 +31,7 @@ public class DirectoryCacheManager : IDirectoryCacheManager
         // If cache is valid and not forcing refresh, return current cache
         if (!forceRefresh && _directoryCache.Count > 0)
         {
-            return _directoryCache;
+            return _directoryCache ?? new Dictionary<string, DirectoryItem>();
         }
 
         // Return existing cache if update is in progress
@@ -38,7 +39,7 @@ public class DirectoryCacheManager : IDirectoryCacheManager
         {
             _logger.LogDebug("Directory cache update already in progress, using existing cache with {Count} items",
                 _directoryCache?.Count ?? 0);
-            return _directoryCache;
+            return _directoryCache ?? new Dictionary<string, DirectoryItem>();
         }
 
         bool lockTaken = false;
@@ -83,12 +84,6 @@ public class DirectoryCacheManager : IDirectoryCacheManager
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error loading directory cache");
-
-                // If we have an existing cache, keep it
-                if (_directoryCache is null)
-                {
-                    _directoryCache = new Dictionary<string, DirectoryItem>();
-                }
 
                 // Rethrow to let caller know about the error
                 throw;

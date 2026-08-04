@@ -1,14 +1,16 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 
 namespace Osirion.Blazor.Cms.Infrastructure.Decorators
 {
+    /// <summary>Defines the LoggingContentProviderDecorator API contract.</summary>
     public class LoggingContentProviderDecorator : IReadContentProvider
     {
         private readonly IReadContentProvider _inner;
         private readonly ILogger<LoggingContentProviderDecorator> _logger;
 
+        /// <summary>Performs the LoggingContentProviderDecorator operation.</summary>
         public LoggingContentProviderDecorator(
             IReadContentProvider inner,
             ILogger<LoggingContentProviderDecorator> logger)
@@ -17,7 +19,8 @@ namespace Osirion.Blazor.Cms.Infrastructure.Decorators
             _logger = logger;
         }
 
-        public async Task<ContentItem> GetByIdAsync(Guid id)
+        /// <summary>Performs the GetById operation asynchronously.</summary>
+        public async Task<ContentItem?> GetByIdAsync(Guid id)
         {
             _logger.LogInformation("Fetching content {Id}", id);
             var result = await _inner.GetByIdAsync(id);
@@ -25,6 +28,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.Decorators
             return result;
         }
 
+        /// <summary>Performs the GetAll operation asynchronously.</summary>
         public async Task<IEnumerable<ContentItem>> GetAllAsync()
         {
             _logger.LogInformation("Fetching all content");

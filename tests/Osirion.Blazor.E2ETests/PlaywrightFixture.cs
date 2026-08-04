@@ -7,10 +7,10 @@ namespace Osirion.Blazor.E2ETests;
 /// </summary>
 public class PlaywrightFixture : IAsyncLifetime
 {
-    public IPlaywright Playwright { get; private set; }
-    public IBrowser Browser { get; private set; }
-    public IBrowserContext Context { get; private set; }
-    public IPage Page { get; private set; }
+    public IPlaywright Playwright { get; private set; } = null!;
+    public IBrowser Browser { get; private set; } = null!;
+    public IBrowserContext Context { get; private set; } = null!;
+    public IPage Page { get; private set; } = null!;
 
     /// <summary>
     /// Base URL for the test application
@@ -22,9 +22,10 @@ public class PlaywrightFixture : IAsyncLifetime
     public PlaywrightFixture()
     {
         // Environment override for CI/CD scenarios
-        if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("TEST_BASE_URL")))
+        var testBaseUrl = Environment.GetEnvironmentVariable("TEST_BASE_URL");
+        if (!string.IsNullOrWhiteSpace(testBaseUrl))
         {
-            BaseUrl = Environment.GetEnvironmentVariable("TEST_BASE_URL");
+            BaseUrl = testBaseUrl;
         }
     }
 
@@ -59,9 +60,21 @@ public class PlaywrightFixture : IAsyncLifetime
     public async Task DisposeAsync()
     {
         // Clean up resources
-        await Page?.CloseAsync();
-        await Context?.CloseAsync();
-        await Browser?.CloseAsync();
+        if (Page is not null)
+        {
+            await Page.CloseAsync();
+        }
+
+        if (Context is not null)
+        {
+            await Context.CloseAsync();
+        }
+
+        if (Browser is not null)
+        {
+            await Browser.CloseAsync();
+        }
+
         Playwright?.Dispose();
     }
 

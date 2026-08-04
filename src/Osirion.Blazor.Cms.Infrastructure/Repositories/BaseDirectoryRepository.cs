@@ -1,20 +1,31 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Exceptions;
 using Osirion.Blazor.Cms.Domain.Repositories;
 using DirectoryNotFoundException = Osirion.Blazor.Cms.Domain.Exceptions.DirectoryNotFoundException;
 
+/// <summary>Provides cached directory repository operations shared by content providers.</summary>
 public abstract class BaseDirectoryRepository<TOptions> : IDirectoryRepository where TOptions : class
 {
+    /// <summary>Gets the logger used by the repository.</summary>
     protected readonly ILogger Logger;
+    /// <summary>Gets the provider options.</summary>
     protected readonly TOptions Options;
+    /// <summary>Gets the lock protecting the cache.</summary>
     protected readonly SemaphoreSlim CacheLock = new(1, 1);
 
     // Cache-related fields
+    /// <summary>Gets or sets the cached directories.</summary>
     protected Dictionary<string, DirectoryItem>? DirectoryCache;
+    /// <summary>Gets or sets the cache expiration time.</summary>
     protected DateTime CacheExpiration = DateTime.MinValue;
+    /// <summary>Gets the provider identifier.</summary>
     protected readonly string ProviderId;
 
+    /// <summary>Initializes a repository for a content provider.</summary>
+    /// <param name="providerId">The provider identifier.</param>
+    /// <param name="options">The provider options.</param>
+    /// <param name="logger">The logger.</param>
     protected BaseDirectoryRepository(
         string providerId,
         TOptions options,
@@ -25,11 +36,17 @@ public abstract class BaseDirectoryRepository<TOptions> : IDirectoryRepository w
         Logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
+    /// <summary>Ensures the directory cache is loaded.</summary>
     protected abstract Task EnsureCacheIsLoaded(CancellationToken cancellationToken, bool forceRefresh = false);
+    /// <summary>Loads directories into the supplied cache.</summary>
     protected abstract Task LoadDirectoriesIntoCacheAsync(Dictionary<string, DirectoryItem> cache, CancellationToken cancellationToken);
+    /// <summary>Saves a directory using the provider implementation.</summary>
     protected abstract Task<DirectoryItem> SaveDirectoryInternalAsync(DirectoryItem entity, CancellationToken cancellationToken);
+    /// <summary>Deletes a directory using the provider implementation.</summary>
     protected abstract Task DeleteDirectoryInternalAsync(string id, bool recursive, string? commitMessage, CancellationToken cancellationToken);
 
+    /// <summary>Gets root directories.</summary>
+    /// <inheritdoc />
     public async Task<IReadOnlyList<DirectoryItem>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         try
@@ -51,6 +68,8 @@ public abstract class BaseDirectoryRepository<TOptions> : IDirectoryRepository w
         }
     }
 
+    /// <inheritdoc />
+    /// <summary>Gets a directory by identifier.</summary>
     public async Task<DirectoryItem?> GetByIdAsync(string id, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(id))
@@ -74,6 +93,8 @@ public abstract class BaseDirectoryRepository<TOptions> : IDirectoryRepository w
         }
     }
 
+    /// <inheritdoc />
+    /// <summary>Gets a directory by path.</summary>
     public async Task<DirectoryItem?> GetByPathAsync(string path, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(path))
@@ -96,6 +117,8 @@ public abstract class BaseDirectoryRepository<TOptions> : IDirectoryRepository w
         }
     }
 
+    /// <inheritdoc />
+    /// <summary>Gets directories for a locale.</summary>
     public async Task<IReadOnlyList<DirectoryItem>> GetByLocaleAsync(string? locale = null, CancellationToken cancellationToken = default)
     {
         try
@@ -127,6 +150,8 @@ public abstract class BaseDirectoryRepository<TOptions> : IDirectoryRepository w
         }
     }
 
+    /// <inheritdoc />
+    /// <summary>Gets the direct children of a directory.</summary>
     public async Task<IReadOnlyList<DirectoryItem>> GetChildrenAsync(string parentId, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(parentId))
@@ -153,6 +178,8 @@ public abstract class BaseDirectoryRepository<TOptions> : IDirectoryRepository w
         }
     }
 
+    /// <inheritdoc />
+    /// <summary>Deletes a directory and its descendants.</summary>
     public async Task DeleteRecursiveAsync(string id, string? commitMessage = null, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(id))
@@ -186,6 +213,8 @@ public abstract class BaseDirectoryRepository<TOptions> : IDirectoryRepository w
         }
     }
 
+    /// <inheritdoc />
+    /// <summary>Gets a directory by URL.</summary>
     public async Task<DirectoryItem?> GetByUrlAsync(string url, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(url))
@@ -207,9 +236,8 @@ public abstract class BaseDirectoryRepository<TOptions> : IDirectoryRepository w
         }
     }
 
-    /// <summary>
-    /// Gets directory by URL
-    /// </summary>
+    /// <inheritdoc />
+    /// <summary>Gets a directory by name and optional locale.</summary>
     public async Task<DirectoryItem?> GetByNameAsync(string? name, string? locale = null, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(name))
@@ -231,6 +259,8 @@ public abstract class BaseDirectoryRepository<TOptions> : IDirectoryRepository w
         }
     }
 
+    /// <inheritdoc />
+    /// <summary>Moves a directory to a new parent.</summary>
     public async Task<DirectoryItem> MoveAsync(string id, string? newParentId, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(id))
@@ -292,6 +322,8 @@ public abstract class BaseDirectoryRepository<TOptions> : IDirectoryRepository w
         }
     }
 
+    /// <inheritdoc />
+    /// <summary>Gets the directory tree for an optional locale.</summary>
     public async Task<IReadOnlyList<DirectoryItem>> GetTreeAsync(string? locale = null, CancellationToken cancellationToken = default)
     {
         try
@@ -309,6 +341,8 @@ public abstract class BaseDirectoryRepository<TOptions> : IDirectoryRepository w
         }
     }
 
+    /// <inheritdoc />
+    /// <summary>Refreshes the directory cache.</summary>
     public async Task RefreshCacheAsync(CancellationToken cancellationToken = default)
     {
         await CacheLock.WaitAsync(cancellationToken);
@@ -326,6 +360,8 @@ public abstract class BaseDirectoryRepository<TOptions> : IDirectoryRepository w
         }
     }
 
+    /// <inheritdoc />
+    /// <summary>Saves a directory.</summary>
     public async Task<DirectoryItem> SaveAsync(DirectoryItem entity, CancellationToken cancellationToken = default)
     {
         if (entity is null)
@@ -360,6 +396,8 @@ public abstract class BaseDirectoryRepository<TOptions> : IDirectoryRepository w
         }
     }
 
+    /// <inheritdoc />
+    /// <summary>Deletes a directory.</summary>
     public async Task DeleteAsync(string id, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(id))
@@ -393,6 +431,7 @@ public abstract class BaseDirectoryRepository<TOptions> : IDirectoryRepository w
         }
     }
 
+    /// <summary>Normalizes a directory path for cache lookups.</summary>
     protected string NormalizePath(string path)
     {
         return path.Replace('\\', '/').Trim('/');

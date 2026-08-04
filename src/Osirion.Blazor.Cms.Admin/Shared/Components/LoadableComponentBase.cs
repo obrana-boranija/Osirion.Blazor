@@ -1,4 +1,4 @@
-﻿using Osirion.Blazor.Cms.Admin.Core.Events;
+using Osirion.Blazor.Cms.Admin.Core.Events;
 
 namespace Osirion.Blazor.Cms.Admin.Shared.Components;
 
@@ -7,9 +7,11 @@ namespace Osirion.Blazor.Cms.Admin.Shared.Components;
 /// </summary>
 public abstract class LoadableComponentBase : BaseComponent
 {
+    /// <summary>Gets or sets the IsProcessing value.</summary>
     protected bool IsProcessing { get; private set; }
 
-    protected async Task ExecuteWithLoadingAsync(Func<Task> action)
+    /// <summary>Performs the ExecuteWithLoading operation asynchronously.</summary>
+    protected new async Task ExecuteWithLoadingAsync(Func<Task> action)
     {
         IsProcessing = true;
         ErrorMessage = null;
@@ -31,6 +33,7 @@ public abstract class LoadableComponentBase : BaseComponent
         }
     }
 
+    /// <summary>Executes an operation and returns a fallback value when it fails.</summary>
     protected T HandleOperation<T>(Func<T> action, T defaultValue)
     {
         try

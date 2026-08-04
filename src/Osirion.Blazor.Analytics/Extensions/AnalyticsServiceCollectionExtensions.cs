@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Osirion.Blazor.Analytics.Internal;
 using Osirion.Blazor.Analytics.Options;

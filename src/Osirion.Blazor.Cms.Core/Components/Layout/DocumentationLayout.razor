@@ -25,12 +25,12 @@
 </PageLayout>
 
 @code {
-    [Parameter] public string Title { get; set; }
-    [Parameter] public string Description { get; set; }
+    [Parameter] public string? Title { get; set; }
+    [Parameter] public string? Description { get; set; }
     [Parameter] public bool ShowHeader { get; set; } = true;
-    [Parameter] public RenderFragment HeaderTemplate { get; set; }
-    [Parameter] public RenderFragment SidebarContent { get; set; }
-    [Parameter] public RenderFragment MainContent { get; set; }
+    [Parameter] public RenderFragment? HeaderTemplate { get; set; }
+    [Parameter] public RenderFragment? SidebarContent { get; set; }
+    [Parameter] public RenderFragment? MainContent { get; set; }
     [Parameter] public string DocTreeTitle { get; set; } = "Documentation";
     [Parameter] public bool SidebarOnRight { get; set; } = false;
 }

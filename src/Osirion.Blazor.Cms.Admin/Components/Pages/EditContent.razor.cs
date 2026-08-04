@@ -7,28 +7,34 @@ using Osirion.Blazor.Cms.Domain.ValueObjects;
 
 namespace Osirion.Blazor.Cms.Admin.Components.Pages;
 
+    /// <summary>Defines the public member type.</summary>
 public partial class EditContent : IDisposable
 {
     [Inject]
     private IGitHubAdminService GitHubService { get; set; } = default!;
 
+    /// <summary>Gets or sets the Path value.</summary>
     [SupplyParameterFromQuery]
     public string? Path { get; set; }
 
-    protected bool IsLoading { get; set; }
+    /// <summary>Gets or sets the IsLoading value.</summary>
+    protected new bool IsLoading { get; set; }
 
+    /// <summary>Initializes the component state and required services.</summary>
     protected override void OnInitialized()
     {
         // Subscribe to state changes from AdminState
         AdminState.StateChanged += StateHasChanged;
     }
 
+    /// <summary>Releases resources held by the component or service.</summary>
     public void Dispose()
     {
         // Unsubscribe to prevent memory leaks
         AdminState.StateChanged -= StateHasChanged;
     }
 
+    /// <summary>Performs the OnParametersSet operation asynchronously.</summary>
     protected override async Task OnParametersSetAsync()
     {
         // Reload content if parameters change and we're already rendered
@@ -39,6 +45,7 @@ public partial class EditContent : IDisposable
         }
     }
 
+    /// <summary>Performs the OnAfterRender operation asynchronously.</summary>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)

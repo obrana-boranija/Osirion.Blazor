@@ -1,4 +1,4 @@
-﻿using Osirion.Blazor.Cms.Domain.Options.Configuration;
+using Osirion.Blazor.Cms.Domain.Options.Configuration;
 
 namespace Osirion.Blazor.Cms.Domain.Interfaces;
 

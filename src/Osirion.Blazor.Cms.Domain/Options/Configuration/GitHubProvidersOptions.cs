@@ -1,4 +1,4 @@
-﻿namespace Osirion.Blazor.Cms.Domain.Options.Configuration;
+namespace Osirion.Blazor.Cms.Domain.Options.Configuration;
 
 /// <summary>
 /// Configuration options for multiple GitHub providers

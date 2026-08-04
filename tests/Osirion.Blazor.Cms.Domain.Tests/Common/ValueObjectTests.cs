@@ -79,8 +79,8 @@ public class ValueObjectTests
     public void EqualityOperator_BothNull_ReturnsTrue()
     {
         // Arrange
-        TestValueObject obj1 = null;
-        TestValueObject obj2 = null;
+        TestValueObject obj1 = null!;
+        TestValueObject obj2 = null!;
 
         // Act & Assert
         Assert.True(obj1 == obj2);
@@ -92,7 +92,7 @@ public class ValueObjectTests
     {
         // Arrange
         TestValueObject obj1 = new TestValueObject("Value", 42);
-        TestValueObject obj2 = null;
+        TestValueObject obj2 = null!;
 
         // Act & Assert
         Assert.False(obj1 == obj2);

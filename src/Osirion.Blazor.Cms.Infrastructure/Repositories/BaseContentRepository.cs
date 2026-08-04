@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Enums;
 using Osirion.Blazor.Cms.Domain.Interfaces;
@@ -15,18 +15,27 @@ namespace Osirion.Blazor.Cms.Infrastructure.Repositories;
 /// </summary>
 public abstract class BaseContentRepository : RepositoryBase<ContentItem, string>, IContentRepository
 {
+    /// <summary>Gets the markdown processor used by the repository.</summary>
     protected readonly IMarkdownProcessor MarkdownProcessor;
+    /// <summary>Gets the content query filter.</summary>
     protected readonly IContentQueryFilter QueryFilter;
+    /// <summary>Gets the lock protecting cache updates.</summary>
     protected readonly SemaphoreSlim CacheLock = new(1, 1);
 
     // Simplified cache - no time-based expiration
+    /// <summary>Gets or sets the cached content items.</summary>
     protected Dictionary<string, ContentItem> ItemCache = new();
+    /// <summary>Gets or sets whether the cache has been loaded.</summary>
     protected bool CacheLoaded = false;
 
     // Configuration properties set by derived classes
+    /// <summary>Gets or sets whether localization is enabled.</summary>
     protected bool EnableLocalization = false;
+    /// <summary>Gets or sets the default content locale.</summary>
     protected string DefaultLocale = "en";
+    /// <summary>Gets or sets the content path.</summary>
     protected string ContentPath = string.Empty;
+    /// <summary>Gets or sets the supported content locales.</summary>
     protected List<string> SupportedLocales = new() { "en" };
 
     // Flag to track if update is in progress to avoid multiple webhooks hammering the system
@@ -34,6 +43,7 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
 
     private string[] _excludedExtensionsFromMarkdownProcessing = [".txt", ".json", ".yml", ".log", ".bak"];
 
+    /// <summary>Initializes a repository with its content services.</summary>
     protected BaseContentRepository(
         string providerId,
         IMarkdownProcessor markdownProcessor,
@@ -45,6 +55,7 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
         QueryFilter = queryFilter ?? throw new ArgumentNullException(nameof(queryFilter));
     }
 
+    /// <summary>Loads content items into the repository cache.</summary>
     protected abstract Task<Dictionary<string, ContentItem>> LoadItemsIntoCache(CancellationToken cancellationToken);
 
     /// <inheritdoc/>
@@ -86,6 +97,9 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
         }
     }
 
+    /// <summary>
+    /// Refreshes the repository cache from its content provider.
+    /// </summary>
     public async Task RefreshCacheAsync(CancellationToken cancellationToken = default)
     {
         // Check if an update is already in progress to avoid multiple simultaneous refreshes
@@ -116,7 +130,7 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
             await LoadAndAssignCache(cancellationToken);
 
             Logger.LogInformation("Cache refreshed for provider {ProviderId}. New cache has {ItemCount} items",
-                ProviderId, ItemCache.Count);
+                ProviderId, ItemCache?.Count ?? 0);
         }
         catch (Exception ex)
         {
@@ -284,7 +298,7 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
     }
 
     /// <inheritdoc/>
-    public async Task<IReadOnlyList<ContentItem>> FindByQueryAsync(ContentQuery query, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<ContentItem>?> FindByQueryAsync(ContentQuery query, CancellationToken cancellationToken = default)
     {
         try
         {

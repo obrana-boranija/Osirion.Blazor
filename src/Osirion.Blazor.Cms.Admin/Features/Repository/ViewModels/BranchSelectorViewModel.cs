@@ -1,4 +1,4 @@
-﻿using Osirion.Blazor.Cms.Admin.Core.Events;
+using Osirion.Blazor.Cms.Admin.Core.Events;
 using Osirion.Blazor.Cms.Admin.Core.State;
 using Osirion.Blazor.Cms.Admin.Features.Repository.Services;
 using Osirion.Blazor.Cms.Admin.Services.Events;
@@ -6,25 +6,36 @@ using Osirion.Blazor.Cms.Domain.Models.GitHub;
 
 namespace Osirion.Blazor.Cms.Admin.Features.Repository.ViewModels;
 
+/// <summary>Manages branch selection and branch creation for the repository editor.</summary>
 public class BranchSelectorViewModel
 {
     private readonly RepositoryService _repositoryService;
     private readonly CmsState _appState;
     private readonly CmsEventMediator _eventMediator;
 
+    /// <summary>Gets the available branches.</summary>
     public List<GitHubBranch> Branches { get; private set; } = new();
+    /// <summary>Gets the selected branch.</summary>
     public GitHubBranch? SelectedBranch => _appState.SelectedBranch;
+    /// <summary>Gets whether branch data is loading.</summary>
     public bool IsLoading { get; private set; }
+    /// <summary>Gets the current error message.</summary>
     public string? ErrorMessage { get; private set; }
 
     // New branch creation
+    /// <summary>Gets whether the new-branch form is visible.</summary>
     public bool IsCreatingNewBranch { get; private set; }
+    /// <summary>Gets whether a branch is being created.</summary>
     public bool IsCreatingBranch { get; private set; }
+    /// <summary>Gets or sets the new branch name.</summary>
     public string NewBranchName { get; set; } = string.Empty;
+    /// <summary>Gets or sets the base branch name.</summary>
     public string BaseBranchName { get; set; } = string.Empty;
 
+    /// <summary>Occurs when the view-model state changes.</summary>
     public event Action? StateChanged;
 
+    /// <summary>Initializes a new branch selector view-model.</summary>
     public BranchSelectorViewModel(
         RepositoryService repositoryService,
         CmsState appState,
@@ -38,6 +49,7 @@ public class BranchSelectorViewModel
         _eventMediator.Subscribe<RepositorySelectedEvent>(OnRepositorySelected);
     }
 
+    /// <summary>Refreshes the branches for the selected repository.</summary>
     public async Task RefreshBranchesAsync()
     {
         if (_appState.SelectedRepository is null)
@@ -69,6 +81,7 @@ public class BranchSelectorViewModel
         }
     }
 
+    /// <summary>Selects a branch and publishes the selection.</summary>
     public async Task SelectBranchAsync(string branchName)
     {
         if (string.IsNullOrWhiteSpace(branchName))
@@ -107,6 +120,7 @@ public class BranchSelectorViewModel
         }
     }
 
+    /// <summary>Shows or hides the new-branch form.</summary>
     public void SetCreatingNewBranch(bool isCreating)
     {
         IsCreatingNewBranch = isCreating;
@@ -125,6 +139,7 @@ public class BranchSelectorViewModel
         NotifyStateChanged();
     }
 
+    /// <summary>Creates and selects a new branch.</summary>
     public async Task CreateBranchAsync()
     {
         if (string.IsNullOrWhiteSpace(NewBranchName) || string.IsNullOrWhiteSpace(BaseBranchName))
@@ -174,6 +189,7 @@ public class BranchSelectorViewModel
         NotifyStateChanged();
     }
 
+    /// <summary>Performs the NotifyStateChanged operation.</summary>
     protected void NotifyStateChanged()
     {
         StateChanged?.Invoke();

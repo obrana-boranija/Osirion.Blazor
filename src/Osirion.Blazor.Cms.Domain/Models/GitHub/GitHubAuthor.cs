@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Osirion.Blazor.Cms.Domain.Models.GitHub;
 
@@ -7,12 +7,15 @@ namespace Osirion.Blazor.Cms.Domain.Models.GitHub;
 /// </summary>
 public class GitHubAuthor
 {
+    /// <summary>Gets or sets the Name value.</summary>
     [JsonPropertyName("name")]
     public string Name { get; set; } = string.Empty;
 
+    /// <summary>Gets or sets the Email value.</summary>
     [JsonPropertyName("email")]
     public string Email { get; set; } = string.Empty;
 
+    /// <summary>Gets or sets the Date value.</summary>
     [JsonPropertyName("date")]
     public DateTime Date { get; set; }
 }

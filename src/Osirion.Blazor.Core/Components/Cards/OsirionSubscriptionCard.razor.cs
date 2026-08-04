@@ -13,6 +13,12 @@ namespace Osirion.Blazor.Components;
 /// </summary>
 public partial class OsirionSubscriptionCard : OsirionComponentBase
 {
+    /// <summary>Performs the OsirionSubscriptionCard operation.</summary>
+    public OsirionSubscriptionCard()
+    {
+        FormModel = new SubscriptionModel();
+    }
+
     #region Form Parameters
 
     /// <summary>
@@ -189,7 +195,7 @@ public partial class OsirionSubscriptionCard : OsirionComponentBase
     public bool ShowShadow { get; set; } = true;
 
     [SupplyParameterFromForm]
-    private SubscriptionModel FormModel { get; set; } = new();
+    private SubscriptionModel FormModel { get; set; }
 
     [SupplyParameterFromQuery]
     private int? SubmissionResultValue { get; set; }

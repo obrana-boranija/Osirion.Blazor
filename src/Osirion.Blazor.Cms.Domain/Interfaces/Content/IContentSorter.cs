@@ -1,4 +1,4 @@
-﻿using Osirion.Blazor.Cms.Domain.Entities;
+using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Enums;
 
 namespace Osirion.Blazor.Cms.Domain.Interfaces.Content;

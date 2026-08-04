@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Repositories;
@@ -18,6 +18,7 @@ public class StaleWhileRevalidateDirectoryCache : IDirectoryRepository
     private readonly SemaphoreSlim _refreshLock = new(1, 1);
     private readonly string _providerIdentifier;
 
+    /// <summary>Initializes a directory cache decorator.</summary>
     public StaleWhileRevalidateDirectoryCache(
         IDirectoryRepository decorated,
         IMemoryCache cache,
@@ -34,6 +35,7 @@ public class StaleWhileRevalidateDirectoryCache : IDirectoryRepository
         _providerIdentifier = providerIdentifier ?? throw new ArgumentNullException(nameof(providerIdentifier));
     }
 
+    /// <summary>Gets all directories, using the cache when available.</summary>
     public async Task<IReadOnlyList<DirectoryItem>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         var cacheKey = $"directory:all:{_providerIdentifier}";
@@ -44,6 +46,7 @@ public class StaleWhileRevalidateDirectoryCache : IDirectoryRepository
             cancellationToken);
     }
 
+    /// <summary>Gets a directory by identifier.</summary>
     public async Task<DirectoryItem?> GetByIdAsync(string id, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(id))
@@ -57,6 +60,7 @@ public class StaleWhileRevalidateDirectoryCache : IDirectoryRepository
             cancellationToken);
     }
 
+    /// <summary>Gets a directory by path.</summary>
     public async Task<DirectoryItem?> GetByPathAsync(string path, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(path))
@@ -70,6 +74,7 @@ public class StaleWhileRevalidateDirectoryCache : IDirectoryRepository
             cancellationToken);
     }
 
+    /// <summary>Gets a directory by URL.</summary>
     public async Task<DirectoryItem?> GetByUrlAsync(string url, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(url))
@@ -83,6 +88,7 @@ public class StaleWhileRevalidateDirectoryCache : IDirectoryRepository
             cancellationToken);
     }
 
+    /// <summary>Gets directories for a locale.</summary>
     public async Task<IReadOnlyList<DirectoryItem>> GetByLocaleAsync(string? locale = null, CancellationToken cancellationToken = default)
     {
         var localeKey = locale ?? "all";
@@ -94,6 +100,7 @@ public class StaleWhileRevalidateDirectoryCache : IDirectoryRepository
             cancellationToken);
     }
 
+    /// <summary>Gets the children of a directory.</summary>
     public async Task<IReadOnlyList<DirectoryItem>> GetChildrenAsync(string parentId, CancellationToken cancellationToken = default)
     {
         var cacheKey = $"directory:children:{parentId}:{_providerIdentifier}";
@@ -104,6 +111,7 @@ public class StaleWhileRevalidateDirectoryCache : IDirectoryRepository
             cancellationToken);
     }
 
+    /// <summary>Gets the directory tree for a locale.</summary>
     public async Task<IReadOnlyList<DirectoryItem>> GetTreeAsync(string? locale = null, CancellationToken cancellationToken = default)
     {
         var localeKey = locale ?? "all";
@@ -115,6 +123,7 @@ public class StaleWhileRevalidateDirectoryCache : IDirectoryRepository
             cancellationToken);
     }
 
+    /// <summary>Gets a directory by name and locale.</summary>
     public async Task<DirectoryItem?> GetByNameAsync(string? name, string? locale = null, CancellationToken cancellationToken = default)
     {
         var localeKey = locale ?? "all";
@@ -127,6 +136,7 @@ public class StaleWhileRevalidateDirectoryCache : IDirectoryRepository
     }
 
     // Write operations should invalidate the cache
+    /// <summary>Saves a directory and refreshes the cache.</summary>
     public async Task<DirectoryItem> SaveAsync(DirectoryItem entity, CancellationToken cancellationToken = default)
     {
         var result = await _decorated.SaveAsync(entity, cancellationToken);
@@ -134,18 +144,21 @@ public class StaleWhileRevalidateDirectoryCache : IDirectoryRepository
         return result;
     }
 
+    /// <summary>Deletes a directory and refreshes the cache.</summary>
     public async Task DeleteAsync(string id, CancellationToken cancellationToken = default)
     {
         await _decorated.DeleteAsync(id, cancellationToken);
         await RefreshCacheAsync(cancellationToken);
     }
 
+    /// <summary>Recursively deletes a directory and refreshes the cache.</summary>
     public async Task DeleteRecursiveAsync(string id, string? commitMessage = null, CancellationToken cancellationToken = default)
     {
         await _decorated.DeleteRecursiveAsync(id, commitMessage, cancellationToken);
         await RefreshCacheAsync(cancellationToken);
     }
 
+    /// <summary>Moves a directory and refreshes the cache.</summary>
     public async Task<DirectoryItem> MoveAsync(string id, string? newParentId, CancellationToken cancellationToken = default)
     {
         var result = await _decorated.MoveAsync(id, newParentId, cancellationToken);
@@ -153,6 +166,7 @@ public class StaleWhileRevalidateDirectoryCache : IDirectoryRepository
         return result;
     }
 
+    /// <summary>Clears and refreshes the directory cache.</summary>
     public async Task RefreshCacheAsync(CancellationToken cancellationToken = default)
     {
         await _refreshLock.WaitAsync(cancellationToken);

@@ -1,4 +1,4 @@
-﻿namespace Osirion.Blazor.Cms.Admin.Core.Configuration;
+namespace Osirion.Blazor.Cms.Admin.Core.Configuration;
 
 /// <summary>
 /// Configuration options for GitHub integration

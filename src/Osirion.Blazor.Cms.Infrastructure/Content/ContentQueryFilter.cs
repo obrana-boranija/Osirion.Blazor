@@ -1,4 +1,4 @@
-﻿using Osirion.Blazor.Cms.Domain.Entities;
+using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Enums;
 using Osirion.Blazor.Cms.Domain.Interfaces.Content;
 using Osirion.Blazor.Cms.Domain.Interfaces.Directory;
@@ -13,6 +13,7 @@ public class ContentQueryFilter : IContentQueryFilter
 {
     private readonly IPathUtilities _pathUtils;
 
+    /// <summary>Performs the ContentQueryFilter operation.</summary>
     public ContentQueryFilter(IPathUtilities pathUtils)
     {
         _pathUtils = pathUtils ?? throw new ArgumentNullException(nameof(pathUtils));

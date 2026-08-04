@@ -1,4 +1,4 @@
-﻿namespace Osirion.Blazor.Cms.Domain.Models;
+namespace Osirion.Blazor.Cms.Domain.Models;
 
 /// <summary>
 /// Represents a text selection within a content item.

@@ -19,7 +19,7 @@ public class GitHubDirectoryRepositoryTests
     private readonly IDirectoryMetadataProcessor _metadataProcessor;
     private readonly IPathUtilities _pathUtils;
     private readonly ILogger<GitHubDirectoryRepository> _logger;
-    private readonly GitHubDirectoryRepository _repository;
+    private readonly GitHubDirectoryRepository _repository = null!;
 
     public GitHubDirectoryRepositoryTests()
     {

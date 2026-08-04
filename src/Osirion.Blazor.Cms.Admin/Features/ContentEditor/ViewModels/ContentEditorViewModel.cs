@@ -1,4 +1,4 @@
-﻿using Osirion.Blazor.Cms.Admin.Core.Events;
+using Osirion.Blazor.Cms.Admin.Core.Events;
 using Osirion.Blazor.Cms.Admin.Features.ContentEditor.Services;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Models;
@@ -6,6 +6,7 @@ using Osirion.Blazor.Cms.Domain.ValueObjects;
 
 namespace Osirion.Blazor.Cms.Admin.Features.ContentEditor.ViewModels;
 
+/// <summary>Coordinates content editing state and persistence operations.</summary>
 public class ContentEditorViewModel : IDisposable
 {
     private readonly IContentEditorService _editorService;
@@ -13,16 +14,24 @@ public class ContentEditorViewModel : IDisposable
     private readonly IEventSubscriber _eventSubscriber;
 
     // State properties
+    /// <summary>Gets the post currently being edited.</summary>
     public ContentItem? EditingPost { get; private set; }
+    /// <summary>Gets whether a new post is being created.</summary>
     public bool IsCreatingNew { get; private set; }
+    /// <summary>Gets whether a save operation is in progress.</summary>
     public bool IsSaving { get; private set; }
+    /// <summary>Gets the current error message.</summary>
     public string? ErrorMessage { get; private set; }
+    /// <summary>Gets or sets the file name for a new post.</summary>
     public string FileName { get; set; } = string.Empty;
+    /// <summary>Gets or sets the commit message.</summary>
     public string CommitMessage { get; set; } = string.Empty;
 
     // State changed event
+    /// <summary>Occurs when the view-model state changes.</summary>
     public event Action? StateChanged;
 
+    /// <summary>Initializes a new content editor view-model.</summary>
     public ContentEditorViewModel(
         IContentEditorService editorService,
         IEventPublisher eventPublisher,
@@ -38,6 +47,7 @@ public class ContentEditorViewModel : IDisposable
     }
 
     // New method to initialize from AdminState
+    /// <summary>Initializes the editor from an existing state.</summary>
     public void InitializeFromState(ContentItem post, bool isCreatingNew)
     {
         EditingPost = post;
@@ -56,6 +66,7 @@ public class ContentEditorViewModel : IDisposable
         NotifyStateChanged();
     }
 
+    /// <summary>Loads a post from the configured content provider.</summary>
     public async Task LoadPostAsync(string path)
     {
         try
@@ -76,6 +87,7 @@ public class ContentEditorViewModel : IDisposable
         }
     }
 
+    /// <summary>Saves the currently edited post.</summary>
     public async Task SavePostAsync()
     {
         if (EditingPost is null)
@@ -148,6 +160,7 @@ public class ContentEditorViewModel : IDisposable
         }
     }
 
+    /// <summary>Updates the content of the edited post.</summary>
     public void UpdateContent(string content)
     {
         if (EditingPost is not null)
@@ -157,6 +170,7 @@ public class ContentEditorViewModel : IDisposable
         }
     }
 
+    /// <summary>Updates the front matter of the edited post.</summary>
     public void UpdateMetadata(FrontMatter metadata)
     {
         if (EditingPost is not null)
@@ -173,7 +187,7 @@ public class ContentEditorViewModel : IDisposable
     {
         if (EditingPost is not null)
         {
-            EditingPost.Metadata.SeoProperties = seoMetadata;
+            EditingPost.SetSeoMetadata(seoMetadata);
             NotifyStateChanged();
         }
     }
@@ -189,6 +203,7 @@ public class ContentEditorViewModel : IDisposable
         }
     }
 
+    /// <summary>Discards the current editing changes.</summary>
     public void DiscardChanges()
     {
         EditingPost = null;
@@ -212,16 +227,18 @@ public class ContentEditorViewModel : IDisposable
         IsCreatingNew = true;
 
         // Generate suggested filename from title
-        FileName = _editorService.GenerateFileNameFromTitle(EditingPost.Metadata.Title);
+        FileName = _editorService.GenerateFileNameFromTitle(EditingPost.Metadata?.Title ?? "new-document-name");
 
         NotifyStateChanged();
     }
 
+    /// <summary>Performs the NotifyStateChanged operation.</summary>
     protected void NotifyStateChanged()
     {
         StateChanged?.Invoke();
     }
 
+    /// <summary>Releases event subscriptions held by the view-model.</summary>
     public void Dispose()
     {
         // Unsubscribe from events

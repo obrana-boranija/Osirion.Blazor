@@ -1,4 +1,4 @@
-﻿namespace Osirion.Blazor.Cms.Domain.Interfaces;
+namespace Osirion.Blazor.Cms.Domain.Interfaces;
 
 /// <summary>
 /// Service for caching content items and related data

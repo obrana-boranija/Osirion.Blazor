@@ -186,6 +186,7 @@ public partial class OsirionContentNavigation(IContentProviderManager ContentPro
         return item.Description;
     }
 
+    /// <summary>Performs the OnParametersSet operation asynchronously.</summary>
     protected override async Task OnParametersSetAsync()
     {
         await base.OnParametersSetAsync();

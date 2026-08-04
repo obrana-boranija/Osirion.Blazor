@@ -43,10 +43,10 @@ public class DomainEventTests
     public void ContentCreatedEvent_WithNullValues_ThrowsArgumentNullException()
     {
         // Assert
-        Assert.Throws<ArgumentNullException>(() => new ContentCreatedEvent(null, "title", "path", "provider"));
-        Assert.Throws<ArgumentNullException>(() => new ContentCreatedEvent("id", null, "path", "provider"));
-        Assert.Throws<ArgumentNullException>(() => new ContentCreatedEvent("id", "title", null, "provider"));
-        Assert.Throws<ArgumentNullException>(() => new ContentCreatedEvent("id", "title", "path", null));
+        Assert.Throws<ArgumentNullException>(() => new ContentCreatedEvent(null!, "title", "path", "provider"));
+        Assert.Throws<ArgumentNullException>(() => new ContentCreatedEvent("id", null!, "path", "provider"));
+        Assert.Throws<ArgumentNullException>(() => new ContentCreatedEvent("id", "title", null!, "provider"));
+        Assert.Throws<ArgumentNullException>(() => new ContentCreatedEvent("id", "title", "path", null!));
     }
 
     [Fact]

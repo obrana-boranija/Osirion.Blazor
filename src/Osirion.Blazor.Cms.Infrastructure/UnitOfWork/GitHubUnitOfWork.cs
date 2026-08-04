@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Events;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Repositories;
@@ -14,6 +14,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.UnitOfWork
         private string? _temporaryBranch = null;
         private string _originalBranch;
 
+        /// <summary>Performs the GitHubUnitOfWork operation.</summary>
         public GitHubUnitOfWork(
             IGitHubApiClient apiClient,
             IContentRepository contentRepository,
@@ -28,6 +29,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.UnitOfWork
             _originalBranch = "main"; // Default value, should be retrieved from the API client
         }
 
+        /// <summary>Performs the OnBeginTransaction operation asynchronously.</summary>
         protected override async Task OnBeginTransactionAsync(CancellationToken cancellationToken)
         {
             try
@@ -49,6 +51,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.UnitOfWork
             }
         }
 
+        /// <summary>Performs the OnCommitTransaction operation asynchronously.</summary>
         protected override async Task OnCommitTransactionAsync(CancellationToken cancellationToken)
         {
             if (_temporaryBranch is null)
@@ -67,6 +70,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.UnitOfWork
             _temporaryBranch = null;
         }
 
+        /// <summary>Performs the OnRollbackTransaction operation asynchronously.</summary>
         protected override Task OnRollbackTransactionAsync(CancellationToken cancellationToken)
         {
             // Simply discard changes by switching back to original branch
@@ -77,12 +81,14 @@ namespace Osirion.Blazor.Cms.Infrastructure.UnitOfWork
         }
 
         // GitHub doesn't natively support savepoints
+        /// <summary>Performs the OnCreateSavePoint operation asynchronously.</summary>
         protected override Task OnCreateSavePointAsync(string savePointName, CancellationToken cancellationToken)
         {
             // Not implemented for GitHub
             return Task.CompletedTask;
         }
 
+        /// <summary>Performs the OnRollbackToSavePoint operation asynchronously.</summary>
         protected override Task OnRollbackToSavePointAsync(string savePointName, CancellationToken cancellationToken)
         {
             // Not implemented for GitHub

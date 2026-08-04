@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Interfaces.Directory;
@@ -15,6 +15,7 @@ public class DirectoryMetadataProcessor : IDirectoryMetadataProcessor
     private readonly IMarkdownProcessor _markdownProcessor;
     private readonly ILogger<DirectoryMetadataProcessor> _logger;
 
+    /// <summary>Performs the DirectoryMetadataProcessor operation.</summary>
     public DirectoryMetadataProcessor(
         IFrontMatterExtractor frontMatterExtractor,
         IMarkdownProcessor markdownProcessor,

@@ -1,4 +1,4 @@
-﻿namespace Osirion.Blazor.Components;
+namespace Osirion.Blazor.Components;
 
 /// <summary>
 /// Utility class for generating CSS class names for various pattern types.

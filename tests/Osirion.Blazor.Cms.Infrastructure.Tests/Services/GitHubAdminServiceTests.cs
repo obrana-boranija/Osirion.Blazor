@@ -14,7 +14,7 @@ public class GitHubAdminServiceTests
     private readonly IGitHubApiClient _apiClient;
     private readonly IOptions<CmsAdminOptions> _options;
     private readonly ILogger<GitHubAdminService> _logger;
-    private readonly GitHubAdminService _adminService;
+    private readonly GitHubAdminService _adminService = null!;
 
     public GitHubAdminServiceTests()
     {

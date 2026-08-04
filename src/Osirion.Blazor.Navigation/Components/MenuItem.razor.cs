@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components.Web;
 
 namespace Osirion.Blazor.Navigation.Components;
 
+/// <summary>Defines the MenuItem type.</summary>
 public partial class MenuItem
 {
     /// <summary>
@@ -130,6 +131,7 @@ public partial class MenuItem
         }
     }
 
+    /// <summary>Initializes the component state and required services.</summary>
     protected override void OnInitialized()
     {
         base.OnInitialized();
@@ -150,6 +152,7 @@ public partial class MenuItem
             Attributes["rel"] = "noopener noreferrer";
     }
 
+    /// <summary>Performs the OnParametersSet operation.</summary>
     protected override void OnParametersSet()
     {
         base.OnParametersSet();

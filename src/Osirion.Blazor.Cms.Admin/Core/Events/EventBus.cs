@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace Osirion.Blazor.Cms.Admin.Core.Events;
 
@@ -10,11 +10,13 @@ public class EventBus : IEventPublisher, IEventSubscriber
     private readonly Dictionary<Type, List<Delegate>> _handlers = new();
     private readonly ILogger<EventBus> _logger;
 
+    /// <summary>Performs the EventBus operation.</summary>
     public EventBus(ILogger<EventBus> logger)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
+    /// <summary>Subscribes a handler for an event type.</summary>
     public void Subscribe<TEvent>(Action<TEvent> handler) where TEvent : class
     {
         var eventType = typeof(TEvent);
@@ -28,6 +30,7 @@ public class EventBus : IEventPublisher, IEventSubscriber
         _logger.LogDebug("Handler subscribed for event type: {EventType}", eventType.Name);
     }
 
+    /// <summary>Unsubscribes a handler from an event type.</summary>
     public void Unsubscribe<TEvent>(Action<TEvent> handler) where TEvent : class
     {
         var eventType = typeof(TEvent);
@@ -39,6 +42,7 @@ public class EventBus : IEventPublisher, IEventSubscriber
         }
     }
 
+    /// <summary>Publishes an event to its subscribed handlers.</summary>
     public void Publish<TEvent>(TEvent @event) where TEvent : class
     {
         var eventType = typeof(TEvent);

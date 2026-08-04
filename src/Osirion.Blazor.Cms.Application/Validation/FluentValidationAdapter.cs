@@ -1,4 +1,4 @@
-﻿namespace Osirion.Blazor.Cms.Application.Validation;
+namespace Osirion.Blazor.Cms.Application.Validation;
 
 /// <summary>
 /// Adapter for FluentValidation validators to IValidator
@@ -8,11 +8,13 @@ public class FluentValidationAdapter<T> : IValidator<T>
 {
     private readonly FluentValidation.IValidator<T> _fluentValidator;
 
+    /// <summary>Performs the FluentValidationAdapter operation.</summary>
     public FluentValidationAdapter(FluentValidation.IValidator<T> fluentValidator)
     {
         _fluentValidator = fluentValidator;
     }
 
+    /// <summary>Performs the Validate operation asynchronously.</summary>
     public async Task<ValidationResult> ValidateAsync(T instance, CancellationToken cancellationToken = default)
     {
         var fluentResult = await _fluentValidator.ValidateAsync(instance, cancellationToken);

@@ -8,12 +8,15 @@ namespace Osirion.Blazor.Cms.Admin.Components.Layouts;
 /// </summary>
 public partial class OsirionAdminLayout
 {
+    /// <summary>Gets or sets the active visual theme.</summary>
     [Parameter]
     public string Theme { get; set; } = "light";
 
+    /// <summary>Gets or sets the callback invoked after the theme changes.</summary>
     [Parameter]
     public EventCallback<string> ThemeChanged { get; set; }
 
+    /// <summary>Subscribes the layout to admin state changes.</summary>
     protected override void OnInitialized()
     {
         AdminState.StateChanged += StateHasChanged;
@@ -46,6 +49,7 @@ public partial class OsirionAdminLayout
         NavigationManager.NavigateTo("/osirion/login");
     }
 
+    /// <summary>Releases the state-change subscription held by the layout.</summary>
     public void Dispose()
     {
         AdminState.StateChanged -= StateHasChanged;

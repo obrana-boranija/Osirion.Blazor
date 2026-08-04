@@ -2,11 +2,14 @@ using Microsoft.AspNetCore.Components;
 
 namespace Osirion.Blazor.Components;
 
+/// <summary>Renders a decorative background pattern wrapper.</summary>
 public partial class OsirionBackgroundPattern
 {
+    /// <summary>Gets or sets the pattern to render.</summary>
     [Parameter]
     public BackgroundPatternType? BackgroundPattern { get; set; }
 
+    /// <summary>Gets or sets whether the pattern image uses a mask.</summary>
     [Parameter]
     public bool MaskImage { get; set; } = true;
 

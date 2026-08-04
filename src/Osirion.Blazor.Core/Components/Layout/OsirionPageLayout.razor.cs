@@ -70,6 +70,7 @@ public partial class OsirionPageLayout
         return string.Join(" ", classes);
     }
 
+    /// <summary>Gets the optional header scroll behavior script.</summary>
     protected RenderFragment HeaderScrollScript => builder =>
     {
 #if NET9_0_OR_GREATER

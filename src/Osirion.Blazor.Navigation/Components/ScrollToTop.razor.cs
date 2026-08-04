@@ -5,6 +5,7 @@ using Osirion.Blazor.Navigation.Options;
 
 namespace Osirion.Blazor.Navigation.Components;
 
+/// <summary>Defines the ScrollToTop type.</summary>
 public partial class ScrollToTop
 {
     /// <summary>
@@ -71,6 +72,7 @@ public partial class ScrollToTop
         }
     }
 
+    /// <summary>Initializes the component state and required services.</summary>
     protected override void OnInitialized()
     {
         base.OnInitialized();

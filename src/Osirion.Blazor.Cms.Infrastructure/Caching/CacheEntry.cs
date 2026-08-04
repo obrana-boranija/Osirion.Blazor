@@ -1,4 +1,4 @@
-﻿namespace Osirion.Blazor.Cms.Infrastructure.Caching;
+namespace Osirion.Blazor.Cms.Infrastructure.Caching;
 
 /// <summary>
 /// Represents a cache entry with metadata about when it was last updated

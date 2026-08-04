@@ -1,4 +1,4 @@
-﻿namespace Osirion.Blazor.Cms.Domain.Repositories;
+namespace Osirion.Blazor.Cms.Domain.Repositories;
 
 /// <summary>
 /// Base interface for all repositories

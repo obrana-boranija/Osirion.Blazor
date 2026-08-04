@@ -104,7 +104,7 @@ public partial class DocumentPage
     /// <inheritdoc/>
     protected override async Task OnParametersSetAsync()
     {
-        if (Content is null && !string.IsNullOrWhiteSpace(ContentPath))
+        if (Content is null && ContentPath is { } contentPath && !string.IsNullOrWhiteSpace(contentPath))
         {
             await LoadContentAsync();
         }
@@ -125,15 +125,15 @@ public partial class DocumentPage
         }
     }
 
-    private async Task LoadContentAsync()
+    private new async Task LoadContentAsync()
     {
         IsLoading = true;
         try
         {
             var provider = ContentProviderManager.GetDefaultProvider();
-            if (provider is not null)
+            if (provider is not null && ContentPath is { } contentPath && !string.IsNullOrWhiteSpace(contentPath))
             {
-                Content = await provider.GetItemByPathAsync(ContentPath);
+                Content = await provider.GetItemByPathAsync(contentPath);
 
                 if (Content is not null)
                 {
@@ -155,7 +155,7 @@ public partial class DocumentPage
 
     private async Task LoadNavigationItemsAsync()
     {
-        if (!ShowNavigationLinks || Content is null || (PreviousItem is not null && NextItem is not null))
+        if (!ShowNavigationLinks || Content is not { } content || (PreviousItem is not null && NextItem is not null))
             return;
 
         try
@@ -165,17 +165,17 @@ public partial class DocumentPage
             {
                 var query = new ContentQuery
                 {
-                    Directory = Content.Directory?.Path,
+                    Directory = content.Directory?.Path,
                     SortBy = SortField.Order,
                     SortDirection = SortDirection.Ascending
                 };
 
-                var items = await provider.GetItemsByQueryAsync(query);
+                var items = await provider.GetItemsByQueryAsync(query) ?? [];
 
                 int currentIndex = -1;
                 for (int i = 0; i < items.Count; i++)
                 {
-                    if (items[i].Path == Content.Path)
+                    if (items[i].Path == content.Path)
                     {
                         currentIndex = i;
                         break;
@@ -262,10 +262,16 @@ public partial class DocumentPage
 /// </summary>
 public class DocumentNavigationItem
 {
+    /// <summary>Gets or sets the Title value.</summary>
     public string Title { get; set; } = string.Empty;
+    /// <summary>Gets or sets the Url value.</summary>
     public string Url { get; set; } = string.Empty;
+    /// <summary>Gets or sets the Path value.</summary>
     public string? Path { get; set; }
+    /// <summary>Gets or sets the Order value.</summary>
     public int Order { get; set; }
+    /// <summary>Gets or sets the IsExpanded value.</summary>
     public bool IsExpanded { get; set; }
+    /// <summary>Gets or sets the Children value.</summary>
     public IReadOnlyList<DocumentNavigationItem>? Children { get; set; }
 }

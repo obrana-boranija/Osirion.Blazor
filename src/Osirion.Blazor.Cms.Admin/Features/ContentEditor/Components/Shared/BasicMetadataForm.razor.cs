@@ -3,11 +3,14 @@ using Osirion.Blazor.Cms.Domain.ValueObjects;
 
 namespace Osirion.Blazor.Cms.Admin.Features.ContentEditor.Components.Shared;
 
+    /// <summary>Defines the public member type.</summary>
 public partial class BasicMetadataForm
 {
+    /// <summary>Performs the Metadata operation.</summary>
     [Parameter]
     public FrontMatter Metadata { get; set; } = FrontMatter.Create("New Post");
 
+    /// <summary>Gets or sets the MetadataChanged value.</summary>
     [Parameter]
     public EventCallback<FrontMatter> MetadataChanged { get; set; }
 
@@ -30,6 +33,7 @@ public partial class BasicMetadataForm
         }
     }
 
+    /// <summary>Performs the OnParametersSet operation.</summary>
     protected override void OnParametersSet()
     {
         Metadata ??= FrontMatter.Create("New Post");

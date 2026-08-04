@@ -1,4 +1,4 @@
-﻿using Blazored.LocalStorage;
+using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.Extensions.Logging;
@@ -19,6 +19,7 @@ public class LocalStorageService : IStateStorageService, IDisposable
     private bool _isInitialized = false;
     private bool _isClientSide = false;
 
+    /// <summary>Performs the LocalStorageService operation.</summary>
     public LocalStorageService(
         ILocalStorageService localStorage,
         NavigationManager navigationManager,
@@ -30,8 +31,10 @@ public class LocalStorageService : IStateStorageService, IDisposable
         _navigationManager.LocationChanged += OnLocationChanged;
     }
 
+    /// <summary>Gets or sets the IsInitialized value.</summary>
     public bool IsInitialized => _isInitialized;
 
+    /// <summary>Performs the Initialize operation asynchronously.</summary>
     public async Task InitializeAsync()
     {
         if (_isInitialized) return;
@@ -93,6 +96,7 @@ public class LocalStorageService : IStateStorageService, IDisposable
         }
     }
 
+    /// <summary>Saves a state value in memory and, when available, local storage.</summary>
     public async Task SaveStateAsync<T>(string key, T value)
     {
         if (string.IsNullOrWhiteSpace(key)) return;
@@ -118,6 +122,7 @@ public class LocalStorageService : IStateStorageService, IDisposable
         }
     }
 
+    /// <summary>Gets a state value from memory or local storage.</summary>
     public async Task<T?> GetStateAsync<T>(string key)
     {
         if (string.IsNullOrWhiteSpace(key)) return default;
@@ -163,6 +168,7 @@ public class LocalStorageService : IStateStorageService, IDisposable
         return default;
     }
 
+    /// <summary>Performs the RemoveState operation asynchronously.</summary>
     public async Task RemoveStateAsync(string key)
     {
         if (string.IsNullOrWhiteSpace(key)) return;
@@ -192,6 +198,7 @@ public class LocalStorageService : IStateStorageService, IDisposable
         // This ensures we keep the state across navigation
     }
 
+    /// <summary>Releases resources held by the component or service.</summary>
     public void Dispose()
     {
         _navigationManager.LocationChanged -= OnLocationChanged;

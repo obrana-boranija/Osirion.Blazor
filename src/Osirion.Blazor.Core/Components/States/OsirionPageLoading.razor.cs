@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components;
 
 namespace Osirion.Blazor.Components;
+/// <summary>Displays a loading state while page content is unavailable.</summary>
 public partial class OsirionPageLoading
 {
     /// <summary>

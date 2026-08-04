@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Options;
 using Osirion.Blazor.Analytics.Options;
 
 namespace Osirion.Blazor.Analytics.Providers;

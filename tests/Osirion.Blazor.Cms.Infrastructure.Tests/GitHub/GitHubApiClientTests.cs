@@ -15,7 +15,7 @@ public class GitHubApiClientTests
     private readonly HttpClient _httpClient;
     private readonly IOptions<CmsAdminOptions> _options;
     private readonly ILogger<GitHubApiClient> _logger;
-    private readonly GitHubApiClient _apiClient;
+    private readonly GitHubApiClient _apiClient = null!;
     private readonly HttpMessageHandler _mockHandler;
 
     public GitHubApiClientTests()

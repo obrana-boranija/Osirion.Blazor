@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using System.Text.Json;
 
 namespace Osirion.Blazor.Core.Handlers;
@@ -135,8 +135,12 @@ public static class CookieConsentHandler
 /// </summary>
 public class CookieConsentData
 {
+    /// <summary>Gets or sets the consent data version.</summary>
     public string Version { get; set; } = string.Empty;
+    /// <summary>Gets or sets when consent was recorded.</summary>
     public DateTime ConsentDate { get; set; }
+    /// <summary>Gets or sets the consent type.</summary>
     public string ConsentType { get; set; } = string.Empty;
+    /// <summary>Gets or sets the consent state for each category.</summary>
     public Dictionary<string, bool> Categories { get; set; } = new();
 }

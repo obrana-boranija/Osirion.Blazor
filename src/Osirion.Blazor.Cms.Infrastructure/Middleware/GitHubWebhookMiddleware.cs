@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 
@@ -13,6 +13,7 @@ public class GitHubWebhookMiddleware
     private readonly ILogger<GitHubWebhookMiddleware> _logger;
     private readonly string _webhookPath;
 
+    /// <summary>Performs the GitHubWebhookMiddleware operation.</summary>
     public GitHubWebhookMiddleware(
         RequestDelegate next,
         ILogger<GitHubWebhookMiddleware> logger)
@@ -22,6 +23,7 @@ public class GitHubWebhookMiddleware
         _webhookPath = "/api/github/webhook";
     }
 
+    /// <summary>Performs the Invoke operation asynchronously.</summary>
     public async Task InvokeAsync(HttpContext context, IGitHubWebhookHandler webhookHandler)
     {
         // Only process POST requests to the webhook path

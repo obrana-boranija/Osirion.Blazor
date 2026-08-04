@@ -1,4 +1,4 @@
-﻿using Osirion.Blazor.Cms.Domain.Common;
+using Osirion.Blazor.Cms.Domain.Common;
 
 namespace Osirion.Blazor.Cms.Domain.ValueObjects;
 
@@ -92,7 +92,7 @@ public class SeoMetadata : ValueObject
     /// </summary>
     public Dictionary<string, string> MetaTags { get; set; } = new Dictionary<string, string>();
 
-    // Factory method for creating a populated instance
+    /// <summary>Creates populated SEO metadata.</summary>
     public static SeoMetadata Create(
         string metaTitle,
         string metaDescription,
@@ -130,7 +130,7 @@ public class SeoMetadata : ValueObject
         return metadata;
     }
 
-    // Builder methods for fluent API
+    /// <summary>Creates a copy with a different meta title.</summary>
     public SeoMetadata WithMetaTitle(string metaTitle)
     {
         var clone = Clone();
@@ -138,6 +138,7 @@ public class SeoMetadata : ValueObject
         return clone;
     }
 
+    /// <summary>Creates a copy with a different meta description.</summary>
     public SeoMetadata WithMetaDescription(string metaDescription)
     {
         var clone = Clone();
@@ -145,6 +146,7 @@ public class SeoMetadata : ValueObject
         return clone;
     }
 
+    /// <summary>Creates a copy with a different canonical URL.</summary>
     public SeoMetadata WithCanonicalUrl(string canonicalUrl)
     {
         var clone = Clone();
@@ -152,6 +154,7 @@ public class SeoMetadata : ValueObject
         return clone;
     }
 
+    /// <summary>Creates a copy with a different robots directive.</summary>
     public SeoMetadata WithRobots(string robots)
     {
         var clone = Clone();
@@ -159,6 +162,7 @@ public class SeoMetadata : ValueObject
         return clone;
     }
 
+    /// <summary>Creates a copy with Open Graph metadata.</summary>
     public SeoMetadata WithOpenGraph(string title, string description, string imageUrl, string type = "article")
     {
         var clone = Clone();
@@ -169,6 +173,7 @@ public class SeoMetadata : ValueObject
         return clone;
     }
 
+    /// <summary>Creates a copy with Twitter card metadata.</summary>
     public SeoMetadata WithTwitterCard(string title, string description, string imageUrl, string cardType = "summary_large_image")
     {
         var clone = Clone();
@@ -179,6 +184,7 @@ public class SeoMetadata : ValueObject
         return clone;
     }
 
+    /// <summary>Creates a copy with JSON-LD metadata.</summary>
     public SeoMetadata WithJsonLd(string jsonLd, string schemaType = "Article")
     {
         var clone = Clone();
@@ -211,6 +217,7 @@ public class SeoMetadata : ValueObject
         };
     }
 
+    /// <summary>Gets or sets the GetEqualityComponents value.</summary>
     protected override IEnumerable<object> GetEqualityComponents()
     {
         yield return Title;

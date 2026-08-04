@@ -161,9 +161,9 @@ public class ContentCacheManagerTests
         _logger.Received(1).Log(
             LogLevel.Error,
             Arg.Any<EventId>(),
-            Arg.Is<object>(o => o.ToString().Contains("Error refreshing content cache")),
+            Arg.Is<object>(o => o == null ? false : o.ToString()!.Contains("Error refreshing content cache")),
             Arg.Any<Exception>(),
-            Arg.Any<Func<object, Exception, string>>());
+            Arg.Any<Func<object, Exception?, string>>());
     }
 
     [Fact]
@@ -202,13 +202,13 @@ public class ContentCacheManagerTests
             Arg.Any<EventId>(),
             Arg.Any<object>(),
             Arg.Any<Exception>(),
-            Arg.Any<Func<object, Exception, string>>());
+            Arg.Any<Func<object, Exception?, string>>());
 
         _logger.Received(1).Log(
             LogLevel.Warning,
             Arg.Any<EventId>(),
-            Arg.Is<object>(o => o.ToString().Contains("Returning stale content cache")),
+            Arg.Is<object>(o => o == null ? false : o.ToString()!.Contains("Returning stale content cache")),
             Arg.Any<Exception>(),
-            Arg.Any<Func<object, Exception, string>>());
+            Arg.Any<Func<object, Exception?, string>>());
     }
 }

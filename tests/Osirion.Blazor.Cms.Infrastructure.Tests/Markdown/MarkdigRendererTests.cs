@@ -47,7 +47,7 @@ public class MarkdigRendererTests
     public void RenderToHtml_WithNullMarkdown_ReturnsEmptyString()
     {
         // Act
-        var result = _renderer.RenderToHtml(null);
+        var result = _renderer.RenderToHtml(null!);
 
         // Assert
         result.ShouldBe(string.Empty);

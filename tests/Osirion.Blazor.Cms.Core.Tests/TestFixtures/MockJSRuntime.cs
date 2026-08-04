@@ -12,7 +12,7 @@ public class MockJSRuntime : IJSRuntime
     /// Mocked implementation of InvokeAsync that returns predictable values
     /// based on the requested type.
     /// </summary>
-    public ValueTask<TValue> InvokeAsync<TValue>(string identifier, object[] args)
+    public ValueTask<TValue> InvokeAsync<TValue>(string identifier, object?[]? args)
     {
         // Handle different return types
         if (typeof(TValue) == typeof(double))
@@ -30,14 +30,14 @@ public class MockJSRuntime : IJSRuntime
         else
         {
             // Default for other types (including object)
-            return new ValueTask<TValue>(result: default(TValue));
+            return new ValueTask<TValue>(result: default(TValue)!);
         }
     }
 
     /// <summary>
     /// Mocked implementation of InvokeAsync overload
     /// </summary>
-    public ValueTask<TValue> InvokeAsync<TValue>(string identifier, CancellationToken cancellationToken, object[] args)
+    public ValueTask<TValue> InvokeAsync<TValue>(string identifier, CancellationToken cancellationToken, object?[]? args)
     {
         return InvokeAsync<TValue>(identifier, args);
     }
@@ -64,14 +64,14 @@ public class MockJSRuntime : IJSRuntime
 /// </summary>
 public class MockJSObjectReference : IJSObjectReference
 {
-    public ValueTask<TValue> InvokeAsync<TValue>(string identifier, object[] args)
+    public ValueTask<TValue> InvokeAsync<TValue>(string identifier, object?[]? args)
     {
-        return new ValueTask<TValue>(result: default(TValue));
+        return new ValueTask<TValue>(result: default(TValue)!);
     }
 
-    public ValueTask<TValue> InvokeAsync<TValue>(string identifier, CancellationToken cancellationToken, object[] args)
+    public ValueTask<TValue> InvokeAsync<TValue>(string identifier, CancellationToken cancellationToken, object?[]? args)
     {
-        return new ValueTask<TValue>(result: default(TValue));
+        return new ValueTask<TValue>(result: default(TValue)!);
     }
 
     public ValueTask DisposeAsync()

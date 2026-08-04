@@ -7,7 +7,7 @@
 @using Osirion.Blazor.Cms.Admin.Shared.Components
 @using Osirion.Blazor.Cms.Domain.Interfaces
 @inject IGitHubAdminService GitHubService
-@inject CmsState AdminState
+@inject CmsState DashboardState
 
 <div class="@GetAdminDashboardClass()">
     <div class="osirion-admin-sidebar">
@@ -33,20 +33,20 @@
         <div class="osirion-admin-header">
             <div class="osirion-admin-breadcrumb">
                 <span class="osirion-admin-breadcrumb-item">Dashboard</span>
-                @if (AdminState.SelectedRepository is not null)
+                @if (DashboardState.SelectedRepository is not null)
                 {
                     <span class="osirion-admin-breadcrumb-separator">/</span>
-                    <span class="osirion-admin-breadcrumb-item">@AdminState.SelectedRepository.Name</span>
+                    <span class="osirion-admin-breadcrumb-item">@DashboardState.SelectedRepository.Name</span>
 
-                    @if (AdminState.SelectedBranch is not null)
+                    @if (DashboardState.SelectedBranch is not null)
                     {
                         <span class="osirion-admin-breadcrumb-separator">/</span>
-                        <span class="osirion-admin-breadcrumb-item">@AdminState.SelectedBranch.Name</span>
+                        <span class="osirion-admin-breadcrumb-item">@DashboardState.SelectedBranch.Name</span>
 
-                        @if (!string.IsNullOrWhiteSpace(AdminState.CurrentPath))
+                        @if (!string.IsNullOrWhiteSpace(DashboardState.CurrentPath))
                         {
                             <span class="osirion-admin-breadcrumb-separator">/</span>
-                            <span class="osirion-admin-breadcrumb-item">@AdminState.CurrentPath</span>
+                            <span class="osirion-admin-breadcrumb-item">@DashboardState.CurrentPath</span>
                         }
                     }
                 }
@@ -73,7 +73,7 @@
         </div>
 
         <div class="osirion-admin-content">
-            @if (AdminState.StatusMessage is not null)
+            @if (DashboardState.StatusMessage is not null)
             {
                 <div class="osirion-admin-alert osirion-admin-alert-success">
                     <span class="osirion-admin-alert-icon">
@@ -82,7 +82,7 @@
                             <polyline points="22 4 12 14.01 9 11.01" />
                         </svg>
                     </span>
-                    <span>@AdminState.StatusMessage</span>
+                    <span>@DashboardState.StatusMessage</span>
                     <button type="button"
                             class="osirion-admin-alert-close"
                             @onclick="ClearMessages"
@@ -92,7 +92,7 @@
                 </div>
             }
 
-            @if (AdminState.ErrorMessage is not null)
+            @if (DashboardState.ErrorMessage is not null)
             {
                 <div class="osirion-admin-alert osirion-admin-alert-error">
                     <span class="osirion-admin-alert-icon">
@@ -102,7 +102,7 @@
                             <line x1="12" y1="16" x2="12.01" y2="16" />
                         </svg>
                     </span>
-                    <span>@AdminState.ErrorMessage</span>
+                    <span>@DashboardState.ErrorMessage</span>
                     <button type="button"
                             class="osirion-admin-alert-close"
                             @onclick="ClearMessages"

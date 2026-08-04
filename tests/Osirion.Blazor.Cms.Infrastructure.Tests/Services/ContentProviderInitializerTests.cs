@@ -66,7 +66,7 @@ public class ContentProviderInitializerTests
         await _initializer.InitializeProvidersAsync();
 
         // Assert
-        await (_cachingProvider as IContentCaching).Received(1).InitializeAsync(Arg.Any<CancellationToken>());
+        await ((IContentCaching)_cachingProvider).Received(1).InitializeAsync(Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -79,23 +79,23 @@ public class ContentProviderInitializerTests
         _logger.Received(1).Log(
             LogLevel.Information,
             Arg.Any<EventId>(),
-            Arg.Is<object>(o => o.ToString().Contains("Found provider: standard-provider")),
+            Arg.Is<object>(o => o == null ? false : o.ToString()!.Contains("Found provider: standard-provider")),
             Arg.Any<Exception>(),
-            Arg.Any<Func<object, Exception, string>>());
+            Arg.Any<Func<object, Exception?, string>>());
 
         _logger.Received(1).Log(
             LogLevel.Information,
             Arg.Any<EventId>(),
-            Arg.Is<object>(o => o.ToString().Contains("Found provider: caching-provider")),
+            Arg.Is<object>(o => o == null ? false : o.ToString()!.Contains("Found provider: caching-provider")),
             Arg.Any<Exception>(),
-            Arg.Any<Func<object, Exception, string>>());
+            Arg.Any<Func<object, Exception?, string>>());
 
         _logger.Received(1).Log(
             LogLevel.Information,
             Arg.Any<EventId>(),
-            Arg.Is<object>(o => o.ToString().Contains("Initialized provider: caching-provider")),
+            Arg.Is<object>(o => o == null ? false : o.ToString()!.Contains("Initialized provider: caching-provider")),
             Arg.Any<Exception>(),
-            Arg.Any<Func<object, Exception, string>>());
+            Arg.Any<Func<object, Exception?, string>>());
     }
 
     [Fact]
@@ -114,14 +114,14 @@ public class ContentProviderInitializerTests
             Arg.Any<EventId>(),
             Arg.Any<object>(),
             Arg.Is<Exception>(e => e.Message == "Test exception"),
-            Arg.Any<Func<object, Exception, string>>());
+            Arg.Any<Func<object, Exception?, string>>());
     }
 
     [Fact]
     public async Task InitializeProvidersAsync_HandlesExceptionInProviderInitialization()
     {
         // Arrange
-        (_cachingProvider as IContentCaching).When(x =>
+        ((IContentCaching)_cachingProvider).When(x =>
             x.InitializeAsync(Arg.Any<CancellationToken>()))
             .Throw(new Exception("Initialization exception"));
 
@@ -134,7 +134,7 @@ public class ContentProviderInitializerTests
             Arg.Any<EventId>(),
             Arg.Any<object>(),
             Arg.Is<Exception>(e => e.Message == "Initialization exception"),
-            Arg.Any<Func<object, Exception, string>>());
+            Arg.Any<Func<object, Exception?, string>>());
     }
 
     [Fact]
@@ -153,7 +153,7 @@ public class ContentProviderInitializerTests
             Arg.Any<EventId>(),
             Arg.Any<object>(),
             Arg.Is<Exception>(e => e.Message == "Registry exception"),
-            Arg.Any<Func<object, Exception, string>>());
+            Arg.Any<Func<object, Exception?, string>>());
     }
 
     [Fact]
@@ -169,9 +169,9 @@ public class ContentProviderInitializerTests
         _logger.DidNotReceive().Log(
             LogLevel.Information,
             Arg.Any<EventId>(),
-            Arg.Is<object>(o => o.ToString().Contains("Found provider:")),
+            Arg.Is<object>(o => o == null ? false : o.ToString()!.Contains("Found provider:")),
             Arg.Any<Exception>(),
-            Arg.Any<Func<object, Exception, string>>());
+            Arg.Any<Func<object, Exception?, string>>());
     }
 
     [Fact]

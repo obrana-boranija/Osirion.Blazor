@@ -7,7 +7,7 @@
     @if (ShowToolbar)
     {
         <div class="osirion-markdown-editor-toolbar">
-            @foreach (var action in ToolbarActions)
+            @foreach (var action in ToolbarActions ?? [])
             {
                 <button type="button"
                         class="osirion-markdown-toolbar-button"

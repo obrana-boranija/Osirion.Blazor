@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Exceptions;
@@ -22,6 +22,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
         private readonly IFileSystem _fileSystem;
         private FileSystemWatcher? _fileWatcher;
 
+        /// <summary>Performs the FileSystemContentRepository operation.</summary>
         public FileSystemContentRepository(
             IMarkdownProcessor markdownProcessor,
             IContentQueryFilter queryFilter,
@@ -60,7 +61,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
         }
 
         /// <inheritdoc/>
-        protected async Task EnsureCacheIsLoaded(CancellationToken cancellationToken, bool forceRefresh = false)
+        protected override async Task EnsureCacheIsLoaded(CancellationToken cancellationToken, bool forceRefresh = false)
         {
             if (!forceRefresh && ItemCache is not null)
             {
@@ -420,6 +421,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
             }
         }
 
+        /// <summary>Releases resources held by the component or service.</summary>
         protected override void Dispose(bool disposing)
         {
             if (disposing)

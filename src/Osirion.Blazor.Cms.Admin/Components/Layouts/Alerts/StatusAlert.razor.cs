@@ -34,11 +34,16 @@ public partial class StatusAlert
         _ => "alert-info"
     };
 
+    /// <summary>Defines the public member API contract.</summary>
     public enum AlertType
     {
+    /// <summary>Performs the public member operation.</summary>
         Success,
+    /// <summary>Performs the public member operation.</summary>
         Error,
+    /// <summary>Performs the public member operation.</summary>
         Warning,
+    /// <summary>Performs the public member operation.</summary>
         Info
     }
 }

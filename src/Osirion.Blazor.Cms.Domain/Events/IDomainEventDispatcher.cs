@@ -1,4 +1,4 @@
-﻿namespace Osirion.Blazor.Cms.Domain.Events;
+namespace Osirion.Blazor.Cms.Domain.Events;
 
 /// <summary>
 /// Interface for dispatching domain events

@@ -193,7 +193,7 @@ namespace Osirion.Blazor.Cms.Tests.Providers
             var result = await _provider.GetItemsByQueryAsync(query);
 
             // Assert
-            result.Count.ShouldBe(2);
+            result!.Count.ShouldBe(2);
             result.ShouldContain(i => i.Id == "1");
             result.ShouldContain(i => i.Id == "3");
         }
@@ -221,7 +221,7 @@ namespace Osirion.Blazor.Cms.Tests.Providers
             var result = await _provider.GetItemsByQueryAsync(query);
 
             // Assert
-            result.Count.ShouldBe(2);
+            result!.Count.ShouldBe(2);
             result.ShouldContain(i => i.Id == "1");
             result.ShouldContain(i => i.Id == "3");
         }
@@ -263,7 +263,7 @@ namespace Osirion.Blazor.Cms.Tests.Providers
             var result = await _provider.GetItemsByQueryAsync(query);
 
             // Assert
-            result.Count.ShouldBe(1);
+            result!.Count.ShouldBe(1);
             result[0].Id.ShouldBe("1");
         }
 
@@ -290,7 +290,7 @@ namespace Osirion.Blazor.Cms.Tests.Providers
             var result = await _provider.GetItemsByQueryAsync(query);
 
             // Assert
-            result.Count.ShouldBe(3);
+            result!.Count.ShouldBe(3);
             result[0].Title.ShouldBe("A Item");
             result[1].Title.ShouldBe("B Item");
             result[2].Title.ShouldBe("C Item");
@@ -325,7 +325,7 @@ namespace Osirion.Blazor.Cms.Tests.Providers
             var result = await _provider.GetItemsByQueryAsync(query);
 
             // Assert
-            result.Count.ShouldBe(3);
+            result!.Count.ShouldBe(3);
             result[0].Title.ShouldBe("Item 3");
             result[1].Title.ShouldBe("Item 4");
             result[2].Title.ShouldBe("Item 5");
@@ -584,7 +584,7 @@ namespace Osirion.Blazor.Cms.Tests.Providers
                 return Task.FromResult(translations);
             }
 
-            public override Task<IReadOnlyList<ContentItem>> GetItemsByQueryAsync(ContentQuery query, CancellationToken cancellationToken = default)
+            public override Task<IReadOnlyList<ContentItem>?> GetItemsByQueryAsync(ContentQuery query, CancellationToken cancellationToken = default)
             {
                 throw new NotImplementedException();
             }

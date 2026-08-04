@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Models.GitHub;
@@ -67,7 +67,7 @@ public class GitHubApiClient : IGitHubApiClient
     /// <summary>
     /// Gets a list of repositories the authenticated user has access to
     /// </summary>
-    public async Task<List<GitHubRepository>> GetRepositoriesAsync(CancellationToken cancellationToken = default!)
+    public async Task<List<GitHubRepository>?> GetRepositoriesAsync(CancellationToken cancellationToken = default!)
     {
         try
         {

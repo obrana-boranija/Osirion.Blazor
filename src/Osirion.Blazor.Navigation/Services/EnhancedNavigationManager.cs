@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Options;
 using Osirion.Blazor.Components;
 using Osirion.Blazor.Navigation.Options;
 

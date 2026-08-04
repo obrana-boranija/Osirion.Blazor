@@ -1,4 +1,4 @@
-﻿namespace Osirion.Blazor.Cms.Domain.Common;
+namespace Osirion.Blazor.Cms.Domain.Common;
 
 /// <summary>
 /// Provides standard metadata handling functionality for entities
@@ -116,6 +116,7 @@ public class MetadataContainer
         return clone;
     }
 
+    /// <summary>Sets a property value in the metadata container.</summary>
     public void SetPropertyValue<T>(string propertyName, T value)
     {
         if (string.IsNullOrWhiteSpace(propertyName))
@@ -124,11 +125,13 @@ public class MetadataContainer
         SetValue(propertyName, value);
     }
 
+    /// <summary>Gets a property value from the metadata container.</summary>
     public T? GetPropertyValue<T>(string propertyName, T? defaultValue = default)
     {
         return GetValue<T>(propertyName, defaultValue);
     }
 
+    /// <summary>Gets or sets the HasProperty value.</summary>
     public bool HasProperty(string propertyName)
     {
         return ContainsKey(propertyName);

@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -18,6 +18,7 @@ public class GitHubPollingService : BackgroundService
     private readonly GitHubOptions _options;
     private readonly Dictionary<string, string> _lastKnownShas = new();
 
+    /// <summary>Performs the GitHubPollingService operation.</summary>
     public GitHubPollingService(
         IServiceProvider serviceProvider,
         IOptions<GitHubOptions> options,
@@ -28,6 +29,7 @@ public class GitHubPollingService : BackgroundService
         _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
     }
 
+    /// <summary>Performs the Execute operation asynchronously.</summary>
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         // Don't start polling if polling is disabled
@@ -138,7 +140,7 @@ public class GitHubPollingService : BackgroundService
         {
             // Get the branch information
             var branches = await apiClient.GetBranchesAsync(cancellationToken);
-            var branch = branches.FirstOrDefault(b => b.Name == _options.Branch);
+            var branch = branches?.FirstOrDefault(b => b.Name == _options.Branch);
 
             if (branch is null)
             {

@@ -1,4 +1,4 @@
-﻿using Osirion.Blazor.Cms.Domain.Common;
+using Osirion.Blazor.Cms.Domain.Common;
 using Osirion.Blazor.Cms.Domain.Enums;
 using Osirion.Blazor.Cms.Domain.Events;
 using Osirion.Blazor.Cms.Domain.Exceptions;
@@ -20,37 +20,62 @@ public class ContentItem : DomainEntity<string>
     private readonly List<string> _categories = new();
     private readonly Dictionary<string, object> _metadataValues = new(StringComparer.OrdinalIgnoreCase);
 
+    /// <summary>Gets or sets the content title.</summary>
     public string Title { get; set; } = string.Empty;
+    /// <summary>Gets or sets the content author.</summary>
     public string Author { get; set; } = string.Empty;
+    /// <summary>Gets or sets when the content was created.</summary>
     public DateTime DateCreated { get; set; }
+    /// <summary>Gets or sets when the content was last modified.</summary>
     public DateTime? LastModified { get; set; }
+    /// <summary>Gets or sets the rendered content.</summary>
     public string Content { get; set; } = string.Empty;
+    /// <summary>Gets or sets the original markdown source.</summary>
     public string? OriginalMarkdown { get; set; }
+    /// <summary>Gets or sets the content locale.</summary>
     public string Locale { get; set; } = string.Empty;
+    /// <summary>Gets or sets the provider content identifier.</summary>
     public string ContentId { get; set; } = string.Empty;
+    /// <summary>Gets or sets the content description.</summary>
     public string Description { get; set; } = string.Empty;
+    /// <summary>Gets or sets the URL-friendly slug.</summary>
     public string Slug { get; set; } = string.Empty;
+    /// <summary>Gets or sets the content URL.</summary>
     public string Url { get; set; } = string.Empty;
+    /// <summary>Gets or sets the source path.</summary>
     public string Path { get; set; } = string.Empty;
+    /// <summary>Gets or sets the featured image URL.</summary>
     public string? FeaturedImageUrl { get; set; }
+    /// <summary>Gets or sets whether the item is featured.</summary>
     public bool IsFeatured { get; set; }
+    /// <summary>Gets or sets whether the item is published.</summary>
     public bool IsPublished { get; set; }
+    /// <summary>Gets or sets the publication status.</summary>
     public ContentStatus Status { get; set; } = ContentStatus.Published;
+    /// <summary>Gets or sets the display order.</summary>
     public int OrderIndex { get; set; }
+    /// <summary>Gets or sets the provider revision identifier.</summary>
     public string Sha { get; set; } = string.Empty;
+    /// <summary>Gets or sets the containing directory.</summary>
     public DirectoryItem? Directory { get; set; }
 
     // Collections
+    /// <summary>Gets the content tags.</summary>
     public IReadOnlyList<string> Tags => _tags.AsReadOnly();
+    /// <summary>Gets the content categories.</summary>
     public IReadOnlyList<string> Categories => _categories.AsReadOnly();
+    /// <summary>Gets or sets the parsed front matter.</summary>
     public FrontMatter? Metadata { get; set; }
 
     // Value objects
     //public SeoMetadata Seo { get; set; } = new SeoMetadata();
 
     // Computed properties
+    /// <summary>Gets the estimated reading time in minutes.</summary>
     public int ReadTimeMinutes => CalculateReadTime();
+    /// <summary>Gets the publication date from metadata or the creation date.</summary>
     public DateTime PublishDate => GetMetadata("publish_date", DateCreated);
+    /// <summary>Initializes an empty content item.</summary>
     public ContentItem() { }
 
     /// <summary>
@@ -85,7 +110,8 @@ public class ContentItem : DomainEntity<string>
         return contentItem;
     }
 
-    // Modifier methods
+    /// <summary>Changes the title.</summary>
+    /// <param name="title">The new title.</param>
     public void SetTitle(string title)
     {
         if (string.IsNullOrWhiteSpace(title))
@@ -95,6 +121,9 @@ public class ContentItem : DomainEntity<string>
         LastModified = DateTime.UtcNow;
     }
 
+    /// <summary>Changes the rendered content and optional markdown source.</summary>
+    /// <param name="content">The rendered content.</param>
+    /// <param name="markdown">The original markdown source.</param>
     public void SetContent(string content, string? markdown = null)
     {
         Content = content ?? throw new ContentValidationException("Content", "Content cannot be null");
@@ -102,17 +131,23 @@ public class ContentItem : DomainEntity<string>
         LastModified = DateTime.UtcNow;
     }
 
+    /// <summary>Changes the original markdown source.</summary>
+    /// <param name="markdown">The markdown source.</param>
     public void SetOriginalMarkdown(string? markdown)
     {
         OriginalMarkdown = markdown;
     }
 
+    /// <summary>Changes the description.</summary>
+    /// <param name="description">The new description.</param>
     public void SetDescription(string description)
     {
         Description = description;
         LastModified = DateTime.UtcNow;
     }
 
+    /// <summary>Changes the URL-friendly slug.</summary>
+    /// <param name="slug">The new slug.</param>
     public void SetSlug(string slug)
     {
         if (string.IsNullOrWhiteSpace(slug))
@@ -126,11 +161,15 @@ public class ContentItem : DomainEntity<string>
         LastModified = DateTime.UtcNow;
     }
 
+    /// <summary>Changes the content URL.</summary>
+    /// <param name="url">The new URL.</param>
     public void SetUrl(string url)
     {
         Url = url;
     }
 
+    /// <summary>Changes the source path.</summary>
+    /// <param name="path">The new path.</param>
     public void SetPath(string path)
     {
         if (string.IsNullOrWhiteSpace(path))
@@ -139,61 +178,83 @@ public class ContentItem : DomainEntity<string>
         Path = path;
     }
 
+    /// <summary>Changes the featured image URL.</summary>
+    /// <param name="url">The image URL.</param>
     public void SetFeaturedImage(string? url)
     {
         FeaturedImageUrl = url;
         LastModified = DateTime.UtcNow;
     }
 
+    /// <summary>Changes whether the content is featured.</summary>
+    /// <param name="isFeatured">Whether the item is featured.</param>
     public void SetFeatured(bool isFeatured)
     {
         IsFeatured = isFeatured;
         LastModified = DateTime.UtcNow;
     }
 
+    /// <summary>Changes the author.</summary>
+    /// <param name="author">The new author.</param>
     public void SetAuthor(string author)
     {
         Author = author;
         LastModified = DateTime.UtcNow;
     }
 
+    /// <summary>Changes the locale.</summary>
+    /// <param name="locale">The new locale.</param>
     public void SetLocale(string locale)
     {
         Locale = locale;
         LastModified = DateTime.UtcNow;
     }
 
+    /// <summary>Changes the provider content identifier.</summary>
+    /// <param name="contentId">The provider identifier.</param>
     public void SetContentId(string contentId)
     {
         ContentId = contentId;
     }
 
+    /// <summary>Changes the creation date.</summary>
+    /// <param name="date">The new creation date.</param>
     public void SetCreatedDate(DateTime date)
     {
         DateCreated = date;
     }
 
+    /// <summary>Changes the last-modified date.</summary>
+    /// <param name="date">The new last-modified date.</param>
     public void SetLastModifiedDate(DateTime date)
     {
         LastModified = date;
     }
 
+    /// <summary>Changes the display order.</summary>
+    /// <param name="orderIndex">The new order.</param>
     public void SetOrderIndex(int orderIndex)
     {
         OrderIndex = orderIndex;
     }
 
+    /// <summary>Changes the containing directory.</summary>
+    /// <param name="directory">The containing directory.</param>
     public void SetDirectory(DirectoryItem? directory)
     {
         Directory = directory;
     }
 
+    /// <summary>Sets SEO metadata for the content item.</summary>
+    /// <param name="seo">The SEO metadata.</param>
     public void SetSeoMetadata(SeoMetadata seo)
     {
+        Metadata ??= new FrontMatter();
         Metadata.SeoProperties = seo ?? throw new ArgumentNullException(nameof(seo));
     }
 
-    // Collection modifiers
+    /// <summary>Adds a tag when it is not already present.</summary>
+    /// <param name="tag">The tag to add.</param>
     public void AddTag(string tag)
     {
         if (string.IsNullOrWhiteSpace(tag))
@@ -206,6 +267,8 @@ public class ContentItem : DomainEntity<string>
         }
     }
 
+    /// <summary>Removes a tag when it is present.</summary>
+    /// <param name="tag">The tag to remove.</param>
     public void RemoveTag(string tag)
     {
         if (string.IsNullOrWhiteSpace(tag))
@@ -219,6 +282,7 @@ public class ContentItem : DomainEntity<string>
         }
     }
 
+    /// <summary>Removes all tags.</summary>
     public void ClearTags()
     {
         if (_tags.Count > 0)
@@ -228,6 +292,8 @@ public class ContentItem : DomainEntity<string>
         }
     }
 
+    /// <summary>Adds a category when it is not already present.</summary>
+    /// <param name="category">The category to add.</param>
     public void AddCategory(string category)
     {
         if (string.IsNullOrWhiteSpace(category))
@@ -240,6 +306,8 @@ public class ContentItem : DomainEntity<string>
         }
     }
 
+    /// <summary>Removes a category when it is present.</summary>
+    /// <param name="category">The category to remove.</param>
     public void RemoveCategory(string category)
     {
         if (string.IsNullOrWhiteSpace(category))
@@ -253,6 +321,7 @@ public class ContentItem : DomainEntity<string>
         }
     }
 
+    /// <summary>Removes all categories.</summary>
     public void ClearCategories()
     {
         if (_categories.Count > 0)
@@ -262,7 +331,10 @@ public class ContentItem : DomainEntity<string>
         }
     }
 
-    // Metadata operations
+    /// <summary>Gets a typed metadata value.</summary>
+    /// <typeparam name="T">The metadata value type.</typeparam>
+    /// <param name="key">The metadata key.</param>
+    /// <param name="defaultValue">The value to return when the key is unavailable.</param>
     public T? GetMetadata<T>(string key, T? defaultValue = default)
     {
         if (_metadataValues.TryGetValue(key, out var value))
@@ -286,6 +358,10 @@ public class ContentItem : DomainEntity<string>
         return defaultValue;
     }
 
+    /// <summary>Sets or removes a metadata value.</summary>
+    /// <typeparam name="T">The metadata value type.</typeparam>
+    /// <param name="key">The metadata key.</param>
+    /// <param name="value">The value to store.</param>
     public void SetMetadata<T>(string key, T value)
     {
         if (string.IsNullOrWhiteSpace(key))
@@ -325,7 +401,7 @@ public class ContentItem : DomainEntity<string>
         return Math.Max(1, (int)Math.Ceiling(wordCount / (double)wordsPerMinute));
     }
 
-    // Create a deep clone of this content item
+    /// <summary>Creates a deep clone of this content item.</summary>
     public ContentItem Clone()
     {
         var clone = new ContentItem
@@ -350,7 +426,7 @@ public class ContentItem : DomainEntity<string>
             ProviderSpecificId = ProviderSpecificId,
             OrderIndex = OrderIndex,
             Directory = Directory,
-            Metadata = Metadata.Clone()
+            Metadata = Metadata?.Clone()
         };
 
         // Clone collections
@@ -382,7 +458,7 @@ public class ContentItem : DomainEntity<string>
         var markdown = new StringBuilder();
 
         // Add frontmatter
-        markdown.Append(Metadata.ToYaml());
+        markdown.Append(Metadata?.ToYaml());
 
         // Add content
         markdown.AppendLine(Content);
@@ -390,6 +466,7 @@ public class ContentItem : DomainEntity<string>
         return markdown.ToString();
     }
 
+    /// <summary>Raises a content-created domain event.</summary>
     public void RaiseCreatedEvent()
     {
         AddDomainEvent(new ContentCreatedEvent(
@@ -399,6 +476,7 @@ public class ContentItem : DomainEntity<string>
             ProviderId));
     }
 
+    /// <summary>Raises a content-updated domain event.</summary>
     public void RaiseUpdatedEvent()
     {
         AddDomainEvent(new ContentUpdatedEvent(
@@ -408,6 +486,7 @@ public class ContentItem : DomainEntity<string>
             ProviderId));
     }
 
+    /// <summary>Raises a content-deleted domain event.</summary>
     public void RaiseDeletedEvent()
     {
         AddDomainEvent(new ContentDeletedEvent(
@@ -416,6 +495,8 @@ public class ContentItem : DomainEntity<string>
             ProviderId));
     }
 
+    /// <summary>Raises a status-changed domain event.</summary>
+    /// <param name="previousStatus">The previous status.</param>
     public void RaiseStatusChangedEvent(ContentStatus previousStatus)
     {
         AddDomainEvent(new ContentStatusChangedEvent(
@@ -426,6 +507,8 @@ public class ContentItem : DomainEntity<string>
             ProviderId));
     }
 
+    /// <summary>Changes the publication status.</summary>
+    /// <param name="status">The new status.</param>
     public void SetStatus(ContentStatus status)
     {
         var previousStatus = Status;

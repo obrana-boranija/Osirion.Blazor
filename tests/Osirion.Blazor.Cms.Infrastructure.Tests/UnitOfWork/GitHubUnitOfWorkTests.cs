@@ -46,7 +46,8 @@ public class GitHubUnitOfWorkTests
             .GetField("_originalBranch", BindingFlags.NonPublic | BindingFlags.Instance);
         originalBranchField.ShouldNotBeNull();
 
-        var originalBranch = (string)originalBranchField.GetValue(_unitOfWork);
+        var originalBranch = originalBranchField.GetValue(_unitOfWork) as string
+            ?? throw new InvalidOperationException("The original branch field was not found.");
         originalBranch.ShouldBe("main");
     }
 
@@ -75,7 +76,8 @@ public class GitHubUnitOfWorkTests
             .GetField("_temporaryBranch", BindingFlags.NonPublic | BindingFlags.Instance);
         temporaryBranchField.ShouldNotBeNull();
 
-        var temporaryBranch = (string)temporaryBranchField.GetValue(_unitOfWork);
+        var temporaryBranch = temporaryBranchField.GetValue(_unitOfWork) as string
+            ?? throw new InvalidOperationException("The temporary branch field was not found.");
         temporaryBranch.ShouldNotBeNull();
         temporaryBranch.ShouldStartWith("temp-");
     }
@@ -112,8 +114,10 @@ public class GitHubUnitOfWorkTests
 
         // Get the temporary branch name
         var temporaryBranchField = typeof(GitHubUnitOfWork)
-            .GetField("_temporaryBranch", BindingFlags.NonPublic | BindingFlags.Instance);
-        var temporaryBranch = (string)temporaryBranchField.GetValue(_unitOfWork);
+            .GetField("_temporaryBranch", BindingFlags.NonPublic | BindingFlags.Instance)
+            ?? throw new InvalidOperationException("The temporary branch field was not found.");
+        var temporaryBranch = temporaryBranchField.GetValue(_unitOfWork) as string
+            ?? throw new InvalidOperationException("The temporary branch field was not found.");
 
         _apiClient.CreatePullRequestAsync(
                 Arg.Any<string>(),
@@ -136,7 +140,7 @@ public class GitHubUnitOfWorkTests
 
         _apiClient.Received(1).SetBranch("main");
 
-        temporaryBranch = (string)temporaryBranchField.GetValue(_unitOfWork);
+        temporaryBranch = temporaryBranchField.GetValue(_unitOfWork) as string;
         temporaryBranch.ShouldBeNull();
     }
 
@@ -153,8 +157,11 @@ public class GitHubUnitOfWorkTests
         await _unitOfWork.BeginTransactionAsync();
 
         var temporaryBranchField = typeof(GitHubUnitOfWork)
-            .GetField("_temporaryBranch", BindingFlags.NonPublic | BindingFlags.Instance);
-        temporaryBranchField.SetValue(_unitOfWork, null);
+            .GetField("_temporaryBranch", BindingFlags.NonPublic | BindingFlags.Instance)
+            ?? throw new InvalidOperationException("The temporary branch field was not found.");
+        var temporaryBranchFieldValue = temporaryBranchField
+            ?? throw new InvalidOperationException("The temporary branch field was not found.");
+        temporaryBranchFieldValue.SetValue(_unitOfWork, null);
 
         // Act & Assert
         await Should.ThrowAsync<InvalidOperationException>(async () =>
@@ -181,8 +188,9 @@ public class GitHubUnitOfWorkTests
         _apiClient.Received(1).SetBranch("main");
 
         var temporaryBranchField = typeof(GitHubUnitOfWork)
-            .GetField("_temporaryBranch", BindingFlags.NonPublic | BindingFlags.Instance);
-        var temporaryBranch = (string)temporaryBranchField.GetValue(_unitOfWork);
+            .GetField("_temporaryBranch", BindingFlags.NonPublic | BindingFlags.Instance)
+            ?? throw new InvalidOperationException("The temporary branch field was not found.");
+        var temporaryBranch = temporaryBranchField.GetValue(_unitOfWork) as string;
         temporaryBranch.ShouldBeNull();
     }
 

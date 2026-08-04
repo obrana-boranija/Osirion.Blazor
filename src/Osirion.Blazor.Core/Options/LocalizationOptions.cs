@@ -1,5 +1,6 @@
-﻿namespace Osirion.Blazor.Components;
+namespace Osirion.Blazor.Components;
 
+/// <summary>Configures localization defaults and supported locales.</summary>
 public class LocalizationOptions
 {
     /// <summary>

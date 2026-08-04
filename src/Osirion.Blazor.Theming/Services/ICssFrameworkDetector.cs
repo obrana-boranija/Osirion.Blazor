@@ -4,6 +4,7 @@ using Osirion.Blazor.Components;
 
 namespace Osirion.Blazor.Theming.Services;
 
+/// <summary>Defines the ICssFrameworkDetector API contract.</summary>
 public interface ICssFrameworkDetector
 {
     /// <summary>

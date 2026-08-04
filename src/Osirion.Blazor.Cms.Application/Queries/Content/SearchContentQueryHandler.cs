@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Services;
 
@@ -12,6 +12,7 @@ public class SearchContentQueryHandler : IQueryHandler<SearchContentQuery, IRead
     private readonly IContentProviderManager _providerManager;
     private readonly ILogger<SearchContentQueryHandler> _logger;
 
+    /// <summary>Performs the SearchContentQueryHandler operation.</summary>
     public SearchContentQueryHandler(
         IContentProviderManager providerManager,
         ILogger<SearchContentQueryHandler> logger)
@@ -20,6 +21,7 @@ public class SearchContentQueryHandler : IQueryHandler<SearchContentQuery, IRead
         _logger = logger;
     }
 
+    /// <summary>Performs the Handle operation asynchronously.</summary>
     public async Task<IReadOnlyList<ContentItem>> HandleAsync(SearchContentQuery query, CancellationToken cancellationToken = default)
     {
         _logger.LogDebug("Searching content with query criteria");

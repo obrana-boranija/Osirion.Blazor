@@ -13,6 +13,12 @@ namespace Osirion.Blazor.Components;
 /// </summary>
 public partial class OsirionContactForm : OsirionComponentBase
 {
+    /// <summary>Performs the OsirionContactForm operation.</summary>
+    public OsirionContactForm()
+    {
+        FormModel = new ContactFormModel();
+    }
+
     #region Form Parameters
 
     /// <summary>
@@ -205,7 +211,7 @@ public partial class OsirionContactForm : OsirionComponentBase
     public bool UseDarkTheme { get; set; } = false;
 
     [SupplyParameterFromForm]
-    private ContactFormModel FormModel { get; set; } = new();
+    private ContactFormModel FormModel { get; set; }
 
     [SupplyParameterFromQuery]
     private int? SubmissionResultValue { get; set; }

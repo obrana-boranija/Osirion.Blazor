@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Osirion.Blazor.Components;
@@ -189,7 +189,7 @@ public class ThemeService : IThemeService
                 httpContext.Response.Cookies.Append(ThemeCookieKey, value, options);
                 
                 // Remove legacy cookie if it exists
-                if (httpContext.Request.Cookies.ContainsKey("preferred-theme"))
+                if (httpContext.Request?.Cookies.ContainsKey("preferred-theme") == true)
                 {
                     httpContext.Response.Cookies.Delete("preferred-theme");
                 }

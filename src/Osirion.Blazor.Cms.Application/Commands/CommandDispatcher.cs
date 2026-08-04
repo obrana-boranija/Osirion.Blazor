@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Osirion.Blazor.Cms.Application.Commands;
 
@@ -9,11 +9,13 @@ public class CommandDispatcher : ICommandDispatcher
 {
     private readonly IServiceProvider _serviceProvider;
 
+    /// <summary>Performs the CommandDispatcher operation.</summary>
     public CommandDispatcher(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
     }
 
+    /// <summary>Dispatches a command to its registered handler.</summary>
     public async Task DispatchAsync<TCommand>(TCommand command, CancellationToken cancellationToken = default)
         where TCommand : ICommand
     {

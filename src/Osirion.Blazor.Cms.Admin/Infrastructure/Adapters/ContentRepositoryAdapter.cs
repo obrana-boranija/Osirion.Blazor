@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Admin.Infrastructure.Adapters;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Interfaces;
@@ -16,6 +16,7 @@ public class ContentRepositoryAdapter : IContentRepositoryAdapter
     private readonly IAuthenticationService _authService;
     private readonly ILogger<ContentRepositoryAdapter> _logger;
 
+    /// <summary>Initializes a content repository adapter.</summary>
     public ContentRepositoryAdapter(
         IGitHubAdminService gitHubService,
         IAuthenticationService authService,
@@ -35,6 +36,7 @@ public class ContentRepositoryAdapter : IContentRepositoryAdapter
         _authService.AuthenticationChanged += OnAuthenticationChanged;
     }
 
+    /// <summary>Gets repositories available to the authenticated account.</summary>
     public async Task<List<GitHubRepository>> GetRepositoriesAsync()
     {
         try
@@ -49,6 +51,7 @@ public class ContentRepositoryAdapter : IContentRepositoryAdapter
         }
     }
 
+    /// <summary>Gets branches for a repository.</summary>
     public async Task<List<GitHubBranch>> GetBranchesAsync(string repositoryName)
     {
         try
@@ -63,6 +66,7 @@ public class ContentRepositoryAdapter : IContentRepositoryAdapter
         }
     }
 
+    /// <summary>Gets repository contents at a path.</summary>
     public async Task<List<GitHubItem>> GetContentsAsync(string path)
     {
         try
@@ -77,6 +81,7 @@ public class ContentRepositoryAdapter : IContentRepositoryAdapter
         }
     }
 
+    /// <summary>Gets a blog post by path.</summary>
     public async Task<ContentItem> GetBlogPostAsync(string path)
     {
         try
@@ -91,6 +96,7 @@ public class ContentRepositoryAdapter : IContentRepositoryAdapter
         }
     }
 
+    /// <summary>Saves content to the repository.</summary>
     public async Task<GitHubFileCommitResponse> SaveContentAsync(string path, string content, string message, string? sha = null)
     {
         try
@@ -105,6 +111,7 @@ public class ContentRepositoryAdapter : IContentRepositoryAdapter
         }
     }
 
+    /// <summary>Deletes a file from the repository.</summary>
     public async Task<GitHubFileCommitResponse> DeleteFileAsync(string path, string message, string sha)
     {
         try
@@ -119,6 +126,7 @@ public class ContentRepositoryAdapter : IContentRepositoryAdapter
         }
     }
 
+    /// <summary>Creates a branch from a base branch.</summary>
     public async Task<GitHubBranch> CreateBranchAsync(string name, string baseBranch)
     {
         try
@@ -133,6 +141,7 @@ public class ContentRepositoryAdapter : IContentRepositoryAdapter
         }
     }
 
+    /// <summary>Creates a pull request.</summary>
     public async Task<GitHubPullRequest> CreatePullRequestAsync(string title, string body, string head, string baseBranch)
     {
         try
@@ -147,6 +156,7 @@ public class ContentRepositoryAdapter : IContentRepositoryAdapter
         }
     }
 
+    /// <summary>Searches repository files.</summary>
     public async Task<List<GitHubItem>> SearchFilesAsync(string query)
     {
         try
@@ -161,6 +171,7 @@ public class ContentRepositoryAdapter : IContentRepositoryAdapter
         }
     }
 
+    /// <summary>Sets the active repository.</summary>
     public void SetRepository(string repositoryName)
     {
         try
@@ -175,6 +186,7 @@ public class ContentRepositoryAdapter : IContentRepositoryAdapter
         }
     }
 
+    /// <summary>Sets the active branch.</summary>
     public void SetBranch(string branchName)
     {
         try
@@ -189,6 +201,7 @@ public class ContentRepositoryAdapter : IContentRepositoryAdapter
         }
     }
 
+    /// <summary>Validates and sets the access token.</summary>
     public async Task SetAccessTokenAsync(string token)
     {
         try

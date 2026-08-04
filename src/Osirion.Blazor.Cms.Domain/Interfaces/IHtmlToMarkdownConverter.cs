@@ -1,4 +1,4 @@
-﻿namespace Osirion.Blazor.Cms.Domain.Interfaces;
+namespace Osirion.Blazor.Cms.Domain.Interfaces;
 
 /// <summary>
 /// Responsible for converting HTML content to Markdown

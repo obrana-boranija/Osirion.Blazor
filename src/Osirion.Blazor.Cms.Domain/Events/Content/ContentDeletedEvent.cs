@@ -1,4 +1,4 @@
-﻿namespace Osirion.Blazor.Cms.Domain.Events;
+namespace Osirion.Blazor.Cms.Domain.Events;
 
 /// <summary>
 /// Event raised when a content item is deleted
@@ -20,6 +20,7 @@ public class ContentDeletedEvent : DomainEvent
     /// </summary>
     public string ProviderId { get; }
 
+    /// <summary>Gets or sets the ContentDeletedEvent value.</summary>
     public ContentDeletedEvent(string contentId, string path, string providerId)
     {
         ContentId = contentId ?? throw new ArgumentNullException(nameof(contentId));

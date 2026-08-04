@@ -104,15 +104,24 @@ public class ContentQueryTests
         Assert.NotSame(original.Categories, clone.Categories);
 
         // Verify collection contents
-        Assert.Equal(original.IncludeIds.Count, clone.IncludeIds.Count);
-        Assert.Equal(original.ExcludeIds.Count, clone.ExcludeIds.Count);
-        Assert.Equal(original.Tags.Count, clone.Tags.Count);
-        Assert.Equal(original.Categories.Count, clone.Categories.Count);
+        var originalIncludeIds = original.IncludeIds ?? throw new InvalidOperationException("Include IDs were not initialized.");
+        var cloneIncludeIds = clone.IncludeIds ?? throw new InvalidOperationException("Cloned include IDs were not initialized.");
+        var originalExcludeIds = original.ExcludeIds ?? throw new InvalidOperationException("Exclude IDs were not initialized.");
+        var cloneExcludeIds = clone.ExcludeIds ?? throw new InvalidOperationException("Cloned exclude IDs were not initialized.");
+        var originalTags = original.Tags ?? throw new InvalidOperationException("Tags were not initialized.");
+        var cloneTags = clone.Tags ?? throw new InvalidOperationException("Cloned tags were not initialized.");
+        var originalCategories = original.Categories ?? throw new InvalidOperationException("Categories were not initialized.");
+        var cloneCategories = clone.Categories ?? throw new InvalidOperationException("Cloned categories were not initialized.");
 
-        Assert.All(original.IncludeIds, id => Assert.Contains(id, clone.IncludeIds));
-        Assert.All(original.ExcludeIds, id => Assert.Contains(id, clone.ExcludeIds));
-        Assert.All(original.Tags, tag => Assert.Contains(tag, clone.Tags));
-        Assert.All(original.Categories, category => Assert.Contains(category, clone.Categories));
+        Assert.Equal(originalIncludeIds.Count, cloneIncludeIds.Count);
+        Assert.Equal(originalExcludeIds.Count, cloneExcludeIds.Count);
+        Assert.Equal(originalTags.Count, cloneTags.Count);
+        Assert.Equal(originalCategories.Count, cloneCategories.Count);
+
+        Assert.All(originalIncludeIds, id => Assert.Contains(id, cloneIncludeIds));
+        Assert.All(originalExcludeIds, id => Assert.Contains(id, cloneExcludeIds));
+        Assert.All(originalTags, tag => Assert.Contains(tag, cloneTags));
+        Assert.All(originalCategories, category => Assert.Contains(category, cloneCategories));
     }
 
     [Fact]
@@ -189,9 +198,11 @@ public class ContentQueryTests
         original.Tags.Add("tag4");
 
         // Assert
-        Assert.Equal(3, clone.IncludeIds.Count);
-        Assert.Equal(3, clone.Tags.Count);
-        Assert.DoesNotContain("id4", clone.IncludeIds);
-        Assert.DoesNotContain("tag4", clone.Tags);
+        var cloneIncludeIds = clone.IncludeIds ?? throw new InvalidOperationException("Cloned include IDs were not initialized.");
+        var cloneTags = clone.Tags ?? throw new InvalidOperationException("Cloned tags were not initialized.");
+        Assert.Equal(3, cloneIncludeIds.Count);
+        Assert.Equal(3, cloneTags.Count);
+        Assert.DoesNotContain("id4", cloneIncludeIds);
+        Assert.DoesNotContain("tag4", cloneTags);
     }
 }

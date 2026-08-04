@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Interfaces;
@@ -10,7 +10,9 @@ namespace Osirion.Blazor.Cms.Infrastructure.Builders;
 /// </summary>
 public abstract class CmsBuilderBase : ICmsBuilder
 {
+    /// <summary>Performs the Configuration operation.</summary>
     protected readonly IConfiguration Configuration;
+    /// <summary>Performs the Logger operation.</summary>
     protected readonly ILogger Logger;
 
     /// <inheritdoc/>

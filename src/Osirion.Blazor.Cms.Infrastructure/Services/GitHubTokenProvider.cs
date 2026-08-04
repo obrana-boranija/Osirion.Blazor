@@ -1,19 +1,22 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 
 namespace Osirion.Blazor.Cms.Infrastructure.Services;
 
+/// <summary>Defines the GitHubTokenProvider API contract.</summary>
 public class GitHubTokenProvider : IGitHubTokenProvider
 {
     private readonly HttpClient _httpClient;
     private readonly ILogger<GitHubTokenProvider> _logger;
 
+    /// <summary>Performs the GitHubTokenProvider operation.</summary>
     public GitHubTokenProvider(HttpClient httpClient, ILogger<GitHubTokenProvider> logger)
     {
         _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
+    /// <summary>Performs the ExchangeCodeForToken operation asynchronously.</summary>
     public async Task<string?> ExchangeCodeForTokenAsync(string code, string clientId, string clientSecret)
     {
         try

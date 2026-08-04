@@ -288,7 +288,7 @@ public class DirectoryItemTests
         var directory = CreateTestDirectory();
 
         // Act & Assert
-        Assert.Throws<ArgumentNullException>(() => directory.AddItem(null));
+        Assert.Throws<ArgumentNullException>(() => directory.AddItem(null!));
     }
 
     [Fact]
@@ -372,7 +372,7 @@ public class DirectoryItemTests
     {
         // Arrange
         var directory = CreateTestDirectory();
-        string key = null;
+        string key = null!;
         string value = "test-value";
 
         // Act & Assert
@@ -444,7 +444,7 @@ public class DirectoryItemTests
         var directory = CreateTestDirectory();
 
         // Act & Assert
-        Assert.False(directory.IsAncestorOf(null));
+        Assert.False(directory.IsAncestorOf(null!));
     }
 
     [Fact]

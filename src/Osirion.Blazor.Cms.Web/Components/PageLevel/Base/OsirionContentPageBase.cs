@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components;
 using Osirion.Blazor.Cms.Components;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Repositories;
@@ -382,6 +382,7 @@ public abstract partial class OsirionContentPageBase : OsirionComponentBase
 
     #endregion
 
+    /// <summary>Performs the ContentProviderManager operation.</summary>
     [Inject]
     protected IContentProviderManager ContentProviderManager { get; set; } = default!;
 

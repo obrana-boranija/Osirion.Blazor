@@ -1,10 +1,10 @@
-﻿namespace Osirion.Blazor.Cms.Domain.Common;
+namespace Osirion.Blazor.Cms.Domain.Common;
 
 /// <summary>
 /// Base class for domain entities with common behavior
 /// </summary>
 /// <typeparam name="TId">The type of entity identifier</typeparam>
-public abstract class DomainEntity<TId> : Entity<TId>
+public abstract class DomainEntity<TId> : Entity<TId> where TId : notnull
 {
     /// <summary>
     /// Gets or sets the provider identifier that created this entity

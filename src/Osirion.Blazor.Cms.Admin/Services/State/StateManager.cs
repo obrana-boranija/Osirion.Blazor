@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Admin.Core.Events;
 using Osirion.Blazor.Cms.Admin.Core.State;
@@ -21,6 +21,7 @@ public class StateManager : IDisposable
     private const string STATE_KEY = "osirion_cms_admin_state";
     private bool _isInitialized = false;
 
+    /// <summary>Performs the StateManager operation.</summary>
     public StateManager(
         CmsState state,
         IStateStorageService storageService,
@@ -38,10 +39,10 @@ public class StateManager : IDisposable
         _state.StateChanged += OnStateChanged;
 
         // Subscribe to events that should trigger state saving
-        _eventMediator.Subscribe<RepositorySelectedEvent>(_ => SaveStateAsync());
-        _eventMediator.Subscribe<BranchSelectedEvent>(_ => SaveStateAsync());
-        _eventMediator.Subscribe<ThemeChangedEvent>(_ => SaveStateAsync());
-        _eventMediator.Subscribe<StateResetRequestedEvent>(_ => ResetStateAsync());
+        _eventMediator.Subscribe<RepositorySelectedEvent>(eventData => { _ = SaveStateAsync(); });
+        _eventMediator.Subscribe<BranchSelectedEvent>(eventData => { _ = SaveStateAsync(); });
+        _eventMediator.Subscribe<ThemeChangedEvent>(eventData => { _ = SaveStateAsync(); });
+        _eventMediator.Subscribe<StateResetRequestedEvent>(eventData => { _ = ResetStateAsync(); });
     }
 
     /// <summary>

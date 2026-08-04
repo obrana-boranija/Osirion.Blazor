@@ -74,8 +74,11 @@ public partial class OsirionResponsiveShowcaseSection : ComponentBase
     /// </summary>
     public enum ViewportMode
     {
+        /// <summary>Represents a desktop viewport.</summary>
         Desktop,
+        /// <summary>Represents a tablet viewport.</summary>
         Tablet,
+        /// <summary>Represents a mobile viewport.</summary>
         Mobile
     }
 
@@ -182,9 +185,9 @@ public partial class OsirionResponsiveShowcaseSection : ComponentBase
     {
         return CurrentViewport switch
         {
-            ViewportMode.Desktop => "Desktop: 1200px × 600px+ (Large screens, laptops)",
-            ViewportMode.Tablet => "Tablet: 768px × 500px+ (iPad, tablets)",
-            ViewportMode.Mobile => "Mobile: 375px × 600px+ (iPhone, Android phones)",
+            ViewportMode.Desktop => "Desktop: 1200px ï¿½ 600px+ (Large screens, laptops)",
+            ViewportMode.Tablet => "Tablet: 768px ï¿½ 500px+ (iPad, tablets)",
+            ViewportMode.Mobile => "Mobile: 375px ï¿½ 600px+ (iPhone, Android phones)",
             _ => ""
         };
     }

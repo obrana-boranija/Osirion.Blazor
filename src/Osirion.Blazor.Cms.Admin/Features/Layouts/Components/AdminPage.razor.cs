@@ -4,44 +4,58 @@ using Osirion.Blazor.Cms.Admin.Shared.Components;
 
 namespace Osirion.Blazor.Cms.Admin.Features.Layouts.Components;
 
+/// <summary>Provides the standard page layout for CMS administration views.</summary>
 public partial class AdminPage : BaseComponent
 {
+    /// <summary>Gets or sets the page title.</summary>
     [Parameter]
     public string Title { get; set; } = "Osirion CMS";
 
+    /// <summary>Gets or sets the page subtitle.</summary>
     [Parameter]
     public string? Subtitle { get; set; }
 
+    /// <summary>Gets or sets the current page identifier.</summary>
     [Parameter]
     public string CurrentPage { get; set; } = string.Empty;
 
+    /// <summary>Gets or sets the current theme.</summary>
     [Parameter]
-    public string Theme { get; set; } = "light";
+    public new string Theme { get; set; } = "light";
 
+    /// <summary>Gets or sets the page content.</summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
+    /// <summary>Gets or sets the custom header content.</summary>
     [Parameter]
     public RenderFragment? HeaderTemplate { get; set; }
 
+    /// <summary>Gets or sets the custom navigation content.</summary>
     [Parameter]
     public RenderFragment? NavigationTemplate { get; set; }
 
+    /// <summary>Gets or sets the custom actions content.</summary>
     [Parameter]
     public RenderFragment? ActionsTemplate { get; set; }
 
+    /// <summary>Gets or sets the custom sidebar footer content.</summary>
     [Parameter]
     public RenderFragment? SidebarFooterTemplate { get; set; }
 
+    /// <summary>Gets or sets whether the login form is shown.</summary>
     [Parameter]
     public bool ShowLoginForm { get; set; } = false;
 
+    /// <summary>Gets or sets the sign-out callback.</summary>
     [Parameter]
     public EventCallback OnSignOut { get; set; }
 
+    /// <summary>Gets or sets the breadcrumb items.</summary>
     [Parameter]
     public List<BreadcrumbItem>? BreadcrumbItems { get; set; }
 
+    /// <summary>Initializes the component state and required services.</summary>
     protected override void OnInitialized()
     {
         AdminState.StateChanged += StateHasChanged;
@@ -78,6 +92,7 @@ public partial class AdminPage : BaseComponent
         return Task.CompletedTask;
     }
 
+    /// <summary>Releases subscriptions held by the page.</summary>
     public void Dispose()
     {
         // Unsubscribe from state changes when component is disposed

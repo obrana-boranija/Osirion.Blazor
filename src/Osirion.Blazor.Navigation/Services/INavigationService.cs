@@ -1,4 +1,4 @@
-﻿using Osirion.Blazor.Components;
+using Osirion.Blazor.Components;
 
 namespace Osirion.Blazor.Navigation.Services;
 

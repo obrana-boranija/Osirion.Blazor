@@ -1,4 +1,4 @@
-﻿using Osirion.Blazor.Cms.Domain.Entities;
+using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Models;
 using Osirion.Blazor.Cms.Domain.Models.GitHub;
 using System.Text.Json;
@@ -11,29 +11,44 @@ namespace Osirion.Blazor.Cms.Admin.Core.State;
 public class CmsState
 {
     // Current selections
+    /// <summary>Gets the selected repository.</summary>
     public GitHubRepository? SelectedRepository { get; protected set; }
+    /// <summary>Gets the selected branch.</summary>
     public GitHubBranch? SelectedBranch { get; protected set; }
+    /// <summary>Gets the selected item.</summary>
     public GitHubItem? SelectedItem { get; private set; }
+    /// <summary>Gets the current repository path.</summary>
     public string CurrentPath { get; protected set; } = string.Empty;
+    /// <summary>Gets the items at the current path.</summary>
     public List<GitHubItem> CurrentItems { get; private set; } = new();
+    /// <summary>Gets the current theme.</summary>
     public string CurrentTheme { get; private set; } = "light";
 
     // Available options
+    /// <summary>Gets the available repositories.</summary>
     public List<GitHubRepository> AvailableRepositories { get; private set; } = new();
+    /// <summary>Gets the available branches.</summary>
     public List<GitHubBranch> AvailableBranches { get; private set; } = new();
 
     // Editing state
+    /// <summary>Gets the post being edited.</summary>
     public ContentItem? EditingPost { get; private set; }
+    /// <summary>Gets whether a post is being edited.</summary>
     public bool IsEditing { get; private set; }
+    /// <summary>Gets whether a save is in progress.</summary>
     public bool IsSaving { get; private set; }
+    /// <summary>Gets whether a new file is being created.</summary>
     public bool IsCreatingNewFile { get; private set; }
 
     // Status and errors
+    /// <summary>Gets the current status message.</summary>
     public string? StatusMessage { get; private set; }
+    /// <summary>Gets the current error message.</summary>
     public string? ErrorMessage { get; private set; }
 
     // State change events
     private Action? _stateChanged;
+    /// <summary>Occurs when the state changes.</summary>
     public event Action StateChanged
     {
         add => _stateChanged += value;

@@ -1,4 +1,4 @@
-﻿using Osirion.Blazor.Cms.Domain.Common;
+using Osirion.Blazor.Cms.Domain.Common;
 using Osirion.Blazor.Cms.Domain.Events;
 using Osirion.Blazor.Cms.Domain.Exceptions;
 using Osirion.Blazor.Cms.Domain.ValueObjects;
@@ -18,21 +18,33 @@ public class DirectoryItem : DomainEntity<string>
     private readonly List<ContentItem> _items = new();
 
     // Core properties
+    /// <summary>Gets the directory path.</summary>
     public string Path { get; private set; } = string.Empty;
+    /// <summary>Gets the directory name.</summary>
     public string Name { get; private set; } = string.Empty;
+    /// <summary>Gets the directory description.</summary>
     public string Description { get; private set; } = string.Empty;
+    /// <summary>Gets the directory URL.</summary>
     public string Url { get; private set; } = string.Empty;
+    /// <summary>Gets the featured image URL.</summary>
     public string? FeaturedImageUrl { get; private set; }
+    /// <summary>Gets the directory locale.</summary>
     public string Locale { get; private set; } = string.Empty;
+    /// <summary>Gets the display order.</summary>
     public int Order { get; private set; }
+    /// <summary>Gets the parent directory.</summary>
     public DirectoryItem? Parent { get; private set; }
 
     // Collections and readonly properties
+    /// <summary>Gets the child directories.</summary>
     public IReadOnlyList<DirectoryItem> Children => _children.AsReadOnly();
+    /// <summary>Gets the content items in this directory.</summary>
     public IReadOnlyList<ContentItem> Items => _items.AsReadOnly();
+    /// <summary>Gets the directory metadata.</summary>
     public FrontMatter? Metadata { get; private set; }
 
     // Computed properties
+    /// <summary>Gets the directory depth in the hierarchy.</summary>
     public int Depth
     {
         get
@@ -51,7 +63,11 @@ public class DirectoryItem : DomainEntity<string>
     // Private constructor for initialization
     private DirectoryItem() { }
 
-    // Factory method
+    /// <summary>Creates a directory item.</summary>
+    /// <param name="id">The directory identifier.</param>
+    /// <param name="path">The directory path.</param>
+    /// <param name="name">The directory name.</param>
+    /// <param name="providerId">The content provider identifier.</param>
     public static DirectoryItem Create(string id, string path, string name, string providerId)
     {
         if (string.IsNullOrWhiteSpace(path))
@@ -69,7 +85,8 @@ public class DirectoryItem : DomainEntity<string>
         };
     }
 
-    // Modifier methods
+    /// <summary>Changes the directory name.</summary>
+    /// <param name="name">The new name.</param>
     public void SetName(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
@@ -78,21 +95,29 @@ public class DirectoryItem : DomainEntity<string>
         Name = name;
     }
 
+    /// <summary>Changes the directory description.</summary>
+    /// <param name="description">The new description.</param>
     public void SetDescription(string description)
     {
         Description = description;
     }
 
+    /// <summary>Changes the directory URL.</summary>
+    /// <param name="url">The new URL.</param>
     public void SetUrl(string url)
     {
         Url = url;
     }
 
+    /// <summary>Changes the featured image URL.</summary>
+    /// <param name="url">The image URL.</param>
     public void SetFeaturedImage(string? url)
     {
         FeaturedImageUrl = url;
     }
 
+    /// <summary>Changes the directory path.</summary>
+    /// <param name="path">The new path.</param>
     public void SetPath(string path)
     {
         if (string.IsNullOrWhiteSpace(path))
@@ -101,11 +126,15 @@ public class DirectoryItem : DomainEntity<string>
         Path = path;
     }
 
+    /// <summary>Changes the directory locale.</summary>
+    /// <param name="locale">The new locale.</param>
     public void SetLocale(string locale)
     {
         Locale = locale;
     }
 
+    /// <summary>Changes the display order.</summary>
+    /// <param name="order">The new order.</param>
     public void SetOrder(int order)
     {
         Order = order;
@@ -171,6 +200,8 @@ public class DirectoryItem : DomainEntity<string>
         }
     }
 
+    /// <summary>Removes a child directory.</summary>
+    /// <param name="child">The child directory to remove.</param>
     public void RemoveChild(DirectoryItem child)
     {
         if (child is not null && _children.Contains(child))
@@ -180,6 +211,7 @@ public class DirectoryItem : DomainEntity<string>
         }
     }
 
+    /// <summary>Removes all child directories.</summary>
     public void ClearChildren()
     {
         foreach (var child in _children.ToList())
@@ -188,7 +220,8 @@ public class DirectoryItem : DomainEntity<string>
         }
     }
 
-    // Content item operations
+    /// <summary>Adds a content item to this directory.</summary>
+    /// <param name="item">The content item to add.</param>
     public void AddItem(ContentItem item)
     {
         if (item is null)
@@ -201,6 +234,8 @@ public class DirectoryItem : DomainEntity<string>
         }
     }
 
+    /// <summary>Removes a content item from this directory.</summary>
+    /// <param name="item">The content item to remove.</param>
     public void RemoveItem(ContentItem item)
     {
         if (item is not null && _items.Contains(item))
@@ -210,6 +245,7 @@ public class DirectoryItem : DomainEntity<string>
         }
     }
 
+    /// <summary>Removes all content items.</summary>
     public void ClearItems()
     {
         foreach (var item in _items.ToList())
@@ -218,7 +254,10 @@ public class DirectoryItem : DomainEntity<string>
         }
     }
 
-    // Metadata operations
+    /// <summary>Gets a typed metadata value.</summary>
+    /// <typeparam name="T">The metadata value type.</typeparam>
+    /// <param name="key">The metadata key.</param>
+    /// <param name="defaultValue">The fallback value.</param>
     public T? GetMetadata<T>(string key, T? defaultValue = default)
     {
         if (_metadataValues.TryGetValue(key, out var value))
@@ -242,11 +281,17 @@ public class DirectoryItem : DomainEntity<string>
         return defaultValue;
     }
 
+    /// <summary>Sets the directory front matter.</summary>
+    /// <param name="metadata">The metadata to assign.</param>
     public void SetMetadata(FrontMatter? metadata)
     {
         Metadata = metadata;
     }
 
+    /// <summary>Sets or removes a metadata value.</summary>
+    /// <typeparam name="T">The metadata value type.</typeparam>
+    /// <param name="key">The metadata key.</param>
+    /// <param name="value">The value to store.</param>
     public void SetMetadata<T>(string key, T value)
     {
         if (string.IsNullOrWhiteSpace(key))
@@ -363,6 +408,7 @@ public class DirectoryItem : DomainEntity<string>
         return clone;
     }
 
+    /// <summary>Performs the RaiseCreatedEvent operation.</summary>
     public void RaiseCreatedEvent()
     {
         AddDomainEvent(new DirectoryCreatedEvent(
@@ -372,6 +418,7 @@ public class DirectoryItem : DomainEntity<string>
             ProviderId));
     }
 
+    /// <summary>Performs the RaiseUpdatedEvent operation.</summary>
     public void RaiseUpdatedEvent()
     {
         AddDomainEvent(new DirectoryUpdatedEvent(
@@ -381,6 +428,7 @@ public class DirectoryItem : DomainEntity<string>
             ProviderId));
     }
 
+    /// <summary>Gets or sets the RaiseDeletedEvent value.</summary>
     public void RaiseDeletedEvent(bool recursive)
     {
         AddDomainEvent(new DirectoryDeletedEvent(

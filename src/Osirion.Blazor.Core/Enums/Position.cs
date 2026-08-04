@@ -1,4 +1,4 @@
-﻿namespace Osirion.Blazor.Components;
+namespace Osirion.Blazor.Components;
 
 /// <summary>
 /// Defines position locations for UI elements

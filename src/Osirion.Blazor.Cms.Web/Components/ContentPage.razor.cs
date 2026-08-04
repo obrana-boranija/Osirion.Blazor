@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 
 namespace Osirion.Blazor.Cms.Web.Components;
 
+/// <summary>Defines the ContentPage type.</summary>
 public partial class ContentPage
 {
     [Inject]
@@ -280,7 +281,7 @@ public partial class ContentPage
         try
         {
             var provider = ContentProviderManager.GetDefaultProvider();
-            if (provider is not null)
+            if (provider is not null && !string.IsNullOrWhiteSpace(Path))
             {
                 // Clean up the path if needed
                 var searchPath = Path;
@@ -353,7 +354,7 @@ public partial class ContentPage
                 SortDirection = SortDirection.Descending
             };
 
-            var items = await provider.GetItemsByQueryAsync(query);
+            var items = await provider.GetItemsByQueryAsync(query) ?? [];
 
             // Find the current item's index
             int currentIndex = -1;
@@ -403,7 +404,7 @@ public partial class ContentPage
                 SortDirection = SortDirection.Descending
             };
 
-            var allItems = await provider.GetItemsByQueryAsync(query);
+            var allItems = await provider.GetItemsByQueryAsync(query) ?? [];
 
             // Find related items (excluding the current item)
             var related = allItems

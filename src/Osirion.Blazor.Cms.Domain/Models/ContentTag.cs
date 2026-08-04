@@ -1,4 +1,4 @@
-﻿using Osirion.Blazor.Cms.Domain.Common;
+using Osirion.Blazor.Cms.Domain.Common;
 
 namespace Osirion.Blazor.Cms.Domain.Repositories;
 
@@ -133,6 +133,7 @@ public class ContentTag : ValueObject
         };
     }
 
+    /// <summary>Gets or sets the GetEqualityComponents value.</summary>
     protected override IEnumerable<object> GetEqualityComponents()
     {
         yield return Name;

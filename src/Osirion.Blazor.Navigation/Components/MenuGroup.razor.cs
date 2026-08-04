@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components;
 
 namespace Osirion.Blazor.Navigation.Components;
 
+/// <summary>Defines the MenuGroup type.</summary>
 public partial class MenuGroup
 {
     /// <summary>
@@ -51,6 +52,7 @@ public partial class MenuGroup
     /// </summary>
     protected string ItemsId => $"{GroupId}-items";
 
+    /// <summary>Initializes the component state and required services.</summary>
     protected override void OnInitialized()
     {
         base.OnInitialized();

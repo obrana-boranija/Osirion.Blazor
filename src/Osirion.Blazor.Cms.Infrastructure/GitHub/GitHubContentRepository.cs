@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Exceptions;
@@ -23,6 +23,7 @@ public class GitHubContentRepository : BaseContentRepository
     private readonly GitHubOptions _options;
     private string _lastKnownCommitSha = string.Empty;
 
+    /// <summary>Performs the GitHubContentRepository operation.</summary>
     public GitHubContentRepository(
         IGitHubApiClientFactory apiClientFactory,
         IMarkdownProcessor markdownProcessor,
@@ -84,7 +85,7 @@ public class GitHubContentRepository : BaseContentRepository
             // Update last known commit SHA if available
             try
             {
-                var branches = await _apiClient.GetBranchesAsync(cancellationToken);
+                var branches = await _apiClient.GetBranchesAsync(cancellationToken) ?? [];
                 var branch = branches.FirstOrDefault(b => b.Name == _options.Branch);
                 if (branch is not null)
                 {
@@ -98,7 +99,7 @@ public class GitHubContentRepository : BaseContentRepository
             }
 
             // Process contents recursively
-            await ProcessContentsRecursivelyAsync(contents, cache, cancellationToken);
+            await ProcessContentsRecursivelyAsync(contents ?? [], cache, cancellationToken);
 
             Logger.LogInformation("Loaded {Count} content items from GitHub repository {Owner}/{Repository}",
                 cache.Count, _options.Owner, _options.Repository);
@@ -141,6 +142,11 @@ public class GitHubContentRepository : BaseContentRepository
                 commitMessage,
                 sha,
                 cancellationToken);
+
+            if (response is null)
+            {
+                throw new ContentProviderException("GitHub did not return a commit response.", ProviderId);
+            }
 
             if (!response.Success)
             {
@@ -240,7 +246,7 @@ public class GitHubContentRepository : BaseContentRepository
             }
             else if (item.IsDirectory)
             {
-                var subContents = await _apiClient.GetRepositoryContentsAsync(item.Path, cancellationToken);
+                var subContents = await _apiClient.GetRepositoryContentsAsync(item.Path, cancellationToken) ?? [];
                 await ProcessContentsRecursivelyAsync(subContents, contentItems, cancellationToken);
             }
         }

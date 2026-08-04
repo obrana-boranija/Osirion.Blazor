@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Models;
 using Osirion.Blazor.Cms.Domain.ValueObjects;
@@ -6,8 +6,10 @@ using ValidationResult = System.ComponentModel.DataAnnotations.ValidationResult;
 
 namespace Osirion.Blazor.Cms.Admin.Common.Validators;
 
+    /// <summary>Defines the public member type.</summary>
 public static class ContentValidators
 {
+    /// <summary>Gets or sets the ValidateFileName value.</summary>
     public static ValidationResult? ValidateFileName(string fileName, ValidationContext context)
     {
         if (string.IsNullOrWhiteSpace(fileName))
@@ -30,6 +32,7 @@ public static class ContentValidators
         return ValidationResult.Success;
     }
 
+    /// <summary>Gets or sets the ValidateBranchName value.</summary>
     public static ValidationResult? ValidateBranchName(string branchName, ValidationContext context)
     {
         if (string.IsNullOrWhiteSpace(branchName))
@@ -55,6 +58,7 @@ public static class ContentValidators
         return ValidationResult.Success;
     }
 
+    /// <summary>Performs the ValidateFrontMatter operation.</summary>
     public static ValidationResult? ValidateFrontMatter(FrontMatter frontMatter, ValidationContext context)
     {
         if (string.IsNullOrWhiteSpace(frontMatter.Title))
@@ -65,6 +69,7 @@ public static class ContentValidators
         return ValidationResult.Success;
     }
 
+    /// <summary>Performs the ValidateBlogPost operation.</summary>
     public static ValidationResult? ValidateBlogPost(ContentItem blogPost, ValidationContext context)
     {
         if (string.IsNullOrWhiteSpace(blogPost.Content))
@@ -72,6 +77,8 @@ public static class ContentValidators
             return new ValidationResult("Content is required", new[] { nameof(blogPost.Content) });
         }
 
-        return ValidateFrontMatter(blogPost.Metadata, context);
+        return blogPost.Metadata is { } frontMatter
+            ? ValidateFrontMatter(frontMatter, context)
+            : new ValidationResult("Front matter is required", new[] { nameof(blogPost.Metadata) });
     }
 }

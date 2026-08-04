@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.0.11205.157 d18.0
+VisualStudioVersion = 18.0.11205.157
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 EndProject
@@ -27,7 +27,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{A0B979F7-9
 		docs\COOKIE_CONSENT.md = docs\COOKIE_CONSENT.md
 		docs\EXAMPLES.md = docs\EXAMPLES.md
 		docs\GETTING_STARTED.md = docs\GETTING_STARTED.md
-		GITHUB_CMS.md = GITHUB_CMS.md
 		docs\GITHUB_CMS.md = docs\GITHUB_CMS.md
 		docs\HERO_SECTION.md = docs\HERO_SECTION.md
 		docs\INFINITE_LOGO_CAROUSEL.md = docs\INFINITE_LOGO_CAROUSEL.md

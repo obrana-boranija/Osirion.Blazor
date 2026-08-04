@@ -153,7 +153,7 @@ public class MetadataValueObjectTests
         var objWithNewMetadata = obj.WithMetadata("Key2", "Value2");
 
         // Assert
-        Assert.Equal(1, obj.Metadata.Count); // Original should be unchanged
+        Assert.Single(obj.Metadata); // Original should be unchanged
         Assert.Equal(2, objWithNewMetadata.Metadata.Count);
         Assert.Equal("Value1", objWithNewMetadata.Metadata["Key1"]);
         Assert.Equal("Value2", objWithNewMetadata.Metadata["Key2"]);

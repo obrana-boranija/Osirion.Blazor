@@ -1,4 +1,4 @@
-﻿namespace Osirion.Blazor.Cms.Domain.Events;
+namespace Osirion.Blazor.Cms.Domain.Events;
 
 /// <summary>
 /// Event raised when a directory is created
@@ -25,6 +25,7 @@ public class DirectoryCreatedEvent : DomainEvent
     /// </summary>
     public string ProviderId { get; }
 
+    /// <summary>Gets or sets the DirectoryCreatedEvent value.</summary>
     public DirectoryCreatedEvent(string directoryId, string name, string path, string providerId)
     {
         DirectoryId = directoryId ?? throw new ArgumentNullException(nameof(directoryId));

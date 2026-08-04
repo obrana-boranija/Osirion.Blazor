@@ -1,4 +1,4 @@
-﻿using Osirion.Blazor.Cms.Domain.Options;
+using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Domain.Services;
 using Microsoft.Extensions.DependencyInjection;
 

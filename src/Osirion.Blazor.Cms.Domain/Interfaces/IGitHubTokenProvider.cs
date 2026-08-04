@@ -1,4 +1,4 @@
-﻿namespace Osirion.Blazor.Cms.Domain.Interfaces;
+namespace Osirion.Blazor.Cms.Domain.Interfaces;
 
 /// <summary>
 /// Provides functionality to exchange GitHub OAuth code for an access token

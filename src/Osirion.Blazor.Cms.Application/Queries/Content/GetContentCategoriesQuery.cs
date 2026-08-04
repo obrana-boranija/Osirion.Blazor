@@ -1,4 +1,4 @@
-﻿using Osirion.Blazor.Cms.Domain.Repositories;
+using Osirion.Blazor.Cms.Domain.Repositories;
 
 namespace Osirion.Blazor.Cms.Application.Queries.Content;
 

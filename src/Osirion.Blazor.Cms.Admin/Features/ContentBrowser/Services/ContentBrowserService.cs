@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Admin.Core.Events;
 using Osirion.Blazor.Cms.Admin.Infrastructure.Adapters;
 using Osirion.Blazor.Cms.Admin.Services.Events;
@@ -8,12 +8,14 @@ using Osirion.Blazor.Cms.Domain.Models.GitHub;
 
 namespace Osirion.Blazor.Cms.Admin.Features.ContentBrowser.Services;
 
+/// <summary>Defines the ContentBrowserService API contract.</summary>
 public class ContentBrowserService
 {
     private readonly IContentRepositoryAdapter _repositoryAdapter;
     private readonly CmsEventMediator _eventMediator;
     private readonly ILogger<ContentBrowserService> _logger;
 
+    /// <summary>Performs the ContentBrowserService operation.</summary>
     public ContentBrowserService(
         IContentRepositoryAdapter repositoryAdapter,
         CmsEventMediator eventMediator,
@@ -24,6 +26,7 @@ public class ContentBrowserService
         _logger = logger;
     }
 
+    /// <summary>Performs the GetContents operation asynchronously.</summary>
     public async Task<List<GitHubItem>> GetContentsAsync(string path)
     {
         try
@@ -41,6 +44,7 @@ public class ContentBrowserService
         }
     }
 
+    /// <summary>Performs the GetBlogPost operation asynchronously.</summary>
     public async Task<ContentItem> GetBlogPostAsync(string path)
     {
         try
@@ -58,6 +62,7 @@ public class ContentBrowserService
         }
     }
 
+    /// <summary>Performs the DeleteFile operation asynchronously.</summary>
     public async Task<GitHubFileCommitResponse> DeleteFileAsync(string path, string sha)
     {
         try
@@ -83,6 +88,7 @@ public class ContentBrowserService
         }
     }
 
+    /// <summary>Performs the SearchFiles operation asynchronously.</summary>
     public async Task<List<GitHubItem>> SearchFilesAsync(string query)
     {
         try
@@ -103,6 +109,7 @@ public class ContentBrowserService
         }
     }
 
+    /// <summary>Performs the GetDirectoryTree operation asynchronously.</summary>
     public async Task<List<GitHubItem>> GetDirectoryTreeAsync(string path)
     {
         try

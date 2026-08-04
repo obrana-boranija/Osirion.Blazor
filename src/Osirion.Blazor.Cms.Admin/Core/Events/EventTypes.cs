@@ -1,4 +1,4 @@
-﻿using Osirion.Blazor.Cms.Domain.Models.GitHub;
+using Osirion.Blazor.Cms.Domain.Models.GitHub;
 
 namespace Osirion.Blazor.Cms.Admin.Core.Events;
 
@@ -69,10 +69,18 @@ public record ThemeChangedEvent(string Theme) : ICmsEvent;
 /// <param name="Exception"></param>
 public record ErrorOccurredEvent(string Message, Exception? Exception = null) : ICmsEvent;
 
-/// <summary>
-/// Event for displaying status notifications in the CMS
-/// </summary>
-public enum StatusType { Info, Success, Warning, Error }
+/// <summary>Identifies the severity of a CMS status notification.</summary>
+public enum StatusType
+{
+	/// <summary>Informational notification.</summary>
+	Info,
+	/// <summary>Successful operation notification.</summary>
+	Success,
+	/// <summary>Warning notification.</summary>
+	Warning,
+	/// <summary>Error notification.</summary>
+	Error
+}
 
 /// <summary>
 /// Event for displaying status notifications in the CMS

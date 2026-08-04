@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Options;
 
 
@@ -82,6 +82,7 @@ public abstract partial class OsirionComponentBase : ComponentBase
 #endif
     }
 
+    /// <summary>Creates a render fragment that loads a client-side script.</summary>
     protected RenderFragment LoadScript(string src) => builder =>
     {
 #if NET9_0_OR_GREATER

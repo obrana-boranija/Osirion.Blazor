@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Domain.Entities;
@@ -14,6 +14,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.Providers;
 /// </summary>
 public abstract class ContentProviderBase : IContentProvider, IDisposable
 {
+    /// <summary>Performs the Logger operation.</summary>
     protected readonly ILogger Logger;
     private bool _disposed;
 
@@ -54,7 +55,7 @@ public abstract class ContentProviderBase : IContentProvider, IDisposable
     public abstract Task<ContentItem?> GetItemByUrlAsync(string url, CancellationToken cancellationToken = default);
 
     /// <inheritdoc/>
-    public abstract Task<IReadOnlyList<ContentItem>> GetItemsByQueryAsync(ContentQuery query, CancellationToken cancellationToken = default);
+    public abstract Task<IReadOnlyList<ContentItem>?> GetItemsByQueryAsync(ContentQuery query, CancellationToken cancellationToken = default);
 
     /// <inheritdoc/>
     public abstract Task<IReadOnlyList<ContentCategory>> GetCategoriesAsync(CancellationToken cancellationToken = default);

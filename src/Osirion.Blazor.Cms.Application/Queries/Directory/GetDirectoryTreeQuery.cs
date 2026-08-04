@@ -1,4 +1,4 @@
-﻿using Osirion.Blazor.Cms.Domain.Entities;
+using Osirion.Blazor.Cms.Domain.Entities;
 
 namespace Osirion.Blazor.Cms.Application.Queries.Directory;
 

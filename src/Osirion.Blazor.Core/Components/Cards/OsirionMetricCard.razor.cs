@@ -35,6 +35,7 @@ public partial class OsirionMetricCard : OsirionComponentBase
     private string Prefix { get; set; } = string.Empty;
     private string Suffix { get; set; } = string.Empty;
 
+    /// <inheritdoc />
     protected override void OnParametersSet()
     {
         var value = Value.Trim();

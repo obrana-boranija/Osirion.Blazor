@@ -1,4 +1,4 @@
-﻿namespace Osirion.Blazor.Cms.Domain.Extensions;
+namespace Osirion.Blazor.Cms.Domain.Extensions;
 
 /// <summary>
 /// Extension methods for domain entities

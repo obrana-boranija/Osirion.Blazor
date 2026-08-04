@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Events;
 
@@ -12,6 +12,7 @@ public class DomainEventDispatcher : IDomainEventDispatcher
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<DomainEventDispatcher> _logger;
 
+    /// <summary>Performs the DomainEventDispatcher operation.</summary>
     public DomainEventDispatcher(
         IServiceProvider serviceProvider,
         ILogger<DomainEventDispatcher> logger)
@@ -20,6 +21,7 @@ public class DomainEventDispatcher : IDomainEventDispatcher
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
+    /// <summary>Dispatches a domain event to its registered handler.</summary>
     public async Task DispatchAsync<T>(T domainEvent) where T : IDomainEvent
     {
         if (domainEvent is null)

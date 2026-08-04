@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 
 namespace Osirion.Blazor.Cms.Admin.Core.State;
@@ -14,6 +14,7 @@ public class StatePersistenceService : IDisposable
     private const string STATE_KEY = "osirion_cms_admin_state";
     private bool _isInitialized = false;
 
+    /// <summary>Performs the StatePersistenceService operation.</summary>
     public StatePersistenceService(
         CmsState state,
         IStateStorageService storageService,
@@ -27,6 +28,7 @@ public class StatePersistenceService : IDisposable
         _state.StateChanged += OnStateChanged;
     }
 
+    /// <summary>Performs the Initialize operation asynchronously.</summary>
     public async Task InitializeAsync()
     {
         if (_isInitialized)
@@ -81,6 +83,7 @@ public class StatePersistenceService : IDisposable
         }
     }
 
+    /// <summary>Performs the ResetState operation asynchronously.</summary>
     public async Task ResetStateAsync()
     {
         try
@@ -99,6 +102,7 @@ public class StatePersistenceService : IDisposable
         }
     }
 
+    /// <summary>Releases resources held by the component or service.</summary>
     public void Dispose()
     {
         _state.StateChanged -= OnStateChanged;

@@ -1,4 +1,4 @@
-﻿namespace Osirion.Blazor.Components;
+namespace Osirion.Blazor.Components;
 
 /// <summary>
 /// Represents a segment in a breadcrumb path

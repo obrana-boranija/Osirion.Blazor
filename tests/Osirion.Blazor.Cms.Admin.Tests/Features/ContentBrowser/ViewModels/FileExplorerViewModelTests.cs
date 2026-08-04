@@ -353,7 +353,7 @@ public class FileExplorerViewModelTests
         await _browserService.Received(1).DeleteFileAsync(fileItem.Path, fileItem.Sha);
         await _browserService.Received(1).GetContentsAsync(path);
 
-        _state.StatusMessage.ShouldContain("deleted successfully");
+        _state.StatusMessage!.ShouldContain("deleted successfully");
     }
 
     [Fact]

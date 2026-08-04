@@ -6,23 +6,29 @@ using Osirion.Blazor.Cms.Domain.Models;
 
 namespace Osirion.Blazor.Cms.Admin.Features.ContentEditor.Components;
 
+    /// <summary>Defines the public member type.</summary>
 public partial class ContentEditor : IDisposable
 {
+    /// <summary>Performs the ViewModel operation.</summary>
     [Inject]
     public ContentEditorViewModel ViewModel { get; set; } = null!;
 
+    /// <summary>Gets or sets the IsPreviewVisible value.</summary>
     [Parameter]
     public bool IsPreviewVisible { get; set; } = true;
 
+    /// <summary>Gets or sets the OnSaveComplete value.</summary>
     [Parameter]
     public EventCallback<ContentItem> OnSaveComplete { get; set; }
 
+    /// <summary>Gets or sets the OnDiscard value.</summary>
     [Parameter]
     public EventCallback OnDiscard { get; set; }
 
     private string ActiveTab { get; set; } = "content";
     private bool IsDirty { get; set; } = false;
 
+    /// <summary>Initializes the component state and required services.</summary>
     protected override void OnInitialized()
     {
         // Subscribe to changes from ViewModel
@@ -40,6 +46,7 @@ public partial class ContentEditor : IDisposable
         EventSubscriber.Subscribe<CreateNewContentEvent>(OnCreateNewContent);
     }
 
+    /// <summary>Releases resources held by the component or service.</summary>
     public void Dispose()
     {
         ViewModel.StateChanged -= StateHasChanged;

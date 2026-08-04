@@ -1,4 +1,4 @@
-﻿using Markdig;
+using Markdig;
 using Markdig.Renderers;
 using Markdig.Syntax;
 
@@ -11,6 +11,7 @@ public class MarkdigRenderer : IMarkdownRenderer
 {
     private readonly MarkdownPipeline _defaultPipeline;
 
+    /// <summary>Performs the MarkdigRenderer operation.</summary>
     public MarkdigRenderer()
     {
         _defaultPipeline = new MarkdownPipelineBuilder()
@@ -19,11 +20,17 @@ public class MarkdigRenderer : IMarkdownRenderer
             .Build();
     }
 
+    /// <summary>Performs the ObjectRenderers operation.</summary>
     public ObjectRendererCollection ObjectRenderers => throw new NotImplementedException();
 
-    public event Action<IMarkdownRenderer, MarkdownObject> ObjectWriteBefore;
-    public event Action<IMarkdownRenderer, MarkdownObject> ObjectWriteAfter;
+#pragma warning disable CS0067 // Events are required by the renderer contract and used when object rendering is implemented.
+    /// <summary>Performs the ObjectWriteBefore operation.</summary>
+    public event Action<IMarkdownRenderer, MarkdownObject> ObjectWriteBefore = delegate { };
+    /// <summary>Performs the ObjectWriteAfter operation.</summary>
+    public event Action<IMarkdownRenderer, MarkdownObject> ObjectWriteAfter = delegate { };
+#pragma warning restore CS0067
 
+    /// <summary>Performs the Render operation.</summary>
     public object Render(MarkdownObject markdownObject)
     {
         throw new NotImplementedException();

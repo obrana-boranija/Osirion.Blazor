@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace Osirion.Blazor.Cms.Infrastructure.Caching
 {
@@ -17,6 +17,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.Caching
         private Dictionary<TKey, TEntity>? _cache;
         private DateTime _cacheExpiration = DateTime.MinValue;
 
+        /// <summary>Performs the RepositoryCacheManager operation.</summary>
         public RepositoryCacheManager(
             ILogger logger,
             TimeSpan cacheDuration,

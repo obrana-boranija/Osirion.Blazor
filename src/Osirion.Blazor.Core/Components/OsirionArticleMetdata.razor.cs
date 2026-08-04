@@ -3,6 +3,7 @@ using System.Globalization;
 
 namespace Osirion.Blazor.Components;
 
+/// <summary>Displays author and publication metadata for an article.</summary>
 public partial class OsirionArticleMetdata
 {
     /// <summary>

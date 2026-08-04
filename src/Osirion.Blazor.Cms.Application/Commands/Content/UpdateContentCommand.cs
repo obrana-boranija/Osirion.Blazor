@@ -1,4 +1,4 @@
-﻿namespace Osirion.Blazor.Cms.Application.Commands.Content;
+namespace Osirion.Blazor.Cms.Application.Commands.Content;
 
 /// <summary>
 /// Command to update an existing content item

@@ -1,4 +1,4 @@
-﻿namespace Osirion.Blazor.Cms.Domain.Interfaces;
+namespace Osirion.Blazor.Cms.Domain.Interfaces;
 
 /// <summary>
 /// Sets a default provider during application startup

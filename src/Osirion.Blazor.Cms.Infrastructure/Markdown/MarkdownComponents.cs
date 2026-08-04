@@ -1,4 +1,4 @@
-﻿using Markdig;
+using Markdig;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using System.Text.RegularExpressions;
 
@@ -11,6 +11,7 @@ public class DefaultMarkdownRenderer : IMarkdownRendererService
 {
     private readonly MarkdownPipeline _defaultPipeline;
 
+    /// <summary>Performs the DefaultMarkdownRenderer operation.</summary>
     public DefaultMarkdownRenderer()
     {
         _defaultPipeline = new MarkdownPipelineBuilder()

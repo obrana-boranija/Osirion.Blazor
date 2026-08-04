@@ -29,14 +29,14 @@ namespace Osirion.Blazor.Cms.Infrastructure.Tests.Decorators
 
             _cache.GetOrCreateAsync(
                 Arg.Is<string>(s => s.Contains(id.ToString())),
-                Arg.Any<Func<CancellationToken, Task<ContentItem>>>())
+                Arg.Any<Func<CancellationToken, Task<ContentItem>>>())!
                 .Returns(callInfo =>
                 {
                     var factory = callInfo.Arg<Func<CancellationToken, Task<ContentItem>>>(); 
                     return factory(CancellationToken.None);
                 });
 
-            _inner.GetByIdAsync(id).Returns(contentItem);
+            _inner.GetByIdAsync(id)!.Returns(Task.FromResult<ContentItem>(contentItem));
 
             // Act
             var result = await _decorator.GetByIdAsync(id);
@@ -61,14 +61,14 @@ namespace Osirion.Blazor.Cms.Infrastructure.Tests.Decorators
 
             _cache.GetOrCreateAsync(
                 Arg.Is<string>(s => s.Contains("Content:All")),
-                Arg.Any<Func<CancellationToken, Task<IEnumerable<ContentItem>>>>())
+                Arg.Any<Func<CancellationToken, Task<IEnumerable<ContentItem>>>>())!
                 .Returns(callInfo =>
                 {
                     var factory = callInfo.Arg<Func<CancellationToken, Task<IEnumerable<ContentItem>>>>();
                     return factory(CancellationToken.None); // Pass CancellationToken.None as required
                 });
 
-            _inner.GetAllAsync().Returns(contentItems);
+            _inner.GetAllAsync().Returns(Task.FromResult<IEnumerable<ContentItem>>(contentItems));
 
             // Act
             var result = await _decorator.GetAllAsync();

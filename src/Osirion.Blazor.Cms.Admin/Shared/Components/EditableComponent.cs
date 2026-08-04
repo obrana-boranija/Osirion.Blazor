@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Osirion.Blazor.Cms.Admin.Core.Events;
 
@@ -9,11 +9,15 @@ namespace Osirion.Blazor.Cms.Admin.Shared.Components;
 /// </summary>
 public abstract class EditableComponent : BaseComponent
 {
+    /// <summary>Performs the JS operation.</summary>
     [Inject]
     protected IJSRuntime JS { get; set; } = null!;
 
+    /// <summary>Gets or sets the IsDirty value.</summary>
     protected bool IsDirty { get; set; }
+    /// <summary>Gets or sets the IsSaving value.</summary>
     protected bool IsSaving { get; set; }
+    /// <summary>Gets or sets the HasConfirmedNavigation value.</summary>
     protected bool HasConfirmedNavigation { get; set; }
 
     /// <summary>

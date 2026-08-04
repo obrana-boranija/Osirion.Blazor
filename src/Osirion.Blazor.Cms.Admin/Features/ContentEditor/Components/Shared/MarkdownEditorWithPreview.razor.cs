@@ -6,39 +6,53 @@ using System.Text.RegularExpressions;
 
 namespace Osirion.Blazor.Cms.Admin.Features.ContentEditor.Components.Shared;
 
+/// <summary>Specifies the display mode for the markdown editor.</summary>
 public enum EditorMode
 {
+    /// <summary>Performs the public member operation.</summary>
     Edit,
+    /// <summary>Performs the public member operation.</summary>
     Preview,
+    /// <summary>Performs the public member operation.</summary>
     Split
 }
 
+/// <summary>Provides an interactive markdown editor with a rendered preview.</summary>
 public partial class MarkdownEditorWithPreview : IAsyncDisposable
 {
+    /// <summary>Gets or sets the markdown content.</summary>
     [Parameter]
     public string Content { get; set; } = string.Empty;
 
+    /// <summary>Gets or sets the callback invoked when content changes.</summary>
     [Parameter]
     public EventCallback<string> ContentChanged { get; set; }
 
+    /// <summary>Gets or sets the editor label.</summary>
     [Parameter]
     public string EditorLabel { get; set; } = "Markdown";
 
+    /// <summary>Gets or sets the preview label.</summary>
     [Parameter]
     public string PreviewLabel { get; set; } = "Preview";
 
+    /// <summary>Gets or sets whether the preview is visible.</summary>
     [Parameter]
     public bool ShowPreview { get; set; } = true;
 
+    /// <summary>Gets or sets whether the toolbar is visible.</summary>
     [Parameter]
     public bool ShowToolbar { get; set; } = true;
 
+    /// <summary>Gets or sets whether the editor receives focus automatically.</summary>
     [Parameter]
     public bool AutoFocus { get; set; } = false;
 
+    /// <summary>Gets or sets whether editor and preview scrolling are synchronized.</summary>
     [Parameter]
     public bool SyncScroll { get; set; } = true;
 
+    /// <summary>Gets or sets whether browser spell checking is enabled.</summary>
     [Parameter]
     public bool SpellCheck { get; set; } = false;
 
@@ -74,6 +88,7 @@ public partial class MarkdownEditorWithPreview : IAsyncDisposable
     private int CurrentColumn { get; set; } = 1;
     private int caretPosition = 0;
 
+    /// <summary>Initializes the component state and required services.</summary>
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
@@ -81,6 +96,7 @@ public partial class MarkdownEditorWithPreview : IAsyncDisposable
         CalculateLineAndColumn(Content);
     }
 
+    /// <summary>Performs the OnAfterRender operation asynchronously.</summary>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -109,6 +125,7 @@ public partial class MarkdownEditorWithPreview : IAsyncDisposable
         await base.OnAfterRenderAsync(firstRender);
     }
 
+    /// <summary>Renders the current markdown content into the preview.</summary>
     public async Task UpdatePreviewAsync()
     {
         try
@@ -156,6 +173,7 @@ public partial class MarkdownEditorWithPreview : IAsyncDisposable
         }
     }
 
+    /// <summary>Focuses the markdown editor.</summary>
     public async Task FocusEditorAsync()
     {
         try
@@ -171,6 +189,7 @@ public partial class MarkdownEditorWithPreview : IAsyncDisposable
         }
     }
 
+    /// <summary>Inserts markdown around the current selection.</summary>
     public async Task InsertMarkdown(string prefix, string suffix, string placeholder)
     {
         try

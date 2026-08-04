@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Events;
 using System;
 using System.Collections.Generic;
@@ -15,11 +15,13 @@ public class ContentDeletedEventHandler : IDomainEventHandler<ContentDeletedEven
 {
     private readonly ILogger<ContentDeletedEventHandler> _logger;
 
+    /// <summary>Performs the ContentDeletedEventHandler operation.</summary>
     public ContentDeletedEventHandler(ILogger<ContentDeletedEventHandler> logger)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
+    /// <summary>Performs the Handle operation asynchronously.</summary>
     public Task HandleAsync(ContentDeletedEvent domainEvent)
     {
         _logger.LogInformation(

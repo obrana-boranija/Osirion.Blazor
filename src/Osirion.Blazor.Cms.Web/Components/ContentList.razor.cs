@@ -6,6 +6,7 @@ using Osirion.Blazor.Cms.Domain.Services;
 
 namespace Osirion.Blazor.Cms.Web.Components;
 
+/// <summary>Defines the ContentList type.</summary>
 public partial class ContentList : IDisposable
 {
     [Inject]
@@ -201,11 +202,6 @@ public partial class ContentList : IDisposable
     /// </summary>
     protected int TotalPages => (int)Math.Ceiling(TotalItems / (double)ItemsPerPage);
 
-    /// <summary>
-    /// Subscription for content provider events.
-    /// </summary>
-    private IDisposable? _contentProviderSubscription;
-
     private string CurrentUrl { get; set; } = "/";
 
     ///// <summary>
@@ -213,7 +209,7 @@ public partial class ContentList : IDisposable
     ///// </summary>
     //protected override async Task OnInitializedAsync()
     //{
-    //    await LoadContentAsync();
+        // Implement IDisposable pattern here
     //}
 
     /// <summary>
@@ -407,10 +403,9 @@ public partial class ContentList : IDisposable
     }
 
     /// <summary>
-    /// Cleans up resources used by the component.
+    /// Releases resources used by the component.
     /// </summary>
     public void Dispose()
     {
-        _contentProviderSubscription?.Dispose();
     }
 }

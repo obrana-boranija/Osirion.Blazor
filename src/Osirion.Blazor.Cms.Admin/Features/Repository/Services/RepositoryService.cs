@@ -1,14 +1,16 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Admin.Infrastructure.Adapters;
 using Osirion.Blazor.Cms.Domain.Models.GitHub;
 
 namespace Osirion.Blazor.Cms.Admin.Features.Repository.Services;
 
+/// <summary>Defines the RepositoryService API contract.</summary>
 public class RepositoryService
 {
     private readonly IContentRepositoryAdapter _repositoryAdapter;
     private readonly ILogger<RepositoryService> _logger;
 
+    /// <summary>Performs the RepositoryService operation.</summary>
     public RepositoryService(
         IContentRepositoryAdapter repositoryAdapter,
         ILogger<RepositoryService> logger)
@@ -17,6 +19,7 @@ public class RepositoryService
         _logger = logger;
     }
 
+    /// <summary>Performs the GetRepositories operation asynchronously.</summary>
     public async Task<List<GitHubRepository>> GetRepositoriesAsync()
     {
         try
@@ -33,6 +36,7 @@ public class RepositoryService
         }
     }
 
+    /// <summary>Performs the GetBranches operation asynchronously.</summary>
     public async Task<List<GitHubBranch>> GetBranchesAsync(string repositoryName)
     {
         try
@@ -50,6 +54,7 @@ public class RepositoryService
         }
     }
 
+    /// <summary>Performs the CreateBranch operation asynchronously.</summary>
     public async Task<GitHubBranch> CreateBranchAsync(string branchName, string baseBranch)
     {
         try
@@ -66,6 +71,7 @@ public class RepositoryService
         }
     }
 
+    /// <summary>Gets or sets the SetRepository value.</summary>
     public void SetRepository(string repositoryName)
     {
         try
@@ -80,6 +86,7 @@ public class RepositoryService
         }
     }
 
+    /// <summary>Gets or sets the SetBranch value.</summary>
     public void SetBranch(string branchName)
     {
         try

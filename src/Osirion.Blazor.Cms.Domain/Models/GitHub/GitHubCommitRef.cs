@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Osirion.Blazor.Cms.Domain.Models.GitHub;
 
@@ -7,9 +7,11 @@ namespace Osirion.Blazor.Cms.Domain.Models.GitHub;
 /// </summary>
 public class GitHubCommitRef
 {
+    /// <summary>Gets or sets the Sha value.</summary>
     [JsonPropertyName("sha")]
     public string Sha { get; set; } = string.Empty;
 
+    /// <summary>Gets or sets the Url value.</summary>
     [JsonPropertyName("url")]
     public string Url { get; set; } = string.Empty;
 }

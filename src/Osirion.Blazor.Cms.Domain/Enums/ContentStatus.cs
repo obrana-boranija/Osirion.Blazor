@@ -1,4 +1,4 @@
-﻿namespace Osirion.Blazor.Cms.Domain.Enums;
+namespace Osirion.Blazor.Cms.Domain.Enums;
 
 /// <summary>
 /// Defines the status of a content item

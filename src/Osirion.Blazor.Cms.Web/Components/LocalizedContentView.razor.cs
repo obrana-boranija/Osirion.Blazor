@@ -6,58 +6,76 @@ using Osirion.Blazor.Cms.Domain.Services;
 
 namespace Osirion.Blazor.Cms.Web.Components;
 
+/// <summary>Displays localized content with optional translation and item navigation.</summary>
 public partial class LocalizedContentView
 {
     [Inject] private IContentProviderManager ContentProviderManager { get; set; } = default!;
 
+    /// <summary>Gets or sets the content localization identifier.</summary>
     [Parameter]
     public string? LocalizationId { get; set; }
 
+    /// <summary>Gets or sets the content path to load.</summary>
     [Parameter]
     public string? Path { get; set; }
 
+    /// <summary>Gets or sets the current locale.</summary>
     [Parameter]
     public string CurrentLocale { get; set; } = "en";
 
+    /// <summary>Gets or sets the callback invoked when the locale changes.</summary>
     [Parameter]
     public EventCallback<string> OnLocaleChanged { get; set; }
 
+    /// <summary>Gets or sets the loading message.</summary>
     [Parameter]
     public string LoadingText { get; set; } = "Loading content...";
 
+    /// <summary>Gets or sets the not-found message.</summary>
     [Parameter]
     public string NotFoundText { get; set; } = "Content not found.";
 
+    /// <summary>Gets or sets the locale display-name formatter.</summary>
     [Parameter]
     public Func<string, string>? LocaleNameFormatter { get; set; }
 
+    /// <summary>Gets or sets the translation URL formatter.</summary>
     [Parameter]
     public Func<string, string, string>? TranslationUrlFormatter { get; set; }
 
+    /// <summary>Gets or sets the category URL formatter.</summary>
     [Parameter]
     public Func<string, string>? CategoryUrlFormatter { get; set; }
 
+    /// <summary>Gets or sets the tag URL formatter.</summary>
     [Parameter]
     public Func<string, string>? TagUrlFormatter { get; set; }
 
+    /// <summary>Gets or sets the content URL formatter.</summary>
     [Parameter]
     public Func<ContentItem, string>? ContentUrlFormatter { get; set; }
 
+    /// <summary>Gets or sets the content item to display.</summary>
     [Parameter]
     public ContentItem? Item { get; set; }
 
+    /// <summary>Gets or sets the previous content item.</summary>
     [Parameter]
     public ContentItem? PreviousItem { get; set; }
 
+    /// <summary>Gets or sets the next content item.</summary>
     [Parameter]
     public ContentItem? NextItem { get; set; }
 
+    /// <summary>Gets or sets whether previous and next navigation links are shown.</summary>
     [Parameter]
     public bool ShowNavigationLinks { get; set; } = false;
 
+    /// <summary>Gets or sets whether the jumbotron is shown.</summary>
     [Parameter]
     public bool ShowJumbotron { get; set; } = true;
 
+    /// <summary>Gets or sets whether localization controls are enabled.</summary>
     [Parameter]
     public bool EnableLocalization { get; set; } = true;
 
@@ -79,9 +97,10 @@ public partial class LocalizedContentView
     //    }
     //}
 
+    /// <summary>Performs the OnParametersSet operation asynchronously.</summary>
     protected override async Task OnParametersSetAsync()
     {
-        if (Item is null && !string.IsNullOrWhiteSpace(Path))
+        if (Item is null && Path is { } path && !string.IsNullOrWhiteSpace(path))
         {
             await LoadContentAsync();
         }
@@ -92,6 +111,7 @@ public partial class LocalizedContentView
         }
     }
 
+    /// <summary>Gets or sets the OnAfterRender value.</summary>
     protected override void OnAfterRender(bool firstRender)
     {
         if(firstRender)
@@ -111,9 +131,9 @@ public partial class LocalizedContentView
             var provider = ContentProviderManager.GetDefaultProvider();
             if (provider is not null)
             {
-                if(Item is null)
+                if (Item is null && Path is { } path && !string.IsNullOrWhiteSpace(path))
                 {
-                    Item = await provider.GetItemByPathAsync(Path);
+                    Item = await provider.GetItemByPathAsync(path);
                 }
                 
 
@@ -131,7 +151,7 @@ public partial class LocalizedContentView
                             Locale = CurrentLocale,
                             SortBy = SortField.Date,
                             SortDirection = SortDirection.Descending
-                        });
+                        }) ?? [];
 
                         // Find the index manually
                         int currentIndex = -1;
@@ -208,7 +228,7 @@ public partial class LocalizedContentView
 
     private string GetTranslationUrl(string locale)
     {
-        return TranslationUrlFormatter?.Invoke(LocalizationId, locale) ?? $"/{AvailableTranslations[locale]}";
+        return TranslationUrlFormatter?.Invoke(LocalizationId ?? string.Empty, locale) ?? $"/{AvailableTranslations[locale]}";
     }
 
     private string GetTranslationClass(string locale)

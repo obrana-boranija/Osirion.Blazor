@@ -242,7 +242,8 @@ public class BaseDirectoryRepositoryTests
             .GetMethod("NormalizePath", BindingFlags.NonPublic | BindingFlags.Instance);
 
         // Act
-        var result = normalizePathMethod.Invoke(_repository, new object[] { path }) as string;
+        var result = normalizePathMethod?.Invoke(_repository, new object[] { path }) as string
+            ?? throw new InvalidOperationException("NormalizePath method returned no result.");
 
         // Assert
         result.ShouldBe("test/path/with/backslashes");

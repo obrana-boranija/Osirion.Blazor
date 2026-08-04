@@ -16,7 +16,7 @@ public class AuthenticationServiceTests
     private readonly IStateStorageService _stateStorage;
     private readonly IGitHubTokenProvider _tokenProvider;
     private readonly IGitHubApiClient _apiClient;
-    private readonly AuthenticationService _authService;
+    private readonly AuthenticationService _authService = null!;
 
     public AuthenticationServiceTests()
     {

@@ -1,4 +1,4 @@
-﻿// src/Osirion.Blazor.Cms.Domain/Repositories/IUnitOfWorkFactory.cs
+// src/Osirion.Blazor.Cms.Domain/Repositories/IUnitOfWorkFactory.cs
 namespace Osirion.Blazor.Cms.Domain.Repositories;
 
 /// <summary>

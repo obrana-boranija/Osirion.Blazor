@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Exceptions;
@@ -18,6 +18,7 @@ public class FileSystemDirectoryRepository : DirectoryRepositoryBase, IDirectory
     private readonly FileSystemOptions _options;
     private FileSystemWatcher? _fileWatcher;
 
+    /// <summary>Performs the FileSystemDirectoryRepository operation.</summary>
     public FileSystemDirectoryRepository(
         IOptions<FileSystemOptions> options,
         IDirectoryCacheManager cacheManager,
@@ -398,6 +399,7 @@ public class FileSystemDirectoryRepository : DirectoryRepositoryBase, IDirectory
         }
     }
 
+    /// <summary>Releases resources held by the component or service.</summary>
     protected override void Dispose(bool disposing)
     {
         if (disposing)

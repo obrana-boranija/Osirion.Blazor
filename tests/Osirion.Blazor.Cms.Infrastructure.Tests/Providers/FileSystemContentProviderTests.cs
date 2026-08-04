@@ -336,7 +336,7 @@ public class FileSystemContentProviderTests
         Should.Throw<ArgumentNullException>(() => new FileSystemContentProvider(
             _contentRepository,
             _directoryRepository,
-            null,
+            null!,
             _memoryCache,
             _logger));
     }
@@ -349,7 +349,7 @@ public class FileSystemContentProviderTests
             _contentRepository,
             _directoryRepository,
             _options,
-            null,
+            null!,
             _logger));
     }
 

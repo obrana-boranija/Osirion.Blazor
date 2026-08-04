@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Services;
 
@@ -12,6 +12,7 @@ public class GetContentByIdQueryHandler : IQueryHandler<GetContentByIdQuery, Con
     private readonly IContentProviderManager _providerManager;
     private readonly ILogger<GetContentByIdQueryHandler> _logger;
 
+    /// <summary>Performs the GetContentByIdQueryHandler operation.</summary>
     public GetContentByIdQueryHandler(
         IContentProviderManager providerManager,
         ILogger<GetContentByIdQueryHandler> logger)
@@ -20,6 +21,7 @@ public class GetContentByIdQueryHandler : IQueryHandler<GetContentByIdQuery, Con
         _logger = logger;
     }
 
+    /// <summary>Performs the Handle operation asynchronously.</summary>
     public async Task<ContentItem?> HandleAsync(GetContentByIdQuery query, CancellationToken cancellationToken = default)
     {
         _logger.LogDebug("Getting content by ID: {Id}", query.Id);

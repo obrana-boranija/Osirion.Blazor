@@ -43,10 +43,12 @@ public class FileSystemUnitOfWorkTests
     {
         // Arrange
         var modifiedFilesField = typeof(FileSystemUnitOfWork)
-            .GetField("_modifiedFiles", BindingFlags.NonPublic | BindingFlags.Instance);
+            .GetField("_modifiedFiles", BindingFlags.NonPublic | BindingFlags.Instance)
+            ?? throw new InvalidOperationException("The modified files field was not found.");
         modifiedFilesField.ShouldNotBeNull();
 
-        var modifiedFiles = (List<string>)modifiedFilesField.GetValue(_unitOfWork);
+        var modifiedFiles = modifiedFilesField.GetValue(_unitOfWork) as List<string>
+            ?? throw new InvalidOperationException("The modified files field was not found.");
         modifiedFiles.Add("test-file.txt");
         modifiedFiles.Count.ShouldBe(1);
 
@@ -80,7 +82,8 @@ public class FileSystemUnitOfWorkTests
 
         // Assert
         var modifiedFilesField = typeof(FileSystemUnitOfWork)
-            .GetField("_modifiedFiles", BindingFlags.NonPublic | BindingFlags.Instance);
+            .GetField("_modifiedFiles", BindingFlags.NonPublic | BindingFlags.Instance)
+            ?? throw new InvalidOperationException("The modified files field was not found.");
         modifiedFilesField.ShouldNotBeNull();
 
         var modifiedFiles = (List<string>?)modifiedFilesField.GetValue(_unitOfWork);
@@ -115,8 +118,10 @@ public class FileSystemUnitOfWorkTests
 
         // Verify modified files list is cleared
         var modifiedFilesField = typeof(FileSystemUnitOfWork)
-            .GetField("_modifiedFiles", BindingFlags.NonPublic | BindingFlags.Instance);
-        var modifiedFiles = (List<string>)modifiedFilesField.GetValue(_unitOfWork);
+            .GetField("_modifiedFiles", BindingFlags.NonPublic | BindingFlags.Instance)
+            ?? throw new InvalidOperationException("The modified files field was not found.");
+        var modifiedFiles = modifiedFilesField.GetValue(_unitOfWork) as List<string>
+            ?? throw new InvalidOperationException("The modified files field was not found.");
         modifiedFiles.Count.ShouldBe(0, "Modified files list should be cleared after commit");
     }
 
@@ -147,8 +152,10 @@ public class FileSystemUnitOfWorkTests
 
         // Verify modified files list is cleared
         var modifiedFilesField = typeof(FileSystemUnitOfWork)
-            .GetField("_modifiedFiles", BindingFlags.NonPublic | BindingFlags.Instance);
-        var modifiedFiles = (List<string>)modifiedFilesField.GetValue(_unitOfWork);
+            .GetField("_modifiedFiles", BindingFlags.NonPublic | BindingFlags.Instance)
+            ?? throw new InvalidOperationException("The modified files field was not found.");
+        var modifiedFiles = modifiedFilesField.GetValue(_unitOfWork) as List<string>
+            ?? throw new InvalidOperationException("The modified files field was not found.");
         modifiedFiles.Count.ShouldBe(0, "Modified files list should be cleared after rollback");
     }
 
@@ -170,10 +177,12 @@ public class FileSystemUnitOfWorkTests
 
         // Assert
         var savePointsField = typeof(BaseUnitOfWork)
-            .GetField("_savePoints", BindingFlags.NonPublic | BindingFlags.Instance);
+            .GetField("_savePoints", BindingFlags.NonPublic | BindingFlags.Instance)
+            ?? throw new InvalidOperationException("The save points field was not found.");
         savePointsField.ShouldNotBeNull();
 
-        var savePoints = (Dictionary<string, string>)savePointsField.GetValue(_unitOfWork);
+        var savePoints = savePointsField.GetValue(_unitOfWork) as Dictionary<string, string>
+            ?? throw new InvalidOperationException("The save points field was not found.");
         savePoints.ShouldContainKey("test-savepoint");
     }
 
@@ -195,8 +204,10 @@ public class FileSystemUnitOfWorkTests
 
         // Get the savepoint timestamp
         var savePointsField = typeof(BaseUnitOfWork)
-            .GetField("_savePoints", BindingFlags.NonPublic | BindingFlags.Instance);
-        var savePoints = (Dictionary<string, string>)savePointsField.GetValue(_unitOfWork);
+            .GetField("_savePoints", BindingFlags.NonPublic | BindingFlags.Instance)
+            ?? throw new InvalidOperationException("The save points field was not found.");
+        var savePoints = savePointsField.GetValue(_unitOfWork) as Dictionary<string, string>
+            ?? throw new InvalidOperationException("The save points field was not found.");
         var savePointTimestamp = long.Parse(savePoints["test-savepoint"]);
 
         // Setup second file (after savepoint) with a backup creation time after the savepoint
@@ -284,14 +295,16 @@ public class FileSystemUnitOfWorkTests
         }
 
         // Override the file operations methods to use our mock file system
-        public void TrackModifiedFile(string filePath)
+        public new void TrackModifiedFile(string filePath)
         {
             if (!_transactionStarted)
                 throw new InvalidOperationException("No transaction in progress");
 
             var modifiedFilesField = typeof(FileSystemUnitOfWork)
-                .GetField("_modifiedFiles", BindingFlags.NonPublic | BindingFlags.Instance);
-            var modifiedFiles = (List<string>)modifiedFilesField.GetValue(this);
+                .GetField("_modifiedFiles", BindingFlags.NonPublic | BindingFlags.Instance)
+                ?? throw new InvalidOperationException("The modified files field was not found.");
+            var modifiedFiles = modifiedFilesField.GetValue(this) as List<string>
+                ?? throw new InvalidOperationException("The modified files field was not found.");
 
             if (!modifiedFiles.Contains(filePath))
             {
@@ -309,8 +322,10 @@ public class FileSystemUnitOfWorkTests
         private string GetBackupPath(string filePath)
         {
             var getBackupPathMethod = typeof(FileSystemUnitOfWork)
-                .GetMethod("GetBackupPath", BindingFlags.NonPublic | BindingFlags.Instance);
-            return (string)getBackupPathMethod.Invoke(this, new object[] { filePath });
+                .GetMethod("GetBackupPath", BindingFlags.NonPublic | BindingFlags.Instance)
+                ?? throw new InvalidOperationException("The backup path method was not found.");
+            return getBackupPathMethod.Invoke(this, new object[] { filePath }) as string
+                ?? throw new InvalidOperationException("The backup path method returned no path.");
         }
     }
 }

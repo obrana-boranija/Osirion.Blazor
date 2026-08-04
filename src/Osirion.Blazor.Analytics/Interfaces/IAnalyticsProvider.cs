@@ -1,4 +1,4 @@
-﻿namespace Osirion.Blazor.Analytics;
+namespace Osirion.Blazor.Analytics;
 
 /// <summary>
 /// Interface for analytics providers

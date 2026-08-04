@@ -1,4 +1,4 @@
-﻿namespace Osirion.Blazor.Analytics.Services;
+namespace Osirion.Blazor.Analytics.Services;
 
 /// <summary>
 /// Service for managing multiple analytics providers

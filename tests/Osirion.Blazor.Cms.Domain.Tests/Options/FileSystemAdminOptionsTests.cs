@@ -49,12 +49,12 @@ public class FileSystemAdminOptionsTests
     [InlineData(null)]
     [InlineData("/path/to/content")]
     [InlineData("C:\\path\\to\\content")]
-    public void RootPath_CanBeSetToAnyValue(string path)
+    public void RootPath_CanBeSetToAnyValue(string? path)
     {
         // Arrange
         var options = new FileSystemAdminOptions
         {
-            RootPath = path
+            RootPath = path ?? string.Empty
         };
 
         // Assert

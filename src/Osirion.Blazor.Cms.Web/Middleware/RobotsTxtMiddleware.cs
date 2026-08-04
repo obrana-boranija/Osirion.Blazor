@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Osirion.Blazor.Cms.Domain.Services;
 using System.Text.RegularExpressions;

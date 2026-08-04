@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Admin.Core.Events;
 using Osirion.Blazor.Cms.Admin.Interfaces;
 using Osirion.Blazor.Cms.Admin.Services.Events;
@@ -21,6 +21,7 @@ public class AdminContentService : IAdminContentService
     private readonly CmsEventMediator _eventMediator;
     private readonly ILogger<AdminContentService> _logger;
 
+    /// <summary>Performs the AdminContentService operation.</summary>
     public AdminContentService(
         ICommandDispatcher commandDispatcher,
         IQueryDispatcher queryDispatcher,
@@ -158,6 +159,7 @@ public class AdminContentService : IAdminContentService
         }
     }
 
+    /// <summary>Performs the UpdateContent operation asynchronously.</summary>
     public async Task<ContentItem?> UpdateContentAsync(
         string id,
         string title,

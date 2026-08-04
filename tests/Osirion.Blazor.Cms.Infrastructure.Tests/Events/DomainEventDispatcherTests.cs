@@ -71,7 +71,7 @@ public class DomainEventDispatcherTests
     {
         // Act & Assert
         await Should.ThrowAsync<ArgumentNullException>(async () =>
-            await _dispatcher.DispatchAsync<TestEvent>(null));
+            await _dispatcher.DispatchAsync<TestEvent>(null!));
     }
 
     [Fact]
@@ -89,8 +89,8 @@ public class DomainEventDispatcherTests
         _logger.Received(1).Log(
             LogLevel.Warning,
             Arg.Any<EventId>(),
-            Arg.Is<object>(o => o.ToString().Contains("No handlers found")),
+            Arg.Is<object>(o => o == null ? false : o.ToString()!.Contains("No handlers found")),
             Arg.Any<Exception>(),
-            Arg.Any<Func<object, Exception, string>>());
+            Arg.Any<Func<object, Exception?, string>>());
     }
 }

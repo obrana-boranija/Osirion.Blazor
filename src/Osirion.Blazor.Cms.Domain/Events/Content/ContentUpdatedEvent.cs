@@ -1,4 +1,4 @@
-﻿namespace Osirion.Blazor.Cms.Domain.Events;
+namespace Osirion.Blazor.Cms.Domain.Events;
 
 /// <summary>
 /// Event raised when a content item is updated
@@ -25,6 +25,7 @@ public class ContentUpdatedEvent : DomainEvent
     /// </summary>
     public string ProviderId { get; }
 
+    /// <summary>Gets or sets the ContentUpdatedEvent value.</summary>
     public ContentUpdatedEvent(string contentId, string title, string path, string providerId)
     {
         ContentId = contentId ?? throw new ArgumentNullException(nameof(contentId));

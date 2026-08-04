@@ -1,23 +1,30 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Admin.Core.State;
 using Osirion.Blazor.Cms.Admin.Features.Repository.Services;
 using Osirion.Blazor.Cms.Domain.Models.GitHub;
 
 namespace Osirion.Blazor.Cms.Admin.Features.Repository.ViewModels;
 
+/// <summary>Defines the RepositorySelectorViewModel API contract.</summary>
 public class RepositorySelectorViewModel
 {
     private readonly RepositoryService _repositoryService;
     private readonly CmsState _state;
     private readonly ILogger<RepositorySelectorViewModel> _logger;
 
+    /// <summary>Gets or sets the Repositories value.</summary>
     public List<GitHubRepository> Repositories { get; set; } = new();
+    /// <summary>Performs the SelectedRepository operation.</summary>
     public GitHubRepository? SelectedRepository => _state.SelectedRepository;
+    /// <summary>Gets or sets the IsLoading value.</summary>
     public bool IsLoading { get; private set; }
+    /// <summary>Gets or sets the ErrorMessage value.</summary>
     public string? ErrorMessage { get; private set; }
 
+    /// <summary>Performs the StateChanged operation.</summary>
     public event Action? StateChanged;
 
+    /// <summary>Performs the RepositorySelectorViewModel operation.</summary>
     public RepositorySelectorViewModel(
         RepositoryService repositoryService,
         CmsState state,
@@ -35,6 +42,7 @@ public class RepositorySelectorViewModel
         NotifyStateChanged();
     }
 
+    /// <summary>Performs the LoadRepositories operation asynchronously.</summary>
     public async Task LoadRepositoriesAsync()
     {
         IsLoading = true;
@@ -60,6 +68,7 @@ public class RepositorySelectorViewModel
         }
     }
 
+    /// <summary>Performs the SelectRepository operation asynchronously.</summary>
     public async Task SelectRepositoryAsync(string repositoryName)
     {
         if (string.IsNullOrWhiteSpace(repositoryName))
@@ -125,6 +134,7 @@ public class RepositorySelectorViewModel
         }
     }
 
+    /// <summary>Performs the NotifyStateChanged operation.</summary>
     protected void NotifyStateChanged()
     {
         StateChanged?.Invoke();

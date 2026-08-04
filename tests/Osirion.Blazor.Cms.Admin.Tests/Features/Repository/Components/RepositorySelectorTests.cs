@@ -109,7 +109,7 @@ public class RepositorySelectorTests : TestContext
 
         _viewModel.Repositories.Returns(repositories);
         _viewModel.IsLoading.Returns(false);
-        _viewModel.ErrorMessage.Returns((string)null);
+        _viewModel.ErrorMessage.Returns((string)null!);
 
         // Act
         var cut = RenderComponent<RepositorySelector>();
@@ -147,7 +147,7 @@ public class RepositorySelectorTests : TestContext
         _viewModel.Repositories.Returns(repositories);
         _viewModel.SelectedRepository.Returns(repositories[0]);
         _viewModel.IsLoading.Returns(false);
-        _viewModel.ErrorMessage.Returns((string)null);
+        _viewModel.ErrorMessage.Returns((string)null!);
 
         // Act
         var cut = RenderComponent<RepositorySelector>();

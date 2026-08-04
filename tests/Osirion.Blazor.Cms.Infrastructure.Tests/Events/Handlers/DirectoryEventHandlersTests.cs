@@ -28,9 +28,9 @@ public class DirectoryEventHandlersTests
         logger.Received(1).Log(
             LogLevel.Information,
             Arg.Any<EventId>(),
-            Arg.Is<object>(o => o.ToString().Contains("Directory created: ID dir-id")),
+            Arg.Is<object>(o => o == null ? false : o.ToString()!.Contains("Directory created: ID dir-id")),
             Arg.Any<Exception>(),
-            Arg.Any<Func<object, Exception, string>>());
+            Arg.Any<Func<object, Exception?, string>>());
     }
 
     [Fact]
@@ -53,9 +53,9 @@ public class DirectoryEventHandlersTests
         logger.Received(1).Log(
             LogLevel.Information,
             Arg.Any<EventId>(),
-            Arg.Is<object>(o => o.ToString().Contains("Directory deleted: ID dir-id")),
+            Arg.Is<object>(o => o == null ? false : o.ToString()!.Contains("Directory deleted: ID dir-id")),
             Arg.Any<Exception>(),
-            Arg.Any<Func<object, Exception, string>>());
+            Arg.Any<Func<object, Exception?, string>>());
     }
 
     [Fact]
@@ -78,16 +78,16 @@ public class DirectoryEventHandlersTests
         logger.Received(1).Log(
             LogLevel.Information,
             Arg.Any<EventId>(),
-            Arg.Is<object>(o => o.ToString().Contains("Directory updated: ID dir-id")),
+            Arg.Is<object>(o => o == null ? false : o.ToString()!.Contains("Directory updated: ID dir-id")),
             Arg.Any<Exception>(),
-            Arg.Any<Func<object, Exception, string>>());
+            Arg.Any<Func<object, Exception?, string>>());
     }
 
     [Fact]
     public void DirectoryCreatedEventHandler_WithNullLogger_ThrowsArgumentNullException()
     {
         // Act & Assert
-        Should.Throw<ArgumentNullException>(() => new DirectoryCreatedEventHandler(null))
+        Should.Throw<ArgumentNullException>(() => new DirectoryCreatedEventHandler(null!))
             .ParamName.ShouldBe("logger");
     }
 
@@ -95,7 +95,7 @@ public class DirectoryEventHandlersTests
     public void DirectoryDeletedEventHandler_WithNullLogger_ThrowsArgumentNullException()
     {
         // Act & Assert
-        Should.Throw<ArgumentNullException>(() => new DirectoryDeletedEventHandler(null))
+        Should.Throw<ArgumentNullException>(() => new DirectoryDeletedEventHandler(null!))
             .ParamName.ShouldBe("logger");
     }
 
@@ -103,7 +103,7 @@ public class DirectoryEventHandlersTests
     public void DirectoryUpdatedEventHandler_WithNullLogger_ThrowsArgumentNullException()
     {
         // Act & Assert
-        Should.Throw<ArgumentNullException>(() => new DirectoryUpdatedEventHandler(null))
+        Should.Throw<ArgumentNullException>(() => new DirectoryUpdatedEventHandler(null!))
             .ParamName.ShouldBe("logger");
     }
 

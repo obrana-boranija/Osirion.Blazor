@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Events;
 using Osirion.Blazor.Cms.Domain.Repositories;
@@ -13,6 +13,7 @@ public class CreateContentCommandHandler : ICommandHandler<CreateContentCommand>
     private readonly IUnitOfWorkFactory _unitOfWorkFactory;
     private readonly ILogger<CreateContentCommandHandler> _logger;
 
+    /// <summary>Performs the CreateContentCommandHandler operation.</summary>
     public CreateContentCommandHandler(
         IUnitOfWorkFactory unitOfWorkFactory,
         ILogger<CreateContentCommandHandler> logger)
@@ -21,6 +22,7 @@ public class CreateContentCommandHandler : ICommandHandler<CreateContentCommand>
         _logger = logger;
     }
 
+    /// <summary>Performs the Handle operation asynchronously.</summary>
     public async Task HandleAsync(CreateContentCommand command, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Creating content with title: {Title}", command.Title);

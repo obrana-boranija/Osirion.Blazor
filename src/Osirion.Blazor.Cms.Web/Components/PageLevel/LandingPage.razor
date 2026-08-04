@@ -43,35 +43,6 @@
                             Padding="@ContentPadding" />
         }
 
-        @if (ShowTestimonials && TestimonialItems is not null && TestimonialItems.Any())
-        {
-            <TestimonialsSection Title="@TestimonialsSectionTitle"
-                                 Testimonials="@TestimonialItems"
-                                 Layout="@TestimonialsLayout"
-                                 ShowImages="@ShowTestimonialImages" />
-        }
-
-        @if (ShowFeatures && FeatureItems is not null && FeatureItems.Any())
-        {
-            <FeaturesSection Title="@FeaturesSectionTitle"
-                             Description="@FeaturesSectionDescription"
-                             Features="@FeatureItems"
-                             Layout="@FeaturesLayout"
-                             Columns="@FeaturesColumns" />
-        }
-
-        @if (ShowCallToAction)
-        {
-            <CallToActionSection Title="@CtaTitle"
-                                 Description="@CtaDescription"
-                                 PrimaryButtonText="@CtaPrimaryButtonText"
-                                 PrimaryButtonUrl="@CtaPrimaryButtonUrl"
-                                 SecondaryButtonText="@CtaSecondaryButtonText"
-                                 SecondaryButtonUrl="@CtaSecondaryButtonUrl"
-                                 BackgroundColor="@CtaBackgroundColor"
-                                 Variant="@CtaVariant" />
-        }
-
         @if (!string.IsNullOrWhiteSpace(CustomContent))
         {
             <ContentSection Content="@CustomContent"

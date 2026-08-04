@@ -1,4 +1,4 @@
-﻿using Osirion.Blazor.Cms.Domain.Enums;
+using Osirion.Blazor.Cms.Domain.Enums;
 
 namespace Osirion.Blazor.Cms.Domain.Events;
 
@@ -32,6 +32,7 @@ public class ContentStatusChangedEvent : DomainEvent
     /// </summary>
     public string ProviderId { get; }
 
+    /// <summary>Performs the ContentStatusChangedEvent operation.</summary>
     public ContentStatusChangedEvent(
         string contentId,
         string title,

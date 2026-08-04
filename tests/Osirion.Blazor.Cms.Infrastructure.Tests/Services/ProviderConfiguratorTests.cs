@@ -40,7 +40,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.Tests.Services
             // Arrange
             var provider = Substitute.For<IContentProvider>();
             provider.ProviderId.Returns("test-provider");
-            IContentProvider capturedProvider = null;
+            IContentProvider capturedProvider = null!;
 
             var configurator = new ProviderConfigurator<IContentProvider>(p => {
                 capturedProvider = p;

@@ -70,10 +70,10 @@ namespace Osirion.Blazor.Cms.Infrastructure.Tests.Utilities
         [Theory]
         [InlineData("")]
         [InlineData(null)]
-        public void GenerateStableId_WithInvalidPath_ThrowsArgumentException(string invalidPath)
+        public void GenerateStableId_WithInvalidPath_ThrowsArgumentException(string? invalidPath)
         {
             // Act & Assert
-            Should.Throw<ArgumentException>(() => IdGenerator.GenerateStableId(invalidPath));
+            Should.Throw<ArgumentException>(() => IdGenerator.GenerateStableId(invalidPath!));
         }
     }
 }

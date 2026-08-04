@@ -40,16 +40,16 @@ namespace Osirion.Blazor.Cms.Infrastructure.Tests.Decorators
             _logger.Received(1).Log(
                 LogLevel.Information,
                 Arg.Any<EventId>(),
-                Arg.Is<object>(o => o.ToString().Contains($"Fetching content {id}")),
+                Arg.Is<object>(o => o == null ? false : o.ToString()!.Contains($"Fetching content {id}")),
                 Arg.Any<Exception>(),
-                Arg.Any<Func<object, Exception, string>>());
+                Arg.Any<Func<object, Exception?, string>>());
 
             _logger.Received(1).Log(
                 LogLevel.Information,
                 Arg.Any<EventId>(),
-                Arg.Is<object>(o => o.ToString().Contains($"Fetched content {id}")),
+                Arg.Is<object>(o => o == null ? false : o.ToString()!.Contains($"Fetched content {id}")),
                 Arg.Any<Exception>(),
-                Arg.Any<Func<object, Exception, string>>());
+                Arg.Any<Func<object, Exception?, string>>());
         }
 
         [Fact]
@@ -74,16 +74,16 @@ namespace Osirion.Blazor.Cms.Infrastructure.Tests.Decorators
             _logger.Received(1).Log(
                 LogLevel.Information,
                 Arg.Any<EventId>(),
-                Arg.Is<object>(o => o.ToString().Contains("Fetching all content")),
+                Arg.Is<object>(o => o == null ? false : o.ToString()!.Contains("Fetching all content")),
                 Arg.Any<Exception>(),
-                Arg.Any<Func<object, Exception, string>>());
+                Arg.Any<Func<object, Exception?, string>>());
 
             _logger.Received(1).Log(
                 LogLevel.Information,
                 Arg.Any<EventId>(),
-                Arg.Is<object>(o => o.ToString().Contains("Fetched 2 items")),
+                Arg.Is<object>(o => o == null ? false : o.ToString()!.Contains("Fetched 2 items")),
                 Arg.Any<Exception>(),
-                Arg.Any<Func<object, Exception, string>>());
+                Arg.Any<Func<object, Exception?, string>>());
         }
     }
 }

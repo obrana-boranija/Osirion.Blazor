@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Domain.Interfaces.Directory;
 using Osirion.Blazor.Cms.Domain.Options;
 using System.Text.RegularExpressions;
@@ -15,6 +15,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.Directory
         private readonly string _defaultLocale;
         private readonly IReadOnlyList<string> _supportedLocales;
 
+        /// <summary>Performs the PathUtilities operation.</summary>
         public PathUtilities(IOptions<FileSystemOptions> options)
         {
             if (options is null) throw new ArgumentNullException(nameof(options));
@@ -25,11 +26,13 @@ namespace Osirion.Blazor.Cms.Infrastructure.Directory
             _supportedLocales = options.Value.SupportedLocales;
         }
 
+        /// <summary>Gets or sets the NormalizePath value.</summary>
         public string NormalizePath(string path)
         {
             return path.Replace('\\', '/').Trim('/');
         }
 
+        /// <summary>Gets or sets the ExtractLocaleFromPath value.</summary>
         public string ExtractLocaleFromPath(string path)
         {
             // If localization is disabled, always return default locale
@@ -52,6 +55,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.Directory
             return _defaultLocale;
         }
 
+        /// <summary>Gets or sets the MatchesGlobPattern value.</summary>
         public bool MatchesGlobPattern(string path, string pattern)
         {
             // Convert glob pattern to regex
@@ -63,6 +67,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.Directory
             return Regex.IsMatch(path, regexPattern, RegexOptions.IgnoreCase);
         }
 
+        /// <summary>Gets or sets the RemoveLocaleFromPath value.</summary>
         public string RemoveLocaleFromPath(string path)
         {
             if (!_enableLocalization)
@@ -82,6 +87,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.Directory
             return path;
         }
 
+        /// <summary>Gets or sets the GenerateDirectoryUrl value.</summary>
         public string GenerateDirectoryUrl(string path)
         {
             // Normalize path
@@ -99,6 +105,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.Directory
             return path;
         }
 
+        /// <summary>Gets or sets the GenerateContentUrl value.</summary>
         public string GenerateContentUrl(string path, string slug)
         {
             // Normalize path

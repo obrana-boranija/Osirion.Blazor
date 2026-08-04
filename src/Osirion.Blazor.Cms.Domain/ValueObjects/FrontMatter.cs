@@ -1,4 +1,4 @@
-﻿using Osirion.Blazor.Cms.Domain.Common;
+using Osirion.Blazor.Cms.Domain.Common;
 using System.Text;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
@@ -97,10 +97,11 @@ public class FrontMatter : ValueObject
     /// </summary>
     public Dictionary<string, object> CustomFields { get; set; } = new Dictionary<string, object>();
 
-    // Value objects
+    /// <summary>Gets or sets SEO metadata.</summary>
     public SeoMetadata SeoProperties { get; set; } = new SeoMetadata();
 
     // Private constructor to enforce creation through factory method
+    /// <summary>Performs the FrontMatter operation.</summary>
     public FrontMatter() { }
 
     /// <summary>
@@ -185,7 +186,8 @@ public class FrontMatter : ValueObject
         return frontMatter;
     }
 
-    // Fluent builder methods
+    /// <summary>Returns a copy with a new title.</summary>
+    /// <param name="title">The new title.</param>
     public FrontMatter WithTitle(string title)
     {
         var clone = Clone();
@@ -193,6 +195,8 @@ public class FrontMatter : ValueObject
         return clone;
     }
 
+    /// <summary>Returns a copy with a new description.</summary>
+    /// <param name="description">The new description.</param>
     public FrontMatter WithDescription(string description)
     {
         var clone = Clone();
@@ -200,6 +204,8 @@ public class FrontMatter : ValueObject
         return clone;
     }
 
+    /// <summary>Returns a copy with a new author.</summary>
+    /// <param name="author">The new author.</param>
     public FrontMatter WithAuthor(string author)
     {
         var clone = Clone();
@@ -207,6 +213,8 @@ public class FrontMatter : ValueObject
         return clone;
     }
 
+    /// <summary>Returns a copy with a new date.</summary>
+    /// <param name="date">The new date.</param>
     public FrontMatter WithDate(DateTime date)
     {
         var clone = Clone();
@@ -214,6 +222,8 @@ public class FrontMatter : ValueObject
         return clone;
     }
 
+    /// <summary>Returns a copy with a new last-modified date.</summary>
+    /// <param name="lastModified">The last-modified date.</param>
     public FrontMatter WithLastModified(DateTime? lastModified)
     {
         var clone = Clone();
@@ -221,6 +231,8 @@ public class FrontMatter : ValueObject
         return clone;
     }
 
+    /// <summary>Returns a copy with a new featured image.</summary>
+    /// <param name="featuredImage">The image URL.</param>
     public FrontMatter WithFeaturedImage(string? featuredImage)
     {
         var clone = Clone();
@@ -228,6 +240,8 @@ public class FrontMatter : ValueObject
         return clone;
     }
 
+    /// <summary>Returns a copy with new categories.</summary>
+    /// <param name="categories">The categories.</param>
     public FrontMatter WithCategories(IEnumerable<string> categories)
     {
         var clone = Clone();
@@ -237,6 +251,8 @@ public class FrontMatter : ValueObject
         return clone;
     }
 
+    /// <summary>Returns a copy with new tags.</summary>
+    /// <param name="tags">The tags.</param>
     public FrontMatter WithTags(IEnumerable<string> tags)
     {
         var clone = Clone();
@@ -246,6 +262,8 @@ public class FrontMatter : ValueObject
         return clone;
     }
 
+    /// <summary>Returns a copy with a new featured state.</summary>
+    /// <param name="isFeatured">Whether the item is featured.</param>
     public FrontMatter WithFeatured(bool isFeatured)
     {
         var clone = Clone();
@@ -253,6 +271,8 @@ public class FrontMatter : ValueObject
         return clone;
     }
 
+    /// <summary>Returns a copy with a new published state.</summary>
+    /// <param name="published">Whether the item is published.</param>
     public FrontMatter WithPublished(bool published)
     {
         var clone = Clone();
@@ -260,6 +280,8 @@ public class FrontMatter : ValueObject
         return clone;
     }
 
+    /// <summary>Returns a copy with a new layout.</summary>
+    /// <param name="layout">The layout name.</param>
     public FrontMatter WithLayout(string? layout)
     {
         var clone = Clone();
@@ -267,6 +289,8 @@ public class FrontMatter : ValueObject
         return clone;
     }
 
+    /// <summary>Returns a copy with a new slug.</summary>
+    /// <param name="slug">The slug.</param>
     public FrontMatter WithSlug(string? slug)
     {
         var clone = Clone();
@@ -274,6 +298,8 @@ public class FrontMatter : ValueObject
         return clone;
     }
 
+    /// <summary>Returns a copy with new custom fields.</summary>
+    /// <param name="customFields">The custom fields.</param>
     public FrontMatter WithCustomFields(IDictionary<string, object> customFields)
     {
         if (customFields is null)
@@ -292,6 +318,9 @@ public class FrontMatter : ValueObject
         return clone;
     }
 
+    /// <summary>Returns a copy with one custom field added or replaced.</summary>
+    /// <param name="key">The custom field key.</param>
+    /// <param name="value">The custom field value.</param>
     public FrontMatter WithCustomField(string key, object value)
     {
         if (string.IsNullOrWhiteSpace(key))

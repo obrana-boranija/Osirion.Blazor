@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -23,6 +23,7 @@ public class GitHubApiClientFactory : IGitHubApiClientFactory
     private string? _defaultWebProvider;
     private string? _defaultAdminProvider;
 
+    /// <summary>Performs the GitHubApiClientFactory operation.</summary>
     public GitHubApiClientFactory(
         IServiceProvider serviceProvider,
         IConfiguration configuration,
@@ -106,6 +107,7 @@ public class GitHubApiClientFactory : IGitHubApiClientFactory
             _webProviders.Count, _adminProviders.Count);
     }
 
+    /// <summary>Gets or sets the GetClient value.</summary>
     public IGitHubApiClient GetClient(string providerName)
     {
         if (string.IsNullOrWhiteSpace(providerName))
@@ -201,6 +203,7 @@ public class GitHubApiClientFactory : IGitHubApiClientFactory
         });
     }
 
+    /// <summary>Performs the GetDefaultClient operation.</summary>
     public IGitHubApiClient GetDefaultClient()
     {
         // Try web default first, then admin default
@@ -226,12 +229,14 @@ public class GitHubApiClientFactory : IGitHubApiClientFactory
         return GetClient(defaultProvider);
     }
 
+    /// <summary>Gets or sets the GetProviderNames value.</summary>
     public IEnumerable<string> GetProviderNames()
     {
         // Return unique provider names from both web and admin
         return _webProviders.Keys.Union(_adminProviders.Keys).Distinct();
     }
 
+    /// <summary>Gets or sets the ProviderExists value.</summary>
     public bool ProviderExists(string providerName)
     {
         return _webProviders.ContainsKey(providerName) || _adminProviders.ContainsKey(providerName);

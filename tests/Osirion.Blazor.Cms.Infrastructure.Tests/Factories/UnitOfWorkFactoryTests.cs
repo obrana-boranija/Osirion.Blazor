@@ -134,7 +134,7 @@ public class UnitOfWorkFactoryTests
     public void Create_WithNonExistentProvider_ThrowsInvalidOperationException()
     {
         // Arrange
-        _providerRegistry.GetProvider("non-existent").Returns((IContentProvider)null);
+        _providerRegistry.GetProvider("non-existent").Returns((IContentProvider)null!);
 
         // Act & Assert
         Should.Throw<InvalidOperationException>(() => _factory.Create("non-existent"))
@@ -157,7 +157,7 @@ public class UnitOfWorkFactoryTests
     public void CreateForDefaultProvider_WithNoDefaultProvider_ThrowsInvalidOperationException()
     {
         // Arrange
-        _providerRegistry.GetDefaultProvider().Returns((IContentProvider)null);
+        _providerRegistry.GetDefaultProvider().Returns((IContentProvider)null!);
 
         // Act & Assert
         Should.Throw<InvalidOperationException>(() => _factory.CreateForDefaultProvider())
@@ -183,10 +183,11 @@ public class UnitOfWorkFactoryTests
 
         // Check the backup directory via reflection
         var backupDirField = typeof(FileSystemUnitOfWork)
-            .GetField("_backupDirectory", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            .GetField("_backupDirectory", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+            ?? throw new InvalidOperationException("The backup directory field was not found.");
 
-        backupDirField.ShouldNotBeNull();
-        var backupDir = backupDirField.GetValue(unitOfWork) as string;
+        var backupDir = backupDirField.GetValue(unitOfWork) as string
+            ?? throw new InvalidOperationException("The backup directory was not initialized.");
         backupDir.ShouldBe("/test/backup");
     }
 
@@ -194,7 +195,7 @@ public class UnitOfWorkFactoryTests
     public void Create_WithFileSystemProvider_UsesDefaultBackupDirectoryWhenNotConfigured()
     {
         // Arrange
-        _configuration["Osirion:Cms:FileSystem:BackupDirectory"].Returns((string)null);
+        _configuration["Osirion:Cms:FileSystem:BackupDirectory"].Returns((string)null!);
 
         // Act
         var unitOfWork = _factory.Create("filesystem-test") as FileSystemUnitOfWork;
@@ -204,10 +205,11 @@ public class UnitOfWorkFactoryTests
 
         // Check the backup directory via reflection
         var backupDirField = typeof(FileSystemUnitOfWork)
-            .GetField("_backupDirectory", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            .GetField("_backupDirectory", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+            ?? throw new InvalidOperationException("The backup directory field was not found.");
 
-        backupDirField.ShouldNotBeNull();
-        var backupDir = backupDirField.GetValue(unitOfWork) as string;
+        var backupDir = backupDirField.GetValue(unitOfWork) as string
+            ?? throw new InvalidOperationException("The backup directory was not initialized.");
         backupDir.ShouldContain("osirion-cms-backup");
     }
 }

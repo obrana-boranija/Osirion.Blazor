@@ -1,4 +1,4 @@
-﻿namespace Osirion.Blazor.Cms.Admin.Features.Layouts.Models;
+namespace Osirion.Blazor.Cms.Admin.Features.Layouts.Models;
 
 /// <summary>
 /// Represents a breadcrumb navigation item

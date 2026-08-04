@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
 
 namespace Osirion.Blazor.Cms.Admin.Common.Extensions;
 
+    /// <summary>Defines the public member type.</summary>
 public static class ComponentExtensions
 {
+    /// <summary>Gets or sets the GetCssClassNames value.</summary>
     public static string GetCssClassNames(this ComponentBase component, string cssClass)
     {
         // Get the component's type name in kebab-case
@@ -17,12 +19,14 @@ public static class ComponentExtensions
             : $"osirion-{componentName} {cssClass}";
     }
 
+    /// <summary>Gets or sets the GetFormCssClass value.</summary>
     public static string GetFormCssClass(this ComponentBase component, string cssClass, bool isValid)
     {
         var baseClass = GetCssClassNames(component, cssClass);
         return isValid ? baseClass : $"{baseClass} osirion-form-invalid";
     }
 
+    /// <summary>Performs the HandleKeyPress operation asynchronously.</summary>
     public static async Task HandleKeyPressAsync(this KeyboardEventArgs e, Func<Task> enterAction, Func<Task>? escapeAction = null)
     {
         if (e.Key.Equals("Enter", StringComparison.OrdinalIgnoreCase))
@@ -35,6 +39,7 @@ public static class ComponentExtensions
         }
     }
 
+    /// <summary>Gets or sets the ToKebabCase value.</summary>
     public static string ToKebabCase(string input)
     {
         if (string.IsNullOrWhiteSpace(input)) return input;
@@ -54,6 +59,7 @@ public static class ComponentExtensions
         return result.ToString();
     }
 
+    /// <summary>Performs the public member operation.</summary>
     public static EditContext CreateEditContext<T>(this T model) where T : class
     {
         return new EditContext(model);

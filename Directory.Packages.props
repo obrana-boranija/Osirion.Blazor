@@ -1,6 +1,7 @@
 <Project>
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
     <CentralPackageFloatingVersionsEnabled>false</CentralPackageFloatingVersionsEnabled>
     <Net8MicrosoftVersion>8.0.29</Net8MicrosoftVersion>
     <Net8MicrosoftExtensionsVersion>8.0.1</Net8MicrosoftExtensionsVersion>
@@ -28,6 +29,7 @@
 
   <ItemGroup Label="Test packages">
     <PackageVersion Include="bUnit" Version="1.40.0" />
+    <PackageVersion Include="AngleSharp" Version="1.7.0" />
     <PackageVersion Include="coverlet.collector" Version="6.0.4" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
     <PackageVersion Include="Microsoft.Playwright" Version="1.52.0" />

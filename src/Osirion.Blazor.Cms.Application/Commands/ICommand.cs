@@ -1,4 +1,4 @@
-﻿namespace Osirion.Blazor.Cms.Application.Commands;
+namespace Osirion.Blazor.Cms.Application.Commands;
 
 /// <summary>
 /// Marker interface for command objects in CQRS pattern

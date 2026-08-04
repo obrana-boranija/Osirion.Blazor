@@ -5,10 +5,12 @@ using Osirion.Blazor.Theming.Services;
 
 namespace Osirion.Blazor.Theming.Components;
 
+/// <summary>Defines the ThemeToggle type.</summary>
 public partial class ThemeToggle : IDisposable
 {
     [Inject] private IOptions<ThemingOptions> ThemingOptions { get; set; } = default!;
 
+    /// <summary>Gets or sets the OnThemeChanged value.</summary>
     [Parameter]
     public EventCallback<string> OnThemeChanged { get; set; }
 
@@ -19,6 +21,7 @@ public partial class ThemeToggle : IDisposable
     private string GetDefaultTheme() => ThemingOptions.Value.DefaultMode.ToString().ToLowerInvariant();
     private string GetFramework() => ThemingOptions.Value.Framework.ToString();
 
+    /// <summary>Initializes the component state and required services.</summary>
     protected override void OnInitialized()
     {
         ThemeService.ThemeChanged += OnThemeChangedHandler;
@@ -30,6 +33,7 @@ public partial class ThemeToggle : IDisposable
         InvokeAsync(StateHasChanged);
     }
 
+    /// <summary>Releases resources held by the component or service.</summary>
     public void Dispose()
     {
         ThemeService.ThemeChanged -= OnThemeChangedHandler;

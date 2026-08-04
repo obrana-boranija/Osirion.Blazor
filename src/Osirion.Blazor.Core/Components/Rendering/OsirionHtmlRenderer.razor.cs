@@ -77,6 +77,7 @@ public partial class OsirionHtmlRenderer
     /// </summary>
     private string ProcessedHtml { get; set; } = string.Empty;
 
+    /// <inheritdoc />
     protected override void OnParametersSet()
     {
         base.OnParametersSet();

@@ -6,7 +6,7 @@
             <p>@LoadingText</p>
         </div>
     }
-    else if (ContentItem is null)
+    else if (ContentItem is not { } contentItem)
     {
         <div class="osirion-content-not-found">
             <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -27,8 +27,8 @@
         <article class="osirion-content-page" itemscope itemtype="https://schema.org/@SchemaType">
             @if (ShowBreadcrumbs)
             {
-                <ContentBreadcrumbs Content="@ContentItem"
-                                    Directory="@ContentItem.Directory"
+                <ContentBreadcrumbs Content="@contentItem"
+                                    Directory="@contentItem.Directory"
                                     ShowHome="@ShowBreadcrumbHome"
                                     HomeUrl="@BreadcrumbHomeUrl"
                                     HomeText="@BreadcrumbHomeText" />
@@ -36,7 +36,7 @@
 
             <div class="osirion-content-main">
                 <div class="osirion-content-primary">
-                    <LocalizedContentView Item="@ContentItem"
+                    <LocalizedContentView Item="@contentItem"
                                           PreviousItem="@PreviousItem"
                                           NextItem="@NextItem"
                                           ShowNavigationLinks="@ShowNavigationLinks"/>
@@ -93,13 +93,13 @@
                 </div>
 
                 <div class="osirion-content-sidebar">
-                    @if (ContentItem.Categories.Any() && ShowCategories)
+                    @if (contentItem.Categories.Any() && ShowCategories)
                     {
                         <CategoriesList Title="@CategoriesTitle"
                                         ShowCount="false" />
                     }
 
-                    @if (ContentItem.Tags.Any() && ShowTags)
+                    @if (contentItem.Tags.Any() && ShowTags)
                     {
                         <TagCloud Title="@TagsTitle"
                                   ShowCount="false"/>

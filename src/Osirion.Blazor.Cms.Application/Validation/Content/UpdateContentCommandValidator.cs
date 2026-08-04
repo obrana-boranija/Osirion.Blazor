@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 using Osirion.Blazor.Cms.Application.Commands.Content;
 
 namespace Osirion.Blazor.Cms.Application.Validation.Content;
@@ -40,8 +40,9 @@ public class UpdateContentCommandValidator : AbstractValidator<UpdateContentComm
                !path.Contains("<") && !path.Contains(">");
     }
 
-    private bool BeValidSlug(string slug)
+    private bool BeValidSlug(string? slug)
     {
-        return System.Text.RegularExpressions.Regex.IsMatch(slug, "^[a-z0-9-]+$");
+        return !string.IsNullOrWhiteSpace(slug) &&
+               System.Text.RegularExpressions.Regex.IsMatch(slug, "^[a-z0-9-]+$");
     }
 }

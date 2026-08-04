@@ -310,7 +310,8 @@ public class FileSystemDirectoryRepositoryTests
         // Arrange - Setup method via reflection since it's private
         var findDirectoriesMethod = typeof(FileSystemDirectoryRepository)
             .GetMethod("FindDirectoriesAsync",
-                       BindingFlags.NonPublic | BindingFlags.Instance);
+                       BindingFlags.NonPublic | BindingFlags.Instance)
+            ?? throw new InvalidOperationException("The directory discovery method was not found.");
 
         // Setup directory structure
         var contentFolder = Path.Combine(_basePath, "content");
@@ -326,9 +327,10 @@ public class FileSystemDirectoryRepositoryTests
             .Returns(callInfo => callInfo.Arg<DirectoryItem>());
 
         // Act
-        var result = await (Task<Dictionary<string, DirectoryItem>>)findDirectoriesMethod.Invoke(
+        var result = await (findDirectoriesMethod.Invoke(
             _repository,
-            new object[] { "content", null, CancellationToken.None });
+            new object[] { "content", null!, CancellationToken.None }) as Task<Dictionary<string, DirectoryItem>>
+            ?? throw new InvalidOperationException("The directory discovery method returned an unexpected result."));
 
         // Assert
         result.ShouldNotBeNull();
@@ -353,7 +355,8 @@ public class FileSystemDirectoryRepositoryTests
         // Arrange - Setup method via reflection since it's private
         var processMetadataMethod = typeof(FileSystemDirectoryRepository)
             .GetMethod("ProcessDirectoryMetadataAsync",
-                       BindingFlags.NonPublic | BindingFlags.Instance);
+                       BindingFlags.NonPublic | BindingFlags.Instance)
+            ?? throw new InvalidOperationException("The metadata processing method was not found.");
 
         // Setup directory and metadata file
         var directoryPath = "test/directory";
@@ -374,9 +377,10 @@ public class FileSystemDirectoryRepositoryTests
             .Returns(directory);
 
         // Act
-        await (Task)processMetadataMethod.Invoke(
+        await (processMetadataMethod.Invoke(
             _repository,
-            new object[] { directory, CancellationToken.None });
+            new object[] { directory, CancellationToken.None }) as Task
+            ?? throw new InvalidOperationException("The metadata processing method returned an unexpected result."));
 
         // Assert
         _metadataProcessor.Received(1).ProcessMetadata(

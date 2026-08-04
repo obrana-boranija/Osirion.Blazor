@@ -1,20 +1,23 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
 
 namespace Osirion.Blazor.Cms.Admin.Infrastructure.Middleware;
 
+/// <summary>Defines the ExceptionHandlingMiddleware API contract.</summary>
 public class ExceptionHandlingMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly ILogger<ExceptionHandlingMiddleware> _logger;
 
+    /// <summary>Performs the ExceptionHandlingMiddleware operation.</summary>
     public ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
     {
         _next = next;
         _logger = logger;
     }
 
+    /// <summary>Performs the Invoke operation asynchronously.</summary>
     public async Task InvokeAsync(HttpContext context)
     {
         try

@@ -1,4 +1,4 @@
-﻿namespace Osirion.Blazor.Cms.Domain.Interfaces;
+namespace Osirion.Blazor.Cms.Domain.Interfaces;
 
 /// <summary>
 /// Interface for content providers that can update their cache when changes are detected

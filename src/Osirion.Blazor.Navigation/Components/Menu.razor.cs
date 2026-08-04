@@ -3,6 +3,7 @@ using Osirion.Blazor.Components;
 
 namespace Osirion.Blazor.Navigation.Components;
 
+/// <summary>Defines the Menu type.</summary>
 public partial class Menu
 {
     /// <summary>
@@ -121,6 +122,7 @@ public partial class Menu
         };
     }
 
+    /// <summary>Initializes the component state and required services.</summary>
     protected override void OnInitialized()
     {
         base.OnInitialized();

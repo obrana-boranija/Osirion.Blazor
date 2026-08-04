@@ -1,4 +1,4 @@
-﻿namespace Osirion.Blazor.Cms.Domain.Events;
+namespace Osirion.Blazor.Cms.Domain.Events;
 
 /// <summary>
 /// Event raised when a directory is deleted
@@ -25,6 +25,7 @@ public class DirectoryDeletedEvent : DomainEvent
     /// </summary>
     public bool Recursive { get; }
 
+    /// <summary>Gets or sets the DirectoryDeletedEvent value.</summary>
     public DirectoryDeletedEvent(string directoryId, string path, string providerId, bool recursive)
     {
         DirectoryId = directoryId ?? throw new ArgumentNullException(nameof(directoryId));

@@ -1,4 +1,4 @@
-﻿namespace Osirion.Blazor.Cms.Application.Queries;
+namespace Osirion.Blazor.Cms.Application.Queries;
 
 /// <summary>
 /// Interface for dispatching queries to their handlers

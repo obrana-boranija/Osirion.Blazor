@@ -5,11 +5,16 @@ using Osirion.Blazor.Theming.Services;
 
 namespace Osirion.Blazor.Theming.Components
 {
+    /// <summary>Defines the OsirionStyles type.</summary>
     public partial class OsirionStyles : OsirionComponentBase
     {
+        /// <summary>Gets or sets whether the default Osirion styles are rendered.</summary>
         [Parameter] public bool? UseStyles { get; set; }
+        /// <summary>Gets or sets custom CSS variables appended to the generated theme styles.</summary>
         [Parameter] public string? CustomVariables { get; set; }
-        [Parameter] public CssFramework? Framework { get; set; }
+        /// <summary>Gets or sets the CSS framework adapter used by the component.</summary>
+        [Parameter] public new CssFramework? Framework { get; set; }
+        /// <summary>Gets or sets the theme mode used for generated styles.</summary>
         [Parameter] public ThemeMode? Mode { get; set; }
 
         private ThemingOptions EffectiveOptions
@@ -42,6 +47,7 @@ namespace Osirion.Blazor.Theming.Components
         private string GeneratedVariables => ThemeService.GenerateThemeVariables();
         private string GetFrameworkClass => ThemeService.GetFrameworkClass();
 
+        /// <summary>Initializes the component state and required services.</summary>
         protected override void OnInitialized()
         {
             ThemeService.ThemeChanged += OnThemeChanged;
@@ -53,6 +59,7 @@ namespace Osirion.Blazor.Theming.Components
             InvokeAsync(StateHasChanged);
         }
 
+        /// <summary>Releases resources held by the component or service.</summary>
         public void Dispose()
         {
             ThemeService.ThemeChanged -= OnThemeChanged;

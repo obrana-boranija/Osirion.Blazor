@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Admin.Services.State;
 using Osirion.Blazor.Cms.Domain.Interfaces;
@@ -18,6 +18,7 @@ public class CmsAdminStartupService
     private readonly IAuthenticationService _authenticationService;
     private bool _isInitialized = false;
 
+    /// <summary>Performs the CmsAdminStartupService operation.</summary>
     public CmsAdminStartupService(
         StateManager stateManager,
         ErrorHandlingService errorHandler,

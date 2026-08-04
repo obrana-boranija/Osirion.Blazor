@@ -162,7 +162,7 @@ public class ContentEditorViewModelTests
         await _viewModel.SavePostAsync();
 
         // Assert
-        _viewModel.EditingPost.Sha.ShouldBe("new-sha-123");
+        _viewModel.EditingPost!.Sha.ShouldBe("new-sha-123");
         _viewModel.IsSaving.ShouldBeFalse();
         stateChangedCalled.ShouldBeTrue();
 
@@ -274,7 +274,7 @@ public class ContentEditorViewModelTests
         _viewModel.UpdateContent("Updated content");
 
         // Assert
-        _viewModel.EditingPost.Content.ShouldBe("Updated content");
+        _viewModel.EditingPost!.Content.ShouldBe("Updated content");
         stateChangedCalled.ShouldBeTrue();
     }
 
@@ -300,7 +300,7 @@ public class ContentEditorViewModelTests
         _viewModel.UpdateMetadata(updatedMetadata);
 
         // Assert
-        _viewModel.EditingPost.Metadata.ShouldBe(updatedMetadata);
+        _viewModel.EditingPost!.Metadata.ShouldBe(updatedMetadata);
         stateChangedCalled.ShouldBeTrue();
     }
 

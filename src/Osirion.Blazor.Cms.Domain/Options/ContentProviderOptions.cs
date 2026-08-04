@@ -1,4 +1,4 @@
-﻿namespace Osirion.Blazor.Cms.Domain.Options;
+namespace Osirion.Blazor.Cms.Domain.Options;
 
 /// <summary>
 /// Base options for content providers

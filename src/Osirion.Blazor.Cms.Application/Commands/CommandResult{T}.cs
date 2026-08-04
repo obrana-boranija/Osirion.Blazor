@@ -1,4 +1,4 @@
-﻿namespace Osirion.Blazor.Cms.Application.Commands;
+namespace Osirion.Blazor.Cms.Application.Commands;
 
 /// <summary>
 /// Generic implementation of ICommandResult that includes a result value

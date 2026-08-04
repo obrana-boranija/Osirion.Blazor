@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Exceptions;
 using Osirion.Blazor.Cms.Domain.Repositories;
 
@@ -12,6 +12,7 @@ public class DeleteContentCommandHandler : ICommandHandler<DeleteContentCommand>
     private readonly IUnitOfWorkFactory _unitOfWorkFactory;
     private readonly ILogger<DeleteContentCommandHandler> _logger;
 
+    /// <summary>Performs the DeleteContentCommandHandler operation.</summary>
     public DeleteContentCommandHandler(
         IUnitOfWorkFactory unitOfWorkFactory,
         ILogger<DeleteContentCommandHandler> logger)
@@ -20,6 +21,7 @@ public class DeleteContentCommandHandler : ICommandHandler<DeleteContentCommand>
         _logger = logger;
     }
 
+    /// <summary>Performs the Handle operation asynchronously.</summary>
     public async Task HandleAsync(DeleteContentCommand command, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Deleting content: {Id}", command.Id);

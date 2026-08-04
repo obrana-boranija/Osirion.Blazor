@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Admin.Core.Events;
 using Osirion.Blazor.Cms.Admin.Core.State;
@@ -8,6 +8,7 @@ using Osirion.Blazor.Cms.Domain.Models.GitHub;
 
 namespace Osirion.Blazor.Cms.Admin.Features.ContentBrowser.ViewModels;
 
+/// <summary>Coordinates content browser navigation and file actions.</summary>
 public class FileExplorerViewModel
 {
     private readonly ContentBrowserService _browserService;
@@ -16,22 +17,33 @@ public class FileExplorerViewModel
     private readonly ILogger<FileExplorerViewModel> _logger;
     private readonly CmsEventMediator _eventMediator;
 
+    /// <summary>Gets the current directory contents.</summary>
     public List<GitHubItem> Contents => _state.CurrentItems;
+    /// <summary>Gets the current repository path.</summary>
     public string CurrentPath => _state.CurrentPath;
+    /// <summary>Gets the selected item.</summary>
     public GitHubItem? SelectedItem { get; private set; }
+    /// <summary>Gets whether content is loading.</summary>
     public bool IsLoading { get; private set; }
+    /// <summary>Gets the current error message.</summary>
     public string? ErrorMessage { get; private set; }
 
+    /// <summary>Gets whether a repository and branch are selected.</summary>
     public bool IsValidRepositoryAndBranch =>
         _state.SelectedRepository is not null && _state.SelectedBranch is not null;
 
     // For delete confirmation
+    /// <summary>Gets whether delete confirmation is visible.</summary>
     public bool IsShowingDeleteConfirmation { get; private set; }
+    /// <summary>Gets the file pending deletion.</summary>
     public GitHubItem? FileToDelete { get; private set; }
+    /// <summary>Gets whether a file deletion is in progress.</summary>
     public bool IsDeletingFile { get; private set; }
 
+    /// <summary>Raised when view-model state changes.</summary>
     public event Action? StateChanged;
 
+    /// <summary>Initializes the file explorer view model.</summary>
     public FileExplorerViewModel(
         ContentBrowserService browserService,
         CmsState state,
@@ -53,6 +65,7 @@ public class FileExplorerViewModel
         NotifyStateChanged();
     }
 
+    /// <summary>Loads the contents of the current path.</summary>
     public async Task LoadContentsAsync()
     {
         if (!IsValidRepositoryAndBranch)
@@ -82,12 +95,15 @@ public class FileExplorerViewModel
         }
     }
 
+    /// <summary>Navigates to a repository path.</summary>
+    /// <param name="path">The repository path.</param>
     public async Task NavigateToPathAsync(string path)
     {
         _state.SetCurrentPath(path, new List<GitHubItem>());
         await LoadContentsAsync();
     }
 
+    /// <summary>Navigates to the repository root.</summary>
     public async Task NavigateToRootAsync()
     {
         await NavigateToPathAsync(string.Empty);
@@ -183,17 +199,23 @@ public class FileExplorerViewModel
         }
     }
 
+    /// <summary>Selects an item.</summary>
+    /// <param name="item">The item to select.</param>
     public void SelectItem(GitHubItem item)
     {
         SelectedItem = item;
         NotifyStateChanged();
     }
 
+    /// <summary>Determines whether an item is selected.</summary>
+    /// <param name="item">The item to check.</param>
     public bool IsItemSelected(GitHubItem item)
     {
         return SelectedItem?.Path == item.Path;
     }
 
+    /// <summary>Shows the delete confirmation for an item.</summary>
+    /// <param name="item">The file to delete.</param>
     public void ShowDeleteConfirmation(GitHubItem item)
     {
         FileToDelete = item;
@@ -201,6 +223,7 @@ public class FileExplorerViewModel
         NotifyStateChanged();
     }
 
+    /// <summary>Cancels the pending deletion.</summary>
     public void CancelDelete()
     {
         FileToDelete = null;
@@ -208,6 +231,7 @@ public class FileExplorerViewModel
         NotifyStateChanged();
     }
 
+    /// <summary>Deletes the file pending confirmation.</summary>
     public async Task DeleteFileAsync()
     {
         if (FileToDelete is null)
@@ -246,6 +270,7 @@ public class FileExplorerViewModel
         }
     }
 
+    /// <summary>Performs the NotifyStateChanged operation.</summary>
     protected void NotifyStateChanged()
     {
         StateChanged?.Invoke();

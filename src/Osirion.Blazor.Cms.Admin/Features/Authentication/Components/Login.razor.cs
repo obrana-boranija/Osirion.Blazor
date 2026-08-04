@@ -1,34 +1,42 @@
-﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Domain.Options.Configuration;
 
 namespace Osirion.Blazor.Cms.Admin.Features.Authentication.Components;
 
+/// <summary>Defines the Login type.</summary>
 public partial class Login
 {
     [Inject]
     private IOptions<CmsAdminOptions> Options { get; set; } = default!;
 
+    /// <summary>Gets or sets the Title value.</summary>
     [Parameter]
     public string Title { get; set; } = "Osirion CMS Admin";
 
+    /// <summary>Gets or sets the Description value.</summary>
     [Parameter]
     public string Description { get; set; } = "Sign in to manage your content.";
 
+    /// <summary>Gets or sets the Theme value.</summary>
     [Parameter]
-    public string Theme { get; set; } = "light";
+    public new string Theme { get; set; } = "light";
 
+    /// <summary>Gets or sets the EnableGitHubAuth value.</summary>
     [Parameter]
     public bool EnableGitHubAuth { get; set; } = false;
 
+    /// <summary>Gets or sets the ReturnUrl value.</summary>
     [Parameter]
     public string ReturnUrl { get; set; } = "/admin";
 
+    /// <summary>Gets or sets the OnLoginResult value.</summary>
     [Parameter]
     public EventCallback<bool> OnLoginResult { get; set; }
 
     private string GitHubAuthUrl => $"https://github.com/login/oauth/authorize?client_id={Options.Value.Authentication.GitHubClientId}&redirect_uri={Uri.EscapeDataString(GetRedirectUri())}&scope=repo";
 
+    /// <summary>Initializes the component state and required services.</summary>
     protected override void OnInitialized()
     {
         ViewModel.StateChanged += StateHasChanged;
@@ -39,6 +47,7 @@ public partial class Login
                          !string.IsNullOrWhiteSpace(Options.Value.Authentication.GitHubClientSecret);
     }
 
+    /// <summary>Initializes the component state and required services.</summary>
     protected override async Task OnInitializedAsync()
     {
         // Check if we have a configured PAT in options
@@ -64,6 +73,7 @@ public partial class Login
         }
     }
 
+    /// <summary>Releases resources held by the component or service.</summary>
     public void Dispose()
     {
         ViewModel.StateChanged -= StateHasChanged;

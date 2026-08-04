@@ -1,4 +1,4 @@
-﻿using Osirion.Blazor.Cms.Domain.Common;
+using Osirion.Blazor.Cms.Domain.Common;
 using Osirion.Blazor.Cms.Domain.Extensions;
 
 namespace Osirion.Blazor.Cms.Domain.Repositories;
@@ -8,21 +8,32 @@ namespace Osirion.Blazor.Cms.Domain.Repositories;
 /// </summary>
 public class ContentCategory : ValueObject
 {
-    // Core properties
+    /// <summary>Gets the category name.</summary>
     public string Name { get; private set; } = string.Empty;
+    /// <summary>Gets the URL-friendly category slug.</summary>
     public string Slug { get; private set; } = string.Empty;
+    /// <summary>Gets the number of content items in the category.</summary>
     public int Count { get; private set; }
+    /// <summary>Gets the category description.</summary>
     public string? Description { get; private set; }
+    /// <summary>Gets the parent category.</summary>
     public ContentCategory? Parent { get; private set; }
+    /// <summary>Gets the child categories.</summary>
     public IReadOnlyList<ContentCategory> Children { get; private set; } = new List<ContentCategory>();
+    /// <summary>Gets the category URL.</summary>
     public string Url { get; private set; } = string.Empty;
+    /// <summary>Gets the category color.</summary>
     public string? Color { get; private set; }
+    /// <summary>Gets the category icon.</summary>
     public string? Icon { get; private set; }
+    /// <summary>Gets the display order.</summary>
     public int Order { get; private set; }
+    /// <summary>Gets whether the category is featured.</summary>
     public bool IsFeatured { get; private set; }
 
     // Metadata
     private readonly Dictionary<string, object> _metadataValues = new(StringComparer.OrdinalIgnoreCase);
+    /// <summary>Gets the category metadata.</summary>
     public IReadOnlyDictionary<string, object> Metadata => _metadataValues;
 
     // Private constructor for object initialization
@@ -59,7 +70,8 @@ public class ContentCategory : ValueObject
         };
     }
 
-    // With methods for immutable updates
+    /// <summary>Returns a copy with a different name.</summary>
+    /// <param name="name">The new category name.</param>
     public ContentCategory WithName(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
@@ -70,6 +82,8 @@ public class ContentCategory : ValueObject
         return clone;
     }
 
+    /// <summary>Returns a copy with a different slug.</summary>
+    /// <param name="slug">The new category slug.</param>
     public ContentCategory WithSlug(string slug)
     {
         if (string.IsNullOrWhiteSpace(slug))
@@ -83,6 +97,8 @@ public class ContentCategory : ValueObject
         return clone;
     }
 
+    /// <summary>Returns a copy with a different item count.</summary>
+    /// <param name="count">The new item count.</param>
     public ContentCategory WithCount(int count)
     {
         var clone = Clone();
@@ -90,6 +106,8 @@ public class ContentCategory : ValueObject
         return clone;
     }
 
+    /// <summary>Returns a copy with a different description.</summary>
+    /// <param name="description">The new description.</param>
     public ContentCategory WithDescription(string? description)
     {
         var clone = Clone();
@@ -97,6 +115,8 @@ public class ContentCategory : ValueObject
         return clone;
     }
 
+    /// <summary>Returns a copy with a different parent category.</summary>
+    /// <param name="parent">The new parent category.</param>
     public ContentCategory WithParent(ContentCategory? parent)
     {
         // Prevent circular references
@@ -108,6 +128,8 @@ public class ContentCategory : ValueObject
         return clone;
     }
 
+    /// <summary>Returns a copy with different child categories.</summary>
+    /// <param name="children">The child categories.</param>
     public ContentCategory WithChildren(IEnumerable<ContentCategory> children)
     {
         var clone = Clone();
@@ -117,6 +139,8 @@ public class ContentCategory : ValueObject
         return clone;
     }
 
+    /// <summary>Returns a copy with a different URL.</summary>
+    /// <param name="url">The new category URL.</param>
     public ContentCategory WithUrl(string url)
     {
         var clone = Clone();
@@ -124,6 +148,8 @@ public class ContentCategory : ValueObject
         return clone;
     }
 
+    /// <summary>Returns a copy with a different color.</summary>
+    /// <param name="color">The new category color.</param>
     public ContentCategory WithColor(string? color)
     {
         var clone = Clone();
@@ -131,6 +157,7 @@ public class ContentCategory : ValueObject
         return clone;
     }
 
+    /// <summary>Gets or sets the WithIcon value.</summary>
     public ContentCategory WithIcon(string? icon)
     {
         var clone = Clone();
@@ -138,6 +165,7 @@ public class ContentCategory : ValueObject
         return clone;
     }
 
+    /// <summary>Gets or sets the WithOrder value.</summary>
     public ContentCategory WithOrder(int order)
     {
         var clone = Clone();
@@ -145,6 +173,7 @@ public class ContentCategory : ValueObject
         return clone;
     }
 
+    /// <summary>Gets or sets the WithFeatured value.</summary>
     public ContentCategory WithFeatured(bool isFeatured)
     {
         var clone = Clone();
@@ -152,6 +181,7 @@ public class ContentCategory : ValueObject
         return clone;
     }
 
+    /// <summary>Gets or sets the WithMetadata value.</summary>
     public ContentCategory WithMetadata(string key, object value)
     {
         if (string.IsNullOrWhiteSpace(key))
@@ -162,6 +192,7 @@ public class ContentCategory : ValueObject
         return clone;
     }
 
+    /// <summary>Gets a typed metadata value by key.</summary>
     public T? GetMetadata<T>(string key, T? defaultValue = default)
     {
         if (_metadataValues.TryGetValue(key, out var value))
@@ -256,6 +287,7 @@ public class ContentCategory : ValueObject
         return clone;
     }
 
+    /// <summary>Gets or sets the GetEqualityComponents value.</summary>
     protected override IEnumerable<object> GetEqualityComponents()
     {
         yield return Name;

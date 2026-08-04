@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Services;
 
@@ -12,6 +12,7 @@ public class GetDirectoryByPathQueryHandler : IQueryHandler<GetDirectoryByPathQu
     private readonly IContentProviderManager _providerManager;
     private readonly ILogger<GetDirectoryByPathQueryHandler> _logger;
 
+    /// <summary>Performs the GetDirectoryByPathQueryHandler operation.</summary>
     public GetDirectoryByPathQueryHandler(
         IContentProviderManager providerManager,
         ILogger<GetDirectoryByPathQueryHandler> logger)
@@ -20,6 +21,7 @@ public class GetDirectoryByPathQueryHandler : IQueryHandler<GetDirectoryByPathQu
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
+    /// <summary>Performs the Handle operation asynchronously.</summary>
     public async Task<DirectoryItem?> HandleAsync(GetDirectoryByPathQuery query, CancellationToken cancellationToken = default)
     {
         _logger.LogDebug("Getting directory by path: {Path}", query.Path);

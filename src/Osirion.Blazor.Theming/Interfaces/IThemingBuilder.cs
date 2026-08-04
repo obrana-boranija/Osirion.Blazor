@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Osirion.Blazor.Components;
 
 namespace Osirion.Blazor.Theming;

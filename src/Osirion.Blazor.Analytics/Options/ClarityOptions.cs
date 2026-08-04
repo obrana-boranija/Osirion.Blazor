@@ -1,4 +1,4 @@
-﻿namespace Osirion.Blazor.Analytics.Options;
+namespace Osirion.Blazor.Analytics.Options;
 
 /// <summary>
 /// Configuration options for Microsoft Clarity

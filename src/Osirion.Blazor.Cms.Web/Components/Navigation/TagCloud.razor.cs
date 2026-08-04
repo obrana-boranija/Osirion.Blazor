@@ -76,6 +76,7 @@ public partial class TagCloud(IContentProviderManager contentProviderManager)
     }
 
 
+    /// <summary>Performs the OnParametersSet operation asynchronously.</summary>
     protected override async Task OnParametersSetAsync()
     {
         await LoadTagsAsync();

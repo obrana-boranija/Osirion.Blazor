@@ -5,18 +5,27 @@ using Osirion.Blazor.Cms.Domain.Interfaces;
 
 namespace Osirion.Blazor.Cms;
 
+/// <summary>Defines the MarkdownPreview type.</summary>
 public partial class MarkdownPreview : IAsyncDisposable
 {
     [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
     [Inject] private IMarkdownRendererService MarkdownRenderer { get; set; } = default!;
 
+    /// <summary>Gets or sets the markdown source.</summary>
     [Parameter] public string Markdown { get; set; } = string.Empty;
+    /// <summary>Gets or sets the preview title.</summary>
     [Parameter] public string Title { get; set; } = "Preview";
+    /// <summary>Gets or sets a value indicating whether the header is shown.</summary>
     [Parameter] public bool ShowHeader { get; set; } = true;
+    /// <summary>Gets or sets the empty-state placeholder.</summary>
     [Parameter] public string Placeholder { get; set; } = "No content to preview";
+    /// <summary>Gets or sets a value indicating whether scrolling is synchronized.</summary>
     [Parameter] public bool SyncScroll { get; set; } = true;
+    /// <summary>Gets or sets the CSS class for the content.</summary>
     [Parameter] public string ContentCssClass { get; set; } = string.Empty;
+    /// <summary>Gets or sets the callback invoked when the preview scrolls.</summary>
     [Parameter] public EventCallback<double> OnScroll { get; set; }
+    /// <summary>Gets or sets the markdown pipeline.</summary>
     [Parameter] public MarkdownPipeline? Pipeline { get; set; }
 
     private ElementReference PreviewContainer;
@@ -28,11 +37,13 @@ public partial class MarkdownPreview : IAsyncDisposable
     /// </summary>
     public string RenderedHtml => RenderMarkdown(Markdown);
 
+    /// <summary>Initializes the component state and required services.</summary>
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
     }
 
+    /// <summary>Performs the OnAfterRender operation asynchronously.</summary>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)

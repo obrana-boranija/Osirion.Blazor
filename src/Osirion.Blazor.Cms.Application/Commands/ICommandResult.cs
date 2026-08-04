@@ -1,4 +1,4 @@
-﻿namespace Osirion.Blazor.Cms.Application.Commands;
+namespace Osirion.Blazor.Cms.Application.Commands;
 
 /// <summary>
 /// Interface for command results in CQRS pattern

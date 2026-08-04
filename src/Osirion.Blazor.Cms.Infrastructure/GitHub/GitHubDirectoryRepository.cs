@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Exceptions;
@@ -22,6 +22,7 @@ public class GitHubDirectoryRepository : DirectoryRepositoryBase, IDirectoryRepo
     private readonly GitHubOptions _options;
     private readonly string? _providerName;
 
+    /// <summary>Performs the GitHubDirectoryRepository operation.</summary>
     public GitHubDirectoryRepository(
         IGitHubApiClientFactory apiClientFactory,
         IOptions<GitHubOptions> options,
@@ -165,7 +166,7 @@ public class GitHubDirectoryRepository : DirectoryRepositoryBase, IDirectoryRepo
         var contentPath = PathUtils.NormalizePath(_options.ContentPath);
 
         // Get repository contents
-        var contents = await _apiClient.GetRepositoryContentsAsync(contentPath, cancellationToken);
+        var contents = await _apiClient.GetRepositoryContentsAsync(contentPath, cancellationToken) ?? [];
 
         // Process contents recursively to build directory structure
         await ProcessDirectoriesRecursivelyAsync(contents, cache, null, cancellationToken);
@@ -293,7 +294,7 @@ public class GitHubDirectoryRepository : DirectoryRepositoryBase, IDirectoryRepo
             }
 
             // Process subdirectories
-            var subContents = await _apiClient.GetRepositoryContentsAsync(item.Path, cancellationToken);
+            var subContents = await _apiClient.GetRepositoryContentsAsync(item.Path, cancellationToken) ?? [];
             await ProcessDirectoriesRecursivelyAsync(
                 subContents,
                 directoryCache,
@@ -314,6 +315,11 @@ public class GitHubDirectoryRepository : DirectoryRepositoryBase, IDirectoryRepo
             {
                 var indexFilePath = Path.Combine(directoryPath, "_index.md").Replace('\\', '/');
                 var fileContent = await _apiClient.GetFileContentAsync(indexFilePath, cancellationToken);
+                if (fileContent is null)
+                {
+                    continue;
+                }
+
                 var decodedContent = fileContent.GetDecodedContent();
 
                 // Find the directory
@@ -386,7 +392,7 @@ public class GitHubDirectoryRepository : DirectoryRepositoryBase, IDirectoryRepo
             try
             {
                 var existingFile = await _apiClient.GetFileContentAsync(indexPath, cancellationToken);
-                sha = existingFile.Sha;
+                sha = existingFile?.Sha;
             }
             catch
             {
@@ -402,6 +408,11 @@ public class GitHubDirectoryRepository : DirectoryRepositoryBase, IDirectoryRepo
             sha,
             cancellationToken);
 
+        if (response is null)
+        {
+            throw new InvalidOperationException($"GitHub did not return a commit response for '{indexPath}'.");
+        }
+
         // Update the entity with the new SHA
         directory.SetProviderSpecificId(response.Content.Sha);
     }
@@ -409,7 +420,7 @@ public class GitHubDirectoryRepository : DirectoryRepositoryBase, IDirectoryRepo
     private async Task<List<GitHubItem>> GetAllFilesInPathAsync(string path, CancellationToken cancellationToken)
     {
         var result = new List<GitHubItem>();
-        var contents = await _apiClient.GetRepositoryContentsAsync(path, cancellationToken);
+        var contents = await _apiClient.GetRepositoryContentsAsync(path, cancellationToken) ?? [];
 
         foreach (var item in contents)
         {
@@ -448,6 +459,11 @@ public class GitHubDirectoryRepository : DirectoryRepositoryBase, IDirectoryRepo
 
             // Get file content
             var fileContent = await _apiClient.GetFileContentAsync(file.Path, cancellationToken);
+            if (fileContent is null)
+            {
+                continue;
+            }
+
             var content = fileContent.GetDecodedContent();
 
             // Create file at new location

@@ -1,19 +1,22 @@
-﻿using Osirion.Blazor.Cms.Domain.Entities;
+using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Exceptions;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 
 namespace Osirion.Blazor.Cms.Infrastructure.Decorators
 {
+    /// <summary>Defines the ExceptionHandlingContentProviderDecorator API contract.</summary>
     public class ExceptionHandlingContentProviderDecorator : IReadContentProvider
     {
         private readonly IReadContentProvider _inner;
 
+        /// <summary>Performs the ExceptionHandlingContentProviderDecorator operation.</summary>
         public ExceptionHandlingContentProviderDecorator(IReadContentProvider inner)
         {
             _inner = inner;
         }
 
-        public async Task<ContentItem> GetByIdAsync(Guid id)
+        /// <summary>Performs the GetById operation asynchronously.</summary>
+        public async Task<ContentItem?> GetByIdAsync(Guid id)
         {
             try
             {
@@ -26,6 +29,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.Decorators
             }
         }
 
+        /// <summary>Performs the GetAll operation asynchronously.</summary>
         public async Task<IEnumerable<ContentItem>> GetAllAsync()
         {
             try

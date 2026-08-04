@@ -131,7 +131,7 @@ public class GitHubTokenProviderTests
         string code = "test-code";
         string clientId = "client-id";
         string clientSecret = "client-secret";
-        HttpContent capturedContent = null;
+        HttpContent capturedContent = null!;
 
         var responseMessage = new HttpResponseMessage(HttpStatusCode.OK)
         {

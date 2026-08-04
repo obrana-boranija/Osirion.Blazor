@@ -86,7 +86,7 @@ public class ExceptionHandlingContentProviderDecoratorTests
     {
         // Act & Assert
         Should.Throw<ArgumentNullException>(() =>
-            new ExceptionHandlingContentProviderDecorator(null))
+            new ExceptionHandlingContentProviderDecorator(null!))
             .ParamName.ShouldBe("inner");
     }
 

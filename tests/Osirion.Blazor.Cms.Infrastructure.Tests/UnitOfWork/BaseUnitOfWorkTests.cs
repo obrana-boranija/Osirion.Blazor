@@ -172,10 +172,10 @@ public class BaseUnitOfWorkTests
     }
 
     [Fact]
-    public void Dispose_WithActiveTransaction_RollsBackTransaction()
+    public async Task Dispose_WithActiveTransaction_RollsBackTransaction()
     {
         // Arrange
-        _unitOfWork.BeginTransactionAsync().GetAwaiter().GetResult();
+        await _unitOfWork.BeginTransactionAsync();
 
         // Act
         _unitOfWork.Dispose();

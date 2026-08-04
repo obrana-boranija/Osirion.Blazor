@@ -58,7 +58,7 @@ public class TestApp
     public async Task<string> GetTextContentAsync(string selector)
     {
         await WaitForComponentAsync(selector);
-        return await Page.TextContentAsync(selector);
+        return await Page.TextContentAsync(selector) ?? string.Empty;
     }
 
     /// <summary>

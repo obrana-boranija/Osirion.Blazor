@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Events;
 using Osirion.Blazor.Cms.Domain.Repositories;
@@ -14,6 +14,7 @@ public class CreateDirectoryCommandHandler : ICommandHandler<CreateDirectoryComm
     private readonly IDomainEventDispatcher _eventDispatcher;
     private readonly ILogger<CreateDirectoryCommandHandler> _logger;
 
+    /// <summary>Performs the CreateDirectoryCommandHandler operation.</summary>
     public CreateDirectoryCommandHandler(
         IUnitOfWorkFactory unitOfWorkFactory,
         IDomainEventDispatcher eventDispatcher,
@@ -24,6 +25,7 @@ public class CreateDirectoryCommandHandler : ICommandHandler<CreateDirectoryComm
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
+    /// <summary>Performs the Handle operation asynchronously.</summary>
     public async Task HandleAsync(CreateDirectoryCommand command, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Creating directory: {Name}", command.Name);

@@ -6,6 +6,7 @@ using Osirion.Blazor.Cms.Domain.ValueObjects;
 
 namespace Osirion.Blazor.Cms.Admin.Components.Pages;
 
+    /// <summary>Defines the public member type.</summary>
 public partial class Dashboard
 {
     /// <summary>
@@ -14,6 +15,7 @@ public partial class Dashboard
     private bool IsRepositoryConfigured =>
         AdminState.SelectedRepository is not null && AdminState.SelectedBranch is not null;
 
+    /// <summary>Initializes the component state and required services.</summary>
     protected override void OnInitialized()
     {
         // Subscribe to state changes to trigger re-render
@@ -50,6 +52,7 @@ public partial class Dashboard
         NavigationManager.NavigateTo("/osirion/content/edit");
     }
 
+    /// <summary>Releases resources held by the component or service.</summary>
     public void Dispose()
     {
         // Unsubscribe from state changes when component is disposed

@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace Osirion.Blazor.Cms.Infrastructure.Events.Handlers;
 
@@ -9,11 +9,13 @@ public class DirectoryCreatedEventHandler : Domain.Events.IDomainEventHandler<Do
 {
     private readonly ILogger<DirectoryCreatedEventHandler> _logger;
 
+    /// <summary>Performs the DirectoryCreatedEventHandler operation.</summary>
     public DirectoryCreatedEventHandler(ILogger<DirectoryCreatedEventHandler> logger)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
+    /// <summary>Performs the Handle operation asynchronously.</summary>
     public Task HandleAsync(Domain.Events.DirectoryCreatedEvent domainEvent)
     {
         _logger.LogInformation(

@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Osirion.Blazor.Cms.Domain.Events;
 using Osirion.Blazor.Cms.Infrastructure.Events;
 

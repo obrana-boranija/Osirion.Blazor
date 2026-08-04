@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Events;
 
 namespace Osirion.Blazor.Cms.Infrastructure.Events.Handlers;
@@ -10,11 +10,13 @@ public class ContentCreatedEventHandler : IDomainEventHandler<ContentCreatedEven
 {
     private readonly ILogger<ContentCreatedEventHandler> _logger;
 
+    /// <summary>Performs the ContentCreatedEventHandler operation.</summary>
     public ContentCreatedEventHandler(ILogger<ContentCreatedEventHandler> logger)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
+    /// <summary>Performs the Handle operation asynchronously.</summary>
     public Task HandleAsync(ContentCreatedEvent domainEvent)
     {
         _logger.LogInformation(

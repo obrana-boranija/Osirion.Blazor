@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Domain.Entities;
@@ -21,6 +21,7 @@ public class FileSystemContentProvider : ContentProviderBase
     private readonly FileSystemDirectoryRepository _directoryRepository;
     private readonly FileSystemOptions _options;
 
+    /// <summary>Initializes a filesystem content provider.</summary>
     public FileSystemContentProvider(
         FileSystemContentRepository contentRepository,
         FileSystemDirectoryRepository directoryRepository,
@@ -34,17 +35,22 @@ public class FileSystemContentProvider : ContentProviderBase
         _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
     }
 
+    /// <inheritdoc />
     public override string ProviderId => _options.ProviderId ?? $"filesystem-{_options.BasePath.GetHashCode():x}";
 
+    /// <inheritdoc />
     public override string DisplayName => $"FileSystem: {_options.BasePath}";
 
+    /// <inheritdoc />
     public override bool IsReadOnly => false;
 
+    /// <inheritdoc />
     public override async Task<IReadOnlyList<ContentItem>> GetAllItemsAsync(CancellationToken cancellationToken = default)
     {
         return await _contentRepository.GetAllAsync(cancellationToken);
     }
 
+    /// <inheritdoc />
     public override async Task<ContentItem?> GetItemByIdAsync(string id, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(id))
@@ -53,6 +59,7 @@ public class FileSystemContentProvider : ContentProviderBase
         return await _contentRepository.GetByIdAsync(id, cancellationToken);
     }
 
+    /// <inheritdoc />
     public override async Task<ContentItem?> GetItemByPathAsync(string path, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(path))
@@ -61,6 +68,7 @@ public class FileSystemContentProvider : ContentProviderBase
         return await _contentRepository.GetByPathAsync(path, cancellationToken);
     }
 
+    /// <inheritdoc />
     public override async Task<ContentItem?> GetItemByUrlAsync(string url, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(url))
@@ -69,16 +77,19 @@ public class FileSystemContentProvider : ContentProviderBase
         return await _contentRepository.GetByUrlAsync(url, cancellationToken);
     }
 
-    public override async Task<IReadOnlyList<ContentItem>> GetItemsByQueryAsync(ContentQuery query, CancellationToken cancellationToken = default)
+    /// <inheritdoc />
+    public override async Task<IReadOnlyList<ContentItem>?> GetItemsByQueryAsync(ContentQuery query, CancellationToken cancellationToken = default)
     {
         return await _contentRepository.FindByQueryAsync(query, cancellationToken);
     }
 
+    /// <inheritdoc />
     public override async Task<IReadOnlyList<DirectoryItem>> GetDirectoriesAsync(string? locale = null, CancellationToken cancellationToken = default)
     {
         return await _directoryRepository.GetByLocaleAsync(locale, cancellationToken);
     }
 
+    /// <inheritdoc />
     public override async Task<DirectoryItem?> GetDirectoryByPathAsync(string path, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(path))
@@ -87,6 +98,7 @@ public class FileSystemContentProvider : ContentProviderBase
         return await _directoryRepository.GetByPathAsync(path, cancellationToken);
     }
 
+    /// <inheritdoc />
     public override async Task<DirectoryItem?> GetDirectoryByIdAsync(string id, string? locale = null, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(id))
@@ -95,6 +107,7 @@ public class FileSystemContentProvider : ContentProviderBase
         return await _directoryRepository.GetByIdAsync(id, cancellationToken);
     }
 
+    /// <inheritdoc />
     public override async Task<DirectoryItem?> GetDirectoryByUrlAsync(string url, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(url))
@@ -103,6 +116,7 @@ public class FileSystemContentProvider : ContentProviderBase
         return await _directoryRepository.GetByUrlAsync(url, cancellationToken);
     }
 
+    /// <inheritdoc />
     public override async Task<IReadOnlyList<ContentCategory>> GetCategoriesAsync(CancellationToken cancellationToken = default)
     {
         // Get all content items
@@ -120,6 +134,7 @@ public class FileSystemContentProvider : ContentProviderBase
             .ToList();
     }
 
+    /// <inheritdoc />
     public override async Task<IReadOnlyList<ContentTag>> GetTagsAsync(CancellationToken cancellationToken = default)
     {
         // Get all content items
@@ -137,6 +152,7 @@ public class FileSystemContentProvider : ContentProviderBase
             .ToList();
     }
 
+    /// <inheritdoc />
     public override async Task InitializeAsync(CancellationToken cancellationToken = default)
     {
         Logger.LogInformation("Initializing FileSystem content provider: {BasePath}", _options.BasePath);
@@ -171,6 +187,7 @@ public class FileSystemContentProvider : ContentProviderBase
         await base.InitializeAsync(cancellationToken);
     }
 
+    /// <inheritdoc />
     public override async Task RefreshCacheAsync(CancellationToken cancellationToken = default)
     {
         await _contentRepository.RefreshCacheAsync(cancellationToken);

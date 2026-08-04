@@ -6,6 +6,7 @@ using Osirion.Blazor.Cms.Domain.Services;
 using System.Text.RegularExpressions;
 
 namespace Osirion.Blazor.Cms.Components;
+/// <summary>Defines the OsirionContentListSection type.</summary>
 public partial class OsirionContentListSection(IContentProviderManager ContentProviderManager)
 {
     /// <summary>

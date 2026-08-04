@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Admin.Core.Events;
 using Osirion.Blazor.Cms.Admin.Core.State;
 using Osirion.Blazor.Cms.Admin.Services.Events;
@@ -14,6 +14,7 @@ public class ErrorHandlingService
     private readonly CmsEventMediator _eventMediator;
     private readonly ILogger<ErrorHandlingService> _logger;
 
+    /// <summary>Performs the ErrorHandlingService operation.</summary>
     public ErrorHandlingService(
         CmsState state,
         CmsEventMediator eventMediator,

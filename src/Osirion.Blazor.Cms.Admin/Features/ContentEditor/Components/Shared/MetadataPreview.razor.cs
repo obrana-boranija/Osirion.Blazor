@@ -4,22 +4,28 @@ using System.Text;
 
 namespace Osirion.Blazor.Cms.Admin.Features.ContentEditor.Components.Shared;
 
+    /// <summary>Defines the public member type.</summary>
 public partial class MetadataPreview
 {
+    /// <summary>Performs the Metadata operation.</summary>
     [Parameter]
     public FrontMatter Metadata { get; set; } = FrontMatter.Create("New Post");
 
+    /// <summary>Performs the SeoMetadata operation.</summary>
     [Parameter]
     public SeoMetadata SeoMetadata { get; set; } = SeoMetadata.Create("", "");
 
+    /// <summary>Gets or sets the ShowActions value.</summary>
     [Parameter]
     public bool ShowActions { get; set; } = true;
 
+    /// <summary>Gets or sets the OnRefresh value.</summary>
     [Parameter]
     public EventCallback OnRefresh { get; set; }
 
     private string BaseUrl { get; set; } = "https://example.com";
 
+    /// <summary>Performs the OnParametersSet operation.</summary>
     protected override void OnParametersSet()
     {
         Metadata ??= FrontMatter.Create("New Post");

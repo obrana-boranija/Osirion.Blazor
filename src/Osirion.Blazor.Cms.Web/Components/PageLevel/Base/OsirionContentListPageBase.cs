@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Repositories;
 
 namespace Osirion.Blazor.Cms.Web.Components;
 
+/// <summary>Defines the OsirionContentListPageBase type.</summary>
 public abstract partial class OsirionContentListPageBase : OsirionContentPageBase
 {
     #region Content

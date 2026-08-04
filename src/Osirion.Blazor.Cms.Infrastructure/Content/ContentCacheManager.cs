@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Interfaces.Content;
 
@@ -15,6 +15,7 @@ public class ContentCacheManager : IContentCacheManager
     private Dictionary<string, ContentItem>? _contentCache;
     private DateTime _cacheExpiration = DateTime.MinValue;
 
+    /// <summary>Performs the ContentCacheManager operation.</summary>
     public ContentCacheManager(
         ILogger<ContentCacheManager> logger)
     {

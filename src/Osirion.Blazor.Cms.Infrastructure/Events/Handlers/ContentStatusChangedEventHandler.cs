@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Events;
 
 namespace Osirion.Blazor.Cms.Infrastructure.Events.Handlers;
@@ -10,11 +10,13 @@ public class ContentStatusChangedEventHandler : IDomainEventHandler<ContentStatu
 {
     private readonly ILogger<ContentStatusChangedEventHandler> _logger;
 
+    /// <summary>Performs the ContentStatusChangedEventHandler operation.</summary>
     public ContentStatusChangedEventHandler(ILogger<ContentStatusChangedEventHandler> logger)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
+    /// <summary>Performs the Handle operation asynchronously.</summary>
     public Task HandleAsync(ContentStatusChangedEvent domainEvent)
     {
         _logger.LogInformation(

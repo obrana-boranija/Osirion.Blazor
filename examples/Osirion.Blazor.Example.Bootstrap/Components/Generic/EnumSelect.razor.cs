@@ -19,7 +19,7 @@ public partial class EnumSelect<TEnum> where TEnum : struct, Enum
         return attribute?.Description ?? value.ToString() ?? string.Empty;
     }
 
-    protected override bool TryParseValueFromString(string value, out TEnum result, out string validationErrorMessage)
+    protected override bool TryParseValueFromString(string? value, out TEnum result, out string validationErrorMessage)
     {
         if (string.IsNullOrWhiteSpace(value))
         {
@@ -40,7 +40,7 @@ public partial class EnumSelect<TEnum> where TEnum : struct, Enum
         return false;
     }
 
-    private string CurrentValueAsString
+    private new string CurrentValueAsString
     {
         get => CurrentValue.ToString() ?? string.Empty;
         set

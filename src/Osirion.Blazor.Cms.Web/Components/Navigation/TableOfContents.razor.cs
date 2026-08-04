@@ -166,8 +166,12 @@ public partial class TableOfContents(NavigationManager navigationManager)
 /// </summary>
 public class HeadingItem
 {
+    /// <summary>Gets or sets the Level value.</summary>
     public int Level { get; set; }
+    /// <summary>Gets or sets the Id value.</summary>
     public string Id { get; set; } = string.Empty;
+    /// <summary>Gets or sets the Text value.</summary>
     public string Text { get; set; } = string.Empty;
+    /// <summary>Gets or sets the Children value.</summary>
     public List<HeadingItem> Children { get; set; } = new();
 }

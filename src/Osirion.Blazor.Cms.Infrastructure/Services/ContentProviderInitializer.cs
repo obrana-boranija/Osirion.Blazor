@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Interfaces.Content;
@@ -6,11 +6,13 @@ using Osirion.Blazor.Cms.Domain.Services;
 
 namespace Osirion.Blazor.Cms.Infrastructure.Services;
 
+/// <summary>Defines the ContentProviderInitializer API contract.</summary>
 public class ContentProviderInitializer : IContentProviderInitializer
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<ContentProviderInitializer> _logger;
 
+    /// <summary>Performs the ContentProviderInitializer operation.</summary>
     public ContentProviderInitializer(
         IServiceProvider serviceProvider,
         ILogger<ContentProviderInitializer> logger)
@@ -19,6 +21,7 @@ public class ContentProviderInitializer : IContentProviderInitializer
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
+    /// <summary>Performs the InitializeProviders operation asynchronously.</summary>
     public async Task InitializeProvidersAsync(CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Initializing content providers");

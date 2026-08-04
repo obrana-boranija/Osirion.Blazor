@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Osirion.Blazor.Cms.Application.Validation;
 using Osirion.Blazor.Cms.Domain.Exceptions;
 

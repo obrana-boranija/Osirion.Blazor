@@ -5,49 +5,64 @@ using Osirion.Blazor.Cms.Domain.Services;
 
 namespace Osirion.Blazor.Cms.Web.Components;
 
+/// <summary>Displays localized directory and content navigation.</summary>
 public partial class LocalizedNavigation
 {
     [Inject] private IContentProviderManager ContentProviderManager { get; set; } = default!;
 
+    /// <summary>Gets or sets the navigation title.</summary>
     [Parameter]
     public string? Title { get; set; }
 
+    /// <summary>Gets or sets the loading message.</summary>
     [Parameter]
     public string LoadingText { get; set; } = "Loading navigation...";
 
+    /// <summary>Gets or sets the empty-navigation message.</summary>
     [Parameter]
     public string NoContentText { get; set; } = "No navigation available.";
 
+    /// <summary>Gets or sets the current locale.</summary>
     [Parameter]
     public string? CurrentLocale { get; set; }
 
+    /// <summary>Gets or sets the callback invoked when the locale changes.</summary>
     [Parameter]
     public EventCallback<string> OnLocaleChanged { get; set; }
 
+    /// <summary>Gets or sets the callback invoked when a directory is selected.</summary>
     [Parameter]
     public EventCallback<DirectoryItem> OnDirectorySelected { get; set; }
 
+    /// <summary>Gets or sets the callback invoked when content is selected.</summary>
     [Parameter]
     public EventCallback<ContentItem> OnContentSelected { get; set; }
 
+    /// <summary>Gets or sets whether all directories are expanded.</summary>
     [Parameter]
     public bool ExpandAllDirectories { get; set; } = false;
 
+    /// <summary>Gets or sets the identifier of the expanded directory.</summary>
     [Parameter]
     public string? ExpandedDirectoryId { get; set; }
 
+    /// <summary>Gets or sets whether content items are shown.</summary>
     [Parameter]
     public bool ShowContentItems { get; set; } = true;
 
+    /// <summary>Gets or sets the directory URL formatter.</summary>
     [Parameter]
     public Func<DirectoryItem, string>? DirectoryUrlFormatter { get; set; }
 
+    /// <summary>Gets or sets the content URL formatter.</summary>
     [Parameter]
     public Func<ContentItem, string>? ContentUrlFormatter { get; set; }
 
+    /// <summary>Gets or sets the locale display-name formatter.</summary>
     [Parameter]
     public Func<string, string>? LocaleNameFormatter { get; set; }
 
+    /// <summary>Gets or sets whether localization controls are enabled.</summary>
     [Parameter]
     public bool EnableLocalization { get; set; } = true;
 
@@ -57,11 +72,13 @@ public partial class LocalizedNavigation
     private bool HasMultipleLocales => AvailableLocales.Count > 1;
     private bool ShowLocaleSelector => EnableLocalization && HasMultipleLocales;
 
+    /// <summary>Initializes the component state and required services.</summary>
     protected override async Task OnInitializedAsync()
     {
         await LoadNavigationAsync();
     }
 
+    /// <summary>Performs the OnParametersSet operation asynchronously.</summary>
     protected override async Task OnParametersSetAsync()
     {
         if (string.IsNullOrWhiteSpace(CurrentLocale) && AvailableLocales.Any())

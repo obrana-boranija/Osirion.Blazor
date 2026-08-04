@@ -122,6 +122,7 @@ public partial class OsirionCookieConsent
     /// </summary>
     private bool IsCustomizing { get; set; }
 
+    /// <inheritdoc />
     protected override void OnInitialized()
     {
         base.OnInitialized();

@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Events;
 using System.Numerics;
 
@@ -11,11 +11,13 @@ public class DirectoryDeletedEventHandler : IDomainEventHandler<DirectoryDeleted
 {
     private readonly ILogger<DirectoryDeletedEventHandler> _logger;
 
+    /// <summary>Performs the DirectoryDeletedEventHandler operation.</summary>
     public DirectoryDeletedEventHandler(ILogger<DirectoryDeletedEventHandler> logger)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
+    /// <summary>Performs the Handle operation asynchronously.</summary>
     public Task HandleAsync(DirectoryDeletedEvent domainEvent)
     {
         _logger.LogInformation(

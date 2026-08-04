@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Repositories;
@@ -19,6 +19,7 @@ public class StaleWhileRevalidateCacheDecorator : IContentRepository
     private readonly SemaphoreSlim _refreshLock = new(1, 1);
     private readonly string _providerIdentifier;
 
+    /// <summary>Initializes a cache decorator with stale-while-revalidate behavior.</summary>
     public StaleWhileRevalidateCacheDecorator(
         IContentRepository decorated,
         IMemoryCache cache,
@@ -35,6 +36,7 @@ public class StaleWhileRevalidateCacheDecorator : IContentRepository
         _providerIdentifier = providerIdentifier ?? throw new ArgumentNullException(nameof(providerIdentifier));
     }
 
+    /// <summary>Gets all content items, using the cache when available.</summary>
     public async Task<IReadOnlyList<ContentItem>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         var cacheKey = $"content:all:{_providerIdentifier}";
@@ -45,6 +47,7 @@ public class StaleWhileRevalidateCacheDecorator : IContentRepository
             cancellationToken);
     }
 
+    /// <summary>Gets a content item by identifier.</summary>
     public async Task<ContentItem?> GetByIdAsync(string id, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(id))
@@ -58,6 +61,7 @@ public class StaleWhileRevalidateCacheDecorator : IContentRepository
             cancellationToken);
     }
 
+    /// <summary>Gets a content item by path.</summary>
     public async Task<ContentItem?> GetByPathAsync(string path, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(path))
@@ -71,6 +75,7 @@ public class StaleWhileRevalidateCacheDecorator : IContentRepository
             cancellationToken);
     }
 
+    /// <summary>Gets a content item by URL.</summary>
     public async Task<ContentItem?> GetByUrlAsync(string url, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(url))
@@ -84,7 +89,8 @@ public class StaleWhileRevalidateCacheDecorator : IContentRepository
             cancellationToken);
     }
 
-    public async Task<IReadOnlyList<ContentItem>> FindByQueryAsync(ContentQuery query, CancellationToken cancellationToken = default)
+    /// <summary>Finds content items matching a query.</summary>
+    public async Task<IReadOnlyList<ContentItem>?> FindByQueryAsync(ContentQuery query, CancellationToken cancellationToken = default)
     {
         // Generate a cache key based on the query properties
         var cacheKey = GenerateQueryCacheKey(query);
@@ -95,6 +101,7 @@ public class StaleWhileRevalidateCacheDecorator : IContentRepository
             cancellationToken);
     }
 
+    /// <summary>Gets content items in a directory.</summary>
     public async Task<IReadOnlyList<ContentItem>> GetByDirectoryAsync(string directoryId, CancellationToken cancellationToken = default)
     {
         var cacheKey = $"content:directory:{directoryId}:{_providerIdentifier}";
@@ -105,6 +112,7 @@ public class StaleWhileRevalidateCacheDecorator : IContentRepository
             cancellationToken);
     }
 
+    /// <summary>Gets translations for a content item.</summary>
     public async Task<IReadOnlyList<ContentItem>> GetTranslationsAsync(string contentId, CancellationToken cancellationToken = default)
     {
         var cacheKey = $"content:translations:{contentId}:{_providerIdentifier}";
@@ -115,6 +123,7 @@ public class StaleWhileRevalidateCacheDecorator : IContentRepository
             cancellationToken);
     }
 
+    /// <summary>Gets all content tags.</summary>
     public async Task<IReadOnlyList<ContentTag>> GetTagsAsync(CancellationToken cancellationToken = default)
     {
         var cacheKey = $"content:tags:{_providerIdentifier}";
@@ -126,6 +135,7 @@ public class StaleWhileRevalidateCacheDecorator : IContentRepository
     }
 
     // Write operations should invalidate the cache
+    /// <summary>Saves a content item and refreshes the cache.</summary>
     public async Task<ContentItem> SaveAsync(ContentItem entity, CancellationToken cancellationToken = default)
     {
         var result = await _decorated.SaveAsync(entity, cancellationToken);
@@ -133,6 +143,7 @@ public class StaleWhileRevalidateCacheDecorator : IContentRepository
         return result;
     }
 
+    /// <summary>Saves a content item with a commit message.</summary>
     public async Task<ContentItem> SaveWithCommitMessageAsync(ContentItem entity, string commitMessage, CancellationToken cancellationToken = default)
     {
         var result = await _decorated.SaveWithCommitMessageAsync(entity, commitMessage, cancellationToken);
@@ -140,18 +151,21 @@ public class StaleWhileRevalidateCacheDecorator : IContentRepository
         return result;
     }
 
+    /// <summary>Deletes a content item and refreshes the cache.</summary>
     public async Task DeleteAsync(string id, CancellationToken cancellationToken = default)
     {
         await _decorated.DeleteAsync(id, cancellationToken);
         await RefreshCacheAsync(cancellationToken);
     }
 
+    /// <summary>Deletes a content item with a commit message.</summary>
     public async Task DeleteWithCommitMessageAsync(string id, string commitMessage, CancellationToken cancellationToken = default)
     {
         await _decorated.DeleteWithCommitMessageAsync(id, commitMessage, cancellationToken);
         await RefreshCacheAsync(cancellationToken);
     }
 
+    /// <summary>Clears and refreshes the repository cache.</summary>
     public async Task RefreshCacheAsync(CancellationToken cancellationToken = default)
     {
         await _refreshLock.WaitAsync(cancellationToken);

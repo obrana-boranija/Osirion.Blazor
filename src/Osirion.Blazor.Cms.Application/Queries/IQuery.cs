@@ -1,4 +1,4 @@
-﻿namespace Osirion.Blazor.Cms.Application.Queries;
+namespace Osirion.Blazor.Cms.Application.Queries;
 
 /// <summary>
 /// Marker interface for query objects in CQRS pattern

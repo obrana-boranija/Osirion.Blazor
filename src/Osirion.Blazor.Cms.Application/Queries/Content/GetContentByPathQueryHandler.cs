@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Services;
 
@@ -12,6 +12,7 @@ public class GetContentByPathQueryHandler : IQueryHandler<GetContentByPathQuery,
     private readonly IContentProviderManager _providerManager;
     private readonly ILogger<GetContentByPathQueryHandler> _logger;
 
+    /// <summary>Performs the GetContentByPathQueryHandler operation.</summary>
     public GetContentByPathQueryHandler(
         IContentProviderManager providerManager,
         ILogger<GetContentByPathQueryHandler> logger)
@@ -20,6 +21,7 @@ public class GetContentByPathQueryHandler : IQueryHandler<GetContentByPathQuery,
         _logger = logger;
     }
 
+    /// <summary>Performs the Handle operation asynchronously.</summary>
     public async Task<ContentItem?> HandleAsync(GetContentByPathQuery query, CancellationToken cancellationToken = default)
     {
         _logger.LogDebug("Getting content by path: {Path}", query.Path);

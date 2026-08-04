@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components;
 using Osirion.Blazor.Components;
 
 namespace Osirion.Blazor.Analytics.Components;

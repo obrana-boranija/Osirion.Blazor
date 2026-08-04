@@ -1,4 +1,4 @@
-﻿namespace Osirion.Blazor.Cms.Application.Commands.Directory;
+namespace Osirion.Blazor.Cms.Application.Commands.Directory;
 
 /// <summary>
 /// Command to move a directory to a new parent

@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Admin.Core.Events;
 using Osirion.Blazor.Cms.Admin.Infrastructure.Adapters;
@@ -22,6 +22,7 @@ public class ContentEditorService : IContentEditorService
     private readonly CmsAdminOptions _options;
     private readonly ILogger<ContentEditorService> _logger;
 
+    /// <summary>Performs the ContentEditorService operation.</summary>
     public ContentEditorService(
         IContentRepositoryAdapter repositoryAdapter,
         IAdminContentService contentService,
@@ -249,9 +250,9 @@ public class ContentEditorService : IContentEditorService
         }
 
         // Auto-generate slug if enabled and not provided
-        if (_options.ContentRules.AutoGenerateSlugs && string.IsNullOrWhiteSpace(post.Metadata.Slug))
+        if (_options.ContentRules.AutoGenerateSlugs && post.Metadata is { } metadata && string.IsNullOrWhiteSpace(metadata.Slug))
         {
-            post.Metadata.Slug = GenerateSlugFromTitle(post.Metadata.Title);
+            metadata.Slug = GenerateSlugFromTitle(metadata.Title);
         }
     }
 

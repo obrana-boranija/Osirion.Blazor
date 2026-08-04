@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Domain.Entities;
@@ -11,6 +11,7 @@ using System.Collections.Concurrent;
 
 namespace Osirion.Blazor.Cms.Infrastructure.Providers;
 
+/// <summary>Defines the GitHubContentProvider API contract.</summary>
 public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
 {
     private readonly GitHubContentRepository _contentRepository;
@@ -28,6 +29,7 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
     private readonly ConcurrentQueue<string> _pendingShaTasks = new();
     private bool _processingQueue = false;
 
+    /// <summary>Initializes a GitHub content provider.</summary>
     public GitHubContentProvider(
         GitHubContentRepository contentRepository,
         GitHubDirectoryRepository directoryRepository,
@@ -53,16 +55,21 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
         }
     }
 
+    /// <inheritdoc />
     public override string ProviderId => _options.ProviderId ?? $"github-{_options.Owner}-{_options.Repository}";
+    /// <inheritdoc />
     public override string DisplayName => $"GitHub: {_options.Owner}/{_options.Repository}";
+    /// <inheritdoc />
     public override bool IsReadOnly => string.IsNullOrWhiteSpace(_options.ApiToken);
 
+    /// <inheritdoc />
     public override async Task<IReadOnlyList<ContentItem>> GetAllItemsAsync(CancellationToken cancellationToken = default)
     {
         await EnsureInitializedAsync(cancellationToken);
         return await _contentRepository.GetAllAsync(cancellationToken);
     }
 
+    /// <inheritdoc />
     public override async Task<ContentItem?> GetItemByIdAsync(string id, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(id))
@@ -72,6 +79,7 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
         return await _contentRepository.GetByIdAsync(id, cancellationToken);
     }
 
+    /// <inheritdoc />
     public override async Task<ContentItem?> GetItemByPathAsync(string path, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(path))
@@ -81,6 +89,7 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
         return await _contentRepository.GetByPathAsync(path, cancellationToken);
     }
 
+    /// <inheritdoc />
     public override async Task<ContentItem?> GetItemByUrlAsync(string url, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(url))
@@ -90,18 +99,21 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
         return await _contentRepository.GetByUrlAsync(url, cancellationToken);
     }
 
-    public override async Task<IReadOnlyList<ContentItem>> GetItemsByQueryAsync(ContentQuery query, CancellationToken cancellationToken = default)
+    /// <inheritdoc />
+    public override async Task<IReadOnlyList<ContentItem>?> GetItemsByQueryAsync(ContentQuery query, CancellationToken cancellationToken = default)
     {
         await EnsureInitializedAsync(cancellationToken);
         return await _contentRepository.FindByQueryAsync(query, cancellationToken);
     }
 
+    /// <inheritdoc />
     public override async Task<IReadOnlyList<DirectoryItem>> GetDirectoriesAsync(string? locale = null, CancellationToken cancellationToken = default)
     {
         await EnsureInitializedAsync(cancellationToken);
         return await _directoryRepository.GetByLocaleAsync(locale, cancellationToken);
     }
 
+    /// <inheritdoc />
     public override async Task<DirectoryItem?> GetDirectoryByPathAsync(string path, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(path))
@@ -111,6 +123,7 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
         return await _directoryRepository.GetByPathAsync(path, cancellationToken);
     }
 
+    /// <inheritdoc />
     public override async Task<DirectoryItem?> GetDirectoryByIdAsync(string id, string? locale = null, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(id))
@@ -120,6 +133,7 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
         return await _directoryRepository.GetByIdAsync(id, cancellationToken);
     }
 
+    /// <inheritdoc />
     public override async Task<DirectoryItem?> GetDirectoryByUrlAsync(string url, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(url))
@@ -129,6 +143,7 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
         return await _directoryRepository.GetByUrlAsync(url, cancellationToken);
     }
 
+    /// <inheritdoc />
     public override async Task<IReadOnlyList<ContentCategory>> GetCategoriesAsync(CancellationToken cancellationToken = default)
     {
         await EnsureInitializedAsync(cancellationToken);
@@ -148,6 +163,7 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
             .ToList();
     }
 
+    /// <inheritdoc />
     public override async Task<IReadOnlyList<ContentTag>> GetTagsAsync(CancellationToken cancellationToken = default)
     {
         await EnsureInitializedAsync(cancellationToken);
@@ -205,7 +221,7 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
             try
             {
                 var branches = await _apiClient.GetBranchesAsync(cancellationToken);
-                var branch = branches.FirstOrDefault(b => b.Name == _options.Branch);
+                var branch = branches?.FirstOrDefault(b => b.Name == _options.Branch);
                 if (branch is not null)
                 {
                     _lastKnownSha = branch.Commit.Sha;
@@ -243,12 +259,14 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
         }
     }
 
+    /// <summary>Performs the Initialize operation asynchronously.</summary>
     public override async Task InitializeAsync(CancellationToken cancellationToken = default)
     {
         await EnsureInitializedAsync(cancellationToken);
         await base.InitializeAsync(cancellationToken);
     }
 
+    /// <summary>Performs the RefreshCache operation asynchronously.</summary>
     public override async Task RefreshCacheAsync(CancellationToken cancellationToken = default)
     {
         Logger.LogInformation("Refreshing cache for GitHub provider: {ProviderId}", ProviderId);

@@ -3,6 +3,7 @@ using Osirion.Blazor.Theming.Services;
 
 namespace Osirion.Blazor.Theming;
 
+/// <summary>Defines the ThemingServiceCollectionExtensions type.</summary>
 public static class ThemingServiceCollectionExtensions
 {
     /// <summary>

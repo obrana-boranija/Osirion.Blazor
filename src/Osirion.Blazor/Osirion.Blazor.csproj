@@ -27,7 +27,6 @@
 
 		<!-- Generate XML documentation -->
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
-		<NoWarn>$(NoWarn);CS1591</NoWarn>
 
 		<!-- Source Link config -->
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>

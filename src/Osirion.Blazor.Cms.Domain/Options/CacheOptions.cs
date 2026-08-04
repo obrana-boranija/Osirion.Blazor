@@ -1,4 +1,4 @@
-﻿namespace Osirion.Blazor.Cms.Domain.Options;
+namespace Osirion.Blazor.Cms.Domain.Options;
 
 /// <summary>
 /// Configuration options for caching

@@ -15,6 +15,7 @@ public class AutoThemeService : ThemeService
     private CssFramework? _detected;
     private bool _detectionAttempted;
 
+    /// <summary>Performs the AutoThemeService operation.</summary>
     public AutoThemeService(
         IOptions<ThemingOptions> options,
         ICssFrameworkDetector detector,
@@ -25,6 +26,7 @@ public class AutoThemeService : ThemeService
         _detector = detector;
     }
 
+    /// <summary>Performs the CurrentFramework operation.</summary>
     public override CssFramework CurrentFramework
     {
         get

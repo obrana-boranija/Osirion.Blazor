@@ -1,4 +1,4 @@
-﻿namespace Osirion.Blazor.Cms.Application.Validation;
+namespace Osirion.Blazor.Cms.Application.Validation;
 
 /// <summary>
 /// Represents the result of a validation operation

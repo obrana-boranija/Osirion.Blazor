@@ -164,9 +164,9 @@ public class RepositoryCacheManagerTests
         _logger.Received(1).Log(
             LogLevel.Error,
             Arg.Any<EventId>(),
-            Arg.Is<object>(o => o.ToString().Contains("Error refreshing cache for")),
+            Arg.Is<object>(o => o == null ? false : o.ToString()!.Contains("Error refreshing cache for")),
             Arg.Any<Exception>(),
-            Arg.Any<Func<object, Exception, string>>());
+            Arg.Any<Func<object, Exception?, string>>());
     }
 
     [Fact]
@@ -205,13 +205,13 @@ public class RepositoryCacheManagerTests
             Arg.Any<EventId>(),
             Arg.Any<object>(),
             Arg.Any<Exception>(),
-            Arg.Any<Func<object, Exception, string>>());
+            Arg.Any<Func<object, Exception?, string>>());
 
         _logger.Received(1).Log(
             LogLevel.Warning,
             Arg.Any<EventId>(),
-            Arg.Is<object>(o => o.ToString().Contains("Returning stale cache")),
+            Arg.Is<object>(o => o == null ? false : o.ToString()!.Contains("Returning stale cache")),
             Arg.Any<Exception>(),
-            Arg.Any<Func<object, Exception, string>>());
+            Arg.Any<Func<object, Exception?, string>>());
     }
 }

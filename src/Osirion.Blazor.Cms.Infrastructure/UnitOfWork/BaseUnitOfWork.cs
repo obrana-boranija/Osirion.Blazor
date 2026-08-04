@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Events;
 using Osirion.Blazor.Cms.Domain.Repositories;
 
@@ -11,9 +11,12 @@ namespace Osirion.Blazor.Cms.Infrastructure.UnitOfWork
     {
         private readonly ILogger _logger;
         private readonly IDomainEventDispatcher? _eventDispatcher;
+        /// <summary>Gets or sets the _transactionStarted value.</summary>
         protected bool _transactionStarted = false;
+        /// <summary>Gets or sets the _savePoints value.</summary>
         protected readonly Dictionary<string, string> _savePoints = new();
 
+        /// <summary>Performs the BaseUnitOfWork operation.</summary>
         public BaseUnitOfWork(
             IContentRepository contentRepository,
             IDirectoryRepository directoryRepository,
@@ -28,10 +31,13 @@ namespace Osirion.Blazor.Cms.Infrastructure.UnitOfWork
             _eventDispatcher = eventDispatcher;
         }
 
+        /// <summary>Performs the ContentRepository operation.</summary>
         public IContentRepository ContentRepository { get; }
 
+        /// <summary>Performs the DirectoryRepository operation.</summary>
         public IDirectoryRepository DirectoryRepository { get; }
 
+        /// <summary>Gets or sets the ProviderId value.</summary>
         public string ProviderId { get; }
 
         /// <summary>
@@ -177,6 +183,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.UnitOfWork
             }
         }
 
+        /// <summary>Releases resources held by the component or service.</summary>
         public void Dispose()
         {
             // If transaction is still active, roll it back
@@ -197,6 +204,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.UnitOfWork
             GC.SuppressFinalize(this);
         }
 
+        /// <summary>Releases resources held by the component or service.</summary>
         public async ValueTask DisposeAsync()
         {
             // If transaction is still active, roll it back

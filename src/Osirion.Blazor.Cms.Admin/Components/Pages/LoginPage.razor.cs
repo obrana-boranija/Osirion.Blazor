@@ -7,6 +7,7 @@ using Osirion.Blazor.Cms.Domain.Options.Configuration;
 
 namespace Osirion.Blazor.Cms.Admin.Components.Pages;
 
+    /// <summary>Defines the public member type.</summary>
 public partial class LoginPage
 {
     [Inject]
@@ -15,12 +16,14 @@ public partial class LoginPage
     [Inject]
     private IOptions<CmsAdminOptions> Options { get; set; } = null!;
 
+    /// <summary>Gets or sets the ReturnUrl value.</summary>
     [Parameter]
     [SupplyParameterFromQuery(Name = "returnUrl")]
     public string ReturnUrl { get; set; } = "/osirion";
 
+    /// <summary>Gets or sets the Theme value.</summary>
     [Parameter]
-    public string Theme { get; set; } = "light";
+    public new string Theme { get; set; } = "light";
 
     private string AccessToken
     {
@@ -36,12 +39,14 @@ public partial class LoginPage
 
     private string GitHubAuthUrl => $"https://github.com/login/oauth/authorize?client_id={Options.Value.Authentication.GitHubClientId}&redirect_uri={Uri.EscapeDataString(GetRedirectUri())}&scope=repo";
 
+    /// <summary>Initializes the component state and required services.</summary>
     protected override void OnInitialized()
     {
         ViewModel.StateChanged += StateHasChanged;
         ViewModel.ReturnUrl = GetSanitizedReturnUrl();
     }
 
+    /// <summary>Initializes the component state and required services.</summary>
     protected override async Task OnInitializedAsync()
     {
         // Check if we have a configured PAT in options
@@ -67,6 +72,7 @@ public partial class LoginPage
         }
     }
 
+    /// <summary>Releases resources held by the component or service.</summary>
     public void Dispose()
     {
         ViewModel.StateChanged -= StateHasChanged;

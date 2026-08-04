@@ -5,6 +5,7 @@ using Osirion.Blazor.Cms.Admin.Shared.Components;
 
 namespace Osirion.Blazor.Cms.Admin.Features.Layouts.Components;
 
+/// <summary>Defines the CmsLayoutEditor type.</summary>
 public partial class CmsLayoutEditor : BaseComponent
 {
     /// <summary>
@@ -17,7 +18,7 @@ public partial class CmsLayoutEditor : BaseComponent
     /// Gets or sets the current theme (light or dark)
     /// </summary>
     [Parameter]
-    public string Theme { get; set; } = "light";
+    public new string Theme { get; set; } = "light";
 
     /// <summary>
     /// Gets or sets breadcrumb items for navigation

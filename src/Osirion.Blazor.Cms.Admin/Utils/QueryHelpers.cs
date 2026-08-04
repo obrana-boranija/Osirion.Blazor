@@ -1,7 +1,9 @@
-﻿namespace Osirion.Blazor.Cms.Admin;
+namespace Osirion.Blazor.Cms.Admin;
 
+/// <summary>Defines the QueryHelpers type.</summary>
 public static class QueryHelpers
 {
+    /// <summary>Gets or sets the ParseQuery value.</summary>
     public static Dictionary<string, string[]> ParseQuery(string queryString)
     {
         var result = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);
@@ -51,6 +53,7 @@ public static class QueryHelpers
     }
 
     // Fix the extension method to match the expected signature
+    /// <summary>Gets or sets the TryGetValue value.</summary>
     public static bool TryGetValue(this Dictionary<string, string[]> query, string key, out string code)
     {
         if (query.TryGetValue(key, out var values) && values.Length > 0)

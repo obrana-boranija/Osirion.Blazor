@@ -1,4 +1,4 @@
-﻿namespace Osirion.Blazor.Cms.Domain.Common;
+namespace Osirion.Blazor.Cms.Domain.Common;
 
 /// <summary>
 /// Base class for domain entities that require metadata

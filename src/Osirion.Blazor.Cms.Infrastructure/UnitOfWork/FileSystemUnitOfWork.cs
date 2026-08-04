@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Events;
 using Osirion.Blazor.Cms.Domain.Repositories;
 
@@ -12,6 +12,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.UnitOfWork
         private readonly string _backupDirectory;
         private readonly List<string> _modifiedFiles = new();
 
+        /// <summary>Performs the FileSystemUnitOfWork operation.</summary>
         public FileSystemUnitOfWork(
             IContentRepository contentRepository,
             IDirectoryRepository directoryRepository,
@@ -26,12 +27,14 @@ namespace Osirion.Blazor.Cms.Infrastructure.UnitOfWork
             System.IO.Directory.CreateDirectory(_backupDirectory);
         }
 
+        /// <summary>Performs the OnBeginTransaction operation asynchronously.</summary>
         protected override Task OnBeginTransactionAsync(CancellationToken cancellationToken)
         {
             _modifiedFiles.Clear();
             return Task.CompletedTask;
         }
 
+        /// <summary>Performs the OnCommitTransaction operation asynchronously.</summary>
         protected override Task OnCommitTransactionAsync(CancellationToken cancellationToken)
         {
             // For file system, committing just means keeping the changes
@@ -49,6 +52,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.UnitOfWork
             return Task.CompletedTask;
         }
 
+        /// <summary>Performs the OnRollbackTransaction operation asynchronously.</summary>
         protected override Task OnRollbackTransactionAsync(CancellationToken cancellationToken)
         {
             // Restore backups of modified files
@@ -66,12 +70,14 @@ namespace Osirion.Blazor.Cms.Infrastructure.UnitOfWork
             return Task.CompletedTask;
         }
 
+        /// <summary>Performs the OnCreateSavePoint operation asynchronously.</summary>
         protected override Task OnCreateSavePointAsync(string savePointName, CancellationToken cancellationToken)
         {
             // For savepoints, we just store the current list of modified files
             return Task.CompletedTask;
         }
 
+        /// <summary>Performs the OnRollbackToSavePoint operation asynchronously.</summary>
         protected override Task OnRollbackToSavePointAsync(string savePointName, CancellationToken cancellationToken)
         {
             // Get the files modified after the savepoint

@@ -1,7 +1,8 @@
-﻿using Osirion.Blazor.Cms.Domain.ValueObjects;
+using Osirion.Blazor.Cms.Domain.ValueObjects;
 
 namespace Osirion.Blazor.Cms.Domain.Interfaces;
 
+/// <summary>Defines the IMarkdownProcessor API contract.</summary>
 public interface IMarkdownProcessor
 {
     /// <summary>

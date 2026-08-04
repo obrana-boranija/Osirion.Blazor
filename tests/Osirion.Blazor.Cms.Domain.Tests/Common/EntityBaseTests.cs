@@ -108,7 +108,7 @@ public class EntityBaseTests
         entity.SetMetadata(key, value);
 
         // Act
-        entity.SetMetadata<string>(key, null);
+        entity.SetMetadata<string>(key, null!);
 
         // Assert
         Assert.False(entity.Metadata.ContainsKey(key));

@@ -173,7 +173,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.Tests.Caching
 
             // Setup repository to return null for deleted item
             _decorated.GetByIdAsync(itemId, Arg.Any<CancellationToken>())
-                .Returns((ContentItem)null);
+                .Returns((ContentItem)null!);
 
             // Get item again
             var resultAfterDelete = await _decorator.GetByIdAsync(itemId);

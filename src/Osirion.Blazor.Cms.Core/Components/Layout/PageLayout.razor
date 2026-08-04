@@ -24,11 +24,11 @@
 </div>
 
 @code {
-    [Parameter] public string Title { get; set; }
-    [Parameter] public string Description { get; set; }
+    [Parameter] public string? Title { get; set; }
+    [Parameter] public string? Description { get; set; }
     [Parameter] public bool ShowHeader { get; set; } = true;
-    [Parameter] public RenderFragment ChildContent { get; set; }
-    [Parameter] public RenderFragment HeaderTemplate { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public RenderFragment? HeaderTemplate { get; set; }
     [Parameter] public ContainerSize Size { get; set; } = ContainerSize.Medium;
 
     private string GetContainerClass()

@@ -4,6 +4,7 @@ using Osirion.Blazor.Navigation.Options;
 
 namespace Osirion.Blazor.Navigation.Components;
 
+/// <summary>Defines the EnhancedNavigation type.</summary>
 public partial class EnhancedNavigation
 {
 

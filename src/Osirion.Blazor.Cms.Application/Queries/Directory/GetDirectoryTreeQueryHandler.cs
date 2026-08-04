@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Services;
 
@@ -12,6 +12,7 @@ public class GetDirectoryTreeQueryHandler : IQueryHandler<GetDirectoryTreeQuery,
     private readonly IContentProviderManager _providerManager;
     private readonly ILogger<GetDirectoryTreeQueryHandler> _logger;
 
+    /// <summary>Performs the GetDirectoryTreeQueryHandler operation.</summary>
     public GetDirectoryTreeQueryHandler(
         IContentProviderManager providerManager,
         ILogger<GetDirectoryTreeQueryHandler> logger)
@@ -20,6 +21,7 @@ public class GetDirectoryTreeQueryHandler : IQueryHandler<GetDirectoryTreeQuery,
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
+    /// <summary>Performs the Handle operation asynchronously.</summary>
     public async Task<IReadOnlyList<DirectoryItem>> HandleAsync(GetDirectoryTreeQuery query, CancellationToken cancellationToken = default)
     {
         _logger.LogDebug("Getting directory tree with locale: {Locale}", query.Locale ?? "all");

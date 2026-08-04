@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Exceptions;
@@ -14,11 +14,15 @@ namespace Osirion.Blazor.Cms.Infrastructure.Directory;
 /// </summary>
 public abstract class DirectoryRepositoryBase : RepositoryBase<DirectoryItem, string>
 {
+    /// <summary>Performs the CacheManager operation.</summary>
     protected readonly IDirectoryCacheManager CacheManager;
+    /// <summary>Performs the MetadataProcessor operation.</summary>
     protected readonly IDirectoryMetadataProcessor MetadataProcessor;
+    /// <summary>Performs the PathUtils operation.</summary>
     protected readonly IPathUtilities PathUtils;
     private readonly ContentProviderOptions _contentOptions;
 
+    /// <summary>Performs the DirectoryRepositoryBase operation.</summary>
     protected DirectoryRepositoryBase(
         string providerId,
         IDirectoryCacheManager cacheManager,

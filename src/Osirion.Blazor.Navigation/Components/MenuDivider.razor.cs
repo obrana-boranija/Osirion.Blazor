@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components;
 
 namespace Osirion.Blazor.Navigation.Components;
 
+/// <summary>Defines the MenuDivider type.</summary>
 public partial class MenuDivider
 {
     /// <summary>
