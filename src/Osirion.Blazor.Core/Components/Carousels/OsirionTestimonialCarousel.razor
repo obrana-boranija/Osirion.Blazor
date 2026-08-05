@@ -1,9 +1,12 @@
 @namespace Osirion.Blazor.Components
 @inherits OsirionComponentBase
+@using BlazorJSComponents
+@inject JSElementReferenceScope Refs
 
 <section class="@GetCarouselClass()" 
          aria-label="@SectionTitle"
          style="@Style"
+         data-ref="@Refs["root"]"
          @attributes="Attributes">
     
     @if (!string.IsNullOrEmpty(Title))
@@ -14,10 +17,14 @@
     }
     
     <div class="osirion-testimonial-carousel-container">
-        <div class="osirion-testimonial-carousel-wrapper">
+        <div class="osirion-testimonial-carousel-shadow-stage">
+            <div class="osirion-testimonial-carousel-wrapper"
+                 tabindex="0"
+                 data-ref="@Refs["viewport"]">
             <div class="osirion-testimonial-carousel-track" 
                  role="list" 
-                 style="@GetCarouselTrackStyle()">
+                 style="@GetCarouselTrackStyle()"
+                 data-ref="@Refs["track"]">
                 
                 @* First set of testimonials with priority loading for first 2 *@
                 @{int cardIndex = 0;}
@@ -40,7 +47,7 @@
                             Variant="@CardVariant"
                             Size="@CardSize"
                             Theme="@GetCardTheme()"
-                            Elevated="@CardElevated"
+                            Elevated="@(testimonial.Elevated ?? CardElevated)"
                             Borderless="@CardBorderless"
                             IsHiddenFromAssistiveTech="false"
                             IsFirstVisible="@(cardIndex < 2)"
@@ -69,7 +76,7 @@
                             Variant="@CardVariant"
                             Size="@CardSize"
                             Theme="@GetCardTheme()"
-                            Elevated="@CardElevated"
+                            Elevated="@(testimonial.Elevated ?? CardElevated)"
                             Borderless="@CardBorderless"
                             IsHiddenFromAssistiveTech="true"
                             IsFirstVisible="false"
@@ -77,6 +84,9 @@
                     </div>
                 }
             </div>
+            </div>
         </div>
     </div>
 </section>
+
+<JS Src="./_content/Osirion.Blazor.Core/Components/Carousels/OsirionTestimonialCarousel.razor.js" Args="@(new object[] { Refs })" />

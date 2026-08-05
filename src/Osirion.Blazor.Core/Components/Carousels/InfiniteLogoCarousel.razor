@@ -1,9 +1,12 @@
 @namespace Osirion.Blazor.Components
 @inherits OsirionComponentBase
+@using BlazorJSComponents
+@inject JSElementReferenceScope Refs
 
 <section class="@GetCarouselClass()" 
          aria-label="@SectionTitle"
          style="@Style"
+         data-ref="@Refs["root"]"
          @attributes="Attributes">
     
     @if (!string.IsNullOrEmpty(Title))
@@ -13,13 +16,14 @@
         </div>
     }
     
-    <div class="osirion-carousel-container">
-        <div class="osirion-carousel-wrapper">
-            <ul class="osirion-carousel-list" 
-                role="list" 
-                style="@GetCarouselListStyle()">
-                
-                @* First set of logos *@
+    <div class="osirion-carousel-container" style="@GetCarouselListStyle()">
+        <div class="osirion-carousel-wrapper"
+             tabindex="0"
+               data-ref="@Refs["viewport"]"
+             data-autoscroll="@(EnableAutoScroll ? "true" : "false")"
+             data-autoscroll-direction="@Direction.ToString().ToLowerInvariant()">
+        <div class="osirion-carousel-track" data-ref="@Refs["track"]">
+            <ul class="osirion-carousel-list" role="list">
                 @foreach (var logo in VisibleLogos)
                 {
                     <li class="@GetLogoClass(logo)" role="listitem">
@@ -33,12 +37,14 @@
                                          height="@LogoHeight" 
                                          alt="@logo.AltText" 
                                          loading="lazy"
+                                         draggable="false"
                                          class="osirion-logo-light">
                                     <img src="@logo.DarkImageUrl" 
                                          width="@LogoWidth" 
                                          height="@LogoHeight" 
                                          alt="@logo.AltText" 
                                          loading="lazy"
+                                         draggable="false"
                                          class="osirion-logo-dark">
                                 }
                                 else
@@ -47,7 +53,8 @@
                                          width="@LogoWidth" 
                                          height="@LogoHeight" 
                                          alt="@logo.AltText" 
-                                         loading="lazy">
+                                         loading="lazy"
+                                         draggable="false">
                                 }
                             </a>
                         }
@@ -60,12 +67,14 @@
                                      height="@LogoHeight" 
                                      alt="@logo.AltText" 
                                      loading="lazy"
+                                     draggable="false"
                                      class="osirion-logo-light">
                                 <img src="@logo.DarkImageUrl" 
                                      width="@LogoWidth" 
                                      height="@LogoHeight" 
                                      alt="@logo.AltText" 
                                      loading="lazy"
+                                     draggable="false"
                                      class="osirion-logo-dark">
                             }
                             else
@@ -74,79 +83,46 @@
                                      width="@LogoWidth" 
                                      height="@LogoHeight" 
                                      alt="@logo.AltText" 
-                                     loading="lazy">
+                                     loading="lazy"
+                                     draggable="false">
                             }
                         }
                     </li>
                 }
-
-                @* Duplicate set for seamless looping *@
-                @foreach (var logo in VisibleLogos)
+                @if (ChildContent is not null)
                 {
-                    <li class="@GetLogoClass(logo)" role="listitem">
-                        @if (!string.IsNullOrWhiteSpace(logo.Url))
-                        {
-                            <a @attributes="GetLogoLinkAttributes(logo)" tabindex="-1" aria-hidden="true">
-                                @if (logo.HasDualLogos)
-                                {
-                                    <img src="@logo.LightImageUrl" 
-                                         width="@LogoWidth" 
-                                         height="@LogoHeight" 
-                                         alt="" 
-                                         loading="lazy"
-                                         aria-hidden="true"
-                                         class="osirion-logo-light">
-                                    <img src="@logo.DarkImageUrl" 
-                                         width="@LogoWidth" 
-                                         height="@LogoHeight" 
-                                         alt="" 
-                                         loading="lazy"
-                                         aria-hidden="true"
-                                         class="osirion-logo-dark">
-                                }
-                                else
-                                {
-                                    <img src="@GetLogoUrl(logo)" 
-                                         width="@LogoWidth" 
-                                         height="@LogoHeight" 
-                                         alt="" 
-                                         loading="lazy"
-                                         aria-hidden="true">
-                                }
-                            </a>
-                        }
-                        else
-                        {
-                            @if (logo.HasDualLogos)
-                            {
-                                <img src="@logo.LightImageUrl" 
-                                     width="@LogoWidth" 
-                                     height="@LogoHeight" 
-                                     alt="" 
-                                     loading="lazy"
-                                     aria-hidden="true"
-                                     class="osirion-logo-light">
-                                <img src="@logo.DarkImageUrl" 
-                                     width="@LogoWidth" 
-                                     height="@LogoHeight" 
-                                     alt="" 
-                                     loading="lazy"
-                                     aria-hidden="true"
-                                     class="osirion-logo-dark">
-                            }
-                            else
-                            {
-                                <img src="@GetLogoUrl(logo)" 
-                                     width="@LogoWidth" 
-                                     height="@LogoHeight" 
-                                     alt="" 
-                                     loading="lazy"
-                                     aria-hidden="true">
-                            }
-                        }
+                    <li class="osirion-carousel-content-item" role="listitem">
+                        @ChildContent
                     </li>
                 }
             </ul>
+            @if (EnableAutoScroll)
+            {
+                <ul class="osirion-carousel-list" aria-hidden="true">
+                    @foreach (var logo in VisibleLogos)
+                    {
+                        <li class="@GetLogoClass(logo)">
+                            @if (logo.HasDualLogos)
+                            {
+                                <img src="@logo.LightImageUrl" width="@LogoWidth" height="@LogoHeight" alt="" loading="lazy" draggable="false" class="osirion-logo-light">
+                                <img src="@logo.DarkImageUrl" width="@LogoWidth" height="@LogoHeight" alt="" loading="lazy" draggable="false" class="osirion-logo-dark">
+                            }
+                            else
+                            {
+                                <img src="@GetLogoUrl(logo)" width="@LogoWidth" height="@LogoHeight" alt="" loading="lazy" draggable="false">
+                            }
+                        </li>
+                    }
+                    @if (ChildContent is not null)
+                    {
+                        <li class="osirion-carousel-content-item">@ChildContent</li>
+                    }
+                </ul>
+            }
+        </div>
         </div>
     </div>
 </section>
+
+<JS Src="./_content/Osirion.Blazor.Core/Components/Carousels/InfiniteLogoCarousel.razor.js" Args="@(new object[] { Refs })" />
+

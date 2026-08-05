@@ -1,52 +1,46 @@
 /* Base testimonial card styles - Matching requested format */
 .osirion-testimonial-card {
+    --osirion-testimonial-elevation-highlight: rgba(255, 255, 255, 0.95);
+    --osirion-testimonial-elevation-shadow-primary: rgba(15, 23, 42, 0.14);
+    --osirion-testimonial-elevation-shadow-secondary: rgba(15, 23, 42, 0.08);
     position: relative;
     display: flex;
     flex-direction: column;
     gap: var(--osirion-spacing-4);
     padding: var(--osirion-spacing-6);
-    background: var(--osirion-background-primary);
-    border-radius: var(--osirion-radius-xl);
-    border: 1px solid var(--osirion-border-color);
-    transition: all var(--osirion-transition-duration-300) var(--osirion-transition-timing-default);
+    background: var(
+        --osirion-testimonial-card-background,
+        color-mix(in srgb, var(--osirion-background-primary, #ffffff) 72%, transparent)
+    );
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(20px) saturate(180%);
+    border-radius: var(--osirion-testimonial-card-radius, var(--osirion-radius-xl, 1rem));
+    border: 1px solid var(
+        --osirion-testimonial-card-border,
+        color-mix(in srgb, var(--osirion-text-primary, #0f172a) 10%, transparent)
+    );
+    transition: border-color var(--osirion-transition-duration-200) ease, box-shadow var(--osirion-transition-duration-200) ease;
     overflow: hidden;
-    /* WCAG 2.2 focus indicators */
-    outline: transparent solid 2px;
-    outline-offset: 2px;
     /* Optimized card height */
     min-height: 280px;
     max-height: 320px;
 }
 
-/* WCAG 2.2 compliant focus styles */
-.osirion-testimonial-card:focus-within {
-    outline: 2px solid var(--osirion-color-primary-600);
-    outline-offset: 4px;
-}
-
 /* Elevated card effect using root variables */
 .osirion-testimonial-elevated {
-    box-shadow: var(--osirion-shadow-base);
-}
-
-.osirion-testimonial-elevated:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--osirion-shadow-lg);
+    transform: translateY(-2px);
+    box-shadow: var(
+        --osirion-testimonial-card-shadow,
+        0 2px 0 var(--osirion-testimonial-elevation-highlight) inset
+    );
+    filter: drop-shadow(0 5px 10px var(--osirion-testimonial-elevation-shadow-primary))
+            drop-shadow(0 1px 3px var(--osirion-testimonial-elevation-shadow-secondary));
 }
 
 /* Borderless variant */
 .osirion-testimonial-borderless {
     border: none;
     background: transparent;
-}
-
-/* Content area - testimonial text and rating at top */
-.osirion-testimonial-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: var(--osirion-spacing-3);
-    text-align: left;
 }
 
 /* Rating stars - left aligned as per image */
@@ -83,6 +77,7 @@
 .osirion-testimonial-quote {
     margin: 0;
     flex: 1;
+    min-height: 0;
     position: relative;
 }
 
@@ -103,19 +98,10 @@
     overflow: hidden;
 }
 
-/* Footer - horizontal layout with profile and details */
-.osirion-testimonial-footer {
-    display: flex;
-    flex-direction: column;
-    gap: var(--osirion-spacing-3);
-    margin-top: auto;
-    padding-top: var(--osirion-spacing-4);
-}
-
 /* Person row - horizontal layout like the image */
 .osirion-testimonial-person-row {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: var(--osirion-spacing-3);
 }
 
@@ -172,6 +158,17 @@
     align-items: center;
     gap: 5px; /* Reduced from 1 for tighter spacing */
     text-decoration: none;
+    color: var(--osirion-text-primary);
+}
+
+.osirion-testimonial-name-link:hover {
+    color: var(--osirion-text-primary);
+    text-decoration: none;
+}
+
+.osirion-testimonial-name-link:focus-visible {
+    outline: 2px solid var(--osirion-color-primary-600);
+    outline-offset: 2px;
 }
 
 /* LinkedIn icon - more compact integration with name */
@@ -211,8 +208,10 @@
 
 /* Read more actions - bottom of card */
 .osirion-testimonial-actions {
-    align-self: flex-start;
-    margin-top: var(--osirion-spacing-3);
+    align-self: stretch;
+    margin-top: auto;
+    padding-top: var(--osirion-spacing-3);
+    border-top: 1px solid var(--osirion-border-color);
 }
 
 /* Size variations - consistent with new layout and larger fonts */
@@ -349,7 +348,7 @@
     padding: var(--osirion-spacing-4);
     min-height: 160px;
     max-height: 200px;
-    border-radius: var(--osirion-radius-lg);
+    background: var(--osirion-background-primary, #ffffff);
 }
 
 .osirion-testimonial-minimal .osirion-testimonial-image {
@@ -361,7 +360,7 @@
 .osirion-testimonial-minimal .osirion-testimonial-text {
     font-size: var(--osirion-font-size-sm); /* Increased from xs to sm */
     -webkit-line-clamp: 2;
-    font-style: normal;
+    /* Keep a stable baseline without clipping optional card content. */
     line-height: var(--osirion-line-height-normal);
 }
 
@@ -409,7 +408,6 @@
 }
 
 .osirion-testimonial-minimal:hover {
-    transform: translateY(-2px);
     box-shadow: var(--osirion-shadow-base);
 }
 
@@ -503,9 +501,7 @@
 /* Theme Mode Support - Clean theme implementation */
 /* Light theme (explicit) */
 .osirion-testimonial-theme-light {
-    background: var(--osirion-color-white);
-    border-color: var(--osirion-text-secondary);
-    color: var(--osirion-text-secondary);
+    color: var(--osirion-text-primary);
 }
 
 .osirion-testimonial-theme-light .osirion-testimonial-text {
@@ -539,29 +535,32 @@
 
 /* Dark theme (explicit) */
 .osirion-testimonial-theme-dark {
-    background: var(--osirion-text-secondary);
-    border-color: var(--osirion-text-secondary);
-    color: var(--osirion-text-secondary);
+    --osirion-testimonial-card-background: color-mix(in srgb, var(--osirion-color-neutral-900, #111827) 88%, transparent);
+    --osirion-testimonial-card-border: rgba(255, 255, 255, 0.14);
+    --osirion-testimonial-elevation-highlight: transparent;
+    --osirion-testimonial-elevation-shadow-primary: rgba(0, 0, 0, 0.48);
+    --osirion-testimonial-elevation-shadow-secondary: rgba(0, 0, 0, 0.28);
+    color: var(--osirion-color-white, #ffffff);
 }
 
 .osirion-testimonial-theme-dark .osirion-testimonial-text {
-    color: var(--osirion-text-secondary);
+    color: color-mix(in srgb, var(--osirion-color-white, #ffffff) 78%, transparent);
 }
 
 .osirion-testimonial-theme-dark .osirion-testimonial-name {
-    color: var(--osirion-text-secondary);
+    color: var(--osirion-color-white, #ffffff);
 }
 
 .osirion-testimonial-theme-dark .osirion-testimonial-details {
-    color: var(--osirion-text-secondary); /* Improved contrast for WCAG 2.2 */
+    color: color-mix(in srgb, var(--osirion-color-white, #ffffff) 68%, transparent);
 }
 
 .osirion-testimonial-theme-dark .osirion-testimonial-position {
-    color: var(--osirion-text-secondary); /* Improved contrast */
+    color: color-mix(in srgb, var(--osirion-color-white, #ffffff) 68%, transparent);
 }
 
     .osirion-testimonial-theme-dark .osirion-testimonial-company {
-        color: var(--osirion-text-secondary); /* Improved contrast */
+        color: color-mix(in srgb, var(--osirion-color-white, #ffffff) 68%, transparent); /* Improved contrast */
     }
 
 .osirion-testimonial-theme-dark .osirion-testimonial-image {
@@ -587,9 +586,6 @@
 
 /* System theme - inherits from parent/global theme via CSS custom properties */
 .osirion-testimonial-theme-system {
-    /* Uses inherited CSS variables that change based on parent theme */
-    background: var(--osirion-background-primary);
-    border-color: var(--osirion-border-color);
     color: var(--osirion-text-primary);
 }
 
@@ -620,6 +616,17 @@
 
 .osirion-testimonial-theme-system .osirion-testimonial-star-empty {
     color: var(--osirion-text-secondary);
+}
+
+:root[data-osirion-theme="dark"] .osirion-testimonial-theme-system,
+[data-osirion-theme="dark"] .osirion-testimonial-theme-system,
+:root[data-theme="dark"] .osirion-testimonial-theme-system,
+[data-theme="dark"] .osirion-testimonial-theme-system,
+:root[data-bs-theme="dark"] .osirion-testimonial-theme-system,
+[data-bs-theme="dark"] .osirion-testimonial-theme-system {
+    --osirion-testimonial-elevation-highlight: transparent;
+    --osirion-testimonial-elevation-shadow-primary: rgba(0, 0, 0, 0.48);
+    --osirion-testimonial-elevation-shadow-secondary: rgba(0, 0, 0, 0.28);
 }
 
 /* Inverted theme */
@@ -695,11 +702,6 @@
     .osirion-testimonial-theme-inverted .osirion-testimonial-star-empty {
         color: var(--osirion-text-secondary);
     }
-}
-
-/* Framework integration */
-.card.osirion-testimonial-card {
-    border: 1px solid var(--osirion-border-color);
 }
 
 /* Enhanced responsive design with WCAG 2.2 compliance */

@@ -1,12 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Options;
-
-
-#if NET9_0_OR_GREATER
 using BlazorJSComponents;
-#else
-using BlazorPageScript;
-#endif
 
 namespace Osirion.Blazor.Components;
 
@@ -31,12 +25,9 @@ public abstract partial class OsirionComponentBase : ComponentBase
     /// Gets or sets whether the component should be considered interactive.
     /// </summary>
     /// <remarks>
-    /// In .NET 9+, this is determined by <c>RendererInfo?.IsInteractive</c>.
-    /// In .NET 8, this is determined by the <see cref="SetInteractive"/> parameter.
+    /// This is determined by <c>RendererInfo?.IsInteractive</c>.
     /// </remarks>
-#if NET9_0_OR_GREATER
     [Obsolete("This parameter is ignored in .NET 9+ as interactivity is automatically determined.", true)]
-#endif
     [Parameter]
     public bool SetInteractive { get; set; }
 
@@ -52,8 +43,7 @@ public abstract partial class OsirionComponentBase : ComponentBase
     /// Indicates whether the component is in an interactive rendering mode.
     /// </summary>
     /// <remarks>
-    /// In .NET 9+, this is determined by <c>RendererInfo?.IsInteractive</c>.
-    /// In .NET 8, this is determined by the <see cref="SetInteractive"/> parameter.
+    /// This is determined by <c>RendererInfo?.IsInteractive</c>.
     /// </remarks>
     protected bool IsInteractive { get; private set; }
 
@@ -74,25 +64,14 @@ public abstract partial class OsirionComponentBase : ComponentBase
             Attributes[Framework == CssFramework.Bootstrap ? "data-bs-theme" : "data-theme"] = Theme.ToString().ToLower();
         }
 
-        // Determine interactivity based on framework version
-#if NET9_0_OR_GREATER
         IsInteractive = RendererInfo?.IsInteractive ?? false;
-#else
-        IsInteractive = SetInteractive;
-#endif
     }
 
     /// <summary>Creates a render fragment that loads a client-side script.</summary>
     protected RenderFragment LoadScript(string src) => builder =>
     {
-#if NET9_0_OR_GREATER
         builder.OpenComponent<JS>(0);
         builder.AddAttribute(1, "Src", src);
         builder.CloseComponent();
-#else
-        builder.OpenComponent<PageScript>(0);
-        builder.AddAttribute(1, "Src", src);
-        builder.CloseComponent();
-#endif
     };
 }

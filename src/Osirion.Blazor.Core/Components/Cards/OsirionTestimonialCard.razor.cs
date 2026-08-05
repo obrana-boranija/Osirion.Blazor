@@ -105,10 +105,10 @@ public partial class OsirionTestimonialCard : OsirionComponentBase
     public int ImageSize { get; set; } = 64;
 
     /// <summary>
-    /// Gets or sets whether the card should have elevated appearance
+    /// Gets or sets whether the card should have an elevated appearance. When null, elevation is enabled by default.
     /// </summary>
     [Parameter]
-    public bool Elevated { get; set; } = true;
+    public bool? Elevated { get; set; }
 
     /// <summary>
     /// Gets or sets whether the card should be borderless
@@ -159,9 +159,6 @@ public partial class OsirionTestimonialCard : OsirionComponentBase
     {
         var classes = new List<string> { "osirion-testimonial-card" };
 
-        // Add framework-specific card classes using inherited method
-        classes.Add(base.GetCardClass());
-
         // Add variant class
         classes.Add($"osirion-testimonial-{Variant.ToString().ToLower()}");
 
@@ -172,7 +169,7 @@ public partial class OsirionTestimonialCard : OsirionComponentBase
         classes.Add($"osirion-testimonial-theme-{GetEffectiveTheme().ToString().ToLower()}");
 
         // Add visual modifiers
-        if (Elevated)
+        if (Elevated ?? true)
         {
             classes.Add("osirion-testimonial-elevated");
         }

@@ -22,7 +22,7 @@ public partial class OsirionMetricGrid : OsirionComponentBase
         string Value,
         string? Label = null,
         string? Description = null,
-        string Accent = "green",
+        MetricCardAccent Accent = MetricCardAccent.Green,
         string? Kicker = null,
         bool Elevated = false,
         bool Animate = false);

@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Components;
 namespace Osirion.Blazor.Components;
 
 /// <summary>
-/// Infinite logo carousel component that displays client logos in a continuous scrolling animation
-/// Works in Static SSR without JavaScript requirements
+/// Horizontally scrollable carousel for logos and arbitrary Blazor content.
+/// It renders meaningful content during static SSR and progressively enhances with controls and drag support.
 /// </summary>
 public partial class InfiniteLogoCarousel : OsirionComponentBase
 {
@@ -21,7 +21,7 @@ public partial class InfiniteLogoCarousel : OsirionComponentBase
     public string SectionTitle { get; set; } = "Our Clients";
     
     /// <summary>
-    /// Animation duration in seconds (default: 60)
+    /// Auto-scroll interval in seconds when <see cref="EnableAutoScroll"/> is enabled.
     /// </summary>
     [Parameter]
     public int AnimationDuration { get; set; } = 60;
@@ -30,7 +30,19 @@ public partial class InfiniteLogoCarousel : OsirionComponentBase
     /// Custom list of client logos. If not provided, uses default logos.
     /// </summary>
     [Parameter]
-    public List<LogoItem>? CustomLogos { get; set; }
+    public IReadOnlyList<LogoItem>? CustomLogos { get; set; }
+
+    /// <summary>
+    /// Additional arbitrary content to render as a carousel item after the logo items.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the carousel advances automatically while it is not being interacted with.
+    /// </summary>
+    [Parameter]
+    public bool EnableAutoScroll { get; set; }
 
     /// <summary>
     /// Gets or sets whether to pause animation on hover
@@ -74,14 +86,14 @@ public partial class InfiniteLogoCarousel : OsirionComponentBase
     [Parameter]
     public int? MaxVisibleLogos { get; set; }
 
-    private List<LogoItem> LogoList => CustomLogos ?? GetDefaultLogos();
-    private List<LogoItem> VisibleLogos 
+    private IReadOnlyList<LogoItem> LogoList => CustomLogos ?? GetDefaultLogos();
+    private IReadOnlyList<LogoItem> VisibleLogos 
     {
         get
         {
             if (MaxVisibleLogos.HasValue && MaxVisibleLogos.Value > 0)
             {
-                return LogoList.Take(MaxVisibleLogos.Value).ToList();
+                return LogoList.Take(MaxVisibleLogos.Value).ToArray();
             }
             return LogoList;
         }
@@ -100,10 +112,12 @@ public partial class InfiniteLogoCarousel : OsirionComponentBase
         if (EnableGrayscale)
             cssClass += " osirion-carousel-grayscale-enabled";
 
-        // Toggle direction via class so CSS (isolated) can switch animation-name without inline keyframes
+        if (EnableAutoScroll)
+            cssClass += " osirion-carousel-autoscroll";
+
         if (Direction == AnimationDirection.Left)
             cssClass += " osirion-carousel-reverse";
-            
+
         return CombineCssClasses(cssClass);
     }
 
@@ -183,7 +197,7 @@ public partial class InfiniteLogoCarousel : OsirionComponentBase
     /// </summary>
     private static string GetLogoUrl(LogoItem logo) => logo.ImageUrl;
 
-    private static List<LogoItem> GetDefaultLogos()
+    private static IReadOnlyList<LogoItem> GetDefaultLogos()
     {
         return new List<LogoItem>
         {

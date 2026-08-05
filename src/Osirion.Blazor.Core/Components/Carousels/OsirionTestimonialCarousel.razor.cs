@@ -51,6 +51,12 @@ public partial class OsirionTestimonialCarousel : OsirionComponentBase
     public int CardWidth { get; set; } = 400;
 
     /// <summary>
+    /// Gets or sets the fixed testimonial card height in pixels.
+    /// </summary>
+    [Parameter]
+    public int CardHeight { get; set; } = 300;
+
+    /// <summary>
     /// Gets or sets the gap between cards in pixels
     /// </summary>
     [Parameter]
@@ -75,10 +81,10 @@ public partial class OsirionTestimonialCarousel : OsirionComponentBase
     public TestimonialSize CardSize { get; set; } = TestimonialSize.Normal;
 
     /// <summary>
-    /// Gets or sets whether cards should have elevated appearance
+    /// Gets or sets the elevation for all cards when an individual testimonial does not specify it.
     /// </summary>
     [Parameter]
-    public bool CardElevated { get; set; } = true;
+    public bool? CardElevated { get; set; }
 
     /// <summary>
     /// Gets or sets whether cards should be borderless
@@ -168,6 +174,7 @@ public partial class OsirionTestimonialCarousel : OsirionComponentBase
         {
             $"--osirion-testimonial-carousel-duration: {GetEffectiveAnimationDuration()}s",
             $"--osirion-testimonial-card-width: {CardWidth}px",
+            $"--osirion-testimonial-card-height: {CardHeight}px",
             $"--osirion-testimonial-card-gap: {CardGap}px"
         };
 
@@ -316,4 +323,5 @@ public record TestimonialItem(
     string? ReadMoreText = "Read more",
     ReadMoreVariant ReadMoreVariant = ReadMoreVariant.Default,
     string? ReadMoreTarget = null,
-    string? AdditionalCssClass = null);
+    string? AdditionalCssClass = null,
+    bool? Elevated = null);

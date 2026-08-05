@@ -1,30 +1,29 @@
-const header = document.querySelector('.osirion-page-header-scroll');
+export default class extends BlazorJSComponents.Component {
+    attach() {
+        this.lastScrollY = window.scrollY;
+        this.isHeaderVisible = true;
+        this.ticking = false;
+    }
 
-if (header) {
-    let lastScrollY = window.scrollY;
-    let isHeaderVisible = true;
-    let ticking = false;
+    setParameters(refs, enabled) {
+        if (!enabled || !refs.header || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-    const updateHeader = () => {
-        const currentScrollY = window.scrollY;
-        const scrollDifference = currentScrollY - lastScrollY;
-
-        if (currentScrollY < 100 || scrollDifference < -10) {
-            header.style.transform = 'translateY(0)';
-            isHeaderVisible = true;
-        } else if (scrollDifference > 10 && isHeaderVisible) {
-            header.style.transform = 'translateY(-100%)';
-            isHeaderVisible = false;
-        }
-
-        lastScrollY = currentScrollY;
-        ticking = false;
-    };
-
-    window.addEventListener('scroll', () => {
-        if (!ticking) {
-            window.requestAnimationFrame(updateHeader);
-            ticking = true;
-        }
-    }, { passive: true });
+        this.setEventListener(window, 'scroll', () => {
+            if (this.ticking) return;
+            this.ticking = true;
+            window.requestAnimationFrame(() => {
+                const currentScrollY = window.scrollY;
+                const difference = currentScrollY - this.lastScrollY;
+                if (currentScrollY < 100 || difference < -10) {
+                    refs.header.style.transform = 'translateY(0)';
+                    this.isHeaderVisible = true;
+                } else if (difference > 10 && this.isHeaderVisible) {
+                    refs.header.style.transform = 'translateY(-100%)';
+                    this.isHeaderVisible = false;
+                }
+                this.lastScrollY = currentScrollY;
+                this.ticking = false;
+            });
+        }, { passive: true });
+    }
 }

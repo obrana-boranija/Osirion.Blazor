@@ -1,0 +1,17 @@
+@namespace Osirion.Blazor.Navigation.Components
+@inherits OsirionComponentBase
+
+<a class="@CombineCssClasses("osirion-menu-call-to-action")"
+   href="@Href"
+   target="@Target"
+   rel="@(Target == "_blank" ? "noopener noreferrer" : null)"
+   @attributes="Attributes">
+    <span class="osirion-menu-call-to-action-content">
+        <span class="osirion-menu-call-to-action-text">@Text</span>
+        @if (!string.IsNullOrWhiteSpace(Description))
+        {
+            <span class="osirion-menu-call-to-action-description">@Description</span>
+        }
+    </span>
+    <span class="osirion-menu-call-to-action-arrow" aria-hidden="true">&rarr;</span>
+</a>

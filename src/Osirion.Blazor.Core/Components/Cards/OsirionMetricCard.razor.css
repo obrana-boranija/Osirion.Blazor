@@ -1,34 +1,67 @@
 .osirion-metric-card {
+    --osirion-metric-card-accent: var(--osirion-color-success-600, #16a34a);
     height: 100%;
     padding: 1.5rem;
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    border-radius: 0.5rem;
-    background: #fff;
+    border-radius: var(--osirion-radius-lg, 0.5rem);
+    background: var(--osirion-background-secondary, #fff);
+    color: var(--osirion-text-primary, #123b2b);
     text-align: center;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
-.osirion-metric-card-elevated {
-    box-shadow: 0 0.75rem 2rem rgba(0, 0, 0, 0.12);
+.osirion-metric-card-border-none { border: 0; }
+.osirion-metric-card-border-default { border: var(--osirion-border-width, 1px) solid var(--osirion-border-color, rgba(0, 0, 0, 0.08)); }
+.osirion-metric-card-border-accent { border: var(--osirion-border-width, 1px) solid color-mix(in srgb, var(--osirion-metric-card-accent) 32%, transparent); }
+
+.osirion-metric-card-shadow-none { box-shadow: none; }
+.osirion-metric-card-shadow-small { box-shadow: var(--osirion-shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.08)); }
+.osirion-metric-card-shadow-medium { box-shadow: var(--osirion-shadow-md, 0 4px 6px rgba(0, 0, 0, 0.1)); }
+.osirion-metric-card-shadow-large { box-shadow: var(--osirion-shadow-lg, 0 0.75rem 2rem rgba(0, 0, 0, 0.12)); }
+.osirion-metric-card-shadow-smallaccent { box-shadow: 0 0.25rem 0.75rem color-mix(in srgb, var(--osirion-metric-card-accent) 18%, transparent); }
+.osirion-metric-card-shadow-mediumaccent { box-shadow: 0 0.75rem 1.75rem color-mix(in srgb, var(--osirion-metric-card-accent) 22%, transparent); }
+.osirion-metric-card-shadow-largeaccent { box-shadow: 0 1.25rem 3rem color-mix(in srgb, var(--osirion-metric-card-accent) 26%, transparent); }
+
+.osirion-metric-card-shadow-small:hover,
+.osirion-metric-card-shadow-medium:hover,
+.osirion-metric-card-shadow-large:hover,
+.osirion-metric-card-shadow-smallaccent:hover,
+.osirion-metric-card-shadow-mediumaccent:hover,
+.osirion-metric-card-shadow-largeaccent:hover {
+    transform: translateY(-0.25rem);
 }
+
+.osirion-metric-card-shadow-small:hover,
+.osirion-metric-card-shadow-medium:hover,
+.osirion-metric-card-shadow-large:hover { box-shadow: var(--osirion-shadow-xl, 0 1.5rem 4rem rgba(0, 0, 0, 0.14)); }
+.osirion-metric-card-shadow-smallaccent:hover { box-shadow: 0 0.5rem 1.25rem color-mix(in srgb, var(--osirion-metric-card-accent) 24%, transparent); }
+.osirion-metric-card-shadow-mediumaccent:hover { box-shadow: 0 1rem 2.25rem color-mix(in srgb, var(--osirion-metric-card-accent) 28%, transparent); }
+.osirion-metric-card-shadow-largeaccent:hover { box-shadow: 0 1.5rem 3.75rem color-mix(in srgb, var(--osirion-metric-card-accent) 32%, transparent); }
 
 .osirion-metric-card-value {
     margin-bottom: 0.5rem;
-    color: #176b45;
+    color: var(--osirion-metric-card-accent);
     font-size: clamp(1.875rem, 3.5vw, 2.75rem);
     font-weight: 800;
     line-height: 1.1;
 }
 
-.osirion-metric-card-teal .osirion-metric-card-value { color: #0d766f; }
-.osirion-metric-card-blue .osirion-metric-card-value { color: #2563a9; }
-.osirion-metric-card-amber .osirion-metric-card-value { color: #9a6700; }
-.osirion-metric-card-purple .osirion-metric-card-value { color: #7040a5; }
-.osirion-metric-card-indigo .osirion-metric-card-value { color: #4f46a5; }
+.osirion-metric-card-primary { --osirion-metric-card-accent: var(--osirion-action-primary, var(--osirion-color-primary-600, #2563eb)); }
+.osirion-metric-card-secondary { --osirion-metric-card-accent: var(--osirion-action-secondary-text, var(--osirion-color-neutral-600, #4b5563)); }
+.osirion-metric-card-success { --osirion-metric-card-accent: var(--osirion-status-success, var(--osirion-color-success-600, #16a34a)); }
+.osirion-metric-card-warning { --osirion-metric-card-accent: var(--osirion-status-warning, var(--osirion-color-warning-600, #d97706)); }
+.osirion-metric-card-danger { --osirion-metric-card-accent: var(--osirion-status-danger, var(--osirion-color-danger-600, #dc2626)); }
+.osirion-metric-card-info { --osirion-metric-card-accent: var(--osirion-status-info, var(--osirion-color-info-600, #2563eb)); }
+.osirion-metric-card-blue { --osirion-metric-card-accent: var(--osirion-color-blue-600, #2563eb); }
+.osirion-metric-card-teal { --osirion-metric-card-accent: var(--osirion-color-teal-600, #0d9488); }
+.osirion-metric-card-green { --osirion-metric-card-accent: var(--osirion-color-green-600, #16a34a); }
+.osirion-metric-card-amber { --osirion-metric-card-accent: var(--osirion-color-amber-600, #d97706); }
+.osirion-metric-card-purple { --osirion-metric-card-accent: var(--osirion-color-purple-600, #7c3aed); }
+.osirion-metric-card-indigo { --osirion-metric-card-accent: var(--osirion-color-indigo-600, #4f46e5); }
 
 .osirion-metric-card-kicker {
     display: block;
     margin-bottom: 0.75rem;
-    color: #666;
+    color: var(--osirion-text-secondary, #666);
     font-size: 0.7rem;
     font-weight: 700;
     letter-spacing: 0.08em;
@@ -36,7 +69,7 @@
 }
 
 .osirion-metric-card-label {
-    color: #123b2b;
+    color: inherit;
     font-size: 0.95rem;
     font-weight: 700;
     line-height: 1.35;
@@ -44,7 +77,7 @@
 
 .osirion-metric-card-description {
     margin-top: 0.25rem;
-    color: #666;
+    color: var(--osirion-text-secondary, #666);
     font-size: 0.82rem;
     line-height: 1.55;
 }

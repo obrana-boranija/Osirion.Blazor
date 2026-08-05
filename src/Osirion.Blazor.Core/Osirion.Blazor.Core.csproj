@@ -1,12 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
 	<PropertyGroup>
-		<TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
+		<TargetFrameworks>$(OsirionTargetFrameworks)</TargetFrameworks>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<LangVersion>latest</LangVersion>
 		<IsPackable>true</IsPackable>
-
 		<!-- XML Documentation -->
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
@@ -26,23 +25,11 @@
 		<PackageIcon>icon.png</PackageIcon>
 	</PropertyGroup>
 
-	<!-- .NET 8.0 specific dependencies -->
-	<ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
-		<PackageReference Include="BlazorPageScript" />
-
-	</ItemGroup>
-
 	<ItemGroup>
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />
 	</ItemGroup>
 
-	<!-- .NET 9.0 specific dependencies -->
-	<ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
-		<PackageReference Include="BlazorJSComponents" />
-	</ItemGroup>
-
-	<!-- .NET 10.0 specific dependencies -->
-	<ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
+	<ItemGroup>
 		<PackageReference Include="BlazorJSComponents" />
 	</ItemGroup>
 	<ItemGroup>

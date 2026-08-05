@@ -1,7 +1,11 @@
 @namespace Osirion.Blazor.Components
 @inherits OsirionComponentBase
+@using BlazorJSComponents
+@attribute [DiscoverCollocatedJS]
+@inject JSElementReferenceScope Refs
 
 <div class="osirion-image-gallery @(Dark ? "osirion-image-gallery-dark" : "")"
+    data-ref="@Refs["root"]"
      data-osirion-gallery
      @attributes="Attributes">
     <div class="osirion-image-gallery-grid" style="--osirion-gallery-columns: @SafeColumns; --osirion-gallery-gap: @SafeGapSize;">
@@ -50,4 +54,4 @@
     </div>
 </div>
 
-@LoadScript("./_content/Osirion.Blazor.Core/Components/Galleries/OsirionImageGallery.razor.js")
+<JS Src="./_content/Osirion.Blazor.Core/Components/Galleries/OsirionImageGallery.razor.js" Args="[Refs]" />

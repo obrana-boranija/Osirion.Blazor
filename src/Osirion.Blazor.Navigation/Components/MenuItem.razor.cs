@@ -14,6 +14,12 @@ public partial class MenuItem
     public string Text { get; set; } = string.Empty;
 
     /// <summary>
+    /// Gets or sets optional supporting text displayed below the menu item text.
+    /// </summary>
+    [Parameter]
+    public string? Description { get; set; }
+
+    /// <summary>
     /// Gets or sets the icon name for the menu item.
     /// </summary>
     [Parameter]
@@ -56,6 +62,12 @@ public partial class MenuItem
     public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
+    /// Gets or sets the visual presentation of the submenu.
+    /// </summary>
+    [Parameter]
+    public SubmenuVariant SubmenuVariant { get; set; } = SubmenuVariant.Regular;
+
+    /// <summary>
     /// Gets or sets the match behavior for automatic active state detection.
     /// </summary>
     [Parameter]
@@ -95,7 +107,20 @@ public partial class MenuItem
     /// <summary>
     /// Gets the unique identifier for the submenu.
     /// </summary>
-    internal string SubmenuId => $"submenu-{Id ?? Guid.NewGuid().ToString("N")[..8]}";
+    private readonly string _generatedId = Guid.NewGuid().ToString("N")[..8];
+
+    internal string SubmenuId => $"submenu-{Id ?? _generatedId}";
+
+    /// <summary>
+    /// Gets the identifier for the submenu toggle control.
+    /// </summary>
+    internal string SubmenuToggleId => $"{SubmenuId}-toggle";
+
+    internal string SubmenuVariantClass => SubmenuVariant switch
+    {
+        SubmenuVariant.Mega => "osirion-submenu-mega",
+        _ => "osirion-submenu-regular"
+    };
 
     /// <summary>
     /// Gets whether this menu item should be considered active based on the current URL.

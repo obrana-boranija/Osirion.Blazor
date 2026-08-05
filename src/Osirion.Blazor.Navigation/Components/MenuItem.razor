@@ -2,6 +2,10 @@
 @inherits OsirionComponentBase
 
 <div class="osirion-menu-item-wrapper @(HasSubmenu ? "osirion-menu-item-has-submenu" : "") @(IsActive ? "osirion-menu-item-wrapper-active" : "")" @attributes="Attributes">
+    @if (HasSubmenu)
+    {
+        <input type="checkbox" class="osirion-submenu-toggler" id="@SubmenuToggleId" aria-controls="@SubmenuId" aria-label="Toggle @Text submenu" />
+    }
     <a href="@(Disabled ? "#" : Href)"
        class="osirion-menu-item @(IsActive ? "osirion-menu-item-active" : "") @(Disabled ? "osirion-menu-item-disabled" : "") @Class"
        @onclick="OnClickHandler"
@@ -9,7 +13,7 @@
        aria-disabled="@(Disabled ? "true" : "false")"
        aria-current="@(IsActive ? "page" : null)"
        aria-haspopup="@(HasSubmenu ? "true" : "false")"
-       aria-expanded="@(HasSubmenu && IsActive ? "true" : "false")"
+    aria-expanded="false"
        aria-controls="@(HasSubmenu ? SubmenuId : null)">
         @if (IconTemplate is not null)
         {
@@ -73,19 +77,24 @@
                 }
             </span>
         }
-        <span class="osirion-menu-item-text">@Text</span>
-        @if (HasSubmenu)
-        {
+        <span class="osirion-menu-item-content">
+            <span class="osirion-menu-item-text">@Text</span>
+            @if (!string.IsNullOrWhiteSpace(Description))
+            {
+                <span class="osirion-menu-item-description">@Description</span>
+            }
+        </span>
+    </a>
+    @if (HasSubmenu)
+    {
+        <label for="@SubmenuToggleId" class="osirion-submenu-toggle" aria-label="Toggle @Text submenu">
             <span class="osirion-menu-item-chevron" aria-hidden="true">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="9 18 15 12 9 6" />
                 </svg>
             </span>
-        }
-    </a>
-    @if (HasSubmenu)
-    {
-        <div class="osirion-submenu compact-submenu" id="@SubmenuId" role="menu" aria-label="@Text submenu">
+        </label>
+        <div class="osirion-submenu compact-submenu @SubmenuVariantClass" id="@SubmenuId" role="menu" aria-label="@Text submenu">
             @ChildContent
         </div>
     }

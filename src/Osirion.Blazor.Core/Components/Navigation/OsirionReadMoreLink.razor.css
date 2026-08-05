@@ -15,7 +15,7 @@
 
 /* Hover states */
 .osirion-read-more:hover {
-    color: var(--osirion-color-primary-700, #006b2a);
+    color: var(--osirion-read-more-hover-color, var(--osirion-color-primary-700, #006b2a));
     text-decoration: none;
 }
 
@@ -124,7 +124,7 @@
 }
 
 .osirion-read-more-external:hover {
-    color: var(--osirion-color-primary-700, #006b2a);
+    color: var(--osirion-read-more-hover-color, var(--osirion-color-primary-700, #006b2a));
 }
 
 .osirion-read-more-download {
@@ -132,7 +132,7 @@
 }
 
 .osirion-read-more-download:hover {
-    color: var(--osirion-color-primary-700, #006b2a);
+    color: var(--osirion-read-more-hover-color, var(--osirion-color-primary-700, #006b2a));
 }
 
 .osirion-read-more-plain {
@@ -141,7 +141,7 @@
 }
 
     .osirion-read-more-plain:hover {
-        color: var(--osirion-color-primary-700, #006b2a);
+        color: var(--osirion-read-more-hover-color, var(--osirion-color-primary-700, #006b2a));
     }
 
 .osirion-read-more-button {

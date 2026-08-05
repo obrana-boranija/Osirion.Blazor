@@ -1,10 +1,13 @@
 ﻿@namespace Osirion.Blazor.Components
 @inherits OsirionComponentBase
+@using BlazorJSComponents
+@attribute [DiscoverCollocatedJS]
+@inject JSElementReferenceScope Refs
 
-<div class="@GetPageLayoutClass()" @attributes="Attributes">
+<div class="@GetPageLayoutClass()" data-ref="@Refs["root"]" @attributes="Attributes">
     @if (Header is not null)
     {
-        <header class="osirion-page-header @(EnableHeaderScrollBehavior ? "osirion-page-header-scroll" : null)">
+        <header class="osirion-page-header @(EnableHeaderScrollBehavior ? "osirion-page-header-scroll" : null)" data-ref="@Refs["header"]">
             @Header
         </header>
     }
@@ -21,4 +24,4 @@
     }
 </div>
 
-@HeaderScrollScript
+<JS Src="./_content/Osirion.Blazor.Core/Components/Layout/OsirionPageLayout.razor.js" Args="[Refs, EnableHeaderScrollBehavior]" />

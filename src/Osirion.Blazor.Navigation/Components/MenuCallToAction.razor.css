@@ -1,0 +1,45 @@
+.osirion-menu-call-to-action {
+    display: flex;
+    align-items: center;
+    gap: var(--osirion-spacing-4, 1rem);
+    padding: var(--osirion-spacing-4, 1rem);
+    color: var(--osirion-text-primary, #f3f4f6);
+    background-color: var(--osirion-background-secondary, #1f2937);
+    border-radius: var(--osirion-radius-md, 0.375rem);
+    border: 1px solid transparent;
+    text-decoration: none;
+    transition: background-color var(--osirion-transition-duration-150, 150ms) ease, border-color var(--osirion-transition-duration-150, 150ms) ease;
+}
+
+.osirion-menu-call-to-action:hover,
+.osirion-menu-call-to-action:focus {
+    color: var(--osirion-text-primary, #f3f4f6);
+    border-color: var(--osirion-color-primary-500, #2563eb);
+    outline: none;
+}
+
+.osirion-menu-call-to-action-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.osirion-menu-call-to-action-text,
+.osirion-menu-call-to-action-description {
+    display: block;
+}
+
+.osirion-menu-call-to-action-text {
+    font-weight: var(--osirion-font-weight-semibold, 600);
+}
+
+.osirion-menu-call-to-action-description {
+    margin-top: var(--osirion-spacing-1, 0.25rem);
+    color: var(--osirion-text-secondary, #9ca3af);
+    font-size: var(--osirion-font-size-sm, 0.875rem);
+}
+
+.osirion-menu-call-to-action-arrow {
+    flex-shrink: 0;
+    font-size: var(--osirion-font-size-lg, 1.125rem);
+    color: var(--osirion-color-primary-500, #2563eb);
+}

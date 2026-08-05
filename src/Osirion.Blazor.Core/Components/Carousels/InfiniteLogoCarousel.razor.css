@@ -1,14 +1,12 @@
 ﻿/* 
  * Osirion Infinite Logo Carousel Component
- * CSS-only, SSR compatible
+ * SSR-first scroll rail with progressive interaction enhancement
  */
 
 .osirion-infinite-carousel {
     --osirion-logo-width: 200px;
     --osirion-logo-height: 80px;
     --osirion-logo-gap: 24px;
-    --osirion-carousel-duration: 60s;
-
     padding: var(--osirion-spacing-6, 2rem) 0;
     background-color: transparent;
     transition: background-color 0.3s ease;
@@ -30,45 +28,68 @@
 
 .osirion-carousel-container {
     max-width: var(--osirion-max-width-7xl, 1440px);
-    height: var(--osirion-logo-height);
     margin: 0 auto;
-    padding: 0 var(--osirion-spacing-12, 3rem);
+    padding: 0 var(--osirion-spacing-4, 1rem);
     box-sizing: border-box;
     position: relative;
-    display: flex;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
     align-items: center;
 }
 
 .osirion-carousel-wrapper {
-    height: var(--osirion-logo-height);
-    display: flex;
     position: relative;
     overflow: hidden;
+    overflow-y: hidden;
     width: 100%;
-    flex: 1;
-    mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+    scroll-behavior: smooth;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 clamp(2rem, 6vw, 6rem), #000 calc(100% - clamp(2rem, 6vw, 6rem)), transparent);
+    mask-image: linear-gradient(to right, transparent, #000 clamp(2rem, 6vw, 6rem), #000 calc(100% - clamp(2rem, 6vw, 6rem)), transparent);
+}
+
+.osirion-carousel-wrapper::-webkit-scrollbar { display: none; }
+
+.osirion-infinite-carousel.is-enhanced .osirion-carousel-wrapper {
+    cursor: grab;
+    touch-action: pan-y;
+}
+
+.osirion-carousel-wrapper.is-dragging { cursor: grabbing; scroll-snap-type: none; -webkit-user-select: none; user-select: none; }
+.osirion-carousel-wrapper:focus-visible { outline: var(--osirion-focus-ring-width, 3px) solid var(--osirion-focus-ring-color, currentColor); outline-offset: 3px; }
+
+.osirion-carousel-track {
+    display: flex;
+    gap: 0;
+    width: max-content;
 }
 
 .osirion-carousel-list {
     display: flex;
     flex-direction: row;
     gap: var(--osirion-logo-gap);
-    height: var(--osirion-logo-height);
+    min-height: var(--osirion-logo-height);
     list-style: none;
     margin: 0;
-    padding: 0;
-    will-change: transform;
-    flex-shrink: 0;
-    animation-name: osirion-slide-right;
-    animation-duration: var(--osirion-carousel-duration);
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
+    padding: 0 var(--osirion-logo-gap) 0 0;
 }
 
-/* Reverse animation when the reverse class is present on the root */
-.osirion-infinite-carousel.osirion-carousel-reverse .osirion-carousel-list {
-    animation-name: osirion-slide-left;
+.osirion-carousel-autoscroll .osirion-carousel-track {
+    animation: osirion-carousel-scroll var(--osirion-carousel-duration, 60s) linear infinite;
+}
+
+.osirion-carousel-autoscroll.osirion-carousel-reverse .osirion-carousel-track {
+    animation-direction: reverse;
+}
+
+.osirion-infinite-carousel-pausable:hover .osirion-carousel-track,
+.osirion-infinite-carousel-pausable:focus-within .osirion-carousel-track {
+    animation-play-state: paused;
+}
+
+@keyframes osirion-carousel-scroll {
+    to { transform: translateX(-50%); }
 }
 
 .osirion-logo-item {
@@ -85,6 +106,7 @@
     position: relative;
     overflow: hidden;
     contain: layout style paint;
+    scroll-snap-align: start;
 }
 
 .osirion-logo-item a {
@@ -98,6 +120,12 @@
     position: relative;
     overflow: hidden;
     contain: layout style paint;
+}
+
+.osirion-carousel-wrapper img {
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 .osirion-logo-item img {
@@ -155,17 +183,13 @@ html[data-bs-theme="dark"] .osirion-logo-dual .osirion-logo-dark,
 /* GRAYSCALE SUPPORT */
 .osirion-carousel-grayscale-enabled .osirion-logo-grayscale img { filter: grayscale(1) opacity(0.7); }
 .osirion-carousel-grayscale-enabled .osirion-logo-grayscale:hover img { filter: grayscale(0) opacity(1) brightness(1.1); }
+.osirion-carousel-grayscale-enabled .osirion-logo-item-focus img { filter: grayscale(0) opacity(1) brightness(1.05); }
 
 /* Non-grayscale logos */
 .osirion-logo-item:not(.osirion-logo-grayscale) img { filter: opacity(0.9); }
 .osirion-logo-item:not(.osirion-logo-grayscale):hover img { filter: opacity(1) brightness(1.1); }
 
-/* ANIMATION KEYFRAMES */
-@keyframes osirion-slide-right { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-@keyframes osirion-slide-left  { 0% { transform: translateX(-50%); } 100% { transform: translateX(0); } }
-
-/* Pause animation on hover */
-.osirion-infinite-carousel-pausable .osirion-carousel-wrapper:hover .osirion-carousel-list { animation-play-state: paused; }
+.osirion-carousel-content-item { flex: 0 0 auto; scroll-snap-align: start; list-style: none; }
 
 /* Focus states */
 .osirion-logo-item img:focus,
@@ -178,7 +202,7 @@ html[data-bs-theme="dark"] .osirion-logo-dual .osirion-logo-dark,
 .osirion-logo-dual img:focus { filter: brightness(1.2) contrast(1.1); }
 
 /* Responsive */
-@media (max-width: 1024px) { .osirion-carousel-container { padding: 0 var(--osirion-spacing-4, 1rem); } }
+@media (max-width: 1024px) { .osirion-carousel-container { padding: 0 var(--osirion-spacing-3, 0.75rem); } }
 @media (max-width: 768px)  {
     .osirion-infinite-carousel { padding: var(--osirion-spacing-6, 1.5rem) 0; }
     .osirion-carousel-title   { font-size: var(--osirion-font-size-xl, 1.5rem); }
@@ -188,12 +212,8 @@ html[data-bs-theme="dark"] .osirion-logo-dual .osirion-logo-dark,
 
 /* Reduced motion (opt-in by container class) */
 @media (prefers-reduced-motion: reduce) {
-    .osirion-infinite-carousel.respect-reduced-motion .osirion-carousel-list { animation: none; }
-    .osirion-carousel-wrapper { overflow-x: auto; mask-image: none; -webkit-mask-image: none; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; }
-    .osirion-carousel-wrapper::-webkit-scrollbar { height: 4px; }
-    .osirion-carousel-wrapper::-webkit-scrollbar-track { background: var(--osirion-background-secondary); }
-    .osirion-carousel-wrapper::-webkit-scrollbar-thumb { background: var(--osirion-text-secondary); border-radius: var(--osirion-border-radius-sm, 0.25rem); }
-    .osirion-carousel-wrapper::-webkit-scrollbar-thumb:hover { background: var(--osirion-text-primary); }
+    .osirion-carousel-wrapper { scroll-behavior: auto; }
+    .osirion-carousel-autoscroll .osirion-carousel-track { animation: none; }
 }
 
 /* High contrast */

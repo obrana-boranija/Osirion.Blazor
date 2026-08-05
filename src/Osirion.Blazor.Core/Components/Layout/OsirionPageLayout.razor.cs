@@ -1,9 +1,5 @@
 using Microsoft.AspNetCore.Components;
 
-#if NET9_0_OR_GREATER
-using BlazorJSComponents;
-#endif
-
 namespace Osirion.Blazor.Components;
 
 /// <summary>
@@ -37,10 +33,10 @@ public partial class OsirionPageLayout
 
     /// <summary>
     /// Gets or sets whether the header hides while scrolling down and reappears while scrolling up.
-    /// This enhancement is available for .NET 9 and later interactive render modes.
+    /// This enhancement is available in interactive render modes.
     /// </summary>
     [Parameter]
-    public bool EnableHeaderScrollBehavior { get; set; }
+    public bool EnableHeaderScrollBehavior { get; set; } = true;
 
     /// <summary>
     /// Gets or sets the minimum height strategy: "viewport" or "content"
@@ -70,16 +66,4 @@ public partial class OsirionPageLayout
         return string.Join(" ", classes);
     }
 
-    /// <summary>Gets the optional header scroll behavior script.</summary>
-    protected RenderFragment HeaderScrollScript => builder =>
-    {
-#if NET9_0_OR_GREATER
-        if (EnableHeaderScrollBehavior && Header is not null)
-        {
-            builder.OpenComponent<JS>(0);
-            builder.AddAttribute(1, "Src", "./_content/Osirion.Blazor.Core/Components/Layout/OsirionPageLayout.razor.js");
-            builder.CloseComponent();
-        }
-#endif
-    };
 }
