@@ -200,6 +200,12 @@ jobs:
   publish_nuget:
     needs: [create_nuget, validate_version]
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    outputs:
+      nuget_packages_published: ${{ steps.publish.outputs.nuget_packages_published }}
+      nuget_packages_skipped: ${{ steps.publish.outputs.nuget_packages_skipped }}
     steps:
       - name: Download NuGet packages
         uses: actions/download-artifact@v4
@@ -211,15 +217,28 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
+
+      - name: NuGet login with trusted publishing
+        id: nuget_login
+        uses: NuGet/login@v1
+        with:
+          user: obrana-boranija
       
       # Publish to NuGet
       - name: Publish NuGet packages
         id: publish
+        env:
+          NUGET_API_KEY: ${{ steps.nuget_login.outputs.NUGET_API_KEY }}
         run: |
           # Initialize counters
           published=0
           skipped=0
           failed=0
+
+          if [ -z "$NUGET_API_KEY" ]; then
+            echo "::error::NuGet trusted publishing did not return a temporary API key. Check the NuGet.org trusted publishing policy and the NuGet/login step."
+            exit 1
+          fi
           
           for package in ${{ env.NuGetDirectory }}/*.nupkg; do
             basename=$(basename "$package")
@@ -229,7 +248,7 @@ jobs:
             echo "Publishing package: $packageId, version: $version"
             
             if output=$(dotnet nuget push "$package" \
-              --api-key ${{ secrets.NUGET_API_KEY }} \
+              --api-key "$NUGET_API_KEY" \
               --source https://api.nuget.org/v3/index.json \
               --skip-duplicate 2>&1); then
               exit_code=0
@@ -246,6 +265,11 @@ jobs:
             else
               echo "Failed to publish $packageId version $version: $output"
               failed=$((failed + 1))
+
+              if echo "$output" | grep -q "403\|API key is invalid, has expired, or does not have permission"; then
+                echo "::error::NuGet.org rejected the trusted publishing token. Verify the trusted publishing policy owner, repository, and workflow file, then rerun the workflow."
+                break
+              fi
             fi
           done
           
@@ -266,6 +290,8 @@ jobs:
       (startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch') && 
       needs.publish_nuget.outputs.nuget_packages_published > 0
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -309,7 +335,7 @@ jobs:
       
       - name: Create GitHub Release
         env:
-          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
           VERSION: ${{ steps.get_release_version.outputs.version }}
           IS_PRERELEASE: ${{ steps.get_release_version.outputs.is_prerelease }}
         run: |
