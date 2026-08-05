@@ -228,12 +228,14 @@ jobs:
             
             echo "Publishing package: $packageId, version: $version"
             
-            output=$(dotnet nuget push "$package" \
+            if output=$(dotnet nuget push "$package" \
               --api-key ${{ secrets.NUGET_API_KEY }} \
               --source https://api.nuget.org/v3/index.json \
-              --skip-duplicate 2>&1)
-            
-            exit_code=$?
+              --skip-duplicate 2>&1); then
+              exit_code=0
+            else
+              exit_code=$?
+            fi
             
             if echo "$output" | grep -q "already exists"; then
               echo "Package $packageId version $version already exists, skipped"
