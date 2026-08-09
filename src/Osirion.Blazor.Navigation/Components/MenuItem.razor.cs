@@ -62,6 +62,14 @@ public partial class MenuItem
     public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
+    /// Gets or sets optional aside content for mega submenus, rendered as a
+    /// dedicated right-hand column. Typically a <see cref="MenuPanel"/> or
+    /// <see cref="MenuImageCard"/>. Only used when <see cref="SubmenuVariant"/> is Mega.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? SubmenuAside { get; set; }
+
+    /// <summary>
     /// Gets or sets the visual presentation of the submenu.
     /// </summary>
     [Parameter]

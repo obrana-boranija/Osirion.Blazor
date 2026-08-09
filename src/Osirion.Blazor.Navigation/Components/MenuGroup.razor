@@ -16,8 +16,23 @@
             }
         </div>
     }
+    @if (!string.IsNullOrWhiteSpace(Description))
+    {
+        <p class="osirion-menu-group-description">@Description</p>
+    }
 
     <div class="osirion-menu-group-items" id="@ItemsId" role="group" aria-labelledby="@(string.IsNullOrWhiteSpace(Label) ? null : LabelId)">
         @ChildContent
     </div>
+
+    @if (!string.IsNullOrWhiteSpace(FooterText) && !string.IsNullOrWhiteSpace(FooterHref))
+    {
+        <a class="osirion-menu-group-footer"
+           href="@FooterHref"
+           target="@FooterTarget"
+           rel="@(FooterTarget == "_blank" ? "noopener noreferrer" : null)">
+            <span class="osirion-menu-group-footer-text">@FooterText</span>
+            <span class="osirion-menu-group-footer-arrow" aria-hidden="true">&rarr;</span>
+        </a>
+    }
 </div>

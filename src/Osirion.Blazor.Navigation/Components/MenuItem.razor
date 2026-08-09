@@ -1,7 +1,7 @@
 ﻿@namespace Osirion.Blazor.Navigation.Components
 @inherits OsirionComponentBase
 
-<div class="osirion-menu-item-wrapper @(HasSubmenu ? "osirion-menu-item-has-submenu" : "") @(IsActive ? "osirion-menu-item-wrapper-active" : "")" @attributes="Attributes">
+<div class="osirion-menu-item-wrapper @(HasSubmenu ? "osirion-menu-item-has-submenu" : "") @(HasSubmenu && SubmenuVariant == SubmenuVariant.Mega ? "osirion-menu-item-has-mega" : "") @(IsActive ? "osirion-menu-item-wrapper-active" : "")" @attributes="Attributes">
     @if (HasSubmenu)
     {
         <input type="checkbox" class="osirion-submenu-toggler" id="@SubmenuToggleId" aria-controls="@SubmenuId" aria-label="Toggle @Text submenu" />
@@ -95,7 +95,22 @@
             </span>
         </label>
         <div class="osirion-submenu compact-submenu @SubmenuVariantClass" id="@SubmenuId" role="menu" aria-label="@Text submenu">
-            @ChildContent
+            @if (SubmenuVariant == SubmenuVariant.Mega)
+            {
+                <div class="osirion-submenu-mega-content">
+                    @ChildContent
+                </div>
+                @if (SubmenuAside is not null)
+                {
+                    <div class="osirion-submenu-mega-aside">
+                        @SubmenuAside
+                    </div>
+                }
+            }
+            else
+            {
+                @ChildContent
+            }
         </div>
     }
 </div>

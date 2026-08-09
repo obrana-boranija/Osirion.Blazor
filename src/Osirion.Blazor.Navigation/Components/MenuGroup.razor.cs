@@ -12,6 +12,32 @@ public partial class MenuGroup
     public string? Label { get; set; }
 
     /// <summary>
+    /// Gets or sets optional supporting text rendered below the label.
+    /// Used by mega menus to describe the column, Personio-style.
+    /// </summary>
+    [Parameter]
+    public string? Description { get; set; }
+
+    /// <summary>
+    /// Gets or sets optional footer link text (for example "Explore Core HR").
+    /// Rendered at the bottom of the group when <see cref="FooterHref"/> is also set.
+    /// </summary>
+    [Parameter]
+    public string? FooterText { get; set; }
+
+    /// <summary>
+    /// Gets or sets the destination of the footer link.
+    /// </summary>
+    [Parameter]
+    public string? FooterHref { get; set; }
+
+    /// <summary>
+    /// Gets or sets how to open the footer link destination.
+    /// </summary>
+    [Parameter]
+    public string? FooterTarget { get; set; }
+
+    /// <summary>
     /// Gets or sets whether the group is collapsible.
     /// Only applies to vertical menus.
     /// </summary>

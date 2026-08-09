@@ -10,6 +10,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- Mega menu building blocks in Osirion.Blazor.Navigation:
+  - `MenuPanel` + `MenuPanelLink`: high-contrast promotional aside with pill links ("Platform highlights", "Build your business case"); brandable via `--osirion-menu-panel-background` / `--osirion-menu-panel-color`
+  - `MenuImageCard`: linked image card with overlay caption for mega menu asides
+  - `MenuItem.SubmenuAside` render fragment: dedicated right-hand aside column for mega submenus
+  - `MenuGroup.Description`: column subtitle with divider (mega menu header style)
+  - `MenuGroup.FooterText`/`FooterHref`/`FooterTarget`: "Explore X →" footer links per group
+- bUnit coverage for all new mega menu components and parameters
+
+### Changed
+- Mega submenus now center under the whole navigation bar on desktop, use a responsive auto-fit column grid with column headers, and keep an invisible hover bridge so the pointer can travel from the trigger into the panel
+- Mega submenu asides and group descriptions are hidden in the collapsed drawer and mobile views to keep the drawer scannable
+- Collapsed drawer submenu toggle no longer paints an opaque hover background over the row label
+
 ## [1.5.0] - 2025-04-21
 
 ### Added

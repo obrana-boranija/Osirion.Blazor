@@ -520,7 +520,8 @@ html.osirion-bootstrap-integration .osirion-menu-container[data-osirion-componen
     /* Cross the CSS-isolation boundary into MenuItem, MenuGroup, and CTA children. */
     .osirion-menu-collapse-extra-large ::deep .osirion-submenu {
         position: static !important;
-        width: 100%;
+        width: 100% !important;
+        transform: none !important;
         box-shadow: none;
         border: none;
         border-top: 1px solid var(--osirion-border-color, rgba(255, 255, 255, 0.1));
@@ -541,6 +542,12 @@ html.osirion-bootstrap-integration .osirion-menu-container[data-osirion-componen
         justify-content: flex-end;
         padding-right: var(--osirion-spacing-3, 0.75rem);
         z-index: 1;
+    }
+
+    /* The toggle spans the whole row here; keep it transparent so it never hides the item text */
+    .osirion-menu-collapse-extra-large ::deep .osirion-menu-item-has-submenu:hover > .osirion-submenu-toggle,
+    .osirion-menu-collapse-extra-large ::deep .osirion-menu-item-has-submenu:focus-within > .osirion-submenu-toggle {
+        background-color: transparent;
     }
 
     .osirion-menu-collapse-extra-large ::deep .osirion-menu-item {
@@ -590,10 +597,43 @@ html.osirion-bootstrap-integration .osirion-menu-container[data-osirion-componen
     .osirion-menu-collapse-extra-large ::deep .osirion-submenu-mega {
         margin: 0;
         padding: var(--osirion-spacing-2, 0.5rem) 0;
+        flex-direction: column;
+        gap: 0;
         background-color: transparent !important;
         border: none !important;
         border-radius: 0;
         box-shadow: none !important;
+    }
+
+    .osirion-menu-collapse-extra-large ::deep .osirion-submenu-mega::before {
+        display: none;
+    }
+
+    .osirion-menu-collapse-extra-large ::deep .osirion-submenu-mega-content {
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Keep the collapsed drawer scannable: hide promotional asides */
+    .osirion-menu-collapse-extra-large ::deep .osirion-submenu-mega-aside {
+        display: none;
+    }
+
+    .osirion-menu-collapse-extra-large ::deep .osirion-menu-group-description {
+        display: none;
+    }
+
+    .osirion-menu-collapse-extra-large ::deep .osirion-menu-group-footer {
+        min-height: 3rem;
+        display: inline-flex;
+        align-items: center;
+        padding: var(--osirion-spacing-2, 0.5rem) var(--osirion-spacing-3, 0.75rem);
+    }
+
+    .osirion-menu-collapse-extra-large ::deep .osirion-submenu-mega .osirion-menu-group-items {
+        margin-top: 0;
+        padding-top: 0;
+        border-top: none;
     }
 
     .osirion-menu-collapse-extra-large ::deep .osirion-submenu-mega .osirion-menu-item {

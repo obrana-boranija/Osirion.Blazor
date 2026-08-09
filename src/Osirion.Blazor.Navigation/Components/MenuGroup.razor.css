@@ -27,6 +27,48 @@
     flex: 1;
 }
 
+/* Optional column description (mega menu header, Personio-style) */
+.osirion-menu-group-description {
+    margin: 0;
+    padding: 0 var(--osirion-spacing-4, 1rem) var(--osirion-spacing-2, 0.5rem);
+    color: var(--osirion-text-secondary, #6b7280);
+    font-size: var(--osirion-font-size-sm, 0.875rem);
+    line-height: 1.4;
+}
+
+/* Optional footer link ("Explore X →") */
+.osirion-menu-group-footer {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--osirion-spacing-2, 0.5rem);
+    margin-top: var(--osirion-spacing-2, 0.5rem);
+    padding: var(--osirion-spacing-2, 0.5rem) var(--osirion-spacing-4, 1rem);
+    color: var(--osirion-action-primary, var(--osirion-color-primary-600, #2563eb));
+    font-size: var(--osirion-font-size-sm, 0.875rem);
+    font-weight: var(--osirion-font-weight-semibold, 600);
+    text-decoration: none;
+    border-radius: var(--osirion-radius-sm, 0.125rem);
+    transition: gap var(--osirion-transition-duration-150, 150ms) ease, color var(--osirion-transition-duration-150, 150ms) ease;
+}
+
+.osirion-menu-group-footer:hover,
+.osirion-menu-group-footer:focus-visible {
+    color: var(--osirion-action-primary-hover, var(--osirion-color-primary-700, #1d4ed8));
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    outline: none;
+}
+
+.osirion-menu-group-footer-arrow {
+    flex-shrink: 0;
+    transition: transform var(--osirion-transition-duration-150, 150ms) ease;
+}
+
+.osirion-menu-group-footer:hover .osirion-menu-group-footer-arrow,
+.osirion-menu-group-footer:focus-visible .osirion-menu-group-footer-arrow {
+    transform: translateX(3px);
+}
+
 /* Group items container */
 .osirion-menu-group-items {
     display: flex;
@@ -79,5 +121,15 @@
 @media (prefers-reduced-motion: reduce) {
     .osirion-menu-group-toggle {
         transition-duration: 0.01ms !important;
+    }
+
+    .osirion-menu-group-footer,
+    .osirion-menu-group-footer-arrow {
+        transition-duration: 0.01ms !important;
+    }
+
+    .osirion-menu-group-footer:hover .osirion-menu-group-footer-arrow,
+    .osirion-menu-group-footer:focus-visible .osirion-menu-group-footer-arrow {
+        transform: none;
     }
 }

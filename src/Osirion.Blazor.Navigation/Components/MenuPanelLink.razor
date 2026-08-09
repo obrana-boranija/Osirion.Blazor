@@ -1,0 +1,15 @@
+@namespace Osirion.Blazor.Navigation.Components
+@inherits OsirionComponentBase
+
+<a class="@CombineCssClasses("osirion-menu-panel-link")"
+   href="@Href"
+   target="@Target"
+   rel="@(Target == "_blank" ? "noopener noreferrer" : null)"
+   @attributes="Attributes">
+    @if (IconTemplate is not null)
+    {
+        <span class="osirion-menu-panel-link-icon" aria-hidden="true">@IconTemplate</span>
+    }
+    <span class="osirion-menu-panel-link-text">@Text</span>
+    <span class="osirion-menu-panel-link-arrow" aria-hidden="true">&rarr;</span>
+</a>

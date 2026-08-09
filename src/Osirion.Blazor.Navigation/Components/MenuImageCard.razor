@@ -1,0 +1,18 @@
+@namespace Osirion.Blazor.Navigation.Components
+@inherits OsirionComponentBase
+
+<a class="@CombineCssClasses("osirion-menu-image-card")"
+   href="@Href"
+   target="@Target"
+   rel="@(Target == "_blank" ? "noopener noreferrer" : null)"
+   @attributes="Attributes">
+    <img class="osirion-menu-image-card-image" src="@ImageUrl" alt="@ImageAlt" loading="lazy" />
+    <span class="osirion-menu-image-card-scrim" aria-hidden="true"></span>
+    <span class="osirion-menu-image-card-caption">
+        <span class="osirion-menu-image-card-title">@Title</span>
+        @if (!string.IsNullOrWhiteSpace(Description))
+        {
+            <span class="osirion-menu-image-card-description">@Description</span>
+        }
+    </span>
+</a>

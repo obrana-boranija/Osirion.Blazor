@@ -1,0 +1,38 @@
+/*
+ * MenuPanel Component Styles
+ * High-contrast promotional aside for mega menus (SSR compatible).
+ * Theme-aware: uses inverted surface tokens so it stays a contrast
+ * panel in both light and dark themes. Sites can rebrand it via
+ * --osirion-menu-panel-background / --osirion-menu-panel-color.
+ */
+
+.osirion-menu-panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--osirion-spacing-3, 0.75rem);
+    height: 100%;
+    padding: var(--osirion-spacing-5, 1.25rem);
+    background-color: var(--osirion-menu-panel-background, var(--osirion-background-inverted, #111827));
+    color: var(--osirion-menu-panel-color, var(--osirion-text-inverted, #ffffff));
+    border-radius: var(--osirion-radius-lg, 0.5rem);
+}
+
+.osirion-menu-panel-title {
+    font-size: var(--osirion-font-size-base, 1rem);
+    font-weight: var(--osirion-font-weight-semibold, 600);
+    line-height: 1.3;
+}
+
+.osirion-menu-panel-description {
+    margin: 0;
+    font-size: var(--osirion-font-size-sm, 0.875rem);
+    line-height: 1.4;
+    opacity: 0.8;
+}
+
+.osirion-menu-panel-links {
+    display: flex;
+    flex-direction: column;
+    gap: var(--osirion-spacing-2, 0.5rem);
+    margin-top: var(--osirion-spacing-1, 0.25rem);
+}

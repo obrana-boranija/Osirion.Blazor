@@ -208,51 +208,178 @@
     left: 0;
 }
 
+/* ===== Mega submenu (Personio-style) ===== */
+
 .osirion-submenu.osirion-submenu-mega {
-    min-width: min(64rem, calc(100vw - 2rem));
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    min-width: 0;
+    width: min(76rem, calc(100vw - 2rem));
+    flex-direction: row;
+    align-items: stretch;
     gap: var(--osirion-spacing-6, 1.5rem);
-    padding: var(--osirion-spacing-5, 1.25rem) var(--osirion-spacing-6, 1.5rem) var(--osirion-spacing-6, 1.5rem);
-    border-radius: var(--osirion-radius-sm, 0.125rem);
-    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.14);
+    padding: var(--osirion-spacing-6, 1.5rem);
+    border-radius: var(--osirion-radius-lg, 0.5rem);
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.14), 0 2px 8px rgba(15, 23, 42, 0.08);
+}
+
+/* Invisible strip that bridges the hover gap between the nav bar and the panel */
+.osirion-submenu.osirion-submenu-mega::before {
+    content: "";
+    position: absolute;
+    top: -0.85rem;
+    left: 0;
+    right: 0;
+    height: 0.85rem;
+}
+
+/* Mega items anchor their panel to the menu container instead of the item, so the
+   panel spans and centers under the whole navigation bar. Only in expanded
+   (non-drawer) layouts: the wrapper must stay position:relative in drawer mode
+   so the absolutely-positioned submenu toggle keeps its anchor. */
+@media (min-width: 769px) {
+    .osirion-menu-horizontal:not(.osirion-menu-collapse-extra-large) .osirion-menu-item-has-mega {
+        position: static;
+        display: flex;
+        align-items: center;
+    }
+
+    .osirion-menu-horizontal:not(.osirion-menu-collapse-extra-large) .osirion-menu-item-has-mega > .osirion-menu-item {
+        padding-right: var(--osirion-spacing-2, 0.5rem);
+    }
+
+    .osirion-menu-horizontal:not(.osirion-menu-collapse-extra-large) .osirion-menu-item-has-mega > .osirion-submenu-toggle {
+        position: static;
+        width: 1.5rem;
+        min-height: 0;
+        margin-left: calc(-1 * var(--osirion-spacing-2, 0.5rem));
+        margin-right: var(--osirion-spacing-2, 0.5rem);
+    }
+
+    .osirion-menu-horizontal:not(.osirion-menu-collapse-extra-large) .osirion-menu-item-has-mega > .osirion-submenu.osirion-submenu-mega {
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+}
+
+@media (min-width: 1440px) {
+    .osirion-menu-horizontal .osirion-menu-item-has-mega {
+        position: static;
+    }
+
+    .osirion-menu-horizontal .osirion-menu-item-has-mega > .osirion-submenu.osirion-submenu-mega {
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+    }
 }
 
 .osirion-menu-item-has-submenu:hover > .osirion-submenu.osirion-submenu-mega,
 .osirion-menu-item-has-submenu:focus-within > .osirion-submenu.osirion-submenu-mega {
-    display: grid;
+    display: flex;
 }
 
-.osirion-submenu-mega ::deep .osirion-menu-call-to-action {
-    grid-column: 1 / -1;
+@media (prefers-reduced-motion: no-preference) {
+    .osirion-menu-item-has-submenu:hover > .osirion-submenu.osirion-submenu-mega,
+    .osirion-menu-item-has-submenu:focus-within > .osirion-submenu.osirion-submenu-mega {
+        animation: osirion-mega-fade-in 160ms ease;
+    }
 }
 
-.osirion-submenu-mega ::deep .osirion-menu-group {
-    width: auto;
+@keyframes osirion-mega-fade-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* Content zone: responsive column grid for MenuGroups */
+.osirion-submenu-mega-content {
+    flex: 1 1 auto;
     min-width: 0;
-    margin: 0;
-    padding: var(--osirion-spacing-1, 0.25rem) var(--osirion-spacing-2, 0.5rem);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    column-gap: var(--osirion-spacing-8, 2rem);
+    row-gap: var(--osirion-spacing-4, 1rem);
+    align-content: start;
 }
 
-.osirion-submenu-mega ::deep .osirion-menu-group-label {
-    padding: var(--osirion-spacing-2, 0.5rem) 0 var(--osirion-spacing-3, 0.75rem);
+/* Aside zone: featured panel or image card pinned to the right */
+.osirion-submenu-mega-aside {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--osirion-spacing-4, 1rem);
+    width: clamp(16rem, 22vw, 19rem);
 }
 
-.osirion-submenu-mega ::deep .osirion-menu-item {
-    min-height: 0;
-    margin: 0 calc(-1 * var(--osirion-spacing-2, 0.5rem));
-    padding: var(--osirion-spacing-2, 0.5rem);
-}
-
-.osirion-submenu-mega ::deep .osirion-menu-item:hover,
-.osirion-submenu-mega ::deep .osirion-menu-item:focus {
-    background-color: var(--osirion-background-secondary, #f3f4f6);
-    border-color: transparent;
-}
-
-.osirion-submenu-mega ::deep .osirion-menu-call-to-action {
+.osirion-submenu-mega-content ::deep .osirion-menu-call-to-action {
+    grid-column: 1 / -1;
     margin-top: var(--osirion-spacing-2, 0.5rem);
     border: 1px solid var(--osirion-border-color, rgba(0, 0, 0, 0.1));
     box-shadow: none;
+}
+
+.osirion-submenu-mega-content ::deep .osirion-menu-group {
+    width: auto;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Personio-style column header: sentence-case title + muted description + divider */
+.osirion-submenu-mega-content ::deep .osirion-menu-group-label {
+    padding: 0;
+    color: var(--osirion-text-primary, #1f2937);
+    font-size: var(--osirion-font-size-base, 1rem);
+    font-weight: var(--osirion-font-weight-semibold, 600);
+    letter-spacing: normal;
+    text-transform: none;
+}
+
+.osirion-submenu-mega-content ::deep .osirion-menu-group-description {
+    margin: var(--osirion-spacing-1, 0.25rem) 0 0;
+    padding: 0;
+}
+
+.osirion-submenu-mega-content ::deep .osirion-menu-group-label ~ .osirion-menu-group-items {
+    margin-top: var(--osirion-spacing-3, 0.75rem);
+    padding-top: var(--osirion-spacing-3, 0.75rem);
+    border-top: 1px solid var(--osirion-border-color, rgba(0, 0, 0, 0.1));
+}
+
+.osirion-submenu-mega-content ::deep .osirion-menu-group-footer {
+    margin-top: auto;
+    padding: var(--osirion-spacing-3, 0.75rem) 0 0;
+}
+
+.osirion-submenu-mega-content ::deep .osirion-menu-item {
+    min-height: 0;
+    margin: 0 calc(-1 * var(--osirion-spacing-2, 0.5rem));
+    padding: var(--osirion-spacing-2, 0.5rem);
+    border: none;
+}
+
+.osirion-submenu-mega-content ::deep .osirion-menu-item:hover,
+.osirion-submenu-mega-content ::deep .osirion-menu-item:focus {
+    background-color: transparent;
+    border-color: transparent;
+}
+
+.osirion-submenu-mega-content ::deep .osirion-menu-item:hover .osirion-menu-item-text,
+.osirion-submenu-mega-content ::deep .osirion-menu-item:focus .osirion-menu-item-text,
+.osirion-submenu-mega-content ::deep .osirion-menu-item:focus-visible .osirion-menu-item-text {
+    color: var(--osirion-action-primary, var(--osirion-color-primary-600, #2563eb));
+}
+
+.osirion-submenu-mega-content ::deep .osirion-menu-item:focus-visible {
+    outline: 2px solid var(--osirion-action-primary, #2563eb);
+    outline-offset: -2px;
+    border-radius: var(--osirion-radius-sm, 0.125rem);
 }
 
 @media (min-width: 1440px) {
@@ -277,7 +404,18 @@
 
 @media (min-width: 769px) and (max-width: 1199px) {
     .osirion-submenu.osirion-submenu-mega {
+        width: min(56rem, calc(100vw - 2rem));
+        gap: var(--osirion-spacing-4, 1rem);
+        padding: var(--osirion-spacing-4, 1rem);
+    }
+
+    .osirion-submenu-mega-content {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+        column-gap: var(--osirion-spacing-4, 1rem);
+    }
+
+    .osirion-submenu-mega-aside {
+        width: clamp(14rem, 26vw, 16rem);
     }
 }
 
@@ -316,9 +454,25 @@
         flex-direction: column;
         gap: 0;
         padding: 0;
+        width: 100% !important;
+        transform: none !important;
     }
 
-    .osirion-submenu-mega ::deep .osirion-menu-group {
+    .osirion-submenu.osirion-submenu-mega::before {
+        display: none;
+    }
+
+    .osirion-submenu-mega-content {
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Keep the collapsed drawer scannable: hide promotional asides on mobile */
+    .osirion-submenu-mega-aside {
+        display: none;
+    }
+
+    .osirion-submenu-mega-content ::deep .osirion-menu-group {
         width: 100%;
     }
 
@@ -341,6 +495,42 @@
         transform: rotate(90deg);
     }
 
+}
+
+/* Drawer behavior for menus that collapse below the extra-large breakpoint */
+@media (min-width: 769px) and (max-width: 1439.98px) {
+    .osirion-menu-collapse-extra-large .osirion-menu-item-has-submenu:hover > .osirion-submenu,
+    .osirion-menu-collapse-extra-large .osirion-menu-item-has-submenu:focus-within > .osirion-submenu,
+    .osirion-menu-collapse-extra-large .osirion-menu-item-has-submenu:hover > .osirion-submenu.osirion-submenu-mega,
+    .osirion-menu-collapse-extra-large .osirion-menu-item-has-submenu:focus-within > .osirion-submenu.osirion-submenu-mega {
+        display: none;
+        animation: none;
+    }
+
+    .osirion-menu-collapse-extra-large .osirion-submenu-toggler:checked ~ .osirion-submenu {
+        display: block;
+    }
+
+    .osirion-menu-collapse-extra-large .osirion-submenu-toggler:checked ~ .osirion-submenu.osirion-submenu-mega {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        width: 100% !important;
+        transform: none !important;
+    }
+
+    .osirion-menu-collapse-extra-large .osirion-submenu.osirion-submenu-mega::before {
+        display: none;
+    }
+
+    .osirion-menu-collapse-extra-large .osirion-submenu-mega-content {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .osirion-menu-collapse-extra-large .osirion-submenu-mega-aside {
+        display: none;
+    }
 }
 
 /* Accessibility */
