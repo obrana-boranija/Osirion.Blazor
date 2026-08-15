@@ -87,7 +87,9 @@
     </a>
     @if (HasSubmenu)
     {
-        <label for="@SubmenuToggleId" class="osirion-submenu-toggle" aria-label="Toggle @Text submenu">
+        @* No aria-label here: ARIA prohibits naming a <label> element; the
+           associated checkbox (osirion-submenu-toggler) carries the accessible name. *@
+        <label for="@SubmenuToggleId" class="osirion-submenu-toggle">
             <span class="osirion-menu-item-chevron" aria-hidden="true">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="9 18 15 12 9 6" />

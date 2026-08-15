@@ -365,3 +365,8 @@ FodyWeavers.xsd
 /examples/Osirion.Blazor.Example/appsettings.Development.json
 /examples/Osirion.Blazor.FluentUI.Example/Osirion.Blazor.FluentUI.Example/appsettings.Development.json
 /examples/bs/Osirion.Blazor.Example/Osirion.Blazor.Example/appsettings.Development.json
+
+# Claude Code — machine-local overrides
+.claude/settings.local.json
+CLAUDE.local.md
+CLAUDE.md
