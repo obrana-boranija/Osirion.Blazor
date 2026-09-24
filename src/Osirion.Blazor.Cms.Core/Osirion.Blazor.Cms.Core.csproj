@@ -13,7 +13,7 @@
 
 		<!-- NuGet package properties -->
 		<PackageId>Osirion.Blazor.Cms.Core</PackageId>
-		<Version>3.0.0</Version>
+		<Version>3.0.1</Version>
 		<Authors>Dejan Demonjić</Authors>
 		<Company>Tridesetri</Company>
 		<Description>Core CMS module for Osirion.Blazor - Provides cms management with provider pattern.</Description>
