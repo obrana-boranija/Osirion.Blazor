@@ -1,4 +1,4 @@
-﻿using Bunit;
+using Bunit;
 using Microsoft.AspNetCore.Components;
 using Osirion.Blazor.Navigation.Components;
 using Shouldly;
@@ -23,12 +23,11 @@ public class MenuGroupTests : TestContext
             .AddChildContent("MenuGroup Content"));
 
         // Assert
-        cut.MarkupMatches(
-            @"<div class=""osirion-menu-group"">
-                <div class=""osirion-menu-group-items"">
-                    MenuGroup Content
-                </div>
-            </div>");
+        cut.FindAll(".osirion-menu-group-label").ShouldBeEmpty();
+        var items = cut.Find(".osirion-menu-group > .osirion-menu-group-items");
+        items.GetAttribute("role").ShouldBe("group");
+        items.HasAttribute("aria-labelledby").ShouldBeFalse();
+        items.TextContent.Trim().ShouldBe("MenuGroup Content");
     }
 
     [Fact]
@@ -40,18 +39,44 @@ public class MenuGroupTests : TestContext
             .AddChildContent("MenuGroup Content"));
 
         // Assert
-        var labelId = cut.Find(".osirion-menu-group-label").Id;
-        labelId.ShouldNotBeNullOrEmpty();
+        var label = cut.Find(".osirion-menu-group-label");
+        label.Id.ShouldNotBeNullOrEmpty();
+        label.QuerySelector(".osirion-menu-group-text")!.TextContent.ShouldBe("Group Label");
+        var items = cut.Find(".osirion-menu-group-items");
+        items.GetAttribute("aria-labelledby").ShouldBe(label.Id);
+        items.TextContent.Trim().ShouldBe("MenuGroup Content");
+    }
 
-        cut.MarkupMatches(
-            $@"<div class=""osirion-menu-group"">
-                <div class=""osirion-menu-group-label"" id=""{labelId}"">
-                    Group Label
-                </div>
-                <div class=""osirion-menu-group-items"">
-                    MenuGroup Content
-                </div>
-            </div>");
+    [Fact]
+    public void MenuGroup_ShouldDeriveElementIds_FromOneGroupId()
+    {
+        // Act
+        var cut = RenderComponent<MenuGroup>(parameters => parameters
+            .Add(p => p.Label, "Group Label")
+            .AddChildContent("MenuGroup Content"));
+
+        // Assert
+        var groupId = cut.Find(".osirion-menu-group").Id;
+        groupId.ShouldNotBeNullOrEmpty();
+        cut.Find(".osirion-menu-group-label").Id.ShouldBe($"{groupId}-label");
+        cut.Find(".osirion-menu-group-items").Id.ShouldBe($"{groupId}-items");
+    }
+
+    [Fact]
+    public void MenuGroup_ShouldKeepElementIds_AcrossRenders()
+    {
+        // Arrange
+        var cut = RenderComponent<MenuGroup>(parameters => parameters
+            .Add(p => p.Label, "Group Label")
+            .AddChildContent("MenuGroup Content"));
+        var labelIdBefore = cut.Find(".osirion-menu-group-label").Id;
+
+        // Act
+        cut.SetParametersAndRender(parameters => parameters
+            .Add(p => p.Label, "Renamed Label"));
+
+        // Assert
+        cut.Find(".osirion-menu-group-label").Id.ShouldBe(labelIdBefore);
     }
 
     [Fact]
@@ -63,12 +88,8 @@ public class MenuGroupTests : TestContext
             .AddChildContent("MenuGroup Content"));
 
         // Assert
-        cut.MarkupMatches(
-            @"<div class=""osirion-menu-group custom-group"">
-                <div class=""osirion-menu-group-items"">
-                    MenuGroup Content
-                </div>
-            </div>");
+        var group = cut.Find(".osirion-menu-group");
+        group.ClassList.ShouldContain("custom-group");
     }
 
     [Fact]
@@ -83,11 +104,6 @@ public class MenuGroupTests : TestContext
             .AddChildContent("MenuGroup Content"));
 
         // Assert
-        cut.MarkupMatches(
-            @"<div class=""osirion-menu-group"" data-testid=""main-group"">
-                <div class=""osirion-menu-group-items"">
-                    MenuGroup Content
-                </div>
-            </div>");
+        cut.Find(".osirion-menu-group").GetAttribute("data-testid").ShouldBe("main-group");
     }
 }

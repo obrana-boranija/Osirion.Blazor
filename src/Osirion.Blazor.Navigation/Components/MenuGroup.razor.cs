@@ -63,10 +63,14 @@ public partial class MenuGroup
     [Parameter]
     public string? Id { get; set; }
 
+    // Generated once per instance: the label id, the items id and aria-labelledby
+    // must all derive from the same value, on every render.
+    private readonly string _generatedId = Guid.NewGuid().ToString("N");
+
     /// <summary>
     /// Gets the unique identifier for the menu group.
     /// </summary>
-    private string GroupId => Id ?? $"osirion-menu-group-{Guid.NewGuid():N}";
+    private string GroupId => Id ?? $"osirion-menu-group-{_generatedId}";
 
     /// <summary>
     /// Gets the ID for the label element.
