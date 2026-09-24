@@ -26,6 +26,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Mega submenu asides and group descriptions are hidden in the collapsed drawer and mobile views to keep the drawer scannable
 - Collapsed drawer submenu toggle no longer paints an opaque hover background over the row label
 
+### Fixed
+- `MenuGroup` without an `Id` generated a new identifier on every read, so the items container's `aria-labelledby` pointed at an element that did not exist and the label and items ids changed on every render; the generated identifier is now created once per instance
+- Navigation tests updated to the current `Menu`, `MenuItem` and `MenuGroup` markup, and `NavigationService` log assertions no longer try to match the `LogInformation` extension method with NSubstitute
+
 ## [1.5.0] - 2025-04-21
 
 ### Added
