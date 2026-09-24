@@ -1,11 +1,15 @@
-﻿using Bunit;
+using Bunit;
 using Microsoft.AspNetCore.Components;
 using Osirion.Blazor.Navigation.Components;
+using Shouldly;
 
 namespace Osirion.Blazor.Navigation.Tests.Components;
 
 public class MenuItemTests : TestContext
 {
+    // Start of the Bootstrap Icons "house" path that MenuItem renders for Icon="home".
+    private const string HomeIconPathStart = "M8.707 1.5a1 1 0 0 0-1.414 0";
+
     public MenuItemTests()
     {
         SetRendererInfo(new RendererInfo("Server", false));
@@ -22,10 +26,14 @@ public class MenuItemTests : TestContext
             .Add(p => p.Text, "Menu Item"));
 
         // Assert
-        cut.MarkupMatches(
-            @"<a href=""#"" class=""osirion-menu-item"" role=""menuitem"">
-                <span class=""osirion-menu-item-text"">Menu Item</span>
-            </a>");
+        var link = cut.Find(".osirion-menu-item-wrapper > a.osirion-menu-item");
+        link.GetAttribute("href").ShouldBe("#");
+        link.GetAttribute("aria-disabled").ShouldBe("false");
+        link.GetAttribute("aria-haspopup").ShouldBe("false");
+        link.HasAttribute("aria-current").ShouldBeFalse();
+        cut.Find(".osirion-menu-item-content > .osirion-menu-item-text").TextContent.ShouldBe("Menu Item");
+        cut.FindAll(".osirion-menu-item-icon").ShouldBeEmpty();
+        cut.FindAll(".osirion-submenu").ShouldBeEmpty();
     }
 
     [Fact]
@@ -37,10 +45,8 @@ public class MenuItemTests : TestContext
             .Add(p => p.Href, "/test-page"));
 
         // Assert
-        cut.MarkupMatches(
-            @"<a href=""/test-page"" class=""osirion-menu-item"" role=""menuitem"">
-                <span class=""osirion-menu-item-text"">Menu Item</span>
-            </a>");
+        cut.Find("a.osirion-menu-item").GetAttribute("href").ShouldBe("/test-page");
+        cut.Find(".osirion-menu-item-text").TextContent.ShouldBe("Menu Item");
     }
 
     [Fact]
@@ -52,15 +58,10 @@ public class MenuItemTests : TestContext
             .Add(p => p.Icon, "home"));
 
         // Assert
-        cut.MarkupMatches(
-            @"<a href=""#"" class=""osirion-menu-item"" role=""menuitem"">
-                <span class=""osirion-menu-item-icon"">
-                    <svg xmlns=""http://www.w3.org/2000/svg"" width=""20"" height=""20"" fill=""currentColor"" class=""bi bi-house"" viewBox=""0 0 16 16"">
-                        <path d=""M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293zM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5z""/>
-                    </svg>
-                </span>
-                <span class=""osirion-menu-item-text"">Home</span>
-            </a>");
+        var icon = cut.Find("a.osirion-menu-item > .osirion-menu-item-icon > svg");
+        icon.GetAttribute("aria-hidden").ShouldBe("true");
+        icon.QuerySelector("path")!.GetAttribute("d")!.ShouldStartWith(HomeIconPathStart);
+        cut.Find(".osirion-menu-item-text").TextContent.ShouldBe("Home");
     }
 
     [Fact]
@@ -72,10 +73,10 @@ public class MenuItemTests : TestContext
             .Add(p => p.IsActive, true));
 
         // Assert
-        cut.MarkupMatches(
-            @"<a href=""#"" class=""osirion-menu-item osirion-menu-item-active"" role=""menuitem"">
-                <span class=""osirion-menu-item-text"">Active Item</span>
-            </a>");
+        cut.Find(".osirion-menu-item-wrapper").ClassList.ShouldContain("osirion-menu-item-wrapper-active");
+        var link = cut.Find("a.osirion-menu-item");
+        link.ClassList.ShouldContain("osirion-menu-item-active");
+        link.GetAttribute("aria-current").ShouldBe("page");
     }
 
     [Fact]
@@ -84,13 +85,14 @@ public class MenuItemTests : TestContext
         // Act
         var cut = RenderComponent<MenuItem>(parameters => parameters
             .Add(p => p.Text, "Disabled Item")
+            .Add(p => p.Href, "/disabled-page")
             .Add(p => p.Disabled, true));
 
         // Assert
-        cut.MarkupMatches(
-            @"<a href=""#"" class=""osirion-menu-item osirion-menu-item-disabled"" role=""menuitem"" aria-disabled=""true"" tabindex=""-1"">
-                <span class=""osirion-menu-item-text"">Disabled Item</span>
-            </a>");
+        var link = cut.Find("a.osirion-menu-item");
+        link.ClassList.ShouldContain("osirion-menu-item-disabled");
+        link.GetAttribute("aria-disabled").ShouldBe("true");
+        link.GetAttribute("href").ShouldBe("#");
     }
 
     [Fact]
@@ -103,17 +105,13 @@ public class MenuItemTests : TestContext
             .AddChildContent(@"<div>Submenu Content</div>"));
 
         // Assert
-        cut.MarkupMatches(
-            @"<a href=""#"" class=""osirion-menu-item osirion-menu-item-has-submenu"" role=""menuitem"">
-                <span class=""osirion-menu-item-text"">Parent Item</span>
-                <span class=""osirion-menu-item-chevron"">
-                    <svg xmlns=""http://www.w3.org/2000/svg"" width=""16"" height=""16"" viewBox=""0 0 24 24"" fill=""none"" stroke=""currentColor"" stroke-width=""2"" stroke-linecap=""round"" stroke-linejoin=""round"">
-                        <polyline points=""9 18 15 12 9 6"" />
-                    </svg>
-                </span>
-            </a>
-            <div class=""osirion-submenu"">
-                <div>Submenu Content</div>
-            </div>");
+        cut.Find(".osirion-menu-item-wrapper").ClassList.ShouldContain("osirion-menu-item-has-submenu");
+        var link = cut.Find("a.osirion-menu-item");
+        var submenu = cut.Find(".osirion-submenu");
+        link.GetAttribute("aria-haspopup").ShouldBe("true");
+        link.GetAttribute("aria-controls").ShouldBe(submenu.Id);
+        submenu.GetAttribute("role").ShouldBe("menu");
+        submenu.QuerySelector("div")!.TextContent.ShouldBe("Submenu Content");
+        cut.Find(".osirion-submenu-toggle > .osirion-menu-item-chevron > svg").ShouldNotBeNull();
     }
 }

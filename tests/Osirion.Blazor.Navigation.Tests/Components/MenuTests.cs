@@ -1,6 +1,7 @@
-﻿using Bunit;
+using Bunit;
 using Microsoft.AspNetCore.Components;
 using Osirion.Blazor.Navigation.Components;
+using Shouldly;
 
 namespace Osirion.Blazor.Navigation.Tests.Components;
 
@@ -24,12 +25,14 @@ public class MenuTests : TestContext
                     .AddChildContent("Menu Content"));
 
         // Assert
-        cut.MarkupMatches(
-            @"<div class=""osirion-menu osirion-menu-vertical osirion-menu-collapsible"" role=""menu"">
-                <div class=""osirion-menu-inner"">
-                    Menu Content
-                </div>
-            </div>");
+        var container = cut.Find(".osirion-menu-container");
+        container.ClassList.ShouldContain("osirion-menu-vertical");
+        container.ClassList.ShouldContain("osirion-menu-auto-expand");
+        container.ClassList.ShouldNotContain("osirion-menu-horizontal");
+        container.ClassList.ShouldNotContain("osirion-menu-sticky");
+        container.HasAttribute("style").ShouldBeFalse();
+        container.Id.ShouldBe("osirion-menu-vertical");
+        cut.Find(".osirion-menu > .osirion-menu-inner").TextContent.Trim().ShouldBe("Menu Content");
     }
 
     [Fact]
@@ -41,12 +44,15 @@ public class MenuTests : TestContext
                     .AddChildContent("Menu Content"));
 
         // Assert
-        cut.MarkupMatches(
-            @"<div class=""osirion-menu osirion-menu-horizontal osirion-menu-collapsible"" role=""menu"">
-                <div class=""osirion-menu-inner"">
-                Menu Content
-                </div>
-            </div>");
+        var container = cut.Find(".osirion-menu-container");
+        container.ClassList.ShouldContain("osirion-menu-horizontal");
+        container.ClassList.ShouldContain("osirion-menu-align-center");
+        container.ClassList.ShouldContain("osirion-menu-collapsible");
+        container.ClassList.ShouldNotContain("osirion-menu-vertical");
+        container.Id.ShouldBe("osirion-menu-horizontal");
+        var toggler = cut.Find("input.osirion-navbar-toggler");
+        cut.Find("label.osirion-navbar-toggle").GetAttribute("for").ShouldBe(toggler.Id);
+        cut.Find(".osirion-menu > .osirion-menu-inner").TextContent.Trim().ShouldBe("Menu Content");
     }
 
     [Fact]
@@ -59,12 +65,9 @@ public class MenuTests : TestContext
             .AddChildContent("Menu Content"));
 
         // Assert
-        cut.MarkupMatches(
-            @"<div class=""osirion-menu osirion-menu-horizontal osirion-menu-collapsible osirion-menu-sticky"" role=""menu"" style=""z-index: 999;"">
-                <div class=""osirion-menu-inner"">
-                    Menu Content
-                </div>
-            </div>");
+        var container = cut.Find(".osirion-menu-container");
+        container.ClassList.ShouldContain("osirion-menu-sticky");
+        container.GetAttribute("style").ShouldBe("z-index: 999;");
     }
 
     [Fact]
@@ -76,12 +79,7 @@ public class MenuTests : TestContext
             .AddChildContent("Menu Content"));
 
         // Assert
-        cut.MarkupMatches(
-            @"<div class=""osirion-menu osirion-menu-horizontal osirion-menu-collapsible"" role=""menu"" aria-label=""Main Menu"">
-                <div class=""osirion-menu-inner"">
-                    Menu Content
-                </div>
-            </div>");
+        cut.Find("nav.osirion-menu-nav").GetAttribute("aria-label").ShouldBe("Main Menu");
     }
 
     [Fact]
@@ -93,12 +91,9 @@ public class MenuTests : TestContext
             .AddChildContent("Menu Content"));
 
         // Assert
-        cut.MarkupMatches(
-            @"<div class=""osirion-menu osirion-menu-horizontal"" role=""menu"">
-                <div class=""osirion-menu-inner"">
-                    Menu Content
-                </div>
-            </div>");
+        cut.Find(".osirion-menu-container").ClassList.ShouldNotContain("osirion-menu-collapsible");
+        cut.FindAll(".osirion-navbar-toggler").ShouldBeEmpty();
+        cut.FindAll(".osirion-navbar-toggle").ShouldBeEmpty();
     }
 
     [Fact]
@@ -110,12 +105,9 @@ public class MenuTests : TestContext
             .AddChildContent("Menu Content"));
 
         // Assert
-        cut.MarkupMatches(
-            @"<div class=""osirion-menu custom-menu osirion-menu-horizontal osirion-menu-collapsible"" role=""menu"">
-                <div class=""osirion-menu-inner"">
-                    Menu Content
-                </div>
-            </div>");
+        var container = cut.Find(".osirion-menu-container");
+        container.ClassList.ShouldContain("custom-menu");
+        container.ClassList.ShouldContain("osirion-menu-horizontal");
     }
 
     [Fact]
@@ -131,14 +123,8 @@ public class MenuTests : TestContext
             .AddChildContent("Menu Content"));
 
         // Assert
-        cut.MarkupMatches(
-            @"<div class=""osirion-menu osirion-menu-horizontal osirion-menu-collapsible"" 
-                 role=""menu"" 
-                 data-testid=""main-menu"" 
-                 aria-expanded=""true"">
-                <div class=""osirion-menu-inner"">
-                    Menu Content
-                </div>
-            </div>");
+        var container = cut.Find(".osirion-menu-container");
+        container.GetAttribute("data-testid").ShouldBe("main-menu");
+        container.GetAttribute("aria-expanded").ShouldBe("true");
     }
 }
