@@ -4,36 +4,36 @@
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
     <CentralPackageFloatingVersionsEnabled>false</CentralPackageFloatingVersionsEnabled>
     <OsirionTargetFrameworks>net9.0;net10.0</OsirionTargetFrameworks>
-    <Net9MicrosoftVersion>9.0.18</Net9MicrosoftVersion>
-    <Net10MicrosoftVersion>10.0.10</Net10MicrosoftVersion>
+    <Net9MicrosoftVersion>9.0.20</Net9MicrosoftVersion>
+    <Net10MicrosoftVersion>10.0.12</Net10MicrosoftVersion>
   </PropertyGroup>
 
   <ItemGroup Label="Common packages">
     <PackageVersion Include="Blazored.LocalStorage" Version="4.5.0" />
     <PackageVersion Include="BlazorJSComponents" Version="1.0.0" />
-    <PackageVersion Include="FluentValidation" Version="12.0.0" />
-    <PackageVersion Include="Markdig" Version="0.41.3" />
+    <PackageVersion Include="FluentValidation" Version="12.1.1" />
+    <PackageVersion Include="Markdig" Version="0.45.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Http" Version="2.3.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.0" />
-    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
+    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.401" />
     <PackageVersion Include="Octokit" Version="14.0.0" />
-    <PackageVersion Include="Scrutor" Version="6.1.0" />
-    <PackageVersion Include="System.IO.Abstractions" Version="22.0.14" />
-    <PackageVersion Include="System.IO.Abstractions.TestingHelpers" Version="22.0.14" />
+    <PackageVersion Include="Scrutor" Version="7.0.0" />
+    <PackageVersion Include="System.IO.Abstractions" Version="22.3.0" />
+    <PackageVersion Include="System.IO.Abstractions.TestingHelpers" Version="22.3.0" />
     <PackageVersion Include="YamlDotNet" Version="16.3.0" />
   </ItemGroup>
 
   <ItemGroup Label="Test packages">
     <PackageVersion Include="bUnit" Version="1.40.0" />
-    <PackageVersion Include="AngleSharp" Version="1.7.0" />
+    <PackageVersion Include="AngleSharp" Version="1.8.2" />
     <PackageVersion Include="coverlet.collector" Version="6.0.4" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
     <PackageVersion Include="Microsoft.Playwright" Version="1.52.0" />
     <PackageVersion Include="Microsoft.Playwright.TestAdapter" Version="1.52.0" />
     <PackageVersion Include="NSubstitute" Version="5.3.0" />
     <PackageVersion Include="Shouldly" Version="4.3.0" />
-    <PackageVersion Include="xunit" Version="2.9.2" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.2" />
+    <PackageVersion Include="xunit" Version="2.9.3" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'" Label=".NET 9 Microsoft packages">
