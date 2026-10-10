@@ -31,12 +31,14 @@ public static class OsirionCmsAdminExtensions
     /// </summary>
     public static IServiceCollection AddOsirionCmsAdminDI(this IServiceCollection services)
     {
-        // Register core services
-        services.TryAddSingleton<IEventPublisher, EventBus>();
-        services.TryAddSingleton<IEventSubscriber>(provider => provider.GetRequiredService<IEventPublisher>() as EventBus
+        // Register the event buses as scoped, so an event stays inside the circuit or request that raised it.
+        // A process-wide bus delivered one admin's content, authentication and error events to the view models
+        // of every other admin, for example replacing another admin's unsaved draft.
+        services.TryAddScoped<IEventPublisher, EventBus>();
+        services.TryAddScoped<IEventSubscriber>(provider => provider.GetRequiredService<IEventPublisher>() as EventBus
             ?? throw new InvalidOperationException("IEventPublisher is not of type EventBus."));
 
-        services.TryAddSingleton<CmsEventMediator>();
+        services.TryAddScoped<CmsEventMediator>();
 
         // Add state management
         services.TryAddScoped<CmsState>();

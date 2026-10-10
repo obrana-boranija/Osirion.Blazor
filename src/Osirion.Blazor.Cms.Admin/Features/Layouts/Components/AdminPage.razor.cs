@@ -19,8 +19,12 @@ public partial class AdminPage : BaseComponent
     [Parameter]
     public string CurrentPage { get; set; } = string.Empty;
 
-    /// <summary>Gets or sets the current theme.</summary>
-    [Parameter]
+    /// <summary>Gets or sets the theme of the page.</summary>
+    /// <remarks>
+    /// It is not a component parameter: a parameter of this name would clash with the <c>Theme</c> parameter of
+    /// <see cref="Osirion.Blazor.Components.OsirionComponentBase"/>, and Blazor refuses to render a component with
+    /// two parameters of the same name.
+    /// </remarks>
     public new string Theme { get; set; } = "light";
 
     /// <summary>Gets or sets the page content.</summary>
@@ -43,8 +47,12 @@ public partial class AdminPage : BaseComponent
     [Parameter]
     public RenderFragment? SidebarFooterTemplate { get; set; }
 
-    /// <summary>Gets or sets whether the login form is shown.</summary>
+    /// <summary>
+    /// Gets or sets whether the login form is shown. It has no effect, because <see cref="Security.Components.AuthGuard"/>
+    /// no longer shows a login form.
+    /// </summary>
     [Parameter]
+    [Obsolete(Security.Components.AuthGuard.NoLoginFormMessage)]
     public bool ShowLoginForm { get; set; } = false;
 
     /// <summary>Gets or sets the sign-out callback.</summary>

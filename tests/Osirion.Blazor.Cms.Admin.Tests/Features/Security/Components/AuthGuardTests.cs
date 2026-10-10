@@ -20,6 +20,19 @@ public class AuthGuardTests : AdminComponentTestContext
         Services.GetRequiredService<FakeNavigationManager>().NavigateTo("osirion/content?path=a.md");
     }
 
+    [Theory]
+    [InlineData(typeof(AuthGuard), "ShowLoginForm")]
+    [InlineData(typeof(AuthGuard), "OnAuthResult")]
+    [InlineData(typeof(Osirion.Blazor.Cms.Admin.Features.Layouts.Components.AdminPage), "ShowLoginForm")]
+    public void AuthGuard_LoginFormParameterWithoutEffect_IsMarkedObsolete(Type componentType, string parameterName)
+    {
+        // Proves a page that still sets these parameters gets a compiler warning instead of a silent no-op.
+        var property = componentType.GetProperty(parameterName);
+
+        property.ShouldNotBeNull();
+        Attribute.IsDefined(property, typeof(ObsoleteAttribute)).ShouldBeTrue();
+    }
+
     [Fact]
     public void AuthGuard_AnonymousUser_HidesChildContentAndLinksToLogin()
     {

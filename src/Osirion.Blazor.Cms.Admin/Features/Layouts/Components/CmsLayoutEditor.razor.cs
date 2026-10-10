@@ -17,7 +17,11 @@ public partial class CmsLayoutEditor : BaseComponent
     /// <summary>
     /// Gets or sets the current theme (light or dark)
     /// </summary>
-    [Parameter]
+    /// <remarks>
+    /// It is not a component parameter: a parameter of this name would clash with the <c>Theme</c> parameter of
+    /// <see cref="Osirion.Blazor.Components.OsirionComponentBase"/>, and Blazor refuses to render a component with
+    /// two parameters of the same name.
+    /// </remarks>
     public new string Theme { get; set; } = "light";
 
     /// <summary>

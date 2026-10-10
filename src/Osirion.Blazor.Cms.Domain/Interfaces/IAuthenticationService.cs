@@ -41,6 +41,14 @@ public interface IAuthenticationService
     /// <summary>
     /// Authenticates with GitHub using an OAuth code
     /// </summary>
+    /// <remarks>
+    /// The code is exchanged without an OAuth <c>state</c> check, a PKCE code verifier or a redirect URI. A caller
+    /// that accepts a <c>code</c> from a callback URL without checking its state can be signed in to an attacker's
+    /// GitHub account (login CSRF). A code issued for a PKCE authorization request is sent without its verifier.
+    /// </remarks>
+    [Obsolete("A GitHub OAuth code cannot be verified here. Check the state of the callback, exchange the code with " +
+        "IGitHubTokenProvider.ExchangeCodeForTokenAsync(code, clientId, clientSecret, redirectUri, codeVerifier, " +
+        "cancellationToken), then call SetAccessTokenAsync. The Cms.Admin LoginViewModel does this.")]
     Task<bool> AuthenticateWithGitHubAsync(string code);
 
     /// <summary>

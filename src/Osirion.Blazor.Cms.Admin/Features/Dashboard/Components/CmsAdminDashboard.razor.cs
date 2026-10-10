@@ -14,8 +14,12 @@ public partial class CmsAdminDashboard
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
-    /// <summary>Gets or sets the Theme value.</summary>
-    [Parameter]
+    /// <summary>Gets or sets the theme of the dashboard.</summary>
+    /// <remarks>
+    /// It is not a component parameter: a parameter of this name would clash with the <c>Theme</c> parameter of
+    /// <see cref="Osirion.Blazor.Components.OsirionComponentBase"/>, and Blazor refuses to render a component with
+    /// two parameters of the same name.
+    /// </remarks>
     public new string Theme { get; set; } = "light";
 
     private bool IsEditing => DashboardState.IsEditing;

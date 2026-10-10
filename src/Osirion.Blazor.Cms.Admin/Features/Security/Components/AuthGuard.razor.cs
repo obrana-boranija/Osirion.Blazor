@@ -38,13 +38,19 @@ public partial class AuthGuard
     /// authorization policy, so it is no longer shown in place of the protected content.
     /// </summary>
     [Parameter]
+    [Obsolete(NoLoginFormMessage)]
     public bool ShowLoginForm { get; set; } = false;
 
     /// <summary>
     /// Gets or sets the OnAuthResult value. It is never invoked, because the GitHub login form is no longer shown.
     /// </summary>
     [Parameter]
+    [Obsolete(NoLoginFormMessage)]
     public EventCallback<bool> OnAuthResult { get; set; }
+
+    /// <summary>The obsolete message of the parameters that belonged to the removed login form.</summary>
+    internal const string NoLoginFormMessage =
+        "Has no effect: AuthGuard no longer shows a login form. Users who do not satisfy Policy see a link to LoginPath.";
 
     private string LoginUrl
     {

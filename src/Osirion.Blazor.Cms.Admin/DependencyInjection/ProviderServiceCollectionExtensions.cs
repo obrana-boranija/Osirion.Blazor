@@ -1,11 +1,10 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Domain.Options.Configuration;
+using Osirion.Blazor.Cms.Infrastructure.DependencyInjection;
 using Osirion.Blazor.Cms.Infrastructure.GitHub;
-using Osirion.Blazor.Cms.Infrastructure.Services;
 
 namespace Osirion.Blazor.Cms.Admin.DependencyInjection;
 
@@ -26,10 +25,10 @@ public static class ProviderServiceCollectionExtensions
 
         services.AddHttpClient<IGitHubApiClient, GitHubApiClient>();
 
-        // Scoped, replacing any earlier registration: a transient or shared admin service would let one
-        // user's GitHub token, repository or branch reach another user
-        services.RemoveAll<IGitHubAdminService>();
-        services.AddScoped<IGitHubAdminService, GitHubAdminService>();
+        // Scoped, replacing any earlier registration, with cookies turned off on the GitHub HTTP clients: a transient
+        // or shared admin service, or a pooled handler that keeps cookies, would let one user's GitHub token,
+        // repository, branch or cookies reach another user
+        services.AddScopedGitHubAdminService();
 
         return services;
     }

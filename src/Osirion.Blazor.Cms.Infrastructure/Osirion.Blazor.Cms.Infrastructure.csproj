@@ -67,6 +67,9 @@
 
 	<ItemGroup>
 		<InternalsVisibleTo Include="Osirion.Blazor.Cms.Infrastructure.Tests" />
+		<!-- Cms.Admin registers the scoped admin service through the same internal helper, so both packages keep one
+		     lifetime rule and one cookie policy for the GitHub HTTP clients -->
+		<InternalsVisibleTo Include="Osirion.Blazor.Cms.Admin" />
 	</ItemGroup>
 
 	<ItemGroup>

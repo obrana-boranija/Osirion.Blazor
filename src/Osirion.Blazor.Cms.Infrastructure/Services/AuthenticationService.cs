@@ -117,6 +117,9 @@ public class AuthenticationService : IAuthenticationService
     }
 
     /// <inheritdoc/>
+    [Obsolete("A GitHub OAuth code cannot be verified here. Check the state of the callback, exchange the code with " +
+        "IGitHubTokenProvider.ExchangeCodeForTokenAsync(code, clientId, clientSecret, redirectUri, codeVerifier, " +
+        "cancellationToken), then call SetAccessTokenAsync. The Cms.Admin LoginViewModel does this.")]
     public async Task<bool> AuthenticateWithGitHubAsync(string code)
     {
         try

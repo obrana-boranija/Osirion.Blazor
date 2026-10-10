@@ -21,11 +21,6 @@ namespace Osirion.Blazor.Cms.Admin.Features.Authentication.ViewModels;
 /// </remarks>
 public class LoginViewModel
 {
-    /// <summary>
-    /// The storage key under which earlier versions kept the token in plain text. It is only ever removed.
-    /// </summary>
-    private const string LegacyTokenStorageKey = "github_auth_token";
-
     private const string UnexpectedErrorMessage = "Authentication failed because of an unexpected error. Please try again.";
 
     private readonly IAuthenticationService _authService;
@@ -77,7 +72,7 @@ public class LoginViewModel
     /// <param name="repositoryAdapter">The repository adapter that receives the user's token</param>
     /// <param name="navigationManager">The navigation manager</param>
     /// <param name="eventMediator">The mediator that announces authentication changes</param>
-    /// <param name="stateStorage">The plain-text storage, used only to remove tokens earlier versions kept there</param>
+    /// <param name="stateStorage">The plain-text browser storage, prepared here for the authentication service</param>
     /// <param name="options">The CMS admin options</param>
     /// <param name="logger">The logger instance</param>
     /// <param name="tokenProvider">The provider that exchanges GitHub OAuth codes for tokens</param>
@@ -277,7 +272,8 @@ public class LoginViewModel
 
         try
         {
-            await RemoveLegacyTokenAsync();
+            // Removes any token an earlier version left in plain-text storage; the service owns that list of keys
+            await _authService.InitializeAsync();
 
             if (_authService.IsAuthenticated)
             {
@@ -319,13 +315,9 @@ public class LoginViewModel
     /// <summary>Signs out and clears persisted authentication state.</summary>
     public async Task SignOutAsync()
     {
+        // The service also removes the authentication state, and any legacy token, from plain-text storage
         await _authService.SignOutAsync();
         await _tokenStore.RemoveTokenAsync();
-
-        // Clear auth state from storage
-        await _stateStorage.RemoveStateAsync("auth_status");
-        await _stateStorage.RemoveStateAsync("last_login_method");
-        await _stateStorage.RemoveStateAsync(LegacyTokenStorageKey);
 
         // The AuthenticationChanged event will be triggered by the service
         _navigationManager.NavigateTo(CmsConstants.Routes.Login);
@@ -350,16 +342,6 @@ public class LoginViewModel
         }
 
         return true;
-    }
-
-    private async Task RemoveLegacyTokenAsync()
-    {
-        if (!_stateStorage.IsInitialized)
-        {
-            await _stateStorage.InitializeAsync();
-        }
-
-        await _stateStorage.RemoveStateAsync(LegacyTokenStorageKey);
     }
 
     private void NavigateToReturnUrl(string? returnUrl)

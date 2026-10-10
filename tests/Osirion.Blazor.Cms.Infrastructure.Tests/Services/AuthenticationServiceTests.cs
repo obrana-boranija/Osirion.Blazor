@@ -48,7 +48,7 @@ public class AuthenticationServiceTests
         _tokenProvider.ExchangeCodeForTokenAsync("code", "client-id", "client-secret").Returns(UserToken);
         var service = CreateService();
 
-        var result = await service.AuthenticateWithGitHubAsync("code");
+        var result = await AuthenticateWithCodeAsync(service, "code");
 
         result.ShouldBeTrue();
         _apiClientFactory.ReceivedCalls().ShouldBeEmpty();
@@ -114,7 +114,7 @@ public class AuthenticationServiceTests
         var service = CreateService();
         await service.SetAccessTokenAsync(UserToken);
 
-        var result = await service.AuthenticateWithGitHubAsync("rejected-code");
+        var result = await AuthenticateWithCodeAsync(service, "rejected-code");
 
         result.ShouldBeFalse();
         service.IsAuthenticated.ShouldBeTrue();
@@ -168,12 +168,30 @@ public class AuthenticationServiceTests
         _tokenProvider.ExchangeCodeForTokenAsync("code", "client-id", "client-secret").Returns(UserToken);
         var service = CreateService();
 
-        var result = await service.AuthenticateWithGitHubAsync("code");
+        var result = await AuthenticateWithCodeAsync(service, "code");
 
         result.ShouldBeTrue();
         await _stateStorage.DidNotReceive().SaveStateAsync(LegacyTokenKey, Arg.Any<string?>());
         await _stateStorage.DidNotReceive().SaveStateAsync(Arg.Any<string>(), UserToken);
     }
+
+    [Theory]
+    [InlineData(typeof(IAuthenticationService))]
+    [InlineData(typeof(AuthenticationService))]
+    public void AuthenticateWithGitHubAsync_ExchangesCodeWithoutStateOrVerifier_IsMarkedObsolete(Type serviceType)
+    {
+        // Proves callers get a compiler warning: the method cannot take part in a state-checked PKCE sign-in.
+        var method = serviceType.GetMethod("AuthenticateWithGitHubAsync", [typeof(string)]);
+
+        method.ShouldNotBeNull();
+        Attribute.IsDefined(method, typeof(ObsoleteAttribute)).ShouldBeTrue();
+    }
+
+    // The obsolete member is exercised on purpose: hosts that still call it must keep the behaviour they had.
+#pragma warning disable CS0618
+    private static Task<bool> AuthenticateWithCodeAsync(AuthenticationService service, string code) =>
+        service.AuthenticateWithGitHubAsync(code);
+#pragma warning restore CS0618
 
     private AuthenticationService CreateService(IGitHubApiClientFactory? factory = null, string? personalAccessToken = null)
     {

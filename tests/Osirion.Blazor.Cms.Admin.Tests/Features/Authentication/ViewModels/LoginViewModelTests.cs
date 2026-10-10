@@ -9,6 +9,7 @@ using Osirion.Blazor.Cms.Admin.Services.Events;
 using Osirion.Blazor.Cms.Admin.Tests.TestDoubles;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Options.Configuration;
+using Osirion.Blazor.Cms.Infrastructure.Services;
 using Shouldly;
 
 namespace Osirion.Blazor.Cms.Admin.Tests.Features.Authentication.ViewModels;
@@ -132,17 +133,37 @@ public class LoginViewModelTests
     [Fact]
     public async Task InitializeAsync_RemovesLegacyPlainTextTokenWithoutReadingIt()
     {
-        // Proves a token an earlier version left in plain-text storage is purged and never used.
+        // Proves a token an earlier version left in plain-text storage is purged and never used. The real
+        // authentication service does the purge, so the list of legacy keys lives in one place.
         _stateStorage.GetStateAsync<string>("github_auth_token").Returns(UserToken);
         _stateStorage.GetStateAsync<bool>("auth_status").Returns(true);
         _stateStorage.GetStateAsync<string>("last_login_method").Returns("pat");
-        var viewModel = CreateViewModel();
+        var authService = new AuthenticationService(
+            new HttpClient(),
+            Options.Create(new CmsAdminOptions { Authentication = _authOptions }),
+            NullLogger<AuthenticationService>.Instance,
+            _stateStorage,
+            _tokenProvider,
+            Substitute.For<IGitHubApiClientFactory>());
+        var viewModel = CreateViewModel(authService);
 
         await viewModel.InitializeAsync();
 
         await _stateStorage.Received(1).RemoveStateAsync("github_auth_token");
         await _stateStorage.DidNotReceive().GetStateAsync<string>("github_auth_token");
-        await _authService.DidNotReceiveWithAnyArgs().SetAccessTokenAsync(default!);
+        authService.IsAuthenticated.ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task InitializeAsync_LeavesLegacyTokenPurgeToAuthenticationService()
+    {
+        // Fails before the fix, when the view model kept its own copy of the legacy key and removed it itself.
+        var viewModel = CreateViewModel();
+
+        await viewModel.InitializeAsync();
+
+        await _authService.Received(1).InitializeAsync();
+        await _stateStorage.DidNotReceive().RemoveStateAsync("github_auth_token");
     }
 
     [Fact]
@@ -328,10 +349,10 @@ public class LoginViewModelTests
         await _authService.DidNotReceiveWithAnyArgs().SetAccessTokenAsync(default!);
     }
 
-    private LoginViewModel CreateViewModel()
+    private LoginViewModel CreateViewModel(IAuthenticationService? authService = null)
     {
         return new LoginViewModel(
-            _authService,
+            authService ?? _authService,
             _repositoryAdapter,
             _navigationManager,
             new CmsEventMediator(NullLogger<CmsEventMediator>.Instance),
