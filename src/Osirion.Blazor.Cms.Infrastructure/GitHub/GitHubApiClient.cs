@@ -28,6 +28,8 @@ public class GitHubApiClient : IGitHubApiClient
     private const string AuthorizationScheme = "token";
     private const string AcceptHeaderName = "Accept";
     private const string UserAgentHeaderName = "User-Agent";
+    private const int BranchesPerPage = 100;
+    private const int MaxBranchPages = 50;
 
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
@@ -155,10 +157,25 @@ public class GitHubApiClient : IGitHubApiClient
                 return null;
             }
 
-            var content = await GetResponseBodyAsync(HttpMethod.Get, $"{GetRepositoryUrl(settings)}/branches", settings, cancellationToken);
-            var branches = JsonSerializer.Deserialize<List<GitHubBranch>>(content, JsonOptions);
+            // GitHub returns 30 branches per page by default, so the configured branch can be on a later page
+            var branches = new List<GitHubBranch>();
+            for (var page = 1; page <= MaxBranchPages; page++)
+            {
+                var content = await GetResponseBodyAsync(
+                    HttpMethod.Get,
+                    $"{GetRepositoryUrl(settings)}/branches?per_page={BranchesPerPage}&page={page}",
+                    settings,
+                    cancellationToken);
+                var pageItems = JsonSerializer.Deserialize<List<GitHubBranch>>(content, JsonOptions) ?? [];
+                branches.AddRange(pageItems);
 
-            return branches ?? [];
+                if (pageItems.Count < BranchesPerPage)
+                {
+                    break;
+                }
+            }
+
+            return branches;
         }
         catch (Exception ex)
         {
@@ -461,6 +478,34 @@ public class GitHubApiClient : IGitHubApiClient
     }
 
     /// <summary>
+    /// Gets the recursive tree of the configured branch in a single request
+    /// </summary>
+    public async Task<GitHubTree?> GetTreeAsync(CancellationToken cancellationToken = default!)
+    {
+        var settings = CurrentSettings;
+
+        try
+        {
+            if (!ValidateRepositoryConfig(settings))
+            {
+                return null;
+            }
+
+            var reference = string.IsNullOrWhiteSpace(settings.Branch)
+                ? "HEAD"
+                : GitHubApiPath.EncodeBranchPath(settings.Branch, nameof(settings.Branch));
+            var content = await GetResponseBodyAsync(HttpMethod.Get, $"{GetRepositoryUrl(settings)}/git/trees/{reference}?recursive=1", settings, cancellationToken);
+
+            return JsonSerializer.Deserialize<GitHubTree>(content, JsonOptions);
+        }
+        catch (Exception ex) when (ex is not GitHubRateLimitException)
+        {
+            _logger.LogError(ex, "Error fetching the repository tree");
+            throw;
+        }
+    }
+
+    /// <summary>
     /// Sets the owner and repository for subsequent requests made through this instance only
     /// </summary>
     public void SetRepository(string owner, string repository)
@@ -526,9 +571,58 @@ public class GitHubApiClient : IGitHubApiClient
         HttpContent? content = null)
     {
         using var response = await SendAsync(method, url, settings, cancellationToken, content);
+        ThrowIfRateLimited(response);
         response.EnsureSuccessStatusCode();
 
         return await response.Content.ReadAsStringAsync(cancellationToken);
+    }
+
+    /// <summary>
+    /// Throws <see cref="GitHubRateLimitException"/> for a 403 or 429 response that signals a rate limit
+    /// </summary>
+    /// <remarks>
+    /// GitHub marks the primary limit with <c>x-ratelimit-remaining: 0</c> and a secondary limit with
+    /// <c>retry-after</c>; both come with 403 or 429. A plain 403 (no such header) is a permission error and stays one.
+    /// </remarks>
+    private void ThrowIfRateLimited(HttpResponseMessage response)
+    {
+        if (response.StatusCode is not (System.Net.HttpStatusCode.Forbidden or System.Net.HttpStatusCode.TooManyRequests))
+        {
+            return;
+        }
+
+        DateTimeOffset? resetAt = null;
+        var limited = response.StatusCode == System.Net.HttpStatusCode.TooManyRequests;
+
+        if (response.Headers.RetryAfter is { } retryAfter)
+        {
+            limited = true;
+            resetAt = retryAfter.Date ?? (retryAfter.Delta is { } delta ? DateTimeOffset.UtcNow + delta : null);
+        }
+
+        if (TryGetHeader(response, "x-ratelimit-remaining", out var remaining) && remaining == "0")
+        {
+            limited = true;
+            if (resetAt is null && TryGetHeader(response, "x-ratelimit-reset", out var reset)
+                && long.TryParse(reset, System.Globalization.NumberStyles.None, System.Globalization.CultureInfo.InvariantCulture, out var epochSeconds))
+            {
+                resetAt = DateTimeOffset.FromUnixTimeSeconds(epochSeconds);
+            }
+        }
+
+        if (!limited)
+        {
+            return;
+        }
+
+        _logger.LogWarning("GitHub rate limit reached (status {StatusCode}); requests are allowed again at {ResetAt}", (int)response.StatusCode, resetAt);
+        throw new GitHubRateLimitException(resetAt, response.StatusCode);
+    }
+
+    private static bool TryGetHeader(HttpResponseMessage response, string name, out string? value)
+    {
+        value = response.Headers.TryGetValues(name, out var values) ? values.FirstOrDefault() : null;
+        return value is not null;
     }
 
     /// <summary>

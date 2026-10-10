@@ -192,7 +192,9 @@ namespace Osirion.Blazor.Cms.Infrastructure.UnitOfWork
                 try
                 {
                     _logger.LogWarning("Transaction still active during disposal, rolling back");
-                    RollbackAsync().GetAwaiter().GetResult();
+                    // Dispose cannot await. Rolling back on a pool thread keeps a captured synchronization context
+                    // from deadlocking the wait; DisposeAsync is the non-blocking path and should be preferred.
+                    Task.Run(() => RollbackAsync()).GetAwaiter().GetResult();
                 }
                 catch (Exception ex)
                 {

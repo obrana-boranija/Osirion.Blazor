@@ -85,6 +85,17 @@ public interface IGitHubApiClient
     Task<GitHubSearchResult?> SearchFilesAsync(string query, CancellationToken cancellationToken = default!);
 
     /// <summary>
+    /// Gets the whole tree (every file and directory with its SHA) of the configured branch in one request
+    /// </summary>
+    /// <param name="cancellationToken">Cancellation Token</param>
+    /// <returns>
+    /// The recursive tree, or <see langword="null"/> when the client does not support the operation or the repository
+    /// is not configured. Callers fall back to listing directories when the result is <see langword="null"/> or
+    /// <see cref="GitHubTree.Truncated"/>.
+    /// </returns>
+    Task<GitHubTree?> GetTreeAsync(CancellationToken cancellationToken = default!) => Task.FromResult<GitHubTree?>(null);
+
+    /// <summary>
     /// Sets the owner and repository for subsequent requests made through this instance
     /// </summary>
     /// <remarks>The change applies to this instance only and never to other clients.</remarks>

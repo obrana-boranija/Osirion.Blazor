@@ -400,7 +400,20 @@ public class FileSystemDirectoryRepository : DirectoryRepositoryBase, IDirectory
             Logger.LogInformation("Directory change detected: {ChangeType} - {Path}", e.ChangeType, e.FullPath);
 
             // Invalidate cache asynchronously
-            Task.Run(() => RefreshCacheAsync());
+            _ = RefreshAfterChangeAsync();
+        }
+    }
+
+    // Supervised: the failure of a background refresh is logged here instead of going unobserved.
+    private async Task RefreshAfterChangeAsync()
+    {
+        try
+        {
+            await Task.Run(() => RefreshCacheAsync());
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error refreshing directories after a file change");
         }
     }
 

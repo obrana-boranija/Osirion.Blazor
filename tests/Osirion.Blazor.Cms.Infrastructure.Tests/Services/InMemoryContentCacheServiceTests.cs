@@ -158,17 +158,48 @@ public sealed class InMemoryContentCacheServiceTests : IDisposable
     }
 
     [Fact]
-    public async Task ClearAsync_WithMemoryCache_CompactsCache()
+    public async Task ClearAsync_RemovesOnlyEntriesWrittenByTheService()
     {
         // Arrange
-        _memoryCache.Set("first-key", "first-value");
-        _memoryCache.Set("second-key", "second-value");
+        await _cacheService.SetAsync("first-key", "first-value");
+        await _cacheService.SetAsync("second-key", "second-value");
+        _memoryCache.Set("host-key", "host-value");
 
         // Act
         await _cacheService.ClearAsync();
 
         // Assert
-        _memoryCache.Count.ShouldBe(0);
+        _memoryCache.TryGetValue("first-key", out _).ShouldBeFalse();
+        _memoryCache.TryGetValue("second-key", out _).ShouldBeFalse();
+        _memoryCache.TryGetValue("host-key", out _).ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task RemoveByPrefixAsync_RemovesOnlyMatchingEntries()
+    {
+        await _cacheService.SetAsync("content:a", "a");
+        await _cacheService.SetAsync("content:b", "b");
+        await _cacheService.SetAsync("other:c", "c");
+        _memoryCache.Set("content:host", "host");
+
+        await _cacheService.RemoveByPrefixAsync("content:");
+
+        _memoryCache.TryGetValue("content:a", out _).ShouldBeFalse();
+        _memoryCache.TryGetValue("content:b", out _).ShouldBeFalse();
+        _memoryCache.TryGetValue("other:c", out _).ShouldBeTrue();
+        _memoryCache.TryGetValue("content:host", out _).ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task RemoveByPrefixAsync_AfterOverwritingAKey_StillRemovesIt()
+    {
+        await _cacheService.SetAsync("content:a", "one");
+        await _cacheService.SetAsync("content:a", "two");
+        await Task.Delay(50);
+
+        await _cacheService.RemoveByPrefixAsync("content:");
+
+        _memoryCache.TryGetValue("content:a", out _).ShouldBeFalse();
     }
 
     private InMemoryContentCacheService CreateService(CacheOptions options) =>

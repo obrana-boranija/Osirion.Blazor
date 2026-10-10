@@ -150,6 +150,13 @@ This release closes security holes in the CMS and Core modules. Most changes are
    - Handlers registered for a concrete domain event type now run.
    - Admin: `BaseComponent` injects `ILogger<BaseComponent>` and `OsirionAdminLayout` injects `IGitHubSessionRestorer` (registered by `AddOsirionCmsAdminDI`); test hosts that render them must register logging and that service. `EditContent` no longer publishes `ContentSelectedEvent` after loading.
 
+13. **CMS infrastructure.**
+   - `LoadItemsIntoCache` implementations should throw on failure so the previous cache is kept; `GitHubContentRepository` now does. After a failed cold load, readers see empty results for 15 seconds before the next retry.
+   - Subclasses should rely on the base `EnsureCacheIsLoaded` and `RefreshCacheAsync`, which are now single-flight, and call `GenerateMarkdownWithFrontMatterAsync`.
+   - `InMemoryContentCacheService.ClearAsync` and `RemoveByPrefixAsync` remove only entries written through that service. Library cache entries carry size 1, so a host `SizeLimit` works.
+   - GitHub rate limits surface as `GitHubRateLimitException` (an `HttpRequestException`). The GitHub clients time out after 30 seconds unless the host sets a timeout.
+   - Prefer `UseOsirionCmsAsync` where startup can be async; `UseOsirionCms` still blocks.
+
 ## Upgrading to v1.5.0
 
 ### Breaking Changes

@@ -24,9 +24,9 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
 
     // Simplified cache - no time-based expiration
     /// <summary>Gets or sets the cached content items.</summary>
-    protected Dictionary<string, ContentItem> ItemCache = new();
+    protected volatile Dictionary<string, ContentItem> ItemCache = new();
     /// <summary>Gets or sets whether the cache has been loaded.</summary>
-    protected bool CacheLoaded = false;
+    protected volatile bool CacheLoaded = false;
 
     // Configuration properties set by derived classes
     /// <summary>Gets or sets whether localization is enabled.</summary>
@@ -38,8 +38,14 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
     /// <summary>Gets or sets the supported content locales.</summary>
     protected List<string> SupportedLocales = new() { "en" };
 
-    // Flag to track if update is in progress to avoid multiple webhooks hammering the system
-    private bool _updateInProgress = false;
+    // Single-flight load state: the load that is running (null when idle) and whether another run was requested meanwhile
+    private readonly object _loadGate = new();
+    private Task? _loadInFlight;
+    private bool _rerunRequested;
+
+    private volatile bool _lastRefreshSucceeded = true;
+    private DateTime _coldRetryNotBeforeUtc = DateTime.MinValue;
+    private static readonly TimeSpan ColdLoadRetryDelay = TimeSpan.FromSeconds(15);
 
     private string[] _excludedExtensionsFromMarkdownProcessing = [".txt", ".json", ".yml", ".log", ".bak"];
 
@@ -97,165 +103,138 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
         }
     }
 
+    /// <summary>Gets whether the most recent cache load succeeded. A failed load keeps the previous cache.</summary>
+    public bool LastRefreshSucceeded => _lastRefreshSucceeded;
+
     /// <summary>
     /// Refreshes the repository cache from its content provider.
     /// </summary>
-    public async Task RefreshCacheAsync(CancellationToken cancellationToken = default)
+    /// <remarks>
+    /// Refreshes are single-flight. A request that arrives while a load is running does not start a second
+    /// concurrent load and is not dropped: it schedules exactly one more run after the current one, so a webhook
+    /// for a newer commit is always reflected. The returned task completes when that run has finished.
+    /// A failed run keeps the previous cache and is logged.
+    /// </remarks>
+    public Task RefreshCacheAsync(CancellationToken cancellationToken = default)
     {
-        // Check if an update is already in progress to avoid multiple simultaneous refreshes
-        if (_updateInProgress)
+        return RequestLoadAsync(forceRefresh: true, cancellationToken);
+    }
+
+    /// <summary>
+    /// Ensures the cache is loaded. Concurrent callers on a cold cache all wait for the same load, so none of
+    /// them reads an empty cache while the first load is still running.
+    /// </summary>
+    protected virtual Task EnsureCacheIsLoaded(CancellationToken cancellationToken, bool forceRefresh = false)
+    {
+        if (!forceRefresh && CacheLoaded)
         {
-            Logger.LogDebug("Cache refresh already in progress for provider {ProviderId}, skipping", ProviderId);
-            return;
+            return Task.CompletedTask;
         }
 
-        bool lockTaken = false;
-        try
+        return RequestLoadAsync(forceRefresh, cancellationToken);
+    }
+
+    private Task RequestLoadAsync(bool forceRefresh, CancellationToken cancellationToken)
+    {
+        Task flight;
+        lock (_loadGate)
         {
-            // Use a shorter timeout for webhooks - we don't want to block too long
-            lockTaken = await CacheLock.WaitAsync(TimeSpan.FromSeconds(10), cancellationToken);
-            if (!lockTaken)
+            if (_loadInFlight is null)
             {
-                Logger.LogWarning("Could not acquire lock for cache refresh - another operation in progress for provider {ProviderId}", ProviderId);
-                return;
+                if (!forceRefresh && CacheLoaded)
+                {
+                    return Task.CompletedTask;
+                }
+
+                // A cold load that just failed is not retried by every reader; a refresh request still is.
+                if (!forceRefresh && DateTime.UtcNow < _coldRetryNotBeforeUtc)
+                {
+                    return Task.CompletedTask;
+                }
+
+                var completion = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+                _loadInFlight = completion.Task;
+                _rerunRequested = false;
+                _ = Task.Run(() => RunLoadLoopAsync(completion));
+            }
+            else if (forceRefresh)
+            {
+                // The running load may have read the source before the change that triggered this request.
+                _rerunRequested = true;
             }
 
-            _updateInProgress = true;
-
-            // Log cache status before refresh
-            Logger.LogInformation("Refreshing cache for provider {ProviderId}. Current cache has {ItemCount} items",
-                ProviderId, ItemCache?.Count ?? 0);
-
-            // Force reload the cache
-            await LoadAndAssignCache(cancellationToken);
-
-            Logger.LogInformation("Cache refreshed for provider {ProviderId}. New cache has {ItemCount} items",
-                ProviderId, ItemCache?.Count ?? 0);
+            flight = _loadInFlight;
         }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error refreshing content cache for provider {ProviderId}", ProviderId);
 
-            // Even if loading fails, ensure we have a valid cache
-            if (ItemCache is null)
+        return flight.WaitAsync(cancellationToken);
+    }
+
+    private async Task RunLoadLoopAsync(TaskCompletionSource completion)
+    {
+        try
+        {
+            while (true)
             {
-                ItemCache = new Dictionary<string, ContentItem>();
+                try
+                {
+                    // The load is shared by every waiter, so it must not observe one caller's cancellation.
+                    await LoadAndAssignCache(CancellationToken.None).ConfigureAwait(false);
+                    _lastRefreshSucceeded = true;
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError(ex, "Error loading content cache for provider {ProviderId}; keeping the previous cache", ProviderId);
+                    _lastRefreshSucceeded = false;
+
+                    if (!CacheLoaded)
+                    {
+                        lock (_loadGate)
+                        {
+                            _coldRetryNotBeforeUtc = DateTime.UtcNow + ColdLoadRetryDelay;
+                        }
+                    }
+                }
+
+                lock (_loadGate)
+                {
+                    if (!_rerunRequested)
+                    {
+                        _loadInFlight = null;
+                        break;
+                    }
+
+                    _rerunRequested = false;
+                }
             }
         }
         finally
         {
-            _updateInProgress = false;
-
-            if (lockTaken)
-            {
-                CacheLock.Release();
-            }
+            completion.TrySetResult();
         }
     }
 
     /// <summary>
-    /// Helper method to load items into cache and properly assign them
+    /// Loads items into the cache and assigns them. A failed load leaves the previous cache untouched.
     /// </summary>
     private async Task LoadAndAssignCache(CancellationToken cancellationToken)
     {
-        try
+        var startTime = DateTime.UtcNow;
+        Logger.LogInformation("Loading content cache for provider {ProviderId}. Current cache has {ItemCount} items",
+            ProviderId, ItemCache.Count);
+
+        var newCache = await LoadItemsIntoCache(cancellationToken).ConfigureAwait(false);
+
+        if (newCache is null)
         {
-            var startTime = DateTime.UtcNow;
-            Logger.LogInformation("Loading content cache for provider {ProviderId}", ProviderId);
-
-            // Call the abstract method implemented by derived classes
-            var newCache = await LoadItemsIntoCache(cancellationToken);
-
-            // Ensure we always have a non-null cache
-            if (newCache is null)
-            {
-                Logger.LogWarning("LoadItemsIntoCache returned null for provider {ProviderId}, using empty dictionary", ProviderId);
-                newCache = new Dictionary<string, ContentItem>();
-            }
-
-            // Atomically update the cache
-            ItemCache = newCache;
-            CacheLoaded = true;
-
-            Logger.LogInformation("Cache loaded successfully for provider {ProviderId} in {Duration}ms. Items count: {ItemCount}",
-                ProviderId, (DateTime.UtcNow - startTime).TotalMilliseconds, newCache.Count);
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Failed to load items into cache for provider {ProviderId}", ProviderId);
-
-            // Always ensure the cache is not null
-            if (ItemCache is null)
-            {
-                ItemCache = new Dictionary<string, ContentItem>();
-                CacheLoaded = true; // Mark as loaded even if empty to avoid infinite loading attempts
-            }
-
-            throw; // Rethrow to let the caller handle it
-        }
-    }
-
-    /// <summary>
-    /// Ensures the cache is loaded (simplified version without time-based expiration)
-    /// </summary>
-    protected virtual async Task EnsureCacheIsLoaded(CancellationToken cancellationToken, bool forceRefresh = false)
-    {
-        // Skip if we have a loaded cache and aren't forcing refresh
-        if (!forceRefresh && CacheLoaded)
-        {
-            return;
+            Logger.LogWarning("LoadItemsIntoCache returned null for provider {ProviderId}, using empty dictionary", ProviderId);
+            newCache = new Dictionary<string, ContentItem>();
         }
 
-        // Skip if an update is already in progress
-        if (_updateInProgress)
-        {
-            Logger.LogDebug("Cache update already in progress for provider {ProviderId}, using existing cache", ProviderId);
-            return;
-        }
+        ItemCache = newCache;
+        CacheLoaded = true;
 
-        bool lockTaken = false;
-        try
-        {
-            // Try to acquire the lock with a reasonable timeout
-            lockTaken = await CacheLock.WaitAsync(TimeSpan.FromSeconds(15), cancellationToken);
-            if (!lockTaken)
-            {
-                Logger.LogWarning("Timeout waiting for cache lock in EnsureCacheIsLoaded for provider {ProviderId}", ProviderId);
-                return; // Use whatever cache we have, even if not loaded
-            }
-
-            // Mark update as in progress to prevent webhook contention
-            _updateInProgress = true;
-
-            // Double-check cache validity after acquiring lock
-            if (!forceRefresh && CacheLoaded)
-            {
-                return; // Another thread loaded the cache while we were waiting
-            }
-
-            // Load and assign the cache
-            await LoadAndAssignCache(cancellationToken);
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error ensuring cache is loaded for provider {ProviderId}", ProviderId);
-
-            // Always ensure cache is not null
-            if (ItemCache is null)
-            {
-                ItemCache = new Dictionary<string, ContentItem>();
-                CacheLoaded = true; // Mark as loaded to avoid infinite retry
-            }
-        }
-        finally
-        {
-            _updateInProgress = false;
-
-            if (lockTaken)
-            {
-                CacheLock.Release();
-            }
-        }
+        Logger.LogInformation("Cache loaded successfully for provider {ProviderId} in {Duration}ms. Items count: {ItemCount}",
+            ProviderId, (DateTime.UtcNow - startTime).TotalMilliseconds, newCache.Count);
     }
 
     /// <inheritdoc/>
@@ -530,7 +509,19 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
     /// <summary>
     /// Generates markdown content with front matter for saving
     /// </summary>
+    /// <remarks>Blocks the calling thread while the HTML is converted. Use <see cref="GenerateMarkdownWithFrontMatterAsync"/>.</remarks>
+    [Obsolete("Use GenerateMarkdownWithFrontMatterAsync, which does not block the calling thread.")]
     protected string GenerateMarkdownWithFrontMatter(ContentItem entity)
+    {
+        return GenerateMarkdownWithFrontMatterAsync(entity, CancellationToken.None).GetAwaiter().GetResult();
+    }
+
+    /// <summary>
+    /// Generates markdown content with front matter for saving
+    /// </summary>
+    /// <param name="entity">The item to serialize.</param>
+    /// <param name="cancellationToken">Cancels the HTML to markdown conversion.</param>
+    protected async Task<string> GenerateMarkdownWithFrontMatterAsync(ContentItem entity, CancellationToken cancellationToken = default)
     {
         var markdown = new StringBuilder();
 
@@ -561,7 +552,7 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
             markdown.AppendLine("---");
             
             if (!string.IsNullOrWhiteSpace(entity.ContentId))
-                markdown.AppendLine($"id: \"{entity.ContentId}\"");
+                markdown.AppendLine($"id: \"{EscapeYamlString(entity.ContentId)}\"");
             
             if (entity.OrderIndex > 0)
                 markdown.AppendLine($"order: {entity.OrderIndex}");
@@ -578,7 +569,7 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
             markdown.AppendLine($"date: {entity.DateCreated:yyyy-MM-dd}");
             
             if (!string.IsNullOrWhiteSpace(entity.FeaturedImageUrl))
-                markdown.AppendLine($"featured_image: \"{entity.FeaturedImageUrl}\"");
+                markdown.AppendLine($"featured_image: \"{EscapeYamlString(entity.FeaturedImageUrl)}\"");
             
             if (entity.Categories.Count > 0)
             {
@@ -601,10 +592,10 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
                 markdown.AppendLine("published: false");
             
             if (!string.IsNullOrWhiteSpace(entity.Slug))
-                markdown.AppendLine($"slug: \"{entity.Slug}\"");
+                markdown.AppendLine($"slug: \"{EscapeYamlString(entity.Slug)}\"");
             
             if (!string.IsNullOrWhiteSpace(entity.Locale))
-                markdown.AppendLine($"lang: \"{entity.Locale}\"");
+                markdown.AppendLine($"lang: \"{EscapeYamlString(entity.Locale)}\"");
             
             markdown.AppendLine("---");
             markdown.AppendLine();
@@ -618,8 +609,7 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
         // Otherwise try to convert HTML to markdown
         else if (!string.IsNullOrWhiteSpace(entity.Content))
         {
-            var plainText = MarkdownProcessor.ConvertHtmlToMarkdownAsync(entity.Content, CancellationToken.None)
-                .GetAwaiter().GetResult();
+            var plainText = await MarkdownProcessor.ConvertHtmlToMarkdownAsync(entity.Content, cancellationToken).ConfigureAwait(false);
             markdown.Append(plainText);
         }
 
@@ -647,12 +637,39 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
     /// </summary>
     protected string EscapeYamlString(string value)
     {
-        return value
-            .Replace("\\", "\\\\")
-            .Replace("\"", "\\\"")
-            .Replace("\n", "\\n")
-            .Replace("\r", "\\r")
-            .Replace("\t", "\\t");
+        ArgumentNullException.ThrowIfNull(value);
+
+        var escaped = new StringBuilder(value.Length + 8);
+        foreach (var character in value)
+        {
+            switch (character)
+            {
+                case '\\':
+                    escaped.Append("\\\\");
+                    break;
+                case '"':
+                    escaped.Append("\\\"");
+                    break;
+                case '\n':
+                    escaped.Append("\\n");
+                    break;
+                case '\r':
+                    escaped.Append("\\r");
+                    break;
+                case '\t':
+                    escaped.Append("\\t");
+                    break;
+                // Other control characters and the Unicode line separators would end the quoted scalar or its line
+                case var control when char.IsControl(control) || (int)control is 0x2028 or 0x2029:
+                    escaped.Append("\\u").Append(((int)control).ToString("X4", CultureInfo.InvariantCulture));
+                    break;
+                default:
+                    escaped.Append(character);
+                    break;
+            }
+        }
+
+        return escaped.ToString();
     }
 
     private bool IsExcludedFromMarkdownProcessing(string fileName)

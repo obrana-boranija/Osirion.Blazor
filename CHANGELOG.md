@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Osirion.Blazor.Core: `LocalUrl` in `Osirion.Blazor.Core.Utils` (`IsLocalPath`, `GetSafeLocalPath` and `DefaultPath`), the local return-URL check used by the cookie consent endpoint and the admin login
 - Analytics consent gate, off by default: `IAnalyticsBuilder.RequireConsent()` or `Osirion:Analytics:Consent:RequireConsent` renders trackers only after the visitor accepted the analytics category in `OsirionCookieConsent`, and GA4 then starts with Google Consent Mode defaults set to denied
 - Matomo and Yandex Metrica report page views after Blazor enhanced navigation through a static script (`_content/Osirion.Blazor.Analytics/js/osirion-analytics.js`) when `AutoTrackPageViews` is on
+- `IGitHubApiClient.GetTreeAsync` (default implementation returns null), `GitHubTree`, `GitHubRateLimitException`, `BaseContentRepository.GenerateMarkdownWithFrontMatterAsync` and `LastRefreshSucceeded`, and `UseOsirionCmsAsync`
 
 ### Changed
 - Mega submenus now center under the whole navigation bar on desktop, use a responsive auto-fit column grid with column headers, and keep an invisible hover bridge so the pointer can travel from the trigger into the panel
@@ -50,12 +51,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `SeoMetadataRenderer`: canonical, og:url and structured-data URLs drop the query string and fragment (keep chosen parameters with the new `CanonicalQueryParameters`), collection pages declare a canonical, generated FAQ data is off by default (`EnableGeneratedFaq`) and valid when on, viewport and theme-color tags are opt-in (`EmitMobileMetaTags`), and dates are written as UTC
 - `ArticlePage`, `DocumentPage` and `HomePage` no longer use streaming rendering and answer missing content with HTTP 404 (`NavigationManager.NotFound()` on .NET 10, the response status on .NET 9)
 - `ArticlePage` tag badges are rendered locally with stable colours instead of loading images from img.shields.io
+- The GitHub provider reads the repository with one Git Trees request and downloads only files whose SHA changed (about 80 requests per refresh for 50 files in 10 folders before, 3 to 13 now); branches are paged; rate-limit responses stop a refresh and keep the current content; GitHub clients get a 30-second timeout when the host left the default
 
 ### Deprecated
 - `LoginViewModel.LoginWithGitHubAsync(string code)` always fails, because a code without its OAuth state cannot be verified; use `StartGitHubLoginAsync()` and `LoginWithGitHubAsync(code, state)`
 - `IAuthenticationService.AuthenticateWithGitHubAsync(string code)` is marked `[Obsolete]`: it exchanges a code without a state check, a PKCE verifier or a redirect URI. It still works; check the state, exchange the code with `IGitHubTokenProvider` and call `SetAccessTokenAsync` instead
 - `AuthGuard.ShowLoginForm`, `AuthGuard.OnAuthResult` and `AdminPage.ShowLoginForm` are marked `[Obsolete]`, because they have no effect
 - `DomainEntityBase<TId>` and the unused Cms.Admin types `CommandDispatcher` (Application.Core), `ContentRepositoryAdapter`, `StatePersistenceService`, `StateManager`, `ErrorHandlingService` and `CmsAdminStartupService`; they will be removed in the next major release
+- `BaseContentRepository.GenerateMarkdownWithFrontMatter`; use `GenerateMarkdownWithFrontMatterAsync`
 
 ### Fixed
 - `MenuGroup` without an `Id` generated a new identifier on every read, so the items container's `aria-labelledby` pointed at an element that did not exist and the label and items ids changed on every render; the generated identifier is now created once per instance
@@ -115,6 +118,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `DomainEventDispatcher` runs handlers registered for the event's concrete type
 - CMS admin: `AddOsirionCmsAdmin(Action<...>)` no longer builds a second service provider; the edit page loads a file once per path change; background failures are logged; error messages shown to users no longer contain exception text; view models unsubscribe from shared state when disposed
 - CMS admin: the GitHub sign-in is restored on any admin page after a reload when the admin layout renders interactively
+- Refreshing a CMS cache cleared the host application's whole memory cache (`Compact(1.0)`); only this library's entries are evicted now, including `IContentCacheService.ClearAsync` and `RemoveByPrefixAsync`
+- Cold-start readers waited for nothing and got empty results; they now await the first load, a refresh requested during a refresh runs once more afterwards, and a failed refresh keeps the previous content instead of emptying it
+- The fallback front matter writer escapes `id`, `slug`, `lang`, `featured_image` and control characters, so a value can no longer add YAML keys
 
 ### Security
 - Osirion.Blazor.Cms.Admin: every routed admin page (`/osirion`, `/osirion/dashboard`, `/osirion/content`, `/osirion/content/edit`, `/osirion/settings`, `/osirion/login`) requires the authorization policy `"Osirion.Cms.Admin"` (`CmsAdminAuthorization.PolicyName`). The default policy requires an authenticated user; a host policy with that name replaces it. These pages, and the repository writes behind them, were open to anonymous visitors
@@ -134,6 +140,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Analytics trackers (Clarity, Matomo, GA4, Yandex Metrica) JSON-encode every configured value they write into scripts and attributes; invalid GA4 ids, Yandex counters and tracker or CDN URLs fail at startup with a message naming the setting
 - Navigation links (`MenuItem`, `MenuGroup` footer, `MenuPanelLink`, `MenuImageCard`, `MenuCallToAction` and the `Menu` brand link) render no `href` for schemes other than relative, http, https, mailto and tel, so a `javascript:` URL from CMS-driven menu data cannot run
 - `ScrollToTop.CustomIcon` is sanitized; the new `IconCssClass` is the way to use a custom icon
+- The CMS query cache key includes every query field, so a draft query (`IncludeUnpublished`) and a public query can no longer share a cached result and leak drafts to the public site
 
 ## [1.5.0] - 2025-04-21
 

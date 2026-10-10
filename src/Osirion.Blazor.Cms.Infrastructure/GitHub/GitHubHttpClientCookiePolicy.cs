@@ -5,7 +5,7 @@ using Osirion.Blazor.Cms.Domain.Interfaces;
 namespace Osirion.Blazor.Cms.Infrastructure.GitHub;
 
 /// <summary>
-/// Turns off cookie handling on the primary handler of every <see cref="IHttpClientFactory"/> client that
+/// Turns off cookie handling and shortens the default timeout of every <see cref="IHttpClientFactory"/> client that
 /// talks to GitHub.
 /// </summary>
 /// <remarks>
@@ -34,8 +34,15 @@ internal sealed class GitHubHttpClientCookiePolicy : IPostConfigureOptions<HttpC
     /// <inheritdoc />
     public void PostConfigure(string? name, HttpClientFactoryOptions options)
     {
+        if (!AppliesTo(name))
+        {
+            return;
+        }
+
+        options.HttpClientActions.Add(ApplyDefaultTimeout);
+
         // Reading UseCookies throws PlatformNotSupportedException in the browser
-        if (OperatingSystem.IsBrowser() || !AppliesTo(name))
+        if (OperatingSystem.IsBrowser())
         {
             return;
         }
@@ -52,6 +59,19 @@ internal sealed class GitHubHttpClientCookiePolicy : IPostConfigureOptions<HttpC
         return !string.IsNullOrEmpty(name)
             && (name.StartsWith(GitHubApiClientFactory.HttpClientNamePrefix, StringComparison.Ordinal)
                 || ClientNames.Contains(name));
+    }
+
+    /// <summary>Timeout applied to GitHub clients whose timeout the host left at the framework default.</summary>
+    internal static readonly TimeSpan DefaultRequestTimeout = TimeSpan.FromSeconds(30);
+
+    // The framework default is 100 seconds, far too long for a refresh that makes many requests in sequence.
+    // A timeout the host set itself is kept.
+    private static void ApplyDefaultTimeout(HttpClient client)
+    {
+        if (client.Timeout == TimeSpan.FromSeconds(100))
+        {
+            client.Timeout = DefaultRequestTimeout;
+        }
     }
 
     private static void DisableCookies(HttpMessageHandler primaryHandler)
