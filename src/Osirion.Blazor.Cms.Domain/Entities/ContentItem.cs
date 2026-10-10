@@ -48,8 +48,26 @@ public class ContentItem : DomainEntity<string>
     public string? FeaturedImageUrl { get; set; }
     /// <summary>Gets or sets whether the item is featured.</summary>
     public bool IsFeatured { get; set; }
-    /// <summary>Gets or sets whether the item is published.</summary>
-    public bool IsPublished { get; set; }
+    /// <summary>
+    /// Gets or sets whether the item is published. This is a view of <see cref="Status"/>, so the two always agree:
+    /// setting it to <see langword="true"/> publishes the item, and setting it to <see langword="false"/> turns a
+    /// published item into a draft while leaving other statuses as they are.
+    /// </summary>
+    public bool IsPublished
+    {
+        get => Status == ContentStatus.Published;
+        set
+        {
+            if (value)
+            {
+                Status = ContentStatus.Published;
+            }
+            else if (Status == ContentStatus.Published)
+            {
+                Status = ContentStatus.Draft;
+            }
+        }
+    }
     /// <summary>Gets or sets the publication status.</summary>
     public ContentStatus Status { get; set; } = ContentStatus.Published;
     /// <summary>Gets or sets the display order.</summary>

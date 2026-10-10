@@ -236,7 +236,9 @@ public partial class LocalizedContentView
 
     private string GetTranslationUrl(string locale)
     {
-        return TranslationUrlFormatter?.Invoke(LocalizationId ?? string.Empty, locale) ?? $"/{AvailableTranslations[locale]}";
+        // A leading slash on the stored URL must not produce "//", which browsers read as another host.
+        return TranslationUrlFormatter?.Invoke(LocalizationId ?? string.Empty, locale)
+            ?? "/" + AvailableTranslations[locale].TrimStart('/');
     }
 
     private string GetTranslationClass(string locale)

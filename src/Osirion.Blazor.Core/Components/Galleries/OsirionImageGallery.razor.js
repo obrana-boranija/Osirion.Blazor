@@ -68,5 +68,4 @@ export default class extends BlazorJSComponents.Component {
         this.close();
         super.dispose();
     }
-    document.querySelectorAll('[data-osirion-gallery]').forEach(initialize);
-})();
+}

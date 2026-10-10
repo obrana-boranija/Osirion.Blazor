@@ -113,4 +113,43 @@ public class MarkdownProcessorTests
                 || attribute.Name == "style"
                 || attribute.Value.TrimStart().StartsWith("javascript:", StringComparison.OrdinalIgnoreCase));
     }
+
+    [Theory]
+    [InlineData("---\ntitle: Post\n---\n# Heading\nBody")]
+    [InlineData("---\r\ntitle: Post\r\n---\r\n# Heading\nBody")]
+    [InlineData("\uFEFF---\ntitle: Post\n---  \n# Heading\nBody")]
+    public void ExtractFrontMatterAndContent_LfCrlfOrBom_KeepsTheWholeBody(string markdown)
+    {
+        // Before the fix the parser skipped two characters after the closing delimiter, which removed the first
+        // character of the body ("#") for files with LF line endings, as GitHub serves them.
+        var (frontMatter, content) = _processor.ExtractFrontMatterAndContent(markdown);
+
+        frontMatter.ShouldNotBeNull();
+        frontMatter.Title.ShouldBe("Post");
+        content.ShouldBe("# Heading\nBody");
+    }
+
+    [Fact]
+    public void ExtractFrontMatterAndContent_DashesInsideAValue_DoNotEndTheFrontMatter()
+    {
+        var (frontMatter, content) = _processor.ExtractFrontMatterAndContent(
+            "---\ntitle: \"Before---After\"\nauthor: Ana\n---\nBody\n\n---\n\nAfter the rule");
+
+        frontMatter.ShouldNotBeNull();
+        frontMatter.Title.ShouldBe("Before---After");
+        frontMatter.Author.ShouldBe("Ana");
+        content.ShouldBe("Body\n\n---\n\nAfter the rule");
+    }
+
+    [Theory]
+    [InlineData("---")]
+    [InlineData("---\ntitle: Post")]
+    [InlineData("--- not front matter\n---\nBody")]
+    public void ExtractFrontMatterAndContent_NoCompleteFrontMatter_ReturnsTheMarkdownUnchanged(string markdown)
+    {
+        var (frontMatter, content) = _processor.ExtractFrontMatterAndContent(markdown);
+
+        frontMatter.ShouldBeNull();
+        content.ShouldBe(markdown);
+    }
 }

@@ -124,28 +124,53 @@ public class MarkdownProcessor : IMarkdownProcessor
     }
 
     /// <summary>
-    /// Helper method to find Jekyll frontmatter boundaries.
-    /// Frontmatter starts and ends with "---" on its own line.
+    /// Finds Jekyll front matter: a first line that is exactly "---" and the next line that is exactly "---".
+    /// Works with LF and CRLF line endings, ignores a leading byte order mark and trailing white space on the
+    /// delimiter lines, and does not mistake "---" inside a value or a later horizontal rule for the end.
     /// </summary>
+    /// <returns>
+    /// The start and length of the YAML between the delimiters and the index where the body starts, or
+    /// <see langword="null"/> when the content has no complete front matter block.
+    /// </returns>
     private static (int Start, int End, int Length)? FindFrontmatterBoundaries(string content)
     {
-        const string delimiter = "---";
-
-        // Must start with delimiter
-        if (!content.StartsWith(delimiter))
+        var openingStart = content.Length > 0 && content[0] == '\uFEFF' ? 1 : 0;
+        var openingEnd = GetLineEnd(content, openingStart, out var yamlStart);
+        if (!IsDelimiterLine(content, openingStart, openingEnd))
             return null;
 
-        // Find the ending delimiter (after the opening one)
-        int firstDelimiterEnd = content.IndexOf('\n') + 1;
-        int secondDelimiterPos = content.IndexOf($"{delimiter}", firstDelimiterEnd);
+        var lineStart = yamlStart;
+        while (lineStart < content.Length)
+        {
+            var lineEnd = GetLineEnd(content, lineStart, out var nextLineStart);
+            if (IsDelimiterLine(content, lineStart, lineEnd))
+                return (yamlStart, nextLineStart, lineStart - yamlStart);
 
-        if (secondDelimiterPos == -1)
-            return null;
+            lineStart = nextLineStart;
+        }
 
-        int yamlStart = firstDelimiterEnd;
-        int yamlEnd = secondDelimiterPos;
-        int fullFrontmatterEnd = secondDelimiterPos + delimiter.Length + 2; // Include delimiter and newline
+        return null;
+    }
 
-        return (yamlStart, fullFrontmatterEnd, yamlEnd - yamlStart);
+    /// <summary>
+    /// Returns the index where the text of the line starting at <paramref name="lineStart"/> ends, without its
+    /// line break, and sets <paramref name="nextLineStart"/> to the index after the line break.
+    /// </summary>
+    private static int GetLineEnd(string content, int lineStart, out int nextLineStart)
+    {
+        var newline = content.IndexOf('\n', lineStart);
+        if (newline < 0)
+        {
+            nextLineStart = content.Length;
+            return content.Length;
+        }
+
+        nextLineStart = newline + 1;
+        return newline > lineStart && content[newline - 1] == '\r' ? newline - 1 : newline;
+    }
+
+    private static bool IsDelimiterLine(string content, int lineStart, int lineEnd)
+    {
+        return content.AsSpan(lineStart, lineEnd - lineStart).TrimEnd() is "---";
     }
 }

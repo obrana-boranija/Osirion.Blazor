@@ -76,6 +76,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `LocalizationInfo.GetBestMatchingLocale` returns the declared locale code instead of the requested casing, and `LocalizationOptions.SetDefaultCulture` adds a culture that is not yet supported instead of ignoring it
 - `AddOsirionGitHubContentProvider(Action<GitHubOptions>)` ignored its configuration
 - CMS admin: a title ending in `.md` produced `titlemd.md`, a new post in a subfolder was saved with a backslash in its path on Windows, and `ErrorHandlingService` handled and logged each error twice
+- `LocalizedContentView` threw `KeyNotFoundException` for any content with more than one translation, so `ContentPage` failed to render translated content; translation links now point to the right locale
+- The `OsirionImageGallery` script did not parse, so the lightbox never opened
+- Commands without a FluentValidation validator, such as `DeleteContentCommand`, could not be dispatched: resolving the open-generic validator adapter threw. Adapters are now registered only for validated commands
+- `FrontMatter.Clone` dropped `Id`, `Order`, `Permalink` and `Lang` and shared `SeoProperties`, and `SeoMetadata.Clone` dropped `Image`, `Lang` and `MetaTags`, so editing metadata in the admin reset them (a translated post was saved as `lang: en`)
+- `ContentItem.IsPublished` is now a view of `Status`. The two disagreed, so content created through `CreateContentCommand` was saved as a draft
+- `CreateContentCommand` and `UpdateContentCommand` keep their markdown as the original source, so saving no longer converts the content back from HTML
+- Front matter is found line by line: files with LF line endings lost the first character of their body (often the `#` of a heading), `---` inside a value ended the front matter early, and a file containing only `---` threw
+- `IOsirionBuilder.UseCmsAdmin(Action<ICmsAdminBuilder>)` registered nothing; it now registers the admin services and applies the callback
+- The markdown editor and preview wrote the scroll position with the current culture, which broke scroll sync in cultures with a decimal comma
 
 ### Security
 - Osirion.Blazor.Cms.Admin: every routed admin page (`/osirion`, `/osirion/dashboard`, `/osirion/content`, `/osirion/content/edit`, `/osirion/settings`, `/osirion/login`) requires the authorization policy `"Osirion.Cms.Admin"` (`CmsAdminAuthorization.PolicyName`). The default policy requires an authenticated user; a host policy with that name replaces it. These pages, and the repository writes behind them, were open to anonymous visitors

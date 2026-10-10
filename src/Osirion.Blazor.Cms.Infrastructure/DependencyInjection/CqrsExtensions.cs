@@ -1,4 +1,6 @@
+using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Osirion.Blazor.Cms.Application.Commands;
 using Osirion.Blazor.Cms.Application.Queries;
 using Osirion.Blazor.Cms.Application.Validation;
@@ -40,9 +42,34 @@ public static class CqrsExtensions
             .AsImplementedInterfaces()
             .WithTransientLifetime());
 
-        // Register validator adapters
-        services.AddTransient(typeof(IValidator<>), typeof(FluentValidationAdapter<>));
+        AddValidatorAdapters(services, typeof(IValidator<object>).Assembly);
 
         return services;
+    }
+
+    /// <summary>
+    /// Registers an <see cref="IValidator{T}"/> adapter for each type that has a FluentValidation validator.
+    /// </summary>
+    /// <remarks>
+    /// An open-generic adapter would also match commands that have no validator, and resolving it would then fail
+    /// because the adapter's FluentValidation validator cannot be created, so those commands could not be
+    /// dispatched at all. The dispatcher treats a missing adapter as "no validation".
+    /// </remarks>
+    private static void AddValidatorAdapters(IServiceCollection services, Assembly assembly)
+    {
+        var validatedTypes = assembly.GetTypes()
+            .Where(type => type is { IsAbstract: false, IsGenericTypeDefinition: false })
+            .SelectMany(type => type.GetInterfaces())
+            .Where(contract => contract.IsGenericType
+                && contract.GetGenericTypeDefinition() == typeof(FluentValidation.IValidator<>))
+            .Select(contract => contract.GetGenericArguments()[0])
+            .Distinct();
+
+        foreach (var validatedType in validatedTypes)
+        {
+            services.TryAddTransient(
+                typeof(IValidator<>).MakeGenericType(validatedType),
+                typeof(FluentValidationAdapter<>).MakeGenericType(validatedType));
+        }
     }
 }

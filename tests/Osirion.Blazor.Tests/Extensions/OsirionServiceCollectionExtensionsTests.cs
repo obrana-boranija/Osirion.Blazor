@@ -167,4 +167,24 @@ public class OsirionServiceCollectionExtensionsTests
         clarityOptions.Value.SiteId.ShouldBe("test-clarity-id");
         clarityOptions.Value.Enabled.ShouldBeTrue();
     }
+
+    [Fact]
+    public void UseCmsAdmin_WithBuilderAction_RegistersAdminServicesAndAppliesTheAction()
+    {
+        // The action overload used to return without registering anything, so a host configured in code got no
+        // admin services and no error until an admin page failed at run time.
+        var services = new ServiceCollection();
+
+        services.AddOsirion(osirion => osirion.UseCmsAdmin(admin => admin.Configure(options =>
+        {
+            options.Owner = "owner";
+            options.Repository = "repository";
+        })));
+
+        services.ShouldContain(descriptor => descriptor.ServiceType == typeof(Osirion.Blazor.Cms.Admin.Core.State.CmsState));
+        using var provider = services.BuildServiceProvider();
+        var options = provider.GetRequiredService<IOptions<GitHubOptions>>().Value;
+        options.Owner.ShouldBe("owner");
+        options.Repository.ShouldBe("repository");
+    }
 }

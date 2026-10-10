@@ -202,7 +202,9 @@ public class SeoMetadata : ValueObject
         {
             Title = Title,
             Description = Description,
+            Image = Image,
             Canonical = Canonical,
+            Lang = Lang,
             Robots = Robots,
             OgTitle = OgTitle,
             OgDescription = OgDescription,
@@ -213,7 +215,8 @@ public class SeoMetadata : ValueObject
             TwitterCard = TwitterCard,
             TwitterTitle = TwitterTitle,
             TwitterDescription = TwitterDescription,
-            TwitterImageUrl = TwitterImageUrl
+            TwitterImageUrl = TwitterImageUrl,
+            MetaTags = new Dictionary<string, string>(MetaTags)
         };
     }
 

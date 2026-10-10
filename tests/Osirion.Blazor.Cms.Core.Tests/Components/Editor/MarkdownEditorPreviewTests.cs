@@ -1,4 +1,5 @@
-﻿using Bunit;
+﻿using System.Globalization;
+using Bunit;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;
@@ -172,6 +173,33 @@ public class MarkdownEditorPreviewTests : TestContext, IDisposable
 
         // Assert
         CountSetScrollPositionCalls().ShouldBe(0);
+    }
+
+    [Fact]
+    public async Task MarkdownEditorPreview_ScrollUnderCommaDecimalCulture_WritesTheScrollPositionAsAJavaScriptNumber()
+    {
+        // In a culture such as sr-Latn-RS the position used to be written as "0,5", which JavaScript reads as two
+        // expressions, so the preview never followed the editor.
+        var cut = RenderComponent<MarkdownEditorPreview>(parameters => parameters
+            .Add(p => p.SyncScroll, true)
+            .Add(p => p.Content, TestData.BasicMarkdown)
+        );
+        var originalCulture = CultureInfo.CurrentCulture;
+        CultureInfo.CurrentCulture = new CultureInfo("sr-Latn-RS");
+
+        try
+        {
+            await cut.Find("textarea").ScrollAsync();
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = originalCulture;
+        }
+
+        var script = _jsRuntime.Invocations
+            .Select(call => call.Arguments is [string text, ..] ? text : string.Empty)
+            .Single(text => text.Contains("targetScrollTop", StringComparison.Ordinal));
+        script.ShouldContain("const targetScrollTop = 0.5 *");
     }
 
     private int CountSetScrollPositionCalls() =>

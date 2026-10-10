@@ -53,7 +53,9 @@ public class UpdateContentCommandHandler : ICommandHandler<UpdateContentCommand>
 
             // Update properties
             existingContent.SetTitle(command.Title);
-            existingContent.SetContent(command.Content);
+            // The command carries the markdown source; keep it so saving writes it as is instead of converting
+            // the content back from HTML.
+            existingContent.SetContent(command.Content, command.Content);
 
             if (!string.IsNullOrWhiteSpace(command.Path) && existingContent.Path != command.Path)
                 existingContent.SetPath(command.Path);

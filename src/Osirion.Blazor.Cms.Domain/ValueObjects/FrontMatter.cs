@@ -367,7 +367,10 @@ public class FrontMatter : ValueObject
     {
         return new FrontMatter
         {
+            Id = Id,
+            Order = Order,
             Title = Title,
+            Permalink = Permalink,
             Description = Description,
             Author = Author,
             Date = Date,
@@ -377,10 +380,11 @@ public class FrontMatter : ValueObject
             Published = Published,
             Layout = Layout,
             Slug = Slug,
+            Lang = Lang,
             Categories = new List<string>(Categories),
             Tags = new List<string>(Tags),
             CustomFields = new Dictionary<string, object>(CustomFields),
-            SeoProperties = SeoProperties,
+            SeoProperties = SeoProperties?.Clone() ?? new SeoMetadata(),
         };
     }
 
