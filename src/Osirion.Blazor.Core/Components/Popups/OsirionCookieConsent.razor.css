@@ -243,9 +243,11 @@
     .osirion-cookie-consent-actions {
         width: 100%;
         flex-direction: column;
+        align-items: stretch;
     }
 
-    .osirion-cookie-consent-button {
+    /* The buttons carry the CSS framework's classes, so they are matched by position */
+    .osirion-cookie-consent-actions > button {
         width: 100%;
     }
 

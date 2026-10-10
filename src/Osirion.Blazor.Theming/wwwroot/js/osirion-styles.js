@@ -198,7 +198,10 @@
   function immediateBootstrap(){
     const html = document.documentElement;
     if(!html) return;
-    
+
+    // OsirionStyles already applied the configured framework and theme while the page was parsed
+    if(html.hasAttribute('data-osirion-framework')) return;
+
     const cookie = readCookie('osirion-preferred-theme');
     
     // If user has a cookie preference, use it

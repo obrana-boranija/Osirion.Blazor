@@ -49,6 +49,8 @@ public static class ServiceCollectionExtensions
         // Register core services (singletons and scoped services)
         services.TryAddSingleton<IMarkdownProcessor, MarkdownProcessor>();
         services.TryAddScoped<IStateStorageService, LocalStorageService>();
+        // LocalStorageService reads browser storage; without this a host with only the FileSystem provider cannot start
+        services.AddBlazoredLocalStorage();
         services.TryAddScoped<IContentCacheService, InMemoryContentCacheService>();
 
         // Register provider registry and manager

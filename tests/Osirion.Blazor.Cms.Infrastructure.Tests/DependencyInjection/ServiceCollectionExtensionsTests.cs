@@ -57,6 +57,27 @@ namespace Osirion.Blazor.Cms.Infrastructure.Tests.DependencyInjection
         }
 
         [Fact]
+        public void AddCms_WithoutGitHubProvider_StateStorageCanBeResolved()
+        {
+            // AddCms registers LocalStorageService, which needs browser storage that only the GitHub registrations
+            // added, so a host with just the FileSystem provider failed to start.
+            var configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(new Dictionary<string, string?> { ["Osirion:Cms:Web:FileSystem:BasePath"] = "content" })
+                .Build();
+            var services = new ServiceCollection();
+            services.AddLogging();
+            services.AddSingleton<IConfiguration>(configuration);
+            services.AddSingleton(Substitute.For<Microsoft.JSInterop.IJSRuntime>());
+            services.AddScoped(_ => Substitute.For<Microsoft.AspNetCore.Components.NavigationManager>());
+            services.AddCms(configuration);
+            services.AddFileSystemContentProvider(configuration);
+            using var provider = services.BuildServiceProvider();
+            using var scope = provider.CreateScope();
+
+            scope.ServiceProvider.GetRequiredService<IStateStorageService>().ShouldNotBeNull();
+        }
+
+        [Fact]
         public void AddGitHubContentProvider_RegistersGitHubServices()
         {
             // Act

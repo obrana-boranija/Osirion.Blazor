@@ -43,7 +43,35 @@
             defaultTheme: '@EffectiveOptions.DefaultMode.ToString().ToLowerInvariant()',
             currentTheme: '@ThemeService.CurrentMode.ToString().ToLowerInvariant()'
         };
-               
+
+        // osirion-styles.js arrives after Blazor starts, so until then the page would paint without the framework
+        // adapter and in the light theme. Apply both now, while the page is parsed; the script takes over later.
+        function applyBeforeFirstPaint(){
+            const html = document.documentElement;
+            const match = document.cookie.match(/(?:^|; )osirion-preferred-theme=([^;]*)/);
+            let theme = match ? decodeURIComponent(match[1]) : config.defaultTheme;
+            if(theme !== 'dark' && theme !== 'light'){
+                theme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+
+            if(config.frameworkClass){
+                html.classList.add(config.frameworkClass);
+            }
+            html.setAttribute('data-osirion-theme', theme);
+            html.setAttribute('data-osirion-framework', config.selectedFramework);
+
+            if(config.selectedFramework === 'Bootstrap'){
+                html.setAttribute('data-bs-theme', theme);
+            } else if(config.selectedFramework === 'MudBlazor'){
+                html.classList.toggle('mud-theme-dark', theme === 'dark');
+            } else if(config.selectedFramework === 'FluentUI'){
+                html.classList.toggle('fluent-dark-theme', theme === 'dark');
+                html.classList.toggle('fluent-light-theme', theme === 'light');
+            } else if(config.selectedFramework === 'Radzen'){
+                html.classList.toggle('rz-dark-theme', theme === 'dark');
+            }
+        }
+
         function init(){
             if(typeof window.initializeOsirionStyles === 'function'){
                 window.initializeOsirionStyles(config);
@@ -51,7 +79,8 @@
                 setTimeout(init, 10);
             }
         }
-        
+
+        applyBeforeFirstPaint();
         init();
     })();
 </script>

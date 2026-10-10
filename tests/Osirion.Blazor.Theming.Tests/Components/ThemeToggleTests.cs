@@ -39,6 +39,15 @@ public class ThemeToggleTests : BunitContext
         cut.Find("button.theme-toggle-btn").GetAttribute("id").ShouldBe("header-theme");
     }
 
+    // Fails before the fix: the text used Bootstrap's visually-hidden class, so it showed on MudBlazor and FluentUI sites.
+    [Fact]
+    public void ThemeToggle_ScreenReaderText_UsesTheOsirionHiddenTextClass()
+    {
+        var cut = Render<ThemeToggle>();
+
+        cut.Find(".theme-text").ClassList.ShouldContain("osirion-visually-hidden");
+    }
+
     // Fails before the fix: a hidden form posted to /theme-toggle, which no endpoint maps, with no antiforgery token.
     [Fact]
     public void ThemeToggle_Markup_HasNoDeadFormAndNoFixedIds()

@@ -91,6 +91,17 @@ public class OsirionCookieConsentTests : BunitContext
         component.FindAll("#consent-banner").Count.ShouldBe(1);
     }
 
+    // Fails before the fix: the form carried the actions class and the buttons sat beside the message, so the
+    // action layout and the mobile rules never reached them and wide framework buttons wrapped under the text.
+    [Fact]
+    public void OsirionCookieConsent_ConsentButtons_AreInsideTheActionsContainer()
+    {
+        var component = RenderOnPage("http://localhost/");
+
+        component.FindAll(".osirion-cookie-consent-actions > button[name=consent]").Count.ShouldBe(3);
+        component.Find("form").ClassList.ShouldNotContain("osirion-cookie-consent-actions");
+    }
+
     // Fails before the fix: resolving the component threw because no IHttpContextAccessor is registered under WebAssembly.
     [Fact]
     public void OsirionCookieConsent_WithoutHttpContextAccessor_RendersNothingAndDoesNotThrow()

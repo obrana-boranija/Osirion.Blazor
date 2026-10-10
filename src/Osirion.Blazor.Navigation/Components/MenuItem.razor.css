@@ -463,6 +463,27 @@
         width: 3rem;
     }
 
+    /* The toggle sits in flow beside the link, so the chevron centres on the link text, and the opened submenu
+       wraps onto its own row. A menu that collapses below the extra-large breakpoint keeps its full-row toggle. */
+    .osirion-menu-container:not(.osirion-menu-collapse-extra-large) .osirion-menu-item-has-submenu {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .osirion-menu-container:not(.osirion-menu-collapse-extra-large) .osirion-menu-item-has-submenu > .osirion-menu-item {
+        flex: 1 1 0%;
+        min-width: 0;
+    }
+
+    .osirion-menu-container:not(.osirion-menu-collapse-extra-large) .osirion-menu-item-has-submenu > .osirion-submenu-toggle {
+        position: static;
+    }
+
+    .osirion-menu-container:not(.osirion-menu-collapse-extra-large) .osirion-menu-item-has-submenu > .osirion-submenu {
+        flex-basis: 100%;
+    }
+
     /* Static submenu positioning on mobile */
     .osirion-submenu {
         position: static !important;

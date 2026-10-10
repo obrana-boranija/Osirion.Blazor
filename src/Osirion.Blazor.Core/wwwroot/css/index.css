@@ -4,6 +4,20 @@
 * Imports all necessary base styles and utilities
 */
 /* Base styles */
+/* Hides text visually while keeping it available to screen readers. Components use this class rather than a
+   CSS framework's utility, which is missing when the host uses another framework. */
+.osirion-visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
 /* 
 * Osirion Design Tokens
 * Core variables that define the foundation of Osirion's design system.

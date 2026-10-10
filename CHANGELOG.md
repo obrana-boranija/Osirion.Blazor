@@ -27,6 +27,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Analytics consent gate, off by default: `IAnalyticsBuilder.RequireConsent()` or `Osirion:Analytics:Consent:RequireConsent` renders trackers only after the visitor accepted the analytics category in `OsirionCookieConsent`, and GA4 then starts with Google Consent Mode defaults set to denied
 - Matomo and Yandex Metrica report page views after Blazor enhanced navigation through a static script (`_content/Osirion.Blazor.Analytics/js/osirion-analytics.js`) when `AutoTrackPageViews` is on
 - `IGitHubApiClient.GetTreeAsync` (default implementation returns null), `GitHubTree`, `GitHubRateLimitException`, `BaseContentRepository.GenerateMarkdownWithFrontMatterAsync` and `LastRefreshSucceeded`, and `UseOsirionCmsAsync`
+- `examples/Osirion.Blazor.Example.Mud`: the CMS example site on MudBlazor 9, with a theme that follows Osirion's theme toggle without a round trip
+- `.osirion-visually-hidden` utility in the Core stylesheet for text that only screen readers announce
 
 ### Changed
 - Mega submenus now center under the whole navigation bar on desktop, use a responsive auto-fit column grid with column headers, and keep an invisible hover bridge so the pointer can travel from the trigger into the panel
@@ -56,6 +58,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Email providers use pooled `IHttpClientFactory` clients with a 30-second timeout and per-request authorization, with one shared mail body builder
 - `OsirionComponentBase.IsServerSide` is obsolete because it is also true under Interactive Server; use `IsInteractive`, or the new `IsRunningInBrowser` for WebAssembly
 - **Behaviour change:** content whose front matter has no `published` key is now published (`FrontMatter.Published` defaults to `true`, as in Jekyll and Hugo); before, such files were silently hidden as drafts. Add `published: false` to keep a file hidden
+- `OsirionCookieConsent`: the form now has the class `osirion-cookie-consent-form` and the consent buttons sit in a `div.osirion-cookie-consent-actions`; CSS that targeted the form through the old class must target `.osirion-cookie-consent-form`
 
 ### Deprecated
 - `LoginViewModel.LoginWithGitHubAsync(string code)` always fails, because a code without its OAuth state cannot be verified; use `StartGitHubLoginAsync()` and `LoginWithGitHubAsync(code, state)`
@@ -136,6 +139,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - FileSystem content items are linked to their directory, so `ContentList Directory="blog"` lists FileSystem content
 - Media queries written with `var(--osirion-breakpoint-*)` never matched, because custom properties cannot be used in media conditions: `.osirion-container` never widened at the sm to xxl breakpoints, and the cookie consent and breadcrumb mobile rules never applied; they now use the literal breakpoint values
 - Horizontal menus between 769px and 1439px drew the submenu chevron above the centre of its link; the toggle now sits in flow beside the link, as it already did from 1440px
+- A host that registers only the FileSystem provider failed at startup: `AddCms` registered `LocalStorageService` without the browser storage it needs, which only the GitHub registrations added
+- `SearchBox` and `ThemeToggle` used Bootstrap's `visually-hidden` class, so their screen-reader text showed on MudBlazor, FluentUI and Radzen sites; they now use `osirion-visually-hidden`
+- Every full page load painted without the framework adapter and in the light theme until `osirion-styles.js` arrived after Blazor started; `OsirionStyles` now applies the framework class and the stored theme while the page is parsed
+- `OsirionCookieConsent` put its actions class on the form around the whole banner, so the buttons never got the actions layout or the mobile rules, and wide framework buttons wrapped under the message
+- The submenu chevron in the mobile drawer sat above the centre of its link
 
 ### Security
 - Osirion.Blazor.Cms.Admin: every routed admin page (`/osirion`, `/osirion/dashboard`, `/osirion/content`, `/osirion/content/edit`, `/osirion/settings`, `/osirion/login`) requires the authorization policy `"Osirion.Cms.Admin"` (`CmsAdminAuthorization.PolicyName`). The default policy requires an authenticated user; a host policy with that name replaces it. These pages, and the repository writes behind them, were open to anonymous visitors
