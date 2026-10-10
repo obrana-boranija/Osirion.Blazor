@@ -40,6 +40,13 @@ public class GitHubOptions : ContentProviderOptions
     /// <summary>
     /// Gets or sets the webhook secret for validating webhook requests
     /// </summary>
+    /// <remarks>
+    /// Required for webhook deliveries. Set the same value as the secret of the GitHub webhook,
+    /// whose content type must be <c>application/json</c>. Deliveries whose
+    /// <c>X-Hub-Signature-256</c> header does not verify against a configured secret are rejected,
+    /// and every delivery is rejected while no provider has a secret. Keep the value out of source
+    /// control (user secrets, environment variables or a key vault).
+    /// </remarks>
     public string? WebhookSecret { get; set; }
 
     /// <summary>

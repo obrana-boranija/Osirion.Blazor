@@ -1,5 +1,6 @@
 ﻿@namespace Osirion.Blazor.Components
 @using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Components.Forms
 @inherits OsirionComponentBase
 @inject NavigationManager Navigation
 @inject IHttpContextAccessor HttpContextAccessor
@@ -7,6 +8,7 @@
 @if (ShowBanner)
 {
     <form method="post" action="@ConsentEndpoint" class="osirion-cookie-consent-actions" @attributes="Attributes">
+        <AntiforgeryToken />
         <input type="hidden" name="returnUrl" value="@GetCurrentUrl()" />
         <div class="@GetCookieConsentClass()" @attributes="Attributes">
             <div class="osirion-cookie-consent-container">

@@ -20,19 +20,11 @@ public class CreateContentCommandValidator : AbstractValidator<CreateContentComm
 
         RuleFor(x => x.Path)
             .NotEmpty().WithMessage("Path is required")
-            .Must(BeValidPath).WithMessage("Path contains invalid characters");
+            .Must(ContentPathRules.IsValidRelativePath).WithMessage(ContentPathRules.InvalidPathMessage);
 
         RuleFor(x => x.Slug)
             .Must(BeValidSlug).When(x => !string.IsNullOrWhiteSpace(x.Slug))
             .WithMessage("Slug must contain only lowercase letters, numbers, and hyphens");
-    }
-
-    private bool BeValidPath(string path)
-    {
-        return !string.IsNullOrWhiteSpace(path) && !path.Contains("..") &&
-               !path.Contains("\\") && !path.Contains("?") &&
-               !path.Contains("*") && !path.Contains(":") &&
-               !path.Contains("<") && !path.Contains(">");
     }
 
     private bool BeValidSlug(string? slug)

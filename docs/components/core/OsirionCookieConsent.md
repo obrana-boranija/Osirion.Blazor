@@ -17,7 +17,8 @@ Key parameters
 Behavior
 - Reads consent cookie "osirion_cookie_consent"; shows banner when absent
 - Supports "?customize-cookies" query to open customization directly
+- Renders an antiforgery token inside the form and posts the current path and query (never the absolute URL) as returnUrl
 
 Notes
 - Emits osirion-cookie-consent-{position} and -customizing classes
-- Provide server endpoint or handle client submission per your architecture.
+- Map the server endpoint with MapOsirionCookieConsent and call UseAntiforgery; the endpoint rejects posts without a valid token and only redirects to local paths. See CookieConsent.md.

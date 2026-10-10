@@ -1,4 +1,9 @@
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.DependencyInjection;
+using Osirion.Blazor.Core.Utils;
+using System.Text;
 using System.Text.Json;
 
 namespace Osirion.Blazor.Core.Handlers;
@@ -10,15 +15,27 @@ public static class CookieConsentHandler
 {
     private const string ConsentCookieName = "osirion_cookie_consent";
     private const string ConsentCookieVersion = "1.0";
+    private const string CustomizeQueryKey = "customize-cookies";
 
     /// <summary>
     /// Processes cookie consent form submission
     /// </summary>
+    /// <remarks>
+    /// The request must be a form post with a valid antiforgery token; otherwise the handler returns
+    /// 400 without a body and records nothing. The posted <c>returnUrl</c> is followed only when it
+    /// is a local path (see <see cref="LocalUrl.IsLocalPath(string?)"/>); any other value redirects
+    /// to <c>/</c>. A <c>customize-cookies</c> query key left on the return URL is removed.
+    /// </remarks>
     public static async Task<IResult> HandleConsentAsync(HttpContext context)
     {
-        var form = await context.Request.ReadFormAsync();
+        if (!await IsAntiforgeryTokenValidAsync(context) || !context.Request.HasFormContentType)
+        {
+            return Results.BadRequest();
+        }
+
+        var form = await context.Request.ReadFormAsync(context.RequestAborted);
         var consentValue = form["consent"].FirstOrDefault();
-        var returnUrl = form["returnUrl"].FirstOrDefault() ?? "/";
+        var returnUrl = GetReturnPath(form["returnUrl"].FirstOrDefault());
 
         var consentData = new CookieConsentData
         {
@@ -52,7 +69,7 @@ public static class CookieConsentHandler
 
             case "customize":
                 // Redirect to the same URL with customize parameter
-                return Results.Redirect($"{returnUrl}?customize-cookies=true");
+                return Results.Redirect(QueryHelpers.AddQueryString(returnUrl, CustomizeQueryKey, "true"));
 
             case "save-preferences":
                 // Process custom preferences
@@ -87,6 +104,52 @@ public static class CookieConsentHandler
 
         // Redirect back to the original page
         return Results.Redirect(returnUrl);
+    }
+
+    private static async Task<bool> IsAntiforgeryTokenValidAsync(HttpContext context)
+    {
+        // When UseAntiforgery has validated the request, its verdict is authoritative, and reading
+        // the form after a failed validation would throw.
+        var validationFeature = context.Features.Get<IAntiforgeryValidationFeature>();
+        if (validationFeature is not null)
+        {
+            return validationFeature.IsValid;
+        }
+
+        // The middleware did not run for this request: validate here and fail closed when
+        // antiforgery services are not registered.
+        var antiforgery = context.RequestServices?.GetService<IAntiforgery>();
+        return antiforgery is not null && await antiforgery.IsRequestValidAsync(context);
+    }
+
+    private static string GetReturnPath(string? returnUrl)
+    {
+        var localPath = LocalUrl.GetSafeLocalPath(returnUrl);
+
+        // Non-ASCII characters cannot be sent in a Location header; the banner always posts an
+        // escaped path, so anything else is not worth repairing.
+        return Ascii.IsValid(localPath) ? RemoveCustomizeFlag(localPath) : LocalUrl.DefaultPath;
+    }
+
+    private static string RemoveCustomizeFlag(string localPath)
+    {
+        var fragmentStart = localPath.IndexOf('#');
+        var pathAndQuery = fragmentStart < 0 ? localPath : localPath[..fragmentStart];
+        var fragment = fragmentStart < 0 ? string.Empty : localPath[fragmentStart..];
+
+        var queryStart = pathAndQuery.IndexOf('?');
+        if (queryStart < 0)
+        {
+            return localPath;
+        }
+
+        var parameters = QueryHelpers.ParseQuery(pathAndQuery[queryStart..]);
+        if (!parameters.Remove(CustomizeQueryKey))
+        {
+            return localPath;
+        }
+
+        return QueryHelpers.AddQueryString(pathAndQuery[..queryStart], parameters) + fragment;
     }
 
     /// <summary>

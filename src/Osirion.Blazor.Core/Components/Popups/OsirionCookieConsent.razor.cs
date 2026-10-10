@@ -149,11 +149,14 @@ public partial class OsirionCookieConsent
     }
 
     /// <summary>
-    /// Gets the current URL for the return URL field
+    /// Gets the current path and query for the return URL field
     /// </summary>
+    /// <remarks>
+    /// The consent endpoint only redirects to local paths, so the absolute URL is never posted.
+    /// </remarks>
     private string GetCurrentUrl()
     {
-        return Navigation.Uri;
+        return new Uri(Navigation.Uri, UriKind.Absolute).PathAndQuery;
     }
 
     /// <summary>

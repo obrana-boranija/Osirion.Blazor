@@ -56,7 +56,7 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
     }
 
     /// <inheritdoc />
-    public override string ProviderId => _options.ProviderId ?? $"github-{_options.Owner}-{_options.Repository}";
+    public override string ProviderId => GitHubProviderId.For(_options);
     /// <inheritdoc />
     public override string DisplayName => $"GitHub: {_options.Owner}/{_options.Repository}";
     /// <inheritdoc />

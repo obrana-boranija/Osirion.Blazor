@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Interfaces;
+using Osirion.Blazor.Cms.Domain.Options;
+using Osirion.Blazor.Cms.Domain.Options.Configuration;
 using Osirion.Blazor.Cms.Domain.Services;
-using System.Security.Cryptography;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -10,10 +12,33 @@ using System.Text.Json.Serialization;
 namespace Osirion.Blazor.Cms.Infrastructure.GitHub;
 
 /// <summary>
-/// Simplified webhook handler for GitHub events
+/// Handles GitHub webhook deliveries and refreshes the content cache of the providers a push affects.
 /// </summary>
+/// <remarks>
+/// <para>
+/// Every delivery must carry an <c>X-Hub-Signature-256</c> header that verifies against the
+/// <see cref="GitHubOptions.WebhookSecret"/> of at least one configured GitHub provider. Deliveries
+/// are rejected when no provider has a webhook secret, when the signature is missing or wrong, and
+/// when the body is larger than 5 MiB. The payload is not parsed or logged before it is verified.
+/// </para>
+/// <para>
+/// A verified push refreshes every provider whose owner, repository and branch match the push and
+/// whose own secret verified the signature. Pushes to tags, deleted branches and untracked branches
+/// are acknowledged without a refresh.
+/// </para>
+/// </remarks>
 public class GitHubWebhookHandler : IGitHubWebhookHandler
 {
+    /// <summary>
+    /// The largest webhook body, in bytes, that the handler reads.
+    /// </summary>
+    internal const int MaxPayloadBytes = 5 * 1024 * 1024;
+
+    private const string EventHeaderName = "X-GitHub-Event";
+    private const string DeliveryHeaderName = "X-GitHub-Delivery";
+    private const string BranchRefPrefix = "refs/heads/";
+    private const int ReadBufferSize = 81920;
+
     private readonly IContentProviderManager _providerManager;
     private readonly IGitHubApiClientFactory _apiClientFactory;
     private readonly ILogger<GitHubWebhookHandler> _logger;
@@ -30,28 +55,51 @@ public class GitHubWebhookHandler : IGitHubWebhookHandler
     }
 
     /// <inheritdoc />
+    /// <remarks>
+    /// Rejects the delivery without reading the body when no provider has a webhook secret or the
+    /// signature header is missing or malformed. Otherwise reads at most 5 MiB of the body without
+    /// disposing it, verifies the signature against the raw bytes, and only then dispatches the event.
+    /// Returns <see langword="false"/> for a rejected or malformed delivery and <see langword="true"/>
+    /// for a verified one, including verified deliveries that match no provider.
+    /// </remarks>
     public async Task<bool> HandleWebhookAsync(HttpRequest request)
     {
+        ArgumentNullException.ThrowIfNull(request);
+
+        var cancellationToken = request.HttpContext.RequestAborted;
+
         try
         {
-            var eventType = request.Headers["X-GitHub-Event"].ToString();
-            var signature = request.Headers["X-Hub-Signature-256"].ToString();
-
-            string payload;
-            using (var reader = new StreamReader(request.Body))
+            if (request.ContentLength > MaxPayloadBytes)
             {
-                payload = await reader.ReadToEndAsync();
-                //request.Body.Position = 0; // Reset for other middleware
+                _logger.LogWarning("Rejected GitHub webhook: the declared body length exceeds {MaxPayloadBytes} bytes", MaxPayloadBytes);
+                return false;
             }
 
-            _logger.LogInformation("Received GitHub webhook: {EventType}", eventType);
-
-            return eventType switch
+            // Checks that need only configuration and headers run first, so an anonymous request
+            // that cannot verify is refused before its body is buffered.
+            var signatureCheck = PrepareSignatureCheck(request.Headers[GitHubWebhookSignature.HeaderName].ToString());
+            if (signatureCheck is null)
             {
-                "ping" => true, // Just acknowledge ping
-                "push" => await HandlePushEventAsync(payload, signature),
-                _ => true // Ignore other events
-            };
+                return false;
+            }
+
+            var payload = await TryReadPayloadAsync(request.Body, cancellationToken);
+            if (payload is null)
+            {
+                return false;
+            }
+
+            return await VerifyAndDispatchAsync(
+                request.Headers[EventHeaderName].ToString(),
+                request.Headers[DeliveryHeaderName].ToString(),
+                signatureCheck,
+                payload);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            _logger.LogInformation("GitHub webhook request was aborted before it was processed");
+            return false;
         }
         catch (Exception ex)
         {
@@ -61,96 +109,247 @@ public class GitHubWebhookHandler : IGitHubWebhookHandler
     }
 
     /// <inheritdoc />
-    public Task<bool> ProcessWebhookAsync(string eventType, string signature, string payload)
-    {
-        return Task.FromResult(true);
-    }
-
-    private async Task<bool> HandlePushEventAsync(string payload, string signature)
+    /// <remarks>
+    /// The signature is verified against the UTF-8 encoding of <paramref name="payload"/>, so the
+    /// payload must be the exact body GitHub sent. Unsigned or wrongly signed payloads are rejected.
+    /// </remarks>
+    public async Task<bool> ProcessWebhookAsync(string eventType, string signature, string payload)
     {
         try
         {
-            using var doc = JsonDocument.Parse(payload);
-            var root = doc.RootElement;
-
-            var owner = root.GetProperty("repository").GetProperty("owner").GetProperty("login").GetString();
-            var repo = root.GetProperty("repository").GetProperty("name").GetString();
-            var branch = root.GetProperty("ref").GetString()?.Split('/').LastOrDefault();
-            var commitSha = root.GetProperty("after").GetString();
-
-            _logger.LogInformation("Push event: {Owner}/{Repo} branch {Branch} commit {Sha}",
-                owner, repo, branch, commitSha);
-
-            string? matchingProvider = null;
-            foreach (var providerName in _apiClientFactory.GetProviderNames())
+            var signatureCheck = PrepareSignatureCheck(signature);
+            if (signatureCheck is null)
             {
-                var options = _apiClientFactory.GetProviderOptions(providerName);
-                if (options is not null &&
-                    string.Equals(options.Owner, owner, StringComparison.OrdinalIgnoreCase) &&
-                    string.Equals(options.Repository, repo, StringComparison.OrdinalIgnoreCase))
-                {
-                    // Validate signature if configured
-                    //if (!string.IsNullOrWhiteSpace(options.WebhookSecret))
-                    //{
-                    //    if (!ValidateSignature(signature, payload, options.WebhookSecret))
-                    //    {
-                    //        _logger.LogWarning("Invalid webhook signature for {Provider}", providerName);
-                    //        return false;
-                    //    }
-                    //}
-
-                    // Check branch
-                    if (!string.IsNullOrWhiteSpace(options.Branch) && branch != options.Branch)
-                    {
-                        _logger.LogInformation("Ignoring push to branch {Branch}, expected {Expected}",
-                            branch, options.Branch);
-                        return true;
-                    }
-
-                    matchingProvider = options.ProviderId;
-                    break;
-                }
-            }
-
-            if (matchingProvider is null)
-            {
-                _logger.LogWarning("No provider found for {Owner}/{Repo}", owner, repo);
                 return false;
             }
 
-            var providers = _providerManager.GetAllProviders()
-                .OfType<IContentCacheUpdater>()
-                .Where(p => p.ProviderId.Contains(matchingProvider));
-
-            foreach (var provider in providers)
+            var payloadBytes = Encoding.UTF8.GetBytes(payload);
+            if (payloadBytes.Length > MaxPayloadBytes)
             {
-                _logger.LogInformation("Updating cache for provider {ProviderId}", provider.ProviderId);
-                await provider.UpdateCacheAsync(commitSha, true);
+                _logger.LogWarning("Rejected GitHub webhook: the body exceeds {MaxPayloadBytes} bytes", MaxPayloadBytes);
+                return false;
             }
 
-            return true;
+            return await VerifyAndDispatchAsync(eventType, deliveryId: null, signatureCheck, payloadBytes);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error handling push event");
+            _logger.LogError(ex, "Error processing webhook");
             return false;
         }
     }
 
-    private bool ValidateSignature(string signature, string payload, string secret)
+    private SignatureCheck? PrepareSignatureCheck(string? signature)
     {
-        if (string.IsNullOrWhiteSpace(signature) || !signature.StartsWith("sha256="))
-            return false;
+        var providersWithSecret = GetProvidersWithWebhookSecret();
+        if (providersWithSecret.Count == 0)
+        {
+            _logger.LogWarning("Rejected GitHub webhook: no GitHub provider has a WebhookSecret configured");
+            return null;
+        }
 
-        var secretBytes = Encoding.UTF8.GetBytes(secret);
-        var payloadBytes = Encoding.UTF8.GetBytes(payload);
+        if (!GitHubWebhookSignature.TryParse(signature, out var digest))
+        {
+            _logger.LogWarning("Rejected GitHub webhook: the {HeaderName} header is missing or malformed", GitHubWebhookSignature.HeaderName);
+            return null;
+        }
 
-        using var hmac = new HMACSHA256(secretBytes);
-        var hash = hmac.ComputeHash(payloadBytes);
-        var expected = "sha256=" + BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
-
-        return signature.Equals(expected, StringComparison.OrdinalIgnoreCase);
+        return new SignatureCheck(providersWithSecret, digest);
     }
+
+    private async Task<bool> VerifyAndDispatchAsync(string? eventType, string? deliveryId, SignatureCheck signatureCheck, byte[] payload)
+    {
+        var verifiedProviders = GetProvidersSignedBy(signatureCheck.ProvidersWithSecret, signatureCheck.Digest, payload);
+        if (verifiedProviders.Count == 0)
+        {
+            _logger.LogWarning("Rejected GitHub webhook: the signature does not match any configured webhook secret");
+            return false;
+        }
+
+        _logger.LogInformation("Received GitHub webhook {EventType} (delivery {DeliveryId})", eventType, deliveryId);
+
+        return eventType switch
+        {
+            "push" => await HandlePushEventAsync(payload, verifiedProviders),
+            _ => true // ping and other events are acknowledged without action
+        };
+    }
+
+    private List<GitHubProviderOptions> GetProvidersWithWebhookSecret()
+    {
+        var providers = new List<GitHubProviderOptions>();
+        foreach (var providerName in _apiClientFactory.GetProviderNames())
+        {
+            var options = _apiClientFactory.GetProviderOptions(providerName);
+            if (options is not null && !string.IsNullOrWhiteSpace(options.WebhookSecret))
+            {
+                providers.Add(options);
+            }
+        }
+
+        return providers;
+    }
+
+    private static List<GitHubProviderOptions> GetProvidersSignedBy(
+        List<GitHubProviderOptions> providers,
+        byte[] digest,
+        byte[] payload)
+    {
+        var verifiedSecrets = providers
+            .Select(options => options.WebhookSecret!)
+            .Distinct(StringComparer.Ordinal)
+            .Where(secret => GitHubWebhookSignature.Matches(digest, secret, payload))
+            .ToHashSet(StringComparer.Ordinal);
+
+        return providers
+            .Where(options => verifiedSecrets.Contains(options.WebhookSecret!))
+            .ToList();
+    }
+
+    private async Task<bool> HandlePushEventAsync(byte[] payload, List<GitHubProviderOptions> verifiedProviders)
+    {
+        if (!TryReadPushEvent(payload, out var push))
+        {
+            _logger.LogWarning("Rejected GitHub push webhook: the payload is not a JSON push event");
+            return false;
+        }
+
+        if (push.Deleted || !push.Ref.StartsWith(BranchRefPrefix, StringComparison.Ordinal))
+        {
+            _logger.LogInformation("Ignoring push to {Ref} in {Owner}/{Repository}: not an updated branch",
+                push.Ref, push.Owner, push.Repository);
+            return true;
+        }
+
+        var branch = push.Ref[BranchRefPrefix.Length..];
+        var providerIds = verifiedProviders
+            .Where(options => TracksBranch(options, push.Owner, push.Repository, branch))
+            .Select(GitHubProviderId.For)
+            .ToHashSet(StringComparer.Ordinal);
+
+        if (providerIds.Count == 0)
+        {
+            _logger.LogInformation("Ignoring push to {Owner}/{Repository} branch {Branch}: no provider tracks it",
+                push.Owner, push.Repository, branch);
+            return true;
+        }
+
+        _logger.LogInformation("Push event: {Owner}/{Repo} branch {Branch} commit {Sha}",
+            push.Owner, push.Repository, branch, push.HeadSha);
+
+        var cacheUpdaters = _providerManager.GetAllProviders()
+            .OfType<IContentCacheUpdater>()
+            .Where(updater => providerIds.Contains(updater.ProviderId));
+
+        foreach (var cacheUpdater in cacheUpdaters)
+        {
+            _logger.LogInformation("Updating cache for provider {ProviderId}", cacheUpdater.ProviderId);
+            await cacheUpdater.UpdateCacheAsync(push.HeadSha, true);
+        }
+
+        return true;
+    }
+
+    private static bool TracksBranch(GitHubOptions options, string owner, string repository, string branch)
+    {
+        // A provider without a branch follows the repository's default branch, which the push does not name.
+        return string.Equals(options.Owner, owner, StringComparison.OrdinalIgnoreCase) &&
+               string.Equals(options.Repository, repository, StringComparison.OrdinalIgnoreCase) &&
+               (string.IsNullOrWhiteSpace(options.Branch) || string.Equals(options.Branch, branch, StringComparison.Ordinal));
+    }
+
+    private async Task<byte[]?> TryReadPayloadAsync(Stream body, CancellationToken cancellationToken)
+    {
+        byte[]? payload;
+        try
+        {
+            payload = await ReadPayloadAsync(body, cancellationToken);
+        }
+        catch (IOException ex)
+        {
+            // The server refuses a body it cannot accept, such as one past its own size limit or one
+            // with broken chunked framing; Kestrel reports both as BadHttpRequestException, an IOException.
+            _logger.LogWarning("Rejected GitHub webhook: the body could not be read ({Reason})", ex.Message);
+            return null;
+        }
+
+        if (payload is null)
+        {
+            _logger.LogWarning("Rejected GitHub webhook: the body exceeds {MaxPayloadBytes} bytes", MaxPayloadBytes);
+        }
+
+        return payload;
+    }
+
+    private static async Task<byte[]?> ReadPayloadAsync(Stream body, CancellationToken cancellationToken)
+    {
+        using var payload = new MemoryStream();
+        var buffer = new byte[ReadBufferSize];
+
+        while (true)
+        {
+            // Reading one byte past the limit is enough to tell an oversized body from a full one.
+            var remaining = MaxPayloadBytes + 1 - (int)payload.Length;
+            var read = await body.ReadAsync(buffer.AsMemory(0, Math.Min(buffer.Length, remaining)), cancellationToken);
+            if (read == 0)
+            {
+                return payload.ToArray();
+            }
+
+            payload.Write(buffer, 0, read);
+            if (payload.Length > MaxPayloadBytes)
+            {
+                return null;
+            }
+        }
+    }
+
+    private static bool TryReadPushEvent(byte[] payload, out PushEvent push)
+    {
+        push = default;
+
+        try
+        {
+            using var document = JsonDocument.Parse(payload);
+            var root = document.RootElement;
+
+            if (root.ValueKind != JsonValueKind.Object ||
+                !TryGetString(root, "ref", out var gitRef) ||
+                !root.TryGetProperty("repository", out var repository) ||
+                repository.ValueKind != JsonValueKind.Object ||
+                !TryGetString(repository, "name", out var repositoryName) ||
+                !repository.TryGetProperty("owner", out var owner) ||
+                owner.ValueKind != JsonValueKind.Object ||
+                !TryGetString(owner, "login", out var ownerLogin))
+            {
+                return false;
+            }
+
+            TryGetString(root, "after", out var headSha);
+            var deleted = root.TryGetProperty("deleted", out var deletedElement) &&
+                          deletedElement.ValueKind == JsonValueKind.True;
+
+            push = new PushEvent(ownerLogin, repositoryName, gitRef, headSha, deleted);
+            return true;
+        }
+        catch (JsonException)
+        {
+            return false;
+        }
+    }
+
+    private static bool TryGetString(JsonElement element, string propertyName, [NotNullWhen(true)] out string? value)
+    {
+        value = element.TryGetProperty(propertyName, out var property) && property.ValueKind == JsonValueKind.String
+            ? property.GetString()
+            : null;
+
+        return !string.IsNullOrEmpty(value);
+    }
+
+    private readonly record struct PushEvent(string Owner, string Repository, string Ref, string? HeadSha, bool Deleted);
+
+    private sealed record SignatureCheck(List<GitHubProviderOptions> ProvidersWithSecret, byte[] Digest);
 }
 
 /// <summary>

@@ -205,9 +205,8 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
 
             try
             {
-                // Build the full file path
-                var relativePath = entity.Path;
-                var fullPath = Path.Combine(_options.BasePath, relativePath);
+                // Build the full file path, refusing any path that leaves the content root
+                var fullPath = ContentPathGuard.ResolveUnderRoot(_options.BasePath, entity.Path);
 
                 // Ensure directory exists
                 var directoryPath = Path.GetDirectoryName(fullPath);
@@ -263,7 +262,12 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
                 if (string.IsNullOrWhiteSpace(fullPath))
                 {
                     // If provider-specific ID is not set, try using path
-                    fullPath = Path.Combine(_options.BasePath, item.Path);
+                    fullPath = ContentPathGuard.ResolveUnderRoot(_options.BasePath, item.Path);
+                }
+                else
+                {
+                    // Callers can change the id on the cached item, so it must still point inside the root
+                    ContentPathGuard.EnsureUnderRoot(_options.BasePath, fullPath);
                 }
 
                 if (!_fileSystem.File.Exists(fullPath))

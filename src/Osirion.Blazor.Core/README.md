@@ -194,7 +194,8 @@ A GDPR-compliant cookie consent banner with customizable categories.
 **Features:**
 - GDPR-compliant cookie consent management
 - Customizable cookie categories (Necessary, Analytics, Marketing, Preferences)
-- SSR-compatible form submission
+- SSR-compatible form submission, protected by an antiforgery token (map the endpoint with `MapOsirionCookieConsent()` and call `UseAntiforgery()`)
+- Redirects back only to local paths after consent is saved
 - Configurable consent expiry
 - Privacy policy integration
 

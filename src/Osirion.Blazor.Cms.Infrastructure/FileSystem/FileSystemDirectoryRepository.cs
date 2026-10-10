@@ -6,6 +6,7 @@ using Osirion.Blazor.Cms.Domain.Interfaces.Directory;
 using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Domain.Repositories;
 using Osirion.Blazor.Cms.Infrastructure.Directory;
+using Osirion.Blazor.Cms.Infrastructure.Utilities;
 using DirectoryNotFoundException = Osirion.Blazor.Cms.Domain.Exceptions.DirectoryNotFoundException;
 
 namespace Osirion.Blazor.Cms.Infrastructure.FileSystem;
@@ -103,14 +104,14 @@ public class FileSystemDirectoryRepository : DirectoryRepositoryBase, IDirectory
                     throw new ContentValidationException("Parent", "Cannot move a directory to one of its descendants");
             }
 
-            // Build physical paths
-            var sourcePhysicalPath = Path.Combine(_options.BasePath, directory.Path);
+            // Build physical paths, refusing any path that leaves the content root
+            var sourcePhysicalPath = ContentPathGuard.ResolveUnderRoot(_options.BasePath, directory.Path);
 
             var newPath = string.IsNullOrWhiteSpace(newParentId)
                 ? Path.GetFileName(directory.Path) // Move to root
                 : Path.Combine(newParent!.Path, Path.GetFileName(directory.Path));
 
-            var destinationPhysicalPath = Path.Combine(_options.BasePath, newPath);
+            var destinationPhysicalPath = ContentPathGuard.ResolveUnderRoot(_options.BasePath, newPath);
 
             if (!System.IO.Directory.Exists(sourcePhysicalPath))
                 throw new DirectoryNotFoundException(directory.Path);
@@ -181,8 +182,8 @@ public class FileSystemDirectoryRepository : DirectoryRepositoryBase, IDirectory
         if (directory is null)
             throw new DirectoryNotFoundException(id);
 
-        // Get the full physical path
-        var physicalPath = Path.Combine(_options.BasePath, directory.Path);
+        // Get the full physical path, refusing any path that leaves the content root
+        var physicalPath = ContentPathGuard.ResolveUnderRoot(_options.BasePath, directory.Path);
 
         if (!System.IO.Directory.Exists(physicalPath))
             throw new DirectoryNotFoundException(directory.Path);
@@ -299,8 +300,8 @@ public class FileSystemDirectoryRepository : DirectoryRepositoryBase, IDirectory
     {
         LogOperation("creating", entity.Id);
 
-        // Build the full physical path
-        var physicalPath = Path.Combine(_options.BasePath, entity.Path);
+        // Build the full physical path, refusing any path that leaves the content root
+        var physicalPath = ContentPathGuard.ResolveUnderRoot(_options.BasePath, entity.Path);
 
         // Create the directory if it doesn't exist
         if (!System.IO.Directory.Exists(physicalPath))
@@ -332,7 +333,7 @@ public class FileSystemDirectoryRepository : DirectoryRepositoryBase, IDirectory
 
     private async Task SaveDirectoryMetadataAsync(DirectoryItem directory, CancellationToken cancellationToken)
     {
-        var physicalPath = Path.Combine(_options.BasePath, directory.Path);
+        var physicalPath = ContentPathGuard.ResolveUnderRoot(_options.BasePath, directory.Path);
         var indexPath = Path.Combine(physicalPath, "_index.md");
 
         // Generate metadata content

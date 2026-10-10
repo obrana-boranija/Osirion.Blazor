@@ -712,55 +712,45 @@ app.MapBlazorHub().RequireAuthorization();
 
 ### Setup GitHub Webhooks
 
-1. **Configure Webhook URL** in your GitHub repository settings
-2. **Set Content-Type** to `application/json`
-3. **Select Events**: Push events, Pull request events
-4. **Add Secret** for security
+A webhook delivery refreshes the content cache of every GitHub provider that tracks the pushed branch, so new content appears without a restart.
+
+1. **Register the services and the middleware**:
 
 ```csharp
-// Configure webhook handling
-builder.Services.AddOsirionBlazor(osirion => {
-    osirion.AddGitHubCms(options => {
-        options.EnableWebhooks = true;
-        options.WebhookSecret = "your-webhook-secret";
-        options.WebhookPath = "/api/github-webhook";
-    });
-});
+builder.Services.AddOsirion(builder.Configuration);
+builder.Services.AddGitHubWebhookAndPolling();
 
-// Add webhook endpoint
-app.MapPost("/api/github-webhook", async (HttpContext context, IGitHubWebhookHandler handler) =>
-{
-    var result = await handler.HandleWebhookAsync(context.Request);
-    return result ? Results.Ok() : Results.BadRequest();
-});
+var app = builder.Build();
+
+app.UseGitHubWebhook(); // handles POST /api/github/webhook
 ```
 
-### Webhook Handler
+2. **Give each provider a webhook secret**. Use a long random value and keep it out of source control (user secrets, environment variables or a key vault):
 
-```csharp
-public class CustomWebhookHandler : IGitHubWebhookHandler
-{
-    public async Task<bool> HandleWebhookAsync(HttpRequest request)
-    {
-        var eventType = request.Headers["X-GitHub-Event"].ToString();
-        
-        return eventType switch
-        {
-            "push" => await HandlePushEvent(request),
-            "pull_request" => await HandlePullRequest(request),
-            _ => true // Ignore other events
-        };
-    }
-    
-    private async Task<bool> HandlePushEvent(HttpRequest request)
-    {
-        // Clear cache, rebuild content index, etc.
-        await contentCache.ClearAsync();
-        await contentIndexer.RebuildIndexAsync();
-        return true;
-    }
-}
+```bash
+dotnet user-secrets set "Osirion:Cms:Web:GitHub:Blog:WebhookSecret" "<long random value>"
 ```
+
+3. **Create the webhook in GitHub** (repository Settings, Webhooks):
+   - **Payload URL**: `https://<your host>/api/github/webhook`. Use the canonical host and the exact path, so no redirect sits in between.
+   - **Content type**: `application/json`
+   - **Secret**: the same value as `WebhookSecret`
+   - **Events**: just the push event
+
+### How Deliveries Are Verified
+
+- Every delivery must carry an `X-Hub-Signature-256` header that verifies against the `WebhookSecret` of at least one configured provider. The HMAC-SHA256 signature is checked over the raw request body with a constant-time comparison.
+- While no provider has a `WebhookSecret`, every delivery is rejected. Such deliveries, and deliveries whose signature header is missing or malformed, are rejected before the body is read.
+- Bodies larger than 5 MiB are rejected: 413 when the declared length is too large, 400 otherwise. Chunked bodies up to 5 MiB are accepted; the middleware lowers the server's request body limit for the webhook path to 10 MiB to leave room for chunked framing, and keeps a stricter limit the host has set.
+- A verified push refreshes each provider whose `Owner` and `Repository` match the push, whose `Branch` matches the pushed branch exactly, and whose own secret verified the signature. The cache is found by the provider's exact `ProviderId`, or `github-{Owner}-{Repository}` when no `ProviderId` is set.
+- Pushes to tags, deleted branches and branches no provider tracks are acknowledged with 202 and refresh nothing. `ping` and other events are acknowledged once verified.
+- Responses are 202 (accepted), 400 (rejected), 413 (too large) or 500 (unexpected error), each with a short generic body. Check GitHub's "Recent Deliveries" view after a change of secret or URL.
+
+Provider options are read once at startup, so a new secret takes effect after the application restarts. Set it in GitHub and in the application at the same time.
+
+### Custom Webhook Handler
+
+You can register your own `IGitHubWebhookHandler` in place of the built-in one. A custom handler must verify the `X-Hub-Signature-256` header against your secret before it acts on the payload, and reject the request when it does not verify. `GitHubWebhookHandler` is the reference implementation.
 
 ### Automated Workflows
 
