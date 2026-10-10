@@ -1,0 +1,24 @@
+@page "/Error"
+@using System.Diagnostics
+
+<PageTitle>Error</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="py-8">
+    <MudText Typo="Typo.h4" HtmlTag="h1" Color="Color.Error" GutterBottom>An error occurred while processing your request.</MudText>
+
+    @if (ShowRequestId)
+    {
+        <MudText><strong>Request ID:</strong> <code>@RequestId</code></MudText>
+    }
+</MudContainer>
+
+@code {
+    [CascadingParameter]
+    private HttpContext? HttpContext { get; set; }
+
+    private string? RequestId { get; set; }
+    private bool ShowRequestId => !string.IsNullOrWhiteSpace(RequestId);
+
+    protected override void OnInitialized() =>
+        RequestId = Activity.Current?.Id ?? HttpContext?.TraceIdentifier;
+}

@@ -1,0 +1,32 @@
+html,
+body {
+    margin: 0;
+    background-color: var(--mud-palette-background);
+    color: var(--mud-palette-text-primary);
+    font-family: var(--mud-typography-default-family);
+}
+
+/* FocusOnNavigate moves focus to the page heading for screen readers; it is not a keyboard focus to outline. */
+h1:focus {
+    outline: none;
+}
+
+#blazor-error-ui {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 0.6rem 1.25rem 0.7rem;
+    background: lightyellow;
+    color: #000;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+}
+
+    #blazor-error-ui .dismiss {
+        cursor: pointer;
+        position: absolute;
+        right: 0.75rem;
+        top: 0.5rem;
+    }

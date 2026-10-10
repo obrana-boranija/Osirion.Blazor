@@ -35,6 +35,10 @@
     <PackageVersion Include="xunit.runner.visualstudio" Version="4.0.1" />
   </ItemGroup>
 
+  <ItemGroup Label="Example packages">
+    <PackageVersion Include="MudBlazor" Version="9.11.0" />
+  </ItemGroup>
+
   <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'" Label=".NET 9 Microsoft packages">
     <PackageVersion Include="Microsoft.AspNetCore.Components" Version="$(Net9MicrosoftVersion)" />
     <PackageVersion Include="Microsoft.AspNetCore.Components.Web" Version="$(Net9MicrosoftVersion)" />

@@ -1,0 +1,32 @@
+@page "/search"
+@page "/{locale}/search"
+@using Osirion.Blazor.Cms.Web.Components
+
+<PageTitle>Search - Osirion.Blazor</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-6">
+    <MudText Typo="Typo.h3" HtmlTag="h1" GutterBottom>Search Results</MudText>
+
+    @if (!string.IsNullOrWhiteSpace(Query))
+    {
+        <MudText Typo="Typo.subtitle1" Class="mb-4">Results for: <strong>@Query</strong></MudText>
+    }
+    else
+    {
+        <MudAlert Severity="Severity.Info" Class="mb-4">Please enter a search query to see results.</MudAlert>
+    }
+
+    <ContentList Locale="@Locale"
+                 SearchQuery="@Query"
+                 ShowPagination
+                 ItemsPerPage="12"
+                 NoContentText="No results found for your search query." />
+</MudContainer>
+
+@code {
+    [Parameter]
+    public string? Locale { get; set; }
+
+    [SupplyParameterFromQuery(Name = "q")]
+    public string? Query { get; set; }
+}

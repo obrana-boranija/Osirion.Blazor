@@ -1,0 +1,34 @@
+@using Osirion.Blazor.Components
+@using Osirion.Blazor.Navigation.Components
+@using Osirion.Blazor.Theming.Components
+@inherits LayoutComponentBase
+
+@* MudThemeProvider writes one palette to :root, chosen on the server. Osirion's theme toggle switches themes in the
+   browser by toggling the mud-theme-dark class on <html>, so the dark palette is rendered a second time under that
+   class: MudBlazor components and the Osirion MudBlazor adapter then follow the toggle without a round trip. *@
+<MudThemeProvider Theme="ExampleTheme.Light" ObserveSystemDarkModeChange="false" />
+<MudThemeProvider Theme="ExampleTheme.Dark" IsDarkMode="true" ObserveSystemDarkModeChange="false" />
+
+<OsirionPageLayout StickyFooter EnableHeaderScrollBehavior>
+    <Header>
+        <NavMenu />
+    </Header>
+
+    <Body>
+        @Body
+    </Body>
+
+    <Footer>
+        <Footer />
+    </Footer>
+</OsirionPageLayout>
+
+<OsirionStyles />
+<OsirionCookieConsent />
+<ScrollToTopProvider />
+
+<div id="blazor-error-ui" data-nosnippet>
+    An unhandled error has occurred.
+    <a href="." class="reload">Reload</a>
+    <span class="dismiss">🗙</span>
+</div>
