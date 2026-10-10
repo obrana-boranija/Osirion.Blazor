@@ -25,7 +25,7 @@ public static class ThemingServiceCollectionExtensions
         if (configure is null) throw new ArgumentNullException(nameof(configure));
 
         services.AddHttpContextAccessor();
-        services.AddSingleton<IThemeService, ThemeService>();
+        services.AddScoped<IThemeService, ThemeService>();
 
         // Create builder and apply configuration
         var builder = new ThemingBuilder(services);
@@ -108,7 +108,7 @@ public static class ThemingServiceCollectionExtensions
         services.AddHttpContextAccessor();
 
         // Register theme service
-        services.AddSingleton<IThemeService, ThemeService>();
+        services.AddScoped<IThemeService, ThemeService>();
 
         return services;
     }

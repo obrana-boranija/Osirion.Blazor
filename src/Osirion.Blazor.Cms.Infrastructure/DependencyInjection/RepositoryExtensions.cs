@@ -23,7 +23,8 @@ public static class RepositoryExtensions
 
         // Register FileSystem repositories
         services.TryAddScoped<FileSystemContentRepository>();
-        services.TryAddScoped<FileSystemDirectoryRepository>();
+        services.TryAddFileSystemDirectoryCache();
+        services.TryAddScoped(DirectoryExtensions.CreateFileSystemDirectoryRepository);
 
         // Register other repositories and services
         services.AddHttpClient<IGitHubApiClient, GitHubApiClient>();

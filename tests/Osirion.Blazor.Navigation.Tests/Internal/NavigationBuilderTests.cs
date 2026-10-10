@@ -200,4 +200,51 @@ public class NavigationBuilderTests
         // Act & Assert
         Should.Throw<ArgumentNullException>(() => builder.AddScrollToTop((IConfiguration)null!));
     }
+
+    public static TheoryData<string> ScrollToTopRegistrations => new() { "action", "configuration" };
+
+    [Theory]
+    [MemberData(nameof(ScrollToTopRegistrations))]
+    public void AddScrollToTop_RegistersManagerPerScope(string registration)
+    {
+        var services = new ServiceCollection();
+        RegisterScrollToTop(new NavigationBuilder(services), registration);
+
+        var descriptor = services.Single(d => d.ServiceType == typeof(ScrollToTopManager));
+
+        descriptor.Lifetime.ShouldBe(ServiceLifetime.Scoped);
+    }
+
+    [Theory]
+    [MemberData(nameof(ScrollToTopRegistrations))]
+    public void AddScrollToTop_ManagerChangedInOneScope_IsNotChangedOrNotifiedInAnotherScope(string registration)
+    {
+        var services = new ServiceCollection();
+        RegisterScrollToTop(new NavigationBuilder(services), registration);
+        using var provider = services.BuildServiceProvider(new ServiceProviderOptions { ValidateScopes = true });
+        using var firstUser = provider.CreateScope();
+        using var secondUser = provider.CreateScope();
+        var firstManager = firstUser.ServiceProvider.GetRequiredService<ScrollToTopManager>();
+        var secondManager = secondUser.ServiceProvider.GetRequiredService<ScrollToTopManager>();
+        var secondUserNotifications = 0;
+        secondManager.ConfigurationChanged += (_, _) => secondUserNotifications++;
+
+        firstManager.IsEnabled = false;
+
+        secondManager.IsEnabled.ShouldBeTrue();
+        secondUserNotifications.ShouldBe(0);
+    }
+
+    private static void RegisterScrollToTop(NavigationBuilder builder, string registration)
+    {
+        if (registration == "action")
+        {
+            builder.AddScrollToTop(options => options.VisibilityThreshold = 500);
+            return;
+        }
+
+        builder.AddScrollToTop(new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?> { ["VisibilityThreshold"] = "500" })
+            .Build());
+    }
 }

@@ -6,8 +6,8 @@ using Osirion.Blazor.Cms.Domain.ValueObjects;
 
 namespace Osirion.Blazor.Cms.Admin.Components.Pages;
 
-    /// <summary>Defines the public member type.</summary>
-public partial class Dashboard
+/// <summary>Admin dashboard page: repository and branch selection plus the file explorer.</summary>
+public partial class Dashboard : IDisposable
 {
     /// <summary>
     /// Checks if both repository and branch are configured

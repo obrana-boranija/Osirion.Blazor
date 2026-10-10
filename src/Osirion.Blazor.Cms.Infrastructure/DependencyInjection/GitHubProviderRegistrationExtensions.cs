@@ -13,6 +13,7 @@ using Osirion.Blazor.Cms.Domain.Services;
 using Osirion.Blazor.Cms.Infrastructure.GitHub;
 using Osirion.Blazor.Cms.Infrastructure.Providers;
 using Osirion.Blazor.Cms.Infrastructure.Services;
+using Osirion.Blazor.Cms.Infrastructure.Directory;
 
 namespace Osirion.Blazor.Cms.Infrastructure.DependencyInjection;
 
@@ -91,7 +92,9 @@ public static class GitHubProviderRegistrationExtensions
         services.AddKeyedSingleton<GitHubDirectoryRepository>(directoryRepoKey, (serviceProvider, key) =>
         {
             var apiClientFactory = serviceProvider.GetRequiredService<IGitHubApiClientFactory>();
-            var cacheManager = serviceProvider.GetRequiredService<IDirectoryCacheManager>();
+            // Each provider gets its own directory cache: the shared default cache would answer this provider's
+            // directory requests with whichever provider loaded first.
+            var cacheManager = new DirectoryCacheManager(serviceProvider.GetRequiredService<ILogger<DirectoryCacheManager>>());
             var metadataProcessor = serviceProvider.GetRequiredService<IDirectoryMetadataProcessor>();
             var pathUtils = serviceProvider.GetRequiredService<IPathUtilities>();
             var logger = serviceProvider.GetRequiredService<ILogger<GitHubDirectoryRepository>>();

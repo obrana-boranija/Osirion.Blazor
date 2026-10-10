@@ -9,6 +9,7 @@ using Osirion.Blazor.Cms.Infrastructure.FileSystem;
 using Osirion.Blazor.Cms.Infrastructure.GitHub;
 using Osirion.Blazor.Cms.Infrastructure.Providers;
 using Osirion.Blazor.Cms.Infrastructure.Services;
+using Osirion.Blazor.Cms.Infrastructure.DependencyInjection;
 
 namespace Osirion.Blazor.Cms.Infrastructure.Builders;
 
@@ -90,7 +91,8 @@ public class ContentBuilder : CmsBuilderBase, IContentBuilder
 
         // Register FileSystem repositories
         Services.AddScoped<FileSystemContentRepository>();
-        Services.AddScoped<FileSystemDirectoryRepository>();
+        Services.TryAddFileSystemDirectoryCache();
+        Services.AddScoped(DirectoryExtensions.CreateFileSystemDirectoryRepository);
 
         // Register provider directly
         Services.AddScoped<FileSystemContentProvider>();

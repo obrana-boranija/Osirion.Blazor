@@ -21,7 +21,8 @@
 
     private void OnConfigurationChanged(object? sender, EventArgs e)
     {
-        StateHasChanged();
+        // The change can be raised from any thread, so re-render through the component dispatcher.
+        InvokeAsync(StateHasChanged);
     }
 
     public void Dispose()

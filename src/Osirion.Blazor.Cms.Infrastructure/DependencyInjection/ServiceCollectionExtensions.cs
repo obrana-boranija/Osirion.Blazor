@@ -211,7 +211,8 @@ public static class ServiceCollectionExtensions
 
         // Register FileSystem repositories
         services.TryAddScoped<FileSystemContentRepository>();
-        services.TryAddScoped<FileSystemDirectoryRepository>();
+        services.TryAddFileSystemDirectoryCache();
+        services.TryAddScoped(DirectoryExtensions.CreateFileSystemDirectoryRepository);
 
         // Register provider
         services.TryAddScoped<FileSystemContentProvider>();

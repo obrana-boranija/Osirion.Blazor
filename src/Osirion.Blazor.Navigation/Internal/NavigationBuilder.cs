@@ -68,29 +68,7 @@ public class NavigationBuilder : INavigationBuilder
         var options = new ScrollToTopOptions();
         configure?.Invoke(options);
 
-        Services.Configure<ScrollToTopOptions>(opt =>
-        {
-            opt.Position = options.Position;
-            opt.Behavior = options.Behavior;
-            opt.VisibilityThreshold = options.VisibilityThreshold;
-            opt.Text = options.Text;
-            opt.Title = options.Title;
-            opt.CssClass = options.CssClass;
-            opt.CustomIcon = options.CustomIcon;
-        });
-
-        // Create and register the ScrollToTopManager
-        Services.AddSingleton(sp => new ScrollToTopManager
-        {
-            IsEnabled = true,
-            Position = options.Position,
-            Behavior = options.Behavior,
-            VisibilityThreshold = options.VisibilityThreshold,
-            Text = options.Text,
-            Title = options.Title,
-            CssClass = options.CssClass,
-            CustomIcon = options.CustomIcon
-        });
+        RegisterScrollToTop(options);
 
         return this;
     }
@@ -106,6 +84,13 @@ public class NavigationBuilder : INavigationBuilder
         var options = new ScrollToTopOptions();
         configuration.Bind(options);
 
+        RegisterScrollToTop(options);
+
+        return this;
+    }
+
+    private void RegisterScrollToTop(ScrollToTopOptions options)
+    {
         Services.Configure<ScrollToTopOptions>(opt =>
         {
             opt.Position = options.Position;
@@ -117,8 +102,9 @@ public class NavigationBuilder : INavigationBuilder
             opt.CustomIcon = options.CustomIcon;
         });
 
-        // Create and register the ScrollToTopManager
-        Services.AddSingleton(sp => new ScrollToTopManager
+        // Scoped, not singleton: the manager's settings are mutable at run time, and a change made for one
+        // user (one circuit or request) must not show up for, or re-render, any other user.
+        Services.AddScoped(_ => new ScrollToTopManager
         {
             IsEnabled = true,
             Position = options.Position,
@@ -129,7 +115,5 @@ public class NavigationBuilder : INavigationBuilder
             CssClass = options.CssClass,
             CustomIcon = options.CustomIcon
         });
-
-        return this;
     }
 }
