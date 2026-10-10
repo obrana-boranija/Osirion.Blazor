@@ -7,7 +7,7 @@ tags: [blazor, github, cms, static-site, tutorial]
 categories: [tutorials, blazor]
 slug: "github-cms-with-blazor"
 is_featured: true
-featured_image: "https://example.com/images/github-cms-blazor.jpg"
+featured_image: "/assets/images/blazor-cover.png"
 ---
 
 # Building a Blog with GitHub CMS and Blazor

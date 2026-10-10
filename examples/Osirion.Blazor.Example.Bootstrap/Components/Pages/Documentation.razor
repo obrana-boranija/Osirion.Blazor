@@ -9,9 +9,17 @@
 
 @* <ArticlePage Locale="@(Locale ?? "en")" DirectoryName="docs" ItemSlug="@(Slug ?? "getting-started")" /> *@
 
-<ArticlePage ItemUrl="@($"/docs/{Slug}")" 
-             Locale="@Locale" 
-             SchemaTypes="@(new[] { SchemaType.Article, SchemaType.BreadcrumbList })" />
+@if (string.IsNullOrWhiteSpace(Slug))
+{
+    <ContentList Locale="@Locale" Category="Components" ShowPagination ItemsPerPage="24"
+                 PageTitle="Documentation" PageDescription="Component and module documentation for Osirion.Blazor." />
+}
+else
+{
+    <ArticlePage ItemUrl="@($"/docs/{Slug}")"
+                 Locale="@Locale"
+                 SchemaTypes="@(new[] { SchemaType.Article, SchemaType.BreadcrumbList })" />
+}
 
 @code {
     [Parameter]

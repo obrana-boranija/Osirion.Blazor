@@ -6,7 +6,7 @@ description: "How to organize your GitHub content repository for performance, co
 slug: "structuring-content-repositories"
 categories: [CMS]
 tags: [GitHub, Structure, Frontmatter]
-featured_image: "/images/blog/content-structure.jpg"
+featured_image: "/assets/images/blazor-cover.png"
 seo_properties:
   title: "Structure Content Repos for Scale"
   description: "Folder strategies, naming conventions, and metadata patterns for content repos."

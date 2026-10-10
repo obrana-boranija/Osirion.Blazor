@@ -56,10 +56,15 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-var rewriteOptions = new RewriteOptions()
-    .AddRedirectToHttpsPermanent() // never include if proxy has redirection
-    .AddRedirectToNonWwwPermanent();
-app.UseRewriter(rewriteOptions);
+// Canonical host and scheme redirects belong to deployed sites; local runs (and tools that browse the dev server
+// by another host name) work over plain HTTP.
+if (!app.Environment.IsDevelopment())
+{
+    var rewriteOptions = new RewriteOptions()
+        .AddRedirectToHttpsPermanent() // never include if proxy has redirection
+        .AddRedirectToNonWwwPermanent();
+    app.UseRewriter(rewriteOptions);
+}
 
 app.UseGitHubWebhook();
 app.UseOsirionRobotsGenerator();

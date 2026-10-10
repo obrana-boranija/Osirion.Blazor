@@ -6,7 +6,7 @@ description: "Fluent API, new components, better theming, and improved docs — ev
 slug: "osirion-blazor-v1-5-release-notes"
 categories: [Releases]
 tags: [Release Notes, Components]
-featured_image: "/images/blog/release-v1-5.jpg"
+featured_image: "/assets/images/blazor-cover.png"
 seo_properties:
   title: "Osirion.Blazor v1.5 — Release Notes"
   description: "What’s new, what changed, and how to upgrade to v1.5."

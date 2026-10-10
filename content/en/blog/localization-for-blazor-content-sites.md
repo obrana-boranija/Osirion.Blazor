@@ -6,7 +6,7 @@ description: "Best practices for multilingual content with Osirion CMS, from fol
 slug: "localization-for-blazor-content-sites"
 categories: [Localization]
 tags: [Localization, i18n, UX]
-featured_image: "/images/blog/localization.jpg"
+featured_image: "/assets/images/blazor-cover.png"
 seo_properties:
   title: "Localization for Blazor Content Sites"
   description: "Organize locales, link translations, and deliver a great multi-language UX."
