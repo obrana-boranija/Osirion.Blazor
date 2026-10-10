@@ -17,7 +17,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.Tests.Services
         public LocalStorageServiceTests()
         {
             _localStorage = Substitute.For<ILocalStorageService>();
-            _navigationManager = Substitute.For<NavigationManager>();
+            _navigationManager = new InitializedNavigationManager();
             _logger = Substitute.For<ILogger<LocalStorageService>>();
 
             _service = new LocalStorageService(
@@ -88,6 +88,31 @@ namespace Osirion.Blazor.Cms.Infrastructure.Tests.Services
 
             // Assert
             await _localStorage.Received(1).RemoveItemAsync(key);
+        }
+
+        [Fact]
+        public async Task InitializeAsync_InClientMode_DoesNotReadGitHubTokenFromPlainTextStorage()
+        {
+            // Proves a token left in plain-text browser storage by an earlier version is never loaded into memory.
+            _localStorage.ContainKeyAsync(Arg.Any<string>()).Returns(true);
+            _localStorage.GetItemAsStringAsync(Arg.Any<string>()).Returns("\"value\"");
+
+            await _service.InitializeAsync();
+
+            await _localStorage.DidNotReceive().ContainKeyAsync("github_auth_token");
+            await _localStorage.DidNotReceive().GetItemAsStringAsync("github_auth_token");
+            await _localStorage.Received(1).GetItemAsStringAsync("github_username");
+        }
+
+        /// <summary>
+        /// A navigation manager initialized the way a Blazor render initializes it.
+        /// </summary>
+        private sealed class InitializedNavigationManager : NavigationManager
+        {
+            public InitializedNavigationManager()
+            {
+                Initialize("https://localhost/", "https://localhost/");
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿@page "/osirion/login"
 @rendermode InteractiveServer
+@implements IDisposable
 
 <div class="min-vh-100 d-flex align-items-center justify-content-center py-5">
     <div class="container">
@@ -13,11 +14,22 @@
                             <p class="text-muted mb-4">Sign in to manage your content</p>
                         </div>
 
-                        @if (!string.IsNullOrWhiteSpace(ErrorMessage))
+                        @if (!string.IsNullOrWhiteSpace(DisplayedErrorMessage))
                         {
                                 <div class="alert alert-danger d-flex align-items-center" role="alert">
                                     <i class="bi bi-exclamation-circle-fill me-2"></i>
-                                    <div>@ErrorMessage</div>
+                                    <div>@DisplayedErrorMessage</div>
+                                </div>
+                        }
+
+                        @if (IsServerCredentialConfigured)
+                        {
+                                <div class="alert alert-info d-flex align-items-start server-credential-notice" role="status">
+                                    <i class="bi bi-shield-lock-fill me-2"></i>
+                                    <div>
+                                        A server access token is configured. The admin uses it when you do not sign in with your own GitHub account.
+                                        <a href="@ViewModel.ReturnUrl" class="alert-link">Continue with the server access token</a>
+                                    </div>
                                 </div>
                         }
 

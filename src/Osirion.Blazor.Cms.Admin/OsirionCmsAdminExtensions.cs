@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Osirion.Blazor.Cms.Admin.Core.Events;
 using Osirion.Blazor.Cms.Admin.Core.State;
 using Osirion.Blazor.Cms.Admin.Features;
+using Osirion.Blazor.Cms.Admin.Features.Authentication.Services;
 using Osirion.Blazor.Cms.Admin.Features.Authentication.ViewModels;
 using Osirion.Blazor.Cms.Admin.Features.ContentBrowser.Services;
 using Osirion.Blazor.Cms.Admin.Features.ContentBrowser.ViewModels;
@@ -55,6 +56,14 @@ public static class OsirionCmsAdminExtensions
         services.TryAddScoped<IContentEditorService, ContentEditorService>();
         services.TryAddScoped<IAdminContentService, AdminContentService>();
         services.TryAddScoped<RepositoryService>();
+
+        // Register GitHub credential stores (encrypted browser storage, bound to the host user). The protected
+        // browser storage they use exists only with interactive server components; factories keep build-time
+        // validation from requiring it in hosts that never render the admin.
+        services.TryAddScoped<IGitHubTokenStore>(
+            serviceProvider => ActivatorUtilities.CreateInstance<ProtectedGitHubTokenStore>(serviceProvider));
+        services.TryAddScoped<IGitHubOAuthStateStore>(
+            serviceProvider => ActivatorUtilities.CreateInstance<ProtectedGitHubOAuthStateStore>(serviceProvider));
 
         // Register view models
         services.TryAddScoped<LoginViewModel>();

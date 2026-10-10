@@ -1,159 +1,207 @@
-﻿using Microsoft.Extensions.Logging;
-using NSubstitute;
+using Microsoft.Extensions.Logging.Abstractions;
+using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Infrastructure.Services;
 using Shouldly;
+using System.Collections.Specialized;
 using System.Net;
+using System.Text;
+using System.Web;
 
 namespace Osirion.Blazor.Cms.Infrastructure.Tests.Services;
 
 public class GitHubTokenProviderTests
 {
-    private readonly HttpClient _httpClient;
-    private readonly HttpMessageHandler _mockHandler;
-    private readonly ILogger<GitHubTokenProvider> _logger;
+    private const string Code = "test-code";
+    private const string ClientId = "client-id";
+    private const string ClientSecret = "client-secret";
+    private const string RedirectUri = "https://admin.example/osirion/login";
+    private const string CodeVerifier = "dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk";
+
+    private readonly TokenEndpointHandler _handler = new();
     private readonly GitHubTokenProvider _tokenProvider;
 
     public GitHubTokenProviderTests()
     {
-        _mockHandler = Substitute.For<DelegatingHandler>();
-        _httpClient = new HttpClient(_mockHandler);
-        _logger = Substitute.For<ILogger<GitHubTokenProvider>>();
-
-        _tokenProvider = new GitHubTokenProvider(_httpClient, _logger);
+        _tokenProvider = new GitHubTokenProvider(new HttpClient(_handler), NullLogger<GitHubTokenProvider>.Instance);
     }
 
     [Fact]
     public async Task ExchangeCodeForTokenAsync_WithValidResponse_ReturnsToken()
     {
-        // Arrange
-        string code = "test-code";
-        string clientId = "client-id";
-        string clientSecret = "client-secret";
-        string expectedToken = "gho_test_token";
+        var result = await _tokenProvider.ExchangeCodeForTokenAsync(Code, ClientId, ClientSecret, RedirectUri, CodeVerifier);
 
-        // Setup mock response
-        var responseMessage = new HttpResponseMessage(HttpStatusCode.OK)
-        {
-            Content = new StringContent("access_token=gho_test_token&scope=repo&token_type=bearer")
-        };
+        result.ShouldBe("gho_test_token");
+    }
 
-        //_mockHandler.When(x => x.SendAsync(Arg.Any<HttpRequestMessage>(), Arg.Any<CancellationToken>()))
-        //    .Do(x => {
-        //        var request = x.Arg<HttpRequestMessage>();
-        //        request.RequestUri.ShouldBe(new Uri("https://github.com/login/oauth/access_token"));
-        //        request.Method.ShouldBe(HttpMethod.Post);
-        //    })
-        //    .Returns(responseMessage);
+    [Fact]
+    public async Task ExchangeCodeForTokenAsync_PostsToTokenEndpointAndRequestsJson()
+    {
+        await _tokenProvider.ExchangeCodeForTokenAsync(Code, ClientId, ClientSecret, RedirectUri, CodeVerifier);
 
-        // Act
-        var result = await _tokenProvider.ExchangeCodeForTokenAsync(code, clientId, clientSecret);
+        var request = _handler.Request.ShouldNotBeNull();
+        request.Method.ShouldBe(HttpMethod.Post);
+        request.RequestUri.ShouldBe(new Uri("https://github.com/login/oauth/access_token"));
+        request.Headers.Accept.ToString().ShouldBe("application/json");
+    }
 
-        // Assert
-        result.ShouldBe(expectedToken);
+    [Fact]
+    public async Task ExchangeCodeForTokenAsync_SendsCorrectRequestParameters()
+    {
+        await _tokenProvider.ExchangeCodeForTokenAsync(Code, ClientId, ClientSecret);
+
+        var form = _handler.Form.ShouldNotBeNull();
+        form["client_id"].ShouldBe(ClientId);
+        form["client_secret"].ShouldBe(ClientSecret);
+        form["code"].ShouldBe(Code);
+        form["grant_type"].ShouldBe("authorization_code");
+    }
+
+    [Fact]
+    public async Task ExchangeCodeForTokenAsync_WithRedirectUriAndCodeVerifier_SendsBoth()
+    {
+        // Proves the exchange repeats the redirect URI of the authorize request and proves possession of the PKCE verifier.
+        await _tokenProvider.ExchangeCodeForTokenAsync(Code, ClientId, ClientSecret, RedirectUri, CodeVerifier);
+
+        var form = _handler.Form.ShouldNotBeNull();
+        form["redirect_uri"].ShouldBe(RedirectUri);
+        form["code_verifier"].ShouldBe(CodeVerifier);
+    }
+
+    [Fact]
+    public async Task ExchangeCodeForTokenAsync_WithoutRedirectUri_SendsNoRedirectUri()
+    {
+        // The previous implementation always sent a hard-coded https://localhost:5001/auth/callback.
+        await _tokenProvider.ExchangeCodeForTokenAsync(Code, ClientId, ClientSecret);
+
+        var form = _handler.Form.ShouldNotBeNull();
+        form.AllKeys.ShouldNotContain("redirect_uri");
+        form.AllKeys.ShouldNotContain("code_verifier");
     }
 
     [Fact]
     public async Task ExchangeCodeForTokenAsync_WithErrorResponse_ReturnsNull()
     {
-        // Arrange
-        string code = "invalid-code";
-        string clientId = "client-id";
-        string clientSecret = "client-secret";
+        _handler.StatusCode = HttpStatusCode.BadRequest;
+        _handler.Body = """{"error":"bad_request"}""";
 
-        // Setup mock response
-        var responseMessage = new HttpResponseMessage(HttpStatusCode.BadRequest)
-        {
-            Content = new StringContent("error=bad_verification_code&error_description=The+code+passed+is+incorrect+or+expired")
-        };
+        var result = await _tokenProvider.ExchangeCodeForTokenAsync(Code, ClientId, ClientSecret, RedirectUri, CodeVerifier);
 
-        //_mockHandler.When(x => x.SendAsync(Arg.Any<HttpRequestMessage>(), Arg.Any<CancellationToken>()))
-        //    .Do(x => {
-        //        var request = x.Arg<HttpRequestMessage>();
-        //        request.RequestUri.ShouldBe(new Uri("https://github.com/login/oauth/access_token"));
-        //    })
-        //    .Returns(responseMessage);
+        result.ShouldBeNull();
+    }
 
-        // Act
-        var result = await _tokenProvider.ExchangeCodeForTokenAsync(code, clientId, clientSecret);
+    [Theory]
+    [InlineData("bad_verification_code")]
+    [InlineData("redirect_uri_mismatch")]
+    [InlineData("incorrect_client_credentials")]
+    public async Task ExchangeCodeForTokenAsync_WithErrorFieldInSuccessResponse_ReturnsNull(string error)
+    {
+        // GitHub reports a rejected exchange as 200 OK with an error field.
+        _handler.Body = $$"""{"error":"{{error}}","error_description":"rejected","access_token":"should-not-be-used"}""";
 
-        // Assert
+        var result = await _tokenProvider.ExchangeCodeForTokenAsync(Code, ClientId, ClientSecret, RedirectUri, CodeVerifier);
+
         result.ShouldBeNull();
     }
 
     [Fact]
     public async Task ExchangeCodeForTokenAsync_WithMissingToken_ReturnsNull()
     {
-        // Arrange
-        string code = "test-code";
-        string clientId = "client-id";
-        string clientSecret = "client-secret";
+        _handler.Body = """{"scope":"repo","token_type":"bearer"}""";
 
-        // Setup mock response with no token
-        var responseMessage = new HttpResponseMessage(HttpStatusCode.OK)
-        {
-            Content = new StringContent("scope=repo&token_type=bearer")
-        };
+        var result = await _tokenProvider.ExchangeCodeForTokenAsync(Code, ClientId, ClientSecret, RedirectUri, CodeVerifier);
 
-        //_mockHandler.When(x => x.SendAsync(Arg.Any<HttpRequestMessage>(), Arg.Any<CancellationToken>()))
-        //    .Returns(responseMessage);
+        result.ShouldBeNull();
+    }
 
-        // Act
-        var result = await _tokenProvider.ExchangeCodeForTokenAsync(code, clientId, clientSecret);
+    [Theory]
+    [InlineData("access_token=gho_test_token&scope=repo&token_type=bearer")]
+    [InlineData("access_token")]
+    [InlineData("")]
+    public async Task ExchangeCodeForTokenAsync_WithBodyThatIsNotJson_ReturnsNull(string body)
+    {
+        _handler.Body = body;
 
-        // Assert
+        var result = await _tokenProvider.ExchangeCodeForTokenAsync(Code, ClientId, ClientSecret, RedirectUri, CodeVerifier);
+
         result.ShouldBeNull();
     }
 
     [Fact]
     public async Task ExchangeCodeForTokenAsync_WhenExceptionOccurs_ReturnsNull()
     {
-        // Arrange
-        string code = "test-code";
-        string clientId = "client-id";
-        string clientSecret = "client-secret";
+        _handler.Exception = new HttpRequestException("Network error");
 
-        // Setup to throw exception
-        //_mockHandler.When(x => x.SendAsync(Arg.Any<HttpRequestMessage>(), Arg.Any<CancellationToken>()))
-        //    .Throws(new HttpRequestException("Network error"));
+        var result = await _tokenProvider.ExchangeCodeForTokenAsync(Code, ClientId, ClientSecret);
 
-        // Act
-        var result = await _tokenProvider.ExchangeCodeForTokenAsync(code, clientId, clientSecret);
-
-        // Assert
         result.ShouldBeNull();
     }
 
-    // Test for request format
     [Fact]
-    public async Task ExchangeCodeForTokenAsync_SendsCorrectRequestParameters()
+    public async Task ExchangeCodeForTokenAsync_WhenCancelled_ThrowsOperationCanceledException()
     {
-        // Arrange
-        string code = "test-code";
-        string clientId = "client-id";
-        string clientSecret = "client-secret";
-        HttpContent capturedContent = null!;
+        using var cancellation = new CancellationTokenSource();
+        await cancellation.CancelAsync();
 
-        var responseMessage = new HttpResponseMessage(HttpStatusCode.OK)
+        await Should.ThrowAsync<OperationCanceledException>(() =>
+            _tokenProvider.ExchangeCodeForTokenAsync(Code, ClientId, ClientSecret, RedirectUri, CodeVerifier, cancellation.Token));
+    }
+
+    [Fact]
+    public async Task ExchangeCodeForTokenAsync_InterfaceDefault_ForwardsToFullOverload()
+    {
+        // Callers of the original three-argument member keep working against an implementation of the new member only.
+        IGitHubTokenProvider provider = new FullOverloadOnlyTokenProvider();
+
+        var result = await provider.ExchangeCodeForTokenAsync(Code, ClientId, ClientSecret);
+
+        result.ShouldBe($"{Code}|{ClientId}|{ClientSecret}|<none>|<none>");
+    }
+
+    private sealed class FullOverloadOnlyTokenProvider : IGitHubTokenProvider
+    {
+        public Task<string?> ExchangeCodeForTokenAsync(
+            string code,
+            string clientId,
+            string clientSecret,
+            string? redirectUri,
+            string? codeVerifier,
+            CancellationToken cancellationToken = default)
         {
-            Content = new StringContent("access_token=test_token&scope=repo&token_type=bearer")
-        };
+            return Task.FromResult<string?>($"{code}|{clientId}|{clientSecret}|{redirectUri ?? "<none>"}|{codeVerifier ?? "<none>"}");
+        }
+    }
 
-        //_mockHandler.When(x => x.SendAsync(Arg.Any<HttpRequestMessage>(), Arg.Any<CancellationToken>()))
-        //    .Do(x => {
-        //        var request = x.Arg<HttpRequestMessage>();
-        //        capturedContent = request.Content;
-        //    })
-        //    .Returns(responseMessage);
+    /// <summary>
+    /// Stands in for GitHub's token endpoint: records the request and its form body and answers with a set status and body.
+    /// </summary>
+    private sealed class TokenEndpointHandler : HttpMessageHandler
+    {
+        public HttpStatusCode StatusCode { get; set; } = HttpStatusCode.OK;
 
-        // Act
-        await _tokenProvider.ExchangeCodeForTokenAsync(code, clientId, clientSecret);
+        public string Body { get; set; } = """{"access_token":"gho_test_token","scope":"repo","token_type":"bearer"}""";
 
-        // Assert
-        capturedContent.ShouldNotBeNull();
-        var contentString = await capturedContent.ReadAsStringAsync();
-        contentString.ShouldContain("client_id=client-id");
-        contentString.ShouldContain("client_secret=client-secret");
-        contentString.ShouldContain("code=test-code");
-        contentString.ShouldContain("grant_type=authorization_code");
+        public Exception? Exception { get; set; }
+
+        public HttpRequestMessage? Request { get; private set; }
+
+        public NameValueCollection? Form { get; private set; }
+
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (Exception is not null)
+            {
+                throw Exception;
+            }
+
+            Request = request;
+            Form = HttpUtility.ParseQueryString(await request.Content!.ReadAsStringAsync(cancellationToken));
+
+            return new HttpResponseMessage(StatusCode)
+            {
+                Content = new StringContent(Body, Encoding.UTF8, "application/json")
+            };
+        }
     }
 }

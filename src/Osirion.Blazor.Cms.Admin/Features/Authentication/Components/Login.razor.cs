@@ -1,15 +1,19 @@
 using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Options;
-using Osirion.Blazor.Cms.Domain.Options.Configuration;
+using Osirion.Blazor.Cms.Admin.Common.Constants;
+using Osirion.Blazor.Core.Utils;
 
 namespace Osirion.Blazor.Cms.Admin.Features.Authentication.Components;
 
-/// <summary>Defines the Login type.</summary>
+/// <summary>
+/// A GitHub login form with a personal access token field and, when configured, GitHub OAuth.
+/// </summary>
+/// <remarks>
+/// It never signs anyone in with the personal access token configured for the server; it only shows that one is
+/// configured. Browser storage and the OAuth code exchange are used only after the first interactive render, never
+/// while prerendering. Place it only on pages that require the admin authorization policy.
+/// </remarks>
 public partial class Login
 {
-    [Inject]
-    private IOptions<CmsAdminOptions> Options { get; set; } = default!;
-
     /// <summary>Gets or sets the Title value.</summary>
     [Parameter]
     public string Title { get; set; } = "Osirion CMS Admin";
@@ -18,15 +22,11 @@ public partial class Login
     [Parameter]
     public string Description { get; set; } = "Sign in to manage your content.";
 
-    /// <summary>Gets or sets the Theme value.</summary>
-    [Parameter]
-    public new string Theme { get; set; } = "light";
-
-    /// <summary>Gets or sets the EnableGitHubAuth value.</summary>
+    /// <summary>Gets or sets the EnableGitHubAuth value. It is replaced by whether GitHub OAuth is configured.</summary>
     [Parameter]
     public bool EnableGitHubAuth { get; set; } = false;
 
-    /// <summary>Gets or sets the ReturnUrl value.</summary>
+    /// <summary>Gets or sets the local path to open after login. Any other value is replaced by <c>/osirion</c>.</summary>
     [Parameter]
     public string ReturnUrl { get; set; } = "/admin";
 
@@ -34,43 +34,39 @@ public partial class Login
     [Parameter]
     public EventCallback<bool> OnLoginResult { get; set; }
 
-    private string GitHubAuthUrl => $"https://github.com/login/oauth/authorize?client_id={Options.Value.Authentication.GitHubClientId}&redirect_uri={Uri.EscapeDataString(GetRedirectUri())}&scope=repo";
-
     /// <summary>Initializes the component state and required services.</summary>
     protected override void OnInitialized()
     {
+        base.OnInitialized();
+
         ViewModel.StateChanged += StateHasChanged;
-        ViewModel.ReturnUrl = ReturnUrl;
+        ViewModel.ReturnUrl = LocalUrl.GetSafeLocalPath(ReturnUrl, CmsConstants.Routes.Dashboard);
 
         // Check if GitHub OAuth is configured
-        EnableGitHubAuth = !string.IsNullOrWhiteSpace(Options.Value.Authentication.GitHubClientId) &&
-                         !string.IsNullOrWhiteSpace(Options.Value.Authentication.GitHubClientSecret);
+        EnableGitHubAuth = ViewModel.IsGitHubOAuthConfigured;
     }
 
-    /// <summary>Initializes the component state and required services.</summary>
-    protected override async Task OnInitializedAsync()
+    /// <summary>Completes a GitHub OAuth login or restores a stored login after the first interactive render.</summary>
+    /// <param name="firstRender">Whether this is the first render of the component</param>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        // Check if we have a configured PAT in options
-        if (!string.IsNullOrWhiteSpace(Options.Value.Authentication.PersonalAccessToken))
+        // Never runs while prerendering, so browser storage and the single-use OAuth state are touched only once
+        if (!firstRender)
         {
-            // If we have a PAT in the options, try to use it directly
-            ViewModel.AccessToken = Options.Value.Authentication.PersonalAccessToken;
-            await LoginWithToken();
             return;
         }
 
-        // Otherwise initialize normally
-        await ViewModel.InitializeAsync();
-
-        // Check if we have a code parameter (from GitHub OAuth redirect)
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
         var queryParameters = QueryHelpers.ParseQuery(uri.Query);
 
         if (queryParameters.TryGetValue("code", out string code))
         {
-            // Process GitHub OAuth login
-            await LoginWithGitHubCodeAsync(code);
+            queryParameters.TryGetValue("state", out string state);
+            await LoginWithGitHubCodeAsync(code, state);
+            return;
         }
+
+        await ExecuteAsync(ViewModel.InitializeAsync);
     }
 
     /// <summary>Releases resources held by the component or service.</summary>
@@ -79,31 +75,16 @@ public partial class Login
         ViewModel.StateChanged -= StateHasChanged;
     }
 
-    private void LoginWithGitHub()
+    private Task LoginWithGitHub()
     {
-        if (EnableGitHubAuth)
-        {
-            // Redirect to GitHub OAuth authorize URL
-            NavigationManager.NavigateTo(GitHubAuthUrl, forceLoad: true);
-        }
-        else
-        {
-            ViewModel.ErrorMessage = "GitHub OAuth login requires additional configuration.";
-        }
+        return ExecuteAsync(ViewModel.StartGitHubLoginAsync);
     }
 
-    private string GetRedirectUri()
-    {
-        var baseUri = NavigationManager.BaseUri.TrimEnd('/');
-        return Options.Value.Authentication.GitHubRedirectUri ??
-               $"{baseUri}/osirion/auth/callback";
-    }
-
-    private async Task LoginWithGitHubCodeAsync(string code)
+    private async Task LoginWithGitHubCodeAsync(string code, string state)
     {
         await ExecuteAsync(async () =>
         {
-            await ViewModel.LoginWithGitHubAsync(code);
+            await ViewModel.LoginWithGitHubAsync(code, state);
 
             if (OnLoginResult.HasDelegate)
             {

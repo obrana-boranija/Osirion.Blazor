@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Osirion.Blazor.Cms.Admin.Features.Authentication.Services;
 using Osirion.Blazor.Cms.Admin.Features.Layouts.Models;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 
@@ -10,6 +11,9 @@ public partial class AdminLayout : IDisposable
     /// <summary>Performs the authService operation.</summary>
     [Inject]
     protected IAuthenticationService authService { get; set; } = default!;
+
+    [Inject]
+    private IGitHubTokenStore TokenStore { get; set; } = default!;
 
     /// <summary>Gets or sets the page title.</summary>
     [Parameter]
@@ -80,6 +84,7 @@ public partial class AdminLayout : IDisposable
     private async Task SignOut()
     {
         await authService.SignOutAsync();
+        await TokenStore.RemoveTokenAsync();
 
         if (OnSignOut.HasDelegate)
         {

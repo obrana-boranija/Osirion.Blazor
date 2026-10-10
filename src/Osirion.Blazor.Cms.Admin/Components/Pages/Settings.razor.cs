@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
+using Osirion.Blazor.Cms.Admin.Features.Authentication.Services;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 
 namespace Osirion.Blazor.Cms.Admin.Components.Pages;
@@ -6,11 +8,23 @@ namespace Osirion.Blazor.Cms.Admin.Components.Pages;
     /// <summary>Defines the public member type.</summary>
 public partial class Settings : IDisposable
 {
+    private const string SignOutFailedMessage = "Signing out failed. Please try again.";
+
     [Inject]
     private IAuthenticationService AuthService { get; set; } = default!;
 
-    /// <summary>Gets or sets the Theme value.</summary>
-    [Parameter]
+    [Inject]
+    private IGitHubTokenStore TokenStore { get; set; } = default!;
+
+    [Inject]
+    private ILogger<Settings> Logger { get; set; } = default!;
+
+    /// <summary>Gets or sets the theme chosen on this page.</summary>
+    /// <remarks>
+    /// It is not a component parameter: a parameter of this name would clash with the <c>Theme</c> parameter of
+    /// <see cref="Osirion.Blazor.Components.OsirionComponentBase"/>, and Blazor refuses to render a component with
+    /// two parameters of the same name.
+    /// </remarks>
     public new string Theme { get; set; } = "light";
 
     /// <summary>Gets or sets the ThemeChanged value.</summary>
@@ -48,11 +62,14 @@ public partial class Settings : IDisposable
         try
         {
             await AuthService.SignOutAsync();
+            await TokenStore.RemoveTokenAsync();
             NavigationManager.NavigateTo("/osirion/login");
         }
         catch (Exception ex)
         {
-            AdminState.SetErrorMessage($"Error signing out: {ex.Message}");
+            // The exception text can carry browser or storage details, so it is logged and never shown
+            Logger.LogError(ex, "Signing out of GitHub failed");
+            AdminState.SetErrorMessage(SignOutFailedMessage);
         }
     }
 

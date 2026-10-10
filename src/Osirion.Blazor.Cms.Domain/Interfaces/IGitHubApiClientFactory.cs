@@ -10,14 +10,21 @@ public interface IGitHubApiClientFactory
     /// <summary>
     /// Gets a GitHub API client for the specified provider
     /// </summary>
+    /// <remarks>
+    /// Every call returns a new instance owned by the caller. Calling SetRepository, SetBranch or
+    /// SetAccessToken on it never affects a client returned to any other caller.
+    /// </remarks>
     /// <param name="providerName">The name of the provider</param>
-    /// <returns>The GitHub API client</returns>
+    /// <returns>A new GitHub API client</returns>
     IGitHubApiClient GetClient(string providerName);
 
     /// <summary>
-    /// Gets the default GitHub API client
+    /// Gets a GitHub API client for the default provider
     /// </summary>
-    /// <returns>The default GitHub API client</returns>
+    /// <remarks>
+    /// Every call returns a new instance owned by the caller, exactly as <see cref="GetClient(string)"/> does.
+    /// </remarks>
+    /// <returns>A new GitHub API client</returns>
     IGitHubApiClient GetDefaultClient();
 
     /// <summary>

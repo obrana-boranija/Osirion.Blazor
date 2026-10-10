@@ -1,23 +1,32 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Domain.Options.Configuration;
-using System.Collections.Concurrent;
 
 namespace Osirion.Blazor.Cms.Infrastructure.GitHub;
 
 /// <summary>
 /// Factory for creating GitHub API client instances for different providers
 /// </summary>
+/// <remarks>
+/// Every <see cref="GetClient(string)"/> and <see cref="GetDefaultClient"/> call returns a new client owned by
+/// the caller. Clients are never cached or shared, so a token, repository or branch set on one client can
+/// never reach another caller, such as the public site or another user's admin session. Each client takes a
+/// short-lived <see cref="HttpClient"/> named <c>GitHub_{providerName}</c> from <see cref="IHttpClientFactory"/>
+/// for every operation.
+/// </remarks>
 public class GitHubApiClientFactory : IGitHubApiClientFactory
 {
+    /// <summary>
+    /// Prefix of the <see cref="IHttpClientFactory"/> client name used for a provider's API calls
+    /// </summary>
+    internal const string HttpClientNamePrefix = "GitHub_";
+
     private readonly IServiceProvider _serviceProvider;
     private readonly IConfiguration _configuration;
     private readonly ILogger<GitHubApiClientFactory> _logger;
-    private readonly ConcurrentDictionary<string, IGitHubApiClient> _clients = new();
     private readonly Dictionary<string, GitHubProviderOptions> _webProviders = new();
     private readonly Dictionary<string, GitHubProviderOptions> _adminProviders = new();
     private string? _defaultWebProvider;
@@ -107,103 +116,91 @@ public class GitHubApiClientFactory : IGitHubApiClientFactory
             _webProviders.Count, _adminProviders.Count);
     }
 
-    /// <summary>Gets or sets the GetClient value.</summary>
+    /// <summary>
+    /// Creates a new GitHub API client for the specified provider
+    /// </summary>
+    /// <param name="providerName">The name of the provider</param>
+    /// <returns>
+    /// A new client owned by the caller, seeded with the provider's owner, repository, branch and API token.
+    /// Changes made through its Set* methods never affect any other client.
+    /// </returns>
+    /// <exception cref="ArgumentException">The provider name is empty.</exception>
+    /// <exception cref="InvalidOperationException">The provider is not configured or misses its owner or repository.</exception>
     public IGitHubApiClient GetClient(string providerName)
     {
         if (string.IsNullOrWhiteSpace(providerName))
             throw new ArgumentException("Provider name cannot be empty", nameof(providerName));
 
-        return _clients.GetOrAdd(providerName, name =>
+        // Try to find the provider in both web and admin configurations
+        GitHubProviderOptions? options = null;
+
+        if (_webProviders.TryGetValue(providerName, out var webOptions))
         {
-            // Try to find the provider in both web and admin configurations
-            GitHubProviderOptions? options = null;
+            options = webOptions;
+            _logger.LogDebug("Using Web provider configuration for '{Name}'", providerName);
+        }
+        else if (_adminProviders.TryGetValue(providerName, out var adminOptions))
+        {
+            options = adminOptions;
+            _logger.LogDebug("Using Admin provider configuration for '{Name}'", providerName);
+        }
 
-            if (_webProviders.TryGetValue(name, out var webOptions))
-            {
-                options = webOptions;
-                _logger.LogInformation("Using Web provider configuration for '{Name}'", name);
-            }
-            else if (_adminProviders.TryGetValue(name, out var adminOptions))
-            {
-                options = adminOptions;
-                _logger.LogInformation("Using Admin provider configuration for '{Name}'", name);
-            }
+        if (options is null)
+        {
+            throw new InvalidOperationException($"GitHub provider '{providerName}' not found in configuration");
+        }
 
-            if (options is null)
-            {
-                throw new InvalidOperationException($"GitHub provider '{name}' not found in configuration");
-            }
+        // Validate the options before creating the client
+        if (string.IsNullOrWhiteSpace(options.Owner))
+        {
+            throw new InvalidOperationException($"GitHub provider '{providerName}' is missing 'Owner' configuration");
+        }
 
-            // Validate the options before creating the client
-            if (string.IsNullOrWhiteSpace(options.Owner))
-            {
-                throw new InvalidOperationException($"GitHub provider '{name}' is missing 'Owner' configuration");
-            }
+        if (string.IsNullOrWhiteSpace(options.Repository))
+        {
+            throw new InvalidOperationException($"GitHub provider '{providerName}' is missing 'Repository' configuration");
+        }
 
-            if (string.IsNullOrWhiteSpace(options.Repository))
-            {
-                throw new InvalidOperationException($"GitHub provider '{name}' is missing 'Repository' configuration");
-            }
+        // Create a proper GitHubOptions instance (not GitHubProviderOptions)
+        // This ensures compatibility with the GitHubApiClient constructor
+        var githubOptions = new GitHubOptions
+        {
+            Owner = options.Owner,
+            Repository = options.Repository,
+            Branch = options.Branch ?? "main",
+            ApiToken = options.ApiToken,
+            ApiUrl = options.ApiUrl,
+            ProviderId = options.ProviderId,
+            IsDefault = options.IsDefault,
+            ContentPath = options.ContentPath,
+            EnableLocalization = options.EnableLocalization,
+            DefaultLocale = options.DefaultLocale,
+            SupportedLocales = options.SupportedLocales,
+            SupportedExtensions = options.SupportedExtensions,
+            ValidateContent = options.ValidateContent,
+            WebhookSecret = options.WebhookSecret,
+            EnablePolling = options.EnablePolling,
+            PollingIntervalSeconds = options.PollingIntervalSeconds,
+            UseBackgroundCacheUpdate = options.UseBackgroundCacheUpdate,
+            ExcludePatterns = options.ExcludePatterns,
+            Authentication = options.Authentication
+        };
 
-            // Create a new HttpClient
-            using var scope = _serviceProvider.CreateScope();
-            var httpClientFactory = scope.ServiceProvider.GetRequiredService<IHttpClientFactory>();
-            var httpClient = httpClientFactory.CreateClient($"GitHub_{name}");
+        // Both services are singletons, so resolving them from the root provider captures no scope
+        var httpClientFactory = _serviceProvider.GetRequiredService<IHttpClientFactory>();
+        var clientLogger = _serviceProvider.GetRequiredService<ILogger<GitHubApiClient>>();
 
-            // Create a proper GitHubOptions instance (not GitHubProviderOptions)
-            // This ensures compatibility with the GitHubApiClient constructor
-            var githubOptions = new GitHubOptions
-            {
-                Owner = options.Owner,
-                Repository = options.Repository,
-                Branch = options.Branch ?? "main",
-                ApiToken = options.ApiToken,
-                ApiUrl = options.ApiUrl,
-                ProviderId = options.ProviderId,
-                IsDefault = options.IsDefault,
-                ContentPath = options.ContentPath,
-                EnableLocalization = options.EnableLocalization,
-                DefaultLocale = options.DefaultLocale,
-                SupportedLocales = options.SupportedLocales,
-                SupportedExtensions = options.SupportedExtensions,
-                ValidateContent = options.ValidateContent,
-                WebhookSecret = options.WebhookSecret,
-                EnablePolling = options.EnablePolling,
-                PollingIntervalSeconds = options.PollingIntervalSeconds,
-                UseBackgroundCacheUpdate = options.UseBackgroundCacheUpdate,
-                ExcludePatterns = options.ExcludePatterns,
-                Authentication = options.Authentication
-            };
+        _logger.LogDebug("Creating GitHub API client for provider '{Name}' with Owner='{Owner}', Repository='{Repository}', Branch='{Branch}'",
+            providerName, githubOptions.Owner, githubOptions.Repository, githubOptions.Branch);
 
-            // Create options wrapper
-            var optionsWrapper = Options.Create(githubOptions);
-
-            // Create logger
-            var clientLogger = scope.ServiceProvider.GetRequiredService<ILogger<GitHubApiClient>>();
-
-            // Log before creating the client
-            _logger.LogInformation("Creating GitHub API client for provider '{Name}' with Owner='{Owner}', Repository='{Repository}', Branch='{Branch}'",
-                name, githubOptions.Owner, githubOptions.Repository, githubOptions.Branch);
-
-            var client = new GitHubApiClient(httpClient, optionsWrapper, clientLogger);
-
-            // The GitHubApiClient constructor should have already set the repository and branch
-            // but let's ensure they're set correctly
-            client.SetRepository(githubOptions.Owner, githubOptions.Repository);
-            client.SetBranch(githubOptions.Branch);
-
-            if (!string.IsNullOrWhiteSpace(githubOptions.ApiToken))
-            {
-                client.SetAccessToken(githubOptions.ApiToken);
-            }
-
-            _logger.LogInformation("Created GitHub API client for provider: {ProviderName}", name);
-
-            return client;
-        });
+        return new GitHubApiClient(httpClientFactory, HttpClientNamePrefix + providerName, githubOptions, clientLogger);
     }
 
-    /// <summary>Performs the GetDefaultClient operation.</summary>
+    /// <summary>
+    /// Creates a new GitHub API client for the default provider
+    /// </summary>
+    /// <returns>A new client owned by the caller, as returned by <see cref="GetClient(string)"/>.</returns>
+    /// <exception cref="InvalidOperationException">No GitHub provider is configured.</exception>
     public IGitHubApiClient GetDefaultClient()
     {
         // Try web default first, then admin default
@@ -225,7 +222,7 @@ public class GitHubApiClientFactory : IGitHubApiClientFactory
             }
         }
 
-        _logger.LogInformation("Getting default client for provider: {DefaultProvider}", defaultProvider);
+        _logger.LogDebug("Getting default client for provider: {DefaultProvider}", defaultProvider);
         return GetClient(defaultProvider);
     }
 

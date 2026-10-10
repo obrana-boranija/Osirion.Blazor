@@ -396,18 +396,20 @@ The `CmsLayoutEditor` component provides a layout editor for CMS pages.
 
 ### AuthGuard
 
-The `AuthGuard` component guards admin routes requiring authentication.
+The `AuthGuard` component shows its content only to users who satisfy an authorization policy, the CMS admin policy (`CmsAdminAuthorization.PolicyName`) by default. It hides content while rendering and does not protect an endpoint: routed admin pages require the policy through `[Authorize(Policy = CmsAdminAuthorization.PolicyName)]`.
 
 #### Parameters
 
 - `ChildContent`: RenderFragment - Protected content
-- `RequiredRole`: string - Required user role
-- `RedirectUrl`: string - Redirect URL for unauthorized users
+- `Policy`: string - Authorization policy name (default: `CmsAdminAuthorization.PolicyName`)
+- `LoginPath`: string - Local path of the sign-in page linked for users who do not satisfy the policy (default: `/osirion/login`)
+- `ShowLoginForm`: bool - No effect
+- `OnAuthResult`: EventCallback<bool> - Never invoked
 
 #### Example
 
 ```razor
-<AuthGuard RequiredRole="Admin" RedirectUrl="/login">
+<AuthGuard Policy="Editors" LoginPath="/account/login">
     <p>Protected admin content</p>
 </AuthGuard>
 ```

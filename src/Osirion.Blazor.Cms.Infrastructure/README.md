@@ -125,6 +125,17 @@ public class FileSystemContentOptions
 }
 ```
 
+## GitHub API Clients and Credentials
+
+- `IGitHubApiClientFactory.GetClient(name)` and `GetDefaultClient()` return a new `GitHubApiClient` on every call. The caller owns it: `SetRepository`, `SetBranch` and `SetAccessToken` change that instance only and never another caller's client.
+- A client sends `Accept`, `User-Agent` and `Authorization` on each request message and never changes `HttpClient.DefaultRequestHeaders`. An `Accept` or `User-Agent` header you configure on the `HttpClient` is kept.
+- Factory clients take a short-lived `HttpClient` named `GitHub_{ProviderName}` from `IHttpClientFactory` for every operation. Configure it with `services.AddHttpClient("GitHub_Blog")`.
+- Cookies are turned off on the primary handler of the `GitHub_*`, `IGitHubApiClient`, `IGitHubTokenProvider` and `IAuthenticationService` clients, because a pooled handler is shared by every user. The policy runs after all handler configuration, so a primary handler you configure (through `ConfigureHttpClientDefaults` or the named client, before or after the Osirion registration) is kept with cookies turned off. In the browser it does nothing, because the fetch API owns cookies there.
+- Repository paths, branch names, owner and repository are percent-encoded per segment. A backslash in a repository path is read as a `/` separator. A path or branch name with an empty, `.` or `..` segment is rejected with an `ArgumentException` before any request is sent. URLs built from letters, digits, `-`, `_`, `.`, `~` and `/` are unchanged.
+- `IAuthenticationService` and `IGitHubAdminService` are registered as scoped, one per circuit or request, replacing any earlier registration. The admin service never uses a content provider's `ApiToken`: it uses the signed-in user's token, or `CmsAdminOptions.Authentication.PersonalAccessToken` when one is configured. Without either, repository operations send no request; `DeleteFileAsync`, for example, throws `InvalidOperationException` instead of sending an unauthenticated delete. Signing out drops the user's token from the admin service of the same scope.
+- `AuthenticationService` keeps the user's token in memory only. It never writes the token to `IStateStorageService` (which stores plain text) and never signs anyone in with the configured `PersonalAccessToken`. `InitializeAsync` and sign-out remove a `github_auth_token` value that earlier versions left in browser storage. The admin module keeps a signed-in user's token between page loads in encrypted, user-bound protected browser storage instead.
+- `GitHubTokenProvider` requests `Accept: application/json`, sends the `redirect_uri` and PKCE `code_verifier` it is given, treats an `error` field in a 200 response as a rejected exchange, and honours its `CancellationToken`. The original `ExchangeCodeForTokenAsync(code, clientId, clientSecret)` overload still works and sends neither value.
+
 ## Dependencies
 
 The infrastructure layer has the following dependencies:

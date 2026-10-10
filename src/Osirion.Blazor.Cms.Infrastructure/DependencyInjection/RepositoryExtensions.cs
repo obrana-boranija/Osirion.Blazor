@@ -28,8 +28,8 @@ public static class RepositoryExtensions
         // Register other repositories and services
         services.AddHttpClient<IGitHubApiClient, GitHubApiClient>();
         services.TryAddScoped<IGitHubTokenProvider, GitHubTokenProvider>();
-        services.TryAddScoped<IAuthenticationService, AuthenticationService>();
-        services.TryAddScoped<IGitHubAdminService, GitHubAdminService>();
+        services.AddScopedAuthenticationService();
+        services.AddScopedGitHubAdminService();
 
         return services;
     }

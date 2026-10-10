@@ -30,11 +30,14 @@ public static class GitHubProviderRegistrationExtensions
     {
         // Register the factory first
         services.TryAddSingleton<IGitHubApiClientFactory, GitHubApiClientFactory>();
+        services.AddGitHubHttpClientCookiePolicy();
 
         // Register HTTP clients
         services.TryAddHttpClient<IGitHubTokenProvider, GitHubTokenProvider>();
-        services.TryAddHttpClient<IAuthenticationService, AuthenticationService>();
-        services.TryAddHttpClient<IGitHubAdminService, GitHubAdminService>();
+
+        // Per-user services are scoped, so one user's GitHub state never reaches another user
+        services.AddScopedAuthenticationService();
+        services.AddScopedGitHubAdminService();
 
         // Load Web providers
         var webSection = configuration.GetSection("Osirion:Cms:Web:GitHub");

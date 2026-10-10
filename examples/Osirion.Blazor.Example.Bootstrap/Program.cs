@@ -69,6 +69,9 @@ app.MapOsirionCookieConsent();
 
 app.UseAntiforgery();
 app.MapStaticAssets();
+// The CMS admin pages (/osirion/...) require the CMS admin authorization policy. This example registers no
+// authentication scheme, so requests to them end in an error instead of rendering. A real host adds its own
+// sign-in first; see "Securing the Admin" in the Osirion.Blazor.Cms.Admin README.
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddAdditionalAssemblies(typeof(Osirion.Blazor.Cms.Admin._Imports).Assembly);

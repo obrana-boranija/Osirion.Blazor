@@ -46,6 +46,7 @@ public partial class OsirionAdminLayout
     private async Task SignOut()
     {
         await AuthService.SignOutAsync();
+        await TokenStore.RemoveTokenAsync();
         NavigationManager.NavigateTo("/osirion/login");
     }
 

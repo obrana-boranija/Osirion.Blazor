@@ -1,0 +1,87 @@
+using Bunit;
+using Bunit.TestDoubles;
+using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.DependencyInjection;
+using Osirion.Blazor.Cms.Admin.Features.Security;
+using Osirion.Blazor.Cms.Admin.Features.Security.Components;
+using Osirion.Blazor.Cms.Admin.Tests.TestDoubles;
+using Shouldly;
+
+namespace Osirion.Blazor.Cms.Admin.Tests.Features.Security.Components;
+
+public class AuthGuardTests : AdminComponentTestContext
+{
+    private readonly TestAuthorizationContext _authorization;
+
+    public AuthGuardTests()
+    {
+        _authorization = this.AddTestAuthorization();
+        RenderInteractively();
+        Services.GetRequiredService<FakeNavigationManager>().NavigateTo("osirion/content?path=a.md");
+    }
+
+    [Fact]
+    public void AuthGuard_AnonymousUser_HidesChildContentAndLinksToLogin()
+    {
+        // Proves the guard no longer renders protected content unconditionally.
+        _authorization.SetNotAuthorized();
+
+        var cut = RenderGuard();
+
+        cut.FindAll("#protected").ShouldBeEmpty();
+        cut.Find("a.btn").GetAttribute("href").ShouldBe("/osirion/login?returnUrl=%2Fosirion%2Fcontent%3Fpath%3Da.md");
+    }
+
+    [Fact]
+    public void AuthGuard_UserWithoutAdminPolicy_HidesChildContent()
+    {
+        _authorization.SetAuthorized("alice");
+
+        var cut = RenderGuard();
+
+        cut.FindAll("#protected").ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void AuthGuard_UserWithAdminPolicy_RendersChildContent()
+    {
+        _authorization.SetAuthorized("alice");
+        _authorization.SetPolicies(CmsAdminAuthorization.PolicyName);
+
+        var cut = RenderGuard();
+
+        cut.Find("#protected").TextContent.ShouldBe("Protected");
+    }
+
+    [Fact]
+    public void AuthGuard_CustomPolicy_UsesSuppliedPolicyName()
+    {
+        _authorization.SetAuthorized("alice");
+        _authorization.SetPolicies(CmsAdminAuthorization.PolicyName);
+
+        var cut = RenderGuard(parameters => parameters.Add(guard => guard.Policy, "Editors"));
+
+        cut.FindAll("#protected").ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void AuthGuard_OffSiteLoginPath_LinksToAdminLogin()
+    {
+        _authorization.SetNotAuthorized();
+
+        var cut = RenderGuard(parameters => parameters.Add(guard => guard.LoginPath, "//evil.example/login"));
+
+        cut.Find("a.btn").GetAttribute("href").ShouldStartWith("/osirion/login?returnUrl=");
+    }
+
+    private IRenderedComponent<AuthGuard> RenderGuard(Action<ComponentParameterCollectionBuilder<AuthGuard>>? configure = null)
+    {
+        RenderFragment content = builder => builder.AddMarkupContent(0, "<p id=\"protected\">Protected</p>");
+
+        return RenderComponent<AuthGuard>(parameters =>
+        {
+            parameters.Add(guard => guard.ChildContent, content);
+            configure?.Invoke(parameters);
+        });
+    }
+}

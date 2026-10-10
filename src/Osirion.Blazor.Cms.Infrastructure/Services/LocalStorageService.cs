@@ -1,6 +1,5 @@
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 
@@ -13,22 +12,26 @@ namespace Osirion.Blazor.Cms.Infrastructure.Services;
 public class LocalStorageService : IStateStorageService, IDisposable
 {
     private readonly ILocalStorageService _localStorage;
-    private readonly NavigationManager _navigationManager;
     private readonly ILogger<LocalStorageService> _logger;
     private readonly Dictionary<string, string> _memoryStore = new();
     private bool _isInitialized = false;
     private bool _isClientSide = false;
 
-    /// <summary>Performs the LocalStorageService operation.</summary>
+    /// <summary>Initializes a new instance of the <see cref="LocalStorageService"/> class.</summary>
+    /// <param name="localStorage">The browser local storage</param>
+    /// <param name="navigationManager">
+    /// Kept for constructor compatibility. The service no longer subscribes to navigation, so it can be constructed
+    /// outside a Blazor render, for example when a background job resolves a service that depends on it.
+    /// </param>
+    /// <param name="logger">The logger instance</param>
     public LocalStorageService(
         ILocalStorageService localStorage,
         NavigationManager navigationManager,
         ILogger<LocalStorageService> logger)
     {
         _localStorage = localStorage ?? throw new ArgumentNullException(nameof(localStorage));
-        _navigationManager = navigationManager ?? throw new ArgumentNullException(nameof(navigationManager));
+        ArgumentNullException.ThrowIfNull(navigationManager);
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _navigationManager.LocationChanged += OnLocationChanged;
     }
 
     /// <summary>Gets or sets the IsInitialized value.</summary>
@@ -69,9 +72,8 @@ public class LocalStorageService : IStateStorageService, IDisposable
 
         try
         {
-            // Load important authentication keys
+            // Load important authentication keys. A GitHub token is never read from this plain-text storage.
             var authKeys = new[] {
-                "github_auth_token",
                 "github_username",
                 "auth_status",
                 "last_login_method"
@@ -192,15 +194,9 @@ public class LocalStorageService : IStateStorageService, IDisposable
         }
     }
 
-    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
-    {
-        // No action needed - we're keeping state in memory and localStorage
-        // This ensures we keep the state across navigation
-    }
-
-    /// <summary>Releases resources held by the component or service.</summary>
+    /// <summary>Releases resources held by the service. The service holds none; the method is kept for compatibility.</summary>
     public void Dispose()
     {
-        _navigationManager.LocationChanged -= OnLocationChanged;
+        GC.SuppressFinalize(this);
     }
 }

@@ -65,6 +65,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<InternalsVisibleTo Include="Osirion.Blazor.Cms.Admin.Tests" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <Folder Include="Core\Services\" />
 	  <Folder Include="Features\Authentication\Services\" />
 	  <Folder Include="Shared\Events\" />

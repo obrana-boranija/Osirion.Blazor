@@ -110,11 +110,14 @@ public static class ServiceCollectionExtensions
 
         // Register the factory if not already registered
         services.TryAddSingleton<IGitHubApiClientFactory, GitHubApiClientFactory>();
+        services.AddGitHubHttpClientCookiePolicy();
 
         // Register HTTP client factory for creating named clients
         services.TryAddHttpClient<IGitHubTokenProvider, GitHubTokenProvider>();
-        services.TryAddHttpClient<IAuthenticationService, AuthenticationService>();
-        services.TryAddHttpClient<IGitHubAdminService, GitHubAdminService>();
+
+        // Per-user services are scoped, so one user's GitHub state never reaches another user
+        services.AddScopedAuthenticationService();
+        services.AddScopedGitHubAdminService();
 
         // If provider name is specified, register as a named provider
         if (!string.IsNullOrWhiteSpace(providerName))

@@ -1,5 +1,6 @@
 @namespace Osirion.Blazor.Cms.Admin.Features.Authentication.Components
 @inherits BaseComponent
+@implements IDisposable
 @using Osirion.Blazor.Cms.Admin.Features.Authentication.ViewModels
 @using Osirion.Blazor.Cms.Admin.Shared.Components
 @inject LoginViewModel ViewModel
@@ -24,6 +25,17 @@
                             class="btn-close"
                             @onclick="() => ViewModel.ErrorMessage = null"
                             aria-label="Close"></button>
+                </div>
+            }
+
+            @if (ViewModel.IsServerCredentialConfigured)
+            {
+                <div class="alert alert-info d-flex align-items-start mb-3 server-credential-notice" role="status">
+                    <i class="bi bi-shield-lock-fill me-2"></i>
+                    <div>
+                        A server access token is configured. The admin uses it when you do not sign in with your own GitHub account.
+                        <a href="@ViewModel.ReturnUrl" class="alert-link">Continue with the server access token</a>
+                    </div>
                 </div>
             }
 

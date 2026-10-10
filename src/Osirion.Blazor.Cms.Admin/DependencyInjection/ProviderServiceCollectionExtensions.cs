@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Domain.Options.Configuration;
@@ -24,6 +25,10 @@ public static class ProviderServiceCollectionExtensions
             configuration.GetSection(CmsAdminOptions.Section));
 
         services.AddHttpClient<IGitHubApiClient, GitHubApiClient>();
+
+        // Scoped, replacing any earlier registration: a transient or shared admin service would let one
+        // user's GitHub token, repository or branch reach another user
+        services.RemoveAll<IGitHubAdminService>();
         services.AddScoped<IGitHubAdminService, GitHubAdminService>();
 
         return services;
