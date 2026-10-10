@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Enums;
 using Osirion.Blazor.Cms.Domain.Models;
@@ -13,6 +14,12 @@ public partial class ContentPage
 {
     [Inject]
     private IContentProviderManager ContentProviderManager { get; set; } = default!;
+
+    [Inject]
+    private NavigationManager NavigationManager { get; set; } = default!;
+
+    [Inject]
+    private ILogger<ContentPage> Logger { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the path of the content to display.
@@ -258,17 +265,21 @@ public partial class ContentPage
     /// </summary>
     protected override async Task OnParametersSetAsync()
     {
-        if (ContentItem is null && !string.IsNullOrWhiteSpace(Path))
-        {
-            await LoadContentAsync();
-        }
-        else if (Path is not null && ContentItem is not null && !ContentItem.Path.EndsWith(Path, StringComparison.OrdinalIgnoreCase))
+        if (!string.IsNullOrWhiteSpace(Path)
+            && (ContentItem is null || !string.Equals(Path, _loadedPath, StringComparison.Ordinal)))
         {
             await LoadContentAsync();
         }
 
         await base.OnParametersSetAsync();
     }
+
+    // What this component produced itself, so a later Path change replaces it without touching values the parent supplied.
+    private string? _loadedPath;
+    private ContentItem? _loadedPrevious;
+    private ContentItem? _loadedNext;
+    private IReadOnlyList<ContentItem>? _loadedRelated;
+    private List<ShareLink>? _defaultShareLinks;
 
     /// <summary>
     /// Loads the content item based on the specified path.
@@ -277,6 +288,31 @@ public partial class ContentPage
     {
         IsLoading = true;
         StateHasChanged();
+
+        if (ReferenceEquals(PreviousItem, _loadedPrevious))
+        {
+            PreviousItem = null;
+        }
+
+        if (ReferenceEquals(NextItem, _loadedNext))
+        {
+            NextItem = null;
+        }
+
+        if (ReferenceEquals(RelatedItems, _loadedRelated))
+        {
+            RelatedItems = null;
+        }
+
+        if (ReferenceEquals(ShareLinks, _defaultShareLinks))
+        {
+            ShareLinks = new();
+        }
+
+        _loadedPath = Path;
+        _loadedPrevious = _loadedNext = null;
+        _loadedRelated = null;
+        _defaultShareLinks = null;
 
         try
         {
@@ -328,7 +364,7 @@ public partial class ContentPage
         }
         catch (Exception ex)
         {
-            Console.Error.WriteLine($"Error loading content: {ex.Message}");
+            Logger.LogError(ex, "Failed to load content {ContentPath}", Path);
             ContentItem = null;
         }
         finally
@@ -370,17 +406,17 @@ public partial class ContentPage
             // Set previous and next items
             if (currentIndex > 0)
             {
-                PreviousItem = items[currentIndex - 1];
+                PreviousItem = _loadedPrevious = items[currentIndex - 1];
             }
 
             if (currentIndex >= 0 && currentIndex < items.Count - 1)
             {
-                NextItem = items[currentIndex + 1];
+                NextItem = _loadedNext = items[currentIndex + 1];
             }
         }
         catch (Exception ex)
         {
-            Console.Error.WriteLine($"Error loading navigation items: {ex.Message}");
+            Logger.LogError(ex, "Failed to load previous and next items for {ContentPath}", item.Path);
         }
     }
 
@@ -418,11 +454,11 @@ public partial class ContentPage
                 .Take(3)
                 .ToList();
 
-            RelatedItems = related;
+            RelatedItems = _loadedRelated = related;
         }
         catch (Exception ex)
         {
-            Console.Error.WriteLine($"Error loading related items: {ex.Message}");
+            Logger.LogError(ex, "Failed to load related items for {ContentPath}", item.Path);
         }
     }
 
@@ -431,10 +467,11 @@ public partial class ContentPage
     /// </summary>
     private void InitializeDefaultShareLinks()
     {
-        var currentUrl = Uri.EscapeDataString($"https://{Path}");
+        // The absolute address of this page, without query string or fragment.
+        var currentUrl = Uri.EscapeDataString(ContentUrls.StripQueryAndFragment(NavigationManager.Uri));
         var title = Uri.EscapeDataString(ContentItem?.Title ?? "");
 
-        ShareLinks = new List<ShareLink>
+        ShareLinks = _defaultShareLinks = new List<ShareLink>
         {
             new ShareLink
             {
@@ -468,6 +505,14 @@ public partial class ContentPage
         return $"osirion-content-page-container {Class}".Trim();
     }
 
+    // CategoriesList and TagCloud format from the category and tag models; adapt the string formatters so a host's
+    // CategoryUrlFormatter and TagUrlFormatter apply to the sidebar links as well.
+    private Func<ContentCategory, string>? CategoryListUrlFormatter =>
+        CategoryUrlFormatter is { } formatter ? category => formatter(category.Name) : null;
+
+    private Func<ContentTag, string>? TagCloudUrlFormatter =>
+        TagUrlFormatter is { } formatter ? tag => formatter(tag.Name) : null;
+
     /// <summary>
     /// Gets the URL for a directory.
     /// </summary>
@@ -481,7 +526,7 @@ public partial class ContentPage
     /// </summary>
     protected string GetCategoryUrl(string category)
     {
-        return CategoryUrlFormatter?.Invoke(category) ?? $"/category/{category.ToLower().Replace(' ', '-')}";
+        return CategoryUrlFormatter?.Invoke(category) ?? ContentUrls.CategoryUrl(category);
     }
 
     /// <summary>
@@ -489,7 +534,7 @@ public partial class ContentPage
     /// </summary>
     protected string GetTagUrl(string tag)
     {
-        return TagUrlFormatter?.Invoke(tag) ?? $"/tag/{tag.ToLower().Replace(' ', '-')}";
+        return TagUrlFormatter?.Invoke(tag) ?? ContentUrls.TagUrl(tag);
     }
 
     /// <summary>

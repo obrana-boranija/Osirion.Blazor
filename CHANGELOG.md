@@ -47,6 +47,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Every package ships SourceLink information and a symbol package (`.snupkg`); the build is deterministic and treats warnings as errors
 - Menu accessibility: the mobile toggle is keyboard-focusable and labelled with `aria-controls`; submenus follow the disclosure pattern (no `role="menu"`, `aria-haspopup` or constant `aria-expanded="false"`); a disabled `MenuItem` renders no `href`; `Menu` default ids are unique per instance (`osirion-menu-{orientation}-{suffix}`)
 - `EnhancedNavigation` parameters are nullable, so configured `EnhancedNavigationOptions` apply unless a parameter is set; `INavigationService.ScrollToTopAsync` and `ScrollToElementAsync` are marked `[Obsolete]` because they only log
+- `SeoMetadataRenderer`: canonical, og:url and structured-data URLs drop the query string and fragment (keep chosen parameters with the new `CanonicalQueryParameters`), collection pages declare a canonical, generated FAQ data is off by default (`EnableGeneratedFaq`) and valid when on, viewport and theme-color tags are opt-in (`EmitMobileMetaTags`), and dates are written as UTC
+- `ArticlePage`, `DocumentPage` and `HomePage` no longer use streaming rendering and answer missing content with HTTP 404 (`NavigationManager.NotFound()` on .NET 10, the response status on .NET 9)
+- `ArticlePage` tag badges are rendered locally with stable colours instead of loading images from img.shields.io
 
 ### Deprecated
 - `LoginViewModel.LoginWithGitHubAsync(string code)` always fails, because a code without its OAuth state cannot be verified; use `StartGitHubLoginAsync()` and `LoginWithGitHubAsync(code, state)`
@@ -100,6 +103,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `MenuItem` renders `target` and `rel="noopener noreferrer"` on the link instead of putting `rel` on the wrapper; its active state no longer overwrites the `IsActive` parameter, follows navigation when interactive, ignores query and fragment, and `Prefix` matches on a segment boundary
 - `Menu` and `MenuGroup` keep their classes, styles and ids when a parent renders again
 - `ScrollToTopOptions.Enabled` is honoured, the scroll listener is registered once, and the button id is unique per instance
+- `SeoMetadataRenderer` recomputes when its parameters change; the Event schema no longer invents an end date; `keywords` and `article:section` are no longer duplicated; malformed hreflang entries are skipped instead of throwing; the article check ignores case
+- `ContentList` pagination keeps the search query and other parameters, navigates on click, clamps invalid page numbers and fetches the list once
+- `ContentView`, `ContentPage` and the detail pages reload when their path, url or slug changes instead of keeping the previous item, and `ContentPage` share links use the real page URL
+- Tag and category URLs come from one invariant, URL-encoded slug helper (`C#` no longer turns into a fragment), and `ContentPage` passes its locale and URL formatters to `LocalizedContentView`
+- Cms.Web components log failures through `ILogger` instead of the console or empty catch blocks; `CategoriesList` and `TagCloud` fetch once; `DocumentPage` writes a valid schema.org `itemtype`
 
 ### Security
 - Osirion.Blazor.Cms.Admin: every routed admin page (`/osirion`, `/osirion/dashboard`, `/osirion/content`, `/osirion/content/edit`, `/osirion/settings`, `/osirion/login`) requires the authorization policy `"Osirion.Cms.Admin"` (`CmsAdminAuthorization.PolicyName`). The default policy requires an authenticated user; a host policy with that name replaces it. These pages, and the repository writes behind them, were open to anonymous visitors

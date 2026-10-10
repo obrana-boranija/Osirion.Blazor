@@ -1,14 +1,19 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Enums;
 using Osirion.Blazor.Cms.Domain.Repositories;
 using Osirion.Blazor.Cms.Domain.Services;
+using Osirion.Blazor.Cms.Web.Components;
 using System.Text.RegularExpressions;
 
 namespace Osirion.Blazor.Cms.Components;
 /// <summary>Defines the OsirionContentListSection type.</summary>
 public partial class OsirionContentListSection(IContentProviderManager ContentProviderManager)
 {
+    [Inject]
+    private ILogger<OsirionContentListSection> Logger { get; set; } = default!;
+
     /// <summary>
     /// Gets or sets the posts to display. If not set, the component will load posts based on the provided filters and query.
     /// </summary>
@@ -236,8 +241,9 @@ public partial class OsirionContentListSection(IContentProviderManager ContentPr
 
             Items = await ContentProviderManager.GetContentByQueryAsync(query);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            Logger.LogError(ex, "Failed to load the content list section");
             Items = null;
         }
         finally
@@ -259,7 +265,7 @@ public partial class OsirionContentListSection(IContentProviderManager ContentPr
     /// </summary>
     private string GetCategoryUrl(string category)
     {
-        return CategoryUrlFormatter?.Invoke(category) ?? $"/category/{category.ToLower().Replace(' ', '-')}";
+        return CategoryUrlFormatter?.Invoke(category) ?? ContentUrls.CategoryUrl(category);
     }
 
     /// <summary>

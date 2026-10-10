@@ -32,6 +32,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<InternalsVisibleTo Include="Osirion.Blazor.Cms.Web.Tests" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <Folder Include="Components\Layout\" />
 	</ItemGroup>
 

@@ -1,0 +1,186 @@
+using Bunit;
+using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using NSubstitute;
+using Osirion.Blazor.Cms.Domain.Entities;
+using Osirion.Blazor.Cms.Domain.Repositories;
+using Osirion.Blazor.Cms.Domain.Services;
+using Osirion.Blazor.Cms.Web.Components;
+using Osirion.Blazor.Cms.Web.Tests.Base;
+using Shouldly;
+
+namespace Osirion.Blazor.Cms.Web.Tests.Components;
+
+public class PageLevelTests : CmsWebComponentTestBase
+{
+    private readonly IContentProviderManager _manager;
+    private readonly RecordingNavigationManager _navigation = new();
+    private readonly RecordingLogger _articleLogger = new();
+
+    public PageLevelTests()
+    {
+        _manager = Substitute.For<IContentProviderManager>();
+        Services.AddSingleton(_manager);
+        Services.AddSingleton<NavigationManager>(_navigation);
+        Services.AddSingleton<ILoggerFactory>(new RecordingLoggerFactory(_articleLogger));
+        Services.AddSingleton(Microsoft.Extensions.Options.Options.Create(new Osirion.Blazor.Cms.Web.Options.SeoMetadataOptions()));
+    }
+
+    // Fails before the fix: tag badges were images from img.shields.io and used string.GetHashCode for the colour.
+    [Fact]
+    public void ArticlePage_Tags_RenderAsLocalBadgesWithEncodedLinks()
+    {
+        var item = Article("Tagged");
+        item.AddTag("C#");
+        item.AddTag("Machine Learning");
+        ReturnFromQuery(item);
+
+        var cut = RenderStatic<ArticlePage>(p => p.Add(c => c.ItemSlug, "tagged"));
+
+        cut.Markup.ShouldNotContain("shields.io");
+        cut.FindAll("img.osirion-tag-shield").ShouldBeEmpty();
+        var badges = cut.FindAll("a.osirion-sidebar-tag");
+        badges.Select(b => b.GetAttribute("href")).ShouldBe(["/tag/c%23", "/tag/machine-learning"]);
+        badges.Select(b => b.TextContent).ShouldBe(["C#", "Machine Learning"]);
+        badges.ShouldAllBe(b => b.ClassList.Any(c => c.StartsWith("osirion-tag-badge-")));
+    }
+
+    [Fact]
+    public void ArticlePage_SameTag_AlwaysGetsTheSameBadgeColour()
+    {
+        var item = Article("Tagged");
+        item.AddTag("alpha");
+        ReturnFromQuery(item);
+
+        string BadgeClass() => RenderStatic<ArticlePage>(p => p.Add(c => c.ItemSlug, "tagged"))
+            .Find("a.osirion-sidebar-tag").ClassList.Single(c => c.StartsWith("osirion-tag-badge-"));
+
+        // FNV-1a("alpha") % 8, computed independently of the production helper.
+        var hash = 2166136261u;
+        foreach (var octet in "alpha"u8)
+        {
+            hash = (hash ^ octet) * 16777619u;
+        }
+
+        BadgeClass().ShouldBe($"osirion-tag-badge-{hash % 8}");
+    }
+
+    // Fails before the fix: missing content rendered with HTTP 200 because nothing told the framework it was a 404.
+    [Fact]
+    public void ArticlePage_ContentNotFound_SignalsNotFoundAndRendersTheNotFoundContent()
+    {
+        ReturnFromQuery();
+
+        var cut = RenderStatic<ArticlePage>(p => p.Add(c => c.ItemSlug, "nothing"));
+
+        _navigation.NotFoundCalls.ShouldBe(1);
+        cut.FindAll(".osirion-content-not-found, .osirion-not-found, [class*='not-found']").ShouldNotBeEmpty();
+    }
+
+    [Fact]
+    public void ArticlePage_ContentFound_DoesNotSignalNotFound()
+    {
+        ReturnFromQuery(Article("Found"));
+
+        RenderStatic<ArticlePage>(p => p.Add(c => c.ItemSlug, "found"));
+
+        _navigation.NotFoundCalls.ShouldBe(0);
+    }
+
+    // Fails before the fix: Item was only loaded while null, so a new ItemSlug kept showing the first article.
+    [Fact]
+    public void ArticlePage_ItemSlugChanges_LoadsTheNewArticle()
+    {
+        _manager.GetContentByQueryAsync(Arg.Is<ContentQuery>(q => q.Slug == "one"), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<IReadOnlyList<ContentItem>>([Article("One")]));
+        _manager.GetContentByQueryAsync(Arg.Is<ContentQuery>(q => q.Slug == "two"), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<IReadOnlyList<ContentItem>>([Article("Two")]));
+
+        var cut = RenderStatic<ArticlePage>(p => p.Add(c => c.ItemSlug, "one"));
+        cut.Instance.Item!.Title.ShouldBe("One");
+
+        cut.Render(p => p.Add(c => c.ItemSlug, "two"));
+
+        cut.Instance.Item!.Title.ShouldBe("Two");
+    }
+
+    // Fails before the fix: the provider exception was swallowed by a bare catch, with nothing logged.
+    [Fact]
+    public void ArticlePage_ProviderThrows_LogsTheFailureAndShowsNotFound()
+    {
+        _manager.GetContentByQueryAsync(Arg.Any<ContentQuery>(), Arg.Any<CancellationToken>())
+            .Returns<Task<IReadOnlyList<ContentItem>>>(_ => throw new InvalidOperationException("provider down"));
+
+        var cut = RenderStatic<ArticlePage>(p => p.Add(c => c.ItemSlug, "x"));
+
+        _articleLogger.Entries.ShouldContain(e => e.Level == LogLevel.Error && e.Exception is InvalidOperationException);
+        cut.Instance.Item.ShouldBeNull();
+        cut.Markup.ShouldNotContain("provider down");
+    }
+
+    [Fact]
+    public void DocumentPage_ItemType_IsASchemaOrgTypeName()
+    {
+        var provider = Substitute.For<IContentProvider>();
+        _manager.GetDefaultProvider().Returns(provider);
+        provider.GetItemByPathAsync("docs/a.md").Returns(Article("Doc"));
+
+        var cut = RenderStatic<Osirion.Blazor.Cms.Components.DocumentPage>(p => p
+            .Add(c => c.ContentPath, "docs/a.md")
+            .Add(c => c.SchemaTypes, [SchemaType.Article, SchemaType.BreadcrumbList]));
+
+        var article = cut.Find("article.osirion-document-content");
+        article.GetAttribute("itemtype").ShouldBe("https://schema.org/Article");
+    }
+
+    private void ReturnFromQuery(params ContentItem[] items) =>
+        _manager.GetContentByQueryAsync(Arg.Any<ContentQuery>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<IReadOnlyList<ContentItem>>(items));
+
+    private static ContentItem Article(string title)
+    {
+        var item = ContentItem.Create($"id-{title}", title, "<p>Body</p>", $"blog/{title}.md", "test");
+        item.SetUrl($"/blog/{title}");
+        return item;
+    }
+
+    private sealed class RecordingNavigationManager : NavigationManager
+    {
+        public RecordingNavigationManager()
+        {
+            Initialize("http://localhost/", "http://localhost/blog/page");
+            OnNotFound += (_, _) => NotFoundCalls++;
+        }
+
+        public int NotFoundCalls { get; private set; }
+
+        protected override void NavigateToCore(string uri, NavigationOptions options) => Uri = ToAbsoluteUri(uri).ToString();
+
+    }
+
+    private sealed class RecordingLoggerFactory(RecordingLogger logger) : ILoggerFactory
+    {
+        public void AddProvider(ILoggerProvider provider)
+        {
+        }
+
+        public ILogger CreateLogger(string categoryName) => logger;
+
+        public void Dispose()
+        {
+        }
+    }
+
+    private sealed class RecordingLogger : ILogger
+    {
+        public List<(LogLevel Level, Exception? Exception)> Entries { get; } = [];
+
+        public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
+
+        public bool IsEnabled(LogLevel logLevel) => true;
+
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter) =>
+            Entries.Add((logLevel, exception));
+    }
+}

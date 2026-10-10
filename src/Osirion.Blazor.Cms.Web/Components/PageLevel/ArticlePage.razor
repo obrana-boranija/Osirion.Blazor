@@ -1,7 +1,6 @@
 ﻿@namespace Osirion.Blazor.Cms.Web.Components
 @using Osirion.Blazor.Cms.Components
 @inherits OsirionContentDetailPageBase
-@attribute [StreamRendering]
 
 <div class="@GetArticlePageClass() @Class" style="@Style" @attributes="Attributes">
     @if (IsLoading)
@@ -108,9 +107,7 @@
                                 <div class="osirion-sidebar-tags">
                                     @foreach (var tag in Item.Tags)
                                     {
-                                        <a href="@GetTagUrl(tag)" class="osirion-sidebar-tag">
-                                            <img src="@GetShieldsIoUrl(tag)" alt="@tag" class="osirion-tag-shield" />
-                                        </a>
+                                        <a href="@GetTagUrl(tag)" class="osirion-sidebar-tag @GetTagBadgeClass(tag)">@tag</a>
                                     }
                                 </div>
                             </div>

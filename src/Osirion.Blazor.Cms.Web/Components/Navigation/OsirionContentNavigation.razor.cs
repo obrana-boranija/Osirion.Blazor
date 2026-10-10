@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Enums;
 using Osirion.Blazor.Cms.Domain.Repositories;
@@ -11,6 +12,9 @@ namespace Osirion.Blazor.Cms.Web.Components;
 /// </summary>
 public partial class OsirionContentNavigation(IContentProviderManager ContentProviderManager)
 {
+    [Inject]
+    private ILogger<OsirionContentNavigation> Logger { get; set; } = default!;
+
     /// <summary>
     /// Gets or sets a default item to search for navigation items
     /// </summary>
@@ -272,7 +276,7 @@ public partial class OsirionContentNavigation(IContentProviderManager ContentPro
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine($"Error loading navigation items: {ex.Message}");
+                Logger.LogError(ex, "Failed to load previous and next items");
             }
         }
     }

@@ -236,13 +236,43 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
     [Parameter]
     public List<(string Name, string Url)>? CustomBreadcrumbs { get; set; }
 
+    /// <summary>
+    /// Query parameters kept in the canonical URL, og:url and structured data URLs (for example <c>page</c> for
+    /// paginated lists, where each page is its own document). All other parameters and the fragment are dropped.
+    /// A canonical URL declared in the content front matter always wins.
+    /// </summary>
+    [Parameter]
+    public IReadOnlyCollection<string>? CanonicalQueryParameters { get; set; }
+
+    /// <summary>
+    /// Emits the viewport, theme-color and mobile web app meta tags. Off by default: the host document owns
+    /// these, and emitting them again duplicates its tags.
+    /// </summary>
+    [Parameter]
+    public bool EmitMobileMetaTags { get; set; }
+
+    /// <summary>
+    /// Generates FAQ structured data and answer meta tags from content titles and descriptions
+    /// (requires <see cref="EnableAeoOptimization"/>). Off by default because the questions are derived, not authored.
+    /// </summary>
+    [Parameter]
+    public bool EnableGeneratedFaq { get; set; }
+
     #endregion
 
     /// <summary>
-    /// Initializes all SEO metadata on component initialization.
+    /// Alternate language versions as <c>(hreflang, href)</c> pairs parsed from <see cref="AlternateLanguageUrls"/>.
     /// </summary>
-    protected override void OnInitialized()
+    private List<(string HrefLang, string Href)> _alternateLinks = [];
+
+    /// <summary>
+    /// Recomputes all SEO metadata whenever the parameters are set, so a reused component instance never
+    /// shows the title, canonical URL or structured data of the previous page.
+    /// </summary>
+    protected override void OnParametersSet()
     {
+        ResetState();
+
         // Require either Content or ContentItems
         if (Content is null && (ContentItems is null || !ContentItems.Any())) return;
 
@@ -255,31 +285,96 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
         // Core setup
         _siteName = SiteNameOverride ?? OrganizationName ?? ExtractSiteName(navigationManager.BaseUri);
         _baseUrl = navigationManager.BaseUri.TrimEnd('/');
-        _currentUrl = navigationManager.Uri;
+        _currentUrl = ResolvePageUrl();
         _locale = GetLocaleCode(Content?.Locale);
         _languageCode = Content?.Locale ?? "en";
+        _alternateLinks = ParseAlternateLanguageUrls();
 
         // Build all metadata
         BuildMetadata();
         BuildOpenGraphMetadata();
+        _isArticle = string.Equals(_ogType, "article", StringComparison.OrdinalIgnoreCase);
         BuildTwitterCardMetadata();
         BuildSeoEssentials();
-        
-        // Generate structured data
-        GenerateAllJsonLdSchemas();
 
-        // GEO & AEO optimization
+        // GEO & AEO optimization (before the structured data, which reuses the generated answers)
         if (EnableGeoOptimization)
         {
             BuildGeoOptimization();
         }
 
-        if (EnableAeoOptimization)
+        if (EnableAeoOptimization && EnableGeneratedFaq)
         {
             BuildAeoOptimization();
         }
 
-        base.OnInitialized();
+        // Generate structured data
+        GenerateAllJsonLdSchemas();
+        AddGeneratedFaqSchema();
+    }
+
+    private void ResetState()
+    {
+        _hasContent = false;
+        _metaTitle = string.Empty;
+        _metaDescription = null;
+        _metaKeywords = null;
+        _ogTitle = null;
+        _ogDescription = null;
+        _ogImage = null;
+        _ogType = null;
+        _ogImageWidth = null;
+        _ogImageHeight = null;
+        _ogImageAlt = null;
+        _twitterTitle = null;
+        _twitterDescription = null;
+        _twitterImage = null;
+        _twitterCard = null;
+        _canonicalUrl = null;
+        _currentUrl = string.Empty;
+        _robotsDirective = null;
+        _languageCode = null;
+        _jsonLdContent = null;
+        _additionalJsonLdSchemas = null;
+        _entitySummary = null;
+        _answersTo = null;
+        _structuredAnswers = null;
+        _mainQuestion = null;
+        _quickAnswer = null;
+        _author = null;
+        _isArticle = false;
+        _publishDate = null;
+        _modifiedDate = null;
+        _readTimeMinutes = null;
+        _tags = null;
+        _categories = null;
+        _alternateLinks = [];
+    }
+
+    /// <summary>
+    /// The URL this page declares for itself: the current address without its fragment and without query
+    /// parameters, except those named in <see cref="CanonicalQueryParameters"/>. Tracking parameters such as
+    /// <c>utm_source</c> therefore never produce a second canonical URL.
+    /// </summary>
+    private string ResolvePageUrl() =>
+        ContentUrls.StripQueryAndFragment(navigationManager.Uri, CanonicalQueryParameters);
+
+    private List<(string HrefLang, string Href)> ParseAlternateLanguageUrls()
+    {
+        var links = new List<(string, string)>();
+        foreach (var entry in AlternateLanguageUrls ?? [])
+        {
+            var separator = entry?.IndexOf('|', StringComparison.Ordinal) ?? -1;
+            if (separator <= 0 || separator == entry!.Length - 1)
+            {
+                Logger.LogWarning("Skipping malformed alternate language entry '{Entry}'; expected 'language|url'", entry);
+                continue;
+            }
+
+            links.Add((entry[..separator].Trim(), entry[(separator + 1)..].Trim()));
+        }
+
+        return links;
     }
 
     /// <summary>
@@ -305,6 +400,9 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
         if (DefaultImageWidth == 1200) DefaultImageWidth = options.DefaultImageWidth;
         if (DefaultImageHeight == 630) DefaultImageHeight = options.DefaultImageHeight;
         
+        EmitMobileMetaTags |= options.EmitMobileMetaTags;
+        EnableGeneratedFaq |= options.EnableGeneratedFaq;
+
         // Apply schema types if not set
         SchemaTypes ??= options.DefaultSchemaTypes;
     }
@@ -321,7 +419,6 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
         {
             // Single content page
             _author = Content.Author;
-            _isArticle = Content.Metadata?.SeoProperties?.Type == "article";
             _publishDate = Content.PublishDate;
             _modifiedDate = Content.LastModified;
             _readTimeMinutes = Content.ReadTimeMinutes;
@@ -333,7 +430,6 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
             // Collection page - extract from first item or use defaults
             var firstItem = ContentItems.First();
             _author = firstItem.Author;
-            _isArticle = false; // Collections are not articles
             _publishDate = firstItem.PublishDate;
             _modifiedDate = ContentItems.Max(c => c.LastModified);
             _readTimeMinutes = null; // Collections don't have read time
@@ -744,10 +840,51 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
 
     private string? BuildCanonicalUrl()
     {
-        if (!string.IsNullOrWhiteSpace(Content?.Metadata?.SeoProperties?.Canonical))
-            return Content.Metadata.SeoProperties.Canonical;
+        var declared = Content?.Metadata?.SeoProperties?.Canonical;
+        var canonical = !string.IsNullOrWhiteSpace(declared) ? declared : _currentUrl;
 
-        return Content?.Url is not null ? _currentUrl : null;
+        // og:url and the structured data url must agree with the canonical URL.
+        if (!string.IsNullOrWhiteSpace(canonical))
+        {
+            _currentUrl = canonical;
+        }
+
+        return string.IsNullOrWhiteSpace(canonical) ? null : canonical;
+    }
+
+    /// <summary>
+    /// Adds a schema.org FAQPage built from the generated questions. Only runs when
+    /// <see cref="EnableGeneratedFaq"/> is on, because the questions are derived from titles, not authored.
+    /// </summary>
+    private void AddGeneratedFaqSchema()
+    {
+        if (!EnableAeoOptimization || !EnableGeneratedFaq || _structuredAnswers is not { Count: > 0 })
+        {
+            return;
+        }
+
+        var faqSchema = new Dictionary<string, object?>
+        {
+            ["@context"] = "https://schema.org",
+            ["@type"] = "FAQPage",
+            ["mainEntity"] = _structuredAnswers.Select(answer => new Dictionary<string, object?>
+            {
+                ["@type"] = "Question",
+                ["name"] = answer.Key,
+                ["acceptedAnswer"] = new Dictionary<string, object?>
+                {
+                    ["@type"] = "Answer",
+                    ["text"] = answer.Value
+                }
+            }).ToArray()
+        };
+
+        _additionalJsonLdSchemas ??= [];
+        _additionalJsonLdSchemas.Add(JsonSerializer.Serialize(faqSchema, new JsonSerializerOptions
+        {
+            WriteIndented = true,
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+        }));
     }
 
     private string BuildRobotsDirective()
@@ -957,8 +1094,8 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
                 ["headline"] = item.Title,
                 ["description"] = item.Description,
                 ["image"] = NormalizeImageUrl(item.FeaturedImageUrl) ?? _ogImage,
-                ["datePublished"] = item.PublishDate.ToString("yyyy-MM-ddTHH:mm:ssZ"),
-                ["dateModified"] = (item.LastModified ?? item.PublishDate).ToString("yyyy-MM-ddTHH:mm:ssZ"),
+                ["datePublished"] = ContentUrls.FormatUtc(item.PublishDate),
+                ["dateModified"] = ContentUrls.FormatUtc(item.LastModified ?? item.PublishDate),
                 ["author"] = new Dictionary<string, object?>
                 {
                     ["@type"] = "Person",
@@ -1053,8 +1190,8 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
                     ["height"] = 60
                 }
             },
-            ["datePublished"] = Content.PublishDate.ToString("yyyy-MM-ddTHH:mm:ssZ"),
-            ["dateModified"] = (Content.LastModified ?? Content.PublishDate).ToString("yyyy-MM-ddTHH:mm:ssZ"),
+            ["datePublished"] = ContentUrls.FormatUtc(Content.PublishDate),
+            ["dateModified"] = ContentUrls.FormatUtc(Content.LastModified ?? Content.PublishDate),
             ["mainEntityOfPage"] = new Dictionary<string, object?>
             {
                 ["@type"] = "WebPage",
@@ -1087,8 +1224,8 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
             ["name"] = Content!.Title,
             ["description"] = Content.Description,
             ["url"] = _currentUrl,
-            ["datePublished"] = Content.PublishDate.ToString("yyyy-MM-ddTHH:mm:ssZ"),
-            ["dateModified"] = Content.LastModified?.ToString("yyyy-MM-ddTHH:mm:ssZ"),
+            ["datePublished"] = ContentUrls.FormatUtc(Content.PublishDate),
+            ["dateModified"] = (Content.LastModified is { } lastModified ? ContentUrls.FormatUtc(lastModified) : null),
             ["author"] = new Dictionary<string, object?>
             {
                 ["@type"] = "Person",
@@ -1213,9 +1350,8 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
             ["description"] = Content.Description,
             ["image"] = NormalizeImageUrl(Content.FeaturedImageUrl),
             ["url"] = _currentUrl,
-            ["startDate"] = Content.PublishDate.ToString("yyyy-MM-ddTHH:mm:ssZ"),
-            ["endDate"] = Content.LastModified?.ToString("yyyy-MM-ddTHH:mm:ssZ") ?? Content.PublishDate.AddHours(2).ToString("yyyy-MM-ddTHH:mm:ssZ"),
-            ["eventStatus"] = "https://schema.org/EventScheduled",
+            ["startDate"] = ContentUrls.FormatUtc(Content.PublishDate),
+                        ["eventStatus"] = "https://schema.org/EventScheduled",
             ["eventAttendanceMode"] = "https://schema.org/OfflineEventAttendanceMode",
             ["location"] = new Dictionary<string, object?>
             {
@@ -1254,7 +1390,7 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
                 ["@type"] = "Person",
                 ["name"] = Content.Author
             },
-            ["datePublished"] = Content.PublishDate.ToString("yyyy-MM-ddTHH:mm:ssZ"),
+            ["datePublished"] = ContentUrls.FormatUtc(Content.PublishDate),
             ["prepTime"] = "PT30M",
             ["cookTime"] = "PT1H",
             ["totalTime"] = "PT1H30M",
@@ -1277,15 +1413,9 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
         return schema;
     }
 
-    private object GenerateFAQSchema()
-    {
-        return new Dictionary<string, object?>
-        {
-            ["@context"] = "https://schema.org",
-            ["@type"] = "FAQPage",
-            ["mainEntity"] = Array.Empty<object>()
-        };
-    }
+    // A FAQPage needs real questions and answers. The only source is the generated FAQ data, which is opt-in,
+    // so an explicit FAQ schema type adds nothing by itself and an empty FAQPage is never emitted.
+    private object? GenerateFAQSchema() => null;
 
     private object GenerateHowToSchema()
     {
@@ -1318,7 +1448,7 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
             ["name"] = Content!.Title,
             ["description"] = Content.Description,
             ["thumbnailUrl"] = NormalizeImageUrl(Content.FeaturedImageUrl),
-            ["uploadDate"] = Content.PublishDate.ToString("yyyy-MM-ddTHH:mm:ssZ"),
+            ["uploadDate"] = ContentUrls.FormatUtc(Content.PublishDate),
             ["contentUrl"] = _currentUrl,
             ["embedUrl"] = _currentUrl,
             ["duration"] = "PT1M",
@@ -1387,7 +1517,7 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
                 ["@type"] = "Person",
                 ["name"] = Content.Author
             },
-            ["datePublished"] = Content.PublishDate.ToString("yyyy-MM-ddTHH:mm:ssZ"),
+            ["datePublished"] = ContentUrls.FormatUtc(Content.PublishDate),
             ["reviewBody"] = Content.Description,
             ["reviewRating"] = new Dictionary<string, object?>
             {
@@ -1556,7 +1686,7 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
                     ["url"] = $"{_baseUrl}{item.Url}",
                     ["name"] = item.Title,
                     ["description"] = item.Description,
-                    ["datePublished"] = item.PublishDate.ToString("yyyy-MM-ddTHH:mm:ssZ"),
+                    ["datePublished"] = ContentUrls.FormatUtc(item.PublishDate),
                     ["image"] = NormalizeImageUrl(item.FeaturedImageUrl)
                 });
             }

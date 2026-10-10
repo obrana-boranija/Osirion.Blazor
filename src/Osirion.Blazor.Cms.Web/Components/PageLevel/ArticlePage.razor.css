@@ -112,7 +112,7 @@
         border-color: rgba(var(--osirion-action-primary-rgb, 59, 130, 246), 0.3);
     }
 
-/* Tags styling with shields.io */
+/* Tag badges, drawn locally (no third-party image requests) */
 .osirion-sidebar-tags {
     display: flex;
     flex-wrap: wrap;
@@ -125,11 +125,25 @@
     transition: transform 0.2s ease;
 }
 
-.osirion-tag-shield {
-    height: 20px;
+.osirion-tag-badge {
+    padding: 0 0.5rem;
+    line-height: 20px;
     border-radius: 3px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #fff;
+    background-color: var(--osirion-tag-badge-color, #555);
     filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.1));
 }
+
+.osirion-tag-badge-0 { --osirion-tag-badge-color: #1d6fb8; }
+.osirion-tag-badge-1 { --osirion-tag-badge-color: #2e7d32; }
+.osirion-tag-badge-2 { --osirion-tag-badge-color: #c62828; }
+.osirion-tag-badge-3 { --osirion-tag-badge-color: #b45309; }
+.osirion-tag-badge-4 { --osirion-tag-badge-color: #6d28d9; }
+.osirion-tag-badge-5 { --osirion-tag-badge-color: #0f766e; }
+.osirion-tag-badge-6 { --osirion-tag-badge-color: #be185d; }
+.osirion-tag-badge-7 { --osirion-tag-badge-color: #4b5563; }
 
 .osirion-sidebar-tag:hover {
     transform: translateY(-2px);

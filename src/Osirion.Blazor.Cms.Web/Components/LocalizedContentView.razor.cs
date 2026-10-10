@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Enums;
 using Osirion.Blazor.Cms.Domain.Repositories;
@@ -11,6 +12,7 @@ public partial class LocalizedContentView
 {
     [Inject] private IContentProviderManager ContentProviderManager { get; set; } = default!;
     [Inject] private IServiceProvider ServiceProvider { get; set; } = default!;
+    [Inject] private ILogger<LocalizedContentView> Logger { get; set; } = default!;
 
     /// <summary>Gets or sets the content localization identifier.</summary>
     [Parameter]
@@ -180,7 +182,7 @@ public partial class LocalizedContentView
         }
         catch (Exception ex)
         {
-            Console.Error.WriteLine($"Error loading content: {ex.Message}");
+            Logger.LogError(ex, "Failed to load localized content {ContentPath}", Path);
             Item = null;
         }
         finally
@@ -213,7 +215,7 @@ public partial class LocalizedContentView
         }
         catch (Exception ex)
         {
-            Console.Error.WriteLine($"Error loading translations: {ex.Message}");
+            Logger.LogError(ex, "Failed to load translations for localization {LocalizationId}", LocalizationId);
         }
     }
 
@@ -250,13 +252,12 @@ public partial class LocalizedContentView
 
     private string GetCategoryUrl(string category)
     {
-        var url = (CategoryUrlFormatter?.Invoke(category) ?? $"/{CurrentLocale}/category/{category.ToLower().Replace(' ', '-')}").Trim('/');
-        return url;
+        return CategoryUrlFormatter?.Invoke(category) ?? ContentUrls.CategoryUrl(category, CurrentLocale);
     }
 
     private string GetTagUrl(string tag)
     {
-        return TagUrlFormatter?.Invoke(tag) ?? $"/{CurrentLocale}/tag/{tag.ToLower().Replace(' ', '-')}";
+        return TagUrlFormatter?.Invoke(tag) ?? ContentUrls.TagUrl(tag, CurrentLocale);
     }
 
     private string GetContentUrl(ContentItem item)

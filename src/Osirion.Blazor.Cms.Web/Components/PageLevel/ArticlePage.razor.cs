@@ -62,34 +62,35 @@ public partial class ArticlePage
         return string.Join(" ", classes);
     }
 
+    /// <inheritdoc/>
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+
+        if (Item is null && !IsLoading)
+        {
+            SignalNotFound();
+        }
+        else
+        {
+            ResetNotFoundSignal();
+        }
+    }
+
     private string GetCategoryUrl(string category)
     {
-        return CategoryUrlFormatter?.Invoke(category) ?? $"/category/{category.ToLower().Replace(' ', '-')}";
+        return CategoryUrlFormatter?.Invoke(category) ?? ContentUrls.CategoryUrl(category);
     }
 
     private string GetTagUrl(string tag)
     {
-        return TagUrlFormatter?.Invoke(tag) ?? $"/tag/{tag.ToLower().Replace(' ', '-')}";
+        return TagUrlFormatter?.Invoke(tag) ?? ContentUrls.TagUrl(tag);
     }
 
-    private string GetShieldsIoUrl(string tag)
-    {
-        // Generate a deterministic color based on the tag name
-        var tagHash = tag.GetHashCode();
-        var colorIndex = Math.Abs(tagHash % TagColors.Length);
-        var color = TagColors[colorIndex];
+    /// <summary>Number of colour variants in <c>ArticlePage.razor.css</c> (<c>osirion-tag-badge-0</c> and up).</summary>
+    private const int TagBadgeColorCount = 8;
 
-        // URL encode the tag
-        var encodedTag = Uri.EscapeDataString(tag);
-
-        return $"https://img.shields.io/badge/{encodedTag}-{color}?style=flat-square&logo=tag&logoColor=white";
-    }
-
-    // Array of colors for the shields.io tags
-    private static readonly string[] TagColors = new[]
-    {
-        "blue", "green", "red", "orange", "yellow", "purple", "lightgrey",
-        "success", "important", "critical", "informational", "inactive",
-        "blueviolet", "ff69b4", "9cf", "brightgreen", "yellowgreen", "orange"
-    };
+    // Stable across processes and restarts, so a tag keeps its colour (and cached pages stay identical).
+    private static string GetTagBadgeClass(string tag) =>
+        $"osirion-tag-badge osirion-tag-badge-{ContentUrls.StableHash(tag.Trim().ToLowerInvariant()) % TagBadgeColorCount}";
 }

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Enums;
 using Osirion.Blazor.Cms.Domain.Repositories;
@@ -11,6 +12,9 @@ public partial class ContentView(IContentProviderManager contentProviderManager)
 {
     [Inject]
     private IServiceProvider ServiceProvider { get; set; } = default!;
+
+    [Inject]
+    private ILogger<ContentView> Logger { get; set; } = default!;
 
     /// <summary>Gets or sets the content path to load.</summary>
     [Parameter]
@@ -54,10 +58,18 @@ public partial class ContentView(IContentProviderManager contentProviderManager)
 
     private bool IsLoading { get; set; } = true;
 
+    // What this component loaded itself, so a later Path change can tell it apart from values the parent supplied.
+    private string? _loadedPath;
+    private ContentItem? _loadedItem;
+    private ContentItem? _loadedPrevious;
+    private ContentItem? _loadedNext;
+
     /// <summary>Performs the OnParametersSet operation asynchronously.</summary>
     protected override async Task OnParametersSetAsync()
     {
-        if (Item is null && !string.IsNullOrWhiteSpace(Path))
+        var itemSuppliedByParent = Item is not null && !ReferenceEquals(Item, _loadedItem);
+        if (!itemSuppliedByParent && !string.IsNullOrWhiteSpace(Path)
+            && (Item is null || !string.Equals(Path, _loadedPath, StringComparison.Ordinal)))
         {
             await LoadContentAsync();
         }
@@ -70,12 +82,28 @@ public partial class ContentView(IContentProviderManager contentProviderManager)
     private async Task LoadContentAsync()
     {
         IsLoading = true;
+
+        // The previous document's content and neighbours must not stay visible while, or after, the new one loads.
+        Item = null;
+        if (ReferenceEquals(PreviousItem, _loadedPrevious))
+        {
+            PreviousItem = null;
+        }
+
+        if (ReferenceEquals(NextItem, _loadedNext))
+        {
+            NextItem = null;
+        }
+
+        _loadedPath = Path;
+        _loadedItem = _loadedPrevious = _loadedNext = null;
         try
         {
             var provider = contentProviderManager.GetDefaultProvider();
             if (provider is not null)
             {
                 Item = await provider.GetItemByPathAsync(Path);
+                _loadedItem = Item;
 
                 if (Item is not null && ShowNavigationLinks)
                 {
@@ -106,20 +134,21 @@ public partial class ContentView(IContentProviderManager contentProviderManager)
 
                     if (currentIndex > 0)
                     {
-                        PreviousItem = allItems[currentIndex - 1];
+                        PreviousItem = _loadedPrevious = allItems[currentIndex - 1];
                     }
 
                     if (currentIndex >= 0 && currentIndex < allItems.Count - 1)
                     {
-                        NextItem = allItems[currentIndex + 1];
+                        NextItem = _loadedNext = allItems[currentIndex + 1];
                     }
                 }
             }
         }
         catch (Exception ex)
         {
-            Console.Error.WriteLine($"Error loading content: {ex.Message}");
+            Logger.LogError(ex, "Failed to load content {ContentPath}", Path);
             Item = null;
+            _loadedItem = null;
         }
         finally
         {
@@ -141,12 +170,12 @@ public partial class ContentView(IContentProviderManager contentProviderManager)
 
     private string GetCategoryUrl(string category)
     {
-        return CategoryUrlFormatter?.Invoke(category) ?? $"/category/{category.ToLower().Replace(' ', '-')}";
+        return CategoryUrlFormatter?.Invoke(category) ?? ContentUrls.CategoryUrl(category);
     }
 
     private string GetTagUrl(string tag)
     {
-        return TagUrlFormatter?.Invoke(tag) ?? $"/tag/{tag.ToLower().Replace(' ', '-')}";
+        return TagUrlFormatter?.Invoke(tag) ?? ContentUrls.TagUrl(tag);
     }
 
     private string GetContentUrl(ContentItem item)

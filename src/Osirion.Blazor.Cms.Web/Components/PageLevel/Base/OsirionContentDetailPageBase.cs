@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Enums;
 using Osirion.Blazor.Cms.Domain.Repositories;
@@ -105,13 +106,39 @@ public abstract partial class OsirionContentDetailPageBase : OsirionContentPageB
         await LoadContentAsync();
     }
 
+    // What this page loaded itself, so a change of ItemPath, ItemUrl, ItemSlug, Locale or Directory replaces it,
+    // while an Item supplied by the parent is left alone.
+    private string? _loadedKey;
+    private ContentItem? _loadedItem;
+    private IReadOnlyList<ContentItem>? _loadedRelated;
+
+    private string BuildLoadKey() =>
+        string.Join('\u001f', ItemPath, ItemUrl, ItemSlug, Locale, DirectoryName);
+
     /// <summary>
     /// Loads the content asynchronously based on the provided parameters.
     /// </summary>
     protected async Task LoadContentAsync()
     {
-        if (Item is null)
+        var key = BuildLoadKey();
+        var itemSuppliedByParent = Item is not null && !ReferenceEquals(Item, _loadedItem);
+        if (itemSuppliedByParent)
         {
+            return;
+        }
+
+        if (Item is null || !string.Equals(key, _loadedKey, StringComparison.Ordinal))
+        {
+            if (ReferenceEquals(RelatedItems, _loadedRelated))
+            {
+                RelatedItems = null;
+            }
+
+            Item = null;
+            _loadedKey = key;
+            _loadedItem = null;
+            _loadedRelated = null;
+            ResetNotFoundSignal();
             IsLoading = true;
             try
             {
@@ -126,10 +153,12 @@ public abstract partial class OsirionContentDetailPageBase : OsirionContentPageB
                         
                     });
 
-                Item = result?.FirstOrDefault();
+                Item = _loadedItem = result?.FirstOrDefault();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Logger.LogError(ex, "Failed to load content (path {ItemPath}, url {ItemUrl}, slug {ItemSlug}, locale {Locale})",
+                    ItemPath, ItemUrl, ItemSlug, Locale);
                 Item = null;
             }
             finally
@@ -170,12 +199,12 @@ public abstract partial class OsirionContentDetailPageBase : OsirionContentPageB
                 .Take(RelatedItemsCount)
                 .ToList();
 
-                RelatedItems = related;
+                RelatedItems = _loadedRelated = related;
             }
         }
         catch (Exception ex)
         {
-            Console.Error.WriteLine($"Error loading related content: {ex.Message}");
+            Logger.LogError(ex, "Failed to load related content for {ContentPath}", Item.Path);
         }
     }
 }

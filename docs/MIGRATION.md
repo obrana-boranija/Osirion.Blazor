@@ -135,6 +135,14 @@ This release closes security holes in the CMS and Core modules. Most changes are
    - Menu ids changed from `osirion-menu-{orientation}` to `osirion-menu-{orientation}-{suffix}`; set `Id` if CSS or script targets the old id. Submenu markup no longer carries `role="menu"`, `aria-haspopup` or `aria-expanded` on links.
    - `INavigationService.ScrollToTopAsync` and `ScrollToElementAsync` are obsolete (a build error where warnings are errors); they never scrolled.
 
+11. **Content pages and SEO (Cms.Web).**
+   - Canonical, og:url and schema URLs no longer carry query strings; list parameters to keep in `CanonicalQueryParameters` (for example `page`).
+   - `SeoMetadataRenderer` no longer emits viewport, theme-color, msapplication, format-detection or mobile web app tags unless `EmitMobileMetaTags` is true. Generated FAQ JSON-LD needs `EnableGeneratedFaq`; the `answer-<hash>` metas are gone.
+   - `ArticlePage`, `DocumentPage` and `HomePage` signal 404 for missing content and no longer stream. On .NET 10 the host's `Router.NotFoundPage` or status-code page renders instead of `OsirionContentNotFound`.
+   - Tag badges are `a.osirion-tag-badge.osirion-tag-badge-N` instead of `img.osirion-tag-shield`; default tag and category URLs are URL-encoded slugs (`C#` becomes `c%23`).
+   - `ContentList` clamps `CurrentPage` and navigates on click when no `PageChanged` handler is set; `ContentPage` reloads only when `Path` changes.
+   - Cms.Web logs through `ILogger`; register a logging provider to see these errors.
+
 ## Upgrading to v1.5.0
 
 ### Breaking Changes

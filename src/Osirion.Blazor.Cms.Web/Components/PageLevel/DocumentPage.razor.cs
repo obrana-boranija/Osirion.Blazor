@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Enums;
 using Osirion.Blazor.Cms.Domain.Repositories;
@@ -127,6 +128,15 @@ public partial class DocumentPage
         {
             CurrentPath = Content.Path;
         }
+
+        if (Content is null && !string.IsNullOrWhiteSpace(ContentPath) && !IsLoading)
+        {
+            SignalNotFound();
+        }
+        else
+        {
+            ResetNotFoundSignal();
+        }
     }
 
     private new async Task LoadContentAsync()
@@ -148,7 +158,7 @@ public partial class DocumentPage
         }
         catch (Exception ex)
         {
-            Console.Error.WriteLine($"Error loading document content: {ex.Message}");
+            Logger.LogError(ex, "Failed to load document {ContentPath}", ContentPath);
             Content = null;
         }
         finally
@@ -199,9 +209,14 @@ public partial class DocumentPage
         }
         catch (Exception ex)
         {
-            Console.Error.WriteLine($"Error loading navigation items: {ex.Message}");
+            Logger.LogError(ex, "Failed to load previous and next documents for {ContentPath}", content.Path);
         }
     }
+
+    // schema.org type of the document article: the first requested schema type, TechArticle for documentation otherwise.
+    private string GetItemType() => SchemaTypes is { Length: > 0 }
+        ? SchemaTypes[0] == SchemaType.FAQ ? "FAQPage" : SchemaTypes[0].ToString()
+        : "TechArticle";
 
     private string GetDocumentPageClass()
     {

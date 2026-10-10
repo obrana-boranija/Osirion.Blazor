@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Repositories;
 using Osirion.Blazor.Cms.Domain.Services;
 
@@ -64,16 +65,10 @@ public partial class TagCloud(IContentProviderManager contentProviderManager)
     [Parameter]
     public IReadOnlyList<ContentTag>? Tags { get; set; }
 
-    private bool IsLoading { get; set; } = true;
+    [Inject]
+    private ILogger<TagCloud> Logger { get; set; } = default!;
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <returns></returns>
-    protected override async Task OnInitializedAsync()
-    {
-        await LoadTagsAsync();
-    }
+    private bool IsLoading { get; set; } = true;
 
 
     /// <summary>Performs the OnParametersSet operation asynchronously.</summary>
@@ -108,8 +103,9 @@ public partial class TagCloud(IContentProviderManager contentProviderManager)
                         : allTags;
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                Logger.LogError(ex, "Failed to load the tag cloud");
                 Tags = Array.Empty<ContentTag>();
             }
             finally
