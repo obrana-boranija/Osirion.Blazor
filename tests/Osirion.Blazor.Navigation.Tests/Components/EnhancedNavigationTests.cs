@@ -8,7 +8,7 @@ using Shouldly;
 
 namespace Osirion.Blazor.Navigation.Tests.Components;
 
-public class EnhancedNavigationTests : TestContext
+public class EnhancedNavigationTests : BunitContext
 {
     public EnhancedNavigationTests()
     {
@@ -25,7 +25,7 @@ public class EnhancedNavigationTests : TestContext
     public void EnhancedNavigation_ShouldUseDefaultOptions_WhenNoOptionsProvided()
     {
         // Act
-        var cut = RenderComponent<EnhancedNavigation>();
+        var cut = Render<EnhancedNavigation>();
 
         // Assert
         cut.Instance.Behavior.ShouldBe(ScrollBehavior.Auto);
@@ -37,7 +37,7 @@ public class EnhancedNavigationTests : TestContext
     public void EnhancedNavigation_ShouldUseParameterValues_WhenProvided()
     {
         // Act
-        var cut = RenderComponent<EnhancedNavigation>(parameters => parameters
+        var cut = Render<EnhancedNavigation>(parameters => parameters
             .Add(p => p.Behavior, ScrollBehavior.Smooth)
             .Add(p => p.ResetScrollOnNavigation, false)
             .Add(p => p.PreserveScrollForSamePageNavigation, false));

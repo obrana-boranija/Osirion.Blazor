@@ -46,7 +46,7 @@ public class ContentEditorTests : AdminComponentTestContext
     public void ContentEditor_WhenEditingPostIsNull_ShouldShowEmptyState()
     {
         // Act
-        var cut = RenderComponent<ContentEditorComponent>();
+        var cut = Render<ContentEditorComponent>();
 
         // Assert
         cut.Markup.ShouldContain("Select a file to edit or create a new file");
@@ -60,7 +60,7 @@ public class ContentEditorTests : AdminComponentTestContext
         _viewModel.InitializeFromState(CreatePost(), false);
 
         // Act
-        var cut = RenderComponent<ContentEditorComponent>();
+        var cut = Render<ContentEditorComponent>();
 
         // Assert
         cut.Find(".content-editor").ShouldNotBeNull();
@@ -78,7 +78,7 @@ public class ContentEditorTests : AdminComponentTestContext
         _viewModel.InitializeFromState(CreatePost(), true);
 
         // Act
-        var cut = RenderComponent<ContentEditorComponent>();
+        var cut = Render<ContentEditorComponent>();
 
         // Assert
         cut.Find("input[type='text']").GetAttribute("value").ShouldBe("new-post.md");
@@ -92,7 +92,7 @@ public class ContentEditorTests : AdminComponentTestContext
         var pendingSave = new TaskCompletionSource<GitHubFileCommitResponse>();
         _editorService.SaveBlogPostAsync(post, Arg.Any<string>()).Returns(pendingSave.Task);
         _viewModel.InitializeFromState(post, false);
-        var cut = RenderComponent<ContentEditorComponent>();
+        var cut = Render<ContentEditorComponent>();
         cut.Find("button.btn-primary").HasAttribute("disabled").ShouldBeFalse();
 
         // Act
@@ -112,7 +112,7 @@ public class ContentEditorTests : AdminComponentTestContext
         // Arrange
         var post = CreatePost();
         _viewModel.InitializeFromState(post, false);
-        var cut = RenderComponent<ContentEditorComponent>();
+        var cut = Render<ContentEditorComponent>();
 
         // Act
         cut.Find("button.btn-primary").Click();
@@ -126,7 +126,7 @@ public class ContentEditorTests : AdminComponentTestContext
     {
         // Arrange
         _viewModel.InitializeFromState(CreatePost(), false);
-        var cut = RenderComponent<ContentEditorComponent>();
+        var cut = Render<ContentEditorComponent>();
 
         // Act
         cut.Find("button.btn-outline-secondary").Click();
@@ -143,7 +143,7 @@ public class ContentEditorTests : AdminComponentTestContext
         _viewModel.InitializeFromState(CreatePost(), false);
 
         // Act
-        var cut = RenderComponent<ContentEditorComponent>();
+        var cut = Render<ContentEditorComponent>();
 
         // Assert
         var tabs = cut.FindAll("button.nav-link").ToList();

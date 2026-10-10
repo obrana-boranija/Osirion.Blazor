@@ -12,7 +12,7 @@ namespace Osirion.Blazor.Cms.Web.Tests.Base;
 /// Base class for Cms.Web component tests: registers the services the content components inject, with a
 /// provider manager that has no provider, so components render only the items the test passes in.
 /// </summary>
-public abstract class CmsWebComponentTestBase : TestContext
+public abstract class CmsWebComponentTestBase : BunitContext
 {
     /// <summary>Content with a script element, an event handler and a script URL.</summary>
     protected const string HostileContent =
@@ -37,7 +37,7 @@ public abstract class CmsWebComponentTestBase : TestContext
         where TComponent : IComponent
     {
         SetRendererInfo(new RendererInfo("Static", false));
-        return RenderComponent(parameterBuilder);
+        return Render(parameterBuilder);
     }
 
     protected static ContentItem CreateItem(string content) =>

@@ -8,7 +8,7 @@ using Shouldly;
 
 namespace Osirion.Blazor.Analytics.Tests.Components;
 
-public class YandexMetricaTrackerTests : TestContext
+public class YandexMetricaTrackerTests : BunitContext
 {
     [Fact]
     public void YandexMetricaTracker_ShouldRenderScript_WhenProviderIsEnabled()
@@ -26,7 +26,7 @@ public class YandexMetricaTrackerTests : TestContext
         SetRendererInfo(new RendererInfo("Server", false));
 
         // Act
-        var cut = RenderComponent<YandexMetricaTracker>();
+        var cut = Render<YandexMetricaTracker>();
 
         // Assert
         cut.Markup.ShouldContain("<script");
@@ -50,7 +50,7 @@ public class YandexMetricaTrackerTests : TestContext
         SetRendererInfo(new RendererInfo("Server", false));
 
         // Act
-        var cut = RenderComponent<YandexMetricaTracker>();
+        var cut = Render<YandexMetricaTracker>();
 
         // Assert
         cut.MarkupMatches(string.Empty);
@@ -72,7 +72,7 @@ public class YandexMetricaTrackerTests : TestContext
         SetRendererInfo(new RendererInfo("Server", false));
 
         // Act
-        var cut = RenderComponent<YandexMetricaTracker>();
+        var cut = Render<YandexMetricaTracker>();
 
         // Assert
         cut.MarkupMatches(string.Empty);
@@ -94,7 +94,7 @@ public class YandexMetricaTrackerTests : TestContext
         SetRendererInfo(new RendererInfo("Server", false));
 
         // Act
-        var cut = RenderComponent<YandexMetricaTracker>(parameters => parameters
+        var cut = Render<YandexMetricaTracker>(parameters => parameters
             .Add(p => p.CounterId, "12345678"));
 
         // Assert
@@ -117,7 +117,7 @@ public class YandexMetricaTrackerTests : TestContext
         SetRendererInfo(new RendererInfo("Server", false));
 
         // Act
-        var cut = RenderComponent<YandexMetricaTracker>(parameters => parameters
+        var cut = Render<YandexMetricaTracker>(parameters => parameters
             .Add(p => p.Enabled, false));
 
         // Assert
@@ -141,7 +141,7 @@ public class YandexMetricaTrackerTests : TestContext
         SetRendererInfo(new RendererInfo("Server", false));
 
         // Act
-        var cut = RenderComponent<YandexMetricaTracker>(parameters => parameters
+        var cut = Render<YandexMetricaTracker>(parameters => parameters
             .Add(p => p.WebVisor, true));
 
         // Assert

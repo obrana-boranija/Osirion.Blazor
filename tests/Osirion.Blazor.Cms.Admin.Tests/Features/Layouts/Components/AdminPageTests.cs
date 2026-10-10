@@ -14,12 +14,12 @@ public class AdminPageTests : AdminComponentTestContext
     [Fact]
     public void AdminPage_UserWithAdminPolicy_RendersChildContent()
     {
-        var authorization = this.AddTestAuthorization();
+        var authorization = this.AddAuthorization();
         authorization.SetAuthorized("alice");
         authorization.SetPolicies(CmsAdminAuthorization.PolicyName);
         RenderInteractively();
 
-        var cut = RenderComponent<AdminPage>(parameters => parameters
+        var cut = Render<AdminPage>(parameters => parameters
             .Add(p => p.Title, "Content")
             .AddChildContent("<p id=\"page-body\">Body</p>"));
 

@@ -24,7 +24,7 @@ public class CmsAdminDashboardTests : AdminComponentTestContext
         ComponentFactories.AddStub<Osirion.Blazor.Cms.Admin.Features.ContentEditor.Components.ContentEditor>();
         RenderInteractively();
 
-        var cut = RenderComponent<CmsAdminDashboard>(parameters => parameters
+        var cut = Render<CmsAdminDashboard>(parameters => parameters
             .AddChildContent("<p id=\"dashboard-body\">Body</p>"));
 
         cut.Find("#dashboard-body").TextContent.ShouldBe("Body");

@@ -12,7 +12,7 @@ namespace Osirion.Blazor.Cms.Admin.Tests.TestDoubles;
 /// <summary>
 /// Registers the services every admin component needs through <c>BaseComponent</c>.
 /// </summary>
-public abstract class AdminComponentTestContext : TestContext
+public abstract class AdminComponentTestContext : BunitContext
 {
     protected AdminComponentTestContext()
     {

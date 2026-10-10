@@ -11,7 +11,7 @@ using Shouldly;
 
 namespace Osirion.Blazor.Cms.Admin.Tests.Features.ContentEditor.Components;
 
-public class MarkdownEditorWithPreviewSanitizationTests : TestContext
+public class MarkdownEditorWithPreviewSanitizationTests : BunitContext
 {
     public MarkdownEditorWithPreviewSanitizationTests()
     {
@@ -31,7 +31,7 @@ public class MarkdownEditorWithPreviewSanitizationTests : TestContext
     {
         SetRendererInfo(new RendererInfo("Server", true));
 
-        var cut = RenderComponent<MarkdownEditorWithPreview>(parameters => parameters
+        var cut = Render<MarkdownEditorWithPreview>(parameters => parameters
             .Add(p => p.Content, "Text <img src=\"/a.png\" onerror=\"alert(1)\">\n\n<script>alert(2)</script>"));
 
         var preview = cut.Find(".preview-container article");

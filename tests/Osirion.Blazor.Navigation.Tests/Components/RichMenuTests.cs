@@ -4,7 +4,7 @@ using Osirion.Blazor.Navigation.Components;
 
 namespace Osirion.Blazor.Navigation.Tests.Components;
 
-public class RichMenuTests : TestContext
+public class RichMenuTests : BunitContext
 {
     public RichMenuTests()
     {
@@ -14,7 +14,7 @@ public class RichMenuTests : TestContext
     [Fact]
     public void MenuItem_RendersDescription_WhenProvided()
     {
-        var cut = RenderComponent<MenuItem>(parameters => parameters
+        var cut = Render<MenuItem>(parameters => parameters
             .Add(item => item.Text, "Tracking & attribution")
             .Add(item => item.Description, "Reliable measurement down to ad level."));
 
@@ -25,7 +25,7 @@ public class RichMenuTests : TestContext
     [Fact]
     public void MenuItem_AppliesMegaSubmenuVariant_WhenProvided()
     {
-        var cut = RenderComponent<MenuItem>(parameters => parameters
+        var cut = Render<MenuItem>(parameters => parameters
             .Add(item => item.Text, "Platform")
             .Add(item => item.HasSubmenu, true)
             .Add(item => item.SubmenuVariant, SubmenuVariant.Mega));
@@ -36,7 +36,7 @@ public class RichMenuTests : TestContext
     [Fact]
     public void MenuItem_WithSubmenu_RendersDedicatedToggleControl()
     {
-        var cut = RenderComponent<MenuItem>(parameters => parameters
+        var cut = Render<MenuItem>(parameters => parameters
             .Add(item => item.Text, "Platform")
             .Add(item => item.HasSubmenu, true));
 
@@ -51,7 +51,7 @@ public class RichMenuTests : TestContext
     [Fact]
     public void MenuGroup_RendersLabelAndItems()
     {
-        var cut = RenderComponent<MenuGroup>(parameters => parameters
+        var cut = Render<MenuGroup>(parameters => parameters
             .Add(group => group.Label, "Core platform")
             .AddChildContent("Tracking & attribution"));
 
@@ -62,7 +62,7 @@ public class RichMenuTests : TestContext
     [Fact]
     public void MenuCallToAction_RendersDestinationAndSupportingText()
     {
-        var cut = RenderComponent<MenuCallToAction>(parameters => parameters
+        var cut = Render<MenuCallToAction>(parameters => parameters
             .Add(callToAction => callToAction.Text, "Platform overview")
             .Add(callToAction => callToAction.Description, "Explore the complete platform.")
             .Add(callToAction => callToAction.Href, "/platform"));
@@ -76,7 +76,7 @@ public class RichMenuTests : TestContext
     [Fact]
     public void MenuGroup_RendersDescriptionAndFooterLink_WhenProvided()
     {
-        var cut = RenderComponent<MenuGroup>(parameters => parameters
+        var cut = Render<MenuGroup>(parameters => parameters
             .Add(group => group.Label, "Core HR")
             .Add(group => group.Description, "Your foundation for HR productivity")
             .Add(group => group.FooterText, "Explore Core HR")
@@ -93,7 +93,7 @@ public class RichMenuTests : TestContext
     [Fact]
     public void MenuGroup_OmitsFooterLink_WhenHrefMissing()
     {
-        var cut = RenderComponent<MenuGroup>(parameters => parameters
+        var cut = Render<MenuGroup>(parameters => parameters
             .Add(group => group.Label, "Core HR")
             .Add(group => group.FooterText, "Explore Core HR")
             .AddChildContent("Items"));
@@ -104,7 +104,7 @@ public class RichMenuTests : TestContext
     [Fact]
     public void MenuItem_RendersMegaContentAndAsideZones_WhenAsideProvided()
     {
-        var cut = RenderComponent<MenuItem>(parameters => parameters
+        var cut = Render<MenuItem>(parameters => parameters
             .Add(item => item.Text, "Platform")
             .Add(item => item.HasSubmenu, true)
             .Add(item => item.SubmenuVariant, SubmenuVariant.Mega)
@@ -119,7 +119,7 @@ public class RichMenuTests : TestContext
     [Fact]
     public void MenuItem_OmitsAsideZone_WhenAsideNotProvided()
     {
-        var cut = RenderComponent<MenuItem>(parameters => parameters
+        var cut = Render<MenuItem>(parameters => parameters
             .Add(item => item.Text, "Platform")
             .Add(item => item.HasSubmenu, true)
             .Add(item => item.SubmenuVariant, SubmenuVariant.Mega)
@@ -131,7 +131,7 @@ public class RichMenuTests : TestContext
     [Fact]
     public void MenuPanel_RendersTitleAndLinks()
     {
-        var cut = RenderComponent<MenuPanel>(parameters => parameters
+        var cut = Render<MenuPanel>(parameters => parameters
             .Add(panel => panel.Title, "Build your business case")
             .AddChildContent<MenuPanelLink>(link => link
                 .Add(l => l.Text, "ROI Assessment")
@@ -148,7 +148,7 @@ public class RichMenuTests : TestContext
     [Fact]
     public void MenuPanelLink_AddsExternalRel_WhenTargetBlank()
     {
-        var cut = RenderComponent<MenuPanelLink>(parameters => parameters
+        var cut = Render<MenuPanelLink>(parameters => parameters
             .Add(link => link.Text, "API Documentation")
             .Add(link => link.Href, "https://docs.example.com")
             .Add(link => link.Target, "_blank"));
@@ -161,7 +161,7 @@ public class RichMenuTests : TestContext
     [Fact]
     public void MenuImageCard_RendersImageAndCaption()
     {
-        var cut = RenderComponent<MenuImageCard>(parameters => parameters
+        var cut = Render<MenuImageCard>(parameters => parameters
             .Add(card => card.ImageUrl, "https://cdn.example.com/story.webp")
             .Add(card => card.ImageAlt, "Customer story")
             .Add(card => card.Title, "Customer Stories")
@@ -181,7 +181,7 @@ public class RichMenuTests : TestContext
     [Fact]
     public void MenuImageCard_OmitsDescription_WhenNotProvided()
     {
-        var cut = RenderComponent<MenuImageCard>(parameters => parameters
+        var cut = Render<MenuImageCard>(parameters => parameters
             .Add(card => card.ImageUrl, "https://cdn.example.com/story.webp")
             .Add(card => card.Title, "Customer Stories")
             .Add(card => card.Href, "/stories"));

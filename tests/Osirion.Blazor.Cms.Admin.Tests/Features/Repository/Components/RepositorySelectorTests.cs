@@ -46,7 +46,7 @@ public class RepositorySelectorTests : AdminComponentTestContext
     public void RepositorySelector_WhenNoRepositories_ShouldShowEmptyState()
     {
         // Act
-        var cut = RenderComponent<RepositorySelector>();
+        var cut = Render<RepositorySelector>();
 
         // Assert
         cut.Markup.ShouldContain("No repositories found");
@@ -60,7 +60,7 @@ public class RepositorySelectorTests : AdminComponentTestContext
         _repositoryAdapter.GetRepositoriesAsync().Returns(pendingLoad.Task);
 
         // Act
-        var cut = RenderComponent<RepositorySelector>();
+        var cut = Render<RepositorySelector>();
 
         // Assert
         cut.Find(".spinner-border").ShouldNotBeNull();
@@ -76,7 +76,7 @@ public class RepositorySelectorTests : AdminComponentTestContext
         _repositoryAdapter.GetRepositoriesAsync().Throws(new InvalidOperationException("Test error message"));
 
         // Act
-        var cut = RenderComponent<RepositorySelector>();
+        var cut = Render<RepositorySelector>();
 
         // Assert
         cut.Find(".alert-danger").TextContent.ShouldContain("Test error message");
@@ -91,7 +91,7 @@ public class RepositorySelectorTests : AdminComponentTestContext
         _repositoryAdapter.GetRepositoriesAsync().Returns(repositories);
 
         // Act
-        var cut = RenderComponent<RepositorySelector>();
+        var cut = Render<RepositorySelector>();
 
         // Assert
         cut.Find("select").ShouldNotBeNull();
@@ -120,7 +120,7 @@ public class RepositorySelectorTests : AdminComponentTestContext
         _state.SelectRepository(repository);
 
         // Act
-        var cut = RenderComponent<RepositorySelector>();
+        var cut = Render<RepositorySelector>();
 
         // Assert
         var footer = cut.Find(".card-footer");
@@ -134,7 +134,7 @@ public class RepositorySelectorTests : AdminComponentTestContext
     public void RepositorySelector_RefreshButton_ShouldCallLoadRepositoriesAsync()
     {
         // Arrange
-        var cut = RenderComponent<RepositorySelector>();
+        var cut = Render<RepositorySelector>();
 
         // Act
         cut.Find("button[title='Refresh repositories']").Click();
@@ -148,7 +148,7 @@ public class RepositorySelectorTests : AdminComponentTestContext
     {
         // Arrange
         _repositoryAdapter.GetRepositoriesAsync().Returns(CreateRepositories());
-        var cut = RenderComponent<RepositorySelector>();
+        var cut = Render<RepositorySelector>();
 
         // Act
         cut.Find("select").Change("repo1");
@@ -162,7 +162,7 @@ public class RepositorySelectorTests : AdminComponentTestContext
     public void RepositorySelector_OnInitialized_ShouldLoadRepositories()
     {
         // Act
-        RenderComponent<RepositorySelector>();
+        Render<RepositorySelector>();
 
         // Assert
         _repositoryAdapter.Received(1).GetRepositoriesAsync();
@@ -174,7 +174,7 @@ public class RepositorySelectorTests : AdminComponentTestContext
         // Arrange
         var repository = CreateRepositories()[0];
         _repositoryAdapter.GetRepositoriesAsync().Returns([repository]);
-        var cut = RenderComponent<RepositorySelector>();
+        var cut = Render<RepositorySelector>();
         cut.FindAll(".card-footer").ShouldBeEmpty();
 
         // Act

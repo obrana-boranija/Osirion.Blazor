@@ -61,7 +61,7 @@ public class LoginPageTests : AdminComponentTestContext
         // Proves the server token is no longer applied for whoever opens the page, nor copied into the form.
         _options.Authentication.PersonalAccessToken = ServerToken;
 
-        var cut = RenderComponent<LoginPage>();
+        var cut = Render<LoginPage>();
         cut.Find("button.btn-outline-secondary").Click();
 
         cut.Find(".server-credential-notice").ShouldNotBeNull();
@@ -73,7 +73,7 @@ public class LoginPageTests : AdminComponentTestContext
     [Fact]
     public void LoginPage_WithoutServerToken_ShowsNoNotice()
     {
-        var cut = RenderComponent<LoginPage>();
+        var cut = Render<LoginPage>();
 
         cut.FindAll(".server-credential-notice").ShouldBeEmpty();
     }
@@ -86,10 +86,10 @@ public class LoginPageTests : AdminComponentTestContext
         _tokenProvider
             .ExchangeCodeForTokenAsync("abc", "client-id", "client-secret", pending.RedirectUri, pending.CodeVerifier, Arg.Any<CancellationToken>())
             .Returns(UserToken);
-        var navigationManager = Services.GetRequiredService<FakeNavigationManager>();
+        var navigationManager = Services.GetRequiredService<BunitNavigationManager>();
         navigationManager.NavigateTo("osirion/login?code=abc&state=expected-state");
 
-        RenderComponent<LoginPage>();
+        Render<LoginPage>();
 
         _authService.Received(1).SetAccessTokenAsync(UserToken);
         navigationManager.Uri.ShouldBe("http://localhost/osirion/settings");
@@ -99,9 +99,9 @@ public class LoginPageTests : AdminComponentTestContext
     public void LoginPage_CallbackWithoutPendingLogin_ShowsErrorWithoutExchangingCode()
     {
         // Proves a forged callback URL (login CSRF) is rejected before the code reaches GitHub.
-        Services.GetRequiredService<FakeNavigationManager>().NavigateTo("osirion/login?code=attacker-code&state=attacker-state");
+        Services.GetRequiredService<BunitNavigationManager>().NavigateTo("osirion/login?code=attacker-code&state=attacker-state");
 
-        var cut = RenderComponent<LoginPage>();
+        var cut = Render<LoginPage>();
 
         _tokenProvider.DidNotReceiveWithAnyArgs()
             .ExchangeCodeForTokenAsync(default!, default!, default!, default, default, default);
@@ -117,10 +117,10 @@ public class LoginPageTests : AdminComponentTestContext
     {
         // Proves the returnUrl query value cannot send a signed-in user to another site.
         _tokenStore.GetTokenAsync().Returns(UserToken);
-        var navigationManager = Services.GetRequiredService<FakeNavigationManager>();
+        var navigationManager = Services.GetRequiredService<BunitNavigationManager>();
         navigationManager.NavigateTo($"osirion/login?returnUrl={Uri.EscapeDataString(returnUrl)}");
 
-        RenderComponent<LoginPage>();
+        Render<LoginPage>();
 
         navigationManager.Uri.ShouldBe("http://localhost/osirion");
     }
@@ -130,10 +130,10 @@ public class LoginPageTests : AdminComponentTestContext
     {
         // Proves the server-credential link, which no view-model navigation guards, cannot send a user off-site.
         _options.Authentication.PersonalAccessToken = ServerToken;
-        Services.GetRequiredService<FakeNavigationManager>()
+        Services.GetRequiredService<BunitNavigationManager>()
             .NavigateTo($"osirion/login?returnUrl={Uri.EscapeDataString("//evil.example")}");
 
-        var cut = RenderComponent<LoginPage>();
+        var cut = Render<LoginPage>();
 
         cut.Find(".server-credential-notice a").GetAttribute("href").ShouldBe("/osirion");
     }

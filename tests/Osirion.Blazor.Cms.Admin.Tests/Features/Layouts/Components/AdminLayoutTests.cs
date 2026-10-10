@@ -28,7 +28,7 @@ public class AdminLayoutTests : AdminComponentTestContext
     [Fact]
     public void AdminLayout_Render_ShowsTitleAndChildContent()
     {
-        var cut = RenderComponent<AdminLayout>(parameters => parameters
+        var cut = Render<AdminLayout>(parameters => parameters
             .Add(p => p.Title, "Content admin")
             .AddChildContent("<p id=\"page-body\">Body</p>"));
 
@@ -41,7 +41,7 @@ public class AdminLayoutTests : AdminComponentTestContext
     {
         _authService.IsAuthenticated.Returns(true);
         _authService.Username.Returns("alice");
-        var cut = RenderComponent<AdminLayout>();
+        var cut = Render<AdminLayout>();
 
         cut.Find(".sidebar-footer button").Click();
 

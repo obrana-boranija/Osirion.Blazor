@@ -8,7 +8,7 @@ using Shouldly;
 
 namespace Osirion.Blazor.Analytics.Tests.Components;
 
-public class ClarityTrackerTests : TestContext
+public class ClarityTrackerTests : BunitContext
 {
     [Fact]
     public void ClarityTracker_ShouldRenderScript_WhenProviderIsEnabled()
@@ -27,7 +27,7 @@ public class ClarityTrackerTests : TestContext
         SetRendererInfo(new RendererInfo("Server", false));
 
         // Act
-        var cut = RenderComponent<ClarityTracker>();
+        var cut = Render<ClarityTracker>();
 
         // Assert
         cut.Markup.ShouldContain("<script");
@@ -51,7 +51,7 @@ public class ClarityTrackerTests : TestContext
         SetRendererInfo(new RendererInfo("Server", false));
 
         // Act
-        var cut = RenderComponent<ClarityTracker>();
+        var cut = Render<ClarityTracker>();
 
         // Assert
         cut.MarkupMatches(string.Empty);
@@ -73,7 +73,7 @@ public class ClarityTrackerTests : TestContext
         SetRendererInfo(new RendererInfo("Server", false));
 
         // Act
-        var cut = RenderComponent<ClarityTracker>();
+        var cut = Render<ClarityTracker>();
 
         // Assert
         cut.MarkupMatches(string.Empty);
@@ -96,7 +96,7 @@ public class ClarityTrackerTests : TestContext
         SetRendererInfo(new RendererInfo("Server", false));
 
         // Act
-        var cut = RenderComponent<ClarityTracker>(parameters => parameters
+        var cut = Render<ClarityTracker>(parameters => parameters
             .Add(p => p.SiteId, "custom-site-id"));
 
         // Assert
@@ -120,7 +120,7 @@ public class ClarityTrackerTests : TestContext
         SetRendererInfo(new RendererInfo("Server", false));
 
         // Act
-        var cut = RenderComponent<ClarityTracker>(parameters => parameters
+        var cut = Render<ClarityTracker>(parameters => parameters
             .Add(p => p.Enabled, false));
 
         // Assert

@@ -6,7 +6,7 @@ using Shouldly;
 
 namespace Osirion.Blazor.Cms.Core.Tests.Components.Navigation;
 
-public class DocumentTreeTests : TestContext
+public class DocumentTreeTests : BunitContext
 {
     public DocumentTreeTests()
     {
@@ -24,7 +24,7 @@ public class DocumentTreeTests : TestContext
         itemWithChildren.Children.Count.ShouldBe(2);
 
         // Act
-        var cut = RenderComponent<DocumentTree>(parameters => parameters
+        var cut = Render<DocumentTree>(parameters => parameters
             .Add(p => p.Sections, sections)
         );
 

@@ -8,7 +8,7 @@ using Shouldly;
 
 namespace Osirion.Blazor.Analytics.Tests.Components;
 
-public class MatomoTrackerTests : TestContext
+public class MatomoTrackerTests : BunitContext
 {
     [Fact]
     public void MatomoTracker_ShouldRenderScript_WhenProviderIsEnabled()
@@ -27,7 +27,7 @@ public class MatomoTrackerTests : TestContext
         SetRendererInfo(new RendererInfo("Server", false));
 
         // Act
-        var cut = RenderComponent<MatomoTracker>();
+        var cut = Render<MatomoTracker>();
 
         // Assert
         cut.Markup.ShouldContain("<script");
@@ -52,7 +52,7 @@ public class MatomoTrackerTests : TestContext
         SetRendererInfo(new RendererInfo("Server", false));
 
         // Act
-        var cut = RenderComponent<MatomoTracker>();
+        var cut = Render<MatomoTracker>();
 
         // Assert
         cut.MarkupMatches(string.Empty);
@@ -75,7 +75,7 @@ public class MatomoTrackerTests : TestContext
         SetRendererInfo(new RendererInfo("Server", false));
 
         // Act
-        var cut = RenderComponent<MatomoTracker>();
+        var cut = Render<MatomoTracker>();
 
         // Assert
         cut.MarkupMatches(string.Empty);
@@ -98,7 +98,7 @@ public class MatomoTrackerTests : TestContext
         SetRendererInfo(new RendererInfo("Server", false));
 
         // Act
-        var cut = RenderComponent<MatomoTracker>();
+        var cut = Render<MatomoTracker>();
 
         // Assert
         cut.MarkupMatches(string.Empty);
@@ -121,7 +121,7 @@ public class MatomoTrackerTests : TestContext
         SetRendererInfo(new RendererInfo("Server", false));
 
         // Act
-        var cut = RenderComponent<MatomoTracker>(parameters => parameters
+        var cut = Render<MatomoTracker>(parameters => parameters
             .Add(p => p.SiteId, "custom-site-id"));
 
         // Assert
@@ -145,7 +145,7 @@ public class MatomoTrackerTests : TestContext
         SetRendererInfo(new RendererInfo("Server", false));
 
         // Act
-        var cut = RenderComponent<MatomoTracker>(parameters => parameters
+        var cut = Render<MatomoTracker>(parameters => parameters
             .Add(p => p.Enabled, false));
 
         // Assert

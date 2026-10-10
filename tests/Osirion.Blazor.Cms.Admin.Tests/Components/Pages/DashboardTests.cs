@@ -21,16 +21,16 @@ public class DashboardTests : AdminComponentTestContext
     }
 
     [Fact]
-    public void Dashboard_Disposed_UnsubscribesFromCmsState()
+    public async Task Dashboard_Disposed_UnsubscribesFromCmsState()
     {
         // The circuit-scoped CmsState outlives the page; a handler left behind keeps every disposed dashboard
         // alive and re-renders it on each state change for the rest of the circuit.
         var state = Services.GetRequiredService<CmsState>();
         var subscribersBefore = CountStateChangedSubscribers(state);
-        RenderComponent<Dashboard>();
+        Render<Dashboard>();
         CountStateChangedSubscribers(state).ShouldBe(subscribersBefore + 1);
 
-        DisposeComponents();
+        await DisposeComponentsAsync();
 
         CountStateChangedSubscribers(state).ShouldBe(subscribersBefore);
     }

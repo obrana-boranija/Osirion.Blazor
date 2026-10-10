@@ -11,7 +11,7 @@ using Shouldly;
 
 namespace Osirion.Blazor.Core.Tests.Components.Popups;
 
-public class OsirionCookieConsentTests : TestContext
+public class OsirionCookieConsentTests : BunitContext
 {
     private const string TokenFieldName = "__RequestVerificationToken";
 
@@ -69,8 +69,8 @@ public class OsirionCookieConsentTests : TestContext
     {
         // The banner is rendered with static server-side rendering
         SetRendererInfo(new RendererInfo("Static", false));
-        Services.GetRequiredService<FakeNavigationManager>().NavigateTo(uri);
-        return RenderComponent<OsirionCookieConsent>();
+        Services.GetRequiredService<BunitNavigationManager>().NavigateTo(uri);
+        return Render<OsirionCookieConsent>();
     }
 
     private void AddAntiforgeryStateProvider()

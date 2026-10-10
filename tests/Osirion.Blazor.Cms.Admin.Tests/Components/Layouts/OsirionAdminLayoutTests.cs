@@ -16,13 +16,13 @@ public class OsirionAdminLayoutTests : AdminComponentTestContext
 {
     private readonly IAuthenticationService _authService = Substitute.For<IAuthenticationService>();
     private readonly IGitHubTokenStore _tokenStore = Substitute.For<IGitHubTokenStore>();
-    private readonly TestAuthorizationContext _authorization;
+    private readonly BunitAuthorizationContext _authorization;
 
     public OsirionAdminLayoutTests()
     {
         Services.AddSingleton(_authService);
         Services.AddSingleton(_tokenStore);
-        _authorization = this.AddTestAuthorization();
+        _authorization = this.AddAuthorization();
         RenderInteractively();
     }
 
@@ -75,13 +75,13 @@ public class OsirionAdminLayoutTests : AdminComponentTestContext
 
         await _authService.Received(1).SignOutAsync();
         await _tokenStore.Received(1).RemoveTokenAsync();
-        Services.GetRequiredService<FakeNavigationManager>().Uri.ShouldEndWith("/osirion/login");
+        Services.GetRequiredService<BunitNavigationManager>().Uri.ShouldEndWith("/osirion/login");
     }
 
     private IRenderedComponent<OsirionAdminLayout> RenderLayout()
     {
         RenderFragment body = builder => builder.AddMarkupContent(0, "<p id=\"admin-body\">Admin content</p>");
 
-        return RenderComponent<OsirionAdminLayout>(parameters => parameters.Add(layout => layout.Body, body));
+        return Render<OsirionAdminLayout>(parameters => parameters.Add(layout => layout.Body, body));
     }
 }

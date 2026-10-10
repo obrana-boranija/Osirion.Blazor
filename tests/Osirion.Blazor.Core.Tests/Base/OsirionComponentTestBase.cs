@@ -9,7 +9,7 @@ namespace Osirion.Blazor.Core.Tests.Base;
 /// <summary>
 /// Base class for Core component tests: registers the services every <see cref="OsirionComponentBase"/> needs.
 /// </summary>
-public abstract class OsirionComponentTestBase : TestContext
+public abstract class OsirionComponentTestBase : BunitContext
 {
     protected OsirionComponentTestBase()
     {
@@ -26,6 +26,6 @@ public abstract class OsirionComponentTestBase : TestContext
         where TComponent : IComponent
     {
         SetRendererInfo(new RendererInfo("Static", false));
-        return RenderComponent(parameterBuilder);
+        return Render(parameterBuilder);
     }
 }

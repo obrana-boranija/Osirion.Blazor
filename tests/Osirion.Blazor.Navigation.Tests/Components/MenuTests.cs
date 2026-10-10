@@ -5,7 +5,7 @@ using Shouldly;
 
 namespace Osirion.Blazor.Navigation.Tests.Components;
 
-public class MenuTests : TestContext
+public class MenuTests : BunitContext
 {
     public MenuTests()
     {
@@ -20,7 +20,7 @@ public class MenuTests : TestContext
     public void Menu_ShouldRenderVerticalMenu_WhenSpecified()
     {
         // Act
-        var cut = RenderComponent<Menu>(parameters => parameters
+        var cut = Render<Menu>(parameters => parameters
                     .Add(p => p.Orientation, MenuOrientation.Vertical)
                     .AddChildContent("Menu Content"));
 
@@ -39,7 +39,7 @@ public class MenuTests : TestContext
     public void Menu_ShouldRenderHorizontalMenu_WhenSpecified()
     {
         // Act
-        var cut = RenderComponent<Menu>(parameters => parameters
+        var cut = Render<Menu>(parameters => parameters
                     .Add(p => p.Orientation, MenuOrientation.Horizontal)
                     .AddChildContent("Menu Content"));
 
@@ -59,7 +59,7 @@ public class MenuTests : TestContext
     public void Menu_ShouldRenderStickyMenu_WhenIsSticky()
     {
         // Act
-        var cut = RenderComponent<Menu>(parameters => parameters
+        var cut = Render<Menu>(parameters => parameters
             .Add(p => p.Sticky, true)
             .Add(p => p.StickyZIndex, 999)
             .AddChildContent("Menu Content"));
@@ -74,7 +74,7 @@ public class MenuTests : TestContext
     public void Menu_ShouldRenderWithAriaLabel_WhenProvided()
     {
         // Act
-        var cut = RenderComponent<Menu>(parameters => parameters
+        var cut = Render<Menu>(parameters => parameters
             .Add(p => p.AriaLabel, "Main Menu")
             .AddChildContent("Menu Content"));
 
@@ -86,7 +86,7 @@ public class MenuTests : TestContext
     public void Menu_ShouldRenderWithoutCollapseClass_WhenCollapseOnMobileFalse()
     {
         // Act
-        var cut = RenderComponent<Menu>(parameters => parameters
+        var cut = Render<Menu>(parameters => parameters
             .Add(p => p.CollapseOnMobile, false)
             .AddChildContent("Menu Content"));
 
@@ -100,7 +100,7 @@ public class MenuTests : TestContext
     public void Menu_ShouldRenderWithCustomClass_WhenProvided()
     {
         // Act
-        var cut = RenderComponent<Menu>(parameters => parameters
+        var cut = Render<Menu>(parameters => parameters
             .Add(p => p.Class, "custom-menu")
             .AddChildContent("Menu Content"));
 
@@ -114,7 +114,7 @@ public class MenuTests : TestContext
     public void Menu_ShouldRenderWithAdditionalAttributes_WhenProvided()
     {
         // Act
-        var cut = RenderComponent<Menu>(parameters => parameters
+        var cut = Render<Menu>(parameters => parameters
             .Add(p => p.Attributes, new Dictionary<string, object>
             {
                 { "data-testid", "main-menu" },

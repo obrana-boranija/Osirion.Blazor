@@ -89,7 +89,7 @@ public class ContentSinkSanitizationTests : CmsWebComponentTestBase
     {
         var cut = RenderStatic<ContentView>(parameters => parameters.Add(p => p.Item, CreateItem("<p>First</p>")));
 
-        cut.SetParametersAndRender(parameters => parameters.Add(p => p.Item, CreateItem(HostileContent)));
+        cut.Render(parameters => parameters.Add(p => p.Item, CreateItem(HostileContent)));
 
         cut.Find(".osirion-content-body").InnerHtml.MarkupMatches(SanitizedContent);
     }

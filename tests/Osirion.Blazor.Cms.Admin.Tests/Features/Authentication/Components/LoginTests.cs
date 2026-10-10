@@ -65,7 +65,7 @@ public class LoginTests : AdminComponentTestContext
         // Proves the server token is no longer applied for whoever sees the component, nor copied into the form.
         _options.Authentication.PersonalAccessToken = ServerToken;
 
-        var cut = RenderComponent<Login>();
+        var cut = Render<Login>();
         cut.Find("button.btn-outline-secondary").Click();
 
         cut.Find(".server-credential-notice").ShouldNotBeNull();
@@ -80,7 +80,7 @@ public class LoginTests : AdminComponentTestContext
         // Proves the server-credential link, which no view-model navigation guards, cannot send a user off-site.
         _options.Authentication.PersonalAccessToken = ServerToken;
 
-        var cut = RenderComponent<Login>(parameters => parameters.Add(login => login.ReturnUrl, OffSiteReturnUrl));
+        var cut = Render<Login>(parameters => parameters.Add(login => login.ReturnUrl, OffSiteReturnUrl));
 
         cut.Find(".server-credential-notice a").GetAttribute("href").ShouldBe("/osirion");
     }
@@ -93,10 +93,10 @@ public class LoginTests : AdminComponentTestContext
         _tokenProvider
             .ExchangeCodeForTokenAsync("abc", "client-id", "client-secret", pending.RedirectUri, pending.CodeVerifier, Arg.Any<CancellationToken>())
             .Returns(UserToken);
-        var navigationManager = Services.GetRequiredService<FakeNavigationManager>();
+        var navigationManager = Services.GetRequiredService<BunitNavigationManager>();
         navigationManager.NavigateTo("osirion/login?code=abc&state=expected-state");
 
-        RenderComponent<Login>();
+        Render<Login>();
 
         _authService.Received(1).SetAccessTokenAsync(UserToken);
         navigationManager.Uri.ShouldBe("http://localhost/osirion/settings");
@@ -106,9 +106,9 @@ public class LoginTests : AdminComponentTestContext
     public void Login_CallbackWithoutPendingLogin_ShowsErrorWithoutExchangingCode()
     {
         // Proves a forged callback URL (login CSRF) is rejected before the code reaches GitHub.
-        Services.GetRequiredService<FakeNavigationManager>().NavigateTo("osirion/login?code=attacker-code&state=attacker-state");
+        Services.GetRequiredService<BunitNavigationManager>().NavigateTo("osirion/login?code=attacker-code&state=attacker-state");
 
-        var cut = RenderComponent<Login>();
+        var cut = Render<Login>();
 
         _tokenProvider.DidNotReceiveWithAnyArgs()
             .ExchangeCodeForTokenAsync(default!, default!, default!, default, default, default);
@@ -121,9 +121,9 @@ public class LoginTests : AdminComponentTestContext
     {
         // Proves the ReturnUrl parameter cannot send a signed-in user to another site.
         _tokenStore.GetTokenAsync().Returns(UserToken);
-        var navigationManager = Services.GetRequiredService<FakeNavigationManager>();
+        var navigationManager = Services.GetRequiredService<BunitNavigationManager>();
 
-        RenderComponent<Login>(parameters => parameters.Add(login => login.ReturnUrl, OffSiteReturnUrl));
+        Render<Login>(parameters => parameters.Add(login => login.ReturnUrl, OffSiteReturnUrl));
 
         navigationManager.Uri.ShouldBe("http://localhost/osirion");
     }

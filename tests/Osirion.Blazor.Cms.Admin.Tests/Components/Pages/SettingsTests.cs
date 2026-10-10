@@ -31,13 +31,13 @@ public class SettingsTests : AdminComponentTestContext
     {
         // Proves the settings page renders and its sign-out removes the stored GitHub token, so the token can be
         // revoked from the admin even where the static admin layout cannot show a sign-out control.
-        var cut = RenderComponent<Settings>();
+        var cut = Render<Settings>();
 
         cut.Find("button.btn-outline-danger").Click();
 
         _authService.Received(1).SignOutAsync();
         _tokenStore.Received(1).RemoveTokenAsync();
-        Services.GetRequiredService<FakeNavigationManager>().Uri.ShouldBe("http://localhost/osirion/login");
+        Services.GetRequiredService<BunitNavigationManager>().Uri.ShouldBe("http://localhost/osirion/login");
     }
 
     [Fact]
@@ -45,7 +45,7 @@ public class SettingsTests : AdminComponentTestContext
     {
         // Proves browser or storage details carried by an exception are no longer shown in the admin alert.
         _tokenStore.RemoveTokenAsync().Returns(Task.FromException(new InvalidOperationException("browser storage detail")));
-        var cut = RenderComponent<Settings>();
+        var cut = Render<Settings>();
 
         cut.Find("button.btn-outline-danger").Click();
 

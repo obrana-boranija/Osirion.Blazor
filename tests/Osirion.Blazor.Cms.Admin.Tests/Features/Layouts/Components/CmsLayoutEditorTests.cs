@@ -14,7 +14,7 @@ public class CmsLayoutEditorTests : AdminComponentTestContext
     {
         RenderInteractively();
 
-        var cut = RenderComponent<CmsLayoutEditor>(parameters => parameters
+        var cut = Render<CmsLayoutEditor>(parameters => parameters
             .Add(p => p.Title, "Edit post"));
 
         cut.Find(".osirion-editor-breadcrumb-current").TextContent.ShouldBe("Edit post");

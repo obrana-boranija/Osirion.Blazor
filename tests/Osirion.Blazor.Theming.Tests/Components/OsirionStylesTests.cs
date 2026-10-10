@@ -9,7 +9,7 @@ using Osirion.Blazor.Theming.Services;
 
 namespace Osirion.Blazor.Theming.Tests.Components;
 
-public class OsirionStylesTests : TestContext
+public class OsirionStylesTests : BunitContext
 {
     private readonly IThemeService _themeService = Substitute.For<IThemeService>();
 
@@ -26,17 +26,17 @@ public class OsirionStylesTests : TestContext
     [Fact]
     public void OsirionStyles_Rendered_SubscribesToThemeChanges()
     {
-        RenderComponent<OsirionStyles>();
+        Render<OsirionStyles>();
 
         _themeService.Received(1).ThemeChanged += Arg.Any<EventHandler<ThemeChangedEventArgs>>();
     }
 
     [Fact]
-    public void OsirionStyles_Disposed_UnsubscribesFromThemeChanges()
+    public async Task OsirionStyles_Disposed_UnsubscribesFromThemeChanges()
     {
-        RenderComponent<OsirionStyles>();
+        Render<OsirionStyles>();
 
-        DisposeComponents();
+        await DisposeComponentsAsync();
 
         _themeService.Received(1).ThemeChanged -= Arg.Any<EventHandler<ThemeChangedEventArgs>>();
     }

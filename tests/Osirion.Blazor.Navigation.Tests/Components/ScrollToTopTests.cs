@@ -6,7 +6,7 @@ using Shouldly;
 
 namespace Osirion.Blazor.Navigation.Tests.Components;
 
-public class ScrollToTopTests : TestContext
+public class ScrollToTopTests : BunitContext
 {
     public ScrollToTopTests()
     {
@@ -18,7 +18,7 @@ public class ScrollToTopTests : TestContext
     public void ScrollToTop_ShouldUseDefaultOptions_WhenNoOptionsProvided()
     {
         // Act
-        var cut = RenderComponent<ScrollToTop>();
+        var cut = Render<ScrollToTop>();
 
         // Assert
         cut.Instance.Position.ShouldBe(Position.BottomRight);
@@ -31,7 +31,7 @@ public class ScrollToTopTests : TestContext
     public void ScrollToTop_ShouldUseParameterValues_WhenProvided()
     {
         // Act
-        var cut = RenderComponent<ScrollToTop>(parameters => parameters
+        var cut = Render<ScrollToTop>(parameters => parameters
             .Add(p => p.Position, Position.TopLeft)
             .Add(p => p.Behavior, ScrollBehavior.Instant)
             .Add(p => p.VisibilityThreshold, 500)

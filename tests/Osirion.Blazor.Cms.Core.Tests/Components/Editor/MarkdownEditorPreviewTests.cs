@@ -10,7 +10,7 @@ using Shouldly;
 
 namespace Osirion.Blazor.Cms.Core.Tests.Components.Editor;
 
-public class MarkdownEditorPreviewTests : TestContext, IDisposable
+public class MarkdownEditorPreviewTests : BunitContext, IDisposable
 {
     private readonly IMarkdownRendererService _markdownRenderer;
     private readonly MockJSRuntime _jsRuntime = new();
@@ -34,7 +34,7 @@ public class MarkdownEditorPreviewTests : TestContext, IDisposable
     public void MarkdownEditorPreview_ShouldRender_WithDefaultSettings()
     {
         // Act
-        var cut = RenderComponent<MarkdownEditorPreview>();
+        var cut = Render<MarkdownEditorPreview>();
 
         // Assert
         cut.Markup.ShouldContain("osirion-markdown-editor-preview");
@@ -48,7 +48,7 @@ public class MarkdownEditorPreviewTests : TestContext, IDisposable
     public void MarkdownEditorPreview_ShouldRender_WithCustomSettings()
     {
         // Act
-        var cut = RenderComponent<MarkdownEditorPreview>(parameters => parameters
+        var cut = Render<MarkdownEditorPreview>(parameters => parameters
             .Add(p => p.EditorTitle, "Custom Editor")
             .Add(p => p.PreviewTitle, "Custom Preview")
             .Add(p => p.ShowActionsBar, false)
@@ -83,7 +83,7 @@ public class MarkdownEditorPreviewTests : TestContext, IDisposable
         string capturedContent = initialContent;
 
         // Act
-        var cut = RenderComponent<MarkdownEditorPreview>(parameters => parameters
+        var cut = Render<MarkdownEditorPreview>(parameters => parameters
             .Add(p => p.Content, initialContent)
             .Add(p => p.ContentChanged, (content) => capturedContent = content)
         );
@@ -102,7 +102,7 @@ public class MarkdownEditorPreviewTests : TestContext, IDisposable
     public void MarkdownEditorPreview_ShouldTogglePreview_WhenButtonClicked()
     {
         // Arrange
-        var cut = RenderComponent<MarkdownEditorPreview>(parameters => parameters
+        var cut = Render<MarkdownEditorPreview>(parameters => parameters
             .Add(p => p.ShowPreview, true)
         );
 
@@ -131,7 +131,7 @@ public class MarkdownEditorPreviewTests : TestContext, IDisposable
     public async Task MarkdownEditorPreview_WhenEditorScrolls_ShouldScrollPreview()
     {
         // Arrange
-        var cut = RenderComponent<MarkdownEditorPreview>(parameters => parameters
+        var cut = Render<MarkdownEditorPreview>(parameters => parameters
             .Add(p => p.SyncScroll, true)
             .Add(p => p.Content, TestData.BasicMarkdown)
         );
@@ -147,7 +147,7 @@ public class MarkdownEditorPreviewTests : TestContext, IDisposable
     public async Task MarkdownEditorPreview_WhenPreviewScrolls_ShouldScrollEditor()
     {
         // Arrange
-        var cut = RenderComponent<MarkdownEditorPreview>(parameters => parameters
+        var cut = Render<MarkdownEditorPreview>(parameters => parameters
             .Add(p => p.SyncScroll, true)
             .Add(p => p.Content, TestData.BasicMarkdown)
         );
@@ -163,7 +163,7 @@ public class MarkdownEditorPreviewTests : TestContext, IDisposable
     public async Task MarkdownEditorPreview_WhenSyncScrollIsDisabled_ShouldNotScrollPreview()
     {
         // Arrange
-        var cut = RenderComponent<MarkdownEditorPreview>(parameters => parameters
+        var cut = Render<MarkdownEditorPreview>(parameters => parameters
             .Add(p => p.SyncScroll, false)
             .Add(p => p.Content, TestData.BasicMarkdown)
         );
@@ -180,7 +180,7 @@ public class MarkdownEditorPreviewTests : TestContext, IDisposable
     {
         // In a culture such as sr-Latn-RS the position used to be written as "0,5", which JavaScript reads as two
         // expressions, so the preview never followed the editor.
-        var cut = RenderComponent<MarkdownEditorPreview>(parameters => parameters
+        var cut = Render<MarkdownEditorPreview>(parameters => parameters
             .Add(p => p.SyncScroll, true)
             .Add(p => p.Content, TestData.BasicMarkdown)
         );
@@ -212,7 +212,7 @@ public class MarkdownEditorPreviewTests : TestContext, IDisposable
     public async Task MarkdownEditorPreview_ShouldProvideMethodsForExternalControl()
     {
         // Arrange
-        var cut = RenderComponent<MarkdownEditorPreview>();
+        var cut = Render<MarkdownEditorPreview>();
         var component = cut.Instance;
 
         // Act & Assert

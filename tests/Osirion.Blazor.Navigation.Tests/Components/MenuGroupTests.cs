@@ -5,7 +5,7 @@ using Shouldly;
 
 namespace Osirion.Blazor.Navigation.Tests.Components;
 
-public class MenuGroupTests : TestContext
+public class MenuGroupTests : BunitContext
 {
     public MenuGroupTests()
     {
@@ -19,7 +19,7 @@ public class MenuGroupTests : TestContext
     public void MenuGroup_ShouldRenderWithoutLabel_WhenLabelNotProvided()
     {
         // Act
-        var cut = RenderComponent<MenuGroup>(parameters => parameters
+        var cut = Render<MenuGroup>(parameters => parameters
             .AddChildContent("MenuGroup Content"));
 
         // Assert
@@ -34,7 +34,7 @@ public class MenuGroupTests : TestContext
     public void MenuGroup_ShouldRenderWithLabel_WhenLabelProvided()
     {
         // Act
-        var cut = RenderComponent<MenuGroup>(parameters => parameters
+        var cut = Render<MenuGroup>(parameters => parameters
             .Add(p => p.Label, "Group Label")
             .AddChildContent("MenuGroup Content"));
 
@@ -51,7 +51,7 @@ public class MenuGroupTests : TestContext
     public void MenuGroup_ShouldDeriveElementIds_FromOneGroupId()
     {
         // Act
-        var cut = RenderComponent<MenuGroup>(parameters => parameters
+        var cut = Render<MenuGroup>(parameters => parameters
             .Add(p => p.Label, "Group Label")
             .AddChildContent("MenuGroup Content"));
 
@@ -66,13 +66,13 @@ public class MenuGroupTests : TestContext
     public void MenuGroup_ShouldKeepElementIds_AcrossRenders()
     {
         // Arrange
-        var cut = RenderComponent<MenuGroup>(parameters => parameters
+        var cut = Render<MenuGroup>(parameters => parameters
             .Add(p => p.Label, "Group Label")
             .AddChildContent("MenuGroup Content"));
         var labelIdBefore = cut.Find(".osirion-menu-group-label").Id;
 
         // Act
-        cut.SetParametersAndRender(parameters => parameters
+        cut.Render(parameters => parameters
             .Add(p => p.Label, "Renamed Label"));
 
         // Assert
@@ -83,7 +83,7 @@ public class MenuGroupTests : TestContext
     public void MenuGroup_ShouldRenderWithCustomClass_WhenProvided()
     {
         // Act
-        var cut = RenderComponent<MenuGroup>(parameters => parameters
+        var cut = Render<MenuGroup>(parameters => parameters
             .Add(p => p.Class, "custom-group")
             .AddChildContent("MenuGroup Content"));
 
@@ -96,7 +96,7 @@ public class MenuGroupTests : TestContext
     public void MenuGroup_ShouldRenderWithAdditionalAttributes_WhenProvided()
     {
         // Act
-        var cut = RenderComponent<MenuGroup>(parameters => parameters
+        var cut = Render<MenuGroup>(parameters => parameters
             .Add(p => p.Attributes, new Dictionary<string, object>
             {
                 { "data-testid", "main-group" }

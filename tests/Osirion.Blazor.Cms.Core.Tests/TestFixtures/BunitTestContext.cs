@@ -6,7 +6,7 @@ using Osirion.Blazor.Cms.Domain.Interfaces;
 
 namespace Osirion.Blazor.Cms.Core.Tests.TestFixtures
 {
-    public class BunitTestContext : TestContext
+    public class BunitTestContext : BunitContext
     {
         public BunitTestContext()
         {

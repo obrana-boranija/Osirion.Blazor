@@ -11,13 +11,13 @@ namespace Osirion.Blazor.Cms.Admin.Tests.Features.Security.Components;
 
 public class AuthGuardTests : AdminComponentTestContext
 {
-    private readonly TestAuthorizationContext _authorization;
+    private readonly BunitAuthorizationContext _authorization;
 
     public AuthGuardTests()
     {
-        _authorization = this.AddTestAuthorization();
+        _authorization = this.AddAuthorization();
         RenderInteractively();
-        Services.GetRequiredService<FakeNavigationManager>().NavigateTo("osirion/content?path=a.md");
+        Services.GetRequiredService<BunitNavigationManager>().NavigateTo("osirion/content?path=a.md");
     }
 
     [Theory]
@@ -91,7 +91,7 @@ public class AuthGuardTests : AdminComponentTestContext
     {
         RenderFragment content = builder => builder.AddMarkupContent(0, "<p id=\"protected\">Protected</p>");
 
-        return RenderComponent<AuthGuard>(parameters =>
+        return Render<AuthGuard>(parameters =>
         {
             parameters.Add(guard => guard.ChildContent, content);
             configure?.Invoke(parameters);

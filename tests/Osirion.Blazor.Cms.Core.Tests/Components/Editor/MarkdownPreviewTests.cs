@@ -11,7 +11,7 @@ using Shouldly;
 
 namespace Osirion.Blazor.Cms.Core.Tests.Components.Editor;
 
-public class MarkdownPreviewTests : TestContext, IDisposable
+public class MarkdownPreviewTests : BunitContext, IDisposable
 {
     private readonly IMarkdownRendererService _markdownRenderer;
     private readonly CapturingLogger<MarkdownPreview> _logger = new();
@@ -36,7 +36,7 @@ public class MarkdownPreviewTests : TestContext, IDisposable
     public void MarkdownPreview_ShouldRender_WithDefaultSettings()
     {
         // Act
-        var cut = RenderComponent<MarkdownPreview>();
+        var cut = Render<MarkdownPreview>();
 
         // Assert
         cut.Markup.ShouldContain("osirion-markdown-preview");
@@ -54,7 +54,7 @@ public class MarkdownPreviewTests : TestContext, IDisposable
     public void MarkdownPreview_ShouldRender_WithCustomSettings()
     {
         // Act
-        var cut = RenderComponent<MarkdownPreview>(parameters => parameters
+        var cut = Render<MarkdownPreview>(parameters => parameters
             .Add(p => p.Title, "Custom Preview")
             .Add(p => p.ShowHeader, false)
             .Add(p => p.Placeholder, "Custom placeholder")
@@ -83,7 +83,7 @@ public class MarkdownPreviewTests : TestContext, IDisposable
         _markdownRenderer.RenderToHtml(markdown).Returns(renderedHtml);
 
         // Act
-        var cut = RenderComponent<MarkdownPreview>(parameters => parameters
+        var cut = Render<MarkdownPreview>(parameters => parameters
             .Add(p => p.Markdown, markdown)
         );
 
@@ -101,7 +101,7 @@ public class MarkdownPreviewTests : TestContext, IDisposable
         var markdown = "Test content";
 
         // Act
-        var cut = RenderComponent<MarkdownPreview>(parameters => parameters
+        var cut = Render<MarkdownPreview>(parameters => parameters
             .Add(p => p.Markdown, markdown)
             .Add(p => p.ContentCssClass, "custom-content-class")
         );
@@ -118,7 +118,7 @@ public class MarkdownPreviewTests : TestContext, IDisposable
         var customPipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
 
         // Act
-        var cut = RenderComponent<MarkdownPreview>(parameters => parameters
+        var cut = Render<MarkdownPreview>(parameters => parameters
             .Add(p => p.Markdown, markdown)
             .Add(p => p.Pipeline, customPipeline)
         );
@@ -135,7 +135,7 @@ public class MarkdownPreviewTests : TestContext, IDisposable
         double capturedPosition = 0;
 
         // Act
-        var cut = RenderComponent<MarkdownPreview>(parameters => parameters
+        var cut = Render<MarkdownPreview>(parameters => parameters
             .Add(p => p.SyncScroll, true)
             .Add(p => p.OnScroll, (position) => capturedPosition = position)
             .Add(p => p.Markdown, TestData.BasicMarkdown)
@@ -155,7 +155,7 @@ public class MarkdownPreviewTests : TestContext, IDisposable
     public async Task MarkdownPreview_ShouldSetScrollPosition_WhenRequested()
     {
         // Arrange
-        var cut = RenderComponent<MarkdownPreview>();
+        var cut = Render<MarkdownPreview>();
         var component = cut.Instance;
 
         // Act
@@ -175,7 +175,7 @@ public class MarkdownPreviewTests : TestContext, IDisposable
         _markdownRenderer.RenderToHtml(markdown).Returns(x => { throw new Exception("Test rendering error"); });
 
         // Act
-        var cut = RenderComponent<MarkdownPreview>(parameters => parameters
+        var cut = Render<MarkdownPreview>(parameters => parameters
             .Add(p => p.Markdown, markdown)
         );
 
@@ -193,7 +193,7 @@ public class MarkdownPreviewTests : TestContext, IDisposable
         _markdownRenderer.RenderToHtml(markdown).Returns("<p>Preview</p><img src=\"/a.png\" onerror=\"alert(1)\"><script>alert(2)</script>");
 
         // Act
-        var cut = RenderComponent<MarkdownPreview>(parameters => parameters
+        var cut = Render<MarkdownPreview>(parameters => parameters
             .Add(p => p.Markdown, markdown)
         );
 
@@ -212,7 +212,7 @@ public class MarkdownPreviewTests : TestContext, IDisposable
         var customPipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
 
         // Act
-        var cut = RenderComponent<MarkdownPreview>(parameters => parameters
+        var cut = Render<MarkdownPreview>(parameters => parameters
             .Add(p => p.Markdown, markdown)
             .Add(p => p.Pipeline, customPipeline)
         );
@@ -231,7 +231,7 @@ public class MarkdownPreviewTests : TestContext, IDisposable
         _markdownRenderer.RenderToHtml(markdown).Returns(x => { throw new Exception("<img src=x onerror=alert(1)>"); });
 
         // Act
-        var cut = RenderComponent<MarkdownPreview>(parameters => parameters
+        var cut = Render<MarkdownPreview>(parameters => parameters
             .Add(p => p.Markdown, markdown)
         );
 
@@ -248,7 +248,7 @@ public class MarkdownPreviewTests : TestContext, IDisposable
         _markdownRenderer.RenderToHtml(markdown).Returns(x => { throw new InvalidOperationException("C:\\secrets\\pipeline.config"); });
 
         // Act
-        var cut = RenderComponent<MarkdownPreview>(parameters => parameters
+        var cut = Render<MarkdownPreview>(parameters => parameters
             .Add(p => p.Markdown, markdown)
         );
 
@@ -264,7 +264,7 @@ public class MarkdownPreviewTests : TestContext, IDisposable
         _markdownRenderer.RenderToHtml("Test content").Returns(x => { throw failure; });
 
         // Act
-        RenderComponent<MarkdownPreview>(parameters => parameters
+        Render<MarkdownPreview>(parameters => parameters
             .Add(p => p.Markdown, "Test content")
         );
 
@@ -280,7 +280,7 @@ public class MarkdownPreviewTests : TestContext, IDisposable
     public async Task MarkdownPreview_ScrollEvent_DoesNotRenderTheMarkdownAgain()
     {
         // Arrange
-        var cut = RenderComponent<MarkdownPreview>(parameters => parameters
+        var cut = Render<MarkdownPreview>(parameters => parameters
             .Add(p => p.SyncScroll, true)
             .Add(p => p.OnScroll, (double _) => { })
             .Add(p => p.Markdown, "Scrolled content")
@@ -298,12 +298,12 @@ public class MarkdownPreviewTests : TestContext, IDisposable
     public void MarkdownPreview_MarkdownChanges_RendersTheNewMarkdown()
     {
         // Arrange
-        var cut = RenderComponent<MarkdownPreview>(parameters => parameters
+        var cut = Render<MarkdownPreview>(parameters => parameters
             .Add(p => p.Markdown, "First")
         );
 
         // Act
-        cut.SetParametersAndRender(parameters => parameters.Add(p => p.Markdown, "Second"));
+        cut.Render(parameters => parameters.Add(p => p.Markdown, "Second"));
 
         // Assert
         cut.Find(".osirion-markdown-preview-content p").TextContent.ShouldBe("Second");
