@@ -57,7 +57,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
 
         private static string GetProviderId(FileSystemOptions options)
         {
-            return options.ProviderId ?? $"filesystem-{options.BasePath.GetHashCode():x}";
+            return FileSystemProviderId.For(options);
         }
 
         /// <inheritdoc/>
@@ -317,9 +317,8 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
                 if (string.IsNullOrWhiteSpace(content))
                     return null;
 
-                // Get ID from relative path
                 var relativePath = GetRelativePath(filePath);
-                var id = relativePath.GetHashCode().ToString("x");
+                var id = CreateItemId(relativePath);
 
                 // Create the content item
                 var contentItem = ContentItem.Create(
@@ -354,13 +353,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
                 var url = UrlGenerator.GenerateUrl(contentItem.Url, contentItem.Path, contentItem.Slug, EnableLocalization, SupportedLocales, ContentPath);
                 contentItem.SetUrl(url);
 
-                // Set content ID if localization is enabled
-                if (_options.EnableLocalization && string.IsNullOrWhiteSpace(contentItem.ContentId))
-                {
-                    var pathWithoutLocale = UrlGenerator.RemoveLocaleFromPath(contentItem.Path, ContentPath, EnableLocalization, SupportedLocales);
-                    var pathWithoutExtension = Path.ChangeExtension(pathWithoutLocale, null);
-                    contentItem.SetContentId(pathWithoutExtension.GetHashCode().ToString("x"));
-                }
+                AssignDefaultLocalizationId(contentItem);
 
                 return contentItem;
             }

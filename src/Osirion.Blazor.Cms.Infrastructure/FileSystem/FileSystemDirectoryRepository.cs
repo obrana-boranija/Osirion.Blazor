@@ -39,7 +39,7 @@ public class FileSystemDirectoryRepository : DirectoryRepositoryBase, IDirectory
 
     private static string GetProviderId(FileSystemOptions options)
     {
-        return options.ProviderId ?? $"filesystem-{options.BasePath.GetHashCode():x}";
+        return FileSystemProviderId.For(options);
     }
 
     /// <inheritdoc/>
@@ -220,11 +220,12 @@ public class FileSystemDirectoryRepository : DirectoryRepositoryBase, IDirectory
             if (relativePath == ".")
                 relativePath = "";
 
-            // Create directory item for this directory
-            var directoryId = relativePath.GetHashCode().ToString("x");
+            // Create directory item for this directory, with the same stable id scheme as GitHub directories
+            var normalizedPath = PathUtils.NormalizePath(relativePath);
+            var directoryId = IdGenerator.GenerateDirectoryId(normalizedPath, dirInfo.Name, ProviderId);
             var directory = DirectoryItem.Create(
                 directoryId,
-                PathUtils.NormalizePath(relativePath),
+                normalizedPath,
                 dirInfo.Name,
                 ProviderId);
 

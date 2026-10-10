@@ -15,6 +15,7 @@ This release closes security holes in the CMS and Core modules. Most changes are
 | Cookie consent | Antiforgery token required, local return URLs only | Hosts that call `MapOsirionCookieConsent` (step 5) |
 | Content paths | Rooted paths and `.`/`..` segments are rejected | Code that builds content paths (step 6) |
 | API | Interface, constructor and lifetime changes | Implementers and direct callers (step 7) |
+| Content ids | Item, directory, localization and FileSystem provider ids are now stable hashes | Hosts that stored ids, and repositories with translations saved through the admin (step 8) |
 
 ### Migration Steps
 
@@ -107,6 +108,17 @@ This release closes security holes in the CMS and Core modules. Most changes are
    - `IAuthenticationService.AuthenticateWithGitHubAsync(string code)` is marked `[Obsolete]` and still works as before. It exchanges the code without a `state` check, a PKCE verifier or a redirect URI, so a host callback built on it accepts a planted `?code=` unless the host checks the state itself. It sends no code verifier, so it is not meant to complete a sign-in started by `LoginViewModel.StartGitHubLoginAsync()`, which always sends a PKCE challenge. Check the state, exchange the code with `IGitHubTokenProvider.ExchangeCodeForTokenAsync(code, clientId, clientSecret, redirectUri, codeVerifier, cancellationToken)`, then call `SetAccessTokenAsync`, as `LoginViewModel.LoginWithGitHubAsync(code, state)` does.
    - The admin event buses (`IEventPublisher`, `IEventSubscriber` and `CmsEventMediator`) are scoped, so an event reaches only subscribers of the same circuit or request. Resolve them inside a scope; resolving them from the root provider fails where scope validation is on (Development).
    - `IThemeService` and `ScrollToTopManager` are scoped instead of singletons, so each circuit or request gets its own. Inject them only into components or scoped services; a singleton that takes either fails where scope validation is on (Development).
+
+8. **Content ids are stable.** Ids used to come from `string.GetHashCode()`, which .NET randomizes per process, so they changed on every restart and differed between server instances. They are now SHA-256 based, 16 lowercase hex characters, and the same everywhere:
+   - Content item `Id`: a hash of the item's path and its provider id.
+   - Localization id (`ContentId`) when the front matter has no `id`: a hash of the path without the locale segment and the extension, so translations share it.
+   - FileSystem directory ids and ids from `CreateDirectoryCommand`: a hash of path, name and provider id, the scheme GitHub directories already used.
+   - FileSystem provider id when `ProviderId` is not configured: `filesystem-` and a hash of `BasePath`. Set `FileSystemOptions.ProviderId` if you want a readable, fixed id.
+
+   What to check:
+   - Ids the library computes are not persisted, except one: when the admin saves content it writes the localization id into the front matter as `id:`. Files saved that way before this release carry a legacy id of 1 to 8 hex digits. It still works as an explicit id, but translations of the same content that were never saved now compute a different id, so the group splits and the language switcher stops linking them. Find such files with `grep -rEn "^id: ['\"]?[0-9a-f]{1,8}['\"]?\s*$" <content folder>`, then either give every translation of that content the same `id:` (any stable value, for example a slug) or remove the legacy `id:` line from all of them so they compute the same id again. Review matches by hand: an id you chose yourself, such as `42`, matches the pattern too.
+   - Hosts that stored content, directory or FileSystem provider ids outside the library (bookmarks, database rows, cache keys) must look them up again. Those values never survived a restart, so nothing that worked before breaks.
+   - No data migration runs and none is needed. Rolling back restores the old, per-process ids.
 
 ## Upgrading to v1.5.0
 

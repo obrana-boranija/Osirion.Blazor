@@ -36,7 +36,7 @@ public class FileSystemContentProvider : ContentProviderBase
     }
 
     /// <inheritdoc />
-    public override string ProviderId => _options.ProviderId ?? $"filesystem-{_options.BasePath.GetHashCode():x}";
+    public override string ProviderId => FileSystemProviderId.For(_options);
 
     /// <inheritdoc />
     public override string DisplayName => $"FileSystem: {_options.BasePath}";

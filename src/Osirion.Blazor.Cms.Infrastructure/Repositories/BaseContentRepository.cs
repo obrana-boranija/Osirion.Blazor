@@ -413,6 +413,42 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
     public abstract Task DeleteWithCommitMessageAsync(string id, string commitMessage, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Creates the id of the content item stored at <paramref name="path"/> in this provider.
+    /// </summary>
+    /// <remarks>
+    /// The id is a hash of the path and the provider id that is the same in every process and on every server
+    /// instance, so caches, links and lookups by id survive restarts and scale-out.
+    /// </remarks>
+    /// <param name="path">The item's path relative to the provider root, with <c>/</c> separators.</param>
+    /// <returns>A 16-character lowercase hexadecimal id.</returns>
+    protected string CreateItemId(string path)
+    {
+        return IdGenerator.GenerateStableId(path, ProviderId);
+    }
+
+    /// <summary>
+    /// Gives an item whose front matter has no <c>id</c> a localization id derived from its path without the locale
+    /// segment and the file extension, so all translations of the same content share it.
+    /// </summary>
+    /// <remarks>
+    /// The provider id is left out on purpose: the admin writes this id into the front matter when it saves an item,
+    /// and translations that were never saved must still compute the same value if the provider id changes.
+    /// </remarks>
+    /// <param name="contentItem">The item to complete.</param>
+    protected void AssignDefaultLocalizationId(ContentItem contentItem)
+    {
+        if (!EnableLocalization || !string.IsNullOrWhiteSpace(contentItem.ContentId))
+            return;
+
+        var pathWithoutLocale = UrlGenerator.RemoveLocaleFromPath(contentItem.Path, ContentPath, EnableLocalization, SupportedLocales);
+        var pathWithoutExtension = Path.ChangeExtension(pathWithoutLocale, null);
+        if (string.IsNullOrWhiteSpace(pathWithoutExtension))
+            return;
+
+        contentItem.SetContentId(IdGenerator.GenerateStableId(pathWithoutExtension));
+    }
+
+    /// <summary>
     /// Processes a markdown file to create a content item
     /// </summary>
     protected async Task ProcessMarkdownAsync(string markdown, ContentItem contentItem, CancellationToken cancellationToken)

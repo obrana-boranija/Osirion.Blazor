@@ -102,7 +102,7 @@ public class ContentBuilder : CmsBuilderBase, IContentBuilder
         Services.AddSingleton<IDefaultProviderSetter>(sp =>
         {
             var options = sp.GetRequiredService<IOptions<FileSystemOptions>>().Value;
-            var providerId = options.ProviderId ?? $"filesystem-{options.BasePath.GetHashCode():x}";
+            var providerId = FileSystemProviderId.For(options);
             return new DefaultProviderSetter(providerId, options.IsDefault);
         });
 

@@ -266,8 +266,7 @@ public class GitHubContentRepository : BaseContentRepository
         if (string.IsNullOrWhiteSpace(markdownContent))
             return null;
 
-        // Get unique ID from path
-        var id = fileContent.Path.GetHashCode().ToString("x");
+        var id = CreateItemId(fileContent.Path);
 
         // Create the content item
         var contentItem = ContentItem.Create(
@@ -317,13 +316,7 @@ public class GitHubContentRepository : BaseContentRepository
         var url = UrlGenerator.GenerateUrl(contentItem.Url, contentItem.Path, contentItem.Slug, EnableLocalization, SupportedLocales, ContentPath);
         contentItem.SetUrl(url);
 
-        // Set content ID if localization is enabled
-        if (_options.EnableLocalization && string.IsNullOrWhiteSpace(contentItem.ContentId))
-        {
-            var pathWithoutLocale = UrlGenerator.RemoveLocaleFromPath(contentItem.Path, ContentPath, EnableLocalization, SupportedLocales);
-            var pathWithoutExtension = Path.ChangeExtension(pathWithoutLocale, null);
-            contentItem.SetContentId(pathWithoutExtension.GetHashCode().ToString("x"));
-        }
+        AssignDefaultLocalizationId(contentItem);
 
         return contentItem;
     }

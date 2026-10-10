@@ -85,6 +85,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Front matter is found line by line: files with LF line endings lost the first character of their body (often the `#` of a heading), `---` inside a value ended the front matter early, and a file containing only `---` threw
 - `IOsirionBuilder.UseCmsAdmin(Action<ICmsAdminBuilder>)` registered nothing; it now registers the admin services and applies the callback
 - The markdown editor and preview wrote the scroll position with the current culture, which broke scroll sync in cultures with a decimal comma
+- Content item ids, default localization ids, FileSystem directory ids and the default FileSystem provider id came from `string.GetHashCode()`, which is randomized per process, so they changed on every restart, differed between server instances and could collide. They are now SHA-256 based and stable; see MIGRATION for translations saved through the admin
 
 ### Security
 - Osirion.Blazor.Cms.Admin: every routed admin page (`/osirion`, `/osirion/dashboard`, `/osirion/content`, `/osirion/content/edit`, `/osirion/settings`, `/osirion/login`) requires the authorization policy `"Osirion.Cms.Admin"` (`CmsAdminAuthorization.PolicyName`). The default policy requires an authenticated user; a host policy with that name replaces it. These pages, and the repository writes behind them, were open to anonymous visitors

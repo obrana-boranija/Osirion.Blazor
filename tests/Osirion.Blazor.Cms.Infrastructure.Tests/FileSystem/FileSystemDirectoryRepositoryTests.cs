@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging.Abstractions;
+﻿using Osirion.Blazor.Cms.Infrastructure.Utilities;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 using Osirion.Blazor.Cms.Domain.Entities;
@@ -273,5 +274,15 @@ public sealed class FileSystemDirectoryRepositoryTests : IDisposable
         var directory = await _repository.GetByPathAsync(path);
         directory.ShouldNotBeNull();
         return directory;
+    }
+
+    [Fact]
+    public async Task GetAllAsync_ScannedDirectory_GetsTheStableIdForItsPathNameAndProvider()
+    {
+        CreateDirectoryOnDisk("content/blog");
+
+        var directory = await GetByPathAsync("content/blog");
+
+        directory.Id.ShouldBe(IdGenerator.GenerateDirectoryId("content/blog", "blog", directory.ProviderId));
     }
 }

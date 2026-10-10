@@ -3,6 +3,7 @@ using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Events;
 using Osirion.Blazor.Cms.Domain.Repositories;
 using DirectoryNotFoundException = Osirion.Blazor.Cms.Domain.Exceptions.DirectoryNotFoundException;
+using Osirion.Blazor.Cms.Infrastructure.Utilities;
 
 namespace Osirion.Blazor.Cms.Application.Commands.Directory;
 
@@ -71,7 +72,7 @@ public class CreateDirectoryCommandHandler : ICommandHandler<CreateDirectoryComm
             }
 
             // Create the directory entity
-            var directoryId = path.GetHashCode().ToString("x");
+            var directoryId = IdGenerator.GenerateDirectoryId(path, command.Name, unitOfWork.ProviderId);
             var directory = DirectoryItem.Create(
                 directoryId,
                 path,
