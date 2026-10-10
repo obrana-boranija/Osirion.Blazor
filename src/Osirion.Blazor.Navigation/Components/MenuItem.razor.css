@@ -156,6 +156,12 @@
     clip: rect(0, 0, 0, 0);
 }
 
+/* Keyboard focus: the checkbox is visually hidden, so show its focus on the visible toggle */
+.osirion-submenu-toggler:focus-visible ~ .osirion-submenu-toggle {
+    outline: 2px solid currentColor;
+    outline-offset: -2px;
+}
+
 .osirion-menu-item-has-submenu > .osirion-menu-item {
     padding-right: 2.75rem;
 }

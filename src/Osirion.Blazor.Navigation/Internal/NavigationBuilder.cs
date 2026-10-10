@@ -100,20 +100,23 @@ public class NavigationBuilder : INavigationBuilder
             opt.Title = options.Title;
             opt.CssClass = options.CssClass;
             opt.CustomIcon = options.CustomIcon;
+            opt.IconCssClass = options.IconCssClass;
+            opt.Enabled = options.Enabled;
         });
 
         // Scoped, not singleton: the manager's settings are mutable at run time, and a change made for one
         // user (one circuit or request) must not show up for, or re-render, any other user.
         Services.AddScoped(_ => new ScrollToTopManager
         {
-            IsEnabled = true,
+            IsEnabled = options.Enabled,
             Position = options.Position,
             Behavior = options.Behavior,
             VisibilityThreshold = options.VisibilityThreshold,
             Text = options.Text,
             Title = options.Title,
             CssClass = options.CssClass,
-            CustomIcon = options.CustomIcon
+            CustomIcon = options.CustomIcon,
+            IconCssClass = options.IconCssClass
         });
     }
 }

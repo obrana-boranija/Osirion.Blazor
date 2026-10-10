@@ -120,7 +120,8 @@ The `ScrollToTop` component adds a button that appears when the user scrolls dow
 | `Text` | string | null | Optional text to display on the button |
 | `Title` | string | "Scroll to top" | Tooltip/accessibility title |
 | `CssClass` | string | null | Additional CSS classes |
-| `CustomIcon` | string | null | Custom SVG icon markup |
+| `CustomIcon` | string | null | Custom icon markup, sanitized with the Osirion HTML sanitizer (which removes `svg`) |
+| `IconCssClass` | string | null | CSS class of an icon element (icon font or CSS mask icon) shown instead of the built-in arrow |
 
 ### ScrollToTopProvider
 
@@ -158,7 +159,9 @@ All components are designed to be SSR-compatible:
 
 ### Programmatically Scroll Using the Service
 
-You can inject the `INavigationService` to programmatically control scrolling:
+> **Obsolete.** `ScrollToTopAsync` and `ScrollToElementAsync` only write a log entry and never scroll. Use the `ScrollToTop` component or an anchor link to the element id instead.
+
+The members are kept for source compatibility:
 
 ```csharp
 @inject INavigationService NavigationService

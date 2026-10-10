@@ -1,3 +1,4 @@
+#pragma warning disable CS0618 // The tests cover the members that are obsolete because they only log.
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NSubstitute;

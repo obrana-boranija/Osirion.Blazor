@@ -188,4 +188,40 @@ public class RichMenuTests : BunitContext
 
         Assert.Empty(cut.FindAll(".osirion-menu-image-card-description"));
     }
+
+    [Theory]
+    [InlineData("javascript:alert(1)")]
+    [InlineData("JAVASCRIPT:alert(1)")]
+    [InlineData("data:text/html,x")]
+    public void MenuLinks_DoNotRenderHref_WhenSchemeIsUnsafe(string href)
+    {
+        var panelLink = Render<MenuPanelLink>(parameters => parameters
+            .Add(p => p.Text, "Link")
+            .Add(p => p.Href, href));
+        var imageCard = Render<MenuImageCard>(parameters => parameters
+            .Add(p => p.Title, "Card")
+            .Add(p => p.ImageUrl, "/a.png")
+            .Add(p => p.Href, href));
+        var callToAction = Render<MenuCallToAction>(parameters => parameters
+            .Add(p => p.Text, "Go")
+            .Add(p => p.Href, href));
+
+        Assert.False(panelLink.Find("a").HasAttribute("href"));
+        Assert.False(imageCard.Find("a").HasAttribute("href"));
+        Assert.False(callToAction.Find("a").HasAttribute("href"));
+    }
+
+    [Fact]
+    public void MenuLinks_RenderHref_WhenSchemeIsSafe()
+    {
+        var panelLink = Render<MenuPanelLink>(parameters => parameters
+            .Add(p => p.Text, "Link")
+            .Add(p => p.Href, "https://example.com/a"));
+        var callToAction = Render<MenuCallToAction>(parameters => parameters
+            .Add(p => p.Text, "Go")
+            .Add(p => p.Href, "/contact"));
+
+        Assert.Equal("https://example.com/a", panelLink.Find("a").GetAttribute("href"));
+        Assert.Equal("/contact", callToAction.Find("a").GetAttribute("href"));
+    }
 }

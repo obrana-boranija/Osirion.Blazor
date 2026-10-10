@@ -1,4 +1,6 @@
 using Bunit;
+using Microsoft.AspNetCore.Components.Routing;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Components;
 using Osirion.Blazor.Navigation.Components;
 using Shouldly;
@@ -29,7 +31,8 @@ public class MenuItemTests : BunitContext
         var link = cut.Find(".osirion-menu-item-wrapper > a.osirion-menu-item");
         link.GetAttribute("href").ShouldBe("#");
         link.GetAttribute("aria-disabled").ShouldBe("false");
-        link.GetAttribute("aria-haspopup").ShouldBe("false");
+        link.HasAttribute("aria-haspopup").ShouldBeFalse();
+        link.HasAttribute("aria-expanded").ShouldBeFalse();
         link.HasAttribute("aria-current").ShouldBeFalse();
         cut.Find(".osirion-menu-item-content > .osirion-menu-item-text").TextContent.ShouldBe("Menu Item");
         cut.FindAll(".osirion-menu-item-icon").ShouldBeEmpty();
@@ -92,7 +95,7 @@ public class MenuItemTests : BunitContext
         var link = cut.Find("a.osirion-menu-item");
         link.ClassList.ShouldContain("osirion-menu-item-disabled");
         link.GetAttribute("aria-disabled").ShouldBe("true");
-        link.GetAttribute("href").ShouldBe("#");
+        link.HasAttribute("href").ShouldBeFalse();
     }
 
     [Fact]
@@ -108,10 +111,148 @@ public class MenuItemTests : BunitContext
         cut.Find(".osirion-menu-item-wrapper").ClassList.ShouldContain("osirion-menu-item-has-submenu");
         var link = cut.Find("a.osirion-menu-item");
         var submenu = cut.Find(".osirion-submenu");
-        link.GetAttribute("aria-haspopup").ShouldBe("true");
-        link.GetAttribute("aria-controls").ShouldBe(submenu.Id);
-        submenu.GetAttribute("role").ShouldBe("menu");
+        link.HasAttribute("aria-haspopup").ShouldBeFalse();
+        link.HasAttribute("aria-expanded").ShouldBeFalse();
+        submenu.HasAttribute("role").ShouldBeFalse();
+        var toggler = cut.Find("input.osirion-submenu-toggler");
+        toggler.GetAttribute("aria-controls").ShouldBe(submenu.Id);
+        toggler.GetAttribute("aria-label").ShouldBe("Toggle Parent Item submenu");
+        toggler.HasAttribute("aria-hidden").ShouldBeFalse();
+        toggler.GetAttribute("tabindex").ShouldBeNull();
         submenu.QuerySelector("div")!.TextContent.ShouldBe("Submenu Content");
         cut.Find(".osirion-submenu-toggle > .osirion-menu-item-chevron > svg").ShouldNotBeNull();
+    }
+
+    [Fact]
+    public void MenuItem_ShouldRenderTargetAndRelOnTheAnchor_WhenTargetIsBlank()
+    {
+        // Act
+        var cut = Render<MenuItem>(parameters => parameters
+            .Add(p => p.Text, "Docs")
+            .Add(p => p.Href, "https://docs.example.com")
+            .Add(p => p.Target, "_blank"));
+
+        // Assert
+        var link = cut.Find("a.osirion-menu-item");
+        link.GetAttribute("target").ShouldBe("_blank");
+        link.GetAttribute("rel").ShouldBe("noopener noreferrer");
+        cut.Find(".osirion-menu-item-wrapper").HasAttribute("rel").ShouldBeFalse();
+    }
+
+    [Fact]
+    public void MenuItem_ShouldNotRenderTargetOrRel_WhenTargetIsNotSet()
+    {
+        var cut = Render<MenuItem>(parameters => parameters
+            .Add(p => p.Text, "Docs")
+            .Add(p => p.Href, "/docs"));
+
+        var link = cut.Find("a.osirion-menu-item");
+        link.HasAttribute("target").ShouldBeFalse();
+        link.HasAttribute("rel").ShouldBeFalse();
+    }
+
+    [Theory]
+    [InlineData("javascript:alert(1)")]
+    [InlineData("JaVaScRiPt:alert(1)")]
+    [InlineData("  javascript:alert(1)")]
+    [InlineData("java\tscript:alert(1)")]
+    [InlineData("data:text/html,<script>alert(1)</script>")]
+    [InlineData("vbscript:msgbox(1)")]
+    public void MenuItem_ShouldNotRenderHref_WhenSchemeIsUnsafe(string href)
+    {
+        var cut = Render<MenuItem>(parameters => parameters
+            .Add(p => p.Text, "Evil")
+            .Add(p => p.Href, href));
+
+        cut.Find("a.osirion-menu-item").HasAttribute("href").ShouldBeFalse();
+    }
+
+    [Theory]
+    [InlineData("/relative/path")]
+    [InlineData("relative")]
+    [InlineData("#section")]
+    [InlineData("?page=2")]
+    [InlineData("https://example.com/a")]
+    [InlineData("http://example.com/a")]
+    [InlineData("mailto:someone@example.com")]
+    [InlineData("tel:+123456789")]
+    [InlineData("/search?q=a:b")]
+    public void MenuItem_ShouldRenderHref_WhenSchemeIsSafe(string href)
+    {
+        var cut = Render<MenuItem>(parameters => parameters
+            .Add(p => p.Text, "Fine")
+            .Add(p => p.Href, href));
+
+        cut.Find("a.osirion-menu-item").GetAttribute("href").ShouldBe(href);
+    }
+
+    [Fact]
+    public void MenuItem_ShouldNotWriteComputedActiveStateIntoTheIsActiveParameter()
+    {
+        // Arrange
+        Services.GetRequiredService<NavigationManager>().NavigateTo("/current");
+
+        // Act
+        var cut = Render<MenuItem>(parameters => parameters
+            .Add(p => p.Text, "Current")
+            .Add(p => p.Href, "/current"));
+
+        // Assert
+        cut.Find("a.osirion-menu-item").GetAttribute("aria-current").ShouldBe("page");
+        cut.Instance.IsActive.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void MenuItem_ShouldFollowLocationChanges_WhenInteractive()
+    {
+        // Arrange
+        SetRendererInfo(new RendererInfo("Server", true));
+        var navigation = Services.GetRequiredService<NavigationManager>();
+        navigation.NavigateTo("/first");
+
+        var first = Render<MenuItem>(parameters => parameters.Add(p => p.Text, "First").Add(p => p.Href, "/first"));
+        var second = Render<MenuItem>(parameters => parameters.Add(p => p.Text, "Second").Add(p => p.Href, "/second"));
+        first.Find("a.osirion-menu-item").GetAttribute("aria-current").ShouldBe("page");
+        second.Find("a.osirion-menu-item").HasAttribute("aria-current").ShouldBeFalse();
+
+        // Act
+        navigation.NavigateTo("/second");
+
+        // Assert
+        first.WaitForAssertion(() => first.Find("a.osirion-menu-item").HasAttribute("aria-current").ShouldBeFalse());
+        second.WaitForAssertion(() => second.Find("a.osirion-menu-item").GetAttribute("aria-current").ShouldBe("page"));
+    }
+
+    [Fact]
+    public void MenuItem_ShouldStopListeningToLocationChanges_WhenDisposed()
+    {
+        // Arrange
+        SetRendererInfo(new RendererInfo("Server", true));
+        var navigation = Services.GetRequiredService<NavigationManager>();
+        navigation.NavigateTo("/first");
+        var cut = Render<MenuItem>(parameters => parameters.Add(p => p.Text, "First").Add(p => p.Href, "/first"));
+
+        var renderCount = cut.RenderCount;
+
+        // Act
+        cut.Instance.Dispose();
+        navigation.NavigateTo("/second");
+
+        // Assert: a component that was still subscribed would have re-rendered without aria-current
+        cut.RenderCount.ShouldBe(renderCount);
+        cut.Find("a.osirion-menu-item").GetAttribute("aria-current").ShouldBe("page");
+    }
+
+    [Fact]
+    public void MenuItem_ShouldMatchPrefixOnSegmentBoundary()
+    {
+        Services.GetRequiredService<NavigationManager>().NavigateTo("/modules-extra/a");
+
+        var cut = Render<MenuItem>(parameters => parameters
+            .Add(p => p.Text, "Modules")
+            .Add(p => p.Href, "/modules")
+            .Add(p => p.Match, NavLinkMatch.Prefix));
+
+        cut.Find("a.osirion-menu-item").HasAttribute("aria-current").ShouldBeFalse();
     }
 }

@@ -1,11 +1,12 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.AspNetCore.Components.Web;
+using Osirion.Blazor.Navigation.Internal;
 
 namespace Osirion.Blazor.Navigation.Components;
 
 /// <summary>Defines the MenuItem type.</summary>
-public partial class MenuItem
+public partial class MenuItem : IDisposable
 {
     /// <summary>
     /// Gets or sets the text content of the menu item.
@@ -112,11 +113,17 @@ public partial class MenuItem
     [Inject]
     private NavigationManager NavigationManager { get; set; } = default!;
 
+    private readonly string _generatedId = Guid.NewGuid().ToString("N")[..8];
+
+    // Derived render state. [Parameter] properties are never written by the component, so a parent
+    // re-render cannot be overridden by a stale computed value.
+    private bool _isActive;
+    private string? _renderedHref;
+    private bool _isSubscribed;
+
     /// <summary>
     /// Gets the unique identifier for the submenu.
     /// </summary>
-    private readonly string _generatedId = Guid.NewGuid().ToString("N")[..8];
-
     internal string SubmenuId => $"submenu-{Id ?? _generatedId}";
 
     /// <summary>
@@ -130,71 +137,71 @@ public partial class MenuItem
         _ => "osirion-submenu-regular"
     };
 
-    /// <summary>
-    /// Gets whether this menu item should be considered active based on the current URL.
-    /// </summary>
-    private bool ShouldBeActive
-    {
-        get
-        {
-            // If IsActive is explicitly set, respect that setting
-            if (IsActive)
-                return true;
-
-            // Skip auto-detection if disabled or if AutoDetectActive is false
-            if (!AutoDetectActive || string.IsNullOrWhiteSpace(Href) || Href == "#")
-                return false;
-
-            var currentUri = NavigationManager.Uri;
-            var baseUri = NavigationManager.BaseUri;
-            
-            // Get the relative path from current URI
-            var relativePath = NavigationManager.ToBaseRelativePath(currentUri);
-            
-            // Normalize the href (remove leading slash if present)
-            var normalizedHref = Href.TrimStart('/');
-            
-            // Handle different matching modes
-            return Match switch
-            {
-                NavLinkMatch.All => string.Equals(relativePath, normalizedHref, StringComparison.OrdinalIgnoreCase),
-                NavLinkMatch.Prefix => relativePath.StartsWith(normalizedHref, StringComparison.OrdinalIgnoreCase),
-                _ => false
-            };
-        }
-    }
-
     /// <summary>Initializes the component state and required services.</summary>
     protected override void OnInitialized()
     {
         base.OnInitialized();
 
-        // Update IsActive based on automatic detection
-        if (AutoDetectActive && !IsActive)
+        // Static SSR renders once per request, so only an interactive item can see the location change.
+        if (IsInteractive && AutoDetectActive)
         {
-            IsActive = ShouldBeActive;
+            NavigationManager.LocationChanged += OnLocationChanged;
+            _isSubscribed = true;
         }
-
-        if (Attributes is null)
-        {
-            Attributes = new Dictionary<string, object>();
-        }
-
-        // Add rel attribute for external links
-        if (Target == "_blank" && !Attributes.ContainsKey("rel"))
-            Attributes["rel"] = "noopener noreferrer";
     }
 
-    /// <summary>Performs the OnParametersSet operation.</summary>
+    /// <summary>Recomputes the effective link target and active state from the current parameters.</summary>
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
-        
-        // Update active state on parameter changes (for example, when navigation occurs)
-        if (AutoDetectActive && !IsActive)
+        RefreshRenderState();
+    }
+
+    private void RefreshRenderState()
+    {
+        // A disabled item and a rejected URL (for example a javascript: scheme) render no href at all.
+        _renderedHref = Disabled ? null : SafeHref.Sanitize(Href);
+        _isActive = IsActive || (AutoDetectActive && MatchesCurrentLocation());
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        var wasActive = _isActive;
+        RefreshRenderState();
+
+        if (wasActive != _isActive)
         {
-            IsActive = ShouldBeActive;
+            _ = InvokeAsync(StateHasChanged);
         }
+    }
+
+    private bool MatchesCurrentLocation()
+    {
+        if (string.IsNullOrWhiteSpace(Href) || Href == "#" || Disabled)
+        {
+            return false;
+        }
+
+        var currentPath = TrimToPath(NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
+        var targetPath = TrimToPath(Href);
+
+        return Match switch
+        {
+            NavLinkMatch.All => string.Equals(currentPath, targetPath, StringComparison.OrdinalIgnoreCase),
+            NavLinkMatch.Prefix => targetPath.Length == 0
+                || string.Equals(currentPath, targetPath, StringComparison.OrdinalIgnoreCase)
+                || currentPath.StartsWith(targetPath + "/", StringComparison.OrdinalIgnoreCase),
+            _ => false
+        };
+    }
+
+    // Compares paths only: a query string or fragment must not change the match, and neither must
+    // a leading or trailing slash.
+    private static string TrimToPath(string value)
+    {
+        var end = value.AsSpan().IndexOfAny('?', '#');
+        var path = end >= 0 ? value[..end] : value;
+        return path.Trim('/');
     }
 
     /// <summary>
@@ -206,6 +213,16 @@ public partial class MenuItem
         if (!Disabled && OnClick.HasDelegate)
         {
             await OnClick.InvokeAsync(args);
+        }
+    }
+
+    /// <summary>Releases the location change subscription.</summary>
+    public void Dispose()
+    {
+        if (_isSubscribed)
+        {
+            NavigationManager.LocationChanged -= OnLocationChanged;
+            _isSubscribed = false;
         }
     }
 }

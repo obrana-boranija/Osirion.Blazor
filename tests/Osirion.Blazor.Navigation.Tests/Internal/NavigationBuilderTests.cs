@@ -247,4 +247,38 @@ public class NavigationBuilderTests
             .AddInMemoryCollection(new Dictionary<string, string?> { ["VisibilityThreshold"] = "500" })
             .Build());
     }
+
+    [Fact]
+    public void AddScrollToTop_ShouldHonourEnabledFalse()
+    {
+        var services = new ServiceCollection();
+        var builder = new NavigationBuilder(services);
+
+        builder.AddScrollToTop(options =>
+        {
+            options.Enabled = false;
+            options.IconCssClass = "fa fa-arrow-up";
+        });
+
+        using var serviceProvider = services.BuildServiceProvider();
+        serviceProvider.GetRequiredService<ScrollToTopManager>().IsEnabled.ShouldBeFalse();
+        serviceProvider.GetRequiredService<ScrollToTopManager>().IconCssClass.ShouldBe("fa fa-arrow-up");
+        var options = serviceProvider.GetRequiredService<IOptions<ScrollToTopOptions>>().Value;
+        options.Enabled.ShouldBeFalse();
+        options.IconCssClass.ShouldBe("fa fa-arrow-up");
+    }
+
+    [Fact]
+    public void AddScrollToTop_FromConfiguration_ShouldHonourEnabledFalse()
+    {
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?> { ["Enabled"] = "false" })
+            .Build();
+        var services = new ServiceCollection();
+
+        new NavigationBuilder(services).AddScrollToTop(configuration);
+
+        using var serviceProvider = services.BuildServiceProvider();
+        serviceProvider.GetRequiredService<ScrollToTopManager>().IsEnabled.ShouldBeFalse();
+    }
 }

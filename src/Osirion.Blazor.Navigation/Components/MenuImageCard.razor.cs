@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Osirion.Blazor.Navigation.Internal;
 
 namespace Osirion.Blazor.Navigation.Components;
 
@@ -31,4 +32,10 @@ public partial class MenuImageCard
     /// <summary>Gets or sets how to open the destination.</summary>
     [Parameter]
     public string? Target { get; set; }
+
+    /// <summary>
+    /// Gets the destination to render, or <see langword="null"/> when <see cref="Href"/> uses a scheme
+    /// that is not safe (for example <c>javascript:</c>).
+    /// </summary>
+    private string? RenderedHref => SafeHref.Sanitize(Href);
 }

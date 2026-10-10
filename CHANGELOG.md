@@ -45,6 +45,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Dependencies updated to their latest releases: .NET 9 packages to 9.0.20, .NET 10 packages to 10.0.12, Markdig 1.4.0, YamlDotNet 18.1.0, Scrutor 7.0.0, FluentValidation 12.2.0 and System.IO.Abstractions 22.3.0
 - Osirion.Blazor.Cms.Domain, Cms.Core and Cms.Infrastructure use the `Microsoft.AspNetCore.App` framework reference instead of the legacy `Microsoft.AspNetCore.Http` 2.x packages and the `Microsoft.Extensions.*` packages that framework already provides
 - Every package ships SourceLink information and a symbol package (`.snupkg`); the build is deterministic and treats warnings as errors
+- Menu accessibility: the mobile toggle is keyboard-focusable and labelled with `aria-controls`; submenus follow the disclosure pattern (no `role="menu"`, `aria-haspopup` or constant `aria-expanded="false"`); a disabled `MenuItem` renders no `href`; `Menu` default ids are unique per instance (`osirion-menu-{orientation}-{suffix}`)
+- `EnhancedNavigation` parameters are nullable, so configured `EnhancedNavigationOptions` apply unless a parameter is set; `INavigationService.ScrollToTopAsync` and `ScrollToElementAsync` are marked `[Obsolete]` because they only log
 
 ### Deprecated
 - `LoginViewModel.LoginWithGitHubAsync(string code)` always fails, because a code without its OAuth state cannot be verified; use `StartGitHubLoginAsync()` and `LoginWithGitHubAsync(code, state)`
@@ -95,6 +97,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GA4 `SendPageView=false` is honoured
 - Tracker component parameters (`Enabled`, `SiteId`, `MeasurementId`, `DebugMode`, `CounterId`, `WebVisor`, `ClickMap`, `TrackLinks`, `AccurateTrackBounce`) were ignored; they now override the configured options for that render
 - Yandex Metrica options bind from `Osirion:Analytics:YandexMetrica` like the other providers (the old `YandexMetrica` key is still read), and each analytics provider is registered once with `IAnalyticsProvider` returning the same instance
+- `MenuItem` renders `target` and `rel="noopener noreferrer"` on the link instead of putting `rel` on the wrapper; its active state no longer overwrites the `IsActive` parameter, follows navigation when interactive, ignores query and fragment, and `Prefix` matches on a segment boundary
+- `Menu` and `MenuGroup` keep their classes, styles and ids when a parent renders again
+- `ScrollToTopOptions.Enabled` is honoured, the scroll listener is registered once, and the button id is unique per instance
 
 ### Security
 - Osirion.Blazor.Cms.Admin: every routed admin page (`/osirion`, `/osirion/dashboard`, `/osirion/content`, `/osirion/content/edit`, `/osirion/settings`, `/osirion/login`) requires the authorization policy `"Osirion.Cms.Admin"` (`CmsAdminAuthorization.PolicyName`). The default policy requires an authenticated user; a host policy with that name replaces it. These pages, and the repository writes behind them, were open to anonymous visitors
@@ -112,6 +117,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Osirion.Blazor.Cms.Admin: `AddGitHubAdminServices` turns cookies off on the GitHub HTTP clients itself, through the same registration as Osirion.Blazor.Cms.Infrastructure, instead of relying on another registration method to do it
 - Osirion.Blazor.Core: `HeroSection` CSS-escapes `ImageUrl` when it writes the background image, so a front matter `featured_image` (passed by `ArticlePage`, `HomePage` and `LandingPage`) can no longer close the `url()` value and add style declarations such as a full-page overlay
 - Analytics trackers (Clarity, Matomo, GA4, Yandex Metrica) JSON-encode every configured value they write into scripts and attributes; invalid GA4 ids, Yandex counters and tracker or CDN URLs fail at startup with a message naming the setting
+- Navigation links (`MenuItem`, `MenuGroup` footer, `MenuPanelLink`, `MenuImageCard`, `MenuCallToAction` and the `Menu` brand link) render no `href` for schemes other than relative, http, https, mailto and tel, so a `javascript:` URL from CMS-driven menu data cannot run
+- `ScrollToTop.CustomIcon` is sanitized; the new `IconCssClass` is the way to use a custom icon
 
 ## [1.5.0] - 2025-04-21
 

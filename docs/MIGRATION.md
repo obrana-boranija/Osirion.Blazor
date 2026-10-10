@@ -128,6 +128,13 @@ This release closes security holes in the CMS and Core modules. Most changes are
    - Script string literals now use double quotes (for example `gtag('config', "G-XXXX", ...)`); update anything that matched the old markup text.
    - `IAnalyticsService.TrackPageViewAsync` and `TrackEventAsync` still send nothing; page views inside an already interactive router are not reported yet.
 
+10. **Navigation.**
+   - `ScrollToTopOptions.Enabled=false` now hides the button (it was always shown). Remove the setting or set it to `true` to keep the button.
+   - `ScrollToTop.CustomIcon` is sanitized and `svg` is removed; move SVG icons to CSS and set `IconCssClass`.
+   - Configured `Osirion:Navigation:Enhanced` values now apply when the `EnhancedNavigation` parameter is not set, so `PreserveScrollForSamePageNavigation=false` now scrolls same-page navigations to the top.
+   - Menu ids changed from `osirion-menu-{orientation}` to `osirion-menu-{orientation}-{suffix}`; set `Id` if CSS or script targets the old id. Submenu markup no longer carries `role="menu"`, `aria-haspopup` or `aria-expanded` on links.
+   - `INavigationService.ScrollToTopAsync` and `ScrollToElementAsync` are obsolete (a build error where warnings are errors); they never scrolled.
+
 ## Upgrading to v1.5.0
 
 ### Breaking Changes
