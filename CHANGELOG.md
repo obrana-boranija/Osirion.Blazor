@@ -55,6 +55,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `LoginViewModel.LoginWithGitHubAsync(string code)` always fails, because a code without its OAuth state cannot be verified; use `StartGitHubLoginAsync()` and `LoginWithGitHubAsync(code, state)`
 - `IAuthenticationService.AuthenticateWithGitHubAsync(string code)` is marked `[Obsolete]`: it exchanges a code without a state check, a PKCE verifier or a redirect URI. It still works; check the state, exchange the code with `IGitHubTokenProvider` and call `SetAccessTokenAsync` instead
 - `AuthGuard.ShowLoginForm`, `AuthGuard.OnAuthResult` and `AdminPage.ShowLoginForm` are marked `[Obsolete]`, because they have no effect
+- `DomainEntityBase<TId>` and the unused Cms.Admin types `CommandDispatcher` (Application.Core), `ContentRepositoryAdapter`, `StatePersistenceService`, `StateManager`, `ErrorHandlingService` and `CmsAdminStartupService`; they will be removed in the next major release
 
 ### Fixed
 - `MenuGroup` without an `Id` generated a new identifier on every read, so the items container's `aria-labelledby` pointed at an element that did not exist and the label and items ids changed on every render; the generated identifier is now created once per instance
@@ -108,6 +109,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `ContentView`, `ContentPage` and the detail pages reload when their path, url or slug changes instead of keeping the previous item, and `ContentPage` share links use the real page URL
 - Tag and category URLs come from one invariant, URL-encoded slug helper (`C#` no longer turns into a fragment), and `ContentPage` passes its locale and URL formatters to `LocalizedContentView`
 - Cms.Web components log failures through `ILogger` instead of the console or empty catch blocks; `CategoriesList` and `TagCloud` fetch once; `DocumentPage` writes a valid schema.org `itemtype`
+- `DirectoryItem` and `ContentItem` keep the directory tree consistent from both sides: moving a child no longer lists it under two parents, and `SetParent` accepts moving a directory up to a higher ancestor
+- `GenerateSlug` strips diacritics and transliterates Serbian Latin and Serbian and Russian Cyrillic; titles with no Latin form get a stable short hash instead of `untitled`. Stored slugs are unchanged
+- Entity equality compares the runtime type, and entities without an id are equal only to themselves
+- `DomainEventDispatcher` runs handlers registered for the event's concrete type
+- CMS admin: `AddOsirionCmsAdmin(Action<...>)` no longer builds a second service provider; the edit page loads a file once per path change; background failures are logged; error messages shown to users no longer contain exception text; view models unsubscribe from shared state when disposed
+- CMS admin: the GitHub sign-in is restored on any admin page after a reload when the admin layout renders interactively
 
 ### Security
 - Osirion.Blazor.Cms.Admin: every routed admin page (`/osirion`, `/osirion/dashboard`, `/osirion/content`, `/osirion/content/edit`, `/osirion/settings`, `/osirion/login`) requires the authorization policy `"Osirion.Cms.Admin"` (`CmsAdminAuthorization.PolicyName`). The default policy requires an authenticated user; a host policy with that name replaces it. These pages, and the repository writes behind them, were open to anonymous visitors

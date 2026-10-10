@@ -6,7 +6,7 @@ using Osirion.Blazor.Cms.Domain.Models.GitHub;
 namespace Osirion.Blazor.Cms.Admin.Features.Repository.ViewModels;
 
 /// <summary>Defines the RepositorySelectorViewModel API contract.</summary>
-public class RepositorySelectorViewModel
+public class RepositorySelectorViewModel : IDisposable
 {
     private readonly RepositoryService _repositoryService;
     private readonly CmsState _state;
@@ -138,5 +138,11 @@ public class RepositorySelectorViewModel
     protected void NotifyStateChanged()
     {
         StateChanged?.Invoke();
+    }
+
+    /// <summary>Unsubscribes from the shared state.</summary>
+    public void Dispose()
+    {
+        _state.StateChanged -= OnStateChanged;
     }
 }

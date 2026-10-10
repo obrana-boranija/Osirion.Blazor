@@ -1,4 +1,4 @@
-﻿using Osirion.Blazor.Cms.Domain.Extensions;
+using Osirion.Blazor.Cms.Domain.Extensions;
 
 namespace Osirion.Blazor.Cms.Domain.Tests.Extensions;
 
@@ -230,5 +230,31 @@ public class EntityExtensionsTests
 
         // Assert
         Assert.Equal(input, result);
+    }
+
+    [Theory]
+    [InlineData("Šta je novo", "sta-je-novo")]
+    [InlineData("Đorđe i ćevapi", "djordje-i-cevapi")]
+    [InlineData("Žaba čeka", "zaba-ceka")]
+    [InlineData("Café déjà vu", "cafe-deja-vu")]
+    [InlineData("Шта је ново", "sta-je-novo")]
+    [InlineData("Ђурђевдан", "djurdjevdan")]
+    [InlineData("Привет мир", "privet-mir")]
+    public void GenerateSlug_WithDiacriticsOrCyrillic_Transliterates(string text, string expected)
+    {
+        Assert.Equal(expected, text.GenerateSlug());
+    }
+
+    [Fact]
+    public void GenerateSlug_WithUntransliterableTitles_UsesStableDistinctHashes()
+    {
+        var first = "你好世界".GenerateSlug();
+        var again = "你好世界".GenerateSlug();
+        var other = "再见".GenerateSlug();
+
+        Assert.Equal(first, again);
+        Assert.NotEqual(first, other);
+        Assert.NotEqual("untitled", first);
+        Assert.True(first.IsValidSlug());
     }
 }

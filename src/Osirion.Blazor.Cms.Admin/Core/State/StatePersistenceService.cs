@@ -1,3 +1,4 @@
+using Osirion.Blazor.Cms.Admin.Common.Extensions;
 using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 
@@ -6,6 +7,7 @@ namespace Osirion.Blazor.Cms.Admin.Core.State;
 /// <summary>
 /// Handles persistence of application state
 /// </summary>
+[Obsolete("Not used by the admin UI: nothing registers or resolves it. State lives per circuit in CmsState, and the browser-stored GitHub sign-in is handled by IGitHubTokenStore. It will be removed in the next major release.")]
 public class StatePersistenceService : IDisposable
 {
     private readonly CmsState _state;
@@ -61,9 +63,9 @@ public class StatePersistenceService : IDisposable
         }
     }
 
-    private async void OnStateChanged()
+    private void OnStateChanged()
     {
-        await SaveStateAsync();
+        SaveStateAsync().Observe(_logger, "state save");
     }
 
     private async Task SaveStateAsync()

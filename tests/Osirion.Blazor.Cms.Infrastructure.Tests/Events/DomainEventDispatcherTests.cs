@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Osirion.Blazor.Cms.Domain.Events;
@@ -91,5 +91,38 @@ public class DomainEventDispatcherTests
             Arg.Is<object>(o => o == null ? false : o.ToString()!.Contains("No handlers found")),
             Arg.Any<Exception>(),
             Arg.Any<Func<object, Exception?, string>>());
+    }
+
+    public class ConcreteEvent : IDomainEvent
+    {
+        public DateTime OccurredOn { get; } = DateTime.UtcNow;
+    }
+
+    public class ConcreteEventHandler : IDomainEventHandler<ConcreteEvent>
+    {
+        public int Calls { get; private set; }
+
+        public Task HandleAsync(ConcreteEvent domainEvent)
+        {
+            Calls++;
+            return Task.CompletedTask;
+        }
+    }
+
+    [Fact]
+    public async Task DispatchAsync_WithEventTypedAsInterface_RunsHandlersOfTheRuntimeType()
+    {
+        // Arrange
+        var handler = new ConcreteEventHandler();
+        var services = new ServiceCollection();
+        services.AddSingleton<IDomainEventHandler<ConcreteEvent>>(handler);
+        var dispatcher = new DomainEventDispatcher(services.BuildServiceProvider(), _logger);
+        IDomainEvent domainEvent = new ConcreteEvent();
+
+        // Act
+        await dispatcher.DispatchAsync(domainEvent);
+
+        // Assert
+        handler.Calls.ShouldBe(1);
     }
 }

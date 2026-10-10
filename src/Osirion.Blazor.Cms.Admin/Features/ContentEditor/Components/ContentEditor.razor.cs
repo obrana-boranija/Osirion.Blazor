@@ -27,12 +27,14 @@ public partial class ContentEditor : IDisposable
 
     private string ActiveTab { get; set; } = "content";
     private bool IsDirty { get; set; } = false;
+    private ContentItem? _observedStatePost;
 
     /// <summary>Initializes the component state and required services.</summary>
     protected override void OnInitialized()
     {
         // Subscribe to changes from ViewModel
         ViewModel.StateChanged += StateHasChanged;
+        _observedStatePost = AdminState.EditingPost;
 
         // If ViewModel.EditingPost is null but AdminState has a post,
         // we need to initialize ViewModel from AdminState
@@ -41,8 +43,8 @@ public partial class ContentEditor : IDisposable
             ViewModel.InitializeFromState(AdminState.EditingPost, AdminState.IsCreatingNewFile);
         }
 
-        // Subscribe to content-related events from EventBus
-        EventSubscriber.Subscribe<ContentSelectedEvent>(OnContentSelected);
+        // ContentSelectedEvent is handled by the view-model, which loads the file; handling it here as well
+        // would fetch the same file twice.
         EventSubscriber.Subscribe<CreateNewContentEvent>(OnCreateNewContent);
     }
 
@@ -52,17 +54,24 @@ public partial class ContentEditor : IDisposable
         ViewModel.StateChanged -= StateHasChanged;
 
         // Unsubscribe from events
-        EventSubscriber.Unsubscribe<ContentSelectedEvent>(OnContentSelected);
         EventSubscriber.Unsubscribe<CreateNewContentEvent>(OnCreateNewContent);
     }
 
-    // Handle content selection event
-    private void OnContentSelected(ContentSelectedEvent e)
+    /// <summary>
+    /// Follows the post held in the shared state when another page (for example the edit page) replaced it after
+    /// this editor was created, so the editor shows it without fetching the file again.
+    /// </summary>
+    protected override void OnParametersSet()
     {
-        if (!string.IsNullOrWhiteSpace(e.Path))
+        var statePost = AdminState.EditingPost;
+        if (statePost is not null &&
+            !ReferenceEquals(statePost, _observedStatePost) &&
+            !AdminState.IsCreatingNewFile)
         {
-            ViewModel.LoadPostAsync(e.Path).ConfigureAwait(false);
+            ViewModel.InitializeFromState(statePost, isCreatingNew: false);
         }
+
+        _observedStatePost = statePost;
     }
 
     // Handle create new content event

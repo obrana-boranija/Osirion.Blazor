@@ -16,12 +16,14 @@ public class OsirionAdminLayoutTests : AdminComponentTestContext
 {
     private readonly IAuthenticationService _authService = Substitute.For<IAuthenticationService>();
     private readonly IGitHubTokenStore _tokenStore = Substitute.For<IGitHubTokenStore>();
+    private readonly IGitHubSessionRestorer _sessionRestorer = Substitute.For<IGitHubSessionRestorer>();
     private readonly BunitAuthorizationContext _authorization;
 
     public OsirionAdminLayoutTests()
     {
         Services.AddSingleton(_authService);
         Services.AddSingleton(_tokenStore);
+        Services.AddSingleton(_sessionRestorer);
         _authorization = this.AddAuthorization();
         RenderInteractively();
     }
@@ -76,6 +78,55 @@ public class OsirionAdminLayoutTests : AdminComponentTestContext
         await _authService.Received(1).SignOutAsync();
         await _tokenStore.Received(1).RemoveTokenAsync();
         Services.GetRequiredService<BunitNavigationManager>().Uri.ShouldEndWith("/osirion/login");
+    }
+
+    [Fact]
+    public void OsirionAdminLayout_NotSignedInToGitHub_HoldsBackThePageUntilTheStoredSignInIsRestored()
+    {
+        // Pages call GitHub from their first lifecycle method, so they must not start before the token is restored.
+        _authorization.SetAuthorized("alice");
+        _authorization.SetPolicies(CmsAdminAuthorization.PolicyName);
+        var restoration = new TaskCompletionSource<bool>();
+        _sessionRestorer.RestoreAsync().Returns(restoration.Task);
+
+        var cut = RenderLayout();
+
+        cut.FindAll("#admin-body").ShouldBeEmpty();
+        cut.Find(".admin-restoring-session").ShouldNotBeNull();
+
+        restoration.SetResult(true);
+
+        cut.WaitForAssertion(() => cut.Find("#admin-body").TextContent.ShouldBe("Admin content"));
+        cut.FindAll(".admin-restoring-session").ShouldBeEmpty();
+        _sessionRestorer.Received(1).RestoreAsync();
+    }
+
+    [Fact]
+    public void OsirionAdminLayout_AlreadySignedInToGitHub_DoesNotRestoreAgain()
+    {
+        _authorization.SetAuthorized("alice");
+        _authorization.SetPolicies(CmsAdminAuthorization.PolicyName);
+        _authService.IsAuthenticated.Returns(true);
+        _authService.Username.Returns("octocat");
+
+        var cut = RenderLayout();
+
+        cut.Find("#admin-body").ShouldNotBeNull();
+        _sessionRestorer.DidNotReceive().RestoreAsync();
+    }
+
+    [Fact]
+    public void OsirionAdminLayout_OnTheLoginPage_LeavesRestorationToThePage()
+    {
+        // The login page restores the sign-in itself, because it also redirects to the page the user came from.
+        _authorization.SetAuthorized("alice");
+        _authorization.SetPolicies(CmsAdminAuthorization.PolicyName);
+        Services.GetRequiredService<BunitNavigationManager>().NavigateTo("/osirion/login");
+
+        var cut = RenderLayout();
+
+        cut.Find("#admin-body").ShouldNotBeNull();
+        _sessionRestorer.DidNotReceive().RestoreAsync();
     }
 
     private IRenderedComponent<OsirionAdminLayout> RenderLayout()

@@ -43,7 +43,7 @@ public class GitHubRepositoryAdapter : IContentRepositoryAdapter
     {
         try
         {
-            LogMethodCall(repositoryName);
+            LogMethodCall(details: repositoryName);
             return await _gitHubService.GetBranchesAsync(repositoryName);
         }
         catch (Exception ex)
@@ -58,7 +58,7 @@ public class GitHubRepositoryAdapter : IContentRepositoryAdapter
     {
         try
         {
-            LogMethodCall(path);
+            LogMethodCall(details: path);
             return await _gitHubService.GetRepositoryContentsAsync(path);
         }
         catch (Exception ex)
@@ -73,7 +73,7 @@ public class GitHubRepositoryAdapter : IContentRepositoryAdapter
     {
         try
         {
-            LogMethodCall(query);
+            LogMethodCall(details: query);
             return await _gitHubService.SearchFilesAsync(query);
         }
         catch (Exception ex)
@@ -88,7 +88,7 @@ public class GitHubRepositoryAdapter : IContentRepositoryAdapter
     {
         try
         {
-            LogMethodCall(path);
+            LogMethodCall(details: path);
             return await _gitHubService.GetBlogPostAsync(path);
         }
         catch (Exception ex)
@@ -104,7 +104,7 @@ public class GitHubRepositoryAdapter : IContentRepositoryAdapter
     {
         try
         {
-            LogMethodCall(path);
+            LogMethodCall(details: path);
             return await _gitHubService.CreateOrUpdateFileAsync(path, content, message, sha);
         }
         catch (Exception ex)
@@ -119,7 +119,7 @@ public class GitHubRepositoryAdapter : IContentRepositoryAdapter
     {
         try
         {
-            LogMethodCall(path);
+            LogMethodCall(details: path);
             return await _gitHubService.DeleteFileAsync(path, message, sha);
         }
         catch (Exception ex)
@@ -134,7 +134,7 @@ public class GitHubRepositoryAdapter : IContentRepositoryAdapter
     {
         try
         {
-            LogMethodCall($"{name} from {baseBranch}");
+            LogMethodCall(details: $"{name} from {baseBranch}");
             return await _gitHubService.CreateBranchAsync(name, baseBranch);
         }
         catch (Exception ex)
@@ -150,7 +150,7 @@ public class GitHubRepositoryAdapter : IContentRepositoryAdapter
     {
         try
         {
-            LogMethodCall($"{head} -> {baseBranch}");
+            LogMethodCall(details: $"{head} -> {baseBranch}");
             return await _gitHubService.CreatePullRequestAsync(title, body, head, baseBranch);
         }
         catch (Exception ex)
@@ -165,7 +165,7 @@ public class GitHubRepositoryAdapter : IContentRepositoryAdapter
     {
         try
         {
-            LogMethodCall(repositoryName);
+            LogMethodCall(details: repositoryName);
             _gitHubService.SetRepository(repositoryName);
         }
         catch (Exception ex)
@@ -180,7 +180,7 @@ public class GitHubRepositoryAdapter : IContentRepositoryAdapter
     {
         try
         {
-            LogMethodCall(branchName);
+            LogMethodCall(details: branchName);
             _gitHubService.SetBranch(branchName);
         }
         catch (Exception ex)
@@ -207,29 +207,11 @@ public class GitHubRepositoryAdapter : IContentRepositoryAdapter
 
     private void LogMethodCall([CallerMemberName] string? methodName = null, string? details = null)
     {
-        var message = $"GitHub repository adapter: {methodName}";
-        if (!string.IsNullOrWhiteSpace(details))
-        {
-            message += $" - {details}";
-        }
-
-        _logger.LogDebug(message);
+        _logger.LogDebug("GitHub repository adapter: {Method} {Details}", methodName, details);
     }
 
     private void LogError(Exception ex, string? context = null, [CallerMemberName] string? methodName = null)
     {
-        var message = $"Error in GitHub repository adapter";
-
-        if (methodName is not null)
-        {
-            message += $": {methodName}";
-        }
-
-        if (context is not null)
-        {
-            message += $" ({context})";
-        }
-
-        _logger.LogError(ex, message);
+        _logger.LogError(ex, "Error in GitHub repository adapter: {Method} {Context}", methodName, context);
     }
 }

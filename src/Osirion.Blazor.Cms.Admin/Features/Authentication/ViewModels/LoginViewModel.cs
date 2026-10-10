@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
+using Osirion.Blazor.Cms.Admin.Common.Extensions;
 using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Admin.Common.Constants;
 using Osirion.Blazor.Cms.Admin.Core.Events;
@@ -102,7 +103,7 @@ public class LoginViewModel
         _oauthStateStore = oauthStateStore ?? throw new ArgumentNullException(nameof(oauthStateStore));
 
         // Initialize storage
-        _ = _stateStorage.InitializeAsync();
+        _stateStorage.InitializeAsync().Observe(_logger, "state storage initialization");
 
         // Subscribe to authentication changes
         _authService.AuthenticationChanged += OnAuthenticationChanged;

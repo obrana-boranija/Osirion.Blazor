@@ -146,13 +146,14 @@ public class DirectoryItem : DomainEntity<string>
     }
 
     /// <summary>
-    /// Sets the parent of this directory with additional safeguards
+    /// Sets the parent of this directory and keeps both sides of the relationship consistent: the directory is
+    /// removed from its previous parent's children and listed under the new parent.
     /// </summary>
     public void SetParent(DirectoryItem? parent, bool skipCircularCheck = false)
     {
-        // If parent is null, just clear the parent reference
         if (parent is null)
         {
+            Parent?.DetachChild(this);
             Parent = null;
             return;
         }
@@ -161,23 +162,26 @@ public class DirectoryItem : DomainEntity<string>
         if (parent.Id == Id)
             throw new ContentValidationException("Parent", "Cannot set a directory as its own parent");
 
-        // Skip circular checks if we already did them (from AddChild)
         if (!skipCircularCheck)
         {
-            // Check if this directory is already an ancestor of the new parent
+            // This directory is an ancestor of the new parent: the move would create a cycle.
+            // (Re-parenting under the current parent or under a higher ancestor is a legitimate move.)
             if (IsAncestorOf(parent))
                 throw new ContentValidationException("Parent", "Cannot set a child directory as parent");
-
-            // Check if parent is already in this directory's ancestry
-            if (parent.IsAncestorOf(this))
-                throw new ContentValidationException("Parent", "Cannot set a parent that would create a circular reference");
         }
 
-        Parent = parent;
+        if (!ReferenceEquals(Parent, parent))
+        {
+            Parent?.DetachChild(this);
+            Parent = parent;
+        }
+
+        parent.AttachChild(this);
     }
 
     /// <summary>
-    /// Adds a directory as a child of this directory with additional safeguards
+    /// Adds a directory as a child of this directory with additional safeguards. A child that belongs to another
+    /// parent is moved: it is removed from the previous parent's children.
     /// </summary>
     public void AddChild(DirectoryItem child)
     {
@@ -192,24 +196,41 @@ public class DirectoryItem : DomainEntity<string>
         if (child.IsAncestorOf(this))
             throw new ContentValidationException("Child", "Cannot add an ancestor directory as a child");
 
-        // Avoid duplicates in the children collection
-        if (!_children.Contains(child))
-        {
-            // Set parent first to ensure proper relationship
-            child.SetParent(this, skipCircularCheck: true); // Skip check since we already did it
-            _children.Add(child);
-        }
+        // A different instance with the same identifier is already listed: keep the existing one
+        if (_children.Contains(child) && !_children.Any(existing => ReferenceEquals(existing, child)))
+            return;
+
+        child.SetParent(this, skipCircularCheck: true); // Circularity was checked above
     }
 
     /// <summary>Removes a child directory.</summary>
     /// <param name="child">The child directory to remove.</param>
     public void RemoveChild(DirectoryItem child)
     {
-        if (child is not null && _children.Contains(child))
-        {
-            _children.Remove(child);
-            child.SetParent(null);
-        }
+        if (child is null)
+            return;
+
+        var listed = _children.FirstOrDefault(existing => ReferenceEquals(existing, child))
+                     ?? _children.FirstOrDefault(existing => existing.Equals(child));
+        if (listed is null)
+            return;
+
+        _children.Remove(listed);
+        if (ReferenceEquals(child.Parent, this))
+            child.Parent = null;
+        if (ReferenceEquals(listed.Parent, this))
+            listed.Parent = null;
+    }
+
+    private void AttachChild(DirectoryItem child)
+    {
+        if (!_children.Contains(child))
+            _children.Add(child);
+    }
+
+    private void DetachChild(DirectoryItem child)
+    {
+        _children.RemoveAll(existing => ReferenceEquals(existing, child));
     }
 
     /// <summary>Removes all child directories.</summary>
@@ -221,29 +242,49 @@ public class DirectoryItem : DomainEntity<string>
         }
     }
 
-    /// <summary>Adds a content item to this directory.</summary>
+    /// <summary>
+    /// Adds a content item to this directory. An item that belongs to another directory is moved: it is removed
+    /// from the previous directory's items.
+    /// </summary>
     /// <param name="item">The content item to add.</param>
     public void AddItem(ContentItem item)
     {
         if (item is null)
             throw new ArgumentNullException(nameof(item));
 
-        if (!_items.Contains(item))
-        {
-            _items.Add(item);
-            item.SetDirectory(this);
-        }
+        // A different instance with the same identifier is already listed: keep the existing one
+        if (_items.Contains(item) && !_items.Any(existing => ReferenceEquals(existing, item)))
+            return;
+
+        item.SetDirectory(this);
     }
 
     /// <summary>Removes a content item from this directory.</summary>
     /// <param name="item">The content item to remove.</param>
     public void RemoveItem(ContentItem item)
     {
-        if (item is not null && _items.Contains(item))
-        {
-            _items.Remove(item);
-            item.SetDirectory(null);
-        }
+        if (item is null)
+            return;
+
+        var listed = _items.FirstOrDefault(existing => ReferenceEquals(existing, item))
+                     ?? _items.FirstOrDefault(existing => existing.Equals(item));
+        if (listed is null)
+            return;
+
+        _items.Remove(listed);
+        item.ClearDirectoryIf(this);
+        listed.ClearDirectoryIf(this);
+    }
+
+    internal void AttachItem(ContentItem item)
+    {
+        if (!_items.Contains(item))
+            _items.Add(item);
+    }
+
+    internal void DetachItem(ContentItem item)
+    {
+        _items.RemoveAll(existing => ReferenceEquals(existing, item));
     }
 
     /// <summary>Removes all content items.</summary>

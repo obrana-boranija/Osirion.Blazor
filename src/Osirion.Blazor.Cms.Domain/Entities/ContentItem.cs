@@ -74,8 +74,17 @@ public class ContentItem : DomainEntity<string>
     public int OrderIndex { get; set; }
     /// <summary>Gets or sets the provider revision identifier.</summary>
     public string Sha { get; set; } = string.Empty;
-    /// <summary>Gets or sets the containing directory.</summary>
-    public DirectoryItem? Directory { get; set; }
+    private DirectoryItem? _directory;
+
+    /// <summary>
+    /// Gets or sets the containing directory. Assigning it keeps the directory's item list consistent
+    /// (same as <see cref="SetDirectory(DirectoryItem?)"/>).
+    /// </summary>
+    public DirectoryItem? Directory
+    {
+        get => _directory;
+        set => SetDirectory(value);
+    }
 
     // Collections
     /// <summary>Gets the content tags.</summary>
@@ -260,7 +269,23 @@ public class ContentItem : DomainEntity<string>
     /// <param name="directory">The containing directory.</param>
     public void SetDirectory(DirectoryItem? directory)
     {
-        Directory = directory;
+        if (ReferenceEquals(_directory, directory))
+        {
+            directory?.AttachItem(this);
+            return;
+        }
+
+        _directory?.DetachItem(this);
+        _directory = directory;
+        directory?.AttachItem(this);
+    }
+
+    internal void ClearDirectoryIf(DirectoryItem directory)
+    {
+        if (ReferenceEquals(_directory, directory))
+        {
+            _directory = null;
+        }
     }
 
     /// <summary>Sets SEO metadata for the content item.</summary>
@@ -443,7 +468,7 @@ public class ContentItem : DomainEntity<string>
             ProviderId = ProviderId,
             ProviderSpecificId = ProviderSpecificId,
             OrderIndex = OrderIndex,
-            Directory = Directory,
+            _directory = _directory,
             Metadata = Metadata?.Clone()
         };
 

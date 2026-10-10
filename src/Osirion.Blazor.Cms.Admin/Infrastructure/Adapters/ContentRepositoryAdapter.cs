@@ -1,3 +1,4 @@
+using Osirion.Blazor.Cms.Admin.Common.Extensions;
 using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Admin.Infrastructure.Adapters;
 using Osirion.Blazor.Cms.Domain.Entities;
@@ -10,6 +11,7 @@ namespace Osirion.Blazor.Cms.Admin.Services.Adapters;
 /// <summary>
 /// Implementation of the content repository adapter using the GitHub admin service
 /// </summary>
+[Obsolete("Never instantiated: the admin resolves GitHubRepositoryAdapter through IContentRepositoryAdapterFactory. It will be removed in the next major release.")]
 public class ContentRepositoryAdapter : IContentRepositoryAdapter
 {
     private readonly IGitHubAdminService _gitHubService;
@@ -29,7 +31,7 @@ public class ContentRepositoryAdapter : IContentRepositoryAdapter
         // If authentication service already has a token, use it
         if (_authService.IsAuthenticated)
         {
-            _ = _gitHubService.SetAuthTokenAsync(_authService.AccessToken!);
+            _gitHubService.SetAuthTokenAsync(_authService.AccessToken!).Observe(_logger, "applying the stored access token");
         }
 
         // Subscribe to authentication changes
@@ -223,11 +225,11 @@ public class ContentRepositoryAdapter : IContentRepositoryAdapter
         }
     }
 
-    private async void OnAuthenticationChanged(bool isAuthenticated)
+    private void OnAuthenticationChanged(bool isAuthenticated)
     {
         if (isAuthenticated && !string.IsNullOrWhiteSpace(_authService.AccessToken))
         {
-            await _gitHubService.SetAuthTokenAsync(_authService.AccessToken);
+            _gitHubService.SetAuthTokenAsync(_authService.AccessToken).Observe(_logger, "applying the access token after sign-in");
         }
     }
 }

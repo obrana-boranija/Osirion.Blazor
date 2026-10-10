@@ -8,6 +8,7 @@ namespace Osirion.Blazor.Cms.Admin.Services;
 /// <summary>
 /// Service for handling errors in the CMS admin interface
 /// </summary>
+[Obsolete("Never resolved by the admin UI. Components report failures through BaseComponent.ReportFailure and the event mediator logs handler errors. It will be removed in the next major release.")]
 public class ErrorHandlingService
 {
     private readonly CmsState _state;

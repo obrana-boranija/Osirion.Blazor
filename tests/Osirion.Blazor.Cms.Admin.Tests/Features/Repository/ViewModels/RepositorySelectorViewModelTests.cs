@@ -211,3 +211,21 @@ public class RepositorySelectorViewModelTests
         _repositoryAdapter.Received(1).SetBranch("main");
     }
 }
+
+public class RepositorySelectorViewModelDisposalTests
+{
+    [Fact]
+    public void Dispose_StopsReactingToStateChanges()
+    {
+        var state = new CmsState();
+        var service = new RepositoryService(Substitute.For<IContentRepositoryAdapter>(), NullLogger<RepositoryService>.Instance);
+        var viewModel = new RepositorySelectorViewModel(service, state, NullLogger<RepositorySelectorViewModel>.Instance);
+        var notifications = 0;
+        viewModel.StateChanged += () => notifications++;
+
+        viewModel.Dispose();
+        state.SelectRepository(new GitHubRepository { Name = "site" });
+
+        notifications.ShouldBe(0);
+    }
+}

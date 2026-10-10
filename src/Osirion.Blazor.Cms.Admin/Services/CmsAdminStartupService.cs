@@ -9,6 +9,7 @@ namespace Osirion.Blazor.Cms.Admin.Services;
 /// <summary>
 /// Startup service for the CMS admin interface
 /// </summary>
+[Obsolete("Never resolved by the admin UI; sign-in is restored by OsirionAdminLayout through IGitHubSessionRestorer and by LoginViewModel.InitializeAsync. It will be removed in the next major release.")]
 public class CmsAdminStartupService
 {
     private readonly StateManager _stateManager;

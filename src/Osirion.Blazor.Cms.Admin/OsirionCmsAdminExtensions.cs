@@ -42,8 +42,10 @@ public static class OsirionCmsAdminExtensions
 
         // Add state management
         services.TryAddScoped<CmsState>();
+#pragma warning disable CS0618 // Obsolete types stay registered until the next major release so existing resolutions keep working
         services.TryAddScoped<StateManager>();
         services.TryAddScoped<CmsAdminStartupService>();
+#pragma warning restore CS0618
 
         // Register adapters
         services.TryAddScoped<IContentRepositoryAdapterFactory, ContentRepositoryAdapterFactory>();
@@ -53,7 +55,9 @@ public static class OsirionCmsAdminExtensions
         });
 
         // Register services
+#pragma warning disable CS0618
         services.TryAddScoped<ErrorHandlingService>();
+#pragma warning restore CS0618
         services.TryAddScoped<ContentBrowserService>();
         services.TryAddScoped<IContentEditorService, ContentEditorService>();
         services.TryAddScoped<IAdminContentService, AdminContentService>();
@@ -64,6 +68,7 @@ public static class OsirionCmsAdminExtensions
         // validation from requiring it in hosts that never render the admin.
         services.TryAddScoped<IGitHubTokenStore>(
             serviceProvider => ActivatorUtilities.CreateInstance<ProtectedGitHubTokenStore>(serviceProvider));
+        services.TryAddScoped<IGitHubSessionRestorer, GitHubSessionRestorer>();
         services.TryAddScoped<IGitHubOAuthStateStore>(
             serviceProvider => ActivatorUtilities.CreateInstance<ProtectedGitHubOAuthStateStore>(serviceProvider));
 

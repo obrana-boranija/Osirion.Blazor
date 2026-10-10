@@ -23,8 +23,7 @@ public abstract class LoadableComponentBase : BaseComponent
         }
         catch (Exception ex)
         {
-            ErrorMessage = ex.Message;
-            EventPublisher.Publish(new ErrorOccurredEvent(ErrorMessage, ex));
+            ReportFailure(ex);
         }
         finally
         {
@@ -42,8 +41,7 @@ public abstract class LoadableComponentBase : BaseComponent
         }
         catch (Exception ex)
         {
-            ErrorMessage = ex.Message;
-            EventPublisher.Publish(new ErrorOccurredEvent(ErrorMessage, ex));
+            ReportFailure(ex);
             return defaultValue;
         }
     }

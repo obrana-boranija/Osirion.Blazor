@@ -461,3 +461,23 @@ public class FileExplorerViewModelTests
         _viewModel.IsItemSelected(item2).ShouldBeFalse();
     }
 }
+public class FileExplorerViewModelDisposalTests
+{
+    [Fact]
+    public void Dispose_StopsReactingToStateChanges()
+    {
+        var mediator = new CmsEventMediator(NullLogger<CmsEventMediator>.Instance);
+        var state = new CmsState();
+        var browserService = new ContentBrowserService(
+            Substitute.For<IContentRepositoryAdapter>(), mediator, NullLogger<ContentBrowserService>.Instance);
+        var viewModel = new FileExplorerViewModel(
+            browserService, state, new TestNavigationManager(), mediator, NullLogger<FileExplorerViewModel>.Instance);
+        var notifications = 0;
+        viewModel.StateChanged += () => notifications++;
+
+        viewModel.Dispose();
+        state.SelectRepository(new GitHubRepository { Name = "site" });
+
+        notifications.ShouldBe(0);
+    }
+}

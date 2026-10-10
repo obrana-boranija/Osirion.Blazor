@@ -143,6 +143,13 @@ This release closes security holes in the CMS and Core modules. Most changes are
    - `ContentList` clamps `CurrentPage` and navigates on click when no `PageChanged` handler is set; `ContentPage` reloads only when `Path` changes.
    - Cms.Web logs through `ILogger`; register a logging provider to see these errors.
 
+12. **CMS domain and admin.**
+   - `Entity<TId>` equality requires the same runtime type and a non-empty id; unsaved entities are equal only to themselves, so `List.Contains` and `Distinct` no longer merge them.
+   - `ContentItem.Directory = x` and `DirectoryItem.SetParent` also update the directory's `Items` and the parent's `Children`.
+   - `GenerateSlug` output changes for non-ASCII titles; re-check any lookup that regenerates slugs from titles.
+   - Handlers registered for a concrete domain event type now run.
+   - Admin: `BaseComponent` injects `ILogger<BaseComponent>` and `OsirionAdminLayout` injects `IGitHubSessionRestorer` (registered by `AddOsirionCmsAdminDI`); test hosts that render them must register logging and that service. `EditContent` no longer publishes `ContentSelectedEvent` after loading.
+
 ## Upgrading to v1.5.0
 
 ### Breaking Changes
