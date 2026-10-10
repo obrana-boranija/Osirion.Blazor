@@ -19,5 +19,11 @@ Example
 
 Notes
 -----
+- The rendered HTML is sanitized with the registered IHtmlContentSanitizer (or the default allow-list), including
+  output from a custom `Pipeline`.
+- The markdown is rendered and sanitized again only when `Markdown` or `Pipeline` changes, not on every render
+  (for example after a scroll event).
+- When rendering fails the preview shows a fixed error message and logs the exception through
+  `ILogger<MarkdownPreview>`; the exception message is not shown in the page.
 - The component exposes scroll events to enable sync with editors.
 - See `src/Osirion.Blazor.Cms.Core/Components/Editor/MarkdownPreview.razor` for implementation details.

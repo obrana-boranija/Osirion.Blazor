@@ -31,6 +31,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="BlazorJSComponents" />
+		<PackageReference Include="HtmlSanitizer" />
 	</ItemGroup>
 	<ItemGroup>
 	  <Content Remove="compilerconfig.json" />

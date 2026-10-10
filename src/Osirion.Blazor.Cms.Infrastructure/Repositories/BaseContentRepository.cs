@@ -420,13 +420,15 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
         try
         {
             var result = MarkdownProcessor.ExtractFrontMatterAndContent(markdown);
-            var html = IsExcludedFromMarkdownProcessing(contentItem.Path) 
-                ? result.Content 
-                : await MarkdownProcessor.RenderToHtmlAsync(result.Content);
+            // Files excluded from markdown rendering are stored as HTML, so they are sanitized as HTML
+            var html = IsExcludedFromMarkdownProcessing(contentItem.Path)
+                ? MarkdownProcessor.SanitizeHtml(result.Content)
+                : await MarkdownProcessor.RenderToHtmlAsync(result.Content, sanitizeHtml: true);
 
             contentItem.Metadata = result.FrontMatter;
-            contentItem.SetOriginalMarkdown(result.Content);
-            contentItem.SetContent(html);
+            // Keep the source next to the sanitized HTML so a save writes the original markdown back,
+            // not a conversion of the sanitized HTML (SetContent alone resets the source to null)
+            contentItem.SetContent(html, result.Content);
             
             // Map all FrontMatter properties to ContentItem (in order of FrontMatter class)
             contentItem.SetContentId(contentItem.Metadata?.Id ?? contentItem.ContentId);

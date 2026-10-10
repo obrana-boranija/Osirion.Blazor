@@ -1,7 +1,10 @@
 using Markdig;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 using Osirion.Blazor.Cms.Domain.Interfaces;
+using Osirion.Blazor.Core.Extensions;
+using Osirion.Blazor.Core.Services;
 
 namespace Osirion.Blazor.Cms;
 
@@ -10,6 +13,8 @@ public partial class MarkdownPreview : IAsyncDisposable
 {
     [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
     [Inject] private IMarkdownRendererService MarkdownRenderer { get; set; } = default!;
+    [Inject] private IServiceProvider ServiceProvider { get; set; } = default!;
+    [Inject] private ILogger<MarkdownPreview> Logger { get; set; } = default!;
 
     /// <summary>Gets or sets the markdown source.</summary>
     [Parameter] public string Markdown { get; set; } = string.Empty;
@@ -31,16 +36,40 @@ public partial class MarkdownPreview : IAsyncDisposable
     private ElementReference PreviewContainer;
     private DotNetObjectReference<MarkdownPreview>? _dotNetReference;
     private bool _preventScrollEvent = false;
+    private string? _renderedMarkdown;
+    private MarkdownPipeline? _renderedPipeline;
 
     /// <summary>
-    /// Gets the rendered HTML content from the markdown
+    /// Gets the rendered HTML content from the markdown, sanitized with the registered
+    /// <see cref="IHtmlContentSanitizer"/> (or the default allow-list when none is registered).
     /// </summary>
-    public string RenderedHtml => RenderMarkdown(Markdown);
+    /// <remarks>
+    /// The markdown is rendered again only when <see cref="Markdown"/> or <see cref="Pipeline"/> changes,
+    /// not on every render of the component, such as the one that follows each scroll event.
+    /// </remarks>
+    public string RenderedHtml { get; private set; } = string.Empty;
 
     /// <summary>Initializes the component state and required services.</summary>
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
+    }
+
+    /// <summary>Renders the markdown when it or the pipeline changed since the last render.</summary>
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (_renderedMarkdown is not null
+            && string.Equals(_renderedMarkdown, Markdown, StringComparison.Ordinal)
+            && ReferenceEquals(_renderedPipeline, Pipeline))
+        {
+            return;
+        }
+
+        _renderedMarkdown = Markdown;
+        _renderedPipeline = Pipeline;
+        RenderedHtml = RenderMarkdown(Markdown);
     }
 
     /// <summary>Performs the OnAfterRender operation asynchronously.</summary>
@@ -72,16 +101,17 @@ public partial class MarkdownPreview : IAsyncDisposable
 
         try
         {
-            if (Pipeline is not null)
-            {
-                return Markdig.Markdown.ToHtml(markdown, Pipeline);
-            }
+            var html = Pipeline is not null
+                ? Markdig.Markdown.ToHtml(markdown, Pipeline)
+                : MarkdownRenderer.RenderToHtml(markdown);
 
-            return MarkdownRenderer.RenderToHtml(markdown);
+            return ServiceProvider.GetHtmlContentSanitizer().Sanitize(html);
         }
         catch (Exception ex)
         {
-            return $"<div class=\"markdown-error\">Error rendering markdown: {ex.Message}</div>";
+            // The message can carry internal details such as paths or configuration, so it is logged, not shown.
+            Logger.LogError(ex, "Failed to render the markdown preview");
+            return "<div class=\"markdown-error\">Error rendering markdown.</div>";
         }
     }
 

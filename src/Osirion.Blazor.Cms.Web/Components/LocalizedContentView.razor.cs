@@ -3,6 +3,7 @@ using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Enums;
 using Osirion.Blazor.Cms.Domain.Repositories;
 using Osirion.Blazor.Cms.Domain.Services;
+using Osirion.Blazor.Core.Extensions;
 
 namespace Osirion.Blazor.Cms.Web.Components;
 
@@ -10,6 +11,7 @@ namespace Osirion.Blazor.Cms.Web.Components;
 public partial class LocalizedContentView
 {
     [Inject] private IContentProviderManager ContentProviderManager { get; set; } = default!;
+    [Inject] private IServiceProvider ServiceProvider { get; set; } = default!;
 
     /// <summary>Gets or sets the content localization identifier.</summary>
     [Parameter]
@@ -219,6 +221,12 @@ public partial class LocalizedContentView
     private string GetContentViewClass()
     {
         return $"osirion-localized-content-view {Class}".Trim();
+    }
+
+    // Built-in providers sanitize at ingestion; this also covers custom providers and items set by the caller.
+    private MarkupString GetSanitizedContent(string? content)
+    {
+        return new MarkupString(ServiceProvider.GetHtmlContentSanitizer().Sanitize(content));
     }
 
     private string GetLocaleName(string locale)

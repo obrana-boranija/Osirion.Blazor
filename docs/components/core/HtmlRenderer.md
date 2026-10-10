@@ -1,6 +1,6 @@
 # OsirionHtmlRenderer
 
-Renders trusted HTML with optional syntax highlighting, line numbers, copy button, and accessible theme.
+Renders HTML, sanitized by default, with optional syntax highlighting, line numbers, copy button, and accessible theme.
 
 Basic usage
 
@@ -27,4 +27,17 @@ Code blocks
 
 Security
 
-- Set SanitizeHtml or provide HtmlSanitizer delegate for untrusted content.
+- SanitizeHtml defaults to true: the registered IHtmlContentSanitizer (or the default allow-list) removes script,
+  event handlers, unsafe URLs, forms, iframes and styles before rendering.
+- Provide an HtmlSanitizer delegate to replace it, or set SanitizeHtml="false" only for markup your application built.
+  A delegate must escape < and > inside attribute values, as the default sanitizer does, because the copy button
+  wrapper and line numbers edit the sanitized markup with text patterns.
+
+```csharp
+// Program.cs: allow a custom element and the attributes your script reads from it
+builder.Services.AddOsirionHtmlSanitizer(options =>
+    options.AllowElement("chart", "type", "title", "data"));
+```
+
+The script that reads those attributes must treat them as text (`textContent`, `setAttribute`) and never write
+them through `innerHTML`: the browser decodes an escaped value back into markup.

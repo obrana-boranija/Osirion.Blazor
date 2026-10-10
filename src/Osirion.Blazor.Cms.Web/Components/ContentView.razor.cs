@@ -3,12 +3,16 @@ using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Enums;
 using Osirion.Blazor.Cms.Domain.Repositories;
 using Osirion.Blazor.Cms.Domain.Services;
+using Osirion.Blazor.Core.Extensions;
 
 namespace Osirion.Blazor.Cms.Web.Components;
 
 /// <summary>Displays a content item and optional previous and next navigation links.</summary>
 public partial class ContentView(IContentProviderManager contentProviderManager)
 {
+    [Inject]
+    private IServiceProvider ServiceProvider { get; set; } = default!;
+
     /// <summary>Gets or sets the content path to load.</summary>
     [Parameter]
     public string Path { get; set; } = string.Empty;
@@ -127,6 +131,12 @@ public partial class ContentView(IContentProviderManager contentProviderManager)
     private string GetContentViewClass()
     {
         return $"osirion-content-view {Class}".Trim();
+    }
+
+    // Built-in providers sanitize at ingestion; this also covers custom providers and items set by the caller.
+    private MarkupString GetSanitizedContent(string? content)
+    {
+        return new MarkupString(ServiceProvider.GetHtmlContentSanitizer().Sanitize(content));
     }
 
     private string GetCategoryUrl(string category)

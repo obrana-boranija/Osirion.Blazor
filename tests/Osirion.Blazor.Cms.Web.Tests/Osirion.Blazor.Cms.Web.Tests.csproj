@@ -8,13 +8,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="bUnit" />
     <PackageReference Include="coverlet.collector">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="NSubstitute" />
+    <PackageReference Include="Shouldly" />
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.runner.visualstudio" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Osirion.Blazor.Cms.Web\Osirion.Blazor.Cms.Web.csproj" />
   </ItemGroup>
 
   <ItemGroup>

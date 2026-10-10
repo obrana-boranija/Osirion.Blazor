@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Infrastructure.Markdown;
+using Osirion.Blazor.Core.Extensions;
 
 namespace Osirion.Blazor.Cms.Infrastructure.DependencyInjection;
 
@@ -23,6 +24,9 @@ public static class MarkdownExtensions
         services.TryAddSingleton<IFrontMatterExtractor, FrontMatterExtractor>();
         services.TryAddSingleton<IMarkdownSanitizer, MarkdownSanitizer>();
         services.TryAddSingleton<IHtmlToMarkdownConverter, HtmlToMarkdownConverter>();
+
+        // Rendered HTML is sanitized with the host's allow-list
+        services.AddOsirionHtmlSanitizer();
 
         //// Register the main processor
         services.TryAddSingleton<IMarkdownProcessor, MarkdownProcessor>();

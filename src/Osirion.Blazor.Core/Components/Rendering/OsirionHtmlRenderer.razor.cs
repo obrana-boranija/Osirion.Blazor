@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Components;
+using Osirion.Blazor.Core.Extensions;
+using Osirion.Blazor.Core.Services;
 using System.Text.RegularExpressions;
 
 namespace Osirion.Blazor.Components;
@@ -51,16 +53,25 @@ public partial class OsirionHtmlRenderer
     public Dictionary<string, string>? LanguageClasses { get; set; }
 
     /// <summary>
-    /// Whether to sanitize the HTML content (recommended for untrusted content)
+    /// Whether to sanitize the HTML content before rendering it. Defaults to <see langword="true"/>.
     /// </summary>
+    /// <remarks>
+    /// Sanitization uses the registered <see cref="IHtmlContentSanitizer"/> (see <c>AddOsirionHtmlSanitizer</c>),
+    /// or the default allow-list when none is registered. Set to <see langword="false"/> only for markup the
+    /// application itself produced; never for content, user input or anything read from a repository.
+    /// </remarks>
     [Parameter]
-    public bool SanitizeHtml { get; set; } = false;
+    public bool SanitizeHtml { get; set; } = true;
 
     /// <summary>
-    /// Callback to provide custom HTML sanitization logic
+    /// Optional custom sanitizer used instead of the registered <see cref="IHtmlContentSanitizer"/>
+    /// when <see cref="SanitizeHtml"/> is <see langword="true"/>.
     /// </summary>
     [Parameter]
     public Func<string, string>? HtmlSanitizer { get; set; }
+
+    [Inject]
+    private IServiceProvider ServiceProvider { get; set; } = default!;
 
     /// <summary>
     /// Whether the content has code blocks
@@ -99,6 +110,7 @@ public partial class OsirionHtmlRenderer
 
         var content = HtmlContent;
 
+        // Sanitize before the code blocks are wrapped: the wrapper adds the library's own copy button handler.
         if (SanitizeHtml)
         {
             content = SanitizeHtmlContent(content);
@@ -136,22 +148,15 @@ public partial class OsirionHtmlRenderer
                 DetectedLanguages.Add(language);
             }
 
-            // Ensure the code block has the language class
-            if (!match.Groups[1].Success && language != "plaintext")
-            {
-                // Add language class if missing
-                codeBlock = Regex.Replace(codeBlock, @"<code([^>]*)>", $"<code$1 class=\"language-{language}\">");
-            }
+            // The block keeps its own language class, which Prism reads from the code element or its pre
+            // ancestor. Tags are not rewritten here: this runs after sanitization, and a pattern that stops at
+            // the first '>' can turn markup held in a quoted attribute value into a live element.
 
             // Wrap code blocks if copy button is enabled
             if (EnableCopyButton)
             {
                 var wrappedBlock = WrapCodeBlock(codeBlock, language, codeBlockIndex++);
                 processedContent = processedContent.Replace(match.Value, wrappedBlock);
-            }
-            else
-            {
-                processedContent = processedContent.Replace(match.Value, codeBlock);
             }
         }
 
@@ -223,31 +228,12 @@ public partial class OsirionHtmlRenderer
     /// </summary>
     private string SanitizeHtmlContent(string html)
     {
-        // Use custom sanitizer if provided
         if (HtmlSanitizer is not null)
         {
             return HtmlSanitizer(html);
         }
 
-        // Basic built-in sanitization
-        // Remove script tags
-        html = Regex.Replace(html, @"<script[^>]*>[\s\S]*?</script>", "", RegexOptions.IgnoreCase);
-
-        // Remove event handlers
-        html = Regex.Replace(html, @"\bon\w+\s*=\s*['""][^'""]*['""]", "", RegexOptions.IgnoreCase);
-        html = Regex.Replace(html, @"\bon\w+\s*=\s*[^\s>]+", "", RegexOptions.IgnoreCase);
-
-        // Remove javascript: protocol
-        html = Regex.Replace(html, @"javascript\s*:", "", RegexOptions.IgnoreCase);
-
-        // Remove iframe tags
-        html = Regex.Replace(html, @"<iframe[^>]*>[\s\S]*?</iframe>", "", RegexOptions.IgnoreCase);
-
-        // Remove object and embed tags
-        html = Regex.Replace(html, @"<object[^>]*>[\s\S]*?</object>", "", RegexOptions.IgnoreCase);
-        html = Regex.Replace(html, @"<embed[^>]*>", "", RegexOptions.IgnoreCase);
-
-        return html;
+        return ServiceProvider.GetHtmlContentSanitizer().Sanitize(html);
     }
 
     /// <summary>

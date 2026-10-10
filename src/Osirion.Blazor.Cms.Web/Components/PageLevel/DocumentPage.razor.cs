@@ -3,6 +3,7 @@ using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Enums;
 using Osirion.Blazor.Cms.Domain.Repositories;
 using Osirion.Blazor.Cms.Domain.Services;
+using Osirion.Blazor.Core.Extensions;
 
 namespace Osirion.Blazor.Cms.Components;
 
@@ -11,6 +12,9 @@ namespace Osirion.Blazor.Cms.Components;
 /// </summary>
 public partial class DocumentPage
 {
+    [Inject]
+    private IServiceProvider ServiceProvider { get; set; } = default!;
+
     /// <summary>
     /// Gets or sets the path to the document content
     /// </summary>
@@ -254,6 +258,12 @@ public partial class DocumentPage
     private string GetContentUrl(ContentItem item)
     {
         return ContentUrlFormatter?.Invoke(item) ?? $"/{item.Path}";
+    }
+
+    // Built-in providers sanitize at ingestion; this also covers custom providers and items set by the caller.
+    private MarkupString GetSanitizedContent(string? content)
+    {
+        return new MarkupString(ServiceProvider.GetHtmlContentSanitizer().Sanitize(content));
     }
 }
 

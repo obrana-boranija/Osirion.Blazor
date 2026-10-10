@@ -6,8 +6,10 @@ namespace Osirion.Blazor.Cms.Domain.Interfaces;
 /// Markdown renderer service for Blazor applications
 /// </summary>
 /// <remarks>
-/// This service provides methods to render markdown content to HTML with enhanced security and sanitization.
-/// It uses the Markdig library for markdown processing and includes methods for both synchronous and asynchronous rendering.
+/// This service renders markdown content to HTML with the Markdig library, synchronously or asynchronously.
+/// The output is raw, unsanitized HTML: raw HTML in the markdown and markup produced by Markdig extensions
+/// pass through unchanged. Sanitize it before rendering it as markup, for example with
+/// <see cref="IMarkdownProcessor.RenderToHtml(string, bool)"/>, which sanitizes by default.
 /// </remarks>
 public interface IMarkdownRendererService
 {

@@ -43,7 +43,7 @@
             
 
             <div class="osirion-content-body">
-                @((MarkupString)Item.Content)
+                @GetSanitizedContent(Item.Content)
             </div>
 
             <div class="osirion-content-footer">

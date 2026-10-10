@@ -54,6 +54,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\Osirion.Blazor.Cms.Application\Osirion.Blazor.Cms.Application.csproj" />
 		<ProjectReference Include="..\Osirion.Blazor.Cms.Domain\Osirion.Blazor.Cms.Domain.csproj" />
+		<ProjectReference Include="..\Osirion.Blazor.Core\Osirion.Blazor.Core.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

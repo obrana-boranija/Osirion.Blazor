@@ -1,5 +1,7 @@
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.ValueObjects;
+using Osirion.Blazor.Core.Services;
+using Osirion.Blazor.Core.Services.Implementations;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
@@ -13,50 +15,71 @@ public class MarkdownProcessor : IMarkdownProcessor
     private readonly IMarkdownRendererService _renderer;
     private readonly IMarkdownSanitizer _sanitizer;
     private readonly IHtmlToMarkdownConverter _htmlToMarkdownConverter;
+    private readonly IHtmlContentSanitizer _htmlSanitizer;
 
-    /// <summary>Performs the MarkdownProcessor operation.</summary>
+    /// <summary>
+    /// Initializes a processor that sanitizes HTML with the default allow-list.
+    /// </summary>
+    /// <remarks>
+    /// Host configuration from <c>AddOsirionHtmlSanitizer</c> does not apply to an instance created with this
+    /// constructor. Resolve <see cref="IMarkdownProcessor"/> from dependency injection, or use the constructor
+    /// that takes an <see cref="IHtmlContentSanitizer"/>, to honour it.
+    /// </remarks>
     public MarkdownProcessor(
         IMarkdownRendererService renderer,
         IMarkdownSanitizer sanitizer,
         IHtmlToMarkdownConverter htmlToMarkdownConverter)
+        : this(renderer, sanitizer, htmlToMarkdownConverter, HtmlContentSanitizer.Default)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a processor that sanitizes HTML with the given sanitizer.
+    /// </summary>
+    public MarkdownProcessor(
+        IMarkdownRendererService renderer,
+        IMarkdownSanitizer sanitizer,
+        IHtmlToMarkdownConverter htmlToMarkdownConverter,
+        IHtmlContentSanitizer htmlSanitizer)
     {
         _renderer = renderer ?? throw new ArgumentNullException(nameof(renderer));
         _sanitizer = sanitizer ?? throw new ArgumentNullException(nameof(sanitizer));
         _htmlToMarkdownConverter = htmlToMarkdownConverter ?? throw new ArgumentNullException(nameof(htmlToMarkdownConverter));
+        _htmlSanitizer = htmlSanitizer ?? throw new ArgumentNullException(nameof(htmlSanitizer));
     }
 
-    /// <summary>Gets or sets the RenderToHtml value.</summary>
-    public string RenderToHtml(string markdown, bool sanitizeHtml = false)
+    /// <inheritdoc/>
+    public string RenderToHtml(string markdown, bool sanitizeHtml = true)
     {
         if (string.IsNullOrWhiteSpace(markdown))
             return string.Empty;
 
-        // Apply sanitization if requested
-        if (sanitizeHtml)
-            markdown = _sanitizer.SanitizeMarkdown(markdown);
+        var html = _renderer.RenderToHtml(markdown);
 
-        // Render to HTML
-        return _renderer.RenderToHtml(markdown);
+        return sanitizeHtml ? _htmlSanitizer.Sanitize(html) : html;
     }
 
-    /// <summary>Performs the RenderToHtml operation asynchronously.</summary>
-    public Task<string> RenderToHtmlAsync(string markdown, bool sanitizeHtml = false)
+    /// <inheritdoc/>
+    public async Task<string> RenderToHtmlAsync(string markdown, bool sanitizeHtml = true)
     {
         if (string.IsNullOrWhiteSpace(markdown))
-            return Task.FromResult(string.Empty);
+            return string.Empty;
 
-        // Apply sanitization if requested
-        if (sanitizeHtml)
-            markdown = _sanitizer.SanitizeMarkdown(markdown);
+        var html = await _renderer.RenderToHtmlAsync(markdown).ConfigureAwait(false);
 
-        // Render to HTML asynchronously
-        return _renderer.RenderToHtmlAsync(markdown);
+        return sanitizeHtml ? _htmlSanitizer.Sanitize(html) : html;
     }
 
     /// <summary>Gets or sets the SanitizeMarkdown value.</summary>
     public string SanitizeMarkdown(string markdown)
     {
         return _sanitizer.SanitizeMarkdown(markdown);
+    }
+
+    /// <inheritdoc/>
+    public string SanitizeHtml(string html)
+    {
+        return _htmlSanitizer.Sanitize(html);
     }
 
     /// <summary>Gets or sets the ExtractFrontMatterAndContent value.</summary>

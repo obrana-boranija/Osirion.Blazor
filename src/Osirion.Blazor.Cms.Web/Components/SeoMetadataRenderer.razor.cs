@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Web.Options;
+using Osirion.Blazor.Core.Utils;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -18,6 +20,9 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
     /// </summary>
     [Inject]
     private IOptions<SeoMetadataOptions>? SeoOptions { get; set; }
+
+    [Inject]
+    private ILogger<SeoMetadataRenderer> Logger { get; set; } = default!;
     // Core properties
     private string _siteName = string.Empty;
     private string _baseUrl = string.Empty;
@@ -852,11 +857,20 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
         if (Content is null)
             return;
 
-        // Use custom JSON-LD if provided
-        if (!string.IsNullOrWhiteSpace(Content?.Metadata?.SeoProperties?.JsonLd))
+        // Use custom JSON-LD if provided. It is written inside a script element, so it is re-serialized with
+        // HTML-sensitive characters escaped; anything that is not a JSON object or array is ignored.
+        var customJsonLd = Content.Metadata?.SeoProperties?.JsonLd;
+        if (!string.IsNullOrWhiteSpace(customJsonLd))
         {
-            _jsonLdContent = Content.Metadata.SeoProperties.JsonLd;
-            return;
+            if (JsonLdNormalizer.TryNormalize(customJsonLd, out var normalizedJsonLd))
+            {
+                _jsonLdContent = normalizedJsonLd;
+                return;
+            }
+
+            Logger.LogWarning(
+                "Ignoring custom JSON-LD for content {ContentPath} because it is not a valid JSON object or array; generated structured data is used instead",
+                Content.Path);
         }
 
         _additionalJsonLdSchemas = new List<string>();

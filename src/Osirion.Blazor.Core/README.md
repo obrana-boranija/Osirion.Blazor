@@ -144,13 +144,13 @@ Displays article metadata including author, publish date, and read time.
 - `ReadTime`: Estimated reading time
 
 #### `OsirionHtmlRenderer`
-Safely renders HTML content with built-in sanitization.
+Renders HTML content, sanitized by default (`SanitizeHtml` defaults to `true`), with optional code highlighting.
 
 ```razor
-<OsirionHtmlRenderer 
-    HtmlContent="@htmlString"
-    SanitizeHtml="true" />
+<OsirionHtmlRenderer HtmlContent="@htmlString" />
 ```
+
+Set `SanitizeHtml="false"` only for markup your application built itself. See [HTML sanitization](#html-sanitization).
 
 ### State Components
 
@@ -235,6 +235,61 @@ public class MyComponent : OsirionComponentBase
     // Your component code here
 }
 ```
+
+## HTML Sanitization
+
+Content HTML (rendered markdown, CMS items, `OsirionHtmlRenderer` input) is cleaned by `IHtmlContentSanitizer`,
+an allow-list sanitizer built on the HtmlSanitizer library. It parses markup the way a browser does and keeps only
+allowed elements, attributes and URL schemes.
+
+Default allow-list:
+
+- Keeps common content markup (headings, paragraphs, lists, tables, links, images, code, details) plus `class`
+  and `id`, so styling, code highlighting and table of contents anchors keep working.
+- URL schemes `http`, `https`, `mailto`, `tel` and relative URLs, including relative URLs with a colon in the
+  query or fragment such as `page.html?t=10:30`.
+- Removes forms and form controls, iframes, `style` and `name` attributes and `<style>` elements. In rendered
+  markdown this also removes table column alignment (written as `style`) and task-list checkboxes (`<input>`).
+- Keeps only attributes on the HtmlSanitizer default list plus `class` and `id`: `role`, `aria-*`, `data-*`,
+  `srcset`, `sizes`, `loading` and `decoding`, and the `video`, `audio`, `source`, `track` and `picture` elements,
+  are removed unless the host allows them.
+- Never allows `script`, `svg`, `math`, `template`, `object`, `embed`, `applet`, `meta`, `base`, `link`, `frame`,
+  `frameset`, `noscript`, event handler attributes (`on*`) or `javascript:`, `vbscript:` and `data:` URLs,
+  whatever the options say.
+- Unknown elements are unwrapped and their text is kept; script, style, iframe, svg and similar elements are
+  removed together with their content.
+
+`AddOsirion()` and the CMS registrations add the sanitizer with this allow-list. Change it with
+`AddOsirionHtmlSanitizer`; the call can be repeated and every configuration is applied:
+
+```csharp
+using Osirion.Blazor.Core.Extensions;
+
+builder.Services.AddOsirionHtmlSanitizer(options =>
+{
+    // A custom element read by client-side script, with attributes kept only on that element
+    options.AllowElement("chart", "type", "title", "caption", "data", "colors");
+
+    // Opt in to inline styles (CSS properties are still filtered)
+    options.AllowedAttributes.Add("style");
+
+    // Opt in to video embeds; src is still limited to the allowed URL schemes
+    options.AllowElement("iframe", "src", "width", "height", "title", "allow", "allowfullscreen", "frameborder");
+
+    // Opt in to accessibility and responsive image attributes; srcset candidates are still URL-screened
+    options.AllowedAttributes.UnionWith(["role", "aria-label", "aria-hidden", "loading", "decoding", "srcset", "sizes"]);
+});
+```
+
+Attributes allowed through `AllowElement` are made inert as HTML only. Client-side script that reads them must
+treat them as text (`textContent`, `setAttribute`, `createElement`) and never write them through `innerHTML`: the
+browser decodes a value such as `caption="&lt;img src=x onerror=...&gt;"` back into markup, and the handler runs.
+
+Components that render content resolve the registered sanitizer and fall back to `HtmlContentSanitizer.Default`
+when none is registered, so content is never written unsanitized.
+
+`JsonLdNormalizer.TryNormalize` makes author-supplied JSON-LD safe to place inside a
+`<script type="application/ld+json">` element by re-serializing it with `<`, `>` and `&` escaped.
 
 ## Base Component Features
 

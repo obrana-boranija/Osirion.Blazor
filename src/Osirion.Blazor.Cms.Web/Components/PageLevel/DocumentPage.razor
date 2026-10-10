@@ -107,7 +107,7 @@
                         }
 
                         <div class="osirion-document-body">
-                            @((MarkupString)Content.Content)
+                            @GetSanitizedContent(Content.Content)
                         </div>
 
                         @if (ShowNavigationLinks && (PreviousItem is not null || NextItem is not null))
