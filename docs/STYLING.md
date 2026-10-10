@@ -38,7 +38,7 @@ Include the component in your layout:
 <OsirionStyles CustomVariables="--osirion-primary-color: #0077cc;" />
 
 <!-- With framework integration -->
-<OsirionStyles FrameworkIntegration="CssFramework.Bootstrap" />
+<OsirionStyles Framework="CssFramework.Bootstrap" />
 ```
 
 ### 3. Configuration-Based
@@ -47,10 +47,9 @@ Configure styling options in `Program.cs`:
 
 ```csharp
 // In Program.cs
-builder.Services.Configure<GitHubCmsOptions>(options => {
-    options.UseStyles = true;
+builder.Services.Configure<ThemingOptions>(options => {
     options.CustomVariables = "--osirion-primary-color: #0077cc;";
-    options.FrameworkIntegration = CssFramework.Bootstrap;
+    options.Framework = CssFramework.Bootstrap;
 });
 ```
 
@@ -64,10 +63,10 @@ Then simply include the component without parameters:
 
 Osirion.Blazor is designed to work seamlessly with popular CSS frameworks used in Blazor applications. You can integrate with these frameworks in three ways:
 
-### 1. Using the FrameworkIntegration Parameter
+### 1. Using the Framework Parameter
 
 ```razor
-<OsirionStyles FrameworkIntegration="CssFramework.Bootstrap" />
+<OsirionStyles Framework="CssFramework.Bootstrap" />
 ```
 
 Supported frameworks:
@@ -95,9 +94,22 @@ Available classes:
 ### 3. Via Configuration
 
 ```csharp
-builder.Services.Configure<GitHubCmsOptions>(options => {
-    options.FrameworkIntegration = CssFramework.Bootstrap;
+builder.Services.Configure<ThemingOptions>(options => {
+    options.Framework = CssFramework.Bootstrap;
 });
+```
+
+Or in `appsettings.json`, which `AddOsirion(builder.Configuration)` reads:
+
+```json
+{
+  "Osirion": {
+    "Theming": {
+      "Framework": "MudBlazor",
+      "DefaultMode": "Light"
+    }
+  }
+}
 ```
 
 ## CSS Variables Reference
@@ -243,7 +255,7 @@ Then in your Blazor app:
 When using Bootstrap integration, Osirion components will automatically adapt to your Bootstrap theme:
 
 ```razor
-<OsirionStyles FrameworkIntegration="CssFramework.Bootstrap" />
+<OsirionStyles Framework="CssFramework.Bootstrap" />
 
 <!-- Your Bootstrap themed Osirion components -->
 <ContentList />
@@ -260,18 +272,43 @@ You can also use Bootstrap utility classes alongside Osirion components:
 
 ### MudBlazor Integration
 
-MudBlazor integration ensures Osirion components match your MudBlazor theme:
+With `Framework` set to `MudBlazor`, the adapter maps Osirion's tokens to MudBlazor's `--mud-palette-*`, typography and
+elevation variables, so Osirion components follow your `MudTheme`.
+
+`MudThemeProvider` writes a single palette to `:root`, chosen on the server from `IsDarkMode`. Osirion's `ThemeToggle`
+switches themes in the browser by toggling the `mud-theme-dark` class on `<html>`, without a round trip. Render the dark
+palette a second time under that class, so MudBlazor components and the adapter follow the toggle:
+
+```csharp
+public static class SiteTheme
+{
+    private static readonly PaletteLight Light = new() { Primary = "#5c5cb0" };
+    private static readonly PaletteDark Dark = new() { Primary = "#9090d6" };
+
+    public static MudTheme LightTheme { get; } = new() { PaletteLight = Light, PaletteDark = Dark };
+
+    public static MudTheme DarkTheme { get; } = new()
+    {
+        PaletteLight = Light,
+        PaletteDark = Dark,
+        PseudoCss = new PseudoCss { Scope = ":root.mud-theme-dark" },
+    };
+}
+```
 
 ```razor
-<MudThemeProvider />
-<OsirionStyles FrameworkIntegration="CssFramework.MudBlazor" />
+@* MainLayout.razor *@
+<MudThemeProvider Theme="SiteTheme.LightTheme" ObserveSystemDarkModeChange="false" />
+<MudThemeProvider Theme="SiteTheme.DarkTheme" IsDarkMode="true" ObserveSystemDarkModeChange="false" />
+
+<OsirionStyles Framework="CssFramework.MudBlazor" />
 
 <MudContainer>
-    <MudPaper Elevation="3" Class="pa-4 my-4">
-        <ContentList />
-    </MudPaper>
+    <ContentList />
 </MudContainer>
 ```
+
+`examples/Osirion.Blazor.Example.Mud` is a complete site built this way.
 
 ## Best Practices
 

@@ -27,7 +27,7 @@ builder.Services.AddOsirionBlazor(osirion => {
 @using Osirion.Blazor.Components
 
 <!-- In your layout -->
-<OsirionStyles FrameworkIntegration="CssFramework.Bootstrap" />
+<OsirionStyles Framework="CssFramework.Bootstrap" />
 <EnhancedNavigation Behavior="ScrollBehavior.Smooth" />
 <ScrollToTop Position="Position.BottomRight" />
 <OsirionCookieConsent PolicyLink="/privacy-policy" />
@@ -398,8 +398,7 @@ builder.Services.AddOsirionBlazor(osirion => {
 
 ```razor
 <OsirionStyles 
-    FrameworkIntegration="CssFramework.Bootstrap"
-    UseStyles="true"
+    Framework="CssFramework.Bootstrap"
     CustomVariables="--primary-color: #007bff;" />
 ```
 
@@ -460,8 +459,8 @@ With `appsettings.json`:
         "SiteId": "clarity-id"
       }
     },
-    "Style": {
-      "FrameworkIntegration": "Bootstrap"
+    "Theming": {
+      "Framework": "Bootstrap"
     }
   }
 }
@@ -615,9 +614,8 @@ builder.Services.AddOsirionStyle(CssFramework.Bootstrap);
         "VisibilityThreshold": 300
       }
     },
-    "Style": {
-      "FrameworkIntegration": "Bootstrap",
-      "UseStyles": true,
+    "Theming": {
+      "Framework": "Bootstrap",
       "CustomVariables": "--primary-color: #007bff;"
     }
   }

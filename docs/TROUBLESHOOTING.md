@@ -49,7 +49,7 @@ builder.Services.AddOsirionBlazor(osirion => {
 3. **Include Required Styles:**
 ```razor
 @* ? Add to layout *@
-<OsirionStyles FrameworkIntegration="CssFramework.Bootstrap" />
+<OsirionStyles Framework="CssFramework.Bootstrap" />
 ```
 
 ### Issue: GitHub API Rate Limiting
@@ -401,15 +401,14 @@ app.UseStaticFiles(new StaticFileOptions
 ```razor
 @* ? Ensure OsirionStyles is included *@
 <OsirionStyles 
-    FrameworkIntegration="CssFramework.Bootstrap"
-    UseStyles="true" />
+    Framework="CssFramework.Bootstrap" />
 ```
 
 2. **Check CSS Framework Integration:**
 ```html
 <!-- ? Include framework CSS before Osirion styles -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<OsirionStyles FrameworkIntegration="CssFramework.Bootstrap" />
+<OsirionStyles Framework="CssFramework.Bootstrap" />
 ```
 
 3. **Verify CSS Variables:**
