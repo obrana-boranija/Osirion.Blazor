@@ -853,7 +853,7 @@ jobs:
    - Log security events
 
 3. **Sanitize Content**
-   - Enable HTML sanitization
+   - HTML sanitization is on by default; extend the allow-list with `AddOsirionHtmlSanitizer` rather than setting `SanitizeHtml="false"` for repository content
    - Validate frontmatter data
    - Escape user-generated content
 

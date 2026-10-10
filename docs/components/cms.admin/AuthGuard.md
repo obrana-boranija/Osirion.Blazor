@@ -9,8 +9,8 @@ Parameters
 - `ChildContent`: RenderFragment - Content shown to users who satisfy the policy
 - `Policy`: string - Name of the authorization policy (default: `CmsAdminAuthorization.PolicyName`, `"Osirion.Cms.Admin"`)
 - `LoginPath`: string - Local path of the sign-in page linked from the message (default: `/osirion/login`). The current page is passed as `returnUrl`. A value that is not a local path is replaced by `/osirion/login`.
-- `ShowLoginForm`: bool - No effect. The GitHub login form cannot make a user satisfy the policy, so it is no longer shown.
-- `OnAuthResult`: EventCallback<bool> - Never invoked, for the same reason.
+- `ShowLoginForm`: bool - Obsolete, no effect. The GitHub login form cannot make a user satisfy the policy, so it is no longer shown. Setting it gives a compiler warning.
+- `OnAuthResult`: EventCallback<bool> - Obsolete, never invoked, for the same reason.
 
 Example
 

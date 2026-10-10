@@ -34,9 +34,9 @@ Security
   wrapper and line numbers edit the sanitized markup with text patterns.
 
 ```csharp
-// Program.cs: allow a custom element and the attributes your script reads from it
+// Program.cs: allow a custom element and every attribute your script reads from it
 builder.Services.AddOsirionHtmlSanitizer(options =>
-    options.AllowElement("chart", "type", "title", "data"));
+    options.AllowElement("chart", "type", "title", "caption", "data", "colors"));
 ```
 
 The script that reads those attributes must treat them as text (`textContent`, `setAttribute`) and never write

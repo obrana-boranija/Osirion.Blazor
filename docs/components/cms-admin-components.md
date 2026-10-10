@@ -403,8 +403,8 @@ The `AuthGuard` component shows its content only to users who satisfy an authori
 - `ChildContent`: RenderFragment - Protected content
 - `Policy`: string - Authorization policy name (default: `CmsAdminAuthorization.PolicyName`)
 - `LoginPath`: string - Local path of the sign-in page linked for users who do not satisfy the policy (default: `/osirion/login`)
-- `ShowLoginForm`: bool - No effect
-- `OnAuthResult`: EventCallback<bool> - Never invoked
+- `ShowLoginForm`: bool - Obsolete, no effect
+- `OnAuthResult`: EventCallback<bool> - Obsolete, never invoked
 
 #### Example
 

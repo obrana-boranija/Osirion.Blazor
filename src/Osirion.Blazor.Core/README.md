@@ -31,7 +31,7 @@ A comprehensive hero section component with support for various layouts, backgro
 - `Title`: Main hero title
 - `Subtitle`: Hero subtitle
 - `Summary`: Hero description/summary
-- `ImageUrl`: Image URL for hero section
+- `ImageUrl`: Image URL for hero section. As a background image it is written into `url('...')` with quotes, backslashes, parentheses and control characters CSS-escaped, so a URL from content front matter cannot add style declarations of its own
 - `UseBackgroundImage`: Display image as background vs. side image
 - `BackgroundPattern`: Optional background pattern
 - `Alignment`: Text alignment (Left, Center, Right, Justify)
@@ -199,6 +199,19 @@ A GDPR-compliant cookie consent banner with customizable categories.
 - Configurable consent expiry
 - Privacy policy integration
 
+The return-URL check is public as `Osirion.Blazor.Core.Utils.LocalUrl`, for your own redirects:
+
+```csharp
+using Osirion.Blazor.Core.Utils;
+
+// true only for a root-relative path such as "/blog?page=2"; false for "//evil.example", "/\evil.example",
+// absolute URLs and values with control characters
+var isLocal = LocalUrl.IsLocalPath(returnUrl);
+
+// returnUrl when it is local, otherwise the fallback (LocalUrl.DefaultPath, "/", unless you pass another local path)
+return Results.LocalRedirect(LocalUrl.GetSafeLocalPath(returnUrl));
+```
+
 #### `InfiniteLogoCarousel`
 Self-contained logo carousel with zero external dependencies.
 
@@ -247,11 +260,15 @@ Default allow-list:
 
 - Keeps common content markup (headings, paragraphs, lists, tables, links, images, code, details) plus `class`
   and `id`, so styling, code highlighting and table of contents anchors keep working.
+- Keeps `role` and every `aria-*` attribute on allowed elements. Set `AllowAriaAttributes = false` to remove them.
+- Keeps markdown table column alignment: `th` and `td` keep the `text-align` declaration of their `style`
+  attribute and every other CSS property is removed from them. Set `AllowTableCellAlignment = false` to remove
+  `style` from table cells too.
 - URL schemes `http`, `https`, `mailto`, `tel` and relative URLs, including relative URLs with a colon in the
   query or fragment such as `page.html?t=10:30`.
-- Removes forms and form controls, iframes, `style` and `name` attributes and `<style>` elements. In rendered
-  markdown this also removes table column alignment (written as `style`) and task-list checkboxes (`<input>`).
-- Keeps only attributes on the HtmlSanitizer default list plus `class` and `id`: `role`, `aria-*`, `data-*`,
+- Removes forms and form controls, iframes, `name` attributes, `<style>` elements and `style` attributes on every
+  element other than table cells. In rendered markdown this also removes task-list checkboxes (`<input>`).
+- Keeps only attributes on the HtmlSanitizer default list plus `class`, `id`, `role` and `aria-*`: `data-*`,
   `srcset`, `sizes`, `loading` and `decoding`, and the `video`, `audio`, `source`, `track` and `picture` elements,
   are removed unless the host allows them.
 - Never allows `script`, `svg`, `math`, `template`, `object`, `embed`, `applet`, `meta`, `base`, `link`, `frame`,
@@ -271,16 +288,20 @@ builder.Services.AddOsirionHtmlSanitizer(options =>
     // A custom element read by client-side script, with attributes kept only on that element
     options.AllowElement("chart", "type", "title", "caption", "data", "colors");
 
-    // Opt in to inline styles (CSS properties are still filtered)
+    // Opt in to inline styles on every element (CSS properties are still filtered, and table cells
+    // get the same general filter instead of keeping text-align only)
     options.AllowedAttributes.Add("style");
 
     // Opt in to video embeds; src is still limited to the allowed URL schemes
     options.AllowElement("iframe", "src", "width", "height", "title", "allow", "allowfullscreen", "frameborder");
 
-    // Opt in to accessibility and responsive image attributes; srcset candidates are still URL-screened
-    options.AllowedAttributes.UnionWith(["role", "aria-label", "aria-hidden", "loading", "decoding", "srcset", "sizes"]);
+    // Opt in to responsive image attributes; srcset candidates are still URL-screened
+    options.AllowedAttributes.UnionWith(["loading", "decoding", "srcset", "sizes"]);
 });
 ```
+
+To go back to the stricter defaults of earlier builds, which removed `role`, `aria-*` and table cell alignment,
+set `options.AllowAriaAttributes = false` and `options.AllowTableCellAlignment = false`.
 
 Attributes allowed through `AllowElement` are made inert as HTML only. Client-side script that reads them must
 treat them as text (`textContent`, `setAttribute`, `createElement`) and never write them through `innerHTML`: the

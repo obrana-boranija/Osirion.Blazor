@@ -308,12 +308,16 @@ builder.Services.AddOsirionBlazor(osirion => {
 ```
 
 3. **Check for HTML Sanitization:**
+Content HTML is sanitized by default with an allow-list (see [HTML Sanitization](../src/Osirion.Blazor.Core/README.md#html-sanitization) in the Core README). If markup you need is removed, extend the allow-list instead of turning sanitization off:
 ```csharp
-// ? Configure HTML sanitization
-services.Configure<HtmlSanitizerOptions>(options =>
+using Osirion.Blazor.Core.Extensions;
+
+builder.Services.AddOsirionHtmlSanitizer(options =>
 {
-    options.AllowedTags.Add("div");
-    options.AllowedAttributes.Add("class");
+    options.AllowedAttributes.Add("style");
+
+    // List every attribute your client script reads from the element; an attribute that is not listed is removed
+    options.AllowElement("chart", "type", "title", "caption", "data", "colors");
 });
 ```
 
