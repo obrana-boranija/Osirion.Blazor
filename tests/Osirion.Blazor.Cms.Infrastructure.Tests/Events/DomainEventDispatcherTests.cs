@@ -12,6 +12,7 @@ public class DomainEventDispatcherTests
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<DomainEventDispatcher> _logger;
     private readonly DomainEventDispatcher _dispatcher;
+    private readonly List<TestEventHandler> _handlers;
 
     // Test event classes
     public class TestEvent : IDomainEvent
@@ -20,9 +21,7 @@ public class DomainEventDispatcherTests
         public string Message { get; set; } = "Test Message";
     }
 
-    public interface ITestEventHandler : IDomainEventHandler<TestEvent> { }
-
-    public class TestEventHandler : ITestEventHandler
+    public class TestEventHandler : IDomainEventHandler<TestEvent>
     {
         public bool HandlerCalled { get; private set; }
 
@@ -40,11 +39,12 @@ public class DomainEventDispatcherTests
         // Create test handlers
         var handler1 = new TestEventHandler();
         var handler2 = new TestEventHandler();
+        _handlers = [handler1, handler2];
 
         // Setup service provider to return our handlers
         var serviceCollection = new ServiceCollection();
-        serviceCollection.AddSingleton<ITestEventHandler>(handler1);
-        serviceCollection.AddSingleton<ITestEventHandler>(handler2);
+        serviceCollection.AddSingleton<IDomainEventHandler<TestEvent>>(handler1);
+        serviceCollection.AddSingleton<IDomainEventHandler<TestEvent>>(handler2);
 
         _serviceProvider = serviceCollection.BuildServiceProvider();
 
@@ -61,9 +61,8 @@ public class DomainEventDispatcherTests
         await _dispatcher.DispatchAsync(testEvent);
 
         // Assert
-        var handlers = _serviceProvider.GetServices<ITestEventHandler>().ToList();
-        handlers.Count.ShouldBe(2);
-        handlers.ShouldAllBe(h => ((TestEventHandler)h).HandlerCalled);
+        _serviceProvider.GetServices<IDomainEventHandler<TestEvent>>().Count().ShouldBe(2);
+        _handlers.ShouldAllBe(h => h.HandlerCalled);
     }
 
     [Fact]

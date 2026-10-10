@@ -43,6 +43,11 @@ public class DirectoryItem : DomainEntity<string>
     /// <summary>Gets the directory metadata.</summary>
     public FrontMatter? Metadata { get; private set; }
 
+    /// <summary>
+    /// Gets the custom metadata values set with <see cref="SetMetadata{T}(string, T)"/>, keyed case-insensitively.
+    /// </summary>
+    public IReadOnlyDictionary<string, object> CustomMetadata => _metadataValues;
+
     // Computed properties
     /// <summary>Gets the directory depth in the hierarchy.</summary>
     public int Depth
@@ -182,10 +187,6 @@ public class DirectoryItem : DomainEntity<string>
         // Don't add self as child
         if (child.Id == Id)
             throw new ContentValidationException("Child", "Cannot add a directory as its own child");
-
-        // Check if this directory is already an ancestor of the child (would create circular reference)
-        if (IsAncestorOf(child))
-            throw new ContentValidationException("Child", "Cannot add a directory as child of its descendant");
 
         // Check if child is already in this directory's ancestry (would create circular reference)
         if (child.IsAncestorOf(this))

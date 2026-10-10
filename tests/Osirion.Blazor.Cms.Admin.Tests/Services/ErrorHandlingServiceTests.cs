@@ -1,9 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
-using NSubstitute;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Osirion.Blazor.Cms.Admin.Core.Events;
 using Osirion.Blazor.Cms.Admin.Core.State;
 using Osirion.Blazor.Cms.Admin.Services;
 using Osirion.Blazor.Cms.Admin.Services.Events;
+using Osirion.Blazor.Cms.Admin.Tests.TestDoubles;
 using Shouldly;
 
 namespace Osirion.Blazor.Cms.Admin.Tests.Services;
@@ -12,15 +13,17 @@ public class ErrorHandlingServiceTests
 {
     private readonly CmsState _state;
     private readonly CmsEventMediator _eventMediator;
-    private readonly ILogger<ErrorHandlingService> _logger;
+    private readonly RecordingLogger<ErrorHandlingService> _logger;
+    private readonly List<ErrorOccurredEvent> _errors;
     private readonly ErrorHandlingService _service;
 
     public ErrorHandlingServiceTests()
     {
         _state = new CmsState();
-        _eventMediator = Substitute.For<CmsEventMediator>(Substitute.For<ILogger<CmsEventMediator>>());
-        _logger = Substitute.For<ILogger<ErrorHandlingService>>();
+        _eventMediator = new CmsEventMediator(NullLogger<CmsEventMediator>.Instance);
+        _logger = new RecordingLogger<ErrorHandlingService>();
         _service = new ErrorHandlingService(_state, _eventMediator, _logger);
+        _errors = EventRecorder.Record<ErrorOccurredEvent>(_eventMediator);
     }
 
     [Fact]
@@ -34,21 +37,20 @@ public class ErrorHandlingServiceTests
         _service.HandleException(exception, context);
 
         // Assert
-        _logger.Received().LogError(
-            Arg.Is(exception),
-            Arg.Is<string>(s => s.Contains(context) && s.Contains(exception.Message))
-        );
+        var logged = _logger.Entries.ShouldHaveSingleItem();
+        logged.Level.ShouldBe(LogLevel.Error);
+        logged.Exception.ShouldBe(exception);
+        logged.Message.ShouldContain(context);
+        logged.Message.ShouldContain(exception.Message);
 
         _state.ErrorMessage.ShouldNotBeNull();
         _state.ErrorMessage.ShouldContain(context);
         _state.ErrorMessage.ShouldContain(exception.Message);
 
-        _eventMediator.Received().Publish(
-            Arg.Is<ErrorOccurredEvent>(e =>
-                e.Message.Contains(context) &&
-                e.Message.Contains(exception.Message) &&
-                e.Exception == exception)
-        );
+        var published = _errors.ShouldHaveSingleItem();
+        published.Message.ShouldContain(context);
+        published.Message.ShouldContain(exception.Message);
+        published.Exception.ShouldBe(exception);
     }
 
     [Fact]
@@ -62,19 +64,18 @@ public class ErrorHandlingServiceTests
         _service.HandleException(exception, context, updateState: false);
 
         // Assert
-        _logger.Received().LogError(
-            Arg.Is(exception),
-            Arg.Is<string>(s => s.Contains(context) && s.Contains(exception.Message))
-        );
+        var logged = _logger.Entries.ShouldHaveSingleItem();
+        logged.Level.ShouldBe(LogLevel.Error);
+        logged.Exception.ShouldBe(exception);
+        logged.Message.ShouldContain(context);
+        logged.Message.ShouldContain(exception.Message);
 
-        _state.ErrorMessage.ShouldBeNull(); // State should not be updated
+        _state.ErrorMessage.ShouldBeNull();
 
-        _eventMediator.Received().Publish(
-            Arg.Is<ErrorOccurredEvent>(e =>
-                e.Message.Contains(context) &&
-                e.Message.Contains(exception.Message) &&
-                e.Exception == exception)
-        );
+        var published = _errors.ShouldHaveSingleItem();
+        published.Message.ShouldContain(context);
+        published.Message.ShouldContain(exception.Message);
+        published.Exception.ShouldBe(exception);
     }
 
     [Fact]
@@ -83,17 +84,14 @@ public class ErrorHandlingServiceTests
         // Arrange
         var errorEvent = new ErrorOccurredEvent("Test error message");
 
-        // Access the private HandleError method through reflection to test it
-        var method = typeof(ErrorHandlingService).GetMethod("HandleError",
-            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-
         // Act
-        method?.Invoke(_service, new object[] { errorEvent });
+        _eventMediator.Publish(errorEvent);
 
         // Assert
-        _logger.Received().LogError(
-            Arg.Is<string>(s => s.Contains(errorEvent.Message))
-        );
+        var logged = _logger.Entries.ShouldHaveSingleItem();
+        logged.Level.ShouldBe(LogLevel.Error);
+        logged.Exception.ShouldBeNull();
+        logged.Message.ShouldContain(errorEvent.Message);
 
         _state.ErrorMessage.ShouldBe(errorEvent.Message);
     }
@@ -105,18 +103,14 @@ public class ErrorHandlingServiceTests
         var exception = new InvalidOperationException("Test exception");
         var errorEvent = new ErrorOccurredEvent("Test error message", exception);
 
-        // Access the private HandleError method through reflection to test it
-        var method = typeof(ErrorHandlingService).GetMethod("HandleError",
-            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-
         // Act
-        method?.Invoke(_service, new object[] { errorEvent });
+        _eventMediator.Publish(errorEvent);
 
         // Assert
-        _logger.Received().LogError(
-            Arg.Is(exception),
-            Arg.Is<string>(s => s.Contains(errorEvent.Message))
-        );
+        var logged = _logger.Entries.ShouldHaveSingleItem();
+        logged.Level.ShouldBe(LogLevel.Error);
+        logged.Exception.ShouldBe(exception);
+        logged.Message.ShouldContain(errorEvent.Message);
 
         _state.ErrorMessage.ShouldBe(errorEvent.Message);
     }

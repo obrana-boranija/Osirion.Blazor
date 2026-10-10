@@ -33,12 +33,10 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services,
         Action<GitHubOptions>? configure = null)
     {
-        //services.AddGitHubContentProvider(configure);
-        //// Allow additional configuration
-        //if (configure is not null)
-        //{
-        //    services.Configure(configure);
-        //}
+        if (configure is not null)
+        {
+            services.Configure(configure);
+        }
 
         return services;
     }
@@ -50,8 +48,6 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services,
         Action<FileSystemOptions>? configure = null)
     {
-        //services.AddFileSystemContentProvider(configure);
-        // Allow additional configuration
         if (configure is not null)
         {
             services.Configure(configure);

@@ -116,7 +116,7 @@ public class FileSystemDirectoryRepository : DirectoryRepositoryBase, IDirectory
             if (!System.IO.Directory.Exists(sourcePhysicalPath))
                 throw new DirectoryNotFoundException(directory.Path);
 
-            if (!System.IO.Directory.Exists(sourcePhysicalPath))
+            if (System.IO.Directory.Exists(destinationPhysicalPath))
                 throw new ContentValidationException("Path", $"Directory already exists at destination: {newPath}");
 
             // Create destination directory structure if needed
@@ -164,8 +164,12 @@ public class FileSystemDirectoryRepository : DirectoryRepositoryBase, IDirectory
             }
         }
 
-        // Scan directories
-        await ScanDirectoriesAsync(_options.BasePath, cache, null, cancellationToken);
+        // The base path is the content root, not a directory of its own: it has no relative path to build an item
+        // from, so scanning it as one failed and left the cache empty. Its subdirectories are the top level.
+        foreach (var topLevelDirectory in new DirectoryInfo(_options.BasePath).GetDirectories())
+        {
+            await ScanDirectoriesAsync(topLevelDirectory.FullName, cache, null, cancellationToken);
+        }
 
         return cache;
     }
@@ -227,7 +231,6 @@ public class FileSystemDirectoryRepository : DirectoryRepositoryBase, IDirectory
             // Set parent if available
             if (parentDirectory is not null)
             {
-                directory.SetParent(parentDirectory);
                 parentDirectory.AddChild(directory);
             }
 

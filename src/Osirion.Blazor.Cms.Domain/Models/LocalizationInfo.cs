@@ -27,13 +27,13 @@ public class LocalizationInfo
     /// <returns>The best matching locale from available locales, or default locale if no match</returns>
     public string GetBestMatchingLocale(string requestedLocale)
     {
-        requestedLocale.ToLower();
         if (string.IsNullOrWhiteSpace(requestedLocale))
             return DefaultLocale;
 
-        // Exact match
-        if (AvailableLocales.Any(l => l.Code.Equals(requestedLocale, StringComparison.OrdinalIgnoreCase)))
-            return requestedLocale;
+        // Exact match (case-insensitive), returning the code as it is declared in AvailableLocales
+        var exactLocale = AvailableLocales.FirstOrDefault(l => l.Code.Equals(requestedLocale, StringComparison.OrdinalIgnoreCase));
+        if (exactLocale is not null)
+            return exactLocale.Code;
 
         // Language match (en-US matches en)
         var languagePart = requestedLocale.Split('-')[0];

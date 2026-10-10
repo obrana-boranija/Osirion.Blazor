@@ -12,7 +12,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.Decorators
         /// <summary>Performs the ExceptionHandlingContentProviderDecorator operation.</summary>
         public ExceptionHandlingContentProviderDecorator(IReadContentProvider inner)
         {
-            _inner = inner;
+            _inner = inner ?? throw new ArgumentNullException(nameof(inner));
         }
 
         /// <summary>Performs the GetById operation asynchronously.</summary>
@@ -21,6 +21,10 @@ namespace Osirion.Blazor.Cms.Infrastructure.Decorators
             try
             {
                 return await _inner.GetByIdAsync(id);
+            }
+            catch (ContentProviderException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
@@ -35,6 +39,10 @@ namespace Osirion.Blazor.Cms.Infrastructure.Decorators
             try
             {
                 return await _inner.GetAllAsync();
+            }
+            catch (ContentProviderException)
+            {
+                throw;
             }
             catch (Exception ex)
             {

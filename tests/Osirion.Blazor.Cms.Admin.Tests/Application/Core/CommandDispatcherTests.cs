@@ -7,13 +7,11 @@ namespace Osirion.Blazor.Cms.Admin.Tests.Application.Core;
 
 public class CommandDispatcherTests
 {
-    private readonly CommandDispatcher _commandDispatcher;
-    private readonly IServiceProvider _serviceProvider;
-
-    public CommandDispatcherTests()
+    private static CommandDispatcher CreateDispatcher(Action<IServiceCollection>? configure = null)
     {
-        _serviceProvider = Substitute.For<IServiceProvider>();
-        _commandDispatcher = new CommandDispatcher(_serviceProvider);
+        var services = new ServiceCollection();
+        configure?.Invoke(services);
+        return new CommandDispatcher(services.BuildServiceProvider());
     }
 
     [Fact]
@@ -22,11 +20,10 @@ public class CommandDispatcherTests
         // Arrange
         var command = new TestCommand();
         var handler = Substitute.For<ICommandHandler<TestCommand>>();
-
-        _serviceProvider.GetRequiredService<ICommandHandler<TestCommand>>().Returns(handler);
+        var dispatcher = CreateDispatcher(services => services.AddSingleton(handler));
 
         // Act
-        await _commandDispatcher.DispatchAsync(command);
+        await dispatcher.DispatchAsync(command);
 
         // Assert
         await handler.Received(1).HandleAsync(command, Arg.Any<CancellationToken>());
@@ -40,11 +37,10 @@ public class CommandDispatcherTests
         var expectedResult = "Test Result";
         var handler = Substitute.For<ICommandHandler<TestCommandWithResult, string>>();
         handler.HandleAsync(command, Arg.Any<CancellationToken>()).Returns(expectedResult);
-
-        _serviceProvider.GetRequiredService<ICommandHandler<TestCommandWithResult, string>>().Returns(handler);
+        var dispatcher = CreateDispatcher(services => services.AddSingleton(handler));
 
         // Act
-        var result = await _commandDispatcher.DispatchAsync<TestCommandWithResult, string>(command);
+        var result = await dispatcher.DispatchAsync<TestCommandWithResult, string>(command);
 
         // Assert
         result.ShouldBe(expectedResult);
@@ -56,14 +52,11 @@ public class CommandDispatcherTests
     {
         // Arrange
         var command = new TestCommand();
-
-        _serviceProvider
-            .GetRequiredService<ICommandHandler<TestCommand>>()
-            .Returns(x => throw new InvalidOperationException("Handler not found"));
+        var dispatcher = CreateDispatcher();
 
         // Act & Assert
         await Should.ThrowAsync<InvalidOperationException>(async () =>
-            await _commandDispatcher.DispatchAsync(command));
+            await dispatcher.DispatchAsync(command));
     }
 
     [Fact]
@@ -71,14 +64,11 @@ public class CommandDispatcherTests
     {
         // Arrange
         var command = new TestCommandWithResult();
-
-        _serviceProvider
-            .GetRequiredService<ICommandHandler<TestCommandWithResult, string>>()
-            .Returns(x => throw new InvalidOperationException("Handler not found"));
+        var dispatcher = CreateDispatcher();
 
         // Act & Assert
         await Should.ThrowAsync<InvalidOperationException>(async () =>
-            await _commandDispatcher.DispatchAsync<TestCommandWithResult, string>(command));
+            await dispatcher.DispatchAsync<TestCommandWithResult, string>(command));
     }
 
     [Fact]
@@ -88,21 +78,20 @@ public class CommandDispatcherTests
         var command = new TestCommand();
         var handler = Substitute.For<ICommandHandler<TestCommand>>();
         var cancellationToken = new CancellationToken();
-
-        _serviceProvider.GetRequiredService<ICommandHandler<TestCommand>>().Returns(handler);
+        var dispatcher = CreateDispatcher(services => services.AddSingleton(handler));
 
         // Act
-        await _commandDispatcher.DispatchAsync(command, cancellationToken);
+        await dispatcher.DispatchAsync(command, cancellationToken);
 
         // Assert
         await handler.Received(1).HandleAsync(command, cancellationToken);
     }
 
-    private class TestCommand : ICommand
+    public class TestCommand : ICommand
     {
     }
 
-    private class TestCommandWithResult : ICommand<string>
+    public class TestCommandWithResult : ICommand<string>
     {
     }
 }

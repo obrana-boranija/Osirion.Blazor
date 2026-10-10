@@ -43,6 +43,9 @@ public static class ServiceCollectionExtensions
         // Required services
         services.AddMemoryCache();
 
+        // FileSystemContentRepository reads and writes through this abstraction
+        services.TryAddSingleton<System.IO.Abstractions.IFileSystem, System.IO.Abstractions.FileSystem>();
+
         // Register core services (singletons and scoped services)
         services.TryAddSingleton<IMarkdownProcessor, MarkdownProcessor>();
         services.TryAddScoped<IStateStorageService, LocalStorageService>();
@@ -208,6 +211,9 @@ public static class ServiceCollectionExtensions
         {
             services.Configure<FileSystemOptions>(configuration.GetSection(FileSystemOptions.Section));
         }
+
+        // The repositories read and write through the abstraction, so a host gets the real file system unless it registers its own
+        services.TryAddSingleton<System.IO.Abstractions.IFileSystem, System.IO.Abstractions.FileSystem>();
 
         // Register FileSystem repositories
         services.TryAddScoped<FileSystemContentRepository>();

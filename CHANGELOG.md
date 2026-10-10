@@ -65,6 +65,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `ScrollToTopManager` is registered per scope instead of as a singleton, so changing it for one user no longer changes the button for every user, and `ScrollToTopProvider` re-renders through its dispatcher
 - Each GitHub content provider and the FileSystem provider now keep their own directory cache; with several providers, one provider could return another provider's directories
 - The admin `Dashboard` page now unsubscribes from `CmsState` when it is disposed
+- The FileSystem provider could not be resolved from DI because `System.IO.Abstractions.IFileSystem` was never registered; it is now registered with `TryAdd`, so a host's own registration wins
+- `FileSystemContentRepository` returned nothing until a refresh, because its lazy load treated the empty cache as loaded
+- `FileSystemDirectoryRepository` found no directories (it scanned the content root as a directory and dropped every nested directory as a circular reference), and `MoveAsync` never checked whether the destination exists
+- Custom directory metadata is written to `_index.md` again; it was dropped on every save. `DirectoryItem.CustomMetadata` exposes the values, and only plain keys (letters, digits, `_`, `-`) are written
+- `DirectoryCacheManager.InvalidateCacheAsync` and `ContentCacheManager` did nothing: invalidation never forced a reload and the content cache never returned a hit
+- `ExceptionHandlingContentProviderDecorator` rejects a null inner provider and no longer wraps a `ContentProviderException` in another one
+- `CreateDirectoryCommandHandler` threw `System.IO.DirectoryNotFoundException` instead of the domain exception for a missing parent
+- `DirectoryItem.AddChild` threw for a child already under the directory, which also broke `CloneWithChildren`
+- `LocalizationInfo.GetBestMatchingLocale` returns the declared locale code instead of the requested casing, and `LocalizationOptions.SetDefaultCulture` adds a culture that is not yet supported instead of ignoring it
+- `AddOsirionGitHubContentProvider(Action<GitHubOptions>)` ignored its configuration
+- CMS admin: a title ending in `.md` produced `titlemd.md`, a new post in a subfolder was saved with a backslash in its path on Windows, and `ErrorHandlingService` handled and logged each error twice
 
 ### Security
 - Osirion.Blazor.Cms.Admin: every routed admin page (`/osirion`, `/osirion/dashboard`, `/osirion/content`, `/osirion/content/edit`, `/osirion/settings`, `/osirion/login`) requires the authorization policy `"Osirion.Cms.Admin"` (`CmsAdminAuthorization.PolicyName`). The default policy requires an authenticated user; a host policy with that name replaces it. These pages, and the repository writes behind them, were open to anonymous visitors

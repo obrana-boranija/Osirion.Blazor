@@ -39,6 +39,7 @@ public class ContentEditorViewModelTests
             Sha = "test-sha"
         };
         bool isCreatingNew = true;
+        _editorService.GenerateFileNameFromTitle("Test Title").Returns("test-title.md");
 
         // Act
         _viewModel.InitializeFromState(blogPost, isCreatingNew);
@@ -46,8 +47,8 @@ public class ContentEditorViewModelTests
         // Assert
         _viewModel.EditingPost.ShouldBe(blogPost);
         _viewModel.IsCreatingNew.ShouldBe(isCreatingNew);
-        _viewModel.FileName.ShouldNotBeNullOrEmpty();
-        _viewModel.CommitMessage.ShouldContain("Create");
+        _viewModel.FileName.ShouldBe("test-title.md");
+        _viewModel.CommitMessage.ShouldBe("Create test-title.md");
     }
 
     [Fact]
@@ -174,7 +175,7 @@ public class ContentEditorViewModelTests
 
         _eventPublisher.Received(1).Publish(
             Arg.Is<StatusNotificationEvent>(e =>
-                e.Message.Contains("saved") &&
+                e.Message.Contains("Saved") &&
                 e.Message.Contains(System.IO.Path.GetFileName(blogPost.Path)) &&
                 e.Type == StatusType.Success)
         );
@@ -186,7 +187,7 @@ public class ContentEditorViewModelTests
         // Arrange
         var blogPost = new ContentItem
         {
-            Path = "content/blog",
+            Path = "content/blog/new-post.md",
             Content = "Test content",
             Metadata = FrontMatter.Create("Test Title", "Test Description", System.DateTime.Now)
         };
@@ -211,7 +212,7 @@ public class ContentEditorViewModelTests
         await _viewModel.SavePostAsync();
 
         // Assert
-        _viewModel.EditingPost?.Path.ShouldBe("content/blog/test-post.md");
+        _viewModel.EditingPost!.Path.ShouldBe("content/blog/test-post.md");
         _viewModel.IsCreatingNew.ShouldBeFalse();
         _viewModel.FileName.ShouldBeEmpty();
 

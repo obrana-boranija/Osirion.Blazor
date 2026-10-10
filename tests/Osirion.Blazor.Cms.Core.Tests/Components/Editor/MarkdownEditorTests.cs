@@ -87,7 +87,7 @@ public class MarkdownEditorTests : TestContext, IDisposable
         var textarea = cut.Find("textarea");
 
         // Set new value
-        textarea.Change(updatedContent);
+        textarea.Input(updatedContent);
 
         // Assert
         capturedContent.ShouldBe(updatedContent);

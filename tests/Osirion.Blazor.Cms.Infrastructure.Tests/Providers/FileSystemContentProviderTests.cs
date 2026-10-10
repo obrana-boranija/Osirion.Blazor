@@ -1,264 +1,258 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 using Osirion.Blazor.Cms.Domain.Entities;
-using Osirion.Blazor.Cms.Domain.Options;
+using Osirion.Blazor.Cms.Domain.Interfaces;
+using Osirion.Blazor.Cms.Domain.Interfaces.Content;
+using Osirion.Blazor.Cms.Domain.Interfaces.Directory;
 using Osirion.Blazor.Cms.Domain.Repositories;
+using Osirion.Blazor.Cms.Domain.Options;
+using Osirion.Blazor.Cms.Domain.ValueObjects;
 using Osirion.Blazor.Cms.Infrastructure.FileSystem;
 using Osirion.Blazor.Cms.Infrastructure.Providers;
 using Shouldly;
+using System.IO.Abstractions.TestingHelpers;
 
 namespace Osirion.Blazor.Cms.Infrastructure.Tests.Providers;
 
-public class FileSystemContentProviderTests
+/// <summary>
+/// The provider owns two concrete repositories whose query methods are not virtual, so they cannot be substituted.
+/// The tests therefore run the real repositories against an in-memory file system and a substituted directory cache,
+/// and assert on what the provider returns.
+/// </summary>
+public sealed class FileSystemContentProviderTests : IDisposable
 {
+    private const string ProviderIdentity = "filesystem";
+
+    private static readonly string BasePath = MockUnixSupport.Path(@"c:\test\content");
+
+    private readonly MockFileSystem _fileSystem = new();
+    private readonly Dictionary<string, DirectoryItem> _cachedDirectories = new();
+    private readonly IDirectoryCacheManager _directoryCacheManager = Substitute.For<IDirectoryCacheManager>();
+    private readonly IContentQueryFilter _queryFilter = Substitute.For<IContentQueryFilter>();
+    private readonly IOptions<FileSystemOptions> _options;
+    private readonly IMemoryCache _memoryCache = new MemoryCache(new MemoryCacheOptions());
     private readonly FileSystemContentRepository _contentRepository;
     private readonly FileSystemDirectoryRepository _directoryRepository;
-    private readonly IOptions<FileSystemOptions> _options;
-    private readonly IMemoryCache _memoryCache;
-    private readonly ILogger<FileSystemContentProvider> _logger;
     private readonly FileSystemContentProvider _provider;
 
     public FileSystemContentProviderTests()
     {
-        // Setup mocks
-        _contentRepository = Substitute.For<FileSystemContentRepository>();
-        _directoryRepository = Substitute.For<FileSystemDirectoryRepository>();
-        _memoryCache = Substitute.For<IMemoryCache>();
-        _logger = Substitute.For<ILogger<FileSystemContentProvider>>();
+        _fileSystem.Directory.CreateDirectory(BasePath);
 
-        // Configure options
-        var options = new FileSystemOptions
+        _options = Options.Create(new FileSystemOptions
         {
-            BasePath = "/test/content",
+            BasePath = BasePath,
             ContentRoot = "content",
             CreateDirectoriesIfNotExist = true,
+            WatchForChanges = false,
             EnableLocalization = false,
             DefaultLocale = "en",
             SupportedExtensions = new List<string> { ".md", ".markdown" },
-        };
-        _options = Options.Create(options);
+        });
 
-        // Create provider
+        var markdownProcessor = Substitute.For<IMarkdownProcessor>();
+        markdownProcessor.ExtractFrontMatterAndContent(Arg.Any<string>())
+            .Returns(call => (ReadFrontMatter(call.Arg<string>()), call.Arg<string>()));
+        markdownProcessor.RenderToHtmlAsync(Arg.Any<string>(), Arg.Any<bool>())
+            .Returns(call => call.Arg<string>());
+
+        _queryFilter.ApplyFilters(Arg.Any<IQueryable<ContentItem>>(), Arg.Any<ContentQuery>())
+            .Returns(call => call.Arg<IQueryable<ContentItem>>());
+
+        _directoryCacheManager.GetCachedDirectoriesAsync(
+                Arg.Any<Func<CancellationToken, Task<Dictionary<string, DirectoryItem>>>>(),
+                Arg.Any<CancellationToken>(),
+                Arg.Any<bool>())
+            .Returns(_ => _cachedDirectories);
+
+        var pathUtilities = Substitute.For<IPathUtilities>();
+        pathUtilities.NormalizePath(Arg.Any<string>()).Returns(call => call.Arg<string>());
+
+        _contentRepository = new FileSystemContentRepository(
+            markdownProcessor,
+            _queryFilter,
+            _options,
+            NullLogger<FileSystemContentRepository>.Instance,
+            _fileSystem);
+
+        _directoryRepository = new FileSystemDirectoryRepository(
+            _options,
+            _directoryCacheManager,
+            Substitute.For<IDirectoryMetadataProcessor>(),
+            pathUtilities,
+            NullLogger<FileSystemDirectoryRepository>.Instance);
+
         _provider = new FileSystemContentProvider(
             _contentRepository,
             _directoryRepository,
             _options,
             _memoryCache,
-            _logger);
+            NullLogger<FileSystemContentProvider>.Instance);
+    }
+
+    public void Dispose()
+    {
+        _contentRepository.Dispose();
+        _directoryRepository.Dispose();
+        _memoryCache.Dispose();
     }
 
     [Fact]
     public void ProviderId_BasedOnOptionValues()
     {
-        // Assert
         _provider.ProviderId.ShouldStartWith("filesystem-");
+    }
+
+    [Fact]
+    public void ProviderId_WithConfiguredId_UsesConfiguredId()
+    {
+        _options.Value.ProviderId = "docs";
+
+        _provider.ProviderId.ShouldBe("docs");
     }
 
     [Fact]
     public void DisplayName_IncludesBasePath()
     {
-        // Assert
-        _provider.DisplayName.ShouldContain("/test/content");
+        _provider.DisplayName.ShouldContain(BasePath);
     }
 
     [Fact]
     public void IsReadOnly_IsFalse()
     {
-        // Assert
         _provider.IsReadOnly.ShouldBeFalse();
     }
 
     [Fact]
     public async Task GetAllItemsAsync_CallsRepository()
     {
-        // Arrange
-        var contentItems = new List<ContentItem>
-        {
-            ContentItem.Create("id1", "Test 1", "Content 1", "path1.md", "filesystem"),
-            ContentItem.Create("id2", "Test 2", "Content 2", "path2.md", "filesystem")
-        };
+        WriteContent("path1.md", "Content 1");
+        WriteContent("path2.md", "Content 2");
 
-        _contentRepository.GetAllAsync(Arg.Any<CancellationToken>())
-            .Returns(contentItems);
-
-        // Act
         var result = await _provider.GetAllItemsAsync();
 
-        // Assert
-        result.ShouldBe(contentItems);
-        await _contentRepository.Received(1).GetAllAsync(Arg.Any<CancellationToken>());
+        result.Select(item => item.Path).ShouldBe(["path1.md", "path2.md"], ignoreOrder: true);
     }
 
     [Fact]
     public async Task GetItemByIdAsync_CallsRepository()
     {
-        // Arrange
-        var contentItem = ContentItem.Create("test-id", "Test", "Content", "path.md", "filesystem");
+        WriteContent("path.md", "Content");
+        var expected = (await _provider.GetAllItemsAsync()).Single();
 
-        _contentRepository.GetByIdAsync("test-id", Arg.Any<CancellationToken>())
-            .Returns(contentItem);
+        var result = await _provider.GetItemByIdAsync(expected.Id);
 
-        // Act
-        var result = await _provider.GetItemByIdAsync("test-id");
+        result.ShouldBeSameAs(expected);
+    }
 
-        // Assert
-        result.ShouldBe(contentItem);
-        await _contentRepository.Received(1).GetByIdAsync("test-id", Arg.Any<CancellationToken>());
+    [Fact]
+    public async Task GetItemByIdAsync_WithUnknownId_ReturnsNull()
+    {
+        WriteContent("path.md", "Content");
+
+        var result = await _provider.GetItemByIdAsync("unknown-id");
+
+        result.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task GetItemByIdAsync_WithBlankId_ThrowsArgumentException()
+    {
+        await Should.ThrowAsync<ArgumentException>(() => _provider.GetItemByIdAsync(" "));
     }
 
     [Fact]
     public async Task GetItemByPathAsync_CallsRepository()
     {
-        // Arrange
-        var contentItem = ContentItem.Create("test-id", "Test", "Content", "path.md", "filesystem");
+        WriteContent("path.md", "Content");
+        var expected = (await _provider.GetAllItemsAsync()).Single();
 
-        _contentRepository.GetByPathAsync("path.md", Arg.Any<CancellationToken>())
-            .Returns(contentItem);
-
-        // Act
         var result = await _provider.GetItemByPathAsync("path.md");
 
-        // Assert
-        result.ShouldBe(contentItem);
-        await _contentRepository.Received(1).GetByPathAsync("path.md", Arg.Any<CancellationToken>());
+        result.ShouldBeSameAs(expected);
     }
 
     [Fact]
     public async Task GetItemByUrlAsync_CallsRepository()
     {
-        // Arrange
-        var contentItem = ContentItem.Create("test-id", "Test", "Content", "path.md", "filesystem");
+        WriteContent("path.md", "Content");
+        var expected = (await _provider.GetAllItemsAsync()).Single();
 
-        _contentRepository.GetByUrlAsync("test-url", Arg.Any<CancellationToken>())
-            .Returns(contentItem);
+        var result = await _provider.GetItemByUrlAsync(expected.Url);
 
-        // Act
-        var result = await _provider.GetItemByUrlAsync("test-url");
-
-        // Assert
-        result.ShouldBe(contentItem);
-        await _contentRepository.Received(1).GetByUrlAsync("test-url", Arg.Any<CancellationToken>());
+        result.ShouldBeSameAs(expected);
     }
 
     [Fact]
     public async Task GetItemsByQueryAsync_CallsRepository()
     {
-        // Arrange
+        WriteContent("path1.md", "Content 1");
+        WriteContent("path2.md", "Content 2");
         var query = new ContentQuery { Tag = "test-tag" };
-        var contentItems = new List<ContentItem>
-        {
-            ContentItem.Create("id1", "Test 1", "Content 1", "path1.md", "filesystem"),
-            ContentItem.Create("id2", "Test 2", "Content 2", "path2.md", "filesystem")
-        };
+        var matching = (await _provider.GetAllItemsAsync()).First();
+        _queryFilter.ApplyFilters(Arg.Any<IQueryable<ContentItem>>(), query)
+            .Returns(new[] { matching }.AsQueryable());
 
-        _contentRepository.FindByQueryAsync(query, Arg.Any<CancellationToken>())
-            .Returns(contentItems);
-
-        // Act
         var result = await _provider.GetItemsByQueryAsync(query);
 
-        // Assert
-        result.ShouldBe(contentItems);
-        await _contentRepository.Received(1).FindByQueryAsync(query, Arg.Any<CancellationToken>());
+        result.ShouldNotBeNull();
+        result.ShouldBe([matching]);
     }
 
     [Fact]
     public async Task GetDirectoriesAsync_CallsRepository()
     {
-        // Arrange
-        var directories = new List<DirectoryItem>
-        {
-            DirectoryItem.Create("dir1", "path1", "Dir 1", "filesystem"),
-            DirectoryItem.Create("dir2", "path2", "Dir 2", "filesystem")
-        };
+        var parent = AddDirectory("dir1", "path1");
+        parent.SetLocale("en");
+        var child = AddDirectory("dir2", "path1/path2");
+        child.SetLocale("en");
+        parent.AddChild(child);
 
-        _directoryRepository.GetByLocaleAsync("en", Arg.Any<CancellationToken>())
-            .Returns(directories);
-
-        // Act
         var result = await _provider.GetDirectoriesAsync("en");
 
-        // Assert
-        result.ShouldBe(directories);
-        await _directoryRepository.Received(1).GetByLocaleAsync("en", Arg.Any<CancellationToken>());
+        result.ShouldBe([child]);
     }
 
     [Fact]
     public async Task GetDirectoryByPathAsync_CallsRepository()
     {
-        // Arrange
-        var directory = DirectoryItem.Create("dir1", "path1", "Dir 1", "filesystem");
+        var directory = AddDirectory("dir1", "path1");
 
-        _directoryRepository.GetByPathAsync("path1", Arg.Any<CancellationToken>())
-            .Returns(directory);
-
-        // Act
         var result = await _provider.GetDirectoryByPathAsync("path1");
 
-        // Assert
-        result.ShouldBe(directory);
-        await _directoryRepository.Received(1).GetByPathAsync("path1", Arg.Any<CancellationToken>());
+        result.ShouldBeSameAs(directory);
     }
 
     [Fact]
     public async Task GetDirectoryByIdAsync_CallsRepository()
     {
-        // Arrange
-        var directory = DirectoryItem.Create("dir1", "path1", "Dir 1", "filesystem");
+        var directory = AddDirectory("dir1", "path1");
 
-        _directoryRepository.GetByIdAsync("dir1", Arg.Any<CancellationToken>())
-            .Returns(directory);
-
-        // Act
         var result = await _provider.GetDirectoryByIdAsync("dir1");
 
-        // Assert
-        result.ShouldBe(directory);
-        await _directoryRepository.Received(1).GetByIdAsync("dir1", Arg.Any<CancellationToken>());
+        result.ShouldBeSameAs(directory);
     }
 
     [Fact]
     public async Task GetDirectoryByUrlAsync_CallsRepository()
     {
-        // Arrange
-        var directory = DirectoryItem.Create("dir1", "path1", "Dir 1", "filesystem");
+        var directory = AddDirectory("dir1", "path1");
 
-        _directoryRepository.GetByUrlAsync("dir-url", Arg.Any<CancellationToken>())
-            .Returns(directory);
+        var result = await _provider.GetDirectoryByUrlAsync(directory.Url);
 
-        // Act
-        var result = await _provider.GetDirectoryByUrlAsync("dir-url");
-
-        // Assert
-        result.ShouldBe(directory);
-        await _directoryRepository.Received(1).GetByUrlAsync("dir-url", Arg.Any<CancellationToken>());
+        result.ShouldBeSameAs(directory);
     }
 
     [Fact]
     public async Task GetCategoriesAsync_DerivedFromContentItems()
     {
-        // Arrange
-        var contentItems = new List<ContentItem>
-        {
-            ContentItem.Create("id1", "Test 1", "Content 1", "path1.md", "filesystem"),
-            ContentItem.Create("id2", "Test 2", "Content 2", "path2.md", "filesystem")
-        };
+        WriteContent("path1.md", "categories: Category A, Category B");
+        WriteContent("path2.md", "categories: Category B, Category C");
 
-        contentItems[0].AddCategory("Category A");
-        contentItems[0].AddCategory("Category B");
-        contentItems[1].AddCategory("Category B");
-        contentItems[1].AddCategory("Category C");
-
-        _contentRepository.GetAllAsync(Arg.Any<CancellationToken>())
-            .Returns(contentItems);
-
-        // Act
         var result = await _provider.GetCategoriesAsync();
 
-        // Assert
-        result.ShouldNotBeNull();
         result.Count.ShouldBe(3);
         result.ShouldContain(c => c.Name == "Category A" && c.Count == 1);
         result.ShouldContain(c => c.Name == "Category B" && c.Count == 2);
@@ -268,26 +262,11 @@ public class FileSystemContentProviderTests
     [Fact]
     public async Task GetTagsAsync_DerivedFromContentItems()
     {
-        // Arrange
-        var contentItems = new List<ContentItem>
-        {
-            ContentItem.Create("id1", "Test 1", "Content 1", "path1.md", "filesystem"),
-            ContentItem.Create("id2", "Test 2", "Content 2", "path2.md", "filesystem")
-        };
+        WriteContent("path1.md", "tags: tag1, tag2");
+        WriteContent("path2.md", "tags: tag2, tag3");
 
-        contentItems[0].AddTag("tag1");
-        contentItems[0].AddTag("tag2");
-        contentItems[1].AddTag("tag2");
-        contentItems[1].AddTag("tag3");
-
-        _contentRepository.GetAllAsync(Arg.Any<CancellationToken>())
-            .Returns(contentItems);
-
-        // Act
         var result = await _provider.GetTagsAsync();
 
-        // Assert
-        result.ShouldNotBeNull();
         result.Count.ShouldBe(3);
         result.ShouldContain(t => t.Name == "tag1" && t.Count == 1);
         result.ShouldContain(t => t.Name == "tag2" && t.Count == 2);
@@ -297,71 +276,99 @@ public class FileSystemContentProviderTests
     [Fact]
     public async Task RefreshCacheAsync_RefreshesBothRepositories()
     {
-        // Act
+        WriteContent("path1.md", "Content 1");
+        (await _provider.GetAllItemsAsync()).Count.ShouldBe(1);
+        WriteContent("path2.md", "Content 2");
+
         await _provider.RefreshCacheAsync();
 
-        // Assert
-        await _contentRepository.Received(1).RefreshCacheAsync(Arg.Any<CancellationToken>());
-        await _directoryRepository.Received(1).RefreshCacheAsync(Arg.Any<CancellationToken>());
+        (await _provider.GetAllItemsAsync()).Count.ShouldBe(2);
+        await _directoryCacheManager.Received(1).InvalidateCacheAsync(Arg.Any<CancellationToken>());
     }
 
     [Fact]
     public void Constructor_WithNullContentRepository_ThrowsArgumentNullException()
     {
-        // Act & Assert
         Should.Throw<ArgumentNullException>(() => new FileSystemContentProvider(
             null!,
             _directoryRepository,
             _options,
             _memoryCache,
-            _logger));
+            NullLogger<FileSystemContentProvider>.Instance));
     }
 
     [Fact]
     public void Constructor_WithNullDirectoryRepository_ThrowsArgumentNullException()
     {
-        // Act & Assert
         Should.Throw<ArgumentNullException>(() => new FileSystemContentProvider(
             _contentRepository,
             null!,
             _options,
             _memoryCache,
-            _logger));
+            NullLogger<FileSystemContentProvider>.Instance));
     }
 
     [Fact]
     public void Constructor_WithNullOptions_ThrowsArgumentNullException()
     {
-        // Act & Assert
         Should.Throw<ArgumentNullException>(() => new FileSystemContentProvider(
             _contentRepository,
             _directoryRepository,
             null!,
             _memoryCache,
-            _logger));
-    }
-
-    [Fact]
-    public void Constructor_WithNullMemoryCache_ThrowsArgumentNullException()
-    {
-        // Act & Assert
-        Should.Throw<ArgumentNullException>(() => new FileSystemContentProvider(
-            _contentRepository,
-            _directoryRepository,
-            _options,
-            null!,
-            _logger));
+            NullLogger<FileSystemContentProvider>.Instance));
     }
 
     [Fact]
     public void Constructor_WithNullLogger_ThrowsArgumentNullException()
     {
-        // Act & Assert
         Should.Throw<ArgumentNullException>(() => new FileSystemContentProvider(
             _contentRepository,
             _directoryRepository,
             _options,
             _memoryCache,
             null!));
+    }
+
+    private void WriteContent(string relativePath, string body)
+    {
+        _fileSystem.File.WriteAllText(Path.Combine(BasePath, relativePath), body);
+    }
+
+    private DirectoryItem AddDirectory(string id, string path)
+    {
+        var directory = DirectoryItem.Create(id, path, id, ProviderIdentity);
+        directory.SetUrl("/" + path);
+        _cachedDirectories[id] = directory;
+        return directory;
+    }
+
+    /// <summary>
+    /// The substituted markdown processor reads <c>categories:</c> and <c>tags:</c> lines, comma separated, as front matter.
+    /// </summary>
+    private static FrontMatter ReadFrontMatter(string markdown)
+    {
+        var frontMatter = new FrontMatter { Title = "Title" };
+        foreach (var line in markdown.Split('\n'))
+        {
+            var parts = line.Split(':', 2);
+            if (parts.Length != 2)
+            {
+                continue;
+            }
+
+            var values = parts[1].Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).ToList();
+            switch (parts[0].Trim())
+            {
+                case "categories":
+                    frontMatter.Categories = values;
+                    break;
+                case "tags":
+                    frontMatter.Tags = values;
+                    break;
+            }
+        }
+
+        return frontMatter;
     }
 }

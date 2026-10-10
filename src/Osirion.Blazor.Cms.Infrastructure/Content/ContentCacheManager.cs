@@ -13,7 +13,6 @@ public class ContentCacheManager : IContentCacheManager
     private readonly ILogger<ContentCacheManager> _logger;
 
     private Dictionary<string, ContentItem>? _contentCache;
-    private DateTime _cacheExpiration = DateTime.MinValue;
 
     /// <summary>Performs the ContentCacheManager operation.</summary>
     public ContentCacheManager(
@@ -28,7 +27,7 @@ public class ContentCacheManager : IContentCacheManager
         CancellationToken cancellationToken = default,
         bool forceRefresh = false)
     {
-        if (!forceRefresh && _contentCache is not null && DateTime.UtcNow < _cacheExpiration)
+        if (!forceRefresh && _contentCache is not null)
         {
             return _contentCache;
         }
@@ -37,7 +36,7 @@ public class ContentCacheManager : IContentCacheManager
         try
         {
             // Double-check inside the lock
-            if (!forceRefresh && _contentCache is not null && DateTime.UtcNow < _cacheExpiration)
+            if (!forceRefresh && _contentCache is not null)
             {
                 return _contentCache;
             }
@@ -77,7 +76,6 @@ public class ContentCacheManager : IContentCacheManager
         try
         {
             _contentCache = null;
-            _cacheExpiration = DateTime.MinValue;
             _logger.LogInformation("Content cache invalidated");
         }
         finally

@@ -2,6 +2,7 @@ using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Interfaces.Directory;
+using System.Globalization;
 using System.Text;
 
 namespace Osirion.Blazor.Cms.Infrastructure.Directory;
@@ -79,20 +80,14 @@ public class DirectoryMetadataProcessor : IDirectoryMetadataProcessor
         if (!string.IsNullOrWhiteSpace(directory.Url))
             frontMatter.AppendLine($"url: \"{directory.Url}\"");
 
-        // Add custom metadata
-        //foreach (var meta in directory.Metadata)
-        //{
-        //    if (meta.Value is string strValue)
-        //        frontMatter.AppendLine($"{meta.Key}: \"{EscapeYamlString(strValue)}\"");
-        //    else if (meta.Value is bool boolValue)
-        //        frontMatter.AppendLine($"{meta.Key}: {boolValue.ToString().ToLowerInvariant()}");
-        //    else if (meta.Value is int intValue)
-        //        frontMatter.AppendLine($"{meta.Key}: {intValue}");
-        //    else if (meta.Value is double doubleValue)
-        //        frontMatter.AppendLine($"{meta.Key}: {doubleValue}");
-        //    else
-        //        frontMatter.AppendLine($"{meta.Key}: \"{meta.Value}\"");
-        //}
+        // Add custom metadata. Only plain keys are written, so a key cannot break the YAML or add other keys.
+        foreach (var meta in directory.CustomMetadata)
+        {
+            if (!IsWritableCustomKey(meta.Key))
+                continue;
+
+            frontMatter.AppendLine($"{meta.Key}: {FormatYamlValue(meta.Value)}");
+        }
 
         frontMatter.AppendLine("---");
         frontMatter.AppendLine();
@@ -111,6 +106,28 @@ public class DirectoryMetadataProcessor : IDirectoryMetadataProcessor
     /// <summary>
     /// Escapes special characters in YAML strings
     /// </summary>
+    private static readonly HashSet<string> StandardKeys = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "title", "description", "order", "locale", "url"
+    };
+
+    private static bool IsWritableCustomKey(string key)
+    {
+        return !string.IsNullOrEmpty(key)
+            && !StandardKeys.Contains(key)
+            && key.All(character => char.IsAsciiLetterOrDigit(character) || character is '_' or '-');
+    }
+
+    private string FormatYamlValue(object? value)
+    {
+        return value switch
+        {
+            bool boolValue => boolValue ? "true" : "false",
+            int or long or double or decimal => Convert.ToString(value, CultureInfo.InvariantCulture)!,
+            _ => $"\"{EscapeYamlString(Convert.ToString(value, CultureInfo.InvariantCulture) ?? string.Empty)}\""
+        };
+    }
+
     private string EscapeYamlString(string value)
     {
         return value

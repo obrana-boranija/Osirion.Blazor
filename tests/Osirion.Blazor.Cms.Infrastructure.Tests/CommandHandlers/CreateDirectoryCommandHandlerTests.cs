@@ -209,6 +209,9 @@ public class CreateDirectoryCommandHandlerTests
             Path = "test-path"
         };
 
+        _directoryRepository.SaveAsync(Arg.Any<DirectoryItem>(), Arg.Any<CancellationToken>())
+            .Returns(callInfo => callInfo.Arg<DirectoryItem>());
+
         // Act
         await _handler.HandleAsync(command);
 

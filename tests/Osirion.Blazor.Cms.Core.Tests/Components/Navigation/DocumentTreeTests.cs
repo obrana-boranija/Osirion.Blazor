@@ -29,11 +29,10 @@ public class DocumentTreeTests : TestContext
         );
 
         // Assert
-        var childLists = cut.FindAll(".osirion-doc-tree-children");
-        childLists.Count.ShouldBeGreaterThan(0);
+        var firstChildList = cut.Find(".osirion-doc-tree-children");
 
         // Use AngleSharp's DOM methods to find child items
-        var childItems = childLists[0].QuerySelectorAll(".osirion-doc-tree-child");
+        var childItems = firstChildList.QuerySelectorAll(".osirion-doc-tree-child");
         childItems.Length.ShouldBe(2);
 
         // Check child item text

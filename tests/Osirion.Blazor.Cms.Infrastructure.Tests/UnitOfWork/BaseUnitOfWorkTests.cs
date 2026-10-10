@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Osirion.Blazor.Cms.Domain.Events;
 using Osirion.Blazor.Cms.Domain.Repositories;
@@ -11,7 +12,6 @@ public class BaseUnitOfWorkTests
 {
     private readonly IContentRepository _contentRepository;
     private readonly IDirectoryRepository _directoryRepository;
-    private readonly ILogger<TestUnitOfWork> _logger;
     private readonly IDomainEventDispatcher _eventDispatcher;
     private readonly TestUnitOfWork _unitOfWork;
     private readonly string _providerId = "test-provider";
@@ -20,14 +20,13 @@ public class BaseUnitOfWorkTests
     {
         _contentRepository = Substitute.For<IContentRepository>();
         _directoryRepository = Substitute.For<IDirectoryRepository>();
-        _logger = Substitute.For<ILogger<TestUnitOfWork>>();
         _eventDispatcher = Substitute.For<IDomainEventDispatcher>();
 
         _unitOfWork = new TestUnitOfWork(
             _contentRepository,
             _directoryRepository,
             _providerId,
-            _logger,
+            NullLogger.Instance,
             _eventDispatcher);
     }
 

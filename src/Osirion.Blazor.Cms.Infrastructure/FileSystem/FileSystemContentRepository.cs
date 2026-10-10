@@ -63,7 +63,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
         /// <inheritdoc/>
         protected override async Task EnsureCacheIsLoaded(CancellationToken cancellationToken, bool forceRefresh = false)
         {
-            if (!forceRefresh && ItemCache is not null)
+            if (!forceRefresh && CacheLoaded)
             {
                 return; // Cache is still valid
             }
@@ -72,7 +72,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
             try
             {
                 // Double-check inside the lock
-                if (!forceRefresh && ItemCache is not null)
+                if (!forceRefresh && CacheLoaded)
                 {
                     return; // Cache was populated while waiting for lock
                 }
@@ -124,6 +124,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
 
                 // Update cache
                 ItemCache = cache;
+                CacheLoaded = true;
             }
             finally
             {

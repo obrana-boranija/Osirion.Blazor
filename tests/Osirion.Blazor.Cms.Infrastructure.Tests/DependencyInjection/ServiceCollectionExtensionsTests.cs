@@ -36,6 +36,10 @@ namespace Osirion.Blazor.Cms.Infrastructure.Tests.DependencyInjection
             });
 
             _configuration = configBuilder.Build();
+
+            // A host always provides configuration and logging
+            _services.AddSingleton(_configuration);
+            _services.AddLogging();
         }
 
         [Fact]
@@ -56,11 +60,12 @@ namespace Osirion.Blazor.Cms.Infrastructure.Tests.DependencyInjection
         public void AddGitHubContentProvider_RegistersGitHubServices()
         {
             // Act
+            _services.AddCms(_configuration, _ => { });
             _services.AddGitHubContentProvider(_configuration);
             var provider = _services.BuildServiceProvider();
 
             // Assert
-            provider.GetService<IGitHubApiClient>().ShouldNotBeNull();
+            provider.GetService<IGitHubApiClientFactory>().ShouldNotBeNull();
             provider.GetService<GitHubContentRepository>().ShouldNotBeNull();
             provider.GetService<GitHubDirectoryRepository>().ShouldNotBeNull();
             provider.GetService<GitHubContentProvider>().ShouldNotBeNull();
@@ -72,6 +77,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.Tests.DependencyInjection
         public void AddFileSystemContentProvider_RegistersFileSystemServices()
         {
             // Act
+            _services.AddCms(_configuration, _ => { });
             _services.AddFileSystemContentProvider(_configuration);
             var provider = _services.BuildServiceProvider();
 
@@ -114,7 +120,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.Tests.DependencyInjection
             var provider = _services.BuildServiceProvider();
 
             // Assert
-            provider.GetService<IGitHubApiClient>().ShouldNotBeNull();
+            provider.GetService<IGitHubApiClientFactory>().ShouldNotBeNull();
             provider.GetService<GitHubContentRepository>().ShouldNotBeNull();
             provider.GetService<GitHubContentProvider>().ShouldNotBeNull();
 

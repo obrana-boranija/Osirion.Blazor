@@ -21,6 +21,9 @@ public static class RepositoryExtensions
         services.TryAddScoped<GitHubContentRepository>();
         services.TryAddScoped<GitHubDirectoryRepository>();
 
+        // The repositories read and write through the abstraction, so a host gets the real file system unless it registers its own
+        services.TryAddSingleton<System.IO.Abstractions.IFileSystem, System.IO.Abstractions.FileSystem>();
+
         // Register FileSystem repositories
         services.TryAddScoped<FileSystemContentRepository>();
         services.TryAddFileSystemDirectoryCache();

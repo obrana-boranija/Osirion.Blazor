@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using Osirion.Blazor.Cms.Domain.Events;
 using Osirion.Blazor.Cms.Domain.Repositories;
@@ -8,47 +8,40 @@ using System.Reflection;
 
 namespace Osirion.Blazor.Cms.Infrastructure.Tests.UnitOfWork;
 
-public class FileSystemUnitOfWorkTests
+/// <summary>
+/// The unit of work copies real files, so every test runs in its own temporary sandbox directory.
+/// </summary>
+public sealed class FileSystemUnitOfWorkTests : IDisposable
 {
-    private readonly IContentRepository _contentRepository;
-    private readonly IDirectoryRepository _directoryRepository;
-    private readonly IDomainEventDispatcher _eventDispatcher;
-    private readonly ILogger<FileSystemUnitOfWork> _logger;
-    private readonly string _backupDirectory;
+    private readonly string _backupDirectory =
+        Path.Combine(Path.GetTempPath(), "osirion-fs-uow-" + Guid.NewGuid().ToString("N"));
+
     private readonly FileSystemUnitOfWork _unitOfWork;
-    private readonly MockFileSystem _mockFileSystem;
 
     public FileSystemUnitOfWorkTests()
     {
-        _contentRepository = Substitute.For<IContentRepository>();
-        _directoryRepository = Substitute.For<IDirectoryRepository>();
-        _eventDispatcher = Substitute.For<IDomainEventDispatcher>();
-        _logger = Substitute.For<ILogger<FileSystemUnitOfWork>>();
-        _backupDirectory = Path.Combine(Path.GetTempPath(), "fs-unit-of-work-test");
+        _unitOfWork = new FileSystemUnitOfWork(
+            Substitute.For<IContentRepository>(),
+            Substitute.For<IDirectoryRepository>(),
+            Substitute.For<IDomainEventDispatcher>(),
+            NullLogger<FileSystemUnitOfWork>.Instance,
+            _backupDirectory);
+    }
 
-        // Create a mock file system for testing
-        _mockFileSystem = new MockFileSystem();
-
-        _unitOfWork = new TestFileSystemUnitOfWork(
-            _contentRepository,
-            _directoryRepository,
-            _eventDispatcher,
-            _logger,
-            _backupDirectory,
-            _mockFileSystem);
+    public void Dispose()
+    {
+        _unitOfWork.Dispose();
+        if (System.IO.Directory.Exists(_backupDirectory))
+        {
+            System.IO.Directory.Delete(_backupDirectory, recursive: true);
+        }
     }
 
     [Fact]
     public async Task BeginTransactionAsync_ClearsModifiedFiles()
     {
         // Arrange
-        var modifiedFilesField = typeof(FileSystemUnitOfWork)
-            .GetField("_modifiedFiles", BindingFlags.NonPublic | BindingFlags.Instance)
-            ?? throw new InvalidOperationException("The modified files field was not found.");
-        modifiedFilesField.ShouldNotBeNull();
-
-        var modifiedFiles = modifiedFilesField.GetValue(_unitOfWork) as List<string>
-            ?? throw new InvalidOperationException("The modified files field was not found.");
+        var modifiedFiles = GetModifiedFiles();
         modifiedFiles.Add("test-file.txt");
         modifiedFiles.Count.ShouldBe(1);
 
@@ -72,26 +65,14 @@ public class FileSystemUnitOfWorkTests
     {
         // Arrange
         await _unitOfWork.BeginTransactionAsync();
-
-        // Setup test file
-        var testFilePath = Path.Combine(_backupDirectory, "test-file.txt");
-        _mockFileSystem.AddFile(testFilePath, "original content");
+        var testFilePath = WriteFile("test-file.txt", "original content");
 
         // Act
         _unitOfWork.TrackModifiedFile(testFilePath);
 
         // Assert
-        var modifiedFilesField = typeof(FileSystemUnitOfWork)
-            .GetField("_modifiedFiles", BindingFlags.NonPublic | BindingFlags.Instance)
-            ?? throw new InvalidOperationException("The modified files field was not found.");
-        modifiedFilesField.ShouldNotBeNull();
-
-        var modifiedFiles = (List<string>?)modifiedFilesField.GetValue(_unitOfWork);
-        modifiedFiles?.ShouldContain(testFilePath);
-
-        // Verify backup was created
-        var backupPath = Path.Combine(_backupDirectory, "test-file.txt.bak");
-        _mockFileSystem.FileExists(backupPath).ShouldBeTrue("Backup file should be created");
+        GetModifiedFiles().ShouldContain(testFilePath);
+        File.ReadAllText(BackupPath("test-file.txt")).ShouldBe("original content");
     }
 
     [Fact]
@@ -99,30 +80,17 @@ public class FileSystemUnitOfWorkTests
     {
         // Arrange
         await _unitOfWork.BeginTransactionAsync();
-
-        // Setup test file and backup
-        var testFilePath = Path.Combine(_backupDirectory, "test-file.txt");
-        var backupPath = Path.Combine(_backupDirectory, "test-file.txt.bak");
-
-        _mockFileSystem.AddFile(testFilePath, "original content");
-        _mockFileSystem.AddFile(backupPath, "backup content");
-
-        // Track the file
+        var testFilePath = WriteFile("test-file.txt", "original content");
         _unitOfWork.TrackModifiedFile(testFilePath);
+        File.Exists(BackupPath("test-file.txt")).ShouldBeTrue();
 
         // Act
         await _unitOfWork.CommitAsync();
 
         // Assert
-        _mockFileSystem.FileExists(backupPath).ShouldBeFalse("Backup file should be deleted after commit");
-
-        // Verify modified files list is cleared
-        var modifiedFilesField = typeof(FileSystemUnitOfWork)
-            .GetField("_modifiedFiles", BindingFlags.NonPublic | BindingFlags.Instance)
-            ?? throw new InvalidOperationException("The modified files field was not found.");
-        var modifiedFiles = modifiedFilesField.GetValue(_unitOfWork) as List<string>
-            ?? throw new InvalidOperationException("The modified files field was not found.");
-        modifiedFiles.Count.ShouldBe(0, "Modified files list should be cleared after commit");
+        File.Exists(BackupPath("test-file.txt")).ShouldBeFalse("Backup file should be deleted after commit");
+        File.ReadAllText(testFilePath).ShouldBe("original content");
+        GetModifiedFiles().Count.ShouldBe(0, "Modified files list should be cleared after commit");
     }
 
     [Fact]
@@ -130,33 +98,17 @@ public class FileSystemUnitOfWorkTests
     {
         // Arrange
         await _unitOfWork.BeginTransactionAsync();
-
-        // Setup test file and backup
-        var testFilePath = Path.Combine(_backupDirectory, "test-file.txt");
-        var backupPath = Path.Combine(_backupDirectory, "test-file.txt.bak");
-
-        _mockFileSystem.AddFile(testFilePath, "modified content");
-        _mockFileSystem.AddFile(backupPath, "original content");
-
-        // Track the file
+        var testFilePath = WriteFile("test-file.txt", "original content");
         _unitOfWork.TrackModifiedFile(testFilePath);
+        File.WriteAllText(testFilePath, "modified content");
 
         // Act
         await _unitOfWork.RollbackAsync();
 
         // Assert
-        var fileContent = _mockFileSystem.GetFileContent(testFilePath);
-        fileContent.ShouldBe("original content", "File should be restored from backup");
-
-        _mockFileSystem.FileExists(backupPath).ShouldBeFalse("Backup file should be deleted after rollback");
-
-        // Verify modified files list is cleared
-        var modifiedFilesField = typeof(FileSystemUnitOfWork)
-            .GetField("_modifiedFiles", BindingFlags.NonPublic | BindingFlags.Instance)
-            ?? throw new InvalidOperationException("The modified files field was not found.");
-        var modifiedFiles = modifiedFilesField.GetValue(_unitOfWork) as List<string>
-            ?? throw new InvalidOperationException("The modified files field was not found.");
-        modifiedFiles.Count.ShouldBe(0, "Modified files list should be cleared after rollback");
+        File.ReadAllText(testFilePath).ShouldBe("original content", "File should be restored from backup");
+        File.Exists(BackupPath("test-file.txt")).ShouldBeFalse("Backup file should be deleted after rollback");
+        GetModifiedFiles().Count.ShouldBe(0, "Modified files list should be cleared after rollback");
     }
 
     [Fact]
@@ -164,26 +116,14 @@ public class FileSystemUnitOfWorkTests
     {
         // Arrange
         await _unitOfWork.BeginTransactionAsync();
-
-        // Setup test file
-        var testFilePath = Path.Combine(_backupDirectory, "test-file.txt");
-        _mockFileSystem.AddFile(testFilePath, "original content");
-
-        // Track the file
+        var testFilePath = WriteFile("test-file.txt", "original content");
         _unitOfWork.TrackModifiedFile(testFilePath);
 
         // Act
         await _unitOfWork.SavePointAsync("test-savepoint");
 
         // Assert
-        var savePointsField = typeof(BaseUnitOfWork)
-            .GetField("_savePoints", BindingFlags.NonPublic | BindingFlags.Instance)
-            ?? throw new InvalidOperationException("The save points field was not found.");
-        savePointsField.ShouldNotBeNull();
-
-        var savePoints = savePointsField.GetValue(_unitOfWork) as Dictionary<string, string>
-            ?? throw new InvalidOperationException("The save points field was not found.");
-        savePoints.ShouldContainKey("test-savepoint");
+        GetSavePoints().ShouldContainKey("test-savepoint");
     }
 
     [Fact]
@@ -192,140 +132,53 @@ public class FileSystemUnitOfWorkTests
         // Arrange
         await _unitOfWork.BeginTransactionAsync();
 
-        // Setup first file (before savepoint)
-        var file1Path = Path.Combine(_backupDirectory, "file1.txt");
-        var file1BackupPath = Path.Combine(_backupDirectory, "file1.txt.bak");
-        _mockFileSystem.AddFile(file1Path, "file1 modified");
-        _mockFileSystem.AddFile(file1BackupPath, "file1 original");
+        // The first file is backed up before the savepoint.
+        var file1Path = WriteFile("file1.txt", "file1 original");
         _unitOfWork.TrackModifiedFile(file1Path);
+        File.WriteAllText(file1Path, "file1 modified");
 
-        // Create savepoint
         await _unitOfWork.SavePointAsync("test-savepoint");
 
-        // Get the savepoint timestamp
-        var savePointsField = typeof(BaseUnitOfWork)
-            .GetField("_savePoints", BindingFlags.NonPublic | BindingFlags.Instance)
-            ?? throw new InvalidOperationException("The save points field was not found.");
-        var savePoints = savePointsField.GetValue(_unitOfWork) as Dictionary<string, string>
-            ?? throw new InvalidOperationException("The save points field was not found.");
-        var savePointTimestamp = long.Parse(savePoints["test-savepoint"]);
+        // File times on disk are coarser than the clock behind the savepoint, so the savepoint is pinned to a known
+        // instant: the first backup is dated before it and every backup made from now on is dated after it.
+        var savePointTime = DateTime.UtcNow.AddHours(-1);
+        File.SetCreationTimeUtc(BackupPath("file1.txt"), savePointTime.AddHours(-1));
+        GetSavePoints()["test-savepoint"] = savePointTime.Ticks.ToString();
 
-        // Setup second file (after savepoint) with a backup creation time after the savepoint
-        var file2Path = Path.Combine(_backupDirectory, "file2.txt");
-        var file2BackupPath = Path.Combine(_backupDirectory, "file2.txt.bak");
-        _mockFileSystem.AddFile(file2Path, "file2 modified");
+        // The second file is backed up after the savepoint.
+        var file2Path = WriteFile("file2.txt", "file2 original");
         _unitOfWork.TrackModifiedFile(file2Path);
+        File.WriteAllText(file2Path, "file2 modified");
 
         // Act
         await _unitOfWork.RollbackToSavePointAsync("test-savepoint");
 
         // Assert
-        // File modified before savepoint should still be modified
-        _mockFileSystem.GetFileContent(file1Path).ShouldBe("file1 modified");
-        // File modified after savepoint should be restored
-        _mockFileSystem.GetFileContent(file2Path).ShouldBe("file2 original");
+        File.ReadAllText(file1Path).ShouldBe("file1 modified", "A file backed up before the savepoint keeps its changes");
+        File.ReadAllText(file2Path).ShouldBe("file2 original", "A file backed up after the savepoint is restored");
+        GetModifiedFiles().ShouldNotContain(file2Path);
     }
 
-    // Test-specific mock file system class
-    public class MockFileSystem
+    private string WriteFile(string name, string content)
     {
-        private Dictionary<string, MockFile> _files = new Dictionary<string, MockFile>();
-
-        public void AddFile(string path, string content, DateTime? creationTime = null)
-        {
-            _files[path] = new MockFile
-            {
-                Content = content,
-                CreationTime = creationTime ?? DateTime.UtcNow
-            };
-        }
-
-        public bool FileExists(string path)
-        {
-            return _files.ContainsKey(path);
-        }
-
-        public string GetFileContent(string path)
-        {
-            if (!_files.ContainsKey(path))
-                throw new FileNotFoundException($"File not found: {path}");
-
-            return _files[path].Content;
-        }
-
-        public void CopyFile(string sourcePath, string destinationPath, bool overwrite)
-        {
-            if (!_files.ContainsKey(sourcePath))
-                throw new FileNotFoundException($"Source file not found: {sourcePath}");
-
-            _files[destinationPath] = new MockFile
-            {
-                Content = _files[sourcePath].Content,
-                CreationTime = DateTime.UtcNow
-            };
-        }
-
-        public void DeleteFile(string path)
-        {
-            _files.Remove(path);
-        }
+        var path = Path.Combine(_backupDirectory, name);
+        File.WriteAllText(path, content);
+        return path;
     }
 
-    public class MockFile
+    private string BackupPath(string name) => Path.Combine(_backupDirectory, name + ".bak");
+
+    private List<string> GetModifiedFiles() =>
+        ReadField<List<string>>(typeof(FileSystemUnitOfWork), "_modifiedFiles");
+
+    private Dictionary<string, string> GetSavePoints() =>
+        ReadField<Dictionary<string, string>>(typeof(BaseUnitOfWork), "_savePoints");
+
+    private T ReadField<T>(Type declaringType, string fieldName) where T : class
     {
-        public string Content { get; set; } = string.Empty;
-        public DateTime CreationTime { get; set; } = DateTime.UtcNow;
-    }
-
-    // Test-specific FileSystemUnitOfWork that works with our mock file system
-    public class TestFileSystemUnitOfWork : FileSystemUnitOfWork
-    {
-        private readonly MockFileSystem _mockFileSystem;
-
-        public TestFileSystemUnitOfWork(
-            IContentRepository contentRepository,
-            IDirectoryRepository directoryRepository,
-            IDomainEventDispatcher eventDispatcher,
-            ILogger<FileSystemUnitOfWork> logger,
-            string backupDirectory,
-            MockFileSystem mockFileSystem)
-            : base(contentRepository, directoryRepository, eventDispatcher, logger, backupDirectory)
-        {
-            _mockFileSystem = mockFileSystem;
-        }
-
-        // Override the file operations methods to use our mock file system
-        public new void TrackModifiedFile(string filePath)
-        {
-            if (!_transactionStarted)
-                throw new InvalidOperationException("No transaction in progress");
-
-            var modifiedFilesField = typeof(FileSystemUnitOfWork)
-                .GetField("_modifiedFiles", BindingFlags.NonPublic | BindingFlags.Instance)
-                ?? throw new InvalidOperationException("The modified files field was not found.");
-            var modifiedFiles = modifiedFilesField.GetValue(this) as List<string>
-                ?? throw new InvalidOperationException("The modified files field was not found.");
-
-            if (!modifiedFiles.Contains(filePath))
-            {
-                // Create backup if it doesn't exist
-                var backupPath = GetBackupPath(filePath);
-                if (!_mockFileSystem.FileExists(backupPath) && _mockFileSystem.FileExists(filePath))
-                {
-                    _mockFileSystem.CopyFile(filePath, backupPath, true);
-                }
-
-                modifiedFiles.Add(filePath);
-            }
-        }
-
-        private string GetBackupPath(string filePath)
-        {
-            var getBackupPathMethod = typeof(FileSystemUnitOfWork)
-                .GetMethod("GetBackupPath", BindingFlags.NonPublic | BindingFlags.Instance)
-                ?? throw new InvalidOperationException("The backup path method was not found.");
-            return getBackupPathMethod.Invoke(this, new object[] { filePath }) as string
-                ?? throw new InvalidOperationException("The backup path method returned no path.");
-        }
+        var field = declaringType.GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance)
+            ?? throw new InvalidOperationException($"The field {fieldName} was not found.");
+        return field.GetValue(_unitOfWork) as T
+            ?? throw new InvalidOperationException($"The field {fieldName} is not a {typeof(T).Name}.");
     }
 }

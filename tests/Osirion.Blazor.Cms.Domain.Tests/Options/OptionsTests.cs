@@ -39,7 +39,7 @@ public class OptionsTests
         Assert.Empty(options.Repository);
         Assert.Empty(options.ContentPath);
         Assert.Equal("main", options.Branch);
-        Assert.Null(options.ApiToken);
+        Assert.Empty(options.ApiToken);
         Assert.Equal("https://api.github.com", options.ApiUrl);
     }
 
@@ -101,7 +101,7 @@ public class OptionsTests
     {
         // Assert
         Assert.Equal("Osirion:Cms:Cache", CacheOptions.Section);
-        Assert.Equal("Osirion:Cms:GitHub:Web", GitHubOptions.Section);
+        Assert.Equal("Osirion:Cms:GitHub", GitHubOptions.Section);
         Assert.Equal("Osirion:Cms:FileSystem:Web", FileSystemOptions.Section);
         Assert.Equal("Osirion:Cms:GitHub:Authorization", GithubAuthorizationOptions.Section);
     }

@@ -1,4 +1,5 @@
-﻿using Osirion.Blazor.Cms.Domain.Options.Configuration;
+﻿using Osirion.Blazor.Cms.Domain.Options;
+using Osirion.Blazor.Cms.Domain.Options.Configuration;
 using Shouldly;
 
 namespace Osirion.Blazor.Cms.Domain.Tests.Options;
@@ -32,10 +33,10 @@ public class CmsAdminOptionsTests
             PersistUserSelections = false
         };
 
-        //options.GitHub = new GitHubAdminOptions
-        //{
-        //    Owner = "test-owner"
-        //};
+        options.GitHub = new GitHubOptions
+        {
+            Owner = "test-owner"
+        };
 
         options.FileSystem = new FileSystemAdminOptions
         {

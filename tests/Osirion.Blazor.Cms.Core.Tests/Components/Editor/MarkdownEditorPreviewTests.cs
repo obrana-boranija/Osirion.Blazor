@@ -12,11 +12,12 @@ namespace Osirion.Blazor.Cms.Core.Tests.Components.Editor;
 public class MarkdownEditorPreviewTests : TestContext, IDisposable
 {
     private readonly IMarkdownRendererService _markdownRenderer;
+    private readonly MockJSRuntime _jsRuntime = new();
 
     public MarkdownEditorPreviewTests()
     {
         // Register a custom mock JSRuntime implementation
-        Services.AddSingleton<IJSRuntime>(new MockJSRuntime());
+        Services.AddSingleton<IJSRuntime>(_jsRuntime);
 
         // Setup MarkdownRenderer
         _markdownRenderer = Substitute.For<IMarkdownRendererService>();
@@ -90,7 +91,7 @@ public class MarkdownEditorPreviewTests : TestContext, IDisposable
         var textarea = cut.Find("textarea");
 
         // Set new value
-        textarea.Change(updatedContent);
+        textarea.Input(updatedContent);
 
         // Assert
         capturedContent.ShouldBe(updatedContent);
@@ -126,7 +127,7 @@ public class MarkdownEditorPreviewTests : TestContext, IDisposable
     }
 
     [Fact]
-    public async Task MarkdownEditorPreview_ShouldSyncScroll_BetweenEditorAndPreview()
+    public async Task MarkdownEditorPreview_WhenEditorScrolls_ShouldScrollPreview()
     {
         // Arrange
         var cut = RenderComponent<MarkdownEditorPreview>(parameters => parameters
@@ -134,24 +135,50 @@ public class MarkdownEditorPreviewTests : TestContext, IDisposable
             .Add(p => p.Content, TestData.BasicMarkdown)
         );
 
-        // Find editor content div
-        var editorContent = cut.Find(".osirion-markdown-editor-content");
+        // Act
+        await cut.Find("textarea").ScrollAsync();
 
-        // Act - trigger scroll in editor
-        await editorContent.ScrollAsync();
-
-        // Assert - Just ensure no exception was thrown
-        cut.Instance.ShouldNotBeNull();
-
-        // Find preview content div
-        var previewContent = cut.Find(".osirion-markdown-preview-content");
-
-        // Act - trigger scroll in preview
-        await previewContent.ScrollAsync();
-
-        // Assert - Just ensure no exception was thrown
-        cut.Instance.ShouldNotBeNull();
+        // Assert
+        CountSetScrollPositionCalls().ShouldBe(1);
     }
+
+    [Fact]
+    public async Task MarkdownEditorPreview_WhenPreviewScrolls_ShouldScrollEditor()
+    {
+        // Arrange
+        var cut = RenderComponent<MarkdownEditorPreview>(parameters => parameters
+            .Add(p => p.SyncScroll, true)
+            .Add(p => p.Content, TestData.BasicMarkdown)
+        );
+
+        // Act
+        await cut.Find(".osirion-markdown-preview-content").ScrollAsync();
+
+        // Assert
+        CountSetScrollPositionCalls().ShouldBe(1);
+    }
+
+    [Fact]
+    public async Task MarkdownEditorPreview_WhenSyncScrollIsDisabled_ShouldNotScrollPreview()
+    {
+        // Arrange
+        var cut = RenderComponent<MarkdownEditorPreview>(parameters => parameters
+            .Add(p => p.SyncScroll, false)
+            .Add(p => p.Content, TestData.BasicMarkdown)
+        );
+
+        // Act
+        await cut.Find("textarea").ScrollAsync();
+
+        // Assert
+        CountSetScrollPositionCalls().ShouldBe(0);
+    }
+
+    private int CountSetScrollPositionCalls() =>
+        _jsRuntime.Invocations.Count(call =>
+            call.Identifier == "eval" &&
+            call.Arguments is [string script, ..] &&
+            script.Contains("targetScrollTop", StringComparison.Ordinal));
 
     [Fact]
     public async Task MarkdownEditorPreview_ShouldProvideMethodsForExternalControl()

@@ -1,65 +1,71 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 using Osirion.Blazor.Cms.Domain.Entities;
+using Osirion.Blazor.Cms.Domain.Exceptions;
 using Osirion.Blazor.Cms.Domain.Interfaces.Directory;
 using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Infrastructure.FileSystem;
 using Shouldly;
-using System.IO.Abstractions.TestingHelpers;
-using System.Reflection;
+using DirectoryNotFoundException = Osirion.Blazor.Cms.Domain.Exceptions.DirectoryNotFoundException;
 
 namespace Osirion.Blazor.Cms.Infrastructure.Tests.FileSystem;
 
-public class FileSystemDirectoryRepositoryTests
+/// <summary>
+/// The repository works on the real file system, so every test runs in its own temporary sandbox.
+/// The cache manager substitute runs the loader it is given, so reads see what is on disk.
+/// </summary>
+public sealed class FileSystemDirectoryRepositoryTests : IDisposable
 {
-    private readonly MockFileSystem _mockFileSystem;
+    private readonly string _sandbox = Path.Combine(Path.GetTempPath(), "osirion-fs-dir-" + Guid.NewGuid().ToString("N"));
+    private readonly string _basePath;
     private readonly IDirectoryMetadataProcessor _metadataProcessor;
     private readonly IDirectoryCacheManager _cacheManager;
-    private readonly IPathUtilities _pathUtils;
-    private readonly IOptions<FileSystemOptions> _options;
-    private readonly ILogger<FileSystemDirectoryRepository> _logger;
     private readonly FileSystemDirectoryRepository _repository;
-    private readonly string _basePath = "/test/content";
 
     public FileSystemDirectoryRepositoryTests()
     {
-        // Setup mocks
-        _mockFileSystem = new MockFileSystem(new Dictionary<string, MockFileData>());
-        _mockFileSystem.Directory.CreateDirectory(_basePath);
+        _basePath = Path.Combine(_sandbox, "content");
+        System.IO.Directory.CreateDirectory(_basePath);
 
         _metadataProcessor = Substitute.For<IDirectoryMetadataProcessor>();
         _cacheManager = Substitute.For<IDirectoryCacheManager>();
-        _pathUtils = Substitute.For<IPathUtilities>();
-        _logger = Substitute.For<ILogger<FileSystemDirectoryRepository>>();
+        _cacheManager.GetCachedDirectoriesAsync(
+                Arg.Any<Func<CancellationToken, Task<Dictionary<string, DirectoryItem>>>>(),
+                Arg.Any<CancellationToken>(),
+                Arg.Any<bool>())
+            .Returns(call => call.Arg<Func<CancellationToken, Task<Dictionary<string, DirectoryItem>>>>()(call.Arg<CancellationToken>()));
 
-        // Configure options
-        var options = new FileSystemOptions
+        var pathUtils = Substitute.For<IPathUtilities>();
+        pathUtils.NormalizePath(Arg.Any<string>()).Returns(call => call.Arg<string>());
+        pathUtils.ExtractLocaleFromPath(Arg.Any<string>()).Returns("en");
+
+        var options = Options.Create(new FileSystemOptions
         {
             BasePath = _basePath,
             ContentRoot = "content",
             CreateDirectoriesIfNotExist = true,
+            WatchForChanges = false,
             EnableLocalization = false,
             DefaultLocale = "en",
             SupportedExtensions = new List<string> { ".md", ".markdown" },
-        };
-        _options = Options.Create(options);
-
-        // Configure path utilities
-        _pathUtils.NormalizePath(Arg.Any<string>()).Returns(x => x.Arg<string>());
-        _pathUtils.ExtractLocaleFromPath(Arg.Any<string>()).Returns("en");
-        _pathUtils.GenerateDirectoryUrl(Arg.Any<string>()).Returns(x => {
-            var path = x.Arg<string>();
-            return Path.GetFileName(path);
         });
 
-        // Create repository
         _repository = new FileSystemDirectoryRepository(
-            _options,
+            options,
             _cacheManager,
             _metadataProcessor,
-            _pathUtils,
-            _logger);
+            pathUtils,
+            NullLogger<FileSystemDirectoryRepository>.Instance);
+    }
+
+    public void Dispose()
+    {
+        _repository.Dispose();
+        if (System.IO.Directory.Exists(_sandbox))
+        {
+            System.IO.Directory.Delete(_sandbox, recursive: true);
+        }
     }
 
     [Fact]
@@ -82,7 +88,6 @@ public class FileSystemDirectoryRepositoryTests
         var result = await _repository.GetAllAsync();
 
         // Assert
-        result.ShouldNotBeNull();
         result.Count.ShouldBe(2);
         result.ShouldContain(d => d.Id == "dir1");
         result.ShouldContain(d => d.Id == "dir2");
@@ -107,35 +112,20 @@ public class FileSystemDirectoryRepositoryTests
     public async Task SaveAsync_CreatesDirectoryAndMetadataFile()
     {
         // Arrange
-        var directory = DirectoryItem.Create(
-            "test-dir",
-            "test/path",
-            "Test Directory",
-            "filesystem");
-
-        _metadataProcessor.GenerateMetadataContent(directory)
-            .Returns("---\ntitle: Test Directory\n---\n\nTest content");
+        var directory = DirectoryItem.Create("test-dir", "test/path", "Test Directory", "filesystem");
+        const string metadata = "---\ntitle: Test Directory\n---\n\nTest content";
+        _metadataProcessor.GenerateMetadataContent(directory).Returns(metadata);
 
         // Act
         var result = await _repository.SaveAsync(directory);
 
         // Assert
-        result.ShouldNotBeNull();
         result.Id.ShouldBe("test-dir");
-
-        // Verify directory was created
-        var fullPath = Path.Combine(_basePath, "test/path");
-        _mockFileSystem.Directory.Exists(fullPath).ShouldBeTrue("Directory should be created");
-
-        // Verify metadata file was created
+        var fullPath = Path.Combine(_basePath, "test", "path");
+        System.IO.Directory.Exists(fullPath).ShouldBeTrue("Directory should be created");
         var metadataPath = Path.Combine(fullPath, "_index.md");
-        _mockFileSystem.File.Exists(metadataPath).ShouldBeTrue("Metadata file should be created");
-
-        // Verify placeholder file was created
-        var placeholderPath = Path.Combine(fullPath, ".gitkeep");
-        _mockFileSystem.File.Exists(placeholderPath).ShouldBeTrue("Placeholder file should be created");
-
-        // Verify cache was refreshed
+        File.ReadAllText(metadataPath).ShouldBe(metadata);
+        result.ProviderSpecificId.ShouldBe(metadataPath);
         await _cacheManager.Received(1).InvalidateCacheAsync(Arg.Any<CancellationToken>());
     }
 
@@ -143,40 +133,16 @@ public class FileSystemDirectoryRepositoryTests
     public async Task DeleteAsync_RemovesDirectoryAndFiles()
     {
         // Arrange
-        var directoryId = "test-dir";
-        var directoryPath = "test/path";
-        var fullPath = Path.Combine(_basePath, directoryPath);
-
-        // Setup directory structure
-        _mockFileSystem.Directory.CreateDirectory(fullPath);
-        _mockFileSystem.File.WriteAllText(Path.Combine(fullPath, "_index.md"), "metadata");
-        _mockFileSystem.File.WriteAllText(Path.Combine(fullPath, "file.md"), "content");
-
-        var directory = DirectoryItem.Create(
-            directoryId,
-            directoryPath,
-            "Test Directory",
-            "filesystem");
-
-        // Setup to return our directory when requested by ID
-        var directories = new Dictionary<string, DirectoryItem>
-        {
-            { directoryId, directory }
-        };
-
-        _cacheManager.GetCachedDirectoriesAsync(
-                Arg.Any<Func<CancellationToken, Task<Dictionary<string, DirectoryItem>>>>(),
-                Arg.Any<CancellationToken>(),
-                Arg.Any<bool>())
-            .Returns(directories);
+        var fullPath = CreateDirectoryOnDisk("test/path");
+        File.WriteAllText(Path.Combine(fullPath, "_index.md"), "metadata");
+        File.WriteAllText(Path.Combine(fullPath, "file.md"), "content");
+        var directory = await GetByPathAsync("test/path");
 
         // Act
-        await _repository.DeleteAsync(directoryId);
+        await _repository.DeleteAsync(directory.Id);
 
         // Assert
-        _mockFileSystem.Directory.Exists(fullPath).ShouldBeFalse("Directory should be removed");
-
-        // Verify cache was refreshed
+        System.IO.Directory.Exists(fullPath).ShouldBeFalse("Directory should be removed");
         await _cacheManager.Received(1).InvalidateCacheAsync(Arg.Any<CancellationToken>());
     }
 
@@ -184,207 +150,128 @@ public class FileSystemDirectoryRepositoryTests
     public async Task DeleteRecursiveAsync_RemovesDirectoryAndSubdirectories()
     {
         // Arrange
-        var directoryId = "parent-dir";
-        var directoryPath = "parent/path";
-        var fullPath = Path.Combine(_basePath, directoryPath);
-        var childPath = Path.Combine(fullPath, "child");
-
-        // Setup directory structure
-        _mockFileSystem.Directory.CreateDirectory(fullPath);
-        _mockFileSystem.Directory.CreateDirectory(childPath);
-        _mockFileSystem.File.WriteAllText(Path.Combine(fullPath, "_index.md"), "parent metadata");
-        _mockFileSystem.File.WriteAllText(Path.Combine(childPath, "_index.md"), "child metadata");
-
-        var parentDir = DirectoryItem.Create(
-            directoryId,
-            directoryPath,
-            "Parent Directory",
-            "filesystem");
-
-        var childDir = DirectoryItem.Create(
-            "child-dir",
-            Path.Combine(directoryPath, "child").Replace('\\', '/'),
-            "Child Directory",
-            "filesystem");
-
-        parentDir.AddChild(childDir);
-
-        // Setup to return our directory when requested by ID
-        var directories = new Dictionary<string, DirectoryItem>
-        {
-            { directoryId, parentDir },
-            { "child-dir", childDir }
-        };
-
-        _cacheManager.GetCachedDirectoriesAsync(
-                Arg.Any<Func<CancellationToken, Task<Dictionary<string, DirectoryItem>>>>(),
-                Arg.Any<CancellationToken>(),
-                Arg.Any<bool>())
-            .Returns(directories);
+        var fullPath = CreateDirectoryOnDisk("parent/path");
+        var childPath = CreateDirectoryOnDisk("parent/path/child");
+        File.WriteAllText(Path.Combine(fullPath, "_index.md"), "parent metadata");
+        File.WriteAllText(Path.Combine(childPath, "_index.md"), "child metadata");
+        var parent = await GetByPathAsync("parent/path");
 
         // Act
-        await _repository.DeleteRecursiveAsync(directoryId);
+        await _repository.DeleteRecursiveAsync(parent.Id);
 
         // Assert
-        _mockFileSystem.Directory.Exists(fullPath).ShouldBeFalse("Parent directory should be removed");
-        _mockFileSystem.Directory.Exists(childPath).ShouldBeFalse("Child directory should be removed");
-
-        // Verify cache was refreshed
+        System.IO.Directory.Exists(fullPath).ShouldBeFalse("Parent directory should be removed");
+        System.IO.Directory.Exists(childPath).ShouldBeFalse("Child directory should be removed");
         await _cacheManager.Received(1).InvalidateCacheAsync(Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task DeleteAsync_WithUnknownId_ThrowsDirectoryNotFoundException()
+    {
+        // Act & Assert
+        await Should.ThrowAsync<DirectoryNotFoundException>(() => _repository.DeleteAsync("unknown-id"));
     }
 
     [Fact]
     public async Task MoveAsync_MovesDirectoryToNewParent()
     {
         // Arrange
-        var directoryId = "dir-to-move";
-        var sourcePath = "source/path";
-        var fullSourcePath = Path.Combine(_basePath, sourcePath);
-
-        var targetParentId = "target-parent";
-        var targetParentPath = "target/parent";
-        var fullTargetParentPath = Path.Combine(_basePath, targetParentPath);
-
-        // Setup directory structure
-        _mockFileSystem.Directory.CreateDirectory(fullSourcePath);
-        _mockFileSystem.Directory.CreateDirectory(fullTargetParentPath);
-        _mockFileSystem.File.WriteAllText(Path.Combine(fullSourcePath, "_index.md"), "source metadata");
-        _mockFileSystem.File.WriteAllText(Path.Combine(fullTargetParentPath, "_index.md"), "target metadata");
-
-        var sourceDir = DirectoryItem.Create(
-            directoryId,
-            sourcePath,
-            "Source Directory",
-            "filesystem");
-
-        var targetParentDir = DirectoryItem.Create(
-            targetParentId,
-            targetParentPath,
-            "Target Parent",
-            "filesystem");
-
-        // Setup to return our directories when requested by ID
-        var directories = new Dictionary<string, DirectoryItem>
-        {
-            { directoryId, sourceDir },
-            { targetParentId, targetParentDir }
-        };
-
-        _cacheManager.GetCachedDirectoriesAsync(
-                Arg.Any<Func<CancellationToken, Task<Dictionary<string, DirectoryItem>>>>(),
-                Arg.Any<CancellationToken>(),
-                Arg.Any<bool>())
-            .Returns(directories);
-
-        // Setup metadata processor
+        var fullSourcePath = CreateDirectoryOnDisk("source/path");
+        var fullTargetParentPath = CreateDirectoryOnDisk("target/parent");
+        File.WriteAllText(Path.Combine(fullSourcePath, "_index.md"), "source metadata");
+        File.WriteAllText(Path.Combine(fullSourcePath, "file.md"), "source content");
+        File.WriteAllText(Path.Combine(fullTargetParentPath, "_index.md"), "target metadata");
+        var source = await GetByPathAsync("source/path");
+        var targetParent = await GetByPathAsync("target/parent");
         _metadataProcessor.GenerateMetadataContent(Arg.Any<DirectoryItem>())
             .Returns("---\ntitle: Source Directory\n---\n\nUpdated content");
 
         // Act
-        var result = await _repository.MoveAsync(directoryId, targetParentId);
+        var result = await _repository.MoveAsync(source.Id, targetParent.Id);
 
         // Assert
-        result.ShouldNotBeNull();
-        result.Id.ShouldBe(directoryId);
+        result.Id.ShouldBe(source.Id);
         result.Parent.ShouldNotBeNull();
-        result.Parent.Id.ShouldBe(targetParentId);
-
-        // Verify original directory was removed
-        _mockFileSystem.Directory.Exists(fullSourcePath).ShouldBeFalse("Source directory should be removed");
-
-        // Verify new directory was created
-        var expectedNewPath = Path.Combine(fullTargetParentPath, Path.GetFileName(sourcePath));
-        _mockFileSystem.Directory.Exists(expectedNewPath).ShouldBeTrue("New directory should be created");
-
-        // Verify metadata file was created in new location
-        var metadataPath = Path.Combine(expectedNewPath, "_index.md");
-        _mockFileSystem.File.Exists(metadataPath).ShouldBeTrue("Metadata file should be created in new location");
-
-        // Verify cache was refreshed
+        result.Parent.Id.ShouldBe(targetParent.Id);
+        System.IO.Directory.Exists(fullSourcePath).ShouldBeFalse("Source directory should be removed");
+        var expectedNewPath = Path.Combine(fullTargetParentPath, "path");
+        System.IO.Directory.Exists(expectedNewPath).ShouldBeTrue("New directory should be created");
+        File.ReadAllText(Path.Combine(expectedNewPath, "file.md")).ShouldBe("source content");
+        File.ReadAllText(Path.Combine(expectedNewPath, "_index.md")).ShouldContain("Updated content");
         await _cacheManager.Received(1).InvalidateCacheAsync(Arg.Any<CancellationToken>());
     }
 
     [Fact]
-    public async Task FindDirectories_ScansFolderStructure()
+    public async Task MoveAsync_WhenDestinationAlreadyExists_ThrowsAndKeepsBothDirectories()
     {
-        // Arrange - Setup method via reflection since it's private
-        var findDirectoriesMethod = typeof(FileSystemDirectoryRepository)
-            .GetMethod("FindDirectoriesAsync",
-                       BindingFlags.NonPublic | BindingFlags.Instance)
-            ?? throw new InvalidOperationException("The directory discovery method was not found.");
-
-        // Setup directory structure
-        var contentFolder = Path.Combine(_basePath, "content");
-        var subFolder = Path.Combine(contentFolder, "subfolder");
-
-        _mockFileSystem.Directory.CreateDirectory(contentFolder);
-        _mockFileSystem.Directory.CreateDirectory(subFolder);
-        _mockFileSystem.File.WriteAllText(Path.Combine(contentFolder, "_index.md"), "content folder metadata");
-        _mockFileSystem.File.WriteAllText(Path.Combine(subFolder, "_index.md"), "subfolder metadata");
-
-        // Setup metadata processor
-        _metadataProcessor.ProcessMetadata(Arg.Any<DirectoryItem>(), Arg.Any<string>())
-            .Returns(callInfo => callInfo.Arg<DirectoryItem>());
+        // Arrange
+        var fullSourcePath = CreateDirectoryOnDisk("source/path");
+        var fullTargetParentPath = CreateDirectoryOnDisk("target/parent");
+        var occupiedPath = CreateDirectoryOnDisk("target/parent/path");
+        File.WriteAllText(Path.Combine(occupiedPath, "keep.md"), "keep");
+        var source = await GetByPathAsync("source/path");
+        var targetParent = await GetByPathAsync("target/parent");
 
         // Act
-        var result = await (findDirectoriesMethod.Invoke(
-            _repository,
-            new object[] { "content", null!, CancellationToken.None }) as Task<Dictionary<string, DirectoryItem>>
-            ?? throw new InvalidOperationException("The directory discovery method returned an unexpected result."));
+        var exception = await Should.ThrowAsync<ContentProviderException>(
+            () => _repository.MoveAsync(source.Id, targetParent.Id));
 
         // Assert
-        result.ShouldNotBeNull();
-        result.Count.ShouldBe(2); // Content folder + subfolder
-
-        result.Values.ShouldContain(d => d.Path == "content");
-        result.Values.ShouldContain(d => d.Path == "content/subfolder");
-
-        // Verify parent-child relationship
-        var parentDir = result.Values.FirstOrDefault(d => d.Path == "content");
-        var childDir = result.Values.FirstOrDefault(d => d.Path == "content/subfolder");
-
-        parentDir.ShouldNotBeNull();
-        childDir.ShouldNotBeNull();
-        childDir.Parent.ShouldBe(parentDir);
-        parentDir.Children.ShouldContain(childDir);
+        exception.InnerException.ShouldBeOfType<ContentValidationException>();
+        System.IO.Directory.Exists(fullSourcePath).ShouldBeTrue();
+        File.ReadAllText(Path.Combine(fullTargetParentPath, "path", "keep.md")).ShouldBe("keep");
     }
 
     [Fact]
-    public async Task ProcessDirectoryMetadata_ReadsMetadataFile()
+    public async Task GetAllAsync_ScansFolderStructure()
     {
-        // Arrange - Setup method via reflection since it's private
-        var processMetadataMethod = typeof(FileSystemDirectoryRepository)
-            .GetMethod("ProcessDirectoryMetadataAsync",
-                       BindingFlags.NonPublic | BindingFlags.Instance)
-            ?? throw new InvalidOperationException("The metadata processing method was not found.");
-
-        // Setup directory and metadata file
-        var directoryPath = "test/directory";
-        var fullPath = Path.Combine(_basePath, directoryPath);
-        var metadataPath = Path.Combine(fullPath, "_index.md");
-
-        _mockFileSystem.Directory.CreateDirectory(fullPath);
-        _mockFileSystem.File.WriteAllText(metadataPath, "---\ntitle: Test Directory\n---\n\nTest content");
-
-        var directory = DirectoryItem.Create(
-            "test-dir",
-            directoryPath,
-            "Directory Name",
-            "filesystem");
-
-        // Setup metadata processor
-        _metadataProcessor.ProcessMetadata(directory, "---\ntitle: Test Directory\n---\n\nTest content")
-            .Returns(directory);
+        // Arrange
+        var contentFolder = CreateDirectoryOnDisk("content");
+        var subFolder = CreateDirectoryOnDisk("content/subfolder");
+        File.WriteAllText(Path.Combine(contentFolder, "_index.md"), "content folder metadata");
+        File.WriteAllText(Path.Combine(subFolder, "_index.md"), "subfolder metadata");
 
         // Act
-        await (processMetadataMethod.Invoke(
-            _repository,
-            new object[] { directory, CancellationToken.None }) as Task
-            ?? throw new InvalidOperationException("The metadata processing method returned an unexpected result."));
+        var parent = await GetByPathAsync("content");
+        var child = await GetByPathAsync("content/subfolder");
+
+        // Assert
+        child.Parent.ShouldBe(parent);
+        parent.Children.ShouldContain(child);
+        parent.Name.ShouldBe("content");
+        child.Name.ShouldBe("subfolder");
+    }
+
+    [Fact]
+    public async Task GetAllAsync_WithIndexFile_ReadsMetadataFile()
+    {
+        // Arrange
+        var fullPath = CreateDirectoryOnDisk("test/directory");
+        var metadataPath = Path.Combine(fullPath, "_index.md");
+        const string metadata = "---\ntitle: Test Directory\n---\n\nTest content";
+        File.WriteAllText(metadataPath, metadata);
+
+        // Act
+        var directory = await GetByPathAsync("test/directory");
 
         // Assert
         _metadataProcessor.Received(1).ProcessMetadata(
-            directory,
-            "---\ntitle: Test Directory\n---\n\nTest content");
+            Arg.Is<DirectoryItem>(d => d.Path == "test/directory"),
+            metadata);
+        directory.ProviderSpecificId.ShouldBe(metadataPath);
+    }
+
+    private string CreateDirectoryOnDisk(string relativePath)
+    {
+        var fullPath = Path.Combine(_basePath, relativePath.Replace('/', Path.DirectorySeparatorChar));
+        System.IO.Directory.CreateDirectory(fullPath);
+        return fullPath;
+    }
+
+    private async Task<DirectoryItem> GetByPathAsync(string path)
+    {
+        var directory = await _repository.GetByPathAsync(path);
+        directory.ShouldNotBeNull();
+        return directory;
     }
 }

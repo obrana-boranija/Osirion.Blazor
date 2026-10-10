@@ -4,6 +4,7 @@ using NSubstitute.ExceptionExtensions;
 using Osirion.Blazor.Cms.Admin.Application.Commands;
 using Osirion.Blazor.Cms.Admin.Infrastructure.Adapters;
 using Osirion.Blazor.Cms.Domain.Models.GitHub;
+using Osirion.Blazor.Cms.Admin.Tests.TestDoubles;
 using Shouldly;
 
 namespace Osirion.Blazor.Cms.Admin.Tests.Application.Commands;
@@ -11,13 +12,13 @@ namespace Osirion.Blazor.Cms.Admin.Tests.Application.Commands;
 public class SaveContentCommandHandlerTests
 {
     private readonly IContentRepositoryAdapter _repositoryAdapter;
-    private readonly ILogger<SaveContentCommandHandler> _logger;
+    private readonly RecordingLogger<SaveContentCommandHandler> _logger;
     private readonly SaveContentCommandHandler _handler;
 
     public SaveContentCommandHandlerTests()
     {
         _repositoryAdapter = Substitute.For<IContentRepositoryAdapter>();
-        _logger = Substitute.For<ILogger<SaveContentCommandHandler>>();
+        _logger = new RecordingLogger<SaveContentCommandHandler>();
         _handler = new SaveContentCommandHandler(_repositoryAdapter, _logger);
     }
 
@@ -59,15 +60,8 @@ public class SaveContentCommandHandlerTests
             .Received(1)
             .SaveContentAsync(command.Path, command.Content, command.CommitMessage, command.Sha);
 
-        _logger.Received(1).LogInformation(
-            Arg.Is<string>(s => s.Contains("Saving content")),
-            Arg.Is(command.Path)
-        );
-
-        _logger.Received(1).LogInformation(
-            Arg.Is<string>(s => s.Contains("Content saved successfully")),
-            Arg.Is(command.Path)
-        );
+        _logger.HasEntry(LogLevel.Information, "Saving content", command.Path).ShouldBeTrue();
+        _logger.HasEntry(LogLevel.Information, "Content saved successfully", command.Path).ShouldBeTrue();
     }
 
     [Fact]
@@ -99,11 +93,8 @@ public class SaveContentCommandHandlerTests
             .Received(1)
             .SaveContentAsync(command.Path, command.Content, command.CommitMessage, command.Sha);
 
-        _logger.Received(1).LogError(
-            Arg.Is(exception),
-            Arg.Is<string>(s => s.Contains("Error saving content")),
-            Arg.Is(command.Path)
-        );
+        _logger.HasEntry(LogLevel.Error, "Error saving content", command.Path).ShouldBeTrue();
+        _logger.Entries.ShouldContain(entry => entry.Level == LogLevel.Error && entry.Exception == exception);
     }
 
     [Fact]

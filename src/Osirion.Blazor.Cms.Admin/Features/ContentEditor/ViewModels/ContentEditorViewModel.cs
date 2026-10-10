@@ -109,8 +109,9 @@ public class ContentEditorViewModel : IDisposable
                     filename += ".md";
                 }
 
-                // Combine directory and filename
-                string directory = Path.GetDirectoryName(EditingPost.Path) ?? string.Empty;
+                // Combine directory and filename; repository paths always use '/', unlike Path.GetDirectoryName on Windows
+                var separatorIndex = EditingPost.Path.LastIndexOf('/');
+                var directory = separatorIndex > 0 ? EditingPost.Path[..separatorIndex] : string.Empty;
                 EditingPost.Path = string.IsNullOrWhiteSpace(directory)
                     ? filename
                     : $"{directory}/{filename}";

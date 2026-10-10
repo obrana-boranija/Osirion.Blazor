@@ -205,10 +205,10 @@ public class CmsStateTests
 
         // The values should match what we expect
         var repoElement = deserialized["SelectedRepository"];
-        repoElement.GetProperty("Name").GetString().ShouldBe("test-repo");
+        repoElement.GetProperty("name").GetString().ShouldBe("test-repo");
 
         var branchElement = deserialized["SelectedBranch"];
-        branchElement.GetProperty("Name").GetString().ShouldBe("main");
+        branchElement.GetProperty("name").GetString().ShouldBe("main");
 
         deserialized["CurrentPath"].GetString().ShouldBe("content/blog");
     }
@@ -223,13 +223,13 @@ public class CmsStateTests
 
         var serializedData = @"{
             ""SelectedRepository"": {
-                ""Name"": ""test-repo"",
-                ""FullName"": ""owner/test-repo"",
-                ""DefaultBranch"": ""main""
+                ""name"": ""test-repo"",
+                ""full_name"": ""owner/test-repo"",
+                ""default_branch"": ""main""
             },
             ""SelectedBranch"": {
-                ""Name"": ""develop"",
-                ""Protected"": false
+                ""name"": ""develop"",
+                ""protected"": false
             },
             ""CurrentPath"": ""content/articles"",
             ""CurrentTheme"": ""dark""

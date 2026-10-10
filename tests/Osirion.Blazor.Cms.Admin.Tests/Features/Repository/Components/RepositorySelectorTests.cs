@@ -1,65 +1,50 @@
-﻿using Bunit;
-using Microsoft.AspNetCore.Components;
+using Bunit;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
-using Osirion.Blazor.Cms.Admin.Core.Events;
+using NSubstitute.ExceptionExtensions;
 using Osirion.Blazor.Cms.Admin.Core.State;
 using Osirion.Blazor.Cms.Admin.Features.Repository.Components;
 using Osirion.Blazor.Cms.Admin.Features.Repository.Services;
 using Osirion.Blazor.Cms.Admin.Features.Repository.ViewModels;
 using Osirion.Blazor.Cms.Admin.Infrastructure.Adapters;
-using Osirion.Blazor.Cms.Admin.Shared.Components;
+using Osirion.Blazor.Cms.Admin.Tests.TestDoubles;
 using Osirion.Blazor.Cms.Domain.Models.GitHub;
 using Shouldly;
 
 namespace Osirion.Blazor.Cms.Admin.Tests.Features.Repository.Components;
 
-public class RepositorySelectorTests : TestContext
+public class RepositorySelectorTests : AdminComponentTestContext
 {
-    private readonly RepositorySelectorViewModel _viewModel;
-    private readonly CmsState _adminState;
-    private readonly IEventPublisher _eventPublisher;
-    private readonly IEventSubscriber _eventSubscriber;
+    private readonly IContentRepositoryAdapter _repositoryAdapter;
+    private readonly CmsState _state;
 
     public RepositorySelectorTests()
     {
-        _viewModel = Substitute.For<RepositorySelectorViewModel>(
-            Substitute.For<RepositoryService>(
-                Substitute.For<IContentRepositoryAdapter>(),
-                Substitute.For<ILogger<RepositoryService>>()
-            ),
-            new CmsState(),
-            Substitute.For<ILogger<RepositorySelectorViewModel>>()
-        );
-        _adminState = new CmsState();
-        _eventPublisher = Substitute.For<IEventPublisher>();
-        _eventSubscriber = Substitute.For<IEventSubscriber>();
+        _repositoryAdapter = Substitute.For<IContentRepositoryAdapter>();
+        _repositoryAdapter.GetRepositoriesAsync().Returns(new List<GitHubRepository>());
+        _repositoryAdapter.GetBranchesAsync(Arg.Any<string>()).Returns(new List<GitHubBranch>());
+        _state = new CmsState();
 
-        // Register services
-        Services.AddSingleton(_viewModel);
-        Services.AddSingleton(_adminState);
-        Services.AddSingleton(_eventPublisher);
-        Services.AddSingleton(_eventSubscriber);
-        Services.AddSingleton(Substitute.For<NavigationManager>());
-
-        // Register logger factory and loggers
-        var loggerFactory = Substitute.For<ILoggerFactory>();
-        loggerFactory.CreateLogger(Arg.Any<string>()).Returns(Substitute.For<ILogger>());
-        Services.AddSingleton(loggerFactory);
-
-        // Configure Blazor components base
-        Services.AddScoped<BaseComponent>();
+        // The view model and the service have no virtual members, so the component gets the real ones over a substituted adapter.
+        var repositoryService = new RepositoryService(_repositoryAdapter, NullLogger<RepositoryService>.Instance);
+        Services.AddSingleton(_state);
+        Services.AddSingleton(new RepositorySelectorViewModel(
+            repositoryService,
+            _state,
+            NullLogger<RepositorySelectorViewModel>.Instance));
+        RenderInteractively();
     }
+
+    private static List<GitHubRepository> CreateRepositories() =>
+    [
+        new GitHubRepository { Name = "repo1", FullName = "owner/repo1", DefaultBranch = "main" },
+        new GitHubRepository { Name = "repo2", FullName = "owner/repo2", DefaultBranch = "master" }
+    ];
 
     [Fact]
     public void RepositorySelector_WhenNoRepositories_ShouldShowEmptyState()
     {
-        // Arrange
-        _viewModel.Repositories.Returns(new List<GitHubRepository>());
-        _viewModel.IsLoading.Returns(false);
-        _viewModel.ErrorMessage.Returns((string)null!);
-
         // Act
         var cut = RenderComponent<RepositorySelector>();
 
@@ -71,7 +56,8 @@ public class RepositorySelectorTests : TestContext
     public void RepositorySelector_WhenLoading_ShouldShowLoadingIndicator()
     {
         // Arrange
-        _viewModel.IsLoading.Returns(true);
+        var pendingLoad = new TaskCompletionSource<List<GitHubRepository>>();
+        _repositoryAdapter.GetRepositoriesAsync().Returns(pendingLoad.Task);
 
         // Act
         var cut = RenderComponent<RepositorySelector>();
@@ -79,50 +65,40 @@ public class RepositorySelectorTests : TestContext
         // Assert
         cut.Find(".spinner-border").ShouldNotBeNull();
         cut.Markup.ShouldContain("Loading repositories");
+
+        pendingLoad.SetResult([]);
     }
 
     [Fact]
     public void RepositorySelector_WithError_ShouldShowErrorMessage()
     {
         // Arrange
-        _viewModel.IsLoading.Returns(false);
-        _viewModel.ErrorMessage.Returns("Test error message");
+        _repositoryAdapter.GetRepositoriesAsync().Throws(new InvalidOperationException("Test error message"));
 
         // Act
         var cut = RenderComponent<RepositorySelector>();
 
         // Assert
-        cut.Find(".alert-danger").ShouldNotBeNull();
-        cut.Markup.ShouldContain("Test error message");
-        cut.Find("button[onclick*='RefreshRepositories']").ShouldNotBeNull();
+        cut.Find(".alert-danger").TextContent.ShouldContain("Test error message");
+        cut.Find(".card-body button").TextContent.Trim().ShouldBe("Retry");
     }
 
     [Fact]
     public void RepositorySelector_WithRepositories_ShouldShowRepositorySelect()
     {
         // Arrange
-        var repositories = new List<GitHubRepository>
-        {
-            new GitHubRepository { Name = "repo1", FullName = "owner/repo1", DefaultBranch = "main" },
-            new GitHubRepository { Name = "repo2", FullName = "owner/repo2", DefaultBranch = "master" }
-        };
-
-        _viewModel.Repositories.Returns(repositories);
-        _viewModel.IsLoading.Returns(false);
-        _viewModel.ErrorMessage.Returns((string)null!);
+        var repositories = CreateRepositories();
+        _repositoryAdapter.GetRepositoriesAsync().Returns(repositories);
 
         // Act
         var cut = RenderComponent<RepositorySelector>();
 
         // Assert
-        var select = cut.Find("select");
-        select.ShouldNotBeNull();
+        cut.Find("select").ShouldNotBeNull();
 
-        // Should have correct number of options (repositories + default)
-        var options = cut.FindAll("option");
+        // One option per repository plus the prompt
+        var options = cut.FindAll("option").ToList();
         options.Count.ShouldBe(repositories.Count + 1);
-
-        // Verify repository names in options
         options[1].TextContent.ShouldBe("repo1");
         options[2].TextContent.ShouldBe("repo2");
     }
@@ -131,32 +107,26 @@ public class RepositorySelectorTests : TestContext
     public void RepositorySelector_WithSelectedRepository_ShouldShowRepositoryDetails()
     {
         // Arrange
-        var repositories = new List<GitHubRepository>
+        var repository = new GitHubRepository
         {
-            new GitHubRepository
-            {
-                Name = "repo1",
-                FullName = "owner/repo1",
-                DefaultBranch = "main",
-                Description = "Test repository",
-                Private = true,
-                HtmlUrl = "https://github.com/owner/repo1"
-            }
+            Name = "repo1",
+            FullName = "owner/repo1",
+            DefaultBranch = "main",
+            Description = "Test repository",
+            Private = true,
+            HtmlUrl = "https://github.com/owner/repo1"
         };
-
-        _viewModel.Repositories.Returns(repositories);
-        _viewModel.SelectedRepository.Returns(repositories[0]);
-        _viewModel.IsLoading.Returns(false);
-        _viewModel.ErrorMessage.Returns((string)null!);
+        _repositoryAdapter.GetRepositoriesAsync().Returns([repository]);
+        _state.SelectRepository(repository);
 
         // Act
         var cut = RenderComponent<RepositorySelector>();
 
         // Assert
-        cut.Find(".card-footer").ShouldNotBeNull();
-        cut.Markup.ShouldContain("repo1");
-        cut.Markup.ShouldContain("Test repository");
-        cut.Find(".badge.bg-danger-subtle").ShouldNotBeNull(); // Private badge
+        var footer = cut.Find(".card-footer");
+        footer.TextContent.ShouldContain("repo1");
+        footer.TextContent.ShouldContain("Test repository");
+        cut.Find(".badge.bg-danger-subtle").ShouldNotBeNull();
         cut.Find("a[href='https://github.com/owner/repo1']").ShouldNotBeNull();
     }
 
@@ -164,49 +134,53 @@ public class RepositorySelectorTests : TestContext
     public void RepositorySelector_RefreshButton_ShouldCallLoadRepositoriesAsync()
     {
         // Arrange
-        _viewModel.Repositories.Returns(new List<GitHubRepository>());
-        _viewModel.IsLoading.Returns(false);
+        var cut = RenderComponent<RepositorySelector>();
 
         // Act
-        var cut = RenderComponent<RepositorySelector>();
         cut.Find("button[title='Refresh repositories']").Click();
 
         // Assert
-        _viewModel.Received(1).LoadRepositoriesAsync();
+        _repositoryAdapter.Received(2).GetRepositoriesAsync();
     }
 
     [Fact]
     public void RepositorySelector_SelectingRepository_ShouldCallSelectRepositoryAsync()
     {
         // Arrange
-        var repositories = new List<GitHubRepository>
-        {
-            new GitHubRepository { Name = "repo1", FullName = "owner/repo1", DefaultBranch = "main" },
-            new GitHubRepository { Name = "repo2", FullName = "owner/repo2", DefaultBranch = "master" }
-        };
-
-        _viewModel.Repositories.Returns(repositories);
-        _viewModel.IsLoading.Returns(false);
+        _repositoryAdapter.GetRepositoriesAsync().Returns(CreateRepositories());
+        var cut = RenderComponent<RepositorySelector>();
 
         // Act
-        var cut = RenderComponent<RepositorySelector>();
-        var select = cut.Find("select");
-
-        // Simulate selection change
-        select.Change("repo1");
+        cut.Find("select").Change("repo1");
 
         // Assert
-        _viewModel.Received(1).SelectRepositoryAsync("repo1");
+        _repositoryAdapter.Received(1).SetRepository("repo1");
+        _state.SelectedRepository.ShouldNotBeNull().Name.ShouldBe("repo1");
     }
 
     [Fact]
-    public void RepositorySelector_OnInitialized_ShouldSubscribeToEvents()
+    public void RepositorySelector_OnInitialized_ShouldLoadRepositories()
     {
         // Act
-        var cut = RenderComponent<RepositorySelector>();
+        RenderComponent<RepositorySelector>();
 
-        // Assert - Since ViewModels are mocked, we can't verify the event subscription directly
-        // We can verify LoadRepositoriesAsync is called on initialization
-        _viewModel.Received(1).LoadRepositoriesAsync();
+        // Assert
+        _repositoryAdapter.Received(1).GetRepositoriesAsync();
+    }
+
+    [Fact]
+    public void RepositorySelector_WhenSelectedRepositoryChanges_ShouldRerender()
+    {
+        // Arrange
+        var repository = CreateRepositories()[0];
+        _repositoryAdapter.GetRepositoriesAsync().Returns([repository]);
+        var cut = RenderComponent<RepositorySelector>();
+        cut.FindAll(".card-footer").ShouldBeEmpty();
+
+        // Act
+        cut.InvokeAsync(() => _state.SelectRepository(repository));
+
+        // Assert
+        cut.Find(".card-footer").TextContent.ShouldContain("repo1");
     }
 }

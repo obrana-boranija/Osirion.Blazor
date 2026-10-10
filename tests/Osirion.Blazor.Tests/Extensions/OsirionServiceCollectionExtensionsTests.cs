@@ -3,9 +3,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Osirion.Blazor.Analytics.Options;
 using Osirion.Blazor.Cms.Domain.Options;
+using Osirion.Blazor.Cms.Domain.Services;
+using Osirion.Blazor.Cms.Infrastructure.Providers;
 using Osirion.Blazor.Components;
 using Osirion.Blazor.Extensions;
 using Osirion.Blazor.Navigation.Options;
+using Osirion.Blazor.Tests.Fakes;
 using Shouldly;
 
 namespace Osirion.Blazor.Tests.Extensions;
@@ -57,14 +60,14 @@ public class OsirionServiceCollectionExtensionsTests
     public void AddOsirion_WithConfigFile_ShouldConfigureAllModules()
     {
         // Arrange
-        var services = new ServiceCollection();
         var configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
-                // Content configuration
-                { "Osirion:Content:GitHub:Owner", "test-owner" },
-                { "Osirion:Content:GitHub:Repository", "test-repo" },
-                { "Osirion:Content:FileSystem:BasePath", "/test/path" },
+                // Content configuration: GitHub providers are named sections under Osirion:Cms:Web:GitHub
+                { "Osirion:Cms:Web:GitHub:Blog:Owner", "test-owner" },
+                { "Osirion:Cms:Web:GitHub:Blog:Repository", "test-repo" },
+                { "Osirion:Cms:Web:FileSystem:BasePath", "/test/path" },
+                { "Osirion:Cms:FileSystem:Web:BasePath", "/test/path" },
 
                 // Analytics configuration  
                 { "Osirion:Analytics:Clarity:SiteId", "clarity-123" },
@@ -79,6 +82,7 @@ public class OsirionServiceCollectionExtensionsTests
                 { "Osirion:Theming:EnableDarkMode", "true" }
             })
             .Build();
+        var services = HostServices.Create(configuration);
 
         // Act
         var result = services.AddOsirion(configuration);
@@ -88,10 +92,8 @@ public class OsirionServiceCollectionExtensionsTests
         result.ShouldBe(services);
 
         // Verify Content configuration
-        var githubOptions = serviceProvider.GetService<IOptions<GitHubOptions>>();
-        githubOptions.ShouldNotBeNull();
-        githubOptions.Value.Owner.ShouldBe("test-owner");
-        githubOptions.Value.Repository.ShouldBe("test-repo");
+        var githubProvider = serviceProvider.GetServices<IContentProvider>().OfType<GitHubContentProvider>().ShouldHaveSingleItem();
+        githubProvider.DisplayName.ShouldBe("GitHub: test-owner/test-repo");
 
         var fileSystemOptions = serviceProvider.GetService<IOptions<FileSystemOptions>>();
         fileSystemOptions.ShouldNotBeNull();
@@ -126,7 +128,7 @@ public class OsirionServiceCollectionExtensionsTests
     public void AddOsirion_WithBuilder_ShouldConfigureModulesSelectively()
     {
         // Arrange
-        var services = new ServiceCollection();
+        var services = HostServices.Create();
 
         // Act
         var result = services.AddOsirion(builder =>

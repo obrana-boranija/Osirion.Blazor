@@ -13,6 +13,7 @@ public class ErrorHandlingService
     private readonly CmsState _state;
     private readonly CmsEventMediator _eventMediator;
     private readonly ILogger<ErrorHandlingService> _logger;
+    private bool _isPublishingOwnError;
 
     /// <summary>Performs the ErrorHandlingService operation.</summary>
     public ErrorHandlingService(
@@ -33,6 +34,10 @@ public class ErrorHandlingService
     /// </summary>
     private void HandleError(ErrorOccurredEvent errorEvent)
     {
+        // HandleException already logged and (optionally) recorded this error before publishing it
+        if (_isPublishingOwnError)
+            return;
+
         // Log the error
         if (errorEvent.Exception is not null)
         {
@@ -65,6 +70,14 @@ public class ErrorHandlingService
         }
 
         // Publish error event for other components to react
-        _eventMediator.Publish(new ErrorOccurredEvent(message, exception));
+        _isPublishingOwnError = true;
+        try
+        {
+            _eventMediator.Publish(new ErrorOccurredEvent(message, exception));
+        }
+        finally
+        {
+            _isPublishingOwnError = false;
+        }
     }
 }
