@@ -8,7 +8,8 @@ Key parameters
 - EnableSyntaxHighlighting (default true)
 - ShowLineNumbers, EnableCopyButton, EnableLineHighlighting
 - UseAccessibleTheme (WCAG-friendly)
-- LanguageClasses (per-language custom CSS classes)
+- LanguageClasses (obsolete, never read by the component; style code blocks with CSS selectors on the language-* classes)
+- PrismBaseUrl (optional base address Prism is served from; empty uses the pinned cdnjs release 1.29.0 with Subresource Integrity)
 - SanitizeHtml (default true): sanitize with the registered IHtmlContentSanitizer allow-list
 - HtmlSanitizer (optional delegate that replaces the registered sanitizer)
 
@@ -16,8 +17,10 @@ Implementation notes
 - Detects <pre><code> blocks and reads their language- class (on the code or pre element) to load the matching
   Prism language; the block markup itself is not rewritten
 - Wraps blocks with header and copy button when enabled
-- Adds line-numbers to <pre> if requested
-- Provides initialization JS snippet with retry
+- Adds the line-numbers class to the <pre> of each block if requested, keeping its other classes
+- Loads Prism, its language components and the line-numbers plugin in order through osirion-script-loader.js, which
+  sets integrity and crossorigin on the pinned cdnjs files (hashes from https://api.cdnjs.com/libraries/prism/1.29.0?fields=sri).
+  Files from a custom PrismBaseUrl carry no integrity check
 
 Security
 - Content is sanitized by default with an allow-list HTML sanitizer: script, event handlers, javascript:/data: URLs,

@@ -198,6 +198,30 @@ public class CookieConsentHandlerTests
         result.ShouldBeOfType<BadRequest>();
     }
 
+    // Fails before the fix: the cookie always lived for 365 days, whatever ConsentExpiryDays the banner was given.
+    [Theory]
+    [InlineData("30", 30)]
+    [InlineData("730", 730)]
+    [InlineData("", 365)]
+    [InlineData("0", 365)]
+    [InlineData("-5", 365)]
+    [InlineData("99999", 365)]
+    [InlineData("abc", 365)]
+    public async Task HandleConsentAsync_PostedExpiryDays_SetsTheCookieLifetime(string postedDays, int expectedDays)
+    {
+        var form = Form("accepted", "/");
+        form["expiryDays"] = postedDays;
+        var context = CreateContext(form);
+
+        await CookieConsentHandler.HandleConsentAsync(context);
+
+        var setCookie = context.Response.Headers.SetCookie.ToString();
+        var expires = DateTimeOffset.Parse(
+            setCookie.Split(';').Select(part => part.Trim()).Single(part => part.StartsWith("expires=", StringComparison.OrdinalIgnoreCase))["expires=".Length..],
+            System.Globalization.CultureInfo.InvariantCulture);
+        (expires - DateTimeOffset.UtcNow).TotalDays.ShouldBe(expectedDays, tolerance: 0.01);
+    }
+
     private static Dictionary<string, StringValues> Form(string consent, string returnUrl) => new()
     {
         ["consent"] = consent,

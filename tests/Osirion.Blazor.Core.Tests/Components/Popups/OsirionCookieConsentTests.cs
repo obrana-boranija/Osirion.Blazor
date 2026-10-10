@@ -65,6 +65,45 @@ public class OsirionCookieConsentTests : BunitContext
         component.Markup.Trim().ShouldBeEmpty();
     }
 
+    // Fails before the fix: the endpoint hard-coded 365 days and the banner never sent its ConsentExpiryDays.
+    [Fact]
+    public void OsirionCookieConsent_ConsentExpiryDays_IsPostedWithTheForm()
+    {
+        AddAntiforgeryStateProvider();
+        SetRendererInfo(new RendererInfo("Static", false));
+        Services.GetRequiredService<BunitNavigationManager>().NavigateTo("http://localhost/");
+
+        var component = Render<OsirionCookieConsent>(parameters => parameters.Add(p => p.ConsentExpiryDays, 90));
+
+        component.Find("input[name=expiryDays]").GetAttribute("value").ShouldBe("90");
+    }
+
+    // Fails before the fix: the unmatched attributes were applied to the form and to the inner banner, so an id repeated.
+    [Fact]
+    public void OsirionCookieConsent_UnmatchedAttributes_AreAppliedOnce()
+    {
+        AddAntiforgeryStateProvider();
+        SetRendererInfo(new RendererInfo("Static", false));
+        Services.GetRequiredService<BunitNavigationManager>().NavigateTo("http://localhost/");
+
+        var component = Render<OsirionCookieConsent>(parameters => parameters.AddUnmatched("id", "consent-banner"));
+
+        component.FindAll("#consent-banner").Count.ShouldBe(1);
+    }
+
+    // Fails before the fix: resolving the component threw because no IHttpContextAccessor is registered under WebAssembly.
+    [Fact]
+    public void OsirionCookieConsent_WithoutHttpContextAccessor_RendersNothingAndDoesNotThrow()
+    {
+        using var context = new BunitContext();
+        context.Services.AddSingleton(Options.Create(new ThemingOptions()));
+        context.SetRendererInfo(new RendererInfo("WebAssembly", true));
+
+        var component = context.Render<OsirionCookieConsent>();
+
+        component.Markup.Trim().ShouldBeEmpty();
+    }
+
     private IRenderedComponent<OsirionCookieConsent> RenderOnPage(string uri)
     {
         // The banner is rendered with static server-side rendering

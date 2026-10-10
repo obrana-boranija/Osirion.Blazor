@@ -3,14 +3,14 @@
 @using Microsoft.AspNetCore.Components.Forms
 @inherits OsirionComponentBase
 @inject NavigationManager Navigation
-@inject IHttpContextAccessor HttpContextAccessor
 
 @if (ShowBanner)
 {
     <form method="post" action="@ConsentEndpoint" class="osirion-cookie-consent-actions" @attributes="Attributes">
         <AntiforgeryToken />
+        <input type="hidden" name="expiryDays" value="@ConsentExpiryDays" />
         <input type="hidden" name="returnUrl" value="@GetCurrentUrl()" />
-        <div class="@GetCookieConsentClass()" @attributes="Attributes">
+        <div class="@GetCookieConsentClass()">
             <div class="osirion-cookie-consent-container">
                 <div class="osirion-cookie-consent-content">
                     <div class="osirion-cookie-consent-message">

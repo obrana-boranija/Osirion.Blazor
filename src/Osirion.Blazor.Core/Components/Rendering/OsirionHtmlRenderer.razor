@@ -1,15 +1,17 @@
 @namespace Osirion.Blazor.Components
 @inherits OsirionComponentBase
+@using BlazorJSComponents
 
 @if (!string.IsNullOrWhiteSpace(HtmlContent))
 {
     <link rel="stylesheet" href="_content/Osirion.Blazor.Core/css/osirion-html-renderer.min.css" />
 
-    <div id="syntax-highlighter-config"
+    @* A class, not an id: several renderers can share a page and an id would repeat. *@
+    <div class="osirion-syntax-highlighter-config"
          data-enable-copy="@EnableCopyButton.ToString().ToLower()"
          data-enable-line-highlighting="@EnableLineHighlighting.ToString().ToLower()"
          data-show-line-numbers="@ShowLineNumbers.ToString().ToLower()"
-         style="display: none;">
+         hidden>
     </div>
 
     @if (HasCodeBlocks && EnableSyntaxHighlighting)
@@ -17,7 +19,7 @@
 
         @if (!UseAccessibleTheme)
         {
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" />
+            <link rel="stylesheet" href="@PrismUrl("themes/prism-okaidia.min.css")" integrity="@PrismIntegrity("themes/prism-okaidia.min.css")" crossorigin="@PrismCrossOrigin("themes/prism-okaidia.min.css")" />
         }
         else
         {
@@ -28,25 +30,15 @@
 
         @if (ShowLineNumbers)
         {
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css" />
+            <link rel="stylesheet" href="@PrismUrl("plugins/line-numbers/prism-line-numbers.min.css")" integrity="@PrismIntegrity("plugins/line-numbers/prism-line-numbers.min.css")" crossorigin="@PrismCrossOrigin("plugins/line-numbers/prism-line-numbers.min.css")" />
         }
 
+        @* Prism and its plugins load through a loader that can enforce Subresource Integrity (the generic JS component cannot). *@
+        <JS Src="./_content/Osirion.Blazor.Core/js/osirion-script-loader.js" Args="@(new object[] { GetPrismScripts() })" />
 
-        @LoadScript("https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js")
         @LoadScript("./_content/Osirion.Blazor.Core/js/osirion-syntax-highlighter.es5.min.js")
         @LoadScript("./_content/Osirion.Blazor.Core/js/osirion-copy-button.es5.min.js")
         @LoadScript("./_content/Osirion.Blazor.Core/js/osirion-line-highlighting.es5.min.js")
-
-
-        @foreach (var lang in DetectedLanguages.Where(NeedsLanguageComponent))
-        {
-            @LoadScript($"https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-{(lang)}.min.js")
-        }
-
-        @if (ShowLineNumbers)
-        {
-            @LoadScript("https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js")
-        }
     }
 
     <article class="@GetHtmlRendererClass()" @attributes="Attributes">

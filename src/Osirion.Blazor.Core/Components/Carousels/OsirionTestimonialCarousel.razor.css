@@ -282,8 +282,8 @@
         -webkit-mask-image: none;
     }
     
-    /* Show optimal number of testimonials when motion is reduced */
-    .osirion-testimonial-carousel-slide:nth-child(n+5) {
+    /* Every testimonial is shown statically; only the decorative looping copies (aria-hidden) are dropped. */
+    .osirion-testimonial-carousel-slide[aria-hidden="true"] {
         display: none;
     }
     
@@ -299,9 +299,6 @@
         max-width: 100%;
     }
     
-    .osirion-testimonial-carousel-slide:nth-child(n+4) {
-        display: none;
-    }
 }
 
 /* High contrast mode support */
@@ -395,4 +392,37 @@
             --osirion-testimonial-card-gap: 36px;
         }
     }
+}
+/* Pause control created by the enhancement script (WCAG 2.2.2 Pause, Stop, Hide) */
+.osirion-testimonial-carousel ::deep .osirion-carousel-pause {
+    position: absolute;
+    top: var(--osirion-spacing-2, 0.5rem);
+    right: var(--osirion-spacing-4, 1rem);
+    z-index: 11;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0;
+    border: 1px solid currentColor;
+    border-radius: 50%;
+    background: var(--osirion-background, Canvas);
+    color: var(--osirion-text-primary, CanvasText);
+    cursor: pointer;
+}
+
+.osirion-testimonial-carousel ::deep .osirion-carousel-pause:focus-visible {
+    outline: var(--osirion-focus-ring-width, 3px) solid var(--osirion-focus-ring-color, currentColor);
+    outline-offset: 2px;
+}
+
+.osirion-testimonial-carousel ::deep .osirion-carousel-pause[aria-pressed="false"] .osirion-carousel-play-icon,
+.osirion-testimonial-carousel ::deep .osirion-carousel-pause[aria-pressed="true"] .osirion-carousel-pause-icon {
+    display: none;
+}
+
+/* Hover pauses only when PauseOnHover is on; keyboard focus always pauses so keyboard users can read and operate links. */
+.osirion-testimonial-carousel:focus-within .osirion-testimonial-carousel-track {
+    animation-play-state: paused;
 }

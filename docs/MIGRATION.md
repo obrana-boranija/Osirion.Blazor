@@ -157,6 +157,14 @@ This release closes security holes in the CMS and Core modules. Most changes are
    - GitHub rate limits surface as `GitHubRateLimitException` (an `HttpRequestException`). The GitHub clients time out after 30 seconds unless the host sets a timeout.
    - Prefer `UseOsirionCmsAsync` where startup can be async; `UseOsirionCms` still blocks.
 
+14. **Core and Theming.**
+   - Set `Permissions-Policy` in the host if you relied on the header from `UseOsirionCookieConsent`.
+   - `OsirionContactForm` renders no contact block when `ContactInfo` is null, and a missing email service shows the error banner.
+   - `OsirionContactInfoSection` drops non-http(s) websites and keeps the path of same-site ones.
+   - Guard JS enhancement with `firstRender && IsInteractive` instead of `!IsServerSide`.
+   - `OsirionHtmlRenderer` injects Prism through `osirion-script-loader.js`; hosts with a strict CSP or their own Prism should set `PrismBaseUrl`. `LanguageClasses` is obsolete.
+   - `ThemeToggle` no longer renders the ids `theme-toggle` and `scrollPositionInput`; use the new `Id` parameter. The gallery trigger is `a.osirion-image-gallery-trigger` with the caption outside it; carousels add a `.osirion-carousel-pause` button.
+
 ## Upgrading to v1.5.0
 
 ### Breaking Changes

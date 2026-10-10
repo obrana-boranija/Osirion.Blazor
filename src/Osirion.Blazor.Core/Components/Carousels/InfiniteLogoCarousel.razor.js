@@ -3,6 +3,7 @@ export default class extends BlazorJSComponents.Component {
         this.isDragging = false;
         this.dragged = false;
         this.focusAnimationFrame = undefined;
+        this.userPaused = false;
     }
 
     setParameters(refs) {
@@ -27,8 +28,118 @@ export default class extends BlazorJSComponents.Component {
         this.setEventListener(this.viewport, 'wheel', event => this.scrollWithWheel(event), { passive: false });
         this.setEventListener(window, 'resize', () => this.updateFocusedLogos(), { passive: true });
 
+        this.userPaused = false;
+        this.createPauseControl();
+        this.listenForPlayStateChanges();
+        this.observeVisibility();
         this.updateFocusedLogos();
-        this.trackFocusedLogos();
+    }
+
+    // Shared motion control (kept identical in both carousels, see the sibling .razor.js file).
+
+    createPauseControl() {
+        this.pauseButton?.remove();
+        if (!this.getTrackAnimation()) {
+            return;
+        }
+
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'osirion-carousel-pause';
+        button.setAttribute('aria-pressed', 'false');
+        button.setAttribute('aria-label', this.root.dataset.pauseLabel || 'Pause animation');
+        button.innerHTML = '<svg aria-hidden="true" focusable="false" viewBox="0 0 16 16" width="14" height="14"><path class="osirion-carousel-pause-icon" d="M4 3h3v10H4zM9 3h3v10H9z" fill="currentColor"/><path class="osirion-carousel-play-icon" d="M4 2.5v11l9-5.5z" fill="currentColor"/></svg>';
+        this.root.appendChild(button);
+        this.pauseButton = button;
+        this.setEventListener(button, 'click', () => this.toggleUserPause());
+    }
+
+    toggleUserPause() {
+        this.userPaused = !this.userPaused;
+        this.pauseButton.setAttribute('aria-pressed', String(this.userPaused));
+        this.pauseButton.setAttribute('aria-label', this.userPaused
+            ? (this.root.dataset.playLabel || 'Play animation')
+            : (this.root.dataset.pauseLabel || 'Pause animation'));
+
+        if (this.userPaused) {
+            this.stopAutoScroll();
+        } else {
+            this.getTrackAnimation()?.play();
+        }
+
+        this.syncFocusTracking();
+    }
+
+    observeVisibility() {
+        this.visibilityObserver?.disconnect();
+        this.isVisible = true;
+        if (typeof IntersectionObserver === 'undefined') {
+            return;
+        }
+
+        this.isVisible = false;
+        this.visibilityObserver = new IntersectionObserver(entries => {
+            this.isVisible = entries[entries.length - 1].isIntersecting;
+            this.syncFocusTracking();
+        });
+        this.visibilityObserver.observe(this.root);
+    }
+
+    isMotionActive() {
+        return this.isVisible
+            && !this.isDragging
+            && !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+            && this.getTrackAnimation()?.playState === 'running';
+    }
+
+    // The highlight only changes while the rail moves, so the frame loop runs only while the carousel is on screen
+    // and actually animating. It stops itself when the animation pauses and is restarted by the events below.
+    syncFocusTracking() {
+        if (!this.isMotionActive()) {
+            this.stopFocusTracking();
+            this.updateFocusedLogos();
+            return;
+        }
+
+        if (this.focusAnimationFrame !== undefined) {
+            return;
+        }
+
+        let lastUpdate = 0;
+        const frame = timestamp => {
+            if (!this.isMotionActive()) {
+                this.focusAnimationFrame = undefined;
+                return;
+            }
+
+            if (timestamp - lastUpdate >= 100) {
+                lastUpdate = timestamp;
+                this.updateFocusedLogos();
+            }
+
+            this.focusAnimationFrame = window.requestAnimationFrame(frame);
+        };
+
+        this.focusAnimationFrame = window.requestAnimationFrame(frame);
+    }
+
+    stopFocusTracking() {
+        if (this.focusAnimationFrame !== undefined) {
+            window.cancelAnimationFrame(this.focusAnimationFrame);
+            this.focusAnimationFrame = undefined;
+        }
+    }
+
+    listenForPlayStateChanges() {
+        const resync = () => window.setTimeout(() => this.syncFocusTracking(), 0);
+        this.setEventListener(this.root, 'pointerenter', resync, { passive: true });
+        this.setEventListener(this.root, 'pointerleave', resync, { passive: true });
+        this.setEventListener(this.root, 'focusin', resync);
+        this.setEventListener(this.root, 'focusout', resync);
+        this.motionQuery?.removeEventListener('change', this.resync);
+        this.resync = resync;
+        this.motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+        this.motionQuery.addEventListener('change', resync);
     }
 
     beginDrag(event) {
@@ -42,6 +153,7 @@ export default class extends BlazorJSComponents.Component {
         this.lastDragX = event.clientX;
         this.viewport.classList.add('is-dragging');
         this.viewport.setPointerCapture?.(event.pointerId);
+        this.syncFocusTracking();
     }
 
     moveDrag(event) {
@@ -73,6 +185,7 @@ export default class extends BlazorJSComponents.Component {
             this.dragged = false;
         }, 0);
         this.startAutoScroll();
+        this.syncFocusTracking();
     }
 
     suppressDraggedClick(event) {
@@ -85,20 +198,20 @@ export default class extends BlazorJSComponents.Component {
     }
 
     scrollWithWheel(event) {
-        const delta = Math.abs(event.deltaX) > Math.abs(event.deltaY)
-            ? event.deltaX
-            : event.deltaY;
-
-        if (delta === 0 || this.getLoopLength() === 0) {
+        // Only a horizontal gesture moves the rail. Vertical wheel input is never cancelled, so the page can always
+        // scroll while the pointer is over the carousel.
+        if (Math.abs(event.deltaX) <= Math.abs(event.deltaY) || this.getLoopLength() === 0) {
             return;
         }
 
         event.preventDefault();
-        this.shiftAnimation(delta);
+        this.shiftAnimation(event.deltaX);
     }
 
     startAutoScroll() {
-        this.getTrackAnimation()?.play();
+        if (!this.userPaused) {
+            this.getTrackAnimation()?.play();
+        }
     }
 
     stopAutoScroll() {
@@ -160,16 +273,6 @@ export default class extends BlazorJSComponents.Component {
         logos.forEach(logo => logo.classList.toggle('osirion-logo-item-focus', focusedLogos.has(logo)));
     }
 
-    trackFocusedLogos() {
-        window.cancelAnimationFrame(this.focusAnimationFrame);
-        const update = () => {
-            this.updateFocusedLogos();
-            this.focusAnimationFrame = window.requestAnimationFrame(update);
-        };
-
-        this.focusAnimationFrame = window.requestAnimationFrame(update);
-    }
-
     getCenter(element) {
         const rect = element.getBoundingClientRect();
         return rect.left + (rect.width / 2);
@@ -180,7 +283,10 @@ export default class extends BlazorJSComponents.Component {
     }
 
     dispose() {
-        window.cancelAnimationFrame(this.focusAnimationFrame);
+        this.stopFocusTracking();
+        this.visibilityObserver?.disconnect();
+        this.motionQuery?.removeEventListener('change', this.resync);
+        this.pauseButton?.remove();
         this.getTrackAnimation()?.cancel();
         this.root?.classList.remove('is-enhanced');
         super.dispose();

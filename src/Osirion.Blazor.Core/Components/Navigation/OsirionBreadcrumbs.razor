@@ -15,13 +15,13 @@
             <li class="osirion-breadcrumbs-item @(segment.IsLast ? "osirion-breadcrumbs-current" : "")">
                 @if (segment.IsLast && !LinkLastItem)
                 {
-                    <span class="osirion-breadcrumbs-text">
+                    <span class="osirion-breadcrumbs-text" aria-current="page">
                         @(SegmentFormatter?.Invoke(segment.Name) ?? FormatSegmentName(segment.Name))
                     </span>
                 }
                 else
                 {
-                    <a href="@($"{UrlPrefix}{segment.Path}")" class="osirion-breadcrumbs-link">
+                    <a href="@($"{UrlPrefix}{segment.Path}")" class="osirion-breadcrumbs-link" aria-current="@(segment.IsLast ? "page" : null)">
                         @(SegmentFormatter?.Invoke(segment.Name) ?? FormatSegmentName(segment.Name))
                     </a>
                 }

@@ -63,8 +63,13 @@ public static class CookieContentExtensions
 }
 
 /// <summary>
-/// Middleware for handling cookie consent checks
+/// Middleware that exposes the visitor consent data through <c>HttpContext.Items["CookieConsent"]</c>.
 /// </summary>
+/// <remarks>
+/// Earlier versions also wrote a <c>Permissions-Policy</c> header (obsolete Feature-Policy syntax, overwriting any
+/// host header, geolocation tied to analytics consent). Consent has no bearing on browser feature permissions, so
+/// the header is no longer written; hosts that want one should set it themselves.
+/// </remarks>
 public class CookieConsentMiddleware
 {
     private readonly RequestDelegate _next;
@@ -88,20 +93,6 @@ public class CookieConsentMiddleware
         // Add consent status to HttpContext.Items for easy access
         var consentData = CookieConsentHandler.GetConsentData(context);
         context.Items["CookieConsent"] = consentData;
-
-        // Set response headers based on consent
-        if (consentData is not null)
-        {
-            // Example: Set feature policy based on consent
-            var features = new List<string> { "camera 'none'", "microphone 'none'" };
-
-            if (!CookieConsentHandler.IsCategoryConsented(context, "analytics"))
-            {
-                features.Add("geolocation 'none'");
-            }
-
-            context.Response.Headers["Permissions-Policy"] = string.Join("; ", features);
-        }
 
         await _next(context);
     }

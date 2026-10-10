@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Osirion.Blazor.Core.Utils;
 
 namespace Osirion.Blazor.Components;
 
@@ -185,7 +186,7 @@ public partial class OsirionBaseSection
 
         if (!string.IsNullOrWhiteSpace(BackgroundImageUrl))
         {
-            styles.Add($"background-image: url('{BackgroundImageUrl}')");
+            styles.Add($"background-image: {CssUrl.Format(BackgroundImageUrl)}");
         }
 
         if (!string.IsNullOrWhiteSpace(BackgroundColor))

@@ -139,7 +139,8 @@ public partial class OsirionContactForm : OsirionComponentBase
     public string ContactInfoTitle { get; set; } = "Contact information";
 
     /// <summary>
-    /// Gets or sets the contact information to display.
+    /// Gets or sets the contact information to display. When it is <see langword="null"/> no contact information
+    /// section is rendered; the form never invents placeholder details.
     /// </summary>
     [Parameter]
     public ContactInformation? ContactInfo { get; set; }
@@ -236,34 +237,19 @@ public partial class OsirionContactForm : OsirionComponentBase
 
     #endregion
 
-    #region Lifecycle Methods
-
-    /// <inheritdoc/>
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-
-        // Set default contact information if not provided
-        ContactInfo ??= new ContactInformation
-        {
-            Address = "198 West 21th Street, Suite 721 New York NY 10016",
-            Phone = "+ 1235 2355 98",
-            Email = "info@yoursite.com",
-            Website = "yoursite.com",
-            Message = "We're open for any suggestion or just to have a chat"
-        };
-    }
-
-    #endregion
-
     #region Event Handlers
 
     private async Task HandleValidSubmit()
     {
-        var contactFormSubmissionResult = ContactFormSubmissionResult.SpamDetected;
+        // Only a filled honeypot field means spam. Anything that stops a genuine submission from being sent
+        // (a missing email service, a failed send) must not tell the visitor they were flagged as spam.
+        var contactFormSubmissionResult = ContactFormSubmissionResult.ServerError;
 
-        // Check for spam (honeypot field should be empty)
-        if (string.IsNullOrWhiteSpace(FormModel.Website))
+        if (!string.IsNullOrWhiteSpace(FormModel.Website))
+        {
+            contactFormSubmissionResult = ContactFormSubmissionResult.SpamDetected;
+        }
+        else
         {
             try
             {

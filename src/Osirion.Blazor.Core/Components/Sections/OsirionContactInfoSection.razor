@@ -5,12 +5,12 @@
 <div class="@GetContactInfoSectionClass() @Class" style="@Style" @attributes="Attributes">
     @if (!string.IsNullOrWhiteSpace(Title))
     {
-        <h2 class="osirion-contact-info-title">@((MarkupString)Title)</h2>
+        <h2 class="osirion-contact-info-title">@Sanitized(Title)</h2>
     }
 
     @if (!string.IsNullOrWhiteSpace(ContactInfo?.Message))
     {
-        <p class="osirion-contact-info-description">@((MarkupString)ContactInfo.Message)</p>
+        <p class="osirion-contact-info-description">@Sanitized(ContactInfo.Message)</p>
     }
 
     <div class="osirion-contact-info-list">
@@ -24,7 +24,7 @@
                 </div>
                 <div class="osirion-contact-info-content">
                     <span class="osirion-contact-info-label">@AddressLabel</span>
-                    <span class="osirion-contact-info-value">@((MarkupString)ContactInfo.Address)</span>
+                    <span class="osirion-contact-info-value">@Sanitized(ContactInfo.Address)</span>
                 </div>
             </div>
         }
@@ -41,7 +41,7 @@
                     <span class="osirion-contact-info-label">@PhoneLabel</span>
                     @foreach (var phone in Phones())
                     {
-                        <a href="tel:@phone" class="osirion-contact-info-value osirion-contact-link">@((MarkupString)phone)</a>
+                        <a href="tel:@phone" class="osirion-contact-info-value osirion-contact-link">@phone</a>
                     }
                 </div>
             </div>
@@ -59,13 +59,13 @@
                     <span class="osirion-contact-info-label">@EmailLabel</span>
                     @foreach (var email in Emails())
                     {
-                        <a href="mailto:@email" class="osirion-contact-info-value osirion-contact-link">@((MarkupString)email)</a>
+                        <a href="mailto:@email" class="osirion-contact-info-value osirion-contact-link">@email</a>
                     }
                 </div>
             </div>
         }
 
-        @if (Websites().Any())
+        @if (_websiteLinks.Count > 0)
         {
             <div class="osirion-contact-info-item">
                 <div class="osirion-contact-info-icon">
@@ -75,12 +75,9 @@
                 </div>
                 <div class="osirion-contact-info-content">
                     <span class="osirion-contact-info-label">@WebsiteLabel</span>
-                    @foreach (var website in Websites())
+                    @foreach (var website in _websiteLinks)
                     {
-                        var websiteDisplayText = GetWebsiteDisplayText(website);
-                        var target = website.TrimEnd("/").StartsWith(navigationManager.BaseUri.TrimEnd("/")) ? "_self" : "_blank";
-
-                        <a href="@(target.Equals("_self") ? "/" : website)" target="@target" rel="noopener noreferrer" class="osirion-contact-info-value osirion-contact-link">@((MarkupString)websiteDisplayText)</a>
+                        <a href="@website.Href" target="@website.Target" rel="noopener noreferrer" class="osirion-contact-info-value osirion-contact-link">@website.DisplayText</a>
                     }
                 </div>
             </div>

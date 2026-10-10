@@ -10,6 +10,13 @@ public partial class ThemeToggle : IDisposable
 {
     [Inject] private IOptions<ThemingOptions> ThemingOptions { get; set; } = default!;
 
+    /// <summary>
+    /// Gets or sets the id of the toggle button. No id is written when it is <see langword="null"/>, so several toggles
+    /// can share a page without repeating an id; set it only when a host stylesheet or script needs to address one.
+    /// </summary>
+    [Parameter]
+    public string? Id { get; set; }
+
     /// <summary>Gets or sets the OnThemeChanged value.</summary>
     [Parameter]
     public EventCallback<string> OnThemeChanged { get; set; }

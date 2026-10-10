@@ -52,6 +52,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `ArticlePage`, `DocumentPage` and `HomePage` no longer use streaming rendering and answer missing content with HTTP 404 (`NavigationManager.NotFound()` on .NET 10, the response status on .NET 9)
 - `ArticlePage` tag badges are rendered locally with stable colours instead of loading images from img.shields.io
 - The GitHub provider reads the repository with one Git Trees request and downloads only files whose SHA changed (about 80 requests per refresh for 50 files in 10 folders before, 3 to 13 now); branches are paged; rate-limit responses stop a refresh and keep the current content; GitHub clients get a 30-second timeout when the host left the default
+- `UseOsirionCookieConsent` no longer sends a `Permissions-Policy` header: it used the obsolete Feature-Policy syntax, overwrote the host's header and has nothing to do with cookie consent
+- Email providers use pooled `IHttpClientFactory` clients with a 30-second timeout and per-request authorization, with one shared mail body builder
+- `OsirionComponentBase.IsServerSide` is obsolete because it is also true under Interactive Server; use `IsInteractive`, or the new `IsRunningInBrowser` for WebAssembly
 
 ### Deprecated
 - `LoginViewModel.LoginWithGitHubAsync(string code)` always fails, because a code without its OAuth state cannot be verified; use `StartGitHubLoginAsync()` and `LoginWithGitHubAsync(code, state)`
@@ -121,6 +124,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Refreshing a CMS cache cleared the host application's whole memory cache (`Compact(1.0)`); only this library's entries are evicted now, including `IContentCacheService.ClearAsync` and `RemoveByPrefixAsync`
 - Cold-start readers waited for nothing and got empty results; they now await the first load, a refresh requested during a refresh runs once more afterwards, and a failed refresh keeps the previous content instead of emptying it
 - The fallback front matter writer escapes `id`, `slug`, `lang`, `featured_image` and control characters, so a value can no longer add YAML keys
+- Carousels run their animation work only while visible and animating, no longer block vertical page scrolling, pause on keyboard focus, get a pause button, show every testimonial under reduced motion and make their looping copies inert
+- `OsirionComponentBase` applies the theme attribute on every parameter update without changing the caller's `Attributes` dictionary
+- `OsirionContactForm` no longer tells visitors they were flagged as spam when the email service is missing, and no longer shows placeholder New York contact details
+- `OsirionCookieConsent` honours `ConsentExpiryDays`, applies extra attributes once and renders nothing instead of throwing without an `HttpContext`
+- `ThemeToggle` drops a form that posted to an unmapped endpoint and its fixed ids; the image gallery uses a link trigger that works without JavaScript, traps focus in the viewer and has valid caption markup; the last breadcrumb carries `aria-current="page"`; `OsirionHtmlRenderer` no longer duplicates the line-numbers class or wraps identical code blocks twice
 
 ### Security
 - Osirion.Blazor.Cms.Admin: every routed admin page (`/osirion`, `/osirion/dashboard`, `/osirion/content`, `/osirion/content/edit`, `/osirion/settings`, `/osirion/login`) requires the authorization policy `"Osirion.Cms.Admin"` (`CmsAdminAuthorization.PolicyName`). The default policy requires an authenticated user; a host policy with that name replaces it. These pages, and the repository writes behind them, were open to anonymous visitors
@@ -141,6 +149,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Navigation links (`MenuItem`, `MenuGroup` footer, `MenuPanelLink`, `MenuImageCard`, `MenuCallToAction` and the `Menu` brand link) render no `href` for schemes other than relative, http, https, mailto and tel, so a `javascript:` URL from CMS-driven menu data cannot run
 - `ScrollToTop.CustomIcon` is sanitized; the new `IconCssClass` is the way to use a custom icon
 - The CMS query cache key includes every query field, so a draft query (`IncludeUnpublished`) and a public query can no longer share a cached result and leak drafts to the public site
+- `OsirionHtmlRenderer` loads the pinned Prism 1.29.0 from cdnjs with Subresource Integrity (new `PrismBaseUrl` to self-host), `OsirionBaseSection` CSS-escapes `BackgroundImageUrl` like `HeroSection`, and `OsirionContactInfoSection` validates website URLs, encodes phone, email and website, and sanitizes its markup fields
 
 ## [1.5.0] - 2025-04-21
 

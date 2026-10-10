@@ -44,7 +44,7 @@ Osirion.Blazor (Meta-package)
 
 ### Component Base Class
 All components inherit from `OsirionComponentBase` at `src/Osirion.Blazor.Core/Components/_Base/OsirionComponentBase.cs`. This provides:
-- Automatic SSR detection via `IsServerSide` property
+- Interactivity detection via the `IsInteractive` property (`IsRunningInBrowser` reports the WebAssembly runtime; the old `IsServerSide` is obsolete because it is also true under Interactive Server)
 - Theme support (`ThemeMode.Light|Dark|System`)
 - .NET 9/10 conditional compilation for interactivity handling
 - Unmatched attributes capture via `Attributes` dictionary
@@ -160,14 +160,14 @@ dotnet watch --project examples/Osirion.Blazor.Example.Bootstrap/Osirion.Blazor.
 1. **Avoid JSInterop** in component initialization; use it only for progressive enhancement
 2. **Test without JS**: Components must render meaningfully server-side
 3. **Progressive Enhancement**: Add JavaScript features via `OnAfterRender(firstRender: true)` for interactive mode
-4. **Conditional Rendering**: Use `IsServerSide` or `RendererInfo.IsInteractive` (.NET 9) to branch logic
+4. **Conditional Rendering**: Use `IsInteractive` (`RendererInfo.IsInteractive`) to branch logic; never `IsServerSide`, which is true under Interactive Server too
 5. **SSR Compatibility**: All features must work with Static Server-Side Rendering (SSG), Server Interactive, and WASM
 
 ### Example
 ```csharp
 protected override async Task OnAfterRenderAsync(bool firstRender)
 {
-    if (firstRender && !IsServerSide)
+    if (firstRender && IsInteractive)
     {
         // Client-side enhancement only
         await JSRuntime.InvokeVoidAsync("initScrollBehavior");

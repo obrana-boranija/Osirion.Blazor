@@ -35,4 +35,14 @@ public partial class OsirionImageGallery : OsirionComponentBase
 
     private int SafeColumns => Math.Clamp(Columns, 1, 4);
     private int SafeGapSize => Math.Clamp(GapSize, 0, 5);
+
+    /// <summary>
+    /// Names the link that opens an image. An empty caption would leave a dangling "View full size: ", so the alt text
+    /// stands in for it.
+    /// </summary>
+    private static string GetTriggerLabel(GalleryItem item)
+    {
+        var subject = !string.IsNullOrWhiteSpace(item.Caption) ? item.Caption : item.Alt;
+        return string.IsNullOrWhiteSpace(subject) ? "View full size image" : $"View full size: {subject}";
+    }
 }

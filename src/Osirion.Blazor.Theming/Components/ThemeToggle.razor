@@ -6,7 +6,7 @@
 @implements IDisposable
 
 <div class="theme-switcher">
-    <button id="theme-toggle" type="button" class="theme-toggle-btn"
+    <button id="@Id" type="button" class="theme-toggle-btn"
             title="@GetTooltipText()"
             aria-label="@GetAriaLabel()"
             onclick="toggleThemeWithTransition()">
@@ -24,10 +24,6 @@
         }
         <span class="visually-hidden theme-text">@GetScreenReaderText()</span>
     </button>
-
-    <form method="post" action="/theme-toggle" class="theme-form-fallback" style="display: none;">
-        <input type="hidden" name="scrollPosition" value="0" id="scrollPositionInput">
-    </form>
 </div>
 
 @LoadScript("./_content/Osirion.Blazor.Theming/js/theme-toggle.js")

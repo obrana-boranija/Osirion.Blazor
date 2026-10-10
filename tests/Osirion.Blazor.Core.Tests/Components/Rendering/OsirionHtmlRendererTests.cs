@@ -111,4 +111,96 @@ public class OsirionHtmlRendererTests : OsirionComponentTestBase
         cut.FindAll("article img").ShouldBeEmpty();
         cut.Find("article code").GetAttribute("title").ShouldBe("x><img src=x onerror=alert(1)>");
     }
+
+    // Fails before the fix: Replace(match.Value) rewrote every identical block with the first wrapper, and the
+    // next iteration then found the original text again inside that wrapper and wrapped it a second time.
+    [Fact]
+    public void OsirionHtmlRenderer_IdenticalCodeBlocksWithCopyButton_WrapsEachBlockOnce()
+    {
+        Services.AddJSComponents();
+        const string block = "<pre><code class=\"language-csharp\">var x = 1;</code></pre>";
+
+        var cut = RenderStatic<OsirionHtmlRenderer>(parameters => parameters
+            .Add(p => p.HtmlContent, block + "<p>between</p>" + block)
+            .Add(p => p.EnableCopyButton, true));
+
+        cut.FindAll("article .osirion-code-wrapper").Count.ShouldBe(2);
+        cut.FindAll("article .osirion-code-wrapper .osirion-code-wrapper").ShouldBeEmpty();
+    }
+
+    // Fails before the fix: the class group never matched, so a pre that had a class got a second class attribute.
+    [Theory]
+    [InlineData("<pre class=\"language-js\"><code>x</code></pre>", "language-js line-numbers")]
+    [InlineData("<pre><code class=\"language-js\">x</code></pre>", "line-numbers")]
+    [InlineData("<pre class='language-js line-numbers'><code>x</code></pre>", "language-js line-numbers")]
+    public void OsirionHtmlRenderer_ShowLineNumbers_AddsOneLineNumbersClassAndKeepsExistingClasses(string html, string expectedClass)
+    {
+        Services.AddJSComponents();
+
+        var cut = RenderStatic<OsirionHtmlRenderer>(parameters => parameters
+            .Add(p => p.HtmlContent, html)
+            .Add(p => p.ShowLineNumbers, true));
+
+        var pre = cut.Find("article pre");
+        pre.GetAttribute("class").ShouldBe(expectedClass);
+        pre.Attributes.Count(attribute => attribute.Name == "class").ShouldBe(1);
+    }
+
+    // Fails before the fix: the Prism stylesheet was requested from cdnjs without integrity or crossorigin.
+    [Fact]
+    public void OsirionHtmlRenderer_PinnedPrismTheme_CarriesIntegrityAndCrossOrigin()
+    {
+        Services.AddJSComponents();
+
+        var cut = RenderStatic<OsirionHtmlRenderer>(parameters => parameters
+            .Add(p => p.HtmlContent, "<pre><code class=\"language-js\">x</code></pre>")
+            .Add(p => p.UseAccessibleTheme, false));
+
+        var theme = cut.Find("link[href*='prism-okaidia']");
+        theme.GetAttribute("href").ShouldBe("https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css");
+        theme.GetAttribute("integrity").ShouldStartWith("sha512-");
+        theme.GetAttribute("crossorigin").ShouldBe("anonymous");
+    }
+
+    [Fact]
+    public void OsirionHtmlRenderer_CustomPrismBaseUrl_LoadsFromTheHostWithoutIntegrity()
+    {
+        Services.AddJSComponents();
+
+        var cut = RenderStatic<OsirionHtmlRenderer>(parameters => parameters
+            .Add(p => p.HtmlContent, "<pre><code class=\"language-js\">x</code></pre>")
+            .Add(p => p.UseAccessibleTheme, false)
+            .Add(p => p.PrismBaseUrl, "/lib/prism/"));
+
+        var theme = cut.Find("link[href*='prism-okaidia']");
+        theme.GetAttribute("href").ShouldBe("/lib/prism/themes/prism-okaidia.min.css");
+        theme.HasAttribute("integrity").ShouldBeFalse();
+    }
+
+    [Fact]
+    public void OsirionHtmlRenderer_PrismScripts_AreNotLoadedFromCdnWithoutIntegrity()
+    {
+        Services.AddJSComponents();
+
+        var cut = RenderStatic<OsirionHtmlRenderer>(parameters => parameters
+            .Add(p => p.HtmlContent, "<pre><code class=\"language-python\">x</code></pre>"));
+
+        // The generic loader cannot enforce integrity, so no direct cdnjs script address may appear in the markup
+        // outside the integrity-aware loader arguments, which carry the hash with every address.
+        cut.FindAll("script[src*='cdnjs.cloudflare.com']").ShouldBeEmpty();
+        cut.Markup.ShouldContain("osirion-script-loader.js");
+        cut.Markup.ShouldContain("prism-python.min.js");
+        cut.Markup.ShouldContain("sha512-");
+    }
+
+    // Fails before the fix: the configuration element had a fixed id, so two renderers on a page repeated it.
+    [Fact]
+    public void OsirionHtmlRenderer_TwoRenderers_ShareNoElementId()
+    {
+        Services.AddJSComponents();
+
+        var first = RenderStatic<OsirionHtmlRenderer>(parameters => parameters.Add(p => p.HtmlContent, "<p>a</p>"));
+
+        first.FindAll("[id]").ShouldBeEmpty();
+    }
 }

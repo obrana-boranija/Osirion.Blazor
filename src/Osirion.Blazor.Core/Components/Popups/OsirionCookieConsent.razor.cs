@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Osirion.Blazor.Components;
 
@@ -107,7 +109,8 @@ public partial class OsirionCookieConsent
     public string Position { get; set; } = "bottom";
 
     /// <summary>
-    /// Gets or sets the consent expiry in days
+    /// Gets or sets the consent expiry in days. The value is posted with the form and applied to the consent cookie by
+    /// the consent endpoint, which accepts 1 to 3650 days and uses 365 for anything else.
     /// </summary>
     [Parameter]
     public int ConsentExpiryDays { get; set; } = 365;
@@ -122,6 +125,9 @@ public partial class OsirionCookieConsent
     /// </summary>
     private bool IsCustomizing { get; set; }
 
+    [Inject]
+    private IServiceProvider ServiceProvider { get; set; } = default!;
+
     /// <inheritdoc />
     protected override void OnInitialized()
     {
@@ -132,9 +138,14 @@ public partial class OsirionCookieConsent
     /// <summary>
     /// Checks if consent has already been given
     /// </summary>
+    /// <remarks>
+    /// The banner reads the consent cookie from the request, so it exists only while an HTTP request is being rendered
+    /// (static server rendering and prerendering). Without an HTTP context, for example in WebAssembly where no
+    /// <see cref="IHttpContextAccessor"/> is registered or in an interactive server circuit, it stays hidden.
+    /// </remarks>
     private void CheckConsentStatus()
     {
-        var httpContext = HttpContextAccessor.HttpContext;
+        var httpContext = ServiceProvider.GetService<IHttpContextAccessor>()?.HttpContext;
         if (httpContext is not null)
         {
             var consentCookie = httpContext.Request.Cookies[ConsentCookieName];

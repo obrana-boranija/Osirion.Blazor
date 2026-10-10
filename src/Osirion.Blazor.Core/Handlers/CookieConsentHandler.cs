@@ -16,6 +16,8 @@ public static class CookieConsentHandler
     private const string ConsentCookieName = "osirion_cookie_consent";
     private const string ConsentCookieVersion = "1.0";
     private const string CustomizeQueryKey = "customize-cookies";
+    private const int DefaultExpiryDays = 365;
+    private const int MaxExpiryDays = 3650;
 
     /// <summary>
     /// Processes cookie consent form submission
@@ -24,7 +26,8 @@ public static class CookieConsentHandler
     /// The request must be a form post with a valid antiforgery token; otherwise the handler returns
     /// 400 without a body and records nothing. The posted <c>returnUrl</c> is followed only when it
     /// is a local path (see <see cref="LocalUrl.IsLocalPath(string?)"/>); any other value redirects
-    /// to <c>/</c>. A <c>customize-cookies</c> query key left on the return URL is removed.
+    /// to <c>/</c>. A <c>customize-cookies</c> query key left on the return URL is removed. The cookie lives for
+    /// the posted <c>expiryDays</c> (1 to 3650), or 365 days when it is missing or out of range.
     /// </remarks>
     public static async Task<IResult> HandleConsentAsync(HttpContext context)
     {
@@ -95,7 +98,7 @@ public static class CookieConsentHandler
             HttpOnly = true,
             Secure = true,
             SameSite = SameSiteMode.Lax,
-            Expires = DateTimeOffset.UtcNow.AddDays(365),
+            Expires = DateTimeOffset.UtcNow.AddDays(GetExpiryDays(form["expiryDays"].FirstOrDefault())),
             Path = "/"
         };
 
@@ -105,6 +108,16 @@ public static class CookieConsentHandler
         // Redirect back to the original page
         return Results.Redirect(returnUrl);
     }
+
+    /// <summary>
+    /// Reads the lifetime the banner posted (its ConsentExpiryDays). The visitor can only change the lifetime of their
+    /// own cookie, so a bounded value is accepted and anything else falls back to the default.
+    /// </summary>
+    private static int GetExpiryDays(string? posted) =>
+        int.TryParse(posted, System.Globalization.NumberStyles.None, System.Globalization.CultureInfo.InvariantCulture, out var days)
+        && days is >= 1 and <= MaxExpiryDays
+            ? days
+            : DefaultExpiryDays;
 
     private static async Task<bool> IsAntiforgeryTokenValidAsync(HttpContext context)
     {
