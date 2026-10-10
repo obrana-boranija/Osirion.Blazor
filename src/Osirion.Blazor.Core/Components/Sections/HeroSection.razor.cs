@@ -1,3 +1,5 @@
+using System.Globalization;
+using System.Text;
 using Microsoft.AspNetCore.Components;
 namespace Osirion.Blazor.Components;
 
@@ -246,7 +248,7 @@ public partial class HeroSection
 
         if (UseBackgroundImage && !string.IsNullOrWhiteSpace(ImageUrl))
         {
-            styles.Add($"background-image: url('{ImageUrl}')");
+            styles.Add($"background-image: {ToCssUrl(ImageUrl)}");
         }
 
         if (!string.IsNullOrWhiteSpace(BackgroundColor))
@@ -262,6 +264,34 @@ public partial class HeroSection
         styles.Add($"min-height: {MinHeight}");
 
         return string.Join("; ", styles) + ";" + Style;
+    }
+
+    /// <summary>
+    /// Writes <paramref name="url"/> as a quoted CSS <c>url()</c> value.
+    /// </summary>
+    /// <remarks>
+    /// The URL can come from content front matter (<c>featured_image</c>). Quotes, backslashes, parentheses and control
+    /// characters are written as CSS escapes, so the value cannot close the string and add declarations of its own,
+    /// such as a full-page overlay, while the browser still reads the original URL. Other URLs are written unchanged.
+    /// </remarks>
+    private static string ToCssUrl(string url)
+    {
+        var css = new StringBuilder("url('", url.Length + 7);
+
+        foreach (var character in url)
+        {
+            if (character is '\'' or '"' or '\\' or '(' or ')' || char.IsControl(character))
+            {
+                // A CSS hex escape; the space ends it, so a hex digit that follows is not read as part of it
+                css.Append('\\').Append(((int)character).ToString("X", CultureInfo.InvariantCulture)).Append(' ');
+            }
+            else
+            {
+                css.Append(character);
+            }
+        }
+
+        return css.Append("')").ToString();
     }
 
     private (string Width, string Heigth) GetImageSize()
