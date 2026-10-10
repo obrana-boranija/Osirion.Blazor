@@ -165,6 +165,12 @@ This release closes security holes in the CMS and Core modules. Most changes are
    - `OsirionHtmlRenderer` injects Prism through `osirion-script-loader.js`; hosts with a strict CSP or their own Prism should set `PrismBaseUrl`. `LanguageClasses` is obsolete.
    - `ThemeToggle` no longer renders the ids `theme-toggle` and `scrollPositionInput`; use the new `Id` parameter. The gallery trigger is `a.osirion-image-gallery-trigger` with the caption outside it; carousels add a `.osirion-carousel-pause` button.
 
+15. **Content providers, drafts and 404 pages**
+   - Files without a `published` key in their front matter are now published. Search your content for files that relied on the old default and add `published: false` to the ones that must stay hidden.
+   - Move FileSystem settings from `Osirion:Cms:FileSystem:Web` to `Osirion:Cms:Web:FileSystem`. The old section is still read when the new one is missing.
+   - The FileSystem provider, its repositories and providers added through `AddContentProvider<T>` or `ContentBuilder.AddProvider<T>` are singletons now. A custom provider must not depend on scoped services; resolve them through `IServiceScopeFactory` instead.
+   - On .NET 10, a content page that is not found sets a 404 status. Without `Router.NotFoundPage` the response body is empty, so set `<Router NotFoundPage="typeof(Pages.NotFound)">` with a page of your own.
+
 ## Upgrading to v1.5.0
 
 ### Breaking Changes

@@ -25,9 +25,9 @@ public static class RepositoryExtensions
         services.TryAddSingleton<System.IO.Abstractions.IFileSystem, System.IO.Abstractions.FileSystem>();
 
         // Register FileSystem repositories
-        services.TryAddScoped<FileSystemContentRepository>();
+        services.TryAddSingleton<FileSystemContentRepository>();
         services.TryAddFileSystemDirectoryCache();
-        services.TryAddScoped(DirectoryExtensions.CreateFileSystemDirectoryRepository);
+        services.TryAddSingleton(DirectoryExtensions.CreateFileSystemDirectoryRepository);
 
         // Register other repositories and services
         services.AddHttpClient<IGitHubApiClient, GitHubApiClient>();

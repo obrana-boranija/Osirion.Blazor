@@ -152,4 +152,18 @@ public class MarkdownProcessorTests
         frontMatter.ShouldBeNull();
         content.ShouldBe(markdown);
     }
+
+    [Theory]
+    [InlineData("---\ntitle: Post\n---\nBody", true)]
+    [InlineData("---\ntitle: Post\npublished: true\n---\nBody", true)]
+    [InlineData("---\ntitle: Post\npublished: false\n---\nBody", false)]
+    public void ExtractFrontMatterAndContent_PublishedKey_DefaultsToPublished(string markdown, bool expected)
+    {
+        // Front matter without a published key used to make the item a draft, which hid most of this repository's
+        // own blog posts; Jekyll and Hugo treat a missing key as published.
+        var (frontMatter, _) = _processor.ExtractFrontMatterAndContent(markdown);
+
+        frontMatter.ShouldNotBeNull();
+        frontMatter.Published.ShouldBe(expected);
+    }
 }

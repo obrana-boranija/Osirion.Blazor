@@ -20,6 +20,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
         private readonly FileSystemOptions _options;
         private readonly Dictionary<string, string> _fileExtensionContentTypeMap;
         private readonly IFileSystem _fileSystem;
+        private readonly FileSystemDirectoryRepository? _directoryRepository;
         private FileSystemWatcher? _fileWatcher;
 
         /// <summary>Performs the FileSystemContentRepository operation.</summary>
@@ -53,6 +54,22 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
             {
                 SetupFileWatcher();
             }
+        }
+
+        /// <summary>
+        /// Initializes a new instance that links every loaded item to its directory, so directory queries (for example
+        /// <c>ContentList Directory="blog"</c>) find FileSystem content the way they find GitHub content.
+        /// </summary>
+        public FileSystemContentRepository(
+            IMarkdownProcessor markdownProcessor,
+            IContentQueryFilter queryFilter,
+            IOptions<FileSystemOptions> options,
+            ILogger<FileSystemContentRepository> logger,
+            IFileSystem fileSystem,
+            FileSystemDirectoryRepository directoryRepository)
+            : this(markdownProcessor, queryFilter, options, logger, fileSystem)
+        {
+            _directoryRepository = directoryRepository ?? throw new ArgumentNullException(nameof(directoryRepository));
         }
 
         private static string GetProviderId(FileSystemOptions options)
@@ -274,6 +291,8 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
                     contentItem.SetLocale(_options.DefaultLocale);
                 }
 
+                await AssignDirectoryAsync(contentItem, relativePath, cancellationToken);
+
                 // Process the markdown content
                 await ProcessMarkdownAsync(content, contentItem, cancellationToken);
 
@@ -289,6 +308,29 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
             {
                 Logger.LogError(ex, "Error processing markdown file: {FilePath}", filePath);
                 return null;
+            }
+        }
+
+        private async Task AssignDirectoryAsync(ContentItem contentItem, string relativePath, CancellationToken cancellationToken)
+        {
+            if (_directoryRepository is null)
+                return;
+
+            var directoryPath = UrlGenerator.GetDirectoryPath(relativePath);
+            if (string.IsNullOrEmpty(directoryPath))
+                return;
+
+            try
+            {
+                var directory = await _directoryRepository.GetByPathAsync(directoryPath, cancellationToken);
+                if (directory is not null)
+                {
+                    contentItem.SetDirectory(directory);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWarning(ex, "Failed to set directory for content: {Path}", relativePath);
             }
         }
 

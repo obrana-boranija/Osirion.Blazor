@@ -229,8 +229,8 @@
     }
 }
 
-/* Responsive design using CSS variable breakpoints */
-@media (max-width: var(--osirion-breakpoint-md-max, 767.98px)) {
+/* Media queries cannot read custom properties, so this is the literal value of --osirion-breakpoint-sm-max */
+@media (max-width: 767.98px) {
     .osirion-cookie-consent-container {
         padding: var(--osirion-spacing-3, 0.75rem);
     }

@@ -55,6 +55,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `UseOsirionCookieConsent` no longer sends a `Permissions-Policy` header: it used the obsolete Feature-Policy syntax, overwrote the host's header and has nothing to do with cookie consent
 - Email providers use pooled `IHttpClientFactory` clients with a 30-second timeout and per-request authorization, with one shared mail body builder
 - `OsirionComponentBase.IsServerSide` is obsolete because it is also true under Interactive Server; use `IsInteractive`, or the new `IsRunningInBrowser` for WebAssembly
+- **Behaviour change:** content whose front matter has no `published` key is now published (`FrontMatter.Published` defaults to `true`, as in Jekyll and Hugo); before, such files were silently hidden as drafts. Add `published: false` to keep a file hidden
 
 ### Deprecated
 - `LoginViewModel.LoginWithGitHubAsync(string code)` always fails, because a code without its OAuth state cannot be verified; use `StartGitHubLoginAsync()` and `LoginWithGitHubAsync(code, state)`
@@ -129,6 +130,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `OsirionContactForm` no longer tells visitors they were flagged as spam when the email service is missing, and no longer shows placeholder New York contact details
 - `OsirionCookieConsent` honours `ConsentExpiryDays`, applies extra attributes once and renders nothing instead of throwing without an `HttpContext`
 - `ThemeToggle` drops a form that posted to an unmapped endpoint and its fixed ids; the image gallery uses a link trigger that works without JavaScript, traps focus in the viewer and has valid caption markup; the last breadcrumb carries `aria-current="page"`; `OsirionHtmlRenderer` no longer duplicates the line-numbers class or wraps identical code blocks twice
+- FileSystem content provider: `AddOsirion(configuration)` enabled the provider when `Osirion:Cms:Web:FileSystem` existed but bound its options only from `Osirion:Cms:FileSystem:Web`; options are now read from `Osirion:Cms:Web:FileSystem` (`FileSystemOptions.WebSection`), falling back to the old section
+- A host that registers the FileSystem provider (or a custom provider through `AddContentProvider<T>` or `ContentBuilder.AddProvider<T>`) failed at startup in Development with a captive dependency, because the singleton provider registry consumed scoped providers; these providers and the FileSystem repositories are now singletons
+- The provider marked `IsDefault` is now the default even when the host does not call `UseOsirionCms`; before, the first registered provider won
+- FileSystem content items are linked to their directory, so `ContentList Directory="blog"` lists FileSystem content
+- Media queries written with `var(--osirion-breakpoint-*)` never matched, because custom properties cannot be used in media conditions: `.osirion-container` never widened at the sm to xxl breakpoints, and the cookie consent and breadcrumb mobile rules never applied; they now use the literal breakpoint values
+- Horizontal menus between 769px and 1439px drew the submenu chevron above the centre of its link; the toggle now sits in flow beside the link, as it already did from 1440px
 
 ### Security
 - Osirion.Blazor.Cms.Admin: every routed admin page (`/osirion`, `/osirion/dashboard`, `/osirion/content`, `/osirion/content/edit`, `/osirion/settings`, `/osirion/login`) requires the authorization policy `"Osirion.Cms.Admin"` (`CmsAdminAuthorization.PolicyName`). The default policy requires an authenticated user; a host policy with that name replaces it. These pages, and the repository writes behind them, were open to anonymous visitors

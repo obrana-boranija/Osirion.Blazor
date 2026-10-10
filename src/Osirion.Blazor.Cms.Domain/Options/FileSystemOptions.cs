@@ -6,9 +6,16 @@ namespace Osirion.Blazor.Cms.Domain.Options;
 public class FileSystemOptions : ContentProviderOptions
 {
     /// <summary>
-    /// The section name in the configuration file
+    /// The configuration section read when <see cref="WebSection"/> is absent. Kept so existing configuration keeps
+    /// working; new configuration should use <see cref="WebSection"/>.
     /// </summary>
     public const string Section = "Osirion:Cms:FileSystem:Web";
+
+    /// <summary>
+    /// The configuration section for the FileSystem provider, next to the GitHub providers under
+    /// <c>Osirion:Cms:Web</c>. It wins over <see cref="Section"/> when both exist.
+    /// </summary>
+    public const string WebSection = "Osirion:Cms:Web:FileSystem";
 
     /// <summary>
     /// Gets or sets the base path for content files

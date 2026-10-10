@@ -388,6 +388,28 @@
     border-radius: var(--osirion-radius-sm, 0.125rem);
 }
 
+/* Expanded horizontal menus put the toggle in flow beside the link, so the chevron centres on the link text.
+   A menu that collapses below the extra-large breakpoint is a drawer until 1440px and keeps its row toggle. */
+@media (min-width: 769px) {
+    .osirion-menu-horizontal:not(.osirion-menu-collapse-extra-large) .osirion-menu-item-has-submenu {
+        display: flex;
+        align-items: center;
+    }
+
+    .osirion-menu-horizontal:not(.osirion-menu-collapse-extra-large) .osirion-menu-item-has-submenu > .osirion-menu-item {
+        padding-right: var(--osirion-spacing-2, 0.5rem);
+    }
+
+    .osirion-menu-horizontal:not(.osirion-menu-collapse-extra-large) .osirion-menu-item-has-submenu > .osirion-submenu-toggle {
+        position: static;
+        width: 1.5rem;
+        min-height: 0;
+        margin-left: calc(-1 * var(--osirion-spacing-2, 0.5rem));
+        margin-right: var(--osirion-spacing-2, 0.5rem);
+        border-radius: 0 var(--osirion-radius-base, 0.375rem) var(--osirion-radius-base, 0.375rem) 0;
+    }
+}
+
 @media (min-width: 1440px) {
     .osirion-menu-horizontal .osirion-menu-item-has-submenu {
         display: flex;

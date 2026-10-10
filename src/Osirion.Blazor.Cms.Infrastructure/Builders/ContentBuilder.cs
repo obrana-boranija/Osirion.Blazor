@@ -77,7 +77,7 @@ public class ContentBuilder : CmsBuilderBase, IContentBuilder
         {
             Services.Configure<FileSystemOptions>(options => {
                 // First apply configuration from appsettings
-                Configuration.GetSection(FileSystemOptions.Section).Bind(options);
+                FileSystemConfiguration.GetSection(Configuration).Bind(options);
 
                 // Then apply custom configuration
                 configure(options);
@@ -86,17 +86,17 @@ public class ContentBuilder : CmsBuilderBase, IContentBuilder
         else
         {
             // Just use configuration from appsettings
-            Services.Configure<FileSystemOptions>(Configuration.GetSection(FileSystemOptions.Section));
+            Services.Configure<FileSystemOptions>(FileSystemConfiguration.GetSection(Configuration));
         }
 
         // Register FileSystem repositories
-        Services.AddScoped<FileSystemContentRepository>();
+        Services.AddSingleton<FileSystemContentRepository>();
         Services.TryAddFileSystemDirectoryCache();
-        Services.AddScoped(DirectoryExtensions.CreateFileSystemDirectoryRepository);
+        Services.AddSingleton(DirectoryExtensions.CreateFileSystemDirectoryRepository);
 
         // Register provider directly
-        Services.AddScoped<FileSystemContentProvider>();
-        Services.AddScoped<IContentProvider>(sp => sp.GetRequiredService<FileSystemContentProvider>());
+        Services.AddSingleton<FileSystemContentProvider>();
+        Services.AddSingleton<IContentProvider>(sp => sp.GetRequiredService<FileSystemContentProvider>());
 
         // Register default setter
         Services.AddSingleton<IDefaultProviderSetter>(sp =>
@@ -114,11 +114,11 @@ public class ContentBuilder : CmsBuilderBase, IContentBuilder
     public IContentBuilder AddProvider<TProvider>(Action<TProvider>? configure = null)
         where TProvider : class, IContentProvider
     {
-        // Register the provider
-        Services.AddScoped<TProvider>();
+        // Register the provider. Singleton because the provider registry that holds every IContentProvider is one.
+        Services.AddSingleton<TProvider>();
 
         // Register as IContentProvider
-        Services.AddScoped<IContentProvider>(sp => {
+        Services.AddSingleton<IContentProvider>(sp => {
             var provider = sp.GetRequiredService<TProvider>();
 
             // Apply configuration if provided

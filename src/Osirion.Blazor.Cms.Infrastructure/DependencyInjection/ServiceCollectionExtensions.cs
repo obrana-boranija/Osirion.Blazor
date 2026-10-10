@@ -202,29 +202,31 @@ public static class ServiceCollectionExtensions
         {
             services.Configure<FileSystemOptions>(options => {
                 // First apply configuration from settings
-                configuration.GetSection(FileSystemOptions.Section).Bind(options);
+                FileSystemConfiguration.GetSection(configuration).Bind(options);
                 // Then apply custom configuration
                 configureOptions(options);
             });
         }
         else
         {
-            services.Configure<FileSystemOptions>(configuration.GetSection(FileSystemOptions.Section));
+            services.Configure<FileSystemOptions>(FileSystemConfiguration.GetSection(configuration));
         }
 
         // The repositories read and write through the abstraction, so a host gets the real file system unless it registers its own
         services.TryAddSingleton<System.IO.Abstractions.IFileSystem, System.IO.Abstractions.FileSystem>();
 
-        // Register FileSystem repositories
-        services.TryAddScoped<FileSystemContentRepository>();
+        // Register FileSystem repositories. Singletons like the GitHub ones: they own the content cache and the file
+        // watchers, and the singleton provider registry holds the provider, so a scoped registration was captured
+        // (and rejected by scope validation in Development).
+        services.TryAddSingleton<FileSystemContentRepository>();
         services.TryAddFileSystemDirectoryCache();
-        services.TryAddScoped(DirectoryExtensions.CreateFileSystemDirectoryRepository);
+        services.TryAddSingleton(DirectoryExtensions.CreateFileSystemDirectoryRepository);
 
         // Register provider
-        services.TryAddScoped<FileSystemContentProvider>();
+        services.TryAddSingleton<FileSystemContentProvider>();
 
         // Register as IContentProvider
-        services.AddScoped<IContentProvider>(sp => sp.GetRequiredService<FileSystemContentProvider>());
+        services.AddSingleton<IContentProvider>(sp => sp.GetRequiredService<FileSystemContentProvider>());
 
         // Register default setter
         services.AddSingleton<IDefaultProviderSetter>(sp => {
@@ -252,11 +254,11 @@ public static class ServiceCollectionExtensions
     {
         if (services is null) throw new ArgumentNullException(nameof(services));
 
-        // Register the provider
-        services.TryAddScoped<TProvider>();
+        // Register the provider. Singleton because the provider registry that holds every IContentProvider is one.
+        services.TryAddSingleton<TProvider>();
 
         // Register as IContentProvider
-        services.AddScoped<IContentProvider>(sp => {
+        services.AddSingleton<IContentProvider>(sp => {
             var provider = sp.GetRequiredService<TProvider>();
 
             // Apply configuration if provided

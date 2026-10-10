@@ -736,27 +736,27 @@
   padding-right: var(--osirion-spacing-4);
 }
 
-@media (min-width: var(--osirion-breakpoint-sm)) {
+@media (min-width: 576px) {
   .osirion-container {
     max-width: var(--osirion-container-sm);
   }
 }
-@media (min-width: var(--osirion-breakpoint-md)) {
+@media (min-width: 768px) {
   .osirion-container {
     max-width: var(--osirion-container-md);
   }
 }
-@media (min-width: var(--osirion-breakpoint-lg)) {
+@media (min-width: 992px) {
   .osirion-container {
     max-width: var(--osirion-container-lg);
   }
 }
-@media (min-width: var(--osirion-breakpoint-xl)) {
+@media (min-width: 1200px) {
   .osirion-container {
     max-width: var(--osirion-container-xl);
   }
 }
-@media (min-width: var(--osirion-breakpoint-xxl)) {
+@media (min-width: 1400px) {
   .osirion-container {
     max-width: var(--osirion-container-xxl);
   }
