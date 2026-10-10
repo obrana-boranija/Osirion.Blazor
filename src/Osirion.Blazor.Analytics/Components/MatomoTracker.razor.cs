@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Components;
+using Osirion.Blazor.Analytics.Options;
 using Osirion.Blazor.Analytics.Providers;
 
 namespace Osirion.Blazor.Analytics.Components;
+
 /// <summary>Renders the Matomo tracking integration.</summary>
 public partial class MatomoTracker
 {
@@ -10,4 +12,23 @@ public partial class MatomoTracker
 
     [Inject]
     private MatomoProvider? _provider { get; set; }
+
+    /// <inheritdoc/>
+    protected override bool CanRenderProvider => _provider is not null && _provider.CanRender(CreateEffectiveOptions());
+
+    /// <inheritdoc/>
+    protected override string BuildScript(AnalyticsScriptContext context) =>
+        _provider is null ? string.Empty : _provider.GetScript(CreateEffectiveOptions(), context);
+
+    private MatomoOptions CreateEffectiveOptions()
+    {
+        var options = _provider!.CreateOptionsCopy();
+        options.Enabled = Enabled ?? options.Enabled;
+        if (!string.IsNullOrWhiteSpace(SiteId))
+        {
+            options.SiteId = SiteId;
+        }
+
+        return options;
+    }
 }

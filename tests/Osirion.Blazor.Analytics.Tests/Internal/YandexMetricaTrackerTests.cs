@@ -98,7 +98,8 @@ public class YandexMetricaTrackerTests : BunitContext
             .Add(p => p.CounterId, "12345678"));
 
         // Assert
-        cut.Instance.CounterId.ShouldBe("12345678");
+        cut.Markup.ShouldContain("ym(12345678,");
+        cut.Markup.ShouldNotContain("87654321");
     }
 
     [Fact]
@@ -121,7 +122,7 @@ public class YandexMetricaTrackerTests : BunitContext
             .Add(p => p.Enabled, false));
 
         // Assert
-        cut.Instance.Enabled.ShouldBe(false);
+        cut.Markup.ShouldNotContain("<script");
     }
 
     [Fact]
@@ -145,6 +146,6 @@ public class YandexMetricaTrackerTests : BunitContext
             .Add(p => p.WebVisor, true));
 
         // Assert
-        cut.Instance.WebVisor.ShouldBe(true);
+        cut.Markup.ShouldContain("\"webvisor\":true");
     }
 }

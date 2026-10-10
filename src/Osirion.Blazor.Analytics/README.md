@@ -74,6 +74,47 @@ builder.Services.AddOsirionAnalytics(analytics => {
 builder.Services.AddOsirion(builder.Configuration);
 ```
 
+### Consent (recommended for EU sites)
+
+By default trackers render as soon as they are configured. Turn on the consent gate and no tracker
+script is rendered until the visitor accepted the `analytics` category in `OsirionCookieConsent`:
+
+```csharp
+builder.Services.AddOsirionAnalytics(analytics => {
+    analytics.AddGA4(o => o.MeasurementId = "G-XXXXXXXXXX").RequireConsent();
+});
+```
+
+```json
+{ "Osirion": { "Analytics": { "Consent": { "RequireConsent": true, "Category": "analytics" } } } }
+```
+
+Consent is read from the consent cookie on the server. When the gate is on and there is no `HttpContext`
+(for example in an already interactive component) nothing renders. With GA4 the script also declares
+Google Consent Mode defaults (all denied) before `config` and then grants `analytics_storage`; advertising
+signals stay denied. Matomo's own `RequireConsent` option is not needed with the gate; without the gate it
+keeps Matomo silent until your page pushes `['setConsentGiven']` or `['rememberConsentGiven']` onto `_paq`.
+
+### Tracker parameters
+
+Every tracker accepts `Enabled` to override the configured option for that render. `ClarityTracker` and
+`MatomoTracker` accept `SiteId`; `GA4Tracker` accepts `MeasurementId` and `DebugMode`;
+`YandexMetricaTracker` accepts `CounterId`, `WebVisor`, `ClickMap`, `TrackLinks` and `AccurateTrackBounce`.
+
+### Configuration is validated
+
+Values are JSON/attribute encoded into the markup, and formats are checked at startup: GA4 measurement ID
+(`G-XXXXXXXXXX`), numeric Yandex counter ID, http(s) tracker and CDN URLs. A bad value fails with a message
+naming the configuration key; a tracker whose values are invalid renders nothing.
+
+### Page views after enhanced navigation
+
+Matomo and Yandex Metrica trackers add a static script (`_content/Osirion.Blazor.Analytics/js/osirion-analytics.js`,
+no inline script) that listens for Blazor's `enhancedload` event and reports the new URL. GA4 relies on its
+Enhanced Measurement setting "Page changes based on browser history events". Clarity follows history changes
+itself. Set `AutoTrackPageViews = false` to leave the module out. Navigation inside an already interactive
+router does not raise `enhancedload` and is not reported yet.
+
 ### Manual Tracking
 
 ```csharp

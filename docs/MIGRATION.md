@@ -120,6 +120,14 @@ This release closes security holes in the CMS and Core modules. Most changes are
    - Hosts that stored content, directory or FileSystem provider ids outside the library (bookmarks, database rows, cache keys) must look them up again. Those values never survived a restart, so nothing that worked before breaks.
    - No data migration runs and none is needed. Rolling back restores the old, per-process ids.
 
+9. **Analytics.**
+   - Invalid tracker settings now throw `OptionsValidationException` at startup instead of being written into the page.
+   - The consent gate is off by default; turn it on for EU sites. With it on, a tracker rendered without an `HttpContext` (inside an already interactive component) renders nothing.
+   - `YandexMetricaOptions.Section` is `Osirion:Analytics:YandexMetrica`; the old `YandexMetrica` key is read only when the new one is absent.
+   - Matomo and Yandex Metrica add an external script tag when `AutoTrackPageViews` is true; allow it in a strict CSP or turn the option off.
+   - Script string literals now use double quotes (for example `gtag('config', "G-XXXX", ...)`); update anything that matched the old markup text.
+   - `IAnalyticsService.TrackPageViewAsync` and `TrackEventAsync` still send nothing; page views inside an already interactive router are not reported yet.
+
 ## Upgrading to v1.5.0
 
 ### Breaking Changes

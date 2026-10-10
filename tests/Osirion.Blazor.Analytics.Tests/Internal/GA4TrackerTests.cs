@@ -99,7 +99,8 @@ public class GA4TrackerTests : BunitContext
             .Add(p => p.MeasurementId, "G-CUSTOM"));
 
         // Assert
-        cut.Instance.MeasurementId.ShouldBe("G-CUSTOM");
+        cut.Markup.ShouldContain("\"G-CUSTOM\"");
+        cut.Markup.ShouldNotContain("G-ORIGINAL");
     }
 
     [Fact]
@@ -122,7 +123,7 @@ public class GA4TrackerTests : BunitContext
             .Add(p => p.Enabled, false));
 
         // Assert
-        cut.Instance.Enabled.ShouldBe(false);
+        cut.Markup.ShouldNotContain("<script");
     }
 
     [Fact]
@@ -146,6 +147,6 @@ public class GA4TrackerTests : BunitContext
             .Add(p => p.DebugMode, true));
 
         // Assert
-        cut.Instance.DebugMode.ShouldBe(true);
+        cut.Markup.ShouldContain("window.ga_debug = {debug_mode: true};");
     }
 }

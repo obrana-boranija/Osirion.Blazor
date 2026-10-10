@@ -59,7 +59,7 @@ public class GA4ProviderTests
         // Assert
         script.ShouldContain("https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXX");
         script.ShouldContain("gtag('js', new Date());");
-        script.ShouldContain("gtag('config', 'G-XXXXXXXX'");
+        script.ShouldContain("gtag('config', \"G-XXXXXXXX\"");
     }
 
     [Fact]
@@ -135,7 +135,9 @@ public class GA4ProviderTests
         var script = provider.GetScript();
 
         // Assert
-        script.ShouldContain("var trackOutboundLink = function(url)");
+        script.ShouldContain("transport_type': 'beacon'");
+        script.ShouldNotContain("preventDefault");
+        script.ShouldNotContain("event_callback");
         script.ShouldContain("document.addEventListener('click'");
     }
 

@@ -100,7 +100,8 @@ public class ClarityTrackerTests : BunitContext
             .Add(p => p.SiteId, "custom-site-id"));
 
         // Assert
-        cut.Instance.SiteId.ShouldBe("custom-site-id");
+        cut.Markup.ShouldContain("\"custom-site-id\"");
+        cut.Markup.ShouldNotContain("original-site-id");
     }
 
     [Fact]
@@ -124,6 +125,6 @@ public class ClarityTrackerTests : BunitContext
             .Add(p => p.Enabled, false));
 
         // Assert
-        cut.Instance.Enabled.ShouldBe(false);
+        cut.Markup.ShouldNotContain("<script");
     }
 }

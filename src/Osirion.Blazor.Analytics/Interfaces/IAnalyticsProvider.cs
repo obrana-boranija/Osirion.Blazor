@@ -39,6 +39,14 @@ public interface IAnalyticsProvider
     string GetScript();
 
     /// <summary>
+    /// Gets the tracking script for this provider for a specific render.
+    /// The default implementation ignores <paramref name="context"/> and returns <see cref="GetScript()"/>.
+    /// </summary>
+    /// <param name="context">Render-time information such as the consent gate state.</param>
+    /// <returns>The script HTML</returns>
+    string GetScript(AnalyticsScriptContext context) => GetScript();
+
+    /// <summary>
     /// Gets whether the tracking script should render
     /// </summary>
     bool ShouldRender { get; }

@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Options;
+using Osirion.Blazor.Analytics.Internal;
 using Osirion.Blazor.Analytics.Options;
 
 namespace Osirion.Blazor.Analytics.Providers;
@@ -22,7 +23,7 @@ public class ClarityProvider : IAnalyticsProvider
     public string ProviderId => "clarity";
 
     /// <inheritdoc/>
-    public bool IsEnabled => _options.Enabled && !string.IsNullOrWhiteSpace(_options.SiteId);
+    public bool IsEnabled => CanRender(_options);
 
     /// <inheritdoc/>
     public bool ShouldRender => IsEnabled;
@@ -41,16 +42,36 @@ public class ClarityProvider : IAnalyticsProvider
         return Task.CompletedTask;
     }
 
-    /// <inheritdoc/>
-    public string GetScript()
+    /// <summary>Creates a copy of the configured options that a tracker can adjust for one render.</summary>
+    public ClarityOptions CreateOptionsCopy() => (ClarityOptions)_options.ShallowCopy();
+
+    /// <summary>Gets whether a script can be rendered for <paramref name="options"/>.</summary>
+    public bool CanRender(ClarityOptions options)
     {
+        ArgumentNullException.ThrowIfNull(options);
+        return options.Enabled && !string.IsNullOrWhiteSpace(options.SiteId)
+            && AnalyticsFormats.IsHttpOrProtocolRelativeUrl(options.TrackerUrl);
+    }
+
+    /// <inheritdoc/>
+    public string GetScript() => GetScript(_options, AnalyticsScriptContext.Default);
+
+    /// <inheritdoc/>
+    public string GetScript(AnalyticsScriptContext context) => GetScript(_options, context);
+
+    /// <summary>Builds the script for <paramref name="options"/>.</summary>
+    public string GetScript(ClarityOptions options, AnalyticsScriptContext context)
+    {
+        ArgumentNullException.ThrowIfNull(options);
+        ArgumentNullException.ThrowIfNull(context);
+
         return $@"
             <script type=""text/javascript"">
                 (function (c, l, a, r, i, t, y) {{
                     c[a] = c[a] || function () {{ (c[a].q = c[a].q || []).push(arguments) }};
-                    t = l.createElement(r); t.async = 1; t.src = ""{_options.TrackerUrl}"" + i;
+                    t = l.createElement(r); t.async = 1; t.src = {ScriptLiteral.Js(options.TrackerUrl)} + i;
                     y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
-                }})(window, document, ""clarity"", ""script"", ""{_options.SiteId}"");
+                }})(window, document, ""clarity"", ""script"", {ScriptLiteral.Js(options.SiteId)});
             </script>
         ";
     }

@@ -71,7 +71,7 @@ public class MatomoProviderTests
 
         // Assert
         script.ShouldContain("_paq.push(['trackPageView']);");
-        script.ShouldContain("_paq.push(['setSiteId', '123']);");
+        script.ShouldContain("_paq.push(['setSiteId', \"123\"]);");
         script.ShouldContain("https://example.com/matomo/");
         script.ShouldNotContain("_paq.push(['requireConsent']);");
     }
