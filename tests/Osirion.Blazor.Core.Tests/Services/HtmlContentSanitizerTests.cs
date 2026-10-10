@@ -1,6 +1,7 @@
 using AngleSharp.Dom;
 using AngleSharp.Html.Parser;
 using Bunit;
+using Ganss.Xss;
 using Microsoft.Extensions.Options;
 using Osirion.Blazor.Core.Configuration;
 using Osirion.Blazor.Core.Services;
@@ -59,6 +60,9 @@ public class HtmlContentSanitizerTests
     [InlineData("<details open ontoggle=alert(1)><summary>x</summary></details>")]
     [InlineData("<div style=\"background:url(javascript:alert(1))\">x</div>")]
     [InlineData("<p>a</p><!--<img src=x onerror=alert(1)>-->")]
+    [InlineData("<div role=\"button\" aria-label=\"Open\" onclick=\"alert(1)\">x</div>")]
+    [InlineData("<table><tr><td style=\"background:url(javascript:alert(1));position:fixed;inset:0\">x</td></tr></table>")]
+    [InlineData("<table><tr><th style=\"text-align:expression(alert(1))\">x</th></tr></table>")]
     public void Sanitize_HostileMarkup_LeavesNothingExecutable(string html)
     {
         var document = Parse(_sanitizer.Sanitize(html));
@@ -154,6 +158,163 @@ public class HtmlContentSanitizerTests
         var result = _sanitizer.Sanitize("<p style=\"color: red\">x</p>");
 
         result.MarkupMatches("<p>x</p>");
+    }
+
+    // Fails before the change: role and aria-* were not on the allow-list, so accessible markup lost them.
+    [Theory]
+    [InlineData("<nav role=\"navigation\" aria-label=\"Contents\"><ul><li><a href=\"#a\" aria-current=\"page\">A</a></li></ul></nav>")]
+    [InlineData("<div role=\"note\" aria-describedby=\"note-1\"><p id=\"note-1\">Note</p></div>")]
+    [InlineData("<p>Required<span aria-hidden=\"true\">*</span></p>")]
+    [InlineData("<img src=\"/images/a.png\" alt=\"\" role=\"presentation\">")]
+    [InlineData("<table role=\"grid\" aria-rowcount=\"1\"><tbody><tr><td aria-colindex=\"1\">x</td></tr></tbody></table>")]
+    public void Sanitize_RoleAndAriaAttributesByDefault_KeepsThem(string html)
+    {
+        _sanitizer.Sanitize(html).MarkupMatches(html);
+    }
+
+    // Fails before the change: role and aria-label were removed together with the handlers.
+    [Fact]
+    public void Sanitize_AriaAttributesNextToEventHandlers_RemovesOnlyTheHandlers()
+    {
+        var result = _sanitizer.Sanitize("<div role=\"button\" aria-label=\"Open\" onclick=\"alert(1)\" onfocus=\"alert(2)\">x</div>");
+
+        result.MarkupMatches("<div role=\"button\" aria-label=\"Open\">x</div>");
+    }
+
+    [Fact]
+    public void Sanitize_AriaAttributesDisabled_RemovesRoleAndAria()
+    {
+        var sanitizer = CreateSanitizer(options => options.AllowAriaAttributes = false);
+
+        var result = sanitizer.Sanitize("<div role=\"note\" aria-label=\"Note\" title=\"t\">x</div>");
+
+        result.MarkupMatches("<div title=\"t\">x</div>");
+    }
+
+    // Fails before the change. The markup is what Markdig 0.41.3 writes for a pipe table aligned with
+    // ":--", ":-:" and "--:" (HtmlTableRenderer); the alignment used to be removed with the style attribute.
+    [Fact]
+    public void Sanitize_MarkdownTableAlignment_KeepsTextAlignOnCells()
+    {
+        const string table =
+            "<table>\n<thead>\n<tr>\n<th style=\"text-align: left;\">Name</th>\n<th style=\"text-align: center;\">Qty</th>\n" +
+            "<th style=\"text-align: right;\">Price</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td style=\"text-align: left;\">Tea</td>\n" +
+            "<td style=\"text-align: center;\">2</td>\n<td style=\"text-align: right;\">4.50</td>\n</tr>\n</tbody>\n</table>\n";
+
+        var cells = Parse(_sanitizer.Sanitize(table)).QuerySelectorAll("th, td");
+
+        cells.Select(cell => cell.GetAttribute("style")).ShouldBe(
+        [
+            "text-align: left", "text-align: center", "text-align: right",
+            "text-align: left", "text-align: center", "text-align: right"
+        ]);
+    }
+
+    // Fails before the change, because the alignment was removed too. Each row puts other CSS next to the
+    // alignment, before it on the header cell and after it on the data cell; only the alignment may survive.
+    [Theory]
+    [InlineData("position: fixed; inset: 0; z-index: 9999")]
+    [InlineData("background-image: url(https://evil.example/track.png)")]
+    [InlineData("background: url(javascript:alert(1))")]
+    [InlineData("width: expression(alert(1))")]
+    [InlineData("behavior: url(x.htc)")]
+    [InlineData("-moz-binding: url(https://evil.example/x.xml#x)")]
+    [InlineData("color: red; font-size: 40px; display: none")]
+    [InlineData("--brand: red; color: var(--brand)")]
+    [InlineData("\\70 osition: fixed")]
+    [InlineData("text-align-last: right")]
+    [InlineData("text-align: url(https://evil.example/x)")]
+    [InlineData("text-align: expression(alert(1))")]
+    public void Sanitize_TableCellStyleWithOtherCss_KeepsOnlyTextAlign(string otherDeclarations)
+    {
+        var html =
+            $"<table><tbody><tr><th style=\"{otherDeclarations}; text-align: center\">h</th>" +
+            $"<td style=\"text-align: center; {otherDeclarations}\">d</td></tr></tbody></table>";
+
+        var cells = Parse(_sanitizer.Sanitize(html)).QuerySelectorAll("th, td");
+
+        cells.Select(cell => cell.GetAttribute("style")).ShouldBe(["text-align: center", "text-align: center"]);
+    }
+
+    // Fails before the change. Covers "any other property": every property on the CSS allow-list of the
+    // underlying library is set on the cell, and only the alignment may survive.
+    [Fact]
+    public void Sanitize_TableCellStyleWithEveryLibraryCssProperty_KeepsOnlyTextAlign()
+    {
+        var otherDeclarations = HtmlSanitizerDefaults.AllowedCssProperties
+            .Where(property => !string.Equals(property, "text-align", StringComparison.OrdinalIgnoreCase))
+            .Select(property => $"{property}: inherit;");
+        var html = $"<table><tbody><tr><td style=\"{string.Concat(otherDeclarations)} text-align: right\">d</td></tr></tbody></table>";
+
+        var cell = Parse(_sanitizer.Sanitize(html)).QuerySelector("td").ShouldNotBeNull();
+
+        cell.GetAttribute("style").ShouldBe("text-align: right");
+    }
+
+    [Theory]
+    [InlineData("text-align: expression(alert(1))")]
+    [InlineData("text-align: url(javascript:alert(1))")]
+    [InlineData("text-align: diagonal")]
+    [InlineData("color: red")]
+    public void Sanitize_TableCellWithoutValidTextAlign_RemovesTheStyle(string style)
+    {
+        var result = _sanitizer.Sanitize($"<table><tbody><tr><td style=\"{style}\">d</td></tr></tbody></table>");
+
+        result.MarkupMatches("<table><tbody><tr><td>d</td></tr></tbody></table>");
+    }
+
+    [Theory]
+    [InlineData("<p style=\"text-align: center\">x</p>", "<p>x</p>")]
+    [InlineData("<div style=\"text-align: right\"><span style=\"text-align: left\">x</span></div>", "<div><span>x</span></div>")]
+    [InlineData("<img src=\"/a.png\" alt=\"a\" style=\"text-align: center\">", "<img src=\"/a.png\" alt=\"a\">")]
+    [InlineData(
+        "<table style=\"text-align: center\"><colgroup><col style=\"width:50%\"></colgroup><tbody><tr style=\"text-align: center\"><td>x</td></tr></tbody></table>",
+        "<table><colgroup><col></colgroup><tbody><tr><td>x</td></tr></tbody></table>")]
+    public void Sanitize_StyleOnElementOtherThanTableCellByDefault_RemovesIt(string html, string expected)
+    {
+        _sanitizer.Sanitize(html).MarkupMatches(expected);
+    }
+
+    [Fact]
+    public void Sanitize_TableCellAlignmentDisabled_RemovesCellStyle()
+    {
+        var sanitizer = CreateSanitizer(options => options.AllowTableCellAlignment = false);
+
+        var result = sanitizer.Sanitize("<table><tbody><tr><th style=\"text-align: center;\">h</th><td style=\"text-align: right;\">d</td></tr></tbody></table>");
+
+        result.MarkupMatches("<table><tbody><tr><th>h</th><td>d</td></tr></tbody></table>");
+    }
+
+    // A host that opts in to inline styles keeps the library's general CSS filter on table cells as well,
+    // not the alignment-only default.
+    [Fact]
+    public void AllowedAttributes_StyleOptIn_TableCellKeepsGeneralFilteredCss()
+    {
+        var sanitizer = CreateSanitizer(options => options.AllowedAttributes.Add("style"));
+
+        var cell = Parse(sanitizer.Sanitize(
+            "<table><tbody><tr><td style=\"color: red; text-align: right; behavior: url(x.htc)\">d</td></tr></tbody></table>"))
+            .QuerySelector("td").ShouldNotBeNull();
+
+        var style = cell.GetAttribute("style").ShouldNotBeNull();
+        style.ShouldContain("color");
+        style.ShouldContain("text-align: right");
+        style.ShouldNotContain("behavior");
+    }
+
+    [Fact]
+    public void AllowElement_TableCellStyleOptIn_KeepsGeneralFilteredCss()
+    {
+        var sanitizer = CreateSanitizer(options => options.AllowElement("td", "style"));
+
+        var cell = Parse(sanitizer.Sanitize(
+            "<table><tbody><tr><td style=\"color: red; text-align: right; behavior: url(x.htc)\">d</td></tr></tbody></table>"))
+            .QuerySelector("td").ShouldNotBeNull();
+
+        var style = cell.GetAttribute("style").ShouldNotBeNull();
+        style.ShouldContain("color");
+        style.ShouldContain("text-align: right");
+        style.ShouldNotContain("behavior");
     }
 
     [Theory]

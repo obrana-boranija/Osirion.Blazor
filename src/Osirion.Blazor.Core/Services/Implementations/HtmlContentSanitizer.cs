@@ -1,4 +1,6 @@
 using System.Collections.Frozen;
+using AngleSharp.Css.Dom;
+using AngleSharp.Dom;
 using Ganss.Xss;
 using Microsoft.Extensions.Options;
 using Osirion.Blazor.Core.Configuration;
@@ -43,8 +45,27 @@ public sealed class HtmlContentSanitizer : IHtmlContentSanitizer
     /// </summary>
     private const string ObjectDataAttribute = "data";
 
+    private const string RoleAttribute = "role";
+
+    private const string AriaAttributePrefix = "aria-";
+
+    private const string StyleAttribute = "style";
+
+    private const string TextAlignProperty = "text-align";
+
+    /// <summary>
+    /// Elements that keep the <c>text-align</c> declaration of their <c>style</c> attribute, the form in
+    /// which markdown writes table column alignment.
+    /// </summary>
+    private static readonly FrozenSet<string> TableCellTags = new[]
+    {
+        "th", "td"
+    }.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
+
     private readonly Ganss.Xss.HtmlSanitizer _sanitizer;
     private readonly FrozenDictionary<string, FrozenSet<string>> _elementAttributes;
+    private readonly bool _allowAriaAttributes;
+    private readonly bool _allowTableCellAlignment;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="HtmlContentSanitizer"/> class.
@@ -56,6 +77,8 @@ public sealed class HtmlContentSanitizer : IHtmlContentSanitizer
 
         var settings = options.Value;
 
+        _allowAriaAttributes = settings.AllowAriaAttributes;
+        _allowTableCellAlignment = settings.AllowTableCellAlignment;
         _elementAttributes = settings.ElementAttributes
             .Where(entry => !HtmlContentSanitizerOptions.NeverAllowedTags.Contains(entry.Key))
             .ToFrozenDictionary(
@@ -125,13 +148,73 @@ public sealed class HtmlContentSanitizer : IHtmlContentSanitizer
     {
         // Only an attribute that is merely not on the global allow-list is rescued. A value removed for
         // an unsafe URL or script include stays removed even on an element that allows the attribute.
-        if (e.Reason == RemoveReason.NotAllowedAttribute
-            && _elementAttributes.TryGetValue(e.Tag.LocalName, out var allowed)
-            && allowed.Contains(e.Attribute.Name)
-            && !HtmlContentSanitizerOptions.IsEventHandlerAttribute(e.Attribute.Name))
+        if (e.Reason != RemoveReason.NotAllowedAttribute
+            || HtmlContentSanitizerOptions.IsEventHandlerAttribute(e.Attribute.Name))
+        {
+            return;
+        }
+
+        var attributeName = e.Attribute.Name;
+
+        // A host that allows the attribute on this element gets it as written, which for style means the
+        // library's general CSS filter rather than the alignment-only rule below.
+        if (IsAllowedOnElement(e.Tag.LocalName, attributeName)
+            || (_allowAriaAttributes && IsAriaAttribute(attributeName)))
         {
             e.Cancel = true;
+            return;
         }
+
+        if (_allowTableCellAlignment
+            && TableCellTags.Contains(e.Tag.LocalName)
+            && string.Equals(attributeName, StyleAttribute, StringComparison.OrdinalIgnoreCase))
+        {
+            // The library filters what is left through its CSS checks when it sanitizes the style next.
+            e.Cancel = TryKeepOnlyTextAlignment(e.Tag);
+        }
+    }
+
+    private bool IsAllowedOnElement(string tagName, string attributeName) =>
+        _elementAttributes.TryGetValue(tagName, out var allowed) && allowed.Contains(attributeName);
+
+    private static bool IsAriaAttribute(string attributeName) =>
+        string.Equals(attributeName, RoleAttribute, StringComparison.OrdinalIgnoreCase)
+        || (attributeName.Length > AriaAttributePrefix.Length
+            && attributeName.StartsWith(AriaAttributePrefix, StringComparison.OrdinalIgnoreCase));
+
+    /// <summary>
+    /// Replaces the inline style of a table cell with its <c>text-align</c> declaration alone.
+    /// </summary>
+    /// <returns>
+    /// <see langword="true"/> when the cell has a valid <c>text-align</c> declaration to keep; otherwise
+    /// <see langword="false"/>, and the caller lets the library remove the attribute.
+    /// </returns>
+    /// <remarks>
+    /// The declaration is cleared and the alignment set again through the CSS object model, which accepts
+    /// only a value valid for <c>text-align</c>. Clearing first means no other property survives, including
+    /// longhands of a shorthand and declarations the parser kept although it does not know them.
+    /// </remarks>
+    private static bool TryKeepOnlyTextAlignment(IElement cell)
+    {
+        var declarations = cell.GetStyle();
+
+        if (declarations is null)
+        {
+            return false;
+        }
+
+        var alignment = declarations.GetPropertyValue(TextAlignProperty);
+        declarations.CssText = string.Empty;
+
+        if (string.IsNullOrWhiteSpace(alignment))
+        {
+            return false;
+        }
+
+        // A null priority sets a normal declaration; any other text that is not "important" sets nothing.
+        declarations.SetProperty(TextAlignProperty, alignment, null);
+
+        return declarations.Length > 0;
     }
 
     private static void OnFilterUrl(object? sender, FilterUrlEventArgs e)

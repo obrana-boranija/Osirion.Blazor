@@ -10,9 +10,12 @@ namespace Osirion.Blazor.Core.Configuration;
 /// <remarks>
 /// <para>
 /// The defaults start from the allow-list of the HtmlSanitizer library, add <c>class</c> and <c>id</c>
-/// (needed for content styling, code highlighting and table of contents anchors) and remove forms,
-/// form controls and the <c>style</c> and <c>name</c> attributes. Iframes and <c>&lt;style&gt;</c> elements
-/// are not allowed by default either. A host can opt in to any of them through these options.
+/// (needed for content styling, code highlighting and table of contents anchors), keep <c>role</c> and
+/// every <c>aria-*</c> attribute (see <see cref="AllowAriaAttributes"/>) and remove forms, form controls
+/// and the <c>name</c> attribute. The <c>style</c> attribute is removed from every element except table
+/// cells, which keep only its <c>text-align</c> declaration (see <see cref="AllowTableCellAlignment"/>).
+/// Iframes and <c>&lt;style&gt;</c> elements are not allowed by default either. A host can opt in to any of
+/// them through these options.
 /// </para>
 /// <para>
 /// Some markup is never allowed, whatever these options contain: the elements <c>script</c>, <c>svg</c>,
@@ -46,9 +49,10 @@ public sealed class HtmlContentSanitizerOptions
     }.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
 
     /// <summary>
-    /// Attributes on the library's default list that are kept only when a host opts in: <c>style</c>, and
-    /// <c>name</c>, which on an image adds a named property to <c>document</c> that hides built-in members
-    /// such as <c>document.querySelectorAll</c> and breaks the page's scripts.
+    /// Attributes on the library's default list that are kept only when a host opts in: <c>style</c> (apart
+    /// from the table cell alignment kept by <see cref="AllowTableCellAlignment"/>), and <c>name</c>, which on
+    /// an image adds a named property to <c>document</c> that hides built-in members such as
+    /// <c>document.querySelectorAll</c> and breaks the page's scripts.
     /// </summary>
     private static readonly FrozenSet<string> OptInAttributes = new[]
     {
@@ -92,7 +96,9 @@ public sealed class HtmlContentSanitizerOptions
     /// Gets the attribute names that are kept on every allowed element. Names are case-insensitive.
     /// </summary>
     /// <remarks>
-    /// Add <c>style</c> to keep inline styles (their CSS properties are still filtered). Add <c>name</c> only
+    /// Add <c>style</c> to keep inline styles on every element. Their CSS properties are still filtered by
+    /// the general CSS allow-list of the HtmlSanitizer library, which then also applies to table cells in
+    /// place of the <c>text-align</c> only rule of <see cref="AllowTableCellAlignment"/>. Add <c>name</c> only
     /// when content needs it, for example for image maps: on images it can hide built-in members of
     /// <c>document</c>. Event handler attributes are ignored. URL attributes such as <c>href</c> and
     /// <c>src</c> are always checked against <see cref="AllowedSchemes"/>.
@@ -110,6 +116,35 @@ public sealed class HtmlContentSanitizerOptions
     public ISet<string> AllowedSchemes { get; } = new HashSet<string>(
         ["http", "https", "mailto", "tel"],
         StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// Gets or sets a value indicating whether <c>role</c> and every <c>aria-*</c> attribute are kept on
+    /// allowed elements. Defaults to <see langword="true"/>.
+    /// </summary>
+    /// <remarks>
+    /// These attributes only describe an element to assistive technology; a browser never loads or runs
+    /// anything from them. Set to <see langword="false"/> to keep only the ARIA attributes listed in
+    /// <see cref="AllowedAttributes"/> or <see cref="AllowElement"/>.
+    /// </remarks>
+    public bool AllowAriaAttributes { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether table header and data cells (<c>th</c> and <c>td</c>) keep the
+    /// <c>text-align</c> declaration of their <c>style</c> attribute. Defaults to <see langword="true"/>.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Markdown table column alignment is written as <c>style="text-align: center;"</c> on each cell. Every
+    /// other CSS property is removed from the cell, a <c>text-align</c> value is still checked by the CSS
+    /// filter of the HtmlSanitizer library, and <c>style</c> on any other element is still removed.
+    /// </para>
+    /// <para>
+    /// A host that allows <c>style</c> through <see cref="AllowedAttributes"/>, or on <c>th</c> or <c>td</c>
+    /// through <see cref="AllowElement"/>, gets the library's general CSS filter on those cells instead.
+    /// Set to <see langword="false"/> to remove <c>style</c> from table cells as from other elements.
+    /// </para>
+    /// </remarks>
+    public bool AllowTableCellAlignment { get; set; } = true;
 
     /// <summary>
     /// Gets the attributes allowed only on a specific element, keyed by element name.

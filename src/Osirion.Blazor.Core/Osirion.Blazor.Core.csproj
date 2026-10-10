@@ -32,6 +32,10 @@
 	<ItemGroup>
 		<PackageReference Include="BlazorJSComponents" />
 		<PackageReference Include="HtmlSanitizer" />
+		<!-- Referenced directly because the sanitizer uses AngleSharp types and is compiled against the central pin.
+		     A transitive pin does not flow through a ProjectReference, so without this a consumer that references
+		     this project resolves HtmlSanitizer's lower AngleSharp floor and fails to load the assembly at run time. -->
+		<PackageReference Include="AngleSharp" />
 	</ItemGroup>
 	<ItemGroup>
 	  <Content Remove="compilerconfig.json" />

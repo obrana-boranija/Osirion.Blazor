@@ -3,7 +3,6 @@ using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Enums;
 using Osirion.Blazor.Cms.Domain.Repositories;
 using Osirion.Blazor.Cms.Domain.Services;
-using Osirion.Blazor.Core.Extensions;
 
 namespace Osirion.Blazor.Cms.Web.Components;
 
@@ -133,10 +132,11 @@ public partial class ContentView(IContentProviderManager contentProviderManager)
         return $"osirion-content-view {Class}".Trim();
     }
 
-    // Built-in providers sanitize at ingestion; this also covers custom providers and items set by the caller.
+    private readonly SanitizedContentCache _sanitizedContent = new();
+
     private MarkupString GetSanitizedContent(string? content)
     {
-        return new MarkupString(ServiceProvider.GetHtmlContentSanitizer().Sanitize(content));
+        return _sanitizedContent.Get(ServiceProvider, content);
     }
 
     private string GetCategoryUrl(string category)
