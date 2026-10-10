@@ -3,7 +3,6 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
     <CentralPackageFloatingVersionsEnabled>false</CentralPackageFloatingVersionsEnabled>
-    <OsirionTargetFrameworks>net9.0;net10.0</OsirionTargetFrameworks>
     <Net9MicrosoftVersion>9.0.20</Net9MicrosoftVersion>
     <Net10MicrosoftVersion>10.0.12</Net10MicrosoftVersion>
   </PropertyGroup>
@@ -15,8 +14,6 @@
     <PackageVersion Include="FluentValidation" Version="12.2.0" />
     <PackageVersion Include="HtmlSanitizer" Version="9.2.1039" />
     <PackageVersion Include="Markdig" Version="1.4.0" />
-    <PackageVersion Include="Microsoft.AspNetCore.Http" Version="2.3.13" />
-    <PackageVersion Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.13" />
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.401" />
     <PackageVersion Include="Octokit" Version="14.0.0" />
     <PackageVersion Include="Scrutor" Version="7.0.0" />

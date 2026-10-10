@@ -172,14 +172,14 @@ builder.Services.AddOsirionBlazor(builder.Configuration);
 - **Zero-JS Dependencies**: No JavaScript dependencies where possible
 - **Progressive Enhancement**: Core functionality works without JavaScript, enhanced with JS when available
 - **Framework Integration**: Seamless integration with popular CSS frameworks
-- **Multi-Platform**: Supports .NET 8 and .NET 9 (and future versions)
+- **Multi-Platform**: Supports .NET 9 and .NET 10
 - **Provider Pattern**: Easily extend with your own providers for analytics, content, etc.
 - **Accessibility**: WCAG 2.1 compliant components with full keyboard and screen reader support
 - **GDPR Compliance**: Built-in privacy and consent management features
 
 ## 📋 Requirements
 
-- .NET 8.0 or higher
+- .NET 9.0 or higher
 - Blazor (Server, WebAssembly, or Auto)
 
 ## 🆕 What's New in v1.5.0
@@ -237,7 +237,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE.txt) 
 
 - **Components**: 15+ production-ready components
 - **Packages**: 10+ NuGet packages
-- **Frameworks**: .NET 8 & .NET 9 support
+- **Frameworks**: .NET 9 & .NET 10 support
 - **CSS Frameworks**: 4 major frameworks supported
 - **Test Coverage**: 85%+ code coverage
 - **Documentation**: Comprehensive guides and examples

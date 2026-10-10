@@ -39,7 +39,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - A verified webhook delivery that matches no provider is answered with 202 instead of 400; tags and deleted branches no longer trigger a refresh
 - `AddOsirionCookieConsent` registers the antiforgery services, and the banner posts the current path and query instead of the absolute URL
 - Content files excluded from markdown rendering (`.txt`, `.json`, `.yml`, `.log`, `.bak`) are stored as sanitized HTML
-- Osirion.Blazor.Cms.Infrastructure now references Osirion.Blazor.Core, which depends on HtmlSanitizer 9.2.1039 and AngleSharp 1.7.3
+- Osirion.Blazor.Cms.Infrastructure now references Osirion.Blazor.Core, which depends on HtmlSanitizer 9.2.1039 and AngleSharp 1.8.4
+- Dependencies updated to their latest releases: .NET 9 packages to 9.0.20, .NET 10 packages to 10.0.12, Markdig 1.4.0, YamlDotNet 18.1.0, Scrutor 7.0.0, FluentValidation 12.2.0 and System.IO.Abstractions 22.3.0
+- Osirion.Blazor.Cms.Domain, Cms.Core and Cms.Infrastructure use the `Microsoft.AspNetCore.App` framework reference instead of the legacy `Microsoft.AspNetCore.Http` 2.x packages and the `Microsoft.Extensions.*` packages that framework already provides
+- Every package ships SourceLink information and a symbol package (`.snupkg`); the build is deterministic and treats warnings as errors
 
 ### Deprecated
 - `LoginViewModel.LoginWithGitHubAsync(string code)` always fails, because a code without its OAuth state cannot be verified; use `StartGitHubLoginAsync()` and `LoginWithGitHubAsync(code, state)`

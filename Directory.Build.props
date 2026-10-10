@@ -1,2 +1,12 @@
 <Project>
+  <!-- Settings shared by every project in the repository: libraries, tests and examples. -->
+  <PropertyGroup>
+    <OsirionTargetFrameworks>net9.0;net10.0</OsirionTargetFrameworks>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Deterministic>true</Deterministic>
+    <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true' or '$(TF_BUILD)' == 'true'">true</ContinuousIntegrationBuild>
+  </PropertyGroup>
 </Project>

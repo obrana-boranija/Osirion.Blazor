@@ -16,7 +16,7 @@ Osirion.Blazor is a modular, high-performance component library for Blazor appli
 ### Design Philosophy
 - **SSR-First**: All components work with Static Server-Side Rendering (SSG), Server Interactive, and WASM
 - **Progressive Enhancement**: Minimal JavaScript, enhanced interactivity when available
-- **Multi-Version Support**: Compatible with .NET 8, .NET 9, and designed for future versions
+- **Multi-Version Support**: Targets .NET 9 and .NET 10
 - **Production-Ready**: Clean APIs, comprehensive documentation, and flexible customization
 - **Best Practices**: Follows SOLID, KISS, DRY, and Clean Code principles
 
@@ -46,7 +46,7 @@ Osirion.Blazor (Meta-package)
 All components inherit from `OsirionComponentBase` at `src/Osirion.Blazor.Core/Components/_Base/OsirionComponentBase.cs`. This provides:
 - Automatic SSR detection via `IsServerSide` property
 - Theme support (`ThemeMode.Light|Dark|System`)
-- .NET 8/9 conditional compilation for interactivity handling
+- .NET 9/10 conditional compilation for interactivity handling
 - Unmatched attributes capture via `Attributes` dictionary
 
 ### Provider Pattern
@@ -88,9 +88,10 @@ builder.Services.AddOsirionBlazor(osirion => {
 - **DRY**: Don't Repeat Yourself - extract reusable logic
 - **Clean Code**: Meaningful names, small functions, clear intent, comprehensive comments
 
-### Multi-Targeting (.NET 8 & 9)
-- Source projects target `<TargetFrameworks>net8.0;net9.0</TargetFrameworks>`
-- Test projects target `<TargetFramework>net9.0</TargetFramework>` only
+### Multi-Targeting (.NET 9 & 10)
+- Source projects target `net9.0;net10.0` through `src/Directory.Build.props` (`OsirionTargetFrameworks` in the root `Directory.Build.props`)
+- Test projects target `<TargetFramework>net10.0</TargetFramework>` only
+- Shared settings live in `Directory.Build.props` (all projects, warnings are errors) and `src/Directory.Build.props` (package metadata, SourceLink); package versions live in `Directory.Packages.props`
 - Use conditional compilation for version-specific code:
   ```csharp
   #if NET9_0_OR_GREATER
@@ -143,9 +144,9 @@ dotnet watch --project examples/Osirion.Blazor.Example.Bootstrap/Osirion.Blazor.
 ```
 
 ### CI/CD
-- **build.yml**: Runs on push to `master`, executes `dotnet build` and `dotnet test`
-- **e2e.yml**: Runs Playwright tests, installs Chromium dependencies on Ubuntu
-- Targets .NET 8.0 and 9.0 SDKs
+- **.github/workflows/build.yml**: Runs on push to `master`, executes `dotnet build` and `dotnet test`
+- **e2e.yml** (repository root, not run by GitHub Actions): Playwright tests, installs Chromium dependencies on Ubuntu
+- Workflows install the .NET 9 and .NET 10 SDKs; `global.json` pins the .NET 10 SDK
 
 ### CSS Build Process
 - CSS minification via Node.js tools in `build/tools/` (uses `clean-css` package)

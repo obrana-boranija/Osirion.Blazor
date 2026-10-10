@@ -1,0 +1,31 @@
+<Project>
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
+  <!--
+    Settings shared by every package under src. The version stays in each project file because the
+    release workflows read and update it there.
+  -->
+  <PropertyGroup>
+    <TargetFrameworks>$(OsirionTargetFrameworks)</TargetFrameworks>
+    <IsPackable>true</IsPackable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+    <Authors>Dejan Demonjić</Authors>
+    <Company>Tridesetri</Company>
+    <PackageProjectUrl>https://getosirion.com</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/obrana-boranija/Osirion.Blazor</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>icon.png</PackageIcon>
+
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
+  </ItemGroup>
+</Project>

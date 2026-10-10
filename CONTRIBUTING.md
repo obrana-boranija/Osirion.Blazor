@@ -22,7 +22,7 @@ This project adheres to a Code of Conduct that we expect all contributors to fol
 
 ### Prerequisites
 
-- .NET 8.0 SDK or newer (latest stable version recommended)
+- .NET 10 SDK (the version in `global.json` or a later feature band)
 - Your favorite IDE (Visual Studio, VS Code, Rider, etc.)
 - Git
 
@@ -178,7 +178,7 @@ Before submitting your PR, make sure you've:
 
 - [ ] Added tests for your changes
 - [ ] Updated relevant documentation
-- [ ] Ensured code builds on both .NET 8 and .NET 9
+- [ ] Ensured code builds on both .NET 9 and .NET 10
 - [ ] Verified SSR compatibility
 - [ ] Updated the CHANGELOG.md
 - [ ] Followed the component structure guidelines
