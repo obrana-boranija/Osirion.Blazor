@@ -97,7 +97,10 @@
             transform: rotate(45deg);
         }
 
+/* Full width; flex keeps the label centred in buttons that set a fixed height (Fluent UI). */
 .osirion-pricing-action {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     text-align: center;
 }

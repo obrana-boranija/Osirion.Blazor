@@ -1,4 +1,7 @@
+/* position: relative makes the scroller the containing block of the visually hidden (absolutely positioned)
+   labels, so they scroll with the table instead of widening the page. */
 .osirion-feature-comparison {
+    position: relative;
     overflow-x: auto;
     border: 1px solid var(--osirion-border-color, #e5e7eb);
     border-radius: var(--osirion-radius-md, 0.375rem);
