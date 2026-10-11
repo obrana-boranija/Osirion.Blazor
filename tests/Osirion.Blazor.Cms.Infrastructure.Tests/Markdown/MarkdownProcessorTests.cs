@@ -27,6 +27,16 @@ public class MarkdownProcessorTests
         frontMatter.LastModified.ShouldBe(expected);
     }
 
+    [Fact]
+    public void ExtractFrontMatterAndContent_SeriesKeys_AreRead()
+    {
+        var (frontMatter, _) = _processor.ExtractFrontMatterAndContent("---\ntitle: Part two\nseries: Build a blog\nseries_order: 2\n---\nBody");
+
+        frontMatter.ShouldNotBeNull();
+        frontMatter.Series.ShouldBe("Build a blog");
+        frontMatter.SeriesOrder.ShouldBe(2);
+    }
+
     // Each row is a way to get active markup out of markdown with the default Markdig pipeline
     // (raw HTML, links, generic attributes and media links). The precondition proves the vector reaches the
     // rendered HTML, so the test fails whenever the rendered output is not sanitized.

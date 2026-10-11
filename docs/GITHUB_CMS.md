@@ -264,6 +264,8 @@ metadata:
 | `title` | String | Article title | ? |
 | `date` | DateTime | Publication date | ? |
 | `last_modified` | DateTime | Last change, used by the sitemap and feeds | Optional |
+| `series` | String | Series the item belongs to, for `ContentSeriesNavigation` | Optional |
+| `series_order` | Number | Position in the series, starting at 1 | Optional |
 | `description` | String | Meta description | Recommended |
 | `author` | String | Author name | Recommended |
 | `categories` | Array | Content categories | Optional |
@@ -374,6 +376,29 @@ metadata:
     }
 }
 ```
+
+#### Series Navigation
+
+Give the parts of a multi-part article the same `series` and number them with `series_order`:
+
+```yaml
+---
+title: "Deploying the blog"
+series: "Build a blog with Osirion"
+series_order: 3
+---
+```
+
+`ContentSeriesNavigation` shows "Part 3 of 5", lists the parts and links the previous and next one. Place it in the
+article page, above or below the content:
+
+```razor
+<ContentSeriesNavigation Item="@item" />
+```
+
+Parts are read from the item's locale and ordered by `series_order`; parts without a number follow, oldest first.
+Nothing renders for an item outside a series or a series with one published part. `ContentUrlFormatter`,
+`PositionFormat` (`Part {0} of {1}`), `PreviousText`, `NextText` and `ShowPartList` adjust it.
 
 #### Author Pages
 
