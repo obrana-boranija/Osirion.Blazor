@@ -135,11 +135,14 @@ dotnet test tests/Osirion.Blazor.E2ETests/
 
 ### Local Development
 ```powershell
-# Restore and build
+# Restore and build (the solution is Osirion.Blazor.slnx)
 dotnet restore
 dotnet build
 
-# Run example app with hot reload
+# Run every example site (Bootstrap :5296, MudBlazor :5297) with the Aspire dashboard
+dotnet run --project examples/Osirion.Blazor.Examples.AppHost
+
+# Run one example app with hot reload
 dotnet watch --project examples/Osirion.Blazor.Example.Bootstrap/Osirion.Blazor.Example.Bootstrap.csproj
 ```
 

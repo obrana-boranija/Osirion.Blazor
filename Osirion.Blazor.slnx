@@ -68,6 +68,7 @@
   <Folder Name="/examples/">
     <Project Path="examples/Osirion.Blazor.Example.Bootstrap/Osirion.Blazor.Example.Bootstrap.csproj" />
     <Project Path="examples/Osirion.Blazor.Example.Mud/Osirion.Blazor.Example.Mud.csproj" />
+    <Project Path="examples/Osirion.Blazor.Examples.AppHost/Osirion.Blazor.Examples.AppHost.csproj" />
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/Osirion.Blazor.Analytics/Osirion.Blazor.Analytics.csproj" />

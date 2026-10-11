@@ -48,7 +48,7 @@ git remote add upstream https://github.com/obrana-boranija/Osirion.Blazor.git
 git checkout -b feature/your-feature-name
 ```
 
-5. Build the solution:
+5. Build the solution (`Osirion.Blazor.slnx`):
 
 ```bash
 dotnet build
@@ -59,6 +59,16 @@ dotnet build
 ```bash
 dotnet test
 ```
+
+7. Run the example sites. The Aspire AppHost starts every example (Bootstrap on `http://localhost:5296`, MudBlazor on
+   `http://localhost:5297`) and opens the Aspire dashboard with their logs:
+
+```bash
+dotnet run --project examples/Osirion.Blazor.Examples.AppHost
+```
+
+   The examples read the repository's `content` folder in Development, so they need no GitHub token. To run one site
+   alone, use `dotnet watch --project examples/Osirion.Blazor.Example.Bootstrap`.
 
 ## Project Structure
 
