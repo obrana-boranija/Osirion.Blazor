@@ -82,7 +82,6 @@ public partial class MarkdownEditorWithPreview : IAsyncDisposable
     private double previewScrollPercentage = 0;
     private IJSObjectReference? jsModule;
     private bool jsInteropAvailable = false;
-    private bool IsFullscreen = false;
     private EditorMode EditorMode { get; set; } = EditorMode.Split;
     private int CurrentLine { get; set; } = 1;
     private int CurrentColumn { get; set; } = 1;
