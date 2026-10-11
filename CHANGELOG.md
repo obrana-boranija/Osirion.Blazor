@@ -31,6 +31,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Osirion.Blazor.Cms.Admin: "Auto-generate" in the SEO form keeps the selected schema type instead of resetting it to Article
 - Osirion.Blazor.Cms.Admin: the file explorer URL-encodes the path it opens in the editor, so files whose names contain `&`, `#` or `+` open correctly
 - Osirion.Blazor.Cms.Admin: the admin layout no longer throws for a signed-in user with an empty user name
+- Osirion.Blazor.Cms.Domain: a front matter list containing a lone quote (`tags: a, "`) no longer makes the file fail to load
+- Osirion.Blazor.Theming: `OsirionStyles` no longer writes `<link rel="stylesheet" href="">` when the framework has no adapter, which made browsers request the page again as a stylesheet
 
 ### Build
 - The coverage workflow runs every test project except the Playwright suite and fails when a test fails or is not discovered, instead of uploading a partial report. Coverage settings live in `coverlet.runsettings` (generated code and auto-property accessors are not counted) and Codecov targets in `codecov.yml` (90% for the project and for each change, informational for now)
