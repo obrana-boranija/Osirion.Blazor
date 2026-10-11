@@ -4,7 +4,7 @@
     <div class="osirion-content-body">
         @if (Item?.Content is not null)
         {
-            <OsirionHtmlRenderer HtmlContent="@Item.Content" />
+            <OsirionHtmlRenderer HtmlContent="@(OmitLeadingTitle ? ContentHeadings.WithoutLeadingTitle(Item.Content) : Item.Content)" />
         }
     </div>
 </div>

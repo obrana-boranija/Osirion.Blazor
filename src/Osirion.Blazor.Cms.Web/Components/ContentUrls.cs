@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Text;
 using Microsoft.AspNetCore.WebUtilities;
+using Osirion.Blazor.Cms.Domain.Entities;
 
 namespace Osirion.Blazor.Cms.Web.Components;
 
@@ -39,6 +40,13 @@ internal static class ContentUrls
 
         return Uri.EscapeDataString(builder.ToString());
     }
+
+    /// <summary>
+    /// Builds the link to a content item: the page's <paramref name="formatter"/> when it has one, otherwise the
+    /// item's URL from the site root.
+    /// </summary>
+    internal static string ItemUrl(ContentItem item, Func<ContentItem, string>? formatter = null) =>
+        formatter?.Invoke(item) ?? "/" + item.Url.TrimStart('/');
 
     /// <summary>Builds the default tag page URL, optionally below a locale segment.</summary>
     internal static string TagUrl(string tag, string? locale = null) => $"{LocalePrefix(locale)}/tag/{Slug(tag)}";

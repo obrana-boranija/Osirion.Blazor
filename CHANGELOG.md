@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Osirion.Blazor.Navigation: `MenuCollapseBreakpoint.Large`, which collapses a menu below 1200px
 - Osirion.Blazor.Navigation: `--osirion-menu-*` theming variables for the bar height, content width, padding, logo size, colors, radii and shadow
 - Osirion.Blazor.Navigation: a tap on the dimmed page behind an open drawer closes the drawer
+- Osirion.Blazor.Cms.Web: `ContentRenderer.OmitLeadingTitle`, which leaves out the content's opening top-level heading
 
 ### Changed
 - Osirion.Blazor.Navigation: menus redesigned. The bar keeps the brand, the items and the actions on one line; dropdowns are rounded panels with a soft shadow; a parent item and its chevron highlight as one control; the active item is marked with the accent color instead of a border
@@ -33,6 +34,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Osirion.Blazor.Core: `OsirionContactForm` no longer runs past the right edge of the screen on phones
 - Osirion.Blazor.Core: rendered Markdown tables scroll sideways on screens up to 768px wide and keep words and inline code whole, instead of breaking them a few letters per line
 - Osirion.Blazor.Navigation: menu accent text (the active item, mega menu links, group footer links) uses the link color instead of the primary button color, which measured 3.5:1 on the Bootstrap example's dark background; it now measures at least 5.2:1 in both modes on all three adapters
+- Osirion.Blazor.Cms.Web: `ContentList.ContentUrlFormatter` and `OsirionContentListSection.PostUrlFormatter` set the post links. The list section linked every post to its `Url` and ignored both. Without a formatter both build the link the same way, from the site root (`/blog/post` instead of the relative `blog/post` the section wrote)
+- Osirion.Blazor.Cms.Web: a page showed its title twice and had two `h1` elements when the Markdown opened with `# Title`. `ArticlePage`, `HomePage` and `LandingPage` (with their hero) and `ContentView`, `DocumentPage` and `LocalizedContentView` (under their own title) now leave that opening heading out of the body
+- Osirion.Blazor.Cms.Web: `ContentList` leaves out the page it is shown on, so a section's list no longer shows a card for the section's own `_index.md` page
+- Osirion.Blazor.Cms.Infrastructure: the file system provider serves a folder's `_index.md` as the page at the folder's URL, as the GitHub provider already did, so section overview pages such as `/docs/components/core` no longer answer 404 when content comes from local files
+- Osirion.Blazor.Core: with `EnableHeaderScrollBehavior`, `OsirionPageLayout` no longer hides the header while the pointer is over it or focus is in it. Scrolling with the pointer on an open dropdown or mega menu carried the panel away with the header and left it floating at the top of the page
+- Osirion.Blazor.Core: on phones `OsirionFooter` opens with the brand, then the links, the left content and the right content, and lines the contact details up with the links. The brand used to land between the contact details and the right column, because the columns had no grid areas and fell into place by auto-placement
 
 ### Removed
 - Osirion.Blazor.Navigation: `Menu.razor.scss`, `Menu.razor.min.css` and `compilerconfig.json`, an out-of-date stylesheet source that a Web Compiler run would have compiled over `Menu.razor.css`
