@@ -540,6 +540,12 @@ public class FrontMatter : ValueObject
 
     private static string StripQuotes(string item)
     {
+        // A lone quote is both the first and the last character, so it needs two characters to be a quoted value.
+        if (item.Length < 2)
+        {
+            return item;
+        }
+
         if ((item.StartsWith("\"") && item.EndsWith("\"")) ||
             (item.StartsWith("'") && item.EndsWith("'")))
         {

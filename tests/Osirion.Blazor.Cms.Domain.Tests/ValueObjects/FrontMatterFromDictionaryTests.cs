@@ -220,6 +220,17 @@ public class FrontMatterFromDictionaryTests
         Assert.Equal(expected, frontMatter.Tags);
     }
 
+    // Threw ArgumentOutOfRangeException before the fix, so one stray quote made the whole file unreadable.
+    [Theory]
+    [InlineData("a, \"", new[] { "a", "\"" })]
+    [InlineData("'", new[] { "'" })]
+    public void FromDictionary_TagsWithALoneQuote_KeepTheQuoteAsAnItem(string value, string[] expected)
+    {
+        var frontMatter = Parse(("tags", value));
+
+        Assert.Equal(expected, frontMatter.Tags);
+    }
+
     [Fact]
     public void FromDictionary_UnknownKeys_BecomeTypedCustomFields()
     {
