@@ -1565,8 +1565,9 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
 
             foreach (var segment in breadcrumbPath.Segments)
             {
-                // Format segment name (convert slug-case to Title Case)
-                var formattedName = FormatBreadcrumbSegment(segment.Name);
+                // The last item is this page: its title keeps the punctuation and casing a slug loses. Earlier segments
+                // are directories, named from the slug (slug-case to Title Case).
+                var formattedName = segment.IsLast ? Content.Title : FormatBreadcrumbSegment(segment.Name);
                 
                 // Build full URL for this breadcrumb item
                 var itemUrl = $"{_baseUrl}/{segment.Path}";

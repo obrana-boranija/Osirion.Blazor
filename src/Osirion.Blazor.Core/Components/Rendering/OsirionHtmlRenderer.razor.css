@@ -42,6 +42,12 @@
         margin-top: 0;
     }
 
+    /* A table of contents or a #fragment link scrolls its heading below a sticky header instead of under it.
+       The content is a MarkupString without this component's scope attribute, so the rule needs ::deep. */
+    .osirion-html-renderer ::deep :is(h1, h2, h3, h4, h5, h6)[id] {
+        scroll-margin-top: var(--osirion-anchor-offset, 6rem);
+    }
+
     .osirion-html-renderer h2 {
         font-size: var(--osirion-font-size-3xl, 1.875rem);
     }
