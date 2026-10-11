@@ -242,6 +242,7 @@ public class ContentNavigationRenderingTests : CmsWebComponentTestBase
         _provider.DidNotReceive().GetDirectoriesAsync("de", Arg.Any<CancellationToken>());
     }
 
+    // Known defect, pinned as current behavior: the default content links keep the ".md" extension of the source file, while ContentPage strips it, so the two disagree on the item URL. Update this expectation when it is fixed.
     [Fact]
     public void LocalizedNavigation_ExpandAll_ShowsContentItemsByTitleAndSubdirectories()
     {

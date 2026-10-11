@@ -188,6 +188,7 @@ public class LocalizedContentViewRenderingTests : CmsWebComponentTestBase
         cut.FindAll(".osirion-content-tags").ShouldBeEmpty();
     }
 
+    // Known defect, pinned as current behavior: the default content links keep the ".md" extension of the source file, while ContentPage strips it, so the two disagree on the item URL. Update this expectation when it is fixed.
     [Fact]
     public void LocalizedContentView_NavigationLinks_LoadsNeighboursInTheItemDirectoryAndLocale()
     {

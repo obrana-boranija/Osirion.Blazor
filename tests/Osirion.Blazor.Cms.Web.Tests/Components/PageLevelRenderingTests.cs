@@ -37,6 +37,7 @@ public class PageLevelRenderingTests : CmsWebComponentTestBase
         _provider.GetTagsAsync().Returns(Task.FromResult<IReadOnlyList<ContentTag>>([ContentTag.Create("dotnet", "dotnet", 1)]));
     }
 
+    // Known defect, pinned as current behavior: the default content links keep the ".md" extension of the source file, while ContentPage strips it, so the two disagree on the item URL. Update this expectation when it is fixed.
     [Fact]
     public void DocumentPage_ContentPath_LoadsTheDocumentAndItsNeighbours()
     {
@@ -170,6 +171,7 @@ public class PageLevelRenderingTests : CmsWebComponentTestBase
         cut.Find(".osirion-document-body").TextContent.ShouldContain("Body");
     }
 
+    // Known defect, pinned as current behavior: the default content links keep the ".md" extension of the source file, while ContentPage strips it, so the two disagree on the item URL. Update this expectation when it is fixed.
     [Fact]
     public void DocumentPage_SuppliedNeighbours_AreShownWithoutQuerying()
     {
