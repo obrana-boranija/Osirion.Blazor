@@ -62,6 +62,65 @@ public class ContentCommandValidatorTests
         result.IsValid.ShouldBeTrue();
     }
 
+    [Fact]
+    public void CreateContentCommandValidator_MissingTitleContentAndPath_ReportsEach()
+    {
+        var result = new CreateContentCommandValidator().Validate(new CreateContentCommand());
+
+        result.Errors.Select(error => error.PropertyName).Distinct().ShouldBe(
+            [nameof(CreateContentCommand.Title), nameof(CreateContentCommand.Content), nameof(CreateContentCommand.Path)],
+            ignoreOrder: true);
+    }
+
+    [Fact]
+    public void CreateContentCommandValidator_TitleOver200Characters_IsInvalid()
+    {
+        var command = CreateCommand("blog/post.md");
+        command.Title = new string('a', 201);
+
+        var result = new CreateContentCommandValidator().Validate(command);
+
+        result.Errors.ShouldContain(error => error.ErrorMessage == "Title cannot exceed 200 characters");
+    }
+
+    [Theory]
+    [InlineData("my-post", true)]
+    [InlineData("post-2026", true)]
+    [InlineData("My Post", false)]
+    [InlineData("post_one", false)]
+    public void CreateContentCommandValidator_Slug_AllowsOnlyLowercaseLettersDigitsAndHyphens(string slug, bool isValid)
+    {
+        var command = CreateCommand("blog/post.md");
+        command.Slug = slug;
+
+        var result = new CreateContentCommandValidator().Validate(command);
+
+        result.IsValid.ShouldBe(isValid);
+    }
+
+    [Fact]
+    public void UpdateContentCommandValidator_MissingIdTitleAndContent_ReportsEach()
+    {
+        var result = new UpdateContentCommandValidator().Validate(new UpdateContentCommand { Path = "blog/post.md" });
+
+        result.Errors.Select(error => error.PropertyName).Distinct().ShouldBe(
+            [nameof(UpdateContentCommand.Id), nameof(UpdateContentCommand.Title), nameof(UpdateContentCommand.Content)],
+            ignoreOrder: true);
+    }
+
+    [Theory]
+    [InlineData("renamed", true)]
+    [InlineData("Renamed!", false)]
+    public void UpdateContentCommandValidator_Slug_AllowsOnlyLowercaseLettersDigitsAndHyphens(string slug, bool isValid)
+    {
+        var command = UpdateCommand("blog/post.md");
+        command.Slug = slug;
+
+        var result = new UpdateContentCommandValidator().Validate(command);
+
+        result.IsValid.ShouldBe(isValid);
+    }
+
     private static CreateContentCommand CreateCommand(string path) => new()
     {
         Title = "Post",

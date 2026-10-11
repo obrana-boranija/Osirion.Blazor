@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Options;
 
@@ -525,55 +526,41 @@ public abstract partial class OsirionComponentBase : ComponentBase
     /// </summary>
     /// <param name="variant">The alert variant</param>
     /// <returns>CSS class string for the alert with variant</returns>
+    /// <remarks>
+    /// An out-of-range severity gets the info class, and an out-of-range framework the neutral Osirion classes.
+    /// </remarks>
     protected virtual string GetAlertClass(Severity variant)
     {
-        var baseClass = GetAlertClass();
-        var variantClass = Framework switch
-        {
-            CssFramework.Bootstrap => variant switch
-            {
-                Severity.Success => "alert-success",
-                Severity.Error => "alert-danger",
-                Severity.Warning => "alert-warning",
-                Severity.Info => "alert-info",
-                _ => "alert-info"
-            },
-            CssFramework.FluentUI => variant switch
-            {
-                Severity.Success => "osirion-alert-success",
-                Severity.Error => "osirion-alert-error",
-                Severity.Warning => "osirion-alert-warning",
-                Severity.Info => "osirion-alert-info",
-                _ => "osirion-alert-info"
-            },
-            CssFramework.MudBlazor => variant switch
-            {
-                Severity.Success => "mud-alert-text-success",
-                Severity.Error => "mud-alert-text-error",
-                Severity.Warning => "mud-alert-text-warning",
-                Severity.Info => "mud-alert-text-info",
-                _ => "mud-alert-text-info"
-            },
-            CssFramework.Radzen => variant switch
-            {
-                Severity.Success => "rz-message-success",
-                Severity.Error => "rz-message-error",
-                Severity.Warning => "rz-message-warning",
-                Severity.Info => "rz-message-info",
-                _ => "rz-message-info"
-            },
-            _ => variant switch
-            {
-                Severity.Success => "osirion-alert-success",
-                Severity.Error => "osirion-alert-error",
-                Severity.Warning => "osirion-alert-warning",
-                Severity.Info => "osirion-alert-info",
-                _ => "osirion-alert-info"
-            }
-        };
+        var framework = Enum.IsDefined(Framework) ? Framework : CssFramework.None;
+        var severity = Enum.IsDefined(variant) ? variant : Severity.Info;
 
-        return $"{baseClass} {variantClass}";
+        return $"{GetAlertClass()} {AlertSeverityClasses[(framework, severity)]}";
     }
+
+    private static readonly FrozenDictionary<(CssFramework Framework, Severity Severity), string> AlertSeverityClasses =
+        new Dictionary<(CssFramework Framework, Severity Severity), string>
+        {
+            [(CssFramework.None, Severity.Success)] = "osirion-alert-success",
+            [(CssFramework.None, Severity.Error)] = "osirion-alert-error",
+            [(CssFramework.None, Severity.Warning)] = "osirion-alert-warning",
+            [(CssFramework.None, Severity.Info)] = "osirion-alert-info",
+            [(CssFramework.Bootstrap, Severity.Success)] = "alert-success",
+            [(CssFramework.Bootstrap, Severity.Error)] = "alert-danger",
+            [(CssFramework.Bootstrap, Severity.Warning)] = "alert-warning",
+            [(CssFramework.Bootstrap, Severity.Info)] = "alert-info",
+            [(CssFramework.FluentUI, Severity.Success)] = "osirion-alert-success",
+            [(CssFramework.FluentUI, Severity.Error)] = "osirion-alert-error",
+            [(CssFramework.FluentUI, Severity.Warning)] = "osirion-alert-warning",
+            [(CssFramework.FluentUI, Severity.Info)] = "osirion-alert-info",
+            [(CssFramework.MudBlazor, Severity.Success)] = "mud-alert-text-success",
+            [(CssFramework.MudBlazor, Severity.Error)] = "mud-alert-text-error",
+            [(CssFramework.MudBlazor, Severity.Warning)] = "mud-alert-text-warning",
+            [(CssFramework.MudBlazor, Severity.Info)] = "mud-alert-text-info",
+            [(CssFramework.Radzen, Severity.Success)] = "rz-message-success",
+            [(CssFramework.Radzen, Severity.Error)] = "rz-message-error",
+            [(CssFramework.Radzen, Severity.Warning)] = "rz-message-warning",
+            [(CssFramework.Radzen, Severity.Info)] = "rz-message-info",
+        }.ToFrozenDictionary();
 
     /// <summary>
     /// Gets the CSS class for a table
