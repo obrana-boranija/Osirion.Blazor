@@ -1,0 +1,24 @@
+# Codecov settings. Target: 90% for the project and for every change; both statuses block a pull request
+# that misses them. The project may drop by at most 1% from its base.
+codecov:
+  require_ci_to_pass: true
+
+coverage:
+  status:
+    project:
+      default:
+        target: 90%
+        threshold: 1%
+        informational: false
+    patch:
+      default:
+        target: 90%
+        informational: false
+
+ignore:
+  - "examples"
+  - "tests"
+  - "**/obj/**"
+
+comment:
+  layout: "diff, flags, files"

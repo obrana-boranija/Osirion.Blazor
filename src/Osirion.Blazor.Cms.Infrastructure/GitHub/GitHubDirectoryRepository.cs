@@ -131,9 +131,9 @@ public class GitHubDirectoryRepository : DirectoryRepositoryBase, IDirectoryRepo
 
             // Determine old and new paths
             var oldPath = directory.Path;
-            var newPath = string.IsNullOrWhiteSpace(newParentId)
-                ? Path.GetFileName(directory.Path) // Move to root
-                : Path.Combine(newParent!.Path, Path.GetFileName(directory.Path)).Replace('\\', '/');
+            // The root is the configured content folder, not the repository root.
+            var parentPath = newParent?.Path ?? PathUtils.NormalizePath(_options.ContentPath);
+            var newPath = Path.Combine(parentPath, Path.GetFileName(directory.Path)).Replace('\\', '/');
 
             // Move all files and directories
             await MoveDirectoryContentsAsync(oldPath, newPath, cancellationToken);

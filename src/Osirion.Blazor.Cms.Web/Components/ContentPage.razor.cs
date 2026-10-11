@@ -258,7 +258,7 @@ public partial class ContentPage
     /// <summary>
     /// Gets or sets a value indicating whether the component is loading.
     /// </summary>
-    protected bool IsLoading { get; set; } = true;
+    protected bool IsLoading { get; set; }
 
     /// <summary>
     /// Processes changes to component parameters.
@@ -289,6 +289,34 @@ public partial class ContentPage
         IsLoading = true;
         StateHasChanged();
 
+        ForgetLoadedValues();
+
+        try
+        {
+            var provider = ContentProviderManager.GetDefaultProvider();
+            if (provider is not null && !string.IsNullOrWhiteSpace(Path))
+            {
+                ContentItem = await provider.GetItemByUrlAsync(BuildSearchPath(Path));
+                await LoadSupplementaryContentAsync(provider);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to load content {ContentPath}", Path);
+            ContentItem = null;
+        }
+        finally
+        {
+            IsLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    /// <summary>
+    /// Clears the values loaded for the previous path, leaving the ones the parent supplied.
+    /// </summary>
+    private void ForgetLoadedValues()
+    {
         if (ReferenceEquals(PreviousItem, _loadedPrevious))
         {
             PreviousItem = null;
@@ -313,64 +341,78 @@ public partial class ContentPage
         _loadedPrevious = _loadedNext = null;
         _loadedRelated = null;
         _defaultShareLinks = null;
+    }
 
+    /// <summary>
+    /// Builds the URL to query from the page path: the ignored segment is added back, then the replace pattern applied.
+    /// </summary>
+    private string BuildSearchPath(string path)
+    {
+        var searchPath = path;
+        if (!string.IsNullOrWhiteSpace(IgnorePathSegment) && !searchPath.Contains(IgnorePathSegment))
+        {
+            searchPath = $"{IgnorePathSegment}/{searchPath}";
+        }
+
+        return ApplyPathReplacePattern(searchPath);
+    }
+
+    /// <summary>
+    /// Applies <see cref="PathReplacePattern"/> ("pattern|replacement") to a path; any other shape leaves it unchanged.
+    /// </summary>
+    private string ApplyPathReplacePattern(string path)
+    {
+        if (string.IsNullOrWhiteSpace(PathReplacePattern))
+        {
+            return path;
+        }
+
+        var parts = PathReplacePattern.Split('|');
+        if (parts.Length != 2)
+        {
+            return path;
+        }
+
+        // The path comes from the URL, so a pattern that backtracks badly must not hold the request.
         try
         {
-            var provider = ContentProviderManager.GetDefaultProvider();
-            if (provider is not null && !string.IsNullOrWhiteSpace(Path))
+            return Regex.Replace(path, parts[0], parts[1], RegexOptions.None, PathReplaceTimeout);
+        }
+        catch (RegexMatchTimeoutException)
+        {
+            return path;
+        }
+    }
+
+    private static readonly TimeSpan PathReplaceTimeout = TimeSpan.FromMilliseconds(250);
+
+    /// <summary>
+    /// Loads what the page shows around the content: neighbours, related items and default share links.
+    /// </summary>
+    private async Task LoadSupplementaryContentAsync(IContentProvider provider)
+    {
+        if (ContentItem is { } item)
+        {
+            if (ShowNavigationLinks && (PreviousItem is null || NextItem is null))
             {
-                // Clean up the path if needed
-                var searchPath = Path;
+                await LoadNavigationItemsAsync(provider, item);
+            }
 
-                // If ignore path segment is specified, add it back before querying
-                if (!string.IsNullOrWhiteSpace(IgnorePathSegment) && !searchPath.Contains(IgnorePathSegment))
-                {
-                    searchPath = $"{IgnorePathSegment}/{searchPath}";
-                }
+            if (ShowRelatedContent && (RelatedItems is null || !RelatedItems.Any()))
+            {
+                await LoadRelatedItemsAsync(provider, item);
+            }
 
-                // Apply custom regex replacement if specified
-                if (!string.IsNullOrWhiteSpace(PathReplacePattern))
-                {
-                    var parts = PathReplacePattern.Split('|');
-                    if (parts.Length == 2)
-                    {
-                        searchPath = Regex.Replace(searchPath, parts[0], parts[1]);
-                    }
-                }
-
-                ContentItem = await provider.GetItemByUrlAsync(searchPath);
-
-                if (ContentItem is not null && ShowNavigationLinks && (PreviousItem is null || NextItem is null))
-                {
-                    await LoadNavigationItemsAsync(provider, ContentItem);
-                }
-
-                if (ContentItem is not null && ShowRelatedContent && (RelatedItems is null || !RelatedItems.Any()))
-                {
-                    await LoadRelatedItemsAsync(provider, ContentItem);
-                }
-
-                if (ContentItem is not null && OnContentLoaded.HasDelegate)
-                {
-                    await OnContentLoaded.InvokeAsync(ContentItem);
-                }
-
-                if (ShowShareLinks && !ShareLinks.Any())
-                {
-                    // Default share links if none provided and sharing is enabled
-                    InitializeDefaultShareLinks();
-                }
+            if (OnContentLoaded.HasDelegate)
+            {
+                await OnContentLoaded.InvokeAsync(item);
             }
         }
-        catch (Exception ex)
+
+        if (ShowShareLinks && !ShareLinks.Any())
         {
-            Logger.LogError(ex, "Failed to load content {ContentPath}", Path);
-            ContentItem = null;
-        }
-        finally
-        {
-            IsLoading = false;
-            StateHasChanged();
+            // Default share links if none provided and sharing is enabled
+            InitializeDefaultShareLinks();
         }
     }
 
@@ -555,15 +597,7 @@ public partial class ContentPage
             path = path.Replace($"{IgnorePathSegment}/", "");
         }
 
-        // Apply custom regex replace pattern if specified
-        if (!string.IsNullOrWhiteSpace(PathReplacePattern))
-        {
-            var parts = PathReplacePattern.Split('|');
-            if (parts.Length == 2)
-            {
-                path = Regex.Replace(path, parts[0], parts[1]);
-            }
-        }
+        path = ApplyPathReplacePattern(path);
 
         // Remove file extension if present
         if (path.EndsWith(".md") || path.EndsWith(".markdown"))

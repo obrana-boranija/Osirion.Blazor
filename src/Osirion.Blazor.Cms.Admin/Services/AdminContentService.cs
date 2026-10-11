@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using Osirion.Blazor.Cms.Admin.Common.Constants;
 using Osirion.Blazor.Cms.Admin.Core.Events;
 using Osirion.Blazor.Cms.Admin.Interfaces;
 using Osirion.Blazor.Cms.Admin.Services.Events;
@@ -68,7 +69,7 @@ public class AdminContentService : IAdminContentService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error getting content by ID: {Id}", id);
-            _eventMediator.Publish(new ErrorOccurredEvent($"Failed to load content: {ex.Message}", ex));
+            _eventMediator.Publish(new ErrorOccurredEvent(UserMessages.LoadFailed, ex));
             throw;
         }
     }
@@ -100,7 +101,7 @@ public class AdminContentService : IAdminContentService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error searching content: {@Query}", searchQuery);
-            _eventMediator.Publish(new ErrorOccurredEvent($"Failed to search content: {ex.Message}", ex));
+            _eventMediator.Publish(new ErrorOccurredEvent(UserMessages.SearchFailed, ex));
             throw;
         }
     }
@@ -154,7 +155,7 @@ public class AdminContentService : IAdminContentService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error creating content with title: {Title}, path: {Path}", title, path);
-            _eventMediator.Publish(new ErrorOccurredEvent($"Failed to create content: {ex.Message}", ex));
+            _eventMediator.Publish(new ErrorOccurredEvent(UserMessages.SaveFailed, ex));
             throw;
         }
     }
@@ -207,7 +208,7 @@ public class AdminContentService : IAdminContentService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error updating content with ID: {Id}, title: {Title}", id, title);
-            _eventMediator.Publish(new ErrorOccurredEvent($"Failed to update content: {ex.Message}", ex));
+            _eventMediator.Publish(new ErrorOccurredEvent(UserMessages.SaveFailed, ex));
             throw;
         }
     }
@@ -249,7 +250,7 @@ public class AdminContentService : IAdminContentService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error deleting content with ID: {Id}", id);
-            _eventMediator.Publish(new ErrorOccurredEvent($"Failed to delete content: {ex.Message}", ex));
+            _eventMediator.Publish(new ErrorOccurredEvent(UserMessages.DeleteFailed, ex));
             throw;
         }
     }

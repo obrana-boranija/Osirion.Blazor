@@ -1,0 +1,3 @@
+# Source projects left out of tools/run-crap.ps1, one wildcard pattern per line, matched
+# case-insensitively against the project folder name under src/. Lines starting with # are comments.
+# Nothing is excluded: every package in src/ is held to the CRAP threshold.
