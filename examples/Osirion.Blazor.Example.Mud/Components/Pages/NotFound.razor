@@ -1,9 +1,28 @@
 @page "/not-found"
+@using Osirion.Blazor.Cms.Web.Components
+@using Osirion.Blazor.Components
 
 <PageTitle>Page not found</PageTitle>
 
-<MudContainer MaxWidth="MaxWidth.Small" Class="py-12 text-center">
-    <MudText Typo="Typo.h3" HtmlTag="h1" GutterBottom>Page not found</MudText>
-    <MudText Typo="Typo.subtitle1" Class="mb-6">The page you are looking for does not exist or has moved.</MudText>
-    <MudButton Href="/" Variant="Variant.Filled" Color="Color.Primary">Back to the home page</MudButton>
-</MudContainer>
+<OsirionContentNotFound ErrorCode="404"
+                        Title="Page not found"
+                        Message="The page you are looking for does not exist or has moved."
+                        PrimaryButtonText="Back to the home page"
+                        PrimaryButtonUrl="/"
+                        ShowSuggestions
+                        SuggestionsTitle="These pages might help:"
+                        Suggestions="Suggestions"
+                        ShowSearchBox>
+    <SearchContent>
+        <SearchBox Placeholder="Search the docs" />
+    </SearchContent>
+</OsirionContentNotFound>
+
+@code {
+    private static readonly IReadOnlyList<ContentNotFoundSuggestion> Suggestions =
+    [
+        new() { Text = "Documentation", Url = "/docs", Description = "Every component, with examples." },
+        new() { Text = "Blog", Url = "/blog", Description = "Guides, release notes and patterns." },
+        new() { Text = "Contact", Url = "/contact", Description = "Ask a question or report a broken link." }
+    ];
+}

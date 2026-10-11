@@ -1,27 +1,127 @@
-﻿@using Osirion.Blazor.Cms.Components
-@using Osirion.Blazor.Cms.Web.Components
-@using Osirion.Blazor.Components
+﻿@using Osirion.Blazor.Cms.Web.Components
 @using Osirion.Blazor.Navigation.Components
-@inherits OsirionComponentBase
+@using Osirion.Blazor.Theming.Components
 
-<Menu AriaLabel="Main Navigation"
+<Menu AriaLabel="Main navigation"
       Orientation="MenuOrientation.Horizontal"
       Alignment="MenuAlignment.Right"
       CollapseOnMobile
+      CollapseBreakpoint="MenuCollapseBreakpoint.Large"
       BrandLogo="/favicon.png"
       BrandText="Osirion.Blazor"
       Sticky>
-    
-    <MenuItem Text="Home" Href="/" Icon="home" />
-    
-    @foreach (var dir in _directories)
-    {
-        <NavMenuItem Directory="@dir" />
-    }
+    <ChildContent>
+        <MenuItem Text="Components" HasSubmenu SubmenuVariant="SubmenuVariant.Mega">
+            <ChildContent>
+                <MenuGroup Label="Content and CMS"
+                           Description="Render Markdown from GitHub or local files.">
+                    <MenuItem Text="Content list" Description="Paged, filterable lists of posts and pages." Href="/docs/components/cms-web/core/content-list" />
+                    <MenuItem Text="Content page" Description="An article with metadata, breadcrumbs and SEO." Href="/docs/components/cms-web/core/content-page" />
+                    <MenuItem Text="Table of contents" Description="Built from the headings of the page." Href="/docs/components/cms-web/navigation/table-of-contents" />
+                </MenuGroup>
+                <MenuGroup Label="Sections and cards"
+                           Description="Compose landing pages from ready-made blocks.">
+                    <MenuItem Text="Hero section" Description="Headline, actions and an image, in four layouts." Href="/docs/components/core/sections/hero-section" />
+                    <MenuItem Text="Feature card" Description="Icon, title and text for a feature grid." Href="/docs/components/core/cards/feature-card" />
+                    <MenuItem Text="Testimonial carousel" Description="Quotes that scroll without JavaScript." Href="/docs/components/core/carousels/testimonial-carousel" />
+                </MenuGroup>
+                <MenuGroup Label="Navigation and theming"
+                           Description="Menus, breadcrumbs and light or dark themes.">
+                    <MenuItem Text="Breadcrumbs" Description="Where the reader is, with structured data." Href="/docs/components/core/navigation/breadcrumbs" />
+                    <MenuItem Text="Theme toggle" Description="Light, dark or the system preference." Href="/docs/components/theming/theme-toggle" />
+                    <MenuItem Text="Cookie consent" Description="Ask before any tracker loads." Href="/docs/components/core/popups/cookie-consent" />
+                </MenuGroup>
+                <MenuCallToAction Text="Browse all components"
+                                  Description="Guides and parameter reference for every module."
+                                  Href="/docs" />
+            </ChildContent>
+            <SubmenuAside>
+                <MenuImageCard ImageUrl="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=640&q=70&auto=format&fit=crop"
+                               ImageAlt="A laptop showing code on a bright desk"
+                               Title="Build a docs site in an afternoon"
+                               Description="Markdown in, a fast server-rendered site out."
+                               Href="/docs" />
+            </SubmenuAside>
+        </MenuItem>
 
-    <MenuItem Text="Contact" Href="/contact" Icon="contact" />
+        <MenuItem Text="Guides" HasSubmenu>
+            <MenuItem Text="Build a blog with GitHub" Href="/blog/github-cms-with-blazor" />
+            <MenuItem Text="Content and SEO" HasSubmenu>
+                <MenuItem Text="SEO checklist for SSR" Href="/blog/blazor-seo-ssr-ssg-checklist" />
+                <MenuItem Text="Localization" Href="/blog/localization-for-blazor-content-sites" />
+                <MenuItem Text="Structuring content" Href="/blog/structuring-content-repositories" />
+            </MenuItem>
+            <MenuItem Text="Pages and navigation" HasSubmenu>
+                <MenuItem Text="Hero sections" Href="/blog/modern-hero-sections-blazor" />
+                <MenuItem Text="Navigation components" Href="/blog/navigation-components" />
+                <MenuItem Text="Scroll after navigation" Href="/blog/enhanced-navigation-interceptor" />
+            </MenuItem>
+            <MenuItem Text="Privacy and analytics" HasSubmenu>
+                <MenuItem Text="Cookie consent and GDPR" Href="/blog/gdpr-cookie-consent-blazor" />
+                <MenuItem Text="Analytics integration" Href="/blog/analytics-integration-in-blazor" />
+            </MenuItem>
+            <MenuItem Text="Performance tuning" Href="/blog/performance-tuning-content-heavy-blazor-sites" />
+            <MenuDivider />
+            <MenuItem Text="All articles" Href="/blog" />
+        </MenuItem>
 
-    <MenuDivider />
-    <SearchBox Class="pa-3" />
-    <Osirion.Blazor.Theming.Components.ThemeToggle />
+        <MenuItem Text="Resources" HasSubmenu SubmenuVariant="SubmenuVariant.Mega">
+            <ChildContent>
+                <MenuGroup Label="Learn" Description="Guides and reference for every module.">
+                    <MenuItem Text="Documentation" Description="Every component, with examples." Href="/docs">
+                        <IconTemplate>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M1 2.828c.885-.37 2.154-.769 3.388-.893 1.33-.134 2.458.063 3.112.752v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.461-3.287.811zm7.5-.141c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492zM8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v11a.5.5 0 0 0 .707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 0 0 .78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0 0 16 13.5v-11a.5.5 0 0 0-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783" /></svg>
+                        </IconTemplate>
+                    </MenuItem>
+                    <MenuItem Text="Blog" Description="Release notes, guides and patterns." Href="/blog">
+                        <IconTemplate>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M5 10.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5m0-2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m0-2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m0-2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5" /><path d="M3 0h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-1h1v1a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v1H1V2a2 2 0 0 1 2-2" /><path d="M1 5v-.5a.5.5 0 0 1 1 0V5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1zm0 3v-.5a.5.5 0 0 1 1 0V8h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1zm0 3v-.5a.5.5 0 0 1 1 0v.5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1z" /></svg>
+                        </IconTemplate>
+                    </MenuItem>
+                    <MenuItem Text="Getting started" Description="From an empty project to a content site." Href="/blog/github-cms-with-blazor">
+                        <IconTemplate>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M9.752 6.193c.599.6 1.73.437 2.528-.362s.96-1.932.362-2.531c-.599-.6-1.73-.438-2.528.361-.798.8-.96 1.933-.362 2.532" /><path d="M15.811 3.312c-.363 1.534-1.334 3.626-3.64 6.218l-.24 2.408a2.56 2.56 0 0 1-.732 1.526L8.817 15.85a.51.51 0 0 1-.867-.434l.27-1.899c.04-.28-.013-.593-.131-.956a9 9 0 0 0-.249-.657l-.082-.202c-.815-.197-1.578-.662-2.191-1.277-.614-.615-1.079-1.379-1.275-2.195l-.203-.083a10 10 0 0 0-.655-.248c-.363-.119-.675-.172-.955-.132l-1.896.27A.51.51 0 0 1 .15 7.17l2.382-2.386c.41-.41.947-.67 1.524-.734h.006l2.4-.238C9.005 1.55 11.087.582 12.623.208c.89-.217 1.59-.232 2.08-.188.244.023.435.06.57.093q.1.026.16.045c.184.06.279.13.351.295l.029.073a3.5 3.5 0 0 1 .157.721c.055.485.051 1.178-.159 2.065m-4.828 7.475.04-.04-.107 1.081a1.54 1.54 0 0 1-.44.913l-1.298 1.3.054-.38c.072-.506-.034-.993-.172-1.418a9 9 0 0 0-.164-.45c.738-.065 1.462-.38 2.087-1.006M5.205 5c-.625.626-.94 1.351-1.004 2.09a9 9 0 0 0-.45-.164c-.424-.138-.91-.244-1.416-.172l-.38.054 1.3-1.3c.245-.246.566-.401.91-.44l1.08-.107zm9.406-3.961c-.38-.034-.967-.027-1.746.163-1.558.38-3.917 1.496-6.937 4.521-.62.62-.799 1.34-.687 2.051.107.676.483 1.362 1.048 1.928.564.565 1.25.941 1.924 1.049.71.112 1.429-.067 2.048-.688 3.079-3.083 4.192-5.444 4.556-6.987.183-.771.18-1.345.138-1.713a3 3 0 0 0-.045-.283 3 3 0 0 0-.3-.041Z" /><path d="M7.009 12.139a7.6 7.6 0 0 1-1.804-1.352A7.6 7.6 0 0 1 3.794 8.86c-1.102.992-1.965 5.054-1.839 5.18.125.126 3.936-.896 5.054-1.902Z" /></svg>
+                        </IconTemplate>
+                    </MenuItem>
+                </MenuGroup>
+                <MenuGroup Label="Contribute" Description="Help shape the next release.">
+                    <MenuItem Text="Contributing guide" Description="Set up the repository and open a pull request." Href="https://github.com/obrana-boranija/Osirion.Blazor/blob/master/CONTRIBUTING.md" Target="_blank" />
+                    <MenuItem Text="Report an issue" Description="Bugs, gaps in the docs and feature ideas." Href="https://github.com/obrana-boranija/Osirion.Blazor/issues" Target="_blank" />
+                    <MenuItem Text="Releases" Description="Every version, with its packages and notes." Href="https://github.com/obrana-boranija/Osirion.Blazor/releases" Target="_blank" />
+                </MenuGroup>
+            </ChildContent>
+            <SubmenuAside>
+                <MenuPanel Title="Open source" Description="MIT licensed and built in the open.">
+                    <MenuPanelLink Text="GitHub repository" Href="https://github.com/obrana-boranija/Osirion.Blazor" Target="_blank">
+                        <IconTemplate>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8" /></svg>
+                        </IconTemplate>
+                    </MenuPanelLink>
+                    <MenuPanelLink Text="NuGet package" Href="https://www.nuget.org/packages/Osirion.Blazor" Target="_blank">
+                        <IconTemplate>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8.186 1.113a.5.5 0 0 0-.372 0L1.846 3.5l2.404.961L10.404 2zm3.564 1.426L5.596 5 8 5.961 14.154 3.5zm3.25 1.7-6.5 2.6v7.922l6.5-2.6V4.24zM7.5 14.762V6.838L1 4.239v7.923zM7.443.184a1.5 1.5 0 0 1 1.114 0l7.129 2.852A.5.5 0 0 1 16 3.5v8.662a1 1 0 0 1-.629.928l-7.185 2.874a.5.5 0 0 1-.372 0L.63 13.09a1 1 0 0 1-.63-.928V3.5a.5.5 0 0 1 .314-.464z" /></svg>
+                        </IconTemplate>
+                    </MenuPanelLink>
+                    <MenuPanelLink Text="MIT license" Href="https://github.com/obrana-boranija/Osirion.Blazor/blob/master/LICENSE.txt" Target="_blank">
+                        <IconTemplate>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M5.5 7a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1zM5 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5" /><path d="M9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.5zm0 1v2A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1z" /></svg>
+                        </IconTemplate>
+                    </MenuPanelLink>
+                    <MenuPanelLink Text="Release notes" Href="https://github.com/obrana-boranija/Osirion.Blazor/blob/master/CHANGELOG.md" Target="_blank">
+                        <IconTemplate>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8.515 1.019A7 7 0 0 0 8 1V0a8 8 0 0 1 .589.022zm2.004.45a7 7 0 0 0-.985-.299l.219-.976q.576.129 1.126.342zm1.37.71a7 7 0 0 0-.439-.27l.493-.87a8 8 0 0 1 .979.654l-.615.789a7 7 0 0 0-.418-.302zm1.834 1.79a7 7 0 0 0-.653-.796l.724-.69q.406.429.747.91zm.744 1.352a7 7 0 0 0-.214-.468l.893-.45a8 8 0 0 1 .45 1.088l-.95.313a7 7 0 0 0-.179-.483m.53 2.507a7 7 0 0 0-.1-1.025l.985-.17q.1.58.116 1.17zm-.131 1.538q.05-.254.081-.51l.993.123a8 8 0 0 1-.23 1.155l-.964-.267q.069-.247.12-.501m-.952 2.379q.276-.436.486-.908l.914.405q-.24.54-.555 1.038zm-.964 1.205q.183-.183.35-.378l.758.653a8 8 0 0 1-.401.432z" /><path d="M8 1a7 7 0 1 0 4.95 11.95l.707.707A8.001 8.001 0 1 1 8 0z" /><path d="M7.5 3a.5.5 0 0 1 .5.5v5.21l3.248 1.856a.5.5 0 0 1-.496.868l-3.5-2A.5.5 0 0 1 7 9V3.5a.5.5 0 0 1 .5-.5" /></svg>
+                        </IconTemplate>
+                    </MenuPanelLink>
+                </MenuPanel>
+            </SubmenuAside>
+        </MenuItem>
+
+        <MenuItem Text="Docs" Href="/docs" Match="NavLinkMatch.Prefix" />
+        <MenuItem Text="Blog" Href="/blog" Match="NavLinkMatch.Prefix" />
+        <MenuItem Text="Contact" Href="/contact" />
+    </ChildContent>
+    <Actions>
+        <SearchBox Placeholder="Search the docs" SearchButtonText="Search" />
+        <ThemeToggle />
+    </Actions>
 </Menu>

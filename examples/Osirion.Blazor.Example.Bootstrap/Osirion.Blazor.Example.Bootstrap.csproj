@@ -7,18 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="wwwroot\css\**" />
-    <Content Remove="wwwroot\css\**" />
-    <EmbeddedResource Remove="wwwroot\css\**" />
-    <None Remove="wwwroot\css\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Remove="compilerconfig.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="wwwroot\css\documentation-layout.css" />
   </ItemGroup>
 
   <ItemGroup>
