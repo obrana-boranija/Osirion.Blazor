@@ -1,3 +1,5 @@
+using System.Collections.Frozen;
+
 namespace Osirion.Blazor.Components;
 
 /// <summary>
@@ -12,18 +14,22 @@ public static class OsirionPattern
     /// <returns>A CSS class name corresponding to the pattern type, or an empty string if null.</returns>
     public static string BackgroundPattern(BackgroundPatternType? type)
     {
-        return type switch
-        {
-            BackgroundPatternType.Dots => "osirion-bg-dots",
-            BackgroundPatternType.Grid => "osirion-bg-grid",
-            BackgroundPatternType.Diagonal => "osirion-bg-diagonal",
-            BackgroundPatternType.Honeycomb => "osirion-bg-honeycomb",
-            BackgroundPatternType.GradientMesh => "osirion-bg-gradient-mesh",
-            BackgroundPatternType.AnimatedGrid => "osirion-bg-grid-animated",
-            BackgroundPatternType.TechWave => "osirion-bg-tech-wave",
-            BackgroundPatternType.Circuit => "osirion-bg-circuit",
-            BackgroundPatternType.DotsFade => "osirion-bg-dots-fade",
-            _ => string.Empty,
-        };
+        return type is { } value && BackgroundPatternClasses.TryGetValue(value, out var cssClass)
+            ? cssClass
+            : string.Empty;
     }
+
+    private static readonly FrozenDictionary<BackgroundPatternType, string> BackgroundPatternClasses =
+        new Dictionary<BackgroundPatternType, string>
+        {
+            [BackgroundPatternType.Dots] = "osirion-bg-dots",
+            [BackgroundPatternType.Grid] = "osirion-bg-grid",
+            [BackgroundPatternType.Diagonal] = "osirion-bg-diagonal",
+            [BackgroundPatternType.Honeycomb] = "osirion-bg-honeycomb",
+            [BackgroundPatternType.GradientMesh] = "osirion-bg-gradient-mesh",
+            [BackgroundPatternType.AnimatedGrid] = "osirion-bg-grid-animated",
+            [BackgroundPatternType.TechWave] = "osirion-bg-tech-wave",
+            [BackgroundPatternType.Circuit] = "osirion-bg-circuit",
+            [BackgroundPatternType.DotsFade] = "osirion-bg-dots-fade",
+        }.ToFrozenDictionary();
 }

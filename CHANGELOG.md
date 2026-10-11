@@ -12,6 +12,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Osirion.Blazor.Core: `OsirionTestimonialCarousel` hung while rendering when `MaxVisibleTestimonials` was 1 or 2, threw `DivideByZeroException` for an empty `CustomTestimonials` list, and appended its loop padding to the host's own `CustomTestimonials` list
+- Osirion.Blazor.Core: `OsirionSubscriptionCard` with `UseBuiltInEmailService` and no registered email service told the visitor the submission looked like spam; it now reports a server error, as `OsirionContactForm` does
+- Osirion.Blazor.Core: `HeroSection` added `Class` twice and glued it to the previous class (`hero-dividerlanding`)
+- Osirion.Blazor.Core: `OsirionResponsiveShowcaseSection` ignored `Class` and unmatched attributes on its root, showed a replacement character instead of `×` in the viewport dimensions, and rendered `aria-pressed` without a `true`/`false` value
+- Osirion.Blazor.Core: the cookie consent check threw `NullReferenceException` when the consent cookie held `"Categories": null`; it now counts as no consent
+
 ### Build
 - The coverage workflow runs every test project except the Playwright suite and fails when a test fails or is not discovered, instead of uploading a partial report. Coverage settings live in `coverlet.runsettings` (generated code and auto-property accessors are not counted) and Codecov targets in `codecov.yml` (90% for the project and for each change, informational for now)
 - CRAP scores (threshold 30) are measured by `tools/run-crap.ps1` and checked by `tools/verify-crap.ps1`, using `crap4dotnet` pinned in `.config/dotnet-tools.json` for complexity and the merged coverlet reports for coverage. The coverage workflow reports them in the job summary without failing the build yet; the baseline snapshot is in `docs/crap/`

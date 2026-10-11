@@ -185,9 +185,9 @@ public partial class OsirionResponsiveShowcaseSection : ComponentBase
     {
         return CurrentViewport switch
         {
-            ViewportMode.Desktop => "Desktop: 1200px � 600px+ (Large screens, laptops)",
-            ViewportMode.Tablet => "Tablet: 768px � 500px+ (iPad, tablets)",
-            ViewportMode.Mobile => "Mobile: 375px � 600px+ (iPhone, Android phones)",
+            ViewportMode.Desktop => "Desktop: 1200px × 600px+ (Large screens, laptops)",
+            ViewportMode.Tablet => "Tablet: 768px × 500px+ (iPad, tablets)",
+            ViewportMode.Mobile => "Mobile: 375px × 600px+ (iPhone, Android phones)",
             _ => ""
         };
     }

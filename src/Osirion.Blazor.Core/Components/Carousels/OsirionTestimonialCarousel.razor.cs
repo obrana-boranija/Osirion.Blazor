@@ -111,17 +111,9 @@ public partial class OsirionTestimonialCarousel : OsirionComponentBase
     public bool InheritTheme { get; set; } = false;
 
     private List<TestimonialItem> TestimonialList => CustomTestimonials ?? GetSampleTestimonials();
-    private List<TestimonialItem> VisibleTestimonials 
-    {
-        get
-        {
-            if (MaxVisibleTestimonials.HasValue && MaxVisibleTestimonials.Value > 0)
-            {
-                return TestimonialList.Take(MaxVisibleTestimonials.Value).ToList();
-            }
-            return TestimonialList;
-        }
-    }
+    private const int MinimumLoopLength = 3;
+    private List<TestimonialItem> _visibleTestimonials = [];
+    private List<TestimonialItem> VisibleTestimonials => _visibleTestimonials;
 
     /// <summary>
     /// Gets the theme to use for testimonial cards
@@ -182,21 +174,27 @@ public partial class OsirionTestimonialCarousel : OsirionComponentBase
     }
 
     /// <inheritdoc/>
-    protected override void OnInitialized()
+    protected override void OnParametersSet()
     {
-        base.OnInitialized();
-        
-        // Ensure we have at least 3 testimonials for smooth looping
-        if (VisibleTestimonials.Count < 3)
+        base.OnParametersSet();
+        _visibleTestimonials = BuildVisibleTestimonials();
+    }
+
+    // Built into a new list: the padding must not leak into the caller's CustomTestimonials.
+    private List<TestimonialItem> BuildVisibleTestimonials()
+    {
+        var visible = MaxVisibleTestimonials is > 0
+            ? TestimonialList.Take(MaxVisibleTestimonials.Value).ToList()
+            : new List<TestimonialItem>(TestimonialList);
+
+        // Fewer cards than this leave a visible gap in the loop, so the first ones are repeated.
+        var originalCount = visible.Count;
+        for (var index = 0; originalCount > 0 && visible.Count < MinimumLoopLength; index++)
         {
-            // Duplicate testimonials to ensure smooth animation
-            var originalCount = VisibleTestimonials.Count;
-            while (VisibleTestimonials.Count < 3)
-            {
-                var indexToDuplicate = VisibleTestimonials.Count % originalCount;
-                VisibleTestimonials.Add(TestimonialList[indexToDuplicate]);
-            }
+            visible.Add(visible[index % originalCount]);
         }
+
+        return visible;
     }
 
     /// <summary>
