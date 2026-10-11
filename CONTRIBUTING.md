@@ -61,7 +61,7 @@ dotnet test
 ```
 
 7. Run the example sites. The Aspire AppHost starts every example (Bootstrap on `http://localhost:5296`, MudBlazor on
-   `http://localhost:5297`) and opens the Aspire dashboard with their logs:
+   `http://localhost:5297`, Fluent UI on `http://localhost:5298`) and opens the Aspire dashboard with their logs:
 
 ```bash
 dotnet run --project examples/Osirion.Blazor.Examples.AppHost

@@ -310,6 +310,45 @@ public static class SiteTheme
 
 `examples/Osirion.Blazor.Example.Mud` is a complete site built this way.
 
+### Fluent UI Integration
+
+With `Framework` set to `FluentUI`, the adapter maps Osirion's tokens to the Fluent UI Blazor v5 design tokens
+(`--colorNeutralBackground1`, `--colorBrandBackground`, `--fontFamilyBase` and so on). Each mapping falls back to the
+matching v4 token and then to a literal value, so the adapter also works with v4 and before Fluent's script has set
+its tokens.
+
+Fluent UI v5 keeps its own theme mode and sets its color tokens from it. `OsirionStyles` hands Osirion's mode to
+`Blazor.theme.setThemeMode`, so Fluent components and Osirion components follow `ThemeToggle` together, and Fluent
+stores the mode for its next start. No extra code is needed for this.
+
+Fluent's default stylesheet turns the body into a fixed-height app shell (`height: 100dvh; overflow: hidden`) for
+`FluentLayout`. A content site that scrolls the document opts out with `no-fuib-style` on the body and sets the body
+styles itself, including the border-box sizing that Osirion's components assume:
+
+```razor
+@* App.razor *@
+<body no-fuib-style>
+    <Routes />
+    <script src="_framework/blazor.web.js"></script>
+</body>
+```
+
+```css
+/* app.css */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: var(--fontFamilyBase, 'Segoe UI', sans-serif);
+    color: var(--colorNeutralForeground1, #242424);
+    background-color: var(--colorNeutralBackground1, #ffffff);
+}
+```
+
+`examples/Osirion.Blazor.Example.FluentUI` is a complete site built this way.
+
 ## Best Practices
 
 1. **Override Only What You Need**: Only override the variables you want to change to minimize maintenance.

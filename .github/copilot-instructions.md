@@ -139,7 +139,7 @@ dotnet test tests/Osirion.Blazor.E2ETests/
 dotnet restore
 dotnet build
 
-# Run every example site (Bootstrap :5296, MudBlazor :5297) with the Aspire dashboard
+# Run every example site (Bootstrap :5296, MudBlazor :5297, Fluent UI :5298) with the Aspire dashboard
 dotnet run --project examples/Osirion.Blazor.Examples.AppHost
 
 # Run one example app with hot reload
