@@ -2,12 +2,13 @@
 id: 'osirion-contact-form'
 order: 1
 layout: docs
-title: OsirionContactForm Component
+title: OsirionContactForm
 permalink: /docs/components/core/forms/contact-form
-description: Learn how to implement the OsirionContactForm component for comprehensive contact forms with validation, accessibility, and email integration.
+description: A contact form that validates on the server, blocks simple bots with a honeypot and sends mail through SMTP, SendGrid or Infobip, without script.
 author: Dejan Demonjić
 date: 2025-09-03
-featured_image: https://storage.googleapis.com/croct-assets-b931d070/blog/Headless_CMS_within_the_React_framework_3_1_da922d2562/Headless_CMS_within_the_React_framework_3_1_da922d2562.png
+last_modified: 2026-10-11
+featured_image: /assets/images/blazor-cover.png
 categories:
 - Components
 - Core Components
@@ -16,891 +17,221 @@ tags:
 - blazor
 - contact-form
 - forms
+- static-ssr
+- email
 - validation
-- email-integration
-- accessibility
-- user-input
 is_featured: true
 published: true
 slug: contact-form
 lang: en
 custom_fields: {}
 seo_properties:
-  title: 'OsirionContactForm Component - Contact Forms with Validation | Osirion.Blazor'
-  description: 'Create comprehensive contact forms with the OsirionContactForm component. Features validation, email integration, and full accessibility support.'
-  image: https://storage.googleapis.com/croct-assets-b931d070/blog/Headless_CMS_within_the_React_framework_3_1_da922d2562/Headless_CMS_within_the_React_framework_3_1_da922d2562.png
+  title: 'OsirionContactForm: Blazor contact form with email delivery | Osirion.Blazor'
+  description: 'A Blazor contact form for static SSR: server validation, honeypot spam check and email delivery through SMTP, SendGrid or Infobip.'
+  image: /assets/images/blazor-cover.png
   canonical: 'https://getosirion.com/docs/components/core/forms/contact-form'
   lang: en
   robots: index, follow
-  og_title: 'OsirionContactForm Component - Osirion.Blazor'
-  og_description: 'Comprehensive contact forms with validation, email integration, and accessibility support.'
-  og_image_url: 'https://storage.googleapis.com/croct-assets-b931d070/blog/Headless_CMS_within_the_React_framework_3_1_da922d2562/Headless_CMS_within_the_React_framework_3_1_da922d2562.png'
+  og_title: 'OsirionContactForm - Osirion.Blazor'
+  og_description: 'Server-validated contact form with a honeypot and built-in SMTP, SendGrid or Infobip delivery.'
+  og_image_url: /assets/images/blazor-cover.png
   og_type: article
   json_ld: ''
   type: Article
   twitter_card: summary_large_image
-  twitter_title: 'OsirionContactForm Component - Osirion.Blazor'
-  twitter_description: 'Create comprehensive contact forms with validation and email integration.'
-  twitter_image_url: 'https://storage.googleapis.com/croct-assets-b931d070/blog/Headless_CMS_within_the_React_framework_3_1_da922d2562/Headless_CMS_within_the_React_framework_3_1_da922d2562.png'
+  twitter_title: 'OsirionContactForm - Osirion.Blazor'
+  twitter_description: 'Server-validated Blazor contact form with email delivery and no script.'
+  twitter_image_url: /assets/images/blazor-cover.png
   meta_tags: {}
 ---
 
-# OsirionContactForm Component
+# OsirionContactForm
 
-The OsirionContactForm component provides a comprehensive contact form solution with built-in validation, email integration, accessibility features, and customizable styling. It includes optional contact information display and follows modern form design principles for optimal user experience.
+`OsirionContactForm` renders a name, email, subject and message form with a privacy checkbox and an optional
+newsletter checkbox. It validates on the server, posts as a normal HTML form under static SSR, and either sends the
+message through the built-in email service or hands it to your own callback.
 
-## Component Overview
+## Usage
 
-OsirionContactForm combines form functionality with contact information display, creating a complete contact solution for websites and applications. It features robust validation, email sending capabilities, loading states, success/error handling, and comprehensive accessibility support.
+The smallest form passes the message to your code:
 
-### Key Features
+```razor
+@page "/contact"
+@using Osirion.Blazor.Components
+@using Osirion.Blazor.Core.Models
 
-**Form Validation**: Built-in validation with custom error messages and real-time feedback
-**Email Integration**: Direct email sending with configurable SMTP settings
-**Contact Info Display**: Optional contact information section with social links
-**Accessibility Compliant**: Full ARIA support, keyboard navigation, and screen reader compatibility
-**Responsive Design**: Mobile-first design that works across all device sizes
-**Loading States**: Visual feedback during form submission and processing
-**Success/Error Handling**: Comprehensive feedback for form submission results
-**Framework Agnostic**: Compatible with Bootstrap, Tailwind CSS, and custom styling
+<OsirionContactForm Id="contact" OnSubmit="HandleSubmitAsync" />
+
+@code {
+    private async Task HandleSubmitAsync(ContactFormModel message)
+    {
+        // Save the message, queue it or call your CRM here.
+        // An exception shows ErrorMessage instead of SuccessMessage.
+        await Task.CompletedTask;
+    }
+}
+```
+
+To have the library send the message by email, register the email service (next section) and set
+`UseBuiltInEmailService`:
+
+```razor
+<OsirionContactForm Id="contact"
+                    UseBuiltInEmailService="true"
+                    FormTitle="Get in touch"
+                    FormDescription="Questions about the library? Write to us."
+                    PrivacyPolicyText="I agree to the <a href='/privacy'>privacy policy</a>"
+                    ShowSubscribeOption="false"
+                    ContactInfo="contactInfo" />
+
+@code {
+    private readonly ContactInformation contactInfo = new()
+    {
+        Address = "Belgrade, Serbia",
+        Email = "hello@example.com"
+    };
+}
+```
+
+When `ContactInfo` is set, an [OsirionContactInfoSection](/docs/components/core/sections/contact-info-section) is
+shown next to the form (or below it with `SideBySideLayout="false"`). Without it, no contact details are rendered.
+
+## Email delivery
+
+`AddOsirion(builder.Configuration)` registers the email service when the `Osirion:Email` section exists.
+`Provider` is `Smtp` (the default), `SendGrid` or `Infobip`.
+
+```json
+{
+  "Osirion": {
+    "Email": {
+      "Provider": "Smtp",
+      "ToEmail": "hello@example.com",
+      "FromName": "Website contact form",
+      "SubjectTemplate": "Contact form: {subject}",
+      "Smtp": {
+        "Host": "smtp.example.com",
+        "Port": 587,
+        "EnableSsl": true,
+        "Username": "contact@example.com",
+        "FromEmail": "contact@example.com"
+      }
+    }
+  }
+}
+```
+
+Keep the password or API key out of `appsettings.json`: put `Osirion:Email:Smtp:Password`,
+`Osirion:Email:SendGrid:ApiKey` or `Osirion:Email:Infobip:ApiKey` in user secrets locally, and in environment
+variables or a key vault in production.
+
+| Key | Default | Meaning |
+| --- | --- | --- |
+| `Provider` | `Smtp` | `Smtp`, `SendGrid` or `Infobip`. |
+| `ToEmail` | empty | Where messages are delivered. |
+| `FromName` | `Contact Form` | Sender display name. |
+| `SubjectTemplate` | `Contact Form: {subject}` | `{subject}` is replaced with the visitor's subject. |
+| `Smtp`: `Host`, `Port`, `EnableSsl`, `Username`, `Password`, `FromEmail` | port `587`, SSL on | SMTP server settings. |
+| `SendGrid`: `ApiKey`, `FromEmail` | empty | SendGrid settings. |
+| `Infobip`: `BaseUrl`, `ApiKey`, `FromEmail` | `BaseUrl` is `https://api.infobip.com` | Infobip settings. |
+
+You can also configure it in code with `UseEmailServices`:
+
+```csharp
+using Osirion.Blazor.Core.Configuration;
+using Osirion.Blazor.Extensions;
+
+builder.Services.AddOsirion(osirion => osirion.UseEmailServices(email =>
+{
+    email.Provider = EmailProviderType.SendGrid;
+    email.ToEmail = "hello@example.com";
+    email.SendGrid.FromEmail = "noreply@example.com";
+    email.SendGrid.ApiKey = builder.Configuration["Osirion:Email:SendGrid:ApiKey"] ?? string.Empty;
+}));
+```
+
+Without the `Osirion.Blazor` meta-package, `services.AddOsirionEmailServices(configuration)` from
+`Osirion.Blazor.Core.Extensions` does the same. The mail is HTML, every visitor value in it is HTML-encoded, and the
+visitor's address is set as Reply-To, so you can answer directly. SendGrid and Infobip calls time out after 30
+seconds.
 
 ## Parameters
 
-### Form Configuration
-
 | Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `Id` | `string` | `"contact-form"` | **Required.** Unique identifier for the contact form. |
-| `FormTitle` | `string` | `"Write us"` | Title displayed above the contact form. |
-| `FormDescription` | `string` | `""` | Description text displayed below the form title. |
-| `SubmitButtonText` | `string` | `"Send Message"` | Text displayed on the submit button. |
-| `SuccessMessage` | `string` | `"Thank you! Your message has been sent successfully."` | Message shown after successful form submission. |
-| `ErrorMessage` | `string` | `"Sorry, there was an error sending your message. Please try again."` | Message shown when form submission fails. |
+| --- | --- | --- | --- |
+| `Id` | `string` | `"contact-form"` | Required. Form name and element id prefix; use a unique value per form on a page. |
+| `FormTitle` | `string` | `"Write us"` | Heading (`h2`) above the form; empty hides it. |
+| `FormDescription` | `string` | empty | Text below the title. |
+| `NamePlaceholder` | `string` | `"Your name"` | Placeholder of the name field. |
+| `EmailPlaceholder` | `string` | `"Your email address"` | Placeholder of the email field. |
+| `SubjectPlaceholder` | `string` | `"Subject"` | Placeholder of the subject field. |
+| `MessagePlaceholder` | `string` | `"Your message"` | Placeholder of the message field. |
+| `MessageRows` | `int` | `6` | Rows of the message textarea. |
+| `SubmitButtonText` | `string` | `"Send Message"` | Submit button text. |
+| `ShowResetButton` | `bool` | `false` | Shows a reset button. |
+| `ResetButtonText` | `string` | `"Reset"` | Reset button text. |
+| `ShowRequiredIndicators` | `bool` | `true` | Shows `*` after required labels. |
+| `PrivacyPolicyText` | `string?` | text linking to `/privacy-policy` | Label of the privacy checkbox, rendered as HTML. |
+| `ShowSubscribeOption` | `bool` | `true` | Shows the newsletter checkbox. |
+| `SubscribeText` | `string` | `"I would like to receive updates and newsletters"` | Label of the newsletter checkbox. |
+| `ShowContactInformation` | `bool` | `true` | Shows the contact information section when `ContactInfo` is set. |
+| `ContactInfoTitle` | `string` | `"Contact information"` | Title of that section. |
+| `ContactInfo` | `ContactInformation?` | `null` | Address, phone, email, website and message to show. |
+| `UseBuiltInEmailService` | `bool` | `false` | Sends the message through the registered email service. |
+| `OnSubmit` | `EventCallback<ContactFormModel>` | none | Called with a valid, non-spam submission; with the built-in service, after a successful send. |
+| `SuccessMessage` | `string` | thank-you text | Shown after a successful submission. |
+| `ErrorMessage` | `string` | error text | Shown when sending or your callback fails. |
+| `SpamMessage` | `string` | spam text | Shown when the honeypot field was filled. |
+| `SideBySideLayout` | `bool` | `true` | Form and contact information side by side; `false` stacks them. |
+| `UseDarkTheme` | `bool` | `false` | Uses the form's dark palette instead of the theme colors. |
 
-### Form Field Configuration
+`Class`, `Style` and unmatched attributes from `OsirionComponentBase` go on the outer element. `SubmittingText`,
+`OnReset` and `OnValidationFailed` are declared but not used by the current markup.
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `NamePlaceholder` | `string` | `"Your name"` | Placeholder text for the name field. |
-| `EmailPlaceholder` | `string` | `"Your email address"` | Placeholder text for the email field. |
-| `SubjectPlaceholder` | `string` | `"Subject"` | Placeholder text for the subject field. |
-| `MessagePlaceholder` | `string` | `"Your message"` | Placeholder text for the message field. |
-| `RequireSubject` | `bool` | `true` | Whether the subject field is required. |
-| `MinMessageLength` | `int` | `10` | Minimum required length for the message field. |
-| `MaxMessageLength` | `int` | `1000` | Maximum allowed length for the message field. |
+## Behavior
 
-### Contact Information Parameters
+- **Static SSR.** The form is an `EditForm` with `FormName` set to `Id`, so it posts and validates on the server
+  without script. After a valid post the component redirects to the same page with a `SubmissionResultValue` query
+  value, and the page shows the success, error or spam message. Invalid fields show their messages in place.
+- **Validation** comes from data annotations on `ContactFormModel`: a name up to 100 characters, a valid email up to
+  255, a subject up to 200, a message of 10 to 5,000 characters, and a ticked privacy checkbox.
+- **Spam.** A hidden `Website` field acts as a honeypot. When a bot fills it, nothing is sent, `OnSubmit` is not
+  called and `SpamMessage` is shown. A missing or failing email service shows `ErrorMessage`, never the spam message.
+- **Without the email service.** With `UseBuiltInEmailService="true"` and no email registration, the form logs a
+  warning and shows `ErrorMessage`.
+- **Accessibility.** Every field has a `label`, and each input points to its validation message with
+  `aria-describedby`. Status icons are hidden from assistive technology; the message text carries the meaning.
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `ShowContactInfo` | `bool` | `false` | Whether to display the contact information section. |
-| `ContactInfoTitle` | `string` | `"Get in Touch"` | Title for the contact information section. |
-| `ContactInfoDescription` | `string` | `""` | Description for the contact information section. |
-| `ContactEmail` | `string?` | `null` | Contact email address to display. |
-| `ContactPhone` | `string?` | `null` | Contact phone number to display. |
-| `ContactAddress` | `string?` | `null` | Contact address to display. |
-| `SocialLinks` | `List<SocialLink>?` | `null` | Collection of social media links to display. |
+> [!WARNING]
+> `PrivacyPolicyText` is rendered as raw HTML. Use only text you wrote; never pass visitor or CMS input.
 
-### Email Configuration
+> [!CAUTION]
+> The model always requires `AgreeToPrivacyPolicy`. If you hide the checkbox by setting `PrivacyPolicyText` to null
+> or empty, the form can no longer pass validation, so keep the checkbox.
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `ToEmail` | `string?` | `null` | Email address where form submissions will be sent. |
-| `FromEmail` | `string?` | `null` | Email address used as the sender. |
-| `EmailSubjectPrefix` | `string` | `"Contact Form:"` | Prefix added to email subjects. |
-| `SendEmailOnSubmit` | `bool` | `true` | Whether to send email when form is submitted. |
+Rate-limit the page that hosts the form: the honeypot stops simple bots, not a determined sender.
 
-### Callback Events
+## Styling
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `OnFormSubmitted` | `EventCallback<ContactFormModel>` | - | Callback invoked when form is successfully submitted. |
-| `OnFormError` | `EventCallback<string>` | - | Callback invoked when form submission encounters an error. |
-| `OnValidationFailed` | `EventCallback<IEnumerable<string>>` | - | Callback invoked when form validation fails. |
+The outer element has `osirion-contact-form-container` plus `osirion-contact-form-side-by-side` or
+`osirion-contact-form-stacked`, and `osirion-contact-form-dark` with `UseDarkTheme`. Override the form's custom
+properties on the container:
 
-## Basic Usage
-
-### Simple Contact Form
-
-```razor
-@using Osirion.Blazor.Components
-
-<OsirionContactForm 
-    Id="main-contact-form"
-    FormTitle="Contact Us"
-    FormDescription="We'd love to hear from you. Send us a message and we'll respond as soon as possible."
-    ToEmail="contact@yourcompany.com"
-    OnFormSubmitted="HandleFormSubmission" />
-
-@code {
-    private async Task HandleFormSubmission(ContactFormModel model)
-    {
-        // Handle successful form submission
-        Console.WriteLine($"Received message from {model.Name} ({model.Email})");
-        
-        // Optional: Log to analytics, save to database, etc.
-        await Analytics.TrackEvent("contact_form_submitted", new
-        {
-            name = model.Name,
-            email = model.Email,
-            subject = model.Subject
-        });
-    }
+```css
+.osirion-contact-form-container {
+    --osirion-contact-accent: #0e7490;
+    --osirion-contact-radius: 0;
 }
 ```
 
-### Contact Form with Contact Information
+The properties are `--osirion-contact-bg`, `--osirion-contact-form-bg`, `--osirion-contact-text`,
+`--osirion-contact-text-muted`, `--osirion-contact-border`, `--osirion-contact-accent`, `--osirion-contact-radius` and
+`--osirion-contact-spacing`. In the light palette they default to the theme tokens (`--osirion-background-primary`,
+`--osirion-text-primary`, `--osirion-action-primary` and so on), so a CSS framework adapter recolors the form. Buttons
+and the status message use the active framework's classes.
 
-```razor
-<OsirionContactForm 
-    Id="contact-with-info"
-    FormTitle="Let's Connect"
-    FormDescription="Get in touch with our team for any questions or support needs."
-    ToEmail="support@yourcompany.com"
-    ShowContactInfo="true"
-    ContactInfoTitle="Reach Us Directly"
-    ContactInfoDescription="Prefer to contact us directly? Here are our contact details."
-    ContactEmail="hello@yourcompany.com"
-    ContactPhone="+1 (555) 123-4567"
-    ContactAddress="123 Business Ave, Suite 100, City, State 12345"
-    SocialLinks="@socialMediaLinks"
-    OnFormSubmitted="HandleContactSubmission"
-    OnFormError="HandleContactError" />
+## Related
 
-@code {
-    private List<SocialLink> socialMediaLinks = new()
-    {
-        new SocialLink
-        {
-            Platform = SocialPlatform.Twitter,
-            Url = "https://twitter.com/yourcompany",
-            DisplayText = "@yourcompany"
-        },
-        new SocialLink
-        {
-            Platform = SocialPlatform.LinkedIn,
-            Url = "https://linkedin.com/company/yourcompany",
-            DisplayText = "Company LinkedIn"
-        },
-        new SocialLink
-        {
-            Platform = SocialPlatform.GitHub,
-            Url = "https://github.com/yourcompany",
-            DisplayText = "GitHub Profile"
-        }
-    };
-    
-    private async Task HandleContactSubmission(ContactFormModel model)
-    {
-        // Success handling
-        await NotificationService.ShowSuccessAsync($"Thank you {model.Name}! We'll get back to you soon.");
-    }
-    
-    private async Task HandleContactError(string error)
-    {
-        // Error handling
-        await NotificationService.ShowErrorAsync($"Failed to send message: {error}");
-        Logger.LogError("Contact form error: {Error}", error);
-    }
-}
-```
-
-### Customized Contact Form
-
-```razor
-<OsirionContactForm 
-    Id="custom-contact-form"
-    FormTitle="Drop Us a Line"
-    FormDescription="Have a project in mind? Let's discuss how we can help bring your vision to life."
-    NamePlaceholder="Full Name"
-    EmailPlaceholder="Email Address"
-    SubjectPlaceholder="Project Type"
-    MessagePlaceholder="Tell us about your project..."
-    SubmitButtonText="Start Conversation"
-    SuccessMessage="Excellent! We've received your project inquiry and will contact you within 24 hours."
-    ErrorMessage="Oops! Something went wrong. Please try again or email us directly at hello@agency.com"
-    ToEmail="projects@agency.com"
-    FromEmail="website@agency.com"
-    EmailSubjectPrefix="New Project Inquiry:"
-    RequireSubject="true"
-    MinMessageLength="25"
-    MaxMessageLength="2000"
-    OnFormSubmitted="HandleProjectInquiry"
-    OnValidationFailed="HandleValidationErrors" />
-
-@code {
-    private async Task HandleProjectInquiry(ContactFormModel model)
-    {
-        // Custom handling for project inquiries
-        await ProjectService.CreateLeadAsync(new ProjectLead
-        {
-            Name = model.Name,
-            Email = model.Email,
-            ProjectType = model.Subject,
-            Description = model.Message,
-            Source = "Website Contact Form",
-            CreatedAt = DateTime.UtcNow
-        });
-        
-        // Send notification to sales team
-        await NotificationService.NotifySalesTeamAsync(model);
-    }
-    
-    private async Task HandleValidationErrors(IEnumerable<string> errors)
-    {
-        var errorMessage = string.Join(", ", errors);
-        await NotificationService.ShowWarningAsync($"Please fix the following: {errorMessage}");
-    }
-}
-```
-
-## Advanced Usage
-
-### Multi-Step Contact Form
-
-```razor
-<div class="multi-step-contact">
-    <div class="step-indicator">
-        <div class="step @(currentStep >= 1 ? "active" : "")">1. Contact Info</div>
-        <div class="step @(currentStep >= 2 ? "active" : "")">2. Project Details</div>
-        <div class="step @(currentStep >= 3 ? "active" : "")">3. Confirmation</div>
-    </div>
-    
-    @if (currentStep == 1)
-    {
-        <OsirionContactForm 
-            Id="step-1-contact"
-            FormTitle="Step 1: Your Information"
-            FormDescription="Let's start with your contact details."
-            SubmitButtonText="Next: Project Details"
-            OnFormSubmitted="HandleStep1" />
-    }
-    else if (currentStep == 2)
-    {
-        <OsirionContactForm 
-            Id="step-2-project"
-            FormTitle="Step 2: Project Details"
-            FormDescription="Tell us about your project requirements."
-            SubjectPlaceholder="Project Category"
-            MessagePlaceholder="Describe your project in detail..."
-            SubmitButtonText="Review & Submit"
-            MinMessageLength="50"
-            OnFormSubmitted="HandleStep2" />
-    }
-    else if (currentStep == 3)
-    {
-        <div class="confirmation-step">
-            <h3>Step 3: Confirmation</h3>
-            <div class="summary">
-                <h4>Contact Information</h4>
-                <p><strong>Name:</strong> @step1Data?.Name</p>
-                <p><strong>Email:</strong> @step1Data?.Email</p>
-                
-                <h4>Project Details</h4>
-                <p><strong>Category:</strong> @step2Data?.Subject</p>
-                <p><strong>Description:</strong> @step2Data?.Message</p>
-            </div>
-            
-            <div class="actions">
-                <button class="btn btn-secondary" @onclick="() => currentStep = 2">
-                    Back to Edit
-                </button>
-                <button class="btn btn-primary" @onclick="SubmitFinalForm">
-                    Submit Project Request
-                </button>
-            </div>
-        </div>
-    }
-</div>
-
-@code {
-    private int currentStep = 1;
-    private ContactFormModel? step1Data;
-    private ContactFormModel? step2Data;
-    
-    private async Task HandleStep1(ContactFormModel model)
-    {
-        step1Data = model;
-        currentStep = 2;
-        StateHasChanged();
-    }
-    
-    private async Task HandleStep2(ContactFormModel model)
-    {
-        step2Data = model;
-        currentStep = 3;
-        StateHasChanged();
-    }
-    
-    private async Task SubmitFinalForm()
-    {
-        if (step1Data != null && step2Data != null)
-        {
-            var combinedData = new ContactFormModel
-            {
-                Name = step1Data.Name,
-                Email = step1Data.Email,
-                Subject = step2Data.Subject,
-                Message = step2Data.Message
-            };
-            
-            await ProjectService.SubmitProjectRequestAsync(combinedData);
-            await NotificationService.ShowSuccessAsync("Project request submitted successfully!");
-            
-            // Reset form
-            currentStep = 1;
-            step1Data = null;
-            step2Data = null;
-        }
-    }
-}
-
-<style>
-.multi-step-contact {
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-.step-indicator {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 2rem;
-    padding: 0 1rem;
-}
-
-.step {
-    padding: 0.5rem 1rem;
-    background: #f3f4f6;
-    color: #6b7280;
-    border-radius: 0.5rem;
-    font-size: 0.875rem;
-    font-weight: 500;
-}
-
-.step.active {
-    background: #3b82f6;
-    color: white;
-}
-
-.confirmation-step {
-    background: #f9fafb;
-    padding: 2rem;
-    border-radius: 0.5rem;
-    border: 1px solid #e5e7eb;
-}
-
-.summary {
-    margin-bottom: 2rem;
-}
-
-.summary h4 {
-    color: #374151;
-    margin-bottom: 0.5rem;
-    font-size: 1.125rem;
-}
-
-.summary p {
-    margin-bottom: 0.5rem;
-    color: #6b7280;
-}
-
-.actions {
-    display: flex;
-    gap: 1rem;
-    justify-content: flex-end;
-}
-</style>
-```
-
-### Contact Form with File Upload
-
-```razor
-<div class="contact-form-with-upload">
-    <OsirionContactForm 
-        Id="contact-with-files"
-        FormTitle="Project Consultation"
-        FormDescription="Upload relevant files to help us understand your project better."
-        OnFormSubmitted="HandleFormWithFiles"
-        OnFormError="HandleUploadError">
-        
-        <div class="file-upload-section">
-            <h4>Attach Files (Optional)</h4>
-            <p class="upload-description">
-                Upload project documents, wireframes, or reference materials (Max 10MB per file)
-            </p>
-            
-            <InputFile id="file-upload" 
-                       OnChange="HandleFileSelection"
-                       multiple
-                       accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.zip"
-                       class="file-input" />
-            
-            <label for="file-upload" class="file-upload-label">
-                <i class="icon-upload"></i>
-                Choose Files or Drag & Drop
-            </label>
-            
-            @if (selectedFiles?.Any() == true)
-            {
-                <div class="selected-files">
-                    <h5>Selected Files:</h5>
-                    @foreach (var file in selectedFiles)
-                    {
-                        <div class="file-item">
-                            <span class="file-name">@file.Name</span>
-                            <span class="file-size">(@(FormatFileSize(file.Size)))</span>
-                            <button type="button" class="remove-file" @onclick="() => RemoveFile(file)">
-                                ×
-                            </button>
-                        </div>
-                    }
-                </div>
-            }
-        </div>
-    </OsirionContactForm>
-</div>
-
-@code {
-    private IList<IBrowserFile>? selectedFiles;
-    private const long MaxFileSize = 10 * 1024 * 1024; // 10MB
-    
-    private async Task HandleFileSelection(InputFileChangeEventArgs e)
-    {
-        selectedFiles = e.GetMultipleFiles(5).ToList(); // Max 5 files
-        
-        // Validate file sizes
-        var oversizedFiles = selectedFiles.Where(f => f.Size > MaxFileSize).ToList();
-        if (oversizedFiles.Any())
-        {
-            await NotificationService.ShowWarningAsync(
-                $"The following files exceed 10MB limit: {string.Join(", ", oversizedFiles.Select(f => f.Name))}");
-            
-            selectedFiles = selectedFiles.Except(oversizedFiles).ToList();
-        }
-        
-        StateHasChanged();
-    }
-    
-    private void RemoveFile(IBrowserFile file)
-    {
-        selectedFiles?.Remove(file);
-        StateHasChanged();
-    }
-    
-    private async Task HandleFormWithFiles(ContactFormModel model)
-    {
-        try
-        {
-            // Upload files first
-            var fileUrls = new List<string>();
-            
-            if (selectedFiles?.Any() == true)
-            {
-                foreach (var file in selectedFiles)
-                {
-                    var url = await FileUploadService.UploadFileAsync(file, $"contact-forms/{DateTime.UtcNow:yyyy-MM}");
-                    fileUrls.Add(url);
-                }
-            }
-            
-            // Submit form with file attachments
-            await ContactService.SubmitContactFormAsync(model, fileUrls);
-            
-            await NotificationService.ShowSuccessAsync("Form submitted successfully with attachments!");
-            
-            // Reset
-            selectedFiles = null;
-            StateHasChanged();
-        }
-        catch (Exception ex)
-        {
-            await NotificationService.ShowErrorAsync($"Failed to upload files: {ex.Message}");
-        }
-    }
-    
-    private async Task HandleUploadError(string error)
-    {
-        await NotificationService.ShowErrorAsync($"Upload failed: {error}");
-    }
-    
-    private string FormatFileSize(long bytes)
-    {
-        if (bytes < 1024) return $"{bytes} B";
-        if (bytes < 1024 * 1024) return $"{bytes / 1024:F1} KB";
-        return $"{bytes / (1024 * 1024):F1} MB";
-    }
-}
-
-<style>
-.contact-form-with-upload {
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-.file-upload-section {
-    margin: 2rem 0;
-    padding: 1.5rem;
-    border: 2px dashed #d1d5db;
-    border-radius: 0.5rem;
-    text-align: center;
-}
-
-.file-input {
-    display: none;
-}
-
-.file-upload-label {
-    display: inline-block;
-    padding: 1rem 2rem;
-    background: #3b82f6;
-    color: white;
-    border-radius: 0.5rem;
-    cursor: pointer;
-    font-weight: 500;
-    transition: background 0.2s;
-}
-
-.file-upload-label:hover {
-    background: #2563eb;
-}
-
-.upload-description {
-    color: #6b7280;
-    font-size: 0.875rem;
-    margin-bottom: 1rem;
-}
-
-.selected-files {
-    margin-top: 1rem;
-    text-align: left;
-}
-
-.file-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.5rem;
-    background: #f3f4f6;
-    border-radius: 0.25rem;
-    margin-bottom: 0.5rem;
-}
-
-.file-name {
-    font-weight: 500;
-}
-
-.file-size {
-    color: #6b7280;
-    font-size: 0.875rem;
-}
-
-.remove-file {
-    background: #ef4444;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 24px;
-    height: 24px;
-    cursor: pointer;
-    font-size: 1.2rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-</style>
-```
-
-### Contact Form with CRM Integration
-
-```razor
-<OsirionContactForm 
-    Id="crm-integrated-contact"
-    FormTitle="Sales Inquiry"
-    FormDescription="Interested in our services? Fill out this form and our sales team will contact you."
-    OnFormSubmitted="HandleCRMSubmission"
-    OnFormError="HandleCRMError">
-    
-    <!-- Custom fields for CRM integration -->
-    <div class="additional-fields">
-        <div class="form-group">
-            <label for="company">Company Name</label>
-            <input type="text" id="company" @bind="companyName" class="form-control" placeholder="Your company name" />
-        </div>
-        
-        <div class="form-group">
-            <label for="budget">Estimated Budget</label>
-            <select id="budget" @bind="estimatedBudget" class="form-control">
-                <option value="">Select budget range</option>
-                <option value="under-10k">Under $10,000</option>
-                <option value="10k-25k">$10,000 - $25,000</option>
-                <option value="25k-50k">$25,000 - $50,000</option>
-                <option value="50k-100k">$50,000 - $100,000</option>
-                <option value="over-100k">Over $100,000</option>
-            </select>
-        </div>
-        
-        <div class="form-group">
-            <label for="timeline">Project Timeline</label>
-            <select id="timeline" @bind="projectTimeline" class="form-control">
-                <option value="">Select timeline</option>
-                <option value="asap">ASAP</option>
-                <option value="1-3-months">1-3 months</option>
-                <option value="3-6-months">3-6 months</option>
-                <option value="6-12-months">6-12 months</option>
-                <option value="planning">Just planning</option>
-            </select>
-        </div>
-    </div>
-</OsirionContactForm>
-
-@code {
-    private string companyName = "";
-    private string estimatedBudget = "";
-    private string projectTimeline = "";
-    
-    private async Task HandleCRMSubmission(ContactFormModel model)
-    {
-        try
-        {
-            // Create CRM lead
-            var crmLead = new CRMLead
-            {
-                FirstName = ExtractFirstName(model.Name),
-                LastName = ExtractLastName(model.Name),
-                Email = model.Email,
-                Company = companyName,
-                Subject = model.Subject,
-                Description = model.Message,
-                EstimatedBudget = estimatedBudget,
-                ProjectTimeline = projectTimeline,
-                Source = "Website Contact Form",
-                Status = "New",
-                CreatedDate = DateTime.UtcNow,
-                Tags = new[] { "website-lead", "sales-inquiry" }
-            };
-            
-            // Submit to CRM system
-            var leadId = await CRMService.CreateLeadAsync(crmLead);
-            
-            // Assign to sales rep based on budget and timeline
-            var assignedRep = await SalesService.AssignLeadAsync(leadId, estimatedBudget, projectTimeline);
-            
-            // Send notification to assigned rep
-            await NotificationService.NotifySalesRepAsync(assignedRep, crmLead);
-            
-            // Track in analytics
-            await Analytics.TrackEvent("sales_lead_created", new
-            {
-                lead_id = leadId,
-                budget_range = estimatedBudget,
-                timeline = projectTimeline,
-                company = companyName
-            });
-            
-            await NotificationService.ShowSuccessAsync(
-                $"Thank you! Your inquiry has been received. {assignedRep.Name} from our sales team will contact you within 24 hours.");
-            
-            // Reset form
-            ResetForm();
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Failed to create CRM lead");
-            await NotificationService.ShowErrorAsync("Failed to submit inquiry. Please try again or contact us directly.");
-        }
-    }
-    
-    private async Task HandleCRMError(string error)
-    {
-        Logger.LogError("CRM integration error: {Error}", error);
-        await NotificationService.ShowErrorAsync("There was an issue submitting your inquiry. Please try again.");
-    }
-    
-    private void ResetForm()
-    {
-        companyName = "";
-        estimatedBudget = "";
-        projectTimeline = "";
-        StateHasChanged();
-    }
-    
-    private string ExtractFirstName(string fullName)
-    {
-        var parts = fullName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        return parts.Length > 0 ? parts[0] : fullName;
-    }
-    
-    private string ExtractLastName(string fullName)
-    {
-        var parts = fullName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        return parts.Length > 1 ? string.Join(" ", parts.Skip(1)) : "";
-    }
-}
-
-<style>
-.additional-fields {
-    margin: 1.5rem 0;
-}
-
-.form-group {
-    margin-bottom: 1rem;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-    color: var(--text-color, #374151);
-}
-
-.form-control {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid var(--border-color, #d1d5db);
-    border-radius: 0.375rem;
-    font-size: 1rem;
-    transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.form-control:focus {
-    outline: none;
-    border-color: var(--primary-color, #3b82f6);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-</style>
-```
-
-## Accessibility Features
-
-### Full Accessibility Support
-
-```razor
-<!-- The component automatically provides comprehensive accessibility -->
-<OsirionContactForm 
-    Id="accessible-contact"
-    FormTitle="Accessible Contact Form"
-    FormDescription="This form is fully accessible with ARIA labels and keyboard navigation."
-    aria-label="Contact form for customer inquiries"
-    role="form" />
-```
-
-The component automatically includes:
-- Proper ARIA labels and descriptions
-- Keyboard navigation support
-- Screen reader announcements
-- Error message associations
-- Focus management
-- High contrast mode support
-
-### Custom Accessibility Enhancements
-
-```razor
-<OsirionContactForm 
-    Id="enhanced-accessible"
-    OnValidationFailed="AnnounceValidationErrors"
-    OnFormSubmitted="AnnounceSuccess" />
-
-@code {
-    private async Task AnnounceValidationErrors(IEnumerable<string> errors)
-    {
-        var message = $"Form has {errors.Count()} validation errors: {string.Join(", ", errors)}";
-        await JSRuntime.InvokeVoidAsync("announceToScreenReader", message);
-    }
-    
-    private async Task AnnounceSuccess(ContactFormModel model)
-    {
-        await JSRuntime.InvokeVoidAsync("announceToScreenReader", "Form submitted successfully");
-    }
-}
-
-<script>
-    window.announceToScreenReader = (message) => {
-        const announcement = document.createElement('div');
-        announcement.setAttribute('aria-live', 'polite');
-        announcement.setAttribute('aria-atomic', 'true');
-        announcement.className = 'sr-only';
-        announcement.textContent = message;
-        
-        document.body.appendChild(announcement);
-        
-        setTimeout(() => {
-            document.body.removeChild(announcement);
-        }, 1000);
-    };
-</script>
-```
-
-## Email Configuration
-
-### SMTP Configuration
-
-```csharp
-// Program.cs or Startup.cs
-services.Configure<EmailSettings>(options =>
-{
-    options.SmtpServer = "smtp.gmail.com";
-    options.SmtpPort = 587;
-    options.SmtpUsername = "your-email@gmail.com";
-    options.SmtpPassword = "your-app-password";
-    options.UseSsl = true;
-    options.FromEmail = "noreply@yourcompany.com";
-    options.FromName = "Your Company Contact Form";
-});
-
-services.AddTransient<IEmailService, EmailService>();
-```
-
-### Custom Email Templates
-
-```razor
-<OsirionContactForm 
-    Id="templated-contact"
-    ToEmail="support@company.com"
-    EmailTemplateId="contact-form-template"
-    OnFormSubmitted="HandleTemplatedSubmission" />
-
-@code {
-    private async Task HandleTemplatedSubmission(ContactFormModel model)
-    {
-        // Use custom email template
-        await EmailService.SendTemplatedEmailAsync("contact-form-template", new
-        {
-            CustomerName = model.Name,
-            CustomerEmail = model.Email,
-            Subject = model.Subject,
-            Message = model.Message,
-            SubmissionDate = DateTime.Now.ToString("F"),
-            CompanyName = "Your Company",
-            SupportEmail = "support@company.com"
-        });
-    }
-}
-```
-
-## Best Practices
-
-### Form Design Guidelines
-
-1. **Clear Labels**: Use descriptive labels and placeholder text
-2. **Validation Feedback**: Provide immediate, helpful validation messages
-3. **Required Fields**: Clearly indicate which fields are required
-4. **Error Handling**: Show specific, actionable error messages
-5. **Success Feedback**: Confirm successful submissions clearly
-
-### Security Considerations
-
-1. **Input Validation**: Always validate and sanitize form inputs
-2. **Rate Limiting**: Implement rate limiting to prevent spam
-3. **CAPTCHA**: Consider adding CAPTCHA for high-traffic sites
-4. **Email Security**: Use secure SMTP settings and authentication
-5. **Data Privacy**: Follow GDPR and privacy regulations
-
-### Performance Optimization
-
-1. **Form Validation**: Use client-side validation for immediate feedback
-2. **Progressive Enhancement**: Ensure forms work without JavaScript
-3. **Loading States**: Show loading indicators during submission
-4. **File Uploads**: Validate file types and sizes before upload
-5. **Error Recovery**: Preserve form data on submission errors
-
-The OsirionContactForm component provides a robust, accessible, and feature-rich solution for implementing contact forms in Blazor applications with comprehensive customization options and integration capabilities.
+- [Forms overview](/docs/components/core/forms)
+- [OsirionContactInfoSection](/docs/components/core/sections/contact-info-section)
+- [OsirionFooter](/docs/components/core/layout/footer)

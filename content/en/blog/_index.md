@@ -1,8 +1,9 @@
 ---
 title: "Blog"
-description: "The latest updates, tutorials, and insights about using Osirion.Blazor components in your projects. Our team regularly posts articles about new features."
+description: "Articles on building content sites with Osirion.Blazor: the CMS, analytics and consent, navigation, SEO and release notes."
 date: 2025-05-30
-featuredImage: "https://storage.googleapis.com/croct-assets-b931d070/blog/Headless_CMS_within_the_React_framework_3_1_da922d2562/Headless_CMS_within_the_React_framework_3_1_da922d2562.png"
+last_modified: 2026-10-11
+featured_image: "/assets/images/blazor-cover.png"
 featured: true
 layout: "post"
 slug: "blog"
@@ -10,6 +11,8 @@ slug: "blog"
 
 # Blog
 
-Welcome to the Osirion.Blazor blog. Here you'll find the latest updates, tutorials, and insights about using Osirion.Blazor components in your projects. Our team regularly posts articles about best practices, new features, and real-world implementation examples.
+Articles on building content sites with Osirion.Blazor, the SSR-first Blazor component library: Markdown content from
+GitHub, analytics and cookie consent, navigation, SEO, and what changed in each release. Every code sample targets the
+current release, 4.0, on .NET 9 and .NET 10; features that arrive in 4.1 are marked as such.
 
-Browse through our categories or use the search functionality to find specific topics you're interested in.
+For a complete reference of components and parameters, see the [documentation](/docs).

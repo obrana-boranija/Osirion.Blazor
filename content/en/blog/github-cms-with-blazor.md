@@ -1,386 +1,250 @@
 ---
-title: "Building a Blog with GitHub CMS and Blazor"
+title: "Build a Blog with GitHub as the CMS"
 author: "Dejan Demonjić"
 date: "2025-04-15"
-description: "Learn how to create a fast, SEO-friendly blog using Osirion.Blazor's GitHub CMS components and static Blazor."
-tags: [blazor, github, cms, static-site, tutorial]
+last_modified: 2026-10-11
+description: "Step by step: a statically rendered Blazor blog whose posts are Markdown files in a GitHub repository, with tags, categories, search and refresh on push."
+tags: [blazor, github, cms, static-ssr, tutorial]
 categories: [tutorials, blazor]
 slug: "github-cms-with-blazor"
 is_featured: true
 featured_image: "/assets/images/blazor-cover.png"
 ---
 
-# Building a Blog with GitHub CMS and Blazor
+# Build a Blog with GitHub as the CMS
 
-In this tutorial, we'll build a fast, SEO-friendly blog using Osirion.Blazor's GitHub CMS components and static Blazor. This approach gives you the benefits of a static site (speed, security, SEO) with the development experience of Blazor.
+In this tutorial you build a Blazor blog whose posts are Markdown files in a GitHub repository. Writing a post means
+committing a file; the site picks it up from GitHub and renders it on the server. There is no database, the content has
+Git history and pull requests for free, and every page is plain HTML that search engines and readers get in the first
+response.
 
-## Why GitHub as a CMS?
+The site uses static server rendering throughout, so it needs no WebAssembly download and no open connection per
+visitor.
 
-Using GitHub as a content management system offers several advantages:
+## What you need
 
-1. **Version Control**: Your content benefits from Git's version control
-2. **Markdown Support**: Write content in Markdown with frontmatter
-3. **Collaboration**: Use GitHub's collaboration features (PRs, issues)
-4. **No Database**: No need for a separate database
-5. **Free Hosting**: Host content for free on GitHub
-6. **Content as Code**: Treat your content the same way you treat your code
+- The .NET 9 or .NET 10 SDK (Osirion.Blazor 4.0 targets both)
+- A GitHub account, a repository for the content, and a personal access token that can read it
+- Basic Blazor knowledge
 
-## Prerequisites
+## Step 1: Create the project
 
-- .NET 8 SDK or newer
-- A GitHub account
-- Basic knowledge of Blazor
-- Visual Studio or VS Code
-
-## Step 1: Create a New Blazor Project
-
-Start by creating a new Blazor Web App with the .NET CLI:
+Create a Blazor Web App without interactivity, which gives you static server rendering:
 
 ```bash
-dotnet new blazor -o GitHubCmsBlog
-cd GitHubCmsBlog
+dotnet new blazor --interactivity None -o MyBlog
+cd MyBlog
+dotnet add package Osirion.Blazor
 ```
 
-## Step 2: Add Osirion.Blazor Package
+`Osirion.Blazor` is the meta-package: it brings the CMS, theming, navigation and analytics packages.
 
-Add the Osirion.Blazor package to your project:
+## Step 2: Add content to GitHub
+
+In your content repository, create `content/blog/hello-blazor.md`:
+
+```markdown
+---
+title: "Hello, Blazor"
+description: "The first post on the new blog."
+author: "Jane Developer"
+date: 2026-10-01
+slug: hello-blazor
+categories: [Getting Started]
+tags: [blazor, markdown]
+---
+
+This post lives in a GitHub repository and is rendered by Blazor on the server.
+
+## A heading
+
+Markdown works as you would expect, including code blocks.
+```
+
+The front matter keys are snake_case (`featured_image`, `is_featured`, `last_modified`). A file without `published` is
+published; add `published: false` to keep a draft off the site. Write multi-word tags with hyphens instead of spaces:
+tag links turn spaces into hyphens, and the tag pages in step 5 compare the URL value with each whole tag (case does not
+matter, spaces do).
+
+## Step 3: Point the site at the repository
+
+Add the provider to `appsettings.json`. The key under `GitHub` (`Blog` here) names the provider:
+
+```json
+{
+  "Osirion": {
+    "Cms": {
+      "Web": {
+        "GitHub": {
+          "Blog": {
+            "Owner": "your-github-user",
+            "Repository": "your-content-repo",
+            "Branch": "main",
+            "ContentPath": "content",
+            "IsDefault": true
+          }
+        }
+      }
+    },
+    "Theming": {
+      "Framework": "Bootstrap"
+    }
+  }
+}
+```
+
+`Framework` tells the Osirion components to take their colors and button styles from Bootstrap, which the template
+already includes.
+
+The provider reads the repository through the GitHub API and sends no request without a token, even for a public
+repository. Create a fine-grained personal access token with read-only access to the repository's contents, and keep it
+out of source control:
 
 ```bash
-dotnet add package Osirion.Blazor --version 1.3.0
+dotnet user-secrets init
+dotnet user-secrets set "Osirion:Cms:Web:GitHub:Blog:ApiToken" "<your token>"
 ```
 
-## Step 3: Configure GitHub CMS
-
-1. Create a GitHub repository for your content
-2. Add some Markdown files with frontmatter (see example below)
-3. Configure the GitHub CMS service in `Program.cs`:
+Then register the services in `Program.cs`:
 
 ```csharp
-builder.Services.AddGitHubCms(options =>
-{
-    options.Owner = "your-github-username";
-    options.Repository = "your-content-repo";
-    options.ContentPath = "content";
-    options.Branch = "main";
-    // Add an API token for private repos
-    // options.ApiToken = "your-github-token";
-});
+using Osirion.Blazor.Extensions;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddRazorComponents();
+builder.Services.AddOsirion(builder.Configuration);
+builder.Services.AddJSComponents();
 ```
 
-## Step 4: Update _Imports.razor
+`AddOsirion` reads the `Osirion` section and registers what it finds: the GitHub provider, the theming options, and the
+navigation defaults. `AddJSComponents` registers the script loader that `OsirionStyles` and the article renderer use;
+without it those components fail to render.
 
-Add the necessary using statements to your `_Imports.razor` file:
+## Step 4: Imports and styles
+
+Add the namespaces to `Components/_Imports.razor`:
 
 ```razor
-@using Osirion.Blazor.Components.GitHubCms
-@using Osirion.Blazor.Services.GitHub
-@using Osirion.Blazor.Models.Cms
+@using Osirion.Blazor.Cms.Web.Components
+@using Osirion.Blazor.Theming.Components
 ```
 
-## Step 5: Create Blog Layout
-
-Create a new layout for your blog in `Components/Layout/BlogLayout.razor`:
+Then render the Osirion stylesheets and a search box in `Components/Layout/MainLayout.razor`:
 
 ```razor
 @inherits LayoutComponentBase
 
-<div class="blog-layout">
-    <header>
-        <h1><a href="/">My GitHub CMS Blog</a></h1>
-        <SearchBox Placeholder="Search posts..." />
-    </header>
+<OsirionStyles />
 
-    <div class="content">
-        <main>
-            @Body
-        </main>
-        
-        <aside>
-            <h2>Categories</h2>
-            <CategoriesList />
-            
-            <h2>Tags</h2>
-            <TagCloud MaxTags="20" />
-            
-            <h2>Navigation</h2>
-            <DirectoryNavigation />
-        </aside>
-    </div>
-    
-    <footer>
-        <p>&copy; 2025 My GitHub CMS Blog</p>
-    </footer>
+<div class="container py-3">
+    <SearchBox />
+    @Body
 </div>
-
-<!-- Add default Osirion styling -->
-<OsirionStyles CustomVariables="
-    --osirion-primary-color: #3b82f6;
-    --osirion-color-background: #f8fafc;
-" />
 ```
 
-## Step 6: Create Blog Home Page
+## Step 5: The pages
 
-Update your `Components/Pages/Home.razor` file:
-
-```razor
-@page "/"
-@using Osirion.Blazor.Components.GitHubCms
-
-<PageTitle>My GitHub CMS Blog</PageTitle>
-
-<h1>Latest Posts</h1>
-
-<ContentList Directory="blog" />
-```
-
-## Step 7: Create Blog Post Page
-
-Create a new file `Components/Pages/BlogPost.razor`:
+One component serves both the post list and the posts. Create `Components/Pages/Blog.razor`:
 
 ```razor
+@page "/blog"
 @page "/blog/{Slug}"
-@inject IGitHubCmsService CmsService
-@using Osirion.Blazor.Components.GitHubCms
-@using Osirion.Blazor.Models.Cms
 
-<PageTitle>@(ContentItem?.Title ?? "Loading...")</PageTitle>
-
-@if (IsLoading)
+@if (string.IsNullOrWhiteSpace(Slug))
 {
-    <p>Loading post...</p>
-}
-else if (ContentItem == null)
-{
-    <p>Post not found.</p>
+    <PageTitle>Blog</PageTitle>
+    <ContentList Directory="blog" ShowPagination ItemsPerPage="12" />
 }
 else
 {
-    <!-- Set metadata for SEO -->
-    <HeadContent>
-        <meta name="description" content="@ContentItem.Description" />
-        <meta property="og:title" content="@ContentItem.Title" />
-        <meta property="og:description" content="@ContentItem.Description" />
-        @if (!string.IsNullOrEmpty(ContentItem.FeaturedImageUrl))
-        {
-            <meta property="og:image" content="@ContentItem.FeaturedImageUrl" />
-        }
-    </HeadContent>
-    
-    <ContentView Path="@($"blog/{Slug}.md")" />
+    <ArticlePage DirectoryName="blog" ItemSlug="@Slug" />
 }
 
 @code {
     [Parameter]
-    public string Slug { get; set; } = string.Empty;
-    
-    private bool IsLoading { get; set; } = true;
-    private ContentItem? ContentItem { get; set; }
-    
-    protected override async Task OnParametersSetAsync()
-    {
-        IsLoading = true;
-        
-        try
-        {
-            var path = $"blog/{Slug}.md";
-            ContentItem = await CmsService.GetContentItemByPathAsync(path);
-        }
-        catch (Exception ex)
-        {
-            Console.Error.WriteLine($"Error loading post: {ex.Message}");
-            ContentItem = null;
-        }
-        finally
-        {
-            IsLoading = false;
-        }
-    }
+    public string? Slug { get; set; }
 }
 ```
 
-## Step 8: Create Category and Tag Pages
+`ContentList` renders the posts in `content/blog` as cards, newest first, with page links that work without script.
+The cards link to each post's URL, its folder below `ContentPath` plus its slug (`blog/hello-blazor`), which is the
+route above. `ArticlePage` renders the post with a hero, breadcrumbs, a table of contents, the categories and tags,
+and links to the previous and next post. When no post matches the slug, it answers with HTTP 404. Both write the page
+title, description, canonical URL and structured data into the head.
 
-Create a `Components/Pages/Category.razor` file:
-
-```razor
-@page "/category/{CategorySlug}"
-@using Osirion.Blazor.Components.GitHubCms
-
-<PageTitle>Category: @CategorySlug</PageTitle>
-
-<h1>Posts in @CategorySlug</h1>
-
-<ContentList Category="@CategorySlug" />
-
-@code {
-    [Parameter]
-    public string CategorySlug { get; set; } = string.Empty;
-}
-```
-
-Create a `Components/Pages/Tag.razor` file:
+Add pages for tags and categories, which is where `ArticlePage` and the cards link to. `Components/Pages/Tag.razor`:
 
 ```razor
 @page "/tag/{TagSlug}"
-@using Osirion.Blazor.Components.GitHubCms
 
 <PageTitle>Tag: @TagSlug</PageTitle>
-
-<h1>Posts tagged with @TagSlug</h1>
-
-<ContentList Tag="@TagSlug" />
+<ContentList Directory="blog" Tag="@TagSlug" ShowPagination />
 
 @code {
     [Parameter]
-    public string TagSlug { get; set; } = string.Empty;
+    public string? TagSlug { get; set; }
 }
 ```
 
-## Step 9: Create Search Results Page
+`Components/Pages/Category.razor` is the same with `@page "/category/{CategorySlug}"` and `Category="@CategorySlug"`.
+The category filter turns hyphens back into spaces, so `/category/getting-started` finds "Getting Started".
 
-Create a `Components/Pages/Search.razor` file:
+Finally, the search page that `SearchBox` submits to, `Components/Pages/Search.razor`:
 
 ```razor
 @page "/search"
-@inject IGitHubCmsService CmsService
-@using Osirion.Blazor.Components.GitHubCms
-@using Osirion.Blazor.Models.Cms
 
-<PageTitle>Search Results: @Query</PageTitle>
+<PageTitle>Search</PageTitle>
 
-<h1>Search Results for "@Query"</h1>
-
-@if (IsLoading)
+@if (!string.IsNullOrWhiteSpace(Query))
 {
-    <p>Searching...</p>
-}
-else if (Results.Count == 0)
-{
-    <p>No results found for "@Query"</p>
-}
-else
-{
-    <ContentList ContentItems="@Results" />
+    <ContentList SearchQuery="@Query" ShowPagination NoContentText="Nothing matched your search." />
 }
 
 @code {
-    [Parameter]
     [SupplyParameterFromQuery(Name = "q")]
-    public string Query { get; set; } = string.Empty;
-    
-    private bool IsLoading { get; set; } = true;
-    private List<ContentItem> Results { get; set; } = new();
-    
-    protected override async Task OnParametersSetAsync()
-    {
-        if (!string.IsNullOrEmpty(Query))
-        {
-            IsLoading = true;
-            Results = await CmsService.SearchContentItemsAsync(Query);
-            IsLoading = false;
-        }
-    }
+    public string? Query { get; set; }
 }
 ```
 
-## Step 10: Add Styling
+The search matches any of the words in a post's title, description, content, categories or tags.
 
-Add some CSS to `wwwroot/app.css`:
-
-```css
-.blog-layout {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 1rem;
-}
-
-.content {
-    display: grid;
-    grid-template-columns: 3fr 1fr;
-    gap: 2rem;
-}
-
-header {
-    margin-bottom: 2rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid var(--osirion-color-border);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-aside {
-    padding: 1rem;
-    background-color: var(--osirion-color-background-light);
-    border-radius: var(--osirion-border-radius);
-}
-
-footer {
-    margin-top: 2rem;
-    padding-top: 1rem;
-    border-top: 1px solid var(--osirion-color-border);
-    text-align: center;
-}
-
-@media (max-width: 768px) {
-    .content {
-        grid-template-columns: 1fr;
-    }
-    
-    header {
-        flex-direction: column;
-        gap: 1rem;
-    }
-}
-```
-
-## Step 11: Run the Application
-
-Start the application:
+## Step 6: Run it
 
 ```bash
 dotnet run
 ```
 
-Visit https://localhost:5001 to see your blog!
+Open `/blog`. The first request waits while the provider reads the repository; after that, the content is served
+from memory.
 
-## Example Content Format
+## Step 7: Refresh on push
 
-Here's an example of a blog post markdown file with frontmatter:
+To pick up a new commit as soon as you push it, let GitHub tell the site. Register the webhook handler in
+`Program.cs`:
 
-```markdown
----
-title: "Getting Started with Blazor"
-author: "John Doe"
-date: "2025-04-10"
-description: "A beginner's guide to getting started with Blazor web development."
-tags: [blazor, webassembly, dotnet]
-categories: [tutorials, web]
-slug: "getting-started-with-blazor"
-is_featured: true
-featured_image: "https://example.com/images/blazor.jpg"
----
+```csharp
+using Osirion.Blazor.Cms.Infrastructure.Extensions;
 
-# Getting Started with Blazor
+builder.Services.AddGitHubWebhookAndPolling();
 
-Blazor is a framework for building interactive web UIs using C# instead of JavaScript.
+var app = builder.Build();
 
-## What is Blazor?
-
-Blazor lets you build interactive web UIs using C#...
+app.UseGitHubWebhook();
 ```
 
-## Conclusion
+Store a random secret as `Osirion:Cms:Web:GitHub:Blog:WebhookSecret` (user secrets locally, your host's secret store in
+production). In the content repository, add a webhook with the payload URL `https://your-site/api/github/webhook`,
+content type `application/json`, the same secret, and the push event. Each delivery's signature is checked against the
+secret, deliveries are rejected while no provider has a secret, and a push refreshes only the provider whose owner,
+repository and branch match it. The refresh downloads only the files that changed.
 
-In this tutorial, we've built a blog using Osirion.Blazor's GitHub CMS components. This approach provides several benefits:
+## Where to go next
 
-- **Performance**: Static Blazor apps are fast and SEO-friendly
-- **Simplicity**: No database to manage
-- **Developer Experience**: Full C# and Blazor development experience
-- **Content Management**: Easy content creation and editing with markdown
-- **Customization**: Full control over styling and layout
-
-The GitHub CMS approach is particularly well-suited for developer blogs, documentation sites, and small to medium-sized content websites. For larger sites with many editors, you might want to consider adding a custom editor UI or integrating with a headless CMS.
-
-Happy coding!
+- Available from 4.1: `MapOsirionFeeds` in `Osirion.Blazor.Cms.Web.Feeds` maps `/sitemap.xml`, an RSS feed at
+  `/feed.xml` and an Atom feed at `/atom.xml` from the published content.
+- [The Osirion.Blazor CMS components](/blog/github-cms-components) describes each component used here and the ones
+  that were not.
+- [Hero sections in Blazor](/blog/modern-hero-sections-blazor) covers the hero `ArticlePage` renders.
+- The [CMS web components](/docs/components/cms-web) reference lists every parameter.

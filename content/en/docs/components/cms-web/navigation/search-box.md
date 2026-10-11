@@ -1,52 +1,39 @@
 ---
-title: "SearchBox"
-description: "A Blazor component for creating accessible search forms with customizable styling and configuration for content search functionality."
-keywords: 
-  - "search-box"
-  - "search form"
-  - "content search"
-  - "blazor cms"
-  - "navigation"
-  - "accessibility"
-seo:
-  title: "SearchBox - Osirion Blazor CMS Web Component"
-  description: "Learn how to implement search functionality in Osirion Blazor CMS with the SearchBox component featuring accessibility support and customizable styling."
-  keywords:
-    - "blazor search component"
-    - "cms search form"
-    - "content search box"
-    - "osirion blazor"
+id: 'cms-web-search-box'
+order: 6
+title: "SearchBox - Osirion Blazor CMS"
+permalink: /docs/components/cms-web/navigation/search-box
+description: "SearchBox renders a search form that submits the query with GET to a results page, with no script, under static SSR and interactive modes."
+author: Dejan Demonjić
 date: "2024-12-29"
+last_modified: 2026-10-11
+featured_image: /assets/images/blazor-cover.png
+categories:
+- Components
+- CMS Web Components
+- Navigation Components
+tags:
+- cms
+- search
+- forms
+- accessibility
+published: true
+slug: "search-box"
+lang: en
+seo_properties:
+  title: "SearchBox Component - Osirion.Blazor CMS"
+  description: "A search form for Blazor content sites that submits with GET to a results page built with ContentList. No script needed."
+  image: /assets/images/blazor-cover.png
+  canonical: "https://getosirion.com/docs/components/cms-web/navigation/search-box"
 ---
 
 # SearchBox
 
-The `SearchBox` component provides a fully accessible search form for content discovery with customizable styling, action URLs, and query parameters. It generates a standard HTML form that can integrate with any search backend.
+`SearchBox` renders a search field and a submit button inside a plain HTML form. Submitting it sends the browser to
+your results page with the query in the URL, for example `/search?q=routing`, so it works without script and in every
+render mode.
 
-## Features
-
-- **Accessible Design**: Full accessibility support with proper ARIA labels and roles
-- **Customizable Action**: Configurable form action URL and HTTP method
-- **Flexible Parameters**: Customizable query parameter names and values
-- **Themeable Styling**: Works with all supported UI frameworks
-- **Form Integration**: Standard HTML form that works with any backend
-- **Unique IDs**: Automatic generation of unique element IDs for multiple instances
-- **Screen Reader Support**: Proper labeling and hidden text for assistive technologies
-
-## Parameters
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `ActionUrl` | `string` | `"/search"` | The URL where the search form will be submitted |
-| `QueryParameterName` | `string` | `"q"` | The name of the query parameter for the search term |
-| `SearchQuery` | `string` | `""` | The current search query value |
-| `Placeholder` | `string` | `"Search content..."` | Placeholder text for the search input |
-| `SearchButtonText` | `string` | `"Search"` | Text displayed on the search button |
-| `Title` | `string?` | `null` | Optional title displayed above the search box |
-
-## Basic Usage
-
-### Simple Search Box
+## Usage
 
 ```razor
 @using Osirion.Blazor.Cms.Web.Components
@@ -54,415 +41,75 @@ The `SearchBox` component provides a fully accessible search form for content di
 <SearchBox />
 ```
 
-### Search Box with Custom Action
-
-```razor
-<SearchBox 
-    ActionUrl="/api/search"
-    QueryParameterName="query"
-    Placeholder="Search articles..." />
-```
-
-### Search Box with Title
-
-```razor
-<SearchBox 
-    Title="Find Content"
-    Placeholder="Enter your search terms"
-    SearchButtonText="Find" />
-```
-
-## Advanced Examples
-
-### Custom Search Configuration
-
-```razor
-<SearchBox 
-    ActionUrl="@searchEndpoint"
-    QueryParameterName="@queryParam"
-    SearchQuery="@currentQuery"
-    Title="@Localizer["SearchTitle"]"
-    Placeholder="@Localizer["SearchPlaceholder"]"
-    SearchButtonText="@Localizer["SearchButton"]" />
-
-@code {
-    private string searchEndpoint = "/search/advanced";
-    private string queryParam = "searchTerm";
-    private string currentQuery = "";
-
-    [Inject] private IStringLocalizer<SearchResources> Localizer { get; set; } = default!;
-}
-```
-
-### Multiple Search Boxes
-
-```razor
-<!-- Global site search -->
-<SearchBox 
-    ActionUrl="/search"
-    Title="Site Search"
-    Placeholder="Search all content..."
-    CssClass="global-search" />
-
-<!-- Category-specific search -->
-<SearchBox 
-    ActionUrl="/search/blog"
-    Title="Blog Search"
-    Placeholder="Search blog posts..."
-    QueryParameterName="blogQuery"
-    CssClass="blog-search" />
-
-<!-- Documentation search -->
-<SearchBox 
-    ActionUrl="/search/docs"
-    Title="Documentation"
-    Placeholder="Search documentation..."
-    QueryParameterName="docQuery"
-    CssClass="doc-search" />
-```
-
-### Pre-filled Search
-
-```razor
-<SearchBox 
-    SearchQuery="@prefilledQuery"
-    ActionUrl="/search/results"
-    Title="Refine Your Search" />
-
-@code {
-    [Parameter] public string? Category { get; set; }
-    
-    private string prefilledQuery => !string.IsNullOrEmpty(Category) ? $"category:{Category}" : "";
-}
-```
-
-### Integration with Search Results
+The results page reads the query and passes it to `ContentList`, which filters the content. Passing the query back
+to `SearchBox` keeps it in the field:
 
 ```razor
 @page "/search"
 @using Osirion.Blazor.Cms.Web.Components
 
-<h1>Search</h1>
+<SearchBox Title="Search the docs" SearchQuery="@(Query ?? string.Empty)" />
 
-<SearchBox 
-    SearchQuery="@Query"
-    ActionUrl="/search"
-    Title="Search Content" />
-
-@if (!string.IsNullOrEmpty(Query))
+@if (!string.IsNullOrWhiteSpace(Query))
 {
-    <div class="search-results">
-        <h2>Results for "@Query"</h2>
-        @if (searchResults != null)
-        {
-            @foreach (var result in searchResults)
-            {
-                <div class="search-result">
-                    <h3><a href="@result.Url">@result.Title</a></h3>
-                    <p>@result.Summary</p>
-                </div>
-            }
-        }
-    </div>
+    <ContentList SearchQuery="@Query"
+                 ShowPagination="true"
+                 ItemsPerPage="12"
+                 NoContentText="No results found." />
 }
 
 @code {
-    [Parameter, SupplyParameterFromQuery] public string? Query { get; set; }
-    [Inject] private ISearchService SearchService { get; set; } = default!;
-    
-    private List<SearchResult>? searchResults;
-
-    protected override async Task OnParametersSetAsync()
-    {
-        if (!string.IsNullOrEmpty(Query))
-        {
-            searchResults = await SearchService.SearchAsync(Query);
-        }
-    }
+    [SupplyParameterFromQuery(Name = "q")]
+    public string? Query { get; set; }
 }
 ```
 
-### AJAX Search with Real-time Results
+The example apps place a `SearchBox` in their navigation menu (`<SearchBox Class="p-3" />` in the Bootstrap app) and
+have a `/search` page that passes the `q` query to `ContentList`.
 
-```razor
-<div class="search-container">
-    <SearchBox 
-        ActionUrl="javascript:void(0)"
-        Placeholder="Type to search..."
-        SearchButtonText="🔍"
-        @onkeyup="@HandleKeyUp" />
-    
-    @if (liveResults != null && liveResults.Any())
-    {
-        <div class="live-results">
-            @foreach (var result in liveResults)
-            {
-                <a href="@result.Url" class="live-result-item">
-                    <strong>@result.Title</strong>
-                    <small>@result.Summary</small>
-                </a>
-            }
-        </div>
-    }
-</div>
+## Parameters
 
-@code {
-    private List<SearchResult>? liveResults;
-    private Timer? searchTimer;
+| Parameter | Type | Default | Description |
+| --- | --- | --- | --- |
+| `ActionUrl` | `string` | `"/search"` | Page the form submits to. |
+| `QueryParameterName` | `string` | `"q"` | Name of the query string parameter that carries the search text. |
+| `SearchQuery` | `string` | `""` | Text shown in the field, usually the current query. |
+| `Placeholder` | `string` | `"Search content..."` | Placeholder of the field; also its accessible name. |
+| `SearchButtonText` | `string` | `"Search"` | Visible text of the submit button. |
+| `Title` | `string?` | `null` | Heading rendered as an `h2` above the form. No heading when null. |
+| `Class` | `string?` | `null` | Extra CSS classes on the outer `div`. |
 
-    [Inject] private ISearchService SearchService { get; set; } = default!;
+Other attributes on the tag are captured but not rendered.
 
-    private async Task HandleKeyUp(KeyboardEventArgs e)
-    {
-        var target = e.Target as IHtmlInputElement;
-        var query = target?.Value;
-        
-        if (string.IsNullOrWhiteSpace(query) || query.Length < 3)
-        {
-            liveResults = null;
-            StateHasChanged();
-            return;
-        }
+## Behavior
 
-        // Debounce search requests
-        searchTimer?.Dispose();
-        searchTimer = new Timer(async _ =>
-        {
-            liveResults = await SearchService.SearchAsync(query, limit: 5);
-            await InvokeAsync(StateHasChanged);
-        }, null, 300, Timeout.Infinite);
-    }
-}
-```
+- The form uses `method="get"` and `role="search"`. Nothing is posted and no antiforgery token is needed.
+- `SearchBox` does not search. `ContentList` with a `SearchQuery` splits the text on spaces and keeps the published
+  items where any word appears, ignoring case, in the title, description, rendered HTML, categories or tags. It is
+  a substring match over the loaded content, not a ranked full-text index.
+- The field has a visually hidden `label` with the text "Search", and an `aria-label` set to `Placeholder`, which
+  screen readers announce instead. The button is announced as "Submit search"; its visible text is hidden from
+  screen readers. Both of these fixed texts are English, so on other languages set `Placeholder` and
+  `SearchButtonText` and expect the button name to stay "Submit search".
+- The submitted text reaches your page through the query string. Render it with Razor (`@Query`), which encodes
+  it; never write it out as raw markup.
 
-## CSS Customization
+## Styling
 
-### Default Styling
+| Class | Element |
+| --- | --- |
+| `osirion-search-container` | Outer `div`, plus your `Class` |
+| `osirion-search-title` | The `h2` heading |
+| `osirion-search-box` | The `form` |
+| `osirion-search-input` | The `input type="search"` |
 
-```css
-.osirion-search-container {
-    margin-bottom: 1rem;
-}
+The button takes the primary button class of the CSS framework configured in the theming options: `btn btn-primary`
+for Bootstrap, `mud-button mud-button-filled mud-button-filled-primary` for MudBlazor, `rz-button rz-button-primary`
+for Radzen, and `osirion-button osirion-button-primary` for Fluent UI and for no framework. The field uses
+`--osirion-background-primary`, `--osirion-border-color`, `--osirion-text-primary` and
+`--osirion-focus-ring-color`.
 
-.osirion-search-title {
-    margin-bottom: 0.5rem;
-    font-size: 1.25rem;
-    font-weight: 600;
-}
+## Related
 
-.osirion-search-box {
-    display: flex;
-    gap: 0.5rem;
-    align-items: stretch;
-}
-
-.osirion-search-input {
-    flex: 1;
-    padding: 0.5rem 0.75rem;
-    border: 1px solid var(--border-color);
-    border-radius: 0.375rem;
-    font-size: 1rem;
-}
-
-.osirion-search-input:focus {
-    outline: 2px solid var(--primary-color);
-    outline-offset: 2px;
-    border-color: var(--primary-color);
-}
-
-.osirion-search-button {
-    padding: 0.5rem 1rem;
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    border-radius: 0.375rem;
-    cursor: pointer;
-    font-weight: 500;
-    transition: background-color 0.2s ease;
-}
-
-.osirion-search-button:hover {
-    background-color: var(--primary-color-dark);
-}
-```
-
-### Compact Search
-
-```css
-.osirion-search-container.compact .osirion-search-input {
-    padding: 0.375rem 0.5rem;
-    font-size: 0.875rem;
-}
-
-.osirion-search-container.compact .osirion-search-button {
-    padding: 0.375rem 0.75rem;
-    font-size: 0.875rem;
-}
-```
-
-### Full-width Search
-
-```css
-.osirion-search-container.full-width {
-    width: 100%;
-}
-
-.osirion-search-container.full-width .osirion-search-box {
-    width: 100%;
-}
-
-.osirion-search-container.full-width .osirion-search-input {
-    min-width: 0;
-}
-```
-
-### Inline Search
-
-```css
-.osirion-search-container.inline {
-    display: inline-block;
-    margin: 0;
-}
-
-.osirion-search-container.inline .osirion-search-box {
-    display: inline-flex;
-    width: auto;
-}
-```
-
-## Framework-Specific Styling
-
-### Bootstrap Integration
-
-```razor
-<SearchBox CssClass="mb-3">
-    <div class="input-group">
-        <input class="form-control" />
-        <button class="btn btn-primary" type="submit">
-            <i class="fas fa-search"></i>
-        </button>
-    </div>
-</SearchBox>
-```
-
-### Tailwind CSS Integration
-
-```razor
-<SearchBox CssClass="mb-4">
-    <div class="flex rounded-md shadow-sm">
-        <input class="flex-1 rounded-l-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500" />
-        <button class="bg-indigo-600 text-white px-4 py-2 rounded-r-md hover:bg-indigo-700">
-            Search
-        </button>
-    </div>
-</SearchBox>
-```
-
-## Accessibility Features
-
-- **Semantic HTML**: Uses proper form elements and structure
-- **ARIA Labels**: Comprehensive labeling for screen readers
-- **Keyboard Navigation**: Full keyboard accessibility
-- **Focus Management**: Proper focus indicators and behavior
-- **Screen Reader Support**: Hidden labels and announcements
-- **Unique IDs**: Automatic generation prevents ID conflicts
-
-## Best Practices
-
-1. **Search Endpoints**: Ensure your search endpoint can handle the form submission
-2. **Query Validation**: Validate and sanitize search queries on the server
-3. **Performance**: Implement debouncing for real-time search features
-4. **Error Handling**: Provide feedback for failed searches
-5. **Results Display**: Show meaningful results and empty states
-6. **SEO Considerations**: Use proper URLs for search results pages
-
-## Integration Examples
-
-### With Search Service
-
-```razor
-@page "/search"
-@using Osirion.Blazor.Cms.Web.Components
-
-<SearchBox 
-    SearchQuery="@Query"
-    ActionUrl="/search"
-    OnSearch="@HandleSearch" />
-
-@if (loading)
-{
-    <div class="loading">Searching...</div>
-}
-else if (results != null)
-{
-    <div class="results">
-        <p>Found @results.TotalCount results for "@Query"</p>
-        @foreach (var item in results.Items)
-        {
-            <ContentView Item="@item" ShowSummary="true" />
-        }
-    </div>
-}
-
-@code {
-    [Parameter, SupplyParameterFromQuery] public string? Query { get; set; }
-    [Inject] private IContentSearchService SearchService { get; set; } = default!;
-    
-    private SearchResults? results;
-    private bool loading;
-
-    protected override async Task OnParametersSetAsync()
-    {
-        if (!string.IsNullOrEmpty(Query))
-        {
-            await PerformSearch();
-        }
-    }
-
-    private async Task HandleSearch(string query)
-    {
-        NavigationManager.NavigateTo($"/search?q={Uri.EscapeDataString(query)}");
-    }
-
-    private async Task PerformSearch()
-    {
-        loading = true;
-        try
-        {
-            results = await SearchService.SearchContentAsync(Query!);
-        }
-        finally
-        {
-            loading = false;
-        }
-    }
-}
-```
-
-### Global Navigation Integration
-
-```razor
-<!-- In MainLayout.razor -->
-<nav class="navbar">
-    <div class="navbar-brand">
-        <a href="/">My Site</a>
-    </div>
-    
-    <div class="navbar-search">
-        <SearchBox 
-            Placeholder="Search site..."
-            CssClass="compact inline" />
-    </div>
-    
-    <div class="navbar-menu">
-        <!-- Other navigation items -->
-    </div>
-</nav>
-```
-
-## Related Components
-
-- [`ContentView`](../core/content-view.md) - For displaying search results
-- [`ContentList`](../core/content-list.md) - For listing search results
-- [`TagCloud`](tag-cloud.md) - For tag-based search discovery
-- [`CategoriesList`](categories-list.md) - For category-based navigation
+- [Content List](/docs/components/cms-web/core/content-list), which runs the search on the results page
+- [CMS navigation components](/docs/components/cms-web/navigation)

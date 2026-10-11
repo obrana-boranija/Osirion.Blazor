@@ -3,6 +3,7 @@ title: "Callouts - Osirion Blazor"
 description: "Highlight a note, tip, important point, warning or caution in content, written in Markdown with GitHub's alert syntax or with the OsirionCallout component."
 author: Dejan Demonjić
 date: 2026-10-11
+last_modified: 2026-10-11
 featured_image: /assets/images/blazor-cover.png
 categories:
 - Components
@@ -22,6 +23,8 @@ published: true
 A callout highlights a note, tip, important point, warning or caution inside content. Write it in Markdown with
 GitHub's alert syntax, or render it from a Razor page with `OsirionCallout`. Both look the same, follow the theme and
 the CSS framework adapter, and need no script.
+
+Available from 4.1.
 
 ## In Markdown
 
@@ -78,3 +81,9 @@ Both forms share the `--osirion-callout-color` and `--osirion-callout-icon` cust
 color from the theme's status tokens (`--osirion-status-info`, `--osirion-status-success`, `--osirion-action-primary`,
 `--osirion-status-warning`, `--osirion-status-danger`), so a framework adapter recolors callouts with the rest of the
 site. Override a kind with its class, for example `.osirion-callout-tip, .markdown-alert-tip { --osirion-callout-color: #0e7490; }`.
+
+## Related
+
+- [Accordion and FAQ](/docs/components/core/content/accordion-and-faq)
+- [Tabs](/docs/components/core/content/tabs)
+- [Content components](/docs/components/core/content)

@@ -2,12 +2,13 @@
 id: 'cms-web-navigation-components-overview'
 order: 1
 layout: docs
-title: CMS Web Navigation Components Overview
+title: CMS Navigation Components
 permalink: /docs/components/cms-web/navigation
-description: Complete overview of Osirion.Blazor CMS Web Navigation components including categories list, content breadcrumbs, directory navigation, search, and table of contents.
+description: 'Components that link CMS content: categories, tags, breadcrumbs, directories, previous and next links, series, table of contents and search.'
 author: Dejan Demonjić
 date: 2025-09-03
-featured_image: https://storage.googleapis.com/croct-assets-b931d070/blog/Headless_CMS_within_the_React_framework_3_1_da922d2562/Headless_CMS_within_the_React_framework_3_1_da922d2562.png
+last_modified: 2026-10-11
+featured_image: /assets/images/blazor-cover.png
 categories:
 - Components
 - CMS Web Components
@@ -16,150 +17,87 @@ tags:
 - blazor
 - cms
 - navigation
-- web-components
-- content-navigation
+- categories
+- tags
 - search
+- table-of-contents
 is_featured: true
 published: true
 slug: navigation
 lang: en
 custom_fields: {}
 seo_properties:
-  title: 'CMS Web Navigation Components - Osirion.Blazor Content Navigation'
-  description: 'Explore Osirion.Blazor CMS Web Navigation components for content discovery and navigation.'
-  image: https://storage.googleapis.com/croct-assets-b931d070/blog/Headless_CMS_within_the_React_framework_3_1_da922d2562/Headless_CMS_within_the_React_framework_3_1_da922d2562.png
+  title: 'CMS Navigation Components - Osirion.Blazor'
+  description: 'Blazor components that link CMS content: categories, tags, breadcrumbs, directories, previous and next links, series, table of contents and search.'
+  image: /assets/images/blazor-cover.png
   canonical: 'https://getosirion.com/docs/components/cms-web/navigation'
   lang: en
   robots: index, follow
-  og_title: 'CMS Web Navigation Components - Osirion.Blazor'
-  og_description: 'Complete documentation for CMS Web Navigation components with search and discovery features.'
-  og_image_url: 'https://storage.googleapis.com/croct-assets-b931d070/blog/Headless_CMS_within_the_React_framework_3_1_da922d2562/Headless_CMS_within_the_React_framework_3_1_da922d2562.png'
+  og_title: 'CMS Navigation Components - Osirion.Blazor'
+  og_description: 'Blazor components that link CMS content: categories, tags, breadcrumbs, directories, series, table of contents and search.'
+  og_image_url: /assets/images/blazor-cover.png
   og_type: article
   json_ld: ''
   type: Article
   twitter_card: summary_large_image
-  twitter_title: 'CMS Web Navigation Components Documentation'
-  twitter_description: 'Complete documentation for Osirion.Blazor CMS Web Navigation components.'
-  twitter_image_url: 'https://storage.googleapis.com/croct-assets-b931d070/blog/Headless_CMS_within_the_React_framework_3_1_da922d2562/Headless_CMS_within_the_React_framework_3_1_da922d2562.png'
+  twitter_title: 'CMS Navigation Components - Osirion.Blazor'
+  twitter_description: 'Blazor components that link CMS content: categories, tags, breadcrumbs, directories, series, table of contents and search.'
+  twitter_image_url: /assets/images/blazor-cover.png
   meta_tags: {}
 ---
 
-# CMS Web Navigation Components Overview
+# CMS navigation components
 
-The Osirion.Blazor CMS Web Navigation module provides comprehensive navigation and content discovery components for content management systems. These components enable users to efficiently find, browse, and navigate through content hierarchies.
-
-## Available Components
-
-### Categories List
-A hierarchical navigation component that displays content categories in tree or list formats, enabling users to browse content by topic, type, or organizational structure.
-
-### Content Breadcrumbs
-A context-aware breadcrumb navigation component that shows the user's current location within the content hierarchy and provides easy navigation back to parent categories or sections.
-
-### Directory Navigation
-A file system-style navigation component that presents content in a directory tree structure, perfect for documentation, knowledge bases, and organized content collections.
-
-### Localized Navigation
-An internationalization-ready navigation component that adapts to different languages and cultures, providing localized navigation labels and structure.
-
-### Osirion Content Navigation
-A specialized navigation component designed specifically for Osirion CMS integration, providing advanced content organization and discovery features.
-
-### Search Box
-A powerful search component with autocomplete, filtering, and faceted search capabilities for content discovery across the entire content repository.
-
-### Table of Contents
-An automatic table of contents generator that creates navigable outlines for long-form content, improving content accessibility and user experience.
-
-### Tag Cloud
-A visual tag representation component that displays content tags in various sizes and styles, enabling tag-based content discovery and navigation.
-
-## Key Features
-
-- **Hierarchical Navigation**: Support for complex content structures
-- **Search Integration**: Advanced search and filtering capabilities
-- **Multi-language Support**: Localized navigation experiences
-- **Performance Optimized**: Efficient content indexing and retrieval
-- **Accessibility**: Screen reader and keyboard navigation support
-
-## Getting Started
-
-To use CMS Web Navigation components in your project:
+These components help readers move through content served by the Osirion CMS: category and tag links,
+breadcrumbs, directory lists, previous and next links, series links, a table of contents and a search form. They
+ship in the Osirion.Blazor.Cms.Web package, in the `Osirion.Blazor.Cms.Web.Components` namespace.
 
 ```razor
-@using Osirion.Blazor.Cms.Web
-
-<CategoriesList ShowHierarchy="true" 
-                MaxDepth="3" 
-                ShowItemCounts="true" />
-
-<ContentBreadcrumbs CurrentContent="@currentContent" 
-                   ShowHome="true" 
-                   Separator="/" />
-
-<DirectoryNavigation RootPath="@contentRoot" 
-                    ShowFiles="true" 
-                    ShowFolders="true" />
-
-<SearchBox Placeholder="Search content..." 
-           EnableAutocomplete="true" 
-           ShowFilters="true" />
-
-<TableOfContents Content="@articleContent" 
-                 MinHeadingLevel="2" 
-                 MaxHeadingLevel="4" />
-
-<TagCloud Tags="@contentTags" 
-          MinSize="12" 
-          MaxSize="24" 
-          ShowCounts="true" />
+@using Osirion.Blazor.Cms.Web.Components
 ```
 
-## Navigation Features
+## Components
 
-### Content Discovery
-- **Advanced Search**: Full-text search with relevance ranking
-- **Faceted Filters**: Category, tag, and metadata-based filtering
-- **Autocomplete**: Real-time search suggestions
-- **Related Content**: Automatic content relationship suggestions
+| Component | What it renders | Where its data comes from |
+| --- | --- | --- |
+| [CategoriesList](/docs/components/cms-web/navigation/categories-list) | Links to every category, with item counts | Loaded from the default content provider |
+| [TagCloud](/docs/components/cms-web/navigation/tag-cloud) | Links to every tag, with item counts | Loaded from the default content provider, or the tags you pass |
+| [ContentBreadcrumbs](/docs/components/cms-web/navigation/content-breadcrumbs) | Home, the item's directories and the item title | The content item or directory you pass |
+| [DirectoryNavigation](/docs/components/cms-web/navigation/directory-navigation) | A list of directories with one level of subdirectories | The directories you pass |
+| [LocalizedNavigation](/docs/components/cms-web/navigation/localized-navigation) | A directory tree with links to content, for one locale | Loaded from the default content provider |
+| [OsirionContentNavigation](/docs/components/cms-web/navigation/osirion-content-navigation) | Previous and next links between the items of a directory | Loaded around the item you pass, or the neighbours you pass |
+| [ContentSeriesNavigation](/docs/components/cms-web/navigation/series-navigation) | "Part 2 of 5", the parts of a series and previous and next links (from 4.1) | Loaded from the items with the same `series` |
+| [TableOfContents](/docs/components/cms-web/navigation/table-of-contents) | Links to the headings of an HTML string | The HTML you pass |
+| [SearchBox](/docs/components/cms-web/navigation/search-box) | A search form that submits with GET | None; your results page reads the query |
 
-### Hierarchical Organization
-- **Category Trees**: Multi-level content categorization
-- **Breadcrumb Trails**: Clear navigation paths
-- **Parent-Child Relationships**: Logical content hierarchies
-- **Cross-references**: Content linking and relationships
+## Before you start
 
-### Localization Support
-- **Multi-language Navigation**: Language-specific menu structures
-- **Cultural Adaptation**: Region-appropriate navigation patterns
-- **Fallback Mechanisms**: Graceful handling of missing translations
-- **RTL Support**: Right-to-left language navigation
+Components that load data use `IContentProviderManager`, so a content provider must be registered. The example
+apps register everything, including the CMS from the `Osirion:Cms` configuration section, with one call:
 
-## Search Capabilities
+```csharp
+using Osirion.Blazor.Extensions;
 
-The search component provides:
+builder.Services.AddOsirion(builder.Configuration);
+```
 
-- **Full-text Search**: Content body and metadata searching
-- **Instant Results**: Real-time search as you type
-- **Advanced Filters**: Date, author, category, and custom filters
-- **Search Analytics**: Query tracking and optimization
-- **Export Options**: Search result export and sharing
+## Rendering
 
-## Performance Features
+Every component here renders under static SSR. Links are plain anchors and the search box is a plain HTML form,
+so none of them needs script. Components that load data do it in `OnParametersSetAsync`; without streaming
+rendering, a statically rendered page is sent once the data is there. Click callbacks such as `DirectoryClicked`
+run only in an interactive render mode.
 
-- **Lazy Loading**: Efficient loading of navigation data
-- **Caching**: Intelligent navigation cache management
-- **Indexing**: Optimized content indexing for fast search
-- **CDN Integration**: Distributed navigation data delivery
+## Styling
 
-## Integration
+Each component ships a scoped stylesheet whose colors, spacing and fonts come from the Osirion theme tokens
+(`--osirion-text-primary`, `--osirion-action-primary`, `--osirion-background-tertiary` and others), so setting the
+tokens or using a framework adapter restyles them with the rest of the site. Scoped rules carry an extra attribute
+selector, so an override in your own stylesheet needs one more class or element than the rule it replaces, for
+example `.sidebar .osirion-categories-list .osirion-category-link`.
 
-These navigation components integrate with:
+## Related
 
-- Content Management Systems
-- Search engines (Elasticsearch, Solr)
-- Analytics platforms
-- User behavior tracking
-- SEO optimization tools
-
-The CMS Web Navigation components provide comprehensive tools for building intuitive, efficient content discovery and navigation experiences in modern web applications.
+- [CMS Web components](/docs/components/cms-web)
+- [Core CMS components](/docs/components/cms-web/core), such as `ContentList` for category, tag and search result pages
+- [OsirionBreadcrumbs](/docs/components/core/navigation/breadcrumbs), breadcrumbs built from a URL path instead of the content tree
