@@ -20,6 +20,15 @@ public class SeoMetadataRendererPageTypeTests : CmsWebComponentTestBase
         schema["datePublished"].ShouldNotBeNull();
     }
 
+    // Fails before the fix: SchemaType.BlogPosting wrote "@type": "Article".
+    [Fact]
+    public void SeoMetadataRenderer_BlogPosting_EmitsTheBlogPostingType()
+    {
+        var cut = Render(CreatePage("Post"), SchemaType.BlogPosting);
+
+        FindSchema(cut, "BlogPosting")["headline"]!.GetValue<string>().ShouldBe("Post");
+    }
+
     [Fact]
     public void SeoMetadataRenderer_SoftwareApplication_UsesTheApplicationCategory()
     {

@@ -1229,7 +1229,7 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
 
     private object GenerateBlogPostingSchema()
     {
-        return GenerateArticleSchema();
+        return GenerateArticleSchema("BlogPosting");
     }
 
     private Dictionary<string, object?> GenerateWebPageSchema(string type = "WebPage")
