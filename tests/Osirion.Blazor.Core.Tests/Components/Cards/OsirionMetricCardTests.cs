@@ -108,7 +108,7 @@ public class OsirionMetricCardTests : OsirionComponentTestBase
     [InlineData("99.99%", "", "99.99", "%")]
     [InlineData("$1,200+", "$", "1,200", "+")]
     [InlineData("18-32%", "", "18-32", "%")]
-    [InlineData("18–32 ms", "", "18–32", " ms")]
+    [InlineData("18\u201332 ms", "", "18\u201332", " ms")]
     [InlineData("  42  ", "", "42", "")]
     [InlineData(".5x", "", ".5", "x")]
     [InlineData("~5-", "~", "5", "-")]
