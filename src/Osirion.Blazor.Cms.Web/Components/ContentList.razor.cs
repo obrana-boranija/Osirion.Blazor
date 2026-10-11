@@ -345,13 +345,9 @@ public partial class ContentList : IDisposable
     // The path of a link or location, without query, fragment or surrounding slashes.
     private static string PathOf(string url)
     {
-        if (url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) || url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
-        {
-            url = new Uri(url).AbsolutePath;
-        }
-
-        var end = url.AsSpan().IndexOfAny('?', '#');
-        return (end >= 0 ? url[..end] : url).Trim('/');
+        var withoutQuery = ContentUrls.StripQueryAndFragment(url);
+        var isWebUrl = Uri.TryCreate(withoutQuery, UriKind.Absolute, out var absolute) && absolute.Scheme is "http" or "https";
+        return (isWebUrl ? absolute!.AbsolutePath : withoutQuery).Trim('/');
     }
 
     /// <summary>
