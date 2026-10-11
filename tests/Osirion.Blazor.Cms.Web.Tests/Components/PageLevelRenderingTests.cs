@@ -414,6 +414,23 @@ public class PageLevelRenderingTests : CmsWebComponentTestBase
         cut.Find(".osirion-homepage-custom").TextContent.ShouldContain("Custom block");
     }
 
+    // Threw InvalidCastException before the fix: the page passed its Func<string, string> formatters to
+    // components that take a category or tag.
+    [Fact]
+    public void HomePage_UrlFormatters_ApplyToTheCategoryAndTagLinks()
+    {
+        var cut = RenderStatic<HomePage>(p => p
+            .Add(c => c.Content, Doc("Welcome"))
+            .Add(c => c.ShowFeaturedContent, false)
+            .Add(c => c.ShowCategories, true)
+            .Add(c => c.ShowTags, true)
+            .Add(c => c.CategoryUrlFormatter, name => $"/topics/{name}")
+            .Add(c => c.TagUrlFormatter, name => $"/labels/{name}"));
+
+        cut.Find(".osirion-homepage-browse a.osirion-category-link").GetAttribute("href").ShouldBe("/topics/News");
+        cut.Find(".osirion-homepage-browse a.osirion-tag-link").GetAttribute("href").ShouldBe("/labels/dotnet");
+    }
+
     [Fact]
     public void HomePage_OnlyTags_RendersTheTagCloudWithoutCategories()
     {
