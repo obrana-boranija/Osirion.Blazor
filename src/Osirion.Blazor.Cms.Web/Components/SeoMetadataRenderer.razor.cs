@@ -2,10 +2,9 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Domain.Entities;
+using Osirion.Blazor.Cms.Web.Components.Seo;
 using Osirion.Blazor.Cms.Web.Options;
 using Osirion.Blazor.Core.Utils;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace Osirion.Blazor.Cms.Web.Components;
 
@@ -62,8 +61,6 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
     private string? _entitySummary;
     private List<string>? _answersTo;
     private Dictionary<string, string>? _structuredAnswers;
-    private string? _mainQuestion;
-    private string? _quickAnswer;
 
     // Helper properties for defensive programming (Content or ContentItems scenarios)
     private bool _hasContent;
@@ -265,6 +262,14 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
     /// </summary>
     private List<(string HrefLang, string Href)> _alternateLinks = [];
 
+    private static readonly Dictionary<string, string> OgTypesBySchemaType = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["Article"] = "article",
+        ["BlogPosting"] = "article",
+        ["Product"] = "product",
+        ["VideoObject"] = "video.other"
+    };
+
     /// <summary>
     /// Recomputes all SEO metadata whenever the parameters are set, so a reused component instance never
     /// shows the title, canonical URL or structured data of the previous page.
@@ -283,10 +288,10 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
         InitializeHelperProperties();
 
         // Core setup
-        _siteName = SiteNameOverride ?? OrganizationName ?? ExtractSiteName(navigationManager.BaseUri);
+        _siteName = SiteNameOverride ?? OrganizationName ?? SeoText.ExtractSiteName(navigationManager.BaseUri);
         _baseUrl = navigationManager.BaseUri.TrimEnd('/');
         _currentUrl = ResolvePageUrl();
-        _locale = GetLocaleCode(Content?.Locale);
+        _locale = SeoText.ToOpenGraphLocale(Content?.Locale);
         _languageCode = Content?.Locale ?? "en";
         _alternateLinks = ParseAlternateLanguageUrls();
 
@@ -339,8 +344,6 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
         _entitySummary = null;
         _answersTo = null;
         _structuredAnswers = null;
-        _mainQuestion = null;
-        _quickAnswer = null;
         _author = null;
         _isArticle = false;
         _publishDate = null;
@@ -385,6 +388,12 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
         var options = SeoOptions?.Value;
         if (options is null) return;
 
+        ApplySiteDefaults(options);
+        ApplyRenderingDefaults(options);
+    }
+
+    private void ApplySiteDefaults(SeoMetadataOptions options)
+    {
         // Apply site-wide defaults only if parameters are not set
         SiteNameOverride ??= options.SiteName;
         SiteDescription ??= options.SiteDescription;
@@ -394,12 +403,16 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
         FacebookAppId ??= options.FacebookAppId;
         DefaultImageUrl ??= options.DefaultImageUrl;
         OrganizationName ??= options.OrganizationName;
+    }
+
+    private void ApplyRenderingDefaults(SeoMetadataOptions options)
+    {
         BreadcrumbHomeText = string.IsNullOrWhiteSpace(BreadcrumbHomeText) ? options.BreadcrumbHomeText : BreadcrumbHomeText;
-        
+
         // Apply default settings if not explicitly overridden
         if (DefaultImageWidth == 1200) DefaultImageWidth = options.DefaultImageWidth;
         if (DefaultImageHeight == 630) DefaultImageHeight = options.DefaultImageHeight;
-        
+
         EmitMobileMetaTags |= options.EmitMobileMetaTags;
         EnableGeneratedFaq |= options.EnableGeneratedFaq;
 
@@ -443,11 +456,11 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
     private void BuildMetadata()
     {
         _metaTitle = BuildMetaTitle();
-        
+
         if (ContentItems?.Any() == true)
         {
             // Collection page metadata
-            _metaDescription = TruncateDescription(CollectionDescription, 160);
+            _metaDescription = SeoText.TruncateDescription(CollectionDescription, 160);
             // Aggregate all unique tags from collection
             var allTags = ContentItems.SelectMany(c => c.Tags).Distinct().ToList();
             _metaKeywords = allTags.Any() ? string.Join(", ", allTags) : null;
@@ -455,8 +468,8 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
         else
         {
             // Single content page metadata
-            _metaDescription = TruncateDescription(
-                GetFirstValue(Content?.Metadata?.SeoProperties?.Description, Content?.Description),
+            _metaDescription = SeoText.TruncateDescription(
+                SeoText.FirstNonBlank(Content?.Metadata?.SeoProperties?.Description, Content?.Description),
                 160
             );
             _metaKeywords = Content?.Tags.Any() == true ? string.Join(", ", Content.Tags) : null;
@@ -467,33 +480,34 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
     {
         if (ContentItems?.Any() == true)
         {
-            // Collection page Open Graph metadata
-            _ogTitle = TruncateTitle(CollectionTitle ?? _metaTitle, 60);
-            _ogDescription = TruncateDescription(CollectionDescription ?? _metaDescription, 200);
-            _ogImage = NormalizeImageUrl(ContentItems.FirstOrDefault()?.FeaturedImageUrl ?? DefaultImageUrl);
-            _ogType = "website";
-            _ogImageAlt = CollectionTitle ?? _siteName;
+            BuildCollectionOpenGraphMetadata(ContentItems);
         }
         else
         {
-            // Single content page Open Graph metadata
-            _ogTitle = TruncateTitle(
-                GetFirstValue(Content?.Metadata?.SeoProperties?.OgTitle, Content?.Title, _metaTitle),
-                60
-            );
-            _ogDescription = TruncateDescription(
-                GetFirstValue(Content?.Metadata?.SeoProperties?.OgDescription, _metaDescription),
-                200
-            );
-            _ogImage = NormalizeImageUrl(
-                GetFirstValue(Content?.Metadata?.SeoProperties?.OgImageUrl, Content?.FeaturedImageUrl, DefaultImageUrl)
-            );
-            _ogType = GetFirstValue(Content?.Metadata?.SeoProperties?.OgType, DetermineOgType());
-            _ogImageAlt = GetFirstValue(Content?.Title, _siteName);
+            BuildContentOpenGraphMetadata();
         }
-        
+
         _ogImageWidth = DefaultImageWidth;
         _ogImageHeight = DefaultImageHeight;
+    }
+
+    private void BuildCollectionOpenGraphMetadata(IReadOnlyList<ContentItem> contentItems)
+    {
+        _ogTitle = SeoText.TruncateTitle(CollectionTitle ?? _metaTitle, 60);
+        _ogDescription = SeoText.TruncateDescription(CollectionDescription ?? _metaDescription, 200);
+        _ogImage = NormalizeImageUrl(contentItems.FirstOrDefault()?.FeaturedImageUrl ?? DefaultImageUrl);
+        _ogType = "website";
+        _ogImageAlt = CollectionTitle ?? _siteName;
+    }
+
+    private void BuildContentOpenGraphMetadata()
+    {
+        var seo = Content?.Metadata?.SeoProperties;
+        _ogTitle = SeoText.TruncateTitle(SeoText.FirstNonBlank(seo?.OgTitle, Content?.Title, _metaTitle), 60);
+        _ogDescription = SeoText.TruncateDescription(SeoText.FirstNonBlank(seo?.OgDescription, _metaDescription), 200);
+        _ogImage = NormalizeImageUrl(SeoText.FirstNonBlank(seo?.OgImageUrl, Content?.FeaturedImageUrl, DefaultImageUrl));
+        _ogType = SeoText.FirstNonBlank(seo?.OgType, DetermineOgType());
+        _ogImageAlt = SeoText.FirstNonBlank(Content?.Title, _siteName);
     }
 
     private void BuildTwitterCardMetadata()
@@ -502,26 +516,17 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
         {
             // Collection page Twitter Card metadata
             _twitterCard = "summary_large_image";
-            _twitterTitle = TruncateTitle(_ogTitle ?? _metaTitle, 70);
-            _twitterDescription = TruncateDescription(_metaDescription, 200);
+            _twitterTitle = SeoText.TruncateTitle(_ogTitle ?? _metaTitle, 70);
+            _twitterDescription = SeoText.TruncateDescription(_metaDescription, 200);
             _twitterImage = NormalizeImageUrl(_ogImage);
+            return;
         }
-        else
-        {
-            // Single content page Twitter Card metadata
-            _twitterCard = GetFirstValue(Content?.Metadata?.SeoProperties?.TwitterCard, "summary_large_image");
-            _twitterTitle = TruncateTitle(
-                GetFirstValue(Content?.Metadata?.SeoProperties?.TwitterTitle, _ogTitle, _metaTitle),
-                70
-            );
-            _twitterDescription = TruncateDescription(
-                GetFirstValue(Content?.Metadata?.SeoProperties?.TwitterDescription, _metaDescription),
-                200
-            );
-            _twitterImage = NormalizeImageUrl(
-                GetFirstValue(Content?.Metadata?.SeoProperties?.TwitterImageUrl, _ogImage)
-            );
-        }
+
+        var seo = Content?.Metadata?.SeoProperties;
+        _twitterCard = SeoText.FirstNonBlank(seo?.TwitterCard, "summary_large_image");
+        _twitterTitle = SeoText.TruncateTitle(SeoText.FirstNonBlank(seo?.TwitterTitle, _ogTitle, _metaTitle), 70);
+        _twitterDescription = SeoText.TruncateDescription(SeoText.FirstNonBlank(seo?.TwitterDescription, _metaDescription), 200);
+        _twitterImage = NormalizeImageUrl(SeoText.FirstNonBlank(seo?.TwitterImageUrl, _ogImage));
     }
 
     private void BuildSeoEssentials()
@@ -534,194 +539,44 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
     {
         // GEO: Create concise entity summary for AI engines
         var description = Content?.Description ?? CollectionDescription;
-        
+
         if (!string.IsNullOrWhiteSpace(description))
         {
-            _entitySummary = TruncateDescription(description, 280);
+            _entitySummary = SeoText.TruncateDescription(description, 280);
         }
     }
 
+    /// <summary>
+    /// AEO: records the question the page answers, either the title itself when it is a question, or a question
+    /// derived from the title pattern ("Guide to X" becomes "How to X?"), with the description as its answer.
+    /// </summary>
     private void BuildAeoOptimization()
     {
-        // AEO: Identify potential questions this content answers (multi-language support)
-        _answersTo = new List<string>();
-        _structuredAnswers = new Dictionary<string, string>();
+        _answersTo = [];
+        _structuredAnswers = [];
 
         var title = Content?.Title ?? CollectionTitle;
+        if (string.IsNullOrWhiteSpace(title)) return;
+
+        var question = AnswerQuestions.IsQuestion(title, _languageCode)
+            ? title
+            : AnswerQuestions.GenerateImplicitQuestion(title, _languageCode);
+        if (string.IsNullOrWhiteSpace(question)) return;
+
+        _answersTo.Add(question);
+
         var description = Content?.Description ?? CollectionDescription;
-
-        if (!string.IsNullOrWhiteSpace(title))
+        if (!string.IsNullOrWhiteSpace(description))
         {
-            // Multi-language question word patterns
-            var questionWords = GetQuestionWordsForLanguage(_languageCode);
-            
-            // Check if title starts with any question word
-            var isQuestion = questionWords.Any(qw => 
-                title.StartsWith(qw, StringComparison.OrdinalIgnoreCase));
-
-            if (isQuestion)
-            {
-                _answersTo.Add(title);
-                
-                if (!string.IsNullOrWhiteSpace(description))
-                {
-                    _structuredAnswers[title] = TruncateDescription(description, 320) ?? string.Empty;
-                }
-            }
-            
-            // Generate implicit questions for non-question titles (e.g., "Guide to X" → "How to X?")
-            else
-            {
-                var implicitQuestion = GenerateImplicitQuestion(title, _languageCode);
-                if (!string.IsNullOrWhiteSpace(implicitQuestion))
-                {
-                    _answersTo.Add(implicitQuestion);
-                    _mainQuestion = implicitQuestion;
-                    
-                    if (!string.IsNullOrWhiteSpace(description))
-                    {
-                        _structuredAnswers[implicitQuestion] = TruncateDescription(description, 320) ?? string.Empty;
-                        _quickAnswer = TruncateDescription(description, 160);
-                    }
-                }
-            }
+            _structuredAnswers[question] = SeoText.TruncateDescription(description, 320) ?? string.Empty;
         }
-    }
-
-    /// <summary>
-    /// Returns question words for the specified language code.
-    /// Supports English, Serbian (Latin &amp; Cyrillic), German, French, Spanish, Italian, Portuguese, and more.
-    /// </summary>
-    private static string[] GetQuestionWordsForLanguage(string? languageCode)
-    {
-        return languageCode?.ToLowerInvariant() switch
-        {
-            // English
-            "en" or "en-us" or "en-gb" => new[] { "how", "what", "why", "when", "where", "who", "which", "can", "does", "is", "are", "should" },
-            
-            // Serbian (Latin)
-            "sr" or "sr-latn" or "sr-latn-rs" => new[] { "kako", "šta", "zašto", "kada", "gde", "ko", "koji", "da li", "može", "treba" },
-            
-            // Serbian (Cyrillic)
-            "sr-cyrl" or "sr-cyrl-rs" => new[] { "како", "шта", "зашто", "када", "где", "ко", "који", "да ли", "може", "треба" },
-            
-            // German
-            "de" or "de-de" or "de-at" or "de-ch" => new[] { "wie", "was", "warum", "wann", "wo", "wer", "welche", "kann", "ist", "sind", "soll" },
-            
-            // French
-            "fr" or "fr-fr" or "fr-ca" => new[] { "comment", "quoi", "pourquoi", "quand", "où", "qui", "quel", "quelle", "peut", "est", "sont" },
-            
-            // Spanish
-            "es" or "es-es" or "es-mx" => new[] { "cómo", "qué", "por qué", "cuándo", "dónde", "quién", "cuál", "puede", "es", "son", "debe" },
-            
-            // Italian
-            "it" or "it-it" => new[] { "come", "cosa", "perché", "quando", "dove", "chi", "quale", "può", "è", "sono", "deve" },
-            
-            // Portuguese
-            "pt" or "pt-pt" or "pt-br" => new[] { "como", "o que", "por que", "quando", "onde", "quem", "qual", "pode", "é", "são", "deve" },
-            
-            // Dutch
-            "nl" or "nl-nl" or "nl-be" => new[] { "hoe", "wat", "waarom", "wanneer", "waar", "wie", "welke", "kan", "is", "zijn", "moet" },
-            
-            // Russian
-            "ru" or "ru-ru" => new[] { "как", "что", "почему", "когда", "где", "кто", "который", "может", "является" },
-            
-            // Default to English
-            _ => new[] { "how", "what", "why", "when", "where", "who", "which", "can", "does", "is", "are", "should" }
-        };
-    }
-
-    /// <summary>
-    /// Generates an implicit question from a title based on language (e.g., "Guide to X" → "How to X?").
-    /// </summary>
-    private static string? GenerateImplicitQuestion(string title, string? languageCode)
-    {
-        if (string.IsNullOrWhiteSpace(title)) return null;
-
-        return languageCode?.ToLowerInvariant() switch
-        {
-            // English patterns
-            "en" or "en-us" or "en-gb" => title switch
-            {
-                var t when t.StartsWith("guide to", StringComparison.OrdinalIgnoreCase) => 
-                    $"How to {t[9..].Trim()}?",
-                var t when t.Contains("tutorial", StringComparison.OrdinalIgnoreCase) => 
-                    $"How to {t.Replace("tutorial", "", StringComparison.OrdinalIgnoreCase).Trim()}?",
-                var t when t.Contains("introduction to", StringComparison.OrdinalIgnoreCase) => 
-                    $"What is {t.Replace("introduction to", "", StringComparison.OrdinalIgnoreCase).Trim()}?",
-                _ => null
-            },
-            
-            // Serbian (Latin) patterns
-            "sr" or "sr-latn" or "sr-latn-rs" => title switch
-            {
-                var t when t.StartsWith("vodič za", StringComparison.OrdinalIgnoreCase) => 
-                    $"Kako {t[8..].Trim()}?",
-                var t when t.Contains("tutorijal", StringComparison.OrdinalIgnoreCase) => 
-                    $"Kako {t.Replace("tutorijal", "", StringComparison.OrdinalIgnoreCase).Trim()}?",
-                var t when t.StartsWith("uvod u", StringComparison.OrdinalIgnoreCase) => 
-                    $"Šta je {t[6..].Trim()}?",
-                _ => null
-            },
-            
-            // Serbian (Cyrillic) patterns
-            "sr-cyrl" or "sr-cyrl-rs" => title switch
-            {
-                var t when t.StartsWith("водич за", StringComparison.OrdinalIgnoreCase) => 
-                    $"Како {t[8..].Trim()}?",
-                var t when t.Contains("туторијал", StringComparison.OrdinalIgnoreCase) => 
-                    $"Како {t.Replace("туторијал", "", StringComparison.OrdinalIgnoreCase).Trim()}?",
-                var t when t.StartsWith("увод у", StringComparison.OrdinalIgnoreCase) => 
-                    $"Шта је {t[6..].Trim()}?",
-                _ => null
-            },
-            
-            // German patterns
-            "de" or "de-de" or "de-at" or "de-ch" => title switch
-            {
-                var t when t.StartsWith("anleitung zu", StringComparison.OrdinalIgnoreCase) => 
-                    $"Wie {t[12..].Trim()}?",
-                var t when t.Contains("tutorial", StringComparison.OrdinalIgnoreCase) => 
-                    $"Wie {t.Replace("tutorial", "", StringComparison.OrdinalIgnoreCase).Trim()}?",
-                var t when t.StartsWith("einführung in", StringComparison.OrdinalIgnoreCase) => 
-                    $"Was ist {t[13..].Trim()}?",
-                _ => null
-            },
-            
-            // French patterns
-            "fr" or "fr-fr" or "fr-ca" => title switch
-            {
-                var t when t.StartsWith("guide de", StringComparison.OrdinalIgnoreCase) => 
-                    $"Comment {t[8..].Trim()}?",
-                var t when t.Contains("tutoriel", StringComparison.OrdinalIgnoreCase) => 
-                    $"Comment {t.Replace("tutoriel", "", StringComparison.OrdinalIgnoreCase).Trim()}?",
-                var t when t.StartsWith("introduction à", StringComparison.OrdinalIgnoreCase) => 
-                    $"Qu'est-ce que {t[14..].Trim()}?",
-                _ => null
-            },
-            
-            // Spanish patterns
-            "es" or "es-es" or "es-mx" => title switch
-            {
-                var t when t.StartsWith("guía de", StringComparison.OrdinalIgnoreCase) => 
-                    $"Cómo {t[8..].Trim()}?",
-                var t when t.Contains("tutorial", StringComparison.OrdinalIgnoreCase) => 
-                    $"Cómo {t.Replace("tutorial", "", StringComparison.OrdinalIgnoreCase).Trim()}?",
-                var t when t.StartsWith("introducción a", StringComparison.OrdinalIgnoreCase) => 
-                    $"Qué es {t[14..].Trim()}?",
-                _ => null
-            },
-            
-            // Default: no implicit question generation
-            _ => null
-        };
     }
 
     #endregion
 
     #region Rendering Methods
 
-    private string RenderMetaTag(string name, string? content)
+    private static string RenderMetaTag(string name, string? content)
     {
         if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(content))
             return string.Empty;
@@ -731,7 +586,7 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
         return $"<meta name=\"{name}\" content=\"{encodedContent}\" />";
     }
 
-    private string RenderPropertyTag(string property, string? content)
+    private static string RenderPropertyTag(string property, string? content)
     {
         if (string.IsNullOrWhiteSpace(property) || string.IsNullOrWhiteSpace(content))
             return string.Empty;
@@ -740,7 +595,7 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
         return $"<meta property=\"{property}\" content=\"{encodedContent}\" />";
     }
 
-    private string RenderMetaTag(string name, DateTime content)
+    private static string RenderMetaTag(string name, DateTime content)
     {
         if (string.IsNullOrWhiteSpace(name))
             return string.Empty;
@@ -748,34 +603,9 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
         return $"<meta name=\"{name}\" content=\"{content:yyyy-MM-dd}\" />";
     }
 
-    private string RenderMetaTag(string name, DateTime? content)
-    {
-        if (string.IsNullOrWhiteSpace(name) || !content.HasValue)
-            return string.Empty;
-
-        return $"<meta name=\"{name}\" content=\"{content.Value:yyyy-MM-dd}\" />";
-    }
-
-    private string RenderMetaTag(string name, IReadOnlyList<string>? content)
-    {
-        if (string.IsNullOrWhiteSpace(name) || content is null || !content.Any())
-            return string.Empty;
-
-        var encodedContent = System.Net.WebUtility.HtmlEncode(string.Join(", ", content));
-        return $"<meta name=\"{name}\" content=\"{encodedContent}\" />";
-    }
-
-    private string RenderLinkTag(string rel, string href)
-    {
-        if (string.IsNullOrWhiteSpace(rel) || string.IsNullOrWhiteSpace(href))
-            return string.Empty;
-
-        return $"<link rel=\"{rel}\" href=\"{href}\" />";
-    }
-
     #endregion
 
-    #region Title and Description Builders
+    #region Title and URL Builders
 
     private string BuildMetaTitle()
     {
@@ -784,59 +614,15 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
             // Collection page title
             return $"{CollectionTitle} | {_siteName}";
         }
-        
-        var title = GetFirstValue(Content?.Metadata?.SeoProperties?.Title, Content?.Title);
-        
+
+        var title = SeoText.FirstNonBlank(Content?.Metadata?.SeoProperties?.Title, Content?.Title);
+
         if (string.IsNullOrWhiteSpace(title))
             return _siteName;
-            
+
         // Optimal title length: 50-60 characters
-        return TruncateTitle($"{title} | {_siteName}", 60) ?? _siteName;
+        return SeoText.TruncateTitle($"{title} | {_siteName}", 60) ?? _siteName;
     }
-
-    private string? TruncateTitle(string? title, int maxLength)
-    {
-        if (string.IsNullOrWhiteSpace(title))
-            return title;
-
-        if (title.Length <= maxLength)
-            return title;
-
-        // Truncate at last complete word before maxLength
-        var truncated = title[..maxLength].TrimEnd();
-        var lastSpace = truncated.LastIndexOf(' ');
-        
-        if (lastSpace > 0)
-            return truncated[..lastSpace] + "...";
-            
-        return truncated + "...";
-    }
-
-    private string? TruncateDescription(string? description, int maxLength)
-    {
-        if (string.IsNullOrWhiteSpace(description))
-            return description;
-
-        if (description.Length <= maxLength)
-            return description;
-
-        // Truncate at last complete sentence or word before maxLength
-        var truncated = description[..maxLength].TrimEnd();
-        var lastPeriod = truncated.LastIndexOf('.');
-        var lastSpace = truncated.LastIndexOf(' ');
-        
-        if (lastPeriod > maxLength - 50) // Keep if period is close to end
-            return truncated[..(lastPeriod + 1)];
-            
-        if (lastSpace > 0)
-            return truncated[..lastSpace] + "...";
-            
-        return truncated + "...";
-    }
-
-    #endregion
-
-    #region URL and Robots Builders
 
     private string? BuildCanonicalUrl()
     {
@@ -852,41 +638,6 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
         return string.IsNullOrWhiteSpace(canonical) ? null : canonical;
     }
 
-    /// <summary>
-    /// Adds a schema.org FAQPage built from the generated questions. Only runs when
-    /// <see cref="EnableGeneratedFaq"/> is on, because the questions are derived from titles, not authored.
-    /// </summary>
-    private void AddGeneratedFaqSchema()
-    {
-        if (!EnableAeoOptimization || !EnableGeneratedFaq || _structuredAnswers is not { Count: > 0 })
-        {
-            return;
-        }
-
-        var faqSchema = new Dictionary<string, object?>
-        {
-            ["@context"] = "https://schema.org",
-            ["@type"] = "FAQPage",
-            ["mainEntity"] = _structuredAnswers.Select(answer => new Dictionary<string, object?>
-            {
-                ["@type"] = "Question",
-                ["name"] = answer.Key,
-                ["acceptedAnswer"] = new Dictionary<string, object?>
-                {
-                    ["@type"] = "Answer",
-                    ["text"] = answer.Value
-                }
-            }).ToArray()
-        };
-
-        _additionalJsonLdSchemas ??= [];
-        _additionalJsonLdSchemas.Add(JsonSerializer.Serialize(faqSchema, new JsonSerializerOptions
-        {
-            WriteIndented = true,
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-        }));
-    }
-
     private string BuildRobotsDirective()
     {
         if (!AllowSearchIndexing)
@@ -899,847 +650,180 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
         return "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1";
     }
 
-    private string? NormalizeImageUrl(string? url)
-    {
-        if (string.IsNullOrWhiteSpace(url))
-            return null;
+    private string? NormalizeImageUrl(string? url) => SeoText.NormalizeImageUrl(url, _baseUrl);
 
-        if (url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) || 
-            url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
-            return url;
-
-        return $"{_baseUrl}/{url.TrimStart('/')}";
-    }
+    private string DetermineOgType() => OgTypesBySchemaType.GetValueOrDefault(PrimarySchemaTypeName, "website");
 
     #endregion
 
-    #region Helper Methods
+    #region Values Shown in the Markup
 
-    private static string? GetFirstValue(params string?[] values)
-    {
-        return values.FirstOrDefault(v => !string.IsNullOrWhiteSpace(v));
-    }
+    /// <summary>
+    /// The name of the first schema type, else the front matter type, else WebPage. An empty
+    /// <see cref="SchemaTypes"/> array yields the default enum value, Article.
+    /// </summary>
+    private string PrimarySchemaTypeName =>
+        SchemaTypes?.FirstOrDefault().ToString() ?? Content?.Metadata?.SeoProperties?.Type ?? "WebPage";
 
-    private static string ExtractSiteName(string url)
-    {
-        if (string.IsNullOrWhiteSpace(url))
-            return string.Empty;
+    private bool HasCategories => _categories?.Any() == true;
 
-        var uri = new Uri(url);
-        return uri.Host.StartsWith("www.", StringComparison.OrdinalIgnoreCase)
-            ? uri.Host[4..]
-            : uri.Host;
-    }
+    private string? PublishedTimeUtc => _publishDate is { } published ? ContentUrls.FormatUtc(published) : null;
 
-    private string GetLocaleCode(string? locale)
-    {
-        if (string.IsNullOrWhiteSpace(locale))
-            return "en_US";
+    private string? ModifiedTimeUtc => _modifiedDate is { } modified ? ContentUrls.FormatUtc(modified) : null;
 
-        // Convert from ISO format (en-US) to Open Graph format (en_US)
-        return locale.Replace('-', '_');
-    }
-
-    private string? DetermineOgType()
-    {
-        var primarySchemaType = SchemaTypes?.FirstOrDefault().ToString() ?? 
-                                Content?.Metadata?.SeoProperties?.Type ?? 
-                                "WebPage";
-
-        if (primarySchemaType.Equals("Article", StringComparison.OrdinalIgnoreCase) ||
-            primarySchemaType.Equals("BlogPosting", StringComparison.OrdinalIgnoreCase))
-            return "article";
-
-        if (primarySchemaType.Equals("Product", StringComparison.OrdinalIgnoreCase))
-            return "product";
-
-        if (primarySchemaType.Equals("VideoObject", StringComparison.OrdinalIgnoreCase))
-            return "video.other";
-
-        return "website";
-    }
+    private string ContentFreshness =>
+        _publishDate is { } published && (DateTime.UtcNow - published).TotalDays < 30 ? "recent" : "evergreen";
 
     #endregion
 
     #region JSON-LD Generation
 
+    private SeoSchemaContext CreateSchemaContext() => new()
+    {
+        Content = Content,
+        ContentItems = ContentItems,
+        SiteName = _siteName,
+        BaseUrl = _baseUrl,
+        CurrentUrl = _currentUrl,
+        LanguageCode = _languageCode,
+        SiteLogoUrl = SiteLogoUrl,
+        BreadcrumbHomeText = BreadcrumbHomeText,
+        CustomBreadcrumbs = CustomBreadcrumbs,
+        CollectionTitle = CollectionTitle,
+        CollectionDescription = CollectionDescription,
+        MetaTitle = _metaTitle,
+        MetaDescription = _metaDescription,
+        OgImage = _ogImage,
+        Author = _author
+    };
+
     private void GenerateAllJsonLdSchemas()
     {
-        // Handle collection pages (ContentItems without Content)
-        if (Content is null && ContentItems?.Any() == true)
-        {
-            _additionalJsonLdSchemas = new List<string>();
-            
-            // Generate collection page schema
-            if (SchemaTypes?.Contains(Cms.Web.Components.SchemaType.CollectionPage) == true)
-            {
-                var collectionSchema = GenerateCollectionPageSchema();
-                if (collectionSchema != null)
-                {
-                    var serialized = JsonSerializer.Serialize(collectionSchema, new JsonSerializerOptions
-                    {
-                        WriteIndented = true,
-                        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-                    });
-                    _jsonLdContent = serialized;
-                }
-            }
-            
-            // Generate individual BlogPosting schemas for collection items
-            GenerateCollectionItemSchemas();
-            return;
-        }
-        
-        // Early return if no content at all
+        var context = CreateSchemaContext();
+
+        // Collection pages: OnParametersSet only gets here without Content when ContentItems has items
         if (Content is null)
-            return;
-
-        // Use custom JSON-LD if provided. It is written inside a script element, so it is re-serialized with
-        // HTML-sensitive characters escaped; anything that is not a JSON object or array is ignored.
-        var customJsonLd = Content.Metadata?.SeoProperties?.JsonLd;
-        if (!string.IsNullOrWhiteSpace(customJsonLd))
         {
-            if (JsonLdNormalizer.TryNormalize(customJsonLd, out var normalizedJsonLd))
-            {
-                _jsonLdContent = normalizedJsonLd;
-                return;
-            }
-
-            Logger.LogWarning(
-                "Ignoring custom JSON-LD for content {ContentPath} because it is not a valid JSON object or array; generated structured data is used instead",
-                Content.Path);
+            GenerateCollectionJsonLd(context);
+            return;
         }
 
-        _additionalJsonLdSchemas = new List<string>();
+        if (TryUseCustomJsonLd(Content))
+            return;
 
-        // Determine which schemas to generate
-        var schemasToGenerate = new List<SchemaType>();
-        
+        _additionalJsonLdSchemas = [];
+
+        // First schema becomes primary, rest go to additional
+        var generatedSchemas = ResolveSchemaTypes(Content)
+            .Select(schemaType => SeoSchemas.Create(schemaType, context))
+            .OfType<object>()
+            .Select(SeoSchemas.Serialize)
+            .ToList();
+        if (generatedSchemas.Count > 0)
+        {
+            _jsonLdContent = generatedSchemas[0];
+            _additionalJsonLdSchemas.AddRange(generatedSchemas.Skip(1));
+        }
+
+        GenerateCollectionItemSchemas(context);
+    }
+
+    private void GenerateCollectionJsonLd(SeoSchemaContext context)
+    {
+        _additionalJsonLdSchemas = [];
+
+        if (SchemaTypes?.Contains(Cms.Web.Components.SchemaType.CollectionPage) == true)
+        {
+            _jsonLdContent = SeoSchemas.Serialize(NavigationSchemas.CollectionPage(context));
+        }
+
+        GenerateCollectionItemSchemas(context);
+    }
+
+    /// <summary>
+    /// Uses the custom JSON-LD from the front matter when it has one. It is written inside a script element, so it
+    /// is re-serialized with HTML-sensitive characters escaped; anything that is not a JSON object or array is ignored.
+    /// </summary>
+    private bool TryUseCustomJsonLd(ContentItem content)
+    {
+        var customJsonLd = content.Metadata?.SeoProperties?.JsonLd;
+        if (string.IsNullOrWhiteSpace(customJsonLd))
+            return false;
+
+        if (JsonLdNormalizer.TryNormalize(customJsonLd, out var normalizedJsonLd))
+        {
+            _jsonLdContent = normalizedJsonLd;
+            return true;
+        }
+
+        Logger.LogWarning(
+            "Ignoring custom JSON-LD for content {ContentPath} because it is not a valid JSON object or array; generated structured data is used instead",
+            content.Path);
+        return false;
+    }
+
+    /// <summary>
+    /// The schema types to generate: the explicit <see cref="SchemaTypes"/>, else the front matter type, else
+    /// WebPage. A single type gets a BreadcrumbList added when <see cref="GenerateMultipleSchemas"/> is on.
+    /// </summary>
+    private List<SchemaType> ResolveSchemaTypes(ContentItem content)
+    {
+        List<SchemaType> schemaTypes;
+        var declaredType = content.Metadata?.SeoProperties?.Type;
+
         if (SchemaTypes?.Any() == true)
         {
-            // Use explicitly provided schema types
-            schemasToGenerate.AddRange(SchemaTypes);
+            schemaTypes = [.. SchemaTypes];
         }
-        else if (!string.IsNullOrWhiteSpace(Content?.Metadata?.SeoProperties?.Type) &&
-                 Enum.TryParse<SchemaType>(Content.Metadata.SeoProperties.Type, out var contentSchemaType))
+        else if (!string.IsNullOrWhiteSpace(declaredType) && Enum.TryParse<SchemaType>(declaredType, out var contentSchemaType))
         {
-            // Use schema type from content metadata
-            schemasToGenerate.Add(contentSchemaType);
+            schemaTypes = [contentSchemaType];
         }
         else
         {
-            // Default to WebPage
-            schemasToGenerate.Add(Cms.Web.Components.SchemaType.WebPage);
+            schemaTypes = [Cms.Web.Components.SchemaType.WebPage];
         }
 
-        // Auto-add breadcrumbs only if:
-        // 1. GenerateMultipleSchemas is enabled
-        // 2. Only one schema type specified (if multiple schemas explicitly provided, don't auto-add)
-        // 3. Content has a path
-        // 4. Breadcrumbs not already included
-        var shouldAutoAddBreadcrumbs = GenerateMultipleSchemas && 
-                                       schemasToGenerate.Count == 1 && 
-                                       Content?.Path != null && 
-                                       !schemasToGenerate.Contains(Cms.Web.Components.SchemaType.BreadcrumbList);
-        
+        // When several schemas are given explicitly, the caller chose them all, so nothing is added.
+        var shouldAutoAddBreadcrumbs = GenerateMultipleSchemas &&
+                                       schemaTypes.Count == 1 &&
+                                       content.Path != null &&
+                                       !schemaTypes.Contains(Cms.Web.Components.SchemaType.BreadcrumbList);
+
         if (shouldAutoAddBreadcrumbs)
         {
-            schemasToGenerate.Add(Cms.Web.Components.SchemaType.BreadcrumbList);
+            schemaTypes.Add(Cms.Web.Components.SchemaType.BreadcrumbList);
         }
 
-        // Generate all schemas
-        var generatedSchemas = new List<string>();
-        foreach (var schemaType in schemasToGenerate)
-        {
-            var schema = GenerateSchemaByType(schemaType);
-            if (schema != null)
-            {
-                var serialized = JsonSerializer.Serialize(schema, new JsonSerializerOptions
-                {
-                    WriteIndented = true,
-                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-                });
-                generatedSchemas.Add(serialized);
-            }
-        }
-
-        // First schema becomes primary, rest go to additional
-        if (generatedSchemas.Any())
-        {
-            _jsonLdContent = generatedSchemas.First();
-            if (generatedSchemas.Count > 1)
-            {
-                _additionalJsonLdSchemas.AddRange(generatedSchemas.Skip(1));
-            }
-        }
-        
-        // Generate individual BlogPosting schemas for collection items
-        GenerateCollectionItemSchemas();
+        return schemaTypes;
     }
-    
+
     /// <summary>
     /// Generates individual BlogPosting schemas for each item in a collection (Blog/Category/Tag pages).
     /// </summary>
-    private void GenerateCollectionItemSchemas()
+    private void GenerateCollectionItemSchemas(SeoSchemaContext context)
     {
         if (ContentItems?.Any() != true)
             return;
-            
-        foreach (var item in ContentItems)
-        {
-            var articleSchema = new Dictionary<string, object?>
-            {
-                ["@context"] = "https://schema.org",
-                ["@type"] = "BlogPosting",
-                ["headline"] = item.Title,
-                ["description"] = item.Description,
-                ["image"] = NormalizeImageUrl(item.FeaturedImageUrl) ?? _ogImage,
-                ["datePublished"] = ContentUrls.FormatUtc(item.PublishDate),
-                ["dateModified"] = ContentUrls.FormatUtc(item.LastModified ?? item.PublishDate),
-                ["author"] = new Dictionary<string, object?>
-                {
-                    ["@type"] = "Person",
-                    ["name"] = item.Author ?? _author ?? "Anonymous"
-                },
-                ["publisher"] = new Dictionary<string, object?>
-                {
-                    ["@type"] = "Organization",
-                    ["name"] = _siteName,
-                    ["logo"] = new Dictionary<string, object?>
-                    {
-                        ["@type"] = "ImageObject",
-                        ["url"] = NormalizeImageUrl(SiteLogoUrl) ?? $"{_baseUrl}/logo.png"
-                    }
-                },
-                ["url"] = $"{_baseUrl.TrimEnd('/')}{item.Url}",
-                ["mainEntityOfPage"] = new Dictionary<string, object?>
-                {
-                    ["@type"] = "WebPage",
-                    ["@id"] = $"{_baseUrl.TrimEnd('/')}{item.Url}"
-                },
-                ["keywords"] = item.Tags?.Any() == true ? string.Join(", ", item.Tags) : null,
-                ["articleSection"] = item.Categories?.FirstOrDefault(),
-                ["inLanguage"] = item.Locale ?? _languageCode,
-                ["timeRequired"] = item.ReadTimeMinutes > 0 ? $"PT{item.ReadTimeMinutes}M" : null
-            };
-            
-            var serialized = JsonSerializer.Serialize(articleSchema, new JsonSerializerOptions
-            {
-                WriteIndented = true,
-                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-            });
-            
-            _additionalJsonLdSchemas ??= new List<string>();
-            _additionalJsonLdSchemas.Add(serialized);
-        }
-    }
 
-    private object? GenerateSchemaByType(SchemaType schemaType)
-    {
-        return schemaType switch
-        {
-            Cms.Web.Components.SchemaType.Article => GenerateArticleSchema(),
-            Cms.Web.Components.SchemaType.BlogPosting => GenerateBlogPostingSchema(),
-            Cms.Web.Components.SchemaType.WebPage => GenerateWebPageSchema(),
-            Cms.Web.Components.SchemaType.Product => GenerateProductSchema(),
-            Cms.Web.Components.SchemaType.Organization => GenerateOrganizationSchema(),
-            Cms.Web.Components.SchemaType.Person => GeneratePersonSchema(),
-            Cms.Web.Components.SchemaType.LocalBusiness => GenerateLocalBusinessSchema(),
-            Cms.Web.Components.SchemaType.Event => GenerateEventSchema(),
-            Cms.Web.Components.SchemaType.Recipe => GenerateRecipeSchema(),
-            Cms.Web.Components.SchemaType.FAQ => GenerateFAQSchema(),
-            Cms.Web.Components.SchemaType.HowTo => GenerateHowToSchema(),
-            Cms.Web.Components.SchemaType.VideoObject => GenerateVideoSchema(),
-            Cms.Web.Components.SchemaType.Course => GenerateCourseSchema(),
-            Cms.Web.Components.SchemaType.Review => GenerateReviewSchema(),
-            Cms.Web.Components.SchemaType.BreadcrumbList => GenerateBreadcrumbSchema(),
-            Cms.Web.Components.SchemaType.WebSite => GenerateWebSiteSchema(),
-            Cms.Web.Components.SchemaType.CollectionPage => GenerateCollectionPageSchema(),
-            _ => GenerateDefaultSchema()
-        };
-    }
-
-    #endregion
-
-    #region Schema Generators
-
-    private object GenerateArticleSchema()
-    {
-        var schema = new Dictionary<string, object?>
-        {
-            ["@context"] = "https://schema.org",
-            ["@type"] = "Article",
-            ["headline"] = Content!.Title,
-            ["description"] = Content.Description,
-            ["image"] = NormalizeImageUrl(Content.FeaturedImageUrl),
-            ["author"] = new Dictionary<string, object?>
-            {
-                ["@type"] = "Person",
-                ["name"] = Content.Author,
-                ["url"] = $"{_baseUrl}/author/{Content.Author.ToLowerInvariant().Replace(" ", "-")}"
-            },
-            ["publisher"] = new Dictionary<string, object?>
-            {
-                ["@type"] = "Organization",
-                ["name"] = _siteName,
-                ["logo"] = new Dictionary<string, object?>
-                {
-                    ["@type"] = "ImageObject",
-                    ["url"] = NormalizeImageUrl(SiteLogoUrl) ?? $"{_baseUrl}/logo.png",
-                    ["width"] = 600,
-                    ["height"] = 60
-                }
-            },
-            ["datePublished"] = ContentUrls.FormatUtc(Content.PublishDate),
-            ["dateModified"] = ContentUrls.FormatUtc(Content.LastModified ?? Content.PublishDate),
-            ["mainEntityOfPage"] = new Dictionary<string, object?>
-            {
-                ["@type"] = "WebPage",
-                ["@id"] = _currentUrl
-            },
-            ["articleSection"] = Content.Categories.FirstOrDefault(),
-            ["wordCount"] = Content.Content?.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length,
-            ["inLanguage"] = _languageCode,
-            ["url"] = _currentUrl,
-            ["timeRequired"] = $"PT{Content.ReadTimeMinutes}M"
-        };
-
-        if (Content.Tags.Any())
-            schema["keywords"] = string.Join(", ", Content.Tags);
-
-        return schema;
-    }
-
-    private object GenerateBlogPostingSchema()
-    {
-        return GenerateArticleSchema();
-    }
-
-    private object GenerateWebPageSchema()
-    {
-        return new Dictionary<string, object?>
-        {
-            ["@context"] = "https://schema.org",
-            ["@type"] = "WebPage",
-            ["name"] = Content!.Title,
-            ["description"] = Content.Description,
-            ["url"] = _currentUrl,
-            ["datePublished"] = ContentUrls.FormatUtc(Content.PublishDate),
-            ["dateModified"] = (Content.LastModified is { } lastModified ? ContentUrls.FormatUtc(lastModified) : null),
-            ["author"] = new Dictionary<string, object?>
-            {
-                ["@type"] = "Person",
-                ["name"] = Content.Author
-            },
-            ["publisher"] = new Dictionary<string, object?>
-            {
-                ["@type"] = "Organization",
-                ["name"] = _siteName
-            }
-        };
-    }
-
-    private object GenerateProductSchema()
-    {
-        return new Dictionary<string, object?>
-        {
-            ["@context"] = "https://schema.org",
-            ["@type"] = "Product",
-            ["name"] = Content!.Title,
-            ["description"] = Content.Description,
-            ["image"] = NormalizeImageUrl(Content.FeaturedImageUrl),
-            ["url"] = _currentUrl,
-            ["brand"] = new Dictionary<string, object?>
-            {
-                ["@type"] = "Brand",
-                ["name"] = _siteName
-            },
-            ["offers"] = new Dictionary<string, object?>
-            {
-                ["@type"] = "Offer",
-                ["url"] = _currentUrl,
-                ["priceCurrency"] = "USD",
-                ["availability"] = "https://schema.org/InStock"
-            }
-        };
-    }
-
-    private object GenerateOrganizationSchema()
-    {
-        var schema = new Dictionary<string, object?>
-        {
-            ["@context"] = "https://schema.org",
-            ["@type"] = "Organization",
-            ["name"] = Content!.Title ?? _siteName,
-            ["description"] = Content.Description,
-            ["url"] = _currentUrl,
-            ["logo"] = NormalizeImageUrl(Content.FeaturedImageUrl) ?? $"{_baseUrl}/logo.png",
-            ["image"] = NormalizeImageUrl(Content.FeaturedImageUrl)
-        };
-
-        if (Content.Tags.Any())
-            schema["sameAs"] = Content.Tags.ToArray();
-
-        return schema;
-    }
-
-    private object GeneratePersonSchema()
-    {
-        var schema = new Dictionary<string, object?>
-        {
-            ["@context"] = "https://schema.org",
-            ["@type"] = "Person",
-            ["name"] = Content!.Title ?? Content.Author,
-            ["description"] = Content.Description,
-            ["url"] = _currentUrl,
-            ["image"] = NormalizeImageUrl(Content.FeaturedImageUrl)
-        };
-
-        if (Content.Tags.Any())
-            schema["sameAs"] = Content.Tags.ToArray();
-
-        return schema;
-    }
-
-    private object GenerateLocalBusinessSchema()
-    {
-        return new Dictionary<string, object?>
-        {
-            ["@context"] = "https://schema.org",
-            ["@type"] = "LocalBusiness",
-            ["name"] = Content!.Title,
-            ["description"] = Content.Description,
-            ["image"] = NormalizeImageUrl(Content.FeaturedImageUrl),
-            ["url"] = _currentUrl,
-            ["telephone"] = Content.Metadata?.SeoProperties?.Type,
-            ["address"] = new Dictionary<string, object?>
-            {
-                ["@type"] = "PostalAddress",
-                ["streetAddress"] = "",
-                ["addressLocality"] = "",
-                ["addressRegion"] = "",
-                ["postalCode"] = "",
-                ["addressCountry"] = ""
-            },
-            ["geo"] = new Dictionary<string, object?>
-            {
-                ["@type"] = "GeoCoordinates",
-                ["latitude"] = "",
-                ["longitude"] = ""
-            },
-            ["openingHoursSpecification"] = new[]
-            {
-                new Dictionary<string, object?>
-                {
-                    ["@type"] = "OpeningHoursSpecification",
-                    ["dayOfWeek"] = new[] { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday" },
-                    ["opens"] = "09:00",
-                    ["closes"] = "17:00"
-                }
-            }
-        };
-    }
-
-    private object GenerateEventSchema()
-    {
-        return new Dictionary<string, object?>
-        {
-            ["@context"] = "https://schema.org",
-            ["@type"] = "Event",
-            ["name"] = Content!.Title,
-            ["description"] = Content.Description,
-            ["image"] = NormalizeImageUrl(Content.FeaturedImageUrl),
-            ["url"] = _currentUrl,
-            ["startDate"] = ContentUrls.FormatUtc(Content.PublishDate),
-                        ["eventStatus"] = "https://schema.org/EventScheduled",
-            ["eventAttendanceMode"] = "https://schema.org/OfflineEventAttendanceMode",
-            ["location"] = new Dictionary<string, object?>
-            {
-                ["@type"] = "Place",
-                ["name"] = _siteName,
-                ["address"] = new Dictionary<string, object?>
-                {
-                    ["@type"] = "PostalAddress",
-                    ["streetAddress"] = "",
-                    ["addressLocality"] = "",
-                    ["addressRegion"] = "",
-                    ["postalCode"] = "",
-                    ["addressCountry"] = ""
-                }
-            },
-            ["organizer"] = new Dictionary<string, object?>
-            {
-                ["@type"] = "Organization",
-                ["name"] = _siteName,
-                ["url"] = _baseUrl
-            }
-        };
-    }
-
-    private object GenerateRecipeSchema()
-    {
-        var schema = new Dictionary<string, object?>
-        {
-            ["@context"] = "https://schema.org",
-            ["@type"] = "Recipe",
-            ["name"] = Content!.Title,
-            ["description"] = Content.Description,
-            ["image"] = NormalizeImageUrl(Content.FeaturedImageUrl),
-            ["author"] = new Dictionary<string, object?>
-            {
-                ["@type"] = "Person",
-                ["name"] = Content.Author
-            },
-            ["datePublished"] = ContentUrls.FormatUtc(Content.PublishDate),
-            ["prepTime"] = "PT30M",
-            ["cookTime"] = "PT1H",
-            ["totalTime"] = "PT1H30M",
-            ["recipeYield"] = "4 servings",
-            ["recipeCategory"] = Content.Categories.FirstOrDefault(),
-            ["recipeCuisine"] = "",
-            ["recipeIngredient"] = Array.Empty<string>(),
-            ["recipeInstructions"] = Array.Empty<object>(),
-            ["aggregateRating"] = new Dictionary<string, object?>
-            {
-                ["@type"] = "AggregateRating",
-                ["ratingValue"] = "5",
-                ["ratingCount"] = "1"
-            }
-        };
-
-        if (Content.Tags.Any())
-            schema["keywords"] = string.Join(", ", Content.Tags);
-
-        return schema;
-    }
-
-    // A FAQPage needs real questions and answers. The only source is the generated FAQ data, which is opt-in,
-    // so an explicit FAQ schema type adds nothing by itself and an empty FAQPage is never emitted.
-    private object? GenerateFAQSchema() => null;
-
-    private object GenerateHowToSchema()
-    {
-        return new Dictionary<string, object?>
-        {
-            ["@context"] = "https://schema.org",
-            ["@type"] = "HowTo",
-            ["name"] = Content!.Title,
-            ["description"] = Content.Description,
-            ["image"] = NormalizeImageUrl(Content.FeaturedImageUrl),
-            ["totalTime"] = "PT1H",
-            ["estimatedCost"] = new Dictionary<string, object?>
-            {
-                ["@type"] = "MonetaryAmount",
-                ["currency"] = "USD",
-                ["value"] = "0"
-            },
-            ["tool"] = Array.Empty<object>(),
-            ["supply"] = Array.Empty<object>(),
-            ["step"] = Array.Empty<object>()
-        };
-    }
-
-    private object GenerateVideoSchema()
-    {
-        return new Dictionary<string, object?>
-        {
-            ["@context"] = "https://schema.org",
-            ["@type"] = "VideoObject",
-            ["name"] = Content!.Title,
-            ["description"] = Content.Description,
-            ["thumbnailUrl"] = NormalizeImageUrl(Content.FeaturedImageUrl),
-            ["uploadDate"] = ContentUrls.FormatUtc(Content.PublishDate),
-            ["contentUrl"] = _currentUrl,
-            ["embedUrl"] = _currentUrl,
-            ["duration"] = "PT1M",
-            ["author"] = new Dictionary<string, object?>
-            {
-                ["@type"] = "Person",
-                ["name"] = Content.Author
-            },
-            ["publisher"] = new Dictionary<string, object?>
-            {
-                ["@type"] = "Organization",
-                ["name"] = _siteName,
-                ["logo"] = new Dictionary<string, object?>
-                {
-                    ["@type"] = "ImageObject",
-                    ["url"] = $"{_baseUrl}/logo.png"
-                }
-            }
-        };
-    }
-
-    private object GenerateCourseSchema()
-    {
-        return new Dictionary<string, object?>
-        {
-            ["@context"] = "https://schema.org",
-            ["@type"] = "Course",
-            ["name"] = Content!.Title,
-            ["description"] = Content.Description,
-            ["provider"] = new Dictionary<string, object?>
-            {
-                ["@type"] = "Organization",
-                ["name"] = _siteName,
-                ["url"] = _baseUrl
-            },
-            ["image"] = NormalizeImageUrl(Content.FeaturedImageUrl),
-            ["aggregateRating"] = new Dictionary<string, object?>
-            {
-                ["@type"] = "AggregateRating",
-                ["ratingValue"] = "5",
-                ["ratingCount"] = "1"
-            },
-            ["offers"] = new Dictionary<string, object?>
-            {
-                ["@type"] = "Offer",
-                ["category"] = "Paid",
-                ["priceCurrency"] = "USD",
-                ["price"] = "0"
-            }
-        };
-    }
-
-    private object GenerateReviewSchema()
-    {
-        return new Dictionary<string, object?>
-        {
-            ["@context"] = "https://schema.org",
-            ["@type"] = "Review",
-            ["itemReviewed"] = new Dictionary<string, object?>
-            {
-                ["@type"] = "Thing",
-                ["name"] = Content!.Title
-            },
-            ["author"] = new Dictionary<string, object?>
-            {
-                ["@type"] = "Person",
-                ["name"] = Content.Author
-            },
-            ["datePublished"] = ContentUrls.FormatUtc(Content.PublishDate),
-            ["reviewBody"] = Content.Description,
-            ["reviewRating"] = new Dictionary<string, object?>
-            {
-                ["@type"] = "Rating",
-                ["ratingValue"] = "5",
-                ["bestRating"] = "5",
-                ["worstRating"] = "1"
-            }
-        };
-    }
-
-    private object GenerateBreadcrumbSchema()
-    {
-        var breadcrumbItems = new List<Dictionary<string, object?>>();
-        
-        // Always start with Home
-        breadcrumbItems.Add(new Dictionary<string, object?>
-        {
-            ["@type"] = "ListItem",
-            ["position"] = 1,
-            ["name"] = BreadcrumbHomeText,
-            ["item"] = _baseUrl
-        });
-
-        // Use custom breadcrumbs if provided
-        if (CustomBreadcrumbs?.Any() == true)
-        {
-            var position = 2;
-            foreach (var (name, url) in CustomBreadcrumbs)
-            {
-                breadcrumbItems.Add(new Dictionary<string, object?>
-                {
-                    ["@type"] = "ListItem",
-                    ["position"] = position++,
-                    ["name"] = name,
-                    ["item"] = url
-                });
-            }
-        }
-        // Parse the content path into breadcrumb segments
-        else if (!string.IsNullOrWhiteSpace(Content?.Url))
-        {
-            var breadcrumbPath = new Osirion.Blazor.Components.BreadcrumbPath(Content.Url);
-            var position = 2; // Start after Home
-
-            foreach (var segment in breadcrumbPath.Segments)
-            {
-                // The last item is this page: its title keeps the punctuation and casing a slug loses. Earlier segments
-                // are directories, named from the slug (slug-case to Title Case).
-                var formattedName = segment.IsLast ? Content.Title : FormatBreadcrumbSegment(segment.Name);
-                
-                // Build full URL for this breadcrumb item
-                var itemUrl = $"{_baseUrl}/{segment.Path}";
-
-                breadcrumbItems.Add(new Dictionary<string, object?>
-                {
-                    ["@type"] = "ListItem",
-                    ["position"] = position++,
-                    ["name"] = formattedName,
-                    ["item"] = segment.IsLast ? _currentUrl : itemUrl
-                });
-            }
-        }
-        // If no path, use current page as single breadcrumb after home
-        else if (Content != null)
-        {
-            breadcrumbItems.Add(new Dictionary<string, object?>
-            {
-                ["@type"] = "ListItem",
-                ["position"] = 2,
-                ["name"] = Content.Title,
-                ["item"] = _currentUrl
-            });
-        }
-
-        return new Dictionary<string, object?>
-        {
-            ["@context"] = "https://schema.org",
-            ["@type"] = "BreadcrumbList",
-            ["itemListElement"] = breadcrumbItems.ToArray()
-        };
+        _additionalJsonLdSchemas ??= [];
+        _additionalJsonLdSchemas.AddRange(ContentItems.Select(item =>
+            SeoSchemas.Serialize(NavigationSchemas.CollectionItemPosting(item, context))));
     }
 
     /// <summary>
-    /// Formats a breadcrumb segment name from slug-case to Title Case
+    /// Adds a schema.org FAQPage built from the generated questions. Only runs when
+    /// <see cref="EnableGeneratedFaq"/> is on, because the questions are derived from titles, not authored.
     /// </summary>
-    private static string FormatBreadcrumbSegment(string segmentName)
+    private void AddGeneratedFaqSchema()
     {
-        if (string.IsNullOrWhiteSpace(segmentName))
-            return string.Empty;
-
-        // Replace hyphens and underscores with spaces
-        var words = segmentName
-            .Replace('-', ' ')
-            .Replace('_', ' ')
-            .Split(' ', StringSplitOptions.RemoveEmptyEntries);
-
-        // Title case each word
-        var titleCased = words.Select(word => 
-            word.Length > 0 
-                ? char.ToUpperInvariant(word[0]) + word[1..].ToLowerInvariant() 
-                : word);
-
-        return string.Join(' ', titleCased);
-    }
-
-    private object GenerateDefaultSchema()
-    {
-        return new Dictionary<string, object?>
+        if (!EnableAeoOptimization || !EnableGeneratedFaq || _structuredAnswers is not { Count: > 0 })
         {
-            ["@context"] = "https://schema.org",
-            ["@type"] = Content?.Metadata?.SeoProperties?.Type ?? "Thing",
-            ["name"] = Content?.Title,
-            ["description"] = Content?.Description,
-            ["url"] = _currentUrl,
-            ["inLanguage"] = _languageCode
-        };
-    }
-
-    private object GenerateWebSiteSchema()
-    {
-        return new Dictionary<string, object?>
-        {
-            ["@context"] = "https://schema.org",
-            ["@type"] = "WebSite",
-            ["name"] = _siteName,
-            ["url"] = _baseUrl,
-            ["description"] = Content?.Description,
-            ["inLanguage"] = _languageCode,
-            ["potentialAction"] = new Dictionary<string, object?>
-            {
-                ["@type"] = "SearchAction",
-                ["target"] = new Dictionary<string, object?>
-                {
-                    ["@type"] = "EntryPoint",
-                    ["urlTemplate"] = $"{_baseUrl}/search?q={{search_term_string}}"
-                },
-                ["query-input"] = "required name=search_term_string"
-            },
-            ["publisher"] = new Dictionary<string, object?>
-            {
-                ["@type"] = "Organization",
-                ["name"] = _siteName,
-                ["url"] = _baseUrl,
-                ["logo"] = new Dictionary<string, object?>
-                {
-                    ["@type"] = "ImageObject",
-                    ["url"] = NormalizeImageUrl(SiteLogoUrl) ?? $"{_baseUrl}/logo.png"
-                }
-            }
-        };
-    }
-
-    private object GenerateCollectionPageSchema()
-    {
-        var itemListElements = new List<Dictionary<string, object?>>();
-        
-        if (ContentItems?.Any() == true)
-        {
-            var position = 1;
-            foreach (var item in ContentItems)
-            {
-                itemListElements.Add(new Dictionary<string, object?>
-                {
-                    ["@type"] = "ListItem",
-                    ["position"] = position++,
-                    ["url"] = $"{_baseUrl}{item.Url}",
-                    ["name"] = item.Title,
-                    ["description"] = item.Description,
-                    ["datePublished"] = ContentUrls.FormatUtc(item.PublishDate),
-                    ["image"] = NormalizeImageUrl(item.FeaturedImageUrl)
-                });
-            }
+            return;
         }
 
-        return new Dictionary<string, object?>
-        {
-            ["@context"] = "https://schema.org",
-            ["@type"] = "CollectionPage",
-            ["name"] = CollectionTitle ?? _metaTitle,
-            ["description"] = CollectionDescription ?? _metaDescription,
-            ["url"] = _currentUrl,
-            ["inLanguage"] = _languageCode,
-            ["mainEntity"] = new Dictionary<string, object?>
-            {
-                ["@type"] = "ItemList",
-                ["numberOfItems"] = ContentItems?.Count ?? 0,
-                ["itemListElement"] = itemListElements
-            },
-            ["breadcrumb"] = new Dictionary<string, object?>
-            {
-                ["@type"] = "BreadcrumbList",
-                ["itemListElement"] = new[]
-                {
-                    new Dictionary<string, object?>
-                    {
-                        ["@type"] = "ListItem",
-                        ["position"] = 1,
-                        ["name"] = BreadcrumbHomeText,
-                        ["item"] = _baseUrl
-                    },
-                    new Dictionary<string, object?>
-                    {
-                        ["@type"] = "ListItem",
-                        ["position"] = 2,
-                        ["name"] = CollectionTitle ?? "Collection",
-                        ["item"] = _currentUrl
-                    }
-                }
-            },
-            ["publisher"] = new Dictionary<string, object?>
-            {
-                ["@type"] = "Organization",
-                ["name"] = _siteName,
-                ["url"] = _baseUrl,
-                ["logo"] = new Dictionary<string, object?>
-                {
-                    ["@type"] = "ImageObject",
-                    ["url"] = NormalizeImageUrl(SiteLogoUrl) ?? $"{_baseUrl}/logo.png"
-                }
-            }
-        };
+        _additionalJsonLdSchemas ??= [];
+        _additionalJsonLdSchemas.Add(SeoSchemas.Serialize(NavigationSchemas.FaqPage(_structuredAnswers)));
     }
 
     #endregion
