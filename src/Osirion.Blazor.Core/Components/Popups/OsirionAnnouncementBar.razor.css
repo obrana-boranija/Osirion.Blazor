@@ -1,0 +1,55 @@
+.osirion-announcement {
+    display: flex;
+    gap: var(--osirion-spacing-3, 0.75rem);
+    align-items: center;
+    justify-content: center;
+    padding: var(--osirion-spacing-2, 0.5rem) var(--osirion-spacing-4, 1rem);
+    background-color: var(--osirion-action-primary, #2563eb);
+    color: var(--osirion-action-primary-text, #fff);
+    font-size: var(--osirion-font-size-sm, 0.875rem);
+}
+
+.osirion-announcement-content {
+    flex: 1;
+    text-align: center;
+}
+
+    .osirion-announcement-content ::deep a {
+        color: inherit;
+        font-weight: var(--osirion-font-weight-semibold, 600);
+        text-decoration: underline;
+    }
+
+    .osirion-announcement-content ::deep p {
+        margin: 0;
+    }
+
+.osirion-announcement-form {
+    flex: none;
+    margin: 0;
+}
+
+.osirion-announcement-dismiss {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: 0;
+    border-radius: var(--osirion-radius-sm, 0.125rem);
+    background: transparent;
+    color: inherit;
+    font-size: 1.25rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+    .osirion-announcement-dismiss:hover {
+        background-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .osirion-announcement-dismiss:focus-visible {
+        outline: 2px solid currentColor;
+        outline-offset: 2px;
+    }

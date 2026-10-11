@@ -71,6 +71,7 @@ app.UseGitHubWebhook();
 app.UseOsirionRobotsGenerator();
 app.UseResponseCompression();
 app.MapOsirionCookieConsent();
+app.MapOsirionAnnouncements();
 
 
 app.UseAntiforgery();
