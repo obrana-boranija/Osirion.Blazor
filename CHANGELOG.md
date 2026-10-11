@@ -162,6 +162,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Under Fluent UI v5, the Theming stylesheet's `[data-theme]` rules matched Fluent's `body[data-theme]` and replaced the adapter's mappings for the whole page in dark mode
 - The FluentUI adapter's success color read the accent token
 - `ArticlePage` content touched the screen edges on viewports between 769px and the container width; two padding declarations in its stylesheet were invalid and ignored
+- On MudBlazor sites, the contact form and subscription card gave plain inputs MudBlazor's internal input classes, which only work inside MudBlazor's own input markup, so the fields rendered without a border; they now use `osirion-input`, `osirion-select` and `osirion-textarea`, which the MudBlazor adapter styles from the MudBlazor palette in both themes
+- The MudBlazor adapter read `--mud-palette-background-grey`, which MudBlazor does not define (it writes `--mud-palette-background-gray`), so secondary backgrounds ignored the theme
+- Links in rendered content kept the light theme's color in dark mode on MudBlazor, Fluent UI and Radzen sites, because the dark override did not match `data-osirion-theme`
 
 ## [3.0.1] - 2026-09-24
 

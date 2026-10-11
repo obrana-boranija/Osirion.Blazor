@@ -67,8 +67,14 @@
             } else if(config.selectedFramework === 'FluentUI'){
                 html.classList.toggle('fluent-dark-theme', theme === 'dark');
                 html.classList.toggle('fluent-light-theme', theme === 'light');
-                // Fluent UI Blazor v5 reads its starting mode from body[data-theme]
-                document.body.setAttribute('data-theme', theme);
+                // Fluent UI Blazor v5 reads its starting mode from body[data-theme]. In <head> the body does not
+                // exist yet, so set it as soon as it does.
+                const markBody = function(){ document.body.setAttribute('data-theme', theme); };
+                if(document.body){
+                    markBody();
+                } else {
+                    document.addEventListener('DOMContentLoaded', markBody, { once: true });
+                }
             } else if(config.selectedFramework === 'Radzen'){
                 html.classList.toggle('rz-dark-theme', theme === 'dark');
             }
