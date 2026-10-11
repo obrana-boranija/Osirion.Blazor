@@ -39,7 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Osirion.Blazor.Cms.Domain: `FrontMatter.Create(title, description, DateTime)` writes the date as `yyyy-MM-dd` instead of the culture's date and time format
 - Osirion.Blazor.Cms.Infrastructure: GitHub polling refreshes only the provider whose id equals the configured one; providers of other repositories whose id merely contained it were refreshed with the wrong commit, and a configured id without "github" in it was never polled
 - Osirion.Blazor.Cms.Infrastructure: content search matches case-insensitively in every culture (under Turkish, "GUIDE" did not find "Guide")
-- Osirion.Blazor.Cms.Infrastructure: the markdown pre-sanitizer replaces the whole `javascript:` link destination, including nested parentheses, leading whitespace and reference-style definitions
+- Osirion.Blazor.Cms.Infrastructure: the markdown pre-sanitizer replaces the whole `javascript:` link destination, including nested parentheses, leading whitespace and reference-style definitions; each of its patterns runs with a 250 ms match timeout, so a pathological document cannot hold a request
 - Osirion.Blazor.Cms.Web: LocalBusiness structured data no longer writes the schema type as the `telephone`
 - Osirion.Blazor.Cms.Web: generated FAQ questions match question words only as whole words, so titles such as "However we ship" are no longer treated as questions
 - Osirion.Blazor.Cms.Web: an empty `SchemaTypes` array is treated as not set, so `og:type`, `content-type` and the JSON-LD type agree
