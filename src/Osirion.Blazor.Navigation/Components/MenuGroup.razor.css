@@ -40,7 +40,7 @@
     gap: 0.375rem;
     margin-top: 0.5rem;
     padding: 0.5rem 0.75rem;
-    color: var(--osirion-menu-accent, var(--osirion-action-primary, #2563eb));
+    color: var(--osirion-menu-accent, var(--osirion-link-color, var(--osirion-action-primary, #2563eb)));
     font-size: var(--osirion-font-size-sm, 0.875rem);
     font-weight: var(--osirion-font-weight-semibold, 600);
     text-decoration: none;
@@ -50,13 +50,13 @@
 
     .osirion-menu-group-footer:hover,
     .osirion-menu-group-footer:focus-visible {
-        color: var(--osirion-menu-accent, var(--osirion-action-primary, #2563eb));
+        color: var(--osirion-menu-accent, var(--osirion-link-color, var(--osirion-action-primary, #2563eb)));
         text-decoration: underline;
         text-underline-offset: 0.2em;
     }
 
     .osirion-menu-group-footer:focus-visible {
-        outline: 2px solid var(--osirion-menu-accent, var(--osirion-action-primary, #2563eb));
+        outline: 2px solid var(--osirion-menu-accent, var(--osirion-link-color, var(--osirion-action-primary, #2563eb)));
         outline-offset: 2px;
     }
 
