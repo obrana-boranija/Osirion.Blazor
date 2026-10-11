@@ -7,7 +7,8 @@
 
 @if (string.IsNullOrWhiteSpace(Slug))
 {
-    <ContentList Locale="@Locale" Directory="blog" ShowPagination ItemsPerPage="12" />
+    <ContentListPage Locale="@Locale" Directory="blog" Title="Blog"
+                     Description="Guides, release notes and patterns for building content sites with Blazor." />
 }
 else
 {

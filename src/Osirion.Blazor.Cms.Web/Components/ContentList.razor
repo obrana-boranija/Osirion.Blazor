@@ -15,6 +15,14 @@
         </HeadContent>
     }
 
+    @if (ShowTitle)
+    {
+        <header class="osirion-content-list-header">
+            <h1 class="osirion-content-list-title">@GetComputedPageTitle()</h1>
+            <p class="osirion-content-list-description">@GetComputedPageDescription()</p>
+        </header>
+    }
+
     @if (IsLoading && IsInteractive)
     {
         <div class="osirion-content-loading">

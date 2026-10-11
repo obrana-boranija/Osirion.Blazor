@@ -35,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Osirion.Blazor.Navigation: `MenuCollapseBreakpoint.Large`, which collapses a menu below 1200px
 - Osirion.Blazor.Navigation: `--osirion-menu-*` theming variables for the bar height, content width, padding, logo size, colors, radii and shadow
 - Osirion.Blazor.Navigation: a tap on the dimmed page behind an open drawer closes the drawer
+- Osirion.Blazor.Cms.Web: `ContentListPage`, a whole list page for a blog index, category, tag or author: the title as the page's `h1` with a description, paged cards, CollectionPage data, feed links (`FeedUrl`) and optional category and tag sidebars; `ContentList.ShowTitle` renders the same heading for lists composed by hand
 - Osirion.Blazor.Cms.Web: `ContentRenderer.OmitLeadingTitle`, which leaves out the content's opening top-level heading
 
 ### Changed

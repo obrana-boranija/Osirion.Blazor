@@ -1,0 +1,35 @@
+# ContentListPage
+
+Purpose
+A whole list page in one line: a blog index, a category page, a tag page or an author's page. It opens with the
+title as the page's only `h1` and a short description, lists the items in cards with pagination, writes
+CollectionPage structured data, and links the feed when there is one. It renders without script.
+
+Usage
+```razor
+@page "/blog"
+<ContentListPage Directory="blog" Title="Blog" Description="Guides and release notes." FeedUrl="/feed.xml" />
+
+@page "/tag/{Tag}"
+<ContentListPage Tag="@Tag" ShowTags />
+
+@code {
+    [Parameter] public string? Tag { get; set; }
+}
+```
+
+Key parameters
+- Filter: `Directory`, `Category`, `Tag`, `Author`, `Locale`
+- Heading: `Title` and `Description`; without them both are built from the filter (`Tag: blazor`, the directory's
+  name), the same text the title tag and meta description use
+- List: `ShowPagination` (true), `ItemsPerPage` (12), `SortBy`, `SortDirection`, `NoContentText`,
+  `ContentUrlFormatter`, `PaginationUrlFormatter`, `WebsiteName`
+- Feed: `FeedUrl` (for example `/feed.xml` from `MapOsirionFeeds`) adds `<link rel="alternate">` to the head and a
+  link below the list; `FeedTitle` names both
+- Sidebar: `ShowCategories` and `ShowTags` (both false) list them beside the list from 992px up, with the current
+  category or tag marked; `CategoriesTitle`, `TagsTitle`, `CategoryUrlFormatter`, `TagUrlFormatter`, `SidebarLabel`
+
+Notes
+- The heading comes from `ContentList.ShowTitle`, so a page that composes `ContentList` itself can turn it on to get
+  the same `h1`.
+- The list keeps its `h1` when nothing matches and shows `NoContentText` below it.

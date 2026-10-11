@@ -1,0 +1,33 @@
+/* ContentListPage - Osirion.Blazor.Cms.Web */
+
+.osirion-content-list-page {
+    display: grid;
+    gap: var(--osirion-spacing-8, 2rem);
+}
+
+.osirion-content-list-page-main {
+    min-width: 0;
+}
+
+.osirion-content-list-page-feed {
+    margin: var(--osirion-spacing-4, 1rem) 0 0;
+    font-size: var(--osirion-font-size-sm, 0.875rem);
+}
+
+.osirion-content-list-page-feed a {
+    color: var(--osirion-link-color, var(--osirion-action-primary, #2563eb));
+}
+
+.osirion-content-list-page-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--osirion-spacing-6, 1.5rem);
+    min-width: 0;
+}
+
+@media (min-width: 992px) {
+    .osirion-content-list-page-with-sidebar {
+        grid-template-columns: minmax(0, 1fr) 16rem;
+        align-items: start;
+    }
+}
