@@ -61,7 +61,7 @@
             <div class="osirion-article-layout @(ShowSidebar ? "osirion-article-layout-with-sidebar" : "")">
                 <!-- Main content area -->
                 <div class="osirion-article-main">
-                    <ContentRenderer Item="@Item" />
+                    <ContentRenderer Item="@Item" OmitLeadingTitle="ShowHero" />
 
                     @if (ShowNavigation)
                     {

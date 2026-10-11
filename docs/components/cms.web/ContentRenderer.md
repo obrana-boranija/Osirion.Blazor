@@ -13,6 +13,7 @@ Renders content item HTML using the OsirionHtmlRenderer component. This is a low
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `Item` | `ContentItem?` | `null` | The content item to render |
+| `OmitLeadingTitle` | `bool` | `false` | Leaves out the content's opening top-level heading (a Markdown `# Title` line). Set it when the page already shows the item's title as its heading, so the title appears once and the page has a single `h1`. |
 
 ## Features
 
@@ -48,6 +49,15 @@ Renders content item HTML using the OsirionHtmlRenderer component. This is a low
 <ContentRenderer 
     Item="@contentItem" 
     Class="custom-content-wrapper" />
+```
+
+### Under a Page Title
+
+When the surrounding page shows the title itself, leave the Markdown's `# Title` out of the body:
+
+```razor
+<h1>@contentItem.Title</h1>
+<ContentRenderer Item="@contentItem" OmitLeadingTitle />
 ```
 
 ### In a Card Layout
@@ -160,7 +170,7 @@ The component is implemented as a simple wrapper around `OsirionHtmlRenderer`:
     <div class="osirion-content-body">
         @if (Item?.Content is not null)
         {
-            <OsirionHtmlRenderer HtmlContent="@Item.Content" />
+            <OsirionHtmlRenderer HtmlContent="@(OmitLeadingTitle ? ContentHeadings.WithoutLeadingTitle(Item.Content) : Item.Content)" />
         }
     </div>
 </div>

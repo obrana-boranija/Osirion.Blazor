@@ -113,13 +113,27 @@ public partial class MenuItem : IDisposable
     [Inject]
     private NavigationManager NavigationManager { get; set; } = default!;
 
+    // The icon names the markup has an SVG for. Any other name renders no icon at all, rather than an empty
+    // icon slot that indents the text.
+    private static readonly HashSet<string> BuiltInIcons = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "home", "blog", "document", "docs", "documentation", "user", "profile", "contact", "about", "info",
+        "settings", "gear", "dashboard"
+    };
+
     private readonly string _generatedId = Guid.NewGuid().ToString("N")[..8];
 
     // Derived render state. [Parameter] properties are never written by the component, so a parent
     // re-render cannot be overridden by a stale computed value.
     private bool _isActive;
     private string? _renderedHref;
+    private bool _isToggleOnly;
     private bool _isSubscribed;
+
+    /// <summary>
+    /// Gets whether <see cref="Icon"/> names one of the built-in icons.
+    /// </summary>
+    private bool HasBuiltInIcon => Icon is not null && BuiltInIcons.Contains(Icon);
 
     /// <summary>
     /// Gets the unique identifier for the submenu.
@@ -162,6 +176,10 @@ public partial class MenuItem : IDisposable
         // A disabled item and a rejected URL (for example a javascript: scheme) render no href at all.
         _renderedHref = Disabled ? null : SafeHref.Sanitize(Href);
         _isActive = IsActive || (AutoDetectActive && MatchesCurrentLocation());
+
+        // A parent that only groups its submenu has nowhere to go, so the whole item toggles the submenu.
+        _isToggleOnly = HasSubmenu && !Disabled && !OnClick.HasDelegate
+            && (string.IsNullOrWhiteSpace(Href) || Href == "#");
     }
 
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)

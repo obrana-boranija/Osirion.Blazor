@@ -27,6 +27,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `OsirionSteps` (`StepItem`): numbered "how it works" steps as an ordered list, side by side or stacked with a joining line (`Vertical`)
 - `OsirionAnnouncementBar` and `MapOsirionAnnouncements`: a dismissible site-wide announcement that closes without script (an antiforgery-protected form post sets a per-announcement cookie and redirects back)
 - `OsirionReadingProgress`: a reading progress bar driven by a CSS scroll-driven animation, with no script; hidden where `animation-timeline` is not supported
+- Osirion.Blazor.Navigation: `Menu.Actions`, a slot after the items for a search box, a theme toggle or a call to action. A horizontal bar aligns it to the end; a collapsed menu shows it at the bottom of the drawer
+- Osirion.Blazor.Navigation: `MenuCollapseBreakpoint.Large`, which collapses a menu below 1200px
+- Osirion.Blazor.Navigation: `--osirion-menu-*` theming variables for the bar height, content width, padding, logo size, colors, radii and shadow
+- Osirion.Blazor.Navigation: a tap on the dimmed page behind an open drawer closes the drawer
+- Osirion.Blazor.Cms.Web: `ContentRenderer.OmitLeadingTitle`, which leaves out the content's opening top-level heading
+
+### Changed
+- Osirion.Blazor.Navigation: menus redesigned. The bar keeps the brand, the items and the actions on one line; dropdowns are rounded panels with a soft shadow; a parent item and its chevron highlight as one control; the active item is marked with the accent color instead of a border
+- Below the collapse breakpoint the drawer opens as a panel under the bar, over a dimmed page, with 48px rows and submenus that open in place as indented lists
+- Nested submenus in a dropdown fly out beside their row (towards the page in a right-aligned bar) instead of stacking over it
+- Dropdown and mega panels open on hover, or from the keyboard with Space on the submenu toggle; a closed panel is skipped by Tab instead of opening whenever focus passes its toggle
+- A `MenuItem` with a submenu and no `Href` (or `Href="#"`) renders as the submenu toggle instead of a link to `#`
+- `MenuItem.Icon` renders no icon slot for a name that is not built in; the `blog` icon is a journal and the `document` icon a page
+- Vertical menus open submenus in place instead of as flyouts
+- Osirion.Blazor.Theming: the Bootstrap, MudBlazor and Fluent UI adapters set `--osirion-link-color` and `--osirion-link-hover-color` from the framework's link color (`--bs-link-color`, `--mud-palette-primary`, `--colorBrandForegroundLink`), in light and dark mode
 
 ### Fixed
 - Osirion.Blazor.Cms.Infrastructure: a content item's `LastModified` was the time the content was loaded, because mapping the front matter touched setters that stamp the current time. It is now the front matter's `last_modified`, then the file's write time (file system provider), then the publication date; SEO `dateModified` and sorting by last-modified date follow it
@@ -36,6 +51,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `OsirionFooter` in `OsirionPageLayout`'s `Footer` slot rendered a `<footer>` inside the layout's `<footer>`, two contentinfo landmarks (axe `landmark-no-duplicate-contentinfo`, `landmark-contentinfo-is-top-level`). Inside the slot it now renders a `<div>` with the same classes; on its own it is still a `<footer>`
 - `OsirionCookieConsent`: the banner is a region named by its title, so its text is no longer content outside every landmark (axe `region`)
 - Osirion.Blazor.Cms.Web: an `ArticlePage` with nothing related (an article alone in its folder) rendered the list's "404 Page Not Found" block, with a second `h1`, as its related items; the section is now left out
+- Osirion.Blazor.Navigation: the drawer rules for submenus in `Menu.razor.css` never applied, because CSS isolation scoped them to `Menu` while `MenuItem` renders the submenu, and non-collapsible and vertical menus disappeared at 768px and below
+- Osirion.Blazor.Core: `OsirionContactForm` no longer runs past the right edge of the screen on phones
+- Osirion.Blazor.Core: rendered Markdown tables scroll sideways on screens up to 768px wide and keep words and inline code whole, instead of breaking them a few letters per line
+- Osirion.Blazor.Navigation: menu accent text (the active item, mega menu links, group footer links) uses the link color instead of the primary button color, which measured 3.5:1 on the Bootstrap example's dark background; it now measures at least 5.2:1 in both modes on all three adapters
+- Osirion.Blazor.Cms.Web: `ContentList.ContentUrlFormatter` and `OsirionContentListSection.PostUrlFormatter` set the post links. The list section linked every post to its `Url` and ignored both. Without a formatter both build the link the same way, from the site root (`/blog/post` instead of the relative `blog/post` the section wrote)
+- Osirion.Blazor.Cms.Web: a page showed its title twice and had two `h1` elements when the Markdown opened with `# Title`. `ArticlePage`, `HomePage` and `LandingPage` (with their hero) and `ContentView`, `DocumentPage` and `LocalizedContentView` (under their own title) now leave that opening heading out of the body
+- Osirion.Blazor.Cms.Web: `ContentList` leaves out the page it is shown on, so a section's list no longer shows a card for the section's own `_index.md` page
+- Osirion.Blazor.Cms.Infrastructure: the file system provider serves a folder's `_index.md` as the page at the folder's URL, as the GitHub provider already did, so section overview pages such as `/docs/components/core` no longer answer 404 when content comes from local files
+- Osirion.Blazor.Core: with `EnableHeaderScrollBehavior`, `OsirionPageLayout` no longer hides the header while the pointer is over it or focus is in it. Scrolling with the pointer on an open dropdown or mega menu carried the panel away with the header and left it floating at the top of the page
+- Osirion.Blazor.Core: on phones `OsirionFooter` opens with the brand, then the links, the left content and the right content, and lines the contact details up with the links. The brand used to land between the contact details and the right column, because the columns had no grid areas and fell into place by auto-placement
+
+### Removed
+- Osirion.Blazor.Navigation: `Menu.razor.scss`, `Menu.razor.min.css` and `compilerconfig.json`, an out-of-date stylesheet source that a Web Compiler run would have compiled over `Menu.razor.css`
 
 ## [4.0.0] - 2026-10-11
 

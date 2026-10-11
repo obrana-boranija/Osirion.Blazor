@@ -53,13 +53,13 @@
         {
             new FooterSection
             {
-                Title = "Products",
+                Title = "Components",
                 Links = new[]
                 {
-                    new FooterLink { Text = "Components", Href = "#" },
-                    new FooterLink { Text = "Themes", Href = "#" },
-                    new FooterLink { Text = "Templates", Href = "#" },
-                    new FooterLink { Text = "Extensions", Href = "#" }
+                    new FooterLink { Text = "Content list", Href = "/docs/components/cms-web/core/content-list" },
+                    new FooterLink { Text = "Hero section", Href = "/docs/components/core/sections/hero-section" },
+                    new FooterLink { Text = "Breadcrumbs", Href = "/docs/components/core/navigation/breadcrumbs" },
+                    new FooterLink { Text = "Theme toggle", Href = "/docs/components/theming/theme-toggle" }
                 }
             },
             new FooterSection
@@ -67,10 +67,10 @@
                 Title = "Resources",
                 Links = new[]
                 {
-                    new FooterLink { Text = "Documentation", Href = "#" },
-                    new FooterLink { Text = "Quick Start", Href = "#" },
-                    new FooterLink { Text = "Examples", Href = "#" },
-                    new FooterLink { Text = "API Reference", Href = "#" }
+                    new FooterLink { Text = "Documentation", Href = "/docs" },
+                    new FooterLink { Text = "Blog", Href = "/blog" },
+                    new FooterLink { Text = "Release notes", Href = "https://github.com/obrana-boranija/Osirion.Blazor/blob/master/CHANGELOG.md", OpenInNewTab = true },
+                    new FooterLink { Text = "NuGet package", Href = "https://www.nuget.org/packages/Osirion.Blazor", OpenInNewTab = true }
                 }
             },
             new FooterSection
@@ -78,21 +78,20 @@
                 Title = "Community",
                 Links = new[]
                 {
-                    new FooterLink { Text = "Blog", Href = "/blog" },
-                    new FooterLink { Text = "Forum", Href = "#" },
+                    new FooterLink { Text = "GitHub", Href = "https://github.com/obrana-boranija/Osirion.Blazor", OpenInNewTab = true },
                     new FooterLink { Text = "Issues", Href = "https://github.com/obrana-boranija/Osirion.Blazor/issues", OpenInNewTab = true },
-                    new FooterLink { Text = "Roadmap", Href = "https://github.com/obrana-boranija/Osirion.Blazor/wiki", OpenInNewTab = true }
+                    new FooterLink { Text = "Contributing", Href = "https://github.com/obrana-boranija/Osirion.Blazor/blob/master/CONTRIBUTING.md", OpenInNewTab = true },
+                    new FooterLink { Text = "Releases", Href = "https://github.com/obrana-boranija/Osirion.Blazor/releases", OpenInNewTab = true }
                 }
             },
             new FooterSection
             {
-                Title = "Company",
+                Title = "Project",
                 Links = new[]
                 {
-                    new FooterLink { Text = "About", Href = "#" },
-                    new FooterLink { Text = "Contact", Href = "#" },
-                    new FooterLink { Text = "Careers", Href = "#" },
-                    new FooterLink { Text = "Partners", Href = "#" }
+                    new FooterLink { Text = "Contact", Href = "/contact" },
+                    new FooterLink { Text = "License", Href = "https://github.com/obrana-boranija/Osirion.Blazor/blob/master/LICENSE.txt", OpenInNewTab = true },
+                    new FooterLink { Text = "Security", Href = "https://github.com/obrana-boranija/Osirion.Blazor/security", OpenInNewTab = true }
                 }
             }
         };
@@ -137,11 +136,8 @@
         // Legal and important links
         BottomLinks = new[]
         {
-            new FooterLink { Text = "Privacy Policy", Href = "#" },
-            new FooterLink { Text = "Terms of Service", Href = "#" },
             new FooterLink { Text = "License", Href = "https://github.com/obrana-boranija/Osirion.Blazor/blob/master/LICENSE.txt", OpenInNewTab = true },
-            new FooterLink { Text = "Security", Href = "#" },
-            // new FooterLink { Text = "Status", Href = "https://status.osirion.dev", OpenInNewTab = true }
+            new FooterLink { Text = "Security", Href = "https://github.com/obrana-boranija/Osirion.Blazor/security", OpenInNewTab = true }
         };
     }
 }

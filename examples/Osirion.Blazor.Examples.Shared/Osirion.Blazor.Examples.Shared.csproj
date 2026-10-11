@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <!-- The layout pieces and pages the three example sites share. Each site keeps only what depends on its CSS
+       framework: App, MainLayout, Routes and the pages written with the framework's own components. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Osirion.Blazor\Osirion.Blazor.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -163,6 +163,52 @@ public class PageLevelTests : CmsWebComponentTestBase
         cut.FindAll("h1").Count.ShouldBe(1);
     }
 
+    // Fails before the fix: the hero showed the title as an h1 and the body's "# Title" showed it again as a second h1.
+    [Fact]
+    public void ArticlePage_WithItsHero_ShowsTheTitleOnce()
+    {
+        ReturnFromQuery(TitledArticle());
+
+        var cut = RenderStatic<ArticlePage>(p => p
+            .Add(c => c.ItemSlug, "titled")
+            .Add(c => c.ShowRelatedContent, false));
+
+        cut.FindAll("h1").Select(h => h.TextContent.Trim()).ShouldBe(["Titled"]);
+        cut.Find(".osirion-article-main").TextContent.ShouldContain("Body");
+    }
+
+    [Fact]
+    public void ArticlePage_WithoutItsHero_KeepsTheContentsTitle()
+    {
+        ReturnFromQuery(TitledArticle());
+
+        var cut = RenderStatic<ArticlePage>(p => p
+            .Add(c => c.ItemSlug, "titled")
+            .Add(c => c.ShowHero, false)
+            .Add(c => c.ShowRelatedContent, false));
+
+        cut.FindAll("h1").Select(h => h.TextContent.Trim()).ShouldBe(["Titled"]);
+        cut.Find(".osirion-article-main h1").ShouldNotBeNull();
+    }
+
+    [Fact]
+    public void HomePage_WithItsHero_ShowsTheTitleOnce()
+    {
+        var cut = RenderStatic<Osirion.Blazor.Cms.Components.HomePage>(p => p
+            .Add(c => c.Content, TitledArticle())
+            .Add(c => c.ShowFeaturedContent, false));
+
+        cut.FindAll("h1").Select(h => h.TextContent.Trim()).ShouldBe(["Titled"]);
+        cut.Find(".osirion-homepage-content").TextContent.ShouldContain("Body");
+    }
+
+    private static ContentItem TitledArticle()
+    {
+        var item = ContentItem.Create("id-titled", "Titled", "<h1 id=\"titled\">Titled</h1><p>Body</p>", "blog/titled.md", "test");
+        item.SetUrl("/blog/titled");
+        return item;
+    }
+
     private void ReturnFromQuery(params ContentItem[] items) =>
         _manager.GetContentByQueryAsync(Arg.Any<ContentQuery>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult<IReadOnlyList<ContentItem>>(items));

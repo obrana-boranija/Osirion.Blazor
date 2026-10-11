@@ -192,6 +192,15 @@ content/
     ??? company/
 ```
 
+### Section Pages
+
+An `_index.md` file in a folder is that folder's page: its front matter names and describes the folder (the title,
+description, order and featured image that directory navigation shows), and its body is the overview page served at
+the folder's URL. `content/en/docs/components/core/_index.md` is the page at `/docs/components/core`. The GitHub and
+file system providers both serve it.
+
+A `ContentList` leaves out the page it is shown on, so the list on `/blog` never shows a card for `blog/_index.md`.
+
 ## Frontmatter Reference
 
 Frontmatter is YAML metadata at the top of your Markdown files:
