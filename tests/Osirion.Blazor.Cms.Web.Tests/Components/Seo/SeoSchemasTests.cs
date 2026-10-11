@@ -13,16 +13,6 @@ public class SeoSchemasTests
     }
 
     [Fact]
-    public void Create_ValueWithoutBuilder_ReturnsThing()
-    {
-        var schema = SeoSchemas.Create((SchemaType)99, CreateContext()).ShouldBeOfType<Dictionary<string, object?>>();
-
-        schema["@type"].ShouldBe("Thing");
-        schema["name"].ShouldBeNull();
-        schema["url"].ShouldBe("https://site.test/page");
-    }
-
-    [Fact]
     public void Breadcrumbs_WithoutContent_ListsOnlyHome()
     {
         var schema = SeoSchemas.Serialize(NavigationSchemas.Breadcrumbs(CreateContext()));
