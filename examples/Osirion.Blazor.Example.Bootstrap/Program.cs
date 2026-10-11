@@ -83,6 +83,8 @@ app.MapOsirionFeeds(feeds =>
 {
     feeds.FeedDirectory = "blog";
     feeds.AdditionalSitemapUrls = ["/", "/blog", "/showcase"];
+    // home.md is served at "/", not at its own slug
+    feeds.ContentUrlFormatter = item => item.Url.Trim('/') == "homepage" ? "/" : "/" + item.Url.TrimStart('/');
 });
 
 // The CMS admin pages (/osirion/...) require the CMS admin authorization policy. This example registers no
