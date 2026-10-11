@@ -63,6 +63,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Osirion.Blazor.Cms.Web: `ContentList` leaves out the page it is shown on, so a section's list no longer shows a card for the section's own `_index.md` page
 - Osirion.Blazor.Cms.Infrastructure: the file system provider serves a folder's `_index.md` as the page at the folder's URL, as the GitHub provider already did, so section overview pages such as `/docs/components/core` no longer answer 404 when content comes from local files
 - Osirion.Blazor.Cms.Web: a page showed its title twice and had two `h1` elements when the Markdown opened with `# Title`. `ArticlePage`, `HomePage` and `LandingPage` (with their hero) and `ContentView`, `DocumentPage` and `LocalizedContentView` (under their own title) now leave that opening heading out of the body
+- Osirion.Blazor.Core: on phones `OsirionFooter` opens with the brand, then the links, the left content and the right content, and lines the contact details up with the links. The brand used to land between the contact details and the right column, because the columns had no grid areas and fell into place by auto-placement
 
 ### Removed
 - Osirion.Blazor.Navigation: `Menu.razor.scss`, `Menu.razor.min.css` and `compilerconfig.json`, an out-of-date stylesheet source that a Web Compiler run would have compiled over `Menu.razor.css`
