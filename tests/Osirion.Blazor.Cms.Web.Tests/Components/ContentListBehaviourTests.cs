@@ -217,6 +217,36 @@ public class ContentListBehaviourTests : CmsWebComponentTestBase
     }
 
     [Theory]
+    [InlineData(1, "1 2 3 4 5 ... 10 >")]
+    [InlineData(6, "< 1 ... 4 5 6 7 8 ... 10 >")]
+    [InlineData(10, "< 1 ... 6 7 8 9 10")]
+    [InlineData(3, "< 1 2 3 4 5 ... 10 >")]
+    [InlineData(4, "< 1 2 3 4 5 6 ... 10 >")]
+    public void ContentList_ManyPages_ShowsAWindowAroundTheCurrentPage(int page, string expected)
+    {
+        ReturnItems(Items(100));
+        Services.GetRequiredService<NavigationManager>().NavigateTo($"http://localhost/list?page={page}");
+
+        var cut = RenderStatic<ContentList>(p => p
+            .Add(c => c.ShowPagination, true)
+            .Add(c => c.ItemsPerPage, 10)
+            .Add(c => c.EnableSeoMetadata, false));
+
+        var parts = cut.Find(".osirion-content-pagination").Children.Select(child =>
+        {
+            var text = child.TextContent.Trim();
+            if (text.Length > 0)
+            {
+                return text;
+            }
+
+            return child.QuerySelector("polyline")!.GetAttribute("points") == "15 18 9 12 15 6" ? "<" : ">";
+        });
+        string.Join(" ", parts).ShouldBe(expected);
+        ActivePage(cut).ShouldBe(page.ToString(System.Globalization.CultureInfo.InvariantCulture));
+    }
+
+    [Theory]
     [InlineData(null, null, null, null, false, 1, "Blog")]
     [InlineData("Custom", "news", null, null, false, 1, "Custom")]
     [InlineData(null, "news", "dotnet", "blog", false, 1, "Category: news")]
@@ -276,6 +306,9 @@ public class ContentListBehaviourTests : CmsWebComponentTestBase
             .Add(c => c.ShowPagination, paginated)
             .Add(c => c.EnableSeoMetadata, false)).Instance;
     }
+
+    private static string ActivePage(IRenderedComponent<ContentList> cut) =>
+        cut.Find("a.osirion-pagination-link.osirion-active").TextContent.Trim();
 
     private void ReturnItems(IReadOnlyList<ContentItem> items) =>
         _provider.GetItemsByQueryAsync(Arg.Any<ContentQuery>()).Returns(Task.FromResult<IReadOnlyList<ContentItem>?>(items));
