@@ -85,8 +85,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `LoginViewModel.LoginWithGitHubAsync(string code)` always fails, because a code without its OAuth state cannot be verified; use `StartGitHubLoginAsync()` and `LoginWithGitHubAsync(code, state)`
 - `IAuthenticationService.AuthenticateWithGitHubAsync(string code)` is marked `[Obsolete]`: it exchanges a code without a state check, a PKCE verifier or a redirect URI. It still works; check the state, exchange the code with `IGitHubTokenProvider` and call `SetAccessTokenAsync` instead
 - `AuthGuard.ShowLoginForm`, `AuthGuard.OnAuthResult` and `AdminPage.ShowLoginForm` are marked `[Obsolete]`, because they have no effect
-- `DomainEntityBase<TId>` and the unused Cms.Admin types `CommandDispatcher` (Application.Core), `ContentRepositoryAdapter`, `StatePersistenceService`, `StateManager`, `ErrorHandlingService` and `CmsAdminStartupService`; they will be removed in the next major release
+- `DomainEntityBase<TId>` and the unused Cms.Admin types `CommandDispatcher` (Application.Core), `StateManager`, `ErrorHandlingService` and `CmsAdminStartupService`; they will be removed in the next major release
 - `BaseContentRepository.GenerateMarkdownWithFrontMatter`; use `GenerateMarkdownWithFrontMatterAsync`
+
+### Removed
+- Osirion.Blazor.Cms.Admin types that nothing in the library used: `ContentRepositoryAdapter`, `RepositoryAdapterBase`, `AdminContentRepository`, `StatePersistenceService`, `EditableComponent`, `LoadableComponentBase`, `ContentValidators`, `ComponentExtensions` and `ExceptionHandlingMiddleware`
 
 ### Fixed
 - Osirion.Blazor.Theming: the theme toggle threw `NotFoundError` ("removeChild") when enhanced navigation replaced the page during its fade, and then scrolled the new page to the old page's position. With `prefers-reduced-motion: reduce` the theme now changes without the full-screen fade
