@@ -19,12 +19,13 @@ public static class StringExtensions
             return UntitledSlug(suffixLength);
 
         var slugBuilder = CollectSlugCharacters(input, out var hasValidChars);
-        EnsureLetterAtSecondPosition(slugBuilder);
-        AppendSlugEnding(slugBuilder, suffixLength);
 
-        // If nothing valid was found, return a default
+        // Checked before the repairs below, which index into the slug and would throw on an empty one
         if (!hasValidChars)
             return UntitledSlug(suffixLength);
+
+        EnsureLetterAtSecondPosition(slugBuilder);
+        AppendSlugEnding(slugBuilder, suffixLength);
 
         return slugBuilder.ToString();
     }
