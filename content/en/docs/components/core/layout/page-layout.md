@@ -71,6 +71,10 @@ OsirionPageLayout creates a structured page layout with clearly defined header, 
 | `Footer` | `RenderFragment?` | `null` | Content for the page footer section. |
 | `StickyFooter` | `bool` | `true` | Whether to use sticky footer layout that pins footer to bottom. |
 | `MinHeightStrategy` | `string` | `"viewport"` | Minimum height strategy: "viewport", "content", or "auto". |
+| `EnableHeaderScrollBehavior` | `bool` | `true` | Hides the header while scrolling down and shows it again while scrolling up, in interactive render modes. |
+| `ShowSkipLink` | `bool` | `true` | Renders a "skip to main content" link as the first focusable element, shown only when it has keyboard focus. |
+| `SkipLinkText` | `string` | `"Skip to main content"` | Text of the skip link; set it for other languages. |
+| `MainContentId` | `string` | `"osirion-main-content"` | Id of the main element, which the skip link targets. |
 | `Class` | `string?` | `null` | Additional CSS classes to apply to the layout container. |
 | `Style` | `string?` | `null` | Inline styles to apply to the layout container. |
 

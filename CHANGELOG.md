@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `OsirionPageLayout` renders a skip link to the main content as the first focusable element (WCAG 2.4.1), shown only while it has keyboard focus; `ShowSkipLink`, `SkipLinkText` and `MainContentId` configure it, and the main element now carries that id and `tabindex="-1"`
+
 ## [4.0.0] - 2026-10-11
 
 ### Security

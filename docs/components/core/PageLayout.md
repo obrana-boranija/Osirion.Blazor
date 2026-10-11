@@ -23,3 +23,4 @@ Basic usage
 Notes
 
 - MinHeightStrategy: "viewport" or "content".
+- ShowSkipLink (default true), SkipLinkText, MainContentId: the skip link to the main content for keyboard users.

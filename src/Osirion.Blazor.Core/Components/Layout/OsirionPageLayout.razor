@@ -5,6 +5,11 @@
 @inject JSElementReferenceScope Refs
 
 <div class="@GetPageLayoutClass()" data-ref="@Refs["root"]" @attributes="Attributes">
+    @if (ShowSkipLink)
+    {
+        <a class="osirion-skip-link" href="@SkipLinkHref">@SkipLinkText</a>
+    }
+
     @if (Header is not null)
     {
         <header class="osirion-page-header @(EnableHeaderScrollBehavior ? "osirion-page-header-scroll" : null)" data-ref="@Refs["header"]">
@@ -12,7 +17,8 @@
         </header>
     }
 
-    <main class="osirion-page-main">
+    @* tabindex="-1" lets the skip link move keyboard focus here, not only scroll *@
+    <main id="@MainContentId" class="osirion-page-main" tabindex="-1">
         @Body
     </main>
 
