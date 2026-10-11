@@ -262,7 +262,6 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
 
                 var fileInfo = _fileSystem.FileInfo.New(filePath);
                 contentItem.SetCreatedDate(fileInfo.CreationTimeUtc);
-                contentItem.SetLastModifiedDate(fileInfo.LastWriteTimeUtc);
 
                 // Extract locale from path if enabled
                 if (_options.EnableLocalization)
@@ -278,7 +277,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
                 await AssignDirectoryAsync(contentItem, relativePath, cancellationToken);
 
                 // Process the markdown content
-                await ProcessMarkdownAsync(content, contentItem, cancellationToken);
+                await ProcessMarkdownAsync(content, contentItem, fileInfo.LastWriteTimeUtc, cancellationToken);
 
                 // Set URL
                 var url = UrlGenerator.GenerateUrl(contentItem.Url, contentItem.Path, contentItem.Slug, EnableLocalization, SupportedLocales, ContentPath);

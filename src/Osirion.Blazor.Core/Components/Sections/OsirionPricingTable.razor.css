@@ -1,0 +1,106 @@
+.osirion-pricing-table {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: var(--osirion-spacing-6, 1.5rem);
+    align-items: stretch;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.osirion-pricing-table:has(.osirion-pricing-badge) {
+    padding-top: var(--osirion-spacing-3, 0.75rem);
+}
+
+.osirion-pricing-plan {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--osirion-spacing-3, 0.75rem);
+    padding: var(--osirion-spacing-6, 1.5rem);
+    border: 1px solid var(--osirion-border-color, #e5e7eb);
+    border-radius: var(--osirion-radius-lg, 0.5rem);
+    background-color: var(--osirion-background-primary, #fff);
+}
+
+    .osirion-pricing-plan p {
+        margin: 0;
+    }
+
+.osirion-pricing-plan-highlighted {
+    border: 2px solid var(--osirion-action-primary, #2563eb);
+    box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.08);
+}
+
+/* The badge sits on the top border, so every plan's name and price stay on the same line. */
+.osirion-pricing-badge {
+    position: absolute;
+    top: 0;
+    left: var(--osirion-spacing-6, 1.5rem);
+    transform: translateY(-50%);
+    padding: 0.125rem var(--osirion-spacing-2, 0.5rem);
+    border-radius: 999px;
+    background-color: var(--osirion-action-primary, #2563eb);
+    color: var(--osirion-action-primary-text, #fff);
+    font-size: var(--osirion-font-size-sm, 0.875rem);
+    font-weight: var(--osirion-font-weight-semibold, 600);
+}
+
+.osirion-pricing-name {
+    font-size: 1.125rem;
+    font-weight: var(--osirion-font-weight-semibold, 600);
+    color: var(--osirion-text-primary, #111827);
+}
+
+.osirion-pricing-price {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--osirion-spacing-1, 0.25rem);
+    align-items: baseline;
+}
+
+.osirion-pricing-amount {
+    font-size: 2.25rem;
+    font-weight: var(--osirion-font-weight-bold, 700);
+    line-height: 1.1;
+    color: var(--osirion-text-primary, #111827);
+}
+
+.osirion-pricing-period,
+.osirion-pricing-description {
+    color: var(--osirion-text-secondary, #4b5563);
+}
+
+.osirion-pricing-features {
+    flex: 1;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+    .osirion-pricing-features li {
+        position: relative;
+        padding: var(--osirion-spacing-1, 0.25rem) 0 var(--osirion-spacing-1, 0.25rem) 1.5rem;
+        color: var(--osirion-text-primary, #111827);
+    }
+
+        /* A check mark drawn with borders, in the primary color. */
+        .osirion-pricing-features li::before {
+            content: "";
+            position: absolute;
+            left: 0.25rem;
+            top: 0.55em;
+            width: 0.4rem;
+            height: 0.75rem;
+            border-right: 2px solid var(--osirion-action-primary, #2563eb);
+            border-bottom: 2px solid var(--osirion-action-primary, #2563eb);
+            transform: rotate(45deg);
+        }
+
+/* Full width; flex keeps the label centred in buttons that set a fixed height (Fluent UI). */
+.osirion-pricing-action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}

@@ -68,7 +68,8 @@
                         <OsirionContentNavigation Item="Item" ShowDescription ShowPlaceholder />
                     }
 
-                    @if (ShowRelatedContent)
+                    @* With nothing related, the section would render the list's "not found" block inside the article *@
+                    @if (ShowRelatedContent && RelatedItems is { Count: > 0 })
                     {
                         <OsirionContentListSection Title="Related items" Items="RelatedItems" Layout="grid" PostCount="10" Columns="2" />
                     }

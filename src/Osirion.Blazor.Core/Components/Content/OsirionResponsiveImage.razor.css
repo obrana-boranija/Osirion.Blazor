@@ -1,0 +1,16 @@
+/* Width and height attributes give the browser the aspect ratio; height: auto keeps it while the image scales down. */
+.osirion-responsive-image {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+.osirion-responsive-image-figure {
+    margin: 0 0 var(--osirion-spacing-4, 1rem);
+}
+
+.osirion-responsive-image-caption {
+    margin-top: var(--osirion-spacing-2, 0.5rem);
+    font-size: var(--osirion-font-size-sm, 0.875rem);
+    color: var(--osirion-text-secondary, #4b5563);
+}

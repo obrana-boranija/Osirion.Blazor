@@ -19,16 +19,16 @@ public class FileSystemContentRepositoryTests
     private static readonly string OutsideFile = MockUnixSupport.Path(@"c:\site\appsettings.json");
 
     private readonly MockFileSystem _fileSystem = new();
+    private readonly IMarkdownProcessor _markdownProcessor = Substitute.For<IMarkdownProcessor>();
     private readonly FileSystemContentRepository _repository;
 
     public FileSystemContentRepositoryTests()
     {
         _fileSystem.Directory.CreateDirectory(ContentRoot);
 
-        var markdownProcessor = Substitute.For<IMarkdownProcessor>();
-        markdownProcessor.ExtractFrontMatterAndContent(Arg.Any<string>())
+        _markdownProcessor.ExtractFrontMatterAndContent(Arg.Any<string>())
             .Returns(call => ((FrontMatter?)null, call.Arg<string>()));
-        markdownProcessor.RenderToHtmlAsync(Arg.Any<string>(), Arg.Any<bool>())
+        _markdownProcessor.RenderToHtmlAsync(Arg.Any<string>(), Arg.Any<bool>())
             .Returns(call => call.Arg<string>());
 
         var options = Options.Create(new FileSystemOptions
@@ -39,11 +39,34 @@ public class FileSystemContentRepositoryTests
         });
 
         _repository = new FileSystemContentRepository(
-            markdownProcessor,
+            _markdownProcessor,
             Substitute.For<IContentQueryFilter>(),
             options,
             NullLogger<FileSystemContentRepository>.Instance,
             _fileSystem);
+    }
+
+    [Fact]
+    public async Task GetAllAsync_NoFrontMatterLastModified_UsesTheFileWriteTime()
+    {
+        var written = new DateTime(2026, 3, 4, 5, 6, 7, DateTimeKind.Utc);
+        _fileSystem.AddFile(Path.Combine(ContentRoot, "post.md"), new MockFileData("Body") { LastWriteTime = written });
+
+        var item = (await _repository.GetAllAsync()).ShouldHaveSingleItem();
+
+        item.LastModified.ShouldBe(written);
+    }
+
+    [Fact]
+    public async Task GetAllAsync_FrontMatterLastModified_WinsOverTheFileWriteTime()
+    {
+        _markdownProcessor.ExtractFrontMatterAndContent(Arg.Any<string>())
+            .Returns(call => ((FrontMatter?)new FrontMatter { Title = "Post", LastModified = "2026-05-06" }, call.Arg<string>()));
+        _fileSystem.AddFile(Path.Combine(ContentRoot, "post.md"), new MockFileData("Body") { LastWriteTime = new DateTime(2026, 3, 4, 0, 0, 0, DateTimeKind.Utc) });
+
+        var item = (await _repository.GetAllAsync()).ShouldHaveSingleItem();
+
+        item.LastModified.ShouldBe(new DateTime(2026, 5, 6, 0, 0, 0, DateTimeKind.Utc));
     }
 
     [Theory]

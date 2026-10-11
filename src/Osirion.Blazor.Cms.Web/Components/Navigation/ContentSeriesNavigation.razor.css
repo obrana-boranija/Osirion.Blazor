@@ -1,0 +1,78 @@
+.osirion-series-nav {
+    margin: var(--osirion-spacing-6, 1.5rem) 0;
+    padding: var(--osirion-spacing-4, 1rem);
+    border: 1px solid var(--osirion-border-color, #e5e7eb);
+    border-radius: var(--osirion-radius-md, 0.375rem);
+    background-color: var(--osirion-background-secondary, #f9fafb);
+}
+
+.osirion-series-nav-heading {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--osirion-spacing-2, 0.5rem);
+    align-items: baseline;
+    margin: 0 0 var(--osirion-spacing-3, 0.75rem);
+}
+
+.osirion-series-nav-position {
+    font-size: var(--osirion-font-size-sm, 0.875rem);
+    color: var(--osirion-text-secondary, #4b5563);
+}
+
+.osirion-series-nav-name {
+    font-weight: var(--osirion-font-weight-semibold, 600);
+    color: var(--osirion-text-primary, #111827);
+}
+
+.osirion-series-nav-parts {
+    margin: 0 0 var(--osirion-spacing-4, 1rem);
+    padding-left: var(--osirion-spacing-6, 1.5rem);
+}
+
+    .osirion-series-nav-parts li {
+        margin: var(--osirion-spacing-1, 0.25rem) 0;
+    }
+
+    .osirion-series-nav-parts a[aria-current="page"] {
+        font-weight: var(--osirion-font-weight-semibold, 600);
+        color: var(--osirion-text-primary, #111827);
+        text-decoration: none;
+    }
+
+.osirion-series-nav-pager {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--osirion-spacing-3, 0.75rem);
+    justify-content: space-between;
+}
+
+    .osirion-series-nav-pager a {
+        display: flex;
+        flex-direction: column;
+        max-width: 48%;
+        text-decoration: none;
+    }
+
+    .osirion-series-nav-pager .osirion-series-nav-next {
+        margin-left: auto;
+        text-align: right;
+    }
+
+.osirion-series-nav-direction {
+    font-size: var(--osirion-font-size-sm, 0.875rem);
+    color: var(--osirion-text-secondary, #4b5563);
+}
+
+.osirion-series-nav-previous .osirion-series-nav-direction::before {
+    content: "\2190\00a0";
+}
+
+.osirion-series-nav-next .osirion-series-nav-direction::after {
+    content: "\00a0\2192";
+}
+
+@media (max-width: 30rem) {
+    .osirion-series-nav-pager a {
+        max-width: 100%;
+    }
+}

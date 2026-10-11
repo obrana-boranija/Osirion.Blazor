@@ -1,0 +1,7 @@
+/* The tabs' labels sit in the first row and the selected panel fills the row below them (OsirionTab orders them) */
+.osirion-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    margin: var(--osirion-spacing-4, 1rem) 0;
+}

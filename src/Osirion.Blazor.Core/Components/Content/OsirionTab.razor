@@ -1,0 +1,8 @@
+@namespace Osirion.Blazor.Components
+@inherits OsirionComponentBase
+
+<input type="radio" class="osirion-tabs-input" name="@Parent!.GroupId" id="@InputId" checked="@IsSelected" aria-controls="@PanelId" />
+<label class="osirion-tabs-label" for="@InputId" id="@LabelId">@Title</label>
+<div class="@GetPanelClass()" id="@PanelId" role="region" aria-labelledby="@LabelId" @attributes="Attributes">
+    @ChildContent
+</div>

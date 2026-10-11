@@ -1,0 +1,63 @@
+/* position: relative makes the scroller the containing block of the visually hidden (absolutely positioned)
+   labels, so they scroll with the table instead of widening the page. */
+.osirion-feature-comparison {
+    position: relative;
+    overflow-x: auto;
+    border: 1px solid var(--osirion-border-color, #e5e7eb);
+    border-radius: var(--osirion-radius-md, 0.375rem);
+}
+
+    .osirion-feature-comparison:focus-visible {
+        outline: var(--osirion-focus-ring-width, 2px) solid var(--osirion-focus-ring-color, rgba(59, 130, 246, 0.5));
+        outline-offset: 2px;
+    }
+
+.osirion-feature-comparison-table {
+    width: 100%;
+    min-width: 32rem;
+    border-collapse: collapse;
+    color: var(--osirion-text-primary, #111827);
+}
+
+.osirion-feature-comparison-caption {
+    padding: var(--osirion-spacing-3, 0.75rem) var(--osirion-spacing-4, 1rem);
+    caption-side: top;
+    text-align: left;
+    font-weight: var(--osirion-font-weight-semibold, 600);
+}
+
+.osirion-feature-comparison-table th,
+.osirion-feature-comparison-table td {
+    padding: var(--osirion-spacing-3, 0.75rem) var(--osirion-spacing-4, 1rem);
+    border-top: 1px solid var(--osirion-border-color, #e5e7eb);
+    text-align: center;
+}
+
+.osirion-feature-comparison-table thead th {
+    border-top: 0;
+    background-color: var(--osirion-background-secondary, #f9fafb);
+    font-weight: var(--osirion-font-weight-semibold, 600);
+}
+
+.osirion-feature-comparison-table tbody th {
+    text-align: left;
+    font-weight: var(--osirion-font-weight-normal, 400);
+}
+
+/* Marks drawn in CSS: a check in the primary color, a short dash for "not included". */
+.osirion-feature-comparison-yes {
+    display: inline-block;
+    width: 0.45rem;
+    height: 0.85rem;
+    border-right: 2px solid var(--osirion-action-primary, #2563eb);
+    border-bottom: 2px solid var(--osirion-action-primary, #2563eb);
+    transform: rotate(45deg);
+}
+
+.osirion-feature-comparison-no {
+    display: inline-block;
+    width: 0.75rem;
+    height: 2px;
+    vertical-align: middle;
+    background-color: var(--osirion-text-tertiary, #6b7280);
+}

@@ -1,0 +1,121 @@
+@page "/showcase"
+@using Osirion.Blazor.Components
+@using Osirion.Blazor.Core.Models
+
+<PageTitle>Component showcase - Osirion.Blazor</PageTitle>
+
+<OsirionReadingProgress />
+
+<div class="showcase">
+    <h1>Component showcase</h1>
+    <p>The content components added in Osirion.Blazor 4.1, rendered with static server-side rendering.</p>
+
+    <section aria-labelledby="showcase-callout">
+        <h2 id="showcase-callout">Callout</h2>
+        <OsirionCallout Type="CalloutType.Tip">
+            <p>Callouts written in Markdown with <code>&gt; [!TIP]</code> look the same as this component.</p>
+        </OsirionCallout>
+        <OsirionCallout Type="CalloutType.Warning" Title="Back up first">
+            <p>Back up the database before you run the migration.</p>
+        </OsirionCallout>
+    </section>
+
+    <section aria-labelledby="showcase-tabs">
+        <h2 id="showcase-tabs">Tabs</h2>
+        <OsirionTabs AriaLabel="Install command" Id="install">
+            <OsirionTab Title=".NET CLI">
+                <pre><code>dotnet add package Osirion.Blazor</code></pre>
+            </OsirionTab>
+            <OsirionTab Title="Package Manager">
+                <pre><code>Install-Package Osirion.Blazor</code></pre>
+            </OsirionTab>
+            <OsirionTab Title="PackageReference">
+                <pre><code>&lt;PackageReference Include="Osirion.Blazor" Version="4.1.0" /&gt;</code></pre>
+            </OsirionTab>
+        </OsirionTabs>
+    </section>
+
+    <section aria-labelledby="showcase-faq">
+        <h2 id="showcase-faq">FAQ</h2>
+        <OsirionFaq Items="faq" AllowMultiple="false" />
+    </section>
+
+    <section aria-labelledby="showcase-image">
+        <h2 id="showcase-image">Responsive image</h2>
+        <OsirionResponsiveImage Src="@PhotoAt(1600)"
+                                Alt="A laptop showing charts on a desk"
+                                Width="1600"
+                                Height="1066"
+                                Widths="imageWidths"
+                                SrcFormatter="(_, width) => PhotoAt(width)"
+                                Caption="The browser picks the 640, 960, 1280 or 1600 pixel file for the space the image takes." />
+    </section>
+
+    <section aria-labelledby="showcase-video">
+        <h2 id="showcase-video">Video embed</h2>
+        <p>Nothing from YouTube but the thumbnail loads until you press play.</p>
+        <OsirionVideoEmbed VideoId="V0Af7y7aMBE" Title="Build better web apps with Blazor in .NET 10" />
+    </section>
+
+    <section aria-labelledby="showcase-author">
+        <h2 id="showcase-author">Author card</h2>
+        <OsirionAuthorCard Name="Dejan Demonjić"
+                           Role="Maintainer of Osirion.Blazor"
+                           Bio="Builds SSR-first Blazor components for content sites."
+                           ProfileUrl="/blog"
+                           Links="authorLinks" />
+    </section>
+
+    <section aria-labelledby="showcase-pricing">
+        <h2 id="showcase-pricing">Pricing</h2>
+        <OsirionPricingTable Plans="plans" />
+        <h3>Compare plans</h3>
+        <OsirionFeatureComparison PlanNames="planNames" Rows="comparison" />
+    </section>
+
+    <section aria-labelledby="showcase-steps">
+        <h2 id="showcase-steps">How it works</h2>
+        <OsirionSteps Items="steps" />
+        <h3>The same steps, stacked</h3>
+        <OsirionSteps Items="steps" Vertical="true" />
+    </section>
+</div>
+
+@code {
+    private const string PhotoUrl = "https://images.unsplash.com/photo-1460925895917-afdab827c52f";
+    private readonly PricingPlan[] plans =
+    [
+        new() { Name = "Community", Price = "Free", Period = "forever", Description = "For personal sites.", Features = ["All components", "GitHub and file content"], CallToActionText = "Install", CallToActionUrl = "https://www.nuget.org/packages/Osirion.Blazor" },
+        new() { Name = "Team", Price = "$29", Period = "per month", Description = "For teams shipping content sites.", Features = ["Everything in Community", "Priority issues", "Theme review"], CallToActionText = "Contact us", CallToActionUrl = "/contact", Highlighted = true, Badge = "Most popular" },
+        new() { Name = "Enterprise", Price = "Custom", Description = "For organisations with many sites.", Features = ["Everything in Team", "Support agreement"], CallToActionText = "Talk to us", CallToActionUrl = "/contact" },
+    ];
+
+    private readonly string[] planNames = ["Community", "Team", "Enterprise"];
+
+    private readonly FeatureComparisonRow[] comparison =
+    [
+        new("Static SSR components", [true, true, true]),
+        new("Priority issues", [false, true, true]),
+        new("Support", ["Community", "Email", "Agreement"]),
+    ];
+
+    private readonly StepItem[] steps =
+    [
+        new("Install the package", "dotnet add package Osirion.Blazor"),
+        new("Point it at your content", "A GitHub repository or a local folder of Markdown files."),
+        new("Publish", "Static SSR pages that need no client script."),
+    ];
+
+    private readonly AuthorLink[] authorLinks = [new("GitHub", "https://github.com/obrana-boranija/Osirion.Blazor"), new("NuGet", "https://www.nuget.org/packages/Osirion.Blazor")];
+    private readonly int[] imageWidths = [640, 960, 1280, 1600];
+
+    // Cropped to 3:2 so every file matches the Width and Height given above.
+    private static string PhotoAt(int width) => $"{PhotoUrl}?w={width}&h={width * 2 / 3}&q=75&auto=format&fit=crop";
+
+    private readonly FaqItem[] faq =
+    [
+        new("Does Osirion.Blazor need JavaScript?", "No. Every component renders with static server-side rendering; script only adds enhancements."),
+        new("Which CSS frameworks are supported?", "Bootstrap, MudBlazor, Fluent UI and Radzen, through theming adapters.\nWithout a framework, the default Osirion theme applies."),
+        new("Where does the content come from?", "Markdown files in a GitHub repository or in a local folder."),
+    ];
+}

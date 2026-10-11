@@ -82,6 +82,18 @@ public static class AnalyticsServiceCollectionExtensions
                 builder.AddYandexMetrica(options => yandexSection.Bind(options));
             }
 
+            var plausibleSection = configuration.GetSection(PlausibleOptions.Section);
+            if (plausibleSection.Exists())
+            {
+                builder.AddPlausible(options => plausibleSection.Bind(options));
+            }
+
+            var umamiSection = configuration.GetSection(UmamiOptions.Section);
+            if (umamiSection.Exists())
+            {
+                builder.AddUmami(options => umamiSection.Bind(options));
+            }
+
             var consentSection = configuration.GetSection(AnalyticsConsentOptions.Section);
             if (consentSection.Exists())
             {

@@ -1,0 +1,44 @@
+@namespace Osirion.Blazor.Cms.Web.Components
+
+@if (Parts.Count > 1 && CurrentIndex >= 0)
+{
+    <nav class="@GetNavClass()" aria-label="@AriaLabel" @attributes="Attributes">
+        <p class="osirion-series-nav-heading">
+            <span class="osirion-series-nav-position">@PositionText</span>
+            <span class="osirion-series-nav-name">@SeriesName</span>
+        </p>
+
+        @if (ShowPartList)
+        {
+            <ol class="osirion-series-nav-parts">
+                @for (var index = 0; index < Parts.Count; index++)
+                {
+                    var part = Parts[index];
+                    var isCurrent = index == CurrentIndex;
+                    <li @key="part.Id" class="@(isCurrent ? "osirion-series-nav-current" : null)">
+                        <a href="@GetUrl(part)" aria-current="@(isCurrent ? "page" : null)">@part.Title</a>
+                    </li>
+                }
+            </ol>
+        }
+
+        <div class="osirion-series-nav-pager">
+            @if (CurrentIndex > 0)
+            {
+                var previous = Parts[CurrentIndex - 1];
+                <a class="osirion-series-nav-previous" href="@GetUrl(previous)" rel="prev">
+                    <span class="osirion-series-nav-direction">@PreviousText</span>
+                    <span class="osirion-series-nav-title">@previous.Title</span>
+                </a>
+            }
+            @if (CurrentIndex < Parts.Count - 1)
+            {
+                var next = Parts[CurrentIndex + 1];
+                <a class="osirion-series-nav-next" href="@GetUrl(next)" rel="next">
+                    <span class="osirion-series-nav-direction">@NextText</span>
+                    <span class="osirion-series-nav-title">@next.Title</span>
+                </a>
+            }
+        </div>
+    </nav>
+}

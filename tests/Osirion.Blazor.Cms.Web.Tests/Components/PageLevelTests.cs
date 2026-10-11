@@ -147,13 +147,28 @@ public class PageLevelTests : CmsWebComponentTestBase
         article.GetAttribute("itemtype").ShouldBe("https://schema.org/Article");
     }
 
+    // Fails before the fix: an article alone in its folder showed the list's "404 Page Not Found" block, with an h1,
+    // as its related items.
+    [Fact]
+    public void ArticlePage_NothingRelated_LeavesTheRelatedSectionOut()
+    {
+        ReturnFromQuery(Article("Alone"));
+
+        var cut = RenderStatic<ArticlePage>(p => p
+            .Add(c => c.ItemSlug, "alone")
+            .Add(c => c.ShowRelatedContent, true));
+
+        cut.FindAll(".osirion-content-not-found").ShouldBeEmpty();
+        cut.Markup.ShouldNotContain("Related items");
+        cut.FindAll("h1").Count.ShouldBe(1);
+    }
+
     // Fails before the fix: the hero showed the title as an h1 and the body's "# Title" showed it again as a second h1.
     [Fact]
     public void ArticlePage_WithItsHero_ShowsTheTitleOnce()
     {
         ReturnFromQuery(TitledArticle());
 
-        // Without related items the section renders its own empty-state block; it is not part of this check.
         var cut = RenderStatic<ArticlePage>(p => p
             .Add(c => c.ItemSlug, "titled")
             .Add(c => c.ShowRelatedContent, false));

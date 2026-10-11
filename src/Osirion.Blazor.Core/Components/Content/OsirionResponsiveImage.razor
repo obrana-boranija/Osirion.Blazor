@@ -1,0 +1,28 @@
+@namespace Osirion.Blazor.Components
+@inherits OsirionComponentBase
+
+@{
+    RenderFragment image = @<img src="@Src"
+                                 alt="@Alt"
+                                 width="@Width"
+                                 height="@Height"
+                                 srcset="@EffectiveSrcSet"
+                                 sizes="@EffectiveSizes"
+                                 loading="@(Priority ? "eager" : "lazy")"
+                                 decoding="async"
+                                 fetchpriority="@(Priority ? "high" : null)"
+                                 class="@GetImageClass()"
+                                 @attributes="Attributes" />;
+}
+
+@if (string.IsNullOrWhiteSpace(Caption))
+{
+    @image
+}
+else
+{
+    <figure class="osirion-responsive-image-figure">
+        @image
+        <figcaption class="osirion-responsive-image-caption">@Caption</figcaption>
+    </figure>
+}

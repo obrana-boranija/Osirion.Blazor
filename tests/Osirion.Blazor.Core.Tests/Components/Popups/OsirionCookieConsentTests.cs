@@ -91,6 +91,16 @@ public class OsirionCookieConsentTests : BunitContext
         component.FindAll("#consent-banner").Count.ShouldBe(1);
     }
 
+    // Fails before the fix: axe "region" reported the banner as content outside every landmark.
+    [Fact]
+    public void OsirionCookieConsent_Banner_IsARegionNamedByItsTitle()
+    {
+        var component = RenderOnPage("http://localhost/");
+
+        var region = component.Find(".osirion-cookie-consent[role='region']");
+        region.GetAttribute("aria-label").ShouldBe("Cookie Consent");
+    }
+
     // Fails before the fix: the form carried the actions class and the buttons sat beside the message, so the
     // action layout and the mobile rules never reached them and wide framework buttons wrapped under the text.
     [Fact]

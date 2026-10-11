@@ -14,11 +14,9 @@ public partial class GA4Tracker
     /// </summary>
     protected override IAnalyticsProvider? Provider => _provider;
 
-    /// <summary>
-    /// The GA4 provider instance.
-    /// </summary>
-    [Inject]
-    private GA4Provider? _provider { get; set; }
+    // Resolved on demand, so a tracker left in a layout renders nothing instead of failing the page
+    // when its provider is not registered.
+    private GA4Provider? _provider => field ??= GetOptionalService<GA4Provider>();
 
     /// <summary>
     /// Gets or sets the Measurement ID. When set it replaces the configured value for this render.

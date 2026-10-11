@@ -7,6 +7,10 @@ namespace Osirion.Blazor.Components;
 /// </summary>
 public partial class OsirionFooter
 {
+    // Set by OsirionPageLayout around its footer slot, which already renders the <footer> landmark.
+    [CascadingParameter(Name = OsirionPageLayout.FooterSlotCascadeName)]
+    private bool InsidePageLayoutFooter { get; set; }
+
     /// <summary>
     /// Gets or sets the company name for the copyright notice
     /// </summary>

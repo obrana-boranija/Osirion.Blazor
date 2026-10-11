@@ -2,88 +2,80 @@
 id: 'core-cards-components-overview'
 order: 1
 layout: docs
-title: Core Cards Components Overview
+title: Cards
 permalink: /docs/components/core/cards
-description: Complete overview of Osirion.Blazor Core Cards components including feature cards, subscription cards, and testimonial cards for modern UI layouts.
+description: The card components in Osirion.Blazor.Core (feature, testimonial, subscription, metric and author cards) and when to use each.
 author: Dejan Demonjić
 date: 2025-09-03
-featured_image: https://storage.googleapis.com/croct-assets-b931d070/blog/Headless_CMS_within_the_React_framework_3_1_da922d2562/Headless_CMS_within_the_React_framework_3_1_da922d2562.png
+last_modified: 2026-10-11
+featured_image: /assets/images/blazor-cover.png
 categories:
 - Components
 - Core Components
 - Cards
 tags:
-- blazor
-- core-components
 - cards
-- ui-components
-- feature-cards
-- testimonials
+- feature-card
+- testimonial-card
+- subscription-card
+- author-card
 is_featured: true
 published: true
 slug: cards
 lang: en
 custom_fields: {}
 seo_properties:
-  title: 'Core Cards Components - Osirion.Blazor UI Cards'
-  description: 'Explore Osirion.Blazor Core Cards components for feature cards, subscription cards, and testimonial displays.'
-  image: https://storage.googleapis.com/croct-assets-b931d070/blog/Headless_CMS_within_the_React_framework_3_1_da922d2562/Headless_CMS_within_the_React_framework_3_1_da922d2562.png
+  title: 'Cards - Osirion.Blazor Core components'
+  description: 'The card components in Osirion.Blazor.Core (feature, testimonial, subscription, metric and author cards) and when to use each.'
+  image: /assets/images/blazor-cover.png
   canonical: 'https://getosirion.com/docs/components/core/cards'
   lang: en
   robots: index, follow
-  og_title: 'Core Cards Components - Osirion.Blazor'
-  og_description: 'Complete documentation for Core Cards components with feature, subscription, and testimonial cards.'
-  og_image_url: 'https://storage.googleapis.com/croct-assets-b931d070/blog/Headless_CMS_within_the_React_framework_3_1_da922d2562/Headless_CMS_within_the_React_framework_3_1_da922d2562.png'
+  og_title: 'Cards - Osirion.Blazor'
+  og_description: 'Feature, testimonial, subscription, metric and author cards for Blazor content sites.'
+  og_image_url: '/assets/images/blazor-cover.png'
   og_type: article
   json_ld: ''
   type: Article
   twitter_card: summary_large_image
-  twitter_title: 'Core Cards Components Documentation'
-  twitter_description: 'Complete documentation for Osirion.Blazor Core Cards components.'
-  twitter_image_url: 'https://storage.googleapis.com/croct-assets-b931d070/blog/Headless_CMS_within_the_React_framework_3_1_da922d2562/Headless_CMS_within_the_React_framework_3_1_da922d2562.png'
+  twitter_title: 'Cards - Osirion.Blazor'
+  twitter_description: 'Feature, testimonial, subscription, metric and author cards for Blazor content sites.'
+  twitter_image_url: '/assets/images/blazor-cover.png'
   meta_tags: {}
 ---
 
-# Core Cards Components Overview
+# Cards
 
-The Osirion.Blazor Core Cards module provides a collection of card components for building modern, responsive UI layouts. These components offer flexible, reusable card designs for various content types.
+Osirion.Blazor.Core has five card components. All of them render complete HTML under static SSR and live in the
+`Osirion.Blazor.Components` namespace.
 
-## Available Components
-
-### Feature Card
-A versatile card component for showcasing features, services, or product highlights with icons, titles, and descriptions.
-
-### Subscription Card
-Specialized card component for displaying subscription plans, pricing tiers, and service offerings with clear call-to-action elements.
-
-### Testimonial Card
-Dedicated card component for customer testimonials, reviews, and user feedback with author attribution and styling options.
-
-## Key Features
-
-- **Responsive Design**: All cards adapt to different screen sizes
-- **Customizable Styling**: Flexible theming and appearance options
-- **Accessibility**: Built-in accessibility features and ARIA support
-- **Performance Optimized**: Lightweight and efficient rendering
-
-## Getting Started
-
-To use card components in your project:
+| Component | Use it for |
+| --- | --- |
+| [OsirionFeatureCard](/docs/components/core/cards/feature-card) | A feature, service or article teaser: image, title, description, a read more link and category links. |
+| [OsirionTestimonialCard](/docs/components/core/cards/testimonial-card) | A quote with the person's name, photo, role and an optional star rating. |
+| [OsirionSubscriptionCard](/docs/components/core/cards/subscription-card) | A newsletter signup form that posts without script, with validation and topic choices. |
+| [OsirionAuthorCard](/docs/components/core/cards/author-card) | An author's avatar or initials, name, role, bio and profile links. Available from 4.1. |
+| `OsirionMetricCard` | One figure with a label and description, optionally counting up when it scrolls into view. No page yet. |
 
 ```razor
-@using Osirion.Blazor.Core
+@using Osirion.Blazor.Components
 
-<FeatureCard Title="Amazing Feature" 
-             Description="This feature will revolutionize your workflow" 
-             Icon="star" />
+<OsirionFeatureCard Title="Static SSR first"
+                    Description="Every component renders meaningful HTML before any script runs." />
 
-<SubscriptionCard Title="Pro Plan" 
-                  Price="$29/month" 
-                  Features="@features" />
-
-<TestimonialCard Quote="This product changed everything for us!" 
-                 Author="John Doe" 
-                 Company="Tech Corp" />
+<OsirionTestimonialCard Name="Ana Petrović"
+                        TestimonialText="We moved our documentation site to static SSR in a weekend." />
 ```
 
-Each card component is designed to be highly customizable while maintaining consistent design patterns throughout your application.
+To show several testimonials in a scrolling row, use the
+[testimonial carousel](/docs/components/core/carousels/testimonial-carousel), which renders `OsirionTestimonialCard`
+for each item.
+
+Each card passes unmatched attributes to its root element and takes extra CSS classes in `Class` (`CssClass` on
+`OsirionMetricCard`). The cards take their colors, borders and spacing from the Osirion theme tokens, so a CSS
+framework adapter restyles them along with the rest of the site.
+
+## Related
+
+- [Core components overview](/docs/components/core)
+- [Sections](/docs/components/core/sections), for pricing tables, steps and metric grids

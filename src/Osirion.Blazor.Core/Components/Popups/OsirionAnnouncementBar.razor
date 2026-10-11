@@ -1,0 +1,22 @@
+@namespace Osirion.Blazor.Components
+@inherits OsirionComponentBase
+@using Microsoft.AspNetCore.Components.Forms
+
+@if (IsVisible)
+{
+    <div class="@GetBarClass()" role="region" aria-label="@RegionLabel" @attributes="Attributes">
+        <div class="osirion-announcement-content">@ChildContent</div>
+        @if (Dismissible)
+        {
+            <form class="osirion-announcement-form" method="post" action="@DismissEndpoint">
+                <AntiforgeryToken />
+                <input type="hidden" name="id" value="@Id" />
+                <input type="hidden" name="days" value="@RememberDays" />
+                <input type="hidden" name="returnUrl" value="@ReturnUrl" />
+                <button type="submit" class="osirion-announcement-dismiss" aria-label="@DismissText">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </form>
+        }
+    </div>
+}

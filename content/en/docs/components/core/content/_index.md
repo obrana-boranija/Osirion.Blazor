@@ -2,97 +2,81 @@
 id: 'core-content-components-overview'
 order: 1
 layout: docs
-title: Core Content Components Overview
+title: Core Content Components
 permalink: /docs/components/core/content
-description: Complete overview of Osirion.Blazor Core Content components including article metadata handling for content-rich applications.
+description: Components for the body of articles and docs pages in Osirion.Blazor Core, from callouts and tabs to video embeds, rendering under static SSR.
 author: Dejan Demonjić
 date: 2025-09-03
-featured_image: https://storage.googleapis.com/croct-assets-b931d070/blog/Headless_CMS_within_the_React_framework_3_1_da922d2562/Headless_CMS_within_the_React_framework_3_1_da922d2562.png
+last_modified: 2026-10-11
+featured_image: /assets/images/blazor-cover.png
 categories:
 - Components
 - Core Components
 - Content
 tags:
 - blazor
-- core-components
 - content
-- metadata
 - articles
+- static-ssr
+- accessibility
 is_featured: true
 published: true
 slug: content
 lang: en
 custom_fields: {}
 seo_properties:
-  title: 'Core Content Components - Osirion.Blazor Content Handling'
-  description: 'Explore Osirion.Blazor Core Content components for article metadata and content management features.'
-  image: https://storage.googleapis.com/croct-assets-b931d070/blog/Headless_CMS_within_the_React_framework_3_1_da922d2562/Headless_CMS_within_the_React_framework_3_1_da922d2562.png
+  title: 'Core Content Components - Osirion.Blazor'
+  description: 'Callouts, tabs, accordions, FAQs, responsive images, video embeds and article metadata for Blazor pages, working under static SSR.'
+  image: /assets/images/blazor-cover.png
   canonical: 'https://getosirion.com/docs/components/core/content'
   lang: en
   robots: index, follow
   og_title: 'Core Content Components - Osirion.Blazor'
-  og_description: 'Complete documentation for Core Content components with metadata and article handling.'
-  og_image_url: 'https://storage.googleapis.com/croct-assets-b931d070/blog/Headless_CMS_within_the_React_framework_3_1_da922d2562/Headless_CMS_within_the_React_framework_3_1_da922d2562.png'
+  og_description: 'Components for articles and docs pages that render under static SSR.'
+  og_image_url: /assets/images/blazor-cover.png
   og_type: article
   json_ld: ''
   type: Article
   twitter_card: summary_large_image
-  twitter_title: 'Core Content Components Documentation'
-  twitter_description: 'Complete documentation for Osirion.Blazor Core Content components.'
-  twitter_image_url: 'https://storage.googleapis.com/croct-assets-b931d070/blog/Headless_CMS_within_the_React_framework_3_1_da922d2562/Headless_CMS_within_the_React_framework_3_1_da922d2562.png'
+  twitter_title: 'Core Content Components - Osirion.Blazor'
+  twitter_description: 'Components for articles and docs pages that render under static SSR.'
+  twitter_image_url: /assets/images/blazor-cover.png
   meta_tags: {}
 ---
 
-# Core Content Components Overview
+# Core Content Components
 
-The Osirion.Blazor Core Content module provides essential components for handling and displaying content metadata and article information. These components are designed to work seamlessly with content management systems and article-based applications.
+These components go inside the body of an article or a documentation page. Each one renders complete HTML under
+static server-side rendering; where a script is involved, it only adds to what is already on the page.
 
-## Available Components
-
-### Article Metadata
-A comprehensive component for displaying and managing article metadata including publication dates, authors, tags, categories, reading time estimates, and other content-related information.
-
-## Key Features
-
-- **Rich Metadata Support**: Display comprehensive article information
-- **SEO Optimization**: Built-in structured data and metadata handling
-- **Customizable Display**: Flexible formatting and presentation options
-- **Accessibility**: Screen reader friendly metadata presentation
-- **Integration Ready**: Works seamlessly with CMS and content systems
-
-## Getting Started
-
-To use content components in your project:
+They live in the `Osirion.Blazor.Components` namespace of the Osirion.Blazor.Core package:
 
 ```razor
-@using Osirion.Blazor.Core
-
-<ArticleMetadata Article="@currentArticle" 
-                 ShowAuthor="true" 
-                 ShowPublishDate="true" 
-                 ShowReadingTime="true" 
-                 ShowTags="true" />
+@using Osirion.Blazor.Components
 ```
 
-## Metadata Features
+## Components
 
-The Article Metadata component supports:
+| Component | What it renders | Script | Available |
+| --- | --- | --- | --- |
+| [Article metadata](/docs/components/core/content/article-metadata) | Author, publish date and read time in one line | None | 4.0 |
+| [Callouts](/docs/components/core/content/callout) | A highlighted note, tip, important point, warning or caution, from Razor or Markdown | None | 4.1 |
+| [Tabs](/docs/components/core/content/tabs) | Alternative content, such as one install command per package manager, behind tabs | None | 4.1 |
+| [Accordion and FAQ](/docs/components/core/content/accordion-and-faq) | Collapsible sections on `<details>`, and questions with FAQPage structured data | None | 4.1 |
+| [Responsive image](/docs/components/core/content/responsive-image) | An `<img>` with intrinsic size, `srcset`, `sizes` and lazy loading | None | 4.1 |
+| [Video embed](/docs/components/core/content/video-embed) | A YouTube or Vimeo thumbnail that loads the player when pressed | Optional | 4.1 |
+| [Reading progress](/docs/components/core/content/reading-progress) | A bar at the top of the window that fills as the reader scrolls | None | 4.1 |
 
-- **Author Information**: Display author names, profiles, and avatars
-- **Publication Dates**: Show creation, modification, and publication timestamps
-- **Content Classification**: Display categories, tags, and content types
-- **Reading Metrics**: Estimated reading time and content statistics
-- **Social Sharing**: Integration with social media metadata
-- **Custom Fields**: Support for additional metadata properties
+"Optional" means the component works without script and the script adds behavior: the video embed is a link to the
+video until its script swaps in the player.
 
-## Integration
+## Razor or Markdown
 
-These components integrate seamlessly with:
+Markdown pages rendered by the CMS cannot contain Razor components. Callouts are the exception: write them with
+GitHub's alert syntax (`> [!NOTE]`) and they get the same styling as `OsirionCallout`. The other components are for
+Razor pages and layouts.
 
-- Content Management Systems (CMS)
-- Blog platforms and article repositories
-- Documentation systems
-- News and media websites
-- Academic and research platforms
+## Related
 
-The content components are designed to be highly flexible while maintaining consistency in metadata presentation across your application.
+- [Carousels](/docs/components/core/carousels)
+- [Core components](/docs/components/core)

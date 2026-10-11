@@ -28,11 +28,42 @@
     transition: transform 0.3s ease-in-out;
 }
 
+/* Skip link: off screen until it receives keyboard focus, then shown at the top of the viewport (fixed, so it is
+   visible however far the page is scrolled) above the sticky header */
+/* The parent selector outranks ".osirion-page-layout > *", which stretches every child to full width */
+.osirion-page-layout > .osirion-skip-link {
+    position: fixed;
+    top: var(--osirion-spacing-2, 0.5rem);
+    left: var(--osirion-spacing-2, 0.5rem);
+    width: max-content;
+    max-width: calc(100vw - 2 * var(--osirion-spacing-2, 0.5rem));
+    z-index: calc(var(--osirion-z-index-50, 2000) + 1);
+    padding: var(--osirion-spacing-2, 0.5rem) var(--osirion-spacing-4, 1rem);
+    border-radius: var(--osirion-radius-md, 0.375rem);
+    /* The page's own text and background colors, inverted: readable in every theme and framework adapter */
+    background-color: var(--osirion-text-primary, #111827);
+    color: var(--osirion-background-primary, #ffffff);
+    font-weight: var(--osirion-font-weight-semibold, 600);
+    text-decoration: none;
+    transform: translateY(calc(-100% - var(--osirion-spacing-4, 1rem)));
+}
+
+    .osirion-page-layout > .osirion-skip-link:focus {
+        transform: none;
+        outline: var(--osirion-focus-ring-width, 3px) solid var(--osirion-focus-ring-color, rgba(59, 130, 246, 0.5));
+        outline-offset: var(--osirion-focus-ring-offset, 2px);
+    }
+
 /* Main content section */
 .osirion-page-main {
     flex: 1 0 auto;
     width: 100%;
 }
+
+    /* Focus arrives here from the skip link; the page itself is not a control to outline */
+    .osirion-page-main:focus {
+        outline: none;
+    }
 
 /* Footer section */
 .osirion-page-footer {

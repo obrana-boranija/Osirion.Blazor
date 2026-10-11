@@ -2,113 +2,78 @@
 id: 'core-navigation-components-overview'
 order: 1
 layout: docs
-title: Core Navigation Components Overview
+title: Core Navigation Components
 permalink: /docs/components/core/navigation
-description: Complete overview of Osirion.Blazor Core Navigation components including breadcrumbs and read more links for enhanced user navigation.
+description: Breadcrumbs and read more links from Osirion.Blazor Core. Both render plain links under static SSR and need no script.
 author: Dejan Demonjić
 date: 2025-09-03
-featured_image: https://storage.googleapis.com/croct-assets-b931d070/blog/Headless_CMS_within_the_React_framework_3_1_da922d2562/Headless_CMS_within_the_React_framework_3_1_da922d2562.png
+last_modified: 2026-10-11
+featured_image: /assets/images/blazor-cover.png
 categories:
 - Components
 - Core Components
 - Navigation
 tags:
 - blazor
-- core-components
 - navigation
 - breadcrumbs
-- user-experience
+- links
+- static-ssr
 is_featured: true
 published: true
 slug: navigation
 lang: en
 custom_fields: {}
 seo_properties:
-  title: 'Core Navigation Components - Osirion.Blazor Navigation Tools'
-  description: 'Explore Osirion.Blazor Core Navigation components for breadcrumbs and enhanced navigation experiences.'
-  image: https://storage.googleapis.com/croct-assets-b931d070/blog/Headless_CMS_within_the_React_framework_3_1_da922d2562/Headless_CMS_within_the_React_framework_3_1_da922d2562.png
+  title: 'Core Navigation Components - Osirion.Blazor'
+  description: 'OsirionBreadcrumbs and OsirionReadMoreLink: breadcrumb trails and call-to-action links for Blazor that render without script.'
+  image: /assets/images/blazor-cover.png
   canonical: 'https://getosirion.com/docs/components/core/navigation'
   lang: en
   robots: index, follow
   og_title: 'Core Navigation Components - Osirion.Blazor'
-  og_description: 'Complete documentation for Core Navigation components with breadcrumbs and navigation tools.'
-  og_image_url: 'https://storage.googleapis.com/croct-assets-b931d070/blog/Headless_CMS_within_the_React_framework_3_1_da922d2562/Headless_CMS_within_the_React_framework_3_1_da922d2562.png'
+  og_description: 'Breadcrumb trails and read more links for Blazor that render without script.'
+  og_image_url: /assets/images/blazor-cover.png
   og_type: article
   json_ld: ''
   type: Article
   twitter_card: summary_large_image
-  twitter_title: 'Core Navigation Components Documentation'
-  twitter_description: 'Complete documentation for Osirion.Blazor Core Navigation components.'
-  twitter_image_url: 'https://storage.googleapis.com/croct-assets-b931d070/blog/Headless_CMS_within_the_React_framework_3_1_da922d2562/Headless_CMS_within_the_React_framework_3_1_da922d2562.png'
+  twitter_title: 'Core Navigation Components - Osirion.Blazor'
+  twitter_description: 'Breadcrumb trails and read more links for Blazor that render without script.'
+  twitter_image_url: /assets/images/blazor-cover.png
   meta_tags: {}
 ---
 
-# Core Navigation Components Overview
+# Core Navigation Components
 
-The Osirion.Blazor Core Navigation module provides essential navigation components that enhance user experience and site wayfinding. These components help users understand their location within your application and navigate efficiently.
+Osirion.Blazor Core has two small navigation components: a breadcrumb trail built from a URL path, and a link for
+"read more" and other calls to action. Both render ordinary `<a>` elements, so they behave the same under static SSR,
+Interactive Server and WebAssembly, and need no script.
 
-## Available Components
-
-### Breadcrumbs
-A hierarchical navigation component that shows the user's current location within the site structure, providing clear paths back to parent pages and improving overall navigation experience.
-
-### Read More Link
-An interactive link component designed for content truncation and expansion, allowing users to reveal additional content without navigating away from the current page.
-
-## Key Features
-
-- **Hierarchical Navigation**: Clear parent-child relationship display
-- **SEO Benefits**: Structured data support for search engines
-- **Responsive Design**: Mobile-friendly navigation patterns
-- **Accessibility**: Screen reader support and keyboard navigation
-- **Customizable Styling**: Flexible appearance and theming options
-
-## Getting Started
-
-To use navigation components in your project:
+They live in the `Osirion.Blazor.Components` namespace of the Osirion.Blazor.Core package:
 
 ```razor
-@using Osirion.Blazor.Core
-
-<Breadcrumbs CurrentPage="@currentPage" 
-             ShowHome="true" 
-             Separator="/" 
-             MaxItems="5" />
-
-<ReadMoreLink Text="@longContent" 
-              MaxLength="150" 
-              ExpandText="Read more" 
-              CollapseText="Show less" />
+@using Osirion.Blazor.Components
 ```
 
-## Breadcrumbs Features
+## Components
 
-The Breadcrumbs component offers:
+| Component | What it renders | Script | Available |
+| --- | --- | --- | --- |
+| [Breadcrumbs](/docs/components/core/navigation/breadcrumbs) | A `<nav>` with an ordered list of links, one per path segment | None | 4.0 |
+| [Read more link](/docs/components/core/navigation/read-more-link) | A link with an optional icon, in several variants and sizes | None | 4.0 |
 
-- **Automatic Generation**: Build breadcrumbs from route data
-- **Custom Separators**: Choose from various separator styles
-- **Truncation Options**: Handle deep navigation hierarchies
-- **Rich Snippets**: Built-in structured data for SEO
-- **Click Handling**: Programmatic navigation support
+## Other navigation
 
-## Read More Link Features
+These two cover links inside a page. Site navigation lives elsewhere:
 
-The Read More Link component includes:
+- The Osirion.Blazor.Navigation package has the menu (`Menu`, `MenuItem`, `MenuGroup` and panels),
+  `EnhancedNavigation` for scroll handling after enhanced navigation, and `ScrollToTop`.
+- The CMS has components that read your content: `ContentBreadcrumbs`, `DirectoryNavigation`, `TableOfContents`,
+  `TagCloud`, `CategoriesList`, `SearchBox` and previous and next links.
 
-- **Content Truncation**: Intelligent text cutting at word boundaries
-- **Smooth Animations**: Expand/collapse transitions
-- **Custom Triggers**: Configurable expand/collapse text
-- **Character Limits**: Flexible content length management
-- **Accessibility**: Screen reader friendly content revelation
+## Related
 
-## Use Cases
-
-These navigation components are ideal for:
-
-- **E-commerce Sites**: Product category navigation
-- **Documentation**: Section and subsection navigation
-- **Blogs**: Article category and tag navigation
-- **Corporate Sites**: Department and page hierarchies
-- **Content Portals**: Multi-level content organization
-
-The navigation components integrate seamlessly with Blazor routing and provide consistent navigation patterns across your application.
+- [Navigation package](/docs/components/navigation)
+- [CMS Web navigation](/docs/components/cms-web/navigation)
+- [Core components](/docs/components/core)

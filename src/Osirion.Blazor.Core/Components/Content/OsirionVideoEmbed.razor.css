@@ -1,0 +1,106 @@
+.osirion-video-embed {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    border-radius: var(--osirion-radius-md, 0.375rem);
+    background-color: #000;
+}
+
+.osirion-video-embed-widescreen {
+    aspect-ratio: 16 / 9;
+}
+
+.osirion-video-embed-standard {
+    aspect-ratio: 4 / 3;
+}
+
+.osirion-video-embed-square {
+    aspect-ratio: 1 / 1;
+}
+
+.osirion-video-embed-vertical {
+    aspect-ratio: 9 / 16;
+    max-width: 22.5rem;
+}
+
+.osirion-video-embed-link {
+    position: absolute;
+    inset: 0;
+    display: block;
+    color: #fff;
+    text-decoration: none;
+}
+
+    .osirion-video-embed-link[hidden] {
+        display: none;
+    }
+
+    .osirion-video-embed-link:focus-visible {
+        outline: var(--osirion-focus-ring-width, 2px) solid var(--osirion-focus-ring-color, rgba(59, 130, 246, 0.5));
+        outline-offset: -4px;
+    }
+
+.osirion-video-embed-thumbnail {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* A play button drawn in CSS: a dark rounded box with a white triangle. */
+.osirion-video-embed-play {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 4.25rem;
+    height: 3rem;
+    transform: translate(-50%, -50%);
+    border-radius: 0.75rem;
+    background-color: rgba(0, 0, 0, 0.75);
+    transition: background-color var(--osirion-transition-duration-200, 200ms) ease;
+}
+
+    .osirion-video-embed-play::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 54%;
+        transform: translate(-50%, -50%);
+        border-style: solid;
+        border-width: 0.75rem 0 0.75rem 1.25rem;
+        border-color: transparent transparent transparent #fff;
+    }
+
+.osirion-video-embed-link:hover .osirion-video-embed-play,
+.osirion-video-embed-link:focus-visible .osirion-video-embed-play {
+    background-color: #cc0000;
+}
+
+.osirion-video-embed-title {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: var(--osirion-spacing-3, 0.75rem) var(--osirion-spacing-4, 1rem);
+    background: linear-gradient(rgba(0, 0, 0, 0.7), transparent);
+    font-weight: var(--osirion-font-weight-semibold, 600);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+.osirion-video-embed-frame:empty {
+    display: none;
+}
+
+/* The player is created by the script, so it has no scope attribute: reach it through the frame. */
+.osirion-video-embed-frame ::deep .osirion-video-embed-player {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .osirion-video-embed-play {
+        transition: none;
+    }
+}

@@ -27,7 +27,7 @@ Osirion.Blazor is composed of specialized modules that can be used independently
 
 [![Docs](https://img.shields.io/badge/docs-ANALYTICS.md-blue)](docs/ANALYTICS.md)
 
-- Multiple provider support (Microsoft Clarity, Matomo, GA4, Yandex Metrica)
+- Multiple provider support (Microsoft Clarity, Matomo, GA4, Yandex Metrica, Plausible, Umami)
 - SSR compatibility with progressive enhancement
 - Privacy-focused with consent management
 - Easily extendable with your own providers

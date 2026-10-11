@@ -1,8 +1,10 @@
 ﻿@namespace Osirion.Blazor.Components
 @inherits OsirionComponentBase
 
-<footer class="@GetFooterClass()" style="@Style" data-osirion-component-theme="@GetComponentTheme()" @attributes="Attributes">
-    <div class="osirion-footer-container">
+@* Inside OsirionPageLayout's footer slot the layout already provides the contentinfo landmark, so a second
+   <footer> would duplicate it; the same markup then renders in a <div>. *@
+@{
+    RenderFragment content = @<div class="osirion-footer-container">
         @if (ShowTopSection && (Logo is not null || Links?.Any() == true || SocialLinks?.Any() == true || LeftContent is not null || RightContent is not null))
         {
             <div class="osirion-footer-main">
@@ -147,8 +149,17 @@
                 </div>
             </div>
         }
-    </div>
-</footer>
+    </div>;
+}
+
+@if (InsidePageLayoutFooter)
+{
+    <div class="@GetFooterClass()" style="@Style" data-osirion-component-theme="@GetComponentTheme()" @attributes="Attributes">@content</div>
+}
+else
+{
+    <footer class="@GetFooterClass()" style="@Style" data-osirion-component-theme="@GetComponentTheme()" @attributes="Attributes">@content</footer>
+}
 
 <style>
     .osirion-footer-bottom-links {

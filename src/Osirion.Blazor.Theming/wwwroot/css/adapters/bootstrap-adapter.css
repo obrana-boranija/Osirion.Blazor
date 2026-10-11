@@ -323,6 +323,8 @@ html.osirion-bootstrap-integration[data-theme=dark],
   /* Action colors - brighter for dark mode */
   --osirion-action-primary: var(--bs-primary, #0d6efd);
   --osirion-action-primary-hover: var(--bs-primary-text-emphasis, #6ea8fe);
+  /* Bootstrap keeps white text on primary buttons in dark mode too */
+  --osirion-action-primary-text: var(--bs-white, #ffffff);
   /* Status colors for dark themes */
   --osirion-status-success-bg: var(--bs-success-bg-subtle, #051b11);
   --osirion-status-success-border: var(--bs-success-border-subtle, #0f5132);

@@ -1,0 +1,20 @@
+@namespace Osirion.Blazor.Components
+@inherits OsirionComponentBase
+@using BlazorJSComponents
+@attribute [DiscoverCollocatedJS]
+@inject JSElementReferenceScope Refs
+
+<div class="@GetContainerClass()" data-ref="@Refs["root"]" @attributes="Attributes">
+    <a class="osirion-video-embed-link" href="@WatchUrl" data-ref="@Refs["link"]" aria-label="@PlayLabel">
+        @if (!string.IsNullOrWhiteSpace(EffectiveThumbnailUrl))
+        {
+            <img class="osirion-video-embed-thumbnail" src="@EffectiveThumbnailUrl" alt="" loading="lazy" decoding="async" />
+        }
+        <span class="osirion-video-embed-play" aria-hidden="true"></span>
+        <span class="osirion-video-embed-title" aria-hidden="true">@Title</span>
+    </a>
+    @* Left empty by Blazor; the script puts the player here, so a re-render never touches it. *@
+    <div class="osirion-video-embed-frame" data-ref="@Refs["frame"]"></div>
+</div>
+
+<JS Src="./_content/Osirion.Blazor.Core/Components/Content/OsirionVideoEmbed.razor.js" Args="[Refs, EmbedUrl, Title]" />

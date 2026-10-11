@@ -10,8 +10,9 @@ public partial class MatomoTracker
     /// <summary>Gets the configured Matomo analytics provider.</summary>
     protected override IAnalyticsProvider? Provider => _provider;
 
-    [Inject]
-    private MatomoProvider? _provider { get; set; }
+    // Resolved on demand, so a tracker left in a layout renders nothing instead of failing the page
+    // when its provider is not registered.
+    private MatomoProvider? _provider => field ??= GetOptionalService<MatomoProvider>();
 
     /// <inheritdoc/>
     protected override bool CanRenderProvider => _provider is not null && _provider.CanRender(CreateEffectiveOptions());

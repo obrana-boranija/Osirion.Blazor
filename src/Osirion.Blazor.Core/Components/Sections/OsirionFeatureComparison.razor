@@ -1,0 +1,49 @@
+@namespace Osirion.Blazor.Components
+@inherits OsirionComponentBase
+
+@if (PlanNames.Count > 0 && Rows.Count > 0)
+{
+    @* The wrapper scrolls on narrow screens; it is focusable and named so keyboard users can scroll it too. *@
+    <div class="@GetWrapperClass()" role="region" aria-label="@Caption" tabindex="0" @attributes="Attributes">
+        <table class="osirion-feature-comparison-table">
+            <caption class="@(ShowCaption ? "osirion-feature-comparison-caption" : "osirion-visually-hidden")">@Caption</caption>
+            <thead>
+                <tr>
+                    <th scope="col"><span class="osirion-visually-hidden">@FeatureColumnText</span></th>
+                    @foreach (var plan in PlanNames)
+                    {
+                        <th scope="col">@plan</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var row in Rows)
+                {
+                    <tr @key="row">
+                        <th scope="row">@row.Feature</th>
+                        @for (var column = 0; column < PlanNames.Count; column++)
+                        {
+                            var cell = column < row.Values.Count ? row.Values[column] : default;
+                            <td>
+                                @if (cell.Included is true)
+                                {
+                                    <span class="osirion-feature-comparison-yes" aria-hidden="true"></span>
+                                    <span class="osirion-visually-hidden">@IncludedText</span>
+                                }
+                                else if (cell.Included is false)
+                                {
+                                    <span class="osirion-feature-comparison-no" aria-hidden="true"></span>
+                                    <span class="osirion-visually-hidden">@NotIncludedText</span>
+                                }
+                                else
+                                {
+                                    @cell.Text
+                                }
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

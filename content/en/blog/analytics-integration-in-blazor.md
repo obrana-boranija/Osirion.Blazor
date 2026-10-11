@@ -1,18 +1,21 @@
 ---
 id: ""
-title: Analytics Integration for Blazor Applications
-description: How to integrate analytics tools like Microsoft Clarity and Matomo into your Blazor applications using Osirion.Blazor components.
+title: Analytics in Blazor with Osirion.Blazor
+description: Add Clarity, Matomo, GA4 or Yandex Metrica to a Blazor app with tracker components, configuration checked at startup and an optional consent gate.
 author: Dejan Demonjić
 date: 2025-04-12
-featured_image: "https://images.pexels.com/photos/97080/pexels-photo-97080.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+last_modified: 2026-10-11
+featured_image: /assets/images/blazor-cover.png
 categories: 
 - Analytics
 - Integration
 tags: 
 - Analytics
-- Tracking
-- Blazor
+- Clarity
+- Matomo
+- GA4
 - Privacy
+- Blazor
 is_featured: true
 published: true
 layout: null
@@ -35,141 +38,156 @@ seo:
   twitter_image_url: ""
 
 ---
-[![NuGet](https://img.shields.io/nuget/v/Osirion.Blazor)](https://www.nuget.org/packages/Osirion.Blazor)
-[![NuGet Downloads](https://img.shields.io/nuget/dt/Osirion.Blazor.svg)](https://www.nuget.org/packages/Osirion.Blazor)
-[![License](https://img.shields.io/github/license/obrana-boranija/Osirion.Blazor)](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/LICENSE.txt)
 
-# Analytics Integration for Blazor Applications
+# Analytics in Blazor with Osirion.Blazor
 
-Adding analytics to your Blazor application can provide valuable insights into user behavior. Osirion.Blazor offers easy integration with popular analytics platforms like Microsoft Clarity and Matomo.
+An analytics product gives you a script snippet and leaves the rest to you: where to put it, how to keep the IDs out of
+your markup, what happens when Blazor's enhanced navigation swaps the page, and how to wait for consent. The
+`Osirion.Blazor.Analytics` package handles those parts. You register a provider, put its tracker component in the page
+head, and the component writes the provider's script during server rendering.
 
-## Why Use Analytics in Blazor?
+Osirion.Blazor 4.0 ships trackers for Microsoft Clarity, Matomo, Google Analytics 4 and Yandex Metrica. Available from
+4.1: Plausible (`AddPlausible`, `PlausibleTracker`) and Umami (`AddUmami`, `UmamiTracker`), both cookie-free.
 
-Analytics tools can help you:
+## Register the providers
 
-1. Understand user engagement
-2. Identify usability issues
-3. Track conversion rates
-4. Optimize performance
-5. Make data-driven decisions
+The package comes with the `Osirion.Blazor` meta-package, or you can install it on its own:
 
-## Available Analytics Components
-
-Osirion.Blazor provides components for two popular analytics platforms:
-
-### Microsoft Clarity
-
-Clarity is Microsoft's free analytics tool that provides heatmaps, session recordings, and insights.
-
-```razor
-@using Osirion.Blazor.Components.Analytics
-@using Osirion.Blazor.Components.Analytics.Options
-
-<ClarityTracker Options="new ClarityOptions { 
-    TrackerUrl = 'https://www.clarity.ms/tag/', 
-    SiteId = 'your-clarity-id',
-    Track = true 
-}" />
+```bash
+dotnet add package Osirion.Blazor.Analytics
 ```
 
-### Matomo (formerly Piwik)
-
-Matomo is an open-source analytics platform that gives you full control over your data.
-
-```razor
-<MatomoTracker Options="new MatomoOptions {
-    TrackerUrl = '//analytics.example.com/',
-    SiteId = '1',
-    Track = true
-}" />
-```
-
-## Configuration Options
-
-Both trackers support the following options:
-
-- `TrackerUrl`: The URL of the analytics script
-- `SiteId`: Your site ID for the analytics platform
-- `Track`: Controls whether tracking is enabled
-
-## Setting Up with Dependency Injection
-
-You can also configure analytics via dependency injection:
+Register the providers you use in `Program.cs`:
 
 ```csharp
-// Program.cs
-using Osirion.Blazor.Extensions;
+using Osirion.Blazor.Analytics.Extensions;
 
-// Using configuration
-builder.Services.AddClarityTracker(builder.Configuration);
-builder.Services.AddMatomoTracker(builder.Configuration);
-
-// Or programmatically
-builder.Services.AddClarityTracker(options =>
+builder.Services.AddOsirionAnalytics(analytics =>
 {
-    options.TrackerUrl = "https://www.clarity.ms/tag/";
-    options.SiteId = "your-clarity-id";
-    options.Track = true;
+    analytics
+        .AddClarity(options => options.SiteId = "your-clarity-project-id")
+        .AddMatomo(options =>
+        {
+            options.TrackerUrl = "https://analytics.example.com/";
+            options.SiteId = "1";
+        })
+        .AddGA4(options => options.MeasurementId = "G-XXXXXXXXXX");
 });
 ```
 
-Then in your layout:
+If you already call `AddOsirion(builder.Configuration)`, you can leave the code out and configure the same providers in
+`appsettings.json`. A provider is registered when its section exists:
 
-```razor
-@inject IOptions<ClarityOptions> ClarityOptions
-@inject IOptions<MatomoOptions> MatomoOptions
-
-@if (ClarityOptions?.Value != null)
+```json
 {
-    <ClarityTracker Options="@ClarityOptions.Value" />
-}
-
-@if (MatomoOptions?.Value != null)
-{
-    <MatomoTracker Options="@MatomoOptions.Value" />
+  "Osirion": {
+    "Analytics": {
+      "Clarity": { "SiteId": "your-clarity-project-id" },
+      "Matomo": { "TrackerUrl": "https://analytics.example.com/", "SiteId": "1" },
+      "GA4": { "MeasurementId": "G-XXXXXXXXXX" }
+    }
+  }
 }
 ```
 
-## Environment-Specific Configuration
+The Matomo tracker appends `matomo.php` and `matomo.js` to `TrackerUrl`, so end it with a slash.
 
-It's a good practice to disable analytics in development environments:
+## Render the trackers
+
+Put the tracker components in the `<head>` of `App.razor`, after `<HeadOutlet />`:
+
+```razor
+@using Osirion.Blazor.Analytics.Components
+
+<head>
+    ...
+    <HeadOutlet />
+
+    <ClarityTracker />
+    <MatomoTracker />
+    <GA4Tracker />
+</head>
+```
+
+A tracker renders its script on the server, so it works under static SSR and in the prerender pass of the interactive
+render modes. It renders nothing when its provider is disabled or a required value is missing.
+
+In 4.0, keep a tracker in the layout only when its provider is registered: a `<ClarityTracker />` without a Clarity
+configuration fails the page. From 4.1, such a tracker renders nothing.
+
+Every tracker takes an `Enabled` parameter that overrides the configured value for that render. `ClarityTracker` and
+`MatomoTracker` also take `SiteId`; `GA4Tracker` takes `MeasurementId` and `DebugMode`; `YandexMetricaTracker` takes
+`CounterId`, `WebVisor`, `ClickMap`, `TrackLinks` and `AccurateTrackBounce`.
+
+## Turn tracking off outside production
+
+Every provider has an `Enabled` option, `true` by default. Set it to `false` in `appsettings.Development.json` and the
+trackers render nothing while you work locally:
+
+```json
+{
+  "Osirion": {
+    "Analytics": {
+      "Clarity": { "Enabled": false },
+      "Matomo": { "Enabled": false },
+      "GA4": { "Enabled": false }
+    }
+  }
+}
+```
+
+## Bad values fail at startup
+
+The options are validated when the application starts. A GA4 measurement ID that does not look like `G-XXXXXXXXXX`, a
+Yandex Metrica counter that is not numeric, or a tracker URL that is not an http(s) URL stops the app with a message
+that names the configuration key, so a typo never ships as a broken snippet. A provider whose `Enabled` is `false` is
+not validated.
+
+Every configured value written into a script or an attribute is encoded, so a value from configuration cannot break out
+of the snippet.
+
+## Page views after enhanced navigation
+
+With enhanced navigation, Blazor replaces the page content without a full page load, so a script that counts a page
+view on load sees only the first page. Each provider deals with it in its own way:
+
+- **Matomo and Yandex Metrica**: while `AutoTrackPageViews` is on (the default), the tracker adds a static script,
+  `_content/Osirion.Blazor.Analytics/js/osirion-analytics.js`, that listens for Blazor's `enhancedload` event and
+  reports the new URL. It is an external file, not an inline script.
+- **GA4**: turn on "Page changes based on browser history events" in the Enhanced Measurement settings of your GA4 web
+  data stream.
+- **Clarity**: the tracker adds nothing; Clarity's own script follows history changes.
+
+Navigation inside a router that is already interactive does not raise `enhancedload`, so the static script does not
+report it.
+
+## Consent
+
+By default, a configured tracker renders on every page. If your site needs consent before analytics runs, turn on the
+consent gate:
 
 ```csharp
-if (builder.Environment.IsProduction())
+builder.Services.AddOsirionAnalytics(analytics =>
 {
-    builder.Services.AddClarityTracker(builder.Configuration);
-    builder.Services.AddMatomoTracker(builder.Configuration);
-}
-else
-{
-    builder.Services.AddClarityTracker(options => options.Track = false);
-    builder.Services.AddMatomoTracker(options => options.Track = false);
-}
+    analytics
+        .AddGA4(options => options.MeasurementId = "G-XXXXXXXXXX")
+        .RequireConsent();
+});
 ```
 
-## Privacy Considerations
+or in configuration:
 
-When implementing analytics, consider these privacy best practices:
-
-1. Obtain user consent before enabling tracking
-2. Provide a clear privacy policy
-3. Allow users to opt out
-4. Consider data retention policies
-5. Be transparent about what data is collected
-
-## Conditional Tracking
-
-You can conditionally enable tracking based on user consent:
-
-```razor
-@if (ConsentGiven)
-{
-    <ClarityTracker Options="@ClarityOptions" />
-}
+```json
+{ "Osirion": { "Analytics": { "Consent": { "RequireConsent": true } } } }
 ```
 
-## Conclusion
+With the gate on, a tracker renders only when the request carries the cookie written by the `OsirionCookieConsent`
+banner and the visitor accepted the `analytics` category. Without that, no tracker script reaches the page. The
+[cookie consent article](/blog/gdpr-cookie-consent-blazor) covers the banner, the cookie, and how GA4 Consent Mode and
+Matomo's own consent setting fit in.
 
-Osirion.Blazor makes it easy to integrate analytics into your Blazor applications. By following the examples in this article, you can start tracking user behavior and gaining valuable insights to improve your application.
+## Related
 
-Remember to respect user privacy and comply with regulations like GDPR when implementing analytics.
+- [Analytics components](/docs/components/analytics)
+- [Cookie consent in Blazor with Osirion.Blazor](/blog/gdpr-cookie-consent-blazor)
+- [Osirion.Blazor.Analytics on NuGet](https://www.nuget.org/packages/Osirion.Blazor.Analytics)

@@ -89,6 +89,18 @@ public class FrontMatter : ValueObject
     public string? Slug { get; set; }
 
     /// <summary>
+    /// Gets or sets the series the item belongs to, such as a multi-part tutorial (<c>series</c>). Items with the same
+    /// series name are listed together in <see cref="SeriesOrder"/>.
+    /// </summary>
+    public string? Series { get; set; }
+
+    /// <summary>
+    /// Gets or sets the item's position in its <see cref="Series"/>, starting at 1 (<c>series_order</c>). Items without
+    /// one follow the numbered parts, oldest first.
+    /// </summary>
+    public int? SeriesOrder { get; set; }
+
+    /// <summary>
     /// Gets the language
     /// </summary>
     public string Lang { get; set; } = "en";
@@ -382,6 +394,8 @@ public class FrontMatter : ValueObject
             Layout = Layout,
             Slug = Slug,
             Lang = Lang,
+            Series = Series,
+            SeriesOrder = SeriesOrder,
             Categories = new List<string>(Categories),
             Tags = new List<string>(Tags),
             CustomFields = new Dictionary<string, object>(CustomFields),
@@ -434,6 +448,19 @@ public class FrontMatter : ValueObject
 
         if (values.TryGetValue("slug", out var slug))
             frontMatter = frontMatter.WithSlug(slug);
+
+        if (values.TryGetValue("series", out var series) && !string.IsNullOrWhiteSpace(series))
+        {
+            frontMatter = frontMatter.Clone();
+            frontMatter.Series = series;
+        }
+
+        if (values.TryGetValue("series_order", out var seriesOrderStr)
+            && int.TryParse(seriesOrderStr, System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out var seriesOrder))
+        {
+            frontMatter = frontMatter.Clone();
+            frontMatter.SeriesOrder = seriesOrder;
+        }
 
         // Handle categories and tags
         if (values.TryGetValue("categories", out var categoriesStr) ||
@@ -489,6 +516,8 @@ public class FrontMatter : ValueObject
         yield return Published;
         yield return Layout ?? string.Empty;
         yield return Slug ?? string.Empty;
+        yield return Series ?? string.Empty;
+        yield return SeriesOrder ?? 0;
 
         // Include collections in equality check
         foreach (var category in Categories)
@@ -553,7 +582,7 @@ public class FrontMatter : ValueObject
         {
             "title", "description", "author", "date", "lastmodified", "last_modified",
             "featuredimage", "featured_image", "featured", "isFeatured", "published",
-            "layout", "slug", "categories", "category", "tags", "tag"
+            "layout", "slug", "categories", "category", "tags", "tag", "series", "series_order"
         };
 
         return standardKeys.Contains(key);
