@@ -160,14 +160,15 @@ public class OsirionReadMoreLinkTests : OsirionComponentTestBase
         cut.Find("a").GetAttribute("style").ShouldBeNullOrEmpty();
     }
 
+    // The filter keeps the framework classes; the component's own osirion-read-more classes are covered elsewhere.
     [Theory]
-    [InlineData(CssFramework.Bootstrap, false, "icon-link icon-link-hover", null)]
-    [InlineData(CssFramework.Bootstrap, true, null, "stretched-link")]
-    [InlineData(CssFramework.FluentUI, true, "osirion-fluent-link", "osirion-fluent-stretched")]
-    [InlineData(CssFramework.MudBlazor, true, "mud-link", "mud-stretched")]
-    [InlineData(CssFramework.Radzen, true, "rz-link", "rz-stretched")]
-    public void ReadMoreLink_Framework_AddsFrameworkLinkAndStretchedClasses(
-        CssFramework framework, bool stretched, string? linkClasses, string? stretchedClass)
+    [InlineData(CssFramework.Bootstrap, false, new[] { "icon-link", "icon-link-hover" })]
+    [InlineData(CssFramework.Bootstrap, true, new[] { "stretched-link" })]
+    [InlineData(CssFramework.FluentUI, true, new[] { "osirion-fluent-link", "osirion-fluent-stretched" })]
+    [InlineData(CssFramework.MudBlazor, true, new[] { "mud-link", "mud-stretched" })]
+    [InlineData(CssFramework.Radzen, true, new[] { "rz-link", "rz-stretched" })]
+    public void ReadMoreLink_Framework_AddsExactlyTheFrameworkLinkAndStretchedClasses(
+        CssFramework framework, bool stretched, string[] expectedFrameworkClasses)
     {
         Services.AddSingleton(Options.Create(new ThemingOptions { Framework = framework }));
 
@@ -175,20 +176,7 @@ public class OsirionReadMoreLinkTests : OsirionComponentTestBase
             .Add(p => p.Href, "/post")
             .Add(p => p.Stretched, stretched));
 
-        var classes = cut.Find("a").ClassList;
-        foreach (var linkClass in (linkClasses ?? string.Empty).Split(' ', StringSplitOptions.RemoveEmptyEntries))
-        {
-            classes.ShouldContain(linkClass);
-        }
-
-        if (stretchedClass is not null)
-        {
-            classes.ShouldContain(stretchedClass);
-        }
-
-        if (framework == CssFramework.Bootstrap && stretched)
-        {
-            classes.ShouldNotContain("icon-link");
-        }
+        cut.Find("a").ClassList.Where(c => !c.StartsWith("osirion-read-more", StringComparison.Ordinal))
+            .ShouldBe(expectedFrameworkClasses, ignoreOrder: true);
     }
 }

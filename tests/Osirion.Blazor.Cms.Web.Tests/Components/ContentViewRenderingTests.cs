@@ -81,6 +81,7 @@ public class ContentViewRenderingTests : CmsWebComponentTestBase
     [Fact]
     public void ContentView_FullItem_RendersAuthorImageTagsAndCategoriesWithDefaultLinks()
     {
+        using var culture = new CultureScope("en-US");
         var item = Item("post", tags: ["C#"], categories: ["News"]);
         item.SetAuthor("Ada");
         item.SetFeaturedImage("/img/post.png");
@@ -127,6 +128,7 @@ public class ContentViewRenderingTests : CmsWebComponentTestBase
         cut.Find("a.osirion-content-next").GetAttribute("href").ShouldBe("/read/newer");
     }
 
+    // Known defect, pinned as current behavior: the default content links keep the ".md" extension of the source file, while ContentPage strips it, so the two disagree on the item URL. Update this expectation when it is fixed.
     [Fact]
     public void ContentView_NavigationLinks_LoadsNeighboursFromTheSameDirectoryNewestFirst()
     {
@@ -179,6 +181,7 @@ public class ContentViewRenderingTests : CmsWebComponentTestBase
         cut.FindAll(".osirion-content-navigation").ShouldBeEmpty();
     }
 
+    // Known defect, pinned as current behavior: the default content links keep the ".md" extension of the source file, while ContentPage strips it, so the two disagree on the item URL. Update this expectation when it is fixed.
     [Fact]
     public void ContentView_PathChanges_ReplacesTheNeighboursItLoaded()
     {

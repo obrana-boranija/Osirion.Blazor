@@ -58,14 +58,19 @@ public class GitHubAdminServiceDelegationTests
     }
 
     [Fact]
-    public void SetProvider_WithEmptyName_SwitchesToTheDefaultClient()
+    public async Task SetProvider_WithEmptyName_SwitchesBackToTheDefaultClient()
     {
+        var docsClient = Substitute.For<IGitHubApiClient>();
+        _factory.GetClient("Docs").Returns(docsClient);
         var service = CreateService();
+        service.SetProvider("Docs");
 
         service.SetProvider(" ");
+        await service.GetRepositoryContentsAsync("content");
 
         service.CurrentProvider.ShouldBe("default");
-        _factory.Received(2).GetDefaultClient();
+        await _client.Received(1).GetRepositoryContentsAsync("content", Arg.Any<CancellationToken>());
+        await docsClient.DidNotReceive().GetRepositoryContentsAsync(Arg.Any<string>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]

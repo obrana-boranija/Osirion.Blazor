@@ -7,7 +7,7 @@
         <h6 class="text-uppercase fw-semibold text-muted mb-3 px-3 fs-6">Dashboard</h6>
         <ul class="nav flex-column">
             <li class="nav-item">
-                <a href="/admin" class="nav-link d-flex align-items-center @GetActiveClass("/osirion")">
+                <a href="@OverviewRoute" class="nav-link d-flex align-items-center @GetActiveClass(OverviewRoute, DashboardRoute)">
                     <i class="bi bi-grid-1x2-fill me-2"></i>
                     <span>Overview</span>
                 </a>
@@ -19,39 +19,15 @@
         <h6 class="text-uppercase fw-semibold text-muted mb-3 px-3 fs-6">Content Management</h6>
         <ul class="nav flex-column">
             <li class="nav-item">
-                <a href="/admin/content" class="nav-link d-flex align-items-center @GetActiveClass("/osirion/content")">
+                <a href="@ContentRoute" class="nav-link d-flex align-items-center @GetActiveClass(ContentRoute)">
                     <i class="bi bi-file-earmark-text me-2"></i>
                     <span>Content Browser</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a href="/admin/content/edit" class="nav-link d-flex align-items-center @GetActiveClass("/osirion/content/edit")">
+                <a href="@EditContentRoute" class="nav-link d-flex align-items-center @GetActiveClass(EditContentRoute)">
                     <i class="bi bi-pencil-square me-2"></i>
                     <span>New Content</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="/admin/media" class="nav-link d-flex align-items-center @GetActiveClass("/osirion/media")">
-                    <i class="bi bi-images me-2"></i>
-                    <span>Media Library</span>
-                </a>
-            </li>
-        </ul>
-    </div>
-
-    <div class="mb-4">
-        <h6 class="text-uppercase fw-semibold text-muted mb-3 px-3 fs-6">Repository</h6>
-        <ul class="nav flex-column">
-            <li class="nav-item">
-                <a href="/admin/pull-requests" class="nav-link d-flex align-items-center @GetActiveClass("/osirion/pull-requests")">
-                    <i class="bi bi-git me-2"></i>
-                    <span>Pull Requests</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="/admin/branches" class="nav-link d-flex align-items-center @GetActiveClass("/osirion/branches")">
-                    <i class="bi bi-diagram-3 me-2"></i>
-                    <span>Branches</span>
                 </a>
             </li>
         </ul>
@@ -61,15 +37,9 @@
         <h6 class="text-uppercase fw-semibold text-muted mb-3 px-3 fs-6">Settings</h6>
         <ul class="nav flex-column">
             <li class="nav-item">
-                <a href="/admin/settings" class="nav-link d-flex align-items-center @GetActiveClass("/osirion/settings")">
+                <a href="@SettingsRoute" class="nav-link d-flex align-items-center @GetActiveClass(SettingsRoute)">
                     <i class="bi bi-gear me-2"></i>
                     <span>General Settings</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="/admin/users" class="nav-link d-flex align-items-center @GetActiveClass("/osirion/users")">
-                    <i class="bi bi-people me-2"></i>
-                    <span>User Management</span>
                 </a>
             </li>
         </ul>
@@ -82,12 +52,6 @@
                 <a href="https://github.com/obrana-boranija/Osirion.Blazor" target="_blank" class="nav-link d-flex align-items-center">
                     <i class="bi bi-github me-2"></i>
                     <span>Documentation</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="/admin/logs" class="nav-link d-flex align-items-center @GetActiveClass("/osirion/logs")">
-                    <i class="bi bi-list-check me-2"></i>
-                    <span>Activity Logs</span>
                 </a>
             </li>
         </ul>

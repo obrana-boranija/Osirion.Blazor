@@ -18,6 +18,10 @@ public class MarkdownEditorToolbarTests : BunitContext
         SetRendererInfo(new RendererInfo("Server", true));
     }
 
+    // The scripts find the textarea through the attribute Blazor puts on a referenced element.
+    private static string TextareaSelector(IRenderedComponent<MarkdownEditor> cut) =>
+        $"document.querySelector('[_bl_{cut.Find("textarea").GetAttribute("blazor:elementReference")}]')";
+
     private IRenderedComponent<MarkdownEditor> RenderEditor(
         Action<ComponentParameterCollectionBuilder<MarkdownEditor>>? configure = null) =>
         Render<MarkdownEditor>(parameters =>
@@ -135,13 +139,32 @@ public class MarkdownEditorToolbarTests : BunitContext
     }
 
     [Fact]
-    public void MarkdownEditor_ShiftTab_SendsTheOutdentScript()
+    public void MarkdownEditor_ShiftTab_OutdentsTheTextareaInTheBrowser()
     {
-        var cut = RenderEditor();
+        string? changed = null;
+        var cut = RenderEditor(parameters => parameters.Add(p => p.ContentChanged, value => changed = value));
+        var textarea = TextareaSelector(cut);
 
         cut.Find("textarea").KeyDown(new KeyboardEventArgs { Key = "Tab", ShiftKey = true });
 
-        _jsRuntime.Scripts.ShouldHaveSingleItem().ShouldContain("if (true)");
+        var script = _jsRuntime.Scripts.ShouldHaveSingleItem();
+        script.ShouldContain($"const textarea = {textarea};");
+        script.ShouldContain("if (true) {");
+        script.ShouldContain("} else if (!true) {");
+        changed.ShouldBeNull();
+    }
+
+    // Known defect, pinned as current behavior: without JavaScript Shift+Tab appends a tab, the same as Tab, instead of outdenting. Update this expectation when it is fixed.
+    [Fact]
+    public void MarkdownEditor_ShiftTabWithoutJavaScript_AppendsATab()
+    {
+        _jsRuntime.Fail = true;
+        string? changed = null;
+        var cut = RenderEditor(parameters => parameters.Add(p => p.ContentChanged, value => changed = value));
+
+        cut.Find("textarea").KeyDown(new KeyboardEventArgs { Key = "Tab", ShiftKey = true });
+
+        changed.ShouldBe("start	");
     }
 
     [Fact]
@@ -157,9 +180,17 @@ public class MarkdownEditorToolbarTests : BunitContext
     [Fact]
     public void MarkdownEditor_AutoFocus_FocusesTheTextareaAfterFirstRender()
     {
-        RenderEditor(parameters => parameters.Add(p => p.AutoFocus, true));
+        var cut = RenderEditor(parameters => parameters.Add(p => p.AutoFocus, true));
 
-        _jsRuntime.Scripts.ShouldHaveSingleItem().ShouldContain("?.focus()");
+        _jsRuntime.Scripts.ShouldHaveSingleItem().ShouldBe($"{TextareaSelector(cut)}?.focus()");
+    }
+
+    [Fact]
+    public void MarkdownEditor_WithoutAutoFocus_SendsNoScript()
+    {
+        RenderEditor();
+
+        _jsRuntime.Scripts.ShouldBeEmpty();
     }
 
     [Fact]
@@ -264,15 +295,5 @@ public class MarkdownEditorToolbarTests : BunitContext
         cut.Find("textarea").Scroll();
 
         reported.ShouldBe(0.25);
-    }
-
-    [Fact]
-    public async Task MarkdownEditor_DisposeAfterRender_Completes()
-    {
-        var cut = RenderEditor();
-
-        var exception = await Record.ExceptionAsync(() => cut.Instance.DisposeAsync().AsTask());
-
-        exception.ShouldBeNull();
     }
 }

@@ -4,6 +4,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Admin.Builders;
+using Osirion.Blazor.Cms.Admin.DependencyInjection;
+using Osirion.Blazor.Cms.Admin.Infrastructure.Adapters;
 using Osirion.Blazor.Cms.Admin.Tests.TestDoubles;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Options.Configuration;
@@ -64,8 +66,9 @@ public class OsirionCmsAdminBuilderTests
         options.GitHub.Owner.ShouldBe("octo");
     }
 
+    // Known defect, pinned as current behavior: UseFileSystemProvider without a configure action registers the file system services but leaves GitHub as the default provider. Update this expectation when it is fixed.
     [Fact]
-    public void UseFileSystemProvider_WithoutConfigure_KeepsTheDefaultProvider()
+    public void UseFileSystemProvider_WithoutConfigure_DoesNotSelectTheFileSystemProvider()
     {
         var result = _builder.UseFileSystemProvider();
 
@@ -81,6 +84,21 @@ public class OsirionCmsAdminBuilderTests
         var options = ResolveOptions();
         options.DefaultContentProvider.ShouldBe("FileSystem");
         options.FileSystem.RootPath.ShouldBe("/content");
+    }
+
+    // Known defect, pinned as current behavior: the adapter factory always needs the GitHub admin service and has no file system adapter, so with only the file system provider the content repository adapter cannot be resolved. Update this expectation when it is fixed.
+    [Fact]
+    public void UseFileSystemProvider_ResolvingTheRepositoryAdapter_Throws()
+    {
+        var services = new ServiceCollection();
+        services.AddLogging();
+        services.AddOsirionCmsAdmin(builder => builder.UseFileSystemProvider(options => options.RootPath = "/content"));
+        using var provider = services.BuildServiceProvider();
+        using var scope = provider.CreateScope();
+
+        var exception = Should.Throw<InvalidOperationException>(() => scope.ServiceProvider.GetRequiredService<IContentRepositoryAdapter>());
+
+        exception.Message.ShouldContain(nameof(IGitHubAdminService));
     }
 
     [Fact]

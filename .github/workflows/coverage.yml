@@ -87,14 +87,15 @@ jobs:
         fail_ci_if_error: false
         verbose: true
 
-    # Report only for now: lists methods over CRAP 30 in the job summary without failing the build.
-    - name: CRAP analysis
+    # Fails the build when a method exceeds CRAP 30 or a package has more offenders than the last snapshot.
+    - name: CRAP gate
       shell: pwsh
       run: |
         ./tools/run-crap.ps1 -CoverageDirectory ./coverage -SkipTests
-        ./tools/verify-crap.ps1 -MaxCrap 30 -ReportOnly
+        ./tools/verify-crap.ps1 -MaxCrap 30
 
     - name: Upload CRAP reports
+      if: always()
       uses: actions/upload-artifact@v4
       with:
         name: crap-reports
@@ -102,7 +103,8 @@ jobs:
         retention-days: 30
 
     - name: Add coverage PR comment
-      if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+      # Posted even when the CRAP gate fails, so the coverage numbers are visible on a red pull request.
+      if: ${{ !cancelled() && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && hashFiles('coveragereport/SummaryGithub.md') != '' }}
       uses: marocchino/sticky-pull-request-comment@v2
       with:
         header: test-coverage

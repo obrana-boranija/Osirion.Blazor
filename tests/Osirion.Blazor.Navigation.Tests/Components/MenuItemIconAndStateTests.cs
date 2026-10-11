@@ -118,8 +118,8 @@ public class MenuItemIconAndStateTests : BunitContext
     {
         var cut = Render<MenuItem>(p => p.Add(c => c.Text, "Item").Add(c => c.Href, "/item"));
 
-        cut.Find(".osirion-menu-item-wrapper").GetAttribute("class").ShouldBe("osirion-menu-item-wrapper   ");
-        cut.Find("a").GetAttribute("class").ShouldBe("osirion-menu-item   ");
+        cut.Find(".osirion-menu-item-wrapper").ClassList.ShouldBe(["osirion-menu-item-wrapper"], ignoreOrder: true);
+        cut.Find("a").ClassList.ShouldBe(["osirion-menu-item"], ignoreOrder: true);
         cut.Find("a").HasAttribute("role").ShouldBeFalse();
     }
 
@@ -132,10 +132,10 @@ public class MenuItemIconAndStateTests : BunitContext
             .Add(c => c.Disabled, true)
             .Add(c => c.Class, "extra"));
 
-        cut.Find(".osirion-menu-item-wrapper").GetAttribute("class")
-            .ShouldBe("osirion-menu-item-wrapper   osirion-menu-item-wrapper-active");
-        cut.Find("a").GetAttribute("class")
-            .ShouldBe("osirion-menu-item osirion-menu-item-active osirion-menu-item-disabled extra");
+        cut.Find(".osirion-menu-item-wrapper").ClassList
+            .ShouldBe(["osirion-menu-item-wrapper", "osirion-menu-item-wrapper-active"], ignoreOrder: true);
+        cut.Find("a").ClassList
+            .ShouldBe(["osirion-menu-item", "osirion-menu-item-active", "osirion-menu-item-disabled", "extra"], ignoreOrder: true);
         cut.Find("a").GetAttribute("aria-disabled").ShouldBe("true");
     }
 
@@ -147,8 +147,8 @@ public class MenuItemIconAndStateTests : BunitContext
             .Add(c => c.HasSubmenu, true)
             .Add(c => c.SubmenuVariant, SubmenuVariant.Mega));
 
-        cut.Find(".osirion-menu-item-wrapper").GetAttribute("class")
-            .ShouldBe("osirion-menu-item-wrapper osirion-menu-item-has-submenu osirion-menu-item-has-mega ");
+        cut.Find(".osirion-menu-item-wrapper").ClassList
+            .ShouldBe(["osirion-menu-item-wrapper", "osirion-menu-item-has-submenu", "osirion-menu-item-has-mega"], ignoreOrder: true);
     }
 
     [Fact]

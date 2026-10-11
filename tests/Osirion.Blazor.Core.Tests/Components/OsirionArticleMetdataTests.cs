@@ -37,13 +37,21 @@ public class OsirionArticleMetdataTests : OsirionComponentTestBase
     [Fact]
     public void ArticleMetadata_DateOnly_UsesShortDatePatternOfCurrentCulture()
     {
-        var cut = RenderStatic<OsirionArticleMetdata>(parameters => parameters
-            .Add(p => p.PublishDate, PublishDate));
+        var originalCulture = CultureInfo.CurrentCulture;
+        CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("de-DE");
+        try
+        {
+            var cut = RenderStatic<OsirionArticleMetdata>(parameters => parameters
+                .Add(p => p.PublishDate, PublishDate));
 
-        cut.Find(".osirion-article-metadata-date").TextContent.Trim()
-            .ShouldBe(PublishDate.ToString("d", CultureInfo.CurrentCulture));
-        cut.FindAll(".osirion-article-metadata-author").ShouldBeEmpty();
-        cut.FindAll(".osirion-article-metadata-read-time").ShouldBeEmpty();
+            cut.Find(".osirion-article-metadata-date").TextContent.Trim().ShouldBe("14.03.2026");
+            cut.FindAll(".osirion-article-metadata-author").ShouldBeEmpty();
+            cut.FindAll(".osirion-article-metadata-read-time").ShouldBeEmpty();
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = originalCulture;
+        }
     }
 
     [Theory]

@@ -1,3 +1,6 @@
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+using Osirion.Blazor.Cms.Admin.Common.Constants;
 using Osirion.Blazor.Cms.Admin.Core.Events;
 using Osirion.Blazor.Cms.Admin.Core.State;
 using Osirion.Blazor.Cms.Admin.Features.ContentBrowser.Services;
@@ -12,6 +15,7 @@ public class ContentBrowserViewModel
     private readonly ContentBrowserService _contentService;
     private readonly CmsState _appState;
     private readonly CmsEventMediator _eventMediator;
+    private readonly ILogger<ContentBrowserViewModel> _logger;
 
     /// <summary>Gets the contents in the current directory.</summary>
     public List<GitHubItem> Contents { get; private set; } = new();
@@ -31,11 +35,13 @@ public class ContentBrowserViewModel
     public ContentBrowserViewModel(
         ContentBrowserService contentService,
         CmsState appState,
-        CmsEventMediator eventMediator)
+        CmsEventMediator eventMediator,
+        ILogger<ContentBrowserViewModel>? logger = null)
     {
         _contentService = contentService;
         _appState = appState;
         _eventMediator = eventMediator;
+        _logger = logger ?? NullLogger<ContentBrowserViewModel>.Instance;
 
         // Subscribe to relevant events
         _appState.StateChanged += OnAppStateChanged;
@@ -58,7 +64,8 @@ public class ContentBrowserViewModel
         }
         catch (Exception ex)
         {
-            ErrorMessage = $"Failed to load contents: {ex.Message}";
+            _logger.LogError(ex, "Failed to load contents for path: {Path}", CurrentPath);
+            ErrorMessage = UserMessages.LoadFailed;
             _appState.SetErrorMessage(ErrorMessage);
         }
         finally
@@ -115,7 +122,8 @@ public class ContentBrowserViewModel
         }
         catch (Exception ex)
         {
-            ErrorMessage = $"Failed to delete file: {ex.Message}";
+            _logger.LogError(ex, "Failed to delete file: {Path}", item.Path);
+            ErrorMessage = UserMessages.DeleteFailed;
             _appState.SetErrorMessage(ErrorMessage);
         }
         finally

@@ -147,7 +147,6 @@ internal static class ContentSchemas
             ["description"] = content.Description,
             ["image"] = context.NormalizeImageUrl(content.FeaturedImageUrl),
             ["url"] = context.CurrentUrl,
-            ["telephone"] = content.Metadata?.SeoProperties?.Type,
             ["address"] = EmptyPostalAddress(),
             ["geo"] = new Dictionary<string, object?>
             {

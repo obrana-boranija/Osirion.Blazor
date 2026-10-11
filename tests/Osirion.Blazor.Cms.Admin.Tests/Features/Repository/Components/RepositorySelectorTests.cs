@@ -169,7 +169,7 @@ public class RepositorySelectorTests : AdminComponentTestContext
     }
 
     [Fact]
-    public void RepositorySelector_WhenSelectedRepositoryChanges_ShouldRerender()
+    public async Task RepositorySelector_WhenSelectedRepositoryChanges_ShouldRerender()
     {
         // Arrange
         var repository = CreateRepositories()[0];
@@ -178,7 +178,7 @@ public class RepositorySelectorTests : AdminComponentTestContext
         cut.FindAll(".card-footer").ShouldBeEmpty();
 
         // Act
-        cut.InvokeAsync(() => _state.SelectRepository(repository));
+        await cut.InvokeAsync(() => _state.SelectRepository(repository));
 
         // Assert
         cut.Find(".card-footer").TextContent.ShouldContain("repo1");

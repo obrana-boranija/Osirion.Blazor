@@ -2,6 +2,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
+using Osirion.Blazor.Cms.Admin.Common.Constants;
 using Osirion.Blazor.Cms.Admin.Core.Events;
 using Osirion.Blazor.Cms.Admin.Services;
 using Osirion.Blazor.Cms.Admin.Services.Events;
@@ -84,7 +85,8 @@ public class AdminContentServiceTests
         await Should.ThrowAsync<InvalidOperationException>(() => _service.GetContentByIdAsync("1"));
 
         var error = _errors.ShouldHaveSingleItem();
-        error.Message.ShouldBe("Failed to load content: offline");
+        error.Message.ShouldBe(UserMessages.LoadFailed);
+        error.Message.ShouldNotContain("offline");
         error.Exception.ShouldBeSameAs(failure);
     }
 
@@ -123,7 +125,9 @@ public class AdminContentServiceTests
 
         await Should.ThrowAsync<InvalidOperationException>(() => _service.SearchContentAsync(new ContentQuery()));
 
-        _errors.ShouldHaveSingleItem().Message.ShouldBe("Failed to search content: offline");
+        _errors.ShouldHaveSingleItem().Message.ShouldBe(UserMessages.SearchFailed);
+        _errors.Single().Message.ShouldNotContain("offline");
+        _logger.Entries.ShouldContain(entry => entry.Level == LogLevel.Error && entry.Exception != null);
     }
 
     [Fact]
@@ -177,7 +181,8 @@ public class AdminContentServiceTests
 
         await Should.ThrowAsync<InvalidOperationException>(() => _service.CreateContentAsync("Title", "Body", "post.md"));
 
-        _errors.ShouldHaveSingleItem().Message.ShouldBe("Failed to create content: conflict");
+        _errors.ShouldHaveSingleItem().Message.ShouldBe(UserMessages.SaveFailed);
+        _errors.Single().Message.ShouldNotContain("conflict");
         _saved.ShouldBeEmpty();
     }
 
@@ -225,7 +230,8 @@ public class AdminContentServiceTests
 
         await Should.ThrowAsync<InvalidOperationException>(() => _service.UpdateContentAsync("1", "Title", "Body", "post.md"));
 
-        _errors.ShouldHaveSingleItem().Message.ShouldBe("Failed to update content: conflict");
+        _errors.ShouldHaveSingleItem().Message.ShouldBe(UserMessages.SaveFailed);
+        _errors.Single().Message.ShouldNotContain("conflict");
     }
 
     [Fact]
@@ -267,6 +273,7 @@ public class AdminContentServiceTests
 
         await Should.ThrowAsync<InvalidOperationException>(() => _service.DeleteContentAsync("1"));
 
-        _errors.ShouldHaveSingleItem().Message.ShouldBe("Failed to delete content: denied");
+        _errors.ShouldHaveSingleItem().Message.ShouldBe(UserMessages.DeleteFailed);
+        _errors.Single().Message.ShouldNotContain("denied");
     }
 }

@@ -94,9 +94,11 @@ public class SectionRenderingTests : CmsWebComponentTestBase
         cut.WaitForAssertion(() => cut.Find(".osirion-featured-post-title-link").TextContent.ShouldBe("Loaded"));
     }
 
+    // Known defect, pinned as current behavior: the default content links keep the ".md" extension of the source file, while ContentPage strips it, so the two disagree on the item URL. Update this expectation when it is fixed.
     [Fact]
-    public void FeaturedPostsSection_SuppliedPosts_RenderEveryPartWithDefaultLinks()
+    public void FeaturedPostsSection_SuppliedPosts_RenderEveryPart()
     {
+        using var culture = new CultureScope("en-US");
         var post = Post("With image", categories: ["News", "Other"]);
         post.SetFeaturedImage("/img/a.png");
         post.SetAuthor("Ada");
@@ -255,6 +257,7 @@ public class SectionRenderingTests : CmsWebComponentTestBase
         var cut = RenderStatic<OsirionContentListSection>(_ => { });
 
         _logs.Entries.ShouldContain(e => e.Level == LogLevel.Error && e.Exception is InvalidOperationException);
+        cut.FindAll(".osirion-content-not-found").ShouldHaveSingleItem();
         cut.FindAll(".osirion-featured-post").ShouldBeEmpty();
         cut.Markup.ShouldNotContain("down");
     }
@@ -267,7 +270,7 @@ public class SectionRenderingTests : CmsWebComponentTestBase
 
         var cut = RenderStatic<OsirionContentListSection>(p => p.Add(c => c.LoadingText, "Loading section"));
 
-        cut.Markup.ShouldContain("Loading section");
+        cut.Find(".osirion-loading p").TextContent.ShouldBe("Loading section");
 
         pending.SetResult([Post("Loaded")]);
 

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using NSubstitute;
@@ -10,6 +11,7 @@ using Osirion.Blazor.Cms.Domain.Interfaces.Directory;
 using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Domain.ValueObjects;
 using Osirion.Blazor.Cms.Infrastructure.FileSystem;
+using Osirion.Blazor.Cms.Infrastructure.Tests.TestDoubles;
 using Shouldly;
 using System.IO.Abstractions.TestingHelpers;
 
@@ -55,20 +57,24 @@ public sealed class FileSystemContentRepositoryLoadingTests : IDisposable
         return options;
     }
 
-    private FileSystemContentRepository Repository(FileSystemOptions options, FileSystemDirectoryRepository? directoryRepository = null)
+    private FileSystemContentRepository Repository(
+        FileSystemOptions options,
+        FileSystemDirectoryRepository? directoryRepository = null,
+        ILogger<FileSystemContentRepository>? logger = null)
     {
+        logger ??= NullLogger<FileSystemContentRepository>.Instance;
         var repository = directoryRepository is null
             ? new FileSystemContentRepository(
                 _markdownProcessor,
                 Substitute.For<IContentQueryFilter>(),
                 Options.Create(options),
-                NullLogger<FileSystemContentRepository>.Instance,
+                logger,
                 _fileSystem)
             : new FileSystemContentRepository(
                 _markdownProcessor,
                 Substitute.For<IContentQueryFilter>(),
                 Options.Create(options),
-                NullLogger<FileSystemContentRepository>.Instance,
+                logger,
                 _fileSystem,
                 directoryRepository);
         _disposables.Add(repository);
@@ -287,12 +293,17 @@ public sealed class FileSystemContentRepositoryLoadingTests : IDisposable
         _fileSystem.Directory.Exists(ContentRoot).ShouldBeFalse();
     }
 
+    // The folder is created only in the in-memory file system, so the real watcher cannot attach to it.
     [Fact]
-    public async Task Constructor_WatchEnabledAndBasePathMissingWithCreation_CreatesItAndStillLoads()
+    public async Task Constructor_WatchEnabledAndBasePathMissingWithCreation_CreatesItLogsTheWatcherFailureAndStillLoads()
     {
-        var repository = Repository(CreateOptions(options => options.WatchForChanges = true));
+        var logger = new RecordingLogger<FileSystemContentRepository>();
+
+        var repository = Repository(CreateOptions(options => options.WatchForChanges = true), logger: logger);
 
         _fileSystem.Directory.Exists(ContentRoot).ShouldBeTrue();
+        logger.Contains(LogLevel.Error, "Failed to set up file watcher").ShouldBeTrue();
+        logger.Contains(LogLevel.Information, "File watcher set up").ShouldBeFalse();
         (await repository.GetAllAsync()).ShouldBeEmpty();
         repository.LastRefreshSucceeded.ShouldBeTrue();
     }
@@ -305,12 +316,17 @@ public sealed class FileSystemContentRepositoryLoadingTests : IDisposable
         try
         {
             _fileSystem.AddFile(Path.Combine(sandbox, "post.md"), new MockFileData("# Post"));
-            var repository = Repository(CreateOptions(options =>
-            {
-                options.BasePath = sandbox;
-                options.WatchForChanges = true;
-            }));
+            var logger = new RecordingLogger<FileSystemContentRepository>();
+            var repository = Repository(
+                CreateOptions(options =>
+                {
+                    options.BasePath = sandbox;
+                    options.WatchForChanges = true;
+                }),
+                logger: logger);
 
+            logger.Contains(LogLevel.Information, "File watcher set up for path: " + sandbox).ShouldBeTrue();
+            logger.Contains(LogLevel.Error, "Failed to set up file watcher").ShouldBeFalse();
             (await repository.GetAllAsync()).ShouldHaveSingleItem().Path.ShouldBe("post.md");
             repository.Dispose();
         }

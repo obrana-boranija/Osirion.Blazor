@@ -134,21 +134,21 @@ public class ContentEditorStateTests : AdminComponentTestContext
     }
 
     [Fact]
-    public void ContentEditor_ContentChanged_UpdatesPostAndShowsUnsavedMarker()
+    public async Task ContentEditor_ContentChanged_UpdatesPostAndShowsUnsavedMarker()
     {
         _viewModel.InitializeFromState(CreatePost("blog/a.md"), false);
         var cut = Render<ContentEditorComponent>();
         cut.Markup.ShouldNotContain("Changes not saved");
         var contentChanged = cut.FindComponent<Stub<MarkdownEditorWithPreview>>().Instance.Parameters.Get(p => p.ContentChanged);
 
-        cut.InvokeAsync(() => contentChanged.InvokeAsync("Edited"));
+        await cut.InvokeAsync(() => contentChanged.InvokeAsync("Edited"));
 
         _viewModel.EditingPost!.Content.ShouldBe("Edited");
         cut.Markup.ShouldContain("Changes not saved");
     }
 
     [Fact]
-    public void ContentEditor_MetadataChanged_UpdatesPostAndShowsUnsavedMarker()
+    public async Task ContentEditor_MetadataChanged_UpdatesPostAndShowsUnsavedMarker()
     {
         _viewModel.InitializeFromState(CreatePost("blog/a.md"), false);
         var cut = Render<ContentEditorComponent>();
@@ -156,14 +156,14 @@ public class ContentEditorStateTests : AdminComponentTestContext
         var metadataChanged = cut.FindComponent<Stub<MetadataEditor>>().Instance.Parameters.Get(p => p.MetadataChanged);
         var metadata = FrontMatter.Create("Renamed");
 
-        cut.InvokeAsync(() => metadataChanged.InvokeAsync(metadata));
+        await cut.InvokeAsync(() => metadataChanged.InvokeAsync(metadata));
 
         _viewModel.EditingPost!.Metadata.ShouldBeSameAs(metadata);
         cut.Markup.ShouldContain("Changes not saved");
     }
 
     [Fact]
-    public void ContentEditor_SaveCompletes_RaisesSaveCompleteAndClearsMarker()
+    public async Task ContentEditor_SaveCompletes_RaisesSaveCompleteAndClearsMarker()
     {
         var post = CreatePost("blog/a.md");
         _editorService.SaveBlogPostAsync(post, Arg.Any<string>())
@@ -173,7 +173,7 @@ public class ContentEditorStateTests : AdminComponentTestContext
         var cut = Render<ContentEditorComponent>(parameters => parameters
             .Add(p => p.OnSaveComplete, (ContentItem item) => saved = item));
         var contentChanged = cut.FindComponent<Stub<MarkdownEditorWithPreview>>().Instance.Parameters.Get(p => p.ContentChanged);
-        cut.InvokeAsync(() => contentChanged.InvokeAsync("Edited"));
+        await cut.InvokeAsync(() => contentChanged.InvokeAsync("Edited"));
 
         cut.Find("button.btn-primary").Click();
 

@@ -226,7 +226,9 @@ dotnet tool restore                    # installs the pinned crap4dotnet
 `run-crap.ps1 -SkipTests` reuses coverage from an earlier run, `-Project Osirion.Blazor.Core` limits the
 analysis to one project, and `-RecordSnapshot` appends the result to `docs/crap/.progress-history.json` and
 regenerates `docs/crap/PROGRESS.md`. Do not edit the files in `docs/crap` by hand. The CI coverage workflow
-runs the same scripts and reports the result in the job summary.
+runs the same scripts and fails when a method exceeds CRAP 30; Codecov fails a pull request whose project or patch
+coverage is below 90%. Record a snapshot (`-RecordSnapshot`) in the pull request that lowers the number of methods
+over the threshold, so the gate's regression check compares against it.
 
 ### Writing Tests
 

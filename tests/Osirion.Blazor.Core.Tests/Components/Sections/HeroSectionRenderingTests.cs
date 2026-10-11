@@ -81,7 +81,26 @@ public class HeroSectionRenderingTests : OsirionComponentTestBase
 
         var buttons = cut.FindAll(".osirion-hero-buttons a");
         buttons.Select(a => (a.TextContent.Trim(), a.GetAttribute("href"))).ShouldBe([("Start", "/start"), ("Docs", "/docs")]);
-        buttons.ShouldAllBe(a => a.ClassList.Contains("osirion-hero-button"));
+        buttons[0].ClassList.ShouldBe(
+            ["osirion-button", "osirion-button-primary", "osirion-button-lg", "osirion-hero-button", "osirion-hero-button-primary"],
+            ignoreOrder: true);
+        buttons[1].ClassList.ShouldContain("osirion-button-outlined");
+        buttons[1].ClassList.ShouldContain("osirion-button-outlined-primary");
+        buttons[1].ClassList.ShouldNotContain("osirion-button-primary");
+    }
+
+    // Known defect, pinned as current behavior: the secondary button carries osirion-hero-button-primary, so hero styles meant for the primary button also apply to it. Update this expectation when it is fixed.
+    [Fact]
+    public void HeroSection_SecondaryButton_CarriesThePrimaryHeroClass()
+    {
+        var cut = RenderStatic<HeroSection>(parameters => parameters
+            .Add(p => p.ShowPrimaryButton, false)
+            .Add(p => p.SecondaryButtonText, "Docs")
+            .Add(p => p.SecondaryButtonUrl, "/docs"));
+
+        cut.Find(".osirion-hero-buttons a").ClassList.ShouldBe(
+            ["osirion-button", "osirion-button-outlined", "osirion-button-outlined-primary", "osirion-button-lg", "osirion-hero-button", "osirion-hero-button-primary"],
+            ignoreOrder: true);
     }
 
     [Fact]

@@ -121,16 +121,22 @@ public class LoginViewModelEdgeCaseTests
     }
 
     [Fact]
-    public async Task LoginWithGitHubAsync_TokenRejected_ShowsTheFailureMessage()
+    public async Task LoginWithGitHubAsync_TokenRejected_ShowsTheFailureMessageAndKeepsTheTokenOut()
     {
         StartPendingLogin();
         _tokenProvider.ExchangeCodeForTokenAsync("code", "client-id", "client-secret", Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns("rejected-token");
+        _authService.SetAccessTokenAsync("rejected-token").Returns(false);
         var viewModel = CreateViewModel();
 
         await viewModel.LoginWithGitHubAsync("code", "state");
 
         viewModel.ErrorMessage.ShouldBe("Failed to authenticate with GitHub. Please try again.");
+        await _authService.Received(1).SetAccessTokenAsync("rejected-token");
+        await _tokenStore.DidNotReceiveWithAnyArgs().SaveTokenAsync(default!);
+        await _repositoryAdapter.DidNotReceiveWithAnyArgs().SetAccessTokenAsync(default!);
+        _navigationManager.Navigations.ShouldBeEmpty();
+        viewModel.IsLoggingIn.ShouldBeFalse();
     }
 
     [Fact]

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
+using Osirion.Blazor.Cms.Admin.Common.Constants;
 using Osirion.Blazor.Cms.Admin.Core.State;
 using Osirion.Blazor.Cms.Admin.Features.ContentBrowser.Services;
 using Osirion.Blazor.Cms.Admin.Features.ContentBrowser.ViewModels;
@@ -78,7 +79,8 @@ public class FileExplorerViewModelEdgeCaseTests
 
         await viewModel.OpenFileAsync(new GitHubItem { Name = "post.md", Type = "file", Path = "post.md" });
 
-        viewModel.ErrorMessage.ShouldBe("Failed to open file: navigation refused");
+        viewModel.ErrorMessage.ShouldBe(UserMessages.OpenFailed);
+        viewModel.ErrorMessage!.ShouldNotContain("navigation refused");
         _state.ErrorMessage.ShouldBe(viewModel.ErrorMessage);
         viewModel.IsLoading.ShouldBeFalse();
     }

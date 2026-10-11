@@ -194,14 +194,15 @@ public class ContentQueryFilter : IContentQueryFilter
             return items;
         }
 
-        var searchTerms = query.SearchQuery.ToLower().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        // Ordinal, not culture-sensitive lowering: under tr-TR "I".ToLower() is a dotless i and "GUIDE" missed "Guide".
+        var searchTerms = query.SearchQuery.Split(' ', StringSplitOptions.RemoveEmptyEntries);
         return items.Where(item =>
             searchTerms.Any(term =>
-                (item.Title != null && item.Title.ToLower().Contains(term)) ||
-                (item.Description != null && item.Description.ToLower().Contains(term)) ||
-                (item.Content != null && item.Content.ToLower().Contains(term)) ||
-                item.Categories.Any(c => c.ToLower().Contains(term)) ||
-                item.Tags.Any(t => t.ToLower().Contains(term))
+                (item.Title != null && item.Title.Contains(term, StringComparison.OrdinalIgnoreCase)) ||
+                (item.Description != null && item.Description.Contains(term, StringComparison.OrdinalIgnoreCase)) ||
+                (item.Content != null && item.Content.Contains(term, StringComparison.OrdinalIgnoreCase)) ||
+                item.Categories.Any(c => c.Contains(term, StringComparison.OrdinalIgnoreCase)) ||
+                item.Tags.Any(t => t.Contains(term, StringComparison.OrdinalIgnoreCase))
             )
         );
     }

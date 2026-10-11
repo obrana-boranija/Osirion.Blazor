@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using NSubstitute;
@@ -7,6 +8,7 @@ using Osirion.Blazor.Cms.Domain.Exceptions;
 using Osirion.Blazor.Cms.Domain.Interfaces.Directory;
 using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Infrastructure.FileSystem;
+using Osirion.Blazor.Cms.Infrastructure.Tests.TestDoubles;
 using Shouldly;
 using DirectoryNotFoundException = Osirion.Blazor.Cms.Domain.Exceptions.DirectoryNotFoundException;
 
@@ -55,7 +57,9 @@ public sealed class FileSystemDirectoryRepositoryScanningTests : IDisposable
         }
     }
 
-    private FileSystemDirectoryRepository Repository(Action<FileSystemOptions>? configure = null)
+    private FileSystemDirectoryRepository Repository(
+        Action<FileSystemOptions>? configure = null,
+        ILogger<FileSystemDirectoryRepository>? logger = null)
     {
         var options = new FileSystemOptions
         {
@@ -73,7 +77,7 @@ public sealed class FileSystemDirectoryRepositoryScanningTests : IDisposable
             _cacheManager,
             _metadataProcessor,
             _pathUtilities,
-            NullLogger<FileSystemDirectoryRepository>.Instance);
+            logger ?? NullLogger<FileSystemDirectoryRepository>.Instance);
         _repositories.Add(repository);
         return repository;
     }
@@ -296,36 +300,56 @@ public sealed class FileSystemDirectoryRepositoryScanningTests : IDisposable
     }
 
     [Fact]
-    public void Constructor_WatchEnabledAndBasePathMissingWithoutCreation_DoesNotCreateIt()
+    public void Constructor_WatchEnabledAndBasePathMissingWithoutCreation_DoesNotCreateItAndSkipsTheWatcher()
     {
-        Repository(options =>
-        {
-            options.WatchForChanges = true;
-            options.CreateDirectoriesIfNotExist = false;
-        });
+        var logger = new RecordingLogger<FileSystemDirectoryRepository>();
+
+        Repository(
+            options =>
+            {
+                options.WatchForChanges = true;
+                options.CreateDirectoriesIfNotExist = false;
+            },
+            logger);
 
         System.IO.Directory.Exists(_basePath).ShouldBeFalse();
+        logger.Contains(LogLevel.Warning, "Cannot set up file watcher").ShouldBeTrue();
+        logger.Contains(LogLevel.Information, "Directory watcher set up").ShouldBeFalse();
     }
 
     [Fact]
-    public void Constructor_WatchEnabledAndBasePathIsAFile_DoesNotThrow()
+    public void Constructor_WatchEnabledAndBasePathIsAFile_LogsTheWatcherFailureWithoutThrowing()
     {
         System.IO.Directory.CreateDirectory(_sandbox);
         File.WriteAllText(_basePath, "not a folder");
+        var logger = new RecordingLogger<FileSystemDirectoryRepository>();
 
-        var repository = Repository(options => options.WatchForChanges = true);
+        Repository(options => options.WatchForChanges = true, logger);
 
-        repository.ShouldNotBeNull();
+        logger.Contains(LogLevel.Error, "Failed to set up directory watcher").ShouldBeTrue();
+        logger.Contains(LogLevel.Information, "Directory watcher set up").ShouldBeFalse();
         File.Exists(_basePath).ShouldBeTrue();
     }
 
+    // A refresh started by the watcher (forceRefresh) does not run the loader, so a change event raised while the
+    // test creates folders cannot scan the sandbox while Dispose deletes it.
     [Fact]
     public async Task Constructor_WatchEnabledAndBasePathMissingWithCreation_CreatesItAndStillScans()
     {
-        var repository = Repository(options => options.WatchForChanges = true);
+        _cacheManager.GetCachedDirectoriesAsync(
+                Arg.Any<Func<CancellationToken, Task<Dictionary<string, DirectoryItem>>>>(),
+                Arg.Any<CancellationToken>(),
+                Arg.Any<bool>())
+            .Returns(call => call.ArgAt<bool>(2)
+                ? Task.FromResult(new Dictionary<string, DirectoryItem>())
+                : call.Arg<Func<CancellationToken, Task<Dictionary<string, DirectoryItem>>>>()(call.Arg<CancellationToken>()));
+        var logger = new RecordingLogger<FileSystemDirectoryRepository>();
+
+        var repository = Repository(options => options.WatchForChanges = true, logger);
         CreateOnDisk("docs");
 
         System.IO.Directory.Exists(_basePath).ShouldBeTrue();
+        logger.Contains(LogLevel.Information, "Directory watcher set up for path: " + _basePath).ShouldBeTrue();
         (await repository.GetAllAsync()).ShouldHaveSingleItem().Path.ShouldBe("docs");
     }
 }

@@ -38,6 +38,7 @@ public class NavigationComponentRenderingTests : CmsWebComponentTestBase
         ]));
     }
 
+    // Known defect, pinned as current behavior: the internal category links carry rel="nofollow", which tells crawlers not to follow the site's own pages. Update this expectation when it is fixed.
     [Fact]
     public void CategoriesList_Default_ListsCategoriesByCountWithCounts()
     {

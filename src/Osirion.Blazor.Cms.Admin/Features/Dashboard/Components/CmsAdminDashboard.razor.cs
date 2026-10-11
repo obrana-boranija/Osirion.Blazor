@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
+using Osirion.Blazor.Cms.Admin.Common.Constants;
 using Osirion.Blazor.Cms.Admin.Shared.Components;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Models;
@@ -79,7 +81,8 @@ public partial class CmsAdminDashboard : IDisposable
             }
             catch (Exception ex)
             {
-                DashboardState.SetErrorMessage($"Failed to refresh directory: {ex.Message}");
+                ComponentLogger.LogError(ex, "Failed to refresh directory: {Path}", DashboardState.CurrentPath);
+                DashboardState.SetErrorMessage(UserMessages.LoadFailed);
             }
         }
 

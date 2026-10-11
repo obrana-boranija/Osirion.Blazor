@@ -249,6 +249,14 @@ public class OsirionContentNotFoundTests : OsirionComponentTestBase
         component.Title.ShouldBe("Access Denied");
         component.Message.ShouldBe("You don't have permission to access this resource.");
         component.PrimaryButtonText.ShouldBe("Go Back");
+    }
+
+    // Known defect, pinned as current behavior: the Go Back link is a javascript: URL, which a strict Content Security Policy blocks. Update this expectation when it is fixed.
+    [Fact]
+    public void Create403_GoBackLinkIsAJavaScriptUrl()
+    {
+        var component = OsirionContentNotFound.Create403();
+
         component.PrimaryButtonUrl.ShouldBe("javascript:history.back()");
     }
 

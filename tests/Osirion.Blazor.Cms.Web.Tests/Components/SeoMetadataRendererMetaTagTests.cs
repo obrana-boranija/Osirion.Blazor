@@ -50,7 +50,6 @@ public class SeoMetadataRendererMetaTagTests : CmsWebComponentTestBase
         Property(cut, "og:type").ShouldBe("article");
         Property(cut, "og:url").ShouldBe(SeoTestContent.PageUrl);
         Property(cut, "og:site_name").ShouldBe("localhost");
-        Property(cut, "og:locale").ShouldBe("en");
         Property(cut, "og:image").ShouldBe("http://localhost/images/cover.png");
         Property(cut, "og:image:secure_url").ShouldBe("http://localhost/images/cover.png");
         Property(cut, "og:image:alt").ShouldBe("Guide to testing Blazor");
@@ -65,10 +64,27 @@ public class SeoMetadataRendererMetaTagTests : CmsWebComponentTestBase
         Meta(cut, "twitter:image:alt").ShouldBe("Guide to testing Blazor");
         Meta(cut, "publish_date").ShouldBe("2020-01-02");
         Meta(cut, "last_modified").ShouldBe("2020-02-03");
-        Meta(cut, "reading_time").ShouldBe("1 minutes");
         Meta(cut, "estimated_reading_time").ShouldBe("1");
         cut.Find("link[rel='preload']").GetAttribute("href").ShouldBe("http://localhost/images/cover.png");
         cut.Find("link[rel='dns-prefetch']").GetAttribute("href").ShouldBe(SeoTestContent.Origin);
+    }
+
+    // Known defect, pinned as current behavior: a one-minute read is written as "1 minutes". Update this expectation when it is fixed.
+    [Fact]
+    public void SeoMetadataRenderer_OneMinuteRead_WritesTheReadingTimeInThePlural()
+    {
+        var cut = RenderPage(p => p.Add(c => c.Content, SeoTestContent.Article()));
+
+        Meta(cut, "reading_time").ShouldBe("1 minutes");
+    }
+
+    // Known defect, pinned as current behavior: the locale "en" is written as og:locale "en" instead of the language_TERRITORY form Open Graph expects. Update this expectation when it is fixed.
+    [Fact]
+    public void SeoMetadataRenderer_LocaleWithoutRegion_WritesTheBareLanguageAsOgLocale()
+    {
+        var cut = RenderPage(p => p.Add(c => c.Content, SeoTestContent.Article()));
+
+        Property(cut, "og:locale").ShouldBe("en");
     }
 
     [Fact]
@@ -175,6 +191,7 @@ public class SeoMetadataRendererMetaTagTests : CmsWebComponentTestBase
         Meta(cut, "Google-Extended").ShouldBe("allow");
     }
 
+    // Known defect, pinned as current behavior: the question derived from "Guide to testing Blazor" is the ungrammatical "How to testing Blazor?". Update this expectation when it is fixed.
     [Fact]
     public void SeoMetadataRenderer_SeoOptions_FillTheParametersThatAreNotSet()
     {
@@ -382,14 +399,15 @@ public class SeoMetadataRendererMetaTagTests : CmsWebComponentTestBase
     }
 
     [Fact]
-    public void SeoMetadataRenderer_EmptySchemaTypes_DerivesOgTypeFromTheDefaultSchemaType()
+    public void SeoMetadataRenderer_EmptySchemaTypes_AgreesWithTheWebPageJsonLd()
     {
         var cut = RenderPage(p => p
             .Add(c => c.Content, SeoTestContent.Article())
             .Add(c => c.SchemaTypes, []));
 
-        Property(cut, "og:type").ShouldBe("article");
-        Meta(cut, "content-type").ShouldBe("Article");
+        Property(cut, "og:type").ShouldBe("website");
+        Meta(cut, "content-type").ShouldBe("WebPage");
+        cut.FindAll("script[type='application/ld+json']")[0].TextContent.ShouldContain("\"@type\": \"WebPage\"");
     }
 
     [Theory]

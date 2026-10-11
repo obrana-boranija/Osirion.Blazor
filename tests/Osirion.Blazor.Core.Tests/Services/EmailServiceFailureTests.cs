@@ -144,15 +144,14 @@ public class EmailServiceFailureTests
         message.GetProperty("subject").GetString().ShouldBe("[Site] Hi");
     }
 
+    // Each row fails while the message is built, before SmtpClient is asked to send, so no row touches the network.
     [Theory]
-    [InlineData("", "to@example.com", 587)]
-    [InlineData("from@example.com", "not an address", 587)]
-    [InlineData("from@example.com", "to@example.com", 0)]
-    public async Task Smtp_InvalidConfiguration_ReturnsFailureWithoutSending(string fromEmail, string toEmail, int port)
+    [InlineData("", "to@example.com", nameof(ArgumentException))]
+    [InlineData("from@example.com", "not an address", nameof(FormatException))]
+    public async Task Smtp_InvalidAddress_ReturnsFailureWithoutSending(string fromEmail, string toEmail, string expectedException)
     {
         var options = Options();
         options.Smtp.FromEmail = fromEmail;
-        options.Smtp.Port = port;
         options.ToEmail = toEmail;
         var service = new SmtpEmailService(Microsoft.Extensions.Options.Options.Create(options), NullLogger<SmtpEmailService>.Instance);
 
@@ -160,7 +159,9 @@ public class EmailServiceFailureTests
 
         result.IsSuccess.ShouldBeFalse();
         result.ErrorMessage.ShouldNotBeNull().ShouldStartWith("SMTP error: ");
-        result.Details.ShouldNotBeNullOrEmpty();
+        var details = result.Details.ShouldNotBeNull();
+        details.ShouldStartWith($"System.{expectedException}");
+        details.ShouldNotContain("SmtpException");
     }
 
     // SmtpClient checks for a host before it opens a connection, so this reaches the send call without a network.

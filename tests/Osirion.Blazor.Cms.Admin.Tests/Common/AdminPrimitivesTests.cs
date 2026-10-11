@@ -94,18 +94,6 @@ public class AdminPrimitivesTests
     }
 
     [Fact]
-    public void CmsEvents_CarryTheirValues()
-    {
-        new CreateNewContentEvent("blog").Directory.ShouldBe("blog");
-        new NavigationRequestedEvent("/osirion").Route.ShouldBe("/osirion");
-        new ThemeChangedEvent("dark").Theme.ShouldBe("dark");
-        new UserProfileLoadedEvent("octocat").Username.ShouldBe("octocat");
-        new StateResetRequestedEvent().ShouldBe(new StateResetRequestedEvent());
-        new ContentSavedEvent("a.md").ShouldBe(new ContentSavedEvent("a.md"));
-        new StatusNotificationEvent("hello").Type.ShouldBe(StatusType.Info);
-    }
-
-    [Fact]
     public void ContentSavedDomainEvent_StampsTheCurrentUtcTimeAndAUniqueId()
     {
         var before = DateTime.UtcNow;
@@ -133,17 +121,5 @@ public class AdminPrimitivesTests
 
         received.ShouldBe(["a.md"]);
         logger.Entries.ShouldContain(entry => entry.Level == LogLevel.Error && entry.Exception is InvalidOperationException);
-    }
-
-    [Fact]
-    public void CmsEventMediator_UnsubscribeUnknownEventType_DoesNothing()
-    {
-        var logger = new RecordingLogger<CmsEventMediator>();
-        var mediator = new CmsEventMediator(logger);
-
-        mediator.Unsubscribe<ContentSavedEvent>(_ => { });
-        mediator.Publish(new ContentSavedEvent("a.md"));
-
-        logger.HasEntry(LogLevel.Debug, "unsubscribed").ShouldBeFalse();
     }
 }

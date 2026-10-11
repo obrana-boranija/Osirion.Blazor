@@ -17,18 +17,10 @@ public class SeoMetadataRendererStructuredDataTests : CmsWebComponentTestBase
     public static TheoryData<SchemaType, string> PrimarySchemas => new()
     {
         { SchemaType.Article, ArticleJson },
-        { SchemaType.BlogPosting, BlogPostingJson },
         { SchemaType.WebPage, WebPageJson },
-        { SchemaType.Product, ProductJson },
         { SchemaType.Organization, OrganizationJson },
         { SchemaType.Person, PersonJson },
-        { SchemaType.LocalBusiness, LocalBusinessJson },
-        { SchemaType.Event, EventJson },
-        { SchemaType.Recipe, RecipeJson },
-        { SchemaType.HowTo, HowToJson },
         { SchemaType.VideoObject, VideoObjectJson },
-        { SchemaType.Course, CourseJson },
-        { SchemaType.Review, ReviewJson },
         { SchemaType.BreadcrumbList, BreadcrumbListJson },
         { SchemaType.WebSite, WebSiteJson },
         { SchemaType.CollectionPage, ContentCollectionPageJson },
@@ -44,6 +36,41 @@ public class SeoMetadataRendererStructuredDataTests : CmsWebComponentTestBase
             .Add(c => c.SchemaTypes, [schemaType]));
 
         schemas[0].ShouldBe(Normalize(expectedJson));
+    }
+
+    public static TheoryData<SchemaType, string> SchemasWithPlaceholderValues => new()
+    {
+        { SchemaType.Product, ProductJson },
+        { SchemaType.LocalBusiness, LocalBusinessJson },
+        { SchemaType.Event, EventJson },
+        { SchemaType.Recipe, RecipeJson },
+        { SchemaType.HowTo, HowToJson },
+        { SchemaType.Course, CourseJson },
+        { SchemaType.Review, ReviewJson },
+    };
+
+    // Known defect, pinned as current behavior: these builders publish hard-coded values the content never stated (a 5-star rating, recipe times and yield, opening hours, an in-stock offer without a price, a paid course at price 0, a fixed event status and how-to cost). Update this expectation when it is fixed.
+    [Theory]
+    [MemberData(nameof(SchemasWithPlaceholderValues))]
+    public void SeoMetadataRenderer_SchemaTypeWithPlaceholderValues_PublishesValuesNotInTheContent(SchemaType schemaType, string expectedJson)
+    {
+        var schemas = RenderJsonLd(p => p
+            .Add(c => c.Content, SeoTestContent.Article())
+            .Add(c => c.SchemaTypes, [schemaType]));
+
+        schemas[0].ShouldBe(Normalize(expectedJson));
+    }
+
+    // Known defect, pinned as current behavior: the BlogPosting schema type is published as "@type": "Article". Update this expectation when it is fixed.
+    [Fact]
+    public void SeoMetadataRenderer_BlogPostingSchemaType_PublishesTheArticleType()
+    {
+        var schemas = RenderJsonLd(p => p
+            .Add(c => c.Content, SeoTestContent.Article())
+            .Add(c => c.SchemaTypes, [SchemaType.BlogPosting]));
+
+        schemas[0].ShouldContain("\"@type\": \"Article\"");
+        schemas[0].ShouldNotContain("BlogPosting");
     }
 
     [Fact]
@@ -96,7 +123,20 @@ public class SeoMetadataRendererStructuredDataTests : CmsWebComponentTestBase
 
         var schemas = RenderJsonLd(p => p.Add(c => c.Content, item));
 
-        schemas[0].ShouldBe(Normalize(RecipeJson));
+        schemas[0].ShouldContain("\"@type\": \"Recipe\"");
+        schemas[1].ShouldBe(Normalize(BreadcrumbListJson));
+    }
+
+    [Fact]
+    public void SeoMetadataRenderer_FrontMatterTypeLocalBusiness_DoesNotWriteTheTypeAsTelephone()
+    {
+        var item = SeoTestContent.Article();
+        item.Metadata = new FrontMatter { SeoProperties = new SeoMetadata { Type = "LocalBusiness" } };
+
+        var schemas = RenderJsonLd(p => p.Add(c => c.Content, item));
+
+        schemas[0].ShouldContain("\"@type\": \"LocalBusiness\"");
+        schemas[0].ShouldNotContain("\"telephone\"");
     }
 
     [Theory]
@@ -216,6 +256,7 @@ public class SeoMetadataRendererStructuredDataTests : CmsWebComponentTestBase
         schemas[2].ShouldContain("\"headline\": \"Second post\"");
     }
 
+    // Known defect, pinned as current behavior: the generated FAQ question for "Guide to testing Blazor" is the ungrammatical "How to testing Blazor?". Update this expectation when it is fixed.
     [Fact]
     public void SeoMetadataRenderer_GeneratedFaq_AppendsTheFaqPage()
     {
@@ -227,6 +268,7 @@ public class SeoMetadataRendererStructuredDataTests : CmsWebComponentTestBase
         schemas[2].ShouldBe(Normalize(FaqPageJson));
     }
 
+    // Known defect, pinned as current behavior: the generated FAQ question for "Guide to testing Blazor" is the ungrammatical "How to testing Blazor?". Update this expectation when it is fixed.
     [Fact]
     public void SeoMetadataRenderer_ValidCustomJsonLd_SkipsGeneratedSchemasButKeepsTheGeneratedFaq()
     {
@@ -256,43 +298,6 @@ public class SeoMetadataRendererStructuredDataTests : CmsWebComponentTestBase
     private static string Normalize(string json) => json.ReplaceLineEndings("\n");
 
     private const string ArticleJson = """
-        {
-          "@context": "https://schema.org",
-          "@type": "Article",
-          "headline": "Guide to testing Blazor",
-          "description": "A practical description of testing. It covers the basics.",
-          "image": "http://localhost/images/cover.png",
-          "author": {
-            "@type": "Person",
-            "name": "Jane Doe",
-            "url": "http://localhost/author/jane-doe"
-          },
-          "publisher": {
-            "@type": "Organization",
-            "name": "localhost",
-            "logo": {
-              "@type": "ImageObject",
-              "url": "http://localhost/logo.png",
-              "width": 600,
-              "height": 60
-            }
-          },
-          "datePublished": "2020-01-02T03:04:05Z",
-          "dateModified": "2020-02-03T04:05:06Z",
-          "mainEntityOfPage": {
-            "@type": "WebPage",
-            "@id": "http://localhost/blog/guides/my-post"
-          },
-          "articleSection": "Guides",
-          "wordCount": 5,
-          "inLanguage": "en",
-          "url": "http://localhost/blog/guides/my-post",
-          "timeRequired": "PT1M",
-          "keywords": "blazor, testing"
-        }
-        """;
-
-    private const string BlogPostingJson = """
         {
           "@context": "https://schema.org",
           "@type": "Article",
@@ -409,7 +414,6 @@ public class SeoMetadataRendererStructuredDataTests : CmsWebComponentTestBase
           "description": "A practical description of testing. It covers the basics.",
           "image": "http://localhost/images/cover.png",
           "url": "http://localhost/blog/guides/my-post",
-          "telephone": null,
           "address": {
             "@type": "PostalAddress",
             "streetAddress": "",

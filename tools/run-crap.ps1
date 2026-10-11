@@ -348,3 +348,7 @@ if ($RecordSnapshot) {
     if ($Project) { throw '-RecordSnapshot needs the full solution; drop -Project.' }
     Save-Snapshot $reports $coverage
 }
+
+# crap4dotnet exits 1 whenever its own (discarded) coverage puts a method over the threshold; that exit code must not
+# become this script's. Failures throw above; the gate is tools/verify-crap.ps1.
+exit 0

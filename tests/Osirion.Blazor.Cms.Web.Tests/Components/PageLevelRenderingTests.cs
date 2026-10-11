@@ -37,6 +37,7 @@ public class PageLevelRenderingTests : CmsWebComponentTestBase
         _provider.GetTagsAsync().Returns(Task.FromResult<IReadOnlyList<ContentTag>>([ContentTag.Create("dotnet", "dotnet", 1)]));
     }
 
+    // Known defect, pinned as current behavior: the default content links keep the ".md" extension of the source file, while ContentPage strips it, so the two disagree on the item URL. Update this expectation when it is fixed.
     [Fact]
     public void DocumentPage_ContentPath_LoadsTheDocumentAndItsNeighbours()
     {
@@ -126,6 +127,7 @@ public class PageLevelRenderingTests : CmsWebComponentTestBase
     [Fact]
     public void DocumentPage_SuppliedContent_RendersMetadataTocFooterAndFormattedNeighbourLinks()
     {
+        using var culture = new CultureScope("en-US");
         var content = Doc("guide", "<h2>Setup</h2><p>Text</p>");
         content.SetAuthor("Ada");
         content.SetCreatedDate(new DateTime(2026, 2, 3, 0, 0, 0, DateTimeKind.Utc));
@@ -169,6 +171,7 @@ public class PageLevelRenderingTests : CmsWebComponentTestBase
         cut.Find(".osirion-document-body").TextContent.ShouldContain("Body");
     }
 
+    // Known defect, pinned as current behavior: the default content links keep the ".md" extension of the source file, while ContentPage strips it, so the two disagree on the item URL. Update this expectation when it is fixed.
     [Fact]
     public void DocumentPage_SuppliedNeighbours_AreShownWithoutQuerying()
     {
@@ -302,7 +305,8 @@ public class PageLevelRenderingTests : CmsWebComponentTestBase
 
         pending.SetResult([Doc("slow")]);
 
-        cut.WaitForAssertion(() => cut.FindAll(".osirion-loading").ShouldBeEmpty());
+        cut.WaitForAssertion(() => cut.Find(".osirion-hero-title").TextContent.ShouldBe("slow"));
+        cut.FindAll(".osirion-loading").ShouldBeEmpty();
     }
 
     [Fact]
@@ -455,6 +459,9 @@ public class PageLevelRenderingTests : CmsWebComponentTestBase
         _navigation.NotFoundCalls.ShouldBe(0);
 
         pending.SetResult([]);
+
+        cut.WaitForAssertion(() => cut.FindAll(".osirion-content-not-found").ShouldHaveSingleItem());
+        _navigation.NotFoundCalls.ShouldBe(1);
     }
 
     [Fact]

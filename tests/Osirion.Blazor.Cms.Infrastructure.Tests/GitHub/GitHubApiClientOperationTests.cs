@@ -204,7 +204,7 @@ public class GitHubApiClientOperationTests
 
         var response = await client.DeleteFileAsync("content/a.md", "Remove a", "file-sha");
 
-        response.ShouldNotBeNull();
+        response.Commit.Sha.ShouldBe("commit-sha");
         var request = _handler.Requests.ShouldHaveSingleItem();
         request.Method.ShouldBe(HttpMethod.Delete);
         request.Uri.AbsolutePath.ShouldBe("/repos/o/r/contents/content/a.md");

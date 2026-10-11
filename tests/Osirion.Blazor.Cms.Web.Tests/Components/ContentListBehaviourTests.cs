@@ -157,8 +157,8 @@ public class ContentListBehaviourTests : CmsWebComponentTestBase
 
         head.WaitForAssertion(() =>
         {
-            head.Markup.ShouldContain("rel=\"prev\"");
-            head.Markup.ShouldContain("rel=\"next\"");
+            head.Find("link[rel='prev']").GetAttribute("href").ShouldBe("/blog");
+            head.Find("link[rel='next']").GetAttribute("href").ShouldBe("/blog?page=3");
         });
     }
 
@@ -252,11 +252,21 @@ public class ContentListBehaviourTests : CmsWebComponentTestBase
     [InlineData(null, "news", "dotnet", "blog", false, 1, "Category: news")]
     [InlineData(null, null, "dotnet", "blog", false, 1, "Tag: dotnet")]
     [InlineData(null, null, null, "/blog/getting-started_guide/", false, 1, "Getting Started Guide")]
-    [InlineData(null, null, null, "docs/API", false, 1, "Api")]
-    [InlineData(null, null, null, "a--b", false, 1, "A  B")]
     [InlineData(null, null, null, null, true, 3, "Blog - Page 3")]
     [InlineData(null, null, null, null, false, 3, "Blog")]
     public void ContentList_ComputedPageTitle_DescribesTheListing(
+        string? pageTitle, string? category, string? tag, string? directory, bool paginated, int page, string expected)
+    {
+        var probe = RenderProbe(pageTitle, null, category, tag, directory, paginated, page);
+
+        probe.Title().ShouldBe(expected);
+    }
+
+    // Known defect, pinned as current behavior: a directory title lowers acronyms ("API" becomes "Api") and keeps a double space for a doubled separator. Update this expectation when it is fixed.
+    [Theory]
+    [InlineData(null, null, null, "docs/API", false, 1, "Api")]
+    [InlineData(null, null, null, "a--b", false, 1, "A  B")]
+    public void ContentList_DirectoryTitle_LowersAcronymsAndKeepsDoubleSpaces(
         string? pageTitle, string? category, string? tag, string? directory, bool paginated, int page, string expected)
     {
         var probe = RenderProbe(pageTitle, null, category, tag, directory, paginated, page);

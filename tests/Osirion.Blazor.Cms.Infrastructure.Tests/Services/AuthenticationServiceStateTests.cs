@@ -56,6 +56,10 @@ public class AuthenticationServiceStateTests
         await _stateStorage.Received(1).SaveStateAsync("auth_status", true);
         await _stateStorage.Received(1).SaveStateAsync("last_login_method", "pat");
         await _stateStorage.Received(1).RemoveStateAsync(LegacyTokenKey);
+        _stateStorage.ReceivedCalls()
+            .Where(call => call.GetMethodInfo().Name == nameof(IStateStorageService.SaveStateAsync))
+            .SelectMany(call => call.GetArguments())
+            .ShouldNotContain("token");
     }
 
     [Theory]

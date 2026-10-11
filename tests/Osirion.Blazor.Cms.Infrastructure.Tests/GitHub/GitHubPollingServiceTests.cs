@@ -255,12 +255,11 @@ public class GitHubPollingServiceTests
     }
 
     [Fact]
-    public async Task CheckForChangesAsync_WhenAnUpdateFails_KeepsGoingAndRetriesThatProviderNextTime()
+    public async Task CheckForChangesAsync_WhenAnUpdateFails_RetriesThatProviderNextTime()
     {
         // Arrange
         var failing = AddCacheUpdater(ConfiguredProviderId);
         failing.UpdateCacheAsync(Arg.Any<string?>(), Arg.Any<bool>()).ThrowsAsync(new InvalidOperationException("boom"));
-        var healthy = AddCacheUpdater(ConfiguredProviderId + "-docs");
         ReturnBranches(Branch("main", "sha-1"));
         var service = CreateService();
         await service.CheckForChangesAsync(CancellationToken.None);
@@ -270,7 +269,39 @@ public class GitHubPollingServiceTests
 
         // Assert
         await failing.Received(2).UpdateCacheAsync("sha-1");
-        await healthy.Received(1).UpdateCacheAsync("sha-1");
+    }
+
+    [Fact]
+    public async Task CheckForChangesAsync_WithAProviderWhoseIdOnlyStartsWithTheConfiguredId_SkipsIt()
+    {
+        // Arrange
+        var configured = AddCacheUpdater(ConfiguredProviderId);
+        var otherRepository = AddCacheUpdater(ConfiguredProviderId + "2");
+        ReturnBranches(Branch("main", "sha-1"));
+        var service = CreateService();
+
+        // Act
+        await service.CheckForChangesAsync(CancellationToken.None);
+
+        // Assert
+        await configured.Received(1).UpdateCacheAsync("sha-1");
+        await otherRepository.DidNotReceive().UpdateCacheAsync(Arg.Any<string?>(), Arg.Any<bool>());
+    }
+
+    [Fact]
+    public async Task CheckForChangesAsync_WithAConfiguredProviderIdThatDoesNotMentionGitHub_PollsThatProvider()
+    {
+        // Arrange
+        _options.ProviderId = "docs";
+        var custom = AddCacheUpdater("docs");
+        ReturnBranches(Branch("main", "sha-1"));
+        var service = CreateService();
+
+        // Act
+        await service.CheckForChangesAsync(CancellationToken.None);
+
+        // Assert
+        await custom.Received(1).UpdateCacheAsync("sha-1");
     }
 
     [Fact]

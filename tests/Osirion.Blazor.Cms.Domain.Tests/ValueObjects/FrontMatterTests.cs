@@ -16,7 +16,7 @@ public class FrontMatterTests
     }
 
     [Fact]
-    public void Create_WithTitleDescriptionAndDate_UsesTheDateText()
+    public void Create_WithTitleDescriptionAndDate_WritesTheIsoDate()
     {
         var created = new DateTime(2024, 3, 4, 5, 6, 7);
 
@@ -24,7 +24,7 @@ public class FrontMatterTests
 
         Assert.Equal("Title", frontMatter.Title);
         Assert.Equal("Description", frontMatter.Description);
-        Assert.Equal(created.ToString(), frontMatter.Date);
+        Assert.Equal("2024-03-04", frontMatter.Date);
     }
 
     [Fact]

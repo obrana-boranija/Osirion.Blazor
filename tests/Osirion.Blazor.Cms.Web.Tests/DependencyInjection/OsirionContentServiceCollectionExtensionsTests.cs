@@ -2,6 +2,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Domain.Interfaces;
+using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Domain.Services;
 using Osirion.Blazor.Cms.Infrastructure.Providers;
 using Osirion.Blazor.Cms.Web.DependencyInjection;
@@ -51,29 +52,40 @@ public class OsirionContentServiceCollectionExtensionsTests
     }
 
     [Fact]
-    public void AddOsirionContent_WebGitHubSection_RegistersAProviderPerEntry()
+    public void AddOsirionContent_WebGitHubSection_RegistersAProviderPerEntryWithItsOwnRepository()
     {
-        var services = new ServiceCollection();
-
-        services.AddOsirionContent(Configuration(new()
+        var configuration = Configuration(new()
         {
             ["Osirion:Cms:Web:GitHub:Main:Owner"] = "owner",
-            ["Osirion:Cms:Web:GitHub:Main:Repository"] = "repo"
-        }));
+            ["Osirion:Cms:Web:GitHub:Main:Repository"] = "repo",
+            ["Osirion:Cms:Web:GitHub:Docs:Owner"] = "docs-owner",
+            ["Osirion:Cms:Web:GitHub:Docs:Repository"] = "docs-repo"
+        });
+        var services = new ServiceCollection()
+            .AddLogging()
+            .AddSingleton(configuration);
 
-        services.ShouldContain(d => d.IsKeyedService && Equals(d.ServiceKey, "GitHubContentProvider_Main"));
+        services.AddOsirionContent(configuration);
+
+        using var provider = services.BuildServiceProvider();
+        provider.GetRequiredKeyedService<GitHubContentProvider>("GitHubContentProvider_Main")
+            .DisplayName.ShouldBe("GitHub: owner/repo");
+        provider.GetRequiredKeyedService<GitHubContentProvider>("GitHubContentProvider_Docs")
+            .DisplayName.ShouldBe("GitHub: docs-owner/docs-repo");
     }
 
     [Theory]
     [InlineData("Osirion:Cms:Web:FileSystem:BasePath")]
     [InlineData("Osirion:Cms:FileSystem:Web:BasePath")]
-    public void AddOsirionContent_FileSystemSection_RegistersTheFileSystemProvider(string key)
+    public void AddOsirionContent_FileSystemSection_RegistersTheFileSystemProviderWithTheBasePath(string key)
     {
         var services = new ServiceCollection();
 
         services.AddOsirionContent(Configuration(new() { [key] = "content" }));
 
         services.ShouldContain(d => d.ServiceType == typeof(FileSystemContentProvider));
+        using var provider = services.BuildServiceProvider();
+        provider.GetRequiredService<IOptions<FileSystemOptions>>().Value.BasePath.ShouldBe("content");
     }
 
     [Fact]

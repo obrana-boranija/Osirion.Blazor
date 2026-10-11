@@ -114,6 +114,17 @@ public class StateManagerTests
     }
 
     [Fact]
+    public void ThemeChanged_WithStorage_SavesTheState()
+    {
+        _storage.IsInitialized.Returns(true);
+        _ = CreateManager();
+
+        _mediator.Publish(new ThemeChangedEvent("dark"));
+
+        _storage.Received(1).SaveStateAsync(StateKey, Arg.Any<string>());
+    }
+
+    [Fact]
     public void StateResetRequested_ClearsStorageAndState()
     {
         _storage.IsInitialized.Returns(true);
@@ -127,7 +138,7 @@ public class StateManagerTests
     }
 
     [Fact]
-    public void Dispose_StopsSavingOnStateChanges()
+    public void Dispose_StopsSavingOnCmsStateChanges()
     {
         _storage.IsInitialized.Returns(true);
         CreateManager().Dispose();
@@ -135,6 +146,18 @@ public class StateManagerTests
         _state.SelectRepository(new GitHubRepository { Name = "site" });
 
         _storage.DidNotReceive().SaveStateAsync(Arg.Any<string>(), Arg.Any<string>());
+    }
+
+    // Known defect, pinned as current behavior: Dispose leaves the mediator subscriptions in place, so a disposed manager still saves on selection events. Update this expectation when it is fixed.
+    [Fact]
+    public void Dispose_MediatorEventAfterDispose_StillSaves()
+    {
+        _storage.IsInitialized.Returns(true);
+        CreateManager().Dispose();
+
+        _mediator.Publish(new RepositorySelectedEvent(new GitHubRepository { Name = "site" }));
+
+        _storage.Received(1).SaveStateAsync(StateKey, Arg.Any<string>());
     }
 
     private StateManager CreateManager() =>

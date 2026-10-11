@@ -113,7 +113,18 @@ public class DefaultMarkdownRendererTests
     {
         var result = _renderer.SanitizeMarkdown("[click](JavaScript:alert(1)) and [safe](https://example.com)");
 
-        result.ShouldBe("[click](#)) and [safe](https://example.com)");
+        result.ShouldBe("[click](#) and [safe](https://example.com)");
+    }
+
+    [Theory]
+    [InlineData("[click]( javascript:alert(1))", "[click](#)")]
+    [InlineData("[click](javascript:alert((1)))", "[click](#)")]
+    [InlineData("[click](javascript:void(0) \"title\") after", "[click](#) after")]
+    [InlineData("[click][x]\n\n[x]: javascript:alert(1)", "[click][x]\n\n[x]: #")]
+    [InlineData("[click][x]\n\n  [x]:  JAVASCRIPT:alert(1) \"title\"", "[click][x]\n\n  [x]: #")]
+    public void SanitizeMarkdown_NeutralizesTheWholeJavaScriptDestination(string markdown, string expected)
+    {
+        _renderer.SanitizeMarkdown(markdown).ShouldBe(expected);
     }
 
     [Fact]

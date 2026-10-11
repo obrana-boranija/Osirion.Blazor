@@ -74,9 +74,17 @@ public class SeoTextTests
     [Theory]
     [InlineData(null, "en_US")]
     [InlineData("", "en_US")]
-    [InlineData("de", "de")]
     [InlineData("sr-Latn-RS", "sr_Latn_RS")]
     public void ToOpenGraphLocale_UsesUnderscores(string? locale, string expected)
+    {
+        SeoText.ToOpenGraphLocale(locale).ShouldBe(expected);
+    }
+
+    // Known defect, pinned as current behavior: a locale without a region is written as the bare language, not the language_TERRITORY form Open Graph expects. Update this expectation when it is fixed.
+    [Theory]
+    [InlineData("de", "de")]
+    [InlineData("en", "en")]
+    public void ToOpenGraphLocale_LanguageWithoutRegion_WritesTheBareLanguage(string locale, string expected)
     {
         SeoText.ToOpenGraphLocale(locale).ShouldBe(expected);
     }
