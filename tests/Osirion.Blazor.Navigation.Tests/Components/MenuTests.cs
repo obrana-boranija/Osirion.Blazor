@@ -239,4 +239,76 @@ public class MenuTests : BunitContext
 
         cut.Find("a.osirion-brand-link").HasAttribute("href").ShouldBeFalse();
     }
+
+    [Theory]
+    [InlineData(MenuCollapseBreakpoint.Mobile, "osirion-menu-collapse-mobile")]
+    [InlineData(MenuCollapseBreakpoint.Large, "osirion-menu-collapse-large")]
+    [InlineData(MenuCollapseBreakpoint.ExtraLarge, "osirion-menu-collapse-extra-large")]
+    public void Menu_ShouldMarkItsCollapseBreakpoint_WhenItCollapses(MenuCollapseBreakpoint breakpoint, string expectedClass)
+    {
+        // Act
+        var cut = Render<Menu>(parameters => parameters
+            .Add(p => p.CollapseBreakpoint, breakpoint)
+            .AddChildContent("Menu Content"));
+
+        // Assert
+        var classes = cut.Find(".osirion-menu-container").ClassList;
+        classes.ShouldContain("osirion-menu-collapsible");
+        classes.ShouldContain(expectedClass);
+        classes.Count(c => c.StartsWith("osirion-menu-collapse-", StringComparison.Ordinal)).ShouldBe(1);
+    }
+
+    [Fact]
+    public void Menu_ShouldNotMarkACollapseBreakpoint_WhenCollapseOnMobileFalse()
+    {
+        // Act
+        var cut = Render<Menu>(parameters => parameters
+            .Add(p => p.CollapseOnMobile, false)
+            .Add(p => p.CollapseBreakpoint, MenuCollapseBreakpoint.Large)
+            .AddChildContent("Menu Content"));
+
+        // Assert
+        cut.Find(".osirion-menu-container").ClassList
+            .ShouldNotContain(c => c.StartsWith("osirion-menu-collapse-", StringComparison.Ordinal));
+        cut.FindAll(".osirion-menu-backdrop").ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void Menu_ShouldRenderABackdropThatClosesTheDrawer_WhenCollapsible()
+    {
+        // Act
+        var cut = Render<Menu>(parameters => parameters.AddChildContent("Menu Content"));
+
+        // Assert
+        var toggler = cut.Find("input.osirion-navbar-toggler");
+        var backdrop = cut.Find("label.osirion-menu-backdrop");
+        backdrop.GetAttribute("for").ShouldBe(toggler.Id);
+        backdrop.GetAttribute("aria-hidden").ShouldBe("true");
+    }
+
+    [Fact]
+    public void Menu_ShouldRenderActionsAfterTheItems_WhenProvided()
+    {
+        // Act
+        var cut = Render<Menu>(parameters => parameters
+            .AddChildContent("Menu Content")
+            .Add(p => p.Actions, "<button type=\"button\">Search</button>"));
+
+        // Assert
+        var menu = cut.Find(".osirion-menu");
+        menu.Children.Length.ShouldBe(2);
+        menu.Children[0].ClassList.ShouldContain("osirion-menu-inner");
+        menu.Children[1].ClassList.ShouldContain("osirion-menu-actions");
+        menu.Children[1].QuerySelector("button")!.TextContent.ShouldBe("Search");
+    }
+
+    [Fact]
+    public void Menu_ShouldRenderNoActionsContainer_WhenActionsAreNotProvided()
+    {
+        // Act
+        var cut = Render<Menu>(parameters => parameters.AddChildContent("Menu Content"));
+
+        // Assert
+        cut.FindAll(".osirion-menu-actions").ShouldBeEmpty();
+    }
 }

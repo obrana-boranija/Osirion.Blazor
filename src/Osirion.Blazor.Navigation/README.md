@@ -7,6 +7,7 @@ Enhanced navigation components for Blazor applications that work seamlessly with
 
 ## Features
 
+- **Menu**: A navigation bar with dropdowns and mega menus that becomes a hamburger drawer on small screens, without JavaScript
 - **EnhancedNavigation**: Improves Blazor's navigation experience with scroll restoration
 - **ScrollToTop**: Adds a customizable "back to top" button
 - **SSR Compatible**: Works with Server-Side Rendering and Static SSG

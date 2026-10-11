@@ -1,63 +1,64 @@
-/* 
+/*
  * MenuGroup Component Styles
- * Pure CSS menu group with SSR compatibility
+ * Pure CSS menu group with SSR compatibility. In a mega submenu a group is a column with a title, an optional
+ * description, its items and an optional footer link; elsewhere it is a labelled section of a list.
  */
 
-/* Menu group container */
 .osirion-menu-group {
     width: 100%;
-    margin: var(--osirion-spacing-1, 0.25rem) 0;
+    margin: 0.25rem 0;
 }
 
-/* Group label */
 .osirion-menu-group-label {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: var(--osirion-spacing-2, 0.5rem) var(--osirion-spacing-4, 1rem);
+    padding: 0.5rem 0.75rem 0.25rem;
+    color: var(--osirion-menu-muted-color, var(--osirion-text-secondary, #6b7280));
     font-size: var(--osirion-font-size-xs, 0.75rem);
     font-weight: var(--osirion-font-weight-semibold, 600);
-    color: var(--osirion-color-primary-500, #2563eb);
+    letter-spacing: 0.06em;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
 }
 
-/* Text in group label */
 .osirion-menu-group-text {
     flex: 1;
 }
 
-/* Optional column description (mega menu header, Personio-style) */
 .osirion-menu-group-description {
     margin: 0;
-    padding: 0 var(--osirion-spacing-4, 1rem) var(--osirion-spacing-2, 0.5rem);
-    color: var(--osirion-text-secondary, #6b7280);
+    padding: 0 0.75rem 0.5rem;
+    color: var(--osirion-menu-muted-color, var(--osirion-text-secondary, #6b7280));
     font-size: var(--osirion-font-size-sm, 0.875rem);
     line-height: 1.4;
 }
 
-/* Optional footer link ("Explore X →") */
+/* Optional footer link ("Explore X") */
 .osirion-menu-group-footer {
     display: inline-flex;
     align-items: center;
-    gap: var(--osirion-spacing-2, 0.5rem);
-    margin-top: var(--osirion-spacing-2, 0.5rem);
-    padding: var(--osirion-spacing-2, 0.5rem) var(--osirion-spacing-4, 1rem);
-    color: var(--osirion-action-primary, var(--osirion-color-primary-600, #2563eb));
+    gap: 0.375rem;
+    margin-top: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    color: var(--osirion-menu-accent, var(--osirion-action-primary, #2563eb));
     font-size: var(--osirion-font-size-sm, 0.875rem);
     font-weight: var(--osirion-font-weight-semibold, 600);
     text-decoration: none;
-    border-radius: var(--osirion-radius-sm, 0.125rem);
-    transition: gap var(--osirion-transition-duration-150, 150ms) ease, color var(--osirion-transition-duration-150, 150ms) ease;
+    border-radius: var(--osirion-menu-radius, 0.5rem);
+    transition: color var(--osirion-transition-duration-150, 150ms) ease;
 }
 
-.osirion-menu-group-footer:hover,
-.osirion-menu-group-footer:focus-visible {
-    color: var(--osirion-action-primary-hover, var(--osirion-color-primary-700, #1d4ed8));
-    text-decoration: underline;
-    text-underline-offset: 0.2em;
-    outline: none;
-}
+    .osirion-menu-group-footer:hover,
+    .osirion-menu-group-footer:focus-visible {
+        color: var(--osirion-menu-accent, var(--osirion-action-primary, #2563eb));
+        text-decoration: underline;
+        text-underline-offset: 0.2em;
+    }
+
+    .osirion-menu-group-footer:focus-visible {
+        outline: 2px solid var(--osirion-menu-accent, var(--osirion-action-primary, #2563eb));
+        outline-offset: 2px;
+    }
 
 .osirion-menu-group-footer-arrow {
     flex-shrink: 0;
@@ -69,28 +70,32 @@
     transform: translateX(3px);
 }
 
-/* Group items container */
 .osirion-menu-group-items {
     display: flex;
     flex-direction: column;
+    gap: 0.125rem;
     width: 100%;
 }
 
-/* Collapsible group styling */
+/* Collapsible group (vertical menus) */
 .osirion-menu-group-collapsible .osirion-menu-group-label {
     cursor: pointer;
     user-select: none;
+    border-radius: var(--osirion-menu-radius, 0.5rem);
 }
+
+    .osirion-menu-group-collapsible .osirion-menu-group-label:hover {
+        background-color: var(--osirion-menu-hover-background, color-mix(in srgb, currentColor 8%, transparent));
+    }
 
 .osirion-menu-group-collapsible .osirion-menu-group-toggle {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-left: var(--osirion-spacing-2, 0.5rem);
-    transition: transform var(--osirion-transition-duration-150, 150ms) var(--osirion-transition-timing-default, ease);
+    margin-left: 0.5rem;
+    transition: transform var(--osirion-transition-duration-150, 150ms) ease;
 }
 
-/* Collapsible logic - using CSS only (for SSR compatibility) */
 .osirion-menu-group-collapsible:not(.osirion-menu-group-expanded) .osirion-menu-group-items {
     display: none;
 }
@@ -99,30 +104,172 @@
     transform: rotate(-90deg);
 }
 
-.osirion-menu-group-expanded .osirion-menu-group-toggle svg {
-    transform: rotate(0);
+/* Mega submenu column: sentence-case title, muted description and a divider above the items */
+.osirion-submenu-mega-content .osirion-menu-group {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    margin: 0;
 }
 
-/* Group hover effect */
-.osirion-menu-group-collapsible .osirion-menu-group-label:hover {
-    color: var(--osirion-text-secondary, #e5e7eb);
-    background-color: var(--osirion-background-secondary, #1f2937);
-    border-radius: var(--osirion-radius-sm, 0.125rem);
+.osirion-submenu-mega-content .osirion-menu-group-label {
+    padding: 0;
+    color: var(--osirion-menu-color, var(--osirion-text-primary, #1f2937));
+    font-size: var(--osirion-font-size-base, 1rem);
+    letter-spacing: normal;
+    text-transform: none;
 }
 
-/* Responsive behavior */
+.osirion-submenu-mega-content .osirion-menu-group-description {
+    margin: 0.25rem 0 0;
+    padding: 0;
+    font-size: 0.8125rem;
+}
+
+.osirion-submenu-mega-content .osirion-menu-group-label ~ .osirion-menu-group-items {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--osirion-menu-border-color, var(--osirion-border-color, rgba(15, 23, 42, 0.12)));
+}
+
+.osirion-submenu-mega-content .osirion-menu-group-footer {
+    align-self: flex-start;
+    margin-top: auto;
+    padding: 0.75rem 0 0;
+}
+
+/* ===== Stacked layout ===== */
+
+/* The stacked blocks below repeat the same rules once per context, because a media query cannot take a parameter:
+   a vertical menu always stacks, and a collapsible menu stacks inside its drawer below its breakpoint. They differ only
+   in their selector prefix and media query; change them together. */
+
+/* Vertical menus */
+.osirion-menu-vertical .osirion-menu-group {
+    margin: 0.25rem 0;
+}
+
+.osirion-menu-vertical .osirion-menu-group-label {
+    padding: 0.75rem 0.75rem 0.25rem;
+    color: var(--osirion-menu-muted-color, var(--osirion-text-secondary, #6b7280));
+    font-size: var(--osirion-font-size-xs, 0.75rem);
+    font-weight: var(--osirion-font-weight-semibold, 600);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.osirion-menu-vertical .osirion-menu-group-description {
+    display: none;
+}
+
+.osirion-menu-vertical .osirion-menu-group-label ~ .osirion-menu-group-items {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 0;
+}
+
+.osirion-menu-vertical .osirion-menu-group-footer {
+    min-height: 2.75rem;
+    margin: 0;
+    padding: 0.625rem 0.75rem;
+}
+
 @media (max-width: 768px) {
-    .osirion-menu-group-label {
-        padding-left: var(--osirion-spacing-2, 0.5rem);
+    .osirion-menu-collapsible .osirion-menu-group {
+        margin: 0.25rem 0;
+    }
+
+    .osirion-menu-collapsible .osirion-menu-group-label {
+        padding: 0.75rem 0.75rem 0.25rem;
+        color: var(--osirion-menu-muted-color, var(--osirion-text-secondary, #6b7280));
+        font-size: var(--osirion-font-size-xs, 0.75rem);
+        font-weight: var(--osirion-font-weight-semibold, 600);
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+    }
+
+    .osirion-menu-collapsible .osirion-menu-group-description {
+        display: none;
+    }
+
+    .osirion-menu-collapsible .osirion-menu-group-label ~ .osirion-menu-group-items {
+        margin-top: 0;
+        padding-top: 0;
+        border-top: 0;
+    }
+
+    .osirion-menu-collapsible .osirion-menu-group-footer {
+        min-height: 2.75rem;
+        margin: 0;
+        padding: 0.625rem 0.75rem;
     }
 }
 
-/* Accessibility */
-@media (prefers-reduced-motion: reduce) {
-    .osirion-menu-group-toggle {
-        transition-duration: 0.01ms !important;
+@media (max-width: 1199.98px) {
+    :is(.osirion-menu-collapse-large, .osirion-menu-collapse-extra-large) .osirion-menu-group {
+        margin: 0.25rem 0;
     }
 
+    :is(.osirion-menu-collapse-large, .osirion-menu-collapse-extra-large) .osirion-menu-group-label {
+        padding: 0.75rem 0.75rem 0.25rem;
+        color: var(--osirion-menu-muted-color, var(--osirion-text-secondary, #6b7280));
+        font-size: var(--osirion-font-size-xs, 0.75rem);
+        font-weight: var(--osirion-font-weight-semibold, 600);
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+    }
+
+    :is(.osirion-menu-collapse-large, .osirion-menu-collapse-extra-large) .osirion-menu-group-description {
+        display: none;
+    }
+
+    :is(.osirion-menu-collapse-large, .osirion-menu-collapse-extra-large) .osirion-menu-group-label ~ .osirion-menu-group-items {
+        margin-top: 0;
+        padding-top: 0;
+        border-top: 0;
+    }
+
+    :is(.osirion-menu-collapse-large, .osirion-menu-collapse-extra-large) .osirion-menu-group-footer {
+        min-height: 2.75rem;
+        margin: 0;
+        padding: 0.625rem 0.75rem;
+    }
+}
+
+@media (max-width: 1439.98px) {
+    .osirion-menu-collapse-extra-large .osirion-menu-group {
+        margin: 0.25rem 0;
+    }
+
+    .osirion-menu-collapse-extra-large .osirion-menu-group-label {
+        padding: 0.75rem 0.75rem 0.25rem;
+        color: var(--osirion-menu-muted-color, var(--osirion-text-secondary, #6b7280));
+        font-size: var(--osirion-font-size-xs, 0.75rem);
+        font-weight: var(--osirion-font-weight-semibold, 600);
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+    }
+
+    .osirion-menu-collapse-extra-large .osirion-menu-group-description {
+        display: none;
+    }
+
+    .osirion-menu-collapse-extra-large .osirion-menu-group-label ~ .osirion-menu-group-items {
+        margin-top: 0;
+        padding-top: 0;
+        border-top: 0;
+    }
+
+    .osirion-menu-collapse-extra-large .osirion-menu-group-footer {
+        min-height: 2.75rem;
+        margin: 0;
+        padding: 0.625rem 0.75rem;
+    }
+}
+
+/* Accessibility: reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .osirion-menu-group-toggle,
     .osirion-menu-group-footer,
     .osirion-menu-group-footer-arrow {
         transition-duration: 0.01ms !important;

@@ -9,10 +9,11 @@
         <label for="@ToggleId" class="osirion-navbar-toggle">
             <span class="osirion-toggle-icon"></span>
         </label>
+        @* Dims the page behind the open drawer; a tap on it closes the drawer. *@
+        <label for="@ToggleId" class="osirion-menu-backdrop" aria-hidden="true"></label>
     }
 
-    <nav class="osirion-menu-nav" id="@NavId" aria-label="@AriaLabel" role="navigation">
-        <!-- Branding container -->
+    <nav class="osirion-menu-nav" id="@NavId" aria-label="@AriaLabel">
         <div class="osirion-nav-branding">
             @if (BrandingTemplate is not null)
             {
@@ -20,25 +21,30 @@
             }
             else if (!string.IsNullOrWhiteSpace(BrandLogo))
             {
-            <a href="@RenderedHref" class="osirion-brand-link">
-                <img src="@BrandLogo" alt="@BrandText brand logo" class="osirion-brand-logo" width="60" height="60" />
+                <a href="@RenderedHref" class="osirion-brand-link">
+                    <img src="@BrandLogo" alt="@BrandText brand logo" class="osirion-brand-logo" width="60" height="60" />
                     @if (!string.IsNullOrWhiteSpace(BrandText))
                     {
                         <span class="osirion-brand-text">@BrandText</span>
                     }
-            </a>
+                </a>
             }
             else if (!string.IsNullOrWhiteSpace(BrandText))
             {
-            <a class="osirion-brand-link osirion-brand-text" href="@RenderedHref">@BrandText</a>
+                <a class="osirion-brand-link osirion-brand-text" href="@RenderedHref">@BrandText</a>
             }
         </div>
 
-        <!-- Main menu content -->
         <div class="osirion-menu">
             <div class="osirion-menu-inner">
                 @ChildContent
             </div>
+            @if (Actions is not null)
+            {
+                <div class="osirion-menu-actions">
+                    @Actions
+                </div>
+            }
         </div>
     </nav>
 </div>

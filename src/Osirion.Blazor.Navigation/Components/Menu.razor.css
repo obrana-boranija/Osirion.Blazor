@@ -1,26 +1,33 @@
-﻿/* 
+﻿/*
  * Osirion Menu Component
- * Pure CSS navigation menu with SSR compatibility
+ * Pure CSS navigation menu with SSR compatibility.
+ *
+ * A horizontal menu is a bar: brand, items, then the Actions slot. Below its collapse breakpoint the bar keeps the
+ * brand and a hamburger, and the items open in a drawer under it. A vertical menu stacks its items.
+ *
+ * Theming hooks, settable on the menu or any ancestor:
+ *   --osirion-menu-height, --osirion-menu-max-width, --osirion-menu-padding-x, --osirion-menu-logo-size,
+ *   --osirion-menu-background, --osirion-menu-color, --osirion-menu-muted-color, --osirion-menu-border-color,
+ *   --osirion-menu-accent, --osirion-menu-hover-background, --osirion-menu-active-background,
+ *   --osirion-menu-radius, --osirion-menu-panel-radius, --osirion-menu-shadow
  */
 
-/* Component-specific theme overrides - these take priority over ALL other styles including Bootstrap integration */
+/* Component-specific theme overrides: these take priority over every other style, framework adapters included */
 [data-osirion-component-theme="light"].osirion-menu-container,
 .osirion-menu-container[data-osirion-component-theme="light"],
 .osirion-bootstrap-integration [data-osirion-component-theme="light"].osirion-menu-container,
 .osirion-bootstrap-integration .osirion-menu-container[data-osirion-component-theme="light"],
 html.osirion-bootstrap-integration [data-osirion-component-theme="light"].osirion-menu-container,
 html.osirion-bootstrap-integration .osirion-menu-container[data-osirion-component-theme="light"] {
-    /* Force Osirion light theme colors regardless of Bootstrap */
     --osirion-background-primary: #ffffff !important;
     --osirion-text-primary: #1f2937 !important;
     --osirion-text-secondary: #6b7280 !important;
     --osirion-border-color: rgba(0, 0, 0, 0.1) !important;
     --osirion-color-primary-500: #2563eb !important;
+    --osirion-action-primary: #2563eb !important;
     background-color: #ffffff !important;
     color: #1f2937 !important;
     border-color: rgba(0, 0, 0, 0.1) !important;
-    
-    /* Override Bootstrap variables locally within this component */
     --bs-body-bg: #ffffff !important;
     --bs-body-color: #1f2937 !important;
     --bs-border-color: rgba(0, 0, 0, 0.1) !important;
@@ -32,229 +39,167 @@ html.osirion-bootstrap-integration .osirion-menu-container[data-osirion-componen
 .osirion-bootstrap-integration .osirion-menu-container[data-osirion-component-theme="dark"],
 html.osirion-bootstrap-integration [data-osirion-component-theme="dark"].osirion-menu-container,
 html.osirion-bootstrap-integration .osirion-menu-container[data-osirion-component-theme="dark"] {
-    /* Force Osirion dark theme colors regardless of Bootstrap */
     --osirion-background-primary: #111827 !important;
     --osirion-text-primary: #f3f4f6 !important;
     --osirion-text-secondary: #9ca3af !important;
     --osirion-border-color: rgba(255, 255, 255, 0.1) !important;
     --osirion-color-primary-500: #60a5fa !important;
+    --osirion-action-primary: #60a5fa !important;
     background-color: #111827 !important;
     color: #f3f4f6 !important;
     border-color: rgba(255, 255, 255, 0.1) !important;
-    
-    /* Override Bootstrap variables locally within this component */
     --bs-body-bg: #111827 !important;
     --bs-body-color: #f3f4f6 !important;
     --bs-border-color: rgba(255, 255, 255, 0.1) !important;
-}
-
-/* Make all child elements of component-themed menu respect the fixed theme */
-[data-osirion-component-theme="light"] .osirion-nav-branding,
-[data-osirion-component-theme="light"] .osirion-brand-text,
-[data-osirion-component-theme="light"] .osirion-brand-link,
-[data-osirion-component-theme="light"] .osirion-toggle-icon,
-[data-osirion-component-theme="light"] .osirion-toggle-icon::before,
-[data-osirion-component-theme="light"] .osirion-toggle-icon::after {
-    color: #1f2937 !important;
-    background-color: #1f2937 !important;
-}
-
-[data-osirion-component-theme="dark"] .osirion-nav-branding,
-[data-osirion-component-theme="dark"] .osirion-brand-text,
-[data-osirion-component-theme="dark"] .osirion-brand-link,
-[data-osirion-component-theme="dark"] .osirion-toggle-icon,
-[data-osirion-component-theme="dark"] .osirion-toggle-icon::before,
-[data-osirion-component-theme="dark"] .osirion-toggle-icon::after {
-    color: #f3f4f6 !important;
-    background-color: #f3f4f6 !important;
 }
 
 /* Menu container */
 .osirion-menu-container {
     position: relative;
     width: 100%;
-    background-color: var(--osirion-background-primary, #111827);
-    color: var(--osirion-text-primary, #f3f4f6);
+    background-color: var(--osirion-menu-background, var(--osirion-background-primary, #ffffff));
+    color: var(--osirion-menu-color, var(--osirion-text-primary, #1f2937));
+    font-family: var(--osirion-font-family-base, inherit);
     z-index: var(--osirion-z-index-20, 100);
-    box-shadow: 0 2px 2px rgba(from var(--osirion-text-secondary) r g b / 0.3), 0 4px 12px rgba(from var(--osirion-text-secondary) r g b / 0.2), 0 8px 24px rgba(from var(--osirion-text-secondary) r g b / 0.08);
-    transition: box-shadow var(--osirion-transition-duration-300, 0.3s) ease;
 }
 
-.osirion-menu-container {
-    box-shadow: 0 2px 2px rgba(from var(--osirion-color-primary-500) r g b / 0.3), 0 4px 12px rgba(from var(--osirion-color-primary-500) r g b / 0.2), 0 8px 24px rgba(from var(--osirion-color-primary-500) r g b / 0.08);
+.osirion-menu-horizontal {
+    border-bottom: 1px solid var(--osirion-menu-border-color, var(--osirion-border-color, rgba(15, 23, 42, 0.12)));
 }
 
-/* Main navigation container */
+.osirion-menu-sticky {
+    position: sticky !important;
+    top: 0;
+    width: 100%;
+}
+
+/* Navigation row: brand, items and actions, centred within --osirion-menu-max-width */
 .osirion-menu-nav {
     display: flex;
     flex-direction: column;
     width: 100%;
-    min-height: 60px;
+    max-width: var(--osirion-menu-max-width, none);
+    margin-inline: auto;
 }
 
-/* Base menu styling */
-.osirion-menu {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    margin: 0;
-    padding: var(--osirion-spacing-1, 0.25rem) 0;
-    font-family: var(--osirion-font-family-base);
+.osirion-menu-horizontal .osirion-menu-nav {
+    flex-direction: row;
+    align-items: center;
+    gap: 1.5rem;
+    min-height: var(--osirion-menu-height, 4rem);
+    padding-inline: var(--osirion-menu-padding-x, 1rem);
 }
 
-/* Branding container */
+/* Branding */
 .osirion-nav-branding {
     display: flex;
-    flex-direction: row; /* Changed to row for inline display */
     align-items: center;
-    justify-content: flex-start; /* Align to the left */
-    padding: var(--osirion-spacing-2, 0.5rem) var(--osirion-spacing-4, 1rem);
-    color: var(--osirion-text-primary, #f3f4f6);
+    flex-shrink: 0;
+    min-width: 0;
 }
 
-/* Brand link styling */
+.osirion-menu-vertical .osirion-nav-branding {
+    min-height: var(--osirion-menu-height, 4rem);
+    padding: 0.75rem var(--osirion-menu-padding-x, 1rem);
+}
+
 .osirion-brand-link {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: var(--osirion-spacing-2, 0.5rem); /* Space between logo and text */
-    text-decoration: none;
+    gap: 0.625rem;
+    min-width: 0;
     color: inherit;
+    text-decoration: none;
+    border-radius: var(--osirion-menu-radius, 0.5rem);
     transition: opacity var(--osirion-transition-duration-200, 0.2s) ease;
 }
 
     .osirion-brand-link:hover {
-        opacity: 0.8;
+        color: inherit;
+        text-decoration: none;
+        opacity: 0.85;
     }
 
-/* Brand logo styling */
+    .osirion-brand-link:focus-visible {
+        outline: 2px solid var(--osirion-menu-accent, var(--osirion-action-primary, #2563eb));
+        outline-offset: 4px;
+    }
+
 .osirion-brand-logo {
-    object-fit: contain; /* Maintain aspect ratio */
-    flex-shrink: 0; /* Prevent logo from shrinking */
+    width: var(--osirion-menu-logo-size, 2.25rem);
+    height: var(--osirion-menu-logo-size, 2.25rem);
+    flex-shrink: 0;
+    object-fit: contain;
 }
 
-/* Branding text styling */
 .osirion-brand-text {
-    font-size: var(--osirion-font-size-xl, 1.25rem);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: inherit;
+    font-size: var(--osirion-font-size-lg, 1.125rem);
     font-weight: var(--osirion-font-weight-bold, 700);
-    color: var(--osirion-text-primary, #f3f4f6);
+    letter-spacing: -0.01em;
+    line-height: 1.2;
     white-space: nowrap;
-    line-height: 1;
 }
 
-/* Menu inner container for flex layout */
-.osirion-menu-inner {
-    width: 100%;
+/* Items and actions */
+.osirion-menu {
     display: flex;
     flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+    min-width: 0;
+    margin: 0;
 }
 
-/* Mobile toggle button - checkbox is hidden but accessible */
-.osirion-navbar-toggler {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
+.osirion-menu-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    width: 100%;
+    min-width: 0;
 }
 
-/* Toggle button visible appearance */
-.osirion-navbar-toggle {
-    display: none; /* Hidden on desktop, shown on mobile */
-    position: absolute;
-    top: 0.75rem;
-    right: 1rem;
-    width: 2.5rem;
-    height: 2.5rem;
-    padding: 0.5rem;
-    border-radius: var(--osirion-radius-sm, 0.125rem);
-    background-color: rgba(255, 255, 255, 0.05);
-    cursor: pointer;
-    z-index: 10;
-}
-
-/* Keyboard focus: the checkbox is visually hidden, so show its focus on the visible toggle */
-.osirion-navbar-toggler:focus-visible + .osirion-navbar-toggle {
-    outline: 2px solid currentColor;
-    outline-offset: 2px;
-}
-
-/* Collapsible menu behavior for mobile */
-.osirion-menu-collapsible .osirion-menu {
-    display: none; /* Hide menu by default on mobile */
-}
-
-.osirion-menu-collapsible .osirion-navbar-toggler:checked ~ .osirion-menu-nav .osirion-menu {
-    display: flex; /* Show menu when toggle is checked */
-}
-
-/* Show toggle button only for collapsible menus */
-.osirion-menu-collapsible .osirion-navbar-toggle {
-    display: block;
-}
-
-/* Toggle icon style - hamburger menu */
-.osirion-toggle-icon,
-.osirion-toggle-icon::before,
-.osirion-toggle-icon::after {
-    display: block;
-    width: 1.5rem;
-    height: 2px;
-    background-color: var(--osirion-text-primary, #f3f4f6);
-    position: relative;
-    margin: 0.25rem auto;
-    transition: transform 0.3s ease;
-}
-
-    .osirion-toggle-icon::before,
-    .osirion-toggle-icon::after {
-        content: "";
-        position: absolute;
-        left: 0;
-    }
-
-    .osirion-toggle-icon::before {
-        top: -8px;
-    }
-
-    .osirion-toggle-icon::after {
-        top: 8px;
-    }
-
-/* Toggle state - transform to X */
-.osirion-navbar-toggler:checked + .osirion-navbar-toggle .osirion-toggle-icon {
-    background-color: transparent;
-}
-
-    .osirion-navbar-toggler:checked + .osirion-navbar-toggle .osirion-toggle-icon::before {
-        transform: rotate(45deg) translate(5px, 5px);
-    }
-
-    .osirion-navbar-toggler:checked + .osirion-navbar-toggle .osirion-toggle-icon::after {
-        transform: rotate(-45deg) translate(5px, -5px);
-    }
-
-/* Horizontal menu styling */
-.osirion-menu-horizontal .osirion-menu-nav {
-    flex-direction: row;
+.osirion-menu-actions {
+    display: flex;
+    flex-wrap: wrap;
     align-items: center;
+    gap: 0.5rem;
 }
 
+    /* Search boxes, toggles and buttons bring their own outer margins; the actions row spaces them instead. */
+    .osirion-menu .osirion-menu-actions ::deep > * {
+        margin: 0;
+    }
+
+.osirion-menu-vertical .osirion-menu {
+    padding: 0.5rem var(--osirion-menu-padding-x, 1rem) 1rem;
+}
+
+/* Horizontal bar: the menu and its item row span the bar's height, so a dropdown's hover area reaches its panel */
 .osirion-menu-horizontal .osirion-menu {
+    flex: 1 1 auto;
     flex-direction: row;
     align-items: center;
+    align-self: stretch;
+    gap: 1rem;
 }
 
 .osirion-menu-horizontal .osirion-menu-inner {
+    flex: 1 1 auto;
     flex-direction: row;
-    align-items: center;
     flex-wrap: wrap;
+    align-items: center;
+    align-self: stretch;
+    gap: 0.25rem;
 }
 
-/* Alignment options for horizontal menu */
+.osirion-menu-horizontal .osirion-menu-actions {
+    flex-shrink: 0;
+    flex-wrap: nowrap;
+}
+
 .osirion-menu-align-left .osirion-menu-inner {
     justify-content: flex-start;
 }
@@ -267,406 +212,315 @@ html.osirion-bootstrap-integration .osirion-menu-container[data-osirion-componen
     justify-content: flex-end;
 }
 
-/* Sticky menu */
-.osirion-menu-sticky {
-    position: sticky !important;
-    top: 0;
-    width: 100%;
-    border-radius: 0;
-    z-index: var(--osirion-z-index-30, 1000);
+/* Hamburger: a visually hidden checkbox, shown through its label */
+.osirion-navbar-toggler {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
 }
 
-/* Submenu styles */
-.osirion-submenu {
+.osirion-navbar-toggle {
     display: none;
     position: absolute;
-    min-width: 12rem;
-    background-color: var(--osirion-background-primary, #111827);
-    border: 1px solid var(--osirion-border-color, rgba(255, 255, 255, 0.1));
-    border-radius: var(--osirion-radius-md, 0.375rem);
-    box-shadow: var(--osirion-shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1));
-    z-index: var(--osirion-z-index-20, 100);
-    padding: var(--osirion-spacing-1, 0.25rem) 0;
-    margin-top: 0;
+    top: calc((var(--osirion-menu-height, 4rem) - 2.75rem) / 2);
+    right: max(var(--osirion-menu-padding-x, 1rem), calc((100% - var(--osirion-menu-max-width, 100%)) / 2 + var(--osirion-menu-padding-x, 1rem)));
+    z-index: 2;
+    width: 2.75rem;
+    height: 2.75rem;
+    align-items: center;
+    justify-content: center;
+    color: inherit;
+    background-color: transparent;
+    border: 1px solid var(--osirion-menu-border-color, var(--osirion-border-color, rgba(15, 23, 42, 0.12)));
+    border-radius: var(--osirion-menu-radius, 0.5rem);
+    cursor: pointer;
+    transition: background-color var(--osirion-transition-duration-150, 150ms) ease;
+    -webkit-tap-highlight-color: transparent;
 }
 
-/* Show submenu on hover - pure CSS solution */
-.osirion-menu-item-has-submenu:hover > .osirion-submenu,
-.osirion-menu-item-has-submenu:focus-within > .osirion-submenu {
+    .osirion-navbar-toggle:hover {
+        background-color: var(--osirion-menu-hover-background, color-mix(in srgb, currentColor 8%, transparent));
+    }
+
+/* Keyboard focus: the checkbox is visually hidden, so show its focus on the visible toggle */
+.osirion-navbar-toggler:focus-visible + .osirion-navbar-toggle {
+    outline: 2px solid var(--osirion-menu-accent, var(--osirion-action-primary, #2563eb));
+    outline-offset: 2px;
+}
+
+.osirion-toggle-icon {
+    position: relative;
     display: block;
+    width: 1.125rem;
+    height: 2px;
+    border-radius: 1px;
+    background-color: currentColor;
+    transition: background-color var(--osirion-transition-duration-150, 150ms) ease;
 }
 
-/* Positioning for horizontal vs vertical menus */
-.osirion-menu-horizontal .osirion-menu-item-has-submenu > .osirion-submenu {
+    .osirion-toggle-icon::before,
+    .osirion-toggle-icon::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        border-radius: 1px;
+        background-color: currentColor;
+        transition: transform 250ms ease, top 250ms ease;
+    }
+
+    .osirion-toggle-icon::before {
+        top: -6px;
+    }
+
+    .osirion-toggle-icon::after {
+        top: 6px;
+    }
+
+/* Open: the lines cross into an X */
+.osirion-navbar-toggler:checked + .osirion-navbar-toggle .osirion-toggle-icon {
+    background-color: transparent;
+}
+
+    .osirion-navbar-toggler:checked + .osirion-navbar-toggle .osirion-toggle-icon::before {
+        top: 0;
+        transform: rotate(45deg);
+    }
+
+    .osirion-navbar-toggler:checked + .osirion-navbar-toggle .osirion-toggle-icon::after {
+        top: 0;
+        transform: rotate(-45deg);
+    }
+
+/* Dims the page under an open drawer. It is a label for the toggle, so a tap on it closes the drawer. */
+.osirion-menu-backdrop {
+    display: none;
+    position: absolute;
     top: 100%;
     left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: rgba(15, 23, 42, 0.45);
+    cursor: pointer;
 }
 
-.osirion-menu-vertical .osirion-menu-item-has-submenu > .osirion-submenu {
-    top: 0;
-    left: 100%;
+@keyframes osirion-menu-drawer-in {
+    from {
+        opacity: 0;
+        transform: translateY(-0.5rem);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
 }
 
-/* Responsive behavior */
+/* Drawer: below its collapse breakpoint a collapsible menu shows the hamburger and opens its items in a panel.
+   The blocks differ only in their media query and selector prefix; change them together. */
 @media (max-width: 768px) {
-    /* Show toggle button on mobile */
-    .osirion-navbar-toggle {
-        display: block;
-    }
-    /* Fix menu stacking on mobile */
-    .osirion-menu-horizontal .osirion-menu-nav {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-    /* Hide menu by default on mobile - only show when toggled */
-    .osirion-menu-container .osirion-menu {
-        display: none;
-        max-height: calc(100vh - 4.5rem);
-        overflow-y: auto;
-        overscroll-behavior: contain;
-    }
-    /* Show menu when toggle is checked */
-    .osirion-navbar-toggler:checked ~ .osirion-menu-nav .osirion-menu {
-        display: flex;
-    }
-    /* Make sure branding stays visible */
-    .osirion-nav-branding {
-        display: flex !important;
-    }
-    /* Reset menu direction on mobile */
-    .osirion-menu-horizontal .osirion-menu {
-        flex-direction: column;
-        align-items: stretch;
+    .osirion-menu-collapsible .osirion-navbar-toggle {
+        display: inline-flex;
     }
 
-    .osirion-menu-horizontal .osirion-menu-inner {
-        flex-direction: column;
-        align-items: stretch;
+    .osirion-menu-collapsible .osirion-menu-nav {
+        flex-direction: row;
+        align-items: center;
+        min-height: var(--osirion-menu-height, 4rem);
+        padding-inline: var(--osirion-menu-padding-x, 1rem);
+        padding-right: calc(var(--osirion-menu-padding-x, 1rem) + 3.5rem);
     }
-    /* Reset alignment on mobile */
-    .osirion-menu-align-left .osirion-menu-inner,
-    .osirion-menu-align-center .osirion-menu-inner,
-    .osirion-menu-align-right .osirion-menu-inner {
-        justify-content: flex-start;
-    }
-    /* Static submenu positioning on mobile */
-    .osirion-submenu {
-        position: static !important;
-        width: 100%;
-        box-shadow: none;
-        border: none;
-        display: none;
-        border-left: 1px solid var(--osirion-border-color, rgba(255, 255, 255, 0.1));
-        margin-left: var(--osirion-spacing-5, 1.25rem);
-        padding-left: var(--osirion-spacing-2, 0.5rem);
-    }
-    /* Reset chevron direction for mobile */
-    .osirion-menu-horizontal .osirion-menu-item-chevron svg {
-        transform: rotate(0deg) !important;
-    }
-}
-/* Larger screens */
-@media (min-width: 769px) {
-    /* Hide mobile toggle button */
-    .osirion-navbar-toggle {
-        display: none;
-    }
-    /* Always show menu on desktop */
-    .osirion-menu-container .osirion-menu {
-        display: flex !important;
-    }
-    /* Horizontal menu spacing for branding */
-    .osirion-menu-horizontal .osirion-nav-branding {
-        margin-right: var(--osirion-spacing-4, 1rem);
+
+    .osirion-menu-collapsible .osirion-nav-branding {
+        min-height: 0;
+        padding: 0;
     }
 
     .osirion-menu-collapsible .osirion-menu {
-        display: flex !important; /* Always show menu on desktop */
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        z-index: 1;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+        max-height: calc(100vh - var(--osirion-menu-height, 4rem));
+        max-height: calc(100dvh - var(--osirion-menu-height, 4rem));
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        padding: 0.75rem var(--osirion-menu-padding-x, 1rem) 1.5rem;
+        background-color: var(--osirion-menu-background, var(--osirion-background-primary, #ffffff));
+        border-top: 1px solid var(--osirion-menu-border-color, var(--osirion-border-color, rgba(15, 23, 42, 0.12)));
+        box-shadow: var(--osirion-menu-shadow, 0 18px 40px -12px rgba(15, 23, 42, 0.28), 0 6px 14px -6px rgba(15, 23, 42, 0.14));
     }
 
-    .osirion-menu-collapsible .osirion-navbar-toggle {
-        display: none; /* Hide toggle on desktop */
+    .osirion-menu-collapsible .osirion-navbar-toggler:checked ~ .osirion-menu-nav .osirion-menu {
+        display: flex;
+        animation: osirion-menu-drawer-in 200ms ease-out;
     }
 
-    .osirion-nav-branding {
-        padding: var(--osirion-spacing-2, 0.5rem);
+    .osirion-menu-collapsible .osirion-navbar-toggler:checked ~ .osirion-menu-backdrop {
+        display: block;
     }
 
-    .osirion-brand-logo {
-        width: 32px;
-        height: 32px;
+    .osirion-menu-collapsible .osirion-menu-inner {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.125rem;
     }
 
-    .osirion-brand-text {
-        font-size: var(--osirion-font-size-lg, 1.125rem);
+    .osirion-menu-collapsible .osirion-menu-actions {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 0.75rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--osirion-menu-border-color, var(--osirion-border-color, rgba(15, 23, 42, 0.12)));
     }
 }
 
-/* Opt-in collapse behavior for dense horizontal menus. */
+@media (max-width: 1199.98px) {
+    :is(.osirion-menu-collapse-large, .osirion-menu-collapse-extra-large) .osirion-navbar-toggle {
+        display: inline-flex;
+    }
+
+    :is(.osirion-menu-collapse-large, .osirion-menu-collapse-extra-large) .osirion-menu-nav {
+        flex-direction: row;
+        align-items: center;
+        min-height: var(--osirion-menu-height, 4rem);
+        padding-inline: var(--osirion-menu-padding-x, 1rem);
+        padding-right: calc(var(--osirion-menu-padding-x, 1rem) + 3.5rem);
+    }
+
+    :is(.osirion-menu-collapse-large, .osirion-menu-collapse-extra-large) .osirion-nav-branding {
+        min-height: 0;
+        padding: 0;
+    }
+
+    :is(.osirion-menu-collapse-large, .osirion-menu-collapse-extra-large) .osirion-menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        z-index: 1;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+        max-height: calc(100vh - var(--osirion-menu-height, 4rem));
+        max-height: calc(100dvh - var(--osirion-menu-height, 4rem));
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        padding: 0.75rem var(--osirion-menu-padding-x, 1rem) 1.5rem;
+        background-color: var(--osirion-menu-background, var(--osirion-background-primary, #ffffff));
+        border-top: 1px solid var(--osirion-menu-border-color, var(--osirion-border-color, rgba(15, 23, 42, 0.12)));
+        box-shadow: var(--osirion-menu-shadow, 0 18px 40px -12px rgba(15, 23, 42, 0.28), 0 6px 14px -6px rgba(15, 23, 42, 0.14));
+    }
+
+    :is(.osirion-menu-collapse-large, .osirion-menu-collapse-extra-large) .osirion-navbar-toggler:checked ~ .osirion-menu-nav .osirion-menu {
+        display: flex;
+        animation: osirion-menu-drawer-in 200ms ease-out;
+    }
+
+    :is(.osirion-menu-collapse-large, .osirion-menu-collapse-extra-large) .osirion-navbar-toggler:checked ~ .osirion-menu-backdrop {
+        display: block;
+    }
+
+    :is(.osirion-menu-collapse-large, .osirion-menu-collapse-extra-large) .osirion-menu-inner {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.125rem;
+    }
+
+    :is(.osirion-menu-collapse-large, .osirion-menu-collapse-extra-large) .osirion-menu-actions {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 0.75rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--osirion-menu-border-color, var(--osirion-border-color, rgba(15, 23, 42, 0.12)));
+    }
+}
+
 @media (max-width: 1439.98px) {
     .osirion-menu-collapse-extra-large .osirion-navbar-toggle {
-        display: block !important;
+        display: inline-flex;
     }
 
     .osirion-menu-collapse-extra-large .osirion-menu-nav {
-        flex-direction: column;
-        align-items: flex-start;
+        flex-direction: row;
+        align-items: center;
+        min-height: var(--osirion-menu-height, 4rem);
+        padding-inline: var(--osirion-menu-padding-x, 1rem);
+        padding-right: calc(var(--osirion-menu-padding-x, 1rem) + 3.5rem);
+    }
+
+    .osirion-menu-collapse-extra-large .osirion-nav-branding {
+        min-height: 0;
+        padding: 0;
     }
 
     .osirion-menu-collapse-extra-large .osirion-menu {
-        display: none !important;
-        max-height: calc(100vh - 4.5rem);
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        z-index: 1;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+        max-height: calc(100vh - var(--osirion-menu-height, 4rem));
+        max-height: calc(100dvh - var(--osirion-menu-height, 4rem));
         overflow-y: auto;
         overscroll-behavior: contain;
-        padding: var(--osirion-spacing-2, 0.5rem) var(--osirion-spacing-4, 1rem) var(--osirion-spacing-6, 1.5rem);
+        padding: 0.75rem var(--osirion-menu-padding-x, 1rem) 1.5rem;
+        background-color: var(--osirion-menu-background, var(--osirion-background-primary, #ffffff));
+        border-top: 1px solid var(--osirion-menu-border-color, var(--osirion-border-color, rgba(15, 23, 42, 0.12)));
+        box-shadow: var(--osirion-menu-shadow, 0 18px 40px -12px rgba(15, 23, 42, 0.28), 0 6px 14px -6px rgba(15, 23, 42, 0.14));
     }
 
     .osirion-menu-collapse-extra-large .osirion-navbar-toggler:checked ~ .osirion-menu-nav .osirion-menu {
-        display: flex !important;
+        display: flex;
+        animation: osirion-menu-drawer-in 200ms ease-out;
     }
 
-    .osirion-menu-collapse-extra-large.osirion-menu-horizontal .osirion-menu {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .osirion-menu-collapse-extra-large.osirion-menu-horizontal .osirion-menu-inner {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .osirion-menu-collapse-extra-large.osirion-menu-align-left .osirion-menu-inner,
-    .osirion-menu-collapse-extra-large.osirion-menu-align-center .osirion-menu-inner,
-    .osirion-menu-collapse-extra-large.osirion-menu-align-right .osirion-menu-inner {
-        justify-content: flex-start;
-    }
-
-    .osirion-menu-collapse-extra-large .osirion-submenu {
-        position: static !important;
-        width: 100%;
-        box-shadow: none;
-        border: none;
-        display: none;
-        border-top: 1px solid var(--osirion-border-color, rgba(255, 255, 255, 0.1));
-        margin: 0;
-        padding: var(--osirion-spacing-2, 0.5rem) 0;
-    }
-
-    .osirion-menu-collapse-extra-large .osirion-menu-inner > .osirion-menu-item-wrapper {
-        border-bottom: 1px solid var(--osirion-border-color, rgba(255, 255, 255, 0.1));
-    }
-
-    .osirion-menu-collapse-extra-large .osirion-menu-item {
-        min-height: 3.5rem;
-        margin: 0;
-        padding: var(--osirion-spacing-3, 0.75rem);
-        border-radius: 0;
-    }
-
-    .osirion-menu-collapse-extra-large .osirion-submenu .osirion-menu-item {
-        min-height: 3rem;
-        padding-left: var(--osirion-spacing-5, 1.25rem);
-    }
-
-    .osirion-menu-collapse-extra-large .osirion-menu-item-description {
-        display: none;
-    }
-
-    .osirion-menu-collapse-extra-large .osirion-menu-item-has-submenu:hover > .osirion-submenu,
-    .osirion-menu-collapse-extra-large .osirion-menu-item-has-submenu:focus-within > .osirion-submenu,
-    .osirion-menu-collapse-extra-large .osirion-menu-item-has-submenu:hover > .osirion-submenu.osirion-submenu-mega,
-    .osirion-menu-collapse-extra-large .osirion-menu-item-has-submenu:focus-within > .osirion-submenu.osirion-submenu-mega {
-        display: none;
-    }
-
-    .osirion-menu-collapse-extra-large .osirion-menu-item-has-submenu > .osirion-menu-item {
-        width: calc(100% - 3.5rem);
-    }
-
-    .osirion-menu-collapse-extra-large .osirion-submenu-toggle {
-        width: 3rem;
-    }
-
-    .osirion-menu-collapse-extra-large .osirion-menu-item-has-submenu > .osirion-submenu-toggle {
-        width: 100%;
-        justify-content: flex-end;
-        padding-right: var(--osirion-spacing-3, 0.75rem);
-        z-index: 1;
-    }
-
-    .osirion-menu-collapse-extra-large .osirion-submenu-toggler:checked ~ .osirion-submenu {
+    .osirion-menu-collapse-extra-large .osirion-navbar-toggler:checked ~ .osirion-menu-backdrop {
         display: block;
     }
 
-    .osirion-menu-collapse-extra-large .osirion-submenu-toggler:checked ~ .osirion-submenu.osirion-submenu-mega {
-        display: flex;
+    .osirion-menu-collapse-extra-large .osirion-menu-inner {
         flex-direction: column;
-        gap: 0;
-        padding: 0;
+        align-items: stretch;
+        gap: 0.125rem;
     }
 
-    .osirion-menu-collapse-extra-large .osirion-submenu-mega .osirion-menu-group {
-        width: 100%;
-        margin: 0;
-        padding: var(--osirion-spacing-2, 0.5rem) 0;
-    }
-
-    .osirion-menu-collapse-extra-large .osirion-submenu-mega .osirion-menu-group-label {
-        padding: var(--osirion-spacing-3, 0.75rem) var(--osirion-spacing-2, 0.5rem);
-    }
-
-    .osirion-menu-collapse-extra-large .osirion-submenu-mega .osirion-menu-call-to-action {
-        display: none;
-    }
-
-    .osirion-menu-collapse-extra-large .osirion-submenu-toggler:checked ~ .osirion-submenu-toggle svg {
-        transform: rotate(90deg);
-    }
-
-    /* Cross the CSS-isolation boundary into MenuItem, MenuGroup, and CTA children. */
-    .osirion-menu-collapse-extra-large ::deep .osirion-submenu {
-        position: static !important;
-        width: 100% !important;
-        transform: none !important;
-        box-shadow: none;
-        border: none;
-        border-top: 1px solid var(--osirion-border-color, rgba(255, 255, 255, 0.1));
-        margin: 0;
-        padding: var(--osirion-spacing-2, 0.5rem) 0;
-    }
-
-    .osirion-menu-collapse-extra-large ::deep .osirion-menu-item-wrapper {
-        border-bottom: none;
-    }
-
-    .osirion-menu-collapse-extra-large ::deep .osirion-menu-inner > .osirion-menu-item-wrapper {
-        border-bottom: 1px solid var(--osirion-border-color, rgba(255, 255, 255, 0.1));
-    }
-
-    .osirion-menu-collapse-extra-large ::deep .osirion-menu-item-has-submenu > .osirion-submenu-toggle {
-        width: 100%;
-        justify-content: flex-end;
-        padding-right: var(--osirion-spacing-3, 0.75rem);
-        z-index: 1;
-    }
-
-    /* The toggle spans the whole row here; keep it transparent so it never hides the item text */
-    .osirion-menu-collapse-extra-large ::deep .osirion-menu-item-has-submenu:hover > .osirion-submenu-toggle,
-    .osirion-menu-collapse-extra-large ::deep .osirion-menu-item-has-submenu:focus-within > .osirion-submenu-toggle {
-        background-color: transparent;
-    }
-
-    .osirion-menu-collapse-extra-large ::deep .osirion-menu-item {
-        min-height: 3.5rem;
-        margin: 0;
-        padding: var(--osirion-spacing-3, 0.75rem);
-        border-radius: 0;
-    }
-
-    .osirion-menu-collapse-extra-large ::deep .osirion-submenu .osirion-menu-item {
-        min-height: 3rem;
-        padding: var(--osirion-spacing-2, 0.5rem) var(--osirion-spacing-3, 0.75rem);
-    }
-
-    .osirion-menu-collapse-extra-large ::deep .osirion-menu-item-description {
-        display: none;
-    }
-
-    .osirion-menu-collapse-extra-large ::deep .osirion-submenu .osirion-menu-item-description {
-        display: block;
-        margin-top: 0.125rem;
-        color: var(--osirion-text-secondary, #6b7280);
-        font-size: 0.8125rem;
-        line-height: 1.35;
-    }
-
-    .osirion-menu-collapse-extra-large ::deep .osirion-submenu-mega .osirion-menu-group {
-        width: 100%;
-        margin: 0;
-        padding: 0;
-    }
-
-    .osirion-menu-collapse-extra-large ::deep .osirion-submenu-mega .osirion-menu-group + .osirion-menu-group {
-        border-top: none;
-    }
-
-    .osirion-menu-collapse-extra-large ::deep .osirion-submenu-mega .osirion-menu-group-label {
-        min-height: 3rem;
-        padding: var(--osirion-spacing-2, 0.5rem) var(--osirion-spacing-3, 0.75rem);
-        color: var(--osirion-color-primary-500, #2563eb);
-        font-size: var(--osirion-font-size-xs, 0.75rem);
-        font-weight: var(--osirion-font-weight-semibold, 600);
-        letter-spacing: 0.05em;
-        text-transform: uppercase;
-    }
-
-    .osirion-menu-collapse-extra-large ::deep .osirion-submenu-mega {
-        margin: 0;
-        padding: var(--osirion-spacing-2, 0.5rem) 0;
-        flex-direction: column;
-        gap: 0;
-        background-color: transparent !important;
-        border: none !important;
-        border-radius: 0;
-        box-shadow: none !important;
-    }
-
-    .osirion-menu-collapse-extra-large ::deep .osirion-submenu-mega::before {
-        display: none;
-    }
-
-    .osirion-menu-collapse-extra-large ::deep .osirion-submenu-mega-content {
-        display: flex;
-        flex-direction: column;
-    }
-
-    /* Keep the collapsed drawer scannable: hide promotional asides */
-    .osirion-menu-collapse-extra-large ::deep .osirion-submenu-mega-aside {
-        display: none;
-    }
-
-    .osirion-menu-collapse-extra-large ::deep .osirion-menu-group-description {
-        display: none;
-    }
-
-    .osirion-menu-collapse-extra-large ::deep .osirion-menu-group-footer {
-        min-height: 3rem;
-        display: inline-flex;
+    .osirion-menu-collapse-extra-large .osirion-menu-actions {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
         align-items: center;
-        padding: var(--osirion-spacing-2, 0.5rem) var(--osirion-spacing-3, 0.75rem);
-    }
-
-    .osirion-menu-collapse-extra-large ::deep .osirion-submenu-mega .osirion-menu-group-items {
-        margin-top: 0;
-        padding-top: 0;
-        border-top: none;
-    }
-
-    .osirion-menu-collapse-extra-large ::deep .osirion-submenu-mega .osirion-menu-item {
-        min-height: 3rem;
-        padding: var(--osirion-spacing-2, 0.5rem) var(--osirion-spacing-3, 0.75rem);
-        color: var(--osirion-text-primary, #1f2937);
-        font-size: var(--osirion-font-size-base, 1rem);
-    }
-
-    .osirion-menu-collapse-extra-large ::deep .osirion-submenu-mega .osirion-menu-item:hover,
-    .osirion-menu-collapse-extra-large ::deep .osirion-submenu-mega .osirion-menu-item:focus-visible {
-        background-color: var(--osirion-background-secondary, #f3f4f6);
-        color: var(--osirion-text-primary, #1f2937);
-        border-radius: 0;
-    }
-
-    .osirion-menu-collapse-extra-large ::deep .osirion-submenu-mega .osirion-menu-call-to-action {
-        display: none;
+        gap: 0.75rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--osirion-menu-border-color, var(--osirion-border-color, rgba(15, 23, 42, 0.12)));
     }
 }
 
-/* Accessibility - reduced motion preference */
+/* Accessibility: reduced motion */
 @media (prefers-reduced-motion: reduce) {
-    .osirion-menu *,
+    .osirion-menu-container *,
     .osirion-toggle-icon,
     .osirion-toggle-icon::before,
     .osirion-toggle-icon::after {
+        animation: none !important;
         transition-duration: 0.01ms !important;
     }
 }

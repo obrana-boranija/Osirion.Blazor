@@ -38,6 +38,14 @@ public partial class Menu
     public RenderFragment? BrandingTemplate { get; set; }
 
     /// <summary>
+    /// Gets or sets content shown at the end of the bar, after the menu items: a search box, a theme toggle or a
+    /// call to action button. A horizontal menu aligns it to the trailing edge; a collapsed menu shows it at the
+    /// bottom of its drawer.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? Actions { get; set; }
+
+    /// <summary>
     /// Gets or sets whether the menu should stick to the top when scrolling.
     /// Only applies to horizontal menus.
     /// </summary>
@@ -164,8 +172,13 @@ public partial class Menu
         if (CollapseOnMobile)
             classes.Add("osirion-menu-collapsible");
 
-        if (CollapseOnMobile && CollapseBreakpoint == MenuCollapseBreakpoint.ExtraLarge)
-            classes.Add("osirion-menu-collapse-extra-large");
+        if (CollapseOnMobile)
+            classes.Add(CollapseBreakpoint switch
+            {
+                MenuCollapseBreakpoint.Large => "osirion-menu-collapse-large",
+                MenuCollapseBreakpoint.ExtraLarge => "osirion-menu-collapse-extra-large",
+                _ => "osirion-menu-collapse-mobile"
+            });
 
         if (Sticky && Orientation == MenuOrientation.Horizontal)
             classes.Add("osirion-menu-sticky");
@@ -221,7 +234,13 @@ public enum MenuCollapseBreakpoint
     /// <summary>
     /// Collapses below the extra-large breakpoint (1440px).
     /// </summary>
-    ExtraLarge
+    ExtraLarge,
+
+    /// <summary>
+    /// Collapses below the large breakpoint (1200px), which suits a bar with a few items and a search box or other
+    /// actions.
+    /// </summary>
+    Large
 }
 
 /// <summary>
