@@ -320,22 +320,6 @@ public partial class MarkdownEditorWithPreview : IAsyncDisposable
         }
     }
 
-    private async Task ToggleFullscreen()
-    {
-        if (jsInteropAvailable && jsModule is not null)
-        {
-            try
-            {
-                IsFullscreen = await jsModule.InvokeAsync<bool>("toggleFullscreen", ".markdown-editor");
-                StateHasChanged();
-            }
-            catch
-            {
-                // Silently fail if JS interop isn't available
-            }
-        }
-    }
-
     private void SetEditorMode(EditorMode mode)
     {
         EditorMode = mode;
