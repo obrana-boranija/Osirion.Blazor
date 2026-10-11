@@ -17,3 +17,7 @@ Notes
 - See `src/Osirion.Blazor.Cms.Web/Components/PageLevel/ArticlePage.razor` for the full parameter list and behaviour.
 
 - The component supports `ShowRelatedContent`, `ShowNavigation`, and slotting of `SidebarContent` for related widgets.
+
+- With `ShowHero` (the default) the hero shows the title as the page's `h1`, so an opening `# Title` line in the
+  Markdown is left out of the body. `HomePage` and `LandingPage` do the same while they show their hero, and
+  `ContentView`, `DocumentPage` and `LocalizedContentView` (with its header) do it under their own title heading.

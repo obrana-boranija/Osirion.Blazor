@@ -36,7 +36,7 @@
 
         @if (Content is not null)
         {
-            <ContentSection Content="@Content.Content"
+            <ContentSection Content="@(ShowHero ? ContentHeadings.WithoutLeadingTitle(Content.Content) : Content.Content)"
                             Width="@ContentWidth"
                             TextAlign="@ContentAlign"
                             Variant="@ContentVariant"

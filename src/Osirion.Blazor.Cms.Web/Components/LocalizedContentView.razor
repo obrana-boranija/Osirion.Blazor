@@ -43,7 +43,7 @@
             
 
             <div class="osirion-content-body">
-                @GetSanitizedContent(Item.Content)
+                @GetSanitizedContent(ShowJumbotron ? ContentHeadings.WithoutLeadingTitle(Item.Content) : Item.Content)
             </div>
 
             <div class="osirion-content-footer">
