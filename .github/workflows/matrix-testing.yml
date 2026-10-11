@@ -64,7 +64,7 @@ jobs:
       run: dotnet restore tests/Osirion.Blazor.E2ETests/Osirion.Blazor.E2ETests.csproj
     
     - name: Build
-      run: dotnet build --no-restore tests/Osirion.Blazor.E2ETests/Osirion.Blazor.E2ETests.csproj
+      run: dotnet build --no-restore --configuration Release tests/Osirion.Blazor.E2ETests/Osirion.Blazor.E2ETests.csproj
     
     - name: Run browser tests
       run: dotnet test tests/Osirion.Blazor.E2ETests/Osirion.Blazor.E2ETests.csproj --no-build --configuration Release
