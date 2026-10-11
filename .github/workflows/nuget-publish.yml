@@ -28,12 +28,12 @@ jobs:
     outputs:
       version: ${{ steps.get_version.outputs.version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0 # Get all history for versioning
       
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: |
             9.0.x
@@ -139,13 +139,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download NuGet packages
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: nuget-packages
           path: ${{ env.NuGetDirectory }}
       
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: '10.0.x'
       
@@ -194,13 +194,13 @@ jobs:
       nuget_packages_skipped: ${{ steps.publish.outputs.nuget_packages_skipped }}
     steps:
       - name: Download NuGet packages
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: nuget-packages
           path: ${{ env.NuGetDirectory }}
       
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: '10.0.x'
 
@@ -279,7 +279,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
       
@@ -314,7 +314,7 @@ jobs:
           echo "$CHANGELOG_SECTION" > release_notes.txt
       
       - name: Download Packages for Release
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: nuget-packages
           path: nuget-packages
