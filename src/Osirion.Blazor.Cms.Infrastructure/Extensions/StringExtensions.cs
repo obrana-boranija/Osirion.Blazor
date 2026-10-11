@@ -16,71 +16,87 @@ public static class StringExtensions
     public static string ToUrlSlug(this string input, uint suffixLength = 0)
     {
         if (string.IsNullOrWhiteSpace(input))
-            return "/" + (suffixLength > 0 ? "untitled-" + GenerateRandomLetters(suffixLength) : "untitled");
+            return UntitledSlug(suffixLength);
 
-        // Use StringBuilder for better performance with multiple string operations
+        var slugBuilder = CollectSlugCharacters(input, out var hasValidChars);
+
+        // Checked before the repairs below, which index into the slug and would throw on an empty one
+        if (!hasValidChars)
+            return UntitledSlug(suffixLength);
+
+        EnsureLetterAtSecondPosition(slugBuilder);
+        AppendSlugEnding(slugBuilder, suffixLength);
+
+        return slugBuilder.ToString();
+    }
+
+    private static string UntitledSlug(uint suffixLength) =>
+        "/" + (suffixLength > 0 ? "untitled-" + GenerateRandomLetters(suffixLength) : "untitled");
+
+    /// <summary>
+    /// Keeps ASCII letters and digits and turns runs of word separators into one hyphen, in a single pass.
+    /// </summary>
+    private static StringBuilder CollectSlugCharacters(string input, out bool hasLetters)
+    {
         var slugBuilder = new StringBuilder(input.Length + 10);
-        //slugBuilder.Append('/');
+        var previousWasHyphen = false;
+        hasLetters = false;
 
-        bool previousWasHyphen = false;
-        bool hasValidChars = false;
-
-        // Process each character - single pass through the string
         foreach (char c in input.ToLowerInvariant())
         {
-            if ('a' <= c && c <= 'z')
+            if (char.IsAsciiLetterLower(c) || char.IsAsciiDigit(c))
             {
                 slugBuilder.Append(c);
                 previousWasHyphen = false;
-                hasValidChars = true;
+                hasLetters |= char.IsAsciiLetterLower(c);
             }
-            else if ('0' <= c && c <= '9')
-            {
-                slugBuilder.Append(c);
-                previousWasHyphen = false;
-            }
-            else if ((c == ' ' || c == '-' || c == '_') && !previousWasHyphen && slugBuilder.Length > 1)
+            else if (IsWordSeparator(c) && !previousWasHyphen && slugBuilder.Length > 1)
             {
                 slugBuilder.Append('-');
                 previousWasHyphen = true;
             }
         }
 
-        // Remove trailing hyphen if exists
-        if (previousWasHyphen && slugBuilder.Length > 1)
+        RemoveTrailingHyphen(slugBuilder);
+        return slugBuilder;
+    }
+
+    // Only a separator can append a hyphen, so a trailing hyphen always comes from a separator run.
+    private static void RemoveTrailingHyphen(StringBuilder slugBuilder)
+    {
+        if (slugBuilder.Length > 1 && slugBuilder[^1] == '-')
         {
             slugBuilder.Length--;
         }
+    }
 
-        // Ensure slug starts with a letter after the leading slash
-        if (slugBuilder.Length <= 1 || !char.IsLetter(slugBuilder[1]))
-        {
-            slugBuilder.Insert(1, 'a');
-            if (slugBuilder.Length > 2 && !char.IsLetter(slugBuilder[2]))
-                slugBuilder.Insert(2, '-');
-        }
+    private static bool IsWordSeparator(char c) => c is ' ' or '-' or '_';
 
-        // Add random suffix if requested
+    // The index is 1 because the slug used to start with a '/' that is no longer added.
+    private static void EnsureLetterAtSecondPosition(StringBuilder slugBuilder)
+    {
+        if (slugBuilder.Length > 1 && char.IsLetter(slugBuilder[1]))
+            return;
+
+        slugBuilder.Insert(1, 'a');
+        if (slugBuilder.Length > 2 && !char.IsLetter(slugBuilder[2]))
+            slugBuilder.Insert(2, '-');
+    }
+
+    private static void AppendSlugEnding(StringBuilder slugBuilder, uint suffixLength)
+    {
         if (suffixLength > 0)
         {
-            string lastChar = slugBuilder[^1].ToString();
-            if (!char.IsLetter(lastChar, 0))
+            if (!char.IsLetter(slugBuilder[^1]))
                 slugBuilder.Append('-');
 
             slugBuilder.Append(GenerateRandomLetters(suffixLength));
-        }
-        else
-        {
-            // If no suffix, ensure slug ends with a letter
-            if (slugBuilder.Length > 1 && !char.IsLetter(slugBuilder[^1]))
-                slugBuilder.Append('z');
+            return;
         }
 
-        // If nothing valid was found, return a default
-        if (!hasValidChars)
-            return "/" + (suffixLength > 0 ? "untitled-" + GenerateRandomLetters(suffixLength) : "untitled");
-
-        return slugBuilder.ToString();
+        // If no suffix, ensure slug ends with a letter
+        if (slugBuilder.Length > 1 && !char.IsLetter(slugBuilder[^1]))
+            slugBuilder.Append('z');
     }
 
     [ThreadStatic]

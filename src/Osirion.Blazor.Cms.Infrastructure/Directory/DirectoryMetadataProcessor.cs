@@ -75,10 +75,10 @@ public class DirectoryMetadataProcessor : IDirectoryMetadataProcessor
             frontMatter.AppendLine($"order: {directory.Order}");
 
         if (!string.IsNullOrWhiteSpace(directory.Locale))
-            frontMatter.AppendLine($"locale: \"{directory.Locale}\"");
+            frontMatter.AppendLine($"locale: \"{EscapeYamlString(directory.Locale)}\"");
 
         if (!string.IsNullOrWhiteSpace(directory.Url))
-            frontMatter.AppendLine($"url: \"{directory.Url}\"");
+            frontMatter.AppendLine($"url: \"{EscapeYamlString(directory.Url)}\"");
 
         // Add custom metadata. Only plain keys are written, so a key cannot break the YAML or add other keys.
         foreach (var meta in directory.CustomMetadata)

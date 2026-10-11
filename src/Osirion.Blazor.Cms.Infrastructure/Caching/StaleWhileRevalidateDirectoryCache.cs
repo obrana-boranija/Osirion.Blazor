@@ -127,7 +127,7 @@ public class StaleWhileRevalidateDirectoryCache : IDirectoryRepository
     public async Task<DirectoryItem?> GetByNameAsync(string? name, string? locale = null, CancellationToken cancellationToken = default)
     {
         var localeKey = locale ?? "all";
-        var cacheKey = $"directory:name:{localeKey}:{_providerIdentifier}";
+        var cacheKey = $"directory:name:{name}:{localeKey}:{_providerIdentifier}";
 
         return await _store.GetOrLoadAsync(
             cacheKey,
