@@ -236,7 +236,7 @@ public partial class HeroSection
         }
 
 
-        return string.Join(" ", classes) + Class;
+        return string.Join(" ", classes);
     }
 
     /// <summary>
