@@ -1,0 +1,67 @@
+/* The radio stays focusable for the keyboard but is hidden; its label is the visible tab */
+.osirion-tabs-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.osirion-tabs-label {
+    order: 0;
+    position: relative;
+    z-index: 1;
+    margin: 0 0 -1px;
+    padding: var(--osirion-spacing-2, 0.5rem) var(--osirion-spacing-4, 1rem);
+    border-bottom: 2px solid transparent;
+    color: var(--osirion-text-secondary, #4b5563);
+    font-weight: var(--osirion-font-weight-medium, 500);
+    cursor: pointer;
+    transition: color var(--osirion-transition-duration-150, 150ms) ease, border-color var(--osirion-transition-duration-150, 150ms) ease;
+}
+
+    .osirion-tabs-label:hover {
+        color: var(--osirion-text-primary, #111827);
+    }
+
+.osirion-tabs-input:checked + .osirion-tabs-label {
+    color: var(--osirion-text-primary, #111827);
+    border-bottom-color: var(--osirion-action-primary, #2563eb);
+}
+
+.osirion-tabs-input:focus-visible + .osirion-tabs-label {
+    outline: var(--osirion-focus-ring-width, 2px) solid var(--osirion-focus-ring-color, rgba(59, 130, 246, 0.5));
+    outline-offset: -2px;
+    border-radius: var(--osirion-radius-sm, 0.125rem);
+}
+
+/* Panels fill the row below the labels; only the selected tab's panel shows */
+.osirion-tabs-panel {
+    order: 1;
+    flex: 1 0 100%;
+    display: none;
+    min-width: 0;
+    padding-top: var(--osirion-spacing-4, 1rem);
+    border-top: 1px solid var(--osirion-border-color, #e5e7eb);
+}
+
+.osirion-tabs-input:checked + .osirion-tabs-label + .osirion-tabs-panel {
+    display: block;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .osirion-tabs-label {
+        transition: none;
+    }
+}
+
+/* Printed pages cannot switch tabs: show every panel under its label */
+@media print {
+    .osirion-tabs-panel {
+        display: block;
+    }
+}

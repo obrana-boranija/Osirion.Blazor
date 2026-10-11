@@ -1,0 +1,11 @@
+@namespace Osirion.Blazor.Components
+@inherits OsirionComponentBase
+
+@* Each OsirionTab renders a radio input, its label and its panel as direct children of this container, which lays
+   the labels out in a row and the selected panel below them. A radio group switches tabs without script and is
+   keyboard accessible as is: Tab reaches the group, the arrow keys move between tabs. *@
+<CascadingValue Value="this" IsFixed="true">
+    <div class="@GetContainerClass()" role="group" aria-label="@AriaLabel" @attributes="Attributes">
+        @ChildContent
+    </div>
+</CascadingValue>

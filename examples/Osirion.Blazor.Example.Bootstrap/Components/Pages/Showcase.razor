@@ -1,0 +1,34 @@
+@page "/showcase"
+@using Osirion.Blazor.Components
+
+<PageTitle>Component showcase - Osirion.Blazor</PageTitle>
+
+<div class="showcase">
+    <h1>Component showcase</h1>
+    <p>The content components added in Osirion.Blazor 4.1, rendered with static server-side rendering.</p>
+
+    <section aria-labelledby="showcase-callout">
+        <h2 id="showcase-callout">Callout</h2>
+        <OsirionCallout Type="CalloutType.Tip">
+            <p>Callouts written in Markdown with <code>&gt; [!TIP]</code> look the same as this component.</p>
+        </OsirionCallout>
+        <OsirionCallout Type="CalloutType.Warning" Title="Back up first">
+            <p>Back up the database before you run the migration.</p>
+        </OsirionCallout>
+    </section>
+
+    <section aria-labelledby="showcase-tabs">
+        <h2 id="showcase-tabs">Tabs</h2>
+        <OsirionTabs AriaLabel="Install command" Id="install">
+            <OsirionTab Title=".NET CLI">
+                <pre><code>dotnet add package Osirion.Blazor</code></pre>
+            </OsirionTab>
+            <OsirionTab Title="Package Manager">
+                <pre><code>Install-Package Osirion.Blazor</code></pre>
+            </OsirionTab>
+            <OsirionTab Title="PackageReference">
+                <pre><code>&lt;PackageReference Include="Osirion.Blazor" Version="4.1.0" /&gt;</code></pre>
+            </OsirionTab>
+        </OsirionTabs>
+    </section>
+</div>

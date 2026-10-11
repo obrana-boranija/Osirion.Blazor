@@ -1,0 +1,9 @@
+.showcase {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: var(--osirion-spacing-8, 2rem) var(--osirion-spacing-4, 1rem);
+}
+
+    .showcase section {
+        margin-top: var(--osirion-spacing-8, 2rem);
+    }
