@@ -196,25 +196,25 @@ public class EditContentNavigationTests : AdminComponentTestContext
     }
 
     [Fact]
-    public void EditContent_EditorSaveComplete_GoesToContentBrowser()
+    public async Task EditContent_EditorSaveComplete_GoesToContentBrowser()
     {
         State.SetEditingPost(CreatePost("blog/new.md"), isNew: true);
         var cut = RenderWithoutPath();
         var onSaveComplete = cut.FindComponent<Stub<ContentEditor>>().Instance.Parameters.Get(p => p.OnSaveComplete);
 
-        cut.InvokeAsync(() => onSaveComplete.InvokeAsync(CreatePost("blog/new.md")));
+        await cut.InvokeAsync(() => onSaveComplete.InvokeAsync(CreatePost("blog/new.md")));
 
         CurrentRelativeUri.ShouldBe("osirion/content");
     }
 
     [Fact]
-    public void EditContent_EditorDiscard_ClearsEditingAndGoesToContentBrowser()
+    public async Task EditContent_EditorDiscard_ClearsEditingAndGoesToContentBrowser()
     {
         State.SetEditingPost(CreatePost("blog/new.md"), isNew: true);
         var cut = RenderWithoutPath();
         var onDiscard = cut.FindComponent<Stub<ContentEditor>>().Instance.Parameters.Get(p => p.OnDiscard);
 
-        cut.InvokeAsync(() => onDiscard.InvokeAsync());
+        await cut.InvokeAsync(() => onDiscard.InvokeAsync());
 
         State.EditingPost.ShouldBeNull();
         State.IsEditing.ShouldBeFalse();

@@ -195,8 +195,8 @@ public class ProviderContractTests
 
         var script = provider.GetScript(ConsentContext);
 
-        script.ShouldContain("17");
-        script.ShouldContain("https://m.example.com/");
+        script.ShouldContain("_paq.push(['setSiteId', \"17\"]);");
+        script.ShouldContain("var u = \"https://m.example.com/\";");
     }
 
     [Fact]
