@@ -377,25 +377,4 @@ public class GitHubAdminService : IGitHubAdminService, IDisposable
 
         return blogPost;
     }
-
-    /// <summary>
-    /// Creates a blog post from markdown with frontmatter
-    /// </summary>
-    /// <param name="markdown">The full markdown content with frontmatter</param>
-    /// <returns>A blog post object</returns>
-    private ContentItem FromMarkdown(string markdown)
-    {
-        var blogPost = new ContentItem();
-
-        if (string.IsNullOrWhiteSpace(markdown))
-        {
-            return blogPost;
-        }
-
-        var extracted = _markdownProcessor.ExtractFrontMatterAndContent(markdown);
-        blogPost.Metadata = extracted.FrontMatter;
-        blogPost.Content = extracted.Content;
-
-        return blogPost;
-    }
 }

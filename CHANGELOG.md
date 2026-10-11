@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Osirion.Blazor.Core: `HeroSection` added `Class` twice and glued it to the previous class (`hero-dividerlanding`)
 - Osirion.Blazor.Core: `OsirionResponsiveShowcaseSection` ignored `Class` and unmatched attributes on its root, showed a replacement character instead of `×` in the viewport dimensions, and rendered `aria-pressed` without a `true`/`false` value
 - Osirion.Blazor.Core: the cookie consent check threw `NullReferenceException` when the consent cookie held `"Categories": null`; it now counts as no consent
+- Osirion.Blazor.Cms.Infrastructure: a content query with `Directory` and `IncludeSubdirectories` matches whole folder names, so `"blog"` no longer also returns content from `blog2` or `blog-archive`
+- Osirion.Blazor.Cms.Infrastructure: moving a GitHub directory without a new parent puts it at the top of `ContentPath` instead of the repository root, where the provider no longer loaded it
 
 ### Build
 - The coverage workflow runs every test project except the Playwright suite and fails when a test fails or is not discovered, instead of uploading a partial report. Coverage settings live in `coverlet.runsettings` (generated code and auto-property accessors are not counted) and Codecov targets in `codecov.yml` (90% for the project and for each change, informational for now)
