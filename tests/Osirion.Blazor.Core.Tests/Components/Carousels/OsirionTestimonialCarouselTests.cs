@@ -106,6 +106,45 @@ public class OsirionTestimonialCarouselTests : OsirionComponentTestBase
             .ShouldBe(["Ann", "Bob", "Ann"]);
     }
 
+    // Hung before the fix: the padding was added to a throwaway list, so the loop never reached three.
+    [Theory]
+    [InlineData(1, new[] { "Ann", "Ann", "Ann" })]
+    [InlineData(2, new[] { "Ann", "Bob", "Ann" })]
+    public void TestimonialCarousel_MaxVisibleBelowThree_RepeatsTheVisibleOnesToFillThree(int maxVisible, string[] expected)
+    {
+        var testimonials = new List<TestimonialItem> { new("Ann"), new("Bob"), new("Cid"), new("Dee") };
+
+        var cut = RenderStatic<OsirionTestimonialCarousel>(parameters => parameters
+            .Add(p => p.CustomTestimonials, testimonials)
+            .Add(p => p.MaxVisibleTestimonials, maxVisible));
+
+        cut.FindAll(".osirion-testimonial-carousel-slide:not([aria-hidden]) cite")
+            .Select(c => c.TextContent)
+            .ShouldBe(expected);
+    }
+
+    // Threw DivideByZeroException before the fix.
+    [Fact]
+    public void TestimonialCarousel_EmptyCustomTestimonials_RendersNoSlides()
+    {
+        var cut = RenderStatic<OsirionTestimonialCarousel>(parameters => parameters
+            .Add(p => p.CustomTestimonials, new List<TestimonialItem>()));
+
+        cut.FindAll(".osirion-testimonial-carousel-slide").ShouldBeEmpty();
+    }
+
+    // The padding used to be appended to the caller's own list.
+    [Fact]
+    public void TestimonialCarousel_FewerThanThreeCustomTestimonials_LeavesTheCallersListUnchanged()
+    {
+        var testimonials = new List<TestimonialItem> { new("Ann"), new("Bob") };
+
+        RenderStatic<OsirionTestimonialCarousel>(parameters => parameters
+            .Add(p => p.CustomTestimonials, testimonials));
+
+        testimonials.Select(t => t.Name).ShouldBe(["Ann", "Bob"]);
+    }
+
     [Fact]
     public void TestimonialCarousel_FirstTwoCards_LoadImagesEagerlyAndClonesLazily()
     {
