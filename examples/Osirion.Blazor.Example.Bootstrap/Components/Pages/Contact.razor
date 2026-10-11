@@ -1,0 +1,19 @@
+@page "/contact"
+@using Osirion.Blazor.Cms.Web.Components
+@using Osirion.Blazor.Core.Models
+
+<ContactPage Description="Questions about Osirion.Blazor, bug reports and ideas for the next release."
+             FormTitle="Get in touch"
+             FormDescription="Have questions about Osirion.Blazor? We'd love to hear from you!"
+             ContactInfo="@contactInfo"
+             UseBuiltInEmailService />
+
+@code {
+    private readonly ContactInformation contactInfo = new()
+    {
+        Address = "Belgrade, Serbia",
+        Phone = "+381 65 248 38 33",
+        Website = "https://getosirion.com",
+        Message = "We're here to help you build amazing Blazor applications!"
+    };
+}

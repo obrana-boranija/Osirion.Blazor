@@ -1,9 +1,6 @@
-using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.DependencyInjection;
 using Osirion.Blazor.Core.Utils;
-using System.Text;
 using System.Text.Json;
 
 namespace Osirion.Blazor.Core.Handlers;
@@ -31,7 +28,7 @@ public static class CookieConsentHandler
     /// </remarks>
     public static async Task<IResult> HandleConsentAsync(HttpContext context)
     {
-        if (!await IsAntiforgeryTokenValidAsync(context) || !context.Request.HasFormContentType)
+        if (!await FormPostSecurity.IsAntiforgeryTokenValidAsync(context) || !context.Request.HasFormContentType)
         {
             return Results.BadRequest();
         }
@@ -119,30 +116,8 @@ public static class CookieConsentHandler
             ? days
             : DefaultExpiryDays;
 
-    private static async Task<bool> IsAntiforgeryTokenValidAsync(HttpContext context)
-    {
-        // When UseAntiforgery has validated the request, its verdict is authoritative, and reading
-        // the form after a failed validation would throw.
-        var validationFeature = context.Features.Get<IAntiforgeryValidationFeature>();
-        if (validationFeature is not null)
-        {
-            return validationFeature.IsValid;
-        }
-
-        // The middleware did not run for this request: validate here and fail closed when
-        // antiforgery services are not registered.
-        var antiforgery = context.RequestServices?.GetService<IAntiforgery>();
-        return antiforgery is not null && await antiforgery.IsRequestValidAsync(context);
-    }
-
-    private static string GetReturnPath(string? returnUrl)
-    {
-        var localPath = LocalUrl.GetSafeLocalPath(returnUrl);
-
-        // Non-ASCII characters cannot be sent in a Location header; the banner always posts an
-        // escaped path, so anything else is not worth repairing.
-        return Ascii.IsValid(localPath) ? RemoveCustomizeFlag(localPath) : LocalUrl.DefaultPath;
-    }
+    private static string GetReturnPath(string? returnUrl) =>
+        RemoveCustomizeFlag(FormPostSecurity.GetReturnPath(returnUrl));
 
     private static string RemoveCustomizeFlag(string localPath)
     {

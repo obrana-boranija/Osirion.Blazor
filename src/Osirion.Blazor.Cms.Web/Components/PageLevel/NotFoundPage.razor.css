@@ -1,0 +1,5 @@
+/* NotFoundPage - Osirion.Blazor.Cms.Web */
+
+.osirion-not-found-page {
+    padding: var(--osirion-spacing-8, 2rem) var(--osirion-spacing-4, 1rem);
+}

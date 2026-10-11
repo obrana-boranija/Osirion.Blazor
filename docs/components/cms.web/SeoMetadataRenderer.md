@@ -8,6 +8,9 @@ Structured data
 - A value that is not a valid JSON object or array, including one whose text is not valid Unicode (for example
   half of a surrogate pair), is ignored with a warning log entry, and the generated Schema.org data is rendered
   instead.
+- `SchemaType.TechArticle`, `SoftwareApplication` (with `ApplicationCategory`, default `DeveloperApplication`),
+  `ProfilePage` (the author as `mainEntity`, tags that are absolute links as `sameAs`), `AboutPage` (the site's
+  organization as `mainEntity`) and `ContactPage` describe whole pages.
 
 ## Canonical URL, FAQ data and mobile tags
 

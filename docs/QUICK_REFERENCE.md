@@ -264,6 +264,24 @@ builder.Services.AddOsirionBlazor(osirion => {
     WebVisor="true" />
 ```
 
+### Plausible
+**Purpose**: Plausible Analytics, cookie-free  
+**Package**: `Osirion.Blazor.Analytics`
+
+```razor
+@* Program.cs: analytics.AddPlausible(o => o.ScriptUrl = "https://plausible.io/js/pa-XXXXX.js") *@
+<PlausibleTracker />
+```
+
+### Umami
+**Purpose**: Umami analytics, cookie-free, cloud or self-hosted  
+**Package**: `Osirion.Blazor.Analytics`
+
+```razor
+@* Program.cs: analytics.AddUmami(o => o.SiteId = "your-website-id") *@
+<UmamiTracker />
+```
+
 ## ?? Content Management
 
 ### Content Display

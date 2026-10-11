@@ -48,7 +48,7 @@
                     @* </a> *@
 
                     <div class="osirion-featured-post-content">
-                        <a href="@item.Url" class="osirion-featured-post-title-link">
+                        <a href="@ContentUrls.ItemUrl(item, PostUrlFormatter)" class="osirion-featured-post-title-link">
                             <h3 class="osirion-featured-post-title">
                                 @item.Title
                             </h3>
@@ -80,7 +80,7 @@
 
                         @if (ShowReadMoreLink)
                         {
-                            <a href="@item.Url" class="osirion-featured-post-read-more">
+                            <a href="@ContentUrls.ItemUrl(item, PostUrlFormatter)" class="osirion-featured-post-read-more">
                                 @ReadMoreText
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <line x1="5" y1="12" x2="19" y2="12"></line>

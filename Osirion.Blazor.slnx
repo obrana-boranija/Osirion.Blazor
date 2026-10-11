@@ -70,6 +70,7 @@
     <Project Path="examples/Osirion.Blazor.Example.FluentUI/Osirion.Blazor.Example.FluentUI.csproj" />
     <Project Path="examples/Osirion.Blazor.Example.Mud/Osirion.Blazor.Example.Mud.csproj" />
     <Project Path="examples/Osirion.Blazor.Examples.AppHost/Osirion.Blazor.Examples.AppHost.csproj" />
+    <Project Path="examples/Osirion.Blazor.Examples.Shared/Osirion.Blazor.Examples.Shared.csproj" />
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/Osirion.Blazor.Analytics/Osirion.Blazor.Analytics.csproj" />
@@ -87,8 +88,12 @@
     <Project Path="src/Osirion.Blazor.Cms.Web/Osirion.Blazor.Cms.Web.csproj" />
     <Project Path="src/Osirion.Blazor.Cms/Osirion.Blazor.Cms.csproj" />
   </Folder>
+  <Folder Name="/tools/">
+    <Project Path="tools/Osirion.Blazor.ApiDocs/Osirion.Blazor.ApiDocs.csproj" />
+  </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Osirion.Blazor.Analytics.Tests/Osirion.Blazor.Analytics.Tests.csproj" />
+    <Project Path="tests/Osirion.Blazor.ApiDocs.Tests/Osirion.Blazor.ApiDocs.Tests.csproj" />
     <Project Path="tests/Osirion.Blazor.Core.Tests/Osirion.Blazor.Core.Tests.csproj" />
     <Project Path="tests/Osirion.Blazor.E2ETests/Osirion.Blazor.E2ETests.csproj" />
     <Project Path="tests/Osirion.Blazor.Navigation.Tests/Osirion.Blazor.Navigation.Tests.csproj" />

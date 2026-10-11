@@ -135,7 +135,8 @@ public sealed class FileSystemContentRepositoryLoadingTests : IDisposable
     }
 
     [Fact]
-    public async Task GetAllAsync_IndexFilesAndEmptyFiles_AreNotLoaded()
+    // A folder's _index.md is its section page, served at the folder's URL as the GitHub provider does.
+    public async Task GetAllAsync_EmptyFiles_AreNotLoadedButIndexFilesAre()
     {
         Write("blog/_index.md", "# Blog");
         Write("blog/empty.md", "   ");
@@ -144,7 +145,7 @@ public sealed class FileSystemContentRepositoryLoadingTests : IDisposable
 
         var items = await repository.GetAllAsync();
 
-        items.ShouldHaveSingleItem().Path.ShouldBe("blog/post.md");
+        items.Select(item => item.Path).ShouldBe(["blog/_index.md", "blog/post.md"], ignoreOrder: true);
     }
 
     [Fact]

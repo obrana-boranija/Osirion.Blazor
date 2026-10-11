@@ -57,9 +57,9 @@ public class PageLevelRenderingTests : CmsWebComponentTestBase
             && q.SortDirection == Osirion.Blazor.Cms.Domain.Enums.SortDirection.Ascending));
         cut.Find(".osirion-document-title").TextContent.ShouldBe("install");
         var previous = cut.Find("a.osirion-doc-nav-previous");
-        previous.GetAttribute("href").ShouldBe("/docs/intro.md");
+        previous.GetAttribute("href").ShouldBe("/docs/intro");
         previous.QuerySelector(".osirion-doc-nav-title")!.TextContent.ShouldBe("intro");
-        cut.Find("a.osirion-doc-nav-next").GetAttribute("href").ShouldBe("/docs/usage.md");
+        cut.Find("a.osirion-doc-nav-next").GetAttribute("href").ShouldBe("/docs/usage");
         _navigation.NotFoundCalls.ShouldBe(0);
     }
 
@@ -131,6 +131,7 @@ public class PageLevelRenderingTests : CmsWebComponentTestBase
         var content = Doc("guide", "<h2>Setup</h2><p>Text</p>");
         content.SetAuthor("Ada");
         content.SetCreatedDate(new DateTime(2026, 2, 3, 0, 0, 0, DateTimeKind.Utc));
+        content.LastModified = new DateTime(2026, 2, 3, 0, 0, 0, DateTimeKind.Utc);
         _provider.GetItemsByQueryAsync(Arg.Any<ContentQuery>())
             .Returns(Task.FromResult<IReadOnlyList<ContentItem>?>([Doc("before"), content, Doc("after")]));
 
@@ -178,10 +179,11 @@ public class PageLevelRenderingTests : CmsWebComponentTestBase
         var cut = RenderStatic<DocumentPage>(p => p
             .Add(c => c.Content, Doc("middle"))
             .Add(c => c.PreviousItem, Doc("first"))
-            .Add(c => c.NextItem, Doc("last")));
+            .Add(c => c.NextItem, Doc("last"))
+            .Add(c => c.ShowSideNavigation, false));
 
         _provider.DidNotReceive().GetItemsByQueryAsync(Arg.Any<ContentQuery>());
-        cut.Find("a.osirion-doc-nav-previous").GetAttribute("href").ShouldBe("/docs/first.md");
+        cut.Find("a.osirion-doc-nav-previous").GetAttribute("href").ShouldBe("/docs/first");
     }
 
     [Fact]
@@ -630,8 +632,12 @@ public class PageLevelRenderingTests : CmsWebComponentTestBase
         cut.WaitForAssertion(() => cut.Markup.ShouldBe("items:1"));
     }
 
-    private static ContentItem Doc(string name, string content = "<p>Body</p>") =>
-        ContentItem.Create($"id-{name}", name, content, $"docs/{name}.md", "test");
+    private static ContentItem Doc(string name, string content = "<p>Body</p>")
+    {
+        var item = ContentItem.Create($"id-{name}", name, content, $"docs/{name}.md", "test");
+        item.SetUrl($"docs/{name}");
+        return item;
+    }
 
     private sealed class ListPage : OsirionContentListPageBase
     {

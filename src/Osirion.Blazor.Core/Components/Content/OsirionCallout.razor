@@ -1,0 +1,9 @@
+@namespace Osirion.Blazor.Components
+@inherits OsirionComponentBase
+
+<div class="@GetCalloutClass()" role="note" @attributes="Attributes">
+    <p class="osirion-callout-title">@EffectiveTitle</p>
+    <div class="osirion-callout-body">
+        @ChildContent
+    </div>
+</div>

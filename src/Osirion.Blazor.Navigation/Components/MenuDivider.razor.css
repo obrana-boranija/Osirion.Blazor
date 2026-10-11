@@ -1,6 +1,6 @@
-/* 
+/*
  * MenuDivider Component Styles
- * Visual separator for menu sections
+ * A separator: a horizontal rule in lists and drawers, a short vertical rule between items of a horizontal bar.
  */
 
 /* Child component theme inheritance - MenuDivider inherits parent component's theme */
@@ -8,41 +8,75 @@
 [data-osirion-component-theme="light"] .osirion-menu-divider-label,
 .osirion-bootstrap-integration [data-osirion-component-theme="light"] .osirion-menu-divider,
 .osirion-bootstrap-integration [data-osirion-component-theme="light"] .osirion-menu-divider-label {
-    /* Force light theme colors */
     --osirion-border-color: rgba(0, 0, 0, 0.1) !important;
     --osirion-text-tertiary: #9ca3af !important;
     --osirion-background-primary: #ffffff !important;
-    background-color: rgba(0, 0, 0, 0.1) !important;
 }
 
 [data-osirion-component-theme="dark"] .osirion-menu-divider,
 [data-osirion-component-theme="dark"] .osirion-menu-divider-label,
 .osirion-bootstrap-integration [data-osirion-component-theme="dark"] .osirion-menu-divider,
 .osirion-bootstrap-integration [data-osirion-component-theme="dark"] .osirion-menu-divider-label {
-    /* Force dark theme colors */
     --osirion-border-color: rgba(255, 255, 255, 0.1) !important;
     --osirion-text-tertiary: #6b7280 !important;
     --osirion-background-primary: #111827 !important;
-    background-color: rgba(255, 255, 255, 0.1) !important;
 }
 
-/* Base divider */
 .osirion-menu-divider {
-    height: 1px;
-    background-color: var(--osirion-border-color, rgba(255, 255, 255, 0.1));
-    margin: var(--osirion-spacing-2, 0.5rem) var(--osirion-spacing-4, 1rem);
     position: relative;
+    height: 1px;
+    margin: 0.5rem 0.75rem;
+    background-color: var(--osirion-menu-border-color, var(--osirion-border-color, rgba(15, 23, 42, 0.12)));
 }
 
-/* Divider with label */
+.osirion-menu-horizontal .osirion-menu-inner > .osirion-menu-divider {
+    align-self: center;
+    width: 1px;
+    height: 1.5rem;
+    margin: 0 0.5rem;
+}
+
 .osirion-menu-divider-label {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    padding: 0 var(--osirion-spacing-2, 0.5rem);
-    font-size: var(--osirion-font-size-xs, 0.75rem);
+    padding: 0 0.5rem;
     color: var(--osirion-text-tertiary, #9ca3af);
-    background-color: var(--osirion-background-primary, #111827);
+    font-size: var(--osirion-font-size-xs, 0.75rem);
     white-space: nowrap;
+    background-color: var(--osirion-menu-background, var(--osirion-background-primary, #ffffff));
+}
+
+/* ===== Stacked layout ===== */
+
+/* The stacked blocks below repeat the same rules once per context, because a media query cannot take a parameter:
+   a vertical menu always stacks, and a collapsible menu stacks inside its drawer below its breakpoint. They differ only
+   in their selector prefix and media query; change them together. */
+
+@media (max-width: 768px) {
+    .osirion-menu-collapsible .osirion-menu-inner > .osirion-menu-divider {
+        align-self: auto;
+        width: auto;
+        height: 1px;
+        margin: 0.5rem 0.75rem;
+    }
+}
+
+@media (max-width: 1199.98px) {
+    :is(.osirion-menu-collapse-large, .osirion-menu-collapse-extra-large) .osirion-menu-inner > .osirion-menu-divider {
+        align-self: auto;
+        width: auto;
+        height: 1px;
+        margin: 0.5rem 0.75rem;
+    }
+}
+
+@media (max-width: 1439.98px) {
+    .osirion-menu-collapse-extra-large .osirion-menu-inner > .osirion-menu-divider {
+        align-self: auto;
+        width: auto;
+        height: 1px;
+        margin: 0.5rem 0.75rem;
+    }
 }

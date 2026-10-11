@@ -1,0 +1,16 @@
+﻿@page "/blog"
+@page "/{locale}/blog"
+@page "/blog/{slug}"
+@page "/{locale}/blog/{slug}"
+@using Osirion.Blazor.Cms.Components
+@using Osirion.Blazor.Cms.Web.Components
+
+@if (string.IsNullOrWhiteSpace(Slug))
+{
+    <ContentListPage Locale="@Locale" Directory="blog" Title="Blog"
+                     Description="Guides, release notes and patterns for building content sites with Blazor." />
+}
+else
+{
+    <ArticlePage Locale="@Locale" DirectoryName="blog" ItemSlug="@Slug" SchemaTypes="new[] { SchemaType.BlogPosting }" />
+}

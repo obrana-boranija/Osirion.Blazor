@@ -147,6 +147,149 @@ public class PageLevelTests : CmsWebComponentTestBase
         article.GetAttribute("itemtype").ShouldBe("https://schema.org/Article");
     }
 
+    // Fails before the fix: an article alone in its folder showed the list's "404 Page Not Found" block, with an h1,
+    // as its related items.
+    [Fact]
+    public void ArticlePage_NothingRelated_LeavesTheRelatedSectionOut()
+    {
+        ReturnFromQuery(Article("Alone"));
+
+        var cut = RenderStatic<ArticlePage>(p => p
+            .Add(c => c.ItemSlug, "alone")
+            .Add(c => c.ShowRelatedContent, true));
+
+        cut.FindAll(".osirion-content-not-found").ShouldBeEmpty();
+        cut.Markup.ShouldNotContain("Related items");
+        cut.FindAll("h1").Count.ShouldBe(1);
+    }
+
+    // Fails before the fix: the hero showed the title as an h1 and the body's "# Title" showed it again as a second h1.
+    [Fact]
+    public void ArticlePage_WithItsHero_ShowsTheTitleOnce()
+    {
+        ReturnFromQuery(TitledArticle());
+
+        var cut = RenderStatic<ArticlePage>(p => p
+            .Add(c => c.ItemSlug, "titled")
+            .Add(c => c.ShowRelatedContent, false));
+
+        cut.FindAll("h1").Select(h => h.TextContent.Trim()).ShouldBe(["Titled"]);
+        cut.Find(".osirion-article-main").TextContent.ShouldContain("Body");
+    }
+
+    [Fact]
+    public void ArticlePage_WithoutItsHero_KeepsTheContentsTitle()
+    {
+        ReturnFromQuery(TitledArticle());
+
+        var cut = RenderStatic<ArticlePage>(p => p
+            .Add(c => c.ItemSlug, "titled")
+            .Add(c => c.ShowHero, false)
+            .Add(c => c.ShowRelatedContent, false));
+
+        cut.FindAll("h1").Select(h => h.TextContent.Trim()).ShouldBe(["Titled"]);
+        cut.Find(".osirion-article-main h1").ShouldNotBeNull();
+    }
+
+    [Fact]
+    public void HomePage_WithItsHero_ShowsTheTitleOnce()
+    {
+        var cut = RenderStatic<Osirion.Blazor.Cms.Components.HomePage>(p => p
+            .Add(c => c.Content, TitledArticle())
+            .Add(c => c.ShowFeaturedContent, false));
+
+        cut.FindAll("h1").Select(h => h.TextContent.Trim()).ShouldBe(["Titled"]);
+        cut.Find(".osirion-homepage-content").TextContent.ShouldContain("Body");
+    }
+
+    private static ContentItem TitledArticle()
+    {
+        var item = ContentItem.Create("id-titled", "Titled", "<h1 id=\"titled\">Titled</h1><p>Body</p>", "blog/titled.md", "test");
+        item.SetUrl("/blog/titled");
+        return item;
+    }
+
+    [Fact]
+    public void ArticlePage_SeriesPart_ShowsTheSeriesNavigationAboveTheBody()
+    {
+        var first = SeriesPart("set-up", "Set up", 1);
+        var second = SeriesPart("deploy", "Deploy", 2);
+        ReturnFromQuery(first, second);
+
+        var cut = RenderStatic<ArticlePage>(p => p.Add(c => c.Item, first).Add(c => c.ShowRelatedContent, false));
+
+        var main = cut.Find(".osirion-article-main");
+        main.FirstElementChild!.ClassList.ShouldContain("osirion-series-nav");
+        cut.Find(".osirion-series-nav-position").TextContent.ShouldBe("Part 1 of 2");
+    }
+
+    [Fact]
+    public void ArticlePage_ShowSeriesNavigationOff_LeavesItOut()
+    {
+        var first = SeriesPart("set-up", "Set up", 1);
+        ReturnFromQuery(first, SeriesPart("deploy", "Deploy", 2));
+
+        var cut = RenderStatic<ArticlePage>(p => p
+            .Add(c => c.Item, first)
+            .Add(c => c.ShowRelatedContent, false)
+            .Add(c => c.ShowSeriesNavigation, false));
+
+        cut.FindAll(".osirion-series-nav").ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void ArticlePage_AuthorContent_FollowsTheBodyWithTheArticle()
+    {
+        var item = Article("Signed");
+        item.SetAuthor("Ana Author");
+        ReturnFromQuery(item);
+
+        var cut = RenderStatic<ArticlePage>(p => p
+            .Add(c => c.ItemSlug, "signed")
+            .Add(c => c.ShowRelatedContent, false)
+            .Add(c => c.AuthorContent, article => $"<p class=\"byline\">{article.Author}</p>"));
+
+        cut.Find(".osirion-article-main .osirion-article-author .byline").TextContent.ShouldBe("Ana Author");
+    }
+
+    // Fails before the fix: the related section was always titled "Related items" and the parameter was ignored.
+    [Fact]
+    public void ArticlePage_RelatedContentTitle_NamesTheRelatedSection()
+    {
+        ReturnFromQuery(Article("Main"));
+
+        var cut = RenderStatic<ArticlePage>(p => p
+            .Add(c => c.ItemSlug, "main")
+            .Add(c => c.RelatedItems, [Article("Other")])
+            .Add(c => c.RelatedContentTitle, "Keep reading"));
+
+        cut.Markup.ShouldContain("Keep reading");
+        cut.Markup.ShouldNotContain("Related items");
+    }
+
+    // Fails before the fix: CustomFooterContent was accepted and never rendered.
+    [Fact]
+    public void ArticlePage_CustomFooterContent_IsRenderedSanitized()
+    {
+        ReturnFromQuery(Article("Main"));
+
+        var cut = RenderStatic<ArticlePage>(p => p
+            .Add(c => c.ItemSlug, "main")
+            .Add(c => c.ShowRelatedContent, false)
+            .Add(c => c.CustomFooterContent, "<p class=\"cta\">Subscribe</p><script>alert(1)</script>"));
+
+        cut.Find(".osirion-article-footer .cta").TextContent.ShouldBe("Subscribe");
+        cut.FindAll(".osirion-article-footer script").ShouldBeEmpty();
+    }
+
+    private static ContentItem SeriesPart(string slug, string title, int order)
+    {
+        var item = Article(title);
+        item.Url = $"blog/{slug}";
+        item.Metadata = new Osirion.Blazor.Cms.Domain.ValueObjects.FrontMatter { Title = title, Series = "Build a blog", SeriesOrder = order };
+        return item;
+    }
+
     private void ReturnFromQuery(params ContentItem[] items) =>
         _manager.GetContentByQueryAsync(Arg.Any<ContentQuery>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult<IReadOnlyList<ContentItem>>(items));
@@ -156,20 +299,6 @@ public class PageLevelTests : CmsWebComponentTestBase
         var item = ContentItem.Create($"id-{title}", title, "<p>Body</p>", $"blog/{title}.md", "test");
         item.SetUrl($"/blog/{title}");
         return item;
-    }
-
-    private sealed class RecordingNavigationManager : NavigationManager
-    {
-        public RecordingNavigationManager()
-        {
-            Initialize("http://localhost/", "http://localhost/blog/page");
-            OnNotFound += (_, _) => NotFoundCalls++;
-        }
-
-        public int NotFoundCalls { get; private set; }
-
-        protected override void NavigateToCore(string uri, NavigationOptions options) => Uri = ToAbsoluteUri(uri).ToString();
-
     }
 
     private sealed class RecordingLoggerFactory(RecordingLogger logger) : ILoggerFactory

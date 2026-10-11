@@ -8,13 +8,13 @@ internal static class ContentSchemas
 {
     private const string SchemaContext = "https://schema.org";
 
-    internal static object Article(SeoSchemaContext context)
+    internal static object Article(SeoSchemaContext context, string type)
     {
         var content = context.Content!;
         var schema = new Dictionary<string, object?>
         {
             ["@context"] = SchemaContext,
-            ["@type"] = "Article",
+            ["@type"] = type,
             ["headline"] = content.Title,
             ["description"] = content.Description,
             ["image"] = context.NormalizeImageUrl(content.FeaturedImageUrl),
@@ -58,13 +58,13 @@ internal static class ContentSchemas
         return schema;
     }
 
-    internal static object WebPage(SeoSchemaContext context)
+    internal static Dictionary<string, object?> WebPage(SeoSchemaContext context, string type)
     {
         var content = context.Content!;
         return new Dictionary<string, object?>
         {
             ["@context"] = SchemaContext,
-            ["@type"] = "WebPage",
+            ["@type"] = type,
             ["name"] = content.Title,
             ["description"] = content.Description,
             ["url"] = context.CurrentUrl,
@@ -72,6 +72,75 @@ internal static class ContentSchemas
             ["dateModified"] = content.LastModified is { } lastModified ? ContentUrls.FormatUtc(lastModified) : null,
             ["author"] = Person(content.Author),
             ["publisher"] = Organization(context.SiteName)
+        };
+    }
+
+    internal static object AboutPage(SeoSchemaContext context)
+    {
+        var schema = WebPage(context, "AboutPage");
+        schema["mainEntity"] = new Dictionary<string, object?>
+        {
+            ["@type"] = "Organization",
+            ["name"] = context.SiteName,
+            ["url"] = context.BaseUrl,
+            ["logo"] = context.NormalizeImageUrl(context.SiteLogoUrl)
+        };
+
+        return schema;
+    }
+
+    // Search engines show software rich results only with a price and a rating or review, which a content page does
+    // not carry; front matter json_ld can supply the full schema when those exist.
+    internal static object SoftwareApplication(SeoSchemaContext context)
+    {
+        var content = context.Content!;
+        var schema = new Dictionary<string, object?>
+        {
+            ["@context"] = SchemaContext,
+            ["@type"] = "SoftwareApplication",
+            ["name"] = content.Title,
+            ["description"] = content.Description,
+            ["url"] = context.CurrentUrl,
+            ["image"] = context.NormalizeImageUrl(content.FeaturedImageUrl),
+            ["applicationCategory"] = context.ApplicationCategory,
+            ["inLanguage"] = context.LanguageCode,
+            ["dateModified"] = ContentUrls.FormatUtc(content.LastModified ?? content.PublishDate),
+            ["publisher"] = Organization(context.SiteName)
+        };
+
+        if (content.Tags.Any())
+        {
+            schema["keywords"] = string.Join(", ", content.Tags);
+        }
+
+        return schema;
+    }
+
+    // An author's page: the page is the ProfilePage and the person it describes is its main entity. Only tags that
+    // are absolute links are profiles elsewhere (sameAs).
+    internal static object ProfilePage(SeoSchemaContext context)
+    {
+        var content = context.Content!;
+        var profiles = content.Tags
+            .Where(tag => Uri.TryCreate(tag, UriKind.Absolute, out var uri) && (uri.Scheme == Uri.UriSchemeHttps || uri.Scheme == Uri.UriSchemeHttp))
+            .ToArray();
+
+        return new Dictionary<string, object?>
+        {
+            ["@context"] = SchemaContext,
+            ["@type"] = "ProfilePage",
+            ["url"] = context.CurrentUrl,
+            ["dateCreated"] = ContentUrls.FormatUtc(content.PublishDate),
+            ["dateModified"] = content.LastModified is { } lastModified ? ContentUrls.FormatUtc(lastModified) : null,
+            ["inLanguage"] = context.LanguageCode,
+            ["mainEntity"] = new Dictionary<string, object?>
+            {
+                ["@type"] = "Person",
+                ["name"] = string.IsNullOrWhiteSpace(content.Author) ? content.Title : content.Author,
+                ["description"] = content.Description,
+                ["image"] = context.NormalizeImageUrl(content.FeaturedImageUrl),
+                ["sameAs"] = profiles.Length > 0 ? profiles : null
+            }
         };
     }
 

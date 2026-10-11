@@ -1,0 +1,5 @@
+@namespace Osirion.Blazor.Components
+@inherits OsirionComponentBase
+
+@* Decorative: the scroll position is already available to assistive technology. *@
+<div class="@GetReadingProgressClass()" aria-hidden="true" @attributes="Attributes"></div>

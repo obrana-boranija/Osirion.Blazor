@@ -192,6 +192,15 @@ content/
     ??? company/
 ```
 
+### Section Pages
+
+An `_index.md` file in a folder is that folder's page: its front matter names and describes the folder (the title,
+description, order and featured image that directory navigation shows), and its body is the overview page served at
+the folder's URL. `content/en/docs/components/core/_index.md` is the page at `/docs/components/core`. The GitHub and
+file system providers both serve it.
+
+A `ContentList` leaves out the page it is shown on, so the list on `/blog` never shows a card for `blog/_index.md`.
+
 ## Frontmatter Reference
 
 Frontmatter is YAML metadata at the top of your Markdown files:
@@ -263,6 +272,10 @@ metadata:
 |-------|------|-------------|----------|
 | `title` | String | Article title | ? |
 | `date` | DateTime | Publication date | ? |
+| `last_modified` | DateTime | Last change, used by the sitemap and feeds | Optional |
+| `series` | String | Series the item belongs to, for `ContentSeriesNavigation` | Optional |
+| `series_order` | Number | Position in the series, starting at 1 | Optional |
+| `redirect_from` | List | Earlier URLs of the item; requests for them redirect here (`UseOsirionRedirects`) | Optional |
 | `description` | String | Meta description | Recommended |
 | `author` | String | Author name | Recommended |
 | `categories` | Array | Content categories | Optional |
@@ -373,6 +386,52 @@ metadata:
     }
 }
 ```
+
+#### Series Navigation
+
+Give the parts of a multi-part article the same `series` and number them with `series_order`:
+
+```yaml
+---
+title: "Deploying the blog"
+series: "Build a blog with Osirion"
+series_order: 3
+---
+```
+
+`ContentSeriesNavigation` shows "Part 3 of 5", lists the parts and links the previous and next one. Place it in the
+article page, above or below the content:
+
+```razor
+<ContentSeriesNavigation Item="@item" />
+```
+
+Parts are read from the item's locale and ordered by `series_order`; parts without a number follow, oldest first.
+Nothing renders for an item outside a series or a series with one published part. `ContentUrlFormatter`,
+`PositionFormat` (`Part {0} of {1}`), `PreviousText`, `NextText` and `ShowPartList` adjust it.
+
+#### Author Pages
+
+Every item's `author` front matter field can drive an author page: list that author's items with `ContentList`
+and introduce them with `OsirionAuthorCard`. Link bylines to the page with `ContentView`'s `AuthorUrlFormatter`.
+
+```razor
+@page "/authors/{Slug}"
+
+<OsirionAuthorCard Name="Jane Developer" Role="Principal engineer" Bio="Writes about Blazor." />
+<ContentList Author="Jane Developer" Directory="blog" />
+
+@code {
+    [Parameter] public string Slug { get; set; } = "";
+}
+```
+
+```razor
+<ContentView Path="@Path" AuthorUrlFormatter="@(name => $"/authors/{Uri.EscapeDataString(name.ToLowerInvariant().Replace(' ', '-'))}")" />
+```
+
+The author filter matches the whole name, ignoring case. Map the slug in the URL to the author's name and details
+(from configuration or a small lookup) in the page.
 
 #### Directory Navigation
 ```razor
@@ -548,30 +607,91 @@ public class CustomSeoProcessor : ISeoProcessor
 }
 ```
 
-### Sitemap Generation
+### Live Demos in Content
+
+Register Razor components as demos and embed them in Markdown with a fenced `demo` block:
+
+````markdown
+```demo
+install-tabs
+```
+````
 
 ```csharp
-public class SitemapService
-{
-    public async Task<string> GenerateSitemapAsync()
-    {
-        var content = await contentProvider.GetAllItemsAsync();
-        var sitemap = new XDocument(
-            new XElement("urlset",
-                new XAttribute("xmlns", "http://www.sitemaps.org/schemas/sitemap/0.9"),
-                content.Select(item => new XElement("url",
-                    new XElement("loc", $"https://mysite.com/{item.Slug}"),
-                    new XElement("lastmod", item.LastModified?.ToString("yyyy-MM-dd")),
-                    new XElement("changefreq", "weekly"),
-                    new XElement("priority", item.IsFeatured ? "0.9" : "0.7")
-                ))
-            )
-        );
-        
-        return sitemap.ToString();
-    }
-}
+builder.Services.AddOsirionContentDemos(demos => demos
+    .Add<InstallTabsDemo>("install-tabs", source: ContentDemoRegistry.ReadEmbeddedSource(
+        typeof(InstallTabsDemo).Assembly, "MySite.Components.Demos.InstallTabsDemo.razor")));
 ```
+
+The block renders the component, with Preview and Code tabs when the demo has source code. See
+`docs/components/core/OsirionContentDemo.md`.
+
+### Redirects
+
+When a page moves, list its earlier URLs in `redirect_from` and add the middleware before the page endpoints:
+
+```yaml
+---
+title: "Tabs"
+redirect_from:
+  - /docs/components/core/content/tabs
+---
+```
+
+```csharp
+using Osirion.Blazor.Cms.Web.Redirects;
+
+app.UseOsirionRedirects(redirects =>
+{
+    // Pages that are not content items
+    redirects.Redirects["/docs/components/core"] = "/components";
+});
+```
+
+- GET and HEAD requests for an old URL get a 301 to the item's current URL (`/{item.Url}`, or `ContentUrlFormatter`);
+  `Permanent = false` answers 302. The query string is kept; the app's path base is added.
+- Paths match ignoring case and a trailing slash. A published page at the same address wins over a redirect, and the
+  first item to claim an old URL keeps it; both cases are logged as warnings.
+- The map is built from published content and reused for `CacheDuration` (5 minutes by default). If the content
+  cannot be read, the fixed redirects keep working and the failure is not cached.
+- Fixed redirects are checked at startup: sources must be site paths, targets site paths or absolute http(s) URLs.
+
+### Sitemap and Feeds
+
+`MapOsirionFeeds` maps three endpoints built from the published content:
+
+| Path | Document | Content |
+|------|----------|---------|
+| `/sitemap.xml` | sitemaps.org XML sitemap | Every published item (up to 50,000 URLs), plus `AdditionalSitemapUrls` |
+| `/feed.xml` | RSS 2.0 | The newest `FeedItemCount` items of `FeedDirectory` and `FeedLocale` |
+| `/atom.xml` | Atom 1.0 | The same items as the RSS feed |
+
+```csharp
+using Osirion.Blazor.Cms.Web.Feeds;
+
+app.MapOsirionFeeds(feeds =>
+{
+    feeds.SiteUrl = "https://mysite.com";   // absolute http(s) URL; checked at startup
+    feeds.FeedDirectory = "blog";           // default: all content
+    feeds.FeedLocale = "en";                // default: every locale
+    feeds.FeedItemCount = 20;               // default: 20
+    feeds.AdditionalSitemapUrls = ["/", "/blog"];
+});
+```
+
+- Set `SiteUrl` in production. Without it, URLs are built from the request's scheme, host and path base, so they
+  follow whatever `Host` header a request sends.
+- The title and description default to `Osirion:Seo:SiteName` and `SiteDescription`; set `Title` and `Description`
+  to override them.
+- Item links are `/{item.Url}`, the same path the content lists use. When the site routes content elsewhere, set
+  `ContentUrlFormatter` (it may return a path or an absolute URL).
+- `lastmod` and Atom `updated` come from the front matter's `last_modified`, then the file's write time (file system
+  provider), then `date`. Set `last_modified` when dates must survive a fresh checkout or deployment.
+- Items whose `seo.robots` contains `noindex` are left out of the sitemap.
+- Responses carry `Cache-Control: public, max-age=600`; change it with `CacheDuration`. Turn single endpoints off
+  with `EnableSitemap`, `EnableRss` or `EnableAtom`.
+- Point crawlers at the sitemap from `robots.txt` with `Sitemap: https://mysite.com/sitemap.xml`, and let feed readers
+  find the feeds with `<link rel="alternate" type="application/rss+xml" href="/feed.xml">` in the page head.
 
 ## Multi-language Support
 

@@ -1,0 +1,24 @@
+﻿@page "/docs/{*slug}"
+@page "/{locale}/docs/{*slug}"
+@using Osirion.Blazor.Cms.Web.Components
+
+
+@if (string.IsNullOrWhiteSpace(Slug))
+{
+    <ContentListPage Locale="@Locale" Category="Components" ItemsPerPage="24"
+                     Title="Documentation" Description="Component and module documentation for Osirion.Blazor." />
+}
+else
+{
+    <ArticlePage ItemUrl="@($"/docs/{Slug}")"
+                 Locale="@Locale"
+                 SchemaTypes="@(new[] { SchemaType.Article, SchemaType.BreadcrumbList })" />
+}
+
+@code {
+    [Parameter]
+    public string? Locale { get; set; } = "en";
+
+    [Parameter]
+    public string? Slug { get; set; }
+}

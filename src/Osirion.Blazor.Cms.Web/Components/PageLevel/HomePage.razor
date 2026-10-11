@@ -44,7 +44,7 @@
         <div class="osirion-homepage-content">
             @if (Content is not null)
             {
-                <OsirionHtmlRenderer HtmlContent="@Content.Content" />
+                <OsirionHtmlRenderer HtmlContent="@(ShowHero ? ContentHeadings.WithoutLeadingTitle(Content.Content) : Content.Content)" />
             }
 
 

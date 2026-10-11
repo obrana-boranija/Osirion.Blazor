@@ -15,6 +15,47 @@ public class MarkdownProcessorTests
 
     private readonly MarkdownProcessor _processor = new(new DefaultMarkdownRenderer(), new MarkdownSanitizer(), new HtmlToMarkdownConverter());
 
+    // Front matter keys are snake_case (UnderscoredNamingConvention): the sitemap and feeds read last_modified.
+    [Theory]
+    [InlineData("last_modified", "2026-05-06")]
+    [InlineData("lastModified", null)]
+    public void ExtractFrontMatterAndContent_LastModifiedKey_IsReadOnlyInSnakeCase(string key, string? expected)
+    {
+        var (frontMatter, _) = _processor.ExtractFrontMatterAndContent($"---\ntitle: Post\n{key}: 2026-05-06\n---\nBody");
+
+        frontMatter.ShouldNotBeNull();
+        frontMatter.LastModified.ShouldBe(expected);
+    }
+
+    [Fact]
+    public void ExtractFrontMatterAndContent_RedirectFrom_IsReadAsAList()
+    {
+        var (frontMatter, _) = _processor.ExtractFrontMatterAndContent(
+            "---\ntitle: Tabs\nredirect_from:\n  - /docs/components/core/content/tabs\n  - /docs/tabs\n---\nBody");
+
+        frontMatter.ShouldNotBeNull();
+        frontMatter.RedirectFrom.ShouldBe(["/docs/components/core/content/tabs", "/docs/tabs"]);
+    }
+
+    [Fact]
+    public void ExtractFrontMatterAndContent_SeriesKeys_AreRead()
+    {
+        var (frontMatter, _) = _processor.ExtractFrontMatterAndContent("---\ntitle: Part two\nseries: Build a blog\nseries_order: 2\n---\nBody");
+
+        frontMatter.ShouldNotBeNull();
+        frontMatter.Series.ShouldBe("Build a blog");
+        frontMatter.SeriesOrder.ShouldBe(2);
+    }
+
+    // OsirionHtmlRenderer replaces this block with a registered demo, so the class must survive rendering and sanitizing.
+    [Fact]
+    public async Task RenderToHtmlAsync_DemoFence_KeepsTheLanguageDemoClass()
+    {
+        var html = await ((IMarkdownProcessor)_processor).RenderToHtmlAsync("Intro\n\n```demo\ntabs-basic\n```\n");
+
+        html.ShouldContain("<pre><code class=\"language-demo\">tabs-basic");
+    }
+
     // Each row is a way to get active markup out of markdown with the default Markdig pipeline
     // (raw HTML, links, generic attributes and media links). The precondition proves the vector reaches the
     // rendered HTML, so the test fails whenever the rendered output is not sanitized.
@@ -55,6 +96,25 @@ public class MarkdownProcessorTests
         var document = Parse(html);
         document.QuerySelector("h2#getting-started").ShouldNotBeNull();
         document.QuerySelector("pre code.language-csharp").ShouldNotBeNull().TextContent.ShouldBe("var total = a < b && c > d;\n");
+    }
+
+    // Callout styling in Osirion.Blazor.Core keys on these classes; the icon comes from CSS because the sanitizer
+    // removes the inline SVG that Markdig writes.
+    [Theory]
+    [InlineData("NOTE", "note")]
+    [InlineData("TIP", "tip")]
+    [InlineData("IMPORTANT", "important")]
+    [InlineData("WARNING", "warning")]
+    [InlineData("CAUTION", "caution")]
+    public async Task RenderToHtmlAsync_GitHubAlert_KeepsTheCalloutClassesAndTitle(string marker, string kind)
+    {
+        var html = await _processor.RenderToHtmlAsync($"> [!{marker}]\n> Back up the **database** first.");
+
+        var document = Parse(html);
+        var alert = document.QuerySelector($"div.markdown-alert.markdown-alert-{kind}").ShouldNotBeNull();
+        alert.QuerySelector("p.markdown-alert-title").ShouldNotBeNull().TextContent.Trim().ShouldNotBeEmpty();
+        alert.QuerySelector("strong").ShouldNotBeNull().TextContent.ShouldBe("database");
+        alert.QuerySelector("svg").ShouldBeNull();
     }
 
     // The markdown-level sanitizer used to run in this path and replaced JavaScript samples.

@@ -44,6 +44,9 @@ internal sealed record SeoSchemaContext
     /// <summary>The page author, the fallback author of collection items.</summary>
     public string? Author { get; init; }
 
+    /// <summary>The <c>applicationCategory</c> of the SoftwareApplication schema.</summary>
+    public string ApplicationCategory { get; init; } = "DeveloperApplication";
+
     /// <summary>The publisher logo URL, <c>/logo.png</c> on the site when no logo is configured.</summary>
     public string PublisherLogoUrl => NormalizeImageUrl(SiteLogoUrl) ?? $"{BaseUrl}/logo.png";
 

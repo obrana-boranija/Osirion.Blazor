@@ -358,3 +358,8 @@
         grid-template-columns: 1fr;
     }
 }
+
+.osirion-article-author,
+.osirion-article-footer {
+    margin-top: var(--osirion-spacing-8, 2rem);
+}

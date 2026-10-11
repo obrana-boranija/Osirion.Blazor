@@ -42,6 +42,23 @@
     }
 
     <article class="@GetHtmlRendererClass()" @attributes="Attributes">
-        @((MarkupString)ProcessedHtml)
+        @if (Segments is null)
+        {
+            @((MarkupString)ProcessedHtml)
+        }
+        else
+        {
+            @foreach (var segment in Segments)
+            {
+                @if (segment.Demo is null)
+                {
+                    @((MarkupString)segment.Html!)
+                }
+                else
+                {
+                    <OsirionContentDemo Demo="segment.Demo" EnableCopyButton="EnableCopyButton" />
+                }
+            }
+        }
     </article>
 }

@@ -75,6 +75,9 @@ html.osirion-mudblazor-integration[data-osirion-theme] {
   --osirion-background-inverted: var(--mud-palette-dark, #272c34);
   --osirion-text-primary: var(--mud-palette-text-primary, rgba(0, 0, 0, 0.87));
   --osirion-text-secondary: var(--mud-palette-text-secondary, rgba(0, 0, 0, 0.6));
+  /* Links follow the framework's link color, which it keeps legible on its own background in both modes */
+  --osirion-link-color: var(--mud-palette-primary, #594ae2);
+  --osirion-link-hover-color: var(--mud-palette-primary-darken, #4538ca);
   --osirion-text-tertiary: var(--mud-palette-text-disabled, rgba(0, 0, 0, 0.38));
   --osirion-text-disabled: var(--mud-palette-text-disabled, rgba(0, 0, 0, 0.38));
   --osirion-text-inverted: var(--mud-palette-white, #ffffff);
@@ -308,6 +311,9 @@ html.osirion-mudblazor-integration.mud-theme-dark {
   --osirion-background-inverted: var(--mud-palette-white, #ffffff);
   --osirion-text-primary: var(--mud-palette-text-primary, rgba(255, 255, 255, 0.87));
   --osirion-text-secondary: var(--mud-palette-text-secondary, rgba(255, 255, 255, 0.6));
+  /* Links follow the framework's link color, which it keeps legible on its own background in both modes */
+  --osirion-link-color: var(--mud-palette-primary, #776be7);
+  --osirion-link-hover-color: var(--mud-palette-primary-lighten, #776be7);
   --osirion-text-tertiary: var(--mud-palette-text-disabled, rgba(255, 255, 255, 0.38));
   --osirion-text-disabled: var(--mud-palette-text-disabled, rgba(255, 255, 255, 0.38));
   --osirion-border-color: var(--mud-palette-divider, rgba(255, 255, 255, 0.12));

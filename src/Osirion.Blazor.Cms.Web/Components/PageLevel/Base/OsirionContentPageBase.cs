@@ -449,4 +449,44 @@ public abstract partial class OsirionContentPageBase : OsirionComponentBase
 
     /// <summary>Allows the next not-found result to signal again after content was found.</summary>
     protected void ResetNotFoundSignal() => _notFoundSignalled = false;
+
+    /// <summary>
+    /// Renders the page's title as its <c>h1</c>: in a <see cref="HeroSection"/> styled by the hero parameters while
+    /// <see cref="ShowHero"/> is on, otherwise in an <see cref="OsirionPageHeading"/>, with the description below the
+    /// title.
+    /// </summary>
+    /// <param name="title">The page title.</param>
+    /// <param name="description">The sentence under the title, or <see langword="null"/> for none.</param>
+    protected RenderFragment RenderPageHeading(string title, string? description) => builder =>
+    {
+        if (ShowHero)
+        {
+            builder.OpenComponent<HeroSection>(0);
+            builder.AddComponentParameter(1, nameof(HeroSection.Title), title);
+            builder.AddComponentParameter(2, nameof(HeroSection.Subtitle), description);
+            builder.AddComponentParameter(3, nameof(HeroSection.Variant), HeroVariant);
+            builder.AddComponentParameter(4, nameof(HeroSection.Alignment), HeroAlignment);
+            builder.AddComponentParameter(5, nameof(HeroSection.BackgroundPattern), HeroBackgroundPattern);
+            builder.AddComponentParameter(6, nameof(HeroSection.Theme), HeroTheme);
+            builder.AddComponentParameter(7, nameof(HeroSection.ImageUrl), HeroImageUrl);
+            builder.AddComponentParameter(8, nameof(HeroSection.ImageAlt), title);
+            builder.AddComponentParameter(9, nameof(HeroSection.ImagePosition), HeroImagePosition);
+            builder.AddComponentParameter(10, nameof(HeroSection.UseBackgroundImage), UseHeroBackgroundImage);
+            builder.AddComponentParameter(11, nameof(HeroSection.HasOverlay), HasOverlay);
+            builder.AddComponentParameter(12, nameof(HeroSection.ShowPrimaryButton), ShowHeroButtons);
+            builder.AddComponentParameter(13, nameof(HeroSection.ShowSecondaryButton), ShowHeroButtons);
+            builder.AddComponentParameter(14, nameof(HeroSection.PrimaryButtonText), HeroPrimaryButtonText);
+            builder.AddComponentParameter(15, nameof(HeroSection.PrimaryButtonUrl), HeroPrimaryButtonUrl);
+            builder.AddComponentParameter(16, nameof(HeroSection.SecondaryButtonText), HeroSecondaryButtonText);
+            builder.AddComponentParameter(17, nameof(HeroSection.SecondaryButtonUrl), HeroSecondaryButtonUrl);
+            builder.AddComponentParameter(18, nameof(HeroSection.HasDivider), false);
+            builder.CloseComponent();
+            return;
+        }
+
+        builder.OpenComponent<OsirionPageHeading>(20);
+        builder.AddComponentParameter(21, nameof(OsirionPageHeading.Title), title);
+        builder.AddComponentParameter(22, nameof(OsirionPageHeading.Description), description);
+        builder.CloseComponent();
+    };
 }

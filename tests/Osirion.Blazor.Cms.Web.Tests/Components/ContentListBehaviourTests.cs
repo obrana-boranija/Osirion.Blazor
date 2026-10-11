@@ -325,7 +325,12 @@ public class ContentListBehaviourTests : CmsWebComponentTestBase
 
     private static List<ContentItem> Items(int count) =>
         Enumerable.Range(1, count)
-            .Select(i => ContentItem.Create($"id-{i}", $"Post {i}", "<p>Body</p>", $"blog/post-{i}.md", "test"))
+            .Select(i =>
+            {
+                var item = ContentItem.Create($"id-{i}", $"Post {i}", "<p>Body</p>", $"blog/post-{i}.md", "test");
+                item.SetUrl($"blog/post-{i}");
+                return item;
+            })
             .ToList();
 
     private sealed class ContentListProbe : ContentList

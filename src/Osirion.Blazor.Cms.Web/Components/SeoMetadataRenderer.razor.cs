@@ -203,6 +203,14 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
     public string? OrganizationName { get; set; }
 
     /// <summary>
+    /// Gets or sets the <c>applicationCategory</c> of the <see cref="SchemaType.SoftwareApplication"/> schema, one of
+    /// the app types search engines support, such as <c>DeveloperApplication</c> or <c>BusinessApplication</c>.
+    /// Defaults to <c>DeveloperApplication</c>.
+    /// </summary>
+    [Parameter]
+    public string ApplicationCategory { get; set; } = "DeveloperApplication";
+
+    /// <summary>
     /// Alternate language versions of this page for hreflang tags.
     /// </summary>
     [Parameter]
@@ -266,6 +274,8 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
     {
         ["Article"] = "article",
         ["BlogPosting"] = "article",
+        ["TechArticle"] = "article",
+        ["ProfilePage"] = "profile",
         ["Product"] = "product",
         ["VideoObject"] = "video.other"
     };
@@ -697,7 +707,8 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
         MetaTitle = _metaTitle,
         MetaDescription = _metaDescription,
         OgImage = _ogImage,
-        Author = _author
+        Author = _author,
+        ApplicationCategory = ApplicationCategory
     };
 
     private void GenerateAllJsonLdSchemas()
@@ -883,12 +894,15 @@ public enum SchemaType
     Recipe,
 
     /// <summary>
-    /// Schema.org FAQPage type for frequently asked questions pages.
+    /// Schema.org FAQPage type for frequently asked questions pages. Generates nothing on its own; use
+    /// <c>EnableGeneratedFaq</c> or the <c>OsirionFaq</c> component. Google no longer shows FAQ rich results
+    /// (since May 2026).
     /// </summary>
     FAQ,
 
     /// <summary>
-    /// Schema.org HowTo type for step-by-step instructions and tutorials.
+    /// Schema.org HowTo type for step-by-step instructions and tutorials. Google no longer shows HowTo rich results
+    /// (since September 2023).
     /// </summary>
     HowTo,
 
@@ -920,5 +934,33 @@ public enum SchemaType
     /// <summary>
     /// Schema.org CollectionPage type for pages listing multiple items (blog index, category, tag pages).
     /// </summary>
-    CollectionPage
+    CollectionPage,
+
+    /// <summary>
+    /// Schema.org TechArticle type for technical documentation and how-to articles: the Article schema with a more
+    /// specific type.
+    /// </summary>
+    TechArticle,
+
+    /// <summary>
+    /// Schema.org SoftwareApplication type for a product page about an app or a library, with the
+    /// <c>applicationCategory</c> from <see cref="SeoMetadataRenderer.ApplicationCategory"/>.
+    /// </summary>
+    SoftwareApplication,
+
+    /// <summary>
+    /// Schema.org ProfilePage type for an author's page, with the person as its main entity. The author (or the
+    /// title) is the person's name, and tags that are absolute links become <c>sameAs</c> profiles.
+    /// </summary>
+    ProfilePage,
+
+    /// <summary>
+    /// Schema.org AboutPage type, with the site's organization as its main entity.
+    /// </summary>
+    AboutPage,
+
+    /// <summary>
+    /// Schema.org ContactPage type for a contact page.
+    /// </summary>
+    ContactPage
 }

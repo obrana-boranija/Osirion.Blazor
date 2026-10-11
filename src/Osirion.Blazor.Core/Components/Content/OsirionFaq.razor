@@ -1,0 +1,21 @@
+@namespace Osirion.Blazor.Components
+@inherits OsirionComponentBase
+
+@if (Items.Count > 0)
+{
+    <OsirionAccordion AllowMultiple="@AllowMultiple" Class="@GetContainerClass()" @attributes="Attributes">
+        @foreach (var item in Items)
+        {
+            <OsirionAccordionItem @key="item" Title="@item.Question">
+                <p class="osirion-faq-answer">@item.Answer</p>
+            </OsirionAccordionItem>
+        }
+    </OsirionAccordion>
+
+    @if (IncludeStructuredData && BuildStructuredData() is { } json)
+    {
+        @* The JSON is written with System.Text.Json's default encoder, which escapes <, > and &, so content cannot
+           end the script element. *@
+        @((MarkupString)$"<script type=\"application/ld+json\">{json}</script>")
+    }
+}

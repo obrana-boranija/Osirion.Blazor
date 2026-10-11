@@ -1,5 +1,20 @@
 # Migration Guide
 
+## Upgrading to 4.1.0
+
+4.1.0 adds components and fixes without breaking the public API. A few defaults and outputs change; check these if
+your site depends on them.
+
+| Area | Change | What to do |
+| --- | --- | --- |
+| Registration | `AddOsirion` registers the JS component services (`AddJSComponents`) | Nothing; an existing `AddJSComponents()` call does no harm |
+| `ContentList` | The list leaves out the item whose URL is the current page | Nothing, unless a list relied on showing its own page |
+| File system provider | A folder's `_index.md` is served at the folder's URL, as on the GitHub provider | Remove `_index.md` files you do not want published |
+| `ArticlePage` | `RelatedContentTitle` is used (default "Related Articles" instead of the fixed "Related items"); series navigation shows for posts with `series` front matter | Set `RelatedContentTitle` or `ShowSeriesNavigation="false"` to keep the old output |
+| `DocumentPage` | The body is a `div` instead of a second `main`; previous and next link to page URLs; the side navigation lists the folder when `NavigationItems` is not set | Update CSS that targeted `main.osirion-document-main` |
+| `SeoMetadataRenderer` | `SchemaType.BlogPosting` writes `"@type": "BlogPosting"` (it wrote `Article`) | Nothing |
+| Menus | Redesigned bar, drawer and dropdowns; a `MenuItem` with a submenu and no `Href` renders as the submenu toggle | Review custom menu CSS |
+
 ## Upgrading to 4.0.0
 
 ### Breaking Changes

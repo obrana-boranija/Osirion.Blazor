@@ -63,14 +63,13 @@ public class SeoMetadataRendererStructuredDataTests : CmsWebComponentTestBase
 
     // Known defect, pinned as current behavior: the BlogPosting schema type is published as "@type": "Article". Update this expectation when it is fixed.
     [Fact]
-    public void SeoMetadataRenderer_BlogPostingSchemaType_PublishesTheArticleType()
+    public void SeoMetadataRenderer_BlogPostingSchemaType_PublishesTheBlogPostingType()
     {
         var schemas = RenderJsonLd(p => p
             .Add(c => c.Content, SeoTestContent.Article())
             .Add(c => c.SchemaTypes, [SchemaType.BlogPosting]));
 
-        schemas[0].ShouldContain("\"@type\": \"Article\"");
-        schemas[0].ShouldNotContain("BlogPosting");
+        schemas[0].ShouldContain("\"@type\": \"BlogPosting\"");
     }
 
     [Fact]

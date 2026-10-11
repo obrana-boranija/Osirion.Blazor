@@ -1,0 +1,23 @@
+/* OsirionPageHeading - Osirion.Blazor.Core */
+
+.osirion-page-heading {
+    box-sizing: border-box;
+    margin: 0 auto var(--osirion-spacing-8, 2rem);
+    padding: var(--osirion-spacing-8, 2rem) var(--osirion-spacing-4, 1rem) 0;
+    max-width: var(--osirion-container-lg, 960px);
+}
+
+.osirion-page-heading-title {
+    margin: 0 0 var(--osirion-spacing-2, 0.5rem);
+    font-size: var(--osirion-font-size-4xl, 2.25rem);
+    font-weight: var(--osirion-font-weight-bold, 700);
+    line-height: var(--osirion-line-height-tight, 1.25);
+    color: var(--osirion-text-primary, #111827);
+}
+
+.osirion-page-heading-description {
+    margin: 0;
+    max-width: 65ch;
+    font-size: var(--osirion-font-size-lg, 1.125rem);
+    color: var(--osirion-text-secondary, #4b5563);
+}

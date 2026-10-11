@@ -14,6 +14,14 @@ Renders Yandex Metrica tag. Configure via YandexMetricaOptions.
 
 Renders Microsoft Clarity tag. Configure via ClarityOptions (ProjectId, etc.).
 
+# PlausibleTracker
+
+Renders the Plausible script and its `plausible.init` call. Configure via PlausibleOptions (ScriptUrl, Endpoint, optional tracking switches). See PlausibleTracker.md.
+
+# UmamiTracker
+
+Renders the Umami script tag, configured by attributes. Configure via UmamiOptions (SiteId = website ID, ScriptUrl, HostUrl, Domains). See UmamiTracker.md.
+
 # AnalyticsTracker
 
 Generic wrapper that selects the configured provider and renders its tracker.

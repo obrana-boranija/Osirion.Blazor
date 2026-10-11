@@ -1,0 +1,18 @@
+/* AboutPage - Osirion.Blazor.Cms.Web */
+
+.osirion-about-page {
+    padding-bottom: var(--osirion-spacing-12, 3rem);
+}
+
+/* The same readable width as OsirionPageHeading */
+.osirion-about-page-body,
+.osirion-about-page-more {
+    box-sizing: border-box;
+    margin: 0 auto;
+    padding: 0 var(--osirion-spacing-4, 1rem);
+    max-width: var(--osirion-container-lg, 960px);
+}
+
+.osirion-about-page-more {
+    margin-top: var(--osirion-spacing-10, 2.5rem);
+}

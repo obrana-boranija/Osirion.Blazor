@@ -90,6 +90,23 @@ dotnet add package Osirion.Blazor.Cms.Web
     DefaultImage="/images/default-social.jpg" />
 ```
 
+### Sitemap, RSS and Atom
+
+```csharp
+using Osirion.Blazor.Cms.Web.Feeds;
+
+// Maps /sitemap.xml, /feed.xml (RSS 2.0) and /atom.xml from the published content
+app.MapOsirionFeeds(feeds =>
+{
+    feeds.SiteUrl = "https://mysite.com";
+    feeds.FeedDirectory = "blog";
+    feeds.AdditionalSitemapUrls = ["/", "/blog"];
+});
+```
+
+See "Sitemap and Feeds" in [GITHUB_CMS.md](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/docs/GITHUB_CMS.md)
+for every option.
+
 ## Components
 
 ### ContentView

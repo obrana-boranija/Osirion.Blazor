@@ -8,40 +8,26 @@
            and without JavaScript. Its checked state is the expanded state. *@
         <input type="checkbox" class="osirion-submenu-toggler" id="@SubmenuToggleId" aria-controls="@SubmenuId" aria-label="Toggle @Text submenu" />
     }
-    <a href="@_renderedHref"
-       target="@RenderedTarget"
-       rel="@RenderedRel"
-       class="@LinkCssClass"
-       @onclick="OnClickHandler"
-       role="@LinkRole"
-       aria-disabled="@AriaDisabled"
-       aria-current="@AriaCurrent">
-        @if (IconTemplate is not null)
-        {
-            <span class="osirion-menu-item-icon">@IconTemplate</span>
-        }
-        else if (!string.IsNullOrWhiteSpace(Icon))
-        {
-            <span class="osirion-menu-item-icon">
-                @if (BuiltInIconPaths is { } iconPaths)
-                {
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
-                        @foreach (var iconPath in iconPaths)
-                        {
-                            <path fill-rule="@iconPath.FillRule" d="@iconPath.Data" />
-                        }
-                    </svg>
-                }
-            </span>
-        }
-        <span class="osirion-menu-item-content">
-            <span class="osirion-menu-item-text">@Text</span>
-            @if (!string.IsNullOrWhiteSpace(Description))
-            {
-                <span class="osirion-menu-item-description">@Description</span>
-            }
-        </span>
-    </a>
+    @if (_isToggleOnly)
+    {
+        @* A parent with no destination of its own opens its submenu instead of following a dead "#" link. *@
+        <label for="@SubmenuToggleId" class="osirion-menu-item osirion-menu-item-toggle-only @(_isActive ? "osirion-menu-item-active" : "") @Class">
+            @ItemContent
+        </label>
+    }
+    else
+    {
+        <a href="@_renderedHref"
+           target="@RenderedTarget"
+           rel="@RenderedRel"
+           class="@LinkCssClass"
+           @onclick="OnClickHandler"
+           role="@LinkRole"
+           aria-disabled="@AriaDisabled"
+           aria-current="@AriaCurrent">
+            @ItemContent
+        </a>
+    }
     @if (HasSubmenu)
     {
         @* No aria-label here: ARIA prohibits naming a <label> element; the
@@ -74,52 +60,31 @@
     }
 </div>
 
-@* <style>
-    .osirion-menu-item-wrapper {
-        margin: 0.15rem 0;
+@code {
+    // The icon and text of the item, shared by the link and by the label of a parent that only toggles its submenu.
+    // A name without a built-in icon renders no icon slot, so the text is not indented.
+    private RenderFragment ItemContent => @<text>
+    @if (IconTemplate is not null)
+    {
+        <span class="osirion-menu-item-icon">@IconTemplate</span>
     }
-    
-    .osirion-menu-item {
-        padding: 0.4rem 0.6rem;
-        display: flex;
-        align-items: center;
-        border-radius: 0.25rem;
-        transition: background-color 0.15s;
-        font-size: 0.9rem;
-        line-height: 1.2;
+    else if (BuiltInIconPaths is { } iconPaths)
+    {
+        <span class="osirion-menu-item-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                @foreach (var iconPath in iconPaths)
+                {
+                    <path fill-rule="@iconPath.FillRule" d="@iconPath.Data" />
+                }
+            </svg>
+        </span>
     }
-    
-    .osirion-menu-item-icon {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-right: 0.5rem;
-        flex-shrink: 0;
-    }
-    
-    .osirion-menu-item-text {
-        flex: 1;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    
-    .osirion-menu-item-chevron {
-        margin-left: 0.3rem;
-    }
-    
-    .osirion-submenu {
-        margin-left: 1.2rem;
-        padding-top: 0.1rem;
-        padding-bottom: 0.1rem;
-    }
-    
-    .osirion-menu-item-wrapper-active > .osirion-menu-item {
-        font-weight: 500;
-    }
-    
-    .compact-submenu .osirion-menu-item {
-        padding-top: 0.3rem;
-        padding-bottom: 0.3rem;
-    }
-</style> *@
+    <span class="osirion-menu-item-content">
+        <span class="osirion-menu-item-text">@Text</span>
+        @if (!string.IsNullOrWhiteSpace(Description))
+        {
+            <span class="osirion-menu-item-description">@Description</span>
+        }
+    </span>
+    </text>;
+}

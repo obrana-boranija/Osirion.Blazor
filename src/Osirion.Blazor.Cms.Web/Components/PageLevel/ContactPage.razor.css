@@ -1,0 +1,23 @@
+/* ContactPage - Osirion.Blazor.Cms.Web */
+
+.osirion-contact-page {
+    padding-bottom: var(--osirion-spacing-12, 3rem);
+}
+
+/* The same readable width as OsirionPageHeading */
+.osirion-contact-page-body,
+.osirion-contact-page-form,
+.osirion-contact-page-more {
+    box-sizing: border-box;
+    margin: 0 auto;
+    padding: 0 var(--osirion-spacing-4, 1rem);
+    max-width: var(--osirion-container-lg, 960px);
+}
+
+.osirion-contact-page-body {
+    margin-bottom: var(--osirion-spacing-8, 2rem);
+}
+
+.osirion-contact-page-more {
+    margin-top: var(--osirion-spacing-10, 2.5rem);
+}

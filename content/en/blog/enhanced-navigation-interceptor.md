@@ -1,510 +1,122 @@
 ---
-title: "Enhanced Navigation Components in Osirion.Blazor v1.5"
+title: "Scroll Position After Enhanced Navigation in Blazor"
 author: "Dejan Demonjić"
 date: "2025-01-20"
-description: "Explore the new navigation components in Osirion.Blazor v1.5, including enhanced navigation with scroll restoration, breadcrumbs, and scroll-to-top functionality."
-tags: [Navigation, Components, Blazor, UX, SSR]
+last_modified: 2026-10-11
+description: "Control where the page scrolls after Blazor enhanced navigation with the EnhancedNavigation component from Osirion.Blazor.Navigation."
+tags: [Navigation, Enhanced Navigation, Scrolling, SSR, Blazor]
 categories: [Components, Navigation]
 slug: "enhanced-navigation-interceptor"
 is_featured: true
-featured_image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
+featured_image: "/assets/images/blazor-cover.png"
 seo_properties:
-  title: "Enhanced Navigation Components - Osirion.Blazor v1.5"
-  description: "Discover the powerful navigation components in Osirion.Blazor v1.5 including breadcrumbs, scroll restoration, and scroll-to-top functionality."
-  og_image_url: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+  title: "Scroll Position After Enhanced Navigation in Blazor"
+  description: "Use EnhancedNavigation to scroll to the top after each Blazor enhanced navigation, with smooth, instant or browser-default scrolling."
+  image: "/assets/images/blazor-cover.png"
+  og_image_url: "/assets/images/blazor-cover.png"
   type: "Article"
 ---
 
-# Enhanced Navigation Components in Osirion.Blazor v1.5
+# Scroll Position After Enhanced Navigation in Blazor
 
-Navigation is the backbone of user experience in web applications. With Osirion.Blazor v1.5, we've significantly enhanced our navigation components to provide a seamless, accessible, and performant navigation experience that works perfectly with SSR.
+Blazor Web Apps use enhanced navigation: when a visitor follows a link, Blazor fetches the next page and patches it into
+the current document instead of loading a new one. Pages feel faster, but the browser's normal page-load behavior no
+longer decides where the window ends up. `EnhancedNavigation` from `Osirion.Blazor.Navigation` makes that decision
+explicit: after each enhanced navigation it scrolls the window to the top, unless you tell it not to.
 
-## What's New in Navigation
+## Add it to App.razor
 
-### 🧭 Enhanced Navigation with Scroll Restoration
-
-The `EnhancedNavigation` component now provides intelligent scroll behavior management:
+Place the component in `App.razor`, after the `blazor.web.js` script tag:
 
 ```razor
-<EnhancedNavigation 
-    Behavior="ScrollBehavior.Smooth"
-    ResetScrollOnNavigation="true"
-    PreserveScrollForSamePageNavigation="true" />
+@using Osirion.Blazor.Navigation.Components
+
+<body>
+    <Routes />
+    <script src="_framework/blazor.web.js"></script>
+
+    <EnhancedNavigation />
+</body>
 ```
 
-**Key Features:**
-- Automatic scroll position restoration when navigating back
-- Smooth scrolling animations
-- Same-page navigation preservation
-- SSR compatibility with progressive enhancement
+The order matters. The component renders a small inline script that subscribes to Blazor's `enhancedload` event, and it
+checks for the `Blazor` object when it runs. Placed before `blazor.web.js`, it finds nothing and does nothing.
 
-### 🍞 Automatic Breadcrumbs
+The component needs no service registration. It reads `EnhancedNavigationOptions` when they are configured and falls
+back to the defaults otherwise.
 
-The new `OsirionBreadcrumbs` component automatically generates navigation breadcrumbs from URL paths:
+## What the script does
 
-```razor
-<OsirionBreadcrumbs 
-    Path="/blog/components/navigation/breadcrumbs"
-    ShowHome="true"
-    HomeText="🏠 Home"
-    SegmentFormatter="@FormatSegment" />
+On every `enhancedload` event, the script compares the new URL with the previous one and then:
 
-@code {
-    private string FormatSegment(string segment)
-    {
-        return segment.Replace("-", " ")
-                     .Split(' ')
-                     .Select(word => char.ToUpper(word[0]) + word.Substring(1))
-                     .Aggregate((a, b) => $"{a} {b}");
-    }
-}
-```
+1. does nothing if `ResetScrollOnNavigation` is `false`;
+2. does nothing if `PreserveScrollForSamePageNavigation` is `true` and the URL did not change;
+3. otherwise calls `window.scrollTo` to the top of the page with the configured behavior.
 
-**Benefits:**
-- Zero configuration breadcrumbs
-- Customizable segment formatting
-- Full accessibility support
-- SEO-friendly structured navigation
+The comparison uses the full URL, including the query string, so moving from `?page=1` to `?page=2` counts as a new
+page, while a link to the page the reader is already on keeps their position as long as
+`PreserveScrollForSamePageNavigation` is on.
 
-### ⬆️ Scroll to Top
+The script runs on every `enhancedload`, so it does not treat the browser's back and forward buttons differently from
+link clicks. Full page loads are left to the browser, and navigation inside an interactive router does not raise
+`enhancedload`, so the script does not run for it.
 
-The `ScrollToTop` component provides a smooth "back to top" experience:
+## Parameters
+
+| Parameter | Type | Default | Description |
+| --- | --- | --- | --- |
+| `Behavior` | `ScrollBehavior?` | `null` (options: `Auto`) | How to scroll: `Auto` lets the browser decide, `Instant` jumps, `Smooth` animates. |
+| `ResetScrollOnNavigation` | `bool?` | `null` (options: `true`) | Scroll to the top after an enhanced navigation. |
+| `PreserveScrollForSamePageNavigation` | `bool?` | `null` (options: `true`) | Skip the scroll when the URL did not change. |
+
+A parameter you leave unset takes its value from `EnhancedNavigationOptions`, so you can configure the behavior once
+and keep the markup bare. `ScrollBehavior` lives in the `Osirion.Blazor.Components` namespace:
 
 ```razor
-<ScrollToTop 
-    Position="Position.BottomRight"
-    Behavior="ScrollBehavior.Smooth"
-    VisibilityThreshold="300"
-    Text="Top" />
-```
+@using Osirion.Blazor.Components
 
-**Features:**
-- Configurable visibility threshold
-- Multiple positioning options
-- Smooth scroll animations
-- Customizable appearance
-
-## Implementation Patterns
-
-### Blog Layout Navigation
-
-```razor
-@page "/blog/{category}/{slug}"
-@inject NavigationManager Navigation
-
-<!-- Breadcrumb navigation -->
-<OsirionBreadcrumbs 
-    Path="@Navigation.Uri"
-    ShowHome="true"
-    HomeText="Blog"
-    HomeUrl="/blog"
-    SegmentFormatter="@FormatBlogSegment" />
-
-<!-- Enhanced navigation -->
 <EnhancedNavigation Behavior="ScrollBehavior.Smooth" />
+```
 
-<!-- Article content -->
-<article>
-    <HeroSection 
-        Title="@article.Title"
-        Author="@article.Author"
-        PublishDate="@article.Date"
-        ShowMetadata="true"
-        Variant="HeroVariant.Minimal" />
-    
-    <ContentView Path="@articlePath" />
-</article>
+## Configure it once
 
-<!-- Scroll to top -->
-<ScrollToTop Position="Position.BottomRight" />
+With the meta-package, `AddOsirion` registers enhanced navigation with its defaults. If you call
+`AddOsirion(builder.Configuration)`, change them in the `Osirion:Navigation:Enhanced` section:
 
-@code {
-    [Parameter] public string Category { get; set; } = "";
-    [Parameter] public string Slug { get; set; } = "";
-    
-    private string articlePath => $"blog/{Category}/{Slug}.md";
-    private Article article = new();
-    
-    private string FormatBlogSegment(string segment)
-    {
-        return segment switch
-        {
-            "components" => "Components",
-            "navigation" => "Navigation",
-            "blazor" => "Blazor",
-            _ => segment.Replace("-", " ").ToTitleCase()
-        };
+```json
+{
+  "Osirion": {
+    "Navigation": {
+      "Enhanced": {
+        "Behavior": "Smooth",
+        "ResetScrollOnNavigation": true,
+        "PreserveScrollForSamePageNavigation": false
+      }
     }
+  }
 }
 ```
 
-### Documentation Site Navigation
-
-```razor
-@page "/docs/{*path}"
-
-<!-- Documentation breadcrumbs -->
-<OsirionBreadcrumbs 
-    Path="@($"/docs/{Path}")"
-    HomeText="Documentation"
-    HomeUrl="/docs"
-    SegmentFormatter="@FormatDocsSegment" />
-
-<!-- Sticky sidebar with navigation -->
-<OsirionPageLayout HasSidebar="true">
-    <SidebarContent>
-        <OsirionStickySidebar Position="Position.Left">
-            <DirectoryNavigation CurrentDirectory="@currentDir" />
-        </OsirionStickySidebar>
-    </SidebarContent>
-    
-    <MainContent>
-        <ContentView Path="@contentPath" />
-    </MainContent>
-</OsirionPageLayout>
-
-@code {
-    [Parameter] public string Path { get; set; } = "";
-    
-    private string contentPath => $"docs/{Path}.md";
-    private string currentDir => System.IO.Path.GetDirectoryName(Path) ?? "";
-    
-    private string FormatDocsSegment(string segment)
-    {
-        var specialCases = new Dictionary<string, string>
-        {
-            { "api", "API Reference" },
-            { "components", "Components" },
-            { "getting-started", "Getting Started" },
-            { "advanced", "Advanced Topics" }
-        };
-        
-        return specialCases.TryGetValue(segment, out var formatted) 
-            ? formatted 
-            : segment.Replace("-", " ").ToTitleCase();
-    }
-}
-```
-
-## Advanced Navigation Patterns
-
-### Hierarchical Menu System
-
-```razor
-<Menu>
-    <MenuGroup Title="Getting Started">
-        <MenuItem Text="Installation" Url="/docs/installation" />
-        <MenuItem Text="Quick Start" Url="/docs/quick-start" />
-        <MenuDivider />
-        <MenuItem Text="Configuration" Url="/docs/configuration" />
-    </MenuGroup>
-    
-    <MenuGroup Title="Components">
-        <MenuItem Text="Core Components" Url="/docs/components/core" />
-        <MenuItem Text="Navigation" Url="/docs/components/navigation" />
-        <MenuItem Text="Content Management" Url="/docs/components/cms" />
-    </MenuGroup>
-    
-    <MenuGroup Title="Advanced">
-        <MenuItem Text="Custom Providers" Url="/docs/advanced/providers" />
-        <MenuItem Text="Performance" Url="/docs/advanced/performance" />
-        <MenuItem Text="Theming" Url="/docs/advanced/theming" />
-    </MenuGroup>
-</Menu>
-```
-
-### Contextual Navigation
-
-```razor
-@inject IContentProvider ContentProvider
-
-<!-- Context-aware breadcrumbs -->
-<OsirionBreadcrumbs 
-    Path="@currentContent?.Path"
-    SegmentFormatter="@FormatContentSegment" />
-
-<!-- Related content navigation -->
-<nav class="related-navigation">
-    <h3>Related Articles</h3>
-    <ContentList 
-        Category="@currentContent?.Categories.FirstOrDefault()"
-        Count="5"
-        ExcludePath="@currentContent?.Path" />
-</nav>
-
-@code {
-    private ContentItem? currentContent;
-    
-    protected override async Task OnInitializedAsync()
-    {
-        currentContent = await ContentProvider.GetItemByPathAsync(currentPath);
-    }
-    
-    private string FormatContentSegment(string segment)
-    {
-        // Use content metadata for better formatting
-        var category = currentContent?.Categories
-            .FirstOrDefault(c => c.Slug == segment);
-        
-        return category?.Name ?? segment.Replace("-", " ").ToTitleCase();
-    }
-}
-```
-
-## Performance Optimizations
-
-### Scroll Event Optimization
-
-The navigation components use optimized scroll event handling:
+or register it in code with the navigation package alone:
 
 ```csharp
-// Debounced scroll events prevent excessive updates
-private async Task HandleScroll()
+using Osirion.Blazor.Components;
+using Osirion.Blazor.Navigation.Extensions;
+
+builder.Services.AddOsirionNavigation(navigation =>
 {
-    if (_scrollTimer != null)
-    {
-        _scrollTimer.Dispose();
-    }
-    
-    _scrollTimer = new Timer(async _ => {
-        await UpdateScrollPosition();
-    }, null, 100, Timeout.Infinite);
-}
+    navigation.AddEnhancedNavigation(options => options.Behavior = ScrollBehavior.Instant);
+});
 ```
 
-### Memory-Efficient Breadcrumbs
+## The same event, other uses
 
-Breadcrumb segments are cached and reused:
+`enhancedload` is also what the Matomo and Yandex Metrica trackers listen for to report page views after enhanced
+navigation, through the static `osirion-analytics.js` script. See
+[Analytics in Blazor with Osirion.Blazor](/blog/analytics-integration-in-blazor).
 
-```csharp
-private readonly Dictionary<string, BreadcrumbPath> _pathCache = new();
+## Related
 
-private BreadcrumbPath GetBreadcrumbPath(string path)
-{
-    if (_pathCache.TryGetValue(path, out var cached))
-    {
-        return cached;
-    }
-    
-    var breadcrumbPath = ParsePath(path);
-    _pathCache[path] = breadcrumbPath;
-    return breadcrumbPath;
-}
-```
-
-## Accessibility Features
-
-All navigation components include comprehensive accessibility support:
-
-### ARIA Labels and Roles
-
-```html
-<nav aria-label="Breadcrumb" class="osirion-breadcrumbs">
-    <ol class="breadcrumb" role="list">
-        <li class="breadcrumb-item" role="listitem">
-            <a href="/">Home</a>
-        </li>
-        <li class="breadcrumb-item active" aria-current="page" role="listitem">
-            Current Page
-        </li>
-    </ol>
-</nav>
-```
-
-### Keyboard Navigation
-
-```csharp
-// Full keyboard support for navigation elements
-[Parameter] public EventCallback<KeyboardEventArgs> OnKeyDown { get; set; }
-
-private async Task HandleKeyDown(KeyboardEventArgs e)
-{
-    switch (e.Key)
-    {
-        case "Enter":
-        case " ":
-            await NavigateToUrl();
-            break;
-        case "Escape":
-            await CloseMenu();
-            break;
-    }
-}
-```
-
-### Screen Reader Support
-
-```razor
-<!-- Descriptive text for screen readers -->
-<span class="sr-only">
-    Navigate to @item.Text. @(item.IsActive ? "Current page" : "")
-</span>
-```
-
-## SSR Compatibility
-
-All navigation components work seamlessly with SSR:
-
-### Progressive Enhancement
-
-```razor
-<!-- Works without JavaScript -->
-<nav class="navigation">
-    <a href="/docs">Documentation</a>
-    <a href="/blog">Blog</a>
-</nav>
-
-<!-- Enhanced with JavaScript when available -->
-<EnhancedNavigation 
-    @rendermode="@RenderMode.InteractiveServer" />
-```
-
-### Static Site Generation
-
-```csharp
-// Generate static navigation during build
-public class NavigationStaticRenderer
-{
-    public string GenerateStaticNavigation(IEnumerable<ContentItem> items)
-    {
-        var nav = new StringBuilder();
-        nav.AppendLine("<nav class='static-navigation'>");
-        
-        foreach (var item in items)
-        {
-            nav.AppendLine($"<a href='{item.Url}'>{item.Title}</a>");
-        }
-        
-        nav.AppendLine("</nav>");
-        return nav.ToString();
-    }
-}
-```
-
-## Framework Integration
-
-Navigation components integrate seamlessly with CSS frameworks:
-
-### Bootstrap Navigation
-
-```razor
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <div class="container">
-        <a class="navbar-brand" href="/">My Site</a>
-        
-        <!-- Enhanced navigation with Bootstrap classes -->
-        <EnhancedNavigation 
-            Class="navbar-nav"
-            Behavior="ScrollBehavior.Smooth" />
-        
-        <!-- Breadcrumbs with Bootstrap styling -->
-        <OsirionBreadcrumbs 
-            Path="@currentPath"
-            Class="breadcrumb bg-light" />
-    </div>
-</nav>
-```
-
-### Fluent UI Navigation
-
-```razor
-<nav class="ms-Nav">
-    <Menu CssClass="ms-Nav-compositeLink">
-        <MenuGroup Title="Navigation">
-            <MenuItem Text="Home" Url="/" CssClass="ms-Nav-link" />
-            <MenuItem Text="About" Url="/about" CssClass="ms-Nav-link" />
-        </MenuGroup>
-    </Menu>
-</nav>
-```
-
-## Best Practices
-
-### 1. Consistent Navigation Structure
-
-```csharp
-// Define navigation structure consistently
-public class NavigationStructure
-{
-    public static readonly Dictionary<string, string> SegmentMappings = new()
-    {
-        { "docs", "Documentation" },
-        { "api", "API Reference" },
-        { "components", "Components" },
-        { "getting-started", "Getting Started" }
-    };
-    
-    public static string FormatSegment(string segment)
-    {
-        return SegmentMappings.TryGetValue(segment, out var mapped) 
-            ? mapped 
-            : segment.Replace("-", " ").ToTitleCase();
-    }
-}
-```
-
-### 2. Mobile-First Navigation
-
-```css
-/* Mobile-first navigation styles */
-.navigation {
-    display: flex;
-    flex-direction: column;
-}
-
-@media (min-width: 768px) {
-    .navigation {
-        flex-direction: row;
-        align-items: center;
-    }
-}
-
-/* Responsive breadcrumbs */
-.osirion-breadcrumbs {
-    font-size: 0.875rem;
-}
-
-@media (max-width: 576px) {
-    .osirion-breadcrumbs .breadcrumb-item:not(:last-child) {
-        display: none;
-    }
-    
-    .osirion-breadcrumbs .breadcrumb-item:nth-last-child(2) {
-        display: inline;
-    }
-    
-    .osirion-breadcrumbs .breadcrumb-item:nth-last-child(2)::before {
-        content: "...";
-    }
-}
-```
-
-### 3. Performance Monitoring
-
-```csharp
-// Monitor navigation performance
-public class NavigationMetrics
-{
-    private readonly ILogger<NavigationMetrics> _logger;
-    
-    public async Task<TimeSpan> MeasureNavigationTime(Func<Task> navigationAction)
-    {
-        var stopwatch = Stopwatch.StartNew();
-        await navigationAction();
-        stopwatch.Stop();
-        
-        _logger.LogInformation("Navigation completed in {Duration}ms", 
-            stopwatch.ElapsedMilliseconds);
-        
-        return stopwatch.Elapsed;
-    }
-}
-```
-
-## Conclusion
-
-The enhanced navigation components in Osirion.Blazor v1.5 provide a comprehensive foundation for building intuitive, accessible, and performant navigation experiences. With automatic breadcrumbs, scroll restoration, and smooth scroll-to-top functionality, you can create navigation that delights users while maintaining excellent performance and accessibility standards.
-
-The components work seamlessly together and integrate with any CSS framework, making them perfect for both simple websites and complex applications. Best of all, they maintain full SSR compatibility while providing progressive enhancement when JavaScript is available.
-
-Start building better navigation experiences today with Osirion.Blazor v1.5!
+- [Navigation components](/docs/components/navigation)
+- [Navigation in Osirion.Blazor: menus, scroll and breadcrumbs](/blog/navigation-components)
+- [Osirion.Blazor.Navigation on NuGet](https://www.nuget.org/packages/Osirion.Blazor.Navigation)

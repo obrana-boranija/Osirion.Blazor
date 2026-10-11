@@ -1,0 +1,55 @@
+@namespace Osirion.Blazor.Cms.Web.Components
+
+@if (!string.IsNullOrWhiteSpace(FeedUrl))
+{
+    <HeadContent>
+        <link rel="alternate" type="application/rss+xml" title="@FeedTitle" href="@FeedUrl" />
+    </HeadContent>
+}
+
+<div class="@GetPageClass()" style="@Style" @attributes="Attributes">
+    <div class="osirion-content-list-page-main">
+        <ContentList ShowTitle
+                     PageTitle="@Title"
+                     PageDescription="@Description"
+                     Directory="@Directory"
+                     Category="@Category"
+                     Tag="@Tag"
+                     Author="@Author"
+                     Locale="@Locale"
+                     ShowPagination="@ShowPagination"
+                     ItemsPerPage="@ItemsPerPage"
+                     SortBy="@SortBy"
+                     SortDirection="@SortDirection"
+                     NoContentText="@NoContentText"
+                     ContentUrlFormatter="@ContentUrlFormatter"
+                     PaginationUrlFormatter="@PaginationUrlFormatter"
+                     WebsiteName="@WebsiteName" />
+
+        @if (!string.IsNullOrWhiteSpace(FeedUrl))
+        {
+            <p class="osirion-content-list-page-feed">
+                <a href="@FeedUrl">@FeedTitle</a>
+            </p>
+        }
+    </div>
+
+    @if (HasSidebar)
+    {
+        <aside class="osirion-content-list-page-sidebar" aria-label="@SidebarLabel">
+            @if (ShowCategories)
+            {
+                <CategoriesList Title="@CategoriesTitle"
+                                ActiveCategory="@Category"
+                                CategoryUrlFormatter="@CategoryUrlFormatter" />
+            }
+
+            @if (ShowTags)
+            {
+                <TagCloud Title="@TagsTitle"
+                          ActiveTag="@Tag"
+                          TagUrlFormatter="@TagUrlFormatter" />
+            }
+        </aside>
+    }
+</div>

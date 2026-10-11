@@ -16,9 +16,14 @@ internal static class SeoSchemas
 
     private static readonly Dictionary<SchemaType, Func<SeoSchemaContext, object?>> Builders = new()
     {
-        [SchemaType.Article] = ContentSchemas.Article,
-        [SchemaType.BlogPosting] = ContentSchemas.Article,
-        [SchemaType.WebPage] = ContentSchemas.WebPage,
+        [SchemaType.Article] = context => ContentSchemas.Article(context, "Article"),
+        [SchemaType.BlogPosting] = context => ContentSchemas.Article(context, "BlogPosting"),
+        [SchemaType.TechArticle] = context => ContentSchemas.Article(context, "TechArticle"),
+        [SchemaType.WebPage] = context => ContentSchemas.WebPage(context, "WebPage"),
+        [SchemaType.ContactPage] = context => ContentSchemas.WebPage(context, "ContactPage"),
+        [SchemaType.AboutPage] = ContentSchemas.AboutPage,
+        [SchemaType.SoftwareApplication] = ContentSchemas.SoftwareApplication,
+        [SchemaType.ProfilePage] = ContentSchemas.ProfilePage,
         [SchemaType.Product] = ContentSchemas.Product,
         [SchemaType.Organization] = ContentSchemas.Organization,
         [SchemaType.Person] = ContentSchemas.Person,

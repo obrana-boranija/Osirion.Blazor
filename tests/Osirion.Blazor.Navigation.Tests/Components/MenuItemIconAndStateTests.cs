@@ -20,8 +20,8 @@ public class MenuItemIconAndStateTests : BunitContext
     {
         { "home", ["M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146"] },
         { "HOME", ["M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146"] },
-        { "blog", ["M11 2a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3H5"] },
-        { "document", ["M11 2a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3H5"] },
+        { "blog", ["M5 10.5a.5.5 0 0 1 .5-.5h2", "M3 0h10a2 2 0 0 1 2 2v12", "M1 5v-.5a.5.5 0 0 1 1 0V5h.5"] },
+        { "document", ["M5.5 7a.5.5 0 0 0 0 1h5", "M9.5 0H4a2 2 0 0 0-2 2v12"] },
         { "docs", ["M1 2.828c.885-.37 2.154-.769 3.388-.893"] },
         { "documentation", ["M1 2.828c.885-.37 2.154-.769 3.388-.893"] },
         { "user", ["M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3"] },
@@ -76,12 +76,11 @@ public class MenuItemIconAndStateTests : BunitContext
     }
 
     [Fact]
-    public void MenuItem_UnknownIcon_RendersAnEmptyIconSlot()
+    public void MenuItem_UnknownIcon_RendersNoIconSlot()
     {
         var cut = Render<MenuItem>(p => p.Add(c => c.Text, "Item").Add(c => c.Icon, "rocket"));
 
-        var slot = cut.Find(".osirion-menu-item-icon");
-        slot.Children.Length.ShouldBe(0);
+        cut.FindAll(".osirion-menu-item-icon").ShouldBeEmpty();
     }
 
     [Fact]

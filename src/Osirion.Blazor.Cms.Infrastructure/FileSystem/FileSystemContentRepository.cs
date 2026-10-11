@@ -108,7 +108,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
                 }
 
                 // Process each file
-                foreach (var file in files.Where(f => !IsExcluded(f)))
+                foreach (var file in files)
                 {
                     try
                     {
@@ -237,22 +237,6 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
             }
         }
 
-        private bool IsExcluded(string filePath)
-        {
-            // Skip _index.md files - they're for directory metadata
-            if (Path.GetFileName(filePath).Equals("_index.md", StringComparison.OrdinalIgnoreCase))
-                return true;
-
-            // Check exclude patterns
-            //foreach (var pattern in _options.ExcludePatterns)
-            //{
-            //    if (MatchesGlobPattern(filePath, pattern))
-            //        return true;
-            //}
-
-            return false;
-        }
-
         private async Task<ContentItem?> ProcessMarkdownFileAsync(string filePath, CancellationToken cancellationToken)
         {
             try
@@ -278,7 +262,6 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
 
                 var fileInfo = _fileSystem.FileInfo.New(filePath);
                 contentItem.SetCreatedDate(fileInfo.CreationTimeUtc);
-                contentItem.SetLastModifiedDate(fileInfo.LastWriteTimeUtc);
 
                 // Extract locale from path if enabled
                 if (_options.EnableLocalization)
@@ -294,7 +277,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
                 await AssignDirectoryAsync(contentItem, relativePath, cancellationToken);
 
                 // Process the markdown content
-                await ProcessMarkdownAsync(content, contentItem, cancellationToken);
+                await ProcessMarkdownAsync(content, contentItem, fileInfo.LastWriteTimeUtc, cancellationToken);
 
                 // Set URL
                 var url = UrlGenerator.GenerateUrl(contentItem.Url, contentItem.Path, contentItem.Slug, EnableLocalization, SupportedLocales, ContentPath);

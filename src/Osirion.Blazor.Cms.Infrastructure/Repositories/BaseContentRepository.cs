@@ -431,7 +431,19 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
     /// <summary>
     /// Processes a markdown file to create a content item
     /// </summary>
-    protected async Task ProcessMarkdownAsync(string markdown, ContentItem contentItem, CancellationToken cancellationToken)
+    protected Task ProcessMarkdownAsync(string markdown, ContentItem contentItem, CancellationToken cancellationToken) =>
+        ProcessMarkdownAsync(markdown, contentItem, sourceLastModified: null, cancellationToken);
+
+    /// <summary>
+    /// Processes a markdown file to create a content item.
+    /// </summary>
+    /// <param name="markdown">The file's markdown, with its front matter.</param>
+    /// <param name="contentItem">The item to fill.</param>
+    /// <param name="sourceLastModified">
+    /// When the source last changed (a file's write time), used when the front matter has no <c>last_modified</c>.
+    /// </param>
+    /// <param name="cancellationToken">A token to cancel the operation.</param>
+    protected async Task ProcessMarkdownAsync(string markdown, ContentItem contentItem, DateTime? sourceLastModified, CancellationToken cancellationToken)
     {
         try
         {
@@ -466,21 +478,8 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
             // CustomFields and SeoProperties are stored in Metadata only
 
             // Parse and set date
-            var createdDate = contentItem.DateCreated;
-            var metadataDate = contentItem.Metadata?.Date;
-
-            if (!string.IsNullOrWhiteSpace(metadataDate) &&
-                DateTime.TryParse(
-                    metadataDate,
-                    CultureInfo.InvariantCulture,
-                    DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal,
-                    out var parsedDate))
-            {
-                createdDate = parsedDate;
-            }
-
+            var createdDate = ParseUtcDate(contentItem.Metadata?.Date) ?? contentItem.DateCreated;
             contentItem.SetCreatedDate(createdDate);
-            contentItem.SetLastModifiedDate(contentItem.LastModified ?? createdDate);
 
             // Add categories
             if (contentItem.Metadata?.Categories is not null && contentItem.Metadata.Categories.Any())
@@ -499,6 +498,10 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
                     contentItem.AddTag(tag);
                 }
             }
+
+            // Last, because every setter above moves LastModified to now. The front matter's last_modified is what the
+            // author declared, so it wins over the source's date; without either, the item was last changed when made.
+            contentItem.SetLastModifiedDate(ParseUtcDate(contentItem.Metadata?.LastModified) ?? sourceLastModified ?? createdDate);
         }
         catch (Exception ex)
         {
@@ -506,6 +509,12 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
             throw;
         }
     }
+
+    private static DateTime? ParseUtcDate(string? value) =>
+        !string.IsNullOrWhiteSpace(value)
+        && DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out var parsed)
+            ? parsed
+            : null;
 
     /// <summary>
     /// Generates markdown content with front matter for saving

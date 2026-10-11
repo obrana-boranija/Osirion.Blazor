@@ -2,12 +2,13 @@
 id: 'components-overview'
 order: 1
 layout: docs
-title: Osirion.Blazor Components Overview
+title: Components overview
 permalink: /docs/components
-description: Complete overview of all Osirion.Blazor components organized by modules - Core, CMS Web, CMS Admin, Navigation, Analytics, and Theming components with usage examples and best practices.
+description: Every Osirion.Blazor component by module and package (Core, CMS web, CMS admin, Navigation, Analytics, Theming) and what they share.
 author: Dejan Demonjić
 date: 2025-09-03
-featured_image: https://storage.googleapis.com/croct-assets-b931d070/blog/Headless_CMS_within_the_React_framework_3_1_da922d2562/Headless_CMS_within_the_React_framework_3_1_da922d2562.png
+last_modified: 2026-10-11
+featured_image: /assets/images/blazor-cover.png
 categories:
 - Components
 - Documentation
@@ -26,238 +27,100 @@ slug: components
 lang: en
 custom_fields: {}
 seo_properties:
-  title: 'Osirion.Blazor Components - Complete Component Library Documentation'
-  description: 'Explore all Osirion.Blazor components organized by modules. Comprehensive documentation with examples for Core, CMS, Navigation, Analytics and Theming components.'
-  image: https://storage.googleapis.com/croct-assets-b931d070/blog/Headless_CMS_within_the_React_framework_3_1_da922d2562/Headless_CMS_within_the_React_framework_3_1_da922d2562.png
+  title: 'Osirion.Blazor components overview'
+  description: 'The Osirion.Blazor components grouped by module and package, with the parameters and behavior they all share.'
+  image: /assets/images/blazor-cover.png
   canonical: 'https://getosirion.com/docs/components'
   lang: en
   robots: index, follow
-  og_title: 'Osirion.Blazor Components - Complete Library'
-  og_description: 'Complete documentation for all Osirion.Blazor components with usage examples and best practices.'
-  og_image_url: 'https://storage.googleapis.com/croct-assets-b931d070/blog/Headless_CMS_within_the_React_framework_3_1_da922d2562/Headless_CMS_within_the_React_framework_3_1_da922d2562.png'
+  og_title: 'Osirion.Blazor components overview'
+  og_description: 'The Osirion.Blazor components grouped by module and package.'
+  og_image_url: /assets/images/blazor-cover.png
   og_type: article
   json_ld: ''
   type: Article
   twitter_card: summary_large_image
-  twitter_title: 'Osirion.Blazor Components Documentation'
-  twitter_description: 'Complete documentation for all Osirion.Blazor components with usage examples.'
-  twitter_image_url: 'https://storage.googleapis.com/croct-assets-b931d070/blog/Headless_CMS_within_the_React_framework_3_1_da922d2562/Headless_CMS_within_the_React_framework_3_1_da922d2562.png'
+  twitter_title: 'Osirion.Blazor components overview'
+  twitter_description: 'The Osirion.Blazor components grouped by module and package.'
+  twitter_image_url: /assets/images/blazor-cover.png
   meta_tags: {}
 ---
 
-# Osirion.Blazor Components Overview
+# Components overview
 
-Osirion.Blazor provides a comprehensive set of modular components designed for modern Blazor applications with Server-Side Rendering (SSR) compatibility. The component library is organized into six main modules, each serving specific functionality requirements.
+Osirion.Blazor is split into modules, and each module is its own NuGet package. The `Osirion.Blazor` package
+references all of them and adds the `AddOsirion` registration; see [Getting started](/docs/getting-started) for the
+setup. This page lists the components by module and links to their reference pages.
 
-## Module Architecture
+## What every component shares
 
-The Osirion.Blazor component library is structured around the following modules:
+- **Server-rendered markup.** Components render their HTML on the server, so pages work under static SSR. A few
+  (for example the carousels, `OsirionImageGallery` and `OsirionPageLayout`) load a small script of their own for
+  behavior that needs the browser; register `AddJSComponents()` so they can.
+- **Common parameters.** Components inherit `OsirionComponentBase`, which adds `Class` and `Style` for the root
+  element, `Attributes` (any unmatched attribute is passed through) and `Theme` (a `ThemeMode`: `Light`, `Dark`,
+  `System` or `Inverted`, default `System`). The old `SetInteractive` parameter is obsolete and setting it is a
+  compile error; interactivity is detected automatically.
+- **Sanitized content.** Markdown is rendered to HTML and cleaned with an allow-list before it is shown, so script,
+  event handler attributes and `javascript:` URLs in content are removed.
 
-### Core Components
-Foundation components for layout, navigation, forms, cards, sections, and UI states. These components are framework-agnostic and provide essential building blocks for any Blazor application.
+Components added in 4.1 are marked below and ship in the next release.
 
-**Key Features:**
-- SSR-compatible components
-- Framework-agnostic design
-- Responsive layouts
-- Accessibility support
-- Performance optimized
+## Core
 
-### CMS Web Components
-Content management components for displaying and rendering GitHub-based CMS content. These components handle content rendering, SEO metadata, and page-level layouts.
+Package `Osirion.Blazor.Core`, namespace `Osirion.Blazor.Components`. Building blocks for any page.
 
-**Key Features:**
-- GitHub CMS integration
-- SEO optimization
-- Content rendering
-- Localization support
-- Dynamic page generation
+- [Layout](/docs/components/core/layout): `OsirionPageLayout`, `OsirionFooter`, `OsirionStickySidebar`,
+  `OsirionBackgroundPattern`.
+- [Sections](/docs/components/core/sections): `HeroSection`, `OsirionBaseSection`, `OsirionContactInfoSection`,
+  `OsirionResponsiveShowcaseSection`, `OsirionContextCardGrid`, `OsirionMetricGrid`. From 4.1:
+  `OsirionPricingTable`, `OsirionFeatureComparison`, `OsirionSteps`.
+- [Cards](/docs/components/core/cards): `OsirionFeatureCard`, `OsirionTestimonialCard`, `OsirionSubscriptionCard`,
+  `OsirionMetricCard`. From 4.1: `OsirionAuthorCard`.
+- [Carousels](/docs/components/core/carousels): `InfiniteLogoCarousel`, `OsirionTestimonialCarousel`.
+- [Content](/docs/components/core/content): `OsirionArticleMetdata`. From 4.1: `OsirionCallout`, `OsirionTabs`,
+  `OsirionAccordion`, `OsirionFaq`, `OsirionResponsiveImage`, `OsirionVideoEmbed`, `OsirionReadingProgress`.
+- [Forms](/docs/components/core/forms): `OsirionContactForm`.
+- [Navigation](/docs/components/core/navigation): `OsirionBreadcrumbs`, `OsirionReadMoreLink`.
+- [Popups](/docs/components/core/popups): `OsirionCookieConsent`. From 4.1: `OsirionAnnouncementBar`.
+- [Rendering](/docs/components/core/rendering): `OsirionHtmlRenderer`, `OsirionReveal`.
+- [States](/docs/components/core/states): `OsirionPageLoading`, `OsirionContentNotFound`.
+- `OsirionImageGallery`, a gallery with a lightbox.
 
-### CMS Admin Components
-Administrative interface components for managing CMS content through a web-based admin panel. These components provide content editing, workflow management, and administrative controls.
+## CMS web
 
-**Key Features:**
-- Content editor interface
-- Workflow management
-- User management
-- Dashboard components
-- Administrative controls
+Package `Osirion.Blazor.Cms.Web`. Components that read content from the configured provider (a local folder or a
+GitHub repository).
 
-### Navigation Components
-Advanced navigation and menu components with enhanced functionality for complex navigation scenarios.
+- [Content](/docs/components/cms-web/core): `ContentList`, `ContentView`, `ContentPage`, `ContentRenderer`,
+  `LocalizedContentView`, `SeoMetadataRenderer`.
+- [Navigation](/docs/components/cms-web/navigation): `ContentBreadcrumbs`, `CategoriesList`, `TagCloud`,
+  `SearchBox`, `TableOfContents`, `DirectoryNavigation`, `LocalizedNavigation`, `OsirionContentNavigation`. From
+  4.1: `ContentSeriesNavigation`.
+- Page-level components that combine the above: `ArticlePage`, `DocumentPage`, `LandingPage` and `HomePage`.
 
-**Key Features:**
-- Multi-level menus
-- Responsive navigation
-- Scroll-to-top functionality
-- Breadcrumb navigation
-- Mobile-optimized
+## CMS admin
 
-### Analytics Components
-Analytics integration components supporting multiple providers including Google Analytics 4, Microsoft Clarity, Matomo, and Yandex Metrica.
+Package `Osirion.Blazor.Cms.Admin`. Admin pages under `/osirion` for browsing and editing content in a GitHub
+repository, with a Markdown editor and preview. Every admin page requires the `Osirion.Cms.Admin` authorization
+policy, so the host must add its own sign-in first. The `Osirion.Blazor.Cms` package combines CMS web and CMS admin.
 
-**Key Features:**
-- Multi-provider support
-- Privacy compliance
-- Performance tracking
-- Custom event tracking
-- GDPR compliance
+## Navigation
 
-### Theming Components
-Theme management and styling components for consistent design systems and dark/light mode support.
+Package `Osirion.Blazor.Navigation`, namespace `Osirion.Blazor.Navigation.Components`.
+[Navigation components](/docs/components/navigation): `Menu` with `MenuItem`, `MenuGroup`, `MenuDivider`,
+`MenuCallToAction`, `MenuPanel`, `MenuPanelLink` and `MenuImageCard`; `EnhancedNavigation`, which handles scroll
+position after Blazor's enhanced navigation; `ScrollToTop` and `ScrollToTopProvider`.
 
-**Key Features:**
-- Theme switching
-- CSS custom properties
-- Design tokens
-- Dark/light mode
-- Brand customization
+## Analytics
 
-## Component Categories
+Package `Osirion.Blazor.Analytics`, namespace `Osirion.Blazor.Analytics.Components`.
+[Analytics components](/docs/components/analytics): `ClarityTracker`, `MatomoTracker`, `GA4Tracker` and
+`YandexMetricaTracker`, configured under `Osirion:Analytics`. From 4.1: `PlausibleTracker` and `UmamiTracker`.
 
-### Layout Components
-- **HeroSection**: Hero banners with background options
-- **OsirionPageLayout**: Main page layout wrapper
-- **OsirionFooter**: Footer component with links and branding
-- **OsirionStickySidebar**: Sticky sidebar for documentation
-- **OsirionBackgroundPattern**: Decorative background patterns
+## Theming
 
-### Content Components
-- **ContentView**: GitHub CMS content display
-- **ContentRenderer**: Markdown content rendering
-- **ContentList**: Content listing with pagination
-- **OsirionHtmlRenderer**: Safe HTML rendering
-- **SeoMetadataRenderer**: SEO metadata injection
-
-### Navigation Components
-- **EnhancedNavigation**: Advanced navigation menu
-- **Menu**: Flexible menu component
-- **MenuItem**: Individual menu items
-- **MenuGroup**: Menu grouping and organization
-- **OsirionBreadcrumbs**: Breadcrumb navigation
-- **ScrollToTop**: Scroll-to-top functionality
-
-### UI Components
-- **OsirionFeatureCard**: Feature showcase cards
-- **OsirionTestimonialCard**: Customer testimonial cards
-- **OsirionSubscriptionCard**: Subscription/pricing cards
-- **OsirionContactForm**: Contact form with validation
-- **OsirionCookieConsent**: GDPR cookie consent
-
-### State Components
-- **OsirionPageLoading**: Loading state indicators
-- **OsirionContentNotFound**: 404 error pages
-- **ThemeToggle**: Dark/light theme switching
-
-### Analytics Components
-- **GA4Tracker**: Google Analytics 4 integration
-- **ClarityTracker**: Microsoft Clarity integration
-- **MatomoTracker**: Matomo analytics integration
-- **YandexMetricaTracker**: Yandex Metrica integration
-
-## Getting Started with Components
-
-To use Osirion.Blazor components in your application:
-
-1. **Install the packages** you need based on your requirements
-2. **Configure services** in your `Program.cs` or `Startup.cs`
-3. **Add component imports** to your `_Imports.razor`
-4. **Use components** in your Razor pages and components
-
-### Basic Setup Example
-
-```csharp
-// Program.cs
-builder.Services.AddOsirionCore();
-builder.Services.AddOsirionCms();
-builder.Services.AddOsirionNavigation();
-builder.Services.AddOsirionAnalytics();
-builder.Services.AddOsirionTheming();
-```
-
-```razor
-@* _Imports.razor *@
-@using Osirion.Blazor.Components
-@using Osirion.Blazor.Cms.Components
-@using Osirion.Blazor.Navigation.Components
-@using Osirion.Blazor.Analytics.Components
-@using Osirion.Blazor.Theming.Components
-```
-
-### Component Usage Example
-
-```razor
-<HeroSection 
-    Title="Welcome to Osirion.Blazor"
-    Subtitle="Modern Blazor Components"
-    Summary="Build beautiful, responsive applications with our component library"
-    PrimaryButtonText="Get Started"
-    PrimaryButtonUrl="/docs/getting-started"
-    UseBackgroundImage="true"
-    ImageUrl="/images/hero-bg.jpg" />
-
-<ContentView ContentPath="/docs/introduction" />
-
-<EnhancedNavigation>
-    <MenuItem Text="Home" Url="/" />
-    <MenuItem Text="Documentation" Url="/docs" />
-    <MenuItem Text="Components" Url="/docs/components" />
-</EnhancedNavigation>
-```
-
-## Best Practices
-
-### Performance Optimization
-- Use SSR-compatible components for better initial load times
-- Implement lazy loading for heavy components
-- Optimize images and assets used in components
-- Use CSS containment where appropriate
-
-### Accessibility
-- All components follow WCAG 2.1 AA guidelines
-- Semantic HTML structure is maintained
-- Keyboard navigation is fully supported
-- Screen reader compatibility is ensured
-
-### Customization
-- Components support CSS custom properties for theming
-- Override component styles using CSS classes
-- Use component parameters for behavioral customization
-- Implement custom render fragments for advanced scenarios
-
-### SEO Optimization
-- Use semantic HTML elements
-- Implement proper heading hierarchy
-- Include meta tags and structured data
-- Optimize for Core Web Vitals
-
-## Documentation Structure
-
-Each component module has detailed documentation including:
-
-- **Component Overview**: Purpose and use cases
-- **Parameters**: All available configuration options
-- **Examples**: Code samples and live demos
-- **Styling**: CSS customization options
-- **Best Practices**: Implementation recommendations
-- **Accessibility**: WCAG compliance information
-
-## Module Documentation
-
-- [Core Components](/docs/components/core) - Foundation UI components
-- [CMS Web Components](/docs/components/cms-web) - Content management components
-- [CMS Admin Components](/docs/components/cms-admin) - Administrative interface components
-- [Navigation Components](/docs/components/navigation) - Advanced navigation components
-- [Analytics Components](/docs/components/analytics) - Analytics integration components
-- [Theming Components](/docs/components/theming) - Theme and styling components
-
-## Support and Contribution
-
-For questions, issues, or contributions:
-
-- **GitHub Repository**: [Osirion.Blazor](https://github.com/obrana-boranija/Osirion.Blazor)
-- **Documentation**: [getosirion.com](https://getosirion.com)
-- **Issues**: Report bugs and feature requests on GitHub
-- **Discussions**: Join community discussions on GitHub
-
-The Osirion.Blazor component library is designed to accelerate Blazor application development while maintaining high standards for performance, accessibility, and maintainability.
+Package `Osirion.Blazor.Theming`, namespace `Osirion.Blazor.Theming.Components`.
+[Theming components](/docs/components/theming): [OsirionStyles](/docs/components/theming/osirion-styles) loads the
+stylesheets and the adapter for Bootstrap, Fluent UI, MudBlazor or Radzen;
+[ThemeToggle](/docs/components/theming/theme-toggle) is a button that switches between the light and dark theme.

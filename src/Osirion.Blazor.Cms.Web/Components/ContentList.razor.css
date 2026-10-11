@@ -7,6 +7,25 @@
     background-color: var(--osirion-background-primary, transparent);
 }
 
+.osirion-content-list-header {
+    margin-bottom: var(--osirion-spacing-8, 2rem);
+}
+
+.osirion-content-list-title {
+    margin: 0 0 var(--osirion-spacing-2, 0.5rem);
+    font-size: var(--osirion-font-size-3xl, 1.875rem);
+    font-weight: var(--osirion-font-weight-bold, 700);
+    line-height: var(--osirion-line-height-tight, 1.25);
+    color: var(--osirion-text-primary, #111827);
+}
+
+.osirion-content-list-description {
+    margin: 0;
+    max-width: 65ch;
+    font-size: var(--osirion-font-size-lg, 1.125rem);
+    color: var(--osirion-text-secondary, #4b5563);
+}
+
 .osirion-content-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(var(--osirion-width-sm, 300px), 1fr));

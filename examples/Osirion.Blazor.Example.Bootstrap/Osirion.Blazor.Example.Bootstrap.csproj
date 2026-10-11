@@ -7,26 +7,21 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="wwwroot\css\**" />
-    <Content Remove="wwwroot\css\**" />
-    <EmbeddedResource Remove="wwwroot\css\**" />
-    <None Remove="wwwroot\css\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Remove="compilerconfig.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="wwwroot\css\documentation-layout.css" />
   </ItemGroup>
 
   <ItemGroup>
     <None Include="compilerconfig.json" />
   </ItemGroup>
 
+  <!-- Content demos show their own Razor source in a Code tab -->
+  <ItemGroup>
+    <EmbeddedResource Include="Components\Demos\*.razor" />
+  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\src\Osirion.Blazor\Osirion.Blazor.csproj" />
+    <ProjectReference Include="..\Osirion.Blazor.Examples.Shared\Osirion.Blazor.Examples.Shared.csproj" />
   </ItemGroup>
 
   <!-- Integrate CSS tree-shaking MSBuild target -->

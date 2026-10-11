@@ -2,117 +2,89 @@
 id: 'core-popups-components-overview'
 order: 1
 layout: docs
-title: Core Popups Components Overview
+title: Popups
 permalink: /docs/components/core/popups
-description: Complete overview of Osirion.Blazor Core Popups components including cookie consent dialogs for user interaction and compliance.
+description: 'Banners in Osirion.Blazor.Core that work without script: cookie consent with categories and a dismissible site-wide announcement bar.'
 author: Dejan Demonjić
 date: 2025-09-03
-featured_image: https://storage.googleapis.com/croct-assets-b931d070/blog/Headless_CMS_within_the_React_framework_3_1_da922d2562/Headless_CMS_within_the_React_framework_3_1_da922d2562.png
+last_modified: 2026-10-11
+featured_image: /assets/images/blazor-cover.png
 categories:
 - Components
 - Core Components
 - Popups
 tags:
 - blazor
-- core-components
-- popups
 - cookie-consent
+- announcement
 - privacy
-- compliance
+- static-ssr
 is_featured: true
 published: true
 slug: popups
 lang: en
 custom_fields: {}
 seo_properties:
-  title: 'Core Popups Components - Osirion.Blazor User Interaction'
-  description: 'Explore Osirion.Blazor Core Popups components for cookie consent and user interaction dialogs.'
-  image: https://storage.googleapis.com/croct-assets-b931d070/blog/Headless_CMS_within_the_React_framework_3_1_da922d2562/Headless_CMS_within_the_React_framework_3_1_da922d2562.png
+  title: 'Popups and banners - Osirion.Blazor'
+  description: 'Cookie consent and a dismissible announcement bar for Blazor that work without script under static SSR.'
+  image: /assets/images/blazor-cover.png
   canonical: 'https://getosirion.com/docs/components/core/popups'
   lang: en
   robots: index, follow
-  og_title: 'Core Popups Components - Osirion.Blazor'
-  og_description: 'Complete documentation for Core Popups components with cookie consent and privacy features.'
-  og_image_url: 'https://storage.googleapis.com/croct-assets-b931d070/blog/Headless_CMS_within_the_React_framework_3_1_da922d2562/Headless_CMS_within_the_React_framework_3_1_da922d2562.png'
+  og_title: 'Popups and banners - Osirion.Blazor'
+  og_description: 'Cookie consent and a dismissible announcement bar that work without script.'
+  og_image_url: /assets/images/blazor-cover.png
   og_type: article
   json_ld: ''
   type: Article
   twitter_card: summary_large_image
-  twitter_title: 'Core Popups Components Documentation'
-  twitter_description: 'Complete documentation for Osirion.Blazor Core Popups components.'
-  twitter_image_url: 'https://storage.googleapis.com/croct-assets-b931d070/blog/Headless_CMS_within_the_React_framework_3_1_da922d2562/Headless_CMS_within_the_React_framework_3_1_da922d2562.png'
+  twitter_title: 'Popups and banners - Osirion.Blazor'
+  twitter_description: 'Cookie consent and an announcement bar that work without script.'
+  twitter_image_url: /assets/images/blazor-cover.png
   meta_tags: {}
 ---
 
-# Core Popups Components Overview
+# Popups
 
-The Osirion.Blazor Core Popups module provides essential user interaction components for displaying important information, obtaining consent, and managing user preferences. These components ensure compliance with privacy regulations while maintaining excellent user experience.
+Both banners in this group work the same way: their buttons post a small form to an endpoint you map, the endpoint
+sets a cookie and redirects back, and the next server render reads that cookie. No script is involved, so they work
+under static SSR, and every post is protected by an antiforgery token.
 
-## Available Components
+| Component | What it does |
+| --- | --- |
+| [OsirionCookieConsent](/docs/components/core/popups/cookie-consent) | Cookie banner with accept, decline and per-category choices; analytics trackers can wait for its consent. |
+| [OsirionAnnouncementBar](/docs/components/core/popups/announcement-bar) | Site-wide announcement that visitors can close; remembered per announcement ID. Available from 4.1. |
 
-### Cookie Consent
-A comprehensive cookie consent dialog component that helps websites comply with GDPR, CCPA, and other privacy regulations while providing users with clear choices about data collection and tracking.
+## Setup for both
 
-## Key Features
+```csharp
+using Osirion.Blazor.Core.Extensions;
 
-- **Legal Compliance**: GDPR, CCPA, and international privacy law compliance
-- **Granular Controls**: Detailed cookie category management
-- **Customizable Design**: Flexible styling and branding options
-- **Multi-language Support**: Localization for international audiences
-- **Accessibility**: Screen reader compatible and keyboard navigable
-- **Storage Management**: Automatic consent preference storage
+builder.Services.AddOsirionCookieConsent();
 
-## Getting Started
+var app = builder.Build();
 
-To use popup components in your project:
-
-```razor
-@using Osirion.Blazor.Core
-
-<CookieConsent OnConsentChanged="@HandleConsentChange"
-               RequiredCategories="@requiredCookies"
-               OptionalCategories="@optionalCookies"
-               Position="@ConsentPosition.Bottom"
-               ShowDetailedOptions="true" />
+app.UseAntiforgery();
+app.MapOsirionCookieConsent();  // POST /api/cookie-consent
+app.MapOsirionAnnouncements();  // POST /api/announcement/dismiss (4.1)
 ```
 
-## Cookie Consent Features
+```razor
+@using Osirion.Blazor.Components
 
-The Cookie Consent component includes:
+<OsirionAnnouncementBar Id="release-4-1">
+    Osirion.Blazor 4.1 is out. <a href="/blog">Read what's new</a>
+</OsirionAnnouncementBar>
 
-- **Essential Cookies**: Always-allowed required functionality cookies
-- **Analytics Cookies**: Optional tracking and analytics consent
-- **Marketing Cookies**: Advertising and targeting cookie controls
-- **Functional Cookies**: Enhanced functionality and personalization
-- **Custom Categories**: Define application-specific cookie types
+@* page content *@
 
-## Compliance Features
+<OsirionCookieConsent PolicyLink="/privacy" />
+```
 
-Built-in compliance capabilities:
+Both components read cookies from the current HTTP request, so put them in a statically rendered layout. In an
+interactive render without a request they render nothing.
 
-- **Consent Recording**: Timestamp and choice logging
-- **Withdrawal Options**: Easy consent modification and withdrawal
-- **Clear Information**: Detailed cookie purpose explanations
-- **Opt-out Support**: Respect user privacy choices
-- **Legal Text**: Customizable privacy policy and terms links
+## Related
 
-## Configuration Options
-
-Extensive customization options:
-
-- **Position**: Top, bottom, overlay, or custom positioning
-- **Styling**: Colors, fonts, and layout customization
-- **Behavior**: Auto-hide, persistent, or interaction-based display
-- **Content**: Custom messaging and legal text
-- **Integration**: Cookie management service connections
-
-## Privacy by Design
-
-The popup components follow privacy-by-design principles:
-
-- **Minimal Data Collection**: Only necessary consent tracking
-- **User Control**: Clear and accessible preference management
-- **Transparency**: Open about data usage and sharing
-- **Security**: Secure consent storage and transmission
-
-These popup components ensure your application meets privacy requirements while providing users with clear, accessible control over their data preferences.
+- [Layout](/docs/components/core/layout)
+- [Analytics](/docs/components/analytics)

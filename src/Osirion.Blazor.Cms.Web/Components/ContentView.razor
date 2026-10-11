@@ -34,7 +34,14 @@
                                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                                     <circle cx="12" cy="7" r="4"></circle>
                                 </svg>
-                                @Item.Author
+                                @if (AuthorUrlFormatter is not null)
+                                {
+                                    <a href="@AuthorUrlFormatter(Item.Author)" rel="author">@Item.Author</a>
+                                }
+                                else
+                                {
+                                    @Item.Author
+                                }
                             </span>
                         }
                         <span class="osirion-content-meta-item osirion-content-date">
@@ -71,14 +78,14 @@
                 @if (!string.IsNullOrWhiteSpace(Item.FeaturedImageUrl))
                 {
                     <figure class="osirion-content-featured-image-container">
-                        <img src="@Item.FeaturedImageUrl" alt="@Item.Title" class="osirion-content-featured-image" loading="lazy" />
+                        <img src="@Item.FeaturedImageUrl" alt="@Item.Title" class="osirion-content-featured-image" loading="eager" fetchpriority="high" decoding="async" />
                     </figure>
                 }
             </header>
 
             <!-- Main content body -->
             <div class="osirion-content-body">
-                @GetSanitizedContent(Item.Content)
+                @GetSanitizedContent(ContentHeadings.WithoutLeadingTitle(Item.Content))
             </div>
 
             <!-- Footer section -->
