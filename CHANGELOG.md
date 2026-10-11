@@ -60,6 +60,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `OsirionHtmlRenderer` loads the pinned Prism 1.29.0 from cdnjs with Subresource Integrity (new `PrismBaseUrl` to self-host), `OsirionBaseSection` CSS-escapes `BackgroundImageUrl` like `HeroSection`, and `OsirionContactInfoSection` validates website URLs, encodes phone, email and website, and sanitizes its markup fields
 
 ### Added
+- Osirion.Blazor.Core: `OsirionBreadcrumbs.CurrentPageText`, the text of the last breadcrumb
 - Content HTML sanitizer in Osirion.Blazor.Core: `IHtmlContentSanitizer`, `HtmlContentSanitizer`, `HtmlContentSanitizerOptions` (`AllowedTags`, `AllowedAttributes`, `AllowedSchemes`, `AllowElement`, `AllowAriaAttributes`, `AllowTableCellAlignment`), `AddOsirionHtmlSanitizer`, `GetHtmlContentSanitizer` and `JsonLdNormalizer`
 - Osirion.Blazor.Cms.Admin: `CmsAdminAuthorization.PolicyName`, `AuthGuard.Policy`, `IGitHubTokenStore`, `IGitHubOAuthStateStore`, `GitHubOAuthRequest`, and the `LoginViewModel` members `StartGitHubLoginAsync`, `LoginWithGitHubAsync(code, state, cancellationToken)`, `IsServerCredentialConfigured`, `IsGitHubOAuthConfigured` and `GitHubRedirectUri`
 - `IGitHubTokenProvider.ExchangeCodeForTokenAsync(code, clientId, clientSecret, redirectUri, codeVerifier, cancellationToken)` and `IMarkdownProcessor.SanitizeHtml(string)`
@@ -108,6 +109,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `BaseContentRepository.GenerateMarkdownWithFrontMatter`; use `GenerateMarkdownWithFrontMatterAsync`
 
 ### Fixed
+- Osirion.Blazor.Theming: the theme toggle threw `NotFoundError` ("removeChild") when enhanced navigation replaced the page during its fade, and then scrolled the new page to the old page's position. With `prefers-reduced-motion: reduce` the theme now changes without the full-screen fade
+- Osirion.Blazor.Core: the last breadcrumb names the current page with `OsirionBreadcrumbs.CurrentPageText`, which `ArticlePage` sets to the article title; it showed the slug turned into words ("Pre Mvp" for "Pre-MVP")
+- Osirion.Blazor.Cms.Web: the last `BreadcrumbList` item in the structured data is named with the content title instead of the slug
+- Osirion.Blazor.Core: `OsirionFooter` section titles are `h2` instead of `h3`, so the heading outline no longer skips a level after a page's `h1`
+- Osirion.Blazor.Navigation: menu items show an outline on keyboard focus; focus looked the same as hover and as the current page (WCAG 2.4.7)
+- Osirion.Blazor.Core: headings with an `id` in rendered content stop below a sticky header when a table of contents or `#fragment` link scrolls to them (`--osirion-anchor-offset`, default `6rem`)
 - `/osirion/login`, `/osirion/settings` and the `Login`, `AdminLayout`, `AdminPage`, `CmsAdminDashboard` and `CmsLayoutEditor` components threw on render ("more than one parameter matching the name 'theme'"); their duplicate `string Theme` parameter is removed
 - The default GitHub OAuth redirect URI is now `{BaseUri}osirion/login`; it was `/osirion/auth/callback`, which has no route, and `GitHubTokenProvider` sent a hard-coded `https://localhost:5001/auth/callback`
 - `IGitHubAdminService` could not be constructed from the registrations of `AddGitHubProvidersFromConfiguration` and `AddGitHubContentProvider`
@@ -186,6 +193,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Under Fluent UI v5, the Theming stylesheet's `[data-theme]` rules matched Fluent's `body[data-theme]` and replaced the adapter's mappings for the whole page in dark mode
 - The FluentUI adapter's success color read the accent token
 - `ArticlePage` content touched the screen edges on viewports between 769px and the container width; two padding declarations in its stylesheet were invalid and ignored
+- On MudBlazor sites, the contact form and subscription card gave plain inputs MudBlazor's internal input classes, which only work inside MudBlazor's own input markup, so the fields rendered without a border; they now use `osirion-input`, `osirion-select` and `osirion-textarea`, which the MudBlazor adapter styles from the MudBlazor palette in both themes
+- The MudBlazor adapter read `--mud-palette-background-grey`, which MudBlazor does not define (it writes `--mud-palette-background-gray`), so secondary backgrounds ignored the theme
+- Links in rendered content kept the light theme's color in dark mode on MudBlazor, Fluent UI and Radzen sites, because the dark override did not match `data-osirion-theme`
 
 ## [3.0.1] - 2026-09-24
 

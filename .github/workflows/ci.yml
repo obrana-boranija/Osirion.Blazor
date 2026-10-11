@@ -98,9 +98,10 @@ jobs:
             lv=$(grep -o '<LangVersion>.*</LangVersion>' "$project" | sed 's/<LangVersion>\(.*\)<\/LangVersion>/\1/')
             ns=$(grep -o '<Nullable>.*</Nullable>' "$project" | sed 's/<Nullable>\(.*\)<\/Nullable>/\1/')
             
-            target_frameworks["$tf"]=1
-            lang_versions["$lv"]=1
-            nullable_settings["$ns"]=1
+            # Most projects inherit these from Directory.Build.props; an empty key would abort bash
+            [ -n "$tf" ] && target_frameworks["$tf"]=1
+            [ -n "$lv" ] && lang_versions["$lv"]=1
+            [ -n "$ns" ] && nullable_settings["$ns"]=1
           done < all_projects.txt
           
           if [ ${#target_frameworks[@]} -gt 1 ]; then

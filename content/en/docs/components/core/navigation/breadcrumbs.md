@@ -75,6 +75,7 @@ OsirionBreadcrumbs automatically parses URL paths to generate hierarchical navig
 | `LinkLastItem` | `bool` | `false` | Whether to make the last breadcrumb item a clickable link. |
 | `UrlPrefix` | `string` | `"/"` | URL prefix added to all breadcrumb links. |
 | `SegmentFormatter` | `Func<string, string>?` | `null` | Custom function to format breadcrumb segment names. |
+| `CurrentPageText` | `string?` | `null` | Text of the last breadcrumb, the current page. Pass the page title; when empty, the last segment is formatted like the others. |
 
 ## Basic Usage
 

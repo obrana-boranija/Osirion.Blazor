@@ -51,6 +51,13 @@ public partial class OsirionBreadcrumbs
     public Func<string, string>? SegmentFormatter { get; set; }
 
     /// <summary>
+    /// Gets or sets the text of the last breadcrumb, the current page. Pass the page title: a slug turned into words
+    /// loses its punctuation and casing ("Pre Mvp" for "Pre-MVP"). When empty, the last segment is formatted like the others.
+    /// </summary>
+    [Parameter]
+    public string? CurrentPageText { get; set; }
+
+    /// <summary>
     /// Gets the breadcrumb path information
     /// </summary>
     private BreadcrumbPath BreadcrumbInfo => new(Path);
@@ -61,6 +68,16 @@ public partial class OsirionBreadcrumbs
     private string GetBreadcrumbsClass()
     {
         return $"osirion-breadcrumbs {Class}".Trim();
+    }
+
+    private string GetSegmentText(BreadcrumbSegment segment)
+    {
+        if (segment.IsLast && !string.IsNullOrWhiteSpace(CurrentPageText))
+        {
+            return CurrentPageText;
+        }
+
+        return SegmentFormatter?.Invoke(segment.Name) ?? FormatSegmentName(segment.Name);
     }
 
     /// <summary>

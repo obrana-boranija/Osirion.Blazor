@@ -22,4 +22,42 @@ public class OsirionBreadcrumbsTests : OsirionComponentTestBase
         current[0].GetAttribute("aria-current").ShouldBe("page");
         current[0].Closest("li")!.ClassList.ShouldContain("osirion-breadcrumbs-current");
     }
+
+    // Fails before the fix: the last crumb was always built from the slug, so "Pre-MVP: make it right" read
+    // "Pre Mvp Make It Right".
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void Breadcrumbs_CurrentPageText_NamesTheLastCrumb(bool linkLastItem)
+    {
+        var cut = RenderStatic<OsirionBreadcrumbs>(parameters => parameters
+            .Add(p => p.Path, "/blog/pre-mvp-make-it-right")
+            .Add(p => p.CurrentPageText, "Pre-MVP: make it right")
+            .Add(p => p.LinkLastItem, linkLastItem));
+
+        cut.Find("[aria-current]").TextContent.Trim().ShouldBe("Pre-MVP: make it right");
+    }
+
+    [Fact]
+    public void Breadcrumbs_CurrentPageText_LeavesEarlierCrumbsFormattedFromTheirSegments()
+    {
+        var cut = RenderStatic<OsirionBreadcrumbs>(parameters => parameters
+            .Add(p => p.Path, "/blog/pre-mvp-make-it-right")
+            .Add(p => p.CurrentPageText, "Pre-MVP: make it right"));
+
+        cut.FindAll("li a").Select(a => a.TextContent.Trim()).ShouldBe(["Home", "Blog"]);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Breadcrumbs_WithoutCurrentPageText_FormatsTheLastSegment(string? currentPageText)
+    {
+        var cut = RenderStatic<OsirionBreadcrumbs>(parameters => parameters
+            .Add(p => p.Path, "/blog/pre-mvp-make-it-right")
+            .Add(p => p.CurrentPageText, currentPageText));
+
+        cut.Find("[aria-current]").TextContent.Trim().ShouldBe("Pre Mvp Make It Right");
+    }
 }
