@@ -5,6 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
+using Osirion.Blazor.Cms.Admin.Common.Constants;
+using Osirion.Blazor.Cms.Admin.Core.Events;
 using Osirion.Blazor.Cms.Admin.Features.ContentEditor.Components.Shared;
 using Osirion.Blazor.Cms.Admin.Tests.TestDoubles;
 using Osirion.Blazor.Cms.Domain.Interfaces;
@@ -149,14 +151,16 @@ public class MarkdownEditorWithPreviewTests : AdminComponentTestContext
     }
 
     [Fact]
-    public async Task MarkdownEditorWithPreview_PreviewRenderingFails_ReportsError()
+    public async Task MarkdownEditorWithPreview_PreviewRenderingFails_PublishesGenericError()
     {
-        var cut = Render<Probe>(parameters => parameters.Add(p => p.Content, "x"));
+        var cut = RenderEditor("x");
         _processor.RenderToHtmlAsync(Arg.Any<string>(), Arg.Any<bool>()).ThrowsAsync(new InvalidOperationException("bad markdown"));
 
         await cut.InvokeAsync(() => cut.Instance.UpdatePreviewAsync());
 
-        cut.Instance.Error.ShouldBe("Error rendering preview: bad markdown");
+        Services.GetRequiredService<IEventPublisher>().Received(1).Publish(Arg.Is<ErrorOccurredEvent>(e =>
+            e.Message == UserMessages.OperationFailed && e.Exception is InvalidOperationException));
+        cut.Markup.ShouldNotContain("bad markdown");
     }
 
     [Fact]
@@ -465,10 +469,5 @@ public class MarkdownEditorWithPreviewTests : AdminComponentTestContext
         cut.Find(".preview-container").TriggerEvent("onscroll", EventArgs.Empty);
 
         Module.VerifyNotInvoke("setScrollPercentage");
-    }
-
-    private sealed class Probe : MarkdownEditorWithPreview
-    {
-        public string? Error => ErrorMessage;
     }
 }

@@ -139,7 +139,7 @@ public partial class MarkdownEditorWithPreview : IAsyncDisposable
         }
         catch (Exception ex)
         {
-            ErrorMessage = $"Error rendering preview: {ex.Message}";
+            ReportFailure(ex);
         }
     }
 
