@@ -1,0 +1,32 @@
+@using Osirion.Blazor.Components
+@using Osirion.Blazor.Navigation.Components
+@using Osirion.Blazor.Theming.Components
+@inherits LayoutComponentBase
+
+@* Fluent UI keeps its own theme mode and sets its color tokens from it. OsirionStyles hands Osirion's mode to
+   Blazor.theme.setThemeMode, so Fluent components and the Osirion FluentUI adapter follow Osirion's theme toggle. *@
+<FluentProviders />
+
+<OsirionPageLayout StickyFooter EnableHeaderScrollBehavior>
+    <Header>
+        <NavMenu />
+    </Header>
+
+    <Body>
+        @Body
+    </Body>
+
+    <Footer>
+        <Footer />
+    </Footer>
+</OsirionPageLayout>
+
+<OsirionStyles />
+<OsirionCookieConsent />
+<ScrollToTopProvider />
+
+<div id="blazor-error-ui" data-nosnippet>
+    An unhandled error has occurred.
+    <a href="." class="reload">Reload</a>
+    <span class="dismiss">🗙</span>
+</div>

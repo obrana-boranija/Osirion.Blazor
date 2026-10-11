@@ -16,7 +16,7 @@ public class UpdateContentCommand : ICommand
     public string Title { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the content body
+    /// Gets or sets the markdown source of the content body, without front matter
     /// </summary>
     public string Content { get; set; } = string.Empty;
 

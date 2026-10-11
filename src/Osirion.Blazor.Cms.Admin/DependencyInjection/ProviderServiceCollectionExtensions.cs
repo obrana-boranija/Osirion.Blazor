@@ -3,8 +3,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Domain.Options.Configuration;
+using Osirion.Blazor.Cms.Infrastructure.DependencyInjection;
 using Osirion.Blazor.Cms.Infrastructure.GitHub;
-using Osirion.Blazor.Cms.Infrastructure.Services;
 
 namespace Osirion.Blazor.Cms.Admin.DependencyInjection;
 
@@ -24,7 +24,11 @@ public static class ProviderServiceCollectionExtensions
             configuration.GetSection(CmsAdminOptions.Section));
 
         services.AddHttpClient<IGitHubApiClient, GitHubApiClient>();
-        services.AddScoped<IGitHubAdminService, GitHubAdminService>();
+
+        // Scoped, replacing any earlier registration, with cookies turned off on the GitHub HTTP clients: a transient
+        // or shared admin service, or a pooled handler that keeps cookies, would let one user's GitHub token,
+        // repository, branch or cookies reach another user
+        services.AddScopedGitHubAdminService();
 
         return services;
     }

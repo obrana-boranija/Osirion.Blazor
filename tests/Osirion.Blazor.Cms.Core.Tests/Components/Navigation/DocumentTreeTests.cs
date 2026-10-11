@@ -6,7 +6,7 @@ using Shouldly;
 
 namespace Osirion.Blazor.Cms.Core.Tests.Components.Navigation;
 
-public class DocumentTreeTests : TestContext
+public class DocumentTreeTests : BunitContext
 {
     public DocumentTreeTests()
     {
@@ -24,16 +24,15 @@ public class DocumentTreeTests : TestContext
         itemWithChildren.Children.Count.ShouldBe(2);
 
         // Act
-        var cut = RenderComponent<DocumentTree>(parameters => parameters
+        var cut = Render<DocumentTree>(parameters => parameters
             .Add(p => p.Sections, sections)
         );
 
         // Assert
-        var childLists = cut.FindAll(".osirion-doc-tree-children");
-        childLists.Count.ShouldBeGreaterThan(0);
+        var firstChildList = cut.Find(".osirion-doc-tree-children");
 
         // Use AngleSharp's DOM methods to find child items
-        var childItems = childLists[0].QuerySelectorAll(".osirion-doc-tree-child");
+        var childItems = firstChildList.QuerySelectorAll(".osirion-doc-tree-child");
         childItems.Length.ShouldBe(2);
 
         // Check child item text

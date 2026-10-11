@@ -16,6 +16,7 @@ public class ScrollToTopManager
     private string _title = "Scroll to top";
     private string? _cssClass;
     private string? _customIcon;
+    private string? _iconCssClass;
 
     /// <summary>
     /// Event raised when configuration changes
@@ -151,6 +152,22 @@ public class ScrollToTopManager
     }
 
     /// <summary>
+    /// Gets or sets the CSS class of the icon element rendered inside the button
+    /// </summary>
+    public string? IconCssClass
+    {
+        get => _iconCssClass;
+        set
+        {
+            if (_iconCssClass != value)
+            {
+                _iconCssClass = value;
+                OnConfigurationChanged();
+            }
+        }
+    }
+
+    /// <summary>
     /// Applies configuration from options
     /// </summary>
     /// <param name="options">The options to apply</param>
@@ -165,6 +182,8 @@ public class ScrollToTopManager
         Title = options.Title;
         CssClass = options.CssClass;
         CustomIcon = options.CustomIcon;
+        IconCssClass = options.IconCssClass;
+        IsEnabled = options.Enabled;
     }
 
     /// <summary>

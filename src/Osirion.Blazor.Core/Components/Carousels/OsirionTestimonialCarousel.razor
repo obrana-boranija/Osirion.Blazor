@@ -59,7 +59,7 @@
                 @* Duplicate set for seamless looping - all lazy loaded *@
                 @foreach (var testimonial in VisibleTestimonials)
                 {
-                    <div class="osirion-testimonial-carousel-slide" role="listitem" aria-hidden="true">
+                    <div class="osirion-testimonial-carousel-slide" role="listitem" aria-hidden="true" inert>
                         <OsirionTestimonialCard 
                             Name="@testimonial.Name"
                             Position="@testimonial.Position"

@@ -49,7 +49,7 @@ builder.Services.AddOsirionBlazor(osirion => {
 3. **Include Required Styles:**
 ```razor
 @* ? Add to layout *@
-<OsirionStyles FrameworkIntegration="CssFramework.Bootstrap" />
+<OsirionStyles Framework="CssFramework.Bootstrap" />
 ```
 
 ### Issue: GitHub API Rate Limiting
@@ -308,12 +308,16 @@ builder.Services.AddOsirionBlazor(osirion => {
 ```
 
 3. **Check for HTML Sanitization:**
+Content HTML is sanitized by default with an allow-list (see [HTML Sanitization](../src/Osirion.Blazor.Core/README.md#html-sanitization) in the Core README). If markup you need is removed, extend the allow-list instead of turning sanitization off:
 ```csharp
-// ? Configure HTML sanitization
-services.Configure<HtmlSanitizerOptions>(options =>
+using Osirion.Blazor.Core.Extensions;
+
+builder.Services.AddOsirionHtmlSanitizer(options =>
 {
-    options.AllowedTags.Add("div");
-    options.AllowedAttributes.Add("class");
+    options.AllowedAttributes.Add("style");
+
+    // List every attribute your client script reads from the element; an attribute that is not listed is removed
+    options.AllowElement("chart", "type", "title", "caption", "data", "colors");
 });
 ```
 
@@ -397,15 +401,14 @@ app.UseStaticFiles(new StaticFileOptions
 ```razor
 @* ? Ensure OsirionStyles is included *@
 <OsirionStyles 
-    FrameworkIntegration="CssFramework.Bootstrap"
-    UseStyles="true" />
+    Framework="CssFramework.Bootstrap" />
 ```
 
 2. **Check CSS Framework Integration:**
 ```html
 <!-- ? Include framework CSS before Osirion styles -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<OsirionStyles FrameworkIntegration="CssFramework.Bootstrap" />
+<OsirionStyles Framework="CssFramework.Bootstrap" />
 ```
 
 3. **Verify CSS Variables:**

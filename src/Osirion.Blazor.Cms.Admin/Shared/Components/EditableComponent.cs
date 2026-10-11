@@ -1,3 +1,4 @@
+using Osirion.Blazor.Cms.Admin.Common.Constants;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Osirion.Blazor.Cms.Admin.Core.Events;
@@ -56,8 +57,7 @@ public abstract class EditableComponent : BaseComponent
         }
         catch (Exception ex)
         {
-            ErrorMessage = $"Failed to save: {ex.Message}";
-            EventPublisher.Publish(new ErrorOccurredEvent(ErrorMessage, ex));
+            ReportFailure(ex, UserMessages.SaveFailed);
         }
         finally
         {

@@ -211,4 +211,15 @@ public class ScrollToTopManagerTests
         manager.CustomIcon.ShouldBe("<svg>...</svg>");
         eventRaised.ShouldBeTrue();
     }
+
+    [Fact]
+    public void ApplyOptions_ShouldApplyEnabledAndIconCssClass()
+    {
+        var manager = new ScrollToTopManager { IsEnabled = true };
+
+        manager.ApplyOptions(new ScrollToTopOptions { Enabled = false, IconCssClass = "fa fa-arrow-up" });
+
+        manager.IsEnabled.ShouldBeFalse();
+        manager.IconCssClass.ShouldBe("fa fa-arrow-up");
+    }
 }

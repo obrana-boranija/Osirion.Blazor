@@ -8,7 +8,13 @@ public class YandexMetricaOptions : AnalyticsOptions
     /// <summary>
     /// Configuration section name
     /// </summary>
-    public new const string Section = "YandexMetrica";
+    public new const string Section = "Osirion:Analytics:YandexMetrica";
+
+    /// <summary>
+    /// Configuration section name used before the other analytics providers' naming was adopted.
+    /// It is still read as a fallback by <c>AddOsirionAnalytics(IConfiguration)</c>.
+    /// </summary>
+    public const string LegacySection = "YandexMetrica";
 
     /// <summary>
     /// Gets or sets the Yandex Metrica counter ID

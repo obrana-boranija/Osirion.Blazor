@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Octokit;
@@ -10,6 +11,7 @@ using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Models;
 using Osirion.Blazor.Cms.Domain.Models.GitHub;
 using Osirion.Blazor.Cms.Domain.ValueObjects;
+using Osirion.Blazor.Cms.Admin.Tests.TestDoubles;
 using Shouldly;
 
 namespace Osirion.Blazor.Cms.Admin.Tests.Features.ContentBrowser.Services;
@@ -18,14 +20,20 @@ public class ContentBrowserServiceTests
 {
     private readonly IContentRepositoryAdapter _repositoryAdapter;
     private readonly CmsEventMediator _eventMediator;
-    private readonly ILogger<ContentBrowserService> _logger;
+    private readonly RecordingLogger<ContentBrowserService> _logger;
+    private readonly List<ErrorOccurredEvent> _errors;
+    private readonly List<ContentDeletedEvent> _deletions;
+    private readonly List<StatusNotificationEvent> _notifications;
     private readonly ContentBrowserService _service;
 
     public ContentBrowserServiceTests()
     {
         _repositoryAdapter = Substitute.For<IContentRepositoryAdapter>();
-        _eventMediator = Substitute.For<CmsEventMediator>(Substitute.For<ILogger<CmsEventMediator>>());
-        _logger = Substitute.For<ILogger<ContentBrowserService>>();
+        _eventMediator = new CmsEventMediator(NullLogger<CmsEventMediator>.Instance);
+        _logger = new RecordingLogger<ContentBrowserService>();
+        _errors = EventRecorder.Record<ErrorOccurredEvent>(_eventMediator);
+        _deletions = EventRecorder.Record<ContentDeletedEvent>(_eventMediator);
+        _notifications = EventRecorder.Record<StatusNotificationEvent>(_eventMediator);
         _service = new ContentBrowserService(_repositoryAdapter, _eventMediator, _logger);
     }
 
@@ -49,16 +57,9 @@ public class ContentBrowserServiceTests
         result.ShouldBe(expectedContents);
         await _repositoryAdapter.Received(1).GetContentsAsync(path);
 
-        _logger.Received(1).LogInformation(
-            Arg.Is<string>(s => s.Contains("Fetching contents")),
-            Arg.Is(path)
-        );
+        _logger.HasEntry(LogLevel.Information, "Fetching contents", path).ShouldBeTrue();
 
-        _logger.Received(1).LogInformation(
-            Arg.Is<string>(s => s.Contains("Retrieved")),
-            Arg.Is(expectedContents.Count),
-            Arg.Is(path)
-        );
+        _logger.HasEntry(LogLevel.Information, "Retrieved", path, expectedContents.Count.ToString()).ShouldBeTrue();
     }
 
     [Fact]
@@ -76,18 +77,13 @@ public class ContentBrowserServiceTests
 
         ex.ShouldBe(exception);
 
-        _logger.Received(1).LogError(
-            Arg.Is(exception),
-            Arg.Is<string>(s => s.Contains("Error fetching contents")),
-            Arg.Is(path)
-        );
+        _logger.HasEntry(LogLevel.Error, "Error fetching contents", path).ShouldBeTrue();
+        _logger.Entries.ShouldContain(entry => entry.Level == LogLevel.Error && entry.Exception == exception);
 
-        _eventMediator.Received(1).Publish(
-            Arg.Is<ErrorOccurredEvent>(e =>
-                e.Message.Contains("Failed to load contents") &&
-                e.Message.Contains(path) &&
-                e.Exception == exception)
-        );
+        var published = _errors.ShouldHaveSingleItem();
+        published.Message.ShouldContain("Failed to load contents");
+        published.Message.ShouldContain(path);
+        published.Exception.ShouldBe(exception);
     }
 
     [Fact]
@@ -112,15 +108,9 @@ public class ContentBrowserServiceTests
         result.ShouldBe(expectedPost);
         await _repositoryAdapter.Received(1).GetBlogPostAsync(path);
 
-        _logger.Received(1).LogInformation(
-            Arg.Is<string>(s => s.Contains("Fetching blog post")),
-            Arg.Is(path)
-        );
+        _logger.HasEntry(LogLevel.Information, "Fetching blog post", path).ShouldBeTrue();
 
-        _logger.Received(1).LogInformation(
-            Arg.Is<string>(s => s.Contains("Blog post fetched successfully")),
-            Arg.Is(path)
-        );
+        _logger.HasEntry(LogLevel.Information, "Blog post fetched successfully", path).ShouldBeTrue();
     }
 
     [Fact]
@@ -138,18 +128,13 @@ public class ContentBrowserServiceTests
 
         ex.ShouldBe(exception);
 
-        _logger.Received(1).LogError(
-            Arg.Is(exception),
-            Arg.Is<string>(s => s.Contains("Error fetching blog post")),
-            Arg.Is(path)
-        );
+        _logger.HasEntry(LogLevel.Error, "Error fetching blog post", path).ShouldBeTrue();
+        _logger.Entries.ShouldContain(entry => entry.Level == LogLevel.Error && entry.Exception == exception);
 
-        _eventMediator.Received(1).Publish(
-            Arg.Is<ErrorOccurredEvent>(e =>
-                e.Message.Contains("Failed to load file") &&
-                e.Message.Contains(path) &&
-                e.Exception == exception)
-        );
+        var published = _errors.ShouldHaveSingleItem();
+        published.Message.ShouldContain("Failed to load file");
+        published.Message.ShouldContain(path);
+        published.Exception.ShouldBe(exception);
     }
 
     [Fact]
@@ -181,26 +166,16 @@ public class ContentBrowserServiceTests
             sha
         );
 
-        _logger.Received(1).LogInformation(
-            Arg.Is<string>(s => s.Contains("Deleting file")),
-            Arg.Is(path)
-        );
+        _logger.HasEntry(LogLevel.Information, "Deleting file", path).ShouldBeTrue();
 
-        _logger.Received(1).LogInformation(
-            Arg.Is<string>(s => s.Contains("File deleted successfully")),
-            Arg.Is(path)
-        );
+        _logger.HasEntry(LogLevel.Information, "File deleted successfully", path).ShouldBeTrue();
 
-        _eventMediator.Received(1).Publish(
-            Arg.Is<ContentDeletedEvent>(e => e.Path == path)
-        );
+        _deletions.ShouldHaveSingleItem().Path.ShouldBe(path);
 
-        _eventMediator.Received(1).Publish(
-            Arg.Is<StatusNotificationEvent>(e =>
-                e.Message.Contains("File deleted successfully") &&
-                e.Message.Contains(path) &&
-                e.Type == StatusType.Success)
-        );
+        var notification = _notifications.ShouldHaveSingleItem();
+        notification.Message.ShouldContain("File deleted successfully");
+        notification.Message.ShouldContain(path);
+        notification.Type.ShouldBe(StatusType.Success);
     }
 
     [Fact]
@@ -221,18 +196,13 @@ public class ContentBrowserServiceTests
 
         ex.ShouldBe(exception);
 
-        _logger.Received(1).LogError(
-            Arg.Is(exception),
-            Arg.Is<string>(s => s.Contains("Error deleting file")),
-            Arg.Is(path)
-        );
+        _logger.HasEntry(LogLevel.Error, "Error deleting file", path).ShouldBeTrue();
+        _logger.Entries.ShouldContain(entry => entry.Level == LogLevel.Error && entry.Exception == exception);
 
-        _eventMediator.Received(1).Publish(
-            Arg.Is<ErrorOccurredEvent>(e =>
-                e.Message.Contains("Failed to delete file") &&
-                e.Message.Contains(path) &&
-                e.Exception == exception)
-        );
+        var published = _errors.ShouldHaveSingleItem();
+        published.Message.ShouldContain("Failed to delete file");
+        published.Message.ShouldContain(path);
+        published.Exception.ShouldBe(exception);
     }
 
     [Fact]
@@ -255,16 +225,9 @@ public class ContentBrowserServiceTests
         result.ShouldBe(expectedResults);
         await _repositoryAdapter.Received(1).SearchFilesAsync(query);
 
-        _logger.Received(1).LogInformation(
-            Arg.Is<string>(s => s.Contains("Searching files with query")),
-            Arg.Is(query)
-        );
+        _logger.HasEntry(LogLevel.Information, "Searching files with query", query).ShouldBeTrue();
 
-        _logger.Received(1).LogInformation(
-            Arg.Is<string>(s => s.Contains("Found")),
-            Arg.Is(expectedResults.Count),
-            Arg.Is(query)
-        );
+        _logger.HasEntry(LogLevel.Information, "Found", query, expectedResults.Count.ToString()).ShouldBeTrue();
     }
 
     [Fact]
@@ -282,18 +245,13 @@ public class ContentBrowserServiceTests
 
         ex.ShouldBe(exception);
 
-        _logger.Received(1).LogError(
-            Arg.Is(exception),
-            Arg.Is<string>(s => s.Contains("Error searching files")),
-            Arg.Is(query)
-        );
+        _logger.HasEntry(LogLevel.Error, "Error searching files", query).ShouldBeTrue();
+        _logger.Entries.ShouldContain(entry => entry.Level == LogLevel.Error && entry.Exception == exception);
 
-        _eventMediator.Received(1).Publish(
-            Arg.Is<ErrorOccurredEvent>(e =>
-                e.Message.Contains("Failed to search files") &&
-                e.Message.Contains(query) &&
-                e.Exception == exception)
-        );
+        var published = _errors.ShouldHaveSingleItem();
+        published.Message.ShouldContain("Failed to search files");
+        published.Message.ShouldContain(query);
+        published.Exception.ShouldBe(exception);
     }
 
     [Fact]
@@ -338,15 +296,8 @@ public class ContentBrowserServiceTests
         await _repositoryAdapter.Received(1).GetContentsAsync("content/blog");
         await _repositoryAdapter.Received(1).GetContentsAsync("content/blog/images");
 
-        _logger.Received(1).LogInformation(
-            Arg.Is<string>(s => s.Contains("Fetching directory tree")),
-            Arg.Is(path)
-        );
+        _logger.HasEntry(LogLevel.Information, "Fetching directory tree", path).ShouldBeTrue();
 
-        _logger.Received(1).LogInformation(
-            Arg.Is<string>(s => s.Contains("Retrieved")),
-            Arg.Is(result.Count),
-            Arg.Is(path)
-        );
+        _logger.HasEntry(LogLevel.Information, "Retrieved", path, result.Count.ToString()).ShouldBeTrue();
     }
 }

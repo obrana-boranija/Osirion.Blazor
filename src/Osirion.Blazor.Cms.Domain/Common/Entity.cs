@@ -60,17 +60,36 @@ namespace Osirion.Blazor.Cms.Domain.Common
             return obj is Entity<TId> entity && Equals(entity);
         }
 
+        // A transient entity (null or empty identifier) is equal only to itself.
+        private bool IsTransient => Id is null || (Id is string text && text.Length == 0);
+
         /// <inheritdoc />
         public bool Equals(Entity<TId>? other)
         {
-            return other is not null &&
-                   EqualityComparer<TId>.Default.Equals(Id, other.Id);
+            if (other is null)
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
+
+            if (GetType() != other.GetType() || IsTransient || other.IsTransient)
+            {
+                return false;
+            }
+
+            return EqualityComparer<TId>.Default.Equals(Id, other.Id);
         }
 
         /// <inheritdoc />
         public override int GetHashCode()
         {
-            return Id?.GetHashCode() ?? 0;
+            return IsTransient
+                ? System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(this)
+                : HashCode.Combine(GetType(), Id);
         }
 
         /// <summary>Determines whether two entities have equal identifiers.</summary>

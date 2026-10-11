@@ -1,17 +1,17 @@
 ﻿@namespace Osirion.Blazor.Navigation.Components
 @inherits OsirionComponentBase
 
-<div class="@CombineCssClasses("osirion-menu-container")" data-osirion-component-theme="@GetComponentTheme()" @attributes="Attributes">
-    <!-- Mobile menu toggle button -->
+<div class="@_containerClass" data-osirion-component-theme="@GetComponentTheme()" @attributes="_containerAttributes">
+    @* Mobile toggle: a visually hidden but focusable checkbox (keyboard and CSS-only, no JavaScript), labelled by the visible hamburger. *@
     @if (CollapseOnMobile)
     {
-        <input type="checkbox" id="@ToggleId" class="osirion-navbar-toggler" aria-hidden="true" tabindex="-1" />
-        <label for="@ToggleId" class="osirion-navbar-toggle" aria-label="@ToggleAriaLabel">
+        <input type="checkbox" id="@ToggleId" class="osirion-navbar-toggler" aria-label="@ToggleAriaLabel" aria-controls="@NavId" />
+        <label for="@ToggleId" class="osirion-navbar-toggle">
             <span class="osirion-toggle-icon"></span>
         </label>
     }
 
-    <nav class="osirion-menu-nav" aria-label="@AriaLabel" role="navigation">
+    <nav class="osirion-menu-nav" id="@NavId" aria-label="@AriaLabel" role="navigation">
         <!-- Branding container -->
         <div class="osirion-nav-branding">
             @if (BrandingTemplate is not null)
@@ -20,7 +20,7 @@
             }
             else if (!string.IsNullOrWhiteSpace(BrandLogo))
             {
-            <a href="@Href" class="osirion-brand-link">
+            <a href="@RenderedHref" class="osirion-brand-link">
                 <img src="@BrandLogo" alt="@BrandText brand logo" class="osirion-brand-logo" width="60" height="60" />
                     @if (!string.IsNullOrWhiteSpace(BrandText))
                     {
@@ -30,7 +30,7 @@
             }
             else if (!string.IsNullOrWhiteSpace(BrandText))
             {
-            <a class="osirion-brand-link osirion-brand-text" href="@Href">@BrandText</a>
+            <a class="osirion-brand-link osirion-brand-text" href="@RenderedHref">@BrandText</a>
             }
         </div>
 

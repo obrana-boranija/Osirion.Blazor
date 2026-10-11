@@ -6,7 +6,7 @@
         <h2 class="osirion-search-title">@Title</h2>
     }
     <form class="@GetSearchBoxClass()" method="get" action="@ActionUrl" role="search">
-        <label for="search-input-@GetHashCode()" class="visually-hidden">Search</label>
+        <label for="search-input-@GetHashCode()" class="osirion-visually-hidden">Search</label>
         <input id="search-input-@GetHashCode()"
                name="@QueryParameterName"
                value="@SearchQuery"

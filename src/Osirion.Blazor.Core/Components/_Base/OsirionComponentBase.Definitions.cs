@@ -369,13 +369,17 @@ public abstract partial class OsirionComponentBase : ComponentBase
     /// <summary>
     /// Gets the CSS class for an input element
     /// </summary>
+    /// <remarks>
+    /// MudBlazor and Fluent UI get the neutral class their adapter styles: their own input classes only work inside
+    /// the framework's input markup, and on a plain input they remove its border and size.
+    /// </remarks>
     protected virtual string GetInputClass()
     {
         return Framework switch
         {
             CssFramework.Bootstrap => "form-control",
             CssFramework.FluentUI => "osirion-input",
-            CssFramework.MudBlazor => "mud-input-root mud-input-underline",
+            CssFramework.MudBlazor => "osirion-input",
             CssFramework.Radzen => "rz-textbox",
             _ => "osirion-input"
         };
@@ -390,7 +394,7 @@ public abstract partial class OsirionComponentBase : ComponentBase
         {
             CssFramework.Bootstrap => "form-select",
             CssFramework.FluentUI => "osirion-select",
-            CssFramework.MudBlazor => "mud-select",
+            CssFramework.MudBlazor => "osirion-select",
             CssFramework.Radzen => "rz-dropdown",
             _ => "osirion-select"
         };
@@ -700,7 +704,7 @@ public abstract partial class OsirionComponentBase : ComponentBase
         {
             CssFramework.Bootstrap => "form-control",
             CssFramework.FluentUI => "osirion-textarea osirion-fluent-textarea",
-            CssFramework.MudBlazor => "mud-input-control",
+            CssFramework.MudBlazor => "osirion-textarea",
             CssFramework.Radzen => "rz-textbox",
             _ => "osirion-textarea"
         };

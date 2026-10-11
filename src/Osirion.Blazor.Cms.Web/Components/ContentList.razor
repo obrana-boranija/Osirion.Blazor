@@ -9,6 +9,7 @@
                                  CollectionDescription="@GetComputedPageDescription()"
                                  SiteNameOverride="@WebsiteName"
                                  SchemaTypes="@(SchemaTypes ?? new[] { SchemaType.CollectionPage, SchemaType.BreadcrumbList })"
+                                 CanonicalQueryParameters="@(ShowPagination && CurrentPage > 1 ? PageQueryParameters : null)"
                                  PrevPageUrl="@(ShowPagination && CurrentPage > 1 ? GetPaginationUrl(CurrentPage - 1) : null)"
                                  NextPageUrl="@(ShowPagination && CurrentPage < TotalPages ? GetPaginationUrl(CurrentPage + 1) : null)" />
         </HeadContent>

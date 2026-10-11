@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Components;
+using Osirion.Blazor.Core.Utils;
+
 namespace Osirion.Blazor.Components;
 
 /// <summary>
@@ -246,7 +248,7 @@ public partial class HeroSection
 
         if (UseBackgroundImage && !string.IsNullOrWhiteSpace(ImageUrl))
         {
-            styles.Add($"background-image: url('{ImageUrl}')");
+            styles.Add($"background-image: {CssUrl.Format(ImageUrl)}");
         }
 
         if (!string.IsNullOrWhiteSpace(BackgroundColor))

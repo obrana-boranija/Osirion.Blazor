@@ -74,7 +74,7 @@ public class SmtpEmailService(IOptions<EmailOptions> emailOptions, ILogger<SmtpE
         {
             From = new MailAddress(smtp.FromEmail, _emailOptions.FromName),
             Subject = subject,
-            Body = CreateEmailBody(contactForm),
+            Body = ContactEmailBodyBuilder.Build(contactForm, DateTime.UtcNow),
             IsBodyHtml = true
         };
 
@@ -84,32 +84,4 @@ public class SmtpEmailService(IOptions<EmailOptions> emailOptions, ILogger<SmtpE
         return message;
     }
 
-    /// <summary>
-    /// Creates the HTML email body from the contact form data.
-    /// </summary>
-    /// <param name="contactForm">The contact form data.</param>
-    /// <returns>A formatted HTML string for the email body.</returns>
-    private static string CreateEmailBody(ContactFormModel contactForm)
-    {
-        var body = new StringBuilder();
-        body.AppendLine("<html><body>");
-        body.AppendLine("<h2>New Contact Form Submission</h2>");
-        body.AppendLine($"<p><strong>Name:</strong> {WebUtility.HtmlEncode(contactForm.Name)}</p>");
-        body.AppendLine($"<p><strong>Email:</strong> {WebUtility.HtmlEncode(contactForm.Email)}</p>");
-        body.AppendLine($"<p><strong>Subject:</strong> {WebUtility.HtmlEncode(contactForm.Subject)}</p>");
-        body.AppendLine($"<p><strong>Message:</strong></p>");
-        body.AppendLine($"<div style='border: 1px solid #ccc; padding: 10px; background-color: #f9f9f9;'>");
-        body.AppendLine(WebUtility.HtmlEncode(contactForm.Message).Replace("\n", "<br>"));
-        body.AppendLine("</div>");
-        
-        if (contactForm.SubscribeToUpdates)
-        {
-            body.AppendLine("<p><em>The sender has requested to receive updates and newsletters.</em></p>");
-        }
-        
-        body.AppendLine($"<p><small>Submitted on: {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss} UTC</small></p>");
-        body.AppendLine("</body></html>");
-        
-        return body.ToString();
-    }
 }

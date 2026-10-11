@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -14,10 +15,17 @@ public static class CookieContentExtensions
     /// <summary>
     /// Adds cookie consent services to the service collection
     /// </summary>
+    /// <remarks>
+    /// Registers <see cref="IHttpContextAccessor"/> and the antiforgery
+    /// services the consent form and endpoint use. Both registrations are idempotent.
+    /// </remarks>
     public static IServiceCollection AddOsirionCookieConsent(this IServiceCollection services)
     {
         // Add IHttpContextAccessor for SSR support
         services.AddHttpContextAccessor();
+
+        // The consent form carries an antiforgery token that the endpoint validates
+        services.AddAntiforgery();
 
         return services;
     }
@@ -25,6 +33,13 @@ public static class CookieContentExtensions
     /// <summary>
     /// Maps the cookie consent endpoint
     /// </summary>
+    /// <remarks>
+    /// The endpoint carries antiforgery metadata, so the application must call
+    /// <c>app.UseAntiforgery()</c> after <c>app.UseRouting()</c> (when the app calls it) and before
+    /// the endpoints, as the Blazor Web App template does. Without that middleware ASP.NET Core throws
+    /// <see cref="InvalidOperationException"/> for every post to the endpoint. Requests without a
+    /// valid token get 400 and record no consent. The endpoint only redirects to local paths.
+    /// </remarks>
     public static IEndpointRouteBuilder MapOsirionCookieConsent(
         this IEndpointRouteBuilder endpoints,
         string pattern = "/api/cookie-consent")
@@ -32,6 +47,7 @@ public static class CookieContentExtensions
         // Cast the route handler to Delegate to ensure the return value is written to the response
         endpoints.MapPost(pattern, (Delegate)CookieConsentHandler.HandleConsentAsync)
             .WithName("CookieConsent")
+            .WithMetadata(new RequireAntiforgeryTokenAttribute())
             .ExcludeFromDescription(); // Hide from API documentation
 
         return endpoints;
@@ -47,8 +63,13 @@ public static class CookieContentExtensions
 }
 
 /// <summary>
-/// Middleware for handling cookie consent checks
+/// Middleware that exposes the visitor consent data through <c>HttpContext.Items["CookieConsent"]</c>.
 /// </summary>
+/// <remarks>
+/// Earlier versions also wrote a <c>Permissions-Policy</c> header (obsolete Feature-Policy syntax, overwriting any
+/// host header, geolocation tied to analytics consent). Consent has no bearing on browser feature permissions, so
+/// the header is no longer written; hosts that want one should set it themselves.
+/// </remarks>
 public class CookieConsentMiddleware
 {
     private readonly RequestDelegate _next;
@@ -72,20 +93,6 @@ public class CookieConsentMiddleware
         // Add consent status to HttpContext.Items for easy access
         var consentData = CookieConsentHandler.GetConsentData(context);
         context.Items["CookieConsent"] = consentData;
-
-        // Set response headers based on consent
-        if (consentData is not null)
-        {
-            // Example: Set feature policy based on consent
-            var features = new List<string> { "camera 'none'", "microphone 'none'" };
-
-            if (!CookieConsentHandler.IsCategoryConsented(context, "analytics"))
-            {
-                features.Add("geolocation 'none'");
-            }
-
-            context.Response.Headers["Permissions-Policy"] = string.Join("; ", features);
-        }
 
         await _next(context);
     }

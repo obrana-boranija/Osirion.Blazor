@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Osirion.Blazor.Cms.Admin.Builders;
 using Osirion.Blazor.Cms.Domain.Options.Configuration;
 
@@ -27,15 +28,29 @@ public static class OsirionCmsAdminServiceCollectionExtensions
         // Add core services
         services.AddOsirionCmsAdminDI();
 
-        // Configure options
-        var serviceProvider = services.BuildServiceProvider();
-        var logger = serviceProvider.GetRequiredService<ILogger<OsirionCmsAdminBuilder>>();
-        var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+        // Building a second service provider here would duplicate every singleton registered so far, so the
+        // configuration is read from its registration instead. Registration time has no logger pipeline yet.
+        var configuration = FindRegisteredConfiguration(services);
 
-        var builder = new OsirionCmsAdminBuilder(services, configuration, logger);
+        var builder = new OsirionCmsAdminBuilder(
+            services,
+            configuration,
+            NullLogger<OsirionCmsAdminBuilder>.Instance);
         configure(builder);
 
         return services;
+    }
+
+    private static IConfiguration FindRegisteredConfiguration(IServiceCollection services)
+    {
+        var descriptor = services.LastOrDefault(registered => registered.ServiceType == typeof(IConfiguration));
+        if (descriptor is { IsKeyedService: false, ImplementationInstance: IConfiguration instance })
+        {
+            return instance;
+        }
+
+        // The host registered no configuration instance (for example a bare ServiceCollection): use an empty one.
+        return new ConfigurationBuilder().Build();
     }
 
     /// <summary>

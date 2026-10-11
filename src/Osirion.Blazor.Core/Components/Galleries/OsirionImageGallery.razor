@@ -13,9 +13,9 @@
         {
             var item = Items[index];
             <figure class="osirion-image-gallery-item" data-gallery-index="@index">
-                <button type="button"
-                        class="osirion-image-gallery-trigger"
-                        aria-label="View full size: @item.Caption">
+                <a href="@item.Src"
+                   class="osirion-image-gallery-trigger"
+                   aria-label="@GetTriggerLabel(item)">
                     <span class="osirion-image-gallery-image-wrap">
                         <img src="@item.Src"
                              alt="@item.Alt"
@@ -24,12 +24,12 @@
                              loading="lazy"
                              class="osirion-image-gallery-image" />
                         <span class="osirion-image-gallery-zoom" aria-hidden="true">+</span>
-                    </span>
-                    @if (!string.IsNullOrWhiteSpace(item.Caption))
-                    {
-                        <figcaption>@item.Caption</figcaption>
-                    }
-                </button>
+                </span>
+                </a>
+                @if (!string.IsNullOrWhiteSpace(item.Caption))
+                {
+                    <figcaption>@item.Caption</figcaption>
+                }
             </figure>
         }
     </div>

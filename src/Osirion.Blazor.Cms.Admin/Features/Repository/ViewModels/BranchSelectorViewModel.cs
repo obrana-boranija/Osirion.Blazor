@@ -1,3 +1,7 @@
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+using Osirion.Blazor.Cms.Admin.Common.Constants;
+using Osirion.Blazor.Cms.Admin.Common.Extensions;
 using Osirion.Blazor.Cms.Admin.Core.Events;
 using Osirion.Blazor.Cms.Admin.Core.State;
 using Osirion.Blazor.Cms.Admin.Features.Repository.Services;
@@ -7,11 +11,12 @@ using Osirion.Blazor.Cms.Domain.Models.GitHub;
 namespace Osirion.Blazor.Cms.Admin.Features.Repository.ViewModels;
 
 /// <summary>Manages branch selection and branch creation for the repository editor.</summary>
-public class BranchSelectorViewModel
+public class BranchSelectorViewModel : IDisposable
 {
     private readonly RepositoryService _repositoryService;
     private readonly CmsState _appState;
     private readonly CmsEventMediator _eventMediator;
+    private readonly ILogger<BranchSelectorViewModel> _logger;
 
     /// <summary>Gets the available branches.</summary>
     public List<GitHubBranch> Branches { get; private set; } = new();
@@ -39,11 +44,13 @@ public class BranchSelectorViewModel
     public BranchSelectorViewModel(
         RepositoryService repositoryService,
         CmsState appState,
-        CmsEventMediator eventMediator)
+        CmsEventMediator eventMediator,
+        ILogger<BranchSelectorViewModel>? logger = null)
     {
         _repositoryService = repositoryService;
         _appState = appState;
         _eventMediator = eventMediator;
+        _logger = logger ?? NullLogger<BranchSelectorViewModel>.Instance;
 
         _appState.StateChanged += OnAppStateChanged;
         _eventMediator.Subscribe<RepositorySelectedEvent>(OnRepositorySelected);
@@ -71,7 +78,8 @@ public class BranchSelectorViewModel
         }
         catch (Exception ex)
         {
-            ErrorMessage = $"Failed to load branches: {ex.Message}";
+            _logger.LogError(ex, "Loading branches failed");
+            ErrorMessage = UserMessages.BranchOperationFailed;
             _appState.SetErrorMessage(ErrorMessage);
         }
         finally
@@ -109,7 +117,8 @@ public class BranchSelectorViewModel
             }
             catch (Exception ex)
             {
-                ErrorMessage = $"Failed to select branch: {ex.Message}";
+                _logger.LogError(ex, "Selecting branch {Branch} failed", branchName);
+                ErrorMessage = UserMessages.BranchOperationFailed;
                 _appState.SetErrorMessage(ErrorMessage);
             }
             finally
@@ -164,7 +173,8 @@ public class BranchSelectorViewModel
         }
         catch (Exception ex)
         {
-            ErrorMessage = $"Failed to create branch: {ex.Message}";
+            _logger.LogError(ex, "Creating branch {Branch} failed", NewBranchName);
+            ErrorMessage = UserMessages.BranchOperationFailed;
             _appState.SetErrorMessage(ErrorMessage);
         }
         finally
@@ -174,14 +184,14 @@ public class BranchSelectorViewModel
         }
     }
 
-    private async void OnRepositorySelected(RepositorySelectedEvent e)
+    private void OnRepositorySelected(RepositorySelectedEvent e)
     {
         // Clear branches when repository changes
         Branches.Clear();
         _appState.SelectBranch(null);
 
-        // Load branches for the new repository
-        await RefreshBranchesAsync();
+        // Load branches for the new repository; RefreshBranchesAsync reports its own failures, Observe covers the rest
+        RefreshBranchesAsync().Observe(_logger, "branch refresh after repository selection");
     }
 
     private void OnAppStateChanged()
@@ -193,5 +203,12 @@ public class BranchSelectorViewModel
     protected void NotifyStateChanged()
     {
         StateChanged?.Invoke();
+    }
+
+    /// <summary>Unsubscribes from state and event notifications.</summary>
+    public void Dispose()
+    {
+        _appState.StateChanged -= OnAppStateChanged;
+        _eventMediator.Unsubscribe<RepositorySelectedEvent>(OnRepositorySelected);
     }
 }

@@ -1,46 +1,65 @@
 using Microsoft.AspNetCore.Components;
-using Osirion.Blazor.Cms.Domain.Interfaces;
+using Osirion.Blazor.Cms.Admin.Common.Constants;
+using Osirion.Blazor.Core.Utils;
 
 namespace Osirion.Blazor.Cms.Admin.Features.Security.Components;
 
-/// <summary>Defines the AuthGuard type.</summary>
+/// <summary>
+/// Shows its content only to users who satisfy an authorization policy, the CMS admin policy by default.
+/// </summary>
+/// <remarks>
+/// AuthGuard hides content while rendering; it does not protect an endpoint. Routed admin pages are protected by
+/// <c>[Authorize(Policy = CmsAdminAuthorization.PolicyName)]</c>, so put embedded admin components on pages that
+/// carry the same attribute. AuthGuard needs the cascading authentication state that <c>AddOsirionCmsAdmin</c>
+/// registers. Users who do not satisfy the policy see a link to <see cref="LoginPath"/>.
+/// </remarks>
 public partial class AuthGuard
 {
-    [Inject]
-    private IAuthenticationService authService { get; set; } = default!;
-
-    [Inject]
-    private NavigationManager navigationManager { get; set; } = default!;
-
-    /// <summary>Gets or sets the ChildContent value.</summary>
+    /// <summary>Gets or sets the content shown to users who satisfy <see cref="Policy"/>.</summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
-    /// <summary>Gets or sets the LoginPath value.</summary>
+    /// <summary>
+    /// Gets or sets the name of the authorization policy the user must satisfy.
+    /// Defaults to <see cref="CmsAdminAuthorization.PolicyName"/>.
+    /// </summary>
+    [Parameter]
+    public string Policy { get; set; } = CmsAdminAuthorization.PolicyName;
+
+    /// <summary>
+    /// Gets or sets the local path of the sign-in page linked for users who do not satisfy <see cref="Policy"/>.
+    /// A value that is not a local path is replaced by the admin login page.
+    /// </summary>
     [Parameter]
     public string LoginPath { get; set; } = "/osirion/login";
 
-    /// <summary>Gets or sets the ShowLoginForm value.</summary>
+    /// <summary>
+    /// Gets or sets the ShowLoginForm value. It has no effect: the GitHub login form cannot make a user satisfy the
+    /// authorization policy, so it is no longer shown in place of the protected content.
+    /// </summary>
     [Parameter]
+    [Obsolete(NoLoginFormMessage)]
     public bool ShowLoginForm { get; set; } = false;
 
-    /// <summary>Gets or sets the OnAuthResult value.</summary>
+    /// <summary>
+    /// Gets or sets the OnAuthResult value. It is never invoked, because the GitHub login form is no longer shown.
+    /// </summary>
     [Parameter]
+    [Obsolete(NoLoginFormMessage)]
     public EventCallback<bool> OnAuthResult { get; set; }
 
-    private string ReturnUrl => navigationManager.ToBaseRelativePath(navigationManager.Uri);
+    /// <summary>The obsolete message of the parameters that belonged to the removed login form.</summary>
+    internal const string NoLoginFormMessage =
+        "Has no effect: AuthGuard no longer shows a login form. Users who do not satisfy Policy see a link to LoginPath.";
 
-    private void RedirectToLogin()
+    private string LoginUrl
     {
-        var returnUrl = Uri.EscapeDataString(ReturnUrl);
-        navigationManager.NavigateTo($"{LoginPath}?returnUrl={returnUrl}");
-    }
-
-    private async Task HandleLoginResult(bool success)
-    {
-        if (OnAuthResult.HasDelegate)
+        get
         {
-            await OnAuthResult.InvokeAsync(success);
+            var loginPath = LocalUrl.GetSafeLocalPath(LoginPath, CmsConstants.Routes.Login);
+            var returnUrl = "/" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+
+            return $"{loginPath}?returnUrl={Uri.EscapeDataString(returnUrl)}";
         }
     }
 }

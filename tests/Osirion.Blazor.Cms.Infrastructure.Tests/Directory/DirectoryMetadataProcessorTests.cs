@@ -2,6 +2,7 @@
 using NSubstitute;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Interfaces;
+using Osirion.Blazor.Cms.Domain.ValueObjects;
 using Osirion.Blazor.Cms.Infrastructure.Directory;
 using Shouldly;
 
@@ -36,17 +37,17 @@ public class DirectoryMetadataProcessorTests
             "Original Name",
             "test-provider");
 
-        var frontMatter = new Dictionary<string, string>
+        var frontMatter = new FrontMatter
         {
-            { "title", "Blog Directory" },
-            { "description", "Blog posts directory" },
-            { "order", "5" },
-            { "locale", "en" },
-            { "url", "blog" }
+            Title = "Blog Directory",
+            Description = "Blog posts directory",
+            Order = 5,
+            Lang = "en",
+            Permalink = "blog"
         };
 
-        _frontMatterExtractor.ExtractFrontMatter(Arg.Any<string>())
-            .Returns(frontMatter);
+        _markdownProcessor.ExtractFrontMatterAndContent(Arg.Any<string>())
+            .Returns((frontMatter, string.Empty));
 
         // Act
         var result = _processor.ProcessMetadata(directory, "---\nMetadata content\n---");
@@ -119,5 +120,22 @@ public class DirectoryMetadataProcessorTests
         result.ShouldContain("url: \"blog\"");
         result.ShouldContain("custom_key: \"custom value\"");
         result.ShouldContain("# Blog Directory");
+    }
+
+    [Fact]
+    public void GenerateMetadataContent_UnsafeOrStandardCustomKey_IsNotWritten()
+    {
+        var directory = DirectoryItem.Create("dir-id", "content/blog", "Blog", "test-provider");
+        directory.SetMetadata("bad: key\npublished", "x");
+        directory.SetMetadata("title", "Overridden");
+        directory.SetMetadata("weight", 2.5);
+        directory.SetMetadata("note", "line one\nline two");
+
+        var result = _processor.GenerateMetadataContent(directory);
+
+        result.ShouldNotContain("bad: key");
+        result.ShouldNotContain("Overridden");
+        result.ShouldContain("weight: 2.5");
+        result.ShouldContain("note: \"line one\\nline two\"");
     }
 }

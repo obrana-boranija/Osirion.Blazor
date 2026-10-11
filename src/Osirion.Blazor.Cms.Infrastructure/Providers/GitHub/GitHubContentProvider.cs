@@ -56,7 +56,7 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
     }
 
     /// <inheritdoc />
-    public override string ProviderId => _options.ProviderId ?? $"github-{_options.Owner}-{_options.Repository}";
+    public override string ProviderId => GitHubProviderId.For(_options);
     /// <inheritdoc />
     public override string DisplayName => $"GitHub: {_options.Owner}/{_options.Repository}";
     /// <inheritdoc />
@@ -422,6 +422,14 @@ public class GitHubContentProvider : ContentProviderBase, IContentCacheUpdater
 
                         await _contentRepository.RefreshCacheAsync();
                         await _directoryRepository.RefreshCacheAsync();
+
+                        // The repository keeps its previous cache when a load fails (for example under a rate limit).
+                        // Recording the SHA then would stop every later poll from retrying that commit.
+                        if (!_contentRepository.LastRefreshSucceeded)
+                        {
+                            Logger.LogWarning("Content refresh for SHA {Sha} failed; the next poll will retry", latestSha);
+                            return;
+                        }
 
                         // Update the stored SHA only after successful refresh
                         _lastKnownSha = latestSha;

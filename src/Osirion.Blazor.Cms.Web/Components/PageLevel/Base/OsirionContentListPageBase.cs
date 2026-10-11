@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Repositories;
 
@@ -43,8 +44,9 @@ public abstract partial class OsirionContentListPageBase : OsirionContentPageBas
                         Locale = Locale,
                     });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Logger.LogError(ex, "Failed to load the content list (directory {Directory}, locale {Locale})", DirectoryName, Locale);
                 Items = null;
             }
             finally

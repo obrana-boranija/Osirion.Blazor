@@ -8,12 +8,22 @@ namespace Osirion.Blazor.Cms.Core.Tests.TestFixtures;
 /// </summary>
 public class MockJSRuntime : IJSRuntime
 {
+    private readonly List<(string Identifier, object?[] Arguments)> _invocations = new();
+
+    /// <summary>
+    /// Gets the calls made through <see cref="InvokeAsync{TValue}(string, object?[])"/>, in call order.
+    /// Void calls made through the <c>InvokeVoidAsync</c> extension are recorded as well.
+    /// </summary>
+    public IReadOnlyList<(string Identifier, object?[] Arguments)> Invocations => _invocations;
+
     /// <summary>
     /// Mocked implementation of InvokeAsync that returns predictable values
     /// based on the requested type.
     /// </summary>
     public ValueTask<TValue> InvokeAsync<TValue>(string identifier, object?[]? args)
     {
+        _invocations.Add((identifier, args ?? []));
+
         // Handle different return types
         if (typeof(TValue) == typeof(double))
         {

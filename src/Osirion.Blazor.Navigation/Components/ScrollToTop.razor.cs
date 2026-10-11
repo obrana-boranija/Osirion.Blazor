@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Osirion.Blazor.Components;
+using Osirion.Blazor.Core.Services;
 using Osirion.Blazor.Navigation.Options;
 
 namespace Osirion.Blazor.Navigation.Components;
@@ -39,16 +41,52 @@ public partial class ScrollToTop
     public string Title { get; set; } = "Scroll to top";
 
     /// <summary>
-    /// Gets or sets custom icon markup
+    /// Gets or sets custom icon markup.
     /// </summary>
+    /// <remarks>
+    /// The markup is passed through the Osirion HTML sanitizer before it is rendered, so scripts, event
+    /// handlers and unsafe URLs are removed. The sanitizer also removes <c>svg</c> elements, so an SVG
+    /// icon set here is dropped: use <see cref="IconCssClass"/> for an icon font or a CSS mask icon, or
+    /// leave both unset for the built-in arrow. When no sanitizer is registered the markup is ignored.
+    /// </remarks>
     [Parameter]
     public string? CustomIcon { get; set; }
+
+    /// <summary>
+    /// Gets or sets the CSS class of an icon element rendered inside the button, for example an icon
+    /// font class. It is used when <see cref="CustomIcon"/> yields no markup.
+    /// </summary>
+    [Parameter]
+    public string? IconCssClass { get; set; }
 
     /// <summary>
     /// Enable Scroll to Top button
     /// </summary>
     [Parameter]
     public bool? Enabled { get; set; }
+
+    [Inject]
+    private IServiceProvider ServiceProvider { get; set; } = default!;
+
+    // Generated once per instance: a fixed id is duplicated when two buttons are on the page, and the
+    // script must address the button it was rendered with.
+    private readonly string _instanceId = Guid.NewGuid().ToString("N")[..8];
+
+    private string ButtonId => $"osirion-scroll-to-top-{_instanceId}";
+
+    private string? SanitizedCustomIcon
+    {
+        get
+        {
+            if (string.IsNullOrWhiteSpace(EffectiveOptions.CustomIcon))
+            {
+                return null;
+            }
+
+            var sanitizer = ServiceProvider.GetService<IHtmlContentSanitizer>();
+            return sanitizer?.Sanitize(EffectiveOptions.CustomIcon);
+        }
+    }
 
     /// <summary>
     /// Gets the effective options, merging parameters with configured options
@@ -67,15 +105,10 @@ public partial class ScrollToTop
                 Title = Title != "Scroll to top" ? Title : options.Title,
                 CssClass = Class ?? options.CssClass,
                 CustomIcon = CustomIcon ?? options.CustomIcon,
-                Enabled = (bool)(Enabled is null ? options.Enabled : Enabled)
+                IconCssClass = IconCssClass ?? options.IconCssClass,
+                Enabled = Enabled ?? options.Enabled
             };
         }
-    }
-
-    /// <summary>Initializes the component state and required services.</summary>
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
     }
 
     /// <summary>
@@ -96,34 +129,34 @@ public partial class ScrollToTop
         return $"{base.GetButtonClass()} osirion-scroll-to-top {positionClass} {EffectiveOptions.CssClass}".Trim();
     }
 
+    // Every value interpolated below is an int or an enum name, never user text. Both listeners are
+    // registered once per button, behind the data-initialized guard: a script that runs again (a
+    // re-render, an enhanced navigation) must not stack another window scroll listener.
     private string GetScript()
     {
         return $@"
-            <script id=""osirion-scroll-to-top-script"">
+            <script>
                 (function() {{
                     function initScrollToTop() {{
-                        const scrollButton = document.getElementById('osirion-scroll-to-top');
-                        if (!scrollButton) return;
+                        const scrollButton = document.getElementById('{ButtonId}');
+                        if (!scrollButton || scrollButton.hasAttribute('data-initialized')) return;
+                        scrollButton.setAttribute('data-initialized', 'true');
 
                         function updateButtonVisibility() {{
                             scrollButton.style.display = window.scrollY > {EffectiveOptions.VisibilityThreshold} ? 'flex' : 'none';
                         }}
 
                         updateButtonVisibility();
-
                         window.addEventListener('scroll', updateButtonVisibility);
 
-                        if (!scrollButton.hasAttribute('data-initialized')) {{
-                            scrollButton.setAttribute('data-initialized', 'true');
-                            scrollButton.addEventListener('click', function(e) {{
-                                e.preventDefault();
-                                window.scrollTo({{
-                                    top: 0,
-                                    left: 0,
-                                    behavior: '{(EffectiveOptions.Behavior.ToString().ToLowerInvariant())}'
-                                }});
+                        scrollButton.addEventListener('click', function(e) {{
+                            e.preventDefault();
+                            window.scrollTo({{
+                                top: 0,
+                                left: 0,
+                                behavior: '{(EffectiveOptions.Behavior.ToString().ToLowerInvariant())}'
                             }});
-                        }}
+                        }});
                     }}
 
                     if (document.readyState === 'loading') {{

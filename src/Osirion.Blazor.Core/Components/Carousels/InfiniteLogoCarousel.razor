@@ -98,7 +98,7 @@
             </ul>
             @if (EnableAutoScroll)
             {
-                <ul class="osirion-carousel-list" aria-hidden="true">
+                <ul class="osirion-carousel-list" aria-hidden="true" inert>
                     @foreach (var logo in VisibleLogos)
                     {
                         <li class="@GetLogoClass(logo)">

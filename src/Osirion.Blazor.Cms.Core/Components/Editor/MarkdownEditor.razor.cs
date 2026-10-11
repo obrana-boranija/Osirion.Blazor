@@ -1,3 +1,4 @@
+using System.Globalization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
@@ -510,7 +511,7 @@ public partial class MarkdownEditor : IAsyncDisposable
                     if (scrollHeight <= clientHeight) return;
                     
                     // Calculate the target scroll position
-                    const targetScrollTop = {position} * (scrollHeight - clientHeight);
+                    const targetScrollTop = {position.ToString(CultureInfo.InvariantCulture)} * (scrollHeight - clientHeight);
                     
                     // Set the scroll position
                     element.scrollTop = targetScrollTop;

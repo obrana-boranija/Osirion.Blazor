@@ -4,7 +4,7 @@ Render Google Analytics 4 (GA4) script when a configured GA4 provider is enabled
 
 Parameters
 ----------
-No component-level parameters. Configure GA4 options via the `GA4Provider` registered in analytics services.
+`MeasurementId`, `DebugMode` and `Enabled` (all optional) override the configured `GA4Options` for that render. Everything else is configured through `GA4Options` in analytics services. With the consent gate on (`RequireConsent()`), the tag renders only after the visitor accepted the `analytics` category.
 
 Example
 -------

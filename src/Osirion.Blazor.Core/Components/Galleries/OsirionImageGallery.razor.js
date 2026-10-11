@@ -14,8 +14,15 @@ export default class extends BlazorJSComponents.Component {
         this.caption = this.root.querySelector('[data-gallery-caption]');
         this.counter = this.root.querySelector('[data-gallery-counter]');
 
-        this.items.forEach((item, index) => this.setEventListener(
-            item.querySelector('button'), 'click', () => this.open(index)));
+        // Without script the trigger is a plain link to the image; with script it opens the viewer instead.
+        this.items.forEach((item, index) => {
+            const trigger = item.querySelector('.osirion-image-gallery-trigger');
+            trigger?.setAttribute('aria-haspopup', 'dialog');
+            this.setEventListener(trigger, 'click', event => {
+                event.preventDefault();
+                this.open(index);
+            });
+        });
         this.root.querySelectorAll('[data-gallery-close]').forEach(button =>
             this.setEventListener(button, 'click', () => this.close()));
         this.setEventListener(this.root.querySelector('[data-gallery-previous]'), 'click', () => this.move(-1));
@@ -59,14 +66,35 @@ export default class extends BlazorJSComponents.Component {
 
     handleKeyDown(event) {
         if (this.lightbox?.hidden) return;
+        if (event.key === 'Tab') this.trapFocus(event);
         if (event.key === 'Escape') this.close();
         if (event.key === 'ArrowLeft') this.move(-1);
         if (event.key === 'ArrowRight') this.move(1);
+    }
+
+    // The viewer is modal: keep Tab and Shift+Tab inside it while it is open.
+    trapFocus(event) {
+        const focusable = [...this.lightbox.querySelectorAll('button:not([disabled])')];
+        if (focusable.length === 0) return;
+
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        const active = document.activeElement;
+
+        if (!this.lightbox.contains(active)) {
+            event.preventDefault();
+            first.focus();
+        } else if (event.shiftKey && active === first) {
+            event.preventDefault();
+            last.focus();
+        } else if (!event.shiftKey && active === last) {
+            event.preventDefault();
+            first.focus();
+        }
     }
 
     dispose() {
         this.close();
         super.dispose();
     }
-    document.querySelectorAll('[data-osirion-gallery]').forEach(initialize);
-})();
+}

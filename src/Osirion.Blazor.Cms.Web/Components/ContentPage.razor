@@ -37,35 +37,13 @@
             <div class="osirion-content-main">
                 <div class="osirion-content-primary">
                     <LocalizedContentView Item="@contentItem"
+                                          CurrentLocale="@(contentItem.Locale ?? "en")"
+                                          CategoryUrlFormatter="@CategoryUrlFormatter"
+                                          TagUrlFormatter="@TagUrlFormatter"
+                                          ContentUrlFormatter="@ContentUrlFormatter"
                                           PreviousItem="@PreviousItem"
                                           NextItem="@NextItem"
                                           ShowNavigationLinks="@ShowNavigationLinks"/>
-                    @*                     @if (UseLocalizedView && AvailableTranslations is not null && AvailableTranslations.Any())
-                    {
-                        <LocalizedContentView 
-                            Item="@ContentItem"
-                            PreviousItem="@PreviousItem"
-                            NextItem="@NextItem"
-                            ShowNavigationLinks="@ShowNavigationLinks"
-                            AvailableTranslations="@AvailableTranslations"
-                            ShowTranslations="true"
-                            GetCategoryUrl="@GetCategoryUrl"
-                            GetTagUrl="@GetTagUrl"
-                            GetContentUrl="@GetContentUrl"
-                            GetTranslationUrl="@GetTranslationUrl" />
-                    }
-                    else
-                    { *@
-@*                     <ContentView Item="@ContentItem"
-                                 LoadingText="@LoadingText"
-                                 NotFoundText="@NotFoundText"
-                                 CategoryUrlFormatter="@CategoryUrlFormatter"
-                                 TagUrlFormatter="@TagUrlFormatter"
-                                 ContentUrlFormatter="@ContentUrlFormatter"
-                                 PreviousItem="@PreviousItem"
-                                 NextItem="@NextItem"
-                                 ShowNavigationLinks="@ShowNavigationLinks" /> *@
-                    @* } *@
 
                     @if (ShowShareLinks && ShareLinks is not null && ShareLinks.Any())
                     {
@@ -96,12 +74,14 @@
                     @if (contentItem.Categories.Any() && ShowCategories)
                     {
                         <CategoriesList Title="@CategoriesTitle"
+                                        CategoryUrlFormatter="@CategoryListUrlFormatter"
                                         ShowCount="false" />
                     }
 
                     @if (contentItem.Tags.Any() && ShowTags)
                     {
                         <TagCloud Title="@TagsTitle"
+                                  TagUrlFormatter="@TagCloudUrlFormatter"
                                   ShowCount="false"/>
                     }
 

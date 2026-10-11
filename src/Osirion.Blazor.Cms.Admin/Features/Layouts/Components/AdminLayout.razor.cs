@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Osirion.Blazor.Cms.Admin.Features.Authentication.Services;
 using Osirion.Blazor.Cms.Admin.Features.Layouts.Models;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 
@@ -11,6 +12,9 @@ public partial class AdminLayout : IDisposable
     [Inject]
     protected IAuthenticationService authService { get; set; } = default!;
 
+    [Inject]
+    private IGitHubTokenStore TokenStore { get; set; } = default!;
+
     /// <summary>Gets or sets the page title.</summary>
     [Parameter]
     public string Title { get; set; } = "Osirion CMS";
@@ -19,8 +23,12 @@ public partial class AdminLayout : IDisposable
     [Parameter]
     public string? Subtitle { get; set; }
 
-    /// <summary>Gets or sets the current theme.</summary>
-    [Parameter]
+    /// <summary>Gets or sets the theme chosen in this layout.</summary>
+    /// <remarks>
+    /// It is not a component parameter: a parameter of this name would clash with the <c>Theme</c> parameter of
+    /// <see cref="Osirion.Blazor.Components.OsirionComponentBase"/>, and Blazor refuses to render a component with
+    /// two parameters of the same name.
+    /// </remarks>
     public new string Theme { get; set; } = "light";
 
     /// <summary>Gets or sets the callback invoked when the theme changes.</summary>
@@ -80,6 +88,7 @@ public partial class AdminLayout : IDisposable
     private async Task SignOut()
     {
         await authService.SignOutAsync();
+        await TokenStore.RemoveTokenAsync();
 
         if (OnSignOut.HasDelegate)
         {

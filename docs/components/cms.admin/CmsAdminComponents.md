@@ -43,6 +43,7 @@ Pages and layouts
 - `StatusAlert.md` - Inline status/notification component
 
 Notes
+- Every routed admin page requires the `Osirion.Cms.Admin` authorization policy (`CmsAdminAuthorization.PolicyName`). The host provides authentication and can replace the default policy, which only requires an authenticated user. See the "Securing the Admin" section of src/Osirion.Blazor.Cms.Admin/README.md.
 - Built on feature modules with DI registration helpers
 - Adapters for GitHub and other content backends
 - See src/Osirion.Blazor.Cms.Admin for service extensions and options.

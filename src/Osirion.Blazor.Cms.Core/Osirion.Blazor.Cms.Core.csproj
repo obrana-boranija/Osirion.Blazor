@@ -1,44 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
 	<PropertyGroup>
-		<TargetFrameworks>$(OsirionTargetFrameworks)</TargetFrameworks>
-		<Nullable>enable</Nullable>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<LangVersion>latest</LangVersion>
-		<IsPackable>true</IsPackable>
-
-		<!-- XML Documentation -->
-		<GenerateDocumentationFile>true</GenerateDocumentationFile>
-		<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
-
 		<!-- NuGet package properties -->
 		<PackageId>Osirion.Blazor.Cms.Core</PackageId>
-		<Version>3.0.1</Version>
-		<Authors>Dejan Demonjić</Authors>
-		<Company>Tridesetri</Company>
+		<Version>4.0.0</Version>
 		<Description>Core CMS module for Osirion.Blazor - Provides cms management with provider pattern.</Description>
 		<PackageTags>blazor;components;content;cms;markdown;github;osirion</PackageTags>
-		<PackageProjectUrl>https://getosirion.com</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/obrana-boranija/Osirion.Blazor</RepositoryUrl>
-		<RepositoryType>git</RepositoryType>
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageIcon>icon.png</PackageIcon>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Markdig" />
-		<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" />
-	</ItemGroup>
-
-	<ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
-		<PackageReference Include="Microsoft.Extensions.Http" />
-		<PackageReference Include="Microsoft.Extensions.Caching.Memory" />
-	</ItemGroup>
-
-	<ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
-		<PackageReference Include="Microsoft.Extensions.Http" />
-		<PackageReference Include="Microsoft.Extensions.Caching.Memory" />
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
 	</ItemGroup>
 
 	<ItemGroup>

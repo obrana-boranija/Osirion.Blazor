@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Osirion.Blazor.Navigation.Internal;
 
 namespace Osirion.Blazor.Navigation.Components;
 
@@ -82,22 +83,19 @@ public partial class MenuGroup
     /// </summary>
     protected string ItemsId => $"{GroupId}-items";
 
-    /// <summary>Initializes the component state and required services.</summary>
-    protected override void OnInitialized()
+    // Derived render state, rebuilt on every parameter update and never written back into a parameter,
+    // so a parent re-render cannot wipe it or append to it twice.
+    private string _groupClass = "osirion-menu-group";
+    private Dictionary<string, object> _groupAttributes = [];
+
+    private string? _footerHref;
+
+    /// <summary>Recomputes the group classes, attributes and the footer link from the current parameters.</summary>
+    protected override void OnParametersSet()
     {
-        base.OnInitialized();
+        base.OnParametersSet();
 
-        if (Attributes is null)
-        {
-            Attributes = new Dictionary<string, object>();
-        }
-
-        // Set ID attribute
-        if (!Attributes.ContainsKey("id"))
-            Attributes["id"] = GroupId;
-
-        // Add CSS classes for state
-        var cssClasses = new List<string>();
+        var cssClasses = new List<string> { "osirion-menu-group" };
 
         if (Collapsible)
             cssClasses.Add("osirion-menu-group-collapsible");
@@ -108,6 +106,13 @@ public partial class MenuGroup
         if (!string.IsNullOrWhiteSpace(Class))
             cssClasses.Add(Class);
 
-        Class = string.Join(" ", cssClasses);
+        _groupClass = string.Join(' ', cssClasses);
+
+        var attributes = new Dictionary<string, object>(Attributes ?? new Dictionary<string, object>());
+        if (!attributes.ContainsKey("id"))
+            attributes["id"] = GroupId;
+
+        _groupAttributes = attributes;
+        _footerHref = SafeHref.Sanitize(FooterHref);
     }
 }

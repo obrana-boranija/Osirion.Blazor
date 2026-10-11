@@ -35,12 +35,9 @@
     }
 
     <!-- ===== Alternate Language Versions (hreflang) ===== -->
-    @if (AlternateLanguageUrls?.Any() == true)
+    @foreach (var (hrefLang, href) in _alternateLinks)
     {
-        foreach (var altUrl in AlternateLanguageUrls)
-        {
-            <link rel="alternate" hreflang="@altUrl.Split('|')[0]" href="@altUrl.Split('|')[1]" />
-        }
+        <link rel="alternate" hreflang="@hrefLang" href="@href" />
     }
 
     <!-- ===== Pagination Links ===== -->
@@ -57,7 +54,7 @@
     @((MarkupString)RenderPropertyTag("og:title", _ogTitle))
     @((MarkupString)RenderPropertyTag("og:description", _ogDescription))
     @((MarkupString)RenderPropertyTag("og:type", _ogType))
-    @((MarkupString)RenderPropertyTag("og:url", _currentUrl))
+    @((MarkupString)RenderPropertyTag("og:url", _canonicalUrl ?? _currentUrl))
     @((MarkupString)RenderPropertyTag("og:site_name", _siteName))
     @((MarkupString)RenderPropertyTag("og:locale", _locale))
     
@@ -79,8 +76,8 @@
     <!-- Article-specific Open Graph Tags -->
     @if (_isArticle)
     {
-        @((MarkupString)RenderPropertyTag("article:published_time", _publishDate?.ToString("yyyy-MM-ddTHH:mm:ssZ")))
-        @((MarkupString)RenderPropertyTag("article:modified_time", _modifiedDate?.ToString("yyyy-MM-ddTHH:mm:ssZ")))
+        @((MarkupString)RenderPropertyTag("article:published_time", (_publishDate is { } published ? ContentUrls.FormatUtc(published) : null)))
+        @((MarkupString)RenderPropertyTag("article:modified_time", (_modifiedDate is { } modified ? ContentUrls.FormatUtc(modified) : null)))
         @if (!string.IsNullOrWhiteSpace(_author))
         {
             @((MarkupString)RenderPropertyTag("article:author", _author))
@@ -125,16 +122,6 @@
         @((MarkupString)RenderMetaTag("last_modified", _modifiedDate.Value))
     }
     
-    @if (_tags?.Any() == true)
-    {
-        @((MarkupString)RenderMetaTag("keywords", _tags))
-    }
-    
-    @if (_categories?.Any() == true)
-    {
-        @((MarkupString)RenderMetaTag("article:section", _categories))
-    }
-
     <!-- Reading Time (for user experience and GEO) -->
     @if (_readTimeMinutes.HasValue && _readTimeMinutes.Value > 0)
     {
@@ -174,11 +161,6 @@
         @foreach (var question in _answersTo)
         {
             <meta name="answers-to" content="@question" />
-            
-            @if (_structuredAnswers?.ContainsKey(question) == true)
-            {
-                <meta name="answer-@question.GetHashCode()" content="@_structuredAnswers[question]" />
-            }
         }
         
         <!-- Content structure hints for better answer extraction -->
@@ -217,7 +199,9 @@
         <meta name="Google-Extended" content="noindex" />
     }
 
-    <!-- ===== Mobile and App Meta Tags ===== -->
+    @if (EmitMobileMetaTags)
+    {
+        <!-- ===== Mobile and App Meta Tags (opt-in: the host document normally owns these) ===== -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
     <meta name="theme-color" content="#ffffff" />
     <meta name="msapplication-TileColor" content="#ffffff" />
@@ -225,7 +209,8 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="apple-mobile-web-app-title" content="@_siteName" />
+        <meta name="apple-mobile-web-app-title" content="@_siteName" />
+    }
 
     <!-- ===== Performance and Resource Hints ===== -->
     <link rel="dns-prefetch" href="@_baseUrl" />
@@ -256,35 +241,6 @@
                 @((MarkupString)schema)
             </script>
         }
-    }
-
-    <!-- ===== Additional Rich Snippets ===== -->
-    @if (EnableAeoOptimization && _structuredAnswers?.Any() == true)
-    {
-        <!-- FAQ Schema for answer engines -->
-        var faqSchema = new
-        {
-            context = "https://schema.org",
-            type = "FAQPage",
-            mainEntity = _structuredAnswers.Select(qa => new
-            {
-                type = "Question",
-                name = qa.Key,
-                acceptedAnswer = new
-                {
-                    type = "Answer",
-                    text = qa.Value
-                }
-            }).ToArray()
-        };
-        
-        <script type="application/ld+json">
-            @((MarkupString)System.Text.Json.JsonSerializer.Serialize(faqSchema, new System.Text.Json.JsonSerializerOptions 
-            { 
-                WriteIndented = true,
-                PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase
-            }))
-        </script>
     }
 
     <!-- ===== Verification Tags (Optional - Add when needed) ===== -->

@@ -1,36 +1,22 @@
 @namespace Osirion.Blazor.Cms.Admin.Features.Security.Components
 @inherits BaseComponent
-@using Osirion.Blazor.Cms.Admin.Features.Authentication.Components
+@using Microsoft.AspNetCore.Components.Authorization
 @using Osirion.Blazor.Cms.Admin.Shared.Components
-@using Osirion.Blazor.Cms.Domain.Interfaces
 
-@ChildContent
-
-@* @if (authService.IsAuthenticated)
-{
-    @ChildContent
-}
-else
-{
-    @if (ShowLoginForm)
-    {
-        <Login ReturnUrl="@ReturnUrl" OnLoginResult="HandleLoginResult" />
-    }
-    else
-    {
-        <div class="d-flex align-items-center justify-content-center min-vh-100 p-4">
-            <div class="card shadow-sm border rounded-3 p-4 text-center" style="max-width: 400px; width: 100%;">
+<AuthorizeView Policy="@Policy">
+    <Authorized>
+        @ChildContent
+    </Authorized>
+    <NotAuthorized>
+        <div class="d-flex align-items-center justify-content-center p-4 auth-guard">
+            <div class="card shadow-sm border rounded-3 p-4 text-center auth-guard-card">
                 <div class="mb-3">
-                    <i class="bi bi-shield-lock text-danger" style="font-size: 3rem;"></i>
+                    <i class="bi bi-shield-lock text-danger auth-guard-icon"></i>
                 </div>
                 <h4 class="mb-3">Authentication Required</h4>
-                <p class="mb-4 text-secondary">You need to sign in to access this area.</p>
-                <button type="button"
-                        class="btn btn-primary"
-                        @onclick="RedirectToLogin">
-                    Sign In
-                </button>
+                <p class="mb-4 text-secondary">You need to sign in with an account that has access to this area.</p>
+                <a class="btn btn-primary" href="@LoginUrl" data-enhance-nav="false">Sign In</a>
             </div>
         </div>
-    }
-} *@
+    </NotAuthorized>
+</AuthorizeView>

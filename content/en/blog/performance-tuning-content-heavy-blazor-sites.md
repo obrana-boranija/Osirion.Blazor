@@ -6,7 +6,7 @@ description: "Tactics for faster content delivery: caching, static generation, l
 slug: "performance-tuning-content-heavy-blazor-sites"
 categories: [Performance]
 tags: [Performance, Caching, SSG]
-featured_image: "/images/blog/performance.jpg"
+featured_image: "/assets/images/blazor-cover.png"
 seo_properties:
   title: "Performance Tuning for Content-Heavy Blazor Sites"
   description: "Practical steps to speed up content-heavy Blazor sites."

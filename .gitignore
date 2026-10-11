@@ -366,7 +366,7 @@ FodyWeavers.xsd
 /examples/Osirion.Blazor.FluentUI.Example/Osirion.Blazor.FluentUI.Example/appsettings.Development.json
 /examples/bs/Osirion.Blazor.Example/Osirion.Blazor.Example/appsettings.Development.json
 
-# Claude Code — machine-local overrides
-.claude/settings.local.json
+# Claude Code: the whole folder is machine-local (agent notes and settings)
+.claude/
 CLAUDE.local.md
 CLAUDE.md

@@ -42,7 +42,7 @@
                                     <div class="osirion-footer-section">
                                         @if (!string.IsNullOrWhiteSpace(linkSection.Title))
                                         {
-                                            <h3 class="osirion-footer-section-title">@linkSection.Title</h3>
+                                            <h2 class="osirion-footer-section-title">@linkSection.Title</h2>
                                         }
                                         <ul class="osirion-footer-list">
                                             @foreach (var link in linkSection.Links)
@@ -67,7 +67,7 @@
                             <div class="osirion-footer-social">
                                 @if (!string.IsNullOrWhiteSpace(SocialTitle))
                                 {
-                                    <h3 class="osirion-footer-section-title">@SocialTitle</h3>
+                                    <h2 class="osirion-footer-section-title">@SocialTitle</h2>
                                 }
                                 <div class="osirion-footer-social-links">
                                     @foreach (var social in SocialLinks)

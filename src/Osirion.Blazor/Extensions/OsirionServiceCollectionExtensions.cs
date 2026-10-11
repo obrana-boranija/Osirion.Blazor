@@ -5,6 +5,7 @@ using Osirion.Blazor.Components;
 using Osirion.Blazor.Internal;
 using Osirion.Blazor.Navigation.Options;
 using Osirion.Blazor.Core.Configuration;
+using Osirion.Blazor.Core.Extensions;
 
 namespace Osirion.Blazor.Extensions;
 
@@ -112,5 +113,8 @@ public static class OsirionServiceCollectionExtensions
         {
             theming.UseFramework(CssFramework.None);
         });
+
+        // Content HTML is sanitized with the default allow-list unless the host configures it
+        builder.Services.AddOsirionHtmlSanitizer();
     }
 }

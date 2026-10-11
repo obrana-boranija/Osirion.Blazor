@@ -1,44 +1,48 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using Osirion.Blazor.Cms.Admin.Core.Events;
 using Osirion.Blazor.Cms.Admin.Core.State;
-using Osirion.Blazor.Cms.Admin.Features.ContentBrowser.ViewModels;
 using Osirion.Blazor.Cms.Admin.Features.ContentBrowser.Services;
+using Osirion.Blazor.Cms.Admin.Features.ContentBrowser.ViewModels;
+using Osirion.Blazor.Cms.Admin.Infrastructure.Adapters;
 using Osirion.Blazor.Cms.Admin.Services.Events;
+using Osirion.Blazor.Cms.Admin.Tests.TestDoubles;
 using Osirion.Blazor.Cms.Domain.Models.GitHub;
 using Shouldly;
-using Microsoft.AspNetCore.Components;
-using NSubstitute.ExceptionExtensions;
 
 namespace Osirion.Blazor.Cms.Admin.Tests.Features.ContentBrowser.ViewModels;
 
 public class FileExplorerViewModelTests
 {
-    private readonly ContentBrowserService _browserService;
+    private readonly IContentRepositoryAdapter _repositoryAdapter;
     private readonly CmsState _state;
-    private readonly NavigationManager _navigationManager;
+    private readonly TestNavigationManager _navigationManager;
     private readonly CmsEventMediator _eventMediator;
-    private readonly ILogger<FileExplorerViewModel> _logger;
+    private readonly List<ContentSelectedEvent> _selections;
+    private readonly List<StatusNotificationEvent> _notifications;
     private readonly FileExplorerViewModel _viewModel;
 
     public FileExplorerViewModelTests()
     {
-        _browserService = Substitute.For<ContentBrowserService>(
-            Substitute.For<Infrastructure.Adapters.IContentRepositoryAdapter>(),
-            Substitute.For<CmsEventMediator>(Substitute.For<ILogger<CmsEventMediator>>()),
-            Substitute.For<ILogger<ContentBrowserService>>()
-        );
+        _repositoryAdapter = Substitute.For<IContentRepositoryAdapter>();
+        _eventMediator = new CmsEventMediator(NullLogger<CmsEventMediator>.Instance);
+        // ContentBrowserService has no virtual members, so the view model gets the real service over a substituted adapter.
+        var browserService = new ContentBrowserService(
+            _repositoryAdapter,
+            _eventMediator,
+            NullLogger<ContentBrowserService>.Instance);
         _state = new CmsState();
-        _navigationManager = Substitute.For<NavigationManager>();
-        _eventMediator = Substitute.For<CmsEventMediator>(Substitute.For<ILogger<CmsEventMediator>>());
-        _logger = Substitute.For<ILogger<FileExplorerViewModel>>();
+        _navigationManager = new TestNavigationManager();
+        _selections = EventRecorder.Record<ContentSelectedEvent>(_eventMediator);
+        _notifications = EventRecorder.Record<StatusNotificationEvent>(_eventMediator);
 
         _viewModel = new FileExplorerViewModel(
-            _browserService,
+            browserService,
             _state,
             _navigationManager,
             _eventMediator,
-            _logger
+            NullLogger<FileExplorerViewModel>.Instance
         );
     }
 
@@ -59,7 +63,7 @@ public class FileExplorerViewModelTests
             new GitHubItem { Name = "post.md", Type = "file", Path = "content/blog/post.md" }
         };
 
-        _browserService.GetContentsAsync(path).Returns(expectedContents);
+        _repositoryAdapter.GetContentsAsync(path).Returns(expectedContents);
 
         var stateChangedCalled = false;
         _viewModel.StateChanged += () => stateChangedCalled = true;
@@ -73,7 +77,7 @@ public class FileExplorerViewModelTests
         _viewModel.ErrorMessage.ShouldBeNull();
         stateChangedCalled.ShouldBeTrue();
 
-        await _browserService.Received(1).GetContentsAsync(path);
+        await _repositoryAdapter.Received(1).GetContentsAsync(path);
     }
 
     [Fact]
@@ -87,7 +91,7 @@ public class FileExplorerViewModelTests
         await _viewModel.LoadContentsAsync();
 
         // Assert
-        await _browserService.DidNotReceive().GetContentsAsync(Arg.Any<string>());
+        await _repositoryAdapter.DidNotReceive().GetContentsAsync(Arg.Any<string>());
         stateChangedCalled.ShouldBeFalse();
     }
 
@@ -104,7 +108,7 @@ public class FileExplorerViewModelTests
         _state.SetCurrentPath(path, new List<GitHubItem>());
 
         var exception = new InvalidOperationException("Test error");
-        _browserService.GetContentsAsync(path).Throws(exception);
+        _repositoryAdapter.GetContentsAsync(path).Throws(exception);
 
         var stateChangedCalled = false;
         _viewModel.StateChanged += () => stateChangedCalled = true;
@@ -120,7 +124,7 @@ public class FileExplorerViewModelTests
         _state.ErrorMessage.ShouldBe(_viewModel.ErrorMessage);
         stateChangedCalled.ShouldBeTrue();
 
-        await _browserService.Received(1).GetContentsAsync(path);
+        await _repositoryAdapter.Received(1).GetContentsAsync(path);
     }
 
     [Fact]
@@ -141,14 +145,14 @@ public class FileExplorerViewModelTests
             new GitHubItem { Name = "post.md", Type = "file", Path = "content/blog/post.md" }
         };
 
-        _browserService.GetContentsAsync(newPath).Returns(expectedContents);
+        _repositoryAdapter.GetContentsAsync(newPath).Returns(expectedContents);
 
         // Act
         await _viewModel.NavigateToPathAsync(newPath);
 
         // Assert
         _state.CurrentPath.ShouldBe(newPath);
-        await _browserService.Received(1).GetContentsAsync(newPath);
+        await _repositoryAdapter.Received(1).GetContentsAsync(newPath);
     }
 
     [Fact]
@@ -168,14 +172,14 @@ public class FileExplorerViewModelTests
             new GitHubItem { Name = "content", Type = "dir", Path = "content" }
         };
 
-        _browserService.GetContentsAsync(string.Empty).Returns(rootContents);
+        _repositoryAdapter.GetContentsAsync(string.Empty).Returns(rootContents);
 
         // Act
         await _viewModel.NavigateToRootAsync();
 
         // Assert
         _state.CurrentPath.ShouldBe(string.Empty);
-        await _browserService.Received(1).GetContentsAsync(string.Empty);
+        await _repositoryAdapter.Received(1).GetContentsAsync(string.Empty);
     }
 
     [Fact]
@@ -195,14 +199,14 @@ public class FileExplorerViewModelTests
             new GitHubItem { Name = "blog", Type = "dir", Path = "content/blog" }
         };
 
-        _browserService.GetContentsAsync("content").Returns(parentContents);
+        _repositoryAdapter.GetContentsAsync("content").Returns(parentContents);
 
         // Act
         await _viewModel.NavigateToParentDirectoryAsync();
 
         // Assert
         _state.CurrentPath.ShouldBe("content");
-        await _browserService.Received(1).GetContentsAsync("content");
+        await _repositoryAdapter.Received(1).GetContentsAsync("content");
     }
 
     [Fact]
@@ -222,7 +226,7 @@ public class FileExplorerViewModelTests
 
         // Assert
         _state.CurrentPath.ShouldBe(string.Empty);
-        await _browserService.DidNotReceive().GetContentsAsync(Arg.Any<string>());
+        await _repositoryAdapter.DidNotReceive().GetContentsAsync(Arg.Any<string>());
     }
 
     [Fact]
@@ -249,7 +253,7 @@ public class FileExplorerViewModelTests
             new GitHubItem { Name = "post.md", Type = "file", Path = "content/blog/post.md" }
         };
 
-        _browserService.GetContentsAsync("content/blog").Returns(dirContents);
+        _repositoryAdapter.GetContentsAsync("content/blog").Returns(dirContents);
 
         // Act
         await _viewModel.HandleItemClickAsync(directoryItem);
@@ -257,7 +261,7 @@ public class FileExplorerViewModelTests
         // Assert
         _viewModel.SelectedItem.ShouldBe(directoryItem);
         _state.CurrentPath.ShouldBe("content/blog");
-        await _browserService.Received(1).GetContentsAsync("content/blog");
+        await _repositoryAdapter.Received(1).GetContentsAsync("content/blog");
     }
 
     [Fact]
@@ -276,12 +280,8 @@ public class FileExplorerViewModelTests
 
         // Assert
         _viewModel.SelectedItem.ShouldBe(fileItem);
-        _eventMediator.Received(1).Publish(
-            Arg.Is<ContentSelectedEvent>(e => e.Path == fileItem.Path)
-        );
-        _navigationManager.Received(1).NavigateTo(
-            Arg.Is<string>(s => s.Contains(fileItem.Path))
-        );
+        _selections.ShouldHaveSingleItem().Path.ShouldBe(fileItem.Path);
+        _navigationManager.Navigations.ShouldHaveSingleItem().Uri.ShouldContain(fileItem.Path);
     }
 
     [Fact]
@@ -300,13 +300,11 @@ public class FileExplorerViewModelTests
 
         // Assert
         _viewModel.SelectedItem.ShouldBe(fileItem);
-        _eventMediator.Received(1).Publish(
-            Arg.Is<StatusNotificationEvent>(e =>
-                e.Message.Contains("Selected file") &&
-                e.Message.Contains(fileItem.Name) &&
-                e.Type == StatusType.Info)
-        );
-        _navigationManager.DidNotReceive().NavigateTo(Arg.Any<string>());
+        var notification = _notifications.ShouldHaveSingleItem();
+        notification.Message.ShouldContain("Selected file");
+        notification.Message.ShouldContain(fileItem.Name);
+        notification.Type.ShouldBe(StatusType.Info);
+        _navigationManager.Navigations.ShouldBeEmpty();
     }
 
     [Fact]
@@ -336,7 +334,7 @@ public class FileExplorerViewModelTests
             new GitHubItem { Name = "another-post.md", Type = "file", Path = "content/blog/another-post.md" }
         };
 
-        _browserService.GetContentsAsync(path).Returns(updatedContents);
+        _repositoryAdapter.GetContentsAsync(path).Returns(updatedContents);
 
         var stateChangedCalled = false;
         _viewModel.StateChanged += () => stateChangedCalled = true;
@@ -350,8 +348,8 @@ public class FileExplorerViewModelTests
         _viewModel.IsDeletingFile.ShouldBeFalse();
         stateChangedCalled.ShouldBeTrue();
 
-        await _browserService.Received(1).DeleteFileAsync(fileItem.Path, fileItem.Sha);
-        await _browserService.Received(1).GetContentsAsync(path);
+        await _repositoryAdapter.Received(1).DeleteFileAsync(fileItem.Path, Arg.Any<string>(), fileItem.Sha!);
+        await _repositoryAdapter.Received(1).GetContentsAsync(path);
 
         _state.StatusMessage!.ShouldContain("deleted successfully");
     }
@@ -376,7 +374,7 @@ public class FileExplorerViewModelTests
         _viewModel.ShowDeleteConfirmation(fileItem);
 
         var exception = new InvalidOperationException("Test error");
-        _browserService.DeleteFileAsync(fileItem.Path, fileItem.Sha).Throws(exception);
+        _repositoryAdapter.DeleteFileAsync(fileItem.Path, Arg.Any<string>(), fileItem.Sha!).Throws(exception);
 
         var stateChangedCalled = false;
         _viewModel.StateChanged += () => stateChangedCalled = true;
@@ -394,8 +392,8 @@ public class FileExplorerViewModelTests
         _state.ErrorMessage.ShouldBe(_viewModel.ErrorMessage);
         stateChangedCalled.ShouldBeTrue();
 
-        await _browserService.Received(1).DeleteFileAsync(fileItem.Path, fileItem.Sha);
-        await _browserService.DidNotReceive().GetContentsAsync(Arg.Any<string>());
+        await _repositoryAdapter.Received(1).DeleteFileAsync(fileItem.Path, Arg.Any<string>(), fileItem.Sha!);
+        await _repositoryAdapter.DidNotReceive().GetContentsAsync(Arg.Any<string>());
     }
 
     [Fact]
@@ -461,5 +459,25 @@ public class FileExplorerViewModelTests
         // Act & Assert
         _viewModel.IsItemSelected(item1).ShouldBeTrue();
         _viewModel.IsItemSelected(item2).ShouldBeFalse();
+    }
+}
+public class FileExplorerViewModelDisposalTests
+{
+    [Fact]
+    public void Dispose_StopsReactingToStateChanges()
+    {
+        var mediator = new CmsEventMediator(NullLogger<CmsEventMediator>.Instance);
+        var state = new CmsState();
+        var browserService = new ContentBrowserService(
+            Substitute.For<IContentRepositoryAdapter>(), mediator, NullLogger<ContentBrowserService>.Instance);
+        var viewModel = new FileExplorerViewModel(
+            browserService, state, new TestNavigationManager(), mediator, NullLogger<FileExplorerViewModel>.Instance);
+        var notifications = 0;
+        viewModel.StateChanged += () => notifications++;
+
+        viewModel.Dispose();
+        state.SelectRepository(new GitHubRepository { Name = "site" });
+
+        notifications.ShouldBe(0);
     }
 }

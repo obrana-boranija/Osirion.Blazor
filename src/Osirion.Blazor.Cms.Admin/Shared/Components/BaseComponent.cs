@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
+using Osirion.Blazor.Cms.Admin.Common.Constants;
 using Osirion.Blazor.Cms.Admin.Core.Events;
 using Osirion.Blazor.Cms.Admin.Core.State;
 using Osirion.Blazor.Components;
@@ -18,6 +20,8 @@ public abstract class BaseComponent : OsirionComponentBase
     [Inject] protected NavigationManager NavigationManager { get; set; } = null!;
     /// <summary>Provides shared CMS admin state.</summary>
     [Inject] protected CmsState AdminState { get; set; } = null!;
+    /// <summary>Logs failures whose details are hidden from the user.</summary>
+    [Inject] protected ILogger<BaseComponent> ComponentLogger { get; set; } = null!;
 
     /// <summary>Gets or sets the IsLoading value.</summary>
     protected bool IsLoading { get; set; }
@@ -37,8 +41,7 @@ public abstract class BaseComponent : OsirionComponentBase
         }
         catch (Exception ex)
         {
-            ErrorMessage = ex.Message;
-            EventPublisher.Publish(new ErrorOccurredEvent(ex.Message, ex));
+            ReportFailure(ex);
         }
         finally
         {
@@ -58,13 +61,22 @@ public abstract class BaseComponent : OsirionComponentBase
         }
         catch (Exception ex)
         {
-            ErrorMessage = ex.Message;
-            EventPublisher.Publish(new ErrorOccurredEvent(ErrorMessage, ex));
+            ReportFailure(ex);
         }
         finally
         {
             IsLoading = false;
             StateHasChanged();
         }
+    }
+
+    /// <summary>
+    /// Logs the exception and shows a generic message; the exception text is not shown to the user.
+    /// </summary>
+    protected void ReportFailure(Exception exception, string userMessage = UserMessages.OperationFailed)
+    {
+        ComponentLogger.LogError(exception, "Admin component {Component} operation failed", GetType().Name);
+        ErrorMessage = userMessage;
+        EventPublisher.Publish(new ErrorOccurredEvent(userMessage, exception));
     }
 }

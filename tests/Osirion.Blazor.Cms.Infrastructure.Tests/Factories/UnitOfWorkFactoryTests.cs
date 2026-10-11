@@ -1,92 +1,116 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 using NSubstitute;
 using Osirion.Blazor.Cms.Domain.Events;
 using Osirion.Blazor.Cms.Domain.Interfaces;
+using Osirion.Blazor.Cms.Domain.Interfaces.Content;
+using Osirion.Blazor.Cms.Domain.Interfaces.Directory;
+using Osirion.Blazor.Cms.Domain.Options;
+using Osirion.Blazor.Cms.Domain.Repositories;
 using Osirion.Blazor.Cms.Domain.Services;
 using Osirion.Blazor.Cms.Infrastructure.Factories;
 using Osirion.Blazor.Cms.Infrastructure.FileSystem;
 using Osirion.Blazor.Cms.Infrastructure.GitHub;
 using Osirion.Blazor.Cms.Infrastructure.UnitOfWork;
 using Shouldly;
+using System.Reflection;
 
 namespace Osirion.Blazor.Cms.Infrastructure.Tests.Factories;
 
-public class UnitOfWorkFactoryTests
+/// <summary>
+/// The factory resolves the concrete repositories from the service provider, and those cannot be substituted, so the
+/// tests register real repositories built on substituted collaborators. The file system unit of work creates its backup
+/// directory when it is constructed, so that directory lives in a temporary sandbox.
+/// </summary>
+public sealed class UnitOfWorkFactoryTests : IDisposable
 {
-    private readonly IServiceProvider _serviceProvider;
-    private readonly IContentProviderRegistry _providerRegistry;
-    private readonly IConfiguration _configuration;
-    private readonly IDomainEventDispatcher _eventDispatcher;
-    private readonly ILoggerFactory _loggerFactory;
-    private readonly UnitOfWorkFactory _factory;
+    private const string BackupDirectoryKey = "Osirion:Cms:FileSystem:BackupDirectory";
 
-    private readonly IContentProvider _githubProvider;
-    private readonly IContentProvider _filesystemProvider;
-    private readonly IContentProvider _defaultProvider;
-    private readonly IGitHubApiClient _apiClient;
-    private readonly GitHubContentRepository _githubContentRepo;
-    private readonly GitHubDirectoryRepository _githubDirectoryRepo;
-    private readonly FileSystemContentRepository _filesystemContentRepo;
-    private readonly FileSystemDirectoryRepository _filesystemDirectoryRepo;
+    private readonly string _sandbox = Path.Combine(Path.GetTempPath(), "osirion-uow-factory-" + Guid.NewGuid().ToString("N"));
+    private readonly IContentProviderRegistry _providerRegistry = Substitute.For<IContentProviderRegistry>();
+    private readonly IDomainEventDispatcher _eventDispatcher = Substitute.For<IDomainEventDispatcher>();
+    private readonly Dictionary<string, string?> _configurationValues = new();
+    private readonly ServiceProvider _serviceProvider;
+    private readonly IContentProvider _githubProvider = Substitute.For<IContentProvider>();
+    private readonly IContentProvider _filesystemProvider = Substitute.For<IContentProvider>();
+    private readonly GitHubContentRepository _githubContentRepository;
+    private readonly GitHubDirectoryRepository _githubDirectoryRepository;
+    private readonly FileSystemContentRepository _filesystemContentRepository;
+    private readonly FileSystemDirectoryRepository _filesystemDirectoryRepository;
+    private readonly UnitOfWorkFactory _factory;
+    private readonly string _backupDirectory;
 
     public UnitOfWorkFactoryTests()
     {
-        // Setup mocks
-        _serviceProvider = Substitute.For<IServiceProvider>();
-        _providerRegistry = Substitute.For<IContentProviderRegistry>();
-        _configuration = Substitute.For<IConfiguration>();
-        _eventDispatcher = Substitute.For<IDomainEventDispatcher>();
-        _loggerFactory = Substitute.For<ILoggerFactory>();
+        _backupDirectory = Path.Combine(_sandbox, "backup");
+        _configurationValues[BackupDirectoryKey] = _backupDirectory;
 
-        // Github components
-        _githubProvider = Substitute.For<IContentProvider>();
-        _apiClient = Substitute.For<IGitHubApiClient>();
-        _githubContentRepo = Substitute.For<GitHubContentRepository>();
-        _githubDirectoryRepo = Substitute.For<GitHubDirectoryRepository>();
+        var apiClientFactory = Substitute.For<IGitHubApiClientFactory>();
+        apiClientFactory.GetDefaultClient().Returns(Substitute.For<IGitHubApiClient>());
+        var gitHubOptions = Options.Create(new GitHubOptions { Owner = "testOwner", Repository = "testRepo", Branch = "main" });
+        var fileSystemOptions = Options.Create(new FileSystemOptions
+        {
+            BasePath = Path.Combine(_sandbox, "content"),
+            WatchForChanges = false
+        });
 
-        // Filesystem components
-        _filesystemProvider = Substitute.For<IContentProvider>();
-        _filesystemContentRepo = Substitute.For<FileSystemContentRepository>();
-        _filesystemDirectoryRepo = Substitute.For<FileSystemDirectoryRepository>();
+        _githubDirectoryRepository = new GitHubDirectoryRepository(
+            apiClientFactory,
+            gitHubOptions,
+            Substitute.For<IDirectoryCacheManager>(),
+            Substitute.For<IDirectoryMetadataProcessor>(),
+            Substitute.For<IPathUtilities>(),
+            NullLogger<GitHubDirectoryRepository>.Instance);
+        _githubContentRepository = new GitHubContentRepository(
+            apiClientFactory,
+            Substitute.For<IMarkdownProcessor>(),
+            Substitute.For<IContentQueryFilter>(),
+            gitHubOptions,
+            _githubDirectoryRepository,
+            NullLogger<GitHubContentRepository>.Instance);
+        _filesystemContentRepository = new FileSystemContentRepository(
+            Substitute.For<IMarkdownProcessor>(),
+            Substitute.For<IContentQueryFilter>(),
+            fileSystemOptions,
+            NullLogger<FileSystemContentRepository>.Instance,
+            new System.IO.Abstractions.FileSystem());
+        _filesystemDirectoryRepository = new FileSystemDirectoryRepository(
+            fileSystemOptions,
+            Substitute.For<IDirectoryCacheManager>(),
+            Substitute.For<IDirectoryMetadataProcessor>(),
+            Substitute.For<IPathUtilities>(),
+            NullLogger<FileSystemDirectoryRepository>.Instance);
 
-        // Default provider
-        _defaultProvider = _githubProvider;
+        _serviceProvider = new ServiceCollection()
+            .AddSingleton(Substitute.For<IGitHubApiClient>())
+            .AddSingleton(_githubContentRepository)
+            .AddSingleton(_githubDirectoryRepository)
+            .AddSingleton(_filesystemContentRepository)
+            .AddSingleton(_filesystemDirectoryRepository)
+            .BuildServiceProvider();
 
-        // Setup provider IDs
         _githubProvider.ProviderId.Returns("github-test");
         _filesystemProvider.ProviderId.Returns("filesystem-test");
-
-        // Setup provider registry
         _providerRegistry.GetProvider("github-test").Returns(_githubProvider);
         _providerRegistry.GetProvider("filesystem-test").Returns(_filesystemProvider);
-        _providerRegistry.GetDefaultProvider().Returns(_defaultProvider);
+        _providerRegistry.GetDefaultProvider().Returns(_githubProvider);
 
-        // Setup service provider
-        _serviceProvider.GetRequiredService<IGitHubApiClient>().Returns(_apiClient);
-        _serviceProvider.GetRequiredService<GitHubContentRepository>().Returns(_githubContentRepo);
-        _serviceProvider.GetRequiredService<GitHubDirectoryRepository>().Returns(_githubDirectoryRepo);
-        _serviceProvider.GetRequiredService<FileSystemContentRepository>().Returns(_filesystemContentRepo);
-        _serviceProvider.GetRequiredService<FileSystemDirectoryRepository>().Returns(_filesystemDirectoryRepo);
+        _factory = CreateFactory();
+    }
 
-        // Setup configuration
-        _configuration["Osirion:Cms:FileSystem:BackupDirectory"]
-            .Returns("/test/backup");
-
-        // Setup logger
-        var githubLogger = Substitute.For<ILogger<GitHubUnitOfWork>>();
-        var filesystemLogger = Substitute.For<ILogger<FileSystemUnitOfWork>>();
-        _loggerFactory.CreateLogger<GitHubUnitOfWork>().Returns(githubLogger);
-        _loggerFactory.CreateLogger<FileSystemUnitOfWork>().Returns(filesystemLogger);
-
-        // Create factory
-        _factory = new UnitOfWorkFactory(
-            _serviceProvider,
-            _providerRegistry,
-            _configuration,
-            _eventDispatcher,
-            _loggerFactory);
+    public void Dispose()
+    {
+        _filesystemContentRepository.Dispose();
+        _filesystemDirectoryRepository.Dispose();
+        _githubContentRepository.Dispose();
+        _githubDirectoryRepository.Dispose();
+        _serviceProvider.Dispose();
+        if (System.IO.Directory.Exists(_sandbox))
+        {
+            System.IO.Directory.Delete(_sandbox, recursive: true);
+        }
     }
 
     [Fact]
@@ -96,11 +120,9 @@ public class UnitOfWorkFactoryTests
         var result = _factory.Create("github-test");
 
         // Assert
-        result.ShouldNotBeNull();
         result.ShouldBeOfType<GitHubUnitOfWork>();
-        result.ProviderId.ShouldBe("github-test");
-        result.ContentRepository.ShouldBe(_githubContentRepo);
-        result.DirectoryRepository.ShouldBe(_githubDirectoryRepo);
+        result.ContentRepository.ShouldBeSameAs(_githubContentRepository);
+        result.DirectoryRepository.ShouldBeSameAs(_githubDirectoryRepository);
     }
 
     [Fact]
@@ -110,11 +132,9 @@ public class UnitOfWorkFactoryTests
         var result = _factory.Create("filesystem-test");
 
         // Assert
-        result.ShouldNotBeNull();
         result.ShouldBeOfType<FileSystemUnitOfWork>();
-        result.ProviderId.ShouldBe("filesystem-test");
-        result.ContentRepository.ShouldBe(_filesystemContentRepo);
-        result.DirectoryRepository.ShouldBe(_filesystemDirectoryRepo);
+        result.ContentRepository.ShouldBeSameAs(_filesystemContentRepository);
+        result.DirectoryRepository.ShouldBeSameAs(_filesystemDirectoryRepository);
     }
 
     [Fact]
@@ -148,9 +168,8 @@ public class UnitOfWorkFactoryTests
         var result = _factory.CreateForDefaultProvider();
 
         // Assert
-        result.ShouldNotBeNull();
         result.ShouldBeOfType<GitHubUnitOfWork>();
-        result.ProviderId.ShouldBe("github-test");
+        result.ContentRepository.ShouldBeSameAs(_githubContentRepository);
     }
 
     [Fact]
@@ -176,40 +195,43 @@ public class UnitOfWorkFactoryTests
     public void Create_WithFileSystemProvider_UsesBackupDirectoryFromConfiguration()
     {
         // Act
-        var unitOfWork = _factory.Create("filesystem-test") as FileSystemUnitOfWork;
+        var unitOfWork = _factory.Create("filesystem-test");
 
         // Assert
-        unitOfWork.ShouldNotBeNull();
-
-        // Check the backup directory via reflection
-        var backupDirField = typeof(FileSystemUnitOfWork)
-            .GetField("_backupDirectory", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-            ?? throw new InvalidOperationException("The backup directory field was not found.");
-
-        var backupDir = backupDirField.GetValue(unitOfWork) as string
-            ?? throw new InvalidOperationException("The backup directory was not initialized.");
-        backupDir.ShouldBe("/test/backup");
+        ReadBackupDirectory(unitOfWork).ShouldBe(_backupDirectory);
+        System.IO.Directory.Exists(_backupDirectory).ShouldBeTrue();
     }
 
     [Fact]
     public void Create_WithFileSystemProvider_UsesDefaultBackupDirectoryWhenNotConfigured()
     {
         // Arrange
-        _configuration["Osirion:Cms:FileSystem:BackupDirectory"].Returns((string)null!);
+        _configurationValues.Remove(BackupDirectoryKey);
+        var factory = CreateFactory();
 
         // Act
-        var unitOfWork = _factory.Create("filesystem-test") as FileSystemUnitOfWork;
+        var unitOfWork = factory.Create("filesystem-test");
 
         // Assert
-        unitOfWork.ShouldNotBeNull();
+        ReadBackupDirectory(unitOfWork).ShouldBe(Path.Combine(Path.GetTempPath(), "osirion-cms-backup"));
+    }
 
-        // Check the backup directory via reflection
-        var backupDirField = typeof(FileSystemUnitOfWork)
-            .GetField("_backupDirectory", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+    private UnitOfWorkFactory CreateFactory()
+    {
+        var configuration = new ConfigurationBuilder().AddInMemoryCollection(_configurationValues).Build();
+        return new UnitOfWorkFactory(
+            _serviceProvider,
+            _providerRegistry,
+            configuration,
+            _eventDispatcher,
+            NullLoggerFactory.Instance);
+    }
+
+    private static string ReadBackupDirectory(IUnitOfWork unitOfWork)
+    {
+        var field = typeof(FileSystemUnitOfWork).GetField("_backupDirectory", BindingFlags.NonPublic | BindingFlags.Instance)
             ?? throw new InvalidOperationException("The backup directory field was not found.");
-
-        var backupDir = backupDirField.GetValue(unitOfWork) as string
+        return field.GetValue(unitOfWork) as string
             ?? throw new InvalidOperationException("The backup directory was not initialized.");
-        backupDir.ShouldContain("osirion-cms-backup");
     }
 }

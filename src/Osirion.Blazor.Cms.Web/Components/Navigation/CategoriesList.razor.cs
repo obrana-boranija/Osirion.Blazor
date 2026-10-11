@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Repositories;
 using Osirion.Blazor.Cms.Domain.Services;
 
@@ -39,14 +40,12 @@ public partial class CategoriesList(IContentProviderManager contentProviderManag
     [Parameter]
     public int? MaxCategories { get; set; }
 
+    [Inject]
+    private ILogger<CategoriesList> Logger { get; set; } = default!;
+
     private IReadOnlyList<ContentCategory>? Categories { get; set; }
     private bool IsLoading { get; set; } = true;
 
-    /// <summary>Initializes the component state and required services.</summary>
-    protected override async Task OnInitializedAsync()
-    {
-        await LoadCategoriesAsync();
-    }
 
     /// <summary>Performs the OnParametersSet operation asynchronously.</summary>
     protected override async Task OnParametersSetAsync()
@@ -80,8 +79,9 @@ public partial class CategoriesList(IContentProviderManager contentProviderManag
                     : allCategories;
             }
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            Logger.LogError(ex, "Failed to load the category list");
             Categories = Array.Empty<ContentCategory>();
         }
         finally

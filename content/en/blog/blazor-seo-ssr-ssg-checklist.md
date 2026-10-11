@@ -6,7 +6,7 @@ description: "A practical SEO checklist to make your Blazor site fast, crawlable
 slug: "blazor-seo-ssr-ssg-checklist"
 categories: [SEO]
 tags: [SEO, SSR, SSG, Performance]
-featured_image: "/images/blog/seo-checklist.jpg"
+featured_image: "/assets/images/blazor-cover.png"
 seo_properties:
   title: "Blazor SEO Checklist (SSR/SSG)"
   description: "Essential on-page SEO for Blazor with server-side rendering and static generation."

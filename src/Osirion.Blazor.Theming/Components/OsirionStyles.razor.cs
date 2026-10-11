@@ -6,7 +6,7 @@ using Osirion.Blazor.Theming.Services;
 namespace Osirion.Blazor.Theming.Components
 {
     /// <summary>Defines the OsirionStyles type.</summary>
-    public partial class OsirionStyles : OsirionComponentBase
+    public partial class OsirionStyles : OsirionComponentBase, IDisposable
     {
         /// <summary>Gets or sets whether the default Osirion styles are rendered.</summary>
         [Parameter] public bool? UseStyles { get; set; }

@@ -16,7 +16,7 @@ Osirion.Blazor is a modular, high-performance component library for Blazor appli
 ### Design Philosophy
 - **SSR-First**: All components work with Static Server-Side Rendering (SSG), Server Interactive, and WASM
 - **Progressive Enhancement**: Minimal JavaScript, enhanced interactivity when available
-- **Multi-Version Support**: Compatible with .NET 8, .NET 9, and designed for future versions
+- **Multi-Version Support**: Targets .NET 9 and .NET 10
 - **Production-Ready**: Clean APIs, comprehensive documentation, and flexible customization
 - **Best Practices**: Follows SOLID, KISS, DRY, and Clean Code principles
 
@@ -44,9 +44,9 @@ Osirion.Blazor (Meta-package)
 
 ### Component Base Class
 All components inherit from `OsirionComponentBase` at `src/Osirion.Blazor.Core/Components/_Base/OsirionComponentBase.cs`. This provides:
-- Automatic SSR detection via `IsServerSide` property
+- Interactivity detection via the `IsInteractive` property (`IsRunningInBrowser` reports the WebAssembly runtime; the old `IsServerSide` is obsolete because it is also true under Interactive Server)
 - Theme support (`ThemeMode.Light|Dark|System`)
-- .NET 8/9 conditional compilation for interactivity handling
+- .NET 9/10 conditional compilation for interactivity handling
 - Unmatched attributes capture via `Attributes` dictionary
 
 ### Provider Pattern
@@ -88,9 +88,10 @@ builder.Services.AddOsirionBlazor(osirion => {
 - **DRY**: Don't Repeat Yourself - extract reusable logic
 - **Clean Code**: Meaningful names, small functions, clear intent, comprehensive comments
 
-### Multi-Targeting (.NET 8 & 9)
-- Source projects target `<TargetFrameworks>net8.0;net9.0</TargetFrameworks>`
-- Test projects target `<TargetFramework>net9.0</TargetFramework>` only
+### Multi-Targeting (.NET 9 & 10)
+- Source projects target `net9.0;net10.0` through `src/Directory.Build.props` (`OsirionTargetFrameworks` in the root `Directory.Build.props`)
+- Test projects target `<TargetFramework>net10.0</TargetFramework>` only
+- Shared settings live in `Directory.Build.props` (all projects, warnings are errors) and `src/Directory.Build.props` (package metadata, SourceLink); package versions live in `Directory.Packages.props`
 - Use conditional compilation for version-specific code:
   ```csharp
   #if NET9_0_OR_GREATER
@@ -134,18 +135,21 @@ dotnet test tests/Osirion.Blazor.E2ETests/
 
 ### Local Development
 ```powershell
-# Restore and build
+# Restore and build (the solution is Osirion.Blazor.slnx)
 dotnet restore
 dotnet build
 
-# Run example app with hot reload
+# Run every example site (Bootstrap :5296, MudBlazor :5297, Fluent UI :5298) with the Aspire dashboard
+dotnet run --project examples/Osirion.Blazor.Examples.AppHost
+
+# Run one example app with hot reload
 dotnet watch --project examples/Osirion.Blazor.Example.Bootstrap/Osirion.Blazor.Example.Bootstrap.csproj
 ```
 
 ### CI/CD
-- **build.yml**: Runs on push to `master`, executes `dotnet build` and `dotnet test`
-- **e2e.yml**: Runs Playwright tests, installs Chromium dependencies on Ubuntu
-- Targets .NET 8.0 and 9.0 SDKs
+- **.github/workflows/build.yml**: Runs on push to `master`, executes `dotnet build` and `dotnet test`
+- **e2e.yml** (repository root, not run by GitHub Actions): Playwright tests, installs Chromium dependencies on Ubuntu
+- Workflows install the .NET 9 and .NET 10 SDKs; `global.json` pins the .NET 10 SDK
 
 ### CSS Build Process
 - CSS minification via Node.js tools in `build/tools/` (uses `clean-css` package)
@@ -159,14 +163,14 @@ dotnet watch --project examples/Osirion.Blazor.Example.Bootstrap/Osirion.Blazor.
 1. **Avoid JSInterop** in component initialization; use it only for progressive enhancement
 2. **Test without JS**: Components must render meaningfully server-side
 3. **Progressive Enhancement**: Add JavaScript features via `OnAfterRender(firstRender: true)` for interactive mode
-4. **Conditional Rendering**: Use `IsServerSide` or `RendererInfo.IsInteractive` (.NET 9) to branch logic
+4. **Conditional Rendering**: Use `IsInteractive` (`RendererInfo.IsInteractive`) to branch logic; never `IsServerSide`, which is true under Interactive Server too
 5. **SSR Compatibility**: All features must work with Static Server-Side Rendering (SSG), Server Interactive, and WASM
 
 ### Example
 ```csharp
 protected override async Task OnAfterRenderAsync(bool firstRender)
 {
-    if (firstRender && !IsServerSide)
+    if (firstRender && IsInteractive)
     {
         // Client-side enhancement only
         await JSRuntime.InvokeVoidAsync("initScrollBehavior");

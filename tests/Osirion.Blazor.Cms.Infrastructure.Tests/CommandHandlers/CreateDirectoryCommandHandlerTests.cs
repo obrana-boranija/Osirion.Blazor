@@ -209,11 +209,28 @@ public class CreateDirectoryCommandHandlerTests
             Path = "test-path"
         };
 
+        _directoryRepository.SaveAsync(Arg.Any<DirectoryItem>(), Arg.Any<CancellationToken>())
+            .Returns(callInfo => callInfo.Arg<DirectoryItem>());
+
         // Act
         await _handler.HandleAsync(command);
 
         // Assert
         _unitOfWorkFactory.Received(1).CreateForDefaultProvider();
         _unitOfWorkFactory.DidNotReceive().Create(Arg.Any<string>());
+    }
+
+    [Fact]
+    public async Task HandleAsync_NewDirectory_GetsTheStableIdForItsPathNameAndProvider()
+    {
+        // The id used to be a per-process string hash; this fixed value is SHA-256 based.
+        DirectoryItem? created = null;
+        _directoryRepository.SaveAsync(Arg.Any<DirectoryItem>(), Arg.Any<CancellationToken>())
+            .Returns(call => created = call.Arg<DirectoryItem>());
+
+        await _handler.HandleAsync(new CreateDirectoryCommand { Name = "TestDir", Path = "test-path", ProviderId = "test-provider" });
+
+        created.ShouldNotBeNull();
+        created.Id.ShouldBe("a07e618ab071d6a7");
     }
 }

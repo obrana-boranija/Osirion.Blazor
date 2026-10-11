@@ -36,7 +36,6 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: |
-            8.0.x
             9.0.x
             10.0.x
       
@@ -67,19 +66,6 @@ jobs:
       
       - name: Create NuGet Directory
         run: mkdir -p ${{ env.NuGetDirectory }}
-      
-      # Fix platform compatibility issues by adding conditional compilation
-      - name: Setup compatibility settings
-        run: |
-          # Create Directory.Build.props to suppress warnings
-          cat > Directory.Build.props << 'EOF'
-          <Project>
-            <PropertyGroup>
-              <NoWarn>$(NoWarn);CA1416;CS8632;CS1998;CS8600;CS8603;CS8618;CS8604;CS8602;CS8625;CS0234</NoWarn>
-              <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-            </PropertyGroup>
-          </Project>
-          EOF
       
       # Full restore first
       - name: Restore dependencies

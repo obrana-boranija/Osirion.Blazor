@@ -98,8 +98,36 @@
     } else if(framework === 'FluentUI'){
       html.classList.toggle('fluent-dark-theme', normalizedTheme === 'dark');
       html.classList.toggle('fluent-light-theme', normalizedTheme === 'light');
+      applyFluentTheme(normalizedTheme, 0);
     } else if(framework === 'Radzen'){
       html.classList.toggle('rz-dark-theme', normalizedTheme === 'dark');
+    }
+  }
+
+  // Fluent UI Blazor v5 keeps its own theme mode and sets its color tokens from it, so Osirion's mode is handed to
+  // Blazor.theme.setThemeMode, which also stores it for Fluent's next start. Fluent registers Blazor.theme when Blazor
+  // starts; until then body[data-theme] tells it which mode to start in.
+  const fluentRetryDelayMs = 50;
+  const fluentRetryLimit = 40;
+
+  function applyFluentTheme(theme, attempt){
+    // A retry for a theme the visitor has since toggled away from stops here
+    if(document.documentElement.getAttribute('data-osirion-theme') !== theme) return;
+
+    const fluentTheme = window.Blazor && window.Blazor.theme;
+    if(fluentTheme && typeof fluentTheme.setThemeMode === 'function'){
+      if(fluentTheme.isDarkMode() !== (theme === 'dark')){
+        fluentTheme.setThemeMode(theme);
+      }
+      return;
+    }
+
+    if(document.body){
+      document.body.setAttribute('data-theme', theme);
+    }
+
+    if(attempt < fluentRetryLimit){
+      setTimeout(function(){ applyFluentTheme(theme, attempt + 1); }, fluentRetryDelayMs);
     }
   }
 
@@ -198,7 +226,10 @@
   function immediateBootstrap(){
     const html = document.documentElement;
     if(!html) return;
-    
+
+    // OsirionStyles already applied the configured framework and theme while the page was parsed
+    if(html.hasAttribute('data-osirion-framework')) return;
+
     const cookie = readCookie('osirion-preferred-theme');
     
     // If user has a cookie preference, use it

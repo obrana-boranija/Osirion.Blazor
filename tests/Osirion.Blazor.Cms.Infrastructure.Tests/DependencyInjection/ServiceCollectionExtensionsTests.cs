@@ -36,6 +36,10 @@ namespace Osirion.Blazor.Cms.Infrastructure.Tests.DependencyInjection
             });
 
             _configuration = configBuilder.Build();
+
+            // A host always provides configuration and logging
+            _services.AddSingleton(_configuration);
+            _services.AddLogging();
         }
 
         [Fact]
@@ -53,14 +57,36 @@ namespace Osirion.Blazor.Cms.Infrastructure.Tests.DependencyInjection
         }
 
         [Fact]
+        public void AddCms_WithoutGitHubProvider_StateStorageCanBeResolved()
+        {
+            // AddCms registers LocalStorageService, which needs browser storage that only the GitHub registrations
+            // added, so a host with just the FileSystem provider failed to start.
+            var configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(new Dictionary<string, string?> { ["Osirion:Cms:Web:FileSystem:BasePath"] = "content" })
+                .Build();
+            var services = new ServiceCollection();
+            services.AddLogging();
+            services.AddSingleton<IConfiguration>(configuration);
+            services.AddSingleton(Substitute.For<Microsoft.JSInterop.IJSRuntime>());
+            services.AddScoped(_ => Substitute.For<Microsoft.AspNetCore.Components.NavigationManager>());
+            services.AddCms(configuration);
+            services.AddFileSystemContentProvider(configuration);
+            using var provider = services.BuildServiceProvider();
+            using var scope = provider.CreateScope();
+
+            scope.ServiceProvider.GetRequiredService<IStateStorageService>().ShouldNotBeNull();
+        }
+
+        [Fact]
         public void AddGitHubContentProvider_RegistersGitHubServices()
         {
             // Act
+            _services.AddCms(_configuration, _ => { });
             _services.AddGitHubContentProvider(_configuration);
             var provider = _services.BuildServiceProvider();
 
             // Assert
-            provider.GetService<IGitHubApiClient>().ShouldNotBeNull();
+            provider.GetService<IGitHubApiClientFactory>().ShouldNotBeNull();
             provider.GetService<GitHubContentRepository>().ShouldNotBeNull();
             provider.GetService<GitHubDirectoryRepository>().ShouldNotBeNull();
             provider.GetService<GitHubContentProvider>().ShouldNotBeNull();
@@ -72,6 +98,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.Tests.DependencyInjection
         public void AddFileSystemContentProvider_RegistersFileSystemServices()
         {
             // Act
+            _services.AddCms(_configuration, _ => { });
             _services.AddFileSystemContentProvider(_configuration);
             var provider = _services.BuildServiceProvider();
 
@@ -114,7 +141,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.Tests.DependencyInjection
             var provider = _services.BuildServiceProvider();
 
             // Assert
-            provider.GetService<IGitHubApiClient>().ShouldNotBeNull();
+            provider.GetService<IGitHubApiClientFactory>().ShouldNotBeNull();
             provider.GetService<GitHubContentRepository>().ShouldNotBeNull();
             provider.GetService<GitHubContentProvider>().ShouldNotBeNull();
 

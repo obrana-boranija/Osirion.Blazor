@@ -12,17 +12,32 @@ namespace Osirion.Blazor.Cms.Infrastructure.Services;
 /// <summary>
 /// Service for GitHub authentication with repository adapter support
 /// </summary>
+/// <remarks>
+/// <para>
+/// The user's token stays inside this instance. The service never configures a GitHub API client, so the
+/// token cannot reach a client used by the public site or by another user. Admin services in the same
+/// scope read the token from <see cref="AccessToken"/> or receive it explicitly.
+/// </para>
+/// <para>
+/// The token is held in memory only and never written to <see cref="IStateStorageService"/>, which keeps
+/// values in plain text. The configured <see cref="AuthenticationOptions.PersonalAccessToken"/> never signs
+/// anyone in here; admin services use it on the server when no user token is set.
+/// </para>
+/// </remarks>
 public class AuthenticationService : IAuthenticationService
 {
+    /// <summary>
+    /// The storage key under which earlier versions kept the token in plain text. It is only ever removed.
+    /// </summary>
+    private const string LegacyTokenStorageKey = "github_auth_token";
+
     private readonly HttpClient _httpClient;
     private readonly ILogger<AuthenticationService> _logger;
     private readonly IStateStorageService _stateStorage;
     private readonly IGitHubTokenProvider _tokenProvider;
-    private readonly IGitHubApiClientFactory _apiClientFactory;
     private readonly GitHubOptions _githubOptions;
     private readonly AuthenticationOptions _authOptions;
 
-    private IGitHubApiClient _apiClient;
     private string? _accessToken;
     private string? _username;
     private bool _initialized = false;
@@ -36,6 +51,15 @@ public class AuthenticationService : IAuthenticationService
     /// <summary>
     /// Initializes a new instance of the AuthenticationService class
     /// </summary>
+    /// <param name="httpClient">The HTTP client used to look up the GitHub user</param>
+    /// <param name="options">The CMS admin options</param>
+    /// <param name="logger">The logger instance</param>
+    /// <param name="stateStorage">The storage for the authentication state</param>
+    /// <param name="tokenProvider">The provider that exchanges OAuth codes for tokens</param>
+    /// <param name="apiClientFactory">
+    /// Kept for constructor compatibility. The service no longer takes a GitHub API client from the factory,
+    /// because pushing a user's token onto a client is how it used to leak to other callers.
+    /// </param>
     public AuthenticationService(
         HttpClient httpClient,
         IOptions<CmsAdminOptions> options,
@@ -48,15 +72,12 @@ public class AuthenticationService : IAuthenticationService
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _stateStorage = stateStorage ?? throw new ArgumentNullException(nameof(stateStorage));
         _tokenProvider = tokenProvider ?? throw new ArgumentNullException(nameof(tokenProvider));
-        _apiClientFactory = apiClientFactory ?? throw new ArgumentNullException(nameof(apiClientFactory));
+        ArgumentNullException.ThrowIfNull(apiClientFactory);
 
         // Get options from the injected CmsAdminOptions
         var options_value = options.Value;
         _githubOptions = options_value.GitHub;
         _authOptions = options_value.Authentication;
-
-        // Get default API client
-        _apiClient = _apiClientFactory.GetDefaultClient();
     }
 
     /// <summary>
@@ -65,20 +86,6 @@ public class AuthenticationService : IAuthenticationService
     public void SetProvider(string providerName)
     {
         _currentProviderName = providerName;
-        if (string.IsNullOrWhiteSpace(providerName))
-        {
-            _apiClient = _apiClientFactory.GetDefaultClient();
-        }
-        else
-        {
-            _apiClient = _apiClientFactory.GetClient(providerName);
-        }
-
-        // If we have a token, set it on the new client
-        if (!string.IsNullOrWhiteSpace(_accessToken))
-        {
-            _apiClient.SetAccessToken(_accessToken);
-        }
     }
 
     /// <inheritdoc/>
@@ -93,27 +100,26 @@ public class AuthenticationService : IAuthenticationService
     /// <summary>
     /// Initializes the authentication service
     /// </summary>
+    /// <remarks>
+    /// Removes any token an earlier version left in plain-text storage. It neither restores a session nor
+    /// signs in with the configured personal access token.
+    /// </remarks>
     public async Task InitializeAsync()
     {
         if (_initialized) return;
 
         _logger.LogInformation("Initializing authentication service");
 
-        // First try to restore from storage
-        await RestoreAuthStateAsync();
-
-        // If not authenticated and PAT is configured, use it
-        if (!IsAuthenticated && !string.IsNullOrWhiteSpace(_authOptions.PersonalAccessToken))
-        {
-            _logger.LogInformation("Using configured PersonalAccessToken for automatic authentication");
-            await SetAccessTokenAsync(_authOptions.PersonalAccessToken);
-        }
+        await RemoveLegacyTokenAsync();
 
         _initialized = true;
         _logger.LogInformation("Authentication service initialized");
     }
 
     /// <inheritdoc/>
+    [Obsolete("A GitHub OAuth code cannot be verified here. Check the state of the callback, exchange the code with " +
+        "IGitHubTokenProvider.ExchangeCodeForTokenAsync(code, clientId, clientSecret, redirectUri, codeVerifier, " +
+        "cancellationToken), then call SetAccessTokenAsync. The Cms.Admin LoginViewModel does this.")]
     public async Task<bool> AuthenticateWithGitHubAsync(string code)
     {
         try
@@ -123,32 +129,21 @@ public class AuthenticationService : IAuthenticationService
                 return false;
 
             // Exchange code for token
-            _accessToken = await _tokenProvider.ExchangeCodeForTokenAsync(
+            var token = await _tokenProvider.ExchangeCodeForTokenAsync(
                 code,
                 _authOptions.GitHubClientId,
                 _authOptions.GitHubClientSecret);
 
-            if (string.IsNullOrWhiteSpace(_accessToken))
+            if (string.IsNullOrWhiteSpace(token))
                 return false;
 
-            // Set the token on the API client immediately
-            _apiClient.SetAccessToken(_accessToken);
+            // Get user information; a rejected token leaves the current sign-in unchanged
+            var username = await GetUsernameAsync(token);
+            if (username is null)
+                return false;
 
-            // Get user information
-            var success = await GetUserInfoAsync();
-
-            // Save state if successful
-            if (success)
-            {
-                await PersistAuthStateAsync();
-                AuthenticationChanged?.Invoke(true);
-            }
-            else
-            {
-                _accessToken = null;
-            }
-
-            return success;
+            await CompleteSignInAsync(token, username);
+            return true;
         }
         catch (Exception ex)
         {
@@ -168,35 +163,29 @@ public class AuthenticationService : IAuthenticationService
                 return false;
             }
 
-            _accessToken = token;
             _logger.LogInformation("Setting access token. Token length: {Length}", token.Length);
 
-            // Set the token on the API client immediately
-            _apiClient.SetAccessToken(token);
-
-            var success = await GetUserInfoAsync();
-
-            // Save state if successful
-            if (success)
+            // The token replaces the current one only once GitHub accepts it, so a rejected token never
+            // leaves this service signed out while admin services of the same scope keep the previous token
+            var username = await GetUsernameAsync(token);
+            if (username is null)
             {
-                await PersistAuthStateAsync();
-                AuthenticationChanged?.Invoke(true);
-                _logger.LogInformation("Token validated successfully");
-            }
-            else
-            {
-                _accessToken = null;
-                await RemoveAuthStateAsync();
                 _logger.LogWarning("Token validation failed");
+                if (!IsAuthenticated)
+                {
+                    await RemoveAuthStateAsync();
+                }
+
+                return false;
             }
 
-            return success;
+            await CompleteSignInAsync(token, username);
+            _logger.LogInformation("Token validated successfully");
+            return true;
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error validating access token");
-            _accessToken = null;
-            await RemoveAuthStateAsync();
             return false;
         }
     }
@@ -226,53 +215,56 @@ public class AuthenticationService : IAuthenticationService
     }
 
     /// <summary>
-    /// Gets user information using the current access token
+    /// Makes <paramref name="token"/> the signed-in token, after GitHub accepted it for <paramref name="username"/>
     /// </summary>
-    private async Task<bool> GetUserInfoAsync()
+    private async Task CompleteSignInAsync(string token, string username)
     {
-        if (string.IsNullOrWhiteSpace(_accessToken))
-        {
-            _logger.LogWarning("Cannot get user info - access token is empty");
-            return false;
-        }
+        await PersistAuthStateAsync(username);
 
+        _accessToken = token;
+        _username = username;
+        AuthenticationChanged?.Invoke(true);
+    }
+
+    /// <summary>
+    /// Gets the login of the GitHub user that <paramref name="token"/> belongs to, without changing this service
+    /// </summary>
+    /// <returns>The login, or <see langword="null"/> when GitHub does not accept the token</returns>
+    private async Task<string?> GetUsernameAsync(string token)
+    {
         try
         {
-            var request = CreateUserInfoRequest();
-            var response = await _httpClient.SendAsync(request);
+            using var request = CreateUserInfoRequest(token);
+            using var response = await _httpClient.SendAsync(request);
 
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogWarning("GitHub API returned non-success status code: {StatusCode}", response.StatusCode);
-                return false;
+                return null;
             }
 
-            response.EnsureSuccessStatusCode();
-
             var userInfo = await response.Content.ReadFromJsonAsync<GitHubUserInfo>();
-            _username = userInfo?.Login;
+            var username = userInfo?.Login;
 
-            _logger.LogInformation("Retrieved user info: {Username}", _username);
-            return !string.IsNullOrWhiteSpace(_username);
+            _logger.LogInformation("Retrieved user info: {Username}", username);
+            return string.IsNullOrWhiteSpace(username) ? null : username;
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to get user info from GitHub");
-            _accessToken = null;
-            _username = null;
-            return false;
+            return null;
         }
     }
 
     /// <summary>
     /// Creates the HTTP request to get user information
     /// </summary>
-    private HttpRequestMessage CreateUserInfoRequest()
+    private static HttpRequestMessage CreateUserInfoRequest(string token)
     {
         var request = new HttpRequestMessage(HttpMethod.Get, "https://api.github.com/user");
 
         // GitHub API prefers "token" scheme rather than "Bearer"
-        request.Headers.Authorization = new AuthenticationHeaderValue("token", _accessToken);
+        request.Headers.Authorization = new AuthenticationHeaderValue("token", token);
         request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         request.Headers.UserAgent.Add(new ProductInfoHeaderValue("OsirionBlogCMS", "2.0"));
 
@@ -282,7 +274,7 @@ public class AuthenticationService : IAuthenticationService
     /// <summary>
     /// Persists authentication state to storage
     /// </summary>
-    private async Task PersistAuthStateAsync()
+    private async Task PersistAuthStateAsync(string username)
     {
         if (!_stateStorage.IsInitialized)
         {
@@ -291,12 +283,13 @@ public class AuthenticationService : IAuthenticationService
 
         if (_stateStorage.IsInitialized)
         {
-            await _stateStorage.SaveStateAsync("github_auth_token", _accessToken);
-            await _stateStorage.SaveStateAsync("github_username", _username);
+            // The token itself is never persisted here: this storage keeps values in plain text
+            await _stateStorage.RemoveStateAsync(LegacyTokenStorageKey);
+            await _stateStorage.SaveStateAsync("github_username", username);
             // Also store auth_status and last_login_method for consistency with LoginViewModel
             await _stateStorage.SaveStateAsync("auth_status", true);
             await _stateStorage.SaveStateAsync("last_login_method", "pat");
-            _logger.LogDebug("Auth state persisted to storage. Token exists: {HasToken}", !string.IsNullOrWhiteSpace(_accessToken));
+            _logger.LogDebug("Auth state persisted to storage without the token");
         }
         else
         {
@@ -305,9 +298,9 @@ public class AuthenticationService : IAuthenticationService
     }
 
     /// <summary>
-    /// Restores authentication state from storage
+    /// Removes a token that an earlier version kept in plain-text storage
     /// </summary>
-    private async Task RestoreAuthStateAsync()
+    private async Task RemoveLegacyTokenAsync()
     {
         if (!_stateStorage.IsInitialized)
         {
@@ -316,45 +309,11 @@ public class AuthenticationService : IAuthenticationService
 
         if (_stateStorage.IsInitialized)
         {
-            // First try the auth_token directly
-            _accessToken = await _stateStorage.GetStateAsync<string>("github_auth_token");
-
-            // If not found, try alternative keys that LoginViewModel might have used
-            if (string.IsNullOrWhiteSpace(_accessToken))
-            {
-                var authStatus = await _stateStorage.GetStateAsync<bool>("auth_status");
-                if (authStatus)
-                {
-                    _accessToken = await _stateStorage.GetStateAsync<string>("github_auth_token");
-                }
-            }
-
-            _username = await _stateStorage.GetStateAsync<string>("github_username");
-
-            _logger.LogDebug("Auth state restored from storage. Token exists: {HasToken}", !string.IsNullOrWhiteSpace(_accessToken));
-
-            // Validate restored token
-            if (!string.IsNullOrWhiteSpace(_accessToken))
-            {
-                // Set the token on the API client
-                _apiClient.SetAccessToken(_accessToken);
-
-                var success = await GetUserInfoAsync();
-                if (!success)
-                {
-                    _logger.LogWarning("Restored token validation failed");
-                    await RemoveAuthStateAsync();
-                }
-                else
-                {
-                    _logger.LogInformation("Restored token validated successfully");
-                    AuthenticationChanged?.Invoke(true);
-                }
-            }
+            await _stateStorage.RemoveStateAsync(LegacyTokenStorageKey);
         }
         else
         {
-            _logger.LogWarning("Could not restore auth state - storage not initialized");
+            _logger.LogWarning("Could not remove the legacy token because storage is not initialized");
         }
     }
 
@@ -370,7 +329,7 @@ public class AuthenticationService : IAuthenticationService
 
         if (_stateStorage.IsInitialized)
         {
-            await _stateStorage.RemoveStateAsync("github_auth_token");
+            await _stateStorage.RemoveStateAsync(LegacyTokenStorageKey);
             await _stateStorage.RemoveStateAsync("github_username");
             await _stateStorage.RemoveStateAsync("auth_status");
             await _stateStorage.RemoveStateAsync("last_login_method");

@@ -2,6 +2,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Interfaces;
+using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Infrastructure.Builders;
 using Osirion.Blazor.Cms.Infrastructure.DependencyInjection;
 using Osirion.Blazor.Cms.Web.Options;
@@ -69,8 +70,8 @@ public static class OsirionContentServiceCollectionExtensions
         }
 
         // Configure FileSystem provider if present
-        var fileSystemSection = cmsSection.GetSection("Web:FileSystem");
-        if (fileSystemSection.Exists())
+        if (configuration.GetSection(FileSystemOptions.WebSection).Exists()
+            || configuration.GetSection(FileSystemOptions.Section).Exists())
         {
             services.AddFileSystemContentProvider(configuration);
         }

@@ -56,15 +56,12 @@ public class LocalizationOptions
     /// <param name="culture">The default culture</param>
     public void SetDefaultCulture(string culture)
     {
-        if (SupportedCultures.Contains(culture) || culture == "en-US")
-        {
-            DefaultCulture = culture;
+        DefaultCulture = culture;
 
-            // Ensure the default culture is in the supported cultures list
-            if (!SupportedCultures.Contains(culture))
-            {
-                SupportedCultures.Add(culture);
-            }
+        // Ensure the default culture is in the supported cultures list
+        if (!SupportedCultures.Contains(culture))
+        {
+            SupportedCultures.Add(culture);
         }
     }
 }

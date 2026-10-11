@@ -44,6 +44,10 @@ public class CreateContentCommandHandler : ICommandHandler<CreateContentCommand>
                 path: command.Path,
                 providerId: unitOfWork.ProviderId);
 
+            // The command carries the markdown source; keep it so saving writes it as is instead of converting
+            // the content back from HTML.
+            contentItem.SetOriginalMarkdown(command.Content);
+
             // Set additional properties
             if (!string.IsNullOrWhiteSpace(command.Author))
                 contentItem.SetAuthor(command.Author);

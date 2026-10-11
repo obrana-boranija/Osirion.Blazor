@@ -7,3 +7,12 @@
 ::deep h4 {
     font-weight: 600;
 }
+
+.auth-guard-card {
+    max-width: 400px;
+    width: 100%;
+}
+
+.auth-guard-icon {
+    font-size: 3rem;
+}

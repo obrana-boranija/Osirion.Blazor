@@ -24,4 +24,7 @@ public abstract class AnalyticsOptions
     /// Gets or sets whether to automatically track page views
     /// </summary>
     public bool AutoTrackPageViews { get; set; } = true;
+
+    /// <summary>Creates a shallow copy so a tracker can apply per-render overrides without touching the shared options.</summary>
+    internal AnalyticsOptions ShallowCopy() => (AnalyticsOptions)MemberwiseClone();
 }

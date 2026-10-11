@@ -81,6 +81,12 @@
     z-index: 10;
 }
 
+/* Keyboard focus: the checkbox is visually hidden, so show its focus on the visible toggle */
+.osirion-navbar-toggler:focus-visible + .osirion-navbar-toggle {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+}
+
 /* Collapsible menu behavior for mobile */
 .osirion-menu-collapsible .osirion-menu {
     display: none; /* Hide menu by default on mobile */

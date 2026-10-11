@@ -15,7 +15,7 @@
                 <div class="osirion-translations">
                     @foreach (var locale in AvailableTranslations.Where(t => t.Key != CurrentLocale))
                     {
-                        <a href="@GetTranslationUrl(locale.Value)">
+                        <a href="@GetTranslationUrl(locale.Key)">
                             @GetLocaleName(locale.Key)
                         </a>
                     }
@@ -43,7 +43,7 @@
             
 
             <div class="osirion-content-body">
-                @((MarkupString)Item.Content)
+                @GetSanitizedContent(Item.Content)
             </div>
 
             <div class="osirion-content-footer">

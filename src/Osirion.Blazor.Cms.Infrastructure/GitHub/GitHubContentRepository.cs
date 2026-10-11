@@ -22,6 +22,7 @@ public class GitHubContentRepository : BaseContentRepository
     private readonly IDirectoryRepository _directoryRepository;
     private readonly GitHubOptions _options;
     private string _lastKnownCommitSha = string.Empty;
+    private DateTimeOffset? _rateLimitedUntil;
 
     /// <summary>Performs the GitHubContentRepository operation.</summary>
     public GitHubContentRepository(
@@ -69,50 +70,190 @@ public class GitHubContentRepository : BaseContentRepository
     }
 
     /// <inheritdoc/>
+    /// <remarks>
+    /// Reads the whole branch with one Git Trees request and downloads only the files whose blob SHA differs from the
+    /// cached item. When the tree is unavailable or truncated, the directories are listed instead (still skipping files
+    /// whose SHA did not change). A failed load throws, so the previous cache stays in place; a rate-limit response
+    /// stops the load and no further request is made before the limit resets.
+    /// </remarks>
     protected override async Task<Dictionary<string, ContentItem>> LoadItemsIntoCache(CancellationToken cancellationToken)
     {
-        var cache = new Dictionary<string, ContentItem>();
+        ThrowIfStillRateLimited();
+
         var contentPath = UrlGenerator.NormalizePath(ContentPath);
+        var previousByPath = IndexByPath(ItemCache.Values);
 
         try
         {
-            // Get repository contents
             Logger.LogInformation("Loading GitHub content from {Owner}/{Repository} path: {Path}",
                 _options.Owner, _options.Repository, contentPath);
 
-            var contents = await _apiClient.GetRepositoryContentsAsync(contentPath, cancellationToken);
+            var cache = await LoadFromTreeAsync(contentPath, previousByPath, cancellationToken)
+                ?? await LoadByListingAsync(contentPath, previousByPath, cancellationToken);
 
-            // Update last known commit SHA if available
-            try
-            {
-                var branches = await _apiClient.GetBranchesAsync(cancellationToken) ?? [];
-                var branch = branches.FirstOrDefault(b => b.Name == _options.Branch);
-                if (branch is not null)
-                {
-                    _lastKnownCommitSha = branch.Commit.Sha;
-                    Logger.LogInformation("Updated commit SHA to {Sha}", _lastKnownCommitSha);
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogWarning(ex, "Failed to update commit SHA");
-            }
-
-            // Process contents recursively
-            await ProcessContentsRecursivelyAsync(contents ?? [], cache, cancellationToken);
+            await UpdateLastKnownCommitShaAsync(cancellationToken);
 
             Logger.LogInformation("Loaded {Count} content items from GitHub repository {Owner}/{Repository}",
                 cache.Count, _options.Owner, _options.Repository);
 
             return cache;
         }
+        catch (GitHubRateLimitException ex)
+        {
+            _rateLimitedUntil = ex.ResetAt ?? DateTimeOffset.UtcNow.AddMinutes(1);
+            Logger.LogWarning(
+                "GitHub rate limit reached while loading {Owner}/{Repository}; keeping the current cache and not retrying before {ResetAt}",
+                _options.Owner, _options.Repository, _rateLimitedUntil);
+            throw;
+        }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Error loading content from GitHub repository {Owner}/{Repository}",
+            Logger.LogError(ex, "Error loading content from GitHub repository {Owner}/{Repository}; keeping the current cache",
                 _options.Owner, _options.Repository);
+            throw;
+        }
+    }
 
-            // Return empty cache rather than null
-            return new Dictionary<string, ContentItem>();
+    private void ThrowIfStillRateLimited()
+    {
+        var until = _rateLimitedUntil;
+        if (until is not null && until > DateTimeOffset.UtcNow)
+        {
+            throw new GitHubRateLimitException(until, System.Net.HttpStatusCode.TooManyRequests);
+        }
+    }
+
+    private static Dictionary<string, ContentItem> IndexByPath(IEnumerable<ContentItem> items)
+    {
+        var index = new Dictionary<string, ContentItem>(StringComparer.Ordinal);
+        foreach (var item in items)
+        {
+            if (!string.IsNullOrWhiteSpace(item.ProviderSpecificId))
+            {
+                index[item.Path] = item;
+            }
+        }
+
+        return index;
+    }
+
+    private async Task UpdateLastKnownCommitShaAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            var branches = await _apiClient.GetBranchesAsync(cancellationToken) ?? [];
+            var branch = branches.FirstOrDefault(b => b.Name == _options.Branch);
+            if (branch is not null)
+            {
+                _lastKnownCommitSha = branch.Commit.Sha;
+                Logger.LogInformation("Updated commit SHA to {Sha}", _lastKnownCommitSha);
+            }
+        }
+        catch (GitHubRateLimitException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Failed to update commit SHA");
+        }
+    }
+
+    private async Task<GitHubTree?> TryGetTreeAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            return await _apiClient.GetTreeAsync(cancellationToken);
+        }
+        catch (GitHubRateLimitException)
+        {
+            throw;
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            Logger.LogWarning(ex, "Could not read the repository tree; listing directories instead");
+            return null;
+        }
+    }
+
+    private async Task<Dictionary<string, ContentItem>?> LoadFromTreeAsync(
+        string contentPath,
+        Dictionary<string, ContentItem> previousByPath,
+        CancellationToken cancellationToken)
+    {
+        var tree = await TryGetTreeAsync(cancellationToken);
+        if (tree is null || tree.Truncated)
+        {
+            Logger.LogInformation("Repository tree unavailable or truncated for {Owner}/{Repository}; listing directories instead",
+                _options.Owner, _options.Repository);
+            return null;
+        }
+
+        var cache = new Dictionary<string, ContentItem>();
+        var prefix = contentPath.Length == 0 ? string.Empty : contentPath + "/";
+
+        foreach (var entry in tree.Entries)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (!entry.IsFile
+                || !entry.Path.StartsWith(prefix, StringComparison.Ordinal)
+                || !IsSupportedFile(System.IO.Path.GetFileName(entry.Path)))
+            {
+                continue;
+            }
+
+            var item = await LoadFileAsync(entry.Path, entry.Sha, previousByPath, cancellationToken);
+            if (item is not null)
+            {
+                cache[item.Id] = item;
+            }
+        }
+
+        return cache;
+    }
+
+    private async Task<Dictionary<string, ContentItem>> LoadByListingAsync(
+        string contentPath,
+        Dictionary<string, ContentItem> previousByPath,
+        CancellationToken cancellationToken)
+    {
+        var cache = new Dictionary<string, ContentItem>();
+        var contents = await _apiClient.GetRepositoryContentsAsync(contentPath, cancellationToken);
+        await ProcessContentsRecursivelyAsync(contents ?? [], cache, previousByPath, cancellationToken);
+        return cache;
+    }
+
+    /// <summary>
+    /// Returns the cached item when the file's SHA is unchanged, otherwise downloads and processes the file.
+    /// A file that cannot be downloaded keeps its previous item, so a transient error does not drop content.
+    /// </summary>
+    private async Task<ContentItem?> LoadFileAsync(
+        string path,
+        string sha,
+        Dictionary<string, ContentItem> previousByPath,
+        CancellationToken cancellationToken)
+    {
+        previousByPath.TryGetValue(path, out var previous);
+
+        if (previous is not null && !string.IsNullOrEmpty(sha) && string.Equals(previous.ProviderSpecificId, sha, StringComparison.Ordinal))
+        {
+            return previous;
+        }
+
+        try
+        {
+            var fileContent = await _apiClient.GetFileContentAsync(path, cancellationToken);
+            return await ProcessMarkdownFileAsync(fileContent, cancellationToken);
+        }
+        catch (GitHubRateLimitException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error processing file: {FileName}", path);
+            return previous;
         }
     }
 
@@ -130,7 +271,7 @@ public class GitHubContentRepository : BaseContentRepository
         try
         {
             // Generate content with front matter
-            var content = GenerateMarkdownWithFrontMatter(entity);
+            var content = await GenerateMarkdownWithFrontMatterAsync(entity, cancellationToken);
 
             // Get SHA if updating
             string? sha = entity.ProviderSpecificId;
@@ -216,38 +357,25 @@ public class GitHubContentRepository : BaseContentRepository
     private async Task ProcessContentsRecursivelyAsync(
         List<GitHubItem> contents,
         Dictionary<string, ContentItem> contentItems,
+        Dictionary<string, ContentItem> previousByPath,
         CancellationToken cancellationToken = default)
     {
-        if(contents is null)
-        {
-            return;
-        }
-
         foreach (var item in contents)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            if (item.IsFile && IsSupportedFile(item.Name) /*&& !item.Name.Equals("_index.md", StringComparison.OrdinalIgnoreCase)*/)
+            if (item.IsFile && IsSupportedFile(item.Name))
             {
-                try
+                var contentItem = await LoadFileAsync(item.Path, item.Sha, previousByPath, cancellationToken);
+                if (contentItem is not null)
                 {
-                    var fileContent = await _apiClient.GetFileContentAsync(item.Path, cancellationToken);
-                    var contentItem = await ProcessMarkdownFileAsync(fileContent, cancellationToken);
-
-                    if (contentItem is not null)
-                    {
-                        contentItems[contentItem.Id] = contentItem;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError(ex, "Error processing file: {FileName}", item.Name);
+                    contentItems[contentItem.Id] = contentItem;
                 }
             }
             else if (item.IsDirectory)
             {
                 var subContents = await _apiClient.GetRepositoryContentsAsync(item.Path, cancellationToken) ?? [];
-                await ProcessContentsRecursivelyAsync(subContents, contentItems, cancellationToken);
+                await ProcessContentsRecursivelyAsync(subContents, contentItems, previousByPath, cancellationToken);
             }
         }
     }
@@ -266,8 +394,7 @@ public class GitHubContentRepository : BaseContentRepository
         if (string.IsNullOrWhiteSpace(markdownContent))
             return null;
 
-        // Get unique ID from path
-        var id = fileContent.Path.GetHashCode().ToString("x");
+        var id = CreateItemId(fileContent.Path);
 
         // Create the content item
         var contentItem = ContentItem.Create(
@@ -317,13 +444,7 @@ public class GitHubContentRepository : BaseContentRepository
         var url = UrlGenerator.GenerateUrl(contentItem.Url, contentItem.Path, contentItem.Slug, EnableLocalization, SupportedLocales, ContentPath);
         contentItem.SetUrl(url);
 
-        // Set content ID if localization is enabled
-        if (_options.EnableLocalization && string.IsNullOrWhiteSpace(contentItem.ContentId))
-        {
-            var pathWithoutLocale = UrlGenerator.RemoveLocaleFromPath(contentItem.Path, ContentPath, EnableLocalization, SupportedLocales);
-            var pathWithoutExtension = Path.ChangeExtension(pathWithoutLocale, null);
-            contentItem.SetContentId(pathWithoutExtension.GetHashCode().ToString("x"));
-        }
+        AssignDefaultLocalizationId(contentItem);
 
         return contentItem;
     }

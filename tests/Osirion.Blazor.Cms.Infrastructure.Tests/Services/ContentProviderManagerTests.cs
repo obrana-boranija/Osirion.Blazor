@@ -83,6 +83,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.Tests.Services
 
             _defaultProvider.GetDirectoriesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
                 .Returns(directories);
+            _registry.GetAllProviders().Returns(new[] { _defaultProvider });
 
             // Act
             var result = await _manager.GetDirectoryTreeAsync("en");

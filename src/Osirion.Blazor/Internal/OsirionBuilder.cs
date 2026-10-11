@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging.Abstractions;
 using Osirion.Blazor.Analytics;
 using Osirion.Blazor.Analytics.Extensions;
 using Osirion.Blazor.Cms.Admin.Interfaces;
@@ -9,7 +10,9 @@ using Osirion.Blazor.Navigation;
 using Osirion.Blazor.Theming;
 using Osirion.Blazor.Theming.Extensions;
 using Osirion.Blazor.Navigation.Extensions;
+using Osirion.Blazor.Cms.Admin;
 using Osirion.Blazor.Cms.Admin.DependencyInjection;
+using Osirion.Blazor.Cms.Infrastructure.Builders;
 using Osirion.Blazor.Core.Extensions;
 
 namespace Osirion.Blazor.Internal;
@@ -31,7 +34,17 @@ internal class OsirionBuilder : IOsirionBuilder
 
     public IOsirionBuilder UseCmsAdmin(Action<ICmsAdminBuilder> configure)
     {
-        //Services.AddOsirionCmsAdmin(configure);
+        ArgumentNullException.ThrowIfNull(configure);
+
+        Services.AddOsirionCmsAdminDI();
+
+        // The host's configuration is registered as an instance by the web application builder; without it the
+        // builder still applies everything the callback configures in code.
+        var configuration = Services
+            .LastOrDefault(descriptor => descriptor.ServiceType == typeof(IConfiguration))?
+            .ImplementationInstance as IConfiguration ?? new ConfigurationBuilder().Build();
+
+        configure(new CmsAdminBuilder(Services, configuration, NullLogger<CmsAdminBuilder>.Instance));
         return this;
     }
 

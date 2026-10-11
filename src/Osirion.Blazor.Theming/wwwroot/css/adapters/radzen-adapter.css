@@ -2,7 +2,10 @@
 * Radzen Adapter for Osirion 
 * Maps Radzen variables to Osirion variables
 */
-html.osirion-radzen-integration {
+/* The [data-osirion-theme] form outranks the Theming light theme's :root[data-osirion-theme="light"], which
+   would otherwise replace these mappings with Osirion's default palette whenever the light theme is active. */
+html.osirion-radzen-integration,
+html.osirion-radzen-integration[data-osirion-theme] {
   /* Map Radzen's design tokens to our semantic tokens */
   /* Primary color scale mapping - based on Radzen's Blue/Primary */
   --osirion-color-primary-50: #edf5fa; /* Derived from primary-lighter */

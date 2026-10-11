@@ -1,5 +1,7 @@
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.ValueObjects;
+using Osirion.Blazor.Core.Services;
+using Osirion.Blazor.Core.Services.Implementations;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
@@ -13,50 +15,71 @@ public class MarkdownProcessor : IMarkdownProcessor
     private readonly IMarkdownRendererService _renderer;
     private readonly IMarkdownSanitizer _sanitizer;
     private readonly IHtmlToMarkdownConverter _htmlToMarkdownConverter;
+    private readonly IHtmlContentSanitizer _htmlSanitizer;
 
-    /// <summary>Performs the MarkdownProcessor operation.</summary>
+    /// <summary>
+    /// Initializes a processor that sanitizes HTML with the default allow-list.
+    /// </summary>
+    /// <remarks>
+    /// Host configuration from <c>AddOsirionHtmlSanitizer</c> does not apply to an instance created with this
+    /// constructor. Resolve <see cref="IMarkdownProcessor"/> from dependency injection, or use the constructor
+    /// that takes an <see cref="IHtmlContentSanitizer"/>, to honour it.
+    /// </remarks>
     public MarkdownProcessor(
         IMarkdownRendererService renderer,
         IMarkdownSanitizer sanitizer,
         IHtmlToMarkdownConverter htmlToMarkdownConverter)
+        : this(renderer, sanitizer, htmlToMarkdownConverter, HtmlContentSanitizer.Default)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a processor that sanitizes HTML with the given sanitizer.
+    /// </summary>
+    public MarkdownProcessor(
+        IMarkdownRendererService renderer,
+        IMarkdownSanitizer sanitizer,
+        IHtmlToMarkdownConverter htmlToMarkdownConverter,
+        IHtmlContentSanitizer htmlSanitizer)
     {
         _renderer = renderer ?? throw new ArgumentNullException(nameof(renderer));
         _sanitizer = sanitizer ?? throw new ArgumentNullException(nameof(sanitizer));
         _htmlToMarkdownConverter = htmlToMarkdownConverter ?? throw new ArgumentNullException(nameof(htmlToMarkdownConverter));
+        _htmlSanitizer = htmlSanitizer ?? throw new ArgumentNullException(nameof(htmlSanitizer));
     }
 
-    /// <summary>Gets or sets the RenderToHtml value.</summary>
-    public string RenderToHtml(string markdown, bool sanitizeHtml = false)
+    /// <inheritdoc/>
+    public string RenderToHtml(string markdown, bool sanitizeHtml = true)
     {
         if (string.IsNullOrWhiteSpace(markdown))
             return string.Empty;
 
-        // Apply sanitization if requested
-        if (sanitizeHtml)
-            markdown = _sanitizer.SanitizeMarkdown(markdown);
+        var html = _renderer.RenderToHtml(markdown);
 
-        // Render to HTML
-        return _renderer.RenderToHtml(markdown);
+        return sanitizeHtml ? _htmlSanitizer.Sanitize(html) : html;
     }
 
-    /// <summary>Performs the RenderToHtml operation asynchronously.</summary>
-    public Task<string> RenderToHtmlAsync(string markdown, bool sanitizeHtml = false)
+    /// <inheritdoc/>
+    public async Task<string> RenderToHtmlAsync(string markdown, bool sanitizeHtml = true)
     {
         if (string.IsNullOrWhiteSpace(markdown))
-            return Task.FromResult(string.Empty);
+            return string.Empty;
 
-        // Apply sanitization if requested
-        if (sanitizeHtml)
-            markdown = _sanitizer.SanitizeMarkdown(markdown);
+        var html = await _renderer.RenderToHtmlAsync(markdown).ConfigureAwait(false);
 
-        // Render to HTML asynchronously
-        return _renderer.RenderToHtmlAsync(markdown);
+        return sanitizeHtml ? _htmlSanitizer.Sanitize(html) : html;
     }
 
     /// <summary>Gets or sets the SanitizeMarkdown value.</summary>
     public string SanitizeMarkdown(string markdown)
     {
         return _sanitizer.SanitizeMarkdown(markdown);
+    }
+
+    /// <inheritdoc/>
+    public string SanitizeHtml(string html)
+    {
+        return _htmlSanitizer.Sanitize(html);
     }
 
     /// <summary>Gets or sets the ExtractFrontMatterAndContent value.</summary>
@@ -101,28 +124,53 @@ public class MarkdownProcessor : IMarkdownProcessor
     }
 
     /// <summary>
-    /// Helper method to find Jekyll frontmatter boundaries.
-    /// Frontmatter starts and ends with "---" on its own line.
+    /// Finds Jekyll front matter: a first line that is exactly "---" and the next line that is exactly "---".
+    /// Works with LF and CRLF line endings, ignores a leading byte order mark and trailing white space on the
+    /// delimiter lines, and does not mistake "---" inside a value or a later horizontal rule for the end.
     /// </summary>
+    /// <returns>
+    /// The start and length of the YAML between the delimiters and the index where the body starts, or
+    /// <see langword="null"/> when the content has no complete front matter block.
+    /// </returns>
     private static (int Start, int End, int Length)? FindFrontmatterBoundaries(string content)
     {
-        const string delimiter = "---";
-
-        // Must start with delimiter
-        if (!content.StartsWith(delimiter))
+        var openingStart = content.Length > 0 && content[0] == '\uFEFF' ? 1 : 0;
+        var openingEnd = GetLineEnd(content, openingStart, out var yamlStart);
+        if (!IsDelimiterLine(content, openingStart, openingEnd))
             return null;
 
-        // Find the ending delimiter (after the opening one)
-        int firstDelimiterEnd = content.IndexOf('\n') + 1;
-        int secondDelimiterPos = content.IndexOf($"{delimiter}", firstDelimiterEnd);
+        var lineStart = yamlStart;
+        while (lineStart < content.Length)
+        {
+            var lineEnd = GetLineEnd(content, lineStart, out var nextLineStart);
+            if (IsDelimiterLine(content, lineStart, lineEnd))
+                return (yamlStart, nextLineStart, lineStart - yamlStart);
 
-        if (secondDelimiterPos == -1)
-            return null;
+            lineStart = nextLineStart;
+        }
 
-        int yamlStart = firstDelimiterEnd;
-        int yamlEnd = secondDelimiterPos;
-        int fullFrontmatterEnd = secondDelimiterPos + delimiter.Length + 2; // Include delimiter and newline
+        return null;
+    }
 
-        return (yamlStart, fullFrontmatterEnd, yamlEnd - yamlStart);
+    /// <summary>
+    /// Returns the index where the text of the line starting at <paramref name="lineStart"/> ends, without its
+    /// line break, and sets <paramref name="nextLineStart"/> to the index after the line break.
+    /// </summary>
+    private static int GetLineEnd(string content, int lineStart, out int nextLineStart)
+    {
+        var newline = content.IndexOf('\n', lineStart);
+        if (newline < 0)
+        {
+            nextLineStart = content.Length;
+            return content.Length;
+        }
+
+        nextLineStart = newline + 1;
+        return newline > lineStart && content[newline - 1] == '\r' ? newline - 1 : newline;
+    }
+
+    private static bool IsDelimiterLine(string content, int lineStart, int lineEnd)
+    {
+        return content.AsSpan(lineStart, lineEnd - lineStart).TrimEnd() is "---";
     }
 }

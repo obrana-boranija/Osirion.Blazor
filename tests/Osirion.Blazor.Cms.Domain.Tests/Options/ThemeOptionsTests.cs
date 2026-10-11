@@ -12,9 +12,9 @@ public class ThemeOptionsTests
         var options = new ThemeOptions();
 
         // Assert
-        options.DefaultMode.ShouldBe("light");
+        options.DefaultMode.ShouldBe("dark");
         options.PrimaryColor.ShouldBe("#0366d6");
-        options.UseDarkMode.ShouldBeFalse();
+        options.UseDarkMode.ShouldBeTrue();
         options.RespectSystemPreferences.ShouldBeTrue();
     }
 
@@ -73,13 +73,13 @@ public class ThemeOptionsTests
     }
 
     [Fact]
-    public void UseDarkMode_DefaultValueIsFalse()
+    public void UseDarkMode_DefaultValueIsTrue()
     {
         // Arrange
         var options = new ThemeOptions();
 
         // Assert
-        options.UseDarkMode.ShouldBeFalse();
+        options.UseDarkMode.ShouldBeTrue();
     }
 
     [Fact]

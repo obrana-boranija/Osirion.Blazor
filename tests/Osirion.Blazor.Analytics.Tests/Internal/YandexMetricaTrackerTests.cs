@@ -8,7 +8,7 @@ using Shouldly;
 
 namespace Osirion.Blazor.Analytics.Tests.Components;
 
-public class YandexMetricaTrackerTests : TestContext
+public class YandexMetricaTrackerTests : BunitContext
 {
     [Fact]
     public void YandexMetricaTracker_ShouldRenderScript_WhenProviderIsEnabled()
@@ -26,7 +26,7 @@ public class YandexMetricaTrackerTests : TestContext
         SetRendererInfo(new RendererInfo("Server", false));
 
         // Act
-        var cut = RenderComponent<YandexMetricaTracker>();
+        var cut = Render<YandexMetricaTracker>();
 
         // Assert
         cut.Markup.ShouldContain("<script");
@@ -50,7 +50,7 @@ public class YandexMetricaTrackerTests : TestContext
         SetRendererInfo(new RendererInfo("Server", false));
 
         // Act
-        var cut = RenderComponent<YandexMetricaTracker>();
+        var cut = Render<YandexMetricaTracker>();
 
         // Assert
         cut.MarkupMatches(string.Empty);
@@ -72,7 +72,7 @@ public class YandexMetricaTrackerTests : TestContext
         SetRendererInfo(new RendererInfo("Server", false));
 
         // Act
-        var cut = RenderComponent<YandexMetricaTracker>();
+        var cut = Render<YandexMetricaTracker>();
 
         // Assert
         cut.MarkupMatches(string.Empty);
@@ -94,11 +94,12 @@ public class YandexMetricaTrackerTests : TestContext
         SetRendererInfo(new RendererInfo("Server", false));
 
         // Act
-        var cut = RenderComponent<YandexMetricaTracker>(parameters => parameters
+        var cut = Render<YandexMetricaTracker>(parameters => parameters
             .Add(p => p.CounterId, "12345678"));
 
         // Assert
-        cut.Instance.CounterId.ShouldBe("12345678");
+        cut.Markup.ShouldContain("ym(12345678,");
+        cut.Markup.ShouldNotContain("87654321");
     }
 
     [Fact]
@@ -117,11 +118,11 @@ public class YandexMetricaTrackerTests : TestContext
         SetRendererInfo(new RendererInfo("Server", false));
 
         // Act
-        var cut = RenderComponent<YandexMetricaTracker>(parameters => parameters
+        var cut = Render<YandexMetricaTracker>(parameters => parameters
             .Add(p => p.Enabled, false));
 
         // Assert
-        cut.Instance.Enabled.ShouldBe(false);
+        cut.Markup.ShouldNotContain("<script");
     }
 
     [Fact]
@@ -141,10 +142,10 @@ public class YandexMetricaTrackerTests : TestContext
         SetRendererInfo(new RendererInfo("Server", false));
 
         // Act
-        var cut = RenderComponent<YandexMetricaTracker>(parameters => parameters
+        var cut = Render<YandexMetricaTracker>(parameters => parameters
             .Add(p => p.WebVisor, true));
 
         // Assert
-        cut.Instance.WebVisor.ShouldBe(true);
+        cut.Markup.ShouldContain("\"webvisor\":true");
     }
 }

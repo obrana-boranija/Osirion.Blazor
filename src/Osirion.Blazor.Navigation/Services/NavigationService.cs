@@ -28,6 +28,7 @@ public class NavigationService : INavigationService
     public bool IsEnhancedNavigationEnabled => true;
 
     /// <inheritdoc/>
+    [Obsolete("Does not scroll: it only writes a log entry. Use the ScrollToTop component, or call window.scrollTo through your own IJSRuntime wrapper.")]
     public Task ScrollToTopAsync(ScrollBehavior? behavior = null, CancellationToken cancellationToken = default)
     {
         // This is implemented without JS interop for SSR compatibility
@@ -36,6 +37,7 @@ public class NavigationService : INavigationService
     }
 
     /// <inheritdoc/>
+    [Obsolete("Does not scroll: it only writes a log entry. Use an anchor link to the element id, or call scrollIntoView through your own IJSRuntime wrapper.")]
     public Task ScrollToElementAsync(string elementId, ScrollBehavior? behavior = null, CancellationToken cancellationToken = default)
     {
         // This is implemented without JS interop for SSR compatibility

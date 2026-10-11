@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Services;
 
@@ -9,6 +10,9 @@ namespace Osirion.Blazor.Cms.Components;
 /// </summary>
 public partial class LandingPage
 {
+    [Inject]
+    private ILogger<LandingPage> Logger { get; set; } = default!;
+
     [Inject]
     private IContentProviderManager ContentProviderManager { get; set; } = default!;
 
@@ -289,7 +293,7 @@ public partial class LandingPage
         }
         catch (Exception ex)
         {
-            Console.Error.WriteLine($"Error loading landing page content: {ex.Message}");
+            Logger.LogError(ex, "Failed to load landing page content {ContentPath}", ContentPath);
             Content = null;
         }
         finally

@@ -19,7 +19,8 @@ public class GitHubDirectoryRepositoryTests
     private readonly IDirectoryMetadataProcessor _metadataProcessor;
     private readonly IPathUtilities _pathUtils;
     private readonly ILogger<GitHubDirectoryRepository> _logger;
-    private readonly GitHubDirectoryRepository _repository = null!;
+    private readonly GitHubDirectoryRepository _repository;
+    private readonly Dictionary<string, DirectoryItem> _cachedDirectories = new();
 
     public GitHubDirectoryRepositoryTests()
     {
@@ -43,15 +44,25 @@ public class GitHubDirectoryRepositoryTests
 
         _options = Options.Create(options);
 
-        //_repository = new GitHubDirectoryRepository(
-        //    _apiClient,
-        //    _options,
-        //    _cacheManager,
-        //    _metadataProcessor,
-        //    _pathUtils,
-        //    _logger);
 
         SetupPathUtils();
+
+        var apiClientFactory = Substitute.For<IGitHubApiClientFactory>();
+        apiClientFactory.GetDefaultClient().Returns(_apiClient);
+
+        _cacheManager.GetCachedDirectoriesAsync(
+                Arg.Any<Func<CancellationToken, Task<Dictionary<string, DirectoryItem>>>>(),
+                Arg.Any<CancellationToken>(),
+                Arg.Any<bool>())
+            .Returns(_ => _cachedDirectories);
+
+        _repository = new GitHubDirectoryRepository(
+            apiClientFactory,
+            _options,
+            _cacheManager,
+            _metadataProcessor,
+            _pathUtils,
+            _logger);
     }
 
     private void SetupPathUtils()
@@ -180,8 +191,7 @@ public class GitHubDirectoryRepositoryTests
             }
         };
 
-        _repository.GetByIdAsync(directoryId, Arg.Any<CancellationToken>())
-            .Returns(directory);
+        _cachedDirectories[directoryId] = directory;
 
         _apiClient.GetRepositoryContentsAsync(
             Arg.Is<string>(s => s == "content/to-delete"),

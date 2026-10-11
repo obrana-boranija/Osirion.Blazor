@@ -1,3 +1,5 @@
+using System.Collections.Concurrent;
+using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -24,6 +26,12 @@ public class InMemoryContentCacheService(
     private readonly IMemoryCache _memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
     private readonly ILogger<InMemoryContentCacheService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     private readonly CacheOptions _options = options?.Value ?? new CacheOptions();
+
+    // The cache is shared with the host, so the keys this service wrote are tracked per IMemoryCache instance.
+    // That lets RemoveByPrefixAsync and ClearAsync evict only this library's entries.
+    private static readonly ConditionalWeakTable<IMemoryCache, ConcurrentDictionary<string, byte>> TrackedKeysByCache = new();
+
+    private ConcurrentDictionary<string, byte> TrackedKeys => TrackedKeysByCache.GetOrCreateValue(_memoryCache);
 
     /// <inheritdoc />
     public async Task<T?> GetAsync<T>(string key, CancellationToken cancellationToken = default)
@@ -63,11 +71,7 @@ public class InMemoryContentCacheService(
             {
                 var cacheExpiration = expiration ?? TimeSpan.FromMinutes(_options.MaxAgeMinutes);
 
-                var cacheEntryOptions = new MemoryCacheEntryOptions()
-                    .SetAbsoluteExpiration(cacheExpiration)
-                    .SetSize(1); // Set size for memory limit
-
-                _memoryCache.Set(key, result, cacheEntryOptions);
+                _memoryCache.Set(key, result, CreateEntryOptions(key, cacheExpiration));
                 _logger.LogDebug("Added {Key} to cache", key);
             }
 
@@ -81,32 +85,46 @@ public class InMemoryContentCacheService(
     }
 
     /// <inheritdoc />
-    public async Task RemoveAsync(string key, CancellationToken cancellationToken = default)
+    public Task RemoveAsync(string key, CancellationToken cancellationToken = default)
     {
         _memoryCache.Remove(key);
+        TrackedKeys.TryRemove(key, out _);
         _logger.LogDebug("Removed {Key} from cache", key);
+        return Task.CompletedTask;
     }
 
     /// <inheritdoc />
-    public async Task RemoveByPrefixAsync(string prefix, CancellationToken cancellationToken = default)
+    public Task RemoveByPrefixAsync(string prefix, CancellationToken cancellationToken = default)
     {
-        // Unfortunately, MemoryCache doesn't support prefix-based removal directly
-        // We'll use Compact with a high percentage to clear most of the cache
-        if (_memoryCache is MemoryCache cache)
+        ArgumentNullException.ThrowIfNull(prefix);
+
+        var removed = 0;
+        foreach (var key in TrackedKeys.Keys)
         {
-            cache.Compact(_options.CompactionPercentage);
-            _logger.LogDebug("Removed items with prefix {Prefix} from cache", prefix);
+            if (key.StartsWith(prefix, StringComparison.Ordinal))
+            {
+                _memoryCache.Remove(key);
+                TrackedKeys.TryRemove(key, out _);
+                removed++;
+            }
         }
+
+        _logger.LogDebug("Removed {Count} items with prefix {Prefix} from cache", removed, prefix);
+        return Task.CompletedTask;
     }
 
     /// <inheritdoc />
-    public async Task ClearAsync(CancellationToken cancellationToken = default)
+    /// <remarks>Removes only the entries written through this service, never the host's other cache entries.</remarks>
+    public Task ClearAsync(CancellationToken cancellationToken = default)
     {
-        if (_memoryCache is MemoryCache cache)
+        foreach (var key in TrackedKeys.Keys)
         {
-            cache.Compact(1.0);
-            _logger.LogInformation("Cleared entire cache");
+            _memoryCache.Remove(key);
+            TrackedKeys.TryRemove(key, out _);
         }
+
+        _logger.LogInformation("Cleared entries written by the content cache service");
+        return Task.CompletedTask;
     }
 
     /// <inheritdoc />
@@ -119,11 +137,24 @@ public class InMemoryContentCacheService(
 
         var cacheExpiration = expiration ?? TimeSpan.FromMinutes(_options.MaxAgeMinutes);
 
-        var cacheEntryOptions = new MemoryCacheEntryOptions()
-            .SetAbsoluteExpiration(cacheExpiration)
-            .SetSize(1); // Set size for memory limit
-
-        _memoryCache.Set(key, value, cacheEntryOptions);
+        _memoryCache.Set(key, value, CreateEntryOptions(key, cacheExpiration));
         _logger.LogDebug("Set {Key} in cache", key);
+    }
+
+    private MemoryCacheEntryOptions CreateEntryOptions(string key, TimeSpan expiration)
+    {
+        var trackedKeys = TrackedKeys;
+        trackedKeys[key] = 0;
+
+        return new MemoryCacheEntryOptions()
+            .SetAbsoluteExpiration(expiration)
+            .SetSize(1)
+            .RegisterPostEvictionCallback(static (evictedKey, value, reason, state) =>
+            {
+                if (reason != EvictionReason.Replaced && evictedKey is string text && state is ConcurrentDictionary<string, byte> keys)
+                {
+                    keys.TryRemove(text, out byte _);
+                }
+            }, trackedKeys);
     }
 }

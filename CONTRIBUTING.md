@@ -22,7 +22,7 @@ This project adheres to a Code of Conduct that we expect all contributors to fol
 
 ### Prerequisites
 
-- .NET 8.0 SDK or newer (latest stable version recommended)
+- .NET 10 SDK (the version in `global.json` or a later feature band)
 - Your favorite IDE (Visual Studio, VS Code, Rider, etc.)
 - Git
 
@@ -48,7 +48,7 @@ git remote add upstream https://github.com/obrana-boranija/Osirion.Blazor.git
 git checkout -b feature/your-feature-name
 ```
 
-5. Build the solution:
+5. Build the solution (`Osirion.Blazor.slnx`):
 
 ```bash
 dotnet build
@@ -59,6 +59,16 @@ dotnet build
 ```bash
 dotnet test
 ```
+
+7. Run the example sites. The Aspire AppHost starts every example (Bootstrap on `http://localhost:5296`, MudBlazor on
+   `http://localhost:5297`, Fluent UI on `http://localhost:5298`) and opens the Aspire dashboard with their logs:
+
+```bash
+dotnet run --project examples/Osirion.Blazor.Examples.AppHost
+```
+
+   The examples read the repository's `content` folder in Development, so they need no GitHub token. To run one site
+   alone, use `dotnet watch --project examples/Osirion.Blazor.Example.Bootstrap`.
 
 ## Project Structure
 
@@ -178,7 +188,7 @@ Before submitting your PR, make sure you've:
 
 - [ ] Added tests for your changes
 - [ ] Updated relevant documentation
-- [ ] Ensured code builds on both .NET 8 and .NET 9
+- [ ] Ensured code builds on both .NET 9 and .NET 10
 - [ ] Verified SSR compatibility
 - [ ] Updated the CHANGELOG.md
 - [ ] Followed the component structure guidelines

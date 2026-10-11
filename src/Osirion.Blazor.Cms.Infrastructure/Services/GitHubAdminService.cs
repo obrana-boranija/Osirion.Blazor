@@ -13,13 +13,23 @@ namespace Osirion.Blazor.Cms.Infrastructure.Services;
 /// <summary>
 /// Implementation of IGitHubAdminService for managing GitHub repositories
 /// </summary>
-public class GitHubAdminService : IGitHubAdminService
+/// <remarks>
+/// Register this service as scoped. Each instance owns its GitHub API client, so the repository, branch and
+/// token chosen in one circuit or request never reach another user or the public site. The client never
+/// uses a content provider's configured API token: it uses the signed-in user's token, or the admin personal
+/// access token configured in <see cref="AuthenticationOptions.PersonalAccessToken"/> when no user token is
+/// set. Without either, repository operations send no request.
+/// </remarks>
+public class GitHubAdminService : IGitHubAdminService, IDisposable
 {
     private readonly IGitHubApiClientFactory _apiClientFactory;
     private readonly IMarkdownProcessor _markdownProcessor;
     private readonly ILogger<GitHubAdminService> _logger;
     private readonly GitHubOptions _options;
+    private readonly IAuthenticationService? _authenticationService;
+    private readonly string? _configuredAccessToken;
     private IGitHubApiClient _apiClient;
+    private string? _userAccessToken;
     private string _currentProviderName = string.Empty;
 
     /// <summary>Performs the GitHubAdminService operation.</summary>
@@ -28,14 +38,48 @@ public class GitHubAdminService : IGitHubAdminService
         IOptions<CmsAdminOptions> options,
         IMarkdownProcessor markdownProcessor,
         ILogger<GitHubAdminService> logger)
+        : this(apiClientFactory, options, markdownProcessor, logger, authenticationService: null)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance that follows the sign-in state of an authentication service
+    /// </summary>
+    /// <param name="apiClientFactory">The factory that creates this instance's GitHub API client</param>
+    /// <param name="options">The CMS admin options</param>
+    /// <param name="markdownProcessor">The markdown processor</param>
+    /// <param name="logger">The logger instance</param>
+    /// <param name="authenticationService">
+    /// The authentication service of the same scope, or <see langword="null"/>. While its user is signed in,
+    /// that user's token is used; on sign-out the token is dropped from this instance.
+    /// </param>
+    public GitHubAdminService(
+        IGitHubApiClientFactory apiClientFactory,
+        IOptions<CmsAdminOptions> options,
+        IMarkdownProcessor markdownProcessor,
+        ILogger<GitHubAdminService> logger,
+        IAuthenticationService? authenticationService)
     {
         _apiClientFactory = apiClientFactory ?? throw new ArgumentNullException(nameof(apiClientFactory));
         _markdownProcessor = markdownProcessor;
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _options = options.Value.GitHub;
+        _configuredAccessToken = NullIfWhiteSpace(options.Value.Authentication?.PersonalAccessToken);
+
+        _authenticationService = authenticationService;
+        if (_authenticationService?.IsAuthenticated == true)
+        {
+            _userAccessToken = NullIfWhiteSpace(_authenticationService.AccessToken);
+        }
 
         // Get default client
-        _apiClient = _apiClientFactory.GetDefaultClient();
+        _apiClient = CreateClient(providerName: null);
+
+        // Subscribe last, so a constructor that throws leaves no handler behind
+        if (_authenticationService is not null)
+        {
+            _authenticationService.AuthenticationChanged += OnAuthenticationChanged;
+        }
     }
 
     /// <inheritdoc />
@@ -52,12 +96,12 @@ public class GitHubAdminService : IGitHubAdminService
     {
         if (string.IsNullOrWhiteSpace(providerName))
         {
-            _apiClient = _apiClientFactory.GetDefaultClient();
+            _apiClient = CreateClient(providerName: null);
             CurrentProvider = "default";
         }
         else
         {
-            _apiClient = _apiClientFactory.GetClient(providerName);
+            _apiClient = CreateClient(providerName);
             CurrentProvider = providerName;
         }
         _currentProviderName = providerName;
@@ -220,6 +264,7 @@ public class GitHubAdminService : IGitHubAdminService
         }
 
         _logger.LogInformation("Setting auth token in GitHubAdminService. Token length: {length}", token.Length);
+        _userAccessToken = token;
         _apiClient.SetAccessToken(token);
 
         // Test the token works
@@ -256,6 +301,51 @@ public class GitHubAdminService : IGitHubAdminService
         {
             _logger.LogWarning("Invalid repository format: {Repository}. Expected format: owner/repo", repository);
         }
+    }
+
+    /// <summary>
+    /// Stops following the sign-in state of the authentication service
+    /// </summary>
+    public void Dispose()
+    {
+        if (_authenticationService is not null)
+        {
+            _authenticationService.AuthenticationChanged -= OnAuthenticationChanged;
+        }
+    }
+
+    /// <summary>
+    /// The token this instance sends: the signed-in user's token, else the configured admin token, else none.
+    /// A content provider's API token is never used.
+    /// </summary>
+    private string EffectiveAccessToken => _userAccessToken ?? _configuredAccessToken ?? string.Empty;
+
+    /// <summary>
+    /// Creates this instance's own client and replaces the provider's API token the factory seeded it with
+    /// </summary>
+    private IGitHubApiClient CreateClient(string? providerName)
+    {
+        var client = string.IsNullOrWhiteSpace(providerName)
+            ? _apiClientFactory.GetDefaultClient()
+            : _apiClientFactory.GetClient(providerName);
+
+        client.SetAccessToken(EffectiveAccessToken);
+        return client;
+    }
+
+    private void OnAuthenticationChanged(bool isAuthenticated)
+    {
+        // Sign-in adopts the user's token; sign-out drops it, leaving only the configured admin token
+        _userAccessToken = isAuthenticated
+            ? NullIfWhiteSpace(_authenticationService?.AccessToken) ?? _userAccessToken
+            : null;
+
+        _apiClient.SetAccessToken(EffectiveAccessToken);
+    }
+
+    private static string? NullIfWhiteSpace(string? value)
+    {
+        return string.IsNullOrWhiteSpace(value) ? null : value;
     }
 
     /// <summary>

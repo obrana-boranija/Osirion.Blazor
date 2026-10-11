@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Exceptions;
+using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Services;
 
 namespace Osirion.Blazor.Cms.Infrastructure.Services;
@@ -30,6 +31,36 @@ public class ContentProviderRegistry : IContentProviderRegistry
         {
             _defaultProviderId = _providers.First().ProviderId;
             _logger.LogInformation("Set initial default provider: {ProviderId}", _defaultProviderId);
+        }
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ContentProviderRegistry"/> class and applies the providers'
+    /// configured <c>IsDefault</c> setting.
+    /// </summary>
+    /// <remarks>
+    /// The default provider used to be set only by <see cref="ContentProviderInitializer"/>, which runs only when the
+    /// host calls <c>UseOsirionCms</c>; otherwise the first registered provider won whatever <c>IsDefault</c> said.
+    /// </remarks>
+    /// <param name="providers">The collection of content providers</param>
+    /// <param name="logger">The logger instance</param>
+    /// <param name="defaultProviderSetters">The registered default provider settings</param>
+    public ContentProviderRegistry(
+        IEnumerable<IContentProvider> providers,
+        ILogger<ContentProviderRegistry> logger,
+        IEnumerable<IDefaultProviderSetter> defaultProviderSetters)
+        : this(providers, logger)
+    {
+        ArgumentNullException.ThrowIfNull(defaultProviderSetters);
+
+        var configuredDefault = defaultProviderSetters
+            .OfType<DefaultProviderSetter>()
+            .LastOrDefault(setter => setter.IsDefault && _providers.Any(p => p.ProviderId == setter.ProviderId));
+
+        if (configuredDefault is not null)
+        {
+            _defaultProviderId = configuredDefault.ProviderId;
+            _logger.LogInformation("Set configured default provider: {ProviderId}", _defaultProviderId);
         }
     }
 

@@ -1,0 +1,14 @@
+﻿@page "/tag"
+@page "/{locale}/tag"
+@page "/tag/{TagSlug?}"
+@page "/{locale}/tag/{TagSlug?}"
+@using Osirion.Blazor.Cms.Components
+@using Osirion.Blazor.Cms.Web.Components
+
+<PageTitle>@(string.IsNullOrWhiteSpace(TagSlug) ? "Tags" : $"Tag: {TagSlug}")</PageTitle>
+
+<ContentList Locale="@Locale"
+             Directory="blog"
+             Tag="@TagSlug"
+             ShowPagination
+             ItemsPerPage="12" />

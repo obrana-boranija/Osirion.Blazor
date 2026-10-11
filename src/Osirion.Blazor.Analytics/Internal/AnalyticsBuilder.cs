@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using Osirion.Blazor.Analytics.Options;
 using Osirion.Blazor.Analytics.Providers;
 
@@ -36,10 +37,7 @@ public class AnalyticsBuilder : IAnalyticsBuilder
             opt.TrackUserAttributes = options.TrackUserAttributes;
         });
 
-        Services.TryAddSingleton<ClarityProvider>();
-
-        // CHANGED: Use AddSingleton instead of TryAddSingleton to support multiple providers
-        Services.AddSingleton<IAnalyticsProvider, ClarityProvider>();
+        RegisterProvider<ClarityProvider, ClarityOptions, ClarityOptionsValidator>();
 
         return this;
     }
@@ -61,10 +59,7 @@ public class AnalyticsBuilder : IAnalyticsBuilder
             opt.RequireConsent = options.RequireConsent;
         });
 
-        Services.TryAddSingleton<MatomoProvider>();
-
-        // CHANGED: Use AddSingleton instead of TryAddSingleton
-        Services.AddSingleton<IAnalyticsProvider, MatomoProvider>();
+        RegisterProvider<MatomoProvider, MatomoOptions, MatomoOptionsValidator>();
 
         return this;
     }
@@ -93,10 +88,7 @@ public class AnalyticsBuilder : IAnalyticsBuilder
             opt.RestrictDataProcessing = options.RestrictDataProcessing;
         });
 
-        Services.AddSingleton<GA4Provider>();
-
-        // CHANGED: Use AddSingleton
-        Services.AddSingleton<IAnalyticsProvider, GA4Provider>();
+        RegisterProvider<GA4Provider, GA4Options, GA4OptionsValidator>();
 
         return this;
     }
@@ -126,10 +118,7 @@ public class AnalyticsBuilder : IAnalyticsBuilder
             opt.EcommerceContainerName = options.EcommerceContainerName;
         });
 
-        Services.AddSingleton<YandexMetricaProvider>();
-
-        // CHANGED: Use AddSingleton
-        Services.AddSingleton<IAnalyticsProvider, YandexMetricaProvider>();
+        RegisterProvider<YandexMetricaProvider, YandexMetricaOptions, YandexMetricaOptionsValidator>();
 
         return this;
     }
@@ -146,17 +135,38 @@ public class AnalyticsBuilder : IAnalyticsBuilder
                 return provider;
             });
 
-            // CHANGED: Register as IAnalyticsProvider too when custom configure is provided
             Services.AddSingleton<IAnalyticsProvider>(sp => sp.GetRequiredService<TProvider>());
         }
         else
         {
-            Services.TryAddSingleton<TProvider>();
-
-            // CHANGED: Use AddSingleton
-            Services.AddSingleton<IAnalyticsProvider, TProvider>();
+            RegisterProviderOnce<TProvider>();
         }
 
         return this;
+    }
+
+    private void RegisterProvider<TProvider, TOptions, TValidator>()
+        where TProvider : class, IAnalyticsProvider
+        where TOptions : class
+        where TValidator : class, IValidateOptions<TOptions>
+    {
+        Services.TryAddEnumerable(ServiceDescriptor.Singleton<IValidateOptions<TOptions>, TValidator>());
+        Services.AddOptions<TOptions>().ValidateOnStart();
+        RegisterProviderOnce<TProvider>();
+    }
+
+    // One concrete singleton, exposed through IAnalyticsProvider as the same instance, so the tracker
+    // component (which injects the concrete type) and IAnalyticsService share state, and repeated
+    // Add* calls do not register duplicates.
+    private void RegisterProviderOnce<TProvider>()
+        where TProvider : class, IAnalyticsProvider
+    {
+        if (Services.Any(descriptor => descriptor.ServiceType == typeof(TProvider)))
+        {
+            return;
+        }
+
+        Services.AddSingleton<TProvider>();
+        Services.AddSingleton<IAnalyticsProvider>(serviceProvider => serviceProvider.GetRequiredService<TProvider>());
     }
 }

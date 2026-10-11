@@ -10,7 +10,7 @@ using Shouldly;
 
 namespace Osirion.Blazor.Cms.Core.Tests.Components.Editor;
 
-public class MarkdownEditorTests : TestContext, IDisposable
+public class MarkdownEditorTests : BunitContext, IDisposable
 {
     private readonly IMarkdownRendererService _markdownRenderer;
 
@@ -33,7 +33,7 @@ public class MarkdownEditorTests : TestContext, IDisposable
     public void MarkdownEditor_ShouldRender_WithDefaultSettings()
     {
         // Act
-        var cut = RenderComponent<MarkdownEditor>();
+        var cut = Render<MarkdownEditor>();
 
         // Assert
         cut.Markup.ShouldContain("osirion-markdown-editor");
@@ -50,7 +50,7 @@ public class MarkdownEditorTests : TestContext, IDisposable
     public void MarkdownEditor_ShouldRender_WithCustomSettings()
     {
         // Act
-        var cut = RenderComponent<MarkdownEditor>(parameters => parameters
+        var cut = Render<MarkdownEditor>(parameters => parameters
             .Add(p => p.Title, "Custom Editor")
             .Add(p => p.ShowToolbar, false)
             .Add(p => p.ShowHeader, false)
@@ -78,7 +78,7 @@ public class MarkdownEditorTests : TestContext, IDisposable
         string capturedContent = initialContent;
 
         // Act
-        var cut = RenderComponent<MarkdownEditor>(parameters => parameters
+        var cut = Render<MarkdownEditor>(parameters => parameters
             .Add(p => p.Content, initialContent)
             .Add(p => p.ContentChanged, (content) => capturedContent = content)
         );
@@ -87,7 +87,7 @@ public class MarkdownEditorTests : TestContext, IDisposable
         var textarea = cut.Find("textarea");
 
         // Set new value
-        textarea.Change(updatedContent);
+        textarea.Input(updatedContent);
 
         // Assert
         capturedContent.ShouldBe(updatedContent);
@@ -97,7 +97,7 @@ public class MarkdownEditorTests : TestContext, IDisposable
     public void MarkdownEditor_ShouldShowToolbarActions_WhenEnabled()
     {
         // Act
-        var cut = RenderComponent<MarkdownEditor>(parameters => parameters
+        var cut = Render<MarkdownEditor>(parameters => parameters
             .Add(p => p.ShowToolbar, true)
         );
 
@@ -121,7 +121,7 @@ public class MarkdownEditorTests : TestContext, IDisposable
         };
 
         // Act
-        var cut = RenderComponent<MarkdownEditor>(parameters => parameters
+        var cut = Render<MarkdownEditor>(parameters => parameters
             .Add(p => p.ShowToolbar, true)
             .Add(p => p.ToolbarActions, customActions)
         );
@@ -135,7 +135,7 @@ public class MarkdownEditorTests : TestContext, IDisposable
     public async Task MarkdownEditor_ShouldHandleKeyboardShortcuts()
     {
         // Arrange
-        var cut = RenderComponent<MarkdownEditor>();
+        var cut = Render<MarkdownEditor>();
         var textarea = cut.Find("textarea");
 
         // Act - Simulate tab key press
@@ -149,7 +149,7 @@ public class MarkdownEditorTests : TestContext, IDisposable
     public async Task MarkdownEditor_ShouldSetScrollPosition_WhenRequested()
     {
         // Arrange
-        var cut = RenderComponent<MarkdownEditor>();
+        var cut = Render<MarkdownEditor>();
         var component = cut.Instance;
 
         // Act

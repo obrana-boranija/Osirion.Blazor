@@ -78,9 +78,10 @@ public class FrontMatter : ValueObject
     public bool IsFeatured { get; set; }
 
     /// <summary>
-    /// Gets whether the post is published
+    /// Gets whether the post is published. Front matter without a <c>published</c> key is published, as in Jekyll
+    /// and Hugo; write <c>published: false</c> to keep a draft hidden.
     /// </summary>
-    public bool Published { get; set; } = false;
+    public bool Published { get; set; } = true;
 
     /// <summary>
     /// Gets the URL slug
@@ -367,7 +368,10 @@ public class FrontMatter : ValueObject
     {
         return new FrontMatter
         {
+            Id = Id,
+            Order = Order,
             Title = Title,
+            Permalink = Permalink,
             Description = Description,
             Author = Author,
             Date = Date,
@@ -377,10 +381,11 @@ public class FrontMatter : ValueObject
             Published = Published,
             Layout = Layout,
             Slug = Slug,
+            Lang = Lang,
             Categories = new List<string>(Categories),
             Tags = new List<string>(Tags),
             CustomFields = new Dictionary<string, object>(CustomFields),
-            SeoProperties = SeoProperties,
+            SeoProperties = SeoProperties?.Clone() ?? new SeoMetadata(),
         };
     }
 

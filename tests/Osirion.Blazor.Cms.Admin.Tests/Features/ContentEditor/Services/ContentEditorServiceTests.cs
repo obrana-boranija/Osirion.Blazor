@@ -11,6 +11,7 @@ using Osirion.Blazor.Cms.Domain.Models;
 using Osirion.Blazor.Cms.Domain.Models.GitHub;
 using Osirion.Blazor.Cms.Domain.Options.Configuration;
 using Osirion.Blazor.Cms.Domain.ValueObjects;
+using Osirion.Blazor.Cms.Admin.Tests.TestDoubles;
 using Shouldly;
 
 namespace Osirion.Blazor.Cms.Admin.Tests.Features.ContentEditor.Services;
@@ -21,7 +22,7 @@ public class ContentEditorServiceTests
     private readonly IAdminContentService _contentService;
     private readonly IEventPublisher _eventPublisher;
     private readonly CmsAdminOptions _options;
-    private readonly ILogger<ContentEditorService> _logger;
+    private readonly RecordingLogger<ContentEditorService> _logger;
     private readonly ContentEditorService _service;
 
     public ContentEditorServiceTests()
@@ -39,7 +40,7 @@ public class ContentEditorServiceTests
                 AllowFileDeletion = true
             }
         };
-        _logger = Substitute.For<ILogger<ContentEditorService>>();
+        _logger = new RecordingLogger<ContentEditorService>();
 
         var optionsWrapper = Microsoft.Extensions.Options.Options.Create(_options);
         _service = new ContentEditorService(
@@ -73,15 +74,9 @@ public class ContentEditorServiceTests
         result.ShouldBe(expectedPost);
         await _repositoryAdapter.Received(1).GetBlogPostAsync(path);
 
-        _logger.Received(1).LogInformation(
-            Arg.Is<string>(s => s.Contains("Fetching blog post")),
-            Arg.Is(path)
-        );
+        _logger.HasEntry(LogLevel.Information, "Fetching blog post", path).ShouldBeTrue();
 
-        _logger.Received(1).LogInformation(
-            Arg.Is<string>(s => s.Contains("Blog post fetched successfully")),
-            Arg.Is(path)
-        );
+        _logger.HasEntry(LogLevel.Information, "Blog post fetched successfully", path).ShouldBeTrue();
     }
 
     [Fact]
@@ -100,11 +95,8 @@ public class ContentEditorServiceTests
 
         ex.ShouldBe(exception);
 
-        _logger.Received(1).LogError(
-            Arg.Is(exception),
-            Arg.Is<string>(s => s.Contains("Error fetching blog post")),
-            Arg.Is(path)
-        );
+        _logger.HasEntry(LogLevel.Error, "Error fetching blog post", path).ShouldBeTrue();
+        _logger.Entries.ShouldContain(entry => entry.Level == LogLevel.Error && entry.Exception == exception);
 
         _eventPublisher.Received(1).Publish(
             Arg.Is<ErrorOccurredEvent>(e =>
@@ -154,15 +146,9 @@ public class ContentEditorServiceTests
             post.Sha
         );
 
-        _logger.Received(1).LogInformation(
-            Arg.Is<string>(s => s.Contains("Saving blog post")),
-            Arg.Is(post.Path)
-        );
+        _logger.HasEntry(LogLevel.Information, "Saving blog post", post.Path).ShouldBeTrue();
 
-        _logger.Received(1).LogInformation(
-            Arg.Is<string>(s => s.Contains("Blog post saved successfully")),
-            Arg.Is(post.Path)
-        );
+        _logger.HasEntry(LogLevel.Information, "Blog post saved successfully", post.Path).ShouldBeTrue();
 
         _eventPublisher.Received(1).Publish(
             Arg.Is<ContentSavedEvent>(e => e.Path == post.Path)
@@ -260,15 +246,9 @@ public class ContentEditorServiceTests
             sha
         );
 
-        _logger.Received(1).LogInformation(
-            Arg.Is<string>(s => s.Contains("Deleting blog post")),
-            Arg.Is(path)
-        );
+        _logger.HasEntry(LogLevel.Information, "Deleting blog post", path).ShouldBeTrue();
 
-        _logger.Received(1).LogInformation(
-            Arg.Is<string>(s => s.Contains("Blog post deleted successfully")),
-            Arg.Is(path)
-        );
+        _logger.HasEntry(LogLevel.Information, "Blog post deleted successfully", path).ShouldBeTrue();
 
         _eventPublisher.Received(1).Publish(
             Arg.Is<ContentDeletedEvent>(e => e.Path == path)

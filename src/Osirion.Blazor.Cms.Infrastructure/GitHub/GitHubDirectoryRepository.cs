@@ -165,16 +165,48 @@ public class GitHubDirectoryRepository : DirectoryRepositoryBase, IDirectoryRepo
         var cache = new Dictionary<string, DirectoryItem>();
         var contentPath = PathUtils.NormalizePath(_options.ContentPath);
 
-        // Get repository contents
-        var contents = await _apiClient.GetRepositoryContentsAsync(contentPath, cancellationToken) ?? [];
+        // One recursive tree request replaces a listing request per directory and a probe request per _index.md.
+        // Without a usable tree the directories are listed one by one.
+        var tree = await TryGetTreeAsync(cancellationToken);
+        var snapshot = tree is null || tree.Truncated ? null : new GitHubTreeSnapshot(tree);
+
+        var contents = snapshot is not null
+            ? snapshot.ListChildren(contentPath)
+            : await _apiClient.GetRepositoryContentsAsync(contentPath, cancellationToken) ?? [];
+
+        Task<List<GitHubItem>> ListChildren(string path) => snapshot is not null
+            ? Task.FromResult(snapshot.ListChildren(path))
+            : ListFromApiAsync(path, cancellationToken);
 
         // Process contents recursively to build directory structure
-        await ProcessDirectoriesRecursivelyAsync(contents, cache, null, cancellationToken);
+        await ProcessDirectoriesRecursivelyAsync(contents, cache, null, ListChildren, cancellationToken);
 
         // Process _index.md files for metadata
-        await ProcessDirectoryMetadataAsync(cache, cancellationToken);
+        await ProcessDirectoryMetadataAsync(cache, snapshot, cancellationToken);
 
         return cache;
+    }
+
+    private async Task<GitHubTree?> TryGetTreeAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            return await _apiClient.GetTreeAsync(cancellationToken);
+        }
+        catch (GitHubRateLimitException)
+        {
+            throw;
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            Logger.LogWarning(ex, "Could not read the repository tree; listing directories instead");
+            return null;
+        }
+    }
+
+    private async Task<List<GitHubItem>> ListFromApiAsync(string path, CancellationToken cancellationToken)
+    {
+        return await _apiClient.GetRepositoryContentsAsync(path, cancellationToken) ?? [];
     }
 
     /// <inheritdoc/>
@@ -213,6 +245,7 @@ public class GitHubDirectoryRepository : DirectoryRepositoryBase, IDirectoryRepo
         List<GitHubItem> contents,
         Dictionary<string, DirectoryItem> directoryCache,
         DirectoryItem? parentDirectory,
+        Func<string, Task<List<GitHubItem>>> listChildren,
         CancellationToken cancellationToken,
         HashSet<string>? processedPaths = null)
     {
@@ -294,11 +327,12 @@ public class GitHubDirectoryRepository : DirectoryRepositoryBase, IDirectoryRepo
             }
 
             // Process subdirectories
-            var subContents = await _apiClient.GetRepositoryContentsAsync(item.Path, cancellationToken) ?? [];
+            var subContents = await listChildren(item.Path);
             await ProcessDirectoriesRecursivelyAsync(
                 subContents,
                 directoryCache,
                 directory, // Use the directory we just processed
+                listChildren,
                 cancellationToken,
                 processedPaths);
         }
@@ -306,6 +340,7 @@ public class GitHubDirectoryRepository : DirectoryRepositoryBase, IDirectoryRepo
 
     private async Task ProcessDirectoryMetadataAsync(
         Dictionary<string, DirectoryItem> directoryCache,
+        GitHubTreeSnapshot? snapshot,
         CancellationToken cancellationToken)
     {
         // Process _index.md files for each directory
@@ -314,6 +349,13 @@ public class GitHubDirectoryRepository : DirectoryRepositoryBase, IDirectoryRepo
             try
             {
                 var indexFilePath = Path.Combine(directoryPath, "_index.md").Replace('\\', '/');
+
+                // With a tree, a directory without an _index.md costs no request at all
+                if (snapshot is not null && !snapshot.ContainsFile(indexFilePath))
+                {
+                    continue;
+                }
+
                 var fileContent = await _apiClient.GetFileContentAsync(indexFilePath, cancellationToken);
                 if (fileContent is null)
                 {
@@ -332,6 +374,10 @@ public class GitHubDirectoryRepository : DirectoryRepositoryBase, IDirectoryRepo
                     // Save SHA for updates
                     directory.SetProviderSpecificId(fileContent.Sha);
                 }
+            }
+            catch (GitHubRateLimitException)
+            {
+                throw;
             }
             catch (Exception)
             {

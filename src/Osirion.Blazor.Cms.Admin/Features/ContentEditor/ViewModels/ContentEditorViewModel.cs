@@ -1,3 +1,6 @@
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+using Osirion.Blazor.Cms.Admin.Common.Extensions;
 using Osirion.Blazor.Cms.Admin.Core.Events;
 using Osirion.Blazor.Cms.Admin.Features.ContentEditor.Services;
 using Osirion.Blazor.Cms.Domain.Entities;
@@ -12,6 +15,7 @@ public class ContentEditorViewModel : IDisposable
     private readonly IContentEditorService _editorService;
     private readonly IEventPublisher _eventPublisher;
     private readonly IEventSubscriber _eventSubscriber;
+    private readonly ILogger<ContentEditorViewModel> _logger;
 
     // State properties
     /// <summary>Gets the post currently being edited.</summary>
@@ -35,8 +39,10 @@ public class ContentEditorViewModel : IDisposable
     public ContentEditorViewModel(
         IContentEditorService editorService,
         IEventPublisher eventPublisher,
-        IEventSubscriber eventSubscriber)
+        IEventSubscriber eventSubscriber,
+        ILogger<ContentEditorViewModel>? logger = null)
     {
+        _logger = logger ?? NullLogger<ContentEditorViewModel>.Instance;
         _editorService = editorService;
         _eventPublisher = eventPublisher;
         _eventSubscriber = eventSubscriber;
@@ -109,8 +115,9 @@ public class ContentEditorViewModel : IDisposable
                     filename += ".md";
                 }
 
-                // Combine directory and filename
-                string directory = Path.GetDirectoryName(EditingPost.Path) ?? string.Empty;
+                // Combine directory and filename; repository paths always use '/', unlike Path.GetDirectoryName on Windows
+                var separatorIndex = EditingPost.Path.LastIndexOf('/');
+                var directory = separatorIndex > 0 ? EditingPost.Path[..separatorIndex] : string.Empty;
                 EditingPost.Path = string.IsNullOrWhiteSpace(directory)
                     ? filename
                     : $"{directory}/{filename}";
@@ -217,7 +224,14 @@ public class ContentEditorViewModel : IDisposable
 
     private void OnContentSelected(ContentSelectedEvent e)
     {
-        LoadPostAsync(e.Path).ConfigureAwait(false);
+        // The editor already shows this file: fetching it again would only repeat the provider call
+        if (!IsCreatingNew && EditingPost is not null && string.Equals(EditingPost.Path, e.Path, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        // LoadPostAsync reports its own failures; Observe covers anything it does not
+        LoadPostAsync(e.Path).Observe(_logger, "load of the selected content");
     }
 
     private void OnCreateNewContent(CreateNewContentEvent e)

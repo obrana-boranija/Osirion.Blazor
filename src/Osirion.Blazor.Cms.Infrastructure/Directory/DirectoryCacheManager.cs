@@ -15,6 +15,7 @@ public class DirectoryCacheManager : IDirectoryCacheManager
     // Initialize to empty dictionary to prevent null references
     private Dictionary<string, DirectoryItem> _directoryCache = new();
     private bool _updateInProgress = false;
+    private bool _invalidated;
 
     /// <summary>Performs the DirectoryCacheManager operation.</summary>
     public DirectoryCacheManager(ILogger<DirectoryCacheManager> logger)
@@ -29,7 +30,7 @@ public class DirectoryCacheManager : IDirectoryCacheManager
         bool forceRefresh = false)
     {
         // If cache is valid and not forcing refresh, return current cache
-        if (!forceRefresh && _directoryCache.Count > 0)
+        if (!forceRefresh && !_invalidated && _directoryCache.Count > 0)
         {
             return _directoryCache ?? new Dictionary<string, DirectoryItem>();
         }
@@ -57,7 +58,7 @@ public class DirectoryCacheManager : IDirectoryCacheManager
             _updateInProgress = true;
 
             // Double-check after acquiring lock
-            if (!forceRefresh && _directoryCache.Count > 0)
+            if (!forceRefresh && !_invalidated && _directoryCache.Count > 0)
             {
                 return _directoryCache;
             }
@@ -78,6 +79,7 @@ public class DirectoryCacheManager : IDirectoryCacheManager
 
                 // Update cache
                 _directoryCache = directories;
+                _invalidated = false;
 
                 _logger.LogInformation("Directory cache refreshed, {Count} directories loaded", directories.Count);
             }
@@ -124,7 +126,8 @@ public class DirectoryCacheManager : IDirectoryCacheManager
                 return;
             }
 
-            // Just invalidate expiration but keep the cache (don't set to null)
+            // Keep the stale entries until the next load replaces them, but make that load happen
+            _invalidated = true;
             _logger.LogInformation("Directory cache invalidated");
         }
         finally

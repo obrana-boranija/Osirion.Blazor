@@ -9,11 +9,15 @@
     <button type="button"
             class="@GetButtonClass()"
             aria-label="@EffectiveOptions.Title"
-            id="osirion-scroll-to-top"
+            id="@ButtonId"
             style="display: none;">
-        @if (!string.IsNullOrWhiteSpace(EffectiveOptions.CustomIcon))
+        @if (!string.IsNullOrWhiteSpace(SanitizedCustomIcon))
         {
-            @((MarkupString)EffectiveOptions.CustomIcon)
+            @((MarkupString)SanitizedCustomIcon)
+        }
+        else if (!string.IsNullOrWhiteSpace(EffectiveOptions.IconCssClass))
+        {
+            <span class="@EffectiveOptions.IconCssClass" aria-hidden="true"></span>
         }
         else
         {

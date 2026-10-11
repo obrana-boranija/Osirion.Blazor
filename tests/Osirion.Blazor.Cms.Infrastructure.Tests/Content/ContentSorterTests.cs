@@ -30,15 +30,18 @@ public class ContentSorterTests
 
         _testItems[1].SetAuthor("Author A");
         _testItems[1].SetCreatedDate(new DateTime(2023, 1, 3));
-        _testItems[1].SetLastModifiedDate(new DateTime(2023, 2, 1));
         _testItems[1].SetSlug("a-title");
         _testItems[1].SetOrderIndex(1);
 
         _testItems[2].SetAuthor("Author C");
         _testItems[2].SetCreatedDate(new DateTime(2023, 1, 1));
-        _testItems[2].SetLastModifiedDate(new DateTime(2023, 2, 2));
         _testItems[2].SetSlug("c-title");
         _testItems[2].SetOrderIndex(3);
+
+        // The setters above stamp LastModified with the current time, so the dates under test are set last
+        _testItems[0].LastModified = null;
+        _testItems[1].SetLastModifiedDate(new DateTime(2023, 2, 1));
+        _testItems[2].SetLastModifiedDate(new DateTime(2023, 2, 2));
     }
 
     [Fact]

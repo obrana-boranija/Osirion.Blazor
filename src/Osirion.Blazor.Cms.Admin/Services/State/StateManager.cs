@@ -1,3 +1,4 @@
+using Osirion.Blazor.Cms.Admin.Common.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Admin.Core.Events;
@@ -11,6 +12,7 @@ namespace Osirion.Blazor.Cms.Admin.Services.State;
 /// <summary>
 /// Manages persistence of application state across sessions
 /// </summary>
+[Obsolete("Not used by the admin UI: no component or service calls it, so it never persists anything. State lives per circuit in CmsState, and the browser-stored GitHub sign-in is handled by IGitHubTokenStore. It will be removed in the next major release.")]
 public class StateManager : IDisposable
 {
     private readonly CmsState _state;
@@ -39,10 +41,10 @@ public class StateManager : IDisposable
         _state.StateChanged += OnStateChanged;
 
         // Subscribe to events that should trigger state saving
-        _eventMediator.Subscribe<RepositorySelectedEvent>(eventData => { _ = SaveStateAsync(); });
-        _eventMediator.Subscribe<BranchSelectedEvent>(eventData => { _ = SaveStateAsync(); });
-        _eventMediator.Subscribe<ThemeChangedEvent>(eventData => { _ = SaveStateAsync(); });
-        _eventMediator.Subscribe<StateResetRequestedEvent>(eventData => { _ = ResetStateAsync(); });
+        _eventMediator.Subscribe<RepositorySelectedEvent>(eventData => SaveStateAsync().Observe(_logger, "state save"));
+        _eventMediator.Subscribe<BranchSelectedEvent>(eventData => SaveStateAsync().Observe(_logger, "state save"));
+        _eventMediator.Subscribe<ThemeChangedEvent>(eventData => SaveStateAsync().Observe(_logger, "state save"));
+        _eventMediator.Subscribe<StateResetRequestedEvent>(eventData => ResetStateAsync().Observe(_logger, "state reset"));
     }
 
     /// <summary>
@@ -83,9 +85,9 @@ public class StateManager : IDisposable
     /// <summary>
     /// Event handler for state changes
     /// </summary>
-    private async void OnStateChanged()
+    private void OnStateChanged()
     {
-        await SaveStateAsync();
+        SaveStateAsync().Observe(_logger, "state save");
     }
 
     /// <summary>

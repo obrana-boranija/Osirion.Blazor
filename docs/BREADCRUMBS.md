@@ -124,6 +124,7 @@ The `OsirionBreadcrumbs` component automatically generates breadcrumb navigation
 | `LinkLastItem` | `bool` | `false` | Make the last breadcrumb item clickable |
 | `UrlPrefix` | `string` | `"/"` | Prefix for generated breadcrumb URLs |
 | `SegmentFormatter` | `Func<string, string>?` | `null` | Function to format URL segments |
+| `CurrentPageText` | `string?` | `null` | Text of the last breadcrumb, the current page; pass the page title. When empty, the last segment is formatted like the others |
 
 ## Path Processing
 

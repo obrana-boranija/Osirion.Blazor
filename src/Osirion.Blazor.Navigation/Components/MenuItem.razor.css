@@ -76,6 +76,13 @@
         border-color: var(--osirion-border-color, rgba(255, 255, 255, 0.1));
     }
 
+    /* Keyboard focus needs its own indicator: the hover style above is also the active page's style, so a focused
+       item looked exactly like the current page (WCAG 2.4.7). */
+    .osirion-menu-item:focus-visible:not(.osirion-menu-item-disabled) {
+        outline: 2px solid currentColor;
+        outline-offset: 2px;
+    }
+
 /* Active state - outlined style instead of filled */
 .osirion-menu-item-active {
     background-color: var(--osirion-background-secondary, #1f2937);
@@ -154,6 +161,12 @@
     height: 1px;
     overflow: hidden;
     clip: rect(0, 0, 0, 0);
+}
+
+/* Keyboard focus: the checkbox is visually hidden, so show its focus on the visible toggle */
+.osirion-submenu-toggler:focus-visible ~ .osirion-submenu-toggle {
+    outline: 2px solid currentColor;
+    outline-offset: -2px;
 }
 
 .osirion-menu-item-has-submenu > .osirion-menu-item {
@@ -382,6 +395,28 @@
     border-radius: var(--osirion-radius-sm, 0.125rem);
 }
 
+/* Expanded horizontal menus put the toggle in flow beside the link, so the chevron centres on the link text.
+   A menu that collapses below the extra-large breakpoint is a drawer until 1440px and keeps its row toggle. */
+@media (min-width: 769px) {
+    .osirion-menu-horizontal:not(.osirion-menu-collapse-extra-large) .osirion-menu-item-has-submenu {
+        display: flex;
+        align-items: center;
+    }
+
+    .osirion-menu-horizontal:not(.osirion-menu-collapse-extra-large) .osirion-menu-item-has-submenu > .osirion-menu-item {
+        padding-right: var(--osirion-spacing-2, 0.5rem);
+    }
+
+    .osirion-menu-horizontal:not(.osirion-menu-collapse-extra-large) .osirion-menu-item-has-submenu > .osirion-submenu-toggle {
+        position: static;
+        width: 1.5rem;
+        min-height: 0;
+        margin-left: calc(-1 * var(--osirion-spacing-2, 0.5rem));
+        margin-right: var(--osirion-spacing-2, 0.5rem);
+        border-radius: 0 var(--osirion-radius-base, 0.375rem) var(--osirion-radius-base, 0.375rem) 0;
+    }
+}
+
 @media (min-width: 1440px) {
     .osirion-menu-horizontal .osirion-menu-item-has-submenu {
         display: flex;
@@ -433,6 +468,27 @@
 
     .osirion-submenu-toggle {
         width: 3rem;
+    }
+
+    /* The toggle sits in flow beside the link, so the chevron centres on the link text, and the opened submenu
+       wraps onto its own row. A menu that collapses below the extra-large breakpoint keeps its full-row toggle. */
+    .osirion-menu-container:not(.osirion-menu-collapse-extra-large) .osirion-menu-item-has-submenu {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .osirion-menu-container:not(.osirion-menu-collapse-extra-large) .osirion-menu-item-has-submenu > .osirion-menu-item {
+        flex: 1 1 0%;
+        min-width: 0;
+    }
+
+    .osirion-menu-container:not(.osirion-menu-collapse-extra-large) .osirion-menu-item-has-submenu > .osirion-submenu-toggle {
+        position: static;
+    }
+
+    .osirion-menu-container:not(.osirion-menu-collapse-extra-large) .osirion-menu-item-has-submenu > .osirion-submenu {
+        flex-basis: 100%;
     }
 
     /* Static submenu positioning on mobile */

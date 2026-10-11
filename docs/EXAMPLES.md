@@ -247,7 +247,7 @@ app.Run();
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
     <!-- Osirion Styles -->
-    <OsirionStyles FrameworkIntegration="CssFramework.Bootstrap" />
+    <OsirionStyles Framework="CssFramework.Bootstrap" />
     
     <!-- Custom Styles -->
     <link href="css/app.css" rel="stylesheet" />

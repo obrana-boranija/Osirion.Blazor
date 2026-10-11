@@ -9,7 +9,7 @@ using Osirion.Blazor.Cms.Domain.Models.GitHub;
 namespace Osirion.Blazor.Cms.Admin.Features.ContentBrowser.ViewModels;
 
 /// <summary>Coordinates content browser navigation and file actions.</summary>
-public class FileExplorerViewModel
+public class FileExplorerViewModel : IDisposable
 {
     private readonly ContentBrowserService _browserService;
     private readonly CmsState _state;
@@ -274,5 +274,11 @@ public class FileExplorerViewModel
     protected void NotifyStateChanged()
     {
         StateChanged?.Invoke();
+    }
+
+    /// <summary>Unsubscribes from the shared state.</summary>
+    public void Dispose()
+    {
+        _state.StateChanged -= OnStateChanged;
     }
 }

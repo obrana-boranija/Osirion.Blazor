@@ -1,20 +1,21 @@
 ﻿@namespace Osirion.Blazor.Navigation.Components
 @inherits OsirionComponentBase
 
-<div class="osirion-menu-item-wrapper @(HasSubmenu ? "osirion-menu-item-has-submenu" : "") @(HasSubmenu && SubmenuVariant == SubmenuVariant.Mega ? "osirion-menu-item-has-mega" : "") @(IsActive ? "osirion-menu-item-wrapper-active" : "")" @attributes="Attributes">
+<div class="osirion-menu-item-wrapper @(HasSubmenu ? "osirion-menu-item-has-submenu" : "") @(HasSubmenu && SubmenuVariant == SubmenuVariant.Mega ? "osirion-menu-item-has-mega" : "") @(_isActive ? "osirion-menu-item-wrapper-active" : "")" @attributes="Attributes">
     @if (HasSubmenu)
     {
+        @* Disclosure toggle: a visually hidden but focusable checkbox, so the submenu opens from the keyboard
+           and without JavaScript. Its checked state is the expanded state. *@
         <input type="checkbox" class="osirion-submenu-toggler" id="@SubmenuToggleId" aria-controls="@SubmenuId" aria-label="Toggle @Text submenu" />
     }
-    <a href="@(Disabled ? "#" : Href)"
-       class="osirion-menu-item @(IsActive ? "osirion-menu-item-active" : "") @(Disabled ? "osirion-menu-item-disabled" : "") @Class"
+    <a href="@_renderedHref"
+       target="@(_renderedHref is null ? null : Target)"
+       rel="@(_renderedHref is not null && string.Equals(Target, "_blank", StringComparison.OrdinalIgnoreCase) ? "noopener noreferrer" : null)"
+       class="osirion-menu-item @(_isActive ? "osirion-menu-item-active" : "") @(Disabled ? "osirion-menu-item-disabled" : "") @Class"
        @onclick="OnClickHandler"
-       @onclick:preventDefault="Disabled"
+       role="@(_renderedHref is null ? "link" : null)"
        aria-disabled="@(Disabled ? "true" : "false")"
-       aria-current="@(IsActive ? "page" : null)"
-       aria-haspopup="@(HasSubmenu ? "true" : "false")"
-    aria-expanded="false"
-       aria-controls="@(HasSubmenu ? SubmenuId : null)">
+       aria-current="@(_isActive ? "page" : null)">
         @if (IconTemplate is not null)
         {
             <span class="osirion-menu-item-icon">@IconTemplate</span>
@@ -96,7 +97,7 @@
                 </svg>
             </span>
         </label>
-        <div class="osirion-submenu compact-submenu @SubmenuVariantClass" id="@SubmenuId" role="menu" aria-label="@Text submenu">
+        <div class="osirion-submenu compact-submenu @SubmenuVariantClass" id="@SubmenuId">
             @if (SubmenuVariant == SubmenuVariant.Mega)
             {
                 <div class="osirion-submenu-mega-content">

@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Osirion.Blazor.Cms.Admin.Core.Events;
 using Osirion.Blazor.Cms.Admin.Core.State;
 using Osirion.Blazor.Cms.Admin.Features;
+using Osirion.Blazor.Cms.Admin.Features.Authentication.Services;
 using Osirion.Blazor.Cms.Admin.Features.Authentication.ViewModels;
 using Osirion.Blazor.Cms.Admin.Features.ContentBrowser.Services;
 using Osirion.Blazor.Cms.Admin.Features.ContentBrowser.ViewModels;
@@ -30,17 +31,21 @@ public static class OsirionCmsAdminExtensions
     /// </summary>
     public static IServiceCollection AddOsirionCmsAdminDI(this IServiceCollection services)
     {
-        // Register core services
-        services.TryAddSingleton<IEventPublisher, EventBus>();
-        services.TryAddSingleton<IEventSubscriber>(provider => provider.GetRequiredService<IEventPublisher>() as EventBus
+        // Register the event buses as scoped, so an event stays inside the circuit or request that raised it.
+        // A process-wide bus delivered one admin's content, authentication and error events to the view models
+        // of every other admin, for example replacing another admin's unsaved draft.
+        services.TryAddScoped<IEventPublisher, EventBus>();
+        services.TryAddScoped<IEventSubscriber>(provider => provider.GetRequiredService<IEventPublisher>() as EventBus
             ?? throw new InvalidOperationException("IEventPublisher is not of type EventBus."));
 
-        services.TryAddSingleton<CmsEventMediator>();
+        services.TryAddScoped<CmsEventMediator>();
 
         // Add state management
         services.TryAddScoped<CmsState>();
+#pragma warning disable CS0618 // Obsolete types stay registered until the next major release so existing resolutions keep working
         services.TryAddScoped<StateManager>();
         services.TryAddScoped<CmsAdminStartupService>();
+#pragma warning restore CS0618
 
         // Register adapters
         services.TryAddScoped<IContentRepositoryAdapterFactory, ContentRepositoryAdapterFactory>();
@@ -50,11 +55,22 @@ public static class OsirionCmsAdminExtensions
         });
 
         // Register services
+#pragma warning disable CS0618
         services.TryAddScoped<ErrorHandlingService>();
+#pragma warning restore CS0618
         services.TryAddScoped<ContentBrowserService>();
         services.TryAddScoped<IContentEditorService, ContentEditorService>();
         services.TryAddScoped<IAdminContentService, AdminContentService>();
         services.TryAddScoped<RepositoryService>();
+
+        // Register GitHub credential stores (encrypted browser storage, bound to the host user). The protected
+        // browser storage they use exists only with interactive server components; factories keep build-time
+        // validation from requiring it in hosts that never render the admin.
+        services.TryAddScoped<IGitHubTokenStore>(
+            serviceProvider => ActivatorUtilities.CreateInstance<ProtectedGitHubTokenStore>(serviceProvider));
+        services.TryAddScoped<IGitHubSessionRestorer, GitHubSessionRestorer>();
+        services.TryAddScoped<IGitHubOAuthStateStore>(
+            serviceProvider => ActivatorUtilities.CreateInstance<ProtectedGitHubOAuthStateStore>(serviceProvider));
 
         // Register view models
         services.TryAddScoped<LoginViewModel>();

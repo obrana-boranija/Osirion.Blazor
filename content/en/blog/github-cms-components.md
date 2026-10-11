@@ -1,3 +1,15 @@
+---
+title: "GitHub CMS Components"
+author: "Dejan Demonjić"
+date: "2025-05-21"
+description: "Use markdown files in a GitHub repository as a content management system with the Osirion.Blazor CMS components."
+tags: [GitHub, CMS, Components]
+categories: [Documentation]
+slug: "github-cms-components"
+is_featured: false
+featured_image: "/assets/images/blazor-cover.png"
+---
+
 # GitHub CMS Components
 
 Osirion.Blazor provides GitHub CMS components that allow you to create a content management system using markdown files in a GitHub repository. These components support features like categories, tags, search, and dynamic navigation.

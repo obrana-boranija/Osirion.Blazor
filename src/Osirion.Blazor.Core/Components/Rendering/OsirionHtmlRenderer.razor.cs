@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Components;
+using Osirion.Blazor.Core.Extensions;
+using Osirion.Blazor.Core.Services;
 using System.Text.RegularExpressions;
 
 namespace Osirion.Blazor.Components;
@@ -47,20 +49,47 @@ public partial class OsirionHtmlRenderer
     /// <summary>
     /// Custom CSS classes for specific languages
     /// </summary>
+    /// <remarks>
+    /// This parameter has never been read by the component. Style code blocks with CSS selectors on the
+    /// <c>language-*</c> classes instead.
+    /// </remarks>
+    [Obsolete("LanguageClasses is not used by the component. Style code blocks with CSS selectors on the language-* classes instead.")]
     [Parameter]
     public Dictionary<string, string>? LanguageClasses { get; set; }
 
     /// <summary>
-    /// Whether to sanitize the HTML content (recommended for untrusted content)
+    /// Whether to sanitize the HTML content before rendering it. Defaults to <see langword="true"/>.
     /// </summary>
+    /// <remarks>
+    /// Sanitization uses the registered <see cref="IHtmlContentSanitizer"/> (see <c>AddOsirionHtmlSanitizer</c>),
+    /// or the default allow-list when none is registered. Set to <see langword="false"/> only for markup the
+    /// application itself produced; never for content, user input or anything read from a repository.
+    /// </remarks>
     [Parameter]
-    public bool SanitizeHtml { get; set; } = false;
+    public bool SanitizeHtml { get; set; } = true;
 
     /// <summary>
-    /// Callback to provide custom HTML sanitization logic
+    /// Optional custom sanitizer used instead of the registered <see cref="IHtmlContentSanitizer"/>
+    /// when <see cref="SanitizeHtml"/> is <see langword="true"/>.
     /// </summary>
     [Parameter]
     public Func<string, string>? HtmlSanitizer { get; set; }
+
+    /// <summary>
+    /// Optional base address Prism is loaded from, for hosts that serve it themselves (for example
+    /// <c>/lib/prism/1.29.0/</c>). When empty, the pinned cdnjs release is used and every file is verified with its
+    /// Subresource Integrity hash.
+    /// </summary>
+    /// <remarks>
+    /// Files from a custom base address are loaded without an integrity check, because the library cannot know
+    /// their content. Expected layout: <c>prism.min.js</c>, <c>components/prism-{language}.min.js</c>,
+    /// <c>themes/prism-okaidia.min.css</c> and <c>plugins/line-numbers/...</c>, as in the Prism release.
+    /// </remarks>
+    [Parameter]
+    public string? PrismBaseUrl { get; set; }
+
+    [Inject]
+    private IServiceProvider ServiceProvider { get; set; } = default!;
 
     /// <summary>
     /// Whether the content has code blocks
@@ -85,6 +114,28 @@ public partial class OsirionHtmlRenderer
     }
 
     /// <summary>
+    /// Matches a code block: a pre element whose first child is a code element.
+    /// </summary>
+    private static readonly Regex CodeBlockPattern = new(
+        @"<pre[^>]*>\s*<code[^>]*>[\s\S]*?</code>\s*</pre>", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+    private static readonly Regex LanguageClassPattern = new(
+        @"class\s*=\s*['""][^'""]*language-(\w+)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+    /// <summary>
+    /// Matches the opening pre tag at the start of a code block, attribute by attribute, so that markup held in a
+    /// quoted attribute value is never mistaken for the end of the tag.
+    /// </summary>
+    private static readonly Regex OpeningPreTagPattern = new(
+        @"^<pre((?:\s+[^\s""'<>/=]+(?:\s*=\s*(?:""[^""]*""|'[^']*'|[^\s""'=<>`]+))?)*)\s*>",
+        RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+    private static readonly Regex AttributePattern = new(
+        @"(\s+)([^\s""'<>/=]+)(?:(\s*=\s*)(""[^""]*""|'[^']*'|[^\s""'=<>`]+))?", RegexOptions.Compiled);
+
+    private const string LineNumbersClass = "line-numbers";
+
+    /// <summary>
     /// Process the HTML content to detect and enhance code blocks
     /// </summary>
     private void ProcessHtmlContent()
@@ -99,16 +150,13 @@ public partial class OsirionHtmlRenderer
 
         var content = HtmlContent;
 
+        // Sanitize before the code blocks are wrapped: the wrapper adds the library's own copy button handler.
         if (SanitizeHtml)
         {
             content = SanitizeHtmlContent(content);
         }
 
-        // Detect code blocks and languages - more flexible pattern
-        var codeBlockPattern = @"<pre[^>]*>\s*<code[^>]*>[\s\S]*?</code>\s*</pre>";
-        var matches = Regex.Matches(content, codeBlockPattern, RegexOptions.IgnoreCase);
-
-        HasCodeBlocks = matches.Count > 0;
+        HasCodeBlocks = CodeBlockPattern.IsMatch(content);
         DetectedLanguages.Clear();
 
         if (!HasCodeBlocks || !EnableSyntaxHighlighting)
@@ -117,67 +165,73 @@ public partial class OsirionHtmlRenderer
             return;
         }
 
-        var processedContent = content;
+        // One pass over the content: every block is rewritten where it stands, so identical blocks are each
+        // handled once and a wrapped block is never searched again.
         var codeBlockIndex = 0;
-
-        foreach (Match match in matches)
+        ProcessedHtml = CodeBlockPattern.Replace(content, match =>
         {
             var codeBlock = match.Value;
 
-            // Then search for language within each block
-            var languageMatch = Regex.Match(codeBlock, @"class\s*=\s*['""][^'""]*language-(\w+)", RegexOptions.IgnoreCase);
-            var language = languageMatch.Success ? languageMatch.Groups[1].Value : "plaintext";
-
-            // Map common language aliases
-            language = MapLanguageAlias(language);
+            var languageMatch = LanguageClassPattern.Match(codeBlock);
+            var language = MapLanguageAlias(languageMatch.Success ? languageMatch.Groups[1].Value : "plaintext");
 
             if (!string.IsNullOrWhiteSpace(language) && language != "plaintext")
             {
                 DetectedLanguages.Add(language);
             }
 
-            // Ensure the code block has the language class
-            if (!match.Groups[1].Success && language != "plaintext")
+            // The block keeps its own language class, which Prism reads from the code element or its pre
+            // ancestor. Only the class list of the opening pre tag is touched, and only through a tag-aware
+            // match: this runs after sanitization, and a pattern that stops at the first '>' can turn markup
+            // held in a quoted attribute value into a live element.
+            if (ShowLineNumbers)
             {
-                // Add language class if missing
-                codeBlock = Regex.Replace(codeBlock, @"<code([^>]*)>", $"<code$1 class=\"language-{language}\">");
+                codeBlock = AddLineNumbersClass(codeBlock);
             }
 
-            // Wrap code blocks if copy button is enabled
-            if (EnableCopyButton)
-            {
-                var wrappedBlock = WrapCodeBlock(codeBlock, language, codeBlockIndex++);
-                processedContent = processedContent.Replace(match.Value, wrappedBlock);
-            }
-            else
-            {
-                processedContent = processedContent.Replace(match.Value, codeBlock);
-            }
-        }
+            return EnableCopyButton ? WrapCodeBlock(codeBlock, language, codeBlockIndex++) : codeBlock;
+        });
+    }
 
-        // Add line-numbers class to pre elements if enabled
-        if (ShowLineNumbers)
+    /// <summary>
+    /// Adds the Prism line-numbers class to the opening pre tag of a code block, keeping the classes it has.
+    /// </summary>
+    private static string AddLineNumbersClass(string codeBlock)
+    {
+        var tag = OpeningPreTagPattern.Match(codeBlock);
+        if (!tag.Success)
         {
-            processedContent = Regex.Replace(processedContent,
-                @"<pre([^>]*?)(?:class\s*=\s*['""]([^'""]*)['""])?([^>]*)>",
-                m => {
-                    var attrs1 = m.Groups[1].Value;
-                    var existingClasses = m.Groups[2].Value;
-                    var attrs2 = m.Groups[3].Value;
-
-                    if (string.IsNullOrWhiteSpace(existingClasses))
-                    {
-                        return $"<pre{attrs1} class=\"line-numbers\"{attrs2}>";
-                    }
-                    else if (!existingClasses.Contains("line-numbers"))
-                    {
-                        return $"<pre{attrs1} class=\"{existingClasses} line-numbers\"{attrs2}>";
-                    }
-                    return m.Value;
-                });
+            return codeBlock;
         }
 
-        ProcessedHtml = processedContent;
+        var hasClassAttribute = false;
+        var attributes = AttributePattern.Replace(tag.Groups[1].Value, attribute =>
+        {
+            if (hasClassAttribute || !attribute.Groups[2].Value.Equals("class", StringComparison.OrdinalIgnoreCase))
+            {
+                return attribute.Value;
+            }
+
+            hasClassAttribute = true;
+            var rawValue = attribute.Groups[4].Value;
+            var quote = rawValue.Length > 0 && rawValue[0] is '"' or '\'' ? rawValue[0] : '"';
+            var classes = rawValue.Trim('"', '\'');
+
+            if (classes.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries).Contains(LineNumbersClass, StringComparer.Ordinal))
+            {
+                return attribute.Value;
+            }
+
+            var combined = string.IsNullOrWhiteSpace(classes) ? LineNumbersClass : $"{classes} {LineNumbersClass}";
+            return $"{attribute.Groups[1].Value}class{attribute.Groups[3].Value}{quote}{combined}{quote}";
+        });
+
+        if (!hasClassAttribute)
+        {
+            attributes += $" class=\"{LineNumbersClass}\"";
+        }
+
+        return string.Concat("<pre", attributes, ">", codeBlock.AsSpan(tag.Length));
     }
 
     /// <summary>
@@ -223,31 +277,12 @@ public partial class OsirionHtmlRenderer
     /// </summary>
     private string SanitizeHtmlContent(string html)
     {
-        // Use custom sanitizer if provided
         if (HtmlSanitizer is not null)
         {
             return HtmlSanitizer(html);
         }
 
-        // Basic built-in sanitization
-        // Remove script tags
-        html = Regex.Replace(html, @"<script[^>]*>[\s\S]*?</script>", "", RegexOptions.IgnoreCase);
-
-        // Remove event handlers
-        html = Regex.Replace(html, @"\bon\w+\s*=\s*['""][^'""]*['""]", "", RegexOptions.IgnoreCase);
-        html = Regex.Replace(html, @"\bon\w+\s*=\s*[^\s>]+", "", RegexOptions.IgnoreCase);
-
-        // Remove javascript: protocol
-        html = Regex.Replace(html, @"javascript\s*:", "", RegexOptions.IgnoreCase);
-
-        // Remove iframe tags
-        html = Regex.Replace(html, @"<iframe[^>]*>[\s\S]*?</iframe>", "", RegexOptions.IgnoreCase);
-
-        // Remove object and embed tags
-        html = Regex.Replace(html, @"<object[^>]*>[\s\S]*?</object>", "", RegexOptions.IgnoreCase);
-        html = Regex.Replace(html, @"<embed[^>]*>", "", RegexOptions.IgnoreCase);
-
-        return html;
+        return ServiceProvider.GetHtmlContentSanitizer().Sanitize(html);
     }
 
     /// <summary>
@@ -314,153 +349,53 @@ public partial class OsirionHtmlRenderer
     }
 
     /// <summary>
-    /// Generate the initialization script for syntax highlighting features
+    /// Gets the address of a Prism file: the pinned cdnjs release, or <see cref="PrismBaseUrl"/> when it is set.
     /// </summary>
-    private string GetInitializationScript()
-    {
-        return $@"
-            (function() {{
-                // Simple initialization with retry
-                var attempts = 0;
-                var maxAttempts = 50;
-    
-                function initializeHighlighting() {{
-                    attempts++;
-        
-                    if (typeof Prism === 'undefined') {{
-                        if (attempts < maxAttempts) {{
-                            setTimeout(initializeHighlighting, 100);
-                        }}
-                        return;
-                    }}
-
-                    // Highlight all code blocks
-                    Prism.highlightAll();
-
-                    {(EnableCopyButton ? GetCopyButtonScript() : "")}
-                    {(EnableLineHighlighting && ShowLineNumbers ? GetLineHighlightingScript() : "")}
-                }}
-
-                // Start initialization
-                setTimeout(initializeHighlighting, 100);
-            }})();
-            ";
-    }
+    private string PrismUrl(string relativePath) => string.IsNullOrWhiteSpace(PrismBaseUrl)
+        ? PrismCdnAssets.BaseUrl + relativePath
+        : PrismBaseUrl.TrimEnd('/') + "/" + relativePath;
 
     /// <summary>
-    /// Generate the copy button functionality script
+    /// Gets the Subresource Integrity hash of a pinned Prism file, or <see langword="null"/> when the file comes
+    /// from a custom <see cref="PrismBaseUrl"/> (the host owns that source) or is not part of the pinned release.
     /// </summary>
-    private string GetCopyButtonScript()
-    {
-        return @"
-        // Copy button functionality
-        document.querySelectorAll('.osirion-copy-button').forEach(button => {
-            button.addEventListener('click', async () => {
-                const codeBlock = button.closest('.osirion-code-wrapper').querySelector('code');
-                const text = codeBlock.textContent;
-                
-                try {
-                    await navigator.clipboard.writeText(text);
-                    button.textContent = 'Copied!';
-                    button.classList.add('copied');
-                    
-                    // Announce to screen readers
-                    const announcement = document.createElement('div');
-                    announcement.className = 'sr-only';
-                    announcement.setAttribute('aria-live', 'polite');
-                    announcement.textContent = 'Code copied to clipboard';
-                    document.body.appendChild(announcement);
-                    
-                    setTimeout(() => {
-                        button.textContent = 'Copy';
-                        button.classList.remove('copied');
-                        announcement.remove();
-                    }, 2000);
-                } catch (err) {
-                    console.error('Failed to copy:', err);
-                    button.textContent = 'Error';
-                    setTimeout(() => {
-                        button.textContent = 'Copy';
-                    }, 2000);
-                }
-            });
-        });";
-    }
+    private string? PrismIntegrity(string relativePath) =>
+        string.IsNullOrWhiteSpace(PrismBaseUrl) && PrismCdnAssets.TryGetIntegrity(relativePath, out var integrity)
+            ? integrity
+            : null;
+
+    private string? PrismCrossOrigin(string relativePath) => PrismIntegrity(relativePath) is null ? null : "anonymous";
 
     /// <summary>
-    /// Generate the line highlighting functionality script
+    /// Lists the Prism scripts to load, in execution order: the core first, then the language components found in
+    /// the content, then the line-numbers plugin.
     /// </summary>
-    private string GetLineHighlightingScript()
+    private List<Dictionary<string, object?>> GetPrismScripts()
     {
-        return @"
-        // Line highlighting functionality
-        const highlightedLines = new Map();
-        
-        // Function to create highlight overlays
-        function createHighlightOverlays(pre) {
-            pre.querySelectorAll('.osirion-line-highlight-overlay').forEach(el => el.remove());
-            
-            const codeId = Array.from(document.querySelectorAll('pre')).indexOf(pre);
-            const lines = highlightedLines.get(codeId) || [];
-            const lineHeight = parseFloat(window.getComputedStyle(pre).lineHeight);
-            const codeElement = pre.querySelector('code');
-            const paddingTop = parseFloat(window.getComputedStyle(codeElement).paddingTop);
-            
-            lines.forEach(lineNum => {
-                const overlay = document.createElement('div');
-                overlay.className = 'osirion-line-highlight-overlay';
-                overlay.style.top = `${paddingTop + (lineNum - 1) * lineHeight}px`;
-                pre.appendChild(overlay);
-            });
+        var usesPinnedRelease = string.IsNullOrWhiteSpace(PrismBaseUrl);
+        var relativePaths = new List<string> { "prism.min.js" };
+
+        // Without a custom source, a language that is not part of the pinned release is skipped instead of
+        // requested: it has no integrity hash and the request could only fail.
+        relativePaths.AddRange(DetectedLanguages
+            .Where(NeedsLanguageComponent)
+            .Order(StringComparer.Ordinal)
+            .Select(language => $"components/prism-{language}.min.js")
+            .Where(path => !usesPinnedRelease || PrismCdnAssets.TryGetIntegrity(path, out _)));
+
+        if (ShowLineNumbers)
+        {
+            relativePaths.Add("plugins/line-numbers/prism-line-numbers.min.js");
         }
-        
-        // Make line numbers clickable
-        document.querySelectorAll('.line-numbers pre').forEach((pre) => {
-            const lineElements = pre.querySelectorAll('.line-numbers-rows > span');
-            
-            lineElements.forEach((span, index) => {
-                const lineNum = index + 1;
-                
-                span.setAttribute('role', 'button');
-                span.setAttribute('aria-label', `Toggle highlight for line ${lineNum}`);
-                span.setAttribute('tabindex', '0');
-                
-                function toggleLine(e) {
-                    const codeId = Array.from(document.querySelectorAll('pre')).indexOf(pre);
-                    let currentHighlights = highlightedLines.get(codeId) || [];
-                    const isCtrlPressed = e && (e.ctrlKey || e.metaKey);
-                    
-                    if (span.classList.contains('osirion-line-highlighted')) {
-                        span.classList.remove('osirion-line-highlighted');
-                        currentHighlights = currentHighlights.filter(n => n !== lineNum);
-                    } else {
-                        if (!isCtrlPressed) {
-                            pre.querySelectorAll('.osirion-line-highlighted').forEach(el => {
-                                el.classList.remove('osirion-line-highlighted');
-                            });
-                            currentHighlights = [];
-                        }
-                        
-                        span.classList.add('osirion-line-highlighted');
-                        if (!currentHighlights.includes(lineNum)) {
-                            currentHighlights.push(lineNum);
-                        }
-                    }
-                    
-                    currentHighlights.sort((a, b) => a - b);
-                    highlightedLines.set(codeId, currentHighlights);
-                    createHighlightOverlays(pre);
-                }
-                
-                span.addEventListener('click', toggleLine);
-                span.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        toggleLine(e);
-                    }
-                });
-            });
-        });";
+
+        return relativePaths
+            .Select(path => new Dictionary<string, object?>
+            {
+                ["src"] = PrismUrl(path),
+                ["integrity"] = PrismIntegrity(path),
+                ["required"] = path == "prism.min.js"
+            })
+            .ToList();
     }
 
     /// <summary>

@@ -42,14 +42,20 @@ public class DefaultProviderSetterTests
         var setter = new DefaultProviderSetter(providerId, true);
 
         var registry = Substitute.For<IContentProviderRegistry>();
-        var serviceProvider = Substitute.For<IServiceProvider>();
-        serviceProvider.GetRequiredService<IContentProviderRegistry>().Returns(registry);
+        var registryResolutions = 0;
+        using var serviceProvider = new ServiceCollection()
+            .AddSingleton(_ =>
+            {
+                registryResolutions++;
+                return registry;
+            })
+            .BuildServiceProvider();
 
         // Act
         setter.SetDefault(serviceProvider);
 
         // Assert
-        serviceProvider.Received(1).GetRequiredService<IContentProviderRegistry>();
+        registryResolutions.ShouldBe(1);
         registry.Received(1).SetDefaultProvider(providerId);
     }
 
@@ -61,14 +67,20 @@ public class DefaultProviderSetterTests
         var setter = new DefaultProviderSetter(providerId, false);
 
         var registry = Substitute.For<IContentProviderRegistry>();
-        var serviceProvider = Substitute.For<IServiceProvider>();
-        serviceProvider.GetRequiredService<IContentProviderRegistry>().Returns(registry);
+        var registryResolutions = 0;
+        using var serviceProvider = new ServiceCollection()
+            .AddSingleton(_ =>
+            {
+                registryResolutions++;
+                return registry;
+            })
+            .BuildServiceProvider();
 
         // Act
         setter.SetDefault(serviceProvider);
 
         // Assert
-        serviceProvider.DidNotReceive().GetRequiredService<IContentProviderRegistry>();
+        registryResolutions.ShouldBe(0);
         registry.DidNotReceive().SetDefaultProvider(Arg.Any<string>());
     }
 }

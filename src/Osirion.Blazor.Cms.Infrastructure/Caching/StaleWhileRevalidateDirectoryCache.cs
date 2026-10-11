@@ -11,11 +11,10 @@ namespace Osirion.Blazor.Cms.Infrastructure.Caching;
 public class StaleWhileRevalidateDirectoryCache : IDirectoryRepository
 {
     private readonly IDirectoryRepository _decorated;
-    private readonly IMemoryCache _cache;
     private readonly ILogger _logger;
     private readonly TimeSpan _staleTime;
     private readonly TimeSpan _maxAge;
-    private readonly SemaphoreSlim _refreshLock = new(1, 1);
+    private readonly StaleWhileRevalidateStore _store;
     private readonly string _providerIdentifier;
 
     /// <summary>Initializes a directory cache decorator.</summary>
@@ -28,11 +27,12 @@ public class StaleWhileRevalidateDirectoryCache : IDirectoryRepository
         string providerIdentifier)
     {
         _decorated = decorated ?? throw new ArgumentNullException(nameof(decorated));
-        _cache = cache ?? throw new ArgumentNullException(nameof(cache));
+        ArgumentNullException.ThrowIfNull(cache);
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _providerIdentifier = providerIdentifier ?? throw new ArgumentNullException(nameof(providerIdentifier));
         _staleTime = staleTime;
         _maxAge = maxAge;
-        _providerIdentifier = providerIdentifier ?? throw new ArgumentNullException(nameof(providerIdentifier));
+        _store = new StaleWhileRevalidateStore(cache, logger, staleTime, maxAge);
     }
 
     /// <summary>Gets all directories, using the cache when available.</summary>
@@ -40,9 +40,9 @@ public class StaleWhileRevalidateDirectoryCache : IDirectoryRepository
     {
         var cacheKey = $"directory:all:{_providerIdentifier}";
 
-        return await GetOrRevalidateAsync(
+        return await _store.GetOrLoadAsync(
             cacheKey,
-            () => _decorated.GetAllAsync(cancellationToken),
+            token => _decorated.GetAllAsync(token),
             cancellationToken);
     }
 
@@ -54,9 +54,9 @@ public class StaleWhileRevalidateDirectoryCache : IDirectoryRepository
 
         var cacheKey = $"directory:{id}:{_providerIdentifier}";
 
-        return await GetOrRevalidateAsync(
+        return await _store.GetOrLoadAsync(
             cacheKey,
-            () => _decorated.GetByIdAsync(id, cancellationToken),
+            token => _decorated.GetByIdAsync(id, token),
             cancellationToken);
     }
 
@@ -68,9 +68,9 @@ public class StaleWhileRevalidateDirectoryCache : IDirectoryRepository
 
         var cacheKey = $"directory:path:{path}:{_providerIdentifier}";
 
-        return await GetOrRevalidateAsync(
+        return await _store.GetOrLoadAsync(
             cacheKey,
-            () => _decorated.GetByPathAsync(path, cancellationToken),
+            token => _decorated.GetByPathAsync(path, token),
             cancellationToken);
     }
 
@@ -82,9 +82,9 @@ public class StaleWhileRevalidateDirectoryCache : IDirectoryRepository
 
         var cacheKey = $"directory:url:{url}:{_providerIdentifier}";
 
-        return await GetOrRevalidateAsync(
+        return await _store.GetOrLoadAsync(
             cacheKey,
-            () => _decorated.GetByUrlAsync(url, cancellationToken),
+            token => _decorated.GetByUrlAsync(url, token),
             cancellationToken);
     }
 
@@ -94,9 +94,9 @@ public class StaleWhileRevalidateDirectoryCache : IDirectoryRepository
         var localeKey = locale ?? "all";
         var cacheKey = $"directory:locale:{localeKey}:{_providerIdentifier}";
 
-        return await GetOrRevalidateAsync(
+        return await _store.GetOrLoadAsync(
             cacheKey,
-            () => _decorated.GetByLocaleAsync(locale, cancellationToken),
+            token => _decorated.GetByLocaleAsync(locale, token),
             cancellationToken);
     }
 
@@ -105,9 +105,9 @@ public class StaleWhileRevalidateDirectoryCache : IDirectoryRepository
     {
         var cacheKey = $"directory:children:{parentId}:{_providerIdentifier}";
 
-        return await GetOrRevalidateAsync(
+        return await _store.GetOrLoadAsync(
             cacheKey,
-            () => _decorated.GetChildrenAsync(parentId, cancellationToken),
+            token => _decorated.GetChildrenAsync(parentId, token),
             cancellationToken);
     }
 
@@ -117,9 +117,9 @@ public class StaleWhileRevalidateDirectoryCache : IDirectoryRepository
         var localeKey = locale ?? "all";
         var cacheKey = $"directory:tree:{localeKey}:{_providerIdentifier}";
 
-        return await GetOrRevalidateAsync(
+        return await _store.GetOrLoadAsync(
             cacheKey,
-            () => _decorated.GetTreeAsync(locale, cancellationToken),
+            token => _decorated.GetTreeAsync(locale, token),
             cancellationToken);
     }
 
@@ -129,9 +129,9 @@ public class StaleWhileRevalidateDirectoryCache : IDirectoryRepository
         var localeKey = locale ?? "all";
         var cacheKey = $"directory:name:{localeKey}:{_providerIdentifier}";
 
-        return await GetOrRevalidateAsync(
+        return await _store.GetOrLoadAsync(
             cacheKey,
-            () => _decorated.GetByNameAsync(name, locale, cancellationToken),
+            token => _decorated.GetByNameAsync(name, locale, token),
             cancellationToken);
     }
 
@@ -166,147 +166,18 @@ public class StaleWhileRevalidateDirectoryCache : IDirectoryRepository
         return result;
     }
 
-    /// <summary>Clears and refreshes the directory cache.</summary>
+    /// <summary>
+    /// Evicts only the entries this decorator created (never the host's shared cache) and refreshes the
+    /// underlying repository.
+    /// </summary>
     public async Task RefreshCacheAsync(CancellationToken cancellationToken = default)
     {
-        await _refreshLock.WaitAsync(cancellationToken);
-        try
-        {
-            // Clear the entire cache for this provider
-            if (_cache is MemoryCache memoryCache)
-            {
-                // Use compact to remove a significant portion of the cache
-                memoryCache.Compact(1.0);
-                _logger.LogInformation("Cache cleared for provider: {ProviderId}", _providerIdentifier);
-            }
+        _store.Clear();
+        _logger.LogInformation("Cache cleared for provider: {ProviderId}", _providerIdentifier);
 
-            // Also refresh the underlying repository's cache
-            await _decorated.RefreshCacheAsync(cancellationToken);
-        }
-        finally
-        {
-            _refreshLock.Release();
-        }
-    }
+        await _decorated.RefreshCacheAsync(cancellationToken);
 
-    private async Task<T> GetOrRevalidateAsync<T>(
-        string cacheKey,
-        Func<Task<T>> factory,
-        CancellationToken cancellationToken)
-    {
-        // Try to get the value from the cache
-        if (_cache.TryGetValue(cacheKey, out CacheEntry<T>? cacheEntry) && cacheEntry is not null)
-        {
-            // Check if the entry is stale and needs background refresh
-            if (DateTime.UtcNow - cacheEntry.LastUpdated > _staleTime && !cacheEntry.IsRefreshing)
-            {
-                // Start background refresh
-                _ = Task.Run(async () =>
-                {
-                    try
-                    {
-                        await RefreshCacheEntryAsync(cacheKey, factory, cacheEntry);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, "Error refreshing cache entry: {CacheKey}", cacheKey);
-                    }
-                }, CancellationToken.None);
-            }
-
-            return cacheEntry.Value;
-        }
-
-        // Not in cache, create it
-        return await CreateCacheEntryAsync(cacheKey, factory, cancellationToken);
-    }
-
-    private async Task<T> CreateCacheEntryAsync<T>(
-        string cacheKey,
-        Func<Task<T>> factory,
-        CancellationToken cancellationToken)
-    {
-        // Ensure we don't have multiple threads creating the same entry
-        await _refreshLock.WaitAsync(cancellationToken);
-        try
-        {
-            // Double check if another thread already created it
-            if (_cache.TryGetValue(cacheKey, out CacheEntry<T>? existingEntry) && existingEntry is not null)
-            {
-                return existingEntry.Value;
-            }
-
-            // Get the value from the source
-            var value = await factory();
-
-            // Create a new cache entry
-            var cacheEntry = new CacheEntry<T>
-            {
-                Value = value,
-                LastUpdated = DateTime.UtcNow,
-                IsRefreshing = false
-            };
-
-            // Store in cache
-            _cache.Set(cacheKey, cacheEntry, _maxAge);
-            _logger.LogDebug("Created cache entry: {CacheKey}", cacheKey);
-
-            return value;
-        }
-        finally
-        {
-            _refreshLock.Release();
-        }
-    }
-
-    private async Task RefreshCacheEntryAsync<T>(
-        string cacheKey,
-        Func<Task<T>> factory,
-        CacheEntry<T> existingEntry)
-    {
-        // Prevent concurrent refreshes of the same entry
-        await _refreshLock.WaitAsync();
-        try
-        {
-            // Check if the entry is still in the cache and not being refreshed
-            if (_cache.TryGetValue(cacheKey, out CacheEntry<T>? currentEntry) &&
-                currentEntry is not null &&
-                !currentEntry.IsRefreshing)
-            {
-                // Mark as refreshing
-                currentEntry.IsRefreshing = true;
-
-                // Refresh the value
-                _logger.LogDebug("Refreshing stale cache entry: {CacheKey}", cacheKey);
-                var freshValue = await factory();
-
-                // Update the entry
-                var updatedEntry = new CacheEntry<T>
-                {
-                    Value = freshValue,
-                    LastUpdated = DateTime.UtcNow,
-                    IsRefreshing = false
-                };
-
-                // Store updated entry
-                _cache.Set(cacheKey, updatedEntry, _maxAge);
-                _logger.LogDebug("Refreshed cache entry: {CacheKey}", cacheKey);
-            }
-        }
-        catch (Exception ex)
-        {
-            // If refresh fails, mark the entry as not refreshing so it can be tried again
-            if (_cache.TryGetValue(cacheKey, out CacheEntry<T>? currentEntry) && currentEntry is not null)
-            {
-                currentEntry.IsRefreshing = false;
-            }
-
-            _logger.LogError(ex, "Failed to refresh cache entry: {CacheKey}", cacheKey);
-            throw;
-        }
-        finally
-        {
-            _refreshLock.Release();
-        }
+        // Readers that loaded from the repository while it was refreshing may have cached the old state.
+        _store.Clear();
     }
 }

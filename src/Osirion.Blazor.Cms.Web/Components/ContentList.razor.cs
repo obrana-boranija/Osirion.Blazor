@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Enums;
 using Osirion.Blazor.Cms.Domain.Repositories;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Services;
 
 namespace Osirion.Blazor.Cms.Web.Components;
@@ -14,6 +15,9 @@ public partial class ContentList : IDisposable
 
     [Inject]
     private NavigationManager NavigationManager { get; set; } = default!;
+
+    [Inject]
+    private ILogger<ContentList> Logger { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the content directory path.
@@ -200,9 +204,15 @@ public partial class ContentList : IDisposable
     /// <summary>
     /// Gets the total number of pages based on item count and page size.
     /// </summary>
-    protected int TotalPages => (int)Math.Ceiling(TotalItems / (double)ItemsPerPage);
+    protected int TotalPages => (int)Math.Ceiling(TotalItems / (double)EffectiveItemsPerPage);
+
+    private int EffectiveItemsPerPage => Math.Max(1, ItemsPerPage);
+
+    private static readonly string[] PageQueryParameters = ["page"];
 
     private string CurrentUrl { get; set; } = "/";
+
+    private string CurrentPathAndQuery { get; set; } = "/";
 
     ///// <summary>
     ///// Initializes the component.
@@ -219,6 +229,7 @@ public partial class ContentList : IDisposable
     {
         var uri = new Uri(NavigationManager.Uri);
         CurrentUrl = uri.AbsolutePath;
+        CurrentPathAndQuery = uri.PathAndQuery;
 
         await LoadContentAsync();
     }
@@ -258,13 +269,17 @@ public partial class ContentList : IDisposable
                 }
                 else if (ShowPagination)
                 {
-                    // Get total count first (without pagination)
-                    var allItems = await provider.GetItemsByQueryAsync(query);
-                    TotalItems = allItems?.Count ?? 0;
+                    // One fetch: the full result gives the total and the requested page is sliced from it.
+                    var allItems = await provider.GetItemsByQueryAsync(query) ?? [];
+                    TotalItems = allItems.Count;
 
-                    // Then apply pagination
-                    query.Skip = (CurrentPage - 1) * ItemsPerPage;
-                    query.Take = ItemsPerPage;
+                    // page=0, negative or past the last page (including int overflow) falls back to the nearest valid page.
+                    CurrentPage = Math.Clamp(CurrentPage, 1, Math.Max(1, TotalPages));
+                    ContentItems = allItems
+                        .Skip((CurrentPage - 1) * EffectiveItemsPerPage)
+                        .Take(EffectiveItemsPerPage)
+                        .ToList();
+                    return;
                 }
 
                 ContentItems = await provider.GetItemsByQueryAsync(query);
@@ -272,7 +287,7 @@ public partial class ContentList : IDisposable
         }
         catch (Exception ex)
         {
-            Console.Error.WriteLine($"Error loading content: {ex.Message}");
+            Logger.LogError(ex, "Failed to load the content list (directory {Directory}, category {Category}, tag {Tag})", Directory, Category, Tag);
             ContentItems = Array.Empty<ContentItem>();
             TotalItems = 0;
         }
@@ -310,7 +325,9 @@ public partial class ContentList : IDisposable
     protected string GetPaginationUrl(int page)
     {
 
-        return PaginationUrlFormatter?.Invoke(page) ?? $"{CurrentUrl}?page={page}";
+        // Keep every other query parameter (search query, filters); page 1 is the bare URL.
+        return PaginationUrlFormatter?.Invoke(page)
+            ?? ContentUrls.WithQueryParameter(CurrentPathAndQuery, "page", page > 1 ? page.ToString(System.Globalization.CultureInfo.InvariantCulture) : null);
     }
 
     /// <summary>
@@ -386,20 +403,21 @@ public partial class ContentList : IDisposable
     /// </summary>
     protected async Task OnPageChanged(int page)
     {
-        if (page != CurrentPage)
+        if (page == CurrentPage)
+        {
+            return;
+        }
+
+        if (PageChanged.HasDelegate)
         {
             CurrentPage = page;
-
-            if (PageChanged.HasDelegate)
-            {
-                await PageChanged.InvokeAsync(page);
-            }
-            else
-            {
-                // If no external handler, reload content with the new page
-                await LoadContentAsync();
-            }
+            await PageChanged.InvokeAsync(page);
+            return;
         }
+
+        // The page lives in the query string, so navigating is what changes it. Assigning the property alone
+        // would not move the address bar, and the next parameter update would reset it.
+        NavigationManager.NavigateTo(GetPaginationUrl(page));
     }
 
     /// <summary>

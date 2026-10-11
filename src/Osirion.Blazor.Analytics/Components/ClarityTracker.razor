@@ -1,7 +1,7 @@
 @namespace Osirion.Blazor.Analytics.Components
 @inherits AnalyticsTracker
 
-@if (Provider?.ShouldRender == true)
+@if (ShouldRenderTracker)
 {
-    @((MarkupString)Provider.GetScript())
+    @TrackerMarkup
 }

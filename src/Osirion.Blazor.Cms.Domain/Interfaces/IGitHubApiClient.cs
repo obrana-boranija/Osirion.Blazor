@@ -85,21 +85,38 @@ public interface IGitHubApiClient
     Task<GitHubSearchResult?> SearchFilesAsync(string query, CancellationToken cancellationToken = default!);
 
     /// <summary>
-    /// Sets the owner and repository for subsequent requests
+    /// Gets the whole tree (every file and directory with its SHA) of the configured branch in one request
     /// </summary>
+    /// <param name="cancellationToken">Cancellation Token</param>
+    /// <returns>
+    /// The recursive tree, or <see langword="null"/> when the client does not support the operation or the repository
+    /// is not configured. Callers fall back to listing directories when the result is <see langword="null"/> or
+    /// <see cref="GitHubTree.Truncated"/>.
+    /// </returns>
+    Task<GitHubTree?> GetTreeAsync(CancellationToken cancellationToken = default!) => Task.FromResult<GitHubTree?>(null);
+
+    /// <summary>
+    /// Sets the owner and repository for subsequent requests made through this instance
+    /// </summary>
+    /// <remarks>The change applies to this instance only and never to other clients.</remarks>
     /// <param name="owner">Repository owner</param>
     /// <param name="repository">Repository name</param>
     void SetRepository(string owner, string repository);
 
     /// <summary>
-    /// Sets the branch for subsequent requests
+    /// Sets the branch for subsequent requests made through this instance
     /// </summary>
+    /// <remarks>The change applies to this instance only and never to other clients.</remarks>
     /// <param name="branch">Branch name</param>
     void SetBranch(string branch);
 
     /// <summary>
-    /// Sets the access token for authentication
+    /// Sets the access token for authentication of subsequent requests made through this instance
     /// </summary>
+    /// <remarks>
+    /// The token applies to this instance only and never to other clients. An empty token removes
+    /// authentication from this instance.
+    /// </remarks>
     /// <param name="token">GitHub access token</param>
     void SetAccessToken(string token);
 }

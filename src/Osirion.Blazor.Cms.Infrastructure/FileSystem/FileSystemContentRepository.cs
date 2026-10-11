@@ -20,6 +20,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
         private readonly FileSystemOptions _options;
         private readonly Dictionary<string, string> _fileExtensionContentTypeMap;
         private readonly IFileSystem _fileSystem;
+        private readonly FileSystemDirectoryRepository? _directoryRepository;
         private FileSystemWatcher? _fileWatcher;
 
         /// <summary>Performs the FileSystemContentRepository operation.</summary>
@@ -55,80 +56,25 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
             }
         }
 
-        private static string GetProviderId(FileSystemOptions options)
+        /// <summary>
+        /// Initializes a new instance that links every loaded item to its directory, so directory queries (for example
+        /// <c>ContentList Directory="blog"</c>) find FileSystem content the way they find GitHub content.
+        /// </summary>
+        public FileSystemContentRepository(
+            IMarkdownProcessor markdownProcessor,
+            IContentQueryFilter queryFilter,
+            IOptions<FileSystemOptions> options,
+            ILogger<FileSystemContentRepository> logger,
+            IFileSystem fileSystem,
+            FileSystemDirectoryRepository directoryRepository)
+            : this(markdownProcessor, queryFilter, options, logger, fileSystem)
         {
-            return options.ProviderId ?? $"filesystem-{options.BasePath.GetHashCode():x}";
+            _directoryRepository = directoryRepository ?? throw new ArgumentNullException(nameof(directoryRepository));
         }
 
-        /// <inheritdoc/>
-        protected override async Task EnsureCacheIsLoaded(CancellationToken cancellationToken, bool forceRefresh = false)
+        private static string GetProviderId(FileSystemOptions options)
         {
-            if (!forceRefresh && ItemCache is not null)
-            {
-                return; // Cache is still valid
-            }
-
-            await CacheLock.WaitAsync(cancellationToken);
-            try
-            {
-                // Double-check inside the lock
-                if (!forceRefresh && ItemCache is not null)
-                {
-                    return; // Cache was populated while waiting for lock
-                }
-
-                // Load all content items
-                var cache = new Dictionary<string, ContentItem>();
-
-                // Create base directory if it doesn't exist
-                if (!_fileSystem.Directory.Exists(_options.BasePath))
-                {
-                    if (_options.CreateDirectoriesIfNotExist)
-                    {
-                        _fileSystem.Directory.CreateDirectory(_options.BasePath);
-                    }
-                    else
-                    {
-                        throw new DirectoryNotFoundException($"Base content directory does not exist: {_options.BasePath}");
-                    }
-                }
-
-                // Find all markdown files
-                var files = new List<string>();
-                foreach (var extension in _options.SupportedExtensions)
-                {
-                    files.AddRange(_fileSystem.Directory.GetFiles(
-                        _options.BasePath,
-                        $"*{extension}",
-                        _options.IncludeSubdirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly));
-                }
-
-                // Process each file
-                foreach (var file in files.Where(f => !IsExcluded(f)))
-                {
-                    try
-                    {
-                        cancellationToken.ThrowIfCancellationRequested();
-
-                        var contentItem = await ProcessMarkdownFileAsync(file, cancellationToken);
-                        if (contentItem is not null)
-                        {
-                            cache[contentItem.Id] = contentItem;
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.LogError(ex, "Error processing file: {FileName}", file);
-                    }
-                }
-
-                // Update cache
-                ItemCache = cache;
-            }
-            finally
-            {
-                CacheLock.Release();
-            }
+            return FileSystemProviderId.For(options);
         }
 
         /// <inheritdoc/>
@@ -205,9 +151,8 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
 
             try
             {
-                // Build the full file path
-                var relativePath = entity.Path;
-                var fullPath = Path.Combine(_options.BasePath, relativePath);
+                // Build the full file path, refusing any path that leaves the content root
+                var fullPath = ContentPathGuard.ResolveUnderRoot(_options.BasePath, entity.Path);
 
                 // Ensure directory exists
                 var directoryPath = Path.GetDirectoryName(fullPath);
@@ -224,7 +169,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
                 }
 
                 // Generate content with front matter
-                var content = GenerateMarkdownWithFrontMatter(entity);
+                var content = await GenerateMarkdownWithFrontMatterAsync(entity, cancellationToken);
 
                 // Write content to file
                 await _fileSystem.File.WriteAllTextAsync(fullPath, content, cancellationToken);
@@ -263,7 +208,12 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
                 if (string.IsNullOrWhiteSpace(fullPath))
                 {
                     // If provider-specific ID is not set, try using path
-                    fullPath = Path.Combine(_options.BasePath, item.Path);
+                    fullPath = ContentPathGuard.ResolveUnderRoot(_options.BasePath, item.Path);
+                }
+                else
+                {
+                    // Callers can change the id on the cached item, so it must still point inside the root
+                    ContentPathGuard.EnsureUnderRoot(_options.BasePath, fullPath);
                 }
 
                 if (!_fileSystem.File.Exists(fullPath))
@@ -312,9 +262,8 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
                 if (string.IsNullOrWhiteSpace(content))
                     return null;
 
-                // Get ID from relative path
                 var relativePath = GetRelativePath(filePath);
-                var id = relativePath.GetHashCode().ToString("x");
+                var id = CreateItemId(relativePath);
 
                 // Create the content item
                 var contentItem = ContentItem.Create(
@@ -342,6 +291,8 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
                     contentItem.SetLocale(_options.DefaultLocale);
                 }
 
+                await AssignDirectoryAsync(contentItem, relativePath, cancellationToken);
+
                 // Process the markdown content
                 await ProcessMarkdownAsync(content, contentItem, cancellationToken);
 
@@ -349,13 +300,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
                 var url = UrlGenerator.GenerateUrl(contentItem.Url, contentItem.Path, contentItem.Slug, EnableLocalization, SupportedLocales, ContentPath);
                 contentItem.SetUrl(url);
 
-                // Set content ID if localization is enabled
-                if (_options.EnableLocalization && string.IsNullOrWhiteSpace(contentItem.ContentId))
-                {
-                    var pathWithoutLocale = UrlGenerator.RemoveLocaleFromPath(contentItem.Path, ContentPath, EnableLocalization, SupportedLocales);
-                    var pathWithoutExtension = Path.ChangeExtension(pathWithoutLocale, null);
-                    contentItem.SetContentId(pathWithoutExtension.GetHashCode().ToString("x"));
-                }
+                AssignDefaultLocalizationId(contentItem);
 
                 return contentItem;
             }
@@ -363,6 +308,29 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
             {
                 Logger.LogError(ex, "Error processing markdown file: {FilePath}", filePath);
                 return null;
+            }
+        }
+
+        private async Task AssignDirectoryAsync(ContentItem contentItem, string relativePath, CancellationToken cancellationToken)
+        {
+            if (_directoryRepository is null)
+                return;
+
+            var directoryPath = UrlGenerator.GetDirectoryPath(relativePath);
+            if (string.IsNullOrEmpty(directoryPath))
+                return;
+
+            try
+            {
+                var directory = await _directoryRepository.GetByPathAsync(directoryPath, cancellationToken);
+                if (directory is not null)
+                {
+                    contentItem.SetDirectory(directory);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWarning(ex, "Failed to set directory for content: {Path}", relativePath);
             }
         }
 
@@ -417,7 +385,20 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
                 Logger.LogInformation("File change detected: {ChangeType} - {Path}", e.ChangeType, e.FullPath);
 
                 // Invalidate cache
-                _ = RefreshCacheAsync();
+                _ = RefreshAfterChangeAsync();
+            }
+        }
+
+        // Supervised: the failure of a background refresh is logged here instead of going unobserved.
+        private async Task RefreshAfterChangeAsync()
+        {
+            try
+            {
+                await RefreshCacheAsync();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Error refreshing content after a file change");
             }
         }
 

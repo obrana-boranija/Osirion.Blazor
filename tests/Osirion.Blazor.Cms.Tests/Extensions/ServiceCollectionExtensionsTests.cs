@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Domain.Services;
 
@@ -12,6 +13,7 @@ public class ServiceCollectionExtensionsTests
     {
         // Arrange
         var services = new ServiceCollection();
+        services.AddLogging();
         var configuration = new ConfigurationBuilder().Build();
 
         // Act
@@ -25,7 +27,23 @@ public class ServiceCollectionExtensionsTests
     }
 
     [Fact]
-    public void AddOsirionGitHubContentProvider_RegistersGitHubProvider()
+    public void AddOsirionCms_RegistersFileSystemAbstractionForFileSystemProvider()
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        services.AddLogging();
+        var configuration = new ConfigurationBuilder().Build();
+
+        // Act
+        services.AddOsirionCms(configuration);
+
+        // Assert
+        var serviceProvider = services.BuildServiceProvider();
+        Assert.NotNull(serviceProvider.GetService<System.IO.Abstractions.IFileSystem>());
+    }
+
+    [Fact]
+    public void AddOsirionGitHubContentProvider_ConfiguresGitHubOptions()
     {
         // Arrange
         var services = new ServiceCollection();
@@ -38,14 +56,14 @@ public class ServiceCollectionExtensionsTests
         });
 
         // Assert
-        var descriptor = Assert.Single(services, d =>
-            d.ServiceType == typeof(Action<GitHubOptions>));
-
-        Assert.Equal(ServiceLifetime.Singleton, descriptor.Lifetime);
+        var options = services.BuildServiceProvider().GetRequiredService<IOptions<GitHubOptions>>().Value;
+        Assert.Equal("test-owner", options.Owner);
+        Assert.Equal("test-repository", options.Repository);
+        Assert.Equal("main", options.Branch);
     }
 
     [Fact]
-    public void AddOsirionFileSystemContentProvider_RegistersFileSystemProvider()
+    public void AddOsirionFileSystemContentProvider_ConfiguresFileSystemOptions()
     {
         // Arrange
         var services = new ServiceCollection();
@@ -57,9 +75,8 @@ public class ServiceCollectionExtensionsTests
         });
 
         // Assert
-        var descriptor = Assert.Single(services, d =>
-            d.ServiceType == typeof(Action<FileSystemOptions>));
-
-        Assert.Equal(ServiceLifetime.Singleton, descriptor.Lifetime);
+        var options = services.BuildServiceProvider().GetRequiredService<IOptions<FileSystemOptions>>().Value;
+        Assert.Equal("test/path", options.BasePath);
+        Assert.True(options.WatchForChanges);
     }
 }

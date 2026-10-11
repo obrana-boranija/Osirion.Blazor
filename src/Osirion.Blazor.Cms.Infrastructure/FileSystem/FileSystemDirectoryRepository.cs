@@ -6,6 +6,7 @@ using Osirion.Blazor.Cms.Domain.Interfaces.Directory;
 using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Domain.Repositories;
 using Osirion.Blazor.Cms.Infrastructure.Directory;
+using Osirion.Blazor.Cms.Infrastructure.Utilities;
 using DirectoryNotFoundException = Osirion.Blazor.Cms.Domain.Exceptions.DirectoryNotFoundException;
 
 namespace Osirion.Blazor.Cms.Infrastructure.FileSystem;
@@ -38,7 +39,7 @@ public class FileSystemDirectoryRepository : DirectoryRepositoryBase, IDirectory
 
     private static string GetProviderId(FileSystemOptions options)
     {
-        return options.ProviderId ?? $"filesystem-{options.BasePath.GetHashCode():x}";
+        return FileSystemProviderId.For(options);
     }
 
     /// <inheritdoc/>
@@ -103,19 +104,19 @@ public class FileSystemDirectoryRepository : DirectoryRepositoryBase, IDirectory
                     throw new ContentValidationException("Parent", "Cannot move a directory to one of its descendants");
             }
 
-            // Build physical paths
-            var sourcePhysicalPath = Path.Combine(_options.BasePath, directory.Path);
+            // Build physical paths, refusing any path that leaves the content root
+            var sourcePhysicalPath = ContentPathGuard.ResolveUnderRoot(_options.BasePath, directory.Path);
 
             var newPath = string.IsNullOrWhiteSpace(newParentId)
                 ? Path.GetFileName(directory.Path) // Move to root
                 : Path.Combine(newParent!.Path, Path.GetFileName(directory.Path));
 
-            var destinationPhysicalPath = Path.Combine(_options.BasePath, newPath);
+            var destinationPhysicalPath = ContentPathGuard.ResolveUnderRoot(_options.BasePath, newPath);
 
             if (!System.IO.Directory.Exists(sourcePhysicalPath))
                 throw new DirectoryNotFoundException(directory.Path);
 
-            if (!System.IO.Directory.Exists(sourcePhysicalPath))
+            if (System.IO.Directory.Exists(destinationPhysicalPath))
                 throw new ContentValidationException("Path", $"Directory already exists at destination: {newPath}");
 
             // Create destination directory structure if needed
@@ -163,8 +164,12 @@ public class FileSystemDirectoryRepository : DirectoryRepositoryBase, IDirectory
             }
         }
 
-        // Scan directories
-        await ScanDirectoriesAsync(_options.BasePath, cache, null, cancellationToken);
+        // The base path is the content root, not a directory of its own: it has no relative path to build an item
+        // from, so scanning it as one failed and left the cache empty. Its subdirectories are the top level.
+        foreach (var topLevelDirectory in new DirectoryInfo(_options.BasePath).GetDirectories())
+        {
+            await ScanDirectoriesAsync(topLevelDirectory.FullName, cache, null, cancellationToken);
+        }
 
         return cache;
     }
@@ -181,8 +186,8 @@ public class FileSystemDirectoryRepository : DirectoryRepositoryBase, IDirectory
         if (directory is null)
             throw new DirectoryNotFoundException(id);
 
-        // Get the full physical path
-        var physicalPath = Path.Combine(_options.BasePath, directory.Path);
+        // Get the full physical path, refusing any path that leaves the content root
+        var physicalPath = ContentPathGuard.ResolveUnderRoot(_options.BasePath, directory.Path);
 
         if (!System.IO.Directory.Exists(physicalPath))
             throw new DirectoryNotFoundException(directory.Path);
@@ -215,18 +220,18 @@ public class FileSystemDirectoryRepository : DirectoryRepositoryBase, IDirectory
             if (relativePath == ".")
                 relativePath = "";
 
-            // Create directory item for this directory
-            var directoryId = relativePath.GetHashCode().ToString("x");
+            // Create directory item for this directory, with the same stable id scheme as GitHub directories
+            var normalizedPath = PathUtils.NormalizePath(relativePath);
+            var directoryId = IdGenerator.GenerateDirectoryId(normalizedPath, dirInfo.Name, ProviderId);
             var directory = DirectoryItem.Create(
                 directoryId,
-                PathUtils.NormalizePath(relativePath),
+                normalizedPath,
                 dirInfo.Name,
                 ProviderId);
 
             // Set parent if available
             if (parentDirectory is not null)
             {
-                directory.SetParent(parentDirectory);
                 parentDirectory.AddChild(directory);
             }
 
@@ -299,8 +304,8 @@ public class FileSystemDirectoryRepository : DirectoryRepositoryBase, IDirectory
     {
         LogOperation("creating", entity.Id);
 
-        // Build the full physical path
-        var physicalPath = Path.Combine(_options.BasePath, entity.Path);
+        // Build the full physical path, refusing any path that leaves the content root
+        var physicalPath = ContentPathGuard.ResolveUnderRoot(_options.BasePath, entity.Path);
 
         // Create the directory if it doesn't exist
         if (!System.IO.Directory.Exists(physicalPath))
@@ -332,7 +337,7 @@ public class FileSystemDirectoryRepository : DirectoryRepositoryBase, IDirectory
 
     private async Task SaveDirectoryMetadataAsync(DirectoryItem directory, CancellationToken cancellationToken)
     {
-        var physicalPath = Path.Combine(_options.BasePath, directory.Path);
+        var physicalPath = ContentPathGuard.ResolveUnderRoot(_options.BasePath, directory.Path);
         var indexPath = Path.Combine(physicalPath, "_index.md");
 
         // Generate metadata content
@@ -395,7 +400,20 @@ public class FileSystemDirectoryRepository : DirectoryRepositoryBase, IDirectory
             Logger.LogInformation("Directory change detected: {ChangeType} - {Path}", e.ChangeType, e.FullPath);
 
             // Invalidate cache asynchronously
-            Task.Run(() => RefreshCacheAsync());
+            _ = RefreshAfterChangeAsync();
+        }
+    }
+
+    // Supervised: the failure of a background refresh is logged here instead of going unobserved.
+    private async Task RefreshAfterChangeAsync()
+    {
+        try
+        {
+            await Task.Run(() => RefreshCacheAsync());
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error refreshing directories after a file change");
         }
     }
 

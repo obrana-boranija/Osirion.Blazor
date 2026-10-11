@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Osirion.Blazor.Analytics.Internal;
 using Osirion.Blazor.Analytics.Options;
 using Osirion.Blazor.Analytics.Services;
@@ -29,7 +30,7 @@ public static class AnalyticsServiceCollectionExtensions
         configure(builder);
 
         // Register analytics service
-        services.AddSingleton<IAnalyticsService, AnalyticsService>();
+        services.TryAddSingleton<IAnalyticsService, AnalyticsService>();
 
         return services;
     }
@@ -70,11 +71,21 @@ public static class AnalyticsServiceCollectionExtensions
                 builder.AddGA4(options => ga4Section.Bind(options));
             }
 
-            // Check for Yandex Metrica configuration
+            // Check for Yandex Metrica configuration; the key used before the Osirion:Analytics prefix is still read.
             var yandexSection = configuration.GetSection(YandexMetricaOptions.Section);
+            if (!yandexSection.Exists())
+            {
+                yandexSection = configuration.GetSection(YandexMetricaOptions.LegacySection);
+            }
             if (yandexSection.Exists())
             {
                 builder.AddYandexMetrica(options => yandexSection.Bind(options));
+            }
+
+            var consentSection = configuration.GetSection(AnalyticsConsentOptions.Section);
+            if (consentSection.Exists())
+            {
+                builder.Services.Configure<AnalyticsConsentOptions>(options => consentSection.Bind(options));
             }
 
             // Custom providers could be added here based on configuration

@@ -21,7 +21,8 @@ public class AuthenticationOptions
     public string GitHubClientSecret { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the GitHub OAuth redirect URI
+    /// Gets or sets the GitHub OAuth redirect URI. When empty, the admin login page of the site
+    /// (<c>{BaseUri}osirion/login</c>) is used.
     /// </summary>
     public string GitHubRedirectUri { get; set; } = string.Empty;
 
@@ -31,7 +32,8 @@ public class AuthenticationOptions
     public bool AllowPersonalAccessTokens { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets personal access token (PAT) for automatic authentication
+    /// Gets or sets a server personal access token (PAT) that admin services use on the server when no user is
+    /// signed in with GitHub. It never signs anyone in and is never sent to the browser.
     /// </summary>
     public string? PersonalAccessToken { get; set; }
 }

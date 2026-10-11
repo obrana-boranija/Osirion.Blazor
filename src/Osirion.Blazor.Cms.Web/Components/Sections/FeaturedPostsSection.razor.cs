@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Enums;
 using Osirion.Blazor.Cms.Domain.Repositories;
 using Osirion.Blazor.Cms.Domain.Services;
+using Osirion.Blazor.Cms.Web.Components;
 using System.Text.RegularExpressions;
 
 namespace Osirion.Blazor.Cms.Components;
@@ -12,6 +14,9 @@ namespace Osirion.Blazor.Cms.Components;
 /// </summary>
 public partial class FeaturedPostsSection
 {
+    [Inject]
+    private ILogger<FeaturedPostsSection> Logger { get; set; } = default!;
+
     [Inject]
     private IContentProviderManager ContentProviderManager { get; set; } = default!;
 
@@ -224,7 +229,7 @@ public partial class FeaturedPostsSection
         }
         catch (Exception ex)
         {
-            Console.Error.WriteLine($"Error loading posts: {ex.Message}");
+            Logger.LogError(ex, "Failed to load featured posts");
             Posts = Array.Empty<ContentItem>();
         }
         finally
@@ -254,7 +259,7 @@ public partial class FeaturedPostsSection
     /// </summary>
     private string GetCategoryUrl(string category)
     {
-        return CategoryUrlFormatter?.Invoke(category) ?? $"/category/{category.ToLower().Replace(' ', '-')}";
+        return CategoryUrlFormatter?.Invoke(category) ?? ContentUrls.CategoryUrl(category);
     }
 
     /// <summary>

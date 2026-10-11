@@ -43,9 +43,14 @@ public static class ServiceCollectionExtensions
         // Required services
         services.AddMemoryCache();
 
+        // FileSystemContentRepository reads and writes through this abstraction
+        services.TryAddSingleton<System.IO.Abstractions.IFileSystem, System.IO.Abstractions.FileSystem>();
+
         // Register core services (singletons and scoped services)
         services.TryAddSingleton<IMarkdownProcessor, MarkdownProcessor>();
         services.TryAddScoped<IStateStorageService, LocalStorageService>();
+        // LocalStorageService reads browser storage; without this a host with only the FileSystem provider cannot start
+        services.AddBlazoredLocalStorage();
         services.TryAddScoped<IContentCacheService, InMemoryContentCacheService>();
 
         // Register provider registry and manager
@@ -110,11 +115,14 @@ public static class ServiceCollectionExtensions
 
         // Register the factory if not already registered
         services.TryAddSingleton<IGitHubApiClientFactory, GitHubApiClientFactory>();
+        services.AddGitHubHttpClientCookiePolicy();
 
         // Register HTTP client factory for creating named clients
         services.TryAddHttpClient<IGitHubTokenProvider, GitHubTokenProvider>();
-        services.TryAddHttpClient<IAuthenticationService, AuthenticationService>();
-        services.TryAddHttpClient<IGitHubAdminService, GitHubAdminService>();
+
+        // Per-user services are scoped, so one user's GitHub state never reaches another user
+        services.AddScopedAuthenticationService();
+        services.AddScopedGitHubAdminService();
 
         // If provider name is specified, register as a named provider
         if (!string.IsNullOrWhiteSpace(providerName))
@@ -196,30 +204,36 @@ public static class ServiceCollectionExtensions
         {
             services.Configure<FileSystemOptions>(options => {
                 // First apply configuration from settings
-                configuration.GetSection(FileSystemOptions.Section).Bind(options);
+                FileSystemConfiguration.GetSection(configuration).Bind(options);
                 // Then apply custom configuration
                 configureOptions(options);
             });
         }
         else
         {
-            services.Configure<FileSystemOptions>(configuration.GetSection(FileSystemOptions.Section));
+            services.Configure<FileSystemOptions>(FileSystemConfiguration.GetSection(configuration));
         }
 
-        // Register FileSystem repositories
-        services.TryAddScoped<FileSystemContentRepository>();
-        services.TryAddScoped<FileSystemDirectoryRepository>();
+        // The repositories read and write through the abstraction, so a host gets the real file system unless it registers its own
+        services.TryAddSingleton<System.IO.Abstractions.IFileSystem, System.IO.Abstractions.FileSystem>();
+
+        // Register FileSystem repositories. Singletons like the GitHub ones: they own the content cache and the file
+        // watchers, and the singleton provider registry holds the provider, so a scoped registration was captured
+        // (and rejected by scope validation in Development).
+        services.TryAddSingleton<FileSystemContentRepository>();
+        services.TryAddFileSystemDirectoryCache();
+        services.TryAddSingleton(DirectoryExtensions.CreateFileSystemDirectoryRepository);
 
         // Register provider
-        services.TryAddScoped<FileSystemContentProvider>();
+        services.TryAddSingleton<FileSystemContentProvider>();
 
         // Register as IContentProvider
-        services.AddScoped<IContentProvider>(sp => sp.GetRequiredService<FileSystemContentProvider>());
+        services.AddSingleton<IContentProvider>(sp => sp.GetRequiredService<FileSystemContentProvider>());
 
         // Register default setter
         services.AddSingleton<IDefaultProviderSetter>(sp => {
             var options = sp.GetRequiredService<IOptions<FileSystemOptions>>().Value;
-            var providerId = options.ProviderId ?? $"filesystem-{options.BasePath.GetHashCode():x}";
+            var providerId = FileSystemProviderId.For(options);
             return new DefaultProviderSetter(providerId, options.IsDefault);
         });
 
@@ -242,11 +256,11 @@ public static class ServiceCollectionExtensions
     {
         if (services is null) throw new ArgumentNullException(nameof(services));
 
-        // Register the provider
-        services.TryAddScoped<TProvider>();
+        // Register the provider. Singleton because the provider registry that holds every IContentProvider is one.
+        services.TryAddSingleton<TProvider>();
 
         // Register as IContentProvider
-        services.AddScoped<IContentProvider>(sp => {
+        services.AddSingleton<IContentProvider>(sp => {
             var provider = sp.GetRequiredService<TProvider>();
 
             // Apply configuration if provided

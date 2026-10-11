@@ -9,7 +9,7 @@ using Shouldly;
 
 namespace Osirion.Blazor.Analytics.Tests.Components;
 
-public class GA4TrackerTests : TestContext
+public class GA4TrackerTests : BunitContext
 {
     [Fact]
     public void GA4Tracker_ShouldRenderScript_WhenProviderIsEnabled()
@@ -27,7 +27,7 @@ public class GA4TrackerTests : TestContext
         SetRendererInfo(new RendererInfo("Server", false));
 
         // Act
-        var cut = RenderComponent<GA4Tracker>();
+        var cut = Render<GA4Tracker>();
 
         // Assert
         cut.Markup.ShouldContain("<script");
@@ -51,7 +51,7 @@ public class GA4TrackerTests : TestContext
         SetRendererInfo(new RendererInfo("Server", false));
 
         // Act
-        var cut = RenderComponent<GA4Tracker>();
+        var cut = Render<GA4Tracker>();
 
         // Assert
         cut.MarkupMatches(string.Empty);
@@ -73,7 +73,7 @@ public class GA4TrackerTests : TestContext
         SetRendererInfo(new RendererInfo("Server", false));
 
         // Act
-        var cut = RenderComponent<GA4Tracker>();
+        var cut = Render<GA4Tracker>();
 
         // Assert
         cut.MarkupMatches(string.Empty);
@@ -95,11 +95,12 @@ public class GA4TrackerTests : TestContext
         SetRendererInfo(new RendererInfo("Server", false));
 
         // Act
-        var cut = RenderComponent<GA4Tracker>(parameters => parameters
+        var cut = Render<GA4Tracker>(parameters => parameters
             .Add(p => p.MeasurementId, "G-CUSTOM"));
 
         // Assert
-        cut.Instance.MeasurementId.ShouldBe("G-CUSTOM");
+        cut.Markup.ShouldContain("\"G-CUSTOM\"");
+        cut.Markup.ShouldNotContain("G-ORIGINAL");
     }
 
     [Fact]
@@ -118,11 +119,11 @@ public class GA4TrackerTests : TestContext
         SetRendererInfo(new RendererInfo("Server", false));
 
         // Act
-        var cut = RenderComponent<GA4Tracker>(parameters => parameters
+        var cut = Render<GA4Tracker>(parameters => parameters
             .Add(p => p.Enabled, false));
 
         // Assert
-        cut.Instance.Enabled.ShouldBe(false);
+        cut.Markup.ShouldNotContain("<script");
     }
 
     [Fact]
@@ -142,10 +143,10 @@ public class GA4TrackerTests : TestContext
         SetRendererInfo(new RendererInfo("Server", false));
 
         // Act
-        var cut = RenderComponent<GA4Tracker>(parameters => parameters
+        var cut = Render<GA4Tracker>(parameters => parameters
             .Add(p => p.DebugMode, true));
 
         // Assert
-        cut.Instance.DebugMode.ShouldBe(true);
+        cut.Markup.ShouldContain("window.ga_debug = {debug_mode: true};");
     }
 }

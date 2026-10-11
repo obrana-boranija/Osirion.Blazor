@@ -36,3 +36,8 @@ Key parameters
 - LogoWidth, LogoHeight, LogoGap: sizing.
 - MaxVisibleLogos: int? limit for performance.
 - CustomLogos: List<LogoItem>.
+
+
+Motion and accessibility
+- The enhancement script adds a pause button, pauses while keyboard focus is inside the carousel, and never cancels vertical wheel scrolling
+- The looping copy is aria-hidden and inert, so links in ChildContent are not focusable twice

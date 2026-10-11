@@ -1,14 +1,16 @@
 ﻿@namespace Osirion.Blazor.Components
 @using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Components.Forms
 @inherits OsirionComponentBase
 @inject NavigationManager Navigation
-@inject IHttpContextAccessor HttpContextAccessor
 
 @if (ShowBanner)
 {
-    <form method="post" action="@ConsentEndpoint" class="osirion-cookie-consent-actions" @attributes="Attributes">
+    <form method="post" action="@ConsentEndpoint" class="osirion-cookie-consent-form" @attributes="Attributes">
+        <AntiforgeryToken />
+        <input type="hidden" name="expiryDays" value="@ConsentExpiryDays" />
         <input type="hidden" name="returnUrl" value="@GetCurrentUrl()" />
-        <div class="@GetCookieConsentClass()" @attributes="Attributes">
+        <div class="@GetCookieConsentClass()">
             <div class="osirion-cookie-consent-container">
                 <div class="osirion-cookie-consent-content">
                     <div class="osirion-cookie-consent-message">
@@ -30,33 +32,34 @@
                         </div>
                     </div>
 
-                    @if (ShowDeclineButton)
-                    {
+                    <div class="osirion-cookie-consent-actions">
+                        @if (ShowDeclineButton)
+                        {
+                            <button type="submit"
+                                    name="consent"
+                                    value="declined"
+                                    class="@GetDangerButtonClass()">
+                                @DeclineButtonText
+                            </button>
+                        }
+
+                        @if (ShowCustomizeButton)
+                        {
+                            <button type="submit"
+                                    name="consent"
+                                    value="customize"
+                                    class="@BuildButtonClass(variant: ButtonVariant.OutlinedPrimary)" style="color:inherit; border-color:inherit;">
+                                @CustomizeButtonText
+                            </button>
+                        }
+
                         <button type="submit"
                                 name="consent"
-                                value="declined"
-                                class="@GetDangerButtonClass()">
-                            @DeclineButtonText
+                                value="accepted"
+                                class="@GetPrimaryButtonClass()">
+                            @AcceptButtonText
                         </button>
-                    }
-
-                    @if (ShowCustomizeButton)
-                    {
-                        <button type="submit"
-                                name="consent"
-                                value="customize"
-                                class="@BuildButtonClass(variant: ButtonVariant.OutlinedPrimary)" style="color:inherit; border-color:inherit;">
-                            @CustomizeButtonText
-                        </button>
-                    }
-
-                    <button type="submit"
-                            name="consent"
-                            value="accepted"
-                            class="@GetPrimaryButtonClass()">
-                        @AcceptButtonText
-                    </button>
-
+                    </div>
                 </div>
 
                 @if (ShowCustomizationPanel && IsCustomizing)

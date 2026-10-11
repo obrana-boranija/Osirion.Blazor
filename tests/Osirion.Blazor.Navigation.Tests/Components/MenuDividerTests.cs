@@ -4,7 +4,7 @@ using Osirion.Blazor.Navigation.Components;
 
 namespace Osirion.Blazor.Navigation.Tests.Components;
 
-public class MenuDividerTests : TestContext
+public class MenuDividerTests : BunitContext
 {
     public MenuDividerTests()
     {
@@ -18,7 +18,7 @@ public class MenuDividerTests : TestContext
     public void MenuDivider_ShouldRenderWithDefaultClass()
     {
         // Act
-        var cut = RenderComponent<MenuDivider>();
+        var cut = Render<MenuDivider>();
 
         // Assert
         cut.MarkupMatches(@"<div class=""osirion-menu-divider"" role=""separator""></div>");
@@ -28,7 +28,7 @@ public class MenuDividerTests : TestContext
     public void MenuDivider_ShouldRenderWithCustomClass_WhenProvided()
     {
         // Act
-        var cut = RenderComponent<MenuDivider>(parameters => parameters
+        var cut = Render<MenuDivider>(parameters => parameters
             .Add(p => p.Class, "custom-divider"));
 
         // Assert
@@ -39,7 +39,7 @@ public class MenuDividerTests : TestContext
     public void MenuDivider_ShouldRenderWithAdditionalAttributes_WhenProvided()
     {
         // Act
-        var cut = RenderComponent<MenuDivider>(parameters => parameters
+        var cut = Render<MenuDivider>(parameters => parameters
             .Add(p => p.Attributes, new Dictionary<string, object>
             {
                 { "data-testid", "main-divider" },

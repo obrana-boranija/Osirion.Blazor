@@ -175,7 +175,7 @@ Add Osirion styles to your layout. In your main layout file (`Components/Layout/
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
     <!-- Osirion Styles -->
-    <OsirionStyles FrameworkIntegration="CssFramework.Bootstrap" />
+    <OsirionStyles Framework="CssFramework.Bootstrap" />
     
     <!-- Your custom styles -->
     <link href="css/app.css" rel="stylesheet" />
@@ -444,9 +444,8 @@ For more advanced scenarios, configure Osirion.Blazor via `appsettings.json`:
         "VisibilityThreshold": 300
       }
     },
-    "Style": {
-      "FrameworkIntegration": "Bootstrap",
-      "UseStyles": true
+    "Theming": {
+      "Framework": "Bootstrap"
     }
   }
 }

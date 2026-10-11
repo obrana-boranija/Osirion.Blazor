@@ -1,132 +1,216 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Options.Configuration;
 using Osirion.Blazor.Cms.Infrastructure.Services;
+using Osirion.Blazor.Cms.Infrastructure.Tests.TestDoubles;
 using Shouldly;
 
 namespace Osirion.Blazor.Cms.Infrastructure.Tests.Services;
 
 public class AuthenticationServiceTests
 {
-    private readonly HttpClient _httpClient;
-    private readonly IOptions<CmsAdminOptions> _options;
-    private readonly ILogger<AuthenticationService> _logger;
-    private readonly IStateStorageService _stateStorage;
-    private readonly IGitHubTokenProvider _tokenProvider;
-    private readonly IGitHubApiClient _apiClient;
-    private readonly AuthenticationService _authService = null!;
+    private const string UserToken = "user-token";
+    private const string RejectedToken = "rejected-token";
+    private const string LegacyTokenKey = "github_auth_token";
+
+    // GitHub answers the user lookup for every token except the rejected one
+    private readonly RecordingHttpMessageHandler _userLookupHandler = new(request =>
+        request.Headers.Authorization?.Parameter == RejectedToken ? "{}" : """{"login":"test-user"}""");
+    private readonly IStateStorageService _stateStorage = Substitute.For<IStateStorageService>();
+    private readonly IGitHubTokenProvider _tokenProvider = Substitute.For<IGitHubTokenProvider>();
+    private readonly IGitHubApiClientFactory _apiClientFactory = Substitute.For<IGitHubApiClientFactory>();
 
     public AuthenticationServiceTests()
     {
-        _httpClient = Substitute.For<HttpClient>();
-        _logger = Substitute.For<ILogger<AuthenticationService>>();
-        _stateStorage = Substitute.For<IStateStorageService>();
-        _tokenProvider = Substitute.For<IGitHubTokenProvider>();
-        _apiClient = Substitute.For<IGitHubApiClient>();
-
-        var options = new CmsAdminOptions
-        {
-            //GitHub = new GitHubAdminOptions
-            //{
-            //    Owner = "testOwner",
-            //    Repository = "testRepo"
-            //},
-            Authentication = new AuthenticationOptions
-            {
-                GitHubClientId = "test-client-id",
-                GitHubClientSecret = "test-client-secret",
-                PersonalAccessToken = "test-pat"
-            }
-        };
-
-        _options = Options.Create(options);
-
-        //_authService = new AuthenticationService(
-        //    _httpClient,
-        //    _options,
-        //    _logger,
-        //    _stateStorage,
-        //    _tokenProvider,
-        //    _apiClient);
-
         _stateStorage.IsInitialized.Returns(true);
     }
 
     [Fact]
-    public async Task InitializeAsync_WithSavedToken_RestoresAuthState()
+    public async Task SetAccessTokenAsync_NeverUsesGitHubApiClientFactory()
     {
-        // Arrange
-        _stateStorage.GetStateAsync<string>("github_auth_token").Returns("saved-token");
-        _stateStorage.GetStateAsync<string>("github_username").Returns("test-user");
+        // Proves a user's token is no longer pushed onto a factory client, through which it reached the public
+        // site and other users.
+        var service = CreateService();
 
-        // Set up API client to return success
-        _apiClient.When(x =>
-            x.SetAccessToken(Arg.Any<string>()))
-            .Do(x => { });
+        var result = await service.SetAccessTokenAsync(UserToken);
 
-        // Act
-        await _authService.InitializeAsync();
-
-        // Assert
-        _authService.IsAuthenticated.ShouldBeTrue();
-        _authService.Username.ShouldBe("test-user");
-        _authService.AccessToken.ShouldBe("saved-token");
-
-        // Verify API client was configured
-        _apiClient.Received(1).SetAccessToken("saved-token");
-    }
-
-    [Fact]
-    public async Task AuthenticateWithGitHubAsync_WithValidCode_SetsAuthState()
-    {
-        // Arrange
-        var code = "test-code";
-        var token = "new-token";
-
-        _tokenProvider.ExchangeCodeForTokenAsync(
-            code,
-            "test-client-id",
-            "test-client-secret")
-            .Returns(token);
-
-        // Set up API client methods
-        _apiClient.When(x =>
-            x.SetAccessToken(Arg.Any<string>()))
-            .Do(x => { });
-
-        // Act
-        var result = await _authService.AuthenticateWithGitHubAsync(code);
-
-        // Assert
         result.ShouldBeTrue();
-        _authService.IsAuthenticated.ShouldBeTrue();
-        _authService.AccessToken.ShouldBe(token);
-
-        // Verify token was set on API client
-        _apiClient.Received(1).SetAccessToken(token);
-
-        // Verify state was saved
-        await _stateStorage.Received(1).SaveStateAsync("github_auth_token", token);
+        _apiClientFactory.ReceivedCalls().ShouldBeEmpty();
     }
 
     [Fact]
-    public async Task SignOutAsync_ClearsAuthState()
+    public async Task AuthenticateWithGitHubAsync_NeverUsesGitHubApiClientFactory()
     {
-        // Arrange - set up initial authenticated state
-        await _authService.SetAccessTokenAsync("test-token");
-        _authService.IsAuthenticated.ShouldBeTrue();
+        // Proves a token obtained through OAuth is no longer pushed onto a factory client.
+        _tokenProvider.ExchangeCodeForTokenAsync("code", "client-id", "client-secret").Returns(UserToken);
+        var service = CreateService();
 
-        // Act
-        await _authService.SignOutAsync();
+        var result = await AuthenticateWithCodeAsync(service, "code");
 
-        // Assert
-        _authService.IsAuthenticated.ShouldBeFalse();
-        _authService.AccessToken.ShouldBeNull();
+        result.ShouldBeTrue();
+        _apiClientFactory.ReceivedCalls().ShouldBeEmpty();
+    }
 
-        // Verify state was removed
-        await _stateStorage.Received(1).RemoveStateAsync("github_auth_token");
-        await _stateStorage.Received(1).RemoveStateAsync("github_username");
+    [Fact]
+    public async Task InitializeAsync_WithStoredToken_NeverUsesGitHubApiClientFactory()
+    {
+        // Proves initializing no longer pushes a stored token onto a factory client.
+        _stateStorage.GetStateAsync<string>(LegacyTokenKey).Returns(UserToken);
+        var service = CreateService();
+
+        await service.InitializeAsync();
+
+        _apiClientFactory.ReceivedCalls().ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void Constructor_WithoutConfiguredGitHubProvider_Succeeds()
+    {
+        var factoryWithoutProviders = GitHubTestServices.CreateFactory(new RecordingHttpMessageHandler(), new ConfigurationBuilder().Build());
+
+        Should.NotThrow(() => CreateService(factoryWithoutProviders));
+    }
+
+    [Fact]
+    public async Task SignOutAsync_ClearsTokenAndAnnouncesSignOut()
+    {
+        var service = CreateService();
+        await service.SetAccessTokenAsync(UserToken);
+        bool? announced = null;
+        service.AuthenticationChanged += isAuthenticated => announced = isAuthenticated;
+
+        await service.SignOutAsync();
+
+        service.IsAuthenticated.ShouldBeFalse();
+        service.AccessToken.ShouldBeNull();
+        announced.ShouldBe(false);
+    }
+
+    [Fact]
+    public async Task SetAccessTokenAsync_WithRejectedTokenWhileSignedIn_KeepsCurrentSignIn()
+    {
+        // Proves a mistyped token no longer signs the user out here while the admin services of the same scope,
+        // which only follow the AuthenticationChanged event, keep acting with the previous token.
+        var service = CreateService();
+        await service.SetAccessTokenAsync(UserToken);
+        var announcements = new List<bool>();
+        service.AuthenticationChanged += announcements.Add;
+
+        var result = await service.SetAccessTokenAsync(RejectedToken);
+
+        result.ShouldBeFalse();
+        service.IsAuthenticated.ShouldBeTrue();
+        service.AccessToken.ShouldBe(UserToken);
+        announcements.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task AuthenticateWithGitHubAsync_WithFailedExchangeWhileSignedIn_KeepsCurrentSignIn()
+    {
+        // Proves a failed OAuth exchange no longer drops the signed-in token from this service alone.
+        var service = CreateService();
+        await service.SetAccessTokenAsync(UserToken);
+
+        var result = await AuthenticateWithCodeAsync(service, "rejected-code");
+
+        result.ShouldBeFalse();
+        service.IsAuthenticated.ShouldBeTrue();
+        service.AccessToken.ShouldBe(UserToken);
+    }
+
+    [Fact]
+    public async Task InitializeAsync_WithConfiguredPersonalAccessToken_DoesNotSignIn()
+    {
+        // Proves the server personal access token no longer signs anyone in through the authentication service.
+        var service = CreateService(personalAccessToken: "server-pat");
+
+        await service.InitializeAsync();
+
+        service.IsAuthenticated.ShouldBeFalse();
+        service.AccessToken.ShouldBeNull();
+        _userLookupHandler.Requests.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task InitializeAsync_WithLegacyPlainTextToken_RemovesItWithoutUsingIt()
+    {
+        // Proves a token an earlier version left in plain-text storage is purged instead of restored.
+        _stateStorage.GetStateAsync<string>(LegacyTokenKey).Returns(UserToken);
+        _stateStorage.GetStateAsync<bool>("auth_status").Returns(true);
+        var service = CreateService();
+
+        await service.InitializeAsync();
+
+        await _stateStorage.Received(1).RemoveStateAsync(LegacyTokenKey);
+        await _stateStorage.DidNotReceive().GetStateAsync<string>(LegacyTokenKey);
+        service.IsAuthenticated.ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task SetAccessTokenAsync_NeverWritesTokenToPlainTextStorage()
+    {
+        // Proves a user's token is no longer persisted in plain text.
+        var service = CreateService();
+
+        var result = await service.SetAccessTokenAsync(UserToken);
+
+        result.ShouldBeTrue();
+        await _stateStorage.DidNotReceive().SaveStateAsync(LegacyTokenKey, Arg.Any<string?>());
+        await _stateStorage.DidNotReceive().SaveStateAsync(Arg.Any<string>(), UserToken);
+    }
+
+    [Fact]
+    public async Task AuthenticateWithGitHubAsync_NeverWritesTokenToPlainTextStorage()
+    {
+        _tokenProvider.ExchangeCodeForTokenAsync("code", "client-id", "client-secret").Returns(UserToken);
+        var service = CreateService();
+
+        var result = await AuthenticateWithCodeAsync(service, "code");
+
+        result.ShouldBeTrue();
+        await _stateStorage.DidNotReceive().SaveStateAsync(LegacyTokenKey, Arg.Any<string?>());
+        await _stateStorage.DidNotReceive().SaveStateAsync(Arg.Any<string>(), UserToken);
+    }
+
+    [Theory]
+    [InlineData(typeof(IAuthenticationService))]
+    [InlineData(typeof(AuthenticationService))]
+    public void AuthenticateWithGitHubAsync_ExchangesCodeWithoutStateOrVerifier_IsMarkedObsolete(Type serviceType)
+    {
+        // Proves callers get a compiler warning: the method cannot take part in a state-checked PKCE sign-in.
+        var method = serviceType.GetMethod("AuthenticateWithGitHubAsync", [typeof(string)]);
+
+        method.ShouldNotBeNull();
+        Attribute.IsDefined(method, typeof(ObsoleteAttribute)).ShouldBeTrue();
+    }
+
+    // The obsolete member is exercised on purpose: hosts that still call it must keep the behaviour they had.
+#pragma warning disable CS0618
+    private static Task<bool> AuthenticateWithCodeAsync(AuthenticationService service, string code) =>
+        service.AuthenticateWithGitHubAsync(code);
+#pragma warning restore CS0618
+
+    private AuthenticationService CreateService(IGitHubApiClientFactory? factory = null, string? personalAccessToken = null)
+    {
+        var options = new CmsAdminOptions
+        {
+            Authentication = new AuthenticationOptions
+            {
+                GitHubClientId = "client-id",
+                GitHubClientSecret = "client-secret",
+                PersonalAccessToken = personalAccessToken
+            }
+        };
+
+        return new AuthenticationService(
+            new HttpClient(_userLookupHandler),
+            Options.Create(options),
+            NullLogger<AuthenticationService>.Instance,
+            _stateStorage,
+            _tokenProvider,
+            factory ?? _apiClientFactory);
     }
 }

@@ -5,5 +5,9 @@
 @using Osirion.Blazor.Cms.Admin.Shared.Components
 @using Osirion.Blazor.Cms.Admin.Components.Layouts
 @using Osirion.Blazor.Cms.Admin.Features.Layouts.Components
+@using Osirion.Blazor.Cms.Admin.Features.Security
+@using Microsoft.AspNetCore.Authorization
 @inherits BaseComponent
 @layout OsirionAdminLayout
+@* Every admin page, the GitHub login page included, requires the admin policy before it renders *@
+@attribute [Authorize(Policy = CmsAdminAuthorization.PolicyName)]

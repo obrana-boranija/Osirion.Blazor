@@ -19,6 +19,12 @@ public class DefaultProviderSetter : IDefaultProviderSetter
         _isDefault = isDefault;
     }
 
+    /// <summary>Gets the id of the provider this setting refers to.</summary>
+    internal string ProviderId => _providerId;
+
+    /// <summary>Gets whether the provider is configured as the default.</summary>
+    internal bool IsDefault => _isDefault;
+
     /// <summary>Performs the SetDefault operation.</summary>
     public void SetDefault(IServiceProvider serviceProvider)
     {

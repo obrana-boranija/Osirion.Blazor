@@ -1,9 +1,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Domain.Interfaces.Directory;
 using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Infrastructure.Directory;
+using Osirion.Blazor.Cms.Infrastructure.FileSystem;
 
 namespace Osirion.Blazor.Cms.Infrastructure.DependencyInjection;
 
@@ -12,6 +14,12 @@ namespace Osirion.Blazor.Cms.Infrastructure.DependencyInjection;
 /// </summary>
 public static class DirectoryExtensions
 {
+    /// <summary>
+    /// Service key of the directory cache that FileSystem directory repositories share. It is kept apart from the
+    /// GitHub cache so that one provider never answers with another provider's directories.
+    /// </summary>
+    internal const string FileSystemDirectoryCacheKey = "Osirion.Cms.FileSystem.DirectoryCache";
+
     /// <summary>
     /// Adds directory services to the service collection
     /// </summary>
@@ -36,5 +44,28 @@ public static class DirectoryExtensions
         });
 
         return services;
+    }
+
+    /// <summary>
+    /// Registers the FileSystem directory cache once, as a keyed singleton separate from other providers' caches.
+    /// </summary>
+    internal static IServiceCollection TryAddFileSystemDirectoryCache(this IServiceCollection services)
+    {
+        services.TryAddKeyedSingleton<IDirectoryCacheManager>(
+            FileSystemDirectoryCacheKey,
+            (sp, _) => new DirectoryCacheManager(sp.GetRequiredService<ILogger<DirectoryCacheManager>>()));
+
+        return services;
+    }
+
+    /// <summary>
+    /// Creates a <see cref="FileSystemDirectoryRepository"/> that uses the FileSystem directory cache instead of the
+    /// default one, which GitHub repositories use.
+    /// </summary>
+    internal static FileSystemDirectoryRepository CreateFileSystemDirectoryRepository(IServiceProvider serviceProvider)
+    {
+        var cacheManager = serviceProvider.GetRequiredKeyedService<IDirectoryCacheManager>(FileSystemDirectoryCacheKey);
+
+        return ActivatorUtilities.CreateInstance<FileSystemDirectoryRepository>(serviceProvider, cacheManager);
     }
 }

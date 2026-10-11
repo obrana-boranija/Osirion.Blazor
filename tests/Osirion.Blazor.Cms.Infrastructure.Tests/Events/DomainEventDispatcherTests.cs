@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Osirion.Blazor.Cms.Domain.Events;
@@ -12,6 +12,7 @@ public class DomainEventDispatcherTests
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<DomainEventDispatcher> _logger;
     private readonly DomainEventDispatcher _dispatcher;
+    private readonly List<TestEventHandler> _handlers;
 
     // Test event classes
     public class TestEvent : IDomainEvent
@@ -20,9 +21,7 @@ public class DomainEventDispatcherTests
         public string Message { get; set; } = "Test Message";
     }
 
-    public interface ITestEventHandler : IDomainEventHandler<TestEvent> { }
-
-    public class TestEventHandler : ITestEventHandler
+    public class TestEventHandler : IDomainEventHandler<TestEvent>
     {
         public bool HandlerCalled { get; private set; }
 
@@ -40,11 +39,12 @@ public class DomainEventDispatcherTests
         // Create test handlers
         var handler1 = new TestEventHandler();
         var handler2 = new TestEventHandler();
+        _handlers = [handler1, handler2];
 
         // Setup service provider to return our handlers
         var serviceCollection = new ServiceCollection();
-        serviceCollection.AddSingleton<ITestEventHandler>(handler1);
-        serviceCollection.AddSingleton<ITestEventHandler>(handler2);
+        serviceCollection.AddSingleton<IDomainEventHandler<TestEvent>>(handler1);
+        serviceCollection.AddSingleton<IDomainEventHandler<TestEvent>>(handler2);
 
         _serviceProvider = serviceCollection.BuildServiceProvider();
 
@@ -61,9 +61,8 @@ public class DomainEventDispatcherTests
         await _dispatcher.DispatchAsync(testEvent);
 
         // Assert
-        var handlers = _serviceProvider.GetServices<ITestEventHandler>().ToList();
-        handlers.Count.ShouldBe(2);
-        handlers.ShouldAllBe(h => ((TestEventHandler)h).HandlerCalled);
+        _serviceProvider.GetServices<IDomainEventHandler<TestEvent>>().Count().ShouldBe(2);
+        _handlers.ShouldAllBe(h => h.HandlerCalled);
     }
 
     [Fact]
@@ -92,5 +91,38 @@ public class DomainEventDispatcherTests
             Arg.Is<object>(o => o == null ? false : o.ToString()!.Contains("No handlers found")),
             Arg.Any<Exception>(),
             Arg.Any<Func<object, Exception?, string>>());
+    }
+
+    public class ConcreteEvent : IDomainEvent
+    {
+        public DateTime OccurredOn { get; } = DateTime.UtcNow;
+    }
+
+    public class ConcreteEventHandler : IDomainEventHandler<ConcreteEvent>
+    {
+        public int Calls { get; private set; }
+
+        public Task HandleAsync(ConcreteEvent domainEvent)
+        {
+            Calls++;
+            return Task.CompletedTask;
+        }
+    }
+
+    [Fact]
+    public async Task DispatchAsync_WithEventTypedAsInterface_RunsHandlersOfTheRuntimeType()
+    {
+        // Arrange
+        var handler = new ConcreteEventHandler();
+        var services = new ServiceCollection();
+        services.AddSingleton<IDomainEventHandler<ConcreteEvent>>(handler);
+        var dispatcher = new DomainEventDispatcher(services.BuildServiceProvider(), _logger);
+        IDomainEvent domainEvent = new ConcreteEvent();
+
+        // Act
+        await dispatcher.DispatchAsync(domainEvent);
+
+        // Assert
+        handler.Calls.ShouldBe(1);
     }
 }

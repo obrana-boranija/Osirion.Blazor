@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Osirion.Blazor.Navigation.Internal;
 using Osirion.Blazor.Components;
 
 namespace Osirion.Blazor.Navigation.Components;
@@ -98,14 +99,34 @@ public partial class Menu
     public string? Id { get; set; }
 
     /// <summary>
+    /// Gets the brand link destination, or <see langword="null"/> when <see cref="Href"/> uses a scheme
+    /// that is not safe (for example <c>javascript:</c>).
+    /// </summary>
+    private string? RenderedHref => SafeHref.Sanitize(Href);
+
+    // Generated once per instance. A fixed per-orientation default would give two menus with the same
+    // orientation the same id, and the toggle label would then switch the wrong menu.
+    private readonly string _generatedId = Guid.NewGuid().ToString("N")[..8];
+
+    // Derived render state, rebuilt from the parameters on every parameter update. It is never written
+    // back into a parameter, so a parent re-render cannot wipe it.
+    private string _containerClass = "osirion-menu-container";
+    private Dictionary<string, object> _containerAttributes = [];
+
+    /// <summary>
     /// Gets the unique identifier for the menu component.
     /// </summary>
-    private string MenuId => Id ?? $"osirion-menu-{Orientation.ToString().ToLowerInvariant()}";
+    private string MenuId => Id ?? $"osirion-menu-{Orientation.ToString().ToLowerInvariant()}-{_generatedId}";
 
     /// <summary>
     /// Gets the menu toggle ID.
     /// </summary>
     private string ToggleId => $"{MenuId}-toggle";
+
+    /// <summary>
+    /// Gets the identifier of the navigation landmark the mobile toggle controls.
+    /// </summary>
+    private string NavId => $"{MenuId}-nav";
 
     /// <summary>
     /// Gets the component theme for the data attribute.
@@ -122,62 +143,52 @@ public partial class Menu
         };
     }
 
-    /// <summary>Initializes the component state and required services.</summary>
-    protected override void OnInitialized()
+    /// <summary>Recomputes the container classes and attributes from the current parameters.</summary>
+    protected override void OnParametersSet()
     {
-        base.OnInitialized();
+        base.OnParametersSet();
 
-        // Set menu orientation class
-        var orientationClass = $"osirion-menu-{Orientation.ToString().ToLowerInvariant()}";
+        var classes = new List<string>
+        {
+            "osirion-menu-container",
+            $"osirion-menu-{Orientation.ToString().ToLowerInvariant()}"
+        };
 
-        // Set alignment class for horizontal orientation
-        var alignmentClass = Orientation == MenuOrientation.Horizontal
-            ? $"osirion-menu-align-{Alignment.ToString().ToLowerInvariant()}"
-            : string.Empty;
+        if (Orientation == MenuOrientation.Horizontal)
+            classes.Add($"osirion-menu-align-{Alignment.ToString().ToLowerInvariant()}");
 
-        // Set auto-expand class for vertical orientation
-        var expandClass = Orientation == MenuOrientation.Vertical && AutoExpandActive
-            ? "osirion-menu-auto-expand"
-            : string.Empty;
+        if (Orientation == MenuOrientation.Vertical && AutoExpandActive)
+            classes.Add("osirion-menu-auto-expand");
 
-        // Combine all classes
-        var classes = new List<string> { orientationClass };
-
-        if (!string.IsNullOrWhiteSpace(alignmentClass))
-            classes.Add(alignmentClass);
-
-        if (!string.IsNullOrWhiteSpace(expandClass))
-            classes.Add(expandClass);
-
-        // Add collapsible class if needed - this is critical for mobile behavior
+        // The collapsible class is critical for the mobile behaviour.
         if (CollapseOnMobile)
             classes.Add("osirion-menu-collapsible");
 
         if (CollapseOnMobile && CollapseBreakpoint == MenuCollapseBreakpoint.ExtraLarge)
             classes.Add("osirion-menu-collapse-extra-large");
 
-        // Add sticky class if enabled (only for horizontal menus)
         if (Sticky && Orientation == MenuOrientation.Horizontal)
             classes.Add("osirion-menu-sticky");
 
-        // Combine with existing CssClass
-        Class = string.IsNullOrWhiteSpace(Class)
-            ? string.Join(" ", classes)
-            : $"{Class} {string.Join(" ", classes)}";
+        if (!string.IsNullOrWhiteSpace(Class))
+            classes.Add(Class);
 
-        // Apply z-index as inline style for sticky menu
-        if (Sticky && Orientation == MenuOrientation.Horizontal && !Attributes.ContainsKey("style"))
+        _containerClass = string.Join(' ', classes);
+
+        var attributes = new Dictionary<string, object>(Attributes ?? new Dictionary<string, object>());
+
+        if (Sticky && Orientation == MenuOrientation.Horizontal)
         {
-            Attributes["style"] = $"z-index: {StickyZIndex};";
-        }
-        else if (Sticky && Orientation == MenuOrientation.Horizontal)
-        {
-            Attributes["style"] = $"{Attributes["style"]} z-index: {StickyZIndex};";
+            var zIndex = $"z-index: {StickyZIndex};";
+            attributes["style"] = attributes.TryGetValue("style", out var existingStyle)
+                ? $"{existingStyle} {zIndex}"
+                : zIndex;
         }
 
-        // Set ID attribute
-        if (!Attributes.ContainsKey("id"))
-            Attributes["id"] = MenuId;
+        if (!attributes.ContainsKey("id"))
+            attributes["id"] = MenuId;
+
+        _containerAttributes = attributes;
     }
 }
 

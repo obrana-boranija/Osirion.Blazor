@@ -9,22 +9,22 @@ public partial class EnhancedNavigation
 {
 
     /// <summary>
-    /// Gets or sets the scroll behavior
+    /// Gets or sets the scroll behavior. When not set, the configured <see cref="EnhancedNavigationOptions.Behavior"/> applies
     /// </summary>
     [Parameter]
-    public ScrollBehavior Behavior { get; set; } = ScrollBehavior.Auto;
+    public ScrollBehavior? Behavior { get; set; }
 
     /// <summary>
-    /// Gets or sets whether to reset scroll on navigation
+    /// Gets or sets whether to reset scroll on navigation. When not set, the configured <see cref="EnhancedNavigationOptions.ResetScrollOnNavigation"/> applies
     /// </summary>
     [Parameter]
-    public bool ResetScrollOnNavigation { get; set; } = true;
+    public bool? ResetScrollOnNavigation { get; set; }
 
     /// <summary>
-    /// Gets or sets whether to preserve scroll for same-page navigation
+    /// Gets or sets whether to preserve scroll for same-page navigation. When not set, the configured <see cref="EnhancedNavigationOptions.PreserveScrollForSamePageNavigation"/> applies
     /// </summary>
     [Parameter]
-    public bool PreserveScrollForSamePageNavigation { get; set; } = true;
+    public bool? PreserveScrollForSamePageNavigation { get; set; }
 
     /// <summary>
     /// Gets the effective options, merging parameters with configured options
@@ -36,9 +36,9 @@ public partial class EnhancedNavigation
             var options = Options?.Value ?? new EnhancedNavigationOptions();
             return new EnhancedNavigationOptions
             {
-                Behavior = Behavior != ScrollBehavior.Auto ? Behavior : options.Behavior,
-                ResetScrollOnNavigation = ResetScrollOnNavigation,
-                PreserveScrollForSamePageNavigation = PreserveScrollForSamePageNavigation
+                Behavior = Behavior ?? options.Behavior,
+                ResetScrollOnNavigation = ResetScrollOnNavigation ?? options.ResetScrollOnNavigation,
+                PreserveScrollForSamePageNavigation = PreserveScrollForSamePageNavigation ?? options.PreserveScrollForSamePageNavigation
             };
         }
     }

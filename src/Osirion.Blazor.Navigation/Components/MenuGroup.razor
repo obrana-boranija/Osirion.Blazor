@@ -1,7 +1,7 @@
 ﻿@namespace Osirion.Blazor.Navigation.Components
 @inherits OsirionComponentBase
 
-<div class="@CombineCssClasses("osirion-menu-group")" @attributes="Attributes">
+<div class="@_groupClass" @attributes="_groupAttributes">
     @if (!string.IsNullOrWhiteSpace(Label))
     {
         <div class="osirion-menu-group-label" id="@LabelId">
@@ -25,10 +25,10 @@
         @ChildContent
     </div>
 
-    @if (!string.IsNullOrWhiteSpace(FooterText) && !string.IsNullOrWhiteSpace(FooterHref))
+    @if (!string.IsNullOrWhiteSpace(FooterText) && _footerHref is not null)
     {
         <a class="osirion-menu-group-footer"
-           href="@FooterHref"
+           href="@_footerHref"
            target="@FooterTarget"
            rel="@(FooterTarget == "_blank" ? "noopener noreferrer" : null)">
             <span class="osirion-menu-group-footer-text">@FooterText</span>

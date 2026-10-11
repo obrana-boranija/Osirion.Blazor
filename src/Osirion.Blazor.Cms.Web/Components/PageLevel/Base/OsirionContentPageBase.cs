@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Components;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Repositories;
@@ -391,4 +393,48 @@ public abstract partial class OsirionContentPageBase : OsirionComponentBase
     /// </summary>
     [Inject]
     protected NavigationManager NavigationManager { get; set; } = default!;
+
+    [Inject]
+    private ILoggerFactory LoggerFactory { get; set; } = default!;
+
+    private ILogger? _logger;
+
+    /// <summary>Gets the logger for the concrete page type.</summary>
+    protected ILogger Logger => _logger ??= LoggerFactory.CreateLogger(GetType());
+
+#if !NET10_0_OR_GREATER
+    /// <summary>The request context; only available during static server-side rendering.</summary>
+    [CascadingParameter]
+    private HttpContext? HttpContext { get; set; }
+#endif
+
+    private bool _notFoundSignalled;
+
+    /// <summary>
+    /// Tells the framework the requested content does not exist so a statically rendered response carries
+    /// HTTP 404 instead of a 200 "soft 404". On .NET 10 this is <c>NavigationManager.NotFound()</c>; on .NET 9 the
+    /// status code is set on the cascading <c>HttpContext</c>. It has no effect once the response has started,
+    /// which is why the page components do not use streaming rendering, and none during interactive rendering,
+    /// where the not-found markup the component renders is all that can be shown.
+    /// </summary>
+    protected void SignalNotFound()
+    {
+        if (_notFoundSignalled)
+        {
+            return;
+        }
+
+        _notFoundSignalled = true;
+#if NET10_0_OR_GREATER
+        NavigationManager.NotFound();
+#else
+        if (HttpContext is { Response.HasStarted: false } httpContext)
+        {
+            httpContext.Response.StatusCode = StatusCodes.Status404NotFound;
+        }
+#endif
+    }
+
+    /// <summary>Allows the next not-found result to signal again after content was found.</summary>
+    protected void ResetNotFoundSignal() => _notFoundSignalled = false;
 }

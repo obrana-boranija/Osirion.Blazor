@@ -8,6 +8,7 @@ namespace Osirion.Blazor.Cms.Domain.Entities;
 /// Base class for domain entities with event support
 /// </summary>
 /// <typeparam name="TId">Type of entity identifier</typeparam>
+[Obsolete("Derive from DomainEntity<TId> (or Entity<TId>) instead. This type hides the domain event members of Entity<TId> with its own list, so events raised through the base type are not seen here. It will be removed in the next major release.")]
 public abstract class DomainEntityBase<TId> : DomainEntity<TId> where TId : notnull
 {
     private readonly List<IDomainEvent> _domainEvents = new();

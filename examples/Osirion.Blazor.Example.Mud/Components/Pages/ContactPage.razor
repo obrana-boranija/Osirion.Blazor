@@ -1,0 +1,19 @@
+@page "/contact"
+@using Osirion.Blazor.Components
+@using Osirion.Blazor.Core.Models
+
+<OsirionBaseSection Id="contact-us" Title="Contact Us">
+    <OsirionContactForm Id="home-contact-form"
+                        FormTitle="Get in Touch"
+                        FormDescription="Have questions about Osirion.Blazor? We'd love to hear from you!"
+                        ContactInfo="@contactInfo"
+                        ShowContactInformation="true" />
+</OsirionBaseSection>
+
+@code {
+    private readonly ContactInformation contactInfo = new()
+    {
+        Address = "Belgrade, Serbia",
+        Message = "We're here to help you build amazing Blazor applications!"
+    };
+}

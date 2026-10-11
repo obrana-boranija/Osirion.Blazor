@@ -1,0 +1,28 @@
+@page "/category"
+@page "/{locale}/category"
+@page "/category/{CategorySlug?}"
+@page "/{locale}/category/{CategorySlug?}"
+@using Osirion.Blazor.Cms.Web.Components
+@using Osirion.Blazor.Components
+
+<PageTitle>@(string.IsNullOrWhiteSpace(CategorySlug) ? "Categories" : $"Category: {Title}")</PageTitle>
+
+<HeroSection Title="@($"Category: {Title}")"
+             Subtitle="@($"All related articles for category \"{Title}\"")"
+             ImageUrl="assets/images/blazor-cover.png"
+             BackgroundPattern="BackgroundPatternType.Grid"
+             Alignment="Osirion.Blazor.Components.Alignment.Right"
+             Variant="HeroVariant.Hero" />
+
+@if (string.IsNullOrWhiteSpace(CategorySlug))
+{
+    <FluentMessageBar Intent="MessageBarIntent.Info">Select a category to view content.</FluentMessageBar>
+}
+else
+{
+    <ContentList Locale="@Locale"
+                 Directory="blog"
+                 Category="@CategorySlug"
+                 ShowPagination
+                 ItemsPerPage="12" />
+}

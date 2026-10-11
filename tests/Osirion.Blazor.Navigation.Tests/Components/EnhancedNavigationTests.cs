@@ -8,8 +8,17 @@ using Shouldly;
 
 namespace Osirion.Blazor.Navigation.Tests.Components;
 
-public class EnhancedNavigationTests : TestContext
+public class EnhancedNavigationTests : BunitContext
 {
+    private static BunitContext CreateContext(EnhancedNavigationOptions options)
+    {
+        var context = new BunitContext();
+        context.Services.AddSingleton(Microsoft.Extensions.Options.Options.Create(options));
+        context.JSInterop.Mode = JSRuntimeMode.Loose;
+        context.SetRendererInfo(new RendererInfo("Server", false));
+        return context;
+    }
+
     public EnhancedNavigationTests()
     {
         // Mock server-side environment by setting SetInteractive to false
@@ -22,29 +31,70 @@ public class EnhancedNavigationTests : TestContext
     }
 
     [Fact]
-    public void EnhancedNavigation_ShouldUseDefaultOptions_WhenNoOptionsProvided()
+    public void EnhancedNavigation_ShouldLeaveParametersUnset_WhenNoneProvided()
     {
         // Act
-        var cut = RenderComponent<EnhancedNavigation>();
+        var cut = Render<EnhancedNavigation>();
 
         // Assert
-        cut.Instance.Behavior.ShouldBe(ScrollBehavior.Auto);
-        cut.Instance.ResetScrollOnNavigation.ShouldBeTrue();
-        cut.Instance.PreserveScrollForSamePageNavigation.ShouldBeTrue();
+        cut.Instance.Behavior.ShouldBeNull();
+        cut.Instance.ResetScrollOnNavigation.ShouldBeNull();
+        cut.Instance.PreserveScrollForSamePageNavigation.ShouldBeNull();
     }
 
     [Fact]
     public void EnhancedNavigation_ShouldUseParameterValues_WhenProvided()
     {
         // Act
-        var cut = RenderComponent<EnhancedNavigation>(parameters => parameters
+        var cut = Render<EnhancedNavigation>(parameters => parameters
             .Add(p => p.Behavior, ScrollBehavior.Smooth)
             .Add(p => p.ResetScrollOnNavigation, false)
             .Add(p => p.PreserveScrollForSamePageNavigation, false));
 
         // Assert
         cut.Instance.Behavior.ShouldBe(ScrollBehavior.Smooth);
-        cut.Instance.ResetScrollOnNavigation.ShouldBeFalse();
-        cut.Instance.PreserveScrollForSamePageNavigation.ShouldBeFalse();
+        cut.Instance.ResetScrollOnNavigation.ShouldBe(false);
+        cut.Instance.PreserveScrollForSamePageNavigation.ShouldBe(false);
+    }
+
+    [Fact]
+    public void EnhancedNavigation_ShouldApplyConfiguredOptions_WhenParametersAreNotSet()
+    {
+        // Arrange
+        using var context = CreateContext(new EnhancedNavigationOptions
+        {
+            Behavior = ScrollBehavior.Smooth,
+            ResetScrollOnNavigation = false,
+            PreserveScrollForSamePageNavigation = false
+        });
+
+        // Act
+        var cut = context.Render<EnhancedNavigation>();
+
+        // Assert
+        cut.Markup.ShouldContain("behavior: 'smooth'");
+        cut.Markup.ShouldNotContain("if (true)");
+    }
+
+    [Fact]
+    public void EnhancedNavigation_ShouldPreferExplicitParameter_OverConfiguredOptions()
+    {
+        // Arrange
+        using var context = CreateContext(new EnhancedNavigationOptions
+        {
+            Behavior = ScrollBehavior.Smooth,
+            ResetScrollOnNavigation = false,
+            PreserveScrollForSamePageNavigation = false
+        });
+
+        // Act
+        var cut = context.Render<EnhancedNavigation>(parameters => parameters
+            .Add(p => p.Behavior, ScrollBehavior.Instant)
+            .Add(p => p.ResetScrollOnNavigation, true));
+
+        // Assert
+        cut.Markup.ShouldContain("behavior: 'instant'");
+        cut.Markup.ShouldNotContain("behavior: 'smooth'");
+        cut.Markup.ShouldContain("if (true)");
     }
 }

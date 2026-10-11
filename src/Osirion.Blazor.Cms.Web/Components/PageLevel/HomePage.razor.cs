@@ -186,5 +186,20 @@ public partial class HomePage
         return $"osirion-homepage {Class}".Trim();
     }
 
+    /// <inheritdoc/>
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+
+        if (NoContent() && !IsLoading)
+        {
+            SignalNotFound();
+        }
+        else
+        {
+            ResetNotFoundSignal();
+        }
+    }
+
     private bool NoContent() => Content is null && ChildContent is null;
 }

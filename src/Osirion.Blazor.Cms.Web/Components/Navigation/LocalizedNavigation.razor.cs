@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Components.Web;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Services;
@@ -8,6 +9,9 @@ namespace Osirion.Blazor.Cms.Web.Components;
 /// <summary>Displays localized directory and content navigation.</summary>
 public partial class LocalizedNavigation
 {
+    [Inject]
+    private ILogger<LocalizedNavigation> Logger { get; set; } = default!;
+
     [Inject] private IContentProviderManager ContentProviderManager { get; set; } = default!;
 
     /// <summary>Gets or sets the navigation title.</summary>
@@ -116,7 +120,7 @@ public partial class LocalizedNavigation
         }
         catch (Exception ex)
         {
-            Console.Error.WriteLine($"Error loading navigation: {ex.Message}");
+            Logger.LogError(ex, "Failed to load navigation directories");
             Directories = new List<DirectoryItem>();
         }
         finally

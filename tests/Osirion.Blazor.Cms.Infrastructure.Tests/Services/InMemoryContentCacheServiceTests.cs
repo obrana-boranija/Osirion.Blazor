@@ -1,208 +1,230 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
-using NSubstitute;
 using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Infrastructure.Services;
 using Shouldly;
 
 namespace Osirion.Blazor.Cms.Infrastructure.Tests.Services;
 
-public class InMemoryContentCacheServiceTests
+/// <summary>
+/// The service stores entries through the <c>Set</c> extension method, which cannot be intercepted on a substitute,
+/// so the tests run against a real <see cref="MemoryCache"/> and assert on its content.
+/// </summary>
+public sealed class InMemoryContentCacheServiceTests : IDisposable
 {
-    private readonly IMemoryCache _memoryCache;
-    private readonly ILogger<InMemoryContentCacheService> _logger;
-    private readonly IOptions<CacheOptions> _options;
+    private readonly MemoryCache _memoryCache = new(new MemoryCacheOptions());
     private readonly InMemoryContentCacheService _cacheService;
 
     public InMemoryContentCacheServiceTests()
     {
-        // Create mocks
-        _memoryCache = Substitute.For<IMemoryCache>();
-        _logger = Substitute.For<ILogger<InMemoryContentCacheService>>();
-
-        // Setup options
-        var cacheOptions = new CacheOptions
+        _cacheService = CreateService(new CacheOptions
         {
             Enabled = true,
             MaxAgeMinutes = 30,
             StaleTimeMinutes = 5,
             CompactionPercentage = 0.25
-        };
-        _options = Options.Create(cacheOptions);
+        });
+    }
 
-        // Create service with mocks
-        _cacheService = new InMemoryContentCacheService(_memoryCache, _logger, _options);
+    public void Dispose()
+    {
+        _memoryCache.Dispose();
     }
 
     [Fact]
     public async Task GetAsync_WithCacheHit_ReturnsItem()
     {
         // Arrange
-        string key = "test-key";
-        string value = "test-value";
-
-        object outValue = value;
-        _memoryCache.TryGetValue(key, out Arg.Any<object?>()).Returns(x => {
-            x[1] = outValue;
-            return true;
-        });
+        _memoryCache.Set("test-key", "test-value");
 
         // Act
-        var result = await _cacheService.GetAsync<string>(key);
+        var result = await _cacheService.GetAsync<string>("test-key");
 
         // Assert
-        result.ShouldBe(value);
-        _memoryCache.Received(1).TryGetValue(key, out Arg.Any<object?>());
+        result.ShouldBe("test-value");
     }
 
     [Fact]
     public async Task GetAsync_WithCacheMiss_ReturnsNull()
     {
-        // Arrange
-        string key = "missing-key";
-        _memoryCache.TryGetValue(key, out Arg.Any<object?>()).Returns(false);
-
         // Act
-        var result = await _cacheService.GetAsync<string>(key);
+        var result = await _cacheService.GetAsync<string>("missing-key");
 
         // Assert
         result.ShouldBeNull();
-        _memoryCache.Received(1).TryGetValue(key, out Arg.Any<object?>());
     }
 
     [Fact]
     public async Task GetOrCreateAsync_WithCacheHit_ReturnsCachedItem()
     {
         // Arrange
-        string key = "test-key";
-        string value = "test-value";
-        bool factoryCalled = false;
-
-        object outValue = value;
-        _memoryCache.TryGetValue(key, out Arg.Any<object?>()).Returns(x => {
-            x[1] = outValue;
-            return true;
-        });
+        _memoryCache.Set("test-key", "test-value");
+        var factoryCalled = false;
 
         // Act
         var result = await _cacheService.GetOrCreateAsync<string>(
-            key,
-            async _ => {
+            "test-key",
+            _ =>
+            {
                 factoryCalled = true;
-                return "factory-value";
+                return Task.FromResult("factory-value");
             });
 
         // Assert
-        result.ShouldBe(value);
+        result.ShouldBe("test-value");
         factoryCalled.ShouldBeFalse("Factory should not be called on cache hit");
-        _memoryCache.Received(1).TryGetValue(key, out Arg.Any<object?>());
-        _memoryCache.DidNotReceive().Set(Arg.Any<string>(), Arg.Any<object>(), Arg.Any<MemoryCacheEntryOptions>());
+        _memoryCache.Get<string>("test-key").ShouldBe("test-value");
     }
 
     [Fact]
     public async Task GetOrCreateAsync_WithCacheMiss_CallsFactoryAndCachesResult()
     {
-        // Arrange
-        string key = "missing-key";
-        string factoryValue = "factory-value";
-        _memoryCache.TryGetValue(key, out Arg.Any<object?>()).Returns(false);
-
         // Act
-        var result = await _cacheService.GetOrCreateAsync<string>(
-            key,
-            async _ => factoryValue);
+        var result = await _cacheService.GetOrCreateAsync<string>("missing-key", _ => Task.FromResult("factory-value"));
 
         // Assert
-        result.ShouldBe(factoryValue);
-        _memoryCache.Received(1).TryGetValue(key, out Arg.Any<object?>());
-        _memoryCache.Received(1).Set(
-            Arg.Is<string>(k => k == key),
-            Arg.Is<string>(v => v == factoryValue),
-            Arg.Any<MemoryCacheEntryOptions>());
+        result.ShouldBe("factory-value");
+        _memoryCache.TryGetValue("missing-key", out string? cached).ShouldBeTrue();
+        cached.ShouldBe("factory-value");
+    }
+
+    [Fact]
+    public async Task GetOrCreateAsync_WithCacheMiss_StoresEntryWithConfiguredExpirationAndSize()
+    {
+        // Arrange
+        var expiration = TimeSpan.FromMinutes(7);
+        var cache = new EntryCapturingMemoryCache(_memoryCache);
+        var service = new InMemoryContentCacheService(cache, NullLogger<InMemoryContentCacheService>.Instance, Options.Create(new CacheOptions()));
+
+        // Act
+        await service.GetOrCreateAsync<string>("missing-key", _ => Task.FromResult("factory-value"), expiration);
+
+        // Assert
+        var entry = cache.CreatedEntries.ShouldHaveSingleItem();
+        entry.AbsoluteExpirationRelativeToNow.ShouldBe(expiration);
+        entry.Size.ShouldBe(1);
     }
 
     [Fact]
     public async Task GetOrCreateAsync_WithCacheDisabled_CallsFactoryWithoutCaching()
     {
         // Arrange
-        var disabledOptions = new CacheOptions { Enabled = false };
-        var options = Options.Create(disabledOptions);
-        var cacheService = new InMemoryContentCacheService(_memoryCache, _logger, options);
-
-        string key = "test-key";
-        string factoryValue = "factory-value";
+        var cacheService = CreateService(new CacheOptions { Enabled = false });
 
         // Act
-        var result = await cacheService.GetOrCreateAsync<string>(
-            key,
-            async _ => factoryValue);
+        var result = await cacheService.GetOrCreateAsync<string>("test-key", _ => Task.FromResult("factory-value"));
 
         // Assert
-        result.ShouldBe(factoryValue);
-        _memoryCache.DidNotReceive().TryGetValue(Arg.Any<string>(), out Arg.Any<object?>());
-        _memoryCache.DidNotReceive().Set(Arg.Any<string>(), Arg.Any<object>(), Arg.Any<MemoryCacheEntryOptions>());
+        result.ShouldBe("factory-value");
+        _memoryCache.Count.ShouldBe(0);
     }
 
     [Fact]
     public async Task RemoveAsync_RemovesItemFromCache()
     {
         // Arrange
-        string key = "test-key";
+        _memoryCache.Set("test-key", "test-value");
 
         // Act
-        await _cacheService.RemoveAsync(key);
+        await _cacheService.RemoveAsync("test-key");
 
         // Assert
-        _memoryCache.Received(1).Remove(key);
+        _memoryCache.TryGetValue("test-key", out _).ShouldBeFalse();
     }
 
     [Fact]
     public async Task SetAsync_WithEnabledCache_SetsItemInCache()
     {
-        // Arrange
-        string key = "test-key";
-        string value = "test-value";
-
         // Act
-        await _cacheService.SetAsync(key, value);
+        await _cacheService.SetAsync("test-key", "test-value");
 
         // Assert
-        _memoryCache.Received(1).Set(
-            Arg.Is<string>(k => k == key),
-            Arg.Is<string>(v => v == value),
-            Arg.Any<MemoryCacheEntryOptions>());
+        _memoryCache.TryGetValue("test-key", out string? cached).ShouldBeTrue();
+        cached.ShouldBe("test-value");
     }
 
     [Fact]
     public async Task SetAsync_WithDisabledCache_DoesNotSetItemInCache()
     {
         // Arrange
-        var disabledOptions = new CacheOptions { Enabled = false };
-        var options = Options.Create(disabledOptions);
-        var cacheService = new InMemoryContentCacheService(_memoryCache, _logger, options);
-
-        string key = "test-key";
-        string value = "test-value";
+        var cacheService = CreateService(new CacheOptions { Enabled = false });
 
         // Act
-        await cacheService.SetAsync(key, value);
+        await cacheService.SetAsync("test-key", "test-value");
 
         // Assert
-        _memoryCache.DidNotReceive().Set(Arg.Any<string>(), Arg.Any<object>(), Arg.Any<MemoryCacheEntryOptions>());
+        _memoryCache.Count.ShouldBe(0);
     }
 
     [Fact]
-    public async Task ClearAsync_WithMemoryCache_CompactsCache()
+    public async Task ClearAsync_RemovesOnlyEntriesWrittenByTheService()
     {
         // Arrange
-        var memoryCache = Substitute.For<MemoryCache>();
-        var cacheService = new InMemoryContentCacheService(memoryCache, _logger, _options);
+        await _cacheService.SetAsync("first-key", "first-value");
+        await _cacheService.SetAsync("second-key", "second-value");
+        _memoryCache.Set("host-key", "host-value");
 
         // Act
-        await cacheService.ClearAsync();
+        await _cacheService.ClearAsync();
 
         // Assert
-        memoryCache.Received(1).Compact(1.0);
+        _memoryCache.TryGetValue("first-key", out _).ShouldBeFalse();
+        _memoryCache.TryGetValue("second-key", out _).ShouldBeFalse();
+        _memoryCache.TryGetValue("host-key", out _).ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task RemoveByPrefixAsync_RemovesOnlyMatchingEntries()
+    {
+        await _cacheService.SetAsync("content:a", "a");
+        await _cacheService.SetAsync("content:b", "b");
+        await _cacheService.SetAsync("other:c", "c");
+        _memoryCache.Set("content:host", "host");
+
+        await _cacheService.RemoveByPrefixAsync("content:");
+
+        _memoryCache.TryGetValue("content:a", out _).ShouldBeFalse();
+        _memoryCache.TryGetValue("content:b", out _).ShouldBeFalse();
+        _memoryCache.TryGetValue("other:c", out _).ShouldBeTrue();
+        _memoryCache.TryGetValue("content:host", out _).ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task RemoveByPrefixAsync_AfterOverwritingAKey_StillRemovesIt()
+    {
+        await _cacheService.SetAsync("content:a", "one");
+        await _cacheService.SetAsync("content:a", "two");
+        await Task.Delay(50);
+
+        await _cacheService.RemoveByPrefixAsync("content:");
+
+        _memoryCache.TryGetValue("content:a", out _).ShouldBeFalse();
+    }
+
+    private InMemoryContentCacheService CreateService(CacheOptions options) =>
+        new(_memoryCache, NullLogger<InMemoryContentCacheService>.Instance, Options.Create(options));
+
+    /// <summary>
+    /// Forwards to a real cache and keeps the entries the service created, so their options can be asserted.
+    /// </summary>
+    private sealed class EntryCapturingMemoryCache(IMemoryCache inner) : IMemoryCache
+    {
+        public List<ICacheEntry> CreatedEntries { get; } = [];
+
+        public bool TryGetValue(object key, out object? value) => inner.TryGetValue(key, out value);
+
+        public ICacheEntry CreateEntry(object key)
+        {
+            var entry = inner.CreateEntry(key);
+            CreatedEntries.Add(entry);
+            return entry;
+        }
+
+        public void Remove(object key) => inner.Remove(key);
+
+        public void Dispose()
+        {
+        }
     }
 }

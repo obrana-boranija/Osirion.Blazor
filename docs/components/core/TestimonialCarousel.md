@@ -26,3 +26,10 @@ Custom items
     };
 }
 ```
+
+
+Motion and accessibility
+- The animation runs only while the carousel is on screen and the visitor has not asked for reduced motion; vertical wheel scrolling always reaches the page
+- It pauses while keyboard focus is inside it, and the enhancement script adds a pause button (override the labels with data-pause-label and data-play-label attributes)
+- Under prefers-reduced-motion every testimonial is shown statically; the looping copies are hidden
+- The looping copies are aria-hidden and inert, so their links are not focusable

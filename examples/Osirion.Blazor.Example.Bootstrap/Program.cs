@@ -56,10 +56,15 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-var rewriteOptions = new RewriteOptions()
-    .AddRedirectToHttpsPermanent() // never include if proxy has redirection
-    .AddRedirectToNonWwwPermanent();
-app.UseRewriter(rewriteOptions);
+// Canonical host and scheme redirects belong to deployed sites; local runs (and tools that browse the dev server
+// by another host name) work over plain HTTP.
+if (!app.Environment.IsDevelopment())
+{
+    var rewriteOptions = new RewriteOptions()
+        .AddRedirectToHttpsPermanent() // never include if proxy has redirection
+        .AddRedirectToNonWwwPermanent();
+    app.UseRewriter(rewriteOptions);
+}
 
 app.UseGitHubWebhook();
 app.UseOsirionRobotsGenerator();
@@ -69,6 +74,9 @@ app.MapOsirionCookieConsent();
 
 app.UseAntiforgery();
 app.MapStaticAssets();
+// The CMS admin pages (/osirion/...) require the CMS admin authorization policy. This example registers no
+// authentication scheme, so requests to them end in an error instead of rendering. A real host adds its own
+// sign-in first; see "Securing the Admin" in the Osirion.Blazor.Cms.Admin README.
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddAdditionalAssemblies(typeof(Osirion.Blazor.Cms.Admin._Imports).Assembly);

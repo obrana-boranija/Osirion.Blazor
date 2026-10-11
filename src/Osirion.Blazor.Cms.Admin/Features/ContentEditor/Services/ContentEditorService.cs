@@ -170,17 +170,21 @@ public class ContentEditorService : IContentEditorService
             return "new-post.md";
         }
 
+        // Strip an existing extension first: the sanitising below would turn ".md" into "md"
+        var baseName = title.EndsWith(".md", StringComparison.OrdinalIgnoreCase) ? title[..^3] : title;
+
         // Convert to kebab case (lowercase with hyphens)
-        var fileName = Regex.Replace(title.ToLowerInvariant(), @"[^a-z0-9\s-]", "");
+        var fileName = Regex.Replace(baseName.ToLowerInvariant(), @"[^a-z0-9\s-]", "");
         fileName = Regex.Replace(fileName, @"\s+", "-");
         fileName = Regex.Replace(fileName, @"-{2,}", "-");
         fileName = fileName.Trim('-');
 
-        // Ensure it ends with .md
-        if (!fileName.EndsWith(".md", StringComparison.OrdinalIgnoreCase))
+        if (fileName.Length == 0)
         {
-            fileName += ".md";
+            return "new-post.md";
         }
+
+        fileName += ".md";
 
         return fileName;
     }

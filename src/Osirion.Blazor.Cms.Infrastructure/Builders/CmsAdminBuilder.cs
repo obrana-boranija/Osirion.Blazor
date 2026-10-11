@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Admin.Interfaces;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Options;
+using Osirion.Blazor.Cms.Infrastructure.DependencyInjection;
 using Osirion.Blazor.Cms.Infrastructure.GitHub;
 using Osirion.Blazor.Cms.Infrastructure.Services;
 
@@ -37,11 +38,10 @@ public class CmsAdminBuilder : CmsBuilderBase, ICmsAdminBuilder
         // Register necessary HTTP clients
         RegisterHttpClient<IGitHubApiClient, GitHubApiClient>();
         RegisterHttpClient<IGitHubTokenProvider, GitHubTokenProvider>();
-        RegisterHttpClient<IAuthenticationService, AuthenticationService>();
-        RegisterHttpClient<IGitHubAdminService, GitHubAdminService>();
 
-        // Register admin services
-        Services.AddScoped<IGitHubAdminService, GitHubAdminService>();
+        // Register per-user admin services as scoped
+        Services.AddScopedAuthenticationService();
+        Services.AddScopedGitHubAdminService();
 
         Logger.LogInformation("Configured CMS admin with GitHub options");
         return this;
@@ -58,10 +58,9 @@ public class CmsAdminBuilder : CmsBuilderBase, ICmsAdminBuilder
 
         // Register necessary HTTP clients
         RegisterHttpClient<IGitHubTokenProvider, GitHubTokenProvider>();
-        RegisterHttpClient<IAuthenticationService, AuthenticationService>();
 
         // Register auth services
-        Services.AddScoped<IAuthenticationService, AuthenticationService>();
+        Services.AddScopedAuthenticationService();
 
         Logger.LogInformation("Added GitHub authentication for CMS admin");
         return this;

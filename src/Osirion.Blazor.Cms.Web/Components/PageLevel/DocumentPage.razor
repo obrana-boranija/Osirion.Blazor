@@ -1,7 +1,6 @@
 ﻿@namespace Osirion.Blazor.Cms.Components
 @using Osirion.Blazor.Cms.Web.Components
 @inherits OsirionContentDetailPageBase
-@attribute [StreamRendering]
 
 <div class="@GetDocumentPageClass() @Class" style="@Style" @attributes="Attributes">
     @if (IsLoading)
@@ -69,7 +68,7 @@
 
                 @if (Content is not null)
                 {
-                    <article class="osirion-document-content" itemscope itemtype="https://schema.org/@SchemaTypes">
+                    <article class="osirion-document-content" itemscope itemtype="https://schema.org/@GetItemType()">
                         <header class="osirion-document-header">
                             <h1 class="osirion-document-title">@Content.Title</h1>
                             @if (ShowMetadata)
@@ -107,7 +106,7 @@
                         }
 
                         <div class="osirion-document-body">
-                            @((MarkupString)Content.Content)
+                            @GetSanitizedContent(Content.Content)
                         </div>
 
                         @if (ShowNavigationLinks && (PreviousItem is not null || NextItem is not null))

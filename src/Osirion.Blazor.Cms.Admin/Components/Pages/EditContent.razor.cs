@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
+using Osirion.Blazor.Cms.Admin.Common.Constants;
 using Osirion.Blazor.Cms.Admin.Core.Events;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Interfaces;
@@ -12,6 +14,11 @@ public partial class EditContent : IDisposable
 {
     [Inject]
     private IGitHubAdminService GitHubService { get; set; } = default!;
+
+    [Inject]
+    private ILogger<EditContent> Logger { get; set; } = default!;
+
+    private string? _loadedPath;
 
     /// <summary>Gets or sets the Path value.</summary>
     [SupplyParameterFromQuery]
@@ -34,40 +41,47 @@ public partial class EditContent : IDisposable
         AdminState.StateChanged -= StateHasChanged;
     }
 
-    /// <summary>Performs the OnParametersSet operation asynchronously.</summary>
+    /// <summary>Loads the file once whenever <see cref="Path"/> changes.</summary>
     protected override async Task OnParametersSetAsync()
     {
-        // Reload content if parameters change and we're already rendered
-        if (!string.IsNullOrWhiteSpace(Path) &&
-           (AdminState.EditingPost is null || AdminState.EditingPost.Path != Path))
+        if (string.IsNullOrWhiteSpace(Path) || string.Equals(Path, _loadedPath, StringComparison.Ordinal))
         {
-            await LoadContentAsync();
+            return;
         }
+
+        _loadedPath = Path;
+
+        // The content browser may already hold this file in the shared state; do not fetch it again.
+        if (AdminState.EditingPost is not null && AdminState.EditingPost.Path == Path)
+        {
+            return;
+        }
+
+        await LoadContentAsync();
     }
 
-    /// <summary>Performs the OnAfterRender operation asynchronously.</summary>
+    /// <summary>Handles the cases without a Path parameter on the first render.</summary>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            // Load content based on parameters or state on first render
-            await LoadContentBasedOnParameters();
+            RedirectToSelectionWhenNoPath();
         }
 
         await base.OnAfterRenderAsync(firstRender);
     }
 
     /// <summary>
-    /// Loads content based on the page parameters and state
+    /// Without a Path parameter, follows the item selected in the content browser or the post being edited.
     /// </summary>
-    private async Task LoadContentBasedOnParameters()
+    private void RedirectToSelectionWhenNoPath()
     {
         if (!string.IsNullOrWhiteSpace(Path))
         {
-            // Path parameter takes precedence
-            await LoadContentAsync();
+            return;
         }
-        else if (AdminState.SelectedItem is not null && AdminState.SelectedItem.IsMarkdownFile)
+
+        if (AdminState.SelectedItem is not null && AdminState.SelectedItem.IsMarkdownFile)
         {
             // Redirect to proper route if we have a selected item
             NavigationManager.NavigateTo($"/osirion/content/edit?Path={AdminState.SelectedItem.Path}");
@@ -98,15 +112,14 @@ public partial class EditContent : IDisposable
         {
             var blogPost = await GitHubService.GetBlogPostAsync(Path);
 
-            // Set the post in AdminState (this triggers StateChanged event)
+            // Set the post in AdminState (this triggers StateChanged event). The mounted editor picks it up
+            // from there; publishing ContentSelectedEvent as well would make every subscriber fetch the file again.
             AdminState.SetEditingPost(blogPost);
-
-            // Also publish a content selected event
-            EventPublisher.Publish(new ContentSelectedEvent(Path));
         }
         catch (Exception ex)
         {
-            AdminState.SetErrorMessage($"Failed to load content: {ex.Message}");
+            Logger.LogError(ex, "Loading content {Path} failed", Path);
+            AdminState.SetErrorMessage(UserMessages.LoadFailed);
         }
         finally
         {
