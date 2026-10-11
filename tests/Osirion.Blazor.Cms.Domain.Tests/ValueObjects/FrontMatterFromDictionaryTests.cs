@@ -1,5 +1,7 @@
+using System.Collections;
 using System.Globalization;
 using Osirion.Blazor.Cms.Domain.ValueObjects;
+using YamlDotNet.Serialization;
 
 namespace Osirion.Blazor.Cms.Domain.Tests.ValueObjects;
 
@@ -7,6 +9,44 @@ public class FrontMatterFromDictionaryTests
 {
     private static FrontMatter Parse(params (string Key, string Value)[] pairs) =>
         FrontMatter.FromDictionary(pairs.ToDictionary(pair => pair.Key, pair => pair.Value));
+
+    // Reads the YAML that ToYaml writes the way a front matter reader hands it to FromDictionary: scalars as text,
+    // sequences as "[a, b]"; nested mappings (custom_fields, seo_properties) and empty values have no flat form.
+    private static FrontMatter RoundTrip(FrontMatter original)
+    {
+        var yaml = original.ToYaml().Split("---")[1];
+        var parsed = new DeserializerBuilder().Build().Deserialize<Dictionary<string, object?>>(yaml);
+        var values = new Dictionary<string, string>();
+        foreach (var (key, value) in parsed)
+        {
+            if (value is string text)
+                values[key] = text;
+            else if (value is IList items)
+                values[key] = "[" + string.Join(", ", items.Cast<object>()) + "]";
+        }
+
+        return FrontMatter.FromDictionary(values);
+    }
+
+    private static FrontMatter FullFrontMatter() => new()
+    {
+        Id = "post-1",
+        Order = 3,
+        Title = "Post",
+        Permalink = "/blog/post/",
+        Description = "Desc",
+        Author = "Ana",
+        Date = "2024-02-03",
+        LastModified = "2024-02-04",
+        FeaturedImage = "/f.png",
+        Categories = ["one", "two"],
+        Tags = ["t1", "t2"],
+        IsFeatured = true,
+        Published = false,
+        Layout = "post",
+        Slug = "post",
+        Lang = "sr",
+    };
 
     [Fact]
     public void FromDictionary_NullValues_ThrowsArgumentNullException()
@@ -334,5 +374,57 @@ public class FrontMatterFromDictionaryTests
 
         Assert.Equal(expected, frontMatter);
         Assert.Equal(expected.ToYaml(), frontMatter.ToYaml());
+    }
+
+    [Fact]
+    public void FromDictionary_ParsedToYaml_KeepsTheFieldsBothSidesSupport()
+    {
+        var original = FullFrontMatter();
+
+        var roundTripped = RoundTrip(original);
+
+        Assert.Equal(original.Title, roundTripped.Title);
+        Assert.Equal(original.Description, roundTripped.Description);
+        Assert.Equal(original.Author, roundTripped.Author);
+        Assert.Equal(original.Date, roundTripped.Date);
+        Assert.Equal(original.LastModified, roundTripped.LastModified);
+        Assert.Equal(original.FeaturedImage, roundTripped.FeaturedImage);
+        Assert.Equal(original.Published, roundTripped.Published);
+        Assert.Equal(original.Layout, roundTripped.Layout);
+        Assert.Equal(original.Slug, roundTripped.Slug);
+        Assert.Equal(original.Categories, roundTripped.Categories);
+        Assert.Equal(original.Tags, roundTripped.Tags);
+    }
+
+    // Known defect, pinned as current behavior: FromDictionary does not read id, order, permalink, lang or is_featured as ToYaml writes them, so they are lost or end up as custom fields. Update this expectation when it is fixed.
+    [Fact]
+    public void FromDictionary_ParsedToYaml_LosesIdOrderPermalinkLangAndFeatured()
+    {
+        var original = FullFrontMatter();
+
+        var roundTripped = RoundTrip(original);
+
+        Assert.Equal(string.Empty, roundTripped.Id);
+        Assert.Null(roundTripped.Order);
+        Assert.Null(roundTripped.Permalink);
+        Assert.Equal("en", roundTripped.Lang);
+        Assert.False(roundTripped.IsFeatured);
+        Assert.Equal("post-1", roundTripped.CustomFields["id"]);
+        Assert.Equal(3, roundTripped.CustomFields["order"]);
+        Assert.Equal("/blog/post/", roundTripped.CustomFields["permalink"]);
+        Assert.Equal("sr", roundTripped.CustomFields["lang"]);
+        Assert.Equal(true, roundTripped.CustomFields["is_featured"]);
+    }
+
+    // Known defect, pinned as current behavior: with a case-sensitive dictionary a standard key in another case is neither read nor kept as a custom field, so its value is dropped. Update this expectation when it is fixed.
+    [Fact]
+    public void FromDictionary_CaseSensitiveDictionaryWithCapitalizedKeys_DropsTheirValues()
+    {
+        var frontMatter = Parse(("Title", "Upper"), ("Featured_Image", "/c.png"), ("PUBLISHED", "false"));
+
+        Assert.Equal(string.Empty, frontMatter.Title);
+        Assert.Null(frontMatter.FeaturedImage);
+        Assert.True(frontMatter.Published);
+        Assert.Empty(frontMatter.CustomFields);
     }
 }

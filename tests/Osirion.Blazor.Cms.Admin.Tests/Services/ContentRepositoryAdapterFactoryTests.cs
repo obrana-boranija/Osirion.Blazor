@@ -42,8 +42,9 @@ public class ContentRepositoryAdapterFactoryTests
         CreateFactory("GitHub").CreateDefaultAdapter().ShouldBeOfType<GitHubRepositoryAdapter>();
     }
 
+    // Known defect, pinned as current behavior: the builder offers UseFileSystemProvider, but the factory has no file system adapter and throws for it. Update this expectation when it is fixed.
     [Fact]
-    public void CreateDefaultAdapter_UnsupportedConfiguredProvider_Throws()
+    public void CreateDefaultAdapter_FileSystemConfigured_ThrowsForLackOfAFileSystemAdapter()
     {
         Should.Throw<ArgumentException>(() => CreateFactory("FileSystem").CreateDefaultAdapter());
     }
