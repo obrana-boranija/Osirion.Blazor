@@ -57,13 +57,17 @@ public static class StringExtensions
             }
         }
 
-        // Remove trailing hyphen if exists
-        if (previousWasHyphen && slugBuilder.Length > 1)
+        RemoveTrailingHyphen(slugBuilder);
+        return slugBuilder;
+    }
+
+    // Only a separator can append a hyphen, so a trailing hyphen always comes from a separator run.
+    private static void RemoveTrailingHyphen(StringBuilder slugBuilder)
+    {
+        if (slugBuilder.Length > 1 && slugBuilder[^1] == '-')
         {
             slugBuilder.Length--;
         }
-
-        return slugBuilder;
     }
 
     private static bool IsWordSeparator(char c) => c is ' ' or '-' or '_';
