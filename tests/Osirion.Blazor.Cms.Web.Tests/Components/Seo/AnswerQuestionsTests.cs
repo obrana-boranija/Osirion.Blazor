@@ -17,6 +17,29 @@ public class AnswerQuestionsTests
     }
 
     [Theory]
+    [InlineData("How", "en")]
+    [InlineData("How? A primer", "en")]
+    [InlineData("What's new in Blazor", "en")]
+    [InlineData("Is\tit worth it", "en")]
+    [InlineData("Da li je spremno", "sr")]
+    public void IsQuestion_QuestionWordEndsAtABoundary_ReturnsTrue(string title, string languageCode)
+    {
+        AnswerQuestions.IsQuestion(title, languageCode).ShouldBeTrue();
+    }
+
+    [Theory]
+    [InlineData("However we ship", "en")]
+    [InlineData("Isolation levels", "en")]
+    [InlineData("Cancel culture", "en")]
+    [InlineData("Whoever wins", "en")]
+    [InlineData("Wochenende in Berlin", "de")]
+    [InlineData("Estrategias de prueba", "es")]
+    public void IsQuestion_QuestionWordIsOnlyThePrefixOfALongerWord_ReturnsFalse(string title, string languageCode)
+    {
+        AnswerQuestions.IsQuestion(title, languageCode).ShouldBeFalse();
+    }
+
+    [Theory]
     [InlineData("", "en")]
     [InlineData("  ", "en")]
     [InlineData("Guide to testing", null)]

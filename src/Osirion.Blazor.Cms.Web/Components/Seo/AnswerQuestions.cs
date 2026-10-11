@@ -19,8 +19,15 @@ internal static class AnswerQuestions
     internal static bool IsQuestion(string title, string? languageCode)
     {
         var words = QuestionWords.GetValueOrDefault(Normalize(languageCode), EnglishQuestionWords);
-        return words.Any(word => title.StartsWith(word, StringComparison.OrdinalIgnoreCase));
+        return words.Any(word => StartsWithWord(title, word));
     }
+
+    // The word must end at the end of the title, a space or punctuation, so "However" is not read as "How".
+    private static bool StartsWithWord(string title, string word) =>
+        title.StartsWith(word, StringComparison.OrdinalIgnoreCase)
+        && (title.Length == word.Length
+            || char.IsWhiteSpace(title[word.Length])
+            || char.IsPunctuation(title[word.Length]));
 
     /// <summary>
     /// Derives a question from a title pattern of the language, or returns <see langword="null"/> when no pattern
