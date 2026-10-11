@@ -76,6 +76,13 @@
         border-color: var(--osirion-border-color, rgba(255, 255, 255, 0.1));
     }
 
+    /* Keyboard focus needs its own indicator: the hover style above is also the active page's style, so a focused
+       item looked exactly like the current page (WCAG 2.4.7). */
+    .osirion-menu-item:focus-visible:not(.osirion-menu-item-disabled) {
+        outline: 2px solid currentColor;
+        outline-offset: 2px;
+    }
+
 /* Active state - outlined style instead of filled */
 .osirion-menu-item-active {
     background-color: var(--osirion-background-secondary, #1f2937);
