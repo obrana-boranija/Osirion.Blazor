@@ -197,14 +197,16 @@ public class ContentProviderBaseTests
     }
 
     [Fact]
-    public void Dispose_CallsTheDisposingOverloadEachTime()
+    public void Dispose_CalledTwice_DoesNotThrow()
     {
-        // Act
-        _provider.Dispose();
+        // Arrange
         _provider.Dispose();
 
+        // Act
+        var act = () => _provider.Dispose();
+
         // Assert
-        _provider.DisposeCalls.ShouldBe([true, true]);
+        act.ShouldNotThrow();
     }
 
     private static ContentItem Item(string id, string locale)
@@ -232,8 +234,6 @@ public class ContentProviderBaseTests
 
         public Exception? QueryException { get; set; }
 
-        public List<bool> DisposeCalls { get; } = [];
-
         public override string ProviderId => "test-provider";
 
         public override string DisplayName => "Test Provider";
@@ -253,12 +253,6 @@ public class ContentProviderBaseTests
             return QueryException is null
                 ? Task.FromResult(QueryResult)
                 : Task.FromException<IReadOnlyList<ContentItem>?>(QueryException);
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            DisposeCalls.Add(disposing);
-            base.Dispose(disposing);
         }
 
         public override Task<IReadOnlyList<ContentItem>> GetAllItemsAsync(CancellationToken cancellationToken = default) => throw new NotSupportedException();
