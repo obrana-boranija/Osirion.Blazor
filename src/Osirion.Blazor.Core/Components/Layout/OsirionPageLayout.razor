@@ -7,7 +7,7 @@
 <div class="@GetPageLayoutClass()" data-ref="@Refs["root"]" @attributes="Attributes">
     @if (ShowSkipLink)
     {
-        <a class="osirion-skip-link" href="@SkipLinkHref">@SkipLinkText</a>
+        <a class="osirion-skip-link" href="@SkipLinkHref" data-ref="@Refs["skip"]">@SkipLinkText</a>
     }
 
     @if (Header is not null)
@@ -18,7 +18,7 @@
     }
 
     @* tabindex="-1" lets the skip link move keyboard focus here, not only scroll *@
-    <main id="@MainContentId" class="osirion-page-main" tabindex="-1">
+    <main id="@MainContentId" class="osirion-page-main" tabindex="-1" data-ref="@Refs["main"]">
         @Body
     </main>
 

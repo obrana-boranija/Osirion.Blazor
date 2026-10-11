@@ -6,6 +6,8 @@ export default class extends BlazorJSComponents.Component {
     }
 
     setParameters(refs, enabled) {
+        this.attachSkipLink(refs);
+
         if (!enabled || !refs.header || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
         this.setEventListener(window, 'scroll', () => {
@@ -25,5 +27,15 @@ export default class extends BlazorJSComponents.Component {
                 this.ticking = false;
             });
         }, { passive: true });
+    }
+
+    // Blazor's enhanced navigation scrolls to a fragment on the same page without moving focus, so the skip link
+    // would leave keyboard focus in the header. Move it to the main element, as the browser does without Blazor.
+    attachSkipLink(refs) {
+        if (!refs.skip || !refs.main) return;
+
+        this.setEventListener(refs.skip, 'click', () => {
+            window.requestAnimationFrame(() => refs.main.focus());
+        });
     }
 }
