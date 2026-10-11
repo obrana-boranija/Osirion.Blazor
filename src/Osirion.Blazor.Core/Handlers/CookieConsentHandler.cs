@@ -169,7 +169,7 @@ public static class CookieConsentHandler
         if (consentData is null)
             return false;
 
-        return consentData.Categories.TryGetValue(category, out var consented) && consented;
+        return consentData.Categories is { } categories && categories.TryGetValue(category, out var consented) && consented;
     }
 
     /// <summary>

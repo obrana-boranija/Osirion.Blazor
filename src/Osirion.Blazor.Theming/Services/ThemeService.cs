@@ -104,15 +104,16 @@ public class ThemeService : IThemeService
     }
 
     /// <summary>
-    /// Toggle between light and dark mode, returns the new mode string ("light" or "dark").
-    /// System mode is treated as the resolved system preference for toggling.
+    /// Toggle between light and dark mode, returns the mode in effect afterwards ("light" or "dark").
+    /// System mode is treated as the resolved system preference for toggling. When dark mode is disabled the
+    /// mode does not change, so the unchanged mode is returned.
     /// </summary>
     public string ToggleTheme()
     {
         var current = ResolveEffectiveMode();
         var newMode = current == ThemeMode.Dark ? ThemeMode.Light : ThemeMode.Dark;
         SetThemeMode(newMode);
-        return newMode == ThemeMode.Dark ? "dark" : "light";
+        return ResolveEffectiveMode() == ThemeMode.Dark ? "dark" : "light";
     }
 
     private ThemeMode ResolveEffectiveMode()

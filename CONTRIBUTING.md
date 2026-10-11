@@ -201,12 +201,34 @@ We use xUnit, bUnit, Shouldly, and NSubstitute for testing. To run the tests:
 # Run all tests
 dotnet test
 
-# Run tests with coverage
-dotnet test --collect:"XPlat Code Coverage"
+# Run tests with coverage (same settings as CI)
+dotnet test tests/Osirion.Blazor.Core.Tests --settings coverlet.runsettings --collect:"XPlat Code Coverage"
 
 # Run tests for a specific project
-dotnet test src/Osirion.Blazor.Core.Tests
+dotnet test tests/Osirion.Blazor.Core.Tests
 ```
+
+The Playwright suite in `tests/Osirion.Blazor.E2ETests` needs browsers installed (`playwright install chromium`)
+and is not part of the coverage run.
+
+### Coverage and CRAP scores
+
+The target is 90% line coverage, and no method may have a CRAP score above 30
+(`CRAP = CC² × (1 - coverage)³ + CC`, where CC is cyclomatic complexity). A complex method therefore needs
+either more tests or a split into smaller methods. Measure both locally before opening a pull request:
+
+```powershell
+dotnet tool restore                    # installs the pinned crap4dotnet
+./tools/run-crap.ps1                   # runs every test project with coverage, writes docs/crap/<Project>.json
+./tools/verify-crap.ps1 -MaxCrap 30    # lists methods over 30 and regressions against the last snapshot
+```
+
+`run-crap.ps1 -SkipTests` reuses coverage from an earlier run, `-Project Osirion.Blazor.Core` limits the
+analysis to one project, and `-RecordSnapshot` appends the result to `docs/crap/.progress-history.json` and
+regenerates `docs/crap/PROGRESS.md`. Do not edit the files in `docs/crap` by hand. The CI coverage workflow
+runs the same scripts and fails when a method exceeds CRAP 30; Codecov fails a pull request whose project or patch
+coverage is below 90%. Record a snapshot (`-RecordSnapshot`) in the pull request that lowers the number of methods
+over the threshold, so the gate's regression check compares against it.
 
 ### Writing Tests
 

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
+using Osirion.Blazor.Cms.Admin.Common.Constants;
 using Osirion.Blazor.Cms.Admin.Core.Events;
 using Osirion.Blazor.Cms.Admin.Core.State;
 using Osirion.Blazor.Cms.Admin.Features.ContentBrowser.Services;
@@ -84,7 +85,7 @@ public class FileExplorerViewModel : IDisposable
         }
         catch (Exception ex)
         {
-            ErrorMessage = $"Failed to load contents: {ex.Message}";
+            ErrorMessage = UserMessages.LoadFailed;
             _logger.LogError(ex, "Failed to load contents for path: {Path}", CurrentPath);
             _state.SetErrorMessage(ErrorMessage);
         }
@@ -174,7 +175,7 @@ public class FileExplorerViewModel : IDisposable
                 _eventMediator.Publish(new ContentSelectedEvent(item.Path));
 
                 // Navigate directly to the edit page with the path
-                _navigationManager.NavigateTo($"/osirion/content/edit?Path={item.Path}");
+                _navigationManager.NavigateTo($"/osirion/content/edit?Path={Uri.EscapeDataString(item.Path)}");
 
                 _logger.LogInformation("Markdown file opened in editor: {Path}", item.Path);
             }
@@ -188,7 +189,7 @@ public class FileExplorerViewModel : IDisposable
         }
         catch (Exception ex)
         {
-            ErrorMessage = $"Failed to open file: {ex.Message}";
+            ErrorMessage = UserMessages.OpenFailed;
             _logger.LogError(ex, "Failed to open file: {Path}", item.Path);
             _state.SetErrorMessage(ErrorMessage);
         }
@@ -257,7 +258,7 @@ public class FileExplorerViewModel : IDisposable
         }
         catch (Exception ex)
         {
-            ErrorMessage = $"Failed to delete file: {ex.Message}";
+            ErrorMessage = UserMessages.DeleteFailed;
             _logger.LogError(ex, "Failed to delete file: {Path}", FileToDelete?.Path);
             _state.SetErrorMessage(ErrorMessage);
         }

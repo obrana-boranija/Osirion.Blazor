@@ -89,11 +89,6 @@ public partial class ContentEditor : IDisposable
         ActiveTab = tab;
     }
 
-    private void TogglePreview()
-    {
-        IsPreviewVisible = !IsPreviewVisible;
-    }
-
     private async Task SaveChanges()
     {
         await ExecuteAsync(async () =>

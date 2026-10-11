@@ -147,6 +147,10 @@ coverage*.json
 coverage*.xml
 coverage*.info
 
+# CRAP reports are regenerated on every run by tools/run-crap.ps1; only the snapshot history is kept.
+docs/crap/*.json
+!docs/crap/.progress-history.json
+
 # Visual Studio code coverage results
 *.coverage
 *.coveragexml

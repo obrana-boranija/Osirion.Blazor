@@ -76,9 +76,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Osirion.Blazor.Core: on phones `OsirionFooter` opens with the brand, then the links, the left content and the right content, and lines the contact details up with the links. The brand used to land between the contact details and the right column, because the columns had no grid areas and fell into place by auto-placement
 - Osirion.Blazor.Core: with `EnableHeaderScrollBehavior`, `OsirionPageLayout` no longer hides the header while the pointer is over it or focus is in it. Scrolling with the pointer on an open dropdown or mega menu carried the panel away with the header and left it floating at the top of the page
 - Osirion.Blazor.Cms.Web: `ContentList.ContentUrlFormatter` and `OsirionContentListSection.PostUrlFormatter` set the post links. The list section linked every post to its `Url` and ignored both. Without a formatter both build the link the same way, from the site root (`/blog/post` instead of the relative `blog/post` the section wrote)
+- Osirion.Blazor.Core: `OsirionTestimonialCarousel` hung while rendering when `MaxVisibleTestimonials` was 1 or 2, threw `DivideByZeroException` for an empty `CustomTestimonials` list, and appended its loop padding to the host's own `CustomTestimonials` list
+- Osirion.Blazor.Core: `OsirionSubscriptionCard` with `UseBuiltInEmailService` and no registered email service told the visitor the submission looked like spam; it now reports a server error, as `OsirionContactForm` does
+- Osirion.Blazor.Core: `HeroSection` added `Class` twice and glued it to the previous class (`hero-dividerlanding`)
+- Osirion.Blazor.Core: `OsirionResponsiveShowcaseSection` ignored `Class` and unmatched attributes on its root, showed a replacement character instead of `×` in the viewport dimensions, and rendered `aria-pressed` without a `true`/`false` value
+- Osirion.Blazor.Core: the cookie consent check threw `NullReferenceException` when the consent cookie held `"Categories": null`; it now counts as no consent
+- Osirion.Blazor.Cms.Infrastructure: a content query with `Directory` and `IncludeSubdirectories` matches whole folder names, so `"blog"` no longer also returns content from `blog2` or `blog-archive`
+- Osirion.Blazor.Cms.Infrastructure: moving a GitHub directory without a new parent puts it at the top of `ContentPath` instead of the repository root, where the provider no longer loaded it
+- Osirion.Blazor.Cms.Infrastructure: a directory's `locale` and `url` are escaped when its `_index.md` front matter is written, so a quote and a line break can no longer add front matter keys
+- Osirion.Blazor.Cms.Infrastructure: the stale-while-revalidate directory cache keyed `GetByNameAsync` by locale only, so after one lookup every other name in that locale returned the first directory until the entry expired
+- Osirion.Blazor.Cms.Infrastructure: `ToUrlSlug` threw `ArgumentOutOfRangeException` for a title without letters or digits (`"!!!"`); it now returns the untitled slug
+- Osirion.Blazor.Cms.Web: with `EnableGeneratedFaq`, a page titled exactly "Guide to" or "Guía de" failed to render (`ArgumentOutOfRangeException`); such a title now produces no generated question
+- Osirion.Blazor.Cms.Web: `HomePage` threw `InvalidCastException` when `CategoryUrlFormatter` or `TagUrlFormatter` was set with the browse section shown
+- Osirion.Blazor.Cms.Web: `ContentPage` given a `ContentItem` without a `Path` showed "Loading content..." forever
+- Osirion.Blazor.Cms.Web: `LocalizedContentView` translation links now carry the `osirion-translation-link` class its stylesheet targets
+- Osirion.Blazor.Cms.Web: `ContentPage` applies `PathReplacePattern` with a 250 ms match timeout and keeps the path unchanged on timeout, so a pattern with catastrophic backtracking can no longer hold a request on a crafted URL
+- Osirion.Blazor.Cms.Admin: the dashboard is disposed by the renderer and stops listening to the circuit's admin state; `CmsAdminDashboard` had a `Dispose` method but did not implement `IDisposable`
+- Osirion.Blazor.Cms.Admin: "Auto-generate" in the SEO form keeps the selected schema type instead of resetting it to Article
+- Osirion.Blazor.Cms.Admin: the file explorer URL-encodes the path it opens in the editor, so files whose names contain `&`, `#` or `+` open correctly
+- Osirion.Blazor.Cms.Admin: the admin layout no longer throws for a signed-in user with an empty user name
+- Osirion.Blazor.Cms.Domain: a front matter list containing a lone quote (`tags: a, "`) no longer makes the file fail to load
+- Osirion.Blazor.Theming: `OsirionStyles` no longer writes `<link rel="stylesheet" href="">` when the framework has no adapter, which made browsers request the page again as a stylesheet
+- Osirion.Blazor.Theming: `ThemeService.ToggleTheme` returns the mode actually in effect; with dark mode disabled it reported "dark" while staying light
+- Osirion.Blazor.Core: `OsirionMetricCard` keeps a trailing dash out of the animated number (`"~5-"` counted up to a range ending in 0)
+- Osirion.Blazor.Cms.Domain: `FrontMatter.Create(title, description, DateTime)` writes the date as `yyyy-MM-dd` instead of the culture's date and time format
+- Osirion.Blazor.Cms.Infrastructure: GitHub polling refreshes only the provider whose id equals the configured one; providers of other repositories whose id merely contained it were refreshed with the wrong commit, and a configured id without "github" in it was never polled
+- Osirion.Blazor.Cms.Infrastructure: content search matches case-insensitively in every culture (under Turkish, "GUIDE" did not find "Guide")
+- Osirion.Blazor.Cms.Infrastructure: the markdown pre-sanitizer replaces the whole `javascript:` link destination, including nested parentheses, leading whitespace and reference-style definitions; each of its patterns runs with a 250 ms match timeout, so a pathological document cannot hold a request
+- Osirion.Blazor.Cms.Web: LocalBusiness structured data no longer writes the schema type as the `telephone`
+- Osirion.Blazor.Cms.Web: generated FAQ questions match question words only as whole words, so titles such as "However we ship" are no longer treated as questions
+- Osirion.Blazor.Cms.Web: an empty `SchemaTypes` array is treated as not set, so `og:type`, `content-type` and the JSON-LD type agree
+- Osirion.Blazor.Cms.Admin: admin error messages show generic text instead of exception messages (which could carry GitHub responses or internal URLs); the details stay in the log. Markdown preview failures are reported through the admin error path instead of being swallowed
+- Osirion.Blazor.Cms.Admin: `DefaultNavigation` links to the routed admin pages under `/osirion` (they pointed to `/admin/...`, which has no pages), marks only the current page active, and drops the links to pages that do not exist (media, pull requests, branches, users, logs)
 
 ### Removed
 - Osirion.Blazor.Navigation: `Menu.razor.scss`, `Menu.razor.min.css` and `compilerconfig.json`, an out-of-date stylesheet source that a Web Compiler run would have compiled over `Menu.razor.css`
+
+### Build
+- The coverage workflow runs every test project except the Playwright suite and fails when a test fails or is not discovered, instead of uploading a partial report. Coverage settings live in `coverlet.runsettings` (generated code and auto-property accessors are not counted) and Codecov targets in `codecov.yml` (90% for the project and for each change, informational for now)
+- CRAP scores (threshold 30) are measured by `tools/run-crap.ps1` and checked by `tools/verify-crap.ps1`, using `crap4dotnet` pinned in `.config/dotnet-tools.json` for complexity and the merged coverlet reports for coverage. The coverage workflow fails when a method exceeds CRAP 30 or a package gains offenders against the last snapshot in `docs/crap/`, and Codecov blocks a pull request below 90% project or patch coverage
 
 ## [4.0.0] - 2026-10-11
 
@@ -149,8 +185,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `LoginViewModel.LoginWithGitHubAsync(string code)` always fails, because a code without its OAuth state cannot be verified; use `StartGitHubLoginAsync()` and `LoginWithGitHubAsync(code, state)`
 - `IAuthenticationService.AuthenticateWithGitHubAsync(string code)` is marked `[Obsolete]`: it exchanges a code without a state check, a PKCE verifier or a redirect URI. It still works; check the state, exchange the code with `IGitHubTokenProvider` and call `SetAccessTokenAsync` instead
 - `AuthGuard.ShowLoginForm`, `AuthGuard.OnAuthResult` and `AdminPage.ShowLoginForm` are marked `[Obsolete]`, because they have no effect
-- `DomainEntityBase<TId>` and the unused Cms.Admin types `CommandDispatcher` (Application.Core), `ContentRepositoryAdapter`, `StatePersistenceService`, `StateManager`, `ErrorHandlingService` and `CmsAdminStartupService`; they will be removed in the next major release
+- `DomainEntityBase<TId>` and the unused Cms.Admin types `CommandDispatcher` (Application.Core), `StateManager`, `ErrorHandlingService` and `CmsAdminStartupService`; they will be removed in the next major release
 - `BaseContentRepository.GenerateMarkdownWithFrontMatter`; use `GenerateMarkdownWithFrontMatterAsync`
+
+### Removed
+- Osirion.Blazor.Cms.Admin types that nothing in the library used: `ContentRepositoryAdapter`, `RepositoryAdapterBase`, `AdminContentRepository`, `StatePersistenceService`, `EditableComponent`, `LoadableComponentBase`, `ContentValidators`, `ComponentExtensions` and `ExceptionHandlingMiddleware`
 
 ### Fixed
 - Osirion.Blazor.Theming: the theme toggle threw `NotFoundError` ("removeChild") when enhanced navigation replaced the page during its fade, and then scrolled the new page to the old page's position. With `prefers-reduced-motion: reduce` the theme now changes without the full-screen fade

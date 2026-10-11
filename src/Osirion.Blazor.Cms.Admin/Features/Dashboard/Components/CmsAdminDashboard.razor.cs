@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
+using Osirion.Blazor.Cms.Admin.Common.Constants;
 using Osirion.Blazor.Cms.Admin.Shared.Components;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Models;
@@ -8,7 +10,7 @@ using Osirion.Blazor.Cms.Domain.ValueObjects;
 namespace Osirion.Blazor.Cms.Admin.Features.Dashboard.Components;
 
 /// <summary>Defines the CmsAdminDashboard type.</summary>
-public partial class CmsAdminDashboard
+public partial class CmsAdminDashboard : IDisposable
 {
     /// <summary>Gets or sets the ChildContent value.</summary>
     [Parameter]
@@ -79,7 +81,8 @@ public partial class CmsAdminDashboard
             }
             catch (Exception ex)
             {
-                DashboardState.SetErrorMessage($"Failed to refresh directory: {ex.Message}");
+                ComponentLogger.LogError(ex, "Failed to refresh directory: {Path}", DashboardState.CurrentPath);
+                DashboardState.SetErrorMessage(UserMessages.LoadFailed);
             }
         }
 

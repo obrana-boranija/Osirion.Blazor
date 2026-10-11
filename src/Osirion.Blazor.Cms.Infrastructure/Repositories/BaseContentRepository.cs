@@ -4,6 +4,7 @@ using Osirion.Blazor.Cms.Domain.Enums;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Interfaces.Content;
 using Osirion.Blazor.Cms.Domain.Repositories;
+using Osirion.Blazor.Cms.Domain.ValueObjects;
 using Osirion.Blazor.Cms.Infrastructure.Utilities;
 using System.Globalization;
 using System.Text;
@@ -534,95 +535,95 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
     {
         var markdown = new StringBuilder();
 
-        // Use FrontMatter.ToYaml() if Metadata exists, otherwise build manually
         if (entity.Metadata is not null)
         {
-            // Update metadata with current entity values
-            entity.Metadata.Id = entity.ContentId;
-            entity.Metadata.Order = entity.OrderIndex;
-            entity.Metadata.Title = entity.Title;
-            entity.Metadata.Description = entity.Description;
-            entity.Metadata.Author = entity.Author;
-            entity.Metadata.Date = entity.DateCreated.ToString("yyyy-MM-dd");
-            entity.Metadata.FeaturedImage = entity.FeaturedImageUrl;
-            entity.Metadata.IsFeatured = entity.IsFeatured;
-            entity.Metadata.Slug = entity.Slug;
-            entity.Metadata.Lang = entity.Locale;
-            entity.Metadata.Published = entity.IsPublished;
-            entity.Metadata.Categories = entity.Categories.ToList();
-            entity.Metadata.Tags = entity.Tags.ToList();
-
-            // Generate YAML using FrontMatter's built-in method
+            CopyEntityToMetadata(entity, entity.Metadata);
             markdown.Append(entity.Metadata.ToYaml());
         }
         else
         {
-            // Fallback: Build frontmatter manually
-            markdown.AppendLine("---");
-            
-            if (!string.IsNullOrWhiteSpace(entity.ContentId))
-                markdown.AppendLine($"id: \"{EscapeYamlString(entity.ContentId)}\"");
-            
-            if (entity.OrderIndex > 0)
-                markdown.AppendLine($"order: {entity.OrderIndex}");
-            
-            if (!string.IsNullOrWhiteSpace(entity.Title))
-                markdown.AppendLine($"title: \"{EscapeYamlString(entity.Title)}\"");
-            
-            if (!string.IsNullOrWhiteSpace(entity.Description))
-                markdown.AppendLine($"description: \"{EscapeYamlString(entity.Description)}\"");
-            
-            if (!string.IsNullOrWhiteSpace(entity.Author))
-                markdown.AppendLine($"author: \"{EscapeYamlString(entity.Author)}\"");
-            
-            markdown.AppendLine($"date: {entity.DateCreated:yyyy-MM-dd}");
-            
-            if (!string.IsNullOrWhiteSpace(entity.FeaturedImageUrl))
-                markdown.AppendLine($"featured_image: \"{EscapeYamlString(entity.FeaturedImageUrl)}\"");
-            
-            if (entity.Categories.Count > 0)
-            {
-                markdown.AppendLine("categories:");
-                foreach (var category in entity.Categories)
-                    markdown.AppendLine($"  - \"{EscapeYamlString(category)}\"");
-            }
-            
-            if (entity.Tags.Count > 0)
-            {
-                markdown.AppendLine("tags:");
-                foreach (var tag in entity.Tags)
-                    markdown.AppendLine($"  - \"{EscapeYamlString(tag)}\"");
-            }
-            
-            if (entity.IsFeatured)
-                markdown.AppendLine("is_featured: true");
-            
-            if (!entity.IsPublished)
-                markdown.AppendLine("published: false");
-            
-            if (!string.IsNullOrWhiteSpace(entity.Slug))
-                markdown.AppendLine($"slug: \"{EscapeYamlString(entity.Slug)}\"");
-            
-            if (!string.IsNullOrWhiteSpace(entity.Locale))
-                markdown.AppendLine($"lang: \"{EscapeYamlString(entity.Locale)}\"");
-            
-            markdown.AppendLine("---");
-            markdown.AppendLine();
+            AppendFrontMatter(markdown, entity);
         }
 
-        // Add original markdown content if available
-        if (!string.IsNullOrWhiteSpace(entity.OriginalMarkdown))
-        {
-            markdown.Append(entity.OriginalMarkdown);
-        }
-        // Otherwise try to convert HTML to markdown
-        else if (!string.IsNullOrWhiteSpace(entity.Content))
-        {
-            var plainText = await MarkdownProcessor.ConvertHtmlToMarkdownAsync(entity.Content, cancellationToken).ConfigureAwait(false);
-            markdown.Append(plainText);
-        }
+        markdown.Append(await GetMarkdownBodyAsync(entity, cancellationToken).ConfigureAwait(false));
 
         return markdown.ToString();
+    }
+
+    private static void CopyEntityToMetadata(ContentItem entity, FrontMatter metadata)
+    {
+        metadata.Id = entity.ContentId;
+        metadata.Order = entity.OrderIndex;
+        metadata.Title = entity.Title;
+        metadata.Description = entity.Description;
+        metadata.Author = entity.Author;
+        metadata.Date = entity.DateCreated.ToString("yyyy-MM-dd");
+        metadata.FeaturedImage = entity.FeaturedImageUrl;
+        metadata.IsFeatured = entity.IsFeatured;
+        metadata.Slug = entity.Slug;
+        metadata.Lang = entity.Locale;
+        metadata.Published = entity.IsPublished;
+        metadata.Categories = entity.Categories.ToList();
+        metadata.Tags = entity.Tags.ToList();
+    }
+
+    // Writes the front matter by hand for items that were never read with metadata. Keys keep this order.
+    private void AppendFrontMatter(StringBuilder markdown, ContentItem entity)
+    {
+        markdown.AppendLine("---");
+
+        AppendQuotedValue(markdown, "id", entity.ContentId);
+
+        if (entity.OrderIndex > 0)
+            markdown.AppendLine($"order: {entity.OrderIndex}");
+
+        AppendQuotedValue(markdown, "title", entity.Title);
+        AppendQuotedValue(markdown, "description", entity.Description);
+        AppendQuotedValue(markdown, "author", entity.Author);
+        markdown.AppendLine($"date: {entity.DateCreated:yyyy-MM-dd}");
+        AppendQuotedValue(markdown, "featured_image", entity.FeaturedImageUrl);
+        AppendQuotedList(markdown, "categories", entity.Categories);
+        AppendQuotedList(markdown, "tags", entity.Tags);
+
+        if (entity.IsFeatured)
+            markdown.AppendLine("is_featured: true");
+
+        if (!entity.IsPublished)
+            markdown.AppendLine("published: false");
+
+        AppendQuotedValue(markdown, "slug", entity.Slug);
+        AppendQuotedValue(markdown, "lang", entity.Locale);
+
+        markdown.AppendLine("---");
+        markdown.AppendLine();
+    }
+
+    private void AppendQuotedValue(StringBuilder markdown, string key, string? value)
+    {
+        if (!string.IsNullOrWhiteSpace(value))
+            markdown.AppendLine($"{key}: \"{EscapeYamlString(value)}\"");
+    }
+
+    private void AppendQuotedList(StringBuilder markdown, string key, IReadOnlyList<string> values)
+    {
+        if (values.Count == 0)
+            return;
+
+        markdown.AppendLine($"{key}:");
+        foreach (var value in values)
+            markdown.AppendLine($"  - \"{EscapeYamlString(value)}\"");
+    }
+
+    // The original markdown is preferred; the HTML is converted only for items that never had a markdown source.
+    private async Task<string> GetMarkdownBodyAsync(ContentItem entity, CancellationToken cancellationToken)
+    {
+        if (!string.IsNullOrWhiteSpace(entity.OriginalMarkdown))
+            return entity.OriginalMarkdown;
+
+        if (string.IsNullOrWhiteSpace(entity.Content))
+            return string.Empty;
+
+        return await MarkdownProcessor.ConvertHtmlToMarkdownAsync(entity.Content, cancellationToken).ConfigureAwait(false);
     }
 
     /// <summary>

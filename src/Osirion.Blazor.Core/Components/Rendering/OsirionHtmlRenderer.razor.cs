@@ -263,27 +263,49 @@ public partial class OsirionHtmlRenderer
     }
 
     /// <summary>
+    /// Common language aliases and the Prism.js language names they stand for. HTML and XML are both Prism's markup.
+    /// </summary>
+    private static readonly Dictionary<string, string> PrismLanguageAliases = new(StringComparer.Ordinal)
+    {
+        ["cs"] = "csharp",
+        ["js"] = "javascript",
+        ["ts"] = "typescript",
+        ["py"] = "python",
+        ["rb"] = "ruby",
+        ["yml"] = "yaml",
+        ["sh"] = "bash",
+        ["ps1"] = "powershell",
+        ["razor"] = "cshtml",
+        ["blazor"] = "cshtml",
+        ["html"] = "markup",
+        ["xml"] = "markup",
+    };
+
+    /// <summary>
+    /// Display labels for Prism language names; a language without one is shown in upper case.
+    /// </summary>
+    private static readonly Dictionary<string, string> LanguageLabels = new(StringComparer.Ordinal)
+    {
+        ["csharp"] = "C#",
+        ["javascript"] = "JavaScript",
+        ["typescript"] = "TypeScript",
+        ["python"] = "Python",
+        ["yaml"] = "YAML",
+        ["bash"] = "Bash",
+        ["powershell"] = "PowerShell",
+        ["cshtml"] = "Razor",
+        ["html"] = "HTML",
+        ["css"] = "CSS",
+        ["sql"] = "SQL",
+        ["xml"] = "XML",
+        ["json"] = "JSON",
+    };
+
+    /// <summary>
     /// Map common language aliases to Prism.js language names
     /// </summary>
-    private string MapLanguageAlias(string language)
-    {
-        return language switch
-        {
-            "cs" => "csharp",
-            "js" => "javascript",
-            "ts" => "typescript",
-            "py" => "python",
-            "rb" => "ruby",
-            "yml" => "yaml",
-            "sh" => "bash",
-            "ps1" => "powershell",
-            "razor" => "cshtml",
-            "blazor" => "cshtml",
-            "html" => "markup", // HTML is included in markup
-            "xml" => "markup",  // XML is also markup
-            _ => language
-        };
-    }
+    private static string MapLanguageAlias(string language) =>
+        PrismLanguageAliases.TryGetValue(language, out var prismLanguage) ? prismLanguage : language;
 
     /// <summary>
     /// Check if a language component needs to be loaded
@@ -388,26 +410,8 @@ public partial class OsirionHtmlRenderer
     /// <summary>
     /// Get a display label for a language
     /// </summary>
-    private string GetLanguageLabel(string language)
-    {
-        return language switch
-        {
-            "csharp" => "C#",
-            "javascript" => "JavaScript",
-            "typescript" => "TypeScript",
-            "python" => "Python",
-            "yaml" => "YAML",
-            "bash" => "Bash",
-            "powershell" => "PowerShell",
-            "cshtml" => "Razor",
-            "html" => "HTML",
-            "css" => "CSS",
-            "sql" => "SQL",
-            "xml" => "XML",
-            "json" => "JSON",
-            _ => language.ToUpper()
-        };
-    }
+    private static string GetLanguageLabel(string language) =>
+        LanguageLabels.TryGetValue(language, out var label) ? label : language.ToUpper();
 
     /// <summary>
     /// Get the CSS class for the HTML renderer

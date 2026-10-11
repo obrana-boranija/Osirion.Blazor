@@ -382,6 +382,18 @@ public abstract partial class OsirionContentPageBase : OsirionComponentBase
     [Parameter]
     public Func<string, string>? TagUrlFormatter { get; set; }
 
+    /// <summary>
+    /// <see cref="CategoryUrlFormatter"/> in the shape <c>CategoriesList</c> takes, or <see langword="null"/>.
+    /// </summary>
+    protected Func<ContentCategory, string>? CategoryListUrlFormatter =>
+        CategoryUrlFormatter is { } formatter ? category => formatter(category.Name) : null;
+
+    /// <summary>
+    /// <see cref="TagUrlFormatter"/> in the shape <c>TagCloud</c> takes, or <see langword="null"/>.
+    /// </summary>
+    protected Func<ContentTag, string>? TagCloudUrlFormatter =>
+        TagUrlFormatter is { } formatter ? tag => formatter(tag.Name) : null;
+
     #endregion
 
     /// <summary>Performs the ContentProviderManager operation.</summary>

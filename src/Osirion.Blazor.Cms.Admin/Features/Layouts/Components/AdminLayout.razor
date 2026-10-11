@@ -39,7 +39,7 @@
                 <div class="d-flex align-items-center justify-content-between">
                     <div class="d-flex align-items-center">
                         <div class="avatar-circle bg-primary text-white me-2">
-                            @(authService.Username?.Substring(0, 1).ToUpper())
+                            @UserInitial
                         </div>
                         <span class="small fw-medium">@authService.Username</span>
                     </div>
@@ -73,11 +73,11 @@
                                     </a>
                                 </li>
 
-                                @if (BreadcrumbItems is not null && BreadcrumbItems.Count > 0)
+                                @if (HasBreadcrumbItems)
                                 {
-                                    foreach (var item in BreadcrumbItems)
+                                    foreach (var item in BreadcrumbItems!)
                                     {
-                                        if (string.IsNullOrWhiteSpace(item.Url) || item == BreadcrumbItems.Last())
+                                        if (IsCurrentCrumb(item))
                                         {
                                             <li class="breadcrumb-item active" aria-current="page">@item.Text</li>
                                         }
@@ -104,14 +104,7 @@
                     
                     <div class="theme-toggle ms-2">
                         <button class="btn btn-sm btn-icon" @onclick="ToggleTheme" title="Toggle theme">
-                            @if (Theme == "light")
-                            {
-                                <i class="bi bi-moon"></i>
-                            }
-                            else
-                            {
-                                <i class="bi bi-sun"></i>
-                            }
+                            <i class="bi @ThemeToggleIconClass"></i>
                         </button>
                     </div>
                 </div>

@@ -18,7 +18,7 @@
             </button>
 
             <span class="file-path text-secondary small font-monospace">
-                @(string.IsNullOrWhiteSpace(ViewModel.CurrentPath) ? "/" : ViewModel.CurrentPath)
+                @DisplayedPath
             </span>
 
             <button type="button"
@@ -82,9 +82,9 @@
 
                 @foreach (var item in ViewModel.Contents.Where(i => i.IsDirectory).OrderBy(i => i.Name))
                 {
-                    <button class="list-group-item list-group-item-action d-flex align-items-center @(ViewModel.IsItemSelected(item) ? "active" : "")"
+                    <button class="list-group-item list-group-item-action d-flex align-items-center @WhenSelected(item, "active", "")"
                             @onclick="@(() => ViewModel.HandleItemClickAsync(item))">
-                        <div class="me-2 @(ViewModel.IsItemSelected(item) ? "text-white" : "text-primary")">
+                        <div class="me-2 @WhenSelected(item, "text-white", "text-primary")">
                             <i class="bi bi-folder-fill"></i>
                         </div>
                         <span>@item.Name</span>
@@ -93,24 +93,17 @@
 
                 @foreach (var item in ViewModel.Contents.Where(i => i.IsFile).OrderBy(i => i.Name))
                 {
-                    <div class="list-group-item list-group-item-action d-flex align-items-center justify-content-between @(ViewModel.IsItemSelected(item) ? "active" : "")"
+                    <div class="list-group-item list-group-item-action d-flex align-items-center justify-content-between @WhenSelected(item, "active", "")"
                          @onclick="@(() => ViewModel.HandleItemClickAsync(item))">
                         <div class="d-flex align-items-center overflow-hidden">
-                            <div class="me-2 @(ViewModel.IsItemSelected(item) ? "text-white" : "text-secondary")">
-                                @if (item.Name.EndsWith(".md", StringComparison.OrdinalIgnoreCase))
-                                {
-                                    <i class="bi bi-markdown-fill"></i>
-                                }
-                                else
-                                {
-                                    <i class="bi bi-file-earmark"></i>
-                                }
+                            <div class="me-2 @WhenSelected(item, "text-white", "text-secondary")">
+                                <i class="bi @FileIconClass(item)"></i>
                             </div>
                             <span class="text-truncate">@item.Name</span>
                         </div>
                         <div class="file-actions">
                             <button type="button"
-                                    class="btn btn-sm btn-icon @(ViewModel.IsItemSelected(item) ? "text-white" : "text-danger")"
+                                    class="btn btn-sm btn-icon @WhenSelected(item, "text-white", "text-danger")"
                                     title="Delete"
                                     @onclick:stopPropagation="true"
                                     @onclick="@(() => ViewModel.ShowDeleteConfirmation(item))">

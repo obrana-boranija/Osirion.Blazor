@@ -301,6 +301,7 @@ public partial class OsirionSubscriptionCard : OsirionComponentBase
                     else
                     {
                         Logger.LogWarning("Email service factory not registered but UseBuiltInEmailService is true");
+                        subscriptionSubmissionResult = SubscriptionSubmissionResult.ServerError;
                     }
                 }
                 else
