@@ -8,6 +8,12 @@ namespace Osirion.Blazor.Components;
 public partial class OsirionPageLayout
 {
     /// <summary>
+    /// The name of the cascading value that tells content in the footer slot the layout already renders the
+    /// <c>&lt;footer&gt;</c> landmark.
+    /// </summary>
+    internal const string FooterSlotCascadeName = "OsirionPageLayout.FooterSlot";
+
+    /// <summary>
     /// Gets or sets the header content
     /// </summary>
     [Parameter]

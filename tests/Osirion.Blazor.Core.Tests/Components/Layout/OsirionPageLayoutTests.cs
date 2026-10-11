@@ -65,6 +65,29 @@ public class OsirionPageLayoutTests : OsirionComponentTestBase
         cut.Find("main").Id.ShouldBe("osirion-main-content");
     }
 
+    // axe landmark-no-duplicate-contentinfo: OsirionFooter in the footer slot rendered a second <footer>.
+    [Fact]
+    public void OsirionPageLayout_OsirionFooterInTheFooterSlot_LeavesOneFooterLandmark()
+    {
+        var cut = RenderLayout(parameters => parameters.Add(p => p.Footer, (RenderFragment)(b =>
+        {
+            b.OpenComponent<OsirionFooter>(0);
+            b.AddAttribute(1, nameof(OsirionFooter.CompanyName), "Osirion");
+            b.CloseComponent();
+        })));
+
+        cut.FindAll("footer").Count.ShouldBe(1);
+        cut.Find("footer.osirion-page-footer > div.osirion-footer").ShouldNotBeNull();
+    }
+
+    [Fact]
+    public void OsirionFooter_OutsideThePageLayout_IsItsOwnFooterLandmark()
+    {
+        var cut = RenderStatic<OsirionFooter>(parameters => parameters.Add(p => p.CompanyName, "Osirion"));
+
+        cut.Find("footer.osirion-footer").ShouldNotBeNull();
+    }
+
     private IRenderedComponent<OsirionPageLayout> RenderLayout(
         Action<ComponentParameterCollectionBuilder<OsirionPageLayout>> parameters) =>
         RenderStatic<OsirionPageLayout>(builder =>

@@ -33,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Osirion.Blazor.Analytics: a tracker component whose provider is not registered (for example `<ClarityTracker />` left in a layout while the Clarity configuration section is absent) failed the whole page with "Cannot provide a value for property '_provider'"; it now renders nothing
 - Osirion.Blazor.Cms.Web: the featured image in the header of `ContentView` and `LocalizedContentView` loaded lazily, which delayed Largest Contentful Paint on article pages; it now loads eagerly with `fetchpriority="high"` and async decoding. Images in lists stay lazy
 - Osirion.Blazor.Theming: in Bootstrap dark mode `--osirion-action-primary-text` fell through to the dark theme's near-black, so text on the primary color (badges, step numbers, the announcement bar) had a 2.7:1 contrast on a mid-tone primary; the Bootstrap adapter now keeps it white, as Bootstrap's own primary buttons do
+- `OsirionFooter` in `OsirionPageLayout`'s `Footer` slot rendered a `<footer>` inside the layout's `<footer>`, two contentinfo landmarks (axe `landmark-no-duplicate-contentinfo`, `landmark-contentinfo-is-top-level`). Inside the slot it now renders a `<div>` with the same classes; on its own it is still a `<footer>`
 
 ## [4.0.0] - 2026-10-11
 

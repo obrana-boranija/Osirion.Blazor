@@ -25,7 +25,10 @@
     @if (Footer is not null)
     {
         <footer class="osirion-page-footer">
-            @Footer
+            @* OsirionFooter reads this and renders a <div>, so the page keeps one contentinfo landmark *@
+            <CascadingValue Name="@FooterSlotCascadeName" Value="true" IsFixed="true">
+                @Footer
+            </CascadingValue>
         </footer>
     }
 </div>
