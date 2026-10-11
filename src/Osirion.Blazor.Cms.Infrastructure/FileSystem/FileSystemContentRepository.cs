@@ -108,7 +108,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
                 }
 
                 // Process each file
-                foreach (var file in files.Where(f => !IsExcluded(f)))
+                foreach (var file in files)
                 {
                     try
                     {
@@ -235,22 +235,6 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
                 LogError(ex, "deleting", id);
                 throw new ContentProviderException($"Failed to delete content item: {ex.Message}", ex, ProviderId);
             }
-        }
-
-        private bool IsExcluded(string filePath)
-        {
-            // Skip _index.md files - they're for directory metadata
-            if (Path.GetFileName(filePath).Equals("_index.md", StringComparison.OrdinalIgnoreCase))
-                return true;
-
-            // Check exclude patterns
-            //foreach (var pattern in _options.ExcludePatterns)
-            //{
-            //    if (MatchesGlobPattern(filePath, pattern))
-            //        return true;
-            //}
-
-            return false;
         }
 
         private async Task<ContentItem?> ProcessMarkdownFileAsync(string filePath, CancellationToken cancellationToken)
