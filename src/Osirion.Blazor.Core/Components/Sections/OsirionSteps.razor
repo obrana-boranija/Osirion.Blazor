@@ -1,0 +1,22 @@
+@namespace Osirion.Blazor.Components
+@inherits OsirionComponentBase
+
+@if (Items.Count > 0)
+{
+    @* An ordered list: screen readers announce the step count and each position without extra markup. *@
+    <ol class="@GetStepsClass()" @attributes="Attributes">
+        @foreach (var step in Items)
+        {
+            <li @key="step" class="osirion-step">
+                <span class="osirion-step-marker" aria-hidden="true"></span>
+                <div class="osirion-step-body">
+                    <p class="osirion-step-title">@step.Title</p>
+                    @if (!string.IsNullOrWhiteSpace(step.Description))
+                    {
+                        <p class="osirion-step-description">@step.Description</p>
+                    }
+                </div>
+            </li>
+        }
+    </ol>
+}

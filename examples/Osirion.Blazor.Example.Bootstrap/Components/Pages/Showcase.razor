@@ -70,6 +70,13 @@
         <h3 class="mt-5">Compare plans</h3>
         <OsirionFeatureComparison PlanNames="planNames" Rows="comparison" />
     </section>
+
+    <section aria-labelledby="showcase-steps">
+        <h2 id="showcase-steps">How it works</h2>
+        <OsirionSteps Items="steps" />
+        <h3 class="mt-5">The same steps, stacked</h3>
+        <OsirionSteps Items="steps" Vertical="true" />
+    </section>
 </div>
 
 @code {
@@ -88,6 +95,13 @@
         new("Static SSR components", [true, true, true]),
         new("Priority issues", [false, true, true]),
         new("Support", ["Community", "Email", "Agreement"]),
+    ];
+
+    private readonly StepItem[] steps =
+    [
+        new("Install the package", "dotnet add package Osirion.Blazor"),
+        new("Point it at your content", "A GitHub repository or a local folder of Markdown files."),
+        new("Publish", "Static SSR pages that need no client script."),
     ];
 
     private readonly AuthorLink[] authorLinks = [new("GitHub", "https://github.com/obrana-boranija/Osirion.Blazor"), new("NuGet", "https://www.nuget.org/packages/Osirion.Blazor")];

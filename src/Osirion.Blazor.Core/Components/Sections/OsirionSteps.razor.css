@@ -1,0 +1,76 @@
+.osirion-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    gap: var(--osirion-spacing-6, 1.5rem);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: osirion-step;
+}
+
+.osirion-step {
+    display: flex;
+    flex-direction: column;
+    gap: var(--osirion-spacing-3, 0.75rem);
+    counter-increment: osirion-step;
+}
+
+/* The number is generated from the list counter, so it always matches the step's position. */
+.osirion-step-marker {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background-color: var(--osirion-action-primary, #2563eb);
+    color: var(--osirion-action-primary-text, #fff);
+    font-weight: var(--osirion-font-weight-bold, 700);
+}
+
+    .osirion-step-marker::before {
+        content: counter(osirion-step);
+    }
+
+.osirion-step-body p {
+    margin: 0;
+}
+
+.osirion-step-title {
+    font-weight: var(--osirion-font-weight-semibold, 600);
+    color: var(--osirion-text-primary, #111827);
+}
+
+.osirion-step-body .osirion-step-description {
+    margin-top: var(--osirion-spacing-1, 0.25rem);
+    color: var(--osirion-text-secondary, #4b5563);
+}
+
+/* Stacked: number on the left, a line joining the numbers. */
+.osirion-steps-vertical {
+    grid-template-columns: 1fr;
+    gap: 0;
+}
+
+    .osirion-steps-vertical .osirion-step {
+        position: relative;
+        flex-direction: row;
+        gap: var(--osirion-spacing-4, 1rem);
+        padding-bottom: var(--osirion-spacing-6, 1.5rem);
+    }
+
+        .osirion-steps-vertical .osirion-step:not(:last-child)::after {
+            content: "";
+            position: absolute;
+            top: 2.5rem;
+            bottom: 0;
+            left: 1.25rem;
+            width: 2px;
+            transform: translateX(-50%);
+            background-color: var(--osirion-border-color, #e5e7eb);
+        }
+
+    .osirion-steps-vertical .osirion-step-body {
+        padding-top: 0.5rem;
+    }
