@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Components;
 
 namespace Osirion.Blazor.Cms.Web.Components;
@@ -27,10 +28,26 @@ public partial class ArticlePage
     public string TableOfContentsTitle { get; set; } = "Table of Contents";
 
     /// <summary>
-    /// Gets or sets custom footer content
+    /// Gets or sets HTML shown after the article and its author, for example a call to subscribe. It is sanitized
+    /// like the article itself.
     /// </summary>
     [Parameter]
     public string? CustomFooterContent { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether an article that belongs to a series (<c>series</c> front matter) shows where it stands in
+    /// it, with links to the other parts, above the body. Defaults to <see langword="true"/>; nothing renders for an
+    /// article outside a series.
+    /// </summary>
+    [Parameter]
+    public bool ShowSeriesNavigation { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets what is shown after the body about the article's author, for example an
+    /// <c>OsirionAuthorCard</c> built from <c>context.Author</c>. Nothing is shown when <see langword="null"/>.
+    /// </summary>
+    [Parameter]
+    public RenderFragment<ContentItem>? AuthorContent { get; set; }
 
     /// <summary>
     /// Gets or sets additional sidebar content

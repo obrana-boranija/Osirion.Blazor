@@ -38,6 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `OsirionPageHeading`: a page title as the `h1` with an optional sentence below it, for pages without a hero; the example privacy page uses it, so it has an `h1` (issue 39)
 - Osirion.Blazor.Cms.Web: `AboutPage` (from `about.md`: the title as the `h1`, the body, `ChildContent` for author cards, AboutPage structured data, 404 when missing), `ContactPage` (an `OsirionContactForm` with the contact details under the title, optional Markdown from `contact.md`, ContactPage structured data, works without content) and `NotFoundPage` (noindex, home link, suggestions, optional search; sets status 404 itself on .NET 9)
 - Osirion.Blazor.Cms.Web: `OsirionContentItemPageBase`, the base of pages that show one content item, split out of `OsirionContentDetailPageBase`, which adds navigation and related items
+- Osirion.Blazor.Cms.Web: `ArticlePage.ShowSeriesNavigation` (on by default; renders only for articles with `series` front matter) and `ArticlePage.AuthorContent`, a slot after the body for an author card
 - Osirion.Blazor.Cms.Web: `ContentListPage`, a whole list page for a blog index, category, tag or author: the title as the page's `h1` with a description, paged cards, CollectionPage data, feed links (`FeedUrl`) and optional category and tag sidebars; `ContentList.ShowTitle` renders the same heading for lists composed by hand
 - Osirion.Blazor.Cms.Web: `ContentRenderer.OmitLeadingTitle`, which leaves out the content's opening top-level heading
 
@@ -52,6 +53,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Osirion.Blazor.Theming: the Bootstrap, MudBlazor and Fluent UI adapters set `--osirion-link-color` and `--osirion-link-hover-color` from the framework's link color (`--bs-link-color`, `--mud-palette-primary`, `--colorBrandForegroundLink`), in light and dark mode
 
 ### Fixed
+- Osirion.Blazor.Cms.Web: `ArticlePage` ignored `RelatedContentTitle` (the section was always titled "Related items") and never rendered `CustomFooterContent`; both are used now, so the related section is titled "Related Articles" unless set
 - Osirion.Blazor.Cms.Web: `SchemaType.BlogPosting` wrote JSON-LD with `"@type": "Article"`; it now writes `BlogPosting`
 - Osirion.Blazor.Cms.Infrastructure: a content item's `LastModified` was the time the content was loaded, because mapping the front matter touched setters that stamp the current time. It is now the front matter's `last_modified`, then the file's write time (file system provider), then the publication date; SEO `dateModified` and sorting by last-modified date follow it
 - Osirion.Blazor.Analytics: a tracker component whose provider is not registered (for example `<ClarityTracker />` left in a layout while the Clarity configuration section is absent) failed the whole page with "Cannot provide a value for property '_provider'"; it now renders nothing

@@ -209,6 +209,87 @@ public class PageLevelTests : CmsWebComponentTestBase
         return item;
     }
 
+    [Fact]
+    public void ArticlePage_SeriesPart_ShowsTheSeriesNavigationAboveTheBody()
+    {
+        var first = SeriesPart("set-up", "Set up", 1);
+        var second = SeriesPart("deploy", "Deploy", 2);
+        ReturnFromQuery(first, second);
+
+        var cut = RenderStatic<ArticlePage>(p => p.Add(c => c.Item, first).Add(c => c.ShowRelatedContent, false));
+
+        var main = cut.Find(".osirion-article-main");
+        main.FirstElementChild!.ClassList.ShouldContain("osirion-series-nav");
+        cut.Find(".osirion-series-nav-position").TextContent.ShouldBe("Part 1 of 2");
+    }
+
+    [Fact]
+    public void ArticlePage_ShowSeriesNavigationOff_LeavesItOut()
+    {
+        var first = SeriesPart("set-up", "Set up", 1);
+        ReturnFromQuery(first, SeriesPart("deploy", "Deploy", 2));
+
+        var cut = RenderStatic<ArticlePage>(p => p
+            .Add(c => c.Item, first)
+            .Add(c => c.ShowRelatedContent, false)
+            .Add(c => c.ShowSeriesNavigation, false));
+
+        cut.FindAll(".osirion-series-nav").ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void ArticlePage_AuthorContent_FollowsTheBodyWithTheArticle()
+    {
+        var item = Article("Signed");
+        item.SetAuthor("Ana Author");
+        ReturnFromQuery(item);
+
+        var cut = RenderStatic<ArticlePage>(p => p
+            .Add(c => c.ItemSlug, "signed")
+            .Add(c => c.ShowRelatedContent, false)
+            .Add(c => c.AuthorContent, article => $"<p class=\"byline\">{article.Author}</p>"));
+
+        cut.Find(".osirion-article-main .osirion-article-author .byline").TextContent.ShouldBe("Ana Author");
+    }
+
+    // Fails before the fix: the related section was always titled "Related items" and the parameter was ignored.
+    [Fact]
+    public void ArticlePage_RelatedContentTitle_NamesTheRelatedSection()
+    {
+        ReturnFromQuery(Article("Main"));
+
+        var cut = RenderStatic<ArticlePage>(p => p
+            .Add(c => c.ItemSlug, "main")
+            .Add(c => c.RelatedItems, [Article("Other")])
+            .Add(c => c.RelatedContentTitle, "Keep reading"));
+
+        cut.Markup.ShouldContain("Keep reading");
+        cut.Markup.ShouldNotContain("Related items");
+    }
+
+    // Fails before the fix: CustomFooterContent was accepted and never rendered.
+    [Fact]
+    public void ArticlePage_CustomFooterContent_IsRenderedSanitized()
+    {
+        ReturnFromQuery(Article("Main"));
+
+        var cut = RenderStatic<ArticlePage>(p => p
+            .Add(c => c.ItemSlug, "main")
+            .Add(c => c.ShowRelatedContent, false)
+            .Add(c => c.CustomFooterContent, "<p class=\"cta\">Subscribe</p><script>alert(1)</script>"));
+
+        cut.Find(".osirion-article-footer .cta").TextContent.ShouldBe("Subscribe");
+        cut.FindAll(".osirion-article-footer script").ShouldBeEmpty();
+    }
+
+    private static ContentItem SeriesPart(string slug, string title, int order)
+    {
+        var item = Article(title);
+        item.Url = $"blog/{slug}";
+        item.Metadata = new Osirion.Blazor.Cms.Domain.ValueObjects.FrontMatter { Title = title, Series = "Build a blog", SeriesOrder = order };
+        return item;
+    }
+
     private void ReturnFromQuery(params ContentItem[] items) =>
         _manager.GetContentByQueryAsync(Arg.Any<ContentQuery>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult<IReadOnlyList<ContentItem>>(items));
