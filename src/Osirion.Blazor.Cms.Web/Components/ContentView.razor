@@ -78,7 +78,7 @@
 
             <!-- Main content body -->
             <div class="osirion-content-body">
-                @GetSanitizedContent(Item.Content)
+                @GetSanitizedContent(ContentHeadings.WithoutLeadingTitle(Item.Content))
             </div>
 
             <!-- Footer section -->
