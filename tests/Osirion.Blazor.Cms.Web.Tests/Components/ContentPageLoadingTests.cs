@@ -61,6 +61,20 @@ public class ContentPageLoadingTests : CmsWebComponentTestBase
         _provider.Received(1).GetItemByUrlAsync("articles/first");
     }
 
+    // The path comes from the URL, so a host pattern with catastrophic backtracking must not tie up the request:
+    // the match times out and the path is used unchanged.
+    [Fact]
+    public void ContentPage_PathReplacePatternThatBacktracks_TimesOutAndKeepsThePath()
+    {
+        var path = new string('a', 40) + "!";
+
+        RenderPage(p => p
+            .Add(c => c.Path, path)
+            .Add(c => c.PathReplacePattern, "^(a+)+$|x"));
+
+        _provider.Received(1).GetItemByUrlAsync(path);
+    }
+
     [Fact]
     public void ContentPage_PathReplacePatternWithoutASeparator_IsIgnored()
     {
