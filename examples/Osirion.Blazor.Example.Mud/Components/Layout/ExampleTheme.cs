@@ -14,13 +14,19 @@ internal static class ExampleTheme
     {
         Primary = "#5c5cb0",
         Secondary = "#9090d6",
+        // Text on the lighter purples and on red must reach 4.5:1; white on #9090d6 measured 2.9:1.
+        SecondaryContrastText = "#14142a",
+        Error = "#c62828",
         AppbarBackground = "#5c5cb0",
     };
 
     private static readonly PaletteDark DarkPalette = new()
     {
         Primary = "#9090d6",
+        PrimaryContrastText = "#14142a",
         Secondary = "#b4b4e6",
+        SecondaryContrastText = "#14142a",
+        Error = "#d32f2f",
         Background = "#14142a",
         BackgroundGray = "#24244a",
         Surface = "#1c1c38",

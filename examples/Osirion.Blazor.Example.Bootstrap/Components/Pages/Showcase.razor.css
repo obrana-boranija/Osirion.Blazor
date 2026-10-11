@@ -7,3 +7,7 @@
     .showcase section {
         margin-top: var(--osirion-spacing-8, 2rem);
     }
+
+    .showcase h3 {
+        margin-top: var(--osirion-spacing-8, 2rem);
+    }
