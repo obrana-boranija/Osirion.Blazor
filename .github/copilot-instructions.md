@@ -88,6 +88,30 @@ builder.Services.AddOsirionBlazor(osirion => {
 - **DRY**: Don't Repeat Yourself - extract reusable logic
 - **Clean Code**: Meaningful names, small functions, clear intent, comprehensive comments
 
+### Engineering Checklist (every change)
+These turn the principles above into checks. Apply them to every change, however small, and to your own diff before
+each commit.
+
+1. **One rule, one place (DRY).** Before writing a helper, look for one that exists: `ContentUrls` (tag, category and
+   pagination URLs), `SafeHref` (link schemes), `SanitizedContentCache`, the `--osirion-*` theme tokens. When the same
+   expression, fallback or regex would appear a second time, move it into the shared helper and call it from both
+   places. When a fix reveals the same rule duplicated in components you are not changing, record it as an issue
+   instead of copying it once more.
+2. **The smallest change that fully solves the problem (KISS, YAGNI).** No speculative parameters, options or
+   abstractions; a new public member needs a caller and a test. Prefer one clear condition over a clever mechanism.
+3. **SOLID boundaries.** Components render, services load data, helpers stay pure and static. A module never reaches
+   into another module's internals: shared styling goes through public hooks (`--osirion-*` variables and documented
+   classes), shared logic through the module that owns it.
+4. **Fix the cause in the library.** A defect seen on an example site is fixed in the component, not patched with
+   example CSS or markup. The example sites stay thin shells that compose library components and supply content.
+5. **Comments explain why, next to what they describe.** A doc comment sits on the member it documents; no
+   commented-out code, no TODO without an issue.
+6. **Tests come with the change.** A bug fix adds a test that fails without the fix; a guard test is labelled as one.
+   Run the tests so their exit code is visible (no pipe that hides it) before pushing.
+7. **Self-review the diff before committing.** Read it top to bottom for duplicated logic, dead code, misplaced
+   comments, unrelated reformatting, byte-order-mark or line-ending churn, and em dashes.
+8. **One step, one pull request.** Each PR states why, what changed, how it was verified, and what was not verified.
+
 ### Multi-Targeting (.NET 9 & 10)
 - Source projects target `net9.0;net10.0` through `src/Directory.Build.props` (`OsirionTargetFrameworks` in the root `Directory.Build.props`)
 - Test projects target `<TargetFramework>net10.0</TargetFramework>` only
