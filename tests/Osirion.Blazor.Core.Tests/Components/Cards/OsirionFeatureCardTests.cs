@@ -90,6 +90,7 @@ public class OsirionFeatureCardTests : OsirionComponentTestBase
         children[imageFirst ? 1 : 0].ClassList.ShouldContain("osirion-feature-card-content");
     }
 
+    // Known defect, pinned as current behavior: the image falls back through an inline onerror handler that loads https://placehold.co, which a strict Content Security Policy blocks. Update this expectation when it is fixed.
     [Theory]
     [InlineData(CardSize.ExtraExtraLarge, "osirion-feature-card-xxl", "1200x1200")]
     [InlineData(CardSize.ExtraLarge, "osirion-feature-card-xl", "900x900")]
@@ -99,7 +100,7 @@ public class OsirionFeatureCardTests : OsirionComponentTestBase
     [InlineData(CardSize.ExtraSmall, "osirion-feature-card-xs", "150x150")]
     [InlineData(CardSize.ExtraExtraSmall, "osirion-feature-card-xxs", "75x75")]
     [InlineData((CardSize)99, "osirion-feature-card-md", "450x450")]
-    public void FeatureCard_CardSize_MapsToClassAndPlaceholderDimensions(CardSize size, string expectedClass, string expectedDimensions)
+    public void FeatureCard_CardSize_MapsToClassAndInlineOnErrorPlaceholder(CardSize size, string expectedClass, string expectedDimensions)
     {
         var cut = RenderCard(p => p
             .Add(c => c.ImageUrl, "/img.png")
@@ -174,7 +175,7 @@ public class OsirionFeatureCardTests : OsirionComponentTestBase
     }
 
     [Fact]
-    public void FeatureCard_UndefinedEffectTiming_AddsAnEmptyClassEntryOnly()
+    public void FeatureCard_UndefinedEffectTiming_RendersNoEffectClasses()
     {
         var cut = RenderCard(p => p
             .Add(c => c.BorderTiming, (EffectTiming)99)

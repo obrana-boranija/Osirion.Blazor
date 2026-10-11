@@ -298,8 +298,9 @@ public class OsirionSubscriptionCardTests : OsirionComponentTestBase
         CurrentUri().ShouldContain("SubmissionResultValue=3");
     }
 
+    // Known defect, pinned as current behavior: with the built-in email service registered the card reports success without sending or recording the subscription. Update this expectation when it is fixed.
     [Fact]
-    public void SubscriptionCard_BuiltInEmailServiceRegistered_ReportsSuccessWithoutInvokingOnSubscribe()
+    public void SubscriptionCard_BuiltInEmailServiceRegistered_ReportsSuccessWithoutSendingAnything()
     {
         Services.AddSingleton(Options.Create(new EmailOptions { Provider = EmailProviderType.Smtp }));
         Services.AddSingleton<SmtpEmailService>();
@@ -329,8 +330,9 @@ public class OsirionSubscriptionCardTests : OsirionComponentTestBase
         CurrentUri().ShouldContain("SubmissionResultValue=3");
     }
 
+    // Known defect, pinned as current behavior: ticked categories are read only from a static form post, so an interactive submit drops the visitor's choices and keeps the required ones. Update this expectation when it is fixed.
     [Fact]
-    public void SubscriptionCard_SubmitWithCategories_KeepsRequiredCategoriesOnly()
+    public void SubscriptionCard_SubmitWithoutPostedCategories_KeepsRequiredCategories()
     {
         SubscriptionModel? received = null;
         var cut = RenderStatic<OsirionSubscriptionCard>(parameters => parameters
@@ -361,14 +363,19 @@ public class OsirionSubscriptionCardTests : OsirionComponentTestBase
     }
 
     [Fact]
-    public void SubscriptionCard_InteractiveRender_RendersTheSameForm()
+    public void SubscriptionCard_InteractiveSubmit_InvokesOnSubscribeAndReportsSuccess()
     {
         SetRendererInfo(new RendererInfo("Server", true));
+        SubscriptionModel? received = null;
+        var cut = Render<OsirionSubscriptionCard>(parameters => parameters
+            .Add(p => p.Id, "live")
+            .Add(p => p.OnSubscribe, (SubscriptionModel model) => received = model));
+        Fill(cut);
 
-        var cut = Render<OsirionSubscriptionCard>(parameters => parameters.Add(p => p.Id, "live"));
+        cut.Find("form").Submit();
 
-        cut.Find("#subscription-email-live").ShouldNotBeNull();
-        cut.Find("button[type=submit]").ShouldNotBeNull();
+        received.ShouldNotBeNull().Email.ShouldBe(Email);
+        CurrentUri().ShouldContain("SubmissionResultValue=1");
     }
 
     private static SubscriptionCategory[] Categories() =>
