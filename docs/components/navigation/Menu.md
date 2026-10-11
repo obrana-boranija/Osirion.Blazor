@@ -86,7 +86,7 @@ rendering and WebAssembly. Open and closed states are kept in visually hidden ch
 ## Theming
 
 The menu follows the Osirion theme tokens (`--osirion-background-primary`, `--osirion-text-primary`,
-`--osirion-border-color`, `--osirion-action-primary` and the framework adapters that set them). These hooks override
+`--osirion-border-color`, `--osirion-link-color` and the framework adapters that set them). These hooks override
 it, on the menu or on any ancestor:
 
 | Variable | Default |
@@ -97,7 +97,7 @@ it, on the menu or on any ancestor:
 | `--osirion-menu-logo-size` | `2.25rem` |
 | `--osirion-menu-background`, `--osirion-menu-color`, `--osirion-menu-muted-color` | theme background, text and secondary text |
 | `--osirion-menu-border-color` | theme border color |
-| `--osirion-menu-accent` | theme primary action color; used for the active item, focus rings and links |
+| `--osirion-menu-accent` | the theme's link color (`--osirion-link-color`), which the framework adapters take from the framework; used for the active item, focus rings and links |
 | `--osirion-menu-hover-background`, `--osirion-menu-active-background` | tints of the text and accent colors |
 | `--osirion-menu-dropdown-background` | the menu background |
 | `--osirion-menu-radius`, `--osirion-menu-panel-radius`, `--osirion-menu-mega-radius` | `0.5rem`, `0.75rem`, `1rem` |

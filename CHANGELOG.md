@@ -44,6 +44,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - A `MenuItem` with a submenu and no `Href` (or `Href="#"`) renders as the submenu toggle instead of a link to `#`
 - `MenuItem.Icon` renders no icon slot for a name that is not built in; the `blog` icon is a journal and the `document` icon a page
 - Vertical menus open submenus in place instead of as flyouts
+- Osirion.Blazor.Theming: the Bootstrap, MudBlazor and Fluent UI adapters set `--osirion-link-color` and `--osirion-link-hover-color` from the framework's link color (`--bs-link-color`, `--mud-palette-primary`, `--colorBrandForegroundLink`), in light and dark mode
 
 ### Fixed
 - Osirion.Blazor.Cms.Web: `SchemaType.BlogPosting` wrote JSON-LD with `"@type": "Article"`; it now writes `BlogPosting`
@@ -57,6 +58,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Osirion.Blazor.Navigation: the drawer rules for submenus in `Menu.razor.css` never applied, because CSS isolation scoped them to `Menu` while `MenuItem` renders the submenu, and non-collapsible and vertical menus disappeared at 768px and below
 - Osirion.Blazor.Core: `OsirionContactForm` no longer runs past the right edge of the screen on phones
 - Osirion.Blazor.Core: rendered Markdown tables scroll sideways on screens up to 768px wide and keep words and inline code whole, instead of breaking them a few letters per line
+- Osirion.Blazor.Navigation: menu accent text (the active item, mega menu links, group footer links) uses the link color instead of the primary button color, which measured 3.5:1 on the Bootstrap example's dark background; it now measures at least 5.2:1 in both modes on all three adapters
 
 ### Removed
 - Osirion.Blazor.Navigation: `Menu.razor.scss`, `Menu.razor.min.css` and `compilerconfig.json`, an out-of-date stylesheet source that a Web Compiler run would have compiled over `Menu.razor.css`
