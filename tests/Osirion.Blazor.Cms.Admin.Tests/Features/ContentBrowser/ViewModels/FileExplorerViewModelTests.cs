@@ -281,7 +281,7 @@ public class FileExplorerViewModelTests
         // Assert
         _viewModel.SelectedItem.ShouldBe(fileItem);
         _selections.ShouldHaveSingleItem().Path.ShouldBe(fileItem.Path);
-        _navigationManager.Navigations.ShouldHaveSingleItem().Uri.ShouldContain(fileItem.Path);
+        _navigationManager.Navigations.ShouldHaveSingleItem().Uri.ShouldContain(Uri.EscapeDataString(fileItem.Path));
     }
 
     [Fact]

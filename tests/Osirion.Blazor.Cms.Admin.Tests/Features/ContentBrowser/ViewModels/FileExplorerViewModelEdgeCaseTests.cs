@@ -91,7 +91,22 @@ public class FileExplorerViewModelEdgeCaseTests
 
         await viewModel.OpenFileAsync(new GitHubItem { Name = "post.md", Type = "file", Path = "blog/post.md" });
 
-        navigation.Navigations.ShouldHaveSingleItem().Uri.ShouldBe("/osirion/content/edit?Path=blog/post.md");
+        navigation.Navigations.ShouldHaveSingleItem().Uri.ShouldBe("/osirion/content/edit?Path=blog%2Fpost.md");
+    }
+
+    // Before the fix the path went into the query unencoded, so "&", "#" and "+" cut or changed it.
+    [Theory]
+    [InlineData("blog/q&a.md", "/osirion/content/edit?Path=blog%2Fq%26a.md")]
+    [InlineData("blog/c#.md", "/osirion/content/edit?Path=blog%2Fc%23.md")]
+    [InlineData("blog/c++.md", "/osirion/content/edit?Path=blog%2Fc%2B%2B.md")]
+    public async Task OpenFileAsync_PathWithQueryCharacters_IsEncodedInTheEditorUrl(string path, string expected)
+    {
+        var navigation = new TestNavigationManager();
+        var viewModel = CreateViewModel(navigation);
+
+        await viewModel.OpenFileAsync(new GitHubItem { Name = Path.GetFileName(path), Type = "file", Path = path });
+
+        navigation.Navigations.ShouldHaveSingleItem().Uri.ShouldBe(expected);
     }
 
     [Fact]
