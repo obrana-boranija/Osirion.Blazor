@@ -120,7 +120,7 @@ Two providers have their own consent settings, and the gate works with both:
   `requireConsent`, so Matomo tracks nothing until your own page pushes `setConsentGiven` or `rememberConsentGiven` onto
   `_paq`. With the gate on, the option is not needed and is left out of the script.
 
-Available from 4.1: Plausible and Umami trackers, which set no cookies. Whether you still ask for consent for them is
+Available from 4.0: Plausible and Umami trackers, which set no cookies. Whether you still ask for consent for them is
 your decision; the gate covers them like the other trackers.
 
 ## Check consent in your own components

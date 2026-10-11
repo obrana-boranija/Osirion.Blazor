@@ -1,32 +1,31 @@
 ---
-title: "New in Osirion.Blazor 4.1: Content Components"
+title: "New in Osirion.Blazor 4.0: Content Components"
 author: "Dejan Demonjić"
 date: "2026-10-11"
 last_modified: 2026-10-11
-description: "Osirion.Blazor 4.1 adds tabs, accordions and FAQs, callouts, responsive images, video embeds, author pages, series, feeds and more."
-slug: "osirion-blazor-4-1-components"
+description: "Osirion.Blazor 4.0 adds tabs, accordions and FAQs, callouts, responsive images, video embeds, author pages, series, feeds and more."
+slug: "osirion-blazor-4-0-components"
 categories: [Releases]
 tags: [Release Notes, Components, Static SSR, Feeds, Analytics]
 featured_image: "/assets/images/blazor-cover.png"
 is_featured: false
 published: true
 seo_properties:
-  title: "New in Osirion.Blazor 4.1: Content Components"
-  description: "The components and features coming in Osirion.Blazor 4.1, each with a short example and a link to its documentation."
+  title: "New in Osirion.Blazor 4.0: Content Components"
+  description: "The components and features new in Osirion.Blazor 4.0, each with a short example and a link to its documentation."
   type: "Article"
 ---
 
-# New in Osirion.Blazor 4.1: content components
+# New in Osirion.Blazor 4.0: content components
 
-Version 4.1 adds the building blocks content sites ask for most: tabs, accordions and FAQs, callouts, responsive
+Version 4.0 adds the building blocks content sites ask for most: tabs, accordions and FAQs, callouts, responsive
 images, video embeds, author pages, series, pricing tables, steps, an announcement bar, a reading progress bar, a
 sitemap with RSS and Atom feeds, and two cookie-free analytics providers. All of them render with static SSR, and most
 need no script at all.
 
 > [!NOTE]
-> 4.1 is not released yet. Everything below is in the repository's `[Unreleased]` changelog section and ships when the
-> 4.1 package is published on NuGet. Until then, the current release is
-> [4.0.0](/blog/osirion-blazor-4-0-release).
+> The same release also hardens the CMS and its security; see
+> [Osirion.Blazor 4.0: security hardening and Fluent UI v5](/blog/osirion-blazor-4-0-release).
 
 The Razor examples assume `@using Osirion.Blazor.Components` and, for the item types, `@using Osirion.Blazor.Core.Models`.
 
@@ -225,8 +224,8 @@ sets a cookie for that announcement and redirects back. Map the endpoint once; l
 needs `app.UseAntiforgery()` in the pipeline before the endpoints.
 
 ```razor
-<OsirionAnnouncementBar Id="release-4-1">
-    Osirion.Blazor 4.1 is out. <a href="/blog/osirion-blazor-4-1-components">See what is new</a>
+<OsirionAnnouncementBar Id="release-4-0">
+    Osirion.Blazor 4.0 is out. <a href="/blog/osirion-blazor-4-0-components">See what is new</a>
 </OsirionAnnouncementBar>
 ```
 
@@ -277,7 +276,7 @@ at startup and honor the consent gate from 4.0. Render `<PlausibleTracker />` or
 
 [Analytics documentation](/docs/components/analytics)
 
-## Also in 4.1
+## Also in 4.0
 
 - `OsirionPageLayout` renders a skip link to the main content as its first focusable element, shown only while it
   has keyboard focus (`ShowSkipLink`, `SkipLinkText`, `MainContentId`).

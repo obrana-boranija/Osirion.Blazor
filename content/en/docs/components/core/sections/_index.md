@@ -65,8 +65,8 @@ types in `Osirion.Blazor.Core.Models`:
 | [Hero section](/docs/components/core/sections/hero-section) | A page header with title, subtitle, buttons and a side or background image | None | 4.0 |
 | [Base section](/docs/components/core/sections/base-section) | A `<section>` with heading, description, container and background options | None | 4.0 |
 | [Contact info section](/docs/components/core/sections/contact-info-section) | Address, phone numbers, email addresses and websites as links | None | 4.0 |
-| [Pricing table and feature comparison](/docs/components/core/sections/pricing-table) | Plans side by side, and a table comparing their features | None | 4.1 |
-| [Steps](/docs/components/core/sections/steps) | Numbered "how it works" steps as an ordered list | None | 4.1 |
+| [Pricing table and feature comparison](/docs/components/core/sections/pricing-table) | Plans side by side, and a table comparing their features | None | 4.0 |
+| [Steps](/docs/components/core/sections/steps) | Numbered "how it works" steps as an ordered list | None | 4.0 |
 | [Responsive showcase](/docs/components/core/sections/responsive-showcase-section) | A preview frame that switches between desktop, tablet and mobile widths | Interactive render mode | 4.0 |
 
 The same folder holds `OsirionMetricGrid` and `OsirionContextCardGrid`, which do not have pages yet.

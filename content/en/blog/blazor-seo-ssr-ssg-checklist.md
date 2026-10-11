@@ -167,7 +167,7 @@ seo_properties:
 Valid JSON-LD replaces the generated data. It is parsed and written again with `<`, `>` and `&` escaped, so it cannot
 close the script element; invalid JSON-LD is dropped with a logged warning, and the generated data is used instead.
 
-Available from 4.1: `OsirionFaq` renders questions and answers you write and the matching `FAQPage` data. Prefer it
+Available from 4.0: `OsirionFaq` renders questions and answers you write and the matching `FAQPage` data. Prefer it
 to the FAQ data the renderer can derive from titles, which is off by default (`EnableGeneratedFaq`). Google no longer
 shows FAQ rich results (since May 2026) or HowTo rich results (since 2023), so this data describes the page without
 changing how it looks in Google results.
@@ -232,7 +232,7 @@ multilingual setup.
 - One scheme and one host; canonical URLs without tracking parameters.
 - `noindex` and `published: false` where pages must stay out of search.
 - `SchemaTypes` or `json_ld` for structured data.
-- A sitemap and feeds with `SiteUrl` set (from 4.1).
+- A sitemap and feeds with `SiteUrl` set (from 4.0).
 - `hreflang` links between translations.
 
 ## Related

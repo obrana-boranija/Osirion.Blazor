@@ -57,7 +57,7 @@ The first tab is selected when the page renders. To start on another one and giv
         <pre><code>Install-Package Osirion.Blazor</code></pre>
     </OsirionTab>
     <OsirionTab Title="PackageReference">
-        <pre><code>&lt;PackageReference Include="Osirion.Blazor" Version="4.1.0" /&gt;</code></pre>
+        <pre><code>&lt;PackageReference Include="Osirion.Blazor" Version="4.0.0" /&gt;</code></pre>
     </OsirionTab>
 </OsirionTabs>
 ```

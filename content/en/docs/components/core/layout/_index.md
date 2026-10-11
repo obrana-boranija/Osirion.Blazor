@@ -52,7 +52,7 @@ SSR; only `OsirionPageLayout` loads a small script, for the header that hides on
 
 | Component | What it renders |
 | --- | --- |
-| [OsirionPageLayout](/docs/components/core/layout/page-layout) | `header`, `main` and `footer` with a sticky footer, a header that hides while scrolling down, and (from 4.1) a skip link. |
+| [OsirionPageLayout](/docs/components/core/layout/page-layout) | `header`, `main` and `footer` with a sticky footer, a header that hides while scrolling down, and (from 4.0) a skip link. |
 | [OsirionFooter](/docs/components/core/layout/footer) | Site footer with link columns, social links, copyright and legal links. |
 | [OsirionStickySidebar](/docs/components/core/layout/sticky-sidebar) | An `aside` that stays in view and scrolls on its own, for a table of contents or docs navigation. |
 | [OsirionPageLoading](/docs/components/core/layout/page-loading) | A centered CSS spinner with optional text. |
@@ -77,7 +77,7 @@ SSR; only `OsirionPageLayout` loads a small script, for the header that hides on
 </OsirionPageLayout>
 ```
 
-`OsirionPageLayout` needs `builder.Services.AddJSComponents()` in `Program.cs` for its script. From 4.1, an
+`OsirionPageLayout` needs `builder.Services.AddJSComponents()` in `Program.cs` for its script. From 4.0, an
 `OsirionFooter` inside the `Footer` slot renders a `div`, so the page has one footer landmark.
 
 ## Related

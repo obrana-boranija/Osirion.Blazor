@@ -19,11 +19,11 @@ public class OsirionAnnouncementBarTests : OsirionComponentTestBase
         var bar = cut.Find("div.osirion-announcement");
         bar.GetAttribute("role").ShouldBe("region");
         bar.GetAttribute("aria-label").ShouldBe("Announcement");
-        cut.Find(".osirion-announcement-content").TextContent.ShouldBe("Version 4.1 is out");
+        cut.Find(".osirion-announcement-content").TextContent.ShouldBe("Version 4.0 is out");
         var form = cut.Find("form");
         form.GetAttribute("method").ShouldBe("post");
         form.GetAttribute("action").ShouldBe("/api/announcement/dismiss");
-        cut.Find("input[name='id']").GetAttribute("value").ShouldBe("release-4-1");
+        cut.Find("input[name='id']").GetAttribute("value").ShouldBe("release-4-0");
         cut.Find("input[name='days']").GetAttribute("value").ShouldBe("30");
         cut.Find("input[name='returnUrl']").GetAttribute("value").ShouldBe("/");
         cut.Find("button[type='submit']").GetAttribute("aria-label").ShouldBe("Dismiss announcement");
@@ -33,7 +33,7 @@ public class OsirionAnnouncementBarTests : OsirionComponentTestBase
     public void OsirionAnnouncementBar_Dismissed_RendersNothing()
     {
         var context = new DefaultHttpContext();
-        context.Request.Headers.Cookie = "osirion_announcement_release-4-1=dismissed";
+        context.Request.Headers.Cookie = "osirion_announcement_release-4-0=dismissed";
 
         Render(context).Markup.Trim().ShouldBeEmpty();
     }
@@ -42,8 +42,8 @@ public class OsirionAnnouncementBarTests : OsirionComponentTestBase
     public void OsirionAnnouncementBar_NoHttpContext_RendersNothing()
     {
         var cut = Render<OsirionAnnouncementBar>(p => p
-            .Add(b => b.Id, "release-4-1")
-            .AddChildContent("Version 4.1 is out"));
+            .Add(b => b.Id, "release-4-0")
+            .AddChildContent("Version 4.0 is out"));
 
         cut.Markup.Trim().ShouldBeEmpty();
     }
@@ -69,8 +69,8 @@ public class OsirionAnnouncementBarTests : OsirionComponentTestBase
 
     private IRenderedComponent<OsirionAnnouncementBar> Render(HttpContext context, bool dismissible = true) =>
         Render<OsirionAnnouncementBar>(p => p
-            .Add(b => b.Id, "release-4-1")
+            .Add(b => b.Id, "release-4-0")
             .Add(b => b.Dismissible, dismissible)
-            .AddChildContent("Version 4.1 is out")
+            .AddChildContent("Version 4.0 is out")
             .AddCascadingValue(context));
 }

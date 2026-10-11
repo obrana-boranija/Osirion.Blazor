@@ -185,7 +185,7 @@ dotnet user-secrets set "Osirion:Cms:Web:GitHub:<Name>:WebhookSecret" "<long ran
 
 ## Related
 
-- [New in Osirion.Blazor 4.1: content components](/blog/osirion-blazor-4-1-components)
+- [New in Osirion.Blazor 4.0: content components](/blog/osirion-blazor-4-0-components)
 - [HTML renderer](/docs/components/core/rendering/html-renderer)
 - [Cookie consent](/docs/components/core/popups/cookie-consent)
 - [Analytics](/docs/components/analytics)

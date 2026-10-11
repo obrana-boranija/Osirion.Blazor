@@ -76,8 +76,8 @@ Put the bar at the top of a statically rendered layout:
 ```razor
 @using Osirion.Blazor.Components
 
-<OsirionAnnouncementBar Id="release-4-1">
-    Osirion.Blazor 4.1 is out. <a href="/blog">Read what's new</a>
+<OsirionAnnouncementBar Id="release-4-0">
+    Osirion.Blazor 4.0 is out. <a href="/blog">Read what's new</a>
 </OsirionAnnouncementBar>
 ```
 
@@ -104,7 +104,7 @@ To announce something new, change `Id`. Visitors who closed the previous announc
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `Id` | `string` | empty | Required. 1 to 40 lowercase letters, digits or hyphens, such as `release-4-1`. A dismissal is remembered per ID. |
+| `Id` | `string` | empty | Required. 1 to 40 lowercase letters, digits or hyphens, such as `release-4-0`. A dismissal is remembered per ID. |
 | `ChildContent` | `RenderFragment?` | `null` | The announcement; it may contain links. |
 | `Dismissible` | `bool` | `true` | Shows the close button. |
 | `RememberDays` | `int` | `30` | How long a dismissal lasts, 1 to 365 days. |

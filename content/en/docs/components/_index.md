@@ -64,7 +64,7 @@ setup. This page lists the components by module and links to their reference pag
 - **Sanitized content.** Markdown is rendered to HTML and cleaned with an allow-list before it is shown, so script,
   event handler attributes and `javascript:` URLs in content are removed.
 
-Components added in 4.1 are marked below and ship in the next release.
+Components new in 4.0 are marked below.
 
 ## Core
 
@@ -73,16 +73,16 @@ Package `Osirion.Blazor.Core`, namespace `Osirion.Blazor.Components`. Building b
 - [Layout](/docs/components/core/layout): `OsirionPageLayout`, `OsirionFooter`, `OsirionStickySidebar`,
   `OsirionBackgroundPattern`.
 - [Sections](/docs/components/core/sections): `HeroSection`, `OsirionBaseSection`, `OsirionContactInfoSection`,
-  `OsirionResponsiveShowcaseSection`, `OsirionContextCardGrid`, `OsirionMetricGrid`. From 4.1:
+  `OsirionResponsiveShowcaseSection`, `OsirionContextCardGrid`, `OsirionMetricGrid`. From 4.0:
   `OsirionPricingTable`, `OsirionFeatureComparison`, `OsirionSteps`.
 - [Cards](/docs/components/core/cards): `OsirionFeatureCard`, `OsirionTestimonialCard`, `OsirionSubscriptionCard`,
-  `OsirionMetricCard`. From 4.1: `OsirionAuthorCard`.
+  `OsirionMetricCard`. From 4.0: `OsirionAuthorCard`.
 - [Carousels](/docs/components/core/carousels): `InfiniteLogoCarousel`, `OsirionTestimonialCarousel`.
-- [Content](/docs/components/core/content): `OsirionArticleMetdata`. From 4.1: `OsirionCallout`, `OsirionTabs`,
+- [Content](/docs/components/core/content): `OsirionArticleMetdata`. From 4.0: `OsirionCallout`, `OsirionTabs`,
   `OsirionAccordion`, `OsirionFaq`, `OsirionResponsiveImage`, `OsirionVideoEmbed`, `OsirionReadingProgress`.
 - [Forms](/docs/components/core/forms): `OsirionContactForm`.
 - [Navigation](/docs/components/core/navigation): `OsirionBreadcrumbs`, `OsirionReadMoreLink`.
-- [Popups](/docs/components/core/popups): `OsirionCookieConsent`. From 4.1: `OsirionAnnouncementBar`.
+- [Popups](/docs/components/core/popups): `OsirionCookieConsent`. From 4.0: `OsirionAnnouncementBar`.
 - [Rendering](/docs/components/core/rendering): `OsirionHtmlRenderer`, `OsirionReveal`.
 - [States](/docs/components/core/states): `OsirionPageLoading`, `OsirionContentNotFound`.
 - `OsirionImageGallery`, a gallery with a lightbox.
@@ -96,7 +96,7 @@ GitHub repository).
   `LocalizedContentView`, `SeoMetadataRenderer`.
 - [Navigation](/docs/components/cms-web/navigation): `ContentBreadcrumbs`, `CategoriesList`, `TagCloud`,
   `SearchBox`, `TableOfContents`, `DirectoryNavigation`, `LocalizedNavigation`, `OsirionContentNavigation`. From
-  4.1: `ContentSeriesNavigation`.
+  4.0: `ContentSeriesNavigation`.
 - Page-level components that combine the above: `ArticlePage`, `DocumentPage`, `LandingPage` and `HomePage`.
 
 ## CMS admin
@@ -116,7 +116,7 @@ position after Blazor's enhanced navigation; `ScrollToTop` and `ScrollToTopProvi
 
 Package `Osirion.Blazor.Analytics`, namespace `Osirion.Blazor.Analytics.Components`.
 [Analytics components](/docs/components/analytics): `ClarityTracker`, `MatomoTracker`, `GA4Tracker` and
-`YandexMetricaTracker`, configured under `Osirion:Analytics`. From 4.1: `PlausibleTracker` and `UmamiTracker`.
+`YandexMetricaTracker`, configured under `Osirion:Analytics`. From 4.0: `PlausibleTracker` and `UmamiTracker`.
 
 ## Theming
 

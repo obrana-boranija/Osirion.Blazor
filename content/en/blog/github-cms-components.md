@@ -90,7 +90,7 @@ script and every page has its own address. The list also writes collection metad
 canonical URL and structured data, plus previous and next links when paginated. Turn that off with
 `EnableSeoMetadata="false"` if the page writes its own.
 
-Available from 4.1: `Author` lists the items of one author.
+Available from 4.0: `Author` lists the items of one author.
 
 ## ArticlePage and ContentView
 

@@ -121,7 +121,7 @@ To keep tracking off while you develop, set `"Enabled": false` for the service i
 
 > [!WARNING]
 > In 4.0.0, a tracker whose service is not registered fails the page. Render only the trackers you configured.
-> From 4.1 such a tracker renders nothing.
+> From 4.0 such a tracker renders nothing.
 
 ## Parameters
 

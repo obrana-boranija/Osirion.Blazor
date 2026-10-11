@@ -47,7 +47,7 @@ your markup, what happens when Blazor's enhanced navigation swaps the page, and 
 head, and the component writes the provider's script during server rendering.
 
 Osirion.Blazor 4.0 ships trackers for Microsoft Clarity, Matomo, Google Analytics 4 and Yandex Metrica. Available from
-4.1: Plausible (`AddPlausible`, `PlausibleTracker`) and Umami (`AddUmami`, `UmamiTracker`), both cookie-free.
+4.0: Plausible (`AddPlausible`, `PlausibleTracker`) and Umami (`AddUmami`, `UmamiTracker`), both cookie-free.
 
 ## Register the providers
 
@@ -113,7 +113,7 @@ A tracker renders its script on the server, so it works under static SSR and in 
 render modes. It renders nothing when its provider is disabled or a required value is missing.
 
 In 4.0, keep a tracker in the layout only when its provider is registered: a `<ClarityTracker />` without a Clarity
-configuration fails the page. From 4.1, such a tracker renders nothing.
+configuration fails the page. From 4.0, such a tracker renders nothing.
 
 Every tracker takes an `Enabled` parameter that overrides the configured value for that render. `ClarityTracker` and
 `MatomoTracker` also take `SiteId`; `GA4Tracker` takes `MeasurementId` and `DebugMode`; `YandexMetricaTracker` takes

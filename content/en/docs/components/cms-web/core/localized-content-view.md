@@ -89,7 +89,7 @@ is left out.
   next link is the item's source path; set `ContentUrlFormatter` when you show navigation links.
 - **Security.** The body passes through the registered `IHtmlContentSanitizer` before it is written as HTML, the
   same allow-list `ContentView` uses. Titles, names and locale labels are encoded as text.
-- **Images.** The featured image uses the title as `alt` text and, from 4.1, loads eagerly with
+- **Images.** The featured image uses the title as `alt` text and, from 4.0, loads eagerly with
   `fetchpriority="high"`.
 - **SEO.** Nothing is written to the head. For `hreflang` links, pass the translations to
   [SeoMetadataRenderer](/docs/components/cms-web/core/seo-metadata-renderer) as `AlternateLanguageUrls`.

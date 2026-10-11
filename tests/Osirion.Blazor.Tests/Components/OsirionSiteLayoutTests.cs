@@ -149,14 +149,14 @@ public class OsirionSiteLayoutTests : BunitContext
         {
             ["Osirion:Site:ShowSearch"] = "true",
             ["Osirion:Site:Announcement:Id"] = "launch",
-            ["Osirion:Site:Announcement:Text"] = "Version 4.1 is out.",
+            ["Osirion:Site:Announcement:Text"] = "Version 4.0 is out.",
             ["Osirion:Site:Announcement:LinkText"] = "Read the notes",
             ["Osirion:Site:Announcement:LinkUrl"] = "/blog/4-1",
         });
 
         cut.Find("form[action='/search']").ShouldNotBeNull();
         var announcement = cut.Find("[aria-label='Announcement']");
-        announcement.TextContent.ShouldContain("Version 4.1 is out.");
+        announcement.TextContent.ShouldContain("Version 4.0 is out.");
         announcement.QuerySelector("a[href='/blog/4-1']")!.TextContent.ShouldBe("Read the notes");
     }
 
