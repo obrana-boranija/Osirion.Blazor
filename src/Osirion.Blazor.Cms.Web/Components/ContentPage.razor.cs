@@ -258,7 +258,7 @@ public partial class ContentPage
     /// <summary>
     /// Gets or sets a value indicating whether the component is loading.
     /// </summary>
-    protected bool IsLoading { get; set; } = true;
+    protected bool IsLoading { get; set; }
 
     /// <summary>
     /// Processes changes to component parameters.

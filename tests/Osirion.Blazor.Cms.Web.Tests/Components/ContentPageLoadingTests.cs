@@ -464,6 +464,16 @@ public class ContentPageLoadingTests : CmsWebComponentTestBase
     }
 
     [Fact]
+    public void ContentPage_NoPath_ShowsTheItemSuppliedByTheParentWithoutLoading()
+    {
+        var cut = RenderPage(p => p.Add(c => c.ContentItem, Item("supplied")));
+
+        _provider.DidNotReceive().GetItemByUrlAsync(Arg.Any<string>());
+        cut.Find("article.osirion-content-page").ShouldNotBeNull();
+        cut.Markup.ShouldContain("supplied");
+    }
+
+    [Fact]
     public void ContentPage_Content_RendersSchemaTypeBreadcrumbsFooterAndClass()
     {
         var directory = DirectoryItem.Create("d", "guides", "Guides", "test");
