@@ -49,7 +49,7 @@ public partial class SeoMetadataForm
             _ => GenerateWebPageJsonLd()
         };
 
-        SeoMetadata = SeoMetadata.WithJsonLd(jsonLd);
+        SeoMetadata = SeoMetadata.WithJsonLd(jsonLd, SeoMetadata.Type);
         await NotifySeoMetadataChanged();
     }
 
