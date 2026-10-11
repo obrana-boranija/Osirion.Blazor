@@ -18,6 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `OsirionTabs` and `OsirionTab`: tabs that switch without script (a radio group per tab set), keyboard accessible with the arrow keys, for code samples and other alternative content
 - `OsirionAccordion` and `OsirionAccordionItem` on the native `<details>` element (optionally one open at a time), and `OsirionFaq` with `FaqItem`, which also writes FAQPage structured data
 
+### Fixed
+- Osirion.Blazor.Cms.Infrastructure: a content item's `LastModified` was the time the content was loaded, because mapping the front matter touched setters that stamp the current time. It is now the front matter's `lastModified`, then the file's write time (file system provider), then the publication date; SEO `dateModified` and sorting by last-modified date follow it
+
 ## [4.0.0] - 2026-10-11
 
 ### Security
