@@ -3,6 +3,7 @@ using Osirion.Blazor.Example.Bootstrap.Components;
 using Osirion.Blazor.Extensions;
 using Osirion.Blazor.Cms.Web.Middleware;
 using Osirion.Blazor.Cms.Web.DependencyInjection;
+using Osirion.Blazor.Cms.Web.Feeds;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.AspNetCore.ResponseCompression;
 using Osirion.Blazor.Core.Extensions;
@@ -74,6 +75,15 @@ app.MapOsirionCookieConsent();
 
 app.UseAntiforgery();
 app.MapStaticAssets();
+
+// /sitemap.xml, /feed.xml (RSS) and /atom.xml from the published content. A deployed site sets SiteUrl so the
+// URLs do not depend on the request's Host header.
+app.MapOsirionFeeds(feeds =>
+{
+    feeds.FeedDirectory = "blog";
+    feeds.AdditionalSitemapUrls = ["/", "/blog", "/showcase"];
+});
+
 // The CMS admin pages (/osirion/...) require the CMS admin authorization policy. This example registers no
 // authentication scheme, so requests to them end in an error instead of rendering. A real host adds its own
 // sign-in first; see "Securing the Admin" in the Osirion.Blazor.Cms.Admin README.

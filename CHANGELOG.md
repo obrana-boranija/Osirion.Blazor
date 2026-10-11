@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Callouts: GitHub-style alerts in Markdown (`> [!NOTE]`, `[!TIP]`, `[!IMPORTANT]`, `[!WARNING]`, `[!CAUTION]`) are now styled, with their icons drawn in CSS so the HTML sanitizer can keep removing inline SVG, and the new `OsirionCallout` component (`CalloutType`) renders the same look from Razor
 - `OsirionTabs` and `OsirionTab`: tabs that switch without script (a radio group per tab set), keyboard accessible with the arrow keys, for code samples and other alternative content
 - `OsirionAccordion` and `OsirionAccordionItem` on the native `<details>` element (optionally one open at a time), and `OsirionFaq` with `FaqItem`, which also writes FAQPage structured data
+- Osirion.Blazor.Cms.Web: `MapOsirionFeeds` maps `/sitemap.xml`, an RSS 2.0 feed at `/feed.xml` and an Atom feed at `/atom.xml` from the published content (`OsirionFeedOptions`: site URL, title, directory, locale, item count, extra sitemap paths, URL formatter, cache duration); `noindex` items stay out of the sitemap
 
 ### Fixed
 - Osirion.Blazor.Cms.Infrastructure: a content item's `LastModified` was the time the content was loaded, because mapping the front matter touched setters that stamp the current time. It is now the front matter's `lastModified`, then the file's write time (file system provider), then the publication date; SEO `dateModified` and sorting by last-modified date follow it

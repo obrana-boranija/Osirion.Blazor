@@ -263,6 +263,7 @@ metadata:
 |-------|------|-------------|----------|
 | `title` | String | Article title | ? |
 | `date` | DateTime | Publication date | ? |
+| `lastModified` | DateTime | Last change, used by the sitemap and feeds | Optional |
 | `description` | String | Meta description | Recommended |
 | `author` | String | Author name | Recommended |
 | `categories` | Array | Content categories | Optional |
@@ -548,30 +549,42 @@ public class CustomSeoProcessor : ISeoProcessor
 }
 ```
 
-### Sitemap Generation
+### Sitemap and Feeds
+
+`MapOsirionFeeds` maps three endpoints built from the published content:
+
+| Path | Document | Content |
+|------|----------|---------|
+| `/sitemap.xml` | sitemaps.org XML sitemap | Every published item (up to 50,000 URLs), plus `AdditionalSitemapUrls` |
+| `/feed.xml` | RSS 2.0 | The newest `FeedItemCount` items of `FeedDirectory` and `FeedLocale` |
+| `/atom.xml` | Atom 1.0 | The same items as the RSS feed |
 
 ```csharp
-public class SitemapService
+using Osirion.Blazor.Cms.Web.Feeds;
+
+app.MapOsirionFeeds(feeds =>
 {
-    public async Task<string> GenerateSitemapAsync()
-    {
-        var content = await contentProvider.GetAllItemsAsync();
-        var sitemap = new XDocument(
-            new XElement("urlset",
-                new XAttribute("xmlns", "http://www.sitemaps.org/schemas/sitemap/0.9"),
-                content.Select(item => new XElement("url",
-                    new XElement("loc", $"https://mysite.com/{item.Slug}"),
-                    new XElement("lastmod", item.LastModified?.ToString("yyyy-MM-dd")),
-                    new XElement("changefreq", "weekly"),
-                    new XElement("priority", item.IsFeatured ? "0.9" : "0.7")
-                ))
-            )
-        );
-        
-        return sitemap.ToString();
-    }
-}
+    feeds.SiteUrl = "https://mysite.com";   // absolute http(s) URL; checked at startup
+    feeds.FeedDirectory = "blog";           // default: all content
+    feeds.FeedLocale = "en";                // default: every locale
+    feeds.FeedItemCount = 20;               // default: 20
+    feeds.AdditionalSitemapUrls = ["/", "/blog"];
+});
 ```
+
+- Set `SiteUrl` in production. Without it, URLs are built from the request's scheme, host and path base, so they
+  follow whatever `Host` header a request sends.
+- The title and description default to `Osirion:Seo:SiteName` and `SiteDescription`; set `Title` and `Description`
+  to override them.
+- Item links are `/{item.Url}`, the same path the content lists use. When the site routes content elsewhere, set
+  `ContentUrlFormatter` (it may return a path or an absolute URL).
+- `lastmod` and Atom `updated` come from the front matter's `lastModified`, then the file's write time (file system
+  provider), then `date`. Set `lastModified` when dates must survive a fresh checkout or deployment.
+- Items whose `seo.robots` contains `noindex` are left out of the sitemap.
+- Responses carry `Cache-Control: public, max-age=600`; change it with `CacheDuration`. Turn single endpoints off
+  with `EnableSitemap`, `EnableRss` or `EnableAtom`.
+- Point crawlers at the sitemap from `robots.txt` with `Sitemap: https://mysite.com/sitemap.xml`, and let feed readers
+  find the feeds with `<link rel="alternate" type="application/rss+xml" href="/feed.xml">` in the page head.
 
 ## Multi-language Support
 
