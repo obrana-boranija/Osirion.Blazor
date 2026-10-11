@@ -20,8 +20,9 @@ public class DirectoryCacheManagerConcurrencyTests
         Should.Throw<ArgumentNullException>(() => new DirectoryCacheManager(null!));
     }
 
+    // Known defect, pinned as current behavior: a second caller on a cold cache gets an empty tree instead of waiting for the running load. Update this expectation when it is fixed.
     [Fact]
-    public async Task GetCachedDirectoriesAsync_WhileALoadIsRunning_ReturnsTheExistingCacheWithoutWaiting()
+    public async Task GetCachedDirectoriesAsync_WhileALoadIsRunningOnAColdCache_ReturnsAnEmptyTreeWithoutWaiting()
     {
         var release = new TaskCompletionSource<Dictionary<string, DirectoryItem>>(TaskCreationOptions.RunContinuationsAsynchronously);
         var running = _cacheManager.GetCachedDirectoriesAsync(_ => release.Task);
@@ -33,8 +34,9 @@ public class DirectoryCacheManagerConcurrencyTests
         (await running.WaitAsync(Timeout)).Keys.ShouldBe(["a"]);
     }
 
+    // Known defect, pinned as current behavior: an invalidation during a running load is dropped, so the stale load result stays cached. Update this expectation when it is fixed.
     [Fact]
-    public async Task InvalidateCacheAsync_WhileALoadIsRunning_IsSkipped()
+    public async Task InvalidateCacheAsync_WhileALoadIsRunning_IsDroppedAndTheLoadResultStaysCached()
     {
         var release = new TaskCompletionSource<Dictionary<string, DirectoryItem>>(TaskCreationOptions.RunContinuationsAsynchronously);
         var running = _cacheManager.GetCachedDirectoriesAsync(_ => release.Task);

@@ -140,8 +140,9 @@ public class ContentQueryFilterBehaviorTests
         result.ShouldBe("a,b,c,d");
     }
 
+    // Known defect, pinned as current behavior: ContentQuery.Path is ignored, so a path filter returns every item. Update this expectation when it is fixed.
     [Fact]
-    public void ApplyFilters_WithPath_DoesNotNarrowTheResult()
+    public void ApplyFilters_WithPath_IsIgnoredAndReturnsEverything()
     {
         // Arrange
         var query = AllStatuses();
