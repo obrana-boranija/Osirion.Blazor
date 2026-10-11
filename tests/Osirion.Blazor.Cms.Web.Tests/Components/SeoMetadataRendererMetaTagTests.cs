@@ -382,14 +382,15 @@ public class SeoMetadataRendererMetaTagTests : CmsWebComponentTestBase
     }
 
     [Fact]
-    public void SeoMetadataRenderer_EmptySchemaTypes_DerivesOgTypeFromTheDefaultSchemaType()
+    public void SeoMetadataRenderer_EmptySchemaTypes_AgreesWithTheWebPageJsonLd()
     {
         var cut = RenderPage(p => p
             .Add(c => c.Content, SeoTestContent.Article())
             .Add(c => c.SchemaTypes, []));
 
-        Property(cut, "og:type").ShouldBe("article");
-        Meta(cut, "content-type").ShouldBe("Article");
+        Property(cut, "og:type").ShouldBe("website");
+        Meta(cut, "content-type").ShouldBe("WebPage");
+        cut.FindAll("script[type='application/ld+json']")[0].TextContent.ShouldContain("\"@type\": \"WebPage\"");
     }
 
     [Theory]

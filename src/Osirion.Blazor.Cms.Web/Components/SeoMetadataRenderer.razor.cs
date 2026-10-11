@@ -660,10 +660,13 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
 
     /// <summary>
     /// The name of the first schema type, else the front matter type, else WebPage. An empty
-    /// <see cref="SchemaTypes"/> array yields the default enum value, Article.
+    /// <see cref="SchemaTypes"/> array counts as not set, as in <see cref="ResolveSchemaTypes"/>, so og:type and
+    /// content-type agree with the JSON-LD.
     /// </summary>
     private string PrimarySchemaTypeName =>
-        SchemaTypes?.FirstOrDefault().ToString() ?? Content?.Metadata?.SeoProperties?.Type ?? "WebPage";
+        (SchemaTypes is { Length: > 0 } schemaTypes ? schemaTypes[0].ToString() : null)
+        ?? Content?.Metadata?.SeoProperties?.Type
+        ?? "WebPage";
 
     private bool HasCategories => _categories?.Any() == true;
 
