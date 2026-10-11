@@ -29,7 +29,8 @@ published: true
 
 `OsirionAccordion` and `OsirionAccordionItem` render collapsible sections on the native `<details>` element, so they
 open and close without script and work with the keyboard as they are. `OsirionFaq` uses them to render questions and
-answers, and also writes FAQPage structured data so search engines can read the answers.
+answers, and also writes FAQPage structured data so search engines can read the answers. Google stopped showing
+FAQ rich results in May 2026, so the data no longer changes how the page looks in Google results.
 
 Available from 4.1.
 

@@ -1882,12 +1882,15 @@ public enum SchemaType
     Recipe,
 
     /// <summary>
-    /// Schema.org FAQPage type for frequently asked questions pages.
+    /// Schema.org FAQPage type for frequently asked questions pages. Generates nothing on its own; use
+    /// <c>EnableGeneratedFaq</c> or the <c>OsirionFaq</c> component. Google no longer shows FAQ rich results
+    /// (since May 2026).
     /// </summary>
     FAQ,
 
     /// <summary>
-    /// Schema.org HowTo type for step-by-step instructions and tutorials.
+    /// Schema.org HowTo type for step-by-step instructions and tutorials. Google no longer shows HowTo rich results
+    /// (since September 2023).
     /// </summary>
     HowTo,
 

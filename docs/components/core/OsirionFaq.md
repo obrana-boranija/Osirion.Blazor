@@ -3,7 +3,8 @@
 Purpose
 `OsirionAccordion` is a list of collapsible sections built on the native `<details>` element, so it opens and closes
 without script and is keyboard accessible as is. `OsirionFaq` renders questions and answers with it and writes
-FAQPage structured data (schema.org) so search engines can show the answers in results.
+FAQPage structured data (schema.org) that describes them to search engines and other readers of the page. Google no
+longer shows FAQ rich results (since May 2026), so the data does not change how the page looks in Google results.
 
 Key parameters
 - OsirionAccordion: `AllowMultiple` (default true; false gives the items a shared `name`, so the browser closes the

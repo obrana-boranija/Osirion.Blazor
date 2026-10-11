@@ -82,7 +82,7 @@ or in `appsettings.json` under `Osirion:Seo`, which `AddOsirion(builder.Configur
 | `ContentItems` | `IReadOnlyList<ContentItem>?` | `null` | The items of a list page. |
 | `CollectionTitle` | `string?` | `null` | Title of a list page. |
 | `CollectionDescription` | `string?` | `null` | Description of a list page. |
-| `SchemaTypes` | `SchemaType[]?` | `null` | JSON-LD types to generate, for example `Article`, `BlogPosting`, `TechArticle`, `WebPage`, `HowTo`, `BreadcrumbList` or `CollectionPage`, and for whole pages `SoftwareApplication`, `ProfilePage`, `AboutPage` and `ContactPage`. `FAQ` generates no data; use `EnableGeneratedFaq` instead. The first type also sets `og:type` when the front matter has no `og_type`. |
+| `SchemaTypes` | `SchemaType[]?` | `null` | JSON-LD types to generate, for example `Article`, `BlogPosting`, `TechArticle`, `WebPage`, `HowTo`, `BreadcrumbList` or `CollectionPage`, and for whole pages `SoftwareApplication`, `ProfilePage`, `AboutPage` and `ContactPage`. `FAQ` generates no data; use `EnableGeneratedFaq` instead. Google no longer shows FAQ or HowTo rich results. The first type also sets `og:type` when the front matter has no `og_type`. |
 | `ApplicationCategory` | `string` | `"DeveloperApplication"` | `applicationCategory` of the SoftwareApplication schema, one of the app types search engines support. |
 | `GenerateMultipleSchemas` | `bool` | `true` | Adds a BreadcrumbList when exactly one type is generated. |
 | `SiteNameOverride` | `string?` | `null` | Site name in titles and Open Graph; otherwise `OrganizationName`, then the host name. |
