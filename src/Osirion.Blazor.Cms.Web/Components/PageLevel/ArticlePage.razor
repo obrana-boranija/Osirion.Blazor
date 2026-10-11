@@ -52,6 +52,7 @@
             @if (ShowBreadcrumbs)
             {
                 <OsirionBreadcrumbs Path="@Item?.Url"
+                                    CurrentPageText="@Item?.Title"
                                     ShowHome="@ShowBreadcrumbHome"
                                     HomeUrl="@BreadcrumbHomeUrl"
                                     HomeText="@BreadcrumbHomeText" />

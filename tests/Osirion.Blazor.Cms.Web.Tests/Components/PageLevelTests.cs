@@ -46,6 +46,19 @@ public class PageLevelTests : CmsWebComponentTestBase
         badges.ShouldAllBe(b => b.ClassList.Any(c => c.StartsWith("osirion-tag-badge-")));
     }
 
+    // Fails before the fix: the last breadcrumb was the slug turned into words ("Pre Mvp Make It Right").
+    [Fact]
+    public void ArticlePage_Breadcrumbs_NameTheCurrentPageWithTheArticleTitle()
+    {
+        var item = ContentItem.Create("id-pre-mvp", "Pre-MVP: make it right", "<p>Body</p>", "blog/pre-mvp-make-it-right.md", "test");
+        item.SetUrl("/blog/pre-mvp-make-it-right");
+        ReturnFromQuery(item);
+
+        var cut = RenderStatic<ArticlePage>(p => p.Add(c => c.ItemSlug, "pre-mvp-make-it-right"));
+
+        cut.Find(".osirion-breadcrumbs [aria-current]").TextContent.Trim().ShouldBe("Pre-MVP: make it right");
+    }
+
     [Fact]
     public void ArticlePage_SameTag_AlwaysGetsTheSameBadgeColour()
     {
