@@ -10,8 +10,9 @@ public partial class ClarityTracker
     /// <summary>Gets the configured Clarity analytics provider.</summary>
     protected override IAnalyticsProvider? Provider => _provider;
 
-    [Inject]
-    private ClarityProvider? _provider { get; set; }
+    // Resolved on demand, so a tracker left in a layout renders nothing instead of failing the page
+    // when its provider is not registered.
+    private ClarityProvider? _provider => field ??= GetOptionalService<ClarityProvider>();
 
     /// <inheritdoc/>
     protected override bool CanRenderProvider => _provider is not null && _provider.CanRender(CreateEffectiveOptions());

@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Osirion.Blazor.Cms.Infrastructure: a content item's `LastModified` was the time the content was loaded, because mapping the front matter touched setters that stamp the current time. It is now the front matter's `lastModified`, then the file's write time (file system provider), then the publication date; SEO `dateModified` and sorting by last-modified date follow it
+- Osirion.Blazor.Analytics: a tracker component whose provider is not registered (for example `<ClarityTracker />` left in a layout while the Clarity configuration section is absent) failed the whole page with "Cannot provide a value for property '_provider'"; it now renders nothing
 
 ## [4.0.0] - 2026-10-11
 

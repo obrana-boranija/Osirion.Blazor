@@ -39,6 +39,9 @@ public abstract class AnalyticsTracker : OsirionComponentBase
     [Inject]
     private IServiceProvider TrackerServices { get; set; } = default!;
 
+    /// <summary>Gets the registered <typeparamref name="TService"/>, or <see langword="null"/> when it is not registered.</summary>
+    protected TService? GetOptionalService<TService>() where TService : class => TrackerServices?.GetService<TService>();
+
     /// <summary>
     /// Gets whether the provider can render with this tracker's parameter overrides applied.
     /// </summary>
