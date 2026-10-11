@@ -1,4 +1,7 @@
-<Router AppAssembly="typeof(Program).Assembly" NotFoundPage="typeof(Pages.NotFound)">
+@* The shared pages (home, blog, docs, tags, privacy, not found) live in Osirion.Blazor.Examples.Shared *@
+<Router AppAssembly="typeof(Program).Assembly"
+        AdditionalAssemblies="[typeof(Osirion.Blazor.Examples.Shared._Imports).Assembly]"
+        NotFoundPage="typeof(Osirion.Blazor.Examples.Shared.Pages.NotFound)">
     <Found Context="routeData">
         <RouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)" />
         <FocusOnNavigate RouteData="routeData" Selector="h1" />

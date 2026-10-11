@@ -81,6 +81,9 @@ html.osirion-fluent-integration > body {
     --osirion-background-inverted: var(--colorNeutralBackgroundInverted, var(--neutral-fill-inverse-rest, #323130));
     --osirion-text-primary: var(--colorNeutralForeground1, var(--neutral-foreground-rest, #323130));
     --osirion-text-secondary: var(--colorNeutralForeground2, var(--neutral-foreground-hint, #605e5c));
+    /* Links follow the framework's link color, which it keeps legible on its own background in both modes */
+    --osirion-link-color: var(--colorBrandForegroundLink, #115ea3);
+    --osirion-link-hover-color: var(--colorBrandForegroundLinkHover, var(--colorBrandForegroundLink, #115ea3));
     --osirion-text-tertiary: var(--colorNeutralForegroundDisabled, var(--neutral-foreground-disabled, #a19f9d));
     --osirion-text-disabled: var(--colorNeutralForegroundDisabled, var(--neutral-foreground-disabled, #a19f9d));
     --osirion-text-inverted: var(--colorNeutralForegroundInverted, var(--neutral-foreground-inverse-rest, #ffffff));
@@ -318,6 +321,9 @@ html.osirion-fluent-integration > body {
         --osirion-background-inverted: var(--colorNeutralBackgroundInverted, var(--neutral-fill-inverse-rest, #ffffff));
         --osirion-text-primary: var(--colorNeutralForeground1, var(--neutral-foreground-rest, #ffffff));
         --osirion-text-secondary: var(--colorNeutralForeground2, var(--neutral-foreground-hint, #d6d2cf));
+        /* Links follow the framework's link color, which it keeps legible on its own background in both modes */
+        --osirion-link-color: var(--colorBrandForegroundLink, #479ef5);
+        --osirion-link-hover-color: var(--colorBrandForegroundLinkHover, var(--colorBrandForegroundLink, #479ef5));
         --osirion-text-tertiary: var(--colorNeutralForegroundDisabled, var(--neutral-foreground-disabled, #a19f9d));
         --osirion-text-disabled: var(--colorNeutralForegroundDisabled, var(--neutral-foreground-disabled, #a19f9d));
         --osirion-border-color: var(--colorNeutralStroke2, var(--neutral-stroke-rest, #3b3a39));

@@ -360,10 +360,12 @@
         padding: var(--osirion-spacing-4, 1rem);
     }
     
+    /* Auto width, so the side margins narrow the card instead of pushing it past the right edge */
     .osirion-contact-form-container {
+        width: auto;
         margin: 0 var(--osirion-spacing-4, 1rem);
     }
-    
+
     .osirion-form-actions {
         flex-direction: column;
     }

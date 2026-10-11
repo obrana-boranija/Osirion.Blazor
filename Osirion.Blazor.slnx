@@ -70,6 +70,7 @@
     <Project Path="examples/Osirion.Blazor.Example.FluentUI/Osirion.Blazor.Example.FluentUI.csproj" />
     <Project Path="examples/Osirion.Blazor.Example.Mud/Osirion.Blazor.Example.Mud.csproj" />
     <Project Path="examples/Osirion.Blazor.Examples.AppHost/Osirion.Blazor.Examples.AppHost.csproj" />
+    <Project Path="examples/Osirion.Blazor.Examples.Shared/Osirion.Blazor.Examples.Shared.csproj" />
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/Osirion.Blazor.Analytics/Osirion.Blazor.Analytics.csproj" />

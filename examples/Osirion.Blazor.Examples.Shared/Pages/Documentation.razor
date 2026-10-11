@@ -1,13 +1,7 @@
 ﻿@page "/docs/{*slug}"
 @page "/{locale}/docs/{*slug}"
-@* @page "/docs/{slug}"
-@page "/{locale}/docs/{slug}"
-@page "/docs/components/{slug}"
-@page "/{locale}/docs/components/{slug}" *@
 @using Osirion.Blazor.Cms.Web.Components
 
-
-@* <ArticlePage Locale="@(Locale ?? "en")" DirectoryName="docs" ItemSlug="@(Slug ?? "getting-started")" /> *@
 
 @if (string.IsNullOrWhiteSpace(Slug))
 {

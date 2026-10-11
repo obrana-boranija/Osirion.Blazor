@@ -104,12 +104,14 @@ public class MenuItemTests : BunitContext
         // Act
         var cut = Render<MenuItem>(parameters => parameters
             .Add(p => p.Text, "Parent Item")
+            .Add(p => p.Href, "/parent")
             .Add(p => p.HasSubmenu, true)
             .AddChildContent(@"<div>Submenu Content</div>"));
 
         // Assert
         cut.Find(".osirion-menu-item-wrapper").ClassList.ShouldContain("osirion-menu-item-has-submenu");
         var link = cut.Find("a.osirion-menu-item");
+        link.GetAttribute("href").ShouldBe("/parent");
         var submenu = cut.Find(".osirion-submenu");
         link.HasAttribute("aria-haspopup").ShouldBeFalse();
         link.HasAttribute("aria-expanded").ShouldBeFalse();
@@ -254,5 +256,100 @@ public class MenuItemTests : BunitContext
             .Add(p => p.Match, NavLinkMatch.Prefix));
 
         cut.Find("a.osirion-menu-item").HasAttribute("aria-current").ShouldBeFalse();
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("#")]
+    public void MenuItem_ShouldRenderParentAsSubmenuToggle_WhenItHasNoDestination(string? href)
+    {
+        // Act
+        var cut = Render<MenuItem>(parameters => parameters
+            .Add(p => p.Text, "Platform")
+            .Add(p => p.Href, href!)
+            .Add(p => p.HasSubmenu, true)
+            .AddChildContent("<div>Submenu Content</div>"));
+
+        // Assert
+        var toggler = cut.Find("input.osirion-submenu-toggler");
+        var parent = cut.Find("label.osirion-menu-item.osirion-menu-item-toggle-only");
+        parent.GetAttribute("for").ShouldBe(toggler.Id);
+        parent.QuerySelector(".osirion-menu-item-text")!.TextContent.ShouldBe("Platform");
+        cut.FindAll("a.osirion-menu-item").ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void MenuItem_ShouldKeepTheLink_WhenAParentWithoutDestinationHandlesClicks()
+    {
+        // Act
+        var cut = Render<MenuItem>(parameters => parameters
+            .Add(p => p.Text, "Platform")
+            .Add(p => p.HasSubmenu, true)
+            .Add(p => p.OnClick, () => { }));
+
+        // Assert
+        cut.Find("a.osirion-menu-item").GetAttribute("href").ShouldBe("#");
+        cut.FindAll(".osirion-menu-item-toggle-only").ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void MenuItem_ShouldRenderALink_WhenItHasNoSubmenuAndNoDestination()
+    {
+        // Act
+        var cut = Render<MenuItem>(parameters => parameters
+            .Add(p => p.Text, "Placeholder"));
+
+        // Assert
+        cut.Find("a.osirion-menu-item").GetAttribute("href").ShouldBe("#");
+        cut.FindAll("label.osirion-menu-item").ShouldBeEmpty();
+    }
+
+    [Theory]
+    [InlineData("components")]
+    [InlineData("osirion.blazor components overview")]
+    public void MenuItem_ShouldRenderNoIconSlot_WhenTheIconNameIsNotBuiltIn(string icon)
+    {
+        // Act
+        var cut = Render<MenuItem>(parameters => parameters
+            .Add(p => p.Text, "Components")
+            .Add(p => p.Icon, icon));
+
+        // Assert
+        cut.FindAll(".osirion-menu-item-icon").ShouldBeEmpty();
+        cut.Find(".osirion-menu-item-text").TextContent.ShouldBe("Components");
+    }
+
+    [Theory]
+    [InlineData("blog")]
+    [InlineData("BLOG")]
+    [InlineData("document")]
+    [InlineData("docs")]
+    [InlineData("contact")]
+    public void MenuItem_ShouldRenderTheBuiltInIcon_RegardlessOfCase(string icon)
+    {
+        // Act
+        var cut = Render<MenuItem>(parameters => parameters
+            .Add(p => p.Text, "Item")
+            .Add(p => p.Icon, icon));
+
+        // Assert
+        var svg = cut.Find("a.osirion-menu-item > .osirion-menu-item-icon > svg");
+        svg.GetAttribute("aria-hidden").ShouldBe("true");
+        svg.QuerySelectorAll("path").Length.ShouldBeGreaterThan(0);
+    }
+
+    [Fact]
+    public void MenuItem_ShouldRenderTheIconTemplate_InsteadOfABuiltInIcon()
+    {
+        // Act
+        var cut = Render<MenuItem>(parameters => parameters
+            .Add(p => p.Text, "Docs")
+            .Add(p => p.Icon, "docs")
+            .Add(p => p.IconTemplate, "<svg class=\"custom-icon\"></svg>"));
+
+        // Assert
+        cut.FindAll(".osirion-menu-item-icon").Count.ShouldBe(1);
+        cut.Find(".osirion-menu-item-icon > svg.custom-icon").ShouldNotBeNull();
     }
 }
