@@ -59,6 +59,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Osirion.Blazor.Core: `OsirionContactForm` no longer runs past the right edge of the screen on phones
 - Osirion.Blazor.Core: rendered Markdown tables scroll sideways on screens up to 768px wide and keep words and inline code whole, instead of breaking them a few letters per line
 - Osirion.Blazor.Navigation: menu accent text (the active item, mega menu links, group footer links) uses the link color instead of the primary button color, which measured 3.5:1 on the Bootstrap example's dark background; it now measures at least 5.2:1 in both modes on all three adapters
+- Osirion.Blazor.Cms.Web: `ContentList` leaves out the page it is shown on, so a section's list no longer shows a card for the section's own `_index.md` page
+- Osirion.Blazor.Cms.Infrastructure: the file system provider serves a folder's `_index.md` as the page at the folder's URL, as the GitHub provider already did, so section overview pages such as `/docs/components/core` no longer answer 404 when content comes from local files
 
 ### Removed
 - Osirion.Blazor.Navigation: `Menu.razor.scss`, `Menu.razor.min.css` and `compilerconfig.json`, an out-of-date stylesheet source that a Web Compiler run would have compiled over `Menu.razor.css`
