@@ -37,9 +37,27 @@
         <h2 id="showcase-faq">FAQ</h2>
         <OsirionFaq Items="faq" AllowMultiple="false" />
     </section>
+
+    <section aria-labelledby="showcase-image">
+        <h2 id="showcase-image">Responsive image</h2>
+        <OsirionResponsiveImage Src="@PhotoAt(1600)"
+                                Alt="A laptop showing charts on a desk"
+                                Width="1600"
+                                Height="1066"
+                                Widths="imageWidths"
+                                SrcFormatter="(_, width) => PhotoAt(width)"
+                                Sizes="(min-width: 992px) 720px, 100vw"
+                                Caption="The browser picks the 640, 960, 1280 or 1600 pixel file for the space the image takes." />
+    </section>
 </div>
 
 @code {
+    private const string PhotoUrl = "https://images.unsplash.com/photo-1460925895917-afdab827c52f";
+    private readonly int[] imageWidths = [640, 960, 1280, 1600];
+
+    // Cropped to 3:2 so every file matches the Width and Height given above.
+    private static string PhotoAt(int width) => $"{PhotoUrl}?w={width}&h={width * 2 / 3}&q=75&auto=format&fit=crop";
+
     private readonly FaqItem[] faq =
     [
         new("Does Osirion.Blazor need JavaScript?", "No. Every component renders with static server-side rendering; script only adds enhancements."),
