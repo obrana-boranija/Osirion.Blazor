@@ -1,23 +1,24 @@
 # DefaultNavigation
 
 Purpose
-Default admin navigation used in the CMS admin layout.
+Default admin navigation used in the CMS admin layout. It links to the routed admin pages and marks the link
+whose route matches the current address as active.
 
 Parameters
-- `MenuItems`: IEnumerable<MenuItem> - Menu items to display
-- `CurrentPath`: string - Current path to highlight
-- `Collapsed`: bool - Navigation collapsed state
+- `Expanded`: bool - Navigation expanded state (default: `true`)
+
+Links
+- Overview: `/osirion` (also active on `/osirion/dashboard`)
+- Content Browser: `/osirion/content`
+- New Content: `/osirion/content/edit`
+- General Settings: `/osirion/settings`
+- Documentation: the project repository on GitHub, opened in a new tab
+
+The active match is exact and ignores letter case, a trailing slash, the query string and the fragment, so only
+one link is active on any admin page.
 
 Example
 
 ```razor
-<DefaultNavigation MenuItems="@menuItems" CurrentPath="/content" />
-
-@code {
-    private IEnumerable<MenuItem> menuItems = new[] {
-        new MenuItem("Dashboard", "/admin"),
-        new MenuItem("Content", "/admin/content"),
-        new MenuItem("Settings", "/admin/settings")
-    };
-}
+<DefaultNavigation />
 ```
