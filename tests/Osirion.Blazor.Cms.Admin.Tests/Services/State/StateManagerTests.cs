@@ -114,6 +114,17 @@ public class StateManagerTests
     }
 
     [Fact]
+    public void ThemeChanged_WithStorage_SavesTheState()
+    {
+        _storage.IsInitialized.Returns(true);
+        _ = CreateManager();
+
+        _mediator.Publish(new ThemeChangedEvent("dark"));
+
+        _storage.Received(1).SaveStateAsync(StateKey, Arg.Any<string>());
+    }
+
+    [Fact]
     public void StateResetRequested_ClearsStorageAndState()
     {
         _storage.IsInitialized.Returns(true);
