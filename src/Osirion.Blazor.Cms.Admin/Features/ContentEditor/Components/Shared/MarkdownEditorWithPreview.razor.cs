@@ -357,7 +357,7 @@ public partial class MarkdownEditorWithPreview : IAsyncDisposable
         }
     }
 
-    private class ScrollInfo
+    internal sealed class ScrollInfo
     {
         public double ScrollTop { get; set; }
         public double ScrollHeight { get; set; }
@@ -365,7 +365,7 @@ public partial class MarkdownEditorWithPreview : IAsyncDisposable
         public double Percentage { get; set; }
     }
 
-    private class InsertionResult
+    internal sealed class InsertionResult
     {
         public string Text { get; set; } = string.Empty;
         public int CaretPosition { get; set; }
