@@ -28,6 +28,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Osirion.Blazor.Cms.Web: `ContentPage` given a `ContentItem` without a `Path` showed "Loading content..." forever
 - Osirion.Blazor.Cms.Web: `LocalizedContentView` translation links now carry the `osirion-translation-link` class its stylesheet targets
 - Osirion.Blazor.Cms.Web: `ContentPage` applies `PathReplacePattern` with a 250 ms match timeout and keeps the path unchanged on timeout, so a pattern with catastrophic backtracking can no longer hold a request on a crafted URL
+- Osirion.Blazor.Cms.Admin: the dashboard is disposed by the renderer and stops listening to the circuit's admin state; `CmsAdminDashboard` had a `Dispose` method but did not implement `IDisposable`
+- Osirion.Blazor.Cms.Admin: "Auto-generate" in the SEO form keeps the selected schema type instead of resetting it to Article
+- Osirion.Blazor.Cms.Admin: the file explorer URL-encodes the path it opens in the editor, so files whose names contain `&`, `#` or `+` open correctly
+- Osirion.Blazor.Cms.Admin: the admin layout no longer throws for a signed-in user with an empty user name
 
 ### Build
 - The coverage workflow runs every test project except the Playwright suite and fails when a test fails or is not discovered, instead of uploading a partial report. Coverage settings live in `coverlet.runsettings` (generated code and auto-property accessors are not counted) and Codecov targets in `codecov.yml` (90% for the project and for each change, informational for now)

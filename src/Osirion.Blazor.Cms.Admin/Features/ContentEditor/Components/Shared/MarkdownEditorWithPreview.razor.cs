@@ -82,7 +82,6 @@ public partial class MarkdownEditorWithPreview : IAsyncDisposable
     private double previewScrollPercentage = 0;
     private IJSObjectReference? jsModule;
     private bool jsInteropAvailable = false;
-    private bool IsFullscreen = false;
     private EditorMode EditorMode { get; set; } = EditorMode.Split;
     private int CurrentLine { get; set; } = 1;
     private int CurrentColumn { get; set; } = 1;
@@ -320,22 +319,6 @@ public partial class MarkdownEditorWithPreview : IAsyncDisposable
         }
     }
 
-    private async Task ToggleFullscreen()
-    {
-        if (jsInteropAvailable && jsModule is not null)
-        {
-            try
-            {
-                IsFullscreen = await jsModule.InvokeAsync<bool>("toggleFullscreen", ".markdown-editor");
-                StateHasChanged();
-            }
-            catch
-            {
-                // Silently fail if JS interop isn't available
-            }
-        }
-    }
-
     private void SetEditorMode(EditorMode mode)
     {
         EditorMode = mode;
@@ -357,7 +340,7 @@ public partial class MarkdownEditorWithPreview : IAsyncDisposable
         }
     }
 
-    private class ScrollInfo
+    internal sealed class ScrollInfo
     {
         public double ScrollTop { get; set; }
         public double ScrollHeight { get; set; }
@@ -365,7 +348,7 @@ public partial class MarkdownEditorWithPreview : IAsyncDisposable
         public double Percentage { get; set; }
     }
 
-    private class InsertionResult
+    internal sealed class InsertionResult
     {
         public string Text { get; set; } = string.Empty;
         public int CaretPosition { get; set; }

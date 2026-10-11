@@ -85,6 +85,19 @@ public partial class AdminLayout : IDisposable
         AdminState.StateChanged += StateHasChanged;
     }
 
+    // The markup branches live here so the render tree keeps a low complexity.
+    // An empty user name has no initial; Substring on it threw while rendering the sidebar.
+    private string? UserInitial => string.IsNullOrEmpty(authService.Username)
+        ? null
+        : authService.Username[..1].ToUpper();
+
+    private bool HasBreadcrumbItems => BreadcrumbItems is not null && BreadcrumbItems.Count > 0;
+
+    private string ThemeToggleIconClass => Theme == "light" ? "bi-moon" : "bi-sun";
+
+    private bool IsCurrentCrumb(BreadcrumbItem item) =>
+        string.IsNullOrWhiteSpace(item.Url) || item == BreadcrumbItems!.Last();
+
     private async Task SignOut()
     {
         await authService.SignOutAsync();

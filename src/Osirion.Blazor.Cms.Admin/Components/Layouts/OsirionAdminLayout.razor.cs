@@ -67,15 +67,6 @@ public partial class OsirionAdminLayout
         };
     }
 
-    private async Task ToggleTheme()
-    {
-        Theme = Theme == "light" ? "dark" : "light";
-        if (ThemeChanged.HasDelegate)
-        {
-            await ThemeChanged.InvokeAsync(Theme);
-        }
-    }
-
     private async Task SignOut()
     {
         await AuthService.SignOutAsync();
