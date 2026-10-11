@@ -267,7 +267,7 @@ public class ThemeServiceCookieTests
     }
 
     [Fact]
-    public void ToggleTheme_DarkModeDisabled_ReportsDarkButKeepsLightMode()
+    public void ToggleTheme_DarkModeDisabled_KeepsAndReportsLightMode()
     {
         // Arrange
         var service = new ThemeService(Options.Create(new ThemingOptions { DefaultMode = ThemeMode.Light, EnableDarkMode = false }));
@@ -276,7 +276,7 @@ public class ThemeServiceCookieTests
         var result = service.ToggleTheme();
 
         // Assert
-        result.ShouldBe("dark");
+        result.ShouldBe("light");
         service.CurrentMode.ShouldBe(ThemeMode.Light);
     }
 
