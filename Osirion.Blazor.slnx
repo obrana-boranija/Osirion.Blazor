@@ -1,0 +1,105 @@
+<Solution>
+  <Folder Name="/.github/">
+    <File Path=".github/CODEOWNERS" />
+    <File Path=".github/copilot-instructions.md" />
+    <File Path=".github/dependabot.yml" />
+    <File Path=".github/pull_request_template.md" />
+  </Folder>
+  <Folder Name="/.github/ISSUE_TEMPLATE/">
+    <File Path=".github/ISSUE_TEMPLATE/bug_report.yml" />
+    <File Path=".github/ISSUE_TEMPLATE/config.yml" />
+    <File Path=".github/ISSUE_TEMPLATE/documentation_improvement.yml" />
+    <File Path=".github/ISSUE_TEMPLATE/feature_request.yml" />
+  </Folder>
+  <Folder Name="/.github/workflows/">
+    <File Path=".github/workflows/Codecov" />
+    <File Path=".github/workflows/ai-code-review.yml" />
+    <File Path=".github/workflows/build.yml" />
+    <File Path=".github/workflows/ci.yml" />
+    <File Path=".github/workflows/code-quality.yml" />
+    <File Path=".github/workflows/codeql-analysis.yml" />
+    <File Path=".github/workflows/coverage.yml" />
+    <File Path=".github/workflows/documentation-check.yml" />
+    <File Path=".github/workflows/matrix-testing.yml" />
+    <File Path=".github/workflows/nuget-publish.yml" />
+    <File Path=".github/workflows/performance-benchmarks.yml" />
+    <File Path=".github/workflows/prepare-release.yml" />
+    <File Path=".github/workflows/verify-versions.yml" />
+  </Folder>
+  <Folder Name="/build/">
+    <File Path="build/Osirion.Blazor.targets" />
+    <File Path="build/tools/css-tree-shaker.js" />
+    <File Path="build/tools/minify-css.js" />
+    <File Path="build/tools/package-lock.json" />
+    <File Path="build/tools/package.json" />
+  </Folder>
+  <Folder Name="/docs/">
+    <File Path="docs/ANALYTICS.md" />
+    <File Path="docs/API_REFERENCE.md" />
+    <File Path="docs/ARCHITECTURE.md" />
+    <File Path="docs/BREADCRUMBS.md" />
+    <File Path="docs/CONTACT_FORM_EMAIL.md" />
+    <File Path="docs/EXAMPLES.md" />
+    <File Path="docs/GETTING_STARTED.md" />
+    <File Path="docs/GITHUB_CMS.md" />
+    <File Path="docs/MARKDOWN_EDITOR.md" />
+    <File Path="docs/MIGRATION.md" />
+    <File Path="docs/NAVIGATION.md" />
+    <File Path="docs/PERFORMANCE.md" />
+    <File Path="docs/QUICK_REFERENCE.md" />
+    <File Path="docs/README.md" />
+    <File Path="docs/STYLING.md" />
+    <File Path="docs/TROUBLESHOOTING.md" />
+    <File Path="docs/performance-optimizations.md" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="global.json" />
+    <File Path="NuGet.Config" />
+    <File Path=".gitattributes" />
+    <File Path=".gitignore" />
+    <File Path="README.md" />
+    <File Path="CHANGELOG.md" />
+    <File Path="CONTRIBUTING.md" />
+    <File Path="THEMING.md" />
+    <File Path="LICENSE.txt" />
+  </Folder>
+  <Folder Name="/examples/">
+    <Project Path="examples/Osirion.Blazor.Example.Bootstrap/Osirion.Blazor.Example.Bootstrap.csproj" />
+    <Project Path="examples/Osirion.Blazor.Example.Mud/Osirion.Blazor.Example.Mud.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/Osirion.Blazor.Analytics/Osirion.Blazor.Analytics.csproj" />
+    <Project Path="src/Osirion.Blazor.Core/Osirion.Blazor.Core.csproj" />
+    <Project Path="src/Osirion.Blazor.Navigation/Osirion.Blazor.Navigation.csproj" />
+    <Project Path="src/Osirion.Blazor.Theming/Osirion.Blazor.Theming.csproj" />
+    <Project Path="src/Osirion.Blazor/Osirion.Blazor.csproj" />
+  </Folder>
+  <Folder Name="/src/Cms/">
+    <Project Path="src/Osirion.Blazor.Cms.Admin/Osirion.Blazor.Cms.Admin.csproj" />
+    <Project Path="src/Osirion.Blazor.Cms.Application/Osirion.Blazor.Cms.Application.csproj" />
+    <Project Path="src/Osirion.Blazor.Cms.Core/Osirion.Blazor.Cms.Core.csproj" />
+    <Project Path="src/Osirion.Blazor.Cms.Domain/Osirion.Blazor.Cms.Domain.csproj" />
+    <Project Path="src/Osirion.Blazor.Cms.Infrastructure/Osirion.Blazor.Cms.Infrastructure.csproj" />
+    <Project Path="src/Osirion.Blazor.Cms.Web/Osirion.Blazor.Cms.Web.csproj" />
+    <Project Path="src/Osirion.Blazor.Cms/Osirion.Blazor.Cms.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Osirion.Blazor.Analytics.Tests/Osirion.Blazor.Analytics.Tests.csproj" />
+    <Project Path="tests/Osirion.Blazor.Core.Tests/Osirion.Blazor.Core.Tests.csproj" />
+    <Project Path="tests/Osirion.Blazor.E2ETests/Osirion.Blazor.E2ETests.csproj" />
+    <Project Path="tests/Osirion.Blazor.Navigation.Tests/Osirion.Blazor.Navigation.Tests.csproj" />
+    <Project Path="tests/Osirion.Blazor.Tests/Osirion.Blazor.Tests.csproj" />
+    <Project Path="tests/Osirion.Blazor.Theming.Tests/Osirion.Blazor.Theming.Tests.csproj" />
+  </Folder>
+  <Folder Name="/tests/Cms/">
+    <Project Path="tests/Osirion.Blazor.Cms.Admin.Tests/Osirion.Blazor.Cms.Admin.Tests.csproj" />
+    <Project Path="tests/Osirion.Blazor.Cms.Application.Tests/Osirion.Blazor.Cms.Application.Tests.csproj" />
+    <Project Path="tests/Osirion.Blazor.Cms.Core.Tests/Osirion.Blazor.Cms.Core.Tests.csproj" />
+    <Project Path="tests/Osirion.Blazor.Cms.Domain.Tests/Osirion.Blazor.Cms.Domain.Tests.csproj" />
+    <Project Path="tests/Osirion.Blazor.Cms.Infrastructure.Tests/Osirion.Blazor.Cms.Infrastructure.Tests.csproj" />
+    <Project Path="tests/Osirion.Blazor.Cms.Tests/Osirion.Blazor.Cms.Tests.csproj" />
+    <Project Path="tests/Osirion.Blazor.Cms.Web.Tests/Osirion.Blazor.Cms.Web.Tests.csproj" />
+  </Folder>
+</Solution>
