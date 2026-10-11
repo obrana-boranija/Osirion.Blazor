@@ -94,7 +94,7 @@ public partial class OsirionContentListSection(IContentProviderManager ContentPr
 
     /// <summary>
     /// Gets or sets the post URL formatter: the link of each post's title and read-more link. Without it a post links
-    /// to its <see cref="ContentItem.Url"/>.
+    /// to its <see cref="ContentItem.Url"/> from the site root.
     /// </summary>
     [Parameter]
     public Func<ContentItem, string>? PostUrlFormatter { get; set; }
@@ -264,11 +264,6 @@ public partial class OsirionContentListSection(IContentProviderManager ContentPr
     /// <summary>
     /// Gets the URL for a category.
     /// </summary>
-    private string GetPostUrl(ContentItem item)
-    {
-        return PostUrlFormatter?.Invoke(item) ?? item.Url;
-    }
-
     private string GetCategoryUrl(string category)
     {
         return CategoryUrlFormatter?.Invoke(category) ?? ContentUrls.CategoryUrl(category);

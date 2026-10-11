@@ -13,7 +13,7 @@ using Shouldly;
 namespace Osirion.Blazor.Cms.Web.Tests.Components;
 
 // The formatter tests fail before the fix: the list section linked every post to item.Url and ignored both
-// formatters. The last test guards the default.
+// formatters. The last test pins the default link, now built by ContentUrls.ItemUrl like ContentList's.
 public class ContentUrlFormatterTests : CmsWebComponentTestBase
 {
     private static readonly ContentItem Post = CreatePost();
@@ -46,11 +46,11 @@ public class ContentUrlFormatterTests : CmsWebComponentTestBase
     }
 
     [Fact]
-    public void OsirionContentListSection_WithoutAFormatter_LinksToTheItemUrl()
+    public void OsirionContentListSection_WithoutAFormatter_LinksToTheItemUrlFromTheRoot()
     {
         var cut = RenderStatic<OsirionContentListSection>(p => p.Add(c => c.Items, new List<ContentItem> { Post }));
 
-        cut.Find("a.osirion-featured-post-title-link").GetAttribute("href").ShouldBe("blog/first-post");
+        cut.Find("a.osirion-featured-post-title-link").GetAttribute("href").ShouldBe("/blog/first-post");
     }
 
     private static ContentItem CreatePost()
