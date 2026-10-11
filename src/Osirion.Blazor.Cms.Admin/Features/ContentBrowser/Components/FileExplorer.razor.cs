@@ -53,15 +53,4 @@ public partial class FileExplorer : IDisposable
     {
         ViewModel.StateChanged -= StateHasChanged;
     }
-
-    private async Task CreateNewFile()
-    {
-        // Publish event to create new file in current directory
-        EventPublisher.Publish(new CreateNewContentEvent(ViewModel.CurrentPath));
-
-        if (OnCreateFile.HasDelegate)
-        {
-            await OnCreateFile.InvokeAsync();
-        }
-    }
 }
