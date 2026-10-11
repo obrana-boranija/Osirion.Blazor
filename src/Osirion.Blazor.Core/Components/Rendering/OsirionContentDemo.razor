@@ -1,0 +1,27 @@
+@namespace Osirion.Blazor.Components
+@inherits OsirionComponentBase
+
+@if (ResolvedDemo is not null)
+{
+    <div class="@GetDemoClass()" @attributes="Attributes">
+        @if (CodeMarkup is null)
+        {
+            <div class="osirion-content-demo-preview">
+                <DynamicComponent Type="ResolvedDemo.ComponentType" Parameters="ComponentParameters" />
+            </div>
+        }
+        else
+        {
+            <OsirionTabs Id="@TabsId" AriaLabel="@ExampleLabel">
+                <OsirionTab Title="@PreviewText">
+                    <div class="osirion-content-demo-preview">
+                        <DynamicComponent Type="ResolvedDemo.ComponentType" Parameters="ComponentParameters" />
+                    </div>
+                </OsirionTab>
+                <OsirionTab Title="@CodeText">
+                    @CodeMarkup
+                </OsirionTab>
+            </OsirionTabs>
+        }
+    </div>
+}

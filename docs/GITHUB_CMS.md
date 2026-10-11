@@ -598,6 +598,25 @@ public class CustomSeoProcessor : ISeoProcessor
 }
 ```
 
+### Live Demos in Content
+
+Register Razor components as demos and embed them in Markdown with a fenced `demo` block:
+
+````markdown
+```demo
+install-tabs
+```
+````
+
+```csharp
+builder.Services.AddOsirionContentDemos(demos => demos
+    .Add<InstallTabsDemo>("install-tabs", source: ContentDemoRegistry.ReadEmbeddedSource(
+        typeof(InstallTabsDemo).Assembly, "MySite.Components.Demos.InstallTabsDemo.razor")));
+```
+
+The block renders the component, with Preview and Code tabs when the demo has source code. See
+`docs/components/core/OsirionContentDemo.md`.
+
 ### Redirects
 
 When a page moves, list its earlier URLs in `redirect_from` and add the middleware before the page endpoints:

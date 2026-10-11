@@ -47,6 +47,15 @@ public class MarkdownProcessorTests
         frontMatter.SeriesOrder.ShouldBe(2);
     }
 
+    // OsirionHtmlRenderer replaces this block with a registered demo, so the class must survive rendering and sanitizing.
+    [Fact]
+    public async Task RenderToHtmlAsync_DemoFence_KeepsTheLanguageDemoClass()
+    {
+        var html = await ((IMarkdownProcessor)_processor).RenderToHtmlAsync("Intro\n\n```demo\ntabs-basic\n```\n");
+
+        html.ShouldContain("<pre><code class=\"language-demo\">tabs-basic");
+    }
+
     // Each row is a way to get active markup out of markdown with the default Markdig pipeline
     // (raw HTML, links, generic attributes and media links). The precondition proves the vector reaches the
     // rendered HTML, so the test fails whenever the rendered output is not sanitized.
