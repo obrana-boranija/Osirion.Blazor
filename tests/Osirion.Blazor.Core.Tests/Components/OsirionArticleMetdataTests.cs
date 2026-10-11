@@ -1,0 +1,61 @@
+using System.Globalization;
+using Bunit;
+using Osirion.Blazor.Components;
+using Osirion.Blazor.Core.Tests.Base;
+using Shouldly;
+
+namespace Osirion.Blazor.Core.Tests.Components;
+
+public class OsirionArticleMetdataTests : OsirionComponentTestBase
+{
+    private static readonly DateTime PublishDate = new(2026, 3, 14, 0, 0, 0, DateTimeKind.Utc);
+
+    [Fact]
+    public void ArticleMetadata_NoMetadata_RendersNothing()
+    {
+        var cut = RenderStatic<OsirionArticleMetdata>(parameters => parameters
+            .Add(p => p.Author, "  ")
+            .Add(p => p.ReadTime, ""));
+
+        cut.Markup.Trim().ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void ArticleMetadata_AllValues_RendersAuthorDateAndReadTime()
+    {
+        var cut = RenderStatic<OsirionArticleMetdata>(parameters => parameters
+            .Add(p => p.Author, "Ada")
+            .Add(p => p.PublishDate, PublishDate)
+            .Add(p => p.DateFormat, "yyyy-MM-dd")
+            .Add(p => p.ReadTime, "5"));
+
+        cut.Find(".osirion-article-metadata-author").TextContent.Trim().ShouldBe("Ada");
+        cut.Find(".osirion-article-metadata-date").TextContent.Trim().ShouldBe("2026-03-14");
+        cut.Find(".osirion-article-metadata-read-time").TextContent.Trim().ShouldBe("5 min");
+    }
+
+    [Fact]
+    public void ArticleMetadata_DateOnly_UsesShortDatePatternOfCurrentCulture()
+    {
+        var cut = RenderStatic<OsirionArticleMetdata>(parameters => parameters
+            .Add(p => p.PublishDate, PublishDate));
+
+        cut.Find(".osirion-article-metadata-date").TextContent.Trim()
+            .ShouldBe(PublishDate.ToString("d", CultureInfo.CurrentCulture));
+        cut.FindAll(".osirion-article-metadata-author").ShouldBeEmpty();
+        cut.FindAll(".osirion-article-metadata-read-time").ShouldBeEmpty();
+    }
+
+    [Theory]
+    [InlineData("Ada", null, ".osirion-article-metadata-author")]
+    [InlineData(null, "3", ".osirion-article-metadata-read-time")]
+    public void ArticleMetadata_SingleValue_RendersOnlyThatItem(string? author, string? readTime, string expectedSelector)
+    {
+        var cut = RenderStatic<OsirionArticleMetdata>(parameters => parameters
+            .Add(p => p.Author, author)
+            .Add(p => p.ReadTime, readTime));
+
+        cut.Find(".osirion-article-metadata").Children.Length.ShouldBe(1);
+        cut.Find(expectedSelector).ShouldNotBeNull();
+    }
+}
