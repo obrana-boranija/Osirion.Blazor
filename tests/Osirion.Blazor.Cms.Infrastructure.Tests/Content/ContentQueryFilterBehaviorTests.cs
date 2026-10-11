@@ -1,3 +1,4 @@
+using System.Globalization;
 using NSubstitute;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Enums;
@@ -444,6 +445,32 @@ public class ContentQueryFilterBehaviorTests
 
         // Act
         var result = Apply(query);
+
+        // Assert
+        result.ShouldBe(expected);
+    }
+
+    [Theory]
+    [InlineData("GUIDE", "a")]
+    [InlineData("guide", "a")]
+    public void ApplyFilters_WithSearchQueryUnderTurkishCulture_MatchesTheLetterIIgnoringCase(string search, string expected)
+    {
+        // Arrange
+        var query = AllStatuses();
+        query.SearchQuery = search;
+        var originalCulture = CultureInfo.CurrentCulture;
+        CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("tr-TR");
+
+        // Act
+        string result;
+        try
+        {
+            result = Apply(query);
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = originalCulture;
+        }
 
         // Assert
         result.ShouldBe(expected);
