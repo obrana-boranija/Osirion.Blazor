@@ -5,10 +5,8 @@
 @using Osirion.Blazor.Cms.Components
 @using Osirion.Blazor.Cms.Web.Components
 
-<PageTitle>@(string.IsNullOrWhiteSpace(TagSlug) ? "Tags" : $"Tag: {TagSlug}")</PageTitle>
-
-<ContentList Locale="@Locale"
-             Directory="blog"
-             Tag="@TagSlug"
-             ShowPagination
-             ItemsPerPage="12" />
+<ContentListPage Locale="@Locale"
+                 Directory="blog"
+                 Tag="@TagSlug"
+                 Title="@(string.IsNullOrWhiteSpace(TagSlug) ? "Tags" : null)"
+                 ShowTags />

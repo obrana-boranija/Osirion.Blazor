@@ -20,6 +20,10 @@ Delegates
 States
 - LoadingText, NoContentText
 
+Heading
+- ShowTitle (false): opens the list with `PageTitle` (or the title built from the filter) as an `h1` and
+  `PageDescription` below it; turn it on when the list is the page. `ContentListPage` does.
+
 Notes
 - Uses IContentProviderManager; query composed from parameters
 - When pagination enabled, component performs a count pass, then a paged fetch.

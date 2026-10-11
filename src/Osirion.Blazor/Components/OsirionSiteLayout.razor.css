@@ -1,0 +1,15 @@
+/* OsirionSiteLayout - Osirion.Blazor */
+
+.osirion-site-footer-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--osirion-spacing-3, 0.75rem);
+    font-size: var(--osirion-font-size-lg, 1.125rem);
+    font-weight: var(--osirion-font-weight-semibold, 600);
+    color: var(--osirion-text-primary, #111827);
+    text-decoration: none;
+}
+
+.osirion-site-footer-brand img {
+    border-radius: var(--osirion-radius-md, 0.375rem);
+}

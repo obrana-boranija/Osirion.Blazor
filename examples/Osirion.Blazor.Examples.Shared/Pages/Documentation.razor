@@ -5,8 +5,8 @@
 
 @if (string.IsNullOrWhiteSpace(Slug))
 {
-    <ContentList Locale="@Locale" Category="Components" ShowPagination ItemsPerPage="24"
-                 PageTitle="Documentation" PageDescription="Component and module documentation for Osirion.Blazor." />
+    <ContentListPage Locale="@Locale" Category="Components" ItemsPerPage="24"
+                     Title="Documentation" Description="Component and module documentation for Osirion.Blazor." />
 }
 else
 {

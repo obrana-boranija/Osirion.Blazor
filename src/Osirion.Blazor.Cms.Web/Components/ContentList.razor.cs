@@ -180,6 +180,15 @@ public partial class ContentList : IDisposable
     public string? WebsiteName { get; set; }
 
     /// <summary>
+    /// Gets or sets whether the list opens with its title as the page's <c>h1</c>, followed by its description. The
+    /// title and description are <see cref="PageTitle"/> and <see cref="PageDescription"/>, or the ones built from the
+    /// filter, the same text the SEO metadata uses. Defaults to <see langword="false"/>; turn it on when the list is
+    /// the page and nothing else gives the page its heading.
+    /// </summary>
+    [Parameter]
+    public bool ShowTitle { get; set; }
+
+    /// <summary>
     /// Gets or sets whether to enable SEO metadata rendering (default: true).
     /// </summary>
     [Parameter]

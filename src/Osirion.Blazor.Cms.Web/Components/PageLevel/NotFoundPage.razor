@@ -1,0 +1,24 @@
+@namespace Osirion.Blazor.Cms.Web.Components
+
+<PageTitle>@Title</PageTitle>
+<HeadContent>
+    <meta name="robots" content="noindex" />
+</HeadContent>
+
+<div class="@CombineCssClasses("osirion-not-found-page")" style="@Style" @attributes="Attributes">
+    <OsirionContentNotFound ErrorCode="404"
+                            Title="@Title"
+                            Message="@Message"
+                            PrimaryButtonText="@HomeText"
+                            PrimaryButtonUrl="@HomeUrl"
+                            ShowSuggestions="@(Suggestions is { Count: > 0 })"
+                            SuggestionsTitle="@SuggestionsTitle"
+                            Suggestions="@Suggestions"
+                            ShowSearchBox="@ShowSearch">
+        <SearchContent>
+            <SearchBox ActionUrl="@SearchUrl" Placeholder="@SearchPlaceholder" />
+        </SearchContent>
+    </OsirionContentNotFound>
+
+    @ChildContent
+</div>

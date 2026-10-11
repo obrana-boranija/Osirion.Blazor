@@ -1,0 +1,11 @@
+@namespace Osirion.Blazor.Components
+@inherits OsirionComponentBase
+
+<header class="@CombineCssClasses("osirion-page-heading")" style="@Style" @attributes="Attributes">
+    <h1 class="osirion-page-heading-title">@Title</h1>
+    @if (!string.IsNullOrWhiteSpace(Description))
+    {
+        <p class="osirion-page-heading-description">@Description</p>
+    }
+    @ChildContent
+</header>

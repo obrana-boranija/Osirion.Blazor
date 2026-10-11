@@ -1,0 +1,67 @@
+@namespace Osirion.Blazor.Cms.Web.Components
+@inherits OsirionContentItemPageBase
+
+<div class="@CombineCssClasses("osirion-contact-page")" style="@Style" @attributes="Attributes">
+    @if (IsLoading)
+    {
+        <OsirionPageLoading ShowText="ShowLoadingText" Text="@LoadingText" />
+    }
+    else
+    {
+        @if (Item is not null)
+        {
+            <HeadContent>
+                <SeoMetadataRenderer Content="Item"
+                                     SiteNameOverride="@WebsiteName"
+                                     OrganizationName="@OrganizationName"
+                                     SiteLogoUrl="@SiteLogoUrl"
+                                     SchemaTypes="@(SchemaTypes ?? DefaultSchemaTypes)"
+                                     GenerateMultipleSchemas="@GenerateMultipleSchemas"
+                                     AlternateLanguageUrls="@AlternateLanguageUrls" />
+            </HeadContent>
+        }
+        else
+        {
+            <PageTitle>@PageTitleText</PageTitle>
+            @if (!string.IsNullOrWhiteSpace(Description))
+            {
+                <HeadContent>
+                    <meta name="description" content="@Description" />
+                </HeadContent>
+            }
+        }
+
+        @RenderPageHeading(PageTitleText, Item?.Description ?? Description)
+
+        @if (!string.IsNullOrWhiteSpace(Item?.Content))
+        {
+            <div class="osirion-contact-page-body">
+                <ContentRenderer Item="@Item" OmitLeadingTitle />
+            </div>
+        }
+
+        <div class="osirion-contact-page-form">
+            @if (FormContent is not null)
+            {
+                @FormContent
+            }
+            else
+            {
+                <OsirionContactForm Id="@FormId"
+                                    FormTitle="@FormTitle"
+                                    FormDescription="@FormDescription"
+                                    ContactInfo="@ContactInfo"
+                                    ShowContactInformation="@(ContactInfo is not null)"
+                                    UseBuiltInEmailService="@UseBuiltInEmailService"
+                                    OnSubmit="@OnSubmit" />
+            }
+        </div>
+
+        @if (ChildContent is not null)
+        {
+            <div class="osirion-contact-page-more">
+                @ChildContent
+            </div>
+        }
+    }
+</div>

@@ -18,6 +18,13 @@ Notes
 
 - The component supports `ShowRelatedContent`, `ShowNavigation`, and slotting of `SidebarContent` for related widgets.
 
+- `ShowSeriesNavigation` (true) shows `ContentSeriesNavigation` above the body for an article with `series` front
+  matter; nothing renders for other articles.
+
+- `AuthorContent` (`RenderFragment<ContentItem>`) is shown after the body, for example
+  `<AuthorContent><OsirionAuthorCard Name="@context.Author" /></AuthorContent>`. `CustomFooterContent` (HTML,
+  sanitized) follows it. `RelatedContentTitle` names the related section.
+
 - With `ShowHero` (the default) the hero shows the title as the page's `h1`, so an opening `# Title` line in the
   Markdown is left out of the body. `HomePage` and `LandingPage` do the same while they show their hero, and
   `ContentView`, `DocumentPage` and `LocalizedContentView` (with its header) do it under their own title heading.

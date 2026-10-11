@@ -2,21 +2,9 @@
 @using Osirion.Blazor.Cms.Web.Components
 @using Osirion.Blazor.Components
 
-<PageTitle>Page not found</PageTitle>
-
-<OsirionContentNotFound ErrorCode="404"
-                        Title="Page not found"
-                        Message="The page you are looking for does not exist or has moved."
-                        PrimaryButtonText="Back to the home page"
-                        PrimaryButtonUrl="/"
-                        ShowSuggestions
-                        SuggestionsTitle="These pages might help:"
-                        Suggestions="Suggestions"
-                        ShowSearchBox>
-    <SearchContent>
-        <SearchBox Placeholder="Search the docs" />
-    </SearchContent>
-</OsirionContentNotFound>
+<NotFoundPage Message="The page you are looking for does not exist or has moved."
+              Suggestions="Suggestions"
+              ShowSearch />
 
 @code {
     private static readonly IReadOnlyList<ContentNotFoundSuggestion> Suggestions =
