@@ -56,7 +56,9 @@ public partial class OsirionMetricCard : OsirionComponentBase
         var start = 0;
         while (start < value.Length && !char.IsDigit(value[start]) && value[start] != '.') start++;
         var end = value.Length - 1;
-        while (end >= start && !char.IsDigit(value[end]) && value[end] != '.' && value[end] != '-' && value[end] != '\u2013') end--;
+        // A dash belongs to the number only as a range separator, which always has a digit after it, so a trailing
+        // dash stays in the suffix instead of turning "5-" into a 5 to 0 count-up range.
+        while (end >= start && !char.IsDigit(value[end]) && value[end] != '.') end--;
 
         Prefix = value[..start];
         NumericValue = start <= end ? value[start..(end + 1)] : string.Empty;
