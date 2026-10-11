@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Osirion.Blazor.Navigation: the drawer rules for submenus in `Menu.razor.css` never applied, because CSS isolation scoped them to `Menu` while `MenuItem` renders the submenu, and non-collapsible and vertical menus disappeared at 768px and below
+- Osirion.Blazor.Core: `OsirionContactForm` no longer runs past the right edge of the screen on phones
 
 ### Removed
 - Osirion.Blazor.Navigation: `Menu.razor.scss`, `Menu.razor.min.css` and `compilerconfig.json`, an out-of-date stylesheet source that a Web Compiler run would have compiled over `Menu.razor.css`
