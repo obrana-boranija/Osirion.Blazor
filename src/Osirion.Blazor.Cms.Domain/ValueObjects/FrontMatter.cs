@@ -101,6 +101,12 @@ public class FrontMatter : ValueObject
     public int? SeriesOrder { get; set; }
 
     /// <summary>
+    /// Gets or sets earlier URLs of this item (<c>redirect_from</c>), such as <c>/docs/components/core/content/tabs</c>.
+    /// The redirect middleware answers requests for them with a permanent redirect to the item's current URL.
+    /// </summary>
+    public List<string> RedirectFrom { get; set; } = new List<string>();
+
+    /// <summary>
     /// Gets the language
     /// </summary>
     public string Lang { get; set; } = "en";
@@ -396,6 +402,7 @@ public class FrontMatter : ValueObject
             Lang = Lang,
             Series = Series,
             SeriesOrder = SeriesOrder,
+            RedirectFrom = new List<string>(RedirectFrom),
             Categories = new List<string>(Categories),
             Tags = new List<string>(Tags),
             CustomFields = new Dictionary<string, object>(CustomFields),
@@ -462,6 +469,12 @@ public class FrontMatter : ValueObject
             frontMatter.SeriesOrder = seriesOrder;
         }
 
+        if (values.TryGetValue("redirect_from", out var redirectFrom))
+        {
+            frontMatter = frontMatter.Clone();
+            frontMatter.RedirectFrom = ParseListValue(redirectFrom);
+        }
+
         // Handle categories and tags
         if (values.TryGetValue("categories", out var categoriesStr) ||
             values.TryGetValue("category", out categoriesStr))
@@ -518,6 +531,11 @@ public class FrontMatter : ValueObject
         yield return Slug ?? string.Empty;
         yield return Series ?? string.Empty;
         yield return SeriesOrder ?? 0;
+
+        foreach (var redirect in RedirectFrom)
+        {
+            yield return "redirect:" + redirect;
+        }
 
         // Include collections in equality check
         foreach (var category in Categories)
@@ -582,7 +600,7 @@ public class FrontMatter : ValueObject
         {
             "title", "description", "author", "date", "lastmodified", "last_modified",
             "featuredimage", "featured_image", "featured", "isFeatured", "published",
-            "layout", "slug", "categories", "category", "tags", "tag", "series", "series_order"
+            "layout", "slug", "categories", "category", "tags", "tag", "series", "series_order", "redirect_from"
         };
 
         return standardKeys.Contains(key);

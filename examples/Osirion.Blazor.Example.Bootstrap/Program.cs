@@ -4,6 +4,7 @@ using Osirion.Blazor.Extensions;
 using Osirion.Blazor.Cms.Web.Middleware;
 using Osirion.Blazor.Cms.Web.DependencyInjection;
 using Osirion.Blazor.Cms.Web.Feeds;
+using Osirion.Blazor.Cms.Web.Redirects;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.AspNetCore.ResponseCompression;
 using Osirion.Blazor.Core.Extensions;
@@ -76,6 +77,9 @@ app.MapOsirionAnnouncements();
 
 app.UseAntiforgery();
 app.MapStaticAssets();
+
+// Old URLs listed in redirect_from front matter answer with a 301 to the page's current address.
+app.UseOsirionRedirects();
 
 // /sitemap.xml, /feed.xml (RSS) and /atom.xml from the published content. A deployed site sets SiteUrl so the
 // URLs do not depend on the request's Host header.

@@ -28,6 +28,16 @@ public class MarkdownProcessorTests
     }
 
     [Fact]
+    public void ExtractFrontMatterAndContent_RedirectFrom_IsReadAsAList()
+    {
+        var (frontMatter, _) = _processor.ExtractFrontMatterAndContent(
+            "---\ntitle: Tabs\nredirect_from:\n  - /docs/components/core/content/tabs\n  - /docs/tabs\n---\nBody");
+
+        frontMatter.ShouldNotBeNull();
+        frontMatter.RedirectFrom.ShouldBe(["/docs/components/core/content/tabs", "/docs/tabs"]);
+    }
+
+    [Fact]
     public void ExtractFrontMatterAndContent_SeriesKeys_AreRead()
     {
         var (frontMatter, _) = _processor.ExtractFrontMatterAndContent("---\ntitle: Part two\nseries: Build a blog\nseries_order: 2\n---\nBody");

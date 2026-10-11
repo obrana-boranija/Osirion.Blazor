@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `OsirionPricingTable` (`PricingPlan`) and `OsirionFeatureComparison` (`FeatureComparisonRow`, `ComparisonCell`): plans side by side with a highlighted plan and framework buttons, and an accessible comparison table with check marks, crosses and values
 - `OsirionSteps` (`StepItem`): numbered "how it works" steps as an ordered list, side by side or stacked with a joining line (`Vertical`)
 - `OsirionAnnouncementBar` and `MapOsirionAnnouncements`: a dismissible site-wide announcement that closes without script (an antiforgery-protected form post sets a per-announcement cookie and redirects back)
+- Osirion.Blazor.Cms.Web: `UseOsirionRedirects` and `redirect_from` front matter (`FrontMatter.RedirectFrom`): requests for a page's earlier URLs get a permanent redirect to its current URL, with fixed redirects for pages that are not content (`OsirionRedirectOptions`)
 - `OsirionReadingProgress`: a reading progress bar driven by a CSS scroll-driven animation, with no script; hidden where `animation-timeline` is not supported
 
 ### Fixed
