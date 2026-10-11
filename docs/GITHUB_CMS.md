@@ -375,6 +375,29 @@ metadata:
 }
 ```
 
+#### Author Pages
+
+Every item's `author` front matter field can drive an author page: list that author's items with `ContentList`
+and introduce them with `OsirionAuthorCard`. Link bylines to the page with `ContentView`'s `AuthorUrlFormatter`.
+
+```razor
+@page "/authors/{Slug}"
+
+<OsirionAuthorCard Name="Jane Developer" Role="Principal engineer" Bio="Writes about Blazor." />
+<ContentList Author="Jane Developer" Directory="blog" />
+
+@code {
+    [Parameter] public string Slug { get; set; } = "";
+}
+```
+
+```razor
+<ContentView Path="@Path" AuthorUrlFormatter="@(name => $"/authors/{Uri.EscapeDataString(name.ToLowerInvariant().Replace(' ', '-'))}")" />
+```
+
+The author filter matches the whole name, ignoring case. Map the slug in the URL to the author's name and details
+(from configuration or a small lookup) in the page.
+
 #### Directory Navigation
 ```razor
 <DirectoryNavigation CurrentDirectory="blog" />

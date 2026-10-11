@@ -36,6 +36,13 @@ public partial class ContentView(IContentProviderManager contentProviderManager)
     [Parameter]
     public Func<string, string>? TagUrlFormatter { get; set; }
 
+    /// <summary>
+    /// Gets or sets how the author's page URL is built from the author's name. When set, the author's name links there
+    /// with <c>rel="author"</c>.
+    /// </summary>
+    [Parameter]
+    public Func<string, string>? AuthorUrlFormatter { get; set; }
+
     /// <summary>Gets or sets a formatter for content URLs.</summary>
     [Parameter]
     public Func<ContentItem, string>? ContentUrlFormatter { get; set; }

@@ -1,0 +1,47 @@
+@namespace Osirion.Blazor.Components
+@inherits OsirionComponentBase
+@using Osirion.Blazor.Core.Models
+
+<div class="@GetAuthorCardClass()" @attributes="Attributes">
+    @if (IsSafeUrl(AvatarUrl))
+    {
+        <img class="osirion-author-card-avatar" src="@AvatarUrl" alt="" width="64" height="64" loading="lazy" decoding="async" />
+    }
+    else
+    {
+        <span class="osirion-author-card-avatar osirion-author-card-initials" aria-hidden="true">@Initials</span>
+    }
+
+    <div class="osirion-author-card-body">
+        <p class="osirion-author-card-name">
+            @if (IsSafeUrl(ProfileUrl))
+            {
+                <a href="@ProfileUrl" rel="author">@Name</a>
+            }
+            else
+            {
+                @Name
+            }
+        </p>
+
+        @if (!string.IsNullOrWhiteSpace(Role))
+        {
+            <p class="osirion-author-card-role">@Role</p>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(Bio))
+        {
+            <p class="osirion-author-card-bio">@Bio</p>
+        }
+
+        @if (SafeLinks.Count > 0)
+        {
+            <ul class="osirion-author-card-links">
+                @foreach (var link in SafeLinks)
+                {
+                    <li @key="link"><a href="@link.Url" rel="me">@link.Label</a></li>
+                }
+            </ul>
+        }
+    </div>
+</div>

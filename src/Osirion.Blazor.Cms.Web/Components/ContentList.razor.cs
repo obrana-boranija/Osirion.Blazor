@@ -38,6 +38,13 @@ public partial class ContentList : IDisposable
     public string? Tag { get; set; }
 
     /// <summary>
+    /// Gets or sets the author filter: only items whose <c>author</c> front matter matches, ignoring case. Use it for
+    /// an author's page.
+    /// </summary>
+    [Parameter]
+    public string? Author { get; set; }
+
+    /// <summary>
     /// Gets or sets the search query for filtering content.
     /// </summary>
     [Parameter]
@@ -250,6 +257,7 @@ public partial class ContentList : IDisposable
                     Directory = Directory,
                     Category = Category,
                     Tag = Tag,
+                    Author = Author,
                     SearchQuery = SearchQuery,
                     Locale = Locale,
                     DirectoryId = DirectoryId,
