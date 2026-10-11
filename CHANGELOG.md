@@ -33,6 +33,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Osirion.Blazor.Cms.Admin: the admin layout no longer throws for a signed-in user with an empty user name
 - Osirion.Blazor.Cms.Domain: a front matter list containing a lone quote (`tags: a, "`) no longer makes the file fail to load
 - Osirion.Blazor.Theming: `OsirionStyles` no longer writes `<link rel="stylesheet" href="">` when the framework has no adapter, which made browsers request the page again as a stylesheet
+- Osirion.Blazor.Theming: `ThemeService.ToggleTheme` returns the mode actually in effect; with dark mode disabled it reported "dark" while staying light
+- Osirion.Blazor.Core: `OsirionMetricCard` keeps a trailing dash out of the animated number (`"~5-"` counted up to a range ending in 0)
+- Osirion.Blazor.Cms.Domain: `FrontMatter.Create(title, description, DateTime)` writes the date as `yyyy-MM-dd` instead of the culture's date and time format
+- Osirion.Blazor.Cms.Infrastructure: GitHub polling refreshes only the provider whose id equals the configured one; providers of other repositories whose id merely contained it were refreshed with the wrong commit, and a configured id without "github" in it was never polled
+- Osirion.Blazor.Cms.Infrastructure: content search matches case-insensitively in every culture (under Turkish, "GUIDE" did not find "Guide")
+- Osirion.Blazor.Cms.Infrastructure: the markdown pre-sanitizer replaces the whole `javascript:` link destination, including nested parentheses, leading whitespace and reference-style definitions
+- Osirion.Blazor.Cms.Web: LocalBusiness structured data no longer writes the schema type as the `telephone`
+- Osirion.Blazor.Cms.Web: generated FAQ questions match question words only as whole words, so titles such as "However we ship" are no longer treated as questions
+- Osirion.Blazor.Cms.Web: an empty `SchemaTypes` array is treated as not set, so `og:type`, `content-type` and the JSON-LD type agree
+- Osirion.Blazor.Cms.Admin: admin error messages show generic text instead of exception messages (which could carry GitHub responses or internal URLs); the details stay in the log. Markdown preview failures are reported through the admin error path instead of being swallowed
+- Osirion.Blazor.Cms.Admin: `DefaultNavigation` links to the routed admin pages under `/osirion` (they pointed to `/admin/...`, which has no pages), marks only the current page active, and drops the links to pages that do not exist (media, pull requests, branches, users, logs)
 
 ### Build
 - The coverage workflow runs every test project except the Playwright suite and fails when a test fails or is not discovered, instead of uploading a partial report. Coverage settings live in `coverlet.runsettings` (generated code and auto-property accessors are not counted) and Codecov targets in `codecov.yml` (90% for the project and for each change, informational for now)
