@@ -2,6 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
@@ -9,6 +10,7 @@ using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Options.Configuration;
 using Osirion.Blazor.Cms.Domain.Services;
 using Osirion.Blazor.Cms.Infrastructure.GitHub;
+using Osirion.Blazor.Cms.Infrastructure.Tests.TestDoubles;
 using Shouldly;
 
 namespace Osirion.Blazor.Cms.Infrastructure.Tests.GitHub;
@@ -61,6 +63,23 @@ public class GitHubWebhookHandlerFailureTests
             deleted = false,
             repository = new { name = Repository, owner = new { login = Owner, name = Owner } }
         });
+    }
+
+    /// <summary>A valid push payload padded with an extra field so it is exactly <paramref name="totalBytes"/> long.</summary>
+    private static string PaddedPushPayload(int totalBytes)
+    {
+        string Serialize(string padding) => JsonSerializer.Serialize(new
+        {
+            @ref = "refs/heads/main",
+            after = HeadSha,
+            deleted = false,
+            repository = new { name = Repository, owner = new { login = Owner, name = Owner } },
+            padding
+        });
+
+        var payload = Serialize(new string('a', totalBytes - Encoding.UTF8.GetByteCount(Serialize(string.Empty))));
+        Encoding.UTF8.GetByteCount(payload).ShouldBe(totalBytes);
+        return payload;
     }
 
     private static string Sign(byte[] payload)
@@ -119,17 +138,32 @@ public class GitHubWebhookHandlerFailureTests
         var accepted = await _handler.ProcessWebhookAsync("push", Sign(payload), Encoding.UTF8.GetString(payload));
 
         accepted.ShouldBeFalse();
+        await _cacheUpdater.Received(1).UpdateCacheAsync(HeadSha, true);
     }
 
     [Fact]
-    public async Task ProcessWebhookAsync_WithPayloadOverTheLimit_ReturnsFalseWithoutRefreshing()
+    public async Task ProcessWebhookAsync_WithASignedPushPayloadOverTheLimit_RejectsItBeforeParsing()
     {
-        var payload = new string('a', GitHubWebhookHandler.MaxPayloadBytes + 1);
-        var signature = Sign(Encoding.UTF8.GetBytes(payload));
+        var logger = new RecordingLogger<GitHubWebhookHandler>();
+        var handler = new GitHubWebhookHandler(_providerManager, _apiClientFactory, logger);
+        var payload = PaddedPushPayload(GitHubWebhookHandler.MaxPayloadBytes + 1);
 
-        var accepted = await _handler.ProcessWebhookAsync("push", signature, payload);
+        var accepted = await handler.ProcessWebhookAsync("push", Sign(Encoding.UTF8.GetBytes(payload)), payload);
 
         accepted.ShouldBeFalse();
+        logger.Contains(LogLevel.Warning, "the body exceeds").ShouldBeTrue();
+        logger.Contains(LogLevel.Information, "Received GitHub webhook").ShouldBeFalse();
         await _cacheUpdater.DidNotReceiveWithAnyArgs().UpdateCacheAsync(default, default);
+    }
+
+    [Fact]
+    public async Task ProcessWebhookAsync_WithASignedPushPayloadAtTheLimit_RefreshesTheCache()
+    {
+        var payload = PaddedPushPayload(GitHubWebhookHandler.MaxPayloadBytes);
+
+        var accepted = await _handler.ProcessWebhookAsync("push", Sign(Encoding.UTF8.GetBytes(payload)), payload);
+
+        accepted.ShouldBeTrue();
+        await _cacheUpdater.Received(1).UpdateCacheAsync(HeadSha, true);
     }
 }
