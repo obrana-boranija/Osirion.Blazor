@@ -23,6 +23,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Osirion.Blazor.Cms.Infrastructure: a directory's `locale` and `url` are escaped when its `_index.md` front matter is written, so a quote and a line break can no longer add front matter keys
 - Osirion.Blazor.Cms.Infrastructure: the stale-while-revalidate directory cache keyed `GetByNameAsync` by locale only, so after one lookup every other name in that locale returned the first directory until the entry expired
 - Osirion.Blazor.Cms.Infrastructure: `ToUrlSlug` threw `ArgumentOutOfRangeException` for a title without letters or digits (`"!!!"`); it now returns the untitled slug
+- Osirion.Blazor.Cms.Web: with `EnableGeneratedFaq`, a page titled exactly "Guide to" or "Guía de" failed to render (`ArgumentOutOfRangeException`); such a title now produces no generated question
+- Osirion.Blazor.Cms.Web: `HomePage` threw `InvalidCastException` when `CategoryUrlFormatter` or `TagUrlFormatter` was set with the browse section shown
+- Osirion.Blazor.Cms.Web: `ContentPage` given a `ContentItem` without a `Path` showed "Loading content..." forever
+- Osirion.Blazor.Cms.Web: `LocalizedContentView` translation links now carry the `osirion-translation-link` class its stylesheet targets
 
 ### Build
 - The coverage workflow runs every test project except the Playwright suite and fails when a test fails or is not discovered, instead of uploading a partial report. Coverage settings live in `coverlet.runsettings` (generated code and auto-property accessors are not counted) and Codecov targets in `codecov.yml` (90% for the project and for each change, informational for now)
