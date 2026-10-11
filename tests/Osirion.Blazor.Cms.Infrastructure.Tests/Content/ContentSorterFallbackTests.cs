@@ -43,4 +43,28 @@ public class ContentSorterFallbackTests
 
         string.Join(",", result.Select(item => item.Id)).ShouldBe(expected);
     }
+
+    [Theory]
+    [InlineData(SortDirection.Ascending, "second,third,first")]
+    [InlineData(SortDirection.Descending, "first,third,second")]
+    public void ApplySorting_ByPublishDate_UsesTheCreationDateWhenNoPublishDateIsSet(SortDirection direction, string expected)
+    {
+        var result = _sorter.ApplySorting(Items(), SortField.PublishDate, direction);
+
+        string.Join(",", result.Select(item => item.Id)).ShouldBe(expected);
+    }
+
+    [Theory]
+    [InlineData(SortDirection.Ascending, "short,medium,long")]
+    [InlineData(SortDirection.Descending, "long,medium,short")]
+    public void ApplySorting_ByReadTime_OrdersByWordCount(SortDirection direction, string expected)
+    {
+        static ContentItem WithWords(string id, int words) =>
+            ContentItem.Create(id, id, string.Join(' ', Enumerable.Repeat("word", words)), id + ".md", "provider");
+        var items = new[] { WithWords("medium", 1000), WithWords("long", 2000), WithWords("short", 10) }.AsQueryable();
+
+        var result = _sorter.ApplySorting(items, SortField.ReadTime, direction);
+
+        string.Join(",", result.Select(item => item.Id)).ShouldBe(expected);
+    }
 }
