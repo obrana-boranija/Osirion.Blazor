@@ -81,8 +81,8 @@ The Bootstrap example site in the repository uses the layout this way, with an
 ```razor
 <OsirionPageLayout StickyFooter EnableHeaderScrollBehavior>
     <Header>
-        <OsirionAnnouncementBar Id="release-4-1">
-            New in 4.1: tabs, FAQ and feeds. <a href="/blog">Read more</a>
+        <OsirionAnnouncementBar Id="release-4-0">
+            New in 4.0: tabs, FAQ and feeds. <a href="/blog">Read more</a>
         </OsirionAnnouncementBar>
         <NavMenu />
     </Header>
@@ -117,11 +117,11 @@ The Bootstrap example site in the repository uses the layout this way, with an
 - **Header on scroll.** With `EnableHeaderScrollBehavior` the header is `position: sticky`; the script hides it while
   you scroll down past the first 100 pixels and shows it again when you scroll up or return to the top. When the
   visitor prefers reduced motion the script leaves the header in place. Without script the header simply stays sticky.
-- **Skip link (4.1).** The link stays off screen until it receives keyboard focus, then appears at the top left. Its
+- **Skip link (4.0).** The link stays off screen until it receives keyboard focus, then appears at the top left. Its
   address is the current page plus `#` and `MainContentId`, because a bare `#id` would resolve against
   `<base href="/">` and lead to the home page. The `main` element has `tabindex="-1"`, and the script moves focus to
   it after the jump, which Blazor's enhanced navigation would otherwise skip.
-- **One footer landmark (4.1).** Inside the `Footer` slot, [OsirionFooter](/docs/components/core/layout/footer)
+- **One footer landmark (4.0).** Inside the `Footer` slot, [OsirionFooter](/docs/components/core/layout/footer)
   renders a `div` instead of its own `footer`, so the page keeps a single contentinfo landmark. In 4.0 it rendered a
   nested `footer`.
 
@@ -133,7 +133,7 @@ The Bootstrap example site in the repository uses the layout this way, with an
 | `osirion-page-header` | The `header`; `osirion-page-header-scroll` when the scroll behavior is on. |
 | `osirion-page-main` | The `main` element. |
 | `osirion-page-footer` | The `footer`. |
-| `osirion-skip-link` | The skip link (4.1). |
+| `osirion-skip-link` | The skip link (4.0). |
 
 The scrolling header has `z-index: 1000`. The skip link uses the page's own text and background colors, inverted,
 and the theme's focus ring (`--osirion-focus-ring-color`, `--osirion-focus-ring-width`, `--osirion-focus-ring-offset`).

@@ -80,7 +80,7 @@ show navigation links, set `ContentUrlFormatter`, for example `item => "/" + ite
   inline styles (apart from table cell alignment) are removed. The result is cached until the content changes. To allow a custom element, register it with
   `AddOsirionHtmlSanitizer(options => options.AllowElement("chart", "type", "data"))`. Title, author and tags are
   encoded as text.
-- **Images.** The featured image uses the item title as its `alt` text. From 4.1 it loads eagerly with
+- **Images.** The featured image uses the item title as its `alt` text. From 4.0 it loads eagerly with
   `fetchpriority="high"` and async decoding, because it is usually the largest element on an article page.
 - **Dates.** The date is `DateCreated` (the `date` front matter), formatted as `MMM d, yyyy`.
 - **SEO.** `ContentView` writes nothing to the page head. Render a

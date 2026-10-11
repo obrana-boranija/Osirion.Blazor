@@ -138,7 +138,7 @@ published: true
 An item's URL is its folder path below the content root plus its `slug`, without the locale folder when localization
 is on. Other keys the
 providers read include `id` (pairs translations), `order`, `is_featured`, `lang`, `custom_fields` and
-`seo_properties` (title, description, canonical, robots, Open Graph and Twitter values, `json_ld`). From 4.1,
+`seo_properties` (title, description, canonical, robots, Open Graph and Twitter values, `json_ld`). From 4.0,
 `series` and `series_order` group items into a series. A folder's `_index.md` describes the folder itself.
 
 Markdown is rendered to HTML and sanitized against an allow-list when it is loaded, and the article components
@@ -159,7 +159,7 @@ builder.Services.AddOsirionHtmlSanitizer(options => options.AllowElement("chart"
 [ContentPage](/docs/components/cms-web/core/content-page),
 [ContentRenderer](/docs/components/cms-web/core/content-renderer),
 [SeoMetadataRenderer](/docs/components/cms-web/core/seo-metadata-renderer) and
-[feeds and sitemap](/docs/components/cms-web/core/feeds-and-sitemap) (from 4.1). See the
+[feeds and sitemap](/docs/components/cms-web/core/feeds-and-sitemap) (from 4.0). See the
 [core overview](/docs/components/cms-web/core).
 
 **Navigation:** [CategoriesList](/docs/components/cms-web/navigation/categories-list),
@@ -169,7 +169,7 @@ builder.Services.AddOsirionHtmlSanitizer(options => options.AllowElement("chart"
 [TagCloud](/docs/components/cms-web/navigation/tag-cloud),
 [SearchBox](/docs/components/cms-web/navigation/search-box),
 [TableOfContents](/docs/components/cms-web/navigation/table-of-contents),
-[OsirionContentNavigation](/docs/components/cms-web/navigation/osirion-content-navigation) and, from 4.1,
+[OsirionContentNavigation](/docs/components/cms-web/navigation/osirion-content-navigation) and, from 4.0,
 [ContentSeriesNavigation](/docs/components/cms-web/navigation/series-navigation). See the
 [navigation overview](/docs/components/cms-web/navigation).
 

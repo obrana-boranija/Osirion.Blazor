@@ -148,7 +148,7 @@ A fuller footer passes link data from code:
 
 - **Landmark.** On its own the footer is a `footer` element. Inside the `Footer` slot of
   [OsirionPageLayout](/docs/components/core/layout/page-layout) it renders a `div` with the same classes, because the
-  layout already provides the `footer` landmark. Available from 4.1; in 4.0 the footer nested a second `footer`.
+  layout already provides the `footer` landmark. Available from 4.0; in 3.x the footer nested a second `footer`.
 - **Headings.** Section titles and the social title are `h2` elements, so the outline does not skip a level after a
   page's `h1`.
 - **Legal links** are wrapped in a `nav` labelled "Footer legal navigation".

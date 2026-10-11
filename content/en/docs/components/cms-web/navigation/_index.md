@@ -66,7 +66,7 @@ ship in the Osirion.Blazor.Cms.Web package, in the `Osirion.Blazor.Cms.Web.Compo
 | [DirectoryNavigation](/docs/components/cms-web/navigation/directory-navigation) | A list of directories with one level of subdirectories | The directories you pass |
 | [LocalizedNavigation](/docs/components/cms-web/navigation/localized-navigation) | A directory tree with links to content, for one locale | Loaded from the default content provider |
 | [OsirionContentNavigation](/docs/components/cms-web/navigation/osirion-content-navigation) | Previous and next links between the items of a directory | Loaded around the item you pass, or the neighbours you pass |
-| [ContentSeriesNavigation](/docs/components/cms-web/navigation/series-navigation) | "Part 2 of 5", the parts of a series and previous and next links (from 4.1) | Loaded from the items with the same `series` |
+| [ContentSeriesNavigation](/docs/components/cms-web/navigation/series-navigation) | "Part 2 of 5", the parts of a series and previous and next links (from 4.0) | Loaded from the items with the same `series` |
 | [TableOfContents](/docs/components/cms-web/navigation/table-of-contents) | Links to the headings of an HTML string | The HTML you pass |
 | [SearchBox](/docs/components/cms-web/navigation/search-box) | A search form that submits with GET | None; your results page reads the query |
 

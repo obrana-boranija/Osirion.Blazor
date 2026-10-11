@@ -66,14 +66,14 @@ var app = builder.Build();
 
 app.UseAntiforgery();
 app.MapOsirionCookieConsent();  // POST /api/cookie-consent
-app.MapOsirionAnnouncements();  // POST /api/announcement/dismiss (4.1)
+app.MapOsirionAnnouncements();  // POST /api/announcement/dismiss (4.0)
 ```
 
 ```razor
 @using Osirion.Blazor.Components
 
-<OsirionAnnouncementBar Id="release-4-1">
-    Osirion.Blazor 4.1 is out. <a href="/blog">Read what's new</a>
+<OsirionAnnouncementBar Id="release-4-0">
+    Osirion.Blazor 4.0 is out. <a href="/blog">Read what's new</a>
 </OsirionAnnouncementBar>
 
 @* page content *@

@@ -242,7 +242,7 @@ repository and branch match it. The refresh downloads only the files that change
 
 ## Where to go next
 
-- Available from 4.1: `MapOsirionFeeds` in `Osirion.Blazor.Cms.Web.Feeds` maps `/sitemap.xml`, an RSS feed at
+- Available from 4.0: `MapOsirionFeeds` in `Osirion.Blazor.Cms.Web.Feeds` maps `/sitemap.xml`, an RSS feed at
   `/feed.xml` and an Atom feed at `/atom.xml` from the published content.
 - [The Osirion.Blazor CMS components](/blog/github-cms-components) describes each component used here and the ones
   that were not.

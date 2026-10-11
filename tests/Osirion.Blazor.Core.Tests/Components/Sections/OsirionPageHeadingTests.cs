@@ -35,9 +35,9 @@ public class OsirionPageHeadingTests : OsirionComponentTestBase
         var cut = Render<OsirionPageHeading>(p => p
             .Add(h => h.Title, "Release notes")
             .Add(h => h.Class, "narrow")
-            .AddChildContent("<span class=\"badge\">4.1</span>"));
+            .AddChildContent("<span class=\"badge\">4.0</span>"));
 
         cut.Find("header").ClassList.ShouldBe(["osirion-page-heading", "narrow"], ignoreOrder: true);
-        cut.Find("header .badge").TextContent.ShouldBe("4.1");
+        cut.Find("header .badge").TextContent.ShouldBe("4.0");
     }
 }

@@ -133,9 +133,9 @@ The repository has complete example sites on Bootstrap, MudBlazor and Fluent UI.
 - [Theming](/docs/components/theming)
 - [Blog](/blog)
 
-## Coming in 4.1
+## New in 4.0
 
-Available from 4.1: callouts, tabs, accordions and FAQ, steps, pricing tables, responsive images, video embeds, an
+Callouts, tabs, accordions and FAQ, steps, pricing tables, responsive images, video embeds, an
 announcement bar, a reading progress bar, a sitemap with RSS and Atom feeds, and Plausible and Umami analytics. The
 [component showcase](/showcase) renders the new content components with static SSR.
 

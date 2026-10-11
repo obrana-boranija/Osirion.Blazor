@@ -124,7 +124,7 @@ without an error. `featured_image` works; `featuredImage` is silently ignored. T
 | `description` | Summary for lists and the meta description. |
 | `author` | Author name; `ContentList` can filter by it from 4.1. |
 | `date` | Publication date, `yyyy-MM-dd`, read as UTC. Lists sort by it. |
-| `last_modified` | Date of the last meaningful change; from 4.1 it drives `dateModified` and the sitemap's `lastmod`. |
+| `last_modified` | Date of the last meaningful change; from 4.0 it drives `dateModified` and the sitemap's `lastmod`. |
 | `slug` | The last URL segment (see above). |
 | `lang` | The item's locale. Without it, an item with front matter is read as `en`. |
 | `id` | Localization id that pairs translations. |
@@ -133,7 +133,7 @@ without an error. `featured_image` works; `featuredImage` is silently ignored. T
 | `is_featured` | Marks an item for featured lists. |
 | `published` | `false` hides the item. |
 | `order` | Position where a list or navigation sorts by order. |
-| `series`, `series_order` | From 4.1: the series name and the part number, read by `ContentSeriesNavigation`. |
+| `series`, `series_order` | From 4.0: the series name and the part number, read by `ContentSeriesNavigation`. |
 | `seo_properties` | Nested SEO overrides: `title`, `description`, `canonical`, `robots`, `og_image_url`, `json_ld` and more. |
 
 A post's front matter with the keys most sites need:

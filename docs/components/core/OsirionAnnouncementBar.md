@@ -12,7 +12,7 @@ app.MapOsirionAnnouncements();   // POST /api/announcement/dismiss
 ```
 
 Key parameters
-- `Id` (required): 1 to 40 lowercase letters, digits or hyphens, such as `release-4-1`; a dismissal is remembered
+- `Id` (required): 1 to 40 lowercase letters, digits or hyphens, such as `release-4-0`; a dismissal is remembered
   per ID
 - `ChildContent`: the message, which may contain links
 - `Dismissible`: show the close button (default true)
@@ -23,8 +23,8 @@ Key parameters
 
 Usage
 ```razor
-<OsirionAnnouncementBar Id="release-4-1">
-    Osirion.Blazor 4.1 is out. <a href="/blog/release-4-1">Read what's new</a>
+<OsirionAnnouncementBar Id="release-4-0">
+    Osirion.Blazor 4.0 is out. <a href="/blog/release-4-0">Read what's new</a>
 </OsirionAnnouncementBar>
 ```
 

@@ -13,6 +13,6 @@ slug: "blog"
 
 Articles on building content sites with Osirion.Blazor, the SSR-first Blazor component library: Markdown content from
 GitHub, analytics and cookie consent, navigation, SEO, and what changed in each release. Every code sample targets the
-current release, 4.0, on .NET 9 and .NET 10; features that arrive in 4.1 are marked as such.
+current release, 4.0, on .NET 9 and .NET 10; features that are new in 4.0 are marked as such.
 
 For a complete reference of components and parameters, see the [documentation](/docs).

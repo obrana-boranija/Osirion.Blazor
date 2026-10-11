@@ -12,112 +12,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [4.1.0] - 2026-10-11
-
-### Added
-- `OsirionPageLayout` renders a skip link to the main content as the first focusable element (WCAG 2.4.1), shown only while it has keyboard focus; `ShowSkipLink`, `SkipLinkText` and `MainContentId` configure it, and the main element now carries that id and `tabindex="-1"`
-- Callouts: GitHub-style alerts in Markdown (`> [!NOTE]`, `[!TIP]`, `[!IMPORTANT]`, `[!WARNING]`, `[!CAUTION]`) are now styled, with their icons drawn in CSS so the HTML sanitizer can keep removing inline SVG, and the new `OsirionCallout` component (`CalloutType`) renders the same look from Razor
-- `OsirionTabs` and `OsirionTab`: tabs that switch without script (a radio group per tab set), keyboard accessible with the arrow keys, for code samples and other alternative content
-- `OsirionAccordion` and `OsirionAccordionItem` on the native `<details>` element (optionally one open at a time), and `OsirionFaq` with `FaqItem`, which also writes FAQPage structured data
-- Osirion.Blazor.Cms.Web: `MapOsirionFeeds` maps `/sitemap.xml`, an RSS 2.0 feed at `/feed.xml` and an Atom feed at `/atom.xml` from the published content (`OsirionFeedOptions`: site URL, title, directory, locale, item count, extra sitemap paths, URL formatter, cache duration); `noindex` items stay out of the sitemap
-- Osirion.Blazor.Analytics: Plausible and Umami, both cookie-free. `AddPlausible` with `PlausibleTracker` renders the site's own Plausible script (`ScriptUrl`, optional `Endpoint` and tracking switches written to `plausible.init` only when set); `AddUmami` with `UmamiTracker` renders one attribute-configured script (`SiteId` = website ID, `ScriptUrl` for self-hosting, `HostUrl`, `Domains`, `Tag`, exclusions, Do Not Track). Both read `Osirion:Analytics:Plausible` and `Osirion:Analytics:Umami`, are validated at startup and honour the consent gate
-- `OsirionResponsiveImage`: an `<img>` with intrinsic `Width` and `Height` (no layout shift), `srcset` from `SrcSet` or `Widths` with a `SrcFormatter`, `Sizes` (default `auto, 100vw`), lazy loading with async decoding, a `Priority` switch for the main image (eager, `fetchpriority="high"`) and an optional `Caption` in a `<figure>`
-- `OsirionVideoEmbed` (`VideoProvider`, `VideoAspectRatio`): a YouTube or Vimeo thumbnail that loads the player only when pressed, privacy-enhanced by default (`youtube-nocookie.com`, Vimeo `dnt=1`), with a start time, a custom thumbnail and a link to the video when script is off
-- Author pages: `OsirionAuthorCard` (avatar or initials, name linked with `rel="author"`, role, bio, `AuthorLink` links with `rel="me"`; unsafe URL schemes are not rendered), `ContentList.Author` to list one author's items, and `ContentView.AuthorUrlFormatter` to link bylines to the author's page
-- Series: `series` and `series_order` front matter (`FrontMatter.Series`, `FrontMatter.SeriesOrder`) and `ContentSeriesNavigation`, which shows "Part 2 of 5", lists the parts and links the previous and next part
-- `OsirionPricingTable` (`PricingPlan`) and `OsirionFeatureComparison` (`FeatureComparisonRow`, `ComparisonCell`): plans side by side with a highlighted plan and framework buttons, and an accessible comparison table with check marks, crosses and values
-- `OsirionSteps` (`StepItem`): numbered "how it works" steps as an ordered list, side by side or stacked with a joining line (`Vertical`)
-- `OsirionAnnouncementBar` and `MapOsirionAnnouncements`: a dismissible site-wide announcement that closes without script (an antiforgery-protected form post sets a per-announcement cookie and redirects back)
-- Live demos in Markdown content: `AddOsirionContentDemos` registers Razor components (`ContentDemoRegistry`, `ContentDemo`), and a fenced `demo` block whose text is a registered key renders the component in its place, with Preview and Code tabs when the demo has source (`OsirionContentDemo`, `OsirionHtmlRenderer.EnableDemos`)
-- Osirion.Blazor.Cms.Web: `UseOsirionRedirects` and `redirect_from` front matter (`FrontMatter.RedirectFrom`): requests for a page's earlier URLs get a permanent redirect to its current URL, with fixed redirects for pages that are not content (`OsirionRedirectOptions`)
-- `tools/Osirion.Blazor.ApiDocs`: generates component parameter tables in Markdown content from the assemblies and their XML docs, between `<!-- osirion:parameters Name -->` and `<!-- /osirion:parameters -->` markers, with a `--check` mode that fails when a table is out of date
-- `SchemaType.TechArticle`, `SchemaType.SoftwareApplication` (`SeoMetadataRenderer.ApplicationCategory`, default `DeveloperApplication`), `SchemaType.ProfilePage` (the author as `mainEntity`, link tags as `sameAs`, `og:type` `profile`), `SchemaType.AboutPage` (the site organization as `mainEntity`) and `SchemaType.ContactPage`
-- `OsirionReadingProgress`: a reading progress bar driven by a CSS scroll-driven animation, with no script; hidden where `animation-timeline` is not supported
-- Osirion.Blazor.Navigation: `Menu.Actions`, a slot after the items for a search box, a theme toggle or a call to action. A horizontal bar aligns it to the end; a collapsed menu shows it at the bottom of the drawer
-- Osirion.Blazor.Navigation: `MenuCollapseBreakpoint.Large`, which collapses a menu below 1200px
-- Osirion.Blazor.Navigation: `--osirion-menu-*` theming variables for the bar height, content width, padding, logo size, colors, radii and shadow
-- Osirion.Blazor.Navigation: a tap on the dimmed page behind an open drawer closes the drawer
-- Osirion.Blazor: `OsirionSiteLayout`, the whole site shell from the `Osirion:Site` configuration section (`OsirionSiteOptions`, `UseSite`): announcement, menu with brand, search and theme toggle, footer with link columns, social icons (`github`, `x`, `linkedin`, `nuget`, `rss`) and legal links, theme styles, scroll to top and optional cookie consent; use it as the router's `DefaultLayout`, or wrap it to replace the header or footer. The options are validated at startup
-- Osirion.Blazor: `AddOsirion` registers the JS component services (`AddJSComponents`) that `OsirionPageLayout`, the content demos and the video embed need, unless they are registered already
-- `OsirionPageHeading`: a page title as the `h1` with an optional sentence below it, for pages without a hero; the example privacy page uses it, so it has an `h1` (issue 39)
-- Osirion.Blazor.Cms.Web: `AboutPage` (from `about.md`: the title as the `h1`, the body, `ChildContent` for author cards, AboutPage structured data, 404 when missing), `ContactPage` (an `OsirionContactForm` with the contact details under the title, optional Markdown from `contact.md`, ContactPage structured data, works without content) and `NotFoundPage` (noindex, home link, suggestions, optional search; sets status 404 itself on .NET 9)
-- Osirion.Blazor.Cms.Web: `OsirionContentItemPageBase`, the base of pages that show one content item, split out of `OsirionContentDetailPageBase`, which adds navigation and related items
-- Osirion.Blazor.Cms.Web: `ArticlePage.ShowSeriesNavigation` (on by default; renders only for articles with `series` front matter) and `ArticlePage.AuthorContent`, a slot after the body for an author card
-- Osirion.Blazor.Cms.Web: `DocumentPage` writes its SEO metadata and TechArticle structured data, lists the pages of its folder in the side navigation when no `NavigationItems` are given, and links to the page's source with `EditUrlFormatter` ("Edit this page")
-- Osirion.Blazor.Cms.Web: `ContentListPage`, a whole list page for a blog index, category, tag or author: the title as the page's `h1` with a description, paged cards, CollectionPage data, feed links (`FeedUrl`) and optional category and tag sidebars; `ContentList.ShowTitle` renders the same heading for lists composed by hand
-- Osirion.Blazor.Cms.Web: `ContentRenderer.OmitLeadingTitle`, which leaves out the content's opening top-level heading
-
-### Changed
-- Osirion.Blazor.Navigation: menus redesigned. The bar keeps the brand, the items and the actions on one line; dropdowns are rounded panels with a soft shadow; a parent item and its chevron highlight as one control; the active item is marked with the accent color instead of a border
-- Below the collapse breakpoint the drawer opens as a panel under the bar, over a dimmed page, with 48px rows and submenus that open in place as indented lists
-- Nested submenus in a dropdown fly out beside their row (towards the page in a right-aligned bar) instead of stacking over it
-- Dropdown and mega panels open on hover, or from the keyboard with Space on the submenu toggle; a closed panel is skipped by Tab instead of opening whenever focus passes its toggle
-- A `MenuItem` with a submenu and no `Href` (or `Href="#"`) renders as the submenu toggle instead of a link to `#`
-- `MenuItem.Icon` renders no icon slot for a name that is not built in; the `blog` icon is a journal and the `document` icon a page
-- Vertical menus open submenus in place instead of as flyouts
-- Osirion.Blazor.Theming: the Bootstrap, MudBlazor and Fluent UI adapters set `--osirion-link-color` and `--osirion-link-hover-color` from the framework's link color (`--bs-link-color`, `--mud-palette-primary`, `--colorBrandForegroundLink`), in light and dark mode
-
-### Fixed
-- Osirion.Blazor.Cms.Web: `DocumentPage` wrapped its body in a `<main>` inside the layout's `<main>` (two main landmarks), showed the creation date as "Last updated", and linked previous and next to the source file path (`/docs/page.md`); the body is a `div`, the date is the last-modified date, and the links use the pages' URLs
-- Osirion.Blazor.Cms.Web: `ArticlePage` ignored `RelatedContentTitle` (the section was always titled "Related items") and never rendered `CustomFooterContent`; both are used now, so the related section is titled "Related Articles" unless set
-- Osirion.Blazor.Cms.Web: `SchemaType.BlogPosting` wrote JSON-LD with `"@type": "Article"`; it now writes `BlogPosting`
-- Osirion.Blazor.Cms.Infrastructure: a content item's `LastModified` was the time the content was loaded, because mapping the front matter touched setters that stamp the current time. It is now the front matter's `last_modified`, then the file's write time (file system provider), then the publication date; SEO `dateModified` and sorting by last-modified date follow it
-- Osirion.Blazor.Analytics: a tracker component whose provider is not registered (for example `<ClarityTracker />` left in a layout while the Clarity configuration section is absent) failed the whole page with "Cannot provide a value for property '_provider'"; it now renders nothing
-- Osirion.Blazor.Cms.Web: the featured image in the header of `ContentView` and `LocalizedContentView` loaded lazily, which delayed Largest Contentful Paint on article pages; it now loads eagerly with `fetchpriority="high"` and async decoding. Images in lists stay lazy
-- Osirion.Blazor.Theming: in Bootstrap dark mode `--osirion-action-primary-text` fell through to the dark theme's near-black, so text on the primary color (badges, step numbers, the announcement bar) had a 2.7:1 contrast on a mid-tone primary; the Bootstrap adapter now keeps it white, as Bootstrap's own primary buttons do
-- `OsirionFooter` in `OsirionPageLayout`'s `Footer` slot rendered a `<footer>` inside the layout's `<footer>`, two contentinfo landmarks (axe `landmark-no-duplicate-contentinfo`, `landmark-contentinfo-is-top-level`). Inside the slot it now renders a `<div>` with the same classes; on its own it is still a `<footer>`
-- `OsirionCookieConsent`: the banner is a region named by its title, so its text is no longer content outside every landmark (axe `region`)
-- Osirion.Blazor.Cms.Web: an `ArticlePage` with nothing related (an article alone in its folder) rendered the list's "404 Page Not Found" block, with a second `h1`, as its related items; the section is now left out
-- Osirion.Blazor.Navigation: the drawer rules for submenus in `Menu.razor.css` never applied, because CSS isolation scoped them to `Menu` while `MenuItem` renders the submenu, and non-collapsible and vertical menus disappeared at 768px and below
-- Osirion.Blazor.Core: `OsirionContactForm` no longer runs past the right edge of the screen on phones
-- Osirion.Blazor.Core: rendered Markdown tables scroll sideways on screens up to 768px wide and keep words and inline code whole, instead of breaking them a few letters per line
-- Osirion.Blazor.Navigation: menu accent text (the active item, mega menu links, group footer links) uses the link color instead of the primary button color, which measured 3.5:1 on the Bootstrap example's dark background; it now measures at least 5.2:1 in both modes on all three adapters
-- Osirion.Blazor.Cms.Web: `ContentList` leaves out the page it is shown on, so a section's list no longer shows a card for the section's own `_index.md` page
-- Osirion.Blazor.Cms.Infrastructure: the file system provider serves a folder's `_index.md` as the page at the folder's URL, as the GitHub provider already did, so section overview pages such as `/docs/components/core` no longer answer 404 when content comes from local files
-- Osirion.Blazor.Cms.Web: a page showed its title twice and had two `h1` elements when the Markdown opened with `# Title`. `ArticlePage`, `HomePage` and `LandingPage` (with their hero) and `ContentView`, `DocumentPage` and `LocalizedContentView` (under their own title) now leave that opening heading out of the body
-- Osirion.Blazor.Core: on phones `OsirionFooter` opens with the brand, then the links, the left content and the right content, and lines the contact details up with the links. The brand used to land between the contact details and the right column, because the columns had no grid areas and fell into place by auto-placement
-- Osirion.Blazor.Core: with `EnableHeaderScrollBehavior`, `OsirionPageLayout` no longer hides the header while the pointer is over it or focus is in it. Scrolling with the pointer on an open dropdown or mega menu carried the panel away with the header and left it floating at the top of the page
-- Osirion.Blazor.Cms.Web: `ContentList.ContentUrlFormatter` and `OsirionContentListSection.PostUrlFormatter` set the post links. The list section linked every post to its `Url` and ignored both. Without a formatter both build the link the same way, from the site root (`/blog/post` instead of the relative `blog/post` the section wrote)
-- Osirion.Blazor.Core: `OsirionTestimonialCarousel` hung while rendering when `MaxVisibleTestimonials` was 1 or 2, threw `DivideByZeroException` for an empty `CustomTestimonials` list, and appended its loop padding to the host's own `CustomTestimonials` list
-- Osirion.Blazor.Core: `OsirionSubscriptionCard` with `UseBuiltInEmailService` and no registered email service told the visitor the submission looked like spam; it now reports a server error, as `OsirionContactForm` does
-- Osirion.Blazor.Core: `HeroSection` added `Class` twice and glued it to the previous class (`hero-dividerlanding`)
-- Osirion.Blazor.Core: `OsirionResponsiveShowcaseSection` ignored `Class` and unmatched attributes on its root, showed a replacement character instead of `×` in the viewport dimensions, and rendered `aria-pressed` without a `true`/`false` value
-- Osirion.Blazor.Core: the cookie consent check threw `NullReferenceException` when the consent cookie held `"Categories": null`; it now counts as no consent
-- Osirion.Blazor.Cms.Infrastructure: a content query with `Directory` and `IncludeSubdirectories` matches whole folder names, so `"blog"` no longer also returns content from `blog2` or `blog-archive`
-- Osirion.Blazor.Cms.Infrastructure: moving a GitHub directory without a new parent puts it at the top of `ContentPath` instead of the repository root, where the provider no longer loaded it
-- Osirion.Blazor.Cms.Infrastructure: a directory's `locale` and `url` are escaped when its `_index.md` front matter is written, so a quote and a line break can no longer add front matter keys
-- Osirion.Blazor.Cms.Infrastructure: the stale-while-revalidate directory cache keyed `GetByNameAsync` by locale only, so after one lookup every other name in that locale returned the first directory until the entry expired
-- Osirion.Blazor.Cms.Infrastructure: `ToUrlSlug` threw `ArgumentOutOfRangeException` for a title without letters or digits (`"!!!"`); it now returns the untitled slug
-- Osirion.Blazor.Cms.Web: with `EnableGeneratedFaq`, a page titled exactly "Guide to" or "Guía de" failed to render (`ArgumentOutOfRangeException`); such a title now produces no generated question
-- Osirion.Blazor.Cms.Web: `HomePage` threw `InvalidCastException` when `CategoryUrlFormatter` or `TagUrlFormatter` was set with the browse section shown
-- Osirion.Blazor.Cms.Web: `ContentPage` given a `ContentItem` without a `Path` showed "Loading content..." forever
-- Osirion.Blazor.Cms.Web: `LocalizedContentView` translation links now carry the `osirion-translation-link` class its stylesheet targets
-- Osirion.Blazor.Cms.Web: `ContentPage` applies `PathReplacePattern` with a 250 ms match timeout and keeps the path unchanged on timeout, so a pattern with catastrophic backtracking can no longer hold a request on a crafted URL
-- Osirion.Blazor.Cms.Admin: the dashboard is disposed by the renderer and stops listening to the circuit's admin state; `CmsAdminDashboard` had a `Dispose` method but did not implement `IDisposable`
-- Osirion.Blazor.Cms.Admin: "Auto-generate" in the SEO form keeps the selected schema type instead of resetting it to Article
-- Osirion.Blazor.Cms.Admin: the file explorer URL-encodes the path it opens in the editor, so files whose names contain `&`, `#` or `+` open correctly
-- Osirion.Blazor.Cms.Admin: the admin layout no longer throws for a signed-in user with an empty user name
-- Osirion.Blazor.Cms.Domain: a front matter list containing a lone quote (`tags: a, "`) no longer makes the file fail to load
-- Osirion.Blazor.Theming: `OsirionStyles` no longer writes `<link rel="stylesheet" href="">` when the framework has no adapter, which made browsers request the page again as a stylesheet
-- Osirion.Blazor.Theming: `ThemeService.ToggleTheme` returns the mode actually in effect; with dark mode disabled it reported "dark" while staying light
-- Osirion.Blazor.Core: `OsirionMetricCard` keeps a trailing dash out of the animated number (`"~5-"` counted up to a range ending in 0)
-- Osirion.Blazor.Cms.Domain: `FrontMatter.Create(title, description, DateTime)` writes the date as `yyyy-MM-dd` instead of the culture's date and time format
-- Osirion.Blazor.Cms.Infrastructure: GitHub polling refreshes only the provider whose id equals the configured one; providers of other repositories whose id merely contained it were refreshed with the wrong commit, and a configured id without "github" in it was never polled
-- Osirion.Blazor.Cms.Infrastructure: content search matches case-insensitively in every culture (under Turkish, "GUIDE" did not find "Guide")
-- Osirion.Blazor.Cms.Infrastructure: the markdown pre-sanitizer replaces the whole `javascript:` link destination, including nested parentheses, leading whitespace and reference-style definitions; each of its patterns runs with a 250 ms match timeout, so a pathological document cannot hold a request
-- Osirion.Blazor.Cms.Web: LocalBusiness structured data no longer writes the schema type as the `telephone`
-- Osirion.Blazor.Cms.Web: generated FAQ questions match question words only as whole words, so titles such as "However we ship" are no longer treated as questions
-- Osirion.Blazor.Cms.Web: an empty `SchemaTypes` array is treated as not set, so `og:type`, `content-type` and the JSON-LD type agree
-- Osirion.Blazor.Cms.Admin: admin error messages show generic text instead of exception messages (which could carry GitHub responses or internal URLs); the details stay in the log. Markdown preview failures are reported through the admin error path instead of being swallowed
-- Osirion.Blazor.Cms.Admin: `DefaultNavigation` links to the routed admin pages under `/osirion` (they pointed to `/admin/...`, which has no pages), marks only the current page active, and drops the links to pages that do not exist (media, pull requests, branches, users, logs)
-
-### Removed
-- Osirion.Blazor.Navigation: `Menu.razor.scss`, `Menu.razor.min.css` and `compilerconfig.json`, an out-of-date stylesheet source that a Web Compiler run would have compiled over `Menu.razor.css`
-
-### Build
-- The coverage workflow runs every test project except the Playwright suite and fails when a test fails or is not discovered, instead of uploading a partial report. Coverage settings live in `coverlet.runsettings` (generated code and auto-property accessors are not counted) and Codecov targets in `codecov.yml` (90% for the project and for each change, informational for now)
-- CRAP scores (threshold 30) are measured by `tools/run-crap.ps1` and checked by `tools/verify-crap.ps1`, using `crap4dotnet` pinned in `.config/dotnet-tools.json` for complexity and the merged coverlet reports for coverage. The coverage workflow fails when a method exceeds CRAP 30 or a package gains offenders against the last snapshot in `docs/crap/`, and Codecov blocks a pull request below 90% project or patch coverage
-
 ## [4.0.0] - 2026-10-11
 
 ### Security
@@ -153,6 +47,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `examples/Osirion.Blazor.Example.Mud`: the CMS example site on MudBlazor 9, with a theme that follows Osirion's theme toggle without a round trip
 - `.osirion-visually-hidden` utility in the Core stylesheet for text that only screen readers announce
 - `examples/Osirion.Blazor.Example.FluentUI`: the CMS example site on Fluent UI Blazor 5, registered in the examples AppHost on port 5298
+- `OsirionPageLayout` renders a skip link to the main content as the first focusable element (WCAG 2.4.1), shown only while it has keyboard focus; `ShowSkipLink`, `SkipLinkText` and `MainContentId` configure it, and the main element now carries that id and `tabindex="-1"`
+- Callouts: GitHub-style alerts in Markdown (`> [!NOTE]`, `[!TIP]`, `[!IMPORTANT]`, `[!WARNING]`, `[!CAUTION]`) are now styled, with their icons drawn in CSS so the HTML sanitizer can keep removing inline SVG, and the new `OsirionCallout` component (`CalloutType`) renders the same look from Razor
+- `OsirionTabs` and `OsirionTab`: tabs that switch without script (a radio group per tab set), keyboard accessible with the arrow keys, for code samples and other alternative content
+- `OsirionAccordion` and `OsirionAccordionItem` on the native `<details>` element (optionally one open at a time), and `OsirionFaq` with `FaqItem`, which also writes FAQPage structured data
+- Osirion.Blazor.Cms.Web: `MapOsirionFeeds` maps `/sitemap.xml`, an RSS 2.0 feed at `/feed.xml` and an Atom feed at `/atom.xml` from the published content (`OsirionFeedOptions`: site URL, title, directory, locale, item count, extra sitemap paths, URL formatter, cache duration); `noindex` items stay out of the sitemap
+- Osirion.Blazor.Analytics: Plausible and Umami, both cookie-free. `AddPlausible` with `PlausibleTracker` renders the site's own Plausible script (`ScriptUrl`, optional `Endpoint` and tracking switches written to `plausible.init` only when set); `AddUmami` with `UmamiTracker` renders one attribute-configured script (`SiteId` = website ID, `ScriptUrl` for self-hosting, `HostUrl`, `Domains`, `Tag`, exclusions, Do Not Track). Both read `Osirion:Analytics:Plausible` and `Osirion:Analytics:Umami`, are validated at startup and honour the consent gate
+- `OsirionResponsiveImage`: an `<img>` with intrinsic `Width` and `Height` (no layout shift), `srcset` from `SrcSet` or `Widths` with a `SrcFormatter`, `Sizes` (default `auto, 100vw`), lazy loading with async decoding, a `Priority` switch for the main image (eager, `fetchpriority="high"`) and an optional `Caption` in a `<figure>`
+- `OsirionVideoEmbed` (`VideoProvider`, `VideoAspectRatio`): a YouTube or Vimeo thumbnail that loads the player only when pressed, privacy-enhanced by default (`youtube-nocookie.com`, Vimeo `dnt=1`), with a start time, a custom thumbnail and a link to the video when script is off
+- Author pages: `OsirionAuthorCard` (avatar or initials, name linked with `rel="author"`, role, bio, `AuthorLink` links with `rel="me"`; unsafe URL schemes are not rendered), `ContentList.Author` to list one author's items, and `ContentView.AuthorUrlFormatter` to link bylines to the author's page
+- Series: `series` and `series_order` front matter (`FrontMatter.Series`, `FrontMatter.SeriesOrder`) and `ContentSeriesNavigation`, which shows "Part 2 of 5", lists the parts and links the previous and next part
+- `OsirionPricingTable` (`PricingPlan`) and `OsirionFeatureComparison` (`FeatureComparisonRow`, `ComparisonCell`): plans side by side with a highlighted plan and framework buttons, and an accessible comparison table with check marks, crosses and values
+- `OsirionSteps` (`StepItem`): numbered "how it works" steps as an ordered list, side by side or stacked with a joining line (`Vertical`)
+- `OsirionAnnouncementBar` and `MapOsirionAnnouncements`: a dismissible site-wide announcement that closes without script (an antiforgery-protected form post sets a per-announcement cookie and redirects back)
+- Live demos in Markdown content: `AddOsirionContentDemos` registers Razor components (`ContentDemoRegistry`, `ContentDemo`), and a fenced `demo` block whose text is a registered key renders the component in its place, with Preview and Code tabs when the demo has source (`OsirionContentDemo`, `OsirionHtmlRenderer.EnableDemos`)
+- Osirion.Blazor.Cms.Web: `UseOsirionRedirects` and `redirect_from` front matter (`FrontMatter.RedirectFrom`): requests for a page's earlier URLs get a permanent redirect to its current URL, with fixed redirects for pages that are not content (`OsirionRedirectOptions`)
+- `tools/Osirion.Blazor.ApiDocs`: generates component parameter tables in Markdown content from the assemblies and their XML docs, between `<!-- osirion:parameters Name -->` and `<!-- /osirion:parameters -->` markers, with a `--check` mode that fails when a table is out of date
+- `SchemaType.TechArticle`, `SchemaType.SoftwareApplication` (`SeoMetadataRenderer.ApplicationCategory`, default `DeveloperApplication`), `SchemaType.ProfilePage` (the author as `mainEntity`, link tags as `sameAs`, `og:type` `profile`), `SchemaType.AboutPage` (the site organization as `mainEntity`) and `SchemaType.ContactPage`
+- `OsirionReadingProgress`: a reading progress bar driven by a CSS scroll-driven animation, with no script; hidden where `animation-timeline` is not supported
+- Osirion.Blazor.Navigation: `Menu.Actions`, a slot after the items for a search box, a theme toggle or a call to action. A horizontal bar aligns it to the end; a collapsed menu shows it at the bottom of the drawer
+- Osirion.Blazor.Navigation: `MenuCollapseBreakpoint.Large`, which collapses a menu below 1200px
+- Osirion.Blazor.Navigation: `--osirion-menu-*` theming variables for the bar height, content width, padding, logo size, colors, radii and shadow
+- Osirion.Blazor.Navigation: a tap on the dimmed page behind an open drawer closes the drawer
+- Osirion.Blazor: `OsirionSiteLayout`, the whole site shell from the `Osirion:Site` configuration section (`OsirionSiteOptions`, `UseSite`): announcement, menu with brand, search and theme toggle, footer with link columns, social icons (`github`, `x`, `linkedin`, `nuget`, `rss`) and legal links, theme styles, scroll to top and optional cookie consent; use it as the router's `DefaultLayout`, or wrap it to replace the header or footer. The options are validated at startup
+- Osirion.Blazor: `AddOsirion` registers the JS component services (`AddJSComponents`) that `OsirionPageLayout`, the content demos and the video embed need, unless they are registered already
+- `OsirionPageHeading`: a page title as the `h1` with an optional sentence below it, for pages without a hero; the example privacy page uses it, so it has an `h1` (issue 39)
+- Osirion.Blazor.Cms.Web: `AboutPage` (from `about.md`: the title as the `h1`, the body, `ChildContent` for author cards, AboutPage structured data, 404 when missing), `ContactPage` (an `OsirionContactForm` with the contact details under the title, optional Markdown from `contact.md`, ContactPage structured data, works without content) and `NotFoundPage` (noindex, home link, suggestions, optional search; sets status 404 itself on .NET 9)
+- Osirion.Blazor.Cms.Web: `OsirionContentItemPageBase`, the base of pages that show one content item, split out of `OsirionContentDetailPageBase`, which adds navigation and related items
+- Osirion.Blazor.Cms.Web: `ArticlePage.ShowSeriesNavigation` (on by default; renders only for articles with `series` front matter) and `ArticlePage.AuthorContent`, a slot after the body for an author card
+- Osirion.Blazor.Cms.Web: `DocumentPage` writes its SEO metadata and TechArticle structured data, lists the pages of its folder in the side navigation when no `NavigationItems` are given, and links to the page's source with `EditUrlFormatter` ("Edit this page")
+- Osirion.Blazor.Cms.Web: `ContentListPage`, a whole list page for a blog index, category, tag or author: the title as the page's `h1` with a description, paged cards, CollectionPage data, feed links (`FeedUrl`) and optional category and tag sidebars; `ContentList.ShowTitle` renders the same heading for lists composed by hand
+- Osirion.Blazor.Cms.Web: `ContentRenderer.OmitLeadingTitle`, which leaves out the content's opening top-level heading
 
 ### Changed
 - `OsirionHtmlRenderer.SanitizeHtml` now defaults to `true` and uses the registered `IHtmlContentSanitizer` instead of a regex sanitizer; `IMarkdownProcessor.RenderToHtml` and `RenderToHtmlAsync` now default `sanitizeHtml` to `true` and sanitize the rendered HTML
@@ -182,6 +107,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `OsirionCookieConsent`: the form now has the class `osirion-cookie-consent-form` and the consent buttons sit in a `div.osirion-cookie-consent-actions`; CSS that targeted the form through the old class must target `.osirion-cookie-consent-form`
 - The FluentUI adapter reads the Fluent UI Blazor v5 tokens (`--colorNeutralBackground1`, `--colorBrandBackground` and so on) and falls back to the v4 tokens, so Osirion components follow a v5 theme
 - With `Framework` set to `FluentUI`, `OsirionStyles` hands Osirion's theme mode to Fluent UI v5 (`Blazor.theme.setThemeMode`), so Fluent components follow `ThemeToggle`
+- Osirion.Blazor.Navigation: menus redesigned. The bar keeps the brand, the items and the actions on one line; dropdowns are rounded panels with a soft shadow; a parent item and its chevron highlight as one control; the active item is marked with the accent color instead of a border
+- Below the collapse breakpoint the drawer opens as a panel under the bar, over a dimmed page, with 48px rows and submenus that open in place as indented lists
+- Nested submenus in a dropdown fly out beside their row (towards the page in a right-aligned bar) instead of stacking over it
+- Dropdown and mega panels open on hover, or from the keyboard with Space on the submenu toggle; a closed panel is skipped by Tab instead of opening whenever focus passes its toggle
+- A `MenuItem` with a submenu and no `Href` (or `Href="#"`) renders as the submenu toggle instead of a link to `#`
+- `MenuItem.Icon` renders no icon slot for a name that is not built in; the `blog` icon is a journal and the `document` icon a page
+- Vertical menus open submenus in place instead of as flyouts
+- Osirion.Blazor.Theming: the Bootstrap, MudBlazor and Fluent UI adapters set `--osirion-link-color` and `--osirion-link-hover-color` from the framework's link color (`--bs-link-color`, `--mud-palette-primary`, `--colorBrandForegroundLink`), in light and dark mode
 
 ### Deprecated
 - `LoginViewModel.LoginWithGitHubAsync(string code)` always fails, because a code without its OAuth state cannot be verified; use `StartGitHubLoginAsync()` and `LoginWithGitHubAsync(code, state)`
@@ -192,6 +125,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 - Osirion.Blazor.Cms.Admin types that nothing in the library used: `ContentRepositoryAdapter`, `RepositoryAdapterBase`, `AdminContentRepository`, `StatePersistenceService`, `EditableComponent`, `LoadableComponentBase`, `ContentValidators`, `ComponentExtensions` and `ExceptionHandlingMiddleware`
+- Osirion.Blazor.Navigation: `Menu.razor.scss`, `Menu.razor.min.css` and `compilerconfig.json`, an out-of-date stylesheet source that a Web Compiler run would have compiled over `Menu.razor.css`
 
 ### Fixed
 - Osirion.Blazor.Theming: the theme toggle threw `NotFoundError` ("removeChild") when enhanced navigation replaced the page during its fade, and then scrolled the new page to the old page's position. With `prefers-reduced-motion: reduce` the theme now changes without the full-screen fade
@@ -281,6 +215,62 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - On MudBlazor sites, the contact form and subscription card gave plain inputs MudBlazor's internal input classes, which only work inside MudBlazor's own input markup, so the fields rendered without a border; they now use `osirion-input`, `osirion-select` and `osirion-textarea`, which the MudBlazor adapter styles from the MudBlazor palette in both themes
 - The MudBlazor adapter read `--mud-palette-background-grey`, which MudBlazor does not define (it writes `--mud-palette-background-gray`), so secondary backgrounds ignored the theme
 - Links in rendered content kept the light theme's color in dark mode on MudBlazor, Fluent UI and Radzen sites, because the dark override did not match `data-osirion-theme`
+- Osirion.Blazor.Cms.Web: `DocumentPage` wrapped its body in a `<main>` inside the layout's `<main>` (two main landmarks), showed the creation date as "Last updated", and linked previous and next to the source file path (`/docs/page.md`); the body is a `div`, the date is the last-modified date, and the links use the pages' URLs
+- Osirion.Blazor.Cms.Web: `ArticlePage` ignored `RelatedContentTitle` (the section was always titled "Related items") and never rendered `CustomFooterContent`; both are used now, so the related section is titled "Related Articles" unless set
+- Osirion.Blazor.Cms.Web: `SchemaType.BlogPosting` wrote JSON-LD with `"@type": "Article"`; it now writes `BlogPosting`
+- Osirion.Blazor.Cms.Infrastructure: a content item's `LastModified` was the time the content was loaded, because mapping the front matter touched setters that stamp the current time. It is now the front matter's `last_modified`, then the file's write time (file system provider), then the publication date; SEO `dateModified` and sorting by last-modified date follow it
+- Osirion.Blazor.Analytics: a tracker component whose provider is not registered (for example `<ClarityTracker />` left in a layout while the Clarity configuration section is absent) failed the whole page with "Cannot provide a value for property '_provider'"; it now renders nothing
+- Osirion.Blazor.Cms.Web: the featured image in the header of `ContentView` and `LocalizedContentView` loaded lazily, which delayed Largest Contentful Paint on article pages; it now loads eagerly with `fetchpriority="high"` and async decoding. Images in lists stay lazy
+- Osirion.Blazor.Theming: in Bootstrap dark mode `--osirion-action-primary-text` fell through to the dark theme's near-black, so text on the primary color (badges, step numbers, the announcement bar) had a 2.7:1 contrast on a mid-tone primary; the Bootstrap adapter now keeps it white, as Bootstrap's own primary buttons do
+- `OsirionFooter` in `OsirionPageLayout`'s `Footer` slot rendered a `<footer>` inside the layout's `<footer>`, two contentinfo landmarks (axe `landmark-no-duplicate-contentinfo`, `landmark-contentinfo-is-top-level`). Inside the slot it now renders a `<div>` with the same classes; on its own it is still a `<footer>`
+- `OsirionCookieConsent`: the banner is a region named by its title, so its text is no longer content outside every landmark (axe `region`)
+- Osirion.Blazor.Cms.Web: an `ArticlePage` with nothing related (an article alone in its folder) rendered the list's "404 Page Not Found" block, with a second `h1`, as its related items; the section is now left out
+- Osirion.Blazor.Navigation: the drawer rules for submenus in `Menu.razor.css` never applied, because CSS isolation scoped them to `Menu` while `MenuItem` renders the submenu, and non-collapsible and vertical menus disappeared at 768px and below
+- Osirion.Blazor.Core: `OsirionContactForm` no longer runs past the right edge of the screen on phones
+- Osirion.Blazor.Core: rendered Markdown tables scroll sideways on screens up to 768px wide and keep words and inline code whole, instead of breaking them a few letters per line
+- Osirion.Blazor.Navigation: menu accent text (the active item, mega menu links, group footer links) uses the link color instead of the primary button color, which measured 3.5:1 on the Bootstrap example's dark background; it now measures at least 5.2:1 in both modes on all three adapters
+- Osirion.Blazor.Cms.Web: `ContentList` leaves out the page it is shown on, so a section's list no longer shows a card for the section's own `_index.md` page
+- Osirion.Blazor.Cms.Infrastructure: the file system provider serves a folder's `_index.md` as the page at the folder's URL, as the GitHub provider already did, so section overview pages such as `/docs/components/core` no longer answer 404 when content comes from local files
+- Osirion.Blazor.Cms.Web: a page showed its title twice and had two `h1` elements when the Markdown opened with `# Title`. `ArticlePage`, `HomePage` and `LandingPage` (with their hero) and `ContentView`, `DocumentPage` and `LocalizedContentView` (under their own title) now leave that opening heading out of the body
+- Osirion.Blazor.Core: on phones `OsirionFooter` opens with the brand, then the links, the left content and the right content, and lines the contact details up with the links. The brand used to land between the contact details and the right column, because the columns had no grid areas and fell into place by auto-placement
+- Osirion.Blazor.Core: with `EnableHeaderScrollBehavior`, `OsirionPageLayout` no longer hides the header while the pointer is over it or focus is in it. Scrolling with the pointer on an open dropdown or mega menu carried the panel away with the header and left it floating at the top of the page
+- Osirion.Blazor.Cms.Web: `ContentList.ContentUrlFormatter` and `OsirionContentListSection.PostUrlFormatter` set the post links. The list section linked every post to its `Url` and ignored both. Without a formatter both build the link the same way, from the site root (`/blog/post` instead of the relative `blog/post` the section wrote)
+- Osirion.Blazor.Core: `OsirionTestimonialCarousel` hung while rendering when `MaxVisibleTestimonials` was 1 or 2, threw `DivideByZeroException` for an empty `CustomTestimonials` list, and appended its loop padding to the host's own `CustomTestimonials` list
+- Osirion.Blazor.Core: `OsirionSubscriptionCard` with `UseBuiltInEmailService` and no registered email service told the visitor the submission looked like spam; it now reports a server error, as `OsirionContactForm` does
+- Osirion.Blazor.Core: `HeroSection` added `Class` twice and glued it to the previous class (`hero-dividerlanding`)
+- Osirion.Blazor.Core: `OsirionResponsiveShowcaseSection` ignored `Class` and unmatched attributes on its root, showed a replacement character instead of `×` in the viewport dimensions, and rendered `aria-pressed` without a `true`/`false` value
+- Osirion.Blazor.Core: the cookie consent check threw `NullReferenceException` when the consent cookie held `"Categories": null`; it now counts as no consent
+- Osirion.Blazor.Cms.Infrastructure: a content query with `Directory` and `IncludeSubdirectories` matches whole folder names, so `"blog"` no longer also returns content from `blog2` or `blog-archive`
+- Osirion.Blazor.Cms.Infrastructure: moving a GitHub directory without a new parent puts it at the top of `ContentPath` instead of the repository root, where the provider no longer loaded it
+- Osirion.Blazor.Cms.Infrastructure: a directory's `locale` and `url` are escaped when its `_index.md` front matter is written, so a quote and a line break can no longer add front matter keys
+- Osirion.Blazor.Cms.Infrastructure: the stale-while-revalidate directory cache keyed `GetByNameAsync` by locale only, so after one lookup every other name in that locale returned the first directory until the entry expired
+- Osirion.Blazor.Cms.Infrastructure: `ToUrlSlug` threw `ArgumentOutOfRangeException` for a title without letters or digits (`"!!!"`); it now returns the untitled slug
+- Osirion.Blazor.Cms.Web: with `EnableGeneratedFaq`, a page titled exactly "Guide to" or "Guía de" failed to render (`ArgumentOutOfRangeException`); such a title now produces no generated question
+- Osirion.Blazor.Cms.Web: `HomePage` threw `InvalidCastException` when `CategoryUrlFormatter` or `TagUrlFormatter` was set with the browse section shown
+- Osirion.Blazor.Cms.Web: `ContentPage` given a `ContentItem` without a `Path` showed "Loading content..." forever
+- Osirion.Blazor.Cms.Web: `LocalizedContentView` translation links now carry the `osirion-translation-link` class its stylesheet targets
+- Osirion.Blazor.Cms.Web: `ContentPage` applies `PathReplacePattern` with a 250 ms match timeout and keeps the path unchanged on timeout, so a pattern with catastrophic backtracking can no longer hold a request on a crafted URL
+- Osirion.Blazor.Cms.Admin: the dashboard is disposed by the renderer and stops listening to the circuit's admin state; `CmsAdminDashboard` had a `Dispose` method but did not implement `IDisposable`
+- Osirion.Blazor.Cms.Admin: "Auto-generate" in the SEO form keeps the selected schema type instead of resetting it to Article
+- Osirion.Blazor.Cms.Admin: the file explorer URL-encodes the path it opens in the editor, so files whose names contain `&`, `#` or `+` open correctly
+- Osirion.Blazor.Cms.Admin: the admin layout no longer throws for a signed-in user with an empty user name
+- Osirion.Blazor.Cms.Domain: a front matter list containing a lone quote (`tags: a, "`) no longer makes the file fail to load
+- Osirion.Blazor.Theming: `OsirionStyles` no longer writes `<link rel="stylesheet" href="">` when the framework has no adapter, which made browsers request the page again as a stylesheet
+- Osirion.Blazor.Theming: `ThemeService.ToggleTheme` returns the mode actually in effect; with dark mode disabled it reported "dark" while staying light
+- Osirion.Blazor.Core: `OsirionMetricCard` keeps a trailing dash out of the animated number (`"~5-"` counted up to a range ending in 0)
+- Osirion.Blazor.Cms.Domain: `FrontMatter.Create(title, description, DateTime)` writes the date as `yyyy-MM-dd` instead of the culture's date and time format
+- Osirion.Blazor.Cms.Infrastructure: GitHub polling refreshes only the provider whose id equals the configured one; providers of other repositories whose id merely contained it were refreshed with the wrong commit, and a configured id without "github" in it was never polled
+- Osirion.Blazor.Cms.Infrastructure: content search matches case-insensitively in every culture (under Turkish, "GUIDE" did not find "Guide")
+- Osirion.Blazor.Cms.Infrastructure: the markdown pre-sanitizer replaces the whole `javascript:` link destination, including nested parentheses, leading whitespace and reference-style definitions; each of its patterns runs with a 250 ms match timeout, so a pathological document cannot hold a request
+- Osirion.Blazor.Cms.Web: LocalBusiness structured data no longer writes the schema type as the `telephone`
+- Osirion.Blazor.Cms.Web: generated FAQ questions match question words only as whole words, so titles such as "However we ship" are no longer treated as questions
+- Osirion.Blazor.Cms.Web: an empty `SchemaTypes` array is treated as not set, so `og:type`, `content-type` and the JSON-LD type agree
+- Osirion.Blazor.Cms.Admin: admin error messages show generic text instead of exception messages (which could carry GitHub responses or internal URLs); the details stay in the log. Markdown preview failures are reported through the admin error path instead of being swallowed
+- Osirion.Blazor.Cms.Admin: `DefaultNavigation` links to the routed admin pages under `/osirion` (they pointed to `/admin/...`, which has no pages), marks only the current page active, and drops the links to pages that do not exist (media, pull requests, branches, users, logs)
+
+### Build
+- The coverage workflow runs every test project except the Playwright suite and fails when a test fails or is not discovered, instead of uploading a partial report. Coverage settings live in `coverlet.runsettings` (generated code and auto-property accessors are not counted) and Codecov targets in `codecov.yml` (90% for the project and for each change, informational for now)
+- CRAP scores (threshold 30) are measured by `tools/run-crap.ps1` and checked by `tools/verify-crap.ps1`, using `crap4dotnet` pinned in `.config/dotnet-tools.json` for complexity and the merged coverlet reports for coverage. The coverage workflow fails when a method exceeds CRAP 30 or a package gains offenders against the last snapshot in `docs/crap/`, and Codecov blocks a pull request below 90% project or patch coverage
 
 ## [3.0.1] - 2026-09-24
 

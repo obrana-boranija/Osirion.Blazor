@@ -60,12 +60,12 @@ They live in the `Osirion.Blazor.Components` namespace of the Osirion.Blazor.Cor
 | Component | What it renders | Script | Available |
 | --- | --- | --- | --- |
 | [Article metadata](/docs/components/core/content/article-metadata) | Author, publish date and read time in one line | None | 4.0 |
-| [Callouts](/docs/components/core/content/callout) | A highlighted note, tip, important point, warning or caution, from Razor or Markdown | None | 4.1 |
-| [Tabs](/docs/components/core/content/tabs) | Alternative content, such as one install command per package manager, behind tabs | None | 4.1 |
-| [Accordion and FAQ](/docs/components/core/content/accordion-and-faq) | Collapsible sections on `<details>`, and questions with FAQPage structured data | None | 4.1 |
-| [Responsive image](/docs/components/core/content/responsive-image) | An `<img>` with intrinsic size, `srcset`, `sizes` and lazy loading | None | 4.1 |
-| [Video embed](/docs/components/core/content/video-embed) | A YouTube or Vimeo thumbnail that loads the player when pressed | Optional | 4.1 |
-| [Reading progress](/docs/components/core/content/reading-progress) | A bar at the top of the window that fills as the reader scrolls | None | 4.1 |
+| [Callouts](/docs/components/core/content/callout) | A highlighted note, tip, important point, warning or caution, from Razor or Markdown | None | 4.0 |
+| [Tabs](/docs/components/core/content/tabs) | Alternative content, such as one install command per package manager, behind tabs | None | 4.0 |
+| [Accordion and FAQ](/docs/components/core/content/accordion-and-faq) | Collapsible sections on `<details>`, and questions with FAQPage structured data | None | 4.0 |
+| [Responsive image](/docs/components/core/content/responsive-image) | An `<img>` with intrinsic size, `srcset`, `sizes` and lazy loading | None | 4.0 |
+| [Video embed](/docs/components/core/content/video-embed) | A YouTube or Vimeo thumbnail that loads the player when pressed | Optional | 4.0 |
+| [Reading progress](/docs/components/core/content/reading-progress) | A bar at the top of the window that fills as the reader scrolls | None | 4.0 |
 
 "Optional" means the component works without script and the script adds behavior: the video embed is a link to the
 video until its script swaps in the player.

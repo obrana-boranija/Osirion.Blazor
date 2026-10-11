@@ -28,14 +28,14 @@ default in a Blazor Web App, and Osirion's content pages are built for it: `Arti
 `HomePage` load their item on the server and, since 4.0, render without streaming, so the first response holds the
 whole article. Give an interactive render mode only to the components that need one, not to the router.
 
-Most content components need no script at all. Available from 4.1:
+Most content components need no script at all. Available from 4.0:
 
 - `OsirionTabs` switch with a radio group per tab set.
 - `OsirionAccordion` and `OsirionFaq` use the native `<details>` element.
 - `OsirionReadingProgress` is a CSS scroll-driven animation.
 - `OsirionAnnouncementBar` closes through a form post that sets a cookie.
 
-`OsirionVideoEmbed` (also from 4.1) does use a small script, but it shows only a thumbnail and loads the YouTube or
+`OsirionVideoEmbed` (also from 4.0) does use a small script, but it shows only a thumbnail and loads the YouTube or
 Vimeo player when the reader presses play; without script, the thumbnail links to the video.
 
 Scripts that do load come in through the loader that `builder.Services.AddJSComponents()` registers, only on pages
@@ -76,11 +76,11 @@ every delivery is rejected while no provider has a secret.
 ## Load the main image early and the rest late
 
 Largest Contentful Paint is usually the featured image at the top of an article. `ArticlePage` shows it in its hero
-with `fetchpriority="high"`. From 4.1, `ContentView` and `LocalizedContentView` load their featured image eagerly
+with `fetchpriority="high"`. From 4.0, `ContentView` and `LocalizedContentView` load their featured image eagerly
 with `fetchpriority="high"` too; in 4.0 it was lazy. Images in content lists stay lazy, which is what you want below
 the fold.
 
-For images you place in Razor, use `OsirionResponsiveImage` (available from 4.1). With `Width` and `Height` the
+For images you place in Razor, use `OsirionResponsiveImage` (available from 4.0). With `Width` and `Height` the
 browser reserves the space before the file arrives, so the text below does not jump (Cumulative Layout Shift).
 `Widths` and `SrcFormatter` build `srcset`, so a phone downloads a smaller file:
 
@@ -129,14 +129,14 @@ app.UseResponseCompression();
 Compressing responses over HTTPS can expose secrets in pages that mix them with attacker-controlled input (BREACH);
 public content pages are the usual safe case, so leave compression off for pages that show tokens or personal data.
 
-The sitemap and feed endpoints from `MapOsirionFeeds` (available from 4.1) send `Cache-Control` with a maximum age
+The sitemap and feed endpoints from `MapOsirionFeeds` (available from 4.0) send `Cache-Control` with a maximum age
 of 10 minutes by default; change it with `CacheDuration`.
 
 ## Be deliberate about analytics
 
 Every tracker adds a third-party script. Render only the trackers you use, and consider the consent gate: with
 `Osirion:Analytics:Consent:RequireConsent` set to `true`, no tracker script renders until the visitor accepts the
-analytics category in `OsirionCookieConsent`. Available from 4.1: Plausible and Umami, both cookie-free. Umami
+analytics category in `OsirionCookieConsent`. Available from 4.0: Plausible and Umami, both cookie-free. Umami
 renders a single script tag; Plausible renders its script and a short inline initialization snippet.
 
 ## Measure before and after
