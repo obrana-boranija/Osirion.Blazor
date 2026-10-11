@@ -206,6 +206,14 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
     public string? OrganizationName { get; set; }
 
     /// <summary>
+    /// Gets or sets the <c>applicationCategory</c> of the <see cref="SchemaType.SoftwareApplication"/> schema, one of
+    /// the app types search engines support, such as <c>DeveloperApplication</c> or <c>BusinessApplication</c>.
+    /// Defaults to <c>DeveloperApplication</c>.
+    /// </summary>
+    [Parameter]
+    public string ApplicationCategory { get; set; } = "DeveloperApplication";
+
+    /// <summary>
     /// Alternate language versions of this page for hreflang tags.
     /// </summary>
     [Parameter]
@@ -947,8 +955,12 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
                                 "WebPage";
 
         if (primarySchemaType.Equals("Article", StringComparison.OrdinalIgnoreCase) ||
-            primarySchemaType.Equals("BlogPosting", StringComparison.OrdinalIgnoreCase))
+            primarySchemaType.Equals("BlogPosting", StringComparison.OrdinalIgnoreCase) ||
+            primarySchemaType.Equals("TechArticle", StringComparison.OrdinalIgnoreCase))
             return "article";
+
+        if (primarySchemaType.Equals("ProfilePage", StringComparison.OrdinalIgnoreCase))
+            return "profile";
 
         if (primarySchemaType.Equals("Product", StringComparison.OrdinalIgnoreCase))
             return "product";
@@ -1155,6 +1167,11 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
             Cms.Web.Components.SchemaType.BreadcrumbList => GenerateBreadcrumbSchema(),
             Cms.Web.Components.SchemaType.WebSite => GenerateWebSiteSchema(),
             Cms.Web.Components.SchemaType.CollectionPage => GenerateCollectionPageSchema(),
+            Cms.Web.Components.SchemaType.TechArticle => GenerateArticleSchema("TechArticle"),
+            Cms.Web.Components.SchemaType.SoftwareApplication => GenerateSoftwareApplicationSchema(),
+            Cms.Web.Components.SchemaType.ProfilePage => GenerateProfilePageSchema(),
+            Cms.Web.Components.SchemaType.AboutPage => GenerateAboutPageSchema(),
+            Cms.Web.Components.SchemaType.ContactPage => GenerateWebPageSchema("ContactPage"),
             _ => GenerateDefaultSchema()
         };
     }
@@ -1163,12 +1180,12 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
 
     #region Schema Generators
 
-    private object GenerateArticleSchema()
+    private object GenerateArticleSchema(string type = "Article")
     {
         var schema = new Dictionary<string, object?>
         {
             ["@context"] = "https://schema.org",
-            ["@type"] = "Article",
+            ["@type"] = type,
             ["headline"] = Content!.Title,
             ["description"] = Content.Description,
             ["image"] = NormalizeImageUrl(Content.FeaturedImageUrl),
@@ -1215,12 +1232,12 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
         return GenerateArticleSchema();
     }
 
-    private object GenerateWebPageSchema()
+    private Dictionary<string, object?> GenerateWebPageSchema(string type = "WebPage")
     {
         return new Dictionary<string, object?>
         {
             ["@context"] = "https://schema.org",
-            ["@type"] = "WebPage",
+            ["@type"] = type,
             ["name"] = Content!.Title,
             ["description"] = Content.Description,
             ["url"] = _currentUrl,
@@ -1235,6 +1252,75 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
             {
                 ["@type"] = "Organization",
                 ["name"] = _siteName
+            }
+        };
+    }
+
+    private object GenerateAboutPageSchema()
+    {
+        var schema = GenerateWebPageSchema("AboutPage");
+        schema["mainEntity"] = new Dictionary<string, object?>
+        {
+            ["@type"] = "Organization",
+            ["name"] = _siteName,
+            ["url"] = _baseUrl,
+            ["logo"] = NormalizeImageUrl(SiteLogoUrl)
+        };
+
+        return schema;
+    }
+
+    // Search engines show software rich results only with a price and a rating or review, which a content page does
+    // not carry; front matter json_ld can supply the full schema when those exist.
+    private object GenerateSoftwareApplicationSchema()
+    {
+        var schema = new Dictionary<string, object?>
+        {
+            ["@context"] = "https://schema.org",
+            ["@type"] = "SoftwareApplication",
+            ["name"] = Content!.Title,
+            ["description"] = Content.Description,
+            ["url"] = _currentUrl,
+            ["image"] = NormalizeImageUrl(Content.FeaturedImageUrl),
+            ["applicationCategory"] = ApplicationCategory,
+            ["inLanguage"] = _languageCode,
+            ["dateModified"] = ContentUrls.FormatUtc(Content.LastModified ?? Content.PublishDate),
+            ["publisher"] = new Dictionary<string, object?>
+            {
+                ["@type"] = "Organization",
+                ["name"] = _siteName
+            }
+        };
+
+        if (Content.Tags.Any())
+            schema["keywords"] = string.Join(", ", Content.Tags);
+
+        return schema;
+    }
+
+    // An author's page: the page is the ProfilePage and the person it describes is its main entity. Only tags that
+    // are absolute links are profiles elsewhere (sameAs).
+    private object GenerateProfilePageSchema()
+    {
+        var profiles = Content!.Tags
+            .Where(tag => Uri.TryCreate(tag, UriKind.Absolute, out var uri) && (uri.Scheme == Uri.UriSchemeHttps || uri.Scheme == Uri.UriSchemeHttp))
+            .ToArray();
+
+        return new Dictionary<string, object?>
+        {
+            ["@context"] = "https://schema.org",
+            ["@type"] = "ProfilePage",
+            ["url"] = _currentUrl,
+            ["dateCreated"] = ContentUrls.FormatUtc(Content.PublishDate),
+            ["dateModified"] = Content.LastModified is { } lastModified ? ContentUrls.FormatUtc(lastModified) : null,
+            ["inLanguage"] = _languageCode,
+            ["mainEntity"] = new Dictionary<string, object?>
+            {
+                ["@type"] = "Person",
+                ["name"] = string.IsNullOrWhiteSpace(Content.Author) ? Content.Title : Content.Author,
+                ["description"] = Content.Description,
+                ["image"] = NormalizeImageUrl(Content.FeaturedImageUrl),
+                ["sameAs"] = profiles.Length > 0 ? profiles : null
             }
         };
     }
@@ -1833,5 +1919,33 @@ public enum SchemaType
     /// <summary>
     /// Schema.org CollectionPage type for pages listing multiple items (blog index, category, tag pages).
     /// </summary>
-    CollectionPage
+    CollectionPage,
+
+    /// <summary>
+    /// Schema.org TechArticle type for technical documentation and how-to articles: the Article schema with a more
+    /// specific type.
+    /// </summary>
+    TechArticle,
+
+    /// <summary>
+    /// Schema.org SoftwareApplication type for a product page about an app or a library, with the
+    /// <c>applicationCategory</c> from <see cref="SeoMetadataRenderer.ApplicationCategory"/>.
+    /// </summary>
+    SoftwareApplication,
+
+    /// <summary>
+    /// Schema.org ProfilePage type for an author's page, with the person as its main entity. The author (or the
+    /// title) is the person's name, and tags that are absolute links become <c>sameAs</c> profiles.
+    /// </summary>
+    ProfilePage,
+
+    /// <summary>
+    /// Schema.org AboutPage type, with the site's organization as its main entity.
+    /// </summary>
+    AboutPage,
+
+    /// <summary>
+    /// Schema.org ContactPage type for a contact page.
+    /// </summary>
+    ContactPage
 }

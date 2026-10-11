@@ -82,7 +82,8 @@ or in `appsettings.json` under `Osirion:Seo`, which `AddOsirion(builder.Configur
 | `ContentItems` | `IReadOnlyList<ContentItem>?` | `null` | The items of a list page. |
 | `CollectionTitle` | `string?` | `null` | Title of a list page. |
 | `CollectionDescription` | `string?` | `null` | Description of a list page. |
-| `SchemaTypes` | `SchemaType[]?` | `null` | JSON-LD types to generate, for example `Article`, `BlogPosting`, `WebPage`, `HowTo`, `BreadcrumbList` or `CollectionPage`. `FAQ` generates no data; use `EnableGeneratedFaq` instead. The first type also sets `og:type` when the front matter has no `og_type`. |
+| `SchemaTypes` | `SchemaType[]?` | `null` | JSON-LD types to generate, for example `Article`, `BlogPosting`, `TechArticle`, `WebPage`, `HowTo`, `BreadcrumbList` or `CollectionPage`, and for whole pages `SoftwareApplication`, `ProfilePage`, `AboutPage` and `ContactPage`. `FAQ` generates no data; use `EnableGeneratedFaq` instead. The first type also sets `og:type` when the front matter has no `og_type`. |
+| `ApplicationCategory` | `string` | `"DeveloperApplication"` | `applicationCategory` of the SoftwareApplication schema, one of the app types search engines support. |
 | `GenerateMultipleSchemas` | `bool` | `true` | Adds a BreadcrumbList when exactly one type is generated. |
 | `SiteNameOverride` | `string?` | `null` | Site name in titles and Open Graph; otherwise `OrganizationName`, then the host name. |
 | `OrganizationName` | `string?` | `null` | Publisher name in structured data. |
@@ -120,7 +121,7 @@ control crawlers reliably.
 | canonical | `seo_properties.canonical`, then the current URL without query string and fragment |
 | robots | `AllowSearchIndexing`, then `seo_properties.robots` (front matter default `index, follow`) |
 | `og:title`, `og:description` | `seo_properties.og_title` and `og_description`, then the title and description above |
-| `og:type` | `seo_properties.og_type` (front matter default `article`), then `article` when the first schema type is Article or BlogPosting, `product` for Product, `video.other` for VideoObject, otherwise `website` |
+| `og:type` | `seo_properties.og_type` (front matter default `article`), then `article` when the first schema type is Article, BlogPosting or TechArticle, `product` for Product, `video.other` for VideoObject, `profile` for ProfilePage, otherwise `website` |
 | `og:image` | `seo_properties.og_image_url`, then `featured_image`, then `DefaultImageUrl` |
 | Twitter Card | `seo_properties.twitter_card`, `twitter_title`, `twitter_description`, `twitter_image_url`, then Open Graph |
 | keywords, `article:tag` | `tags` |
@@ -128,6 +129,16 @@ control crawlers reliably.
 | JSON-LD | `seo_properties.json_ld`, then `SchemaTypes`, then `seo_properties.type` (front matter default `Article`), then `WebPage` |
 
 Relative image URLs become absolute with the site's base URL.
+
+## Page types
+
+| Type | Use it for | What it holds |
+| --- | --- | --- |
+| `TechArticle` | Documentation and technical guides | The Article schema with the more specific type. |
+| `SoftwareApplication` | A product page about an app or a library | Name, description, image, `ApplicationCategory`, last modified date and keywords. Search engines show software rich results only with a price and a rating or review; put the full schema in `json_ld` when you have them. |
+| `ProfilePage` | An author's page | The person as `mainEntity`: the `author` (or the title), description and image, with tags that are absolute links as `sameAs`. |
+| `AboutPage` | The about page | A WebPage with the site's organization as `mainEntity`. |
+| `ContactPage` | The contact page | A WebPage with the more specific type. |
 
 ## Behavior
 

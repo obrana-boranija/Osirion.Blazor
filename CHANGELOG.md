@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Live demos in Markdown content: `AddOsirionContentDemos` registers Razor components (`ContentDemoRegistry`, `ContentDemo`), and a fenced `demo` block whose text is a registered key renders the component in its place, with Preview and Code tabs when the demo has source (`OsirionContentDemo`, `OsirionHtmlRenderer.EnableDemos`)
 - Osirion.Blazor.Cms.Web: `UseOsirionRedirects` and `redirect_from` front matter (`FrontMatter.RedirectFrom`): requests for a page's earlier URLs get a permanent redirect to its current URL, with fixed redirects for pages that are not content (`OsirionRedirectOptions`)
 - `tools/Osirion.Blazor.ApiDocs`: generates component parameter tables in Markdown content from the assemblies and their XML docs, between `<!-- osirion:parameters Name -->` and `<!-- /osirion:parameters -->` markers, with a `--check` mode that fails when a table is out of date
+- `SchemaType.TechArticle`, `SchemaType.SoftwareApplication` (`SeoMetadataRenderer.ApplicationCategory`, default `DeveloperApplication`), `SchemaType.ProfilePage` (the author as `mainEntity`, link tags as `sameAs`, `og:type` `profile`), `SchemaType.AboutPage` (the site organization as `mainEntity`) and `SchemaType.ContactPage`
 - `OsirionReadingProgress`: a reading progress bar driven by a CSS scroll-driven animation, with no script; hidden where `animation-timeline` is not supported
 
 ### Fixed
