@@ -71,10 +71,11 @@ public class GitHubPollingService : BackgroundService
             var providerManager = scope.ServiceProvider.GetRequiredService<IContentProviderManager>();
             var apiClient = scope.ServiceProvider.GetRequiredService<IGitHubApiClient>();
 
-            // Get all GitHub-based content providers
+            // Exact match: a provider for another repository can share a prefix with this one (github-owner-repo2).
+            var configuredProviderId = GitHubProviderId.For(_options);
             var providers = providerManager.GetAllProviders()
                 .OfType<IContentCacheUpdater>()
-                .Where(p => p.ProviderId.Contains("github"))
+                .Where(p => string.Equals(p.ProviderId, configuredProviderId, StringComparison.Ordinal))
                 .ToList();
 
             if (!providers.Any())
@@ -85,12 +86,6 @@ public class GitHubPollingService : BackgroundService
 
             foreach (var provider in providers)
             {
-                // Skip if provider ID doesn't match our configured provider
-                if (!provider.ProviderId.Contains(_options.ProviderId ?? $"github-{_options.Owner}-{_options.Repository}"))
-                {
-                    continue;
-                }
-
                 try
                 {
                     // Get the latest commit SHA for the branch
