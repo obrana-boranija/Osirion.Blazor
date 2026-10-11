@@ -114,6 +114,18 @@ public class AdminLayoutBehaviorTests : AdminComponentTestContext
         cut.Find(".sidebar-footer .fw-medium").TextContent.ShouldBe("alice");
     }
 
+    // Threw ArgumentOutOfRangeException before the fix.
+    [Fact]
+    public void AdminLayout_AuthenticatedWithEmptyUsername_RendersWithoutAnInitial()
+    {
+        _authService.IsAuthenticated.Returns(true);
+        _authService.Username.Returns(string.Empty);
+
+        var cut = Render<AdminLayout>();
+
+        cut.Find(".avatar-circle").TextContent.Trim().ShouldBeEmpty();
+    }
+
     [Fact]
     public void AdminLayout_SignOutWithListener_InvokesIt()
     {

@@ -86,7 +86,10 @@ public partial class AdminLayout : IDisposable
     }
 
     // The markup branches live here so the render tree keeps a low complexity.
-    private string? UserInitial => authService.Username?.Substring(0, 1).ToUpper();
+    // An empty user name has no initial; Substring on it threw while rendering the sidebar.
+    private string? UserInitial => string.IsNullOrEmpty(authService.Username)
+        ? null
+        : authService.Username[..1].ToUpper();
 
     private bool HasBreadcrumbItems => BreadcrumbItems is not null && BreadcrumbItems.Count > 0;
 
