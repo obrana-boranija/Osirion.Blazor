@@ -3,6 +3,7 @@ using Bunit.TestDoubles;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
+using Osirion.Blazor.Cms.Admin.Common.Constants;
 using Osirion.Blazor.Cms.Admin.Core.State;
 using Osirion.Blazor.Cms.Admin.Features.ContentBrowser.Components;
 using Osirion.Blazor.Cms.Admin.Features.Dashboard.Components;
@@ -166,7 +167,8 @@ public class CmsAdminDashboardBehaviorTests : AdminComponentTestContext
         await cut.InvokeAsync(() => onSave.InvokeAsync(new ContentItem()));
 
         _state.IsEditing.ShouldBeFalse();
-        cut.Find(".osirion-admin-alert-error").TextContent.ShouldContain("Failed to refresh directory: offline");
+        cut.Find(".osirion-admin-alert-error").TextContent.ShouldContain(UserMessages.LoadFailed);
+        cut.Find(".osirion-admin-alert-error").TextContent.ShouldNotContain("offline");
     }
 
     [Fact]

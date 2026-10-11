@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
+using Osirion.Blazor.Cms.Admin.Common.Constants;
 using Osirion.Blazor.Cms.Admin.Core.State;
 using Osirion.Blazor.Cms.Admin.Features.ContentBrowser.Components;
 using Osirion.Blazor.Cms.Admin.Features.ContentBrowser.Services;
@@ -90,7 +91,8 @@ public class FileExplorerTests : AdminComponentTestContext
         RenderInteractively();
 
         var cut = Render<FileExplorer>();
-        cut.Find(".alert-danger").TextContent.ShouldContain("Failed to load contents: offline");
+        cut.Find(".alert-danger").TextContent.ShouldContain(UserMessages.LoadFailed);
+        cut.Find(".alert-danger").TextContent.ShouldNotContain("offline");
         ReturnContents(string.Empty, File("post.md", "post.md"));
         cut.FindAll("button").Single(button => button.TextContent.Trim() == "Retry").Click();
 

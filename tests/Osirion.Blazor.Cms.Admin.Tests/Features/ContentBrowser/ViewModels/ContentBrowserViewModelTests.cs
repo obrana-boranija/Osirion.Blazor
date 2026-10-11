@@ -1,6 +1,8 @@
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
+using Osirion.Blazor.Cms.Admin.Common.Constants;
 using Osirion.Blazor.Cms.Admin.Core.Events;
 using Osirion.Blazor.Cms.Admin.Core.State;
 using Osirion.Blazor.Cms.Admin.Features.ContentBrowser.Services;
@@ -18,13 +20,14 @@ public class ContentBrowserViewModelTests
     private readonly IContentRepositoryAdapter _adapter = Substitute.For<IContentRepositoryAdapter>();
     private readonly CmsState _state = new();
     private readonly CmsEventMediator _mediator = new(NullLogger<CmsEventMediator>.Instance);
+    private readonly RecordingLogger<ContentBrowserViewModel> _logger = new();
     private readonly ContentBrowserViewModel _viewModel;
     private int _notifications;
 
     public ContentBrowserViewModelTests()
     {
         var service = new ContentBrowserService(_adapter, _mediator, NullLogger<ContentBrowserService>.Instance);
-        _viewModel = new ContentBrowserViewModel(service, _state, _mediator);
+        _viewModel = new ContentBrowserViewModel(service, _state, _mediator, _logger);
         _viewModel.StateChanged += () => _notifications++;
     }
 
@@ -96,8 +99,10 @@ public class ContentBrowserViewModelTests
 
         await _viewModel.RefreshContentsAsync();
 
-        _viewModel.ErrorMessage.ShouldBe("Failed to load contents: offline");
-        _state.ErrorMessage.ShouldBe("Failed to load contents: offline");
+        _viewModel.ErrorMessage.ShouldBe(UserMessages.LoadFailed);
+        _viewModel.ErrorMessage!.ShouldNotContain("offline");
+        _state.ErrorMessage.ShouldBe(UserMessages.LoadFailed);
+        _logger.Entries.ShouldContain(entry => entry.Level == LogLevel.Error && entry.Exception is InvalidOperationException);
         _viewModel.IsLoading.ShouldBeFalse();
     }
 
@@ -186,8 +191,10 @@ public class ContentBrowserViewModelTests
 
         await _viewModel.DeleteFileAsync(file);
 
-        _viewModel.ErrorMessage.ShouldBe("Failed to delete file: denied");
-        _state.ErrorMessage.ShouldBe("Failed to delete file: denied");
+        _viewModel.ErrorMessage.ShouldBe(UserMessages.DeleteFailed);
+        _viewModel.ErrorMessage!.ShouldNotContain("denied");
+        _state.ErrorMessage.ShouldBe(UserMessages.DeleteFailed);
+        _logger.Entries.ShouldContain(entry => entry.Level == LogLevel.Error && entry.Exception is InvalidOperationException);
         _viewModel.IsLoading.ShouldBeFalse();
     }
 }

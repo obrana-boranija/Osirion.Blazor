@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
+using Osirion.Blazor.Cms.Admin.Common.Constants;
 using Osirion.Blazor.Cms.Admin.Core.Events;
 using Osirion.Blazor.Cms.Admin.Core.State;
 using Osirion.Blazor.Cms.Admin.Features.ContentBrowser.Services;
@@ -119,8 +120,8 @@ public class FileExplorerViewModelTests
         // Assert
         _viewModel.IsLoading.ShouldBeFalse();
         _viewModel.ErrorMessage.ShouldNotBeNullOrEmpty();
-        _viewModel.ErrorMessage.ShouldContain("Failed to load contents");
-        _viewModel.ErrorMessage.ShouldContain(exception.Message);
+        _viewModel.ErrorMessage.ShouldBe(UserMessages.LoadFailed);
+        _viewModel.ErrorMessage.ShouldNotContain(exception.Message);
         _state.ErrorMessage.ShouldBe(_viewModel.ErrorMessage);
         stateChangedCalled.ShouldBeTrue();
 
@@ -387,8 +388,8 @@ public class FileExplorerViewModelTests
         _viewModel.FileToDelete.ShouldBeNull();
         _viewModel.IsDeletingFile.ShouldBeFalse();
         _viewModel.ErrorMessage.ShouldNotBeNullOrEmpty();
-        _viewModel.ErrorMessage.ShouldContain("Failed to delete file");
-        _viewModel.ErrorMessage.ShouldContain(exception.Message);
+        _viewModel.ErrorMessage.ShouldBe(UserMessages.DeleteFailed);
+        _viewModel.ErrorMessage.ShouldNotContain(exception.Message);
         _state.ErrorMessage.ShouldBe(_viewModel.ErrorMessage);
         stateChangedCalled.ShouldBeTrue();
 
