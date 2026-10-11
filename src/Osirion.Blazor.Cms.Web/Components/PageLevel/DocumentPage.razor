@@ -13,6 +13,21 @@
     }
     else
     {
+        @if (Content is not null)
+        {
+            <HeadContent>
+                <SeoMetadataRenderer Content="Content"
+                                     SiteNameOverride="@WebsiteName"
+                                     OrganizationName="@OrganizationName"
+                                     SiteLogoUrl="@SiteLogoUrl"
+                                     SchemaTypes="@(SchemaTypes ?? DefaultSchemaTypes)"
+                                     GenerateMultipleSchemas="@GenerateMultipleSchemas"
+                                     PrevPageUrl="@PrevPageUrl"
+                                     NextPageUrl="@NextPageUrl"
+                                     AlternateLanguageUrls="@AlternateLanguageUrls" />
+            </HeadContent>
+        }
+
         <div class="osirion-document-layout">
             @if (ShowSideNavigation)
             {
@@ -22,10 +37,10 @@
                         <h2 class="osirion-sidenav-title">@NavigationTitle</h2>
                     }
 
-                    @if (NavigationItems is not null && NavigationItems.Any())
+                    @if (SideNavigationItems is { Count: > 0 } sideNavigationItems)
                     {
                         <ul class="osirion-sidenav-list">
-                            @foreach (var item in NavigationItems)
+                            @foreach (var item in sideNavigationItems)
                             {
                                 <li class="osirion-sidenav-item">
                                     <a href="@GetNavigationUrl(item)"
@@ -55,7 +70,7 @@
                 </nav>
             }
 
-            <main class="osirion-document-main">
+            <div class="osirion-document-main">
                 @if (ShowBreadcrumbs)
                 {
                     <ContentBreadcrumbs Content="@Content"
@@ -91,7 +106,7 @@
                                             <line x1="8" y1="2" x2="8" y2="6"></line>
                                             <line x1="3" y1="10" x2="21" y2="10"></line>
                                         </svg>
-                                        Last updated: @Content.DateCreated.ToString("MMMM d, yyyy")
+                                        Last updated: @((Content.LastModified ?? Content.PublishDate).ToString("MMMM d, yyyy"))
                                     </span>
                                 </div>
                             }
@@ -108,6 +123,13 @@
                         <div class="osirion-document-body">
                             @GetSanitizedContent(ContentHeadings.WithoutLeadingTitle(Content.Content))
                         </div>
+
+                        @if (EditUrlFormatter?.Invoke(Content) is { Length: > 0 } editUrl)
+                        {
+                            <p class="osirion-document-edit">
+                                <a href="@editUrl" rel="noopener" target="_blank">@EditLinkText</a>
+                            </p>
+                        }
 
                         @if (ShowNavigationLinks && (PreviousItem is not null || NextItem is not null))
                         {
@@ -148,7 +170,7 @@
                                     Variant="highlight"
                                     Padding="normal" />
                 }
-            </main>
+            </div>
         </div>
     }
 </div>

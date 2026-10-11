@@ -95,6 +95,18 @@ public partial class DocumentPage
     public string? CustomFooterContent { get; set; }
 
     /// <summary>
+    /// Gets or sets how the address of a page's source for editing is built, for example
+    /// <c>item =&gt; $"https://github.com/owner/repo/edit/main/content/{item.Path}"</c>. When it returns an address, the
+    /// page links to it after the body; no link is shown when it is <see langword="null"/> or returns nothing.
+    /// </summary>
+    [Parameter]
+    public Func<ContentItem, string?>? EditUrlFormatter { get; set; }
+
+    /// <summary>Gets or sets the text of the edit link. Defaults to <c>Edit this page</c>.</summary>
+    [Parameter]
+    public string EditLinkText { get; set; } = "Edit this page";
+
+    /// <summary>
     /// Gets or sets the content URL formatter
     /// </summary>
     [Parameter]
@@ -167,9 +179,19 @@ public partial class DocumentPage
         }
     }
 
+    private static readonly SchemaType[] DefaultSchemaTypes = [SchemaType.TechArticle];
+
+    // The pages of the document's folder, listed in the side navigation when the parent gives no NavigationItems.
+    private IReadOnlyList<DocumentNavigationItem>? _folderNavigation;
+
+    private IReadOnlyList<DocumentNavigationItem>? SideNavigationItems => NavigationItems ?? _folderNavigation;
+
     private async Task LoadNavigationItemsAsync()
     {
-        if (!ShowNavigationLinks || Content is not { } content || (PreviousItem is not null && NextItem is not null))
+        _folderNavigation = null;
+        var needsPager = ShowNavigationLinks && (PreviousItem is null || NextItem is null);
+        var needsSideNavigation = ShowSideNavigation && NavigationItems is null;
+        if (!(needsPager || needsSideNavigation) || Content is not { } content)
             return;
 
         try
@@ -185,6 +207,24 @@ public partial class DocumentPage
                 };
 
                 var items = await provider.GetItemsByQueryAsync(query) ?? [];
+
+                if (needsSideNavigation)
+                {
+                    _folderNavigation = items
+                        .Select(item => new DocumentNavigationItem
+                        {
+                            Title = item.Title,
+                            Url = GetContentUrl(item),
+                            Path = item.Path,
+                            Order = item.OrderIndex,
+                        })
+                        .ToList();
+                }
+
+                if (!needsPager)
+                {
+                    return;
+                }
 
                 int currentIndex = -1;
                 for (int i = 0; i < items.Count; i++)
@@ -270,10 +310,7 @@ public partial class DocumentPage
         return item.Children.Any(child => IsCurrentPage(child));
     }
 
-    private string GetContentUrl(ContentItem item)
-    {
-        return ContentUrlFormatter?.Invoke(item) ?? $"/{item.Path}";
-    }
+    private string GetContentUrl(ContentItem item) => ContentUrls.ItemUrl(item, ContentUrlFormatter);
 
     private readonly SanitizedContentCache _sanitizedContent = new();
 
