@@ -76,4 +76,21 @@ public class DirectoryMetadataProcessorEdgeCaseTests
         lines.ShouldContain("weight: 2.5");
         lines.ShouldContain("note: \"say \\\"hi\\\"\"");
     }
+
+    // Before the fix locale and url were written unescaped, so a quote and a line break added a front matter key.
+    [Fact]
+    public void GenerateMetadataContent_QuoteAndLineBreakInLocaleAndUrl_AreEscaped()
+    {
+        var directory = DirectoryItem.Create("a", "a", "Docs", "test");
+        directory.SetLocale("en\"\nhidden: true");
+        directory.SetUrl("docs\"\norder: 99");
+
+        var content = _processor.GenerateMetadataContent(directory);
+
+        var lines = content.Split(Environment.NewLine);
+        lines.ShouldContain("locale: \"en\\\"\\nhidden: true\"");
+        lines.ShouldContain("url: \"docs\\\"\\norder: 99\"");
+        lines.ShouldNotContain("hidden: true");
+        lines.ShouldNotContain("order: 99");
+    }
 }
