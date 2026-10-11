@@ -1,4 +1,5 @@
 using Osirion.Blazor.Cms.Domain.Common;
+using System.Globalization;
 using System.Text;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
@@ -127,7 +128,7 @@ public class FrontMatter : ValueObject
         {
             Title = title,
             Description = description,
-            Date = dateCreated.ToString()
+            Date = dateCreated.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)
         };
 
         return frontMatter;
