@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Osirion.Blazor\Osirion.Blazor.csproj" />
+    <ProjectReference Include="..\Osirion.Blazor.Examples.Shared\Osirion.Blazor.Examples.Shared.csproj" />
   </ItemGroup>
 
   <!-- Integrate CSS tree-shaking MSBuild target -->
