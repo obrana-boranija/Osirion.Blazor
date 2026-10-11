@@ -76,3 +76,60 @@ internal sealed class YandexMetricaOptionsValidator : IValidateOptions<YandexMet
         return failures.Count == 0 ? ValidateOptionsResult.Success : ValidateOptionsResult.Fail(failures);
     }
 }
+
+/// <summary>Validates <see cref="PlausibleOptions"/> at startup. Disabled providers are not checked.</summary>
+internal sealed class PlausibleOptionsValidator : IValidateOptions<PlausibleOptions>
+{
+    public ValidateOptionsResult Validate(string? name, PlausibleOptions options)
+    {
+        if (!options.Enabled)
+        {
+            return ValidateOptionsResult.Success;
+        }
+
+        var failures = new List<string>();
+
+        if (!string.IsNullOrWhiteSpace(options.ScriptUrl) && !AnalyticsFormats.IsHttpOrSiteRelativeUrl(options.ScriptUrl))
+        {
+            failures.Add("Osirion:Analytics:Plausible:ScriptUrl must be an http(s) URL or a path such as /js/script.js.");
+        }
+
+        if (!string.IsNullOrWhiteSpace(options.Endpoint) && !AnalyticsFormats.IsHttpOrSiteRelativeUrl(options.Endpoint))
+        {
+            failures.Add("Osirion:Analytics:Plausible:Endpoint must be an http(s) URL or a path such as /api/event.");
+        }
+
+        return failures.Count == 0 ? ValidateOptionsResult.Success : ValidateOptionsResult.Fail(failures);
+    }
+}
+
+/// <summary>Validates <see cref="UmamiOptions"/> at startup. Disabled providers are not checked.</summary>
+internal sealed class UmamiOptionsValidator : IValidateOptions<UmamiOptions>
+{
+    public ValidateOptionsResult Validate(string? name, UmamiOptions options)
+    {
+        if (!options.Enabled)
+        {
+            return ValidateOptionsResult.Success;
+        }
+
+        var failures = new List<string>();
+
+        if (!string.IsNullOrWhiteSpace(options.SiteId) && !Guid.TryParse(options.SiteId, out _))
+        {
+            failures.Add("Osirion:Analytics:Umami:SiteId must be the website ID, a GUID.");
+        }
+
+        if (!AnalyticsFormats.IsHttpOrSiteRelativeUrl(options.ScriptUrl))
+        {
+            failures.Add("Osirion:Analytics:Umami:ScriptUrl must be an http(s) URL or a path such as /script.js.");
+        }
+
+        if (!string.IsNullOrWhiteSpace(options.HostUrl) && !AnalyticsFormats.IsHttpOrProtocolRelativeUrl(options.HostUrl))
+        {
+            failures.Add("Osirion:Analytics:Umami:HostUrl must be an absolute http(s) URL.");
+        }
+
+        return failures.Count == 0 ? ValidateOptionsResult.Success : ValidateOptionsResult.Fail(failures);
+    }
+}

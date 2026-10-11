@@ -26,6 +26,14 @@ internal static partial class AnalyticsFormats
         Uri.TryCreate(value, UriKind.Absolute, out var uri)
         && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps);
 
+    /// <summary>
+    /// An http(s) or protocol-relative URL, or a path on the site itself such as <c>/js/script.js</c>, the shape a
+    /// script or endpoint takes when a same-site proxy serves it.
+    /// </summary>
+    public static bool IsHttpOrSiteRelativeUrl(string? value) =>
+        IsHttpOrProtocolRelativeUrl(value)
+        || (value is ['/', not '/' and not '\\', ..] && Uri.TryCreate(value, UriKind.Relative, out _));
+
     /// <summary>An absolute http(s) URL, or a protocol-relative URL such as <c>//analytics.example.com/</c>.</summary>
     public static bool IsHttpOrProtocolRelativeUrl(string? value)
     {

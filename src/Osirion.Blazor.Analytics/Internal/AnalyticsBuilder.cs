@@ -149,24 +149,41 @@ public class AnalyticsBuilder : IAnalyticsBuilder
         where TProvider : class, IAnalyticsProvider
         where TOptions : class
         where TValidator : class, IValidateOptions<TOptions>
+        => AnalyticsProviderRegistration.Register<TProvider, TOptions, TValidator>(Services);
+
+    private void RegisterProviderOnce<TProvider>()
+        where TProvider : class, IAnalyticsProvider
+        => AnalyticsProviderRegistration.RegisterOnce<TProvider>(Services);
+}
+
+/// <summary>
+/// Registers built-in providers, shared by <see cref="AnalyticsBuilder"/> and the builder extension methods.
+/// </summary>
+internal static class AnalyticsProviderRegistration
+{
+    /// <summary>Registers a provider with options validated at startup.</summary>
+    public static void Register<TProvider, TOptions, TValidator>(IServiceCollection services)
+        where TProvider : class, IAnalyticsProvider
+        where TOptions : class
+        where TValidator : class, IValidateOptions<TOptions>
     {
-        Services.TryAddEnumerable(ServiceDescriptor.Singleton<IValidateOptions<TOptions>, TValidator>());
-        Services.AddOptions<TOptions>().ValidateOnStart();
-        RegisterProviderOnce<TProvider>();
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IValidateOptions<TOptions>, TValidator>());
+        services.AddOptions<TOptions>().ValidateOnStart();
+        RegisterOnce<TProvider>(services);
     }
 
     // One concrete singleton, exposed through IAnalyticsProvider as the same instance, so the tracker
     // component (which injects the concrete type) and IAnalyticsService share state, and repeated
     // Add* calls do not register duplicates.
-    private void RegisterProviderOnce<TProvider>()
+    public static void RegisterOnce<TProvider>(IServiceCollection services)
         where TProvider : class, IAnalyticsProvider
     {
-        if (Services.Any(descriptor => descriptor.ServiceType == typeof(TProvider)))
+        if (services.Any(descriptor => descriptor.ServiceType == typeof(TProvider)))
         {
             return;
         }
 
-        Services.AddSingleton<TProvider>();
-        Services.AddSingleton<IAnalyticsProvider>(serviceProvider => serviceProvider.GetRequiredService<TProvider>());
+        services.AddSingleton<TProvider>();
+        services.AddSingleton<IAnalyticsProvider>(serviceProvider => serviceProvider.GetRequiredService<TProvider>());
     }
 }

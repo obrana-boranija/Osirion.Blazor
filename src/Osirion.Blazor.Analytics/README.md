@@ -7,7 +7,7 @@ Analytics integration for Blazor applications, supporting multiple providers wit
 
 ## Features
 
-- **Multiple Providers**: Microsoft Clarity and Matomo support out of the box
+- **Multiple Providers**: Microsoft Clarity, Matomo, Google Analytics 4, Yandex Metrica, Plausible and Umami out of the box
 - **Provider Pattern**: Easily extend with your own analytics providers
 - **SSR Compatible**: Works with Server-Side Rendering and Static SSG
 - **Configuration-Driven**: Simple setup through dependency injection
@@ -95,10 +95,50 @@ Google Consent Mode defaults (all denied) before `config` and then grants `analy
 signals stay denied. Matomo's own `RequireConsent` option is not needed with the gate; without the gate it
 keeps Matomo silent until your page pushes `['setConsentGiven']` or `['rememberConsentGiven']` onto `_paq`.
 
+### Plausible and Umami
+
+Both are cookie-free. Plausible gives every site its own script (Site installation in the site settings);
+Umami needs the website ID, and the script URL for a self-hosted instance.
+
+```csharp
+builder.Services.AddOsirionAnalytics(analytics => {
+    analytics
+        .AddPlausible(o => o.ScriptUrl = "https://plausible.io/js/pa-XXXXX.js")
+        .AddUmami(o => o.SiteId = "94db1cb1-74f4-4a40-ad6c-962362670409")
+        .RequireConsent();
+});
+```
+
+```razor
+<head>
+    ...
+    <PlausibleTracker />
+    <UmamiTracker />
+</head>
+```
+
+```json
+{
+  "Osirion": {
+    "Analytics": {
+      "Plausible": { "ScriptUrl": "https://plausible.io/js/pa-XXXXX.js" },
+      "Umami": { "SiteId": "94db1cb1-74f4-4a40-ad6c-962362670409", "ScriptUrl": "https://umami.example.com/script.js" }
+    }
+  }
+}
+```
+
+The Plausible switches (`OutboundLinks`, `FileDownloads`, `FormSubmissions`, `HashBasedRouting`,
+`CaptureOnLocalhost`) are written only when set, so the settings in your Plausible dashboard apply otherwise.
+Plausible's snippet includes a short inline script that defines `plausible.init`; Umami is a single external
+script configured by attributes. Both scripts follow `history.pushState`, so enhanced navigations are counted
+without the page view module. These trackers do not set cookies; whether your site still asks for analytics
+consent is your call, and the consent gate covers them like every other tracker.
+
 ### Tracker parameters
 
-Every tracker accepts `Enabled` to override the configured option for that render. `ClarityTracker` and
-`MatomoTracker` accept `SiteId`; `GA4Tracker` accepts `MeasurementId` and `DebugMode`;
+Every tracker accepts `Enabled` to override the configured option for that render. `ClarityTracker`,
+`MatomoTracker` and `UmamiTracker` accept `SiteId`; `GA4Tracker` accepts `MeasurementId` and `DebugMode`;
 `YandexMetricaTracker` accepts `CounterId`, `WebVisor`, `ClickMap`, `TrackLinks` and `AccurateTrackBounce`.
 
 ### Configuration is validated
@@ -111,8 +151,8 @@ naming the configuration key; a tracker whose values are invalid renders nothing
 
 Matomo and Yandex Metrica trackers add a static script (`_content/Osirion.Blazor.Analytics/js/osirion-analytics.js`,
 no inline script) that listens for Blazor's `enhancedload` event and reports the new URL. GA4 relies on its
-Enhanced Measurement setting "Page changes based on browser history events". Clarity follows history changes
-itself. Set `AutoTrackPageViews = false` to leave the module out. Navigation inside an already interactive
+Enhanced Measurement setting "Page changes based on browser history events". Clarity, Plausible and Umami follow
+history changes themselves. Set `AutoTrackPageViews = false` to leave the module out. Navigation inside an already interactive
 router does not raise `enhancedload` and is not reported yet.
 
 ### Manual Tracking

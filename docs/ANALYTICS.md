@@ -187,6 +187,26 @@ builder.Services.AddOsirionAnalytics(analytics => {
 - `EcommerceEnabled`: Enable e-commerce data layer (default: false)
 - `EcommerceContainerName`: E-commerce data layer container name (default: "dataLayer")
 
+### Plausible Options
+
+- `ScriptUrl`: Your site's script from Plausible's Site installation settings, such as `https://plausible.io/js/pa-XXXXX.js`, or a proxied path such as `/js/script.js` (required)
+- `Endpoint`: Where events are sent, for a proxy such as `/api/event` (optional)
+- `HashBasedRouting`, `OutboundLinks`, `FileDownloads`, `FormSubmissions`, `CaptureOnLocalhost`: Override the site's tracking settings; left out of the markup unless set
+- `AutoTrackPageViews`: `false` sends `autoCapturePageviews: false` so you report page views yourself (default: true)
+- `Enabled`: Whether the tracker is enabled (default: true)
+
+### Umami Options
+
+- `SiteId`: Your Umami website ID, a GUID (required)
+- `ScriptUrl`: The tracker script (default: "https://cloud.umami.is/script.js"; self-hosted: `https://your-umami-host/script.js`)
+- `HostUrl`: Where data is sent (`data-host-url`, optional)
+- `Domains`: Comma-separated host names the tracker runs on (`data-domains`, optional)
+- `Tag`: Groups the site's events (`data-tag`, optional)
+- `ExcludeSearch`, `ExcludeHash`: Leave query strings or fragments out of the collected URLs (default: false)
+- `DoNotTrack`: Respect the browser's Do Not Track setting (default: false)
+- `AutoTrackPageViews`: `false` writes `data-auto-track="false"`, which turns off all automatic tracking (default: true)
+- `Enabled`: Whether the tracker is enabled (default: true)
+
 ## Integration with Privacy Modules
 
 Osirion.Blazor.Analytics can integrate with privacy consent modules to provide GDPR-compliant analytics:

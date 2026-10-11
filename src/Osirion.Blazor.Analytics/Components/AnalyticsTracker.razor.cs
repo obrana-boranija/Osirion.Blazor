@@ -20,8 +20,8 @@ public abstract class AnalyticsTracker : OsirionComponentBase
 
     /// <summary>
     /// Gets or sets the site ID. When set it replaces the configured site ID for this render.
-    /// Used by the Clarity and Matomo trackers; the GA4 and Yandex Metrica trackers use
-    /// their own identifier parameters instead.
+    /// Used by the Clarity, Matomo and Umami trackers; the GA4 and Yandex Metrica trackers use
+    /// their own identifier parameters instead, and Plausible identifies the site by its script.
     /// </summary>
     [Parameter]
     public string? SiteId { get; set; }
