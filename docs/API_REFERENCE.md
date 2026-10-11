@@ -78,6 +78,7 @@ Automatically generates breadcrumb navigation from URL paths.
 | `LinkLastItem` | `bool` | `false` | Make the last breadcrumb item clickable |
 | `UrlPrefix` | `string?` | `null` | Prefix for generated URLs |
 | `SegmentFormatter` | `Func<string, string>?` | `null` | Function to format URL segments |
+| `CurrentPageText` | `string?` | `null` | Text of the last breadcrumb, the current page; pass the page title. When empty, the last segment is formatted like the others |
 
 #### Usage
 
