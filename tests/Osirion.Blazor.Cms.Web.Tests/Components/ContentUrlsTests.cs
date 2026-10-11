@@ -1,3 +1,4 @@
+using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Web.Components;
 using Shouldly;
 
@@ -65,5 +66,26 @@ public class ContentUrlsTests
         ContentUrls.WithQueryParameter("http://x/s?q=a%20b&page=2", "page", "3").ShouldBe("/s?q=a%20b&page=3");
         ContentUrls.WithQueryParameter("/s?q=a&page=2", "page", null).ShouldBe("/s?q=a");
         ContentUrls.WithQueryParameter("/s", "page", "2").ShouldBe("/s?page=2");
+    }
+
+    [Theory]
+    [InlineData("blog/first-post", "/blog/first-post")]
+    [InlineData("/blog/first-post", "/blog/first-post")]
+    [InlineData("", "/")]
+    public void ItemUrl_WithoutAFormatter_LinksFromTheSiteRoot(string url, string expected)
+    {
+        var item = ContentItem.Create("id", "Title", "<p>Body</p>", "blog/first-post.md", "test");
+        item.SetUrl(url);
+
+        ContentUrls.ItemUrl(item).ShouldBe(expected);
+    }
+
+    [Fact]
+    public void ItemUrl_WithAFormatter_ReturnsWhatTheFormatterBuilds()
+    {
+        var item = ContentItem.Create("id", "Title", "<p>Body</p>", "blog/first-post.md", "test");
+        item.SetUrl("blog/first-post");
+
+        ContentUrls.ItemUrl(item, i => $"/en/{i.Url}").ShouldBe("/en/blog/first-post");
     }
 }

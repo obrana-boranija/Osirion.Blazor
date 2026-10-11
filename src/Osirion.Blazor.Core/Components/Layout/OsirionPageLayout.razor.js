@@ -19,7 +19,8 @@ export default class extends BlazorJSComponents.Component {
                 if (currentScrollY < 100 || difference < -10) {
                     refs.header.style.transform = 'translateY(0)';
                     this.isHeaderVisible = true;
-                } else if (difference > 10 && this.isHeaderVisible) {
+                } else if (difference > 10 && this.isHeaderVisible && !refs.header.matches(':hover, :focus-within')) {
+                    // A header the reader is using stays: hiding it would carry an open menu panel or drawer away.
                     refs.header.style.transform = 'translateY(-100%)';
                     this.isHeaderVisible = false;
                 }

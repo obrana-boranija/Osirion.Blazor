@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 
-namespace Osirion.Blazor.Example.Mud.Components.Pages;
+namespace Osirion.Blazor.Examples.Shared.Pages;
 
 public partial class Tag
 {

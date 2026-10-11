@@ -176,6 +176,23 @@ public class FileSystemContentRepositoryTests
         _fileSystem.File.Exists(Path.Combine(ContentRoot, "post.md")).ShouldBeFalse();
     }
 
+    // Fails before the fix: the file system provider skipped _index.md, so a section's overview page answered 404
+    // locally while the GitHub provider served it.
+    [Fact]
+    public async Task RefreshCacheAsync_SectionIndexFile_LoadsAsThePageAtTheSectionUrl()
+    {
+        _fileSystem.AddFile(Path.Combine(ContentRoot, "docs", "core", "_index.md"), new MockFileData("# Core components"));
+        _fileSystem.AddFile(Path.Combine(ContentRoot, "docs", "core", "cards.md"), new MockFileData("# Cards"));
+
+        await _repository.RefreshCacheAsync();
+        var items = await _repository.GetAllAsync();
+
+        items.Count.ShouldBe(2);
+        var index = items.Where(item => item.Path.EndsWith("_index.md", StringComparison.OrdinalIgnoreCase)).ShouldHaveSingleItem();
+        index.Url.ShouldBe("docs/core");
+        items.ShouldContain(item => item.Path.EndsWith("cards.md", StringComparison.OrdinalIgnoreCase) && item.Url != "docs/core");
+    }
+
     private async Task<ContentItem> SeedAndLoadAsync(string relativePath)
     {
         _fileSystem.AddFile(Path.Combine(ContentRoot, relativePath), new MockFileData("# Post"));

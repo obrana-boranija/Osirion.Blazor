@@ -77,6 +77,9 @@ html.osirion-bootstrap-integration[data-theme="light"],
     --osirion-background-inverted: var(--bs-dark, #212529);
     --osirion-text-primary: var(--bs-body-color, #212529);
     --osirion-text-secondary: var(--bs-secondary-color, #6c757d);
+    /* Links follow the framework's link color, which it keeps legible on its own background in both modes */
+    --osirion-link-color: var(--bs-link-color, #0d6efd);
+    --osirion-link-hover-color: var(--bs-link-hover-color, #0a58ca);
     --osirion-text-tertiary: var(--bs-tertiary-color, #6c757d);
     --osirion-text-inverted: var(--bs-white, #ffffff);
     --osirion-text-disabled: var(--bs-secondary-color, #6c757d);
@@ -312,6 +315,9 @@ html.osirion-bootstrap-integration[data-theme="light"],
         --osirion-background-inverted: var(--bs-white, #ffffff);
         --osirion-text-primary: var(--bs-body-color, #dee2e6);
         --osirion-text-secondary: var(--bs-secondary-color, #adb5bd);
+        /* Links follow the framework's link color, which it keeps legible on its own background in both modes */
+        --osirion-link-color: var(--bs-link-color, #6ea8fe);
+        --osirion-link-hover-color: var(--bs-link-hover-color, #8bb9fe);
         --osirion-text-tertiary: var(--bs-tertiary-color, #adb5bd);
         --osirion-text-disabled: var(--bs-secondary-color, #adb5bd);
         --osirion-border-color: var(--bs-border-color, #495057);
