@@ -17,7 +17,7 @@ seo_properties:
 
 # Building Modern Hero Sections with Osirion.Blazor
 
-Hero sections are often the first thing users see when they visit your website. They need to capture attention, communicate value, and guide users toward action—all while looking great across devices. With Osirion.Blazor v1.5, we've introduced the `HeroSection` component that makes creating compelling hero sections effortless and flexible.
+Hero sections are often the first thing users see when they visit your website. They need to capture attention, communicate value, and guide users toward action, all while looking great across devices. With Osirion.Blazor v1.5, we've introduced the `HeroSection` component that makes creating compelling hero sections effortless and flexible.
 
 ## The New HeroSection Component
 

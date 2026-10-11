@@ -17,7 +17,7 @@ seo_properties:
 
 # GDPR-Compliant Cookie Consent with Osirion.Blazor
 
-Privacy compliance isn't just a legal requirement—it's about building trust with your users. With the new `OsirionCookieConsent` component in Osirion.Blazor v1.5, implementing comprehensive GDPR-compliant cookie consent management becomes straightforward while maintaining full control over the user experience.
+Privacy compliance isn't just a legal requirement; it's about building trust with your users. With the new `OsirionCookieConsent` component in Osirion.Blazor v1.5, implementing comprehensive GDPR-compliant cookie consent management becomes straightforward while maintaining full control over the user experience.
 
 ## Why Cookie Consent Matters
 
@@ -780,6 +780,6 @@ var categories = new List<CookieCategory>
 
 The `OsirionCookieConsent` component provides a comprehensive solution for GDPR compliance while maintaining excellent user experience. With customizable categories, server-side processing, and full accessibility support, you can implement privacy-respectful cookie management that builds trust with your users.
 
-Remember that compliance is not just about the technical implementation—it's about being transparent, respectful, and giving users meaningful control over their data. The component provides the tools; your content and policies complete the compliance picture.
+Remember that compliance is not just about the technical implementation; it's about being transparent, respectful, and giving users meaningful control over their data. The component provides the tools; your content and policies complete the compliance picture.
 
 Start building trust through transparent privacy practices with Osirion.Blazor v1.5!
