@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `IGitHubApiClient.GetTreeAsync` (default implementation returns null), `GitHubTree`, `GitHubRateLimitException`, `BaseContentRepository.GenerateMarkdownWithFrontMatterAsync` and `LastRefreshSucceeded`, and `UseOsirionCmsAsync`
 - `examples/Osirion.Blazor.Example.Mud`: the CMS example site on MudBlazor 9, with a theme that follows Osirion's theme toggle without a round trip
 - `.osirion-visually-hidden` utility in the Core stylesheet for text that only screen readers announce
+- `examples/Osirion.Blazor.Example.FluentUI`: the CMS example site on Fluent UI Blazor 5, registered in the examples AppHost on port 5298
 
 ### Changed
 - Mega submenus now center under the whole navigation bar on desktop, use a responsive auto-fit column grid with column headers, and keep an invisible hover bridge so the pointer can travel from the trigger into the panel
@@ -59,6 +60,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `OsirionComponentBase.IsServerSide` is obsolete because it is also true under Interactive Server; use `IsInteractive`, or the new `IsRunningInBrowser` for WebAssembly
 - **Behaviour change:** content whose front matter has no `published` key is now published (`FrontMatter.Published` defaults to `true`, as in Jekyll and Hugo); before, such files were silently hidden as drafts. Add `published: false` to keep a file hidden
 - `OsirionCookieConsent`: the form now has the class `osirion-cookie-consent-form` and the consent buttons sit in a `div.osirion-cookie-consent-actions`; CSS that targeted the form through the old class must target `.osirion-cookie-consent-form`
+- The FluentUI adapter reads the Fluent UI Blazor v5 tokens (`--colorNeutralBackground1`, `--colorBrandBackground` and so on) and falls back to the v4 tokens, so Osirion components follow a v5 theme
+- With `Framework` set to `FluentUI`, `OsirionStyles` hands Osirion's theme mode to Fluent UI v5 (`Blazor.theme.setThemeMode`), so Fluent components follow `ThemeToggle`
 
 ### Deprecated
 - `LoginViewModel.LoginWithGitHubAsync(string code)` always fails, because a code without its OAuth state cannot be verified; use `StartGitHubLoginAsync()` and `LoginWithGitHubAsync(code, state)`
@@ -144,6 +147,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Every full page load painted without the framework adapter and in the light theme until `osirion-styles.js` arrived after Blazor started; `OsirionStyles` now applies the framework class and the stored theme while the page is parsed
 - `OsirionCookieConsent` put its actions class on the form around the whole banner, so the buttons never got the actions layout or the mobile rules, and wide framework buttons wrapped under the message
 - The submenu chevron in the mobile drawer sat above the centre of its link
+- The MudBlazor, FluentUI and Radzen adapters lost to the Theming light theme's `:root[data-osirion-theme="light"]`, so in light mode Osirion components used Osirion's default palette instead of the framework's
+- Under Fluent UI v5, the Theming stylesheet's `[data-theme]` rules matched Fluent's `body[data-theme]` and replaced the adapter's mappings for the whole page in dark mode
+- The FluentUI adapter's success color read the accent token
+- `ArticlePage` content touched the screen edges on viewports between 769px and the container width; two padding declarations in its stylesheet were invalid and ignored
 
 ### Security
 - Osirion.Blazor.Cms.Admin: every routed admin page (`/osirion`, `/osirion/dashboard`, `/osirion/content`, `/osirion/content/edit`, `/osirion/settings`, `/osirion/login`) requires the authorization policy `"Osirion.Cms.Admin"` (`CmsAdminAuthorization.PolicyName`). The default policy requires an authenticated user; a host policy with that name replaces it. These pages, and the repository writes behind them, were open to anonymous visitors

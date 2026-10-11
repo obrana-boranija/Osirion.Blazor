@@ -10,7 +10,8 @@
 .osirion-article-page-content {
     max-width: var(--osirion-container-xxl, 1320px);
     margin: 0 auto;
-    padding: 0;
+    /* The max-width only leaves side space on viewports wider than the container; this keeps it on narrower ones */
+    padding: 0 var(--osirion-spacing-4, 1rem);
     position: relative;
     z-index: 1;
 }
@@ -247,7 +248,7 @@
 
     /* Add a TOC to the top of the content on medium screens */
     .osirion-article-main {
-        padding: var(--osirion-spacing-4, 1rem), 0;
+        padding: var(--osirion-spacing-4, 1rem) 0;
     }
 
     .osirion-medium-toc {
@@ -273,7 +274,7 @@
     }
 
     .osirion-article-main {
-        padding: var(--osirion-spacing-4, 1rem), 0;
+        padding: var(--osirion-spacing-4, 1rem) 0;
     }
 
     .osirion-mobile-tags-categories {

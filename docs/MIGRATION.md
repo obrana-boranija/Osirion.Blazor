@@ -171,6 +171,10 @@ This release closes security holes in the CMS and Core modules. Most changes are
    - The FileSystem provider, its repositories and providers added through `AddContentProvider<T>` or `ContentBuilder.AddProvider<T>` are singletons now. A custom provider must not depend on scoped services; resolve them through `IServiceScopeFactory` instead.
    - On .NET 10, a content page that is not found sets a 404 status. Without `Router.NotFoundPage` the response body is empty, so set `<Router NotFoundPage="typeof(Pages.NotFound)">` with a page of your own.
 
+16. **Fluent UI Blazor v5 hosts**
+   - The FluentUI adapter now targets the v5 tokens and keeps the v4 tokens as fallbacks; no change is needed for v4 hosts.
+   - A content site on Fluent UI v5 that scrolls the document should put `no-fuib-style` on the body and set `box-sizing: border-box` itself, because Fluent's default stylesheet makes the body a fixed-height app shell. See the Fluent UI section of `docs/STYLING.md`.
+
 ## Upgrading to v1.5.0
 
 ### Breaking Changes
