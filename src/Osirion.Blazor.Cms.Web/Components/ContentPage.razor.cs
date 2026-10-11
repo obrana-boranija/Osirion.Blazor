@@ -368,8 +368,23 @@ public partial class ContentPage
         }
 
         var parts = PathReplacePattern.Split('|');
-        return parts.Length == 2 ? Regex.Replace(path, parts[0], parts[1]) : path;
+        if (parts.Length != 2)
+        {
+            return path;
+        }
+
+        // The path comes from the URL, so a pattern that backtracks badly must not hold the request.
+        try
+        {
+            return Regex.Replace(path, parts[0], parts[1], RegexOptions.None, PathReplaceTimeout);
+        }
+        catch (RegexMatchTimeoutException)
+        {
+            return path;
+        }
     }
+
+    private static readonly TimeSpan PathReplaceTimeout = TimeSpan.FromMilliseconds(250);
 
     /// <summary>
     /// Loads what the page shows around the content: neighbours, related items and default share links.
