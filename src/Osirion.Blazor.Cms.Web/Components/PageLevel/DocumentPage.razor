@@ -106,7 +106,7 @@
                         }
 
                         <div class="osirion-document-body">
-                            @GetSanitizedContent(Content.Content)
+                            @GetSanitizedContent(ContentHeadings.WithoutLeadingTitle(Content.Content))
                         </div>
 
                         @if (ShowNavigationLinks && (PreviousItem is not null || NextItem is not null))

@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Osirion.Blazor.Cms.Web: `ContentRenderer.OmitLeadingTitle`, which leaves out the content's opening top-level heading
+
+### Fixed
+- Osirion.Blazor.Cms.Web: a page showed its title twice and had two `h1` elements when the Markdown opened with `# Title`. `ArticlePage`, `HomePage` and `LandingPage` (with their hero) and `ContentView`, `DocumentPage` and `LocalizedContentView` (under their own title) now leave that opening heading out of the body
+
 ## [4.0.0] - 2026-10-11
 
 ### Security
