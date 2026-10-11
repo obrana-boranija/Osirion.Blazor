@@ -1,6 +1,7 @@
-/* 
+/*
  * MenuItem Component Styles
- * Pure CSS menu item with SSR compatibility
+ * Pure CSS menu item with SSR compatibility. A horizontal bar opens submenus as dropdown panels on hover and focus;
+ * a vertical menu or a drawer stacks them, opened by their toggle. Colours come from the Menu's theming hooks.
  */
 
 /* Child component theme inheritance - MenuItem inherits parent Menu's component theme */
@@ -8,590 +9,918 @@
 [data-osirion-component-theme="light"] .osirion-menu-item-wrapper,
 .osirion-bootstrap-integration [data-osirion-component-theme="light"] .osirion-menu-item,
 .osirion-bootstrap-integration [data-osirion-component-theme="light"] .osirion-menu-item-wrapper {
-    /* Force light theme colors */
     --osirion-text-primary: #1f2937 !important;
+    --osirion-text-secondary: #6b7280 !important;
     --osirion-background-primary: #ffffff !important;
     --osirion-background-secondary: #f8f9fa !important;
     --osirion-border-color: rgba(0, 0, 0, 0.1) !important;
     --osirion-action-primary: #2563eb !important;
     --osirion-text-inverted: #ffffff !important;
-    color: #1f2937 !important;
 }
 
 [data-osirion-component-theme="dark"] .osirion-menu-item,
 [data-osirion-component-theme="dark"] .osirion-menu-item-wrapper,
 .osirion-bootstrap-integration [data-osirion-component-theme="dark"] .osirion-menu-item,
 .osirion-bootstrap-integration [data-osirion-component-theme="dark"] .osirion-menu-item-wrapper {
-    /* Force dark theme colors */
     --osirion-text-primary: #f3f4f6 !important;
+    --osirion-text-secondary: #9ca3af !important;
     --osirion-background-primary: #111827 !important;
     --osirion-background-secondary: #1f2937 !important;
     --osirion-border-color: rgba(255, 255, 255, 0.1) !important;
     --osirion-action-primary: #60a5fa !important;
     --osirion-text-inverted: #ffffff !important;
-    color: #f3f4f6 !important;
 }
 
-/* Submenu inheritance */
-[data-osirion-component-theme="light"] .osirion-submenu,
-.osirion-bootstrap-integration [data-osirion-component-theme="light"] .osirion-submenu {
-    background-color: #ffffff !important;
-    border-color: rgba(0, 0, 0, 0.1) !important;
-}
-
-[data-osirion-component-theme="dark"] .osirion-submenu,
-.osirion-bootstrap-integration [data-osirion-component-theme="dark"] .osirion-submenu {
-    background-color: #111827 !important;
-    border-color: rgba(255, 255, 255, 0.1) !important;
-}
-
-/* Base menu item wrapper - allows for proper hover detection and submenu positioning */
+/* Item */
 .osirion-menu-item-wrapper {
     position: relative;
     display: block;
 }
 
-/* Base menu item styles */
 .osirion-menu-item {
     display: flex;
     align-items: center;
-    padding: var(--osirion-spacing-3, 0.75rem) var(--osirion-spacing-4, 1rem);
-    color: var(--osirion-text-primary, #f3f4f6);
-    font-size: var(--osirion-font-size-base, 1rem);
-    cursor: pointer;
+    gap: 0.625rem;
+    min-height: 2.5rem;
+    margin: 0;
+    padding: 0.5rem 0.75rem;
+    color: inherit;
+    font-size: 0.9375rem;
+    font-weight: var(--osirion-font-weight-medium, 500);
+    line-height: 1.3;
     text-decoration: none;
-    transition: all var(--osirion-transition-duration-150, 150ms) var(--osirion-transition-timing-default, ease);
-    border-radius: var(--osirion-radius-base, 0.375rem);
-    margin: var(--osirion-spacing-1, 0.25rem);
-    min-height: var(--osirion-header-height, 2.5rem);
-    border: 1px solid transparent;
+    background-color: transparent;
+    border: 0;
+    border-radius: var(--osirion-menu-radius, 0.5rem);
+    cursor: pointer;
+    transition: background-color var(--osirion-transition-duration-150, 150ms) ease, color var(--osirion-transition-duration-150, 150ms) ease;
+    -webkit-tap-highlight-color: transparent;
 }
 
-    /* Hover and focus states */
-    .osirion-menu-item:hover:not(.osirion-menu-item-disabled),
-    .osirion-menu-item:focus:not(.osirion-menu-item-disabled) {
-        background-color: var(--osirion-background-secondary, #1f2937);
-        color: var(--osirion-text-primary, #f3f4f6);
-        outline: none;
-        border-color: var(--osirion-border-color, rgba(255, 255, 255, 0.1));
+    .osirion-menu-item:hover {
+        color: inherit;
+        text-decoration: none;
+        background-color: var(--osirion-menu-hover-background, color-mix(in srgb, currentColor 8%, transparent));
     }
 
-    /* Keyboard focus needs its own indicator: the hover style above is also the active page's style, so a focused
-       item looked exactly like the current page (WCAG 2.4.7). */
-    .osirion-menu-item:focus-visible:not(.osirion-menu-item-disabled) {
-        outline: 2px solid currentColor;
-        outline-offset: 2px;
+    /* Keyboard focus has its own indicator, so a focused item never looks like the current page (WCAG 2.4.7) */
+    .osirion-menu-item:focus-visible {
+        outline: 2px solid var(--osirion-menu-accent, var(--osirion-action-primary, #2563eb));
+        outline-offset: -2px;
     }
 
-/* Active state - outlined style instead of filled */
-.osirion-menu-item-active {
-    background-color: var(--osirion-background-secondary, #1f2937);
-    color: var(--osirion-text-primary, #f3f4f6);
-    outline: none;
-    border-color: var(--osirion-border-color, rgba(255, 255, 255, 0.1));
+.osirion-menu-item-active,
+.osirion-menu-item-active:hover {
+    color: var(--osirion-menu-accent, var(--osirion-action-primary, #2563eb));
+    background-color: var(--osirion-menu-active-background, color-mix(in srgb, var(--osirion-menu-accent, var(--osirion-action-primary, #2563eb)) 12%, transparent));
 }
 
-/* Remove the left border indicator since we're using full border */
-.osirion-menu-vertical .osirion-menu-item-active::before {
-    display: none;
-}
-
-/* Disabled state */
 .osirion-menu-item-disabled {
     opacity: 0.5;
     cursor: not-allowed;
     pointer-events: none;
 }
 
-/* Icons and text */
 .osirion-menu-item-icon {
-    margin-right: var(--osirion-spacing-3, 0.75rem);
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 1.25rem;
-    height: 1.25rem;
+    width: 1rem;
+    height: 1rem;
     flex-shrink: 0;
+    opacity: 0.8;
 }
 
+    .osirion-menu-item-icon ::deep svg {
+        width: 100%;
+        height: 100%;
+    }
+
 .osirion-menu-item-content {
-    flex: 1;
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
     min-width: 0;
 }
 
 .osirion-menu-item-text {
-    display: block;
-    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 .osirion-menu-item-description {
-    display: block;
-    margin-top: var(--osirion-spacing-1, 0.25rem);
-    color: var(--osirion-text-secondary, #9ca3af);
-    font-size: var(--osirion-font-size-sm, 0.875rem);
-    line-height: 1.35;
+    margin-top: 0.125rem;
+    color: var(--osirion-menu-muted-color, var(--osirion-text-secondary, #6b7280));
+    font-size: 0.8125rem;
+    font-weight: var(--osirion-font-weight-normal, 400);
+    line-height: 1.4;
     white-space: normal;
 }
 
-.osirion-menu-item-chevron {
-    margin-left: var(--osirion-spacing-2, 0.5rem);
+/* Top-level bar items stay on one line and fill the bar's height, so their dropdown's hover area reaches the panel */
+.osirion-menu-horizontal .osirion-menu-inner > .osirion-menu-item-wrapper {
     display: flex;
     align-items: center;
-    justify-content: center;
-    transition: transform var(--osirion-transition-duration-150, 150ms) var(--osirion-transition-timing-default, ease);
+    align-self: stretch;
 }
 
-.osirion-submenu-toggler,
-.osirion-submenu-toggle {
-    position: absolute;
-    top: 0;
-    right: 0;
-    display: flex;
-    width: 2.5rem;
-    min-height: var(--osirion-header-height, 2.5rem);
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
+.osirion-menu-horizontal .osirion-menu-inner > .osirion-menu-item-wrapper > .osirion-menu-item {
+    white-space: nowrap;
 }
 
+.osirion-menu-horizontal .osirion-menu-inner > .osirion-menu-item-has-submenu > .osirion-submenu-toggle {
+    align-self: center;
+    min-height: 2.5rem;
+}
+
+/* Submenu toggle: a visually hidden checkbox (the expanded state) shown through a chevron label */
 .osirion-submenu-toggler {
+    position: absolute;
     width: 1px;
     height: 1px;
+    padding: 0;
+    margin: -1px;
     overflow: hidden;
     clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.osirion-submenu-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: inherit;
+    border-radius: var(--osirion-menu-radius, 0.5rem);
+    cursor: pointer;
+    transition: background-color var(--osirion-transition-duration-150, 150ms) ease;
+    -webkit-tap-highlight-color: transparent;
 }
 
 /* Keyboard focus: the checkbox is visually hidden, so show its focus on the visible toggle */
 .osirion-submenu-toggler:focus-visible ~ .osirion-submenu-toggle {
-    outline: 2px solid currentColor;
+    outline: 2px solid var(--osirion-menu-accent, var(--osirion-action-primary, #2563eb));
     outline-offset: -2px;
 }
 
-.osirion-menu-item-has-submenu > .osirion-menu-item {
-    padding-right: 2.75rem;
-}
-
-.osirion-submenu-toggler:checked ~ .osirion-submenu-toggle svg {
+.osirion-menu-item-chevron {
+    display: inline-flex;
+    opacity: 0.65;
     transform: rotate(90deg);
+    transition: transform var(--osirion-transition-duration-200, 200ms) ease;
 }
 
-/* Submenu styling */
+/* A parent row: the link (or the toggle-only label) and its chevron read as one control */
+.osirion-menu-item-has-submenu {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+}
+
+    .osirion-menu-item-has-submenu > .osirion-menu-item {
+        flex: 1 1 auto;
+        min-width: 0;
+        padding-right: 0.25rem;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+
+    .osirion-menu-item-has-submenu > .osirion-submenu-toggle {
+        width: 2rem;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+
+.osirion-menu-item-has-submenu:is(:hover, :focus-within) > :is(.osirion-menu-item, .osirion-submenu-toggle) {
+    background-color: var(--osirion-menu-hover-background, color-mix(in srgb, currentColor 8%, transparent));
+}
+
+.osirion-menu-item-wrapper-active.osirion-menu-item-has-submenu > :is(.osirion-menu-item, .osirion-submenu-toggle) {
+    color: var(--osirion-menu-accent, var(--osirion-action-primary, #2563eb));
+    background-color: var(--osirion-menu-active-background, color-mix(in srgb, var(--osirion-menu-accent, var(--osirion-action-primary, #2563eb)) 12%, transparent));
+}
+
+/* An open top-level submenu turns its chevron up; inside a dropdown, a nested submenu's chevron points at its flyout */
+.osirion-menu-inner > .osirion-menu-item-has-submenu:hover > .osirion-submenu-toggle .osirion-menu-item-chevron,
+.osirion-menu-inner > .osirion-menu-item-has-submenu:focus-within > .osirion-submenu-toggler:checked ~ .osirion-submenu-toggle .osirion-menu-item-chevron {
+    transform: rotate(-90deg);
+}
+
+.osirion-submenu .osirion-menu-item-chevron {
+    transform: none;
+}
+
+.osirion-menu-align-right .osirion-submenu .osirion-menu-item-chevron {
+    transform: rotate(180deg);
+}
+
+/* Dropdown panel */
 .osirion-submenu {
     display: none;
     position: absolute;
-    min-width: 12rem;
-    background-color: var(--osirion-background-primary, #111827);
-    border: 1px solid var(--osirion-border-color, rgba(255, 255, 255, 0.1));
-    border-radius: var(--osirion-radius-md, 0.375rem);
-    box-shadow: var(--osirion-shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1));
-    z-index: var(--osirion-z-index-20, 100);
-    padding: var(--osirion-spacing-1, 0.25rem) 0;
+    z-index: var(--osirion-z-index-30, 30);
+    min-width: 15rem;
+    max-width: min(22rem, calc(100vw - 2rem));
+    padding: 0.375rem;
+    color: var(--osirion-menu-color, var(--osirion-text-primary, #1f2937));
+    text-align: start;
+    background-color: var(--osirion-menu-dropdown-background, var(--osirion-menu-background, var(--osirion-background-primary, #ffffff)));
+    border: 1px solid var(--osirion-menu-border-color, var(--osirion-border-color, rgba(15, 23, 42, 0.12)));
+    border-radius: var(--osirion-menu-panel-radius, 0.75rem);
+    box-shadow: var(--osirion-menu-shadow, 0 18px 40px -12px rgba(15, 23, 42, 0.28), 0 6px 14px -6px rgba(15, 23, 42, 0.14));
 }
 
-/* Show submenu on hover - CSS-only implementation */
+    /* Invisible strip over the gap above the panel, so the pointer can cross it without closing the panel */
+    .osirion-submenu::before {
+        content: "";
+        position: absolute;
+        top: -0.75rem;
+        left: 0;
+        right: 0;
+        height: 0.75rem;
+    }
+
+/* A panel opens on hover, or from the keyboard when its toggle is checked (Space) and focus stays inside it. A closed
+   panel is skipped by Tab, so a keyboard user does not have to walk through every link of every menu. */
 .osirion-menu-item-has-submenu:hover > .osirion-submenu,
-.osirion-menu-item-has-submenu:focus-within > .osirion-submenu {
+.osirion-menu-item-has-submenu:focus-within > .osirion-submenu-toggler:checked ~ .osirion-submenu {
     display: block;
 }
 
-.osirion-menu-item-has-submenu:hover > .osirion-menu-item,
-.osirion-menu-item-has-submenu:focus-within > .osirion-menu-item,
-.osirion-menu-item-has-submenu:hover > .osirion-submenu-toggle,
-.osirion-menu-item-has-submenu:focus-within > .osirion-submenu-toggle {
-    background-color: var(--osirion-background-secondary, #1f2937);
-    color: var(--osirion-text-primary, #f3f4f6);
-}
-
-.osirion-menu-item-has-submenu:hover > .osirion-submenu-toggle svg,
-.osirion-menu-item-has-submenu:focus-within > .osirion-submenu-toggle svg {
-    transform: rotate(90deg);
-}
-
-/* Submenu positioning for vertical menu */
-.osirion-menu-vertical .osirion-menu-item-has-submenu > .osirion-submenu {
-    top: 0;
-    left: 100%;
-}
-
-/* Submenu positioning for horizontal menu */
-.osirion-menu-horizontal .osirion-menu-item-has-submenu > .osirion-submenu {
-    top: 100%;
+.osirion-menu-item-has-submenu > .osirion-submenu {
+    top: calc(100% + 0.25rem);
     left: 0;
 }
 
-/* ===== Mega submenu (Personio-style) ===== */
-
-.osirion-submenu.osirion-submenu-mega {
-    min-width: 0;
-    width: min(76rem, calc(100vw - 2rem));
-    flex-direction: row;
-    align-items: stretch;
-    gap: var(--osirion-spacing-6, 1.5rem);
-    padding: var(--osirion-spacing-6, 1.5rem);
-    border-radius: var(--osirion-radius-lg, 0.5rem);
-    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.14), 0 2px 8px rgba(15, 23, 42, 0.08);
-}
-
-/* Invisible strip that bridges the hover gap between the nav bar and the panel */
-.osirion-submenu.osirion-submenu-mega::before {
-    content: "";
-    position: absolute;
-    top: -0.85rem;
-    left: 0;
+/* In a right-aligned bar, panels open towards the page so the last items' panels stay on screen */
+.osirion-menu-align-right .osirion-menu-inner > .osirion-menu-item-has-submenu > .osirion-submenu-regular {
+    left: auto;
     right: 0;
-    height: 0.85rem;
 }
 
-/* Mega items anchor their panel to the menu container instead of the item, so the
-   panel spans and centers under the whole navigation bar. Only in expanded
-   (non-drawer) layouts: the wrapper must stay position:relative in drawer mode
-   so the absolutely-positioned submenu toggle keeps its anchor. */
-@media (min-width: 769px) {
-    .osirion-menu-horizontal:not(.osirion-menu-collapse-extra-large) .osirion-menu-item-has-mega {
-        position: static;
-        display: flex;
-        align-items: center;
-    }
-
-    .osirion-menu-horizontal:not(.osirion-menu-collapse-extra-large) .osirion-menu-item-has-mega > .osirion-menu-item {
-        padding-right: var(--osirion-spacing-2, 0.5rem);
-    }
-
-    .osirion-menu-horizontal:not(.osirion-menu-collapse-extra-large) .osirion-menu-item-has-mega > .osirion-submenu-toggle {
-        position: static;
-        width: 1.5rem;
-        min-height: 0;
-        margin-left: calc(-1 * var(--osirion-spacing-2, 0.5rem));
-        margin-right: var(--osirion-spacing-2, 0.5rem);
-    }
-
-    .osirion-menu-horizontal:not(.osirion-menu-collapse-extra-large) .osirion-menu-item-has-mega > .osirion-submenu.osirion-submenu-mega {
-        top: 100%;
-        left: 50%;
-        transform: translateX(-50%);
-    }
+.osirion-submenu .osirion-menu-item {
+    min-height: 2.5rem;
 }
 
-@media (min-width: 1440px) {
-    .osirion-menu-horizontal .osirion-menu-item-has-mega {
-        position: static;
-    }
-
-    .osirion-menu-horizontal .osirion-menu-item-has-mega > .osirion-submenu.osirion-submenu-mega {
-        top: 100%;
-        left: 50%;
-        transform: translateX(-50%);
-    }
+/* Nested submenus fly out beside their parent row */
+.osirion-submenu .osirion-menu-item-has-submenu > .osirion-submenu {
+    top: calc(-0.375rem - 1px);
+    left: calc(100% + 0.375rem);
 }
 
-.osirion-menu-item-has-submenu:hover > .osirion-submenu.osirion-submenu-mega,
-.osirion-menu-item-has-submenu:focus-within > .osirion-submenu.osirion-submenu-mega {
-    display: flex;
+    .osirion-submenu .osirion-submenu::before {
+        top: 0;
+        bottom: 0;
+        left: -0.5rem;
+        right: auto;
+        width: 0.5rem;
+        height: auto;
+    }
+
+.osirion-menu-align-right .osirion-submenu .osirion-menu-item-has-submenu > .osirion-submenu {
+    left: auto;
+    right: calc(100% + 0.375rem);
 }
+
+    .osirion-menu-align-right .osirion-submenu .osirion-submenu::before {
+        left: auto;
+        right: -0.5rem;
+    }
 
 @media (prefers-reduced-motion: no-preference) {
-    .osirion-menu-item-has-submenu:hover > .osirion-submenu.osirion-submenu-mega,
-    .osirion-menu-item-has-submenu:focus-within > .osirion-submenu.osirion-submenu-mega {
-        animation: osirion-mega-fade-in 160ms ease;
+    .osirion-menu-item-has-submenu:hover > .osirion-submenu,
+    .osirion-menu-item-has-submenu:focus-within > .osirion-submenu-toggler:checked ~ .osirion-submenu {
+        animation: osirion-menu-panel-in 160ms ease-out;
     }
 }
 
-@keyframes osirion-mega-fade-in {
+@keyframes osirion-menu-panel-in {
     from {
         opacity: 0;
+        transform: translateY(-0.25rem);
     }
 
     to {
         opacity: 1;
+        transform: none;
     }
 }
+
+/* ===== Mega submenu ===== */
+
+.osirion-submenu.osirion-submenu-mega {
+    flex-direction: row;
+    align-items: stretch;
+    gap: 2rem;
+    width: min(72rem, calc(100vw - 2rem));
+    min-width: 0;
+    max-width: none;
+    padding: 1.75rem;
+    border-radius: var(--osirion-menu-mega-radius, 1rem);
+}
+
+.osirion-menu-item-has-submenu:hover > .osirion-submenu-mega,
+.osirion-menu-item-has-submenu:focus-within > .osirion-submenu-toggler:checked ~ .osirion-submenu-mega {
+    display: flex;
+}
+
+/* A top-level mega item anchors its panel to the menu bar, so the panel centres under the whole bar */
+.osirion-menu-horizontal .osirion-menu-inner > .osirion-menu-item-has-mega {
+    position: static;
+}
+
+    .osirion-menu-horizontal .osirion-menu-inner > .osirion-menu-item-has-mega > .osirion-submenu-mega {
+        top: calc(100% + 0.5rem);
+        left: 50%;
+        right: auto;
+        translate: -50% 0;
+    }
 
 /* Content zone: responsive column grid for MenuGroups */
 .osirion-submenu-mega-content {
-    flex: 1 1 auto;
-    min-width: 0;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
-    column-gap: var(--osirion-spacing-8, 2rem);
-    row-gap: var(--osirion-spacing-4, 1rem);
+    flex: 1 1 auto;
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
     align-content: start;
+    gap: 1.75rem 2rem;
+    min-width: 0;
 }
 
-/* Aside zone: featured panel or image card pinned to the right */
+/* Aside zone: featured panel or image card */
 .osirion-submenu-mega-aside {
-    flex: 0 0 auto;
     display: flex;
+    flex: 0 0 18rem;
     flex-direction: column;
-    gap: var(--osirion-spacing-4, 1rem);
-    width: clamp(16rem, 22vw, 19rem);
+    gap: 1rem;
+    min-width: 0;
 }
 
-.osirion-submenu-mega-content ::deep .osirion-menu-call-to-action {
-    grid-column: 1 / -1;
-    margin-top: var(--osirion-spacing-2, 0.5rem);
-    border: 1px solid var(--osirion-border-color, rgba(0, 0, 0, 0.1));
-    box-shadow: none;
+.osirion-submenu-mega .osirion-menu-item {
+    align-items: flex-start;
+    gap: 0.75rem;
+    min-height: 0;
+    margin-inline: -0.75rem;
+    padding: 0.625rem 0.75rem;
 }
 
-.osirion-submenu-mega-content ::deep .osirion-menu-group {
+    .osirion-submenu-mega .osirion-menu-item:hover .osirion-menu-item-text {
+        color: var(--osirion-menu-accent, var(--osirion-action-primary, #2563eb));
+    }
+
+.osirion-submenu-mega .osirion-menu-item-text {
+    font-weight: var(--osirion-font-weight-semibold, 600);
+}
+
+/* Icons in a mega submenu sit in a tinted tile */
+.osirion-submenu-mega .osirion-menu-item-icon {
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0.5rem;
+    color: var(--osirion-menu-accent, var(--osirion-action-primary, #2563eb));
+    background-color: var(--osirion-menu-active-background, color-mix(in srgb, var(--osirion-menu-accent, var(--osirion-action-primary, #2563eb)) 12%, transparent));
+    border-radius: var(--osirion-menu-radius, 0.5rem);
+    opacity: 1;
+}
+
+@media (min-width: 769px) and (max-width: 1199.98px) {
+    .osirion-submenu.osirion-submenu-mega {
+        gap: 1.25rem;
+        width: calc(100vw - 2rem);
+        padding: 1.25rem;
+    }
+
+    .osirion-submenu-mega-content {
+        grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+        gap: 1.25rem 1.5rem;
+    }
+
+    .osirion-submenu-mega-aside {
+        flex-basis: 15rem;
+    }
+}
+
+/* ===== Stacked layout ===== */
+
+/* The stacked blocks below repeat the same rules once per context, because a media query cannot take a parameter:
+   a vertical menu always stacks, and a collapsible menu stacks inside its drawer below its breakpoint. They differ only
+   in their selector prefix and media query; change them together. */
+
+/* Vertical menus */
+.osirion-menu-vertical .osirion-menu-inner > .osirion-menu-item-wrapper {
+    display: block;
+}
+
+.osirion-menu-vertical .osirion-menu-inner > .osirion-menu-item-has-submenu,
+.osirion-menu-vertical .osirion-menu-item-has-submenu {
+    display: flex;
+    align-items: stretch;
+}
+
+.osirion-menu-vertical .osirion-menu-inner > .osirion-menu-item-has-submenu > .osirion-submenu-toggle {
+    align-self: stretch;
+}
+
+.osirion-menu-vertical .osirion-menu-item {
+    min-height: 3rem;
+    padding: 0.75rem;
+    font-size: var(--osirion-font-size-base, 1rem);
+}
+
+.osirion-menu-vertical .osirion-menu-item-description {
+    display: none;
+}
+
+.osirion-menu-vertical .osirion-menu-item-has-submenu > .osirion-menu-item {
+    flex: 1 1 0%;
+}
+
+.osirion-menu-vertical .osirion-menu-item-has-submenu > .osirion-submenu-toggle {
+    width: 3rem;
+}
+
+/* The row highlights while the pointer is on it, not while it is on the open submenu below it */
+.osirion-menu-vertical .osirion-menu-item-has-submenu:is(:hover, :focus-within) > :is(.osirion-menu-item, .osirion-submenu-toggle) {
+    background-color: transparent;
+}
+
+.osirion-menu-vertical .osirion-menu-item-wrapper-active.osirion-menu-item-has-submenu > :is(.osirion-menu-item, .osirion-submenu-toggle) {
+    background-color: var(--osirion-menu-active-background, color-mix(in srgb, var(--osirion-menu-accent, var(--osirion-action-primary, #2563eb)) 12%, transparent));
+}
+
+.osirion-menu-vertical .osirion-menu-item-has-submenu:has(> .osirion-menu-item:hover, > .osirion-submenu-toggle:hover) > :is(.osirion-menu-item, .osirion-submenu-toggle) {
+    background-color: var(--osirion-menu-hover-background, color-mix(in srgb, currentColor 8%, transparent));
+}
+
+/* Chevrons point down, and up once their submenu is open */
+.osirion-menu-vertical .osirion-submenu .osirion-menu-item-chevron,
+.osirion-menu-vertical .osirion-menu-inner > .osirion-menu-item-has-submenu:is(:hover, :focus-within) > .osirion-submenu-toggle .osirion-menu-item-chevron {
+    transform: rotate(90deg);
+}
+
+.osirion-menu-vertical .osirion-menu-inner .osirion-submenu-toggler:checked ~ .osirion-submenu-toggle .osirion-menu-item-chevron {
+    transform: rotate(-90deg);
+}
+
+/* Submenus open in place, as an indented list, and only from their toggle */
+.osirion-menu-vertical .osirion-menu-item-has-submenu > .osirion-submenu,
+.osirion-menu-vertical .osirion-menu-item-has-submenu > .osirion-submenu.osirion-submenu-mega {
+    display: none;
+    position: static;
+    flex-basis: 100%;
     width: auto;
     min-width: 0;
-    margin: 0;
-    padding: 0;
+    max-width: none;
+    margin: 0.125rem 0 0.375rem 0.875rem;
+    padding: 0 0 0 0.5rem;
+    background-color: transparent;
+    border: 0;
+    border-left: 2px solid var(--osirion-menu-border-color, var(--osirion-border-color, rgba(15, 23, 42, 0.12)));
+    border-radius: 0;
+    box-shadow: none;
+    translate: none;
+    animation: none;
+}
+
+.osirion-menu-vertical .osirion-submenu::before {
+    display: none;
+}
+
+.osirion-menu-vertical .osirion-menu-item-has-submenu:is(:hover, :focus-within) > .osirion-submenu {
+    display: none;
+}
+
+.osirion-menu-vertical .osirion-submenu-toggler:checked ~ .osirion-submenu {
+    display: block;
+}
+
+.osirion-menu-vertical .osirion-submenu-toggler:checked ~ .osirion-submenu-mega {
     display: flex;
     flex-direction: column;
+    gap: 0.25rem;
 }
 
-/* Personio-style column header: sentence-case title + muted description + divider */
-.osirion-submenu-mega-content ::deep .osirion-menu-group-label {
-    padding: 0;
-    color: var(--osirion-text-primary, #1f2937);
-    font-size: var(--osirion-font-size-base, 1rem);
-    font-weight: var(--osirion-font-weight-semibold, 600);
-    letter-spacing: normal;
-    text-transform: none;
+.osirion-menu-vertical .osirion-submenu .osirion-menu-item {
+    min-height: 2.75rem;
+    padding: 0.625rem 0.75rem;
+    font-size: 0.9375rem;
 }
 
-.osirion-submenu-mega-content ::deep .osirion-menu-group-description {
-    margin: var(--osirion-spacing-1, 0.25rem) 0 0;
-    padding: 0;
+/* Mega submenus become one list of their groups; the promotional aside is left out */
+.osirion-menu-vertical .osirion-submenu-mega-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
 }
 
-.osirion-submenu-mega-content ::deep .osirion-menu-group-label ~ .osirion-menu-group-items {
-    margin-top: var(--osirion-spacing-3, 0.75rem);
-    padding-top: var(--osirion-spacing-3, 0.75rem);
-    border-top: 1px solid var(--osirion-border-color, rgba(0, 0, 0, 0.1));
+.osirion-menu-vertical .osirion-submenu-mega-aside {
+    display: none;
 }
 
-.osirion-submenu-mega-content ::deep .osirion-menu-group-footer {
-    margin-top: auto;
-    padding: var(--osirion-spacing-3, 0.75rem) 0 0;
+.osirion-menu-vertical .osirion-submenu-mega .osirion-menu-item {
+    align-items: center;
+    gap: 0.625rem;
+    margin-inline: 0;
 }
 
-.osirion-submenu-mega-content ::deep .osirion-menu-item {
-    min-height: 0;
-    margin: 0 calc(-1 * var(--osirion-spacing-2, 0.5rem));
-    padding: var(--osirion-spacing-2, 0.5rem);
-    border: none;
+.osirion-menu-vertical .osirion-submenu-mega .osirion-menu-item-text {
+    font-weight: inherit;
 }
 
-.osirion-submenu-mega-content ::deep .osirion-menu-item:hover,
-.osirion-submenu-mega-content ::deep .osirion-menu-item:focus {
-    background-color: transparent;
-    border-color: transparent;
+.osirion-menu-vertical .osirion-submenu-mega .osirion-menu-item-icon {
+    width: 1.75rem;
+    height: 1.75rem;
+    padding: 0.375rem;
 }
 
-.osirion-submenu-mega-content ::deep .osirion-menu-item:hover .osirion-menu-item-text,
-.osirion-submenu-mega-content ::deep .osirion-menu-item:focus .osirion-menu-item-text,
-.osirion-submenu-mega-content ::deep .osirion-menu-item:focus-visible .osirion-menu-item-text {
-    color: var(--osirion-action-primary, var(--osirion-color-primary-600, #2563eb));
-}
-
-.osirion-submenu-mega-content ::deep .osirion-menu-item:focus-visible {
-    outline: 2px solid var(--osirion-action-primary, #2563eb);
-    outline-offset: -2px;
-    border-radius: var(--osirion-radius-sm, 0.125rem);
-}
-
-/* Expanded horizontal menus put the toggle in flow beside the link, so the chevron centres on the link text.
-   A menu that collapses below the extra-large breakpoint is a drawer until 1440px and keeps its row toggle. */
-@media (min-width: 769px) {
-    .osirion-menu-horizontal:not(.osirion-menu-collapse-extra-large) .osirion-menu-item-has-submenu {
-        display: flex;
-        align-items: center;
-    }
-
-    .osirion-menu-horizontal:not(.osirion-menu-collapse-extra-large) .osirion-menu-item-has-submenu > .osirion-menu-item {
-        padding-right: var(--osirion-spacing-2, 0.5rem);
-    }
-
-    .osirion-menu-horizontal:not(.osirion-menu-collapse-extra-large) .osirion-menu-item-has-submenu > .osirion-submenu-toggle {
-        position: static;
-        width: 1.5rem;
-        min-height: 0;
-        margin-left: calc(-1 * var(--osirion-spacing-2, 0.5rem));
-        margin-right: var(--osirion-spacing-2, 0.5rem);
-        border-radius: 0 var(--osirion-radius-base, 0.375rem) var(--osirion-radius-base, 0.375rem) 0;
-    }
-}
-
-@media (min-width: 1440px) {
-    .osirion-menu-horizontal .osirion-menu-item-has-submenu {
-        display: flex;
-        align-items: center;
-    }
-
-    .osirion-menu-horizontal .osirion-menu-item-has-submenu > .osirion-menu-item {
-        padding-right: var(--osirion-spacing-2, 0.5rem);
-    }
-
-    .osirion-menu-horizontal .osirion-menu-item-has-submenu > .osirion-submenu-toggle {
-        position: static;
-        width: 1.5rem;
-        min-height: 0;
-        margin-left: calc(-1 * var(--osirion-spacing-2, 0.5rem));
-        margin-right: var(--osirion-spacing-2, 0.5rem);
-        border-radius: 0 var(--osirion-radius-base, 0.375rem) var(--osirion-radius-base, 0.375rem) 0;
-    }
-}
-
-@media (min-width: 769px) and (max-width: 1199px) {
-    .osirion-submenu.osirion-submenu-mega {
-        width: min(56rem, calc(100vw - 2rem));
-        gap: var(--osirion-spacing-4, 1rem);
-        padding: var(--osirion-spacing-4, 1rem);
-    }
-
-    .osirion-submenu-mega-content {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        column-gap: var(--osirion-spacing-4, 1rem);
-    }
-
-    .osirion-submenu-mega-aside {
-        width: clamp(14rem, 26vw, 16rem);
-    }
-}
-
-/* Responsive adjustments */
 @media (max-width: 768px) {
-    /* Full width menu items on mobile */
-    .osirion-menu-item {
-        width: calc(100% - var(--osirion-spacing-2, 0.5rem));
-        border-radius: var(--osirion-radius-sm, 0.125rem);
-    }
-
-    .osirion-menu-item-has-submenu > .osirion-menu-item {
-        width: calc(100% - 3.5rem);
-    }
-
-    .osirion-submenu-toggle {
-        width: 3rem;
-    }
-
-    /* The toggle sits in flow beside the link, so the chevron centres on the link text, and the opened submenu
-       wraps onto its own row. A menu that collapses below the extra-large breakpoint keeps its full-row toggle. */
-    .osirion-menu-container:not(.osirion-menu-collapse-extra-large) .osirion-menu-item-has-submenu {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-    }
-
-    .osirion-menu-container:not(.osirion-menu-collapse-extra-large) .osirion-menu-item-has-submenu > .osirion-menu-item {
-        flex: 1 1 0%;
-        min-width: 0;
-    }
-
-    .osirion-menu-container:not(.osirion-menu-collapse-extra-large) .osirion-menu-item-has-submenu > .osirion-submenu-toggle {
-        position: static;
-    }
-
-    .osirion-menu-container:not(.osirion-menu-collapse-extra-large) .osirion-menu-item-has-submenu > .osirion-submenu {
-        flex-basis: 100%;
-    }
-
-    /* Static submenu positioning on mobile */
-    .osirion-submenu {
-        position: static !important;
-        width: 100%;
-        box-shadow: none;
-        border: none;
-        display: none;
-        border-left: 1px solid var(--osirion-border-color, rgba(255, 255, 255, 0.1));
-        margin-left: var(--osirion-spacing-4, 1rem);
-        padding-left: var(--osirion-spacing-2, 0.5rem);
-        padding-top: 0;
-        padding-bottom: 0;
-    }
-
-    .osirion-submenu.osirion-submenu-mega {
-        display: none;
-        flex-direction: column;
-        gap: 0;
-        padding: 0;
-        width: 100% !important;
-        transform: none !important;
-    }
-
-    .osirion-submenu.osirion-submenu-mega::before {
-        display: none;
-    }
-
-    .osirion-submenu-mega-content {
-        display: flex;
-        flex-direction: column;
-    }
-
-    /* Keep the collapsed drawer scannable: hide promotional asides on mobile */
-    .osirion-submenu-mega-aside {
-        display: none;
-    }
-
-    .osirion-submenu-mega-content ::deep .osirion-menu-group {
-        width: 100%;
-    }
-
-    .osirion-menu-item-has-submenu:hover > .osirion-submenu,
-    .osirion-menu-item-has-submenu:focus-within > .osirion-submenu,
-    .osirion-menu-item-has-submenu:hover > .osirion-submenu.osirion-submenu-mega,
-    .osirion-menu-item-has-submenu:focus-within > .osirion-submenu.osirion-submenu-mega {
-        display: none;
-    }
-
-    .osirion-submenu-toggler:checked ~ .osirion-submenu {
+    .osirion-menu-collapsible .osirion-menu-inner > .osirion-menu-item-wrapper {
         display: block;
     }
 
-    .osirion-submenu-toggler:checked ~ .osirion-submenu.osirion-submenu-mega {
+    .osirion-menu-collapsible .osirion-menu-inner > .osirion-menu-item-has-submenu,
+    .osirion-menu-collapsible .osirion-menu-item-has-submenu {
         display: flex;
+        align-items: stretch;
     }
 
-    .osirion-submenu-toggler:checked ~ .osirion-submenu-toggle svg {
+    .osirion-menu-collapsible .osirion-menu-inner > .osirion-menu-item-has-submenu > .osirion-submenu-toggle {
+        align-self: stretch;
+    }
+
+    .osirion-menu-collapsible .osirion-menu-item {
+        min-height: 3rem;
+        padding: 0.75rem;
+        font-size: var(--osirion-font-size-base, 1rem);
+    }
+
+    .osirion-menu-collapsible .osirion-menu-item-description {
+        display: none;
+    }
+
+    .osirion-menu-collapsible .osirion-menu-item-has-submenu > .osirion-menu-item {
+        flex: 1 1 0%;
+    }
+
+    .osirion-menu-collapsible .osirion-menu-item-has-submenu > .osirion-submenu-toggle {
+        width: 3rem;
+    }
+
+    /* The row highlights while the pointer is on it, not while it is on the open submenu below it */
+    .osirion-menu-collapsible .osirion-menu-item-has-submenu:is(:hover, :focus-within) > :is(.osirion-menu-item, .osirion-submenu-toggle) {
+        background-color: transparent;
+    }
+
+    .osirion-menu-collapsible .osirion-menu-item-wrapper-active.osirion-menu-item-has-submenu > :is(.osirion-menu-item, .osirion-submenu-toggle) {
+        background-color: var(--osirion-menu-active-background, color-mix(in srgb, var(--osirion-menu-accent, var(--osirion-action-primary, #2563eb)) 12%, transparent));
+    }
+
+    .osirion-menu-collapsible .osirion-menu-item-has-submenu:has(> .osirion-menu-item:hover, > .osirion-submenu-toggle:hover) > :is(.osirion-menu-item, .osirion-submenu-toggle) {
+        background-color: var(--osirion-menu-hover-background, color-mix(in srgb, currentColor 8%, transparent));
+    }
+
+    /* Chevrons point down, and up once their submenu is open */
+    .osirion-menu-collapsible .osirion-submenu .osirion-menu-item-chevron,
+    .osirion-menu-collapsible .osirion-menu-inner > .osirion-menu-item-has-submenu:is(:hover, :focus-within) > .osirion-submenu-toggle .osirion-menu-item-chevron {
         transform: rotate(90deg);
     }
 
+    .osirion-menu-collapsible .osirion-menu-inner .osirion-submenu-toggler:checked ~ .osirion-submenu-toggle .osirion-menu-item-chevron {
+        transform: rotate(-90deg);
+    }
+
+    /* Submenus open in place, as an indented list, and only from their toggle */
+    .osirion-menu-collapsible .osirion-menu-item-has-submenu > .osirion-submenu,
+    .osirion-menu-collapsible .osirion-menu-item-has-submenu > .osirion-submenu.osirion-submenu-mega {
+        display: none;
+        position: static;
+        flex-basis: 100%;
+        width: auto;
+        min-width: 0;
+        max-width: none;
+        margin: 0.125rem 0 0.375rem 0.875rem;
+        padding: 0 0 0 0.5rem;
+        background-color: transparent;
+        border: 0;
+        border-left: 2px solid var(--osirion-menu-border-color, var(--osirion-border-color, rgba(15, 23, 42, 0.12)));
+        border-radius: 0;
+        box-shadow: none;
+        translate: none;
+        animation: none;
+    }
+
+    .osirion-menu-collapsible .osirion-submenu::before {
+        display: none;
+    }
+
+    .osirion-menu-collapsible .osirion-menu-item-has-submenu:is(:hover, :focus-within) > .osirion-submenu {
+        display: none;
+    }
+
+    .osirion-menu-collapsible .osirion-submenu-toggler:checked ~ .osirion-submenu {
+        display: block;
+    }
+
+    .osirion-menu-collapsible .osirion-submenu-toggler:checked ~ .osirion-submenu-mega {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .osirion-menu-collapsible .osirion-submenu .osirion-menu-item {
+        min-height: 2.75rem;
+        padding: 0.625rem 0.75rem;
+        font-size: 0.9375rem;
+    }
+
+    /* Mega submenus become one list of their groups; the promotional aside is left out */
+    .osirion-menu-collapsible .osirion-submenu-mega-content {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .osirion-menu-collapsible .osirion-submenu-mega-aside {
+        display: none;
+    }
+
+    .osirion-menu-collapsible .osirion-submenu-mega .osirion-menu-item {
+        align-items: center;
+        gap: 0.625rem;
+        margin-inline: 0;
+    }
+
+    .osirion-menu-collapsible .osirion-submenu-mega .osirion-menu-item-text {
+        font-weight: inherit;
+    }
+
+    .osirion-menu-collapsible .osirion-submenu-mega .osirion-menu-item-icon {
+        width: 1.75rem;
+        height: 1.75rem;
+        padding: 0.375rem;
+    }
 }
 
-/* Drawer behavior for menus that collapse below the extra-large breakpoint */
-@media (min-width: 769px) and (max-width: 1439.98px) {
-    .osirion-menu-collapse-extra-large .osirion-menu-item-has-submenu:hover > .osirion-submenu,
-    .osirion-menu-collapse-extra-large .osirion-menu-item-has-submenu:focus-within > .osirion-submenu,
-    .osirion-menu-collapse-extra-large .osirion-menu-item-has-submenu:hover > .osirion-submenu.osirion-submenu-mega,
-    .osirion-menu-collapse-extra-large .osirion-menu-item-has-submenu:focus-within > .osirion-submenu.osirion-submenu-mega {
+@media (max-width: 1199.98px) {
+    :is(.osirion-menu-collapse-large, .osirion-menu-collapse-extra-large) .osirion-menu-inner > .osirion-menu-item-wrapper {
+        display: block;
+    }
+
+    :is(.osirion-menu-collapse-large, .osirion-menu-collapse-extra-large) .osirion-menu-inner > .osirion-menu-item-has-submenu,
+    :is(.osirion-menu-collapse-large, .osirion-menu-collapse-extra-large) .osirion-menu-item-has-submenu {
+        display: flex;
+        align-items: stretch;
+    }
+
+    :is(.osirion-menu-collapse-large, .osirion-menu-collapse-extra-large) .osirion-menu-inner > .osirion-menu-item-has-submenu > .osirion-submenu-toggle {
+        align-self: stretch;
+    }
+
+    :is(.osirion-menu-collapse-large, .osirion-menu-collapse-extra-large) .osirion-menu-item {
+        min-height: 3rem;
+        padding: 0.75rem;
+        font-size: var(--osirion-font-size-base, 1rem);
+    }
+
+    :is(.osirion-menu-collapse-large, .osirion-menu-collapse-extra-large) .osirion-menu-item-description {
         display: none;
+    }
+
+    :is(.osirion-menu-collapse-large, .osirion-menu-collapse-extra-large) .osirion-menu-item-has-submenu > .osirion-menu-item {
+        flex: 1 1 0%;
+    }
+
+    :is(.osirion-menu-collapse-large, .osirion-menu-collapse-extra-large) .osirion-menu-item-has-submenu > .osirion-submenu-toggle {
+        width: 3rem;
+    }
+
+    /* The row highlights while the pointer is on it, not while it is on the open submenu below it */
+    :is(.osirion-menu-collapse-large, .osirion-menu-collapse-extra-large) .osirion-menu-item-has-submenu:is(:hover, :focus-within) > :is(.osirion-menu-item, .osirion-submenu-toggle) {
+        background-color: transparent;
+    }
+
+    :is(.osirion-menu-collapse-large, .osirion-menu-collapse-extra-large) .osirion-menu-item-wrapper-active.osirion-menu-item-has-submenu > :is(.osirion-menu-item, .osirion-submenu-toggle) {
+        background-color: var(--osirion-menu-active-background, color-mix(in srgb, var(--osirion-menu-accent, var(--osirion-action-primary, #2563eb)) 12%, transparent));
+    }
+
+    :is(.osirion-menu-collapse-large, .osirion-menu-collapse-extra-large) .osirion-menu-item-has-submenu:has(> .osirion-menu-item:hover, > .osirion-submenu-toggle:hover) > :is(.osirion-menu-item, .osirion-submenu-toggle) {
+        background-color: var(--osirion-menu-hover-background, color-mix(in srgb, currentColor 8%, transparent));
+    }
+
+    /* Chevrons point down, and up once their submenu is open */
+    :is(.osirion-menu-collapse-large, .osirion-menu-collapse-extra-large) .osirion-submenu .osirion-menu-item-chevron,
+    :is(.osirion-menu-collapse-large, .osirion-menu-collapse-extra-large) .osirion-menu-inner > .osirion-menu-item-has-submenu:is(:hover, :focus-within) > .osirion-submenu-toggle .osirion-menu-item-chevron {
+        transform: rotate(90deg);
+    }
+
+    :is(.osirion-menu-collapse-large, .osirion-menu-collapse-extra-large) .osirion-menu-inner .osirion-submenu-toggler:checked ~ .osirion-submenu-toggle .osirion-menu-item-chevron {
+        transform: rotate(-90deg);
+    }
+
+    /* Submenus open in place, as an indented list, and only from their toggle */
+    :is(.osirion-menu-collapse-large, .osirion-menu-collapse-extra-large) .osirion-menu-item-has-submenu > .osirion-submenu,
+    :is(.osirion-menu-collapse-large, .osirion-menu-collapse-extra-large) .osirion-menu-item-has-submenu > .osirion-submenu.osirion-submenu-mega {
+        display: none;
+        position: static;
+        flex-basis: 100%;
+        width: auto;
+        min-width: 0;
+        max-width: none;
+        margin: 0.125rem 0 0.375rem 0.875rem;
+        padding: 0 0 0 0.5rem;
+        background-color: transparent;
+        border: 0;
+        border-left: 2px solid var(--osirion-menu-border-color, var(--osirion-border-color, rgba(15, 23, 42, 0.12)));
+        border-radius: 0;
+        box-shadow: none;
+        translate: none;
         animation: none;
+    }
+
+    :is(.osirion-menu-collapse-large, .osirion-menu-collapse-extra-large) .osirion-submenu::before {
+        display: none;
+    }
+
+    :is(.osirion-menu-collapse-large, .osirion-menu-collapse-extra-large) .osirion-menu-item-has-submenu:is(:hover, :focus-within) > .osirion-submenu {
+        display: none;
+    }
+
+    :is(.osirion-menu-collapse-large, .osirion-menu-collapse-extra-large) .osirion-submenu-toggler:checked ~ .osirion-submenu {
+        display: block;
+    }
+
+    :is(.osirion-menu-collapse-large, .osirion-menu-collapse-extra-large) .osirion-submenu-toggler:checked ~ .osirion-submenu-mega {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    :is(.osirion-menu-collapse-large, .osirion-menu-collapse-extra-large) .osirion-submenu .osirion-menu-item {
+        min-height: 2.75rem;
+        padding: 0.625rem 0.75rem;
+        font-size: 0.9375rem;
+    }
+
+    /* Mega submenus become one list of their groups; the promotional aside is left out */
+    :is(.osirion-menu-collapse-large, .osirion-menu-collapse-extra-large) .osirion-submenu-mega-content {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    :is(.osirion-menu-collapse-large, .osirion-menu-collapse-extra-large) .osirion-submenu-mega-aside {
+        display: none;
+    }
+
+    :is(.osirion-menu-collapse-large, .osirion-menu-collapse-extra-large) .osirion-submenu-mega .osirion-menu-item {
+        align-items: center;
+        gap: 0.625rem;
+        margin-inline: 0;
+    }
+
+    :is(.osirion-menu-collapse-large, .osirion-menu-collapse-extra-large) .osirion-submenu-mega .osirion-menu-item-text {
+        font-weight: inherit;
+    }
+
+    :is(.osirion-menu-collapse-large, .osirion-menu-collapse-extra-large) .osirion-submenu-mega .osirion-menu-item-icon {
+        width: 1.75rem;
+        height: 1.75rem;
+        padding: 0.375rem;
+    }
+}
+
+@media (max-width: 1439.98px) {
+    .osirion-menu-collapse-extra-large .osirion-menu-inner > .osirion-menu-item-wrapper {
+        display: block;
+    }
+
+    .osirion-menu-collapse-extra-large .osirion-menu-inner > .osirion-menu-item-has-submenu,
+    .osirion-menu-collapse-extra-large .osirion-menu-item-has-submenu {
+        display: flex;
+        align-items: stretch;
+    }
+
+    .osirion-menu-collapse-extra-large .osirion-menu-inner > .osirion-menu-item-has-submenu > .osirion-submenu-toggle {
+        align-self: stretch;
+    }
+
+    .osirion-menu-collapse-extra-large .osirion-menu-item {
+        min-height: 3rem;
+        padding: 0.75rem;
+        font-size: var(--osirion-font-size-base, 1rem);
+    }
+
+    .osirion-menu-collapse-extra-large .osirion-menu-item-description {
+        display: none;
+    }
+
+    .osirion-menu-collapse-extra-large .osirion-menu-item-has-submenu > .osirion-menu-item {
+        flex: 1 1 0%;
+    }
+
+    .osirion-menu-collapse-extra-large .osirion-menu-item-has-submenu > .osirion-submenu-toggle {
+        width: 3rem;
+    }
+
+    /* The row highlights while the pointer is on it, not while it is on the open submenu below it */
+    .osirion-menu-collapse-extra-large .osirion-menu-item-has-submenu:is(:hover, :focus-within) > :is(.osirion-menu-item, .osirion-submenu-toggle) {
+        background-color: transparent;
+    }
+
+    .osirion-menu-collapse-extra-large .osirion-menu-item-wrapper-active.osirion-menu-item-has-submenu > :is(.osirion-menu-item, .osirion-submenu-toggle) {
+        background-color: var(--osirion-menu-active-background, color-mix(in srgb, var(--osirion-menu-accent, var(--osirion-action-primary, #2563eb)) 12%, transparent));
+    }
+
+    .osirion-menu-collapse-extra-large .osirion-menu-item-has-submenu:has(> .osirion-menu-item:hover, > .osirion-submenu-toggle:hover) > :is(.osirion-menu-item, .osirion-submenu-toggle) {
+        background-color: var(--osirion-menu-hover-background, color-mix(in srgb, currentColor 8%, transparent));
+    }
+
+    /* Chevrons point down, and up once their submenu is open */
+    .osirion-menu-collapse-extra-large .osirion-submenu .osirion-menu-item-chevron,
+    .osirion-menu-collapse-extra-large .osirion-menu-inner > .osirion-menu-item-has-submenu:is(:hover, :focus-within) > .osirion-submenu-toggle .osirion-menu-item-chevron {
+        transform: rotate(90deg);
+    }
+
+    .osirion-menu-collapse-extra-large .osirion-menu-inner .osirion-submenu-toggler:checked ~ .osirion-submenu-toggle .osirion-menu-item-chevron {
+        transform: rotate(-90deg);
+    }
+
+    /* Submenus open in place, as an indented list, and only from their toggle */
+    .osirion-menu-collapse-extra-large .osirion-menu-item-has-submenu > .osirion-submenu,
+    .osirion-menu-collapse-extra-large .osirion-menu-item-has-submenu > .osirion-submenu.osirion-submenu-mega {
+        display: none;
+        position: static;
+        flex-basis: 100%;
+        width: auto;
+        min-width: 0;
+        max-width: none;
+        margin: 0.125rem 0 0.375rem 0.875rem;
+        padding: 0 0 0 0.5rem;
+        background-color: transparent;
+        border: 0;
+        border-left: 2px solid var(--osirion-menu-border-color, var(--osirion-border-color, rgba(15, 23, 42, 0.12)));
+        border-radius: 0;
+        box-shadow: none;
+        translate: none;
+        animation: none;
+    }
+
+    .osirion-menu-collapse-extra-large .osirion-submenu::before {
+        display: none;
+    }
+
+    .osirion-menu-collapse-extra-large .osirion-menu-item-has-submenu:is(:hover, :focus-within) > .osirion-submenu {
+        display: none;
     }
 
     .osirion-menu-collapse-extra-large .osirion-submenu-toggler:checked ~ .osirion-submenu {
         display: block;
     }
 
-    .osirion-menu-collapse-extra-large .osirion-submenu-toggler:checked ~ .osirion-submenu.osirion-submenu-mega {
+    .osirion-menu-collapse-extra-large .osirion-submenu-toggler:checked ~ .osirion-submenu-mega {
         display: flex;
         flex-direction: column;
-        gap: 0;
-        width: 100% !important;
-        transform: none !important;
+        gap: 0.25rem;
     }
 
-    .osirion-menu-collapse-extra-large .osirion-submenu.osirion-submenu-mega::before {
-        display: none;
+    .osirion-menu-collapse-extra-large .osirion-submenu .osirion-menu-item {
+        min-height: 2.75rem;
+        padding: 0.625rem 0.75rem;
+        font-size: 0.9375rem;
     }
 
+    /* Mega submenus become one list of their groups; the promotional aside is left out */
     .osirion-menu-collapse-extra-large .osirion-submenu-mega-content {
         display: flex;
         flex-direction: column;
+        gap: 0.25rem;
     }
 
     .osirion-menu-collapse-extra-large .osirion-submenu-mega-aside {
         display: none;
     }
+
+    .osirion-menu-collapse-extra-large .osirion-submenu-mega .osirion-menu-item {
+        align-items: center;
+        gap: 0.625rem;
+        margin-inline: 0;
+    }
+
+    .osirion-menu-collapse-extra-large .osirion-submenu-mega .osirion-menu-item-text {
+        font-weight: inherit;
+    }
+
+    .osirion-menu-collapse-extra-large .osirion-submenu-mega .osirion-menu-item-icon {
+        width: 1.75rem;
+        height: 1.75rem;
+        padding: 0.375rem;
+    }
 }
 
-/* Accessibility */
+/* Accessibility: reduced motion */
 @media (prefers-reduced-motion: reduce) {
     .osirion-menu-item,
+    .osirion-submenu-toggle,
     .osirion-menu-item-chevron {
         transition-duration: 0.01ms !important;
     }

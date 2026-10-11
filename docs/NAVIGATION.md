@@ -8,6 +8,7 @@ Enhanced navigation components for Blazor applications that work seamlessly with
 
 ## Features
 
+- **Menu**: A navigation bar with dropdowns and mega menus that becomes a hamburger drawer on small screens, without JavaScript
 - **EnhancedNavigation**: Improves Blazor's navigation experience with scroll restoration
 - **ScrollToTop**: Adds a customizable "back to top" button
 - **SSR Compatible**: Works with Server-Side Rendering and Static SSG
@@ -74,6 +75,30 @@ builder.Services.AddOsirion(builder.Configuration);
 ```
 
 ## Component Documentation
+
+### Menu
+
+`Menu` is the site navigation: a bar with dropdowns and mega menus on wide screens and a hamburger drawer below its
+collapse breakpoint, with the open state kept in CSS so it works under static SSR.
+
+```razor
+<Menu BrandText="Contoso" Alignment="MenuAlignment.Right" CollapseBreakpoint="MenuCollapseBreakpoint.Large">
+    <ChildContent>
+        <MenuItem Text="Products" HasSubmenu SubmenuVariant="SubmenuVariant.Mega">
+            <MenuGroup Label="Platform" Description="Everything you need to run it.">
+                <MenuItem Text="Analytics" Description="Know what works." Href="/products/analytics" />
+            </MenuGroup>
+        </MenuItem>
+        <MenuItem Text="Pricing" Href="/pricing" />
+    </ChildContent>
+    <Actions>
+        <ThemeToggle />
+    </Actions>
+</Menu>
+```
+
+See [Menu](components/navigation/Menu.md) for the parameters, the keyboard and drawer behaviour and the theming
+variables, and [MenuItems](components/navigation/MenuItems.md) for the items and mega menu building blocks.
 
 ### EnhancedNavigation
 

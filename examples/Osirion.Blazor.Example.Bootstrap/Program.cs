@@ -103,6 +103,8 @@ app.MapOsirionFeeds(feeds =>
 // sign-in first; see "Securing the Admin" in the Osirion.Blazor.Cms.Admin README.
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
-    .AddAdditionalAssemblies(typeof(Osirion.Blazor.Cms.Admin._Imports).Assembly);
+    .AddAdditionalAssemblies(
+        typeof(Osirion.Blazor.Examples.Shared._Imports).Assembly,
+        typeof(Osirion.Blazor.Cms.Admin._Imports).Assembly);
 
 app.Run();

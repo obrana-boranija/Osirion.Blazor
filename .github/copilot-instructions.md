@@ -146,6 +146,10 @@ dotnet run --project examples/Osirion.Blazor.Examples.AppHost
 dotnet watch --project examples/Osirion.Blazor.Example.Bootstrap/Osirion.Blazor.Example.Bootstrap.csproj
 ```
 
+The three example sites share their menu, footer and framework-neutral pages (home, blog, docs, tags, privacy, not
+found) through `examples/Osirion.Blazor.Examples.Shared`. A site keeps only what depends on its CSS framework: `App`,
+`MainLayout`, `Routes` and the pages written with the framework's own components. Change shared parts once, there.
+
 ### CI/CD
 - **.github/workflows/build.yml**: Runs on push to `master`, executes `dotnet build` and `dotnet test`
 - **e2e.yml** (repository root, not run by GitHub Actions): Playwright tests, installs Chromium dependencies on Ubuntu

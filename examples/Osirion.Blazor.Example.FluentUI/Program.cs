@@ -34,6 +34,7 @@ app.MapOsirionCookieConsent();
 app.UseAntiforgery();
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
+    .AddInteractiveServerRenderMode()
+    .AddAdditionalAssemblies(typeof(Osirion.Blazor.Examples.Shared._Imports).Assembly);
 
 app.Run();
