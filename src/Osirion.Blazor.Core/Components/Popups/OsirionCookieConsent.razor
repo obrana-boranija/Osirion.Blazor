@@ -10,7 +10,8 @@
         <AntiforgeryToken />
         <input type="hidden" name="expiryDays" value="@ConsentExpiryDays" />
         <input type="hidden" name="returnUrl" value="@GetCurrentUrl()" />
-        <div class="@GetCookieConsentClass()">
+        @* A named region, so the banner is not content outside every landmark (axe "region") *@
+        <div class="@GetCookieConsentClass()" role="region" aria-label="@Title">
             <div class="osirion-cookie-consent-container">
                 <div class="osirion-cookie-consent-content">
                     <div class="osirion-cookie-consent-message">
