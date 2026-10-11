@@ -1,0 +1,7 @@
+/* Answers are plain text: keep the line breaks the author wrote */
+.osirion-faq-answer {
+    margin: 0;
+    white-space: pre-line;
+    color: var(--osirion-text-secondary, #4b5563);
+    line-height: var(--osirion-line-height-relaxed, 1.625);
+}

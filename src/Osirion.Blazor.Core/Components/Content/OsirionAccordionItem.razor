@@ -1,0 +1,9 @@
+@namespace Osirion.Blazor.Components
+@inherits OsirionComponentBase
+
+<details class="@GetItemClass()" name="@Parent?.GroupName" open="@Open" @attributes="Attributes">
+    <summary class="osirion-accordion-summary">@Title</summary>
+    <div class="osirion-accordion-content">
+        @ChildContent
+    </div>
+</details>

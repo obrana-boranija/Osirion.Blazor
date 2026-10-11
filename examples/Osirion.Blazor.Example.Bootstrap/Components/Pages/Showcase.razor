@@ -1,5 +1,6 @@
 @page "/showcase"
 @using Osirion.Blazor.Components
+@using Osirion.Blazor.Core.Models
 
 <PageTitle>Component showcase - Osirion.Blazor</PageTitle>
 
@@ -31,4 +32,18 @@
             </OsirionTab>
         </OsirionTabs>
     </section>
+
+    <section aria-labelledby="showcase-faq">
+        <h2 id="showcase-faq">FAQ</h2>
+        <OsirionFaq Items="faq" AllowMultiple="false" />
+    </section>
 </div>
+
+@code {
+    private readonly FaqItem[] faq =
+    [
+        new("Does Osirion.Blazor need JavaScript?", "No. Every component renders with static server-side rendering; script only adds enhancements."),
+        new("Which CSS frameworks are supported?", "Bootstrap, MudBlazor, Fluent UI and Radzen, through theming adapters.\nWithout a framework, the default Osirion theme applies."),
+        new("Where does the content come from?", "Markdown files in a GitHub repository or in a local folder."),
+    ];
+}

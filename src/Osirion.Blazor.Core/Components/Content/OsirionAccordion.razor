@@ -1,0 +1,8 @@
+@namespace Osirion.Blazor.Components
+@inherits OsirionComponentBase
+
+<CascadingValue Value="this" IsFixed="true">
+    <div class="@GetContainerClass()" @attributes="Attributes">
+        @ChildContent
+    </div>
+</CascadingValue>
