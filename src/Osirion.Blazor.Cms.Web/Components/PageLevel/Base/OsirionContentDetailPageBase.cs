@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Enums;
 using Osirion.Blazor.Cms.Domain.Repositories;
-using Osirion.Blazor.Cms.Web.Components;
 
 namespace Osirion.Blazor.Cms.Web.Components;
 
@@ -11,42 +10,8 @@ namespace Osirion.Blazor.Cms.Web.Components;
 /// Represents the base class for a content detail page in the Osirion CMS.
 /// Provides properties and methods for displaying a single content item, navigation, and related content.
 /// </summary>
-public abstract partial class OsirionContentDetailPageBase : OsirionContentPageBase
+public abstract partial class OsirionContentDetailPageBase : OsirionContentItemPageBase
 {
-    #region Content
-
-    /// <summary>
-    /// Gets or sets the content item to display
-    /// </summary>
-    [Parameter]
-    public ContentItem? Item { get; set; }
-
-    /// <summary>
-    /// Gets or sets the path to the article content (eg. "en/articles/my-article.md")
-    /// </summary>
-    [Parameter]
-    public string? ItemPath { get; set; }
-
-    /// <summary>
-    /// Gets or sets the url to the article content (eg. "articles/my-article")
-    /// </summary>
-    [Parameter]
-    public string? ItemUrl { get; set; }
-
-    /// <summary>
-    /// Gets or sets the slug to the article content (eg. "my-article")
-    /// </summary>
-    [Parameter]
-    public string? ItemSlug { get; set; }
-
-    /// <summary>
-    /// Gets or sets the content URL formatter
-    /// </summary>
-    [Parameter]
-    public Func<ContentItem, string>? ItemUrlFormatter { get; set; }
-
-    #endregion
-
     #region Content Navigation 
 
     /// <summary>
@@ -97,77 +62,23 @@ public abstract partial class OsirionContentDetailPageBase : OsirionContentPageB
 
     #endregion
 
-    /// <summary>
-    /// Initializes the component and loads content asynchronously based on the provided parameters.
-    /// </summary>
-    protected override async Task OnParametersSetAsync()
-    {
-        await base.OnParametersSetAsync();
-        await LoadContentAsync();
-    }
-
-    // What this page loaded itself, so a change of ItemPath, ItemUrl, ItemSlug, Locale or Directory replaces it,
-    // while an Item supplied by the parent is left alone.
-    private string? _loadedKey;
-    private ContentItem? _loadedItem;
+    // Related items this page loaded itself, so loading another item replaces them, while related items supplied
+    // by the parent are left alone.
     private IReadOnlyList<ContentItem>? _loadedRelated;
 
-    private string BuildLoadKey() =>
-        string.Join('\u001f', ItemPath, ItemUrl, ItemSlug, Locale, DirectoryName);
-
-    /// <summary>
-    /// Loads the content asynchronously based on the provided parameters.
-    /// </summary>
-    protected async Task LoadContentAsync()
+    /// <inheritdoc/>
+    protected override void OnLoadedItemReplaced()
     {
-        var key = BuildLoadKey();
-        var itemSuppliedByParent = Item is not null && !ReferenceEquals(Item, _loadedItem);
-        if (itemSuppliedByParent)
+        if (ReferenceEquals(RelatedItems, _loadedRelated))
         {
-            return;
+            RelatedItems = null;
         }
 
-        if (Item is null || !string.Equals(key, _loadedKey, StringComparison.Ordinal))
-        {
-            if (ReferenceEquals(RelatedItems, _loadedRelated))
-            {
-                RelatedItems = null;
-            }
-
-            Item = null;
-            _loadedKey = key;
-            _loadedItem = null;
-            _loadedRelated = null;
-            ResetNotFoundSignal();
-            IsLoading = true;
-            try
-            {
-                var result = await ContentProviderManager
-                    .GetContentByQueryAsync(Query ?? new ContentQuery
-                    {
-                        Path = ItemPath,
-                        Directory = DirectoryName,
-                        Url = ItemUrl,
-                        Slug = ItemSlug,
-                        Locale = Locale,
-                        
-                    });
-
-                Item = _loadedItem = result?.FirstOrDefault();
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex, "Failed to load content (path {ItemPath}, url {ItemUrl}, slug {ItemSlug}, locale {Locale})",
-                    ItemPath, ItemUrl, ItemSlug, Locale);
-                Item = null;
-            }
-            finally
-            {
-                IsLoading = false;
-                await LoadRelatedContentAsync();
-            }
-        }
+        _loadedRelated = null;
     }
+
+    /// <inheritdoc/>
+    protected override Task OnItemLoadedAsync() => LoadRelatedContentAsync();
 
     private async Task LoadRelatedContentAsync()
     {
