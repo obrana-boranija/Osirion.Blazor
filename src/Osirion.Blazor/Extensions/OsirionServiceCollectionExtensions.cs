@@ -4,6 +4,7 @@ using Osirion.Blazor.Analytics.Options;
 using Osirion.Blazor.Components;
 using Osirion.Blazor.Internal;
 using Osirion.Blazor.Navigation.Options;
+using Osirion.Blazor.Options;
 using Osirion.Blazor.Core.Configuration;
 using Osirion.Blazor.Core.Extensions;
 
@@ -96,6 +97,12 @@ public static class OsirionServiceCollectionExtensions
             {
                 builder.UseSeoMetadata(seoSection);
             }
+
+            // The site OsirionSiteLayout renders
+            if (configuration.GetSection(OsirionSiteOptions.Section).Exists())
+            {
+                builder.UseSite(configuration);
+            }
         });
     }
 
@@ -116,5 +123,11 @@ public static class OsirionServiceCollectionExtensions
 
         // Content HTML is sanitized with the default allow-list unless the host configures it
         builder.Services.AddOsirionHtmlSanitizer();
+
+        // OsirionPageLayout, the content demos and the video embed load their scripts as JS components
+        if (!builder.Services.Any(descriptor => descriptor.ServiceType == typeof(BlazorJSComponents.JSElementReferenceScope)))
+        {
+            builder.Services.AddJSComponents();
+        }
     }
 }

@@ -1,8 +1,12 @@
 /* ContentListPage - Osirion.Blazor.Cms.Web */
 
 .osirion-content-list-page {
+    box-sizing: border-box;
     display: grid;
     gap: var(--osirion-spacing-8, 2rem);
+    margin: 0 auto;
+    padding: 0 var(--osirion-spacing-4, 1rem);
+    max-width: var(--osirion-container-xxl, 1320px);
 }
 
 .osirion-content-list-page-main {

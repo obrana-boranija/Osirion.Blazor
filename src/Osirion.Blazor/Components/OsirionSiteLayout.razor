@@ -1,0 +1,106 @@
+@namespace Osirion.Blazor.Components
+@inherits LayoutComponentBase
+@using Osirion.Blazor.Cms.Web.Components
+@using Osirion.Blazor.Navigation.Components
+@using Osirion.Blazor.Theming.Components
+
+<OsirionPageLayout StickyFooter EnableHeaderScrollBehavior>
+    <Header>
+        @if (Site.Announcement is { } announcement)
+        {
+            <OsirionAnnouncementBar Id="@announcement.Id">
+                @announcement.Text
+                @if (!string.IsNullOrWhiteSpace(announcement.LinkUrl))
+                {
+                    @(" ")<a href="@announcement.LinkUrl">@(announcement.LinkText ?? announcement.LinkUrl)</a>
+                }
+            </OsirionAnnouncementBar>
+        }
+
+        @if (Header is not null)
+        {
+            @Header
+        }
+        else
+        {
+            <Menu AriaLabel="@MenuLabel"
+                  Href="@Site.HomeUrl"
+                  BrandLogo="@Site.LogoUrl"
+                  BrandText="@Site.Name"
+                  Alignment="MenuAlignment.Right"
+                  CollapseBreakpoint="MenuCollapseBreakpoint.Large">
+                <ChildContent>
+                    @foreach (var item in Site.Menu)
+                    {
+                        @if (item.Items.Count > 0)
+                        {
+                            <MenuItem @key="item" Text="@item.Text" Description="@item.Description" HasSubmenu>
+                                @foreach (var child in item.Items)
+                                {
+                                    <MenuItem @key="child" Text="@child.Text" Description="@child.Description" Href="@child.Href" Match="@GetMatch(child)" />
+                                }
+                            </MenuItem>
+                        }
+                        else
+                        {
+                            <MenuItem @key="item" Text="@item.Text" Description="@item.Description" Href="@item.Href" Match="@GetMatch(item)" />
+                        }
+                    }
+                </ChildContent>
+                <Actions>
+                    @if (Site.ShowSearch)
+                    {
+                        <SearchBox ActionUrl="@Site.SearchUrl" Placeholder="@Site.SearchPlaceholder" />
+                    }
+                    @if (Site.ShowThemeToggle)
+                    {
+                        <ThemeToggle />
+                    }
+                    @MenuActions
+                </Actions>
+            </Menu>
+        }
+    </Header>
+
+    <Body>
+        @(ChildContent ?? Body)
+    </Body>
+
+    <Footer>
+        @if (Footer is not null)
+        {
+            @Footer
+        }
+        else
+        {
+            <OsirionFooter CompanyName="@(Site.Owner ?? Site.Name)"
+                           CompanyUrl="@(Site.OwnerUrl ?? Site.HomeUrl)"
+                           Description="@Site.FooterDescription"
+                           Links="@FooterSections"
+                           SocialLinks="@SocialLinks"
+                           BottomLinks="@LegalLinks">
+                <Logo>
+                    <a class="osirion-site-footer-brand" href="@Site.HomeUrl">
+                        @if (!string.IsNullOrWhiteSpace(Site.LogoUrl))
+                        {
+                            <img src="@Site.LogoUrl" width="40" height="40" alt="" />
+                        }
+                        <span>@Site.Name</span>
+                    </a>
+                </Logo>
+            </OsirionFooter>
+        }
+    </Footer>
+</OsirionPageLayout>
+
+<OsirionStyles />
+
+@if (Site.ShowCookieConsent)
+{
+    <OsirionCookieConsent />
+}
+
+@if (Site.ShowScrollToTop)
+{
+    <ScrollToTopProvider />
+}
