@@ -63,10 +63,33 @@
                            ProfileUrl="/blog"
                            Links="authorLinks" />
     </section>
+
+    <section aria-labelledby="showcase-pricing">
+        <h2 id="showcase-pricing">Pricing</h2>
+        <OsirionPricingTable Plans="plans" />
+        <h3 class="mt-5">Compare plans</h3>
+        <OsirionFeatureComparison PlanNames="planNames" Rows="comparison" />
+    </section>
 </div>
 
 @code {
     private const string PhotoUrl = "https://images.unsplash.com/photo-1460925895917-afdab827c52f";
+    private readonly PricingPlan[] plans =
+    [
+        new() { Name = "Community", Price = "Free", Period = "forever", Description = "For personal sites.", Features = ["All components", "GitHub and file content"], CallToActionText = "Install", CallToActionUrl = "https://www.nuget.org/packages/Osirion.Blazor" },
+        new() { Name = "Team", Price = "$29", Period = "per month", Description = "For teams shipping content sites.", Features = ["Everything in Community", "Priority issues", "Theme review"], CallToActionText = "Contact us", CallToActionUrl = "/contact", Highlighted = true, Badge = "Most popular" },
+        new() { Name = "Enterprise", Price = "Custom", Description = "For organisations with many sites.", Features = ["Everything in Team", "Support agreement"], CallToActionText = "Talk to us", CallToActionUrl = "/contact" },
+    ];
+
+    private readonly string[] planNames = ["Community", "Team", "Enterprise"];
+
+    private readonly FeatureComparisonRow[] comparison =
+    [
+        new("Static SSR components", [true, true, true]),
+        new("Priority issues", [false, true, true]),
+        new("Support", ["Community", "Email", "Agreement"]),
+    ];
+
     private readonly AuthorLink[] authorLinks = [new("GitHub", "https://github.com/obrana-boranija/Osirion.Blazor"), new("NuGet", "https://www.nuget.org/packages/Osirion.Blazor")];
     private readonly int[] imageWidths = [640, 960, 1280, 1600];
 

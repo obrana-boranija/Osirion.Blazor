@@ -1,9 +1,10 @@
 @namespace Osirion.Blazor.Components
 @inherits OsirionComponentBase
+@using Osirion.Blazor.Core.Utils
 @using Osirion.Blazor.Core.Models
 
 <div class="@GetAuthorCardClass()" @attributes="Attributes">
-    @if (IsSafeUrl(AvatarUrl))
+    @if (SafeLink.IsSafe(AvatarUrl))
     {
         <img class="osirion-author-card-avatar" src="@AvatarUrl" alt="" width="64" height="64" loading="lazy" decoding="async" />
     }
@@ -14,7 +15,7 @@
 
     <div class="osirion-author-card-body">
         <p class="osirion-author-card-name">
-            @if (IsSafeUrl(ProfileUrl))
+            @if (SafeLink.IsSafe(ProfileUrl))
             {
                 <a href="@ProfileUrl" rel="author">@Name</a>
             }

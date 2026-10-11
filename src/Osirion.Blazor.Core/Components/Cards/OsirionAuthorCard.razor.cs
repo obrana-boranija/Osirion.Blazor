@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Osirion.Blazor.Core.Models;
+using Osirion.Blazor.Core.Utils;
 
 namespace Osirion.Blazor.Components;
 
@@ -48,28 +49,11 @@ public partial class OsirionAuthorCard
     /// <inheritdoc/>
     protected override void OnParametersSet()
     {
-        SafeLinks = Links?.Where(link => !string.IsNullOrWhiteSpace(link.Label) && IsSafeUrl(link.Url)).ToArray() ?? [];
+        SafeLinks = Links?.Where(link => !string.IsNullOrWhiteSpace(link.Label) && SafeLink.IsSafe(link.Url)).ToArray() ?? [];
         Initials = string.Concat(Name
             .Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
             .Take(2)
             .Select(part => char.ToUpperInvariant(part[0])));
-    }
-
-    // Values may come from content, so only schemes that cannot run script reach an href or src.
-    private static bool IsSafeUrl(string? url)
-    {
-        if (string.IsNullOrWhiteSpace(url))
-        {
-            return false;
-        }
-
-        if (url.StartsWith('/') && !url.StartsWith("//", StringComparison.Ordinal) && !url.StartsWith("/\\", StringComparison.Ordinal))
-        {
-            return true;
-        }
-
-        return Uri.TryCreate(url, UriKind.Absolute, out var uri)
-            && (uri.Scheme == Uri.UriSchemeHttps || uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeMailto);
     }
 
     private string GetAuthorCardClass() =>

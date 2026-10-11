@@ -21,8 +21,7 @@
     align-items: center;
     justify-content: center;
     background-color: var(--osirion-action-primary, #2563eb);
-    /* The page background contrasts with the primary color in both themes. */
-    color: var(--osirion-background-primary, #fff);
+    color: var(--osirion-action-primary-text, #fff);
     font-weight: var(--osirion-font-weight-semibold, 600);
     font-size: 1.25rem;
 }

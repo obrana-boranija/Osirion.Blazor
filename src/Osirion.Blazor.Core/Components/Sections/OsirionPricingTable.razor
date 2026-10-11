@@ -1,0 +1,50 @@
+@namespace Osirion.Blazor.Components
+@inherits OsirionComponentBase
+@using Osirion.Blazor.Core.Utils
+
+@if (Plans.Count > 0)
+{
+    <ul class="@GetPricingTableClass()" role="list" @attributes="Attributes">
+        @foreach (var plan in Plans)
+        {
+            <li @key="plan.Name" class="@GetPlanClass(plan)">
+                @if (!string.IsNullOrWhiteSpace(plan.Badge))
+                {
+                    <p class="osirion-pricing-badge">@plan.Badge</p>
+                }
+
+                <p class="osirion-pricing-name">@plan.Name</p>
+
+                <p class="osirion-pricing-price">
+                    <span class="osirion-pricing-amount">@plan.Price</span>
+                    @if (!string.IsNullOrWhiteSpace(plan.Period))
+                    {
+                        <span class="osirion-pricing-period">@plan.Period</span>
+                    }
+                </p>
+
+                @if (!string.IsNullOrWhiteSpace(plan.Description))
+                {
+                    <p class="osirion-pricing-description">@plan.Description</p>
+                }
+
+                @if (plan.Features.Count > 0)
+                {
+                    <ul class="osirion-pricing-features">
+                        @foreach (var feature in plan.Features)
+                        {
+                            <li>@feature</li>
+                        }
+                    </ul>
+                }
+
+                @if (!string.IsNullOrWhiteSpace(plan.CallToActionText) && SafeLink.IsSafe(plan.CallToActionUrl))
+                {
+                    <a class="osirion-pricing-action @(plan.Highlighted ? GetPrimaryButtonClass() : GetOutlinedPrimaryButtonClass())"
+                       href="@plan.CallToActionUrl"
+                       aria-label="@($"{plan.CallToActionText}: {plan.Name}")">@plan.CallToActionText</a>
+                }
+            </li>
+        }
+    </ul>
+}
