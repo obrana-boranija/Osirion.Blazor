@@ -1,7 +1,12 @@
+using System.Text;
+using System.Text.RegularExpressions;
+using AngleSharp;
+using AngleSharp.Dom;
+using AngleSharp.Html.Parser;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.DependencyInjection;
 using Osirion.Blazor.Core.Extensions;
 using Osirion.Blazor.Core.Services;
-using System.Text.RegularExpressions;
 
 namespace Osirion.Blazor.Components;
 
@@ -88,6 +93,14 @@ public partial class OsirionHtmlRenderer
     [Parameter]
     public string? PrismBaseUrl { get; set; }
 
+    /// <summary>
+    /// Gets or sets whether fenced <c>demo</c> blocks whose text is a registered demo key (see
+    /// <c>AddOsirionContentDemos</c>) render the live demo instead of the code block. Defaults to <see langword="true"/>.
+    /// Only blocks at the top level of the content are replaced; a block inside a list or quote stays a code block.
+    /// </summary>
+    [Parameter]
+    public bool EnableDemos { get; set; } = true;
+
     [Inject]
     private IServiceProvider ServiceProvider { get; set; } = default!;
 
@@ -105,6 +118,15 @@ public partial class OsirionHtmlRenderer
     /// Processed HTML with enhanced code blocks
     /// </summary>
     private string ProcessedHtml { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The content split around embedded demos, or <see langword="null"/> when it has none.
+    /// </summary>
+    private IReadOnlyList<HtmlSegment>? Segments { get; set; }
+
+    // Marks where a demo was taken out of the content. The random part cannot occur in content, and it is added after
+    // sanitization, so content cannot forge a marker.
+    private readonly string _demoMarker = "<!--osirion-demo-" + Guid.NewGuid().ToString("N") + "-";
 
     /// <inheritdoc />
     protected override void OnParametersSet()
@@ -156,19 +178,25 @@ public partial class OsirionHtmlRenderer
             content = SanitizeHtmlContent(content);
         }
 
-        HasCodeBlocks = CodeBlockPattern.IsMatch(content);
+        var demos = ExtractDemos(ref content);
+        HasCodeBlocks = CodeBlockPattern.IsMatch(content) || demos.Any(demo => demo.Source is not null);
         DetectedLanguages.Clear();
-
-        if (!HasCodeBlocks || !EnableSyntaxHighlighting)
+        if (demos.Any(demo => demo.Source is not null))
         {
-            ProcessedHtml = content;
-            return;
+            DetectedLanguages.Add("cshtml");
         }
+
+        ProcessedHtml = !HasCodeBlocks || !EnableSyntaxHighlighting ? content : EnhanceCodeBlocks(content);
+        Segments = demos.Count == 0 ? null : SplitAroundDemos(ProcessedHtml, demos);
+    }
+
+    private string EnhanceCodeBlocks(string content)
+    {
 
         // One pass over the content: every block is rewritten where it stands, so identical blocks are each
         // handled once and a wrapped block is never searched again.
         var codeBlockIndex = 0;
-        ProcessedHtml = CodeBlockPattern.Replace(content, match =>
+        return CodeBlockPattern.Replace(content, match =>
         {
             var codeBlock = match.Value;
 
@@ -273,6 +301,72 @@ public partial class OsirionHtmlRenderer
     }
 
     /// <summary>
+    /// Replaces each top-level fenced <c>demo</c> block whose key is registered with a marker, and returns the demos in
+    /// order. Content without such a block is returned unchanged, without being parsed.
+    /// </summary>
+    private List<ContentDemo> ExtractDemos(ref string content)
+    {
+        var demos = new List<ContentDemo>();
+        if (!EnableDemos || !content.Contains("language-demo", StringComparison.OrdinalIgnoreCase)
+            || ServiceProvider.GetService<IContentDemoRegistry>() is not { } registry)
+        {
+            return demos;
+        }
+
+        var parser = new HtmlParser();
+        var context = parser.ParseDocument(string.Empty).Body!;
+        var rebuilt = new StringBuilder(content.Length);
+        foreach (var node in parser.ParseFragment(content, context))
+        {
+            if (node is IElement { LocalName: "pre" } pre
+                && pre.Children.Length == 1
+                && pre.Children[0] is IElement { LocalName: "code" } code
+                && code.ClassList.Contains("language-demo")
+                && registry.TryGet(code.TextContent.Trim(), out var demo))
+            {
+                rebuilt.Append(_demoMarker).Append(demos.Count).Append("-->");
+                demos.Add(demo);
+            }
+            else
+            {
+                rebuilt.Append(node.ToHtml());
+            }
+        }
+
+        if (demos.Count > 0)
+        {
+            content = rebuilt.ToString();
+        }
+
+        return demos;
+    }
+
+    private List<HtmlSegment> SplitAroundDemos(string html, List<ContentDemo> demos)
+    {
+        var segments = new List<HtmlSegment>();
+        var position = 0;
+        foreach (Match marker in Regex.Matches(html, Regex.Escape(_demoMarker) + "([0-9]+)-->"))
+        {
+            if (marker.Index > position)
+            {
+                segments.Add(new HtmlSegment(html[position..marker.Index], null));
+            }
+
+            segments.Add(new HtmlSegment(null, demos[int.Parse(marker.Groups[1].Value, System.Globalization.CultureInfo.InvariantCulture)]));
+            position = marker.Index + marker.Length;
+        }
+
+        if (position < html.Length)
+        {
+            segments.Add(new HtmlSegment(html[position..], null));
+        }
+
+        return segments;
+    }
+
+    private sealed record HtmlSegment(string? Html, ContentDemo? Demo);
+
+    /// <summary>
     /// Sanitize HTML content to prevent XSS attacks
     /// </summary>
     private string SanitizeHtmlContent(string html)
@@ -288,21 +382,8 @@ public partial class OsirionHtmlRenderer
     /// <summary>
     /// Wrap a code block with additional markup for features
     /// </summary>
-    private string WrapCodeBlock(string codeBlock, string language, int index)
-    {
-        var languageLabel = GetLanguageLabel(language);
-
-        return $@"
-            <div class=""osirion-code-wrapper"" data-language=""{language}"">
-                <div class=""osirion-code-header"">
-                    <span class=""osirion-language-label"">{languageLabel}</span>
-                    <button class=""{GetButtonClass()} osirion-copy-button"" aria-label=""Copy {languageLabel} code to clipboard"" onclick=""osirionCopyCode(this)"">
-                        <span class=""osirion-copy-text"">Copy</span>
-                    </button>
-                </div>
-                {codeBlock}
-            </div>";
-    }
+    private string WrapCodeBlock(string codeBlock, string language, int index) =>
+        CodeBlockMarkup.Wrap(codeBlock, language, GetLanguageLabel(language), GetButtonClass());
 
     /// <summary>
     /// Get a display label for a language

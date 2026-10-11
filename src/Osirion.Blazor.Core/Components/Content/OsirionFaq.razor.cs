@@ -6,7 +6,9 @@ namespace Osirion.Blazor.Components;
 
 /// <summary>
 /// Frequently asked questions as an <see cref="OsirionAccordion"/>, with FAQPage structured data
-/// (<see href="https://schema.org/FAQPage">schema.org</see>) so search engines can show the answers in results.
+/// (<see href="https://schema.org/FAQPage">schema.org</see>) that describes the questions and answers to search
+/// engines and other readers of the page. Google no longer shows FAQ rich results (since May 2026), so the data does
+/// not change how the page looks in Google results.
 /// </summary>
 public partial class OsirionFaq
 {

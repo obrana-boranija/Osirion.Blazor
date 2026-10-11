@@ -4,9 +4,12 @@ using Osirion.Blazor.Extensions;
 using Osirion.Blazor.Cms.Web.Middleware;
 using Osirion.Blazor.Cms.Web.DependencyInjection;
 using Osirion.Blazor.Cms.Web.Feeds;
+using Osirion.Blazor.Cms.Web.Redirects;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.AspNetCore.ResponseCompression;
 using Osirion.Blazor.Core.Extensions;
+using Osirion.Blazor.Core.Services;
+using Osirion.Blazor.Example.Bootstrap.Components.Demos;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +22,11 @@ builder.Services.AddOsirion(builder.Configuration);
 builder.Services.AddGitHubWebhookAndPolling();
 builder.Services.AddJSComponents();
 builder.Services.AddOsirionCookieConsent();
+
+// Live demos that Markdown content embeds with a fenced "demo" block
+builder.Services.AddOsirionContentDemos(demos => demos
+    .Add<InstallTabsDemo>("install-tabs", title: "Install command tabs", source: ContentDemoRegistry.ReadEmbeddedSource(
+        typeof(InstallTabsDemo).Assembly, "Osirion.Blazor.Example.Bootstrap.Components.Demos.InstallTabsDemo.razor")));
 
 // Optional: Override SEO metadata configuration programmatically
 // Uncomment below to override values from appsettings.json
@@ -76,6 +84,9 @@ app.MapOsirionAnnouncements();
 
 app.UseAntiforgery();
 app.MapStaticAssets();
+
+// Old URLs listed in redirect_from front matter answer with a 301 to the page's current address.
+app.UseOsirionRedirects();
 
 // /sitemap.xml, /feed.xml (RSS) and /atom.xml from the published content. A deployed site sets SiteUrl so the
 // URLs do not depend on the request's Host header.

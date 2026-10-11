@@ -28,6 +28,16 @@ public class MarkdownProcessorTests
     }
 
     [Fact]
+    public void ExtractFrontMatterAndContent_RedirectFrom_IsReadAsAList()
+    {
+        var (frontMatter, _) = _processor.ExtractFrontMatterAndContent(
+            "---\ntitle: Tabs\nredirect_from:\n  - /docs/components/core/content/tabs\n  - /docs/tabs\n---\nBody");
+
+        frontMatter.ShouldNotBeNull();
+        frontMatter.RedirectFrom.ShouldBe(["/docs/components/core/content/tabs", "/docs/tabs"]);
+    }
+
+    [Fact]
     public void ExtractFrontMatterAndContent_SeriesKeys_AreRead()
     {
         var (frontMatter, _) = _processor.ExtractFrontMatterAndContent("---\ntitle: Part two\nseries: Build a blog\nseries_order: 2\n---\nBody");
@@ -35,6 +45,15 @@ public class MarkdownProcessorTests
         frontMatter.ShouldNotBeNull();
         frontMatter.Series.ShouldBe("Build a blog");
         frontMatter.SeriesOrder.ShouldBe(2);
+    }
+
+    // OsirionHtmlRenderer replaces this block with a registered demo, so the class must survive rendering and sanitizing.
+    [Fact]
+    public async Task RenderToHtmlAsync_DemoFence_KeepsTheLanguageDemoClass()
+    {
+        var html = await ((IMarkdownProcessor)_processor).RenderToHtmlAsync("Intro\n\n```demo\ntabs-basic\n```\n");
+
+        html.ShouldContain("<pre><code class=\"language-demo\">tabs-basic");
     }
 
     // Each row is a way to get active markup out of markdown with the default Markdig pipeline

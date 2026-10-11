@@ -275,6 +275,7 @@ metadata:
 | `last_modified` | DateTime | Last change, used by the sitemap and feeds | Optional |
 | `series` | String | Series the item belongs to, for `ContentSeriesNavigation` | Optional |
 | `series_order` | Number | Position in the series, starting at 1 | Optional |
+| `redirect_from` | List | Earlier URLs of the item; requests for them redirect here (`UseOsirionRedirects`) | Optional |
 | `description` | String | Meta description | Recommended |
 | `author` | String | Author name | Recommended |
 | `categories` | Array | Content categories | Optional |
@@ -605,6 +606,55 @@ public class CustomSeoProcessor : ISeoProcessor
     }
 }
 ```
+
+### Live Demos in Content
+
+Register Razor components as demos and embed them in Markdown with a fenced `demo` block:
+
+````markdown
+```demo
+install-tabs
+```
+````
+
+```csharp
+builder.Services.AddOsirionContentDemos(demos => demos
+    .Add<InstallTabsDemo>("install-tabs", source: ContentDemoRegistry.ReadEmbeddedSource(
+        typeof(InstallTabsDemo).Assembly, "MySite.Components.Demos.InstallTabsDemo.razor")));
+```
+
+The block renders the component, with Preview and Code tabs when the demo has source code. See
+`docs/components/core/OsirionContentDemo.md`.
+
+### Redirects
+
+When a page moves, list its earlier URLs in `redirect_from` and add the middleware before the page endpoints:
+
+```yaml
+---
+title: "Tabs"
+redirect_from:
+  - /docs/components/core/content/tabs
+---
+```
+
+```csharp
+using Osirion.Blazor.Cms.Web.Redirects;
+
+app.UseOsirionRedirects(redirects =>
+{
+    // Pages that are not content items
+    redirects.Redirects["/docs/components/core"] = "/components";
+});
+```
+
+- GET and HEAD requests for an old URL get a 301 to the item's current URL (`/{item.Url}`, or `ContentUrlFormatter`);
+  `Permanent = false` answers 302. The query string is kept; the app's path base is added.
+- Paths match ignoring case and a trailing slash. A published page at the same address wins over a redirect, and the
+  first item to claim an old URL keeps it; both cases are logged as warnings.
+- The map is built from published content and reused for `CacheDuration` (5 minutes by default). If the content
+  cannot be read, the fixed redirects keep working and the failure is not cached.
+- Fixed redirects are checked at startup: sources must be site paths, targets site paths or absolute http(s) URLs.
 
 ### Sitemap and Feeds
 

@@ -258,8 +258,29 @@ Documentation is a crucial part of our project. When adding or modifying feature
 - Include code examples for all features
 - Structure documents with proper headings
 - Link to related documentation
-- Include parameter tables for components
+- Include parameter tables for components (see below)
 - Document supported frameworks and versions
+
+### Generated parameter tables
+
+Parameter tables in the site content can be generated from the components, so they cannot drift from the code. Put
+a pair of markers where the table belongs:
+
+```markdown
+<!-- osirion:parameters OsirionTabs -->
+<!-- /osirion:parameters -->
+```
+
+Then run the generator over the content folder. It rewrites everything between each pair of markers with a table of
+the component's `[Parameter]` properties (its own first, then inherited ones), their types, the defaults their
+initializers set and the `<summary>` from the XML docs:
+
+```powershell
+dotnet run --project tools/Osirion.Blazor.ApiDocs -- content
+dotnet run --project tools/Osirion.Blazor.ApiDocs -- content --check   # exit code 1 when a table is out of date
+```
+
+The description comes from the XML docs, so write the `<summary>` of a parameter for the reader of the website.
 
 ## Versioning
 

@@ -168,7 +168,9 @@ Valid JSON-LD replaces the generated data. It is parsed and written again with `
 close the script element; invalid JSON-LD is dropped with a logged warning, and the generated data is used instead.
 
 Available from 4.1: `OsirionFaq` renders questions and answers you write and the matching `FAQPage` data. Prefer it
-to the FAQ data the renderer can derive from titles, which is off by default (`EnableGeneratedFaq`).
+to the FAQ data the renderer can derive from titles, which is off by default (`EnableGeneratedFaq`). Google no longer
+shows FAQ rich results (since May 2026) or HowTo rich results (since 2023), so this data describes the page without
+changing how it looks in Google results.
 
 ## 6. Publish a sitemap and feeds
 

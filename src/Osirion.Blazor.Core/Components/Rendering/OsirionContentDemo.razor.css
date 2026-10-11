@@ -1,0 +1,10 @@
+.osirion-content-demo {
+    margin: var(--osirion-spacing-6, 1.5rem) 0;
+}
+
+.osirion-content-demo-preview {
+    padding: var(--osirion-spacing-6, 1.5rem);
+    border: 1px solid var(--osirion-border-color, #e5e7eb);
+    border-radius: var(--osirion-radius-md, 0.375rem);
+    background-color: var(--osirion-background-primary, #fff);
+}
