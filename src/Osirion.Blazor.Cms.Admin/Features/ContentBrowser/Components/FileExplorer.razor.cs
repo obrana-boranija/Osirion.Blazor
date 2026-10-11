@@ -27,6 +27,15 @@ public partial class FileExplorer : IDisposable
     [Parameter]
     public bool CanDeleteFile { get; set; } = true;
 
+    private string DisplayedPath => string.IsNullOrWhiteSpace(ViewModel.CurrentPath) ? "/" : ViewModel.CurrentPath;
+
+    // The markup branches live here so the render tree keeps a low complexity.
+    private string WhenSelected(GitHubItem item, string selectedClass, string otherClass) =>
+        ViewModel.IsItemSelected(item) ? selectedClass : otherClass;
+
+    private static string FileIconClass(GitHubItem item) =>
+        item.Name.EndsWith(".md", StringComparison.OrdinalIgnoreCase) ? "bi-markdown-fill" : "bi-file-earmark";
+
     /// <summary>Initializes the component state and required services.</summary>
     protected override void OnInitialized()
     {

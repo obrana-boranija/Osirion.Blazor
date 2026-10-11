@@ -85,6 +85,16 @@ public partial class AdminLayout : IDisposable
         AdminState.StateChanged += StateHasChanged;
     }
 
+    // The markup branches live here so the render tree keeps a low complexity.
+    private string? UserInitial => authService.Username?.Substring(0, 1).ToUpper();
+
+    private bool HasBreadcrumbItems => BreadcrumbItems is not null && BreadcrumbItems.Count > 0;
+
+    private string ThemeToggleIconClass => Theme == "light" ? "bi-moon" : "bi-sun";
+
+    private bool IsCurrentCrumb(BreadcrumbItem item) =>
+        string.IsNullOrWhiteSpace(item.Url) || item == BreadcrumbItems!.Last();
+
     private async Task SignOut()
     {
         await authService.SignOutAsync();
