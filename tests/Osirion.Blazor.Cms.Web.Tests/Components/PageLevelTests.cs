@@ -220,20 +220,6 @@ public class PageLevelTests : CmsWebComponentTestBase
         return item;
     }
 
-    private sealed class RecordingNavigationManager : NavigationManager
-    {
-        public RecordingNavigationManager()
-        {
-            Initialize("http://localhost/", "http://localhost/blog/page");
-            OnNotFound += (_, _) => NotFoundCalls++;
-        }
-
-        public int NotFoundCalls { get; private set; }
-
-        protected override void NavigateToCore(string uri, NavigationOptions options) => Uri = ToAbsoluteUri(uri).ToString();
-
-    }
-
     private sealed class RecordingLoggerFactory(RecordingLogger logger) : ILoggerFactory
     {
         public void AddProvider(ILoggerProvider provider)

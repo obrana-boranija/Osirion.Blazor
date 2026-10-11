@@ -1,0 +1,38 @@
+@namespace Osirion.Blazor.Cms.Web.Components
+@inherits OsirionContentItemPageBase
+
+<div class="@CombineCssClasses("osirion-about-page")" style="@Style" @attributes="Attributes">
+    @if (IsLoading)
+    {
+        <OsirionPageLoading ShowText="ShowLoadingText" Text="@LoadingText" />
+    }
+    else if (Item is null)
+    {
+        <OsirionContentNotFound ErrorCode="404" />
+    }
+    else
+    {
+        <HeadContent>
+            <SeoMetadataRenderer Content="Item"
+                                 SiteNameOverride="@WebsiteName"
+                                 OrganizationName="@OrganizationName"
+                                 SiteLogoUrl="@SiteLogoUrl"
+                                 SchemaTypes="@(SchemaTypes ?? DefaultSchemaTypes)"
+                                 GenerateMultipleSchemas="@GenerateMultipleSchemas"
+                                 AlternateLanguageUrls="@AlternateLanguageUrls" />
+        </HeadContent>
+
+        @RenderPageHeading(Item.Title, Item.Description)
+
+        <div class="osirion-about-page-body">
+            <ContentRenderer Item="@Item" OmitLeadingTitle />
+        </div>
+
+        @if (ChildContent is not null)
+        {
+            <div class="osirion-about-page-more">
+                @ChildContent
+            </div>
+        }
+    }
+</div>
