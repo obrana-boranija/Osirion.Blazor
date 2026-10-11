@@ -99,6 +99,18 @@ public class SeoMetadataRendererStructuredDataTests : CmsWebComponentTestBase
         schemas[0].ShouldBe(Normalize(RecipeJson));
     }
 
+    [Fact]
+    public void SeoMetadataRenderer_FrontMatterTypeLocalBusiness_DoesNotWriteTheTypeAsTelephone()
+    {
+        var item = SeoTestContent.Article();
+        item.Metadata = new FrontMatter { SeoProperties = new SeoMetadata { Type = "LocalBusiness" } };
+
+        var schemas = RenderJsonLd(p => p.Add(c => c.Content, item));
+
+        schemas[0].ShouldContain("\"@type\": \"LocalBusiness\"");
+        schemas[0].ShouldNotContain("\"telephone\"");
+    }
+
     [Theory]
     [InlineData("Unknown")]
     [InlineData("")]
@@ -409,7 +421,6 @@ public class SeoMetadataRendererStructuredDataTests : CmsWebComponentTestBase
           "description": "A practical description of testing. It covers the basics.",
           "image": "http://localhost/images/cover.png",
           "url": "http://localhost/blog/guides/my-post",
-          "telephone": null,
           "address": {
             "@type": "PostalAddress",
             "streetAddress": "",
