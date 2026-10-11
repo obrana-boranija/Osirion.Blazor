@@ -15,11 +15,11 @@
 .osirion-menu-call-to-action:focus-visible {
     color: var(--osirion-menu-color, var(--osirion-text-primary, #1f2937));
     text-decoration: none;
-    border-color: var(--osirion-menu-accent, var(--osirion-action-primary, #2563eb));
+    border-color: var(--osirion-menu-accent, var(--osirion-link-color, var(--osirion-action-primary, #2563eb)));
 }
 
 .osirion-menu-call-to-action:focus-visible {
-    outline: 2px solid var(--osirion-menu-accent, var(--osirion-action-primary, #2563eb));
+    outline: 2px solid var(--osirion-menu-accent, var(--osirion-link-color, var(--osirion-action-primary, #2563eb)));
     outline-offset: 2px;
 }
 
@@ -51,7 +51,7 @@
 .osirion-menu-call-to-action-arrow {
     flex-shrink: 0;
     font-size: var(--osirion-font-size-lg, 1.125rem);
-    color: var(--osirion-menu-accent, var(--osirion-action-primary, #2563eb));
+    color: var(--osirion-menu-accent, var(--osirion-link-color, var(--osirion-action-primary, #2563eb)));
     transition: transform var(--osirion-transition-duration-150, 150ms) ease;
 }
 
