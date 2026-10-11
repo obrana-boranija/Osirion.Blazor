@@ -61,7 +61,8 @@ public class GitHubPollingService : BackgroundService
     /// <summary>
     /// Checks for changes in GitHub repositories and updates content cache if needed
     /// </summary>
-    private async Task CheckForChangesAsync(CancellationToken stoppingToken)
+    /// <remarks>Internal so one polling pass can be tested without waiting for the timer.</remarks>
+    internal async Task CheckForChangesAsync(CancellationToken stoppingToken)
     {
         using var scope = _serviceProvider.CreateScope();
 
