@@ -1,0 +1,25 @@
+# Codecov settings. Target: 90% for the project and for every change.
+# Both statuses are informational while coverage is being raised to the target;
+# set `informational: false` to make them blocking.
+codecov:
+  require_ci_to_pass: true
+
+coverage:
+  status:
+    project:
+      default:
+        target: 90%
+        threshold: 1%
+        informational: true
+    patch:
+      default:
+        target: 90%
+        informational: true
+
+ignore:
+  - "examples"
+  - "tests"
+  - "**/obj/**"
+
+comment:
+  layout: "diff, flags, files"

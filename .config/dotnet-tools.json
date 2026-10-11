@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "isRoot": true,
+  "tools": {
+    "crap4dotnet": {
+      "version": "0.1.1",
+      "commands": [
+        "dotnet-crap"
+      ],
+      "rollForward": false
+    }
+  }
+}

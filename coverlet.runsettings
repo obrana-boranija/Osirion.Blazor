@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Coverage settings for the XPlat code coverage collector (coverlet.collector), passed explicitly
+  together with the collector so that plain test runs stay fast. Used by .github/workflows/coverage.yml
+  and tools/run-crap.ps1; CONTRIBUTING.md shows the dotnet test command line.
+-->
+<RunSettings>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="XPlat code coverage">
+        <Configuration>
+          <Format>cobertura</Format>
+          <!-- Generated code is not ours to test; real logic is never excluded by attribute. -->
+          <ExcludeByAttribute>GeneratedCodeAttribute,CompilerGeneratedAttribute,ExcludeFromCodeCoverageAttribute</ExcludeByAttribute>
+          <!-- Source generator output (for example the Regex generator) lands under obj/. -->
+          <ExcludeByFile>**/obj/**/*.cs</ExcludeByFile>
+          <!-- Auto-property accessors hold no logic; counting them only adds noise. -->
+          <SkipAutoProps>true</SkipAutoProps>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>

@@ -7,38 +7,51 @@ on:
     branches: [ master ]
   workflow_dispatch: # Allow manual triggering
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   test:
     name: Test and Coverage
     runs-on: ubuntu-latest
-    
+
     steps:
     - uses: actions/checkout@v4
       with:
         fetch-depth: 0
-    
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: |
           9.0.x
           10.0.x
-    
+
     - name: Restore dependencies
-      run: dotnet restore
-      
+      run: |
+        dotnet restore
+        dotnet tool restore
+
     - name: Build
       run: dotnet build --no-restore --configuration Release
-      
+
+    # Every test project except the Playwright suite, which needs browsers and runs from e2e.yml.
+    # A failing or undiscovered test fails this step, so a partial report is never uploaded.
     - name: Test with coverage
-      id: test
-      continue-on-error: true  # Continue even if tests fail
       run: |
-        dotnet test --no-build --configuration Release --verbosity detailed \
-          --collect:"XPlat Code Coverage" \
-          --results-directory ./coverage \
-          --logger "trx;LogFileName=test-results.trx"
-      
+        status=0
+        for project in tests/*/*.csproj; do
+          name=$(basename "$project" .csproj)
+          if [ "$name" = "Osirion.Blazor.E2ETests" ]; then continue; fi
+          dotnet test "$project" --no-build --configuration Release \
+            --settings coverlet.runsettings \
+            --collect:"XPlat Code Coverage" \
+            --results-directory "./coverage/$name" \
+            --logger "trx;LogFileName=$name.trx" || status=1
+        done
+        exit $status
+
     - name: Upload test results
       if: always()
       uses: actions/upload-artifact@v4
@@ -46,93 +59,51 @@ jobs:
         name: test-results
         path: ./coverage/**/*.trx
         retention-days: 7
-    
-    - name: Check for coverage files
-      id: check_coverage
-      if: always()
-      run: |
-        if ls ./coverage/**/coverage.cobertura.xml 1> /dev/null 2>&1; then
-          echo "COVERAGE_EXISTS=true" >> $GITHUB_ENV
-          echo "::notice::Coverage files found, proceeding with report generation"
-        else
-          echo "COVERAGE_EXISTS=false" >> $GITHUB_ENV
-          echo "::warning::No coverage files found. Test run may have failed completely."
-        fi
-    
-    - name: Generate HTML report
-      if: env.COVERAGE_EXISTS == 'true'
+
+    - name: Merge coverage reports
       uses: danielpalme/ReportGenerator-GitHub-Action@5.4.7
       with:
         reports: './coverage/**/coverage.cobertura.xml'
         targetdir: 'coveragereport'
-        reporttypes: 'HtmlInline;Cobertura;MarkdownSummary'
+        reporttypes: 'HtmlInline;Cobertura;MarkdownSummaryGithub'
         title: 'Osirion.Blazor Coverage Report'
-    
+
     - name: Upload coverage report artifact
-      if: env.COVERAGE_EXISTS == 'true'
       uses: actions/upload-artifact@v4
       with:
         name: coverage-report
         path: coveragereport
         retention-days: 30
-    
-    - name: Create coverage summary
-      id: coverage_summary
-      if: env.COVERAGE_EXISTS == 'true'
-      run: |
-        if [ -f "coveragereport/Summary.md" ]; then
-          # Print summary to console
-          cat coveragereport/Summary.md
-          
-          # Extract coverage percentage
-          COVERAGE_PCT=$(grep -oP '\d+\.\d+(?=%)' coveragereport/Summary.md | head -1)
-          if [ -n "$COVERAGE_PCT" ]; then
-            echo "coverage=$COVERAGE_PCT" >> $GITHUB_OUTPUT
-            
-            if (( $(echo "$COVERAGE_PCT < 70" | bc -l) )); then
-              echo "::warning::Coverage is below 70% (Current: ${COVERAGE_PCT}%)"
-            else
-              echo "::notice::Coverage is ${COVERAGE_PCT}%"
-            fi
-          else
-            echo "::warning::Could not extract coverage percentage"
-          fi
-        else
-          echo "::warning::Summary.md not found"
-        fi
-    
+
+    - name: Publish coverage summary
+      run: cat coveragereport/SummaryGithub.md >> "$GITHUB_STEP_SUMMARY"
+
     - name: Upload to Codecov
-      if: env.COVERAGE_EXISTS == 'true'
       uses: codecov/codecov-action@v5
       with:
-        file: ./coverage/**/coverage.cobertura.xml
+        files: ./coveragereport/Cobertura.xml
+        disable_search: true
+        token: ${{ secrets.CODECOV_TOKEN }}
         fail_ci_if_error: false
         verbose: true
-    
-    - name: Add Coverage PR Comment
-      if: github.event_name == 'pull_request' && env.COVERAGE_EXISTS == 'true' && steps.coverage_summary.outputs.coverage != ''
+
+    # Report only for now: lists methods over CRAP 30 in the job summary without failing the build.
+    - name: CRAP analysis
+      shell: pwsh
+      run: |
+        ./tools/run-crap.ps1 -CoverageDirectory ./coverage -SkipTests
+        ./tools/verify-crap.ps1 -MaxCrap 30 -ReportOnly
+
+    - name: Upload CRAP reports
+      uses: actions/upload-artifact@v4
+      with:
+        name: crap-reports
+        path: docs/crap/*.json
+        retention-days: 30
+
+    - name: Add coverage PR comment
+      if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
       uses: marocchino/sticky-pull-request-comment@v2
       with:
         header: test-coverage
-        message: |
-          # Test Coverage Report
-          
-          Overall coverage: **${{ steps.coverage_summary.outputs.coverage }}%**
-          
-          <details>
-          <summary>Coverage details</summary>
-          
-          ```
-          $(cat coveragereport/Summary.md || echo "Summary not available")
-          ```
-          
-          [Full HTML report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
-          
-          </details>
-    
-    - name: Check test status
-      if: steps.test.outcome == 'failure'
-      run: |
-        echo "::error::Tests failed. Please fix failing tests for accurate coverage reporting."
-        echo "Failed tests summary:"
-        grep -r "Failed" ./coverage/*.trx || echo "Could not extract failures from test results."
+        path: coveragereport/SummaryGithub.md
