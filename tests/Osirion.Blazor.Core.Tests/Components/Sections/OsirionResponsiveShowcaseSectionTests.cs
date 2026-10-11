@@ -54,6 +54,15 @@ public class OsirionResponsiveShowcaseSectionTests : OsirionComponentTestBase
         cut.FindAll(".viewport-btn").Select(b => b.ClassList.Contains("active")).ShouldBe([true, false, false]);
     }
 
+    // A bool rendered aria-pressed="" or no attribute at all, which is not a valid ARIA state.
+    [Fact]
+    public void Showcase_ViewportButtons_ExposeTheirPressedStateAsTrueOrFalse()
+    {
+        var cut = RenderStatic<OsirionResponsiveShowcaseSection>(_ => { });
+
+        cut.FindAll(".viewport-btn").Select(b => b.GetAttribute("aria-pressed")).ShouldBe(["true", "false", "false"]);
+    }
+
     [Theory]
     [InlineData(ViewportMode.Tablet, "viewport-tablet", "width: 768px; max-width: 100%; min-height: 500px", "example.com - Tablet View", "Tablet: 768px")]
     [InlineData(ViewportMode.Mobile, "viewport-mobile", "width: 375px; max-width: 100%; min-height: 600px", "example.com - Mobile View", "Mobile: 375px")]
