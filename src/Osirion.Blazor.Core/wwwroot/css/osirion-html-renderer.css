@@ -235,6 +235,29 @@
         background-color: var(--osirion-background-secondary, #f9fafb);
     }
 
+    /* On small screens a wide table scrolls sideways inside the content column. Its cells keep whole words and
+       inline code together, instead of the column squeezing them into a letter or two per line. */
+    @media (max-width: 768px) {
+        .osirion-html-renderer table {
+            display: block;
+            max-width: 100%;
+            overflow-x: auto;
+            overscroll-behavior-x: contain;
+        }
+
+        .osirion-html-renderer th,
+        .osirion-html-renderer td {
+            min-width: 7rem;
+            word-break: normal;
+            overflow-wrap: normal;
+        }
+
+        .osirion-html-renderer th code,
+        .osirion-html-renderer td code {
+            white-space: nowrap;
+        }
+    }
+
     /* ========== IMAGES ========== */
     .osirion-html-renderer img {
         max-width: 100%;
