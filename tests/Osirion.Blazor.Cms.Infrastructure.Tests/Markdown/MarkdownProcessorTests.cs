@@ -15,6 +15,18 @@ public class MarkdownProcessorTests
 
     private readonly MarkdownProcessor _processor = new(new DefaultMarkdownRenderer(), new MarkdownSanitizer(), new HtmlToMarkdownConverter());
 
+    // Front matter keys are snake_case (UnderscoredNamingConvention): the sitemap and feeds read last_modified.
+    [Theory]
+    [InlineData("last_modified", "2026-05-06")]
+    [InlineData("lastModified", null)]
+    public void ExtractFrontMatterAndContent_LastModifiedKey_IsReadOnlyInSnakeCase(string key, string? expected)
+    {
+        var (frontMatter, _) = _processor.ExtractFrontMatterAndContent($"---\ntitle: Post\n{key}: 2026-05-06\n---\nBody");
+
+        frontMatter.ShouldNotBeNull();
+        frontMatter.LastModified.ShouldBe(expected);
+    }
+
     // Each row is a way to get active markup out of markdown with the default Markdig pipeline
     // (raw HTML, links, generic attributes and media links). The precondition proves the vector reaches the
     // rendered HTML, so the test fails whenever the rendered output is not sanitized.

@@ -263,7 +263,7 @@ metadata:
 |-------|------|-------------|----------|
 | `title` | String | Article title | ? |
 | `date` | DateTime | Publication date | ? |
-| `lastModified` | DateTime | Last change, used by the sitemap and feeds | Optional |
+| `last_modified` | DateTime | Last change, used by the sitemap and feeds | Optional |
 | `description` | String | Meta description | Recommended |
 | `author` | String | Author name | Recommended |
 | `categories` | Array | Content categories | Optional |
@@ -601,8 +601,8 @@ app.MapOsirionFeeds(feeds =>
   to override them.
 - Item links are `/{item.Url}`, the same path the content lists use. When the site routes content elsewhere, set
   `ContentUrlFormatter` (it may return a path or an absolute URL).
-- `lastmod` and Atom `updated` come from the front matter's `lastModified`, then the file's write time (file system
-  provider), then `date`. Set `lastModified` when dates must survive a fresh checkout or deployment.
+- `lastmod` and Atom `updated` come from the front matter's `last_modified`, then the file's write time (file system
+  provider), then `date`. Set `last_modified` when dates must survive a fresh checkout or deployment.
 - Items whose `seo.robots` contains `noindex` are left out of the sitemap.
 - Responses carry `Cache-Control: public, max-age=600`; change it with `CacheDuration`. Turn single endpoints off
   with `EnableSitemap`, `EnableRss` or `EnableAtom`.

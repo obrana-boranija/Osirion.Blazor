@@ -439,7 +439,7 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
     /// <param name="markdown">The file's markdown, with its front matter.</param>
     /// <param name="contentItem">The item to fill.</param>
     /// <param name="sourceLastModified">
-    /// When the source last changed (a file's write time), used when the front matter has no <c>lastModified</c>.
+    /// When the source last changed (a file's write time), used when the front matter has no <c>last_modified</c>.
     /// </param>
     /// <param name="cancellationToken">A token to cancel the operation.</param>
     protected async Task ProcessMarkdownAsync(string markdown, ContentItem contentItem, DateTime? sourceLastModified, CancellationToken cancellationToken)
@@ -498,7 +498,7 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
                 }
             }
 
-            // Last, because every setter above moves LastModified to now. The front matter's lastModified is what the
+            // Last, because every setter above moves LastModified to now. The front matter's last_modified is what the
             // author declared, so it wins over the source's date; without either, the item was last changed when made.
             contentItem.SetLastModifiedDate(ParseUtcDate(contentItem.Metadata?.LastModified) ?? sourceLastModified ?? createdDate);
         }
