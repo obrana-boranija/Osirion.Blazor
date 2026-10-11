@@ -121,7 +121,7 @@ html.osirion-bootstrap-integration .osirion-menu-container[data-osirion-componen
     }
 
     .osirion-brand-link:focus-visible {
-        outline: 2px solid var(--osirion-menu-accent, var(--osirion-action-primary, #2563eb));
+        outline: 2px solid var(--osirion-menu-accent, var(--osirion-link-color, var(--osirion-action-primary, #2563eb)));
         outline-offset: 4px;
     }
 
@@ -250,7 +250,7 @@ html.osirion-bootstrap-integration .osirion-menu-container[data-osirion-componen
 
 /* Keyboard focus: the checkbox is visually hidden, so show its focus on the visible toggle */
 .osirion-navbar-toggler:focus-visible + .osirion-navbar-toggle {
-    outline: 2px solid var(--osirion-menu-accent, var(--osirion-action-primary, #2563eb));
+    outline: 2px solid var(--osirion-menu-accent, var(--osirion-link-color, var(--osirion-action-primary, #2563eb)));
     outline-offset: 2px;
 }
 

@@ -65,14 +65,14 @@
 
     /* Keyboard focus has its own indicator, so a focused item never looks like the current page (WCAG 2.4.7) */
     .osirion-menu-item:focus-visible {
-        outline: 2px solid var(--osirion-menu-accent, var(--osirion-action-primary, #2563eb));
+        outline: 2px solid var(--osirion-menu-accent, var(--osirion-link-color, var(--osirion-action-primary, #2563eb)));
         outline-offset: -2px;
     }
 
 .osirion-menu-item-active,
 .osirion-menu-item-active:hover {
-    color: var(--osirion-menu-accent, var(--osirion-action-primary, #2563eb));
-    background-color: var(--osirion-menu-active-background, color-mix(in srgb, var(--osirion-menu-accent, var(--osirion-action-primary, #2563eb)) 12%, transparent));
+    color: var(--osirion-menu-accent, var(--osirion-link-color, var(--osirion-action-primary, #2563eb)));
+    background-color: var(--osirion-menu-active-background, color-mix(in srgb, var(--osirion-menu-accent, var(--osirion-link-color, var(--osirion-action-primary, #2563eb))) 12%, transparent));
 }
 
 .osirion-menu-item-disabled {
@@ -160,7 +160,7 @@
 
 /* Keyboard focus: the checkbox is visually hidden, so show its focus on the visible toggle */
 .osirion-submenu-toggler:focus-visible ~ .osirion-submenu-toggle {
-    outline: 2px solid var(--osirion-menu-accent, var(--osirion-action-primary, #2563eb));
+    outline: 2px solid var(--osirion-menu-accent, var(--osirion-link-color, var(--osirion-action-primary, #2563eb)));
     outline-offset: -2px;
 }
 
@@ -197,8 +197,8 @@
 }
 
 .osirion-menu-item-wrapper-active.osirion-menu-item-has-submenu > :is(.osirion-menu-item, .osirion-submenu-toggle) {
-    color: var(--osirion-menu-accent, var(--osirion-action-primary, #2563eb));
-    background-color: var(--osirion-menu-active-background, color-mix(in srgb, var(--osirion-menu-accent, var(--osirion-action-primary, #2563eb)) 12%, transparent));
+    color: var(--osirion-menu-accent, var(--osirion-link-color, var(--osirion-action-primary, #2563eb)));
+    background-color: var(--osirion-menu-active-background, color-mix(in srgb, var(--osirion-menu-accent, var(--osirion-link-color, var(--osirion-action-primary, #2563eb))) 12%, transparent));
 }
 
 /* An open top-level submenu turns its chevron up; inside a dropdown, a nested submenu's chevron points at its flyout */
@@ -365,7 +365,7 @@
 }
 
     .osirion-submenu-mega .osirion-menu-item:hover .osirion-menu-item-text {
-        color: var(--osirion-menu-accent, var(--osirion-action-primary, #2563eb));
+        color: var(--osirion-menu-accent, var(--osirion-link-color, var(--osirion-action-primary, #2563eb)));
     }
 
 .osirion-submenu-mega .osirion-menu-item-text {
@@ -377,8 +377,8 @@
     width: 2.25rem;
     height: 2.25rem;
     padding: 0.5rem;
-    color: var(--osirion-menu-accent, var(--osirion-action-primary, #2563eb));
-    background-color: var(--osirion-menu-active-background, color-mix(in srgb, var(--osirion-menu-accent, var(--osirion-action-primary, #2563eb)) 12%, transparent));
+    color: var(--osirion-menu-accent, var(--osirion-link-color, var(--osirion-action-primary, #2563eb)));
+    background-color: var(--osirion-menu-active-background, color-mix(in srgb, var(--osirion-menu-accent, var(--osirion-link-color, var(--osirion-action-primary, #2563eb))) 12%, transparent));
     border-radius: var(--osirion-menu-radius, 0.5rem);
     opacity: 1;
 }
@@ -445,7 +445,7 @@
 }
 
 .osirion-menu-vertical .osirion-menu-item-wrapper-active.osirion-menu-item-has-submenu > :is(.osirion-menu-item, .osirion-submenu-toggle) {
-    background-color: var(--osirion-menu-active-background, color-mix(in srgb, var(--osirion-menu-accent, var(--osirion-action-primary, #2563eb)) 12%, transparent));
+    background-color: var(--osirion-menu-active-background, color-mix(in srgb, var(--osirion-menu-accent, var(--osirion-link-color, var(--osirion-action-primary, #2563eb))) 12%, transparent));
 }
 
 .osirion-menu-vertical .osirion-menu-item-has-submenu:has(> .osirion-menu-item:hover, > .osirion-submenu-toggle:hover) > :is(.osirion-menu-item, .osirion-submenu-toggle) {
@@ -572,7 +572,7 @@
     }
 
     .osirion-menu-collapsible .osirion-menu-item-wrapper-active.osirion-menu-item-has-submenu > :is(.osirion-menu-item, .osirion-submenu-toggle) {
-        background-color: var(--osirion-menu-active-background, color-mix(in srgb, var(--osirion-menu-accent, var(--osirion-action-primary, #2563eb)) 12%, transparent));
+        background-color: var(--osirion-menu-active-background, color-mix(in srgb, var(--osirion-menu-accent, var(--osirion-link-color, var(--osirion-action-primary, #2563eb))) 12%, transparent));
     }
 
     .osirion-menu-collapsible .osirion-menu-item-has-submenu:has(> .osirion-menu-item:hover, > .osirion-submenu-toggle:hover) > :is(.osirion-menu-item, .osirion-submenu-toggle) {
@@ -700,7 +700,7 @@
     }
 
     :is(.osirion-menu-collapse-large, .osirion-menu-collapse-extra-large) .osirion-menu-item-wrapper-active.osirion-menu-item-has-submenu > :is(.osirion-menu-item, .osirion-submenu-toggle) {
-        background-color: var(--osirion-menu-active-background, color-mix(in srgb, var(--osirion-menu-accent, var(--osirion-action-primary, #2563eb)) 12%, transparent));
+        background-color: var(--osirion-menu-active-background, color-mix(in srgb, var(--osirion-menu-accent, var(--osirion-link-color, var(--osirion-action-primary, #2563eb))) 12%, transparent));
     }
 
     :is(.osirion-menu-collapse-large, .osirion-menu-collapse-extra-large) .osirion-menu-item-has-submenu:has(> .osirion-menu-item:hover, > .osirion-submenu-toggle:hover) > :is(.osirion-menu-item, .osirion-submenu-toggle) {
@@ -828,7 +828,7 @@
     }
 
     .osirion-menu-collapse-extra-large .osirion-menu-item-wrapper-active.osirion-menu-item-has-submenu > :is(.osirion-menu-item, .osirion-submenu-toggle) {
-        background-color: var(--osirion-menu-active-background, color-mix(in srgb, var(--osirion-menu-accent, var(--osirion-action-primary, #2563eb)) 12%, transparent));
+        background-color: var(--osirion-menu-active-background, color-mix(in srgb, var(--osirion-menu-accent, var(--osirion-link-color, var(--osirion-action-primary, #2563eb))) 12%, transparent));
     }
 
     .osirion-menu-collapse-extra-large .osirion-menu-item-has-submenu:has(> .osirion-menu-item:hover, > .osirion-submenu-toggle:hover) > :is(.osirion-menu-item, .osirion-submenu-toggle) {
