@@ -40,7 +40,7 @@
 
                 @if (!string.IsNullOrWhiteSpace(plan.CallToActionText) && SafeLink.IsSafe(plan.CallToActionUrl))
                 {
-                    <a class="osirion-pricing-action @(plan.Highlighted ? GetPrimaryButtonClass() : GetOutlinedPrimaryButtonClass())"
+                    <a class="osirion-pricing-action @(plan.Highlighted ? GetPrimaryButtonClass() : GetSecondaryButtonClass())"
                        href="@plan.CallToActionUrl"
                        aria-label="@($"{plan.CallToActionText}: {plan.Name}")">@plan.CallToActionText</a>
                 }

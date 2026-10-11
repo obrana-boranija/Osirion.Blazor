@@ -9,7 +9,7 @@ configured CSS framework.
 Key parameters
 - OsirionPricingTable: `Plans` (`IReadOnlyList<PricingPlan>`, in `Osirion.Blazor.Core.Models`), `Class`
 - `PricingPlan`: `Name` and `Price` (required), `Period`, `Description`, `Features`, `CallToActionText`,
-  `CallToActionUrl`, `Highlighted` (primary button and accent border), `Badge`
+  `CallToActionUrl`, `Highlighted` (primary button and accent border; other plans get the secondary button), `Badge`
 - OsirionFeatureComparison: `PlanNames`, `Rows` (`FeatureComparisonRow(Feature, Values)`), `Caption`
   (default "Compare plans"), `ShowCaption`, `FeatureColumnText`, `IncludedText`, `NotIncludedText`
 - `ComparisonCell`: `true` or `false` (check or cross) or text, converted implicitly

@@ -41,12 +41,12 @@ public class OsirionPricingTests : OsirionComponentTestBase
     }
 
     [Fact]
-    public void OsirionPricingTable_HighlightedPlan_GetsThePrimaryButton()
+    public void OsirionPricingTable_HighlightedPlan_GetsThePrimaryButtonAndOthersTheSecondary()
     {
         var cut = Render<OsirionPricingTable>(p => p.Add(t => t.Plans, Plans));
 
         var actions = cut.FindAll("a.osirion-pricing-action");
-        actions[0].ClassList.ShouldContain("osirion-button-outlined-primary");
+        actions[0].ClassList.ShouldContain("osirion-button-secondary");
         actions[1].ClassList.ShouldContain("osirion-button-primary");
     }
 
