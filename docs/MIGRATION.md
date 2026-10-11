@@ -1,6 +1,6 @@
 # Migration Guide
 
-## Upgrading to the next release (Unreleased)
+## Upgrading to 4.0.0
 
 ### Breaking Changes
 
