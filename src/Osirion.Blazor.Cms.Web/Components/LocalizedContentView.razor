@@ -36,7 +36,7 @@
                     </div>
                     @if (!string.IsNullOrWhiteSpace(Item.FeaturedImageUrl))
                     {
-                        <img src="@Item.FeaturedImageUrl" alt="@Item.Title" class="osirion-content-featured-image" loading="lazy" />
+                        <img src="@Item.FeaturedImageUrl" alt="@Item.Title" class="osirion-content-featured-image" loading="eager" fetchpriority="high" decoding="async" />
                     }
                 </div>
             }
