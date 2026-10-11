@@ -303,7 +303,8 @@ public class PageLevelRenderingTests : CmsWebComponentTestBase
 
         pending.SetResult([Doc("slow")]);
 
-        cut.WaitForAssertion(() => cut.FindAll(".osirion-loading").ShouldBeEmpty());
+        cut.WaitForAssertion(() => cut.Find(".osirion-hero-title").TextContent.ShouldBe("slow"));
+        cut.FindAll(".osirion-loading").ShouldBeEmpty();
     }
 
     [Fact]
@@ -456,6 +457,9 @@ public class PageLevelRenderingTests : CmsWebComponentTestBase
         _navigation.NotFoundCalls.ShouldBe(0);
 
         pending.SetResult([]);
+
+        cut.WaitForAssertion(() => cut.FindAll(".osirion-content-not-found").ShouldHaveSingleItem());
+        _navigation.NotFoundCalls.ShouldBe(1);
     }
 
     [Fact]

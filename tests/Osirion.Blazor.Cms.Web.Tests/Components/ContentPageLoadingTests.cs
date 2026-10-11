@@ -127,7 +127,7 @@ public class ContentPageLoadingTests : CmsWebComponentTestBase
 
         pending.SetResult(Item("slow"));
 
-        cut.WaitForAssertion(() => cut.Find(".osirion-content-page").ShouldNotBeNull());
+        cut.WaitForAssertion(() => cut.Find("article.osirion-content-page .osirion-content-header h1").TextContent.ShouldBe("slow"));
     }
 
     [Fact]
@@ -470,8 +470,7 @@ public class ContentPageLoadingTests : CmsWebComponentTestBase
         var cut = RenderPage(p => p.Add(c => c.ContentItem, Item("supplied")));
 
         _provider.DidNotReceive().GetItemByUrlAsync(Arg.Any<string>());
-        cut.Find("article.osirion-content-page").ShouldNotBeNull();
-        cut.Markup.ShouldContain("supplied");
+        cut.Find("article.osirion-content-page .osirion-content-header h1").TextContent.ShouldBe("supplied");
     }
 
     [Fact]
