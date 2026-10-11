@@ -1,0 +1,32 @@
+.osirion-reading-progress {
+    display: none;
+}
+
+/* Shown only where the browser can drive it from the scroll position; elsewhere it would sit empty. */
+@supports (animation-timeline: scroll()) {
+    .osirion-reading-progress {
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1100;
+        height: var(--osirion-reading-progress-height, 3px);
+        background-color: var(--osirion-reading-progress-color, var(--osirion-action-primary, #2563eb));
+        transform-origin: 0 50%;
+        transform: scaleX(0);
+        pointer-events: none;
+        animation: osirion-reading-progress linear both;
+        animation-timeline: scroll(root block);
+    }
+}
+
+@keyframes osirion-reading-progress {
+    from {
+        transform: scaleX(0);
+    }
+
+    to {
+        transform: scaleX(1);
+    }
+}

@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `OsirionPricingTable` (`PricingPlan`) and `OsirionFeatureComparison` (`FeatureComparisonRow`, `ComparisonCell`): plans side by side with a highlighted plan and framework buttons, and an accessible comparison table with check marks, crosses and values
 - `OsirionSteps` (`StepItem`): numbered "how it works" steps as an ordered list, side by side or stacked with a joining line (`Vertical`)
 - `OsirionAnnouncementBar` and `MapOsirionAnnouncements`: a dismissible site-wide announcement that closes without script (an antiforgery-protected form post sets a per-announcement cookie and redirects back)
+- `OsirionReadingProgress`: a reading progress bar driven by a CSS scroll-driven animation, with no script; hidden where `animation-timeline` is not supported
 
 ### Fixed
 - Osirion.Blazor.Cms.Infrastructure: a content item's `LastModified` was the time the content was loaded, because mapping the front matter touched setters that stamp the current time. It is now the front matter's `last_modified`, then the file's write time (file system provider), then the publication date; SEO `dateModified` and sorting by last-modified date follow it
