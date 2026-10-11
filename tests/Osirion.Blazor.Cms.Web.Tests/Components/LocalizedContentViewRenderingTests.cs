@@ -145,6 +145,26 @@ public class LocalizedContentViewRenderingTests : CmsWebComponentTestBase
         link.GetAttribute("href").ShouldBe("/de/blog/post");
     }
 
+    // Fails before the fix: the component's CSS styles .osirion-translation-link, but the links had no class.
+    [Fact]
+    public void LocalizedContentView_TranslationLinks_CarryTheTranslationLinkClass()
+    {
+        var item = Item("post");
+        var german = Item("post-de");
+        german.SetUrl("de/blog/post");
+        _provider.GetContentTranslationsAsync(item.ContentId).Returns(new Dictionary<string, ContentItem>
+        {
+            ["en"] = item,
+            ["de"] = german
+        });
+
+        var cut = RenderStatic<LocalizedContentView>(p => p.Add(c => c.Item, item));
+
+        var link = cut.Find(".osirion-translations a");
+        link.ClassList.ShouldContain("osirion-translation-link");
+        link.ClassList.ShouldNotContain("osirion-active");
+    }
+
     [Fact]
     public void LocalizedContentView_CategoriesAndTags_LinkBelowTheCurrentLocale()
     {
