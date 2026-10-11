@@ -36,7 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Build
 - The coverage workflow runs every test project except the Playwright suite and fails when a test fails or is not discovered, instead of uploading a partial report. Coverage settings live in `coverlet.runsettings` (generated code and auto-property accessors are not counted) and Codecov targets in `codecov.yml` (90% for the project and for each change, informational for now)
-- CRAP scores (threshold 30) are measured by `tools/run-crap.ps1` and checked by `tools/verify-crap.ps1`, using `crap4dotnet` pinned in `.config/dotnet-tools.json` for complexity and the merged coverlet reports for coverage. The coverage workflow reports them in the job summary without failing the build yet; the baseline snapshot is in `docs/crap/`
+- CRAP scores (threshold 30) are measured by `tools/run-crap.ps1` and checked by `tools/verify-crap.ps1`, using `crap4dotnet` pinned in `.config/dotnet-tools.json` for complexity and the merged coverlet reports for coverage. The coverage workflow fails when a method exceeds CRAP 30 or a package gains offenders against the last snapshot in `docs/crap/`, and Codecov blocks a pull request below 90% project or patch coverage
 
 ## [4.0.0] - 2026-10-11
 

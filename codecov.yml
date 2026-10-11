@@ -1,6 +1,5 @@
-# Codecov settings. Target: 90% for the project and for every change.
-# Both statuses are informational while coverage is being raised to the target;
-# set `informational: false` to make them blocking.
+# Codecov settings. Target: 90% for the project and for every change; both statuses block a pull request
+# that misses them. The project may drop by at most 1% from its base.
 codecov:
   require_ci_to_pass: true
 
@@ -10,11 +9,11 @@ coverage:
       default:
         target: 90%
         threshold: 1%
-        informational: true
+        informational: false
     patch:
       default:
         target: 90%
-        informational: true
+        informational: false
 
 ignore:
   - "examples"
