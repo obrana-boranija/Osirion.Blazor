@@ -427,12 +427,44 @@ body:has(.osirion-footer-docked-fixed) {
 }
 
 @media (max-width: 767.98px) {
+    /* Phones stack the footer: the links, the left content (contact details), then the right content. The left and
+       right columns name their areas, so the order no longer depends on auto-placement. */
     .osirion-footer-main {
         grid-template-columns: 1fr;
         grid-template-areas:
             "middle"
-            "right"
-            "left";
+            "left"
+            "right";
+    }
+
+    .osirion-footer-main-left-content {
+        grid-area: left;
+    }
+
+    .osirion-footer-main-right-content {
+        grid-area: right;
+    }
+
+    /* With a logo, the brand opens the footer instead of sitting between the contact details and the right column */
+    .osirion-footer-main:has(> .osirion-footer-main-left-content-has-child) {
+        grid-template-areas:
+            "brand"
+            "middle"
+            "left"
+            "right";
+    }
+
+    .osirion-footer-main-left-content-has-child {
+        display: contents;
+    }
+
+    .osirion-footer-main-left-content-has-child > .osirion-footer-brand {
+        grid-area: brand;
+    }
+
+    /* OsirionContactInfoSection pads itself on phones for use as a panel; in the footer it lines up with the links */
+    .osirion-footer-main-left-content ::deep .osirion-contact-info-section {
+        padding-inline: 0;
     }
 
     .osirion-footer-main-left-content,

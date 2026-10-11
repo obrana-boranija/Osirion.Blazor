@@ -270,7 +270,7 @@ public partial class ContentList : IDisposable
                 else if (ShowPagination)
                 {
                     // One fetch: the full result gives the total and the requested page is sliced from it.
-                    var allItems = await provider.GetItemsByQueryAsync(query) ?? [];
+                    var allItems = WithoutCurrentPage(await provider.GetItemsByQueryAsync(query) ?? []);
                     TotalItems = allItems.Count;
 
                     // page=0, negative or past the last page (including int overflow) falls back to the nearest valid page.
@@ -282,7 +282,8 @@ public partial class ContentList : IDisposable
                     return;
                 }
 
-                ContentItems = await provider.GetItemsByQueryAsync(query);
+                var items = await provider.GetItemsByQueryAsync(query);
+                ContentItems = items is null ? null : WithoutCurrentPage(items);
             }
         }
         catch (Exception ex)
@@ -317,6 +318,36 @@ public partial class ContentList : IDisposable
         }
 
         return $"/{item.Url}";
+    }
+
+    /// <summary>
+    /// Removes the item the list is shown on. A section's index page (<c>_index.md</c>) has the section's own URL, so
+    /// the section's list would otherwise link to the page the reader is already on.
+    /// </summary>
+    private List<ContentItem> WithoutCurrentPage(IEnumerable<ContentItem> items)
+    {
+        var currentPath = PathOf(NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
+        var localePrefix = string.IsNullOrWhiteSpace(Locale) ? null : Locale.Trim('/') + "/";
+        var currentPathWithoutLocale = localePrefix is not null && currentPath.StartsWith(localePrefix, StringComparison.OrdinalIgnoreCase)
+            ? currentPath[localePrefix.Length..]
+            : currentPath;
+
+        return items
+            .Where(item =>
+            {
+                var itemPath = PathOf(GetContentUrl(item));
+                return !string.Equals(itemPath, currentPath, StringComparison.OrdinalIgnoreCase)
+                    && !string.Equals(itemPath, currentPathWithoutLocale, StringComparison.OrdinalIgnoreCase);
+            })
+            .ToList();
+    }
+
+    // The path of a link or location, without query, fragment or surrounding slashes.
+    private static string PathOf(string url)
+    {
+        var withoutQuery = ContentUrls.StripQueryAndFragment(url);
+        var isWebUrl = Uri.TryCreate(withoutQuery, UriKind.Absolute, out var absolute) && absolute.Scheme is "http" or "https";
+        return (isWebUrl ? absolute!.AbsolutePath : withoutQuery).Trim('/');
     }
 
     /// <summary>
