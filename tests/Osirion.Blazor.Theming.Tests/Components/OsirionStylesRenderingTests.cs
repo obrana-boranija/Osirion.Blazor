@@ -55,11 +55,12 @@ public class OsirionStylesRenderingTests : BunitContext
     [Theory]
     [InlineData(CssFramework.None)]
     [InlineData((CssFramework)99)]
-    public void OsirionStyles_NoKnownFramework_RendersAdapterLinkWithEmptyHref(CssFramework framework)
+    // Rendered <link rel="stylesheet" href=""> before the fix, which requests the current page as CSS.
+    public void OsirionStyles_NoKnownFramework_RendersNoAdapterLink(CssFramework framework)
     {
         var cut = Render<OsirionStyles>(p => p.Add(c => c.Framework, framework));
 
-        Hrefs(cut).ShouldContain(string.Empty);
+        Hrefs(cut).ShouldNotContain(string.Empty);
         Hrefs(cut).ShouldNotContain(h => h.StartsWith(AdapterFolder, StringComparison.Ordinal));
     }
 
