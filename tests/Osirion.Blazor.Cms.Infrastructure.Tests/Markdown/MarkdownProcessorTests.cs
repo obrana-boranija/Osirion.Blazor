@@ -57,6 +57,25 @@ public class MarkdownProcessorTests
         document.QuerySelector("pre code.language-csharp").ShouldNotBeNull().TextContent.ShouldBe("var total = a < b && c > d;\n");
     }
 
+    // Callout styling in Osirion.Blazor.Core keys on these classes; the icon comes from CSS because the sanitizer
+    // removes the inline SVG that Markdig writes.
+    [Theory]
+    [InlineData("NOTE", "note")]
+    [InlineData("TIP", "tip")]
+    [InlineData("IMPORTANT", "important")]
+    [InlineData("WARNING", "warning")]
+    [InlineData("CAUTION", "caution")]
+    public async Task RenderToHtmlAsync_GitHubAlert_KeepsTheCalloutClassesAndTitle(string marker, string kind)
+    {
+        var html = await _processor.RenderToHtmlAsync($"> [!{marker}]\n> Back up the **database** first.");
+
+        var document = Parse(html);
+        var alert = document.QuerySelector($"div.markdown-alert.markdown-alert-{kind}").ShouldNotBeNull();
+        alert.QuerySelector("p.markdown-alert-title").ShouldNotBeNull().TextContent.Trim().ShouldNotBeEmpty();
+        alert.QuerySelector("strong").ShouldNotBeNull().TextContent.ShouldBe("database");
+        alert.QuerySelector("svg").ShouldBeNull();
+    }
+
     // The markdown-level sanitizer used to run in this path and replaced JavaScript samples.
     [Fact]
     public async Task RenderToHtmlAsync_JavaScriptFencedSample_KeepsTheSample()

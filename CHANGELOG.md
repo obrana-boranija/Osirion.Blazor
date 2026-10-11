@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - `OsirionPageLayout` renders a skip link to the main content as the first focusable element (WCAG 2.4.1), shown only while it has keyboard focus; `ShowSkipLink`, `SkipLinkText` and `MainContentId` configure it, and the main element now carries that id and `tabindex="-1"`
+- Callouts: GitHub-style alerts in Markdown (`> [!NOTE]`, `[!TIP]`, `[!IMPORTANT]`, `[!WARNING]`, `[!CAUTION]`) are now styled, with their icons drawn in CSS so the HTML sanitizer can keep removing inline SVG, and the new `OsirionCallout` component (`CalloutType`) renders the same look from Razor
 
 ## [4.0.0] - 2026-10-11
 
