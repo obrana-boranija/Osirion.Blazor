@@ -1,0 +1,26 @@
+@page "/Error"
+@using System.Diagnostics
+
+<PageTitle>Error</PageTitle>
+
+<div class="px-4 py-6">
+    <FluentStack Orientation="Orientation.Vertical">
+        <FluentText As="TextTag.H1" Size="TextSize.Size700" Weight="TextWeight.Semibold">An error occurred while processing your request.</FluentText>
+
+        @if (ShowRequestId)
+        {
+            <FluentText As="TextTag.Paragraph"><strong>Request ID:</strong> <code>@RequestId</code></FluentText>
+        }
+    </FluentStack>
+</div>
+
+@code {
+    [CascadingParameter]
+    private HttpContext? HttpContext { get; set; }
+
+    private string? RequestId { get; set; }
+    private bool ShowRequestId => !string.IsNullOrWhiteSpace(RequestId);
+
+    protected override void OnInitialized() =>
+        RequestId = Activity.Current?.Id ?? HttpContext?.TraceIdentifier;
+}

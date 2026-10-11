@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Osirion.Blazor.Example.Bootstrap\Osirion.Blazor.Example.Bootstrap.csproj" />
+    <ProjectReference Include="..\Osirion.Blazor.Example.FluentUI\Osirion.Blazor.Example.FluentUI.csproj" />
     <ProjectReference Include="..\Osirion.Blazor.Example.Mud\Osirion.Blazor.Example.Mud.csproj" />
   </ItemGroup>
 

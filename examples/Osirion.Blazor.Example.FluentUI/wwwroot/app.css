@@ -1,0 +1,51 @@
+/* The body styles Fluent UI's default stylesheet would set, without its fixed-height app shell. Fluent sets these
+   tokens from script when Blazor starts, so each has the light theme's value as a fallback for the first paint. */
+html,
+body {
+    margin: 0;
+}
+
+/* Fluent UI's default stylesheet also sets border-box sizing, which Osirion's components assume (as Bootstrap's and
+   MudBlazor's stylesheets provide); without it, padded full-width blocks such as the footer overflow the page. */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--fontFamilyBase, 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', sans-serif);
+    font-size: var(--fontSizeBase300, 14px);
+    line-height: var(--lineHeightBase300, 20px);
+    color: var(--colorNeutralForeground1, #242424);
+    background-color: var(--colorNeutralBackground1, #ffffff);
+}
+
+a {
+    color: var(--colorBrandForegroundLink, #115ea3);
+}
+
+/* FocusOnNavigate moves focus to the page heading for screen readers; it is not a keyboard focus to outline. */
+h1:focus {
+    outline: none;
+}
+
+#blazor-error-ui {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 0.6rem 1.25rem 0.7rem;
+    background: lightyellow;
+    color: #000;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+}
+
+    #blazor-error-ui .dismiss {
+        cursor: pointer;
+        position: absolute;
+        right: 0.75rem;
+        top: 0.5rem;
+    }

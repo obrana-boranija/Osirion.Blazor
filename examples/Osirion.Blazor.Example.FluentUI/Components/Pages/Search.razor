@@ -1,0 +1,34 @@
+@page "/search"
+@page "/{locale}/search"
+@using Osirion.Blazor.Cms.Web.Components
+
+<PageTitle>Search - Osirion.Blazor</PageTitle>
+
+<div class="px-4 py-6">
+    <FluentStack Orientation="Orientation.Vertical">
+        <FluentText As="TextTag.H1" Size="TextSize.Size800" Weight="TextWeight.Semibold">Search Results</FluentText>
+
+        @if (!string.IsNullOrWhiteSpace(Query))
+        {
+            <FluentText As="TextTag.Paragraph" Size="TextSize.Size400">Results for: <strong>@Query</strong></FluentText>
+        }
+        else
+        {
+            <FluentMessageBar Intent="MessageBarIntent.Info">Please enter a search query to see results.</FluentMessageBar>
+        }
+
+        <ContentList Locale="@Locale"
+                     SearchQuery="@Query"
+                     ShowPagination
+                     ItemsPerPage="12"
+                     NoContentText="No results found for your search query." />
+    </FluentStack>
+</div>
+
+@code {
+    [Parameter]
+    public string? Locale { get; set; }
+
+    [SupplyParameterFromQuery(Name = "q")]
+    public string? Query { get; set; }
+}

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+
+    <link rel="stylesheet" href="@Assets["Osirion.Blazor.Example.FluentUI.styles.css"]" />
+    <link rel="stylesheet" href="@Assets["app.css"]" />
+
+    <link rel="icon" type="image/png" href="favicon.png" />
+
+    <HeadOutlet />
+</head>
+
+@* no-fuib-style: Fluent UI's default stylesheet makes the body a fixed-height app shell (height: 100dvh;
+   overflow: hidden) for FluentLayout. This site scrolls the document, so app.css styles the body instead. *@
+<body no-fuib-style>
+    <Routes />
+    <script src="_framework/blazor.web.js"></script>
+</body>
+
+</html>

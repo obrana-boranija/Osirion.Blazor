@@ -36,6 +36,7 @@
   </ItemGroup>
 
   <ItemGroup Label="Example packages">
+    <PackageVersion Include="Microsoft.FluentUI.AspNetCore.Components" Version="5.0.0" />
     <PackageVersion Include="MudBlazor" Version="9.11.0" />
   </ItemGroup>
 
