@@ -190,6 +190,22 @@ public class ContentQueryFilterBehaviorTests
         result.ShouldBe(expected);
     }
 
+    // Before the fix a plain prefix match let "blog" take in "blog2/..." too.
+    [Theory]
+    [InlineData("blog", "a,b")]
+    [InlineData("blog2", "z")]
+    public void ApplyFilters_WithDirectoryAndSubdirectories_MatchesWholeFolderNamesOnly(string directory, string expected)
+    {
+        _items.Add(CreateItem("z", "Zeta", "blog2/zeta.md", "next to blog"));
+        var query = AllStatuses();
+        query.Directory = directory;
+        query.IncludeSubdirectories = true;
+
+        var result = Apply(query);
+
+        result.ShouldBe(expected);
+    }
+
     [Theory]
     [InlineData("d-sub", "b")]
     [InlineData("d-blog", "a")]

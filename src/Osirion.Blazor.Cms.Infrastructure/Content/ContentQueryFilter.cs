@@ -82,18 +82,21 @@ public class ContentQueryFilter : IContentQueryFilter
             return items;
         }
 
-        var normalizedDirectory = query.Directory.ToLowerInvariant();
         if (query.IncludeSubdirectories)
         {
-            // Include all items in this directory and its subdirectories
-            return items.Where(item =>
-                _pathUtils.NormalizePath(GetDirectoryPath(item.Path)).StartsWith(normalizedDirectory, StringComparison.OrdinalIgnoreCase));
+            var directory = _pathUtils.NormalizePath(query.Directory);
+            return items.Where(item => IsInDirectoryTree(_pathUtils.NormalizePath(GetDirectoryPath(item.Path)), directory));
         }
 
         // Only include items directly in this directory
         return items.Where(item =>
-            item.Directory != null && item.Directory.Name.Equals(normalizedDirectory, StringComparison.OrdinalIgnoreCase));
+            item.Directory != null && item.Directory.Name.Equals(query.Directory, StringComparison.OrdinalIgnoreCase));
     }
+
+    // Whole folder names only: "blog" must not take in "blog2".
+    private static bool IsInDirectoryTree(string itemDirectory, string directory) =>
+        itemDirectory.Equals(directory, StringComparison.OrdinalIgnoreCase)
+        || itemDirectory.StartsWith(directory + "/", StringComparison.OrdinalIgnoreCase);
 
     private static IQueryable<ContentItem> ApplyCategoryFilters(IQueryable<ContentItem> items, ContentQuery query)
     {
