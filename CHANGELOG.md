@@ -65,6 +65,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Osirion.Blazor.Cms.Web: a page showed its title twice and had two `h1` elements when the Markdown opened with `# Title`. `ArticlePage`, `HomePage` and `LandingPage` (with their hero) and `ContentView`, `DocumentPage` and `LocalizedContentView` (under their own title) now leave that opening heading out of the body
 - Osirion.Blazor.Core: on phones `OsirionFooter` opens with the brand, then the links, the left content and the right content, and lines the contact details up with the links. The brand used to land between the contact details and the right column, because the columns had no grid areas and fell into place by auto-placement
 - Osirion.Blazor.Core: with `EnableHeaderScrollBehavior`, `OsirionPageLayout` no longer hides the header while the pointer is over it or focus is in it. Scrolling with the pointer on an open dropdown or mega menu carried the panel away with the header and left it floating at the top of the page
+- Osirion.Blazor.Cms.Web: `ContentList.ContentUrlFormatter` and `OsirionContentListSection.PostUrlFormatter` set the post links. The list section linked every post to its `Url` and ignored both. Without a formatter both build the link the same way, from the site root (`/blog/post` instead of the relative `blog/post` the section wrote)
 
 ### Removed
 - Osirion.Blazor.Navigation: `Menu.razor.scss`, `Menu.razor.min.css` and `compilerconfig.json`, an out-of-date stylesheet source that a Web Compiler run would have compiled over `Menu.razor.css`
