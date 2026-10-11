@@ -35,4 +35,14 @@ public class AnswerQuestionsTests
     {
         AnswerQuestions.GenerateImplicitQuestion(title, languageCode).ShouldBe(expected);
     }
+
+    // Threw ArgumentOutOfRangeException before the fix, so the page failed to render with generated FAQ on.
+    [Theory]
+    [InlineData("Guide to", "en")]
+    [InlineData("Guide to ", "en")]
+    [InlineData("Guía de", "es")]
+    public void GenerateImplicitQuestion_PrefixWithoutSubject_ReturnsNull(string title, string languageCode)
+    {
+        AnswerQuestions.GenerateImplicitQuestion(title, languageCode).ShouldBeNull();
+    }
 }

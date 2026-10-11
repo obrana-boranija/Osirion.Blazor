@@ -101,9 +101,12 @@ internal static class AnswerQuestions
         public static TitlePattern Contained(string keyword, string questionPrefix) =>
             new(keyword, null, questionPrefix);
 
-        public bool Matches(string title) => SkipLength is null
+        // A prefix pattern needs a subject after the keyword: a bare "Guide to" has no question to ask.
+        public bool Matches(string title) => SkipLength is not { } skip
             ? title.Contains(Keyword, StringComparison.OrdinalIgnoreCase)
-            : title.StartsWith(Keyword, StringComparison.OrdinalIgnoreCase);
+            : title.StartsWith(Keyword, StringComparison.OrdinalIgnoreCase)
+                && title.Length > skip
+                && !string.IsNullOrWhiteSpace(title[skip..]);
 
         public string ToQuestion(string title)
         {
