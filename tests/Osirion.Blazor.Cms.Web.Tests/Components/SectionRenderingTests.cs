@@ -97,6 +97,7 @@ public class SectionRenderingTests : CmsWebComponentTestBase
     [Fact]
     public void FeaturedPostsSection_SuppliedPosts_RenderEveryPartWithDefaultLinks()
     {
+        using var culture = new CultureScope("en-US");
         var post = Post("With image", categories: ["News", "Other"]);
         post.SetFeaturedImage("/img/a.png");
         post.SetAuthor("Ada");

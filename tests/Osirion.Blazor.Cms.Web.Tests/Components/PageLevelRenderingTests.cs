@@ -126,6 +126,7 @@ public class PageLevelRenderingTests : CmsWebComponentTestBase
     [Fact]
     public void DocumentPage_SuppliedContent_RendersMetadataTocFooterAndFormattedNeighbourLinks()
     {
+        using var culture = new CultureScope("en-US");
         var content = Doc("guide", "<h2>Setup</h2><p>Text</p>");
         content.SetAuthor("Ada");
         content.SetCreatedDate(new DateTime(2026, 2, 3, 0, 0, 0, DateTimeKind.Utc));

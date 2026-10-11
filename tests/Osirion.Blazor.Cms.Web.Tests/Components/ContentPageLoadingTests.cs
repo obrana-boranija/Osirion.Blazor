@@ -320,6 +320,7 @@ public class ContentPageLoadingTests : CmsWebComponentTestBase
     [Fact]
     public void ContentPage_RelatedItemWithAnImage_RendersTheImageAndTheDate()
     {
+        using var culture = new CultureScope("en-US");
         _provider.GetItemByUrlAsync("tagged").Returns(Item("tagged", tags: ["a"]));
         var related = Item("pictured", tags: ["a"]);
         related.SetFeaturedImage("/img/pictured.png");

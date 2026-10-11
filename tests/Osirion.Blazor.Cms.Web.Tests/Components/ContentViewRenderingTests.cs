@@ -81,6 +81,7 @@ public class ContentViewRenderingTests : CmsWebComponentTestBase
     [Fact]
     public void ContentView_FullItem_RendersAuthorImageTagsAndCategoriesWithDefaultLinks()
     {
+        using var culture = new CultureScope("en-US");
         var item = Item("post", tags: ["C#"], categories: ["News"]);
         item.SetAuthor("Ada");
         item.SetFeaturedImage("/img/post.png");

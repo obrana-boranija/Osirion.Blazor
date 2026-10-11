@@ -30,6 +30,7 @@ public class LocalizedContentViewRenderingTests : CmsWebComponentTestBase
     [Fact]
     public void LocalizedContentView_Path_LoadsTheItemAndRendersTheHeader()
     {
+        using var culture = new CultureScope("en-US");
         var item = Item("post");
         item.SetAuthor("Ada");
         item.SetFeaturedImage("/img/post.png");
