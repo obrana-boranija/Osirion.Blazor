@@ -57,14 +57,14 @@ public class GitHubDirectoryRepositoryWriteTests
             .Returns(new GitHubFileCommitResponse { Success = true });
     }
 
-    private GitHubDirectoryRepository CreateRepository(string? providerName = null)
+    private GitHubDirectoryRepository CreateRepository(string? providerName = null, IPathUtilities? pathUtils = null)
     {
         return new GitHubDirectoryRepository(
             _factory,
             Options.Create(_options),
             _cacheManager,
             _metadataProcessor,
-            Substitute.For<IPathUtilities>(),
+            pathUtils ?? Substitute.For<IPathUtilities>(),
             NullLogger<GitHubDirectoryRepository>.Instance,
             providerName);
     }
@@ -261,21 +261,24 @@ public class GitHubDirectoryRepositoryWriteTests
     }
 
     [Fact]
-    public async Task MoveAsync_ToRoot_UsesTheDirectoryNameAsTheNewPath()
+    // Before the fix the directory landed at the repository root ("news"), outside the content folder,
+    // where the provider no longer loads it.
+    public async Task MoveAsync_ToRoot_MovesTheDirectoryToTheTopOfTheContentFolder()
     {
         var blog = AddCached("blog", "content/blog");
         AddCached("news", "content/blog/news", blog);
         SetListing("content/blog/news", File("content/blog/news/a.md"));
         ServeFile("content/blog/news/a.md", "text");
-        var repository = CreateRepository();
+        var pathUtils = Substitute.For<IPathUtilities>();
+        pathUtils.NormalizePath(Arg.Any<string>()).Returns(call => call.Arg<string>().Trim('/'));
+        var repository = CreateRepository(pathUtils: pathUtils);
 
         var moved = await repository.MoveAsync("news", null);
 
-        // The new path is relative to the repository root, not to the content path.
-        moved.Path.ShouldBe("news");
+        moved.Path.ShouldBe("content/news");
         moved.Parent.ShouldBeNull();
         await _apiClient.Received(1).CreateOrUpdateFileAsync(
-            "news/a.md", "text", "Move directory from content/blog/news to news", null, Arg.Any<CancellationToken>());
+            "content/news/a.md", "text", "Move directory from content/blog/news to content/news", null, Arg.Any<CancellationToken>());
     }
 
     [Fact]
