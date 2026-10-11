@@ -157,8 +157,8 @@ public class ContentListBehaviourTests : CmsWebComponentTestBase
 
         head.WaitForAssertion(() =>
         {
-            head.Markup.ShouldContain("rel=\"prev\"");
-            head.Markup.ShouldContain("rel=\"next\"");
+            head.Find("link[rel='prev']").GetAttribute("href").ShouldBe("/blog");
+            head.Find("link[rel='next']").GetAttribute("href").ShouldBe("/blog?page=3");
         });
     }
 
