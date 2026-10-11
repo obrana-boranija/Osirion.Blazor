@@ -310,15 +310,7 @@ public partial class ContentList : IDisposable
     /// <summary>
     /// Gets the URL for a content item.
     /// </summary>
-    protected string GetContentUrl(ContentItem item)
-    {
-        if (ContentUrlFormatter is not null)
-        {
-            return ContentUrlFormatter(item);
-        }
-
-        return $"/{item.Url}";
-    }
+    protected string GetContentUrl(ContentItem item) => ContentUrls.ItemUrl(item, ContentUrlFormatter);
 
     /// <summary>
     /// Removes the item the list is shown on. A section's index page (<c>_index.md</c>) has the section's own URL, so
