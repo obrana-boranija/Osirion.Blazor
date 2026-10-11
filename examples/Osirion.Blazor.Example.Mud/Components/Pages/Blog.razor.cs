@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components;
 
 namespace Osirion.Blazor.Example.Mud.Components.Pages;
+
 public partial class Blog
 {
     [Parameter]
