@@ -390,6 +390,25 @@ public class FrontMatter : ValueObject
     }
 
     /// <summary>
+    /// Readers for the keys <see cref="FromDictionary"/> maps onto properties. Each entry lists its aliases in
+    /// priority order: the first alias present wins, even when its value cannot be parsed.
+    /// </summary>
+    private static readonly (string[] Keys, Func<FrontMatter, string, FrontMatter> Apply)[] KeyReaders =
+    [
+        (["description"], (frontMatter, value) => frontMatter.WithDescription(value)),
+        (["author"], (frontMatter, value) => frontMatter.WithAuthor(value)),
+        (["date"], ApplyDate),
+        (["lastModified", "last_modified"], ApplyLastModified),
+        (["featuredImage", "featured_image"], (frontMatter, value) => frontMatter.WithFeaturedImage(value)),
+        (["featured", "isFeatured"], (frontMatter, value) => frontMatter.WithFeatured(bool.TryParse(value, out var featured) && featured)),
+        (["published"], (frontMatter, value) => frontMatter.WithPublished(!bool.TryParse(value, out var published) || published)),
+        (["layout"], (frontMatter, value) => frontMatter.WithLayout(value)),
+        (["slug"], (frontMatter, value) => frontMatter.WithSlug(value)),
+        (["categories", "category"], (frontMatter, value) => frontMatter.WithCategories(ParseListValue(value))),
+        (["tags", "tag"], (frontMatter, value) => frontMatter.WithTags(ParseListValue(value))),
+    ];
+
+    /// <summary>
     /// Static method to create FrontMatter from a dictionary of values
     /// </summary>
     public static FrontMatter FromDictionary(IDictionary<string, string> values)
@@ -397,81 +416,63 @@ public class FrontMatter : ValueObject
         if (values is null)
             throw new ArgumentNullException(nameof(values));
 
-        // Extract required title or use empty string
-        string title = values.TryGetValue("title", out var titleValue) ? titleValue : string.Empty;
+        var frontMatter = Create(values.TryGetValue("title", out var title) ? title : string.Empty);
 
-        // Create the base front matter
-        var frontMatter = Create(title);
-
-        // Update properties from the dictionary
-        if (values.TryGetValue("description", out var description))
-            frontMatter = frontMatter.WithDescription(description);
-
-        if (values.TryGetValue("author", out var author))
-            frontMatter = frontMatter.WithAuthor(author);
-
-        if (values.TryGetValue("date", out var dateStr) && DateTime.TryParse(dateStr, out var date))
-            frontMatter = frontMatter.WithDate(date);
-
-        if ((values.TryGetValue("lastModified", out var lastModifiedStr) ||
-             values.TryGetValue("last_modified", out lastModifiedStr)) &&
-            DateTime.TryParse(lastModifiedStr, out var lastModified))
-            frontMatter = frontMatter.WithLastModified(lastModified);
-
-        if (values.TryGetValue("featuredImage", out var featuredImage) ||
-            values.TryGetValue("featured_image", out featuredImage))
-            frontMatter = frontMatter.WithFeaturedImage(featuredImage);
-
-        if (values.TryGetValue("featured", out var featuredStr) ||
-            values.TryGetValue("isFeatured", out featuredStr))
-            frontMatter = frontMatter.WithFeatured(bool.TryParse(featuredStr, out var featured) && featured);
-
-        if (values.TryGetValue("published", out var publishedStr))
-            frontMatter = frontMatter.WithPublished(!bool.TryParse(publishedStr, out var published) || published);
-
-        if (values.TryGetValue("layout", out var layout))
-            frontMatter = frontMatter.WithLayout(layout);
-
-        if (values.TryGetValue("slug", out var slug))
-            frontMatter = frontMatter.WithSlug(slug);
-
-        // Handle categories and tags
-        if (values.TryGetValue("categories", out var categoriesStr) ||
-            values.TryGetValue("category", out categoriesStr))
+        foreach (var (keys, apply) in KeyReaders)
         {
-            var categories = ParseListValue(categoriesStr);
-            frontMatter = frontMatter.WithCategories(categories);
+            if (TryGetFirstValue(values, keys, out var value))
+                frontMatter = apply(frontMatter, value);
         }
 
-        if (values.TryGetValue("tags", out var tagsStr) ||
-            values.TryGetValue("tag", out tagsStr))
-        {
-            var tags = ParseListValue(tagsStr);
-            frontMatter = frontMatter.WithTags(tags);
-        }
-
-        // Add remaining values as custom fields
-        var customFields = new Dictionary<string, object>();
-        foreach (var kvp in values)
-        {
-            if (!IsStandardKey(kvp.Key))
-            {
-                // Try to parse as different types
-                if (bool.TryParse(kvp.Value, out var boolVal))
-                    customFields[kvp.Key] = boolVal;
-                else if (int.TryParse(kvp.Value, out var intVal))
-                    customFields[kvp.Key] = intVal;
-                else if (double.TryParse(kvp.Value, out var doubleVal))
-                    customFields[kvp.Key] = doubleVal;
-                else
-                    customFields[kvp.Key] = kvp.Value;
-            }
-        }
-
+        var customFields = ReadCustomFields(values);
         if (customFields.Count > 0)
             frontMatter = frontMatter.WithCustomFields(customFields);
 
         return frontMatter;
+    }
+
+    private static bool TryGetFirstValue(IDictionary<string, string> values, string[] keys, out string value)
+    {
+        foreach (var key in keys)
+        {
+            if (values.TryGetValue(key, out value!))
+                return true;
+        }
+
+        value = string.Empty;
+        return false;
+    }
+
+    private static FrontMatter ApplyDate(FrontMatter frontMatter, string value) =>
+        DateTime.TryParse(value, out var date) ? frontMatter.WithDate(date) : frontMatter;
+
+    private static FrontMatter ApplyLastModified(FrontMatter frontMatter, string value) =>
+        DateTime.TryParse(value, out var lastModified) ? frontMatter.WithLastModified(lastModified) : frontMatter;
+
+    private static Dictionary<string, object> ReadCustomFields(IDictionary<string, string> values)
+    {
+        var customFields = new Dictionary<string, object>();
+        foreach (var kvp in values)
+        {
+            if (!IsStandardKey(kvp.Key))
+                customFields[kvp.Key] = ParseCustomFieldValue(kvp.Value);
+        }
+
+        return customFields;
+    }
+
+    private static object ParseCustomFieldValue(string value)
+    {
+        if (bool.TryParse(value, out var boolValue))
+            return boolValue;
+
+        if (int.TryParse(value, out var intValue))
+            return intValue;
+
+        if (double.TryParse(value, out var doubleValue))
+            return doubleValue;
+
+        return value;
     }
 
     /// <summary>
@@ -526,14 +527,7 @@ public class FrontMatter : ValueObject
         // Split by comma or semicolon and process each item
         foreach (var item in value.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries))
         {
-            var trimmedItem = item.Trim();
-
-            // Remove quotes if present
-            if ((trimmedItem.StartsWith("\"") && trimmedItem.EndsWith("\"")) ||
-                (trimmedItem.StartsWith("'") && trimmedItem.EndsWith("'")))
-            {
-                trimmedItem = trimmedItem.Substring(1, trimmedItem.Length - 2);
-            }
+            var trimmedItem = StripQuotes(item.Trim());
 
             if (!string.IsNullOrWhiteSpace(trimmedItem))
             {
@@ -542,6 +536,23 @@ public class FrontMatter : ValueObject
         }
 
         return result;
+    }
+
+    private static string StripQuotes(string item)
+    {
+        // A lone quote is both the first and the last character, so it needs two characters to be a quoted value.
+        if (item.Length < 2)
+        {
+            return item;
+        }
+
+        if ((item.StartsWith("\"") && item.EndsWith("\"")) ||
+            (item.StartsWith("'") && item.EndsWith("'")))
+        {
+            return item.Substring(1, item.Length - 2);
+        }
+
+        return item;
     }
 
     /// <summary>

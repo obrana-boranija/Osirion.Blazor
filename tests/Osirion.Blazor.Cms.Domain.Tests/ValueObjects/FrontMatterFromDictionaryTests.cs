@@ -1,0 +1,338 @@
+using System.Globalization;
+using Osirion.Blazor.Cms.Domain.ValueObjects;
+
+namespace Osirion.Blazor.Cms.Domain.Tests.ValueObjects;
+
+public class FrontMatterFromDictionaryTests
+{
+    private static FrontMatter Parse(params (string Key, string Value)[] pairs) =>
+        FrontMatter.FromDictionary(pairs.ToDictionary(pair => pair.Key, pair => pair.Value));
+
+    [Fact]
+    public void FromDictionary_NullValues_ThrowsArgumentNullException()
+    {
+        var exception = Assert.Throws<ArgumentNullException>(() => FrontMatter.FromDictionary(null!));
+
+        Assert.Equal("values", exception.ParamName);
+    }
+
+    [Fact]
+    public void FromDictionary_EmptyDictionary_ReturnsDefaults()
+    {
+        var frontMatter = Parse();
+
+        Assert.Equal(string.Empty, frontMatter.Title);
+        Assert.Equal(string.Empty, frontMatter.Description);
+        Assert.Equal(string.Empty, frontMatter.Author);
+        Assert.Null(frontMatter.LastModified);
+        Assert.Null(frontMatter.FeaturedImage);
+        Assert.False(frontMatter.IsFeatured);
+        Assert.True(frontMatter.Published);
+        Assert.Null(frontMatter.Layout);
+        Assert.Null(frontMatter.Slug);
+        Assert.Empty(frontMatter.Categories);
+        Assert.Empty(frontMatter.Tags);
+        Assert.Empty(frontMatter.CustomFields);
+        Assert.Equal(string.Empty, frontMatter.Id);
+        Assert.Null(frontMatter.Order);
+        Assert.Null(frontMatter.Permalink);
+        Assert.Equal("en", frontMatter.Lang);
+        Assert.True(DateTime.TryParseExact(frontMatter.Date, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out _));
+    }
+
+    [Fact]
+    public void FromDictionary_TextKeys_SetsMatchingProperties()
+    {
+        var frontMatter = Parse(
+            ("title", "Hello"),
+            ("description", "A greeting"),
+            ("author", "Ana"),
+            ("layout", "post"),
+            ("slug", "hello"));
+
+        Assert.Equal("Hello", frontMatter.Title);
+        Assert.Equal("A greeting", frontMatter.Description);
+        Assert.Equal("Ana", frontMatter.Author);
+        Assert.Equal("post", frontMatter.Layout);
+        Assert.Equal("hello", frontMatter.Slug);
+        Assert.Empty(frontMatter.CustomFields);
+    }
+
+    [Fact]
+    public void FromDictionary_ValidDate_StoresIsoDate()
+    {
+        var frontMatter = Parse(("date", "2024-05-17T13:45:00"));
+
+        Assert.Equal("2024-05-17", frontMatter.Date);
+    }
+
+    [Fact]
+    public void FromDictionary_InvalidDate_KeepsTheDefaultDate()
+    {
+        var frontMatter = Parse(("date", "not a date"));
+
+        Assert.NotEqual("not a date", frontMatter.Date);
+        Assert.True(DateTime.TryParseExact(frontMatter.Date, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out _));
+    }
+
+    [Theory]
+    [InlineData("lastModified")]
+    [InlineData("last_modified")]
+    public void FromDictionary_LastModifiedAlias_StoresIsoDate(string key)
+    {
+        var frontMatter = Parse((key, "2023-01-02"));
+
+        Assert.Equal("2023-01-02", frontMatter.LastModified);
+    }
+
+    [Fact]
+    public void FromDictionary_BothLastModifiedAliases_PrefersCamelCase()
+    {
+        var frontMatter = Parse(("lastModified", "2023-01-02"), ("last_modified", "2022-12-31"));
+
+        Assert.Equal("2023-01-02", frontMatter.LastModified);
+    }
+
+    [Fact]
+    public void FromDictionary_InvalidCamelCaseLastModified_DoesNotFallBackToSnakeCase()
+    {
+        var frontMatter = Parse(("lastModified", "soon"), ("last_modified", "2022-12-31"));
+
+        Assert.Null(frontMatter.LastModified);
+    }
+
+    [Fact]
+    public void FromDictionary_InvalidLastModified_LeavesLastModifiedEmpty()
+    {
+        var frontMatter = Parse(("last_modified", "never"));
+
+        Assert.Null(frontMatter.LastModified);
+    }
+
+    [Theory]
+    [InlineData("featuredImage")]
+    [InlineData("featured_image")]
+    public void FromDictionary_FeaturedImageAlias_SetsFeaturedImage(string key)
+    {
+        var frontMatter = Parse((key, "/img/cover.png"));
+
+        Assert.Equal("/img/cover.png", frontMatter.FeaturedImage);
+    }
+
+    [Fact]
+    public void FromDictionary_BothFeaturedImageAliases_PrefersCamelCase()
+    {
+        var frontMatter = Parse(("featuredImage", "/a.png"), ("featured_image", "/b.png"));
+
+        Assert.Equal("/a.png", frontMatter.FeaturedImage);
+    }
+
+    [Theory]
+    [InlineData("featured", "true", true)]
+    [InlineData("featured", "True", true)]
+    [InlineData("featured", "false", false)]
+    [InlineData("featured", "yes", false)]
+    [InlineData("isFeatured", "true", true)]
+    [InlineData("isFeatured", "1", false)]
+    public void FromDictionary_FeaturedAlias_ParsesBoolean(string key, string value, bool expected)
+    {
+        var frontMatter = Parse((key, value));
+
+        Assert.Equal(expected, frontMatter.IsFeatured);
+    }
+
+    [Fact]
+    public void FromDictionary_BothFeaturedAliases_PrefersFeatured()
+    {
+        var frontMatter = Parse(("featured", "false"), ("isFeatured", "true"));
+
+        Assert.False(frontMatter.IsFeatured);
+    }
+
+    [Theory]
+    [InlineData("true", true)]
+    [InlineData("FALSE", false)]
+    [InlineData("false", false)]
+    [InlineData("draft", true)]
+    [InlineData("", true)]
+    public void FromDictionary_Published_TreatsOnlyAParsedFalseAsUnpublished(string value, bool expected)
+    {
+        var frontMatter = Parse(("published", value));
+
+        Assert.Equal(expected, frontMatter.Published);
+    }
+
+    [Theory]
+    [InlineData("categories")]
+    [InlineData("category")]
+    public void FromDictionary_CategoryAlias_ParsesList(string key)
+    {
+        var frontMatter = Parse((key, "news, tech"));
+
+        Assert.Equal(["news", "tech"], frontMatter.Categories);
+    }
+
+    [Fact]
+    public void FromDictionary_BothCategoryAliases_PrefersPlural()
+    {
+        var frontMatter = Parse(("categories", "a"), ("category", "b"));
+
+        Assert.Equal(["a"], frontMatter.Categories);
+    }
+
+    [Theory]
+    [InlineData("tags")]
+    [InlineData("tag")]
+    public void FromDictionary_TagAlias_ParsesList(string key)
+    {
+        var frontMatter = Parse((key, "[blazor; dotnet]"));
+
+        Assert.Equal(["blazor", "dotnet"], frontMatter.Tags);
+    }
+
+    [Fact]
+    public void FromDictionary_BothTagAliases_PrefersPlural()
+    {
+        var frontMatter = Parse(("tags", "x"), ("tag", "y"));
+
+        Assert.Equal(["x"], frontMatter.Tags);
+    }
+
+    [Theory]
+    [InlineData("", new string[0])]
+    [InlineData("   ", new string[0])]
+    [InlineData("[]", new string[0])]
+    [InlineData("single", new[] { "single" })]
+    [InlineData("[a, b]", new[] { "a", "b" })]
+    [InlineData("[a, b", new[] { "[a", "b" })]
+    [InlineData("a, b]", new[] { "a", "b]" })]
+    [InlineData("\"quoted\", 'single'", new[] { "quoted", "single" })]
+    [InlineData("\"half, half'", new[] { "\"half", "half'" })]
+    [InlineData("'mixed\"", new[] { "'mixed\"" })]
+    [InlineData("a,,b;;c", new[] { "a", "b", "c" })]
+    [InlineData("a,  ,b", new[] { "a", "b" })]
+    [InlineData("'', \"\", x", new[] { "x" })]
+    [InlineData("' padded '", new[] { " padded " })]
+    public void FromDictionary_ListValue_ParsesItems(string value, string[] expected)
+    {
+        var frontMatter = Parse(("tags", value));
+
+        Assert.Equal(expected, frontMatter.Tags);
+    }
+
+    // Threw ArgumentOutOfRangeException before the fix, so one stray quote made the whole file unreadable.
+    [Theory]
+    [InlineData("a, \"", new[] { "a", "\"" })]
+    [InlineData("'", new[] { "'" })]
+    public void FromDictionary_TagsWithALoneQuote_KeepTheQuoteAsAnItem(string value, string[] expected)
+    {
+        var frontMatter = Parse(("tags", value));
+
+        Assert.Equal(expected, frontMatter.Tags);
+    }
+
+    [Fact]
+    public void FromDictionary_UnknownKeys_BecomeTypedCustomFields()
+    {
+        var frontMatter = Parse(
+            ("draft", "true"),
+            ("weight", "42"),
+            ("ratio", "1e3"),
+            ("subtitle", "hello"));
+
+        Assert.Equal(4, frontMatter.CustomFields.Count);
+        Assert.Equal(true, frontMatter.CustomFields["draft"]);
+        Assert.Equal(42, frontMatter.CustomFields["weight"]);
+        Assert.Equal(1000d, frontMatter.CustomFields["ratio"]);
+        Assert.Equal("hello", frontMatter.CustomFields["subtitle"]);
+    }
+
+    [Fact]
+    public void FromDictionary_PropertiesWithoutAKey_AreStoredAsCustomFields()
+    {
+        var frontMatter = Parse(("id", "abc"), ("order", "3"), ("permalink", "/x/"), ("lang", "sr"));
+
+        Assert.Equal(string.Empty, frontMatter.Id);
+        Assert.Null(frontMatter.Order);
+        Assert.Null(frontMatter.Permalink);
+        Assert.Equal("en", frontMatter.Lang);
+        Assert.Equal("abc", frontMatter.CustomFields["id"]);
+        Assert.Equal(3, frontMatter.CustomFields["order"]);
+        Assert.Equal("/x/", frontMatter.CustomFields["permalink"]);
+        Assert.Equal("sr", frontMatter.CustomFields["lang"]);
+    }
+
+    [Theory]
+    [InlineData("Title")]
+    [InlineData("DESCRIPTION")]
+    [InlineData("lastmodified")]
+    [InlineData("featuredimage")]
+    [InlineData("IsFeatured")]
+    [InlineData("Tags")]
+    public void FromDictionary_StandardKeyInOtherCase_IsNeitherReadNorStoredAsCustomField(string key)
+    {
+        var frontMatter = Parse((key, "2024-01-01"));
+
+        Assert.Empty(frontMatter.CustomFields);
+        Assert.Equal(string.Empty, frontMatter.Title);
+        Assert.Equal(string.Empty, frontMatter.Description);
+        Assert.Null(frontMatter.LastModified);
+        Assert.Null(frontMatter.FeaturedImage);
+        Assert.False(frontMatter.IsFeatured);
+        Assert.Empty(frontMatter.Tags);
+    }
+
+    [Fact]
+    public void FromDictionary_CaseInsensitiveDictionary_ReadsKeysInAnyCase()
+    {
+        var values = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["TITLE"] = "Upper",
+            ["Featured_Image"] = "/c.png",
+            ["PUBLISHED"] = "false",
+        };
+
+        var frontMatter = FrontMatter.FromDictionary(values);
+
+        Assert.Equal("Upper", frontMatter.Title);
+        Assert.Equal("/c.png", frontMatter.FeaturedImage);
+        Assert.False(frontMatter.Published);
+        Assert.Empty(frontMatter.CustomFields);
+    }
+
+    [Fact]
+    public void FromDictionary_AllKeys_ProducesTheSameValueAsTheFluentApi()
+    {
+        var frontMatter = Parse(
+            ("title", "Post"),
+            ("description", "Desc"),
+            ("author", "Ana"),
+            ("date", "2024-02-03"),
+            ("last_modified", "2024-02-04"),
+            ("featured_image", "/f.png"),
+            ("isFeatured", "true"),
+            ("published", "false"),
+            ("layout", "post"),
+            ("slug", "post"),
+            ("category", "one;two"),
+            ("tag", "'t1', \"t2\""),
+            ("rating", "5"));
+
+        var expected = FrontMatter.Create("Post")
+            .WithDescription("Desc")
+            .WithAuthor("Ana")
+            .WithDate(new DateTime(2024, 2, 3))
+            .WithLastModified(new DateTime(2024, 2, 4))
+            .WithFeaturedImage("/f.png")
+            .WithFeatured(true)
+            .WithPublished(false)
+            .WithLayout("post")
+            .WithSlug("post")
+            .WithCategories(["one", "two"])
+            .WithTags(["t1", "t2"])
+            .WithCustomField("rating", 5);
+
+        Assert.Equal(expected, frontMatter);
+        Assert.Equal(expected.ToYaml(), frontMatter.ToYaml());
+    }
+}
