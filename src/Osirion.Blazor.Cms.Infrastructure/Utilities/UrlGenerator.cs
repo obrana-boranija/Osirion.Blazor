@@ -20,56 +20,29 @@ public static class UrlGenerator
         path = NormalizePath(path);
 
         // Step 1: Remove skipSegment from the beginning of the path if present
-        if (!skipPrefixRemoval && skipSegment is not null && path.StartsWith(skipSegment))
+        if (!skipPrefixRemoval)
         {
-            // Only remove 'skipSegment' if it's followed by a slash or is the entire string
-            if (path.Length == skipSegment.Length || path[skipSegment.Length] == '/')
-            {
-                // If skipSegment is followed by a slash, remove both skipSegment and the slash
-                // If skipSegment is the entire string, this will result in an empty string
-                path = path.Length > skipSegment.Length ? path.Substring(skipSegment.Length + 1) : "";
-            }
+            path = RemoveLeadingSegment(path, skipSegment!);
         }
 
-        var isIndexFile = false;
-
-        if (path.Contains("_index.md", StringComparison.OrdinalIgnoreCase))
-        {
-            isIndexFile = true;
-        }
+        var isIndexFile = path.Contains("_index.md", StringComparison.OrdinalIgnoreCase);
 
         // Step 2: Remove the filename from the path
-        int lastSlashIndex = path.LastIndexOf('/');
-        if (lastSlashIndex >= 0)
-        {
-            path = path.Substring(0, lastSlashIndex);
-        }
-        else
-        {
-            // If there's no slash, path is a single segment, so clear it
-            path = "";
-        }
+        path = GetDirectoryPath(path);
 
         // If using localization, check if the first segment is a locale and remove it
         if (enableLocalization && path.Length > 0)
         {
-            var segments = path.Split('/', StringSplitOptions.RemoveEmptyEntries);
-            if (segments.Length > 0 && IsValidLocale(segments[0], supportedLocales))
-            {
-                // Remove the locale segment
-                path = string.Join("/", segments.Skip(1));
-            }
+            path = RemoveLeadingLocale(path, supportedLocales);
         }
 
         // Step 3: Append slug, with a slash if path is not empty
-        if (!string.IsNullOrWhiteSpace(path))
-        {
-            return isIndexFile ? path : $"{path}/{slug}";
-        }
-        else
+        if (string.IsNullOrWhiteSpace(path))
         {
             return slug;
         }
+
+        return isIndexFile ? path : $"{path}/{slug}";
     }
 
     /// <summary>
@@ -119,29 +92,8 @@ public static class UrlGenerator
         if (!enableLocalization)
             return path;
 
-        // Check if content path is set and remove it
-        var _contentPath = NormalizePath(contentPath);
-        if (!string.IsNullOrWhiteSpace(_contentPath) && path.StartsWith(_contentPath))
-        {
-            // Only remove if it's followed by a slash or is the entire path
-            if (path.Length == _contentPath.Length || path[_contentPath.Length] == '/')
-            {
-                // Remove content path prefix
-                path = path.Length > _contentPath.Length
-                    ? path.Substring(_contentPath.Length + 1)
-                    : "";
-            }
-        }
-
-        // Check if first segment is a locale
-        var segments = path.Split('/', StringSplitOptions.RemoveEmptyEntries);
-        if (segments.Length > 0 && IsValidLocale(segments[0], supportedLocales))
-        {
-            // Remove locale segment
-            return string.Join("/", segments.Skip(1));
-        }
-
-        return path;
+        path = RemoveContentPath(path, contentPath);
+        return RemoveLeadingLocale(path, supportedLocales);
     }
 
     /// <summary>
@@ -155,23 +107,11 @@ public static class UrlGenerator
             return defaultLocale;
         }
 
-        // Check if content path is set and remove it from the beginning
-        var _contentPath = UrlGenerator.NormalizePath(contentPath);
-        if (!string.IsNullOrWhiteSpace(_contentPath) && path.StartsWith(_contentPath))
-        {
-            // Only remove if it's followed by a slash or is the entire path
-            if (path.Length == _contentPath.Length || path[_contentPath.Length] == '/')
-            {
-                // Remove content path prefix
-                path = path.Length > _contentPath.Length
-                    ? path.Substring(_contentPath.Length + 1)
-                    : "";
-            }
-        }
+        path = RemoveContentPath(path, contentPath);
 
         // Try to extract locale from path format like "en/blog" or "es/articles"
         var segments = path.Split('/', StringSplitOptions.RemoveEmptyEntries);
-        if (segments.Length > 0 && UrlGenerator.IsValidLocale(segments[0], supportedLocales))
+        if (segments.Length > 0 && IsValidLocale(segments[0], supportedLocales))
         {
             return segments[0];
         }
@@ -204,5 +144,39 @@ public static class UrlGenerator
     public static string NormalizePath(string path)
     {
         return path.Replace('\\', '/').Trim('/');
+    }
+
+    private static string RemoveContentPath(string path, string contentPath)
+    {
+        var normalizedContentPath = NormalizePath(contentPath);
+        return string.IsNullOrWhiteSpace(normalizedContentPath)
+            ? path
+            : RemoveLeadingSegment(path, normalizedContentPath);
+    }
+
+    /// <summary>
+    /// Removes <paramref name="prefix"/> from the start of <paramref name="path"/> only when it is a whole segment,
+    /// that is followed by a slash or the end of the path.
+    /// </summary>
+    private static string RemoveLeadingSegment(string path, string prefix)
+    {
+        if (!path.StartsWith(prefix))
+            return path;
+
+        if (path.Length == prefix.Length)
+            return string.Empty;
+
+        return path[prefix.Length] == '/' ? path.Substring(prefix.Length + 1) : path;
+    }
+
+    private static string RemoveLeadingLocale(string path, List<string>? supportedLocales)
+    {
+        var segments = path.Split('/', StringSplitOptions.RemoveEmptyEntries);
+        if (segments.Length > 0 && IsValidLocale(segments[0], supportedLocales))
+        {
+            return string.Join("/", segments.Skip(1));
+        }
+
+        return path;
     }
 }
