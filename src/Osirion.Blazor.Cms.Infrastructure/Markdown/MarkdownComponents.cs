@@ -86,12 +86,22 @@ public class DefaultMarkdownRenderer : IMarkdownRendererService
             RegexOptions.IgnoreCase | RegexOptions.Singleline
         );
 
-        // Sanitize links - remove javascript: protocol
+        // Sanitize links: remove the javascript: protocol. This is a best-effort pre-pass; the HTML sanitizer that runs
+        // after rendering is the real defence. The balancing group consumes nested parentheses so the whole destination
+        // (and any title) is replaced instead of leaving a stray ")".
         markdown = Regex.Replace(
             markdown,
-            @"\[([^\]]*)\]\(javascript:[^\)]*\)",
+            @"\[([^\]]*)\]\(\s*javascript:(?>[^()]+|\((?<depth>)|\)(?<-depth>))*(?(depth)(?!))\)",
             "[$1](#)",
             RegexOptions.IgnoreCase
+        );
+
+        // Reference-style link definitions ([id]: javascript:...).
+        markdown = Regex.Replace(
+            markdown,
+            @"^( {0,3}\[[^\]]+\]:)[ \t]*javascript:[^\r\n]*",
+            "$1 #",
+            RegexOptions.IgnoreCase | RegexOptions.Multiline
         );
 
         return markdown;
