@@ -23,7 +23,11 @@
                                  AlternateLanguageUrls="@AlternateLanguageUrls" />
         </HeadContent>
 
-        @if (ShowHero)
+        @if (HeaderContent is not null)
+        {
+            <header class="osirion-article-header">@HeaderContent(Item!)</header>
+        }
+        else if (ShowHero)
         {
             <HeroSection Title="@Item?.Title"
                          Subtitle="@Item?.Description"
@@ -66,7 +70,7 @@
                         <ContentSeriesNavigation Item="@Item" ContentUrlFormatter="@ItemUrlFormatter" />
                     }
 
-                    <ContentRenderer Item="@Item" OmitLeadingTitle="ShowHero" />
+                    <ContentRenderer Item="@Item" OmitLeadingTitle="@(ShowHero || HeaderContent is not null)" />
 
                     @if (AuthorContent is not null)
                     {
