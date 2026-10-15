@@ -97,6 +97,40 @@ public class ContentListPageTests : CmsWebComponentTestBase
         cut.FindAll("h1").ShouldBeEmpty();
     }
 
+    [Fact]
+    public void ContentListPage_ItemTemplate_RendersEachItemInAnOrderedListInsteadOfCards()
+    {
+        ReturnItems(Post("first-post", "First post"), Post("second-post", "Second post"));
+
+        var cut = RenderStatic<ContentListPage>(p => p
+            .Add(c => c.Directory, "blog")
+            .Add(c => c.ItemTemplate, item => builder => builder.AddMarkupContent(0, $"<span class=\"row\">{item.Title}</span>")));
+
+        cut.FindAll("ol.osirion-content-index > li.osirion-content-index-item > span.row")
+            .Select(row => row.TextContent).ShouldBe(["First post", "Second post"]);
+        cut.FindAll(".osirion-featured-post").ShouldBeEmpty();
+        cut.FindAll("h1").ShouldHaveSingleItem();
+    }
+
+    [Fact]
+    public void ContentListPage_WithoutItemTemplate_KeepsTheCards()
+    {
+        ReturnItems(Post("first-post", "First post"));
+
+        var cut = RenderStatic<ContentListPage>(p => p.Add(c => c.Directory, "blog"));
+
+        cut.FindAll(".osirion-featured-post").ShouldHaveSingleItem();
+        cut.FindAll("ol.osirion-content-index").ShouldBeEmpty();
+    }
+
+    // A list leaves out the item at the current page's address, so the items need addresses of their own.
+    private static ContentItem Post(string slug, string title)
+    {
+        var item = ContentItem.Create($"id-{slug}", title, "<p>Body</p>", $"blog/{slug}.md", "test");
+        item.SetUrl($"blog/{slug}");
+        return item;
+    }
+
     private void ReturnItems(params ContentItem[] items) =>
         _provider.GetItemsByQueryAsync(Arg.Any<ContentQuery>())
             .Returns(Task.FromResult<IReadOnlyList<ContentItem>?>(items));

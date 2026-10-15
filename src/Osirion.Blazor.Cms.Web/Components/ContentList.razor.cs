@@ -189,6 +189,13 @@ public partial class ContentList : IDisposable
     public bool ShowTitle { get; set; }
 
     /// <summary>
+    /// Gets or sets the markup of one item. When set, the items render as an ordered list with this template in each
+    /// entry instead of the built-in cards; paging, the title, feeds and SEO metadata work as before.
+    /// </summary>
+    [Parameter]
+    public RenderFragment<ContentItem>? ItemTemplate { get; set; }
+
+    /// <summary>
     /// Gets or sets whether to enable SEO metadata rendering (default: true).
     /// </summary>
     [Parameter]

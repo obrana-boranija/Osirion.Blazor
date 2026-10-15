@@ -24,6 +24,9 @@ Key parameters
   name), the same text the title tag and meta description use
 - List: `ShowPagination` (true), `ItemsPerPage` (12), `SortBy`, `SortDirection`, `NoContentText`,
   `ContentUrlFormatter`, `PaginationUrlFormatter`, `WebsiteName`
+- Items: `ItemTemplate` (`RenderFragment<ContentItem>`) renders each item in an `ol.osirion-content-index` instead of
+  the built-in cards, for a text-first index such as `<ItemTemplate><MyRow Item="context" /></ItemTemplate>`; paging,
+  the `h1`, the feed and the structured data stay the same
 - Feed: `FeedUrl` (for example `/feed.xml` from `MapOsirionFeeds`) adds `<link rel="alternate">` to the head and a
   link below the list; `FeedTitle` names both
 - Sidebar: `ShowCategories` and `ShowTags` (both false) list them beside the list from 992px up, with the current

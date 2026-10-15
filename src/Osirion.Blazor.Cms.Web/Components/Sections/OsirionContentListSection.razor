@@ -22,6 +22,17 @@
     {
         <OsirionContentNotFound />
     }
+    else if (ItemTemplate is not null)
+    {
+        <ol class="osirion-content-index">
+            @foreach (var item in Items)
+            {
+                <li @key="item" class="osirion-content-index-item">@ItemTemplate(item)</li>
+            }
+        </ol>
+
+        @RenderViewAllLink()
+    }
     else
     {
         <div class="osirion-featured-posts @LayoutClass">
@@ -93,6 +104,12 @@
             }
         </div>
 
+        @RenderViewAllLink()
+    }
+</section>
+
+@code {
+    private RenderFragment RenderViewAllLink() => @<text>
         @if (ShowViewAllLink && !string.IsNullOrWhiteSpace(ViewAllUrl))
         {
             <div class="osirion-view-all-container">
@@ -105,5 +122,5 @@
                 </a>
             </div>
         }
-    }
-</section>
+    </text>;
+}

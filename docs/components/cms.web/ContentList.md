@@ -11,6 +11,9 @@ Key parameters
 - ShowPagination (bool), ItemsPerPage (10), CurrentPage (1)
 - ReadMoreText
 
+Templates
+- ItemTemplate(ContentItem): the markup of one item, rendered in an ordered list instead of the cards
+
 Delegates
 - ContentUrlFormatter(ContentItem): build item URL
 - PaginationUrlFormatter(int): build page URL

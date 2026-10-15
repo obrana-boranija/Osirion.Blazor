@@ -39,6 +39,13 @@ public partial class OsirionContentListSection(IContentProviderManager ContentPr
     public string Layout { get; set; } = "grid";
 
     /// <summary>
+    /// Gets or sets the markup of one item. When set, the items render as an ordered list (<c>ol.osirion-content-index</c>)
+    /// with this template inside each <c>li</c>, in place of the built-in cards, and <see cref="Layout"/> is not used.
+    /// </summary>
+    [Parameter]
+    public RenderFragment<ContentItem>? ItemTemplate { get; set; }
+
+    /// <summary>
     /// Content query. If defined, overrides all other filters.
     /// </summary>
     [Parameter]

@@ -386,3 +386,12 @@
         transform: none;
     }
 }
+
+/* Templated items (ItemTemplate): a plain list the host styles; only the list chrome is removed here. */
+.osirion-content-index {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--osirion-content-index-gap, var(--osirion-spacing-6, 1.5rem));
+}
