@@ -7,7 +7,8 @@
 @inject IThemeService ThemeService
 
 <link rel="stylesheet" href="_content/Osirion.Blazor.Core/css/index.min.css" />
-<link rel="stylesheet" href="_content/Osirion.Blazor.Core/Osirion.Blazor.Core.bundle.scp.css" />
+@* No link to Osirion.Blazor.Core.bundle.scp.css: the host's {App}.styles.css imports every referenced package's scoped
+   styles, so a link here downloaded that bundle (about 250 KB) a second time under another address. *@
 
 @if (!EffectiveOptions.UseDefaultStyles)
 {
