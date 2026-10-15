@@ -47,8 +47,9 @@ Options (`OsirionSiteOptions`)
 - `ShowThemeToggle` (true)
 - `Announcement`: `Id`, `Text`, optional `LinkText` and `LinkUrl`; dismissing it needs `app.MapOsirionAnnouncements()`
 - Footer: `FooterDescription`, `FooterSections` (title and links), `SocialLinks` (`Network` is `github`, `x`,
-  `linkedin`, `nuget` or `rss` for an icon; other networks show their `Label` as text), `LegalLinks`, and `Owner`
-  and `OwnerUrl` for the copyright line (default `Name` and `HomeUrl`)
+  `linkedin`, `nuget` or `rss` for an icon; other networks show their `Label` as text) under `SocialTitle`
+  (`Follow Us`), `LegalLinks`, and `Owner` and `OwnerUrl` for the copyright line (default `Name` and `HomeUrl`);
+  `Copyright` replaces that line with your own markup
 - `ShowCookieConsent` (false; needs `app.MapOsirionCookieConsent()`), `ShowScrollToTop` (true)
 
 The options are checked when the application starts: a missing `Name`, a menu entry without text or address, or

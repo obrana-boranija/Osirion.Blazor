@@ -64,6 +64,15 @@ public sealed class OsirionSiteOptions
     public string? OwnerUrl { get; set; }
 
     /// <summary>
+    /// Gets or sets the footer's copyright line, written as markup (it is configuration, not content). When empty the
+    /// footer writes the year and <see cref="Owner"/>.
+    /// </summary>
+    public string? Copyright { get; set; }
+
+    /// <summary>Gets or sets the heading above the footer's social links. Defaults to <c>Follow Us</c>.</summary>
+    public string SocialTitle { get; set; } = "Follow Us";
+
+    /// <summary>
     /// Gets or sets whether the cookie consent banner is shown. Defaults to <see langword="false"/>; the banner needs
     /// <c>app.MapOsirionCookieConsent()</c>.
     /// </summary>

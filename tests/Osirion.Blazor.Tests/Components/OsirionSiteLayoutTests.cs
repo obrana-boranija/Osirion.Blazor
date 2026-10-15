@@ -160,6 +160,20 @@ public class OsirionSiteLayoutTests : BunitContext
         announcement.QuerySelector("a[href='/blog/4-1']")!.TextContent.ShouldBe("Read the notes");
     }
 
+    // Fails before the fix: the layout passed neither value to the footer, so a site could not change them.
+    [Fact]
+    public void OsirionSiteLayout_CopyrightAndSocialTitle_ReachTheFooter()
+    {
+        var cut = RenderLayout(new Dictionary<string, string?>(Site)
+        {
+            ["Osirion:Site:Copyright"] = "&copy; Osirion contributors",
+            ["Osirion:Site:SocialTitle"] = "Elsewhere",
+        });
+
+        cut.Find(".osirion-footer-copyright").TextContent.Trim().ShouldBe("© Osirion contributors");
+        cut.FindAll(".osirion-footer-social .osirion-footer-section-title").ShouldHaveSingleItem().TextContent.ShouldBe("Elsewhere");
+    }
+
     // Fails before the fix: the default line separated the owner and "All rights reserved" with an em dash.
     [Fact]
     public void OsirionSiteLayout_DefaultCopyright_NamesTheOwnerWithoutADash()
