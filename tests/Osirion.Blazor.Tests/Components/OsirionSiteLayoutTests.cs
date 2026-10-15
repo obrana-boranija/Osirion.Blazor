@@ -160,6 +160,18 @@ public class OsirionSiteLayoutTests : BunitContext
         announcement.QuerySelector("a[href='/blog/4-1']")!.TextContent.ShouldBe("Read the notes");
     }
 
+    // Fails before the fix: the default line separated the owner and "All rights reserved" with an em dash.
+    [Fact]
+    public void OsirionSiteLayout_DefaultCopyright_NamesTheOwnerWithoutADash()
+    {
+        var cut = RenderLayout(Site);
+
+        var copyright = cut.Find(".osirion-footer-copyright").TextContent;
+        copyright.ShouldContain("Osirion.Blazor. All rights reserved.");
+        copyright.ShouldNotContain("—");
+        cut.Find(".osirion-footer-social .osirion-footer-section-title").TextContent.ShouldBe("Follow Us");
+    }
+
     [Fact]
     public void OsirionSiteLayout_HeaderAndFooterSlots_ReplaceTheGeneratedOnes()
     {
