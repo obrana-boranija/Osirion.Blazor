@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Osirion.Blazor.Core: the skip link's address is relative to the document's base instead of absolute, so a page rendered on one host (a static export) works on another; with script running it moves focus to `main` without following the link
 - Osirion.Blazor.Theming: `OsirionStyles` no longer links `Osirion.Blazor.Core.bundle.scp.css`, which the host's `{App}.styles.css` already imports; every page downloaded it (about 250 KB) twice
 - Osirion.Blazor.Core: `OsirionFooter`'s default copyright line no longer uses an em dash
+- Osirion.Blazor.Theming: in the dark theme, the active navigation item, danger and info messages reach 4.5:1 (they were 3.43, 3.62 and 4.07): `--osirion-nav-active-text`, `--osirion-status-danger-text` and `--osirion-status-info-text` move one step lighter on their scales
 
 ## [4.0.0] - 2026-10-11
 
