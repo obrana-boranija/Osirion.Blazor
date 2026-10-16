@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Osirion.Blazor.Core: the skip link's address is relative to the document's base instead of absolute, so a page rendered on one host (a static export) works on another; with script running it moves focus to `main` without following the link
 - Osirion.Blazor.Theming: `OsirionStyles` no longer links `Osirion.Blazor.Core.bundle.scp.css`, which the host's `{App}.styles.css` already imports; every page downloaded it (about 250 KB) twice
 - Osirion.Blazor.Core: `OsirionFooter`'s default copyright line no longer uses an em dash
+- Osirion.Blazor.Core: `OsirionHtmlRenderer` gives code blocks and tables `tabindex="0"`. Its styles let wide code, and tables on screens up to 768px, scroll sideways, and a scroll box with nothing focusable inside cannot be scrolled from a keyboard (WCAG 2.1.1; axe `scrollable-region-focusable`). An element with its own `tabindex` keeps it; `FocusableScrollBlocks="false"` turns this off
 
 ## [4.0.0] - 2026-10-11
 
