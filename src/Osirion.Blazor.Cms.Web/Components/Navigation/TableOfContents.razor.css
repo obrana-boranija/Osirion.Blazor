@@ -55,6 +55,13 @@
         background-color: var(--osirion-background-secondary, #f3f4f6);
     }
 
+    /* The section being read, marked by the component's script as the page scrolls */
+    .osirion-toc-link.osirion-toc-link-active {
+        color: var(--osirion-toc-active-color, var(--osirion-text-primary, #111827));
+        border-left-color: var(--osirion-toc-active-accent, var(--osirion-action-primary, #2563eb));
+        background-color: var(--osirion-toc-active-background, transparent);
+    }
+
     /* Add numbering */
     .osirion-toc-link::before {
         content: counter(toc-counter) ". ";

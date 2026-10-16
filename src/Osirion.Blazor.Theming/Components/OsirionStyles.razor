@@ -20,6 +20,11 @@
     <link rel="stylesheet" href="_content/Osirion.Blazor.Theming/css/index.min.css" />
 }
 
+@if (LinksPalettes)
+{
+    <link rel="stylesheet" href="@PaletteStylesheet" data-osirion-palettes />
+}
+
 @if (!string.IsNullOrWhiteSpace(CustomVariables))
 {
     <style>
@@ -46,8 +51,10 @@
             frameworkClass: '@GetFrameworkClass',
             selectedFramework: '@EffectiveOptions.Framework',
             defaultTheme: '@EffectiveOptions.DefaultMode.ToString().ToLowerInvariant()',
-            currentTheme: '@ThemeService.CurrentMode.ToString().ToLowerInvariant()'
+            currentTheme: '@ThemeService.CurrentMode.ToString().ToLowerInvariant()',
+            defaultPalette: '@EffectiveOptions.DefaultPalette.ToId()'
         };
+        const palettes = ['framework', 'osirion', 'commit', 'editor', 'studio', 'studio-blue', 'contrast'];
 
         // osirion-styles.js arrives after Blazor starts, so until then the page would paint without the framework
         // adapter and in the light theme. Apply both now, while the page is parsed; the script takes over later.
@@ -64,6 +71,15 @@
             }
             html.setAttribute('data-osirion-theme', theme);
             html.setAttribute('data-osirion-framework', config.selectedFramework);
+
+            const paletteMatch = document.cookie.match(/(?:^|; )osirion-preferred-palette=([^;]*)/);
+            const chosen = paletteMatch ? decodeURIComponent(paletteMatch[1]).toLowerCase() : '';
+            const palette = palettes.indexOf(chosen) >= 0 ? chosen : config.defaultPalette;
+            if(palette === 'framework'){
+                html.removeAttribute('data-osirion-palette');
+            } else {
+                html.setAttribute('data-osirion-palette', palette);
+            }
 
             if(config.selectedFramework === 'Bootstrap'){
                 html.setAttribute('data-bs-theme', theme);

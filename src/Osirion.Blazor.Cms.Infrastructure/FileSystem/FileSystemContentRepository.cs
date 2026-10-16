@@ -277,7 +277,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
                 await AssignDirectoryAsync(contentItem, relativePath, cancellationToken);
 
                 // Process the markdown content
-                await ProcessMarkdownAsync(content, contentItem, fileInfo.LastWriteTimeUtc, cancellationToken);
+                await ProcessMarkdownAsync(content, contentItem, _options.UseFileWriteTimeAsLastModified ? fileInfo.LastWriteTimeUtc : null, cancellationToken);
 
                 // Set URL
                 var url = UrlGenerator.GenerateUrl(contentItem.Url, contentItem.Path, contentItem.Slug, EnableLocalization, SupportedLocales, ContentPath);

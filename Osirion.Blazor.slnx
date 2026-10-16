@@ -90,6 +90,7 @@
   </Folder>
   <Folder Name="/tools/">
     <Project Path="tools/Osirion.Blazor.ApiDocs/Osirion.Blazor.ApiDocs.csproj" />
+    <Project Path="tools/Osirion.Blazor.Palettes/Osirion.Blazor.Palettes.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Osirion.Blazor.Analytics.Tests/Osirion.Blazor.Analytics.Tests.csproj" />

@@ -240,6 +240,33 @@ public class NavigationComponentRenderingTests : CmsWebComponentTestBase
     }
 
     [Fact]
+    public void TableOfContents_Headings_LoadTheScriptThatMarksTheSectionBeingRead()
+    {
+        var cut = RenderStatic<TableOfContents>(p => p.Add(c => c.Content, "<h2 id=\"one\">One</h2>"));
+
+        cut.Find("bl-script").GetAttribute("src").ShouldBe("./_content/Osirion.Blazor.Cms.Web/Components/Navigation/TableOfContents.razor.js");
+        cut.Find("nav.osirion-table-of-contents").HasAttribute("data-ref").ShouldBeTrue();
+    }
+
+    [Fact]
+    public void TableOfContents_TrackingOff_LoadsNoScript()
+    {
+        var cut = RenderStatic<TableOfContents>(p => p
+            .Add(c => c.Content, "<h2 id=\"one\">One</h2>")
+            .Add(c => c.TrackActiveHeading, false));
+
+        cut.FindAll("bl-script").ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void TableOfContents_NoHeadings_LoadsNoScript()
+    {
+        var cut = RenderStatic<TableOfContents>(p => p.Add(c => c.Content, "<p>None</p>"));
+
+        cut.FindAll("bl-script").ShouldBeEmpty();
+    }
+
+    [Fact]
     public void TableOfContents_LevelRange_KeepsOnlyHeadingsInsideIt()
     {
         var cut = RenderStatic<TableOfContents>(p => p

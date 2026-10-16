@@ -15,7 +15,7 @@ jobs:
         shell: pwsh
         run: |
           pwsh -NoProfile -ExecutionPolicy Bypass -File .\tools\check_component_docs.ps1
-          $report = .\tools\missing_component_docs.json
+          $report = '.\tools\missing_component_docs.json'
           if (-not (Test-Path $report)) { Write-Error "Missing report file"; exit 1 }
           $items = Get-Content $report -Raw | ConvertFrom-Json
           # filter out _Imports entries
