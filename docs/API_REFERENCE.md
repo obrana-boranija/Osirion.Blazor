@@ -1,6 +1,6 @@
 # API Reference
 
-[![Documentation](https://img.shields.io/badge/Documentation-API_Reference-blue)](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/docs/API_REFERENCE.md)
+[![Documentation](https://img.shields.io/badge/Documentation-API_Reference-blue)](https://github.com/demonjic/Osirion.Blazor/blob/master/docs/API_REFERENCE.md)
 [![Version](https://img.shields.io/nuget/v/Osirion.Blazor)](https://www.nuget.org/packages/Osirion.Blazor)
 
 Comprehensive API reference for all Osirion.Blazor packages, components, and services.

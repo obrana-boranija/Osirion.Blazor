@@ -13,7 +13,7 @@
     <Authors>Dejan Demonjić</Authors>
     <Company>Tridesetri</Company>
     <PackageProjectUrl>https://getosirion.com</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/obrana-boranija/Osirion.Blazor</RepositoryUrl>
+    <RepositoryUrl>https://github.com/demonjic/Osirion.Blazor</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>

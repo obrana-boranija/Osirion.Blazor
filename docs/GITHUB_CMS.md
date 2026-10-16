@@ -1,6 +1,6 @@
 # GitHub CMS Guide
 
-[![Documentation](https://img.shields.io/badge/Documentation-GitHub_CMS-blue)](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/docs/GITHUB_CMS.md)
+[![Documentation](https://img.shields.io/badge/Documentation-GitHub_CMS-blue)](https://github.com/demonjic/Osirion.Blazor/blob/master/docs/GITHUB_CMS.md)
 [![Version](https://img.shields.io/nuget/v/Osirion.Blazor.Cms)](https://www.nuget.org/packages/Osirion.Blazor.Cms)
 
 Comprehensive guide for using GitHub as a content management system with Osirion.Blazor.

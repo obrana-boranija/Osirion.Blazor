@@ -1,6 +1,6 @@
 # Performance Guide
 
-[![Documentation](https://img.shields.io/badge/Documentation-Performance-orange)](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/docs/PERFORMANCE.md)
+[![Documentation](https://img.shields.io/badge/Documentation-Performance-orange)](https://github.com/demonjic/Osirion.Blazor/blob/master/docs/PERFORMANCE.md)
 [![Version](https://img.shields.io/nuget/v/Osirion.Blazor)](https://www.nuget.org/packages/Osirion.Blazor)
 
 This guide provides comprehensive information about optimizing performance when using Osirion.Blazor in your applications.

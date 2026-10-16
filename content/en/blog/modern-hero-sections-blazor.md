@@ -65,7 +65,7 @@ With `ImageUrl`, the image is shown next to the text by default:
              PrimaryButtonText="Read the docs"
              PrimaryButtonUrl="/docs"
              SecondaryButtonText="View on GitHub"
-             SecondaryButtonUrl="https://github.com/obrana-boranija/Osirion.Blazor" />
+             SecondaryButtonUrl="https://github.com/demonjic/Osirion.Blazor" />
 ```
 
 The side image is an `<img>` with `fetchpriority="high"`, because the hero image is usually the largest thing on screen

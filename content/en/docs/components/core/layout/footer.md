@@ -92,7 +92,7 @@ A fuller footer passes link data from code:
             Title = "Project",
             Links =
             [
-                new FooterLink { Text = "Source code", Href = "https://github.com/obrana-boranija/Osirion.Blazor", OpenInNewTab = true }
+                new FooterLink { Text = "Source code", Href = "https://github.com/demonjic/Osirion.Blazor", OpenInNewTab = true }
             ]
         }
     ];

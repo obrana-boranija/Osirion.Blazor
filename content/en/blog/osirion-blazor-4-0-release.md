@@ -133,12 +133,12 @@ Other output is encoded or checked too:
   served to others.
 
 The full list, including more than 80 fixes, is in the
-[changelog](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/CHANGELOG.md).
+[changelog](https://github.com/demonjic/Osirion.Blazor/blob/master/CHANGELOG.md).
 
 ## Breaking changes and how to upgrade
 
 Skip the rows for features you do not use. The
-[migration guide](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/docs/MIGRATION.md#upgrading-to-400)
+[migration guide](https://github.com/demonjic/Osirion.Blazor/blob/master/docs/MIGRATION.md#upgrading-to-400)
 has every step in detail.
 
 | Area | What changed | What to do |

@@ -1,7 +1,7 @@
 # Osirion.Blazor.Cms.Application
 
 [![NuGet](https://img.shields.io/nuget/v/Osirion.Blazor.Cms.Application)](https://www.nuget.org/packages/Osirion.Blazor.Cms.Application)
-[![License](https://img.shields.io/github/license/obrana-boranija/Osirion.Blazor)](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/LICENSE.txt)
+[![License](https://img.shields.io/github/license/demonjic/Osirion.Blazor)](https://github.com/demonjic/Osirion.Blazor/blob/master/LICENSE.txt)
 
 Application layer for the Osirion.Blazor CMS ecosystem, implementing core business logic, use cases, and application services.
 
@@ -142,4 +142,4 @@ The application layer has the following dependencies:
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/LICENSE.txt) file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/demonjic/Osirion.Blazor/blob/master/LICENSE.txt) file for details.

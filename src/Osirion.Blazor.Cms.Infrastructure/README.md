@@ -1,7 +1,7 @@
 # Osirion.Blazor.Cms.Infrastructure
 
 [![NuGet](https://img.shields.io/nuget/v/Osirion.Blazor.Cms.Infrastructure)](https://www.nuget.org/packages/Osirion.Blazor.Cms.Infrastructure)
-[![License](https://img.shields.io/github/license/obrana-boranija/Osirion.Blazor)](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/LICENSE.txt)
+[![License](https://img.shields.io/github/license/demonjic/Osirion.Blazor)](https://github.com/demonjic/Osirion.Blazor/blob/master/LICENSE.txt)
 
 Infrastructure layer for the Osirion.Blazor CMS ecosystem, implementing repositories, external service integrations, and infrastructure concerns.
 
@@ -149,4 +149,4 @@ The infrastructure layer has the following dependencies:
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/LICENSE.txt) file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/demonjic/Osirion.Blazor/blob/master/LICENSE.txt) file for details.

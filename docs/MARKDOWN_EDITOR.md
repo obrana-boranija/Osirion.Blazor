@@ -1,6 +1,6 @@
 # Markdown Editor Components
 
-[![Component](https://img.shields.io/badge/Component-CMS_Admin-blue)](https://github.com/obrana-boranija/Osirion.Blazor/tree/master/src/Osirion.Blazor.Cms.Admin)
+[![Component](https://img.shields.io/badge/Component-CMS_Admin-blue)](https://github.com/demonjic/Osirion.Blazor/tree/master/src/Osirion.Blazor.Cms.Admin)
 [![Version](https://img.shields.io/nuget/v/Osirion.Blazor.Cms.Admin)](https://www.nuget.org/packages/Osirion.Blazor.Cms.Admin)
 
 The Osirion.Blazor.Cms.Admin package includes a set of powerful Markdown editor components designed for content management. These components are built to be SSR-compatible and provide a seamless editing experience with synchronized preview, toolbar support, and comprehensive formatting options.

@@ -1,7 +1,7 @@
 # Osirion.Blazor.Cms.Core
 
 [![NuGet](https://img.shields.io/nuget/v/Osirion.Blazor.Cms.Core)](https://www.nuget.org/packages/Osirion.Blazor.Cms.Core)
-[![License](https://img.shields.io/github/license/obrana-boranija/Osirion.Blazor)](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/LICENSE.txt)
+[![License](https://img.shields.io/github/license/demonjic/Osirion.Blazor)](https://github.com/demonjic/Osirion.Blazor/blob/master/LICENSE.txt)
 
 Core content management abstractions and base implementations for the Osirion.Blazor ecosystem. This package provides the foundation for building content providers and content management functionality.
 
@@ -264,4 +264,4 @@ services.Configure<MarkdownOptions>(options => {
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/LICENSE.txt) file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/demonjic/Osirion.Blazor/blob/master/LICENSE.txt) file for details.

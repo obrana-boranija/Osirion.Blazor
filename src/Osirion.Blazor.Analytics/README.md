@@ -1,7 +1,7 @@
 # Osirion.Blazor.Analytics
 
 [![NuGet](https://img.shields.io/nuget/v/Osirion.Blazor.Analytics)](https://www.nuget.org/packages/Osirion.Blazor.Analytics)
-[![License](https://img.shields.io/github/license/obrana-boranija/Osirion.Blazor)](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/LICENSE.txt)
+[![License](https://img.shields.io/github/license/demonjic/Osirion.Blazor)](https://github.com/demonjic/Osirion.Blazor/blob/master/LICENSE.txt)
 
 Analytics integration for Blazor applications, supporting multiple providers with SSR compatibility.
 
@@ -202,8 +202,8 @@ builder.Services.AddOsirionAnalytics(analytics => {
 
 ## Documentation
 
-For more detailed documentation, see [Analytics Documentation](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/docs/ANALYTICS.md).
+For more detailed documentation, see [Analytics Documentation](https://github.com/demonjic/Osirion.Blazor/blob/master/docs/ANALYTICS.md).
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/LICENSE.txt) file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/demonjic/Osirion.Blazor/blob/master/LICENSE.txt) file for details.

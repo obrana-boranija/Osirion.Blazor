@@ -69,4 +69,4 @@ and not in 3.x.
 ## Elsewhere
 
 - The [blog](/blog) has longer articles about building content sites with the library.
-- The source, issues and example sites are on [GitHub](https://github.com/obrana-boranija/Osirion.Blazor).
+- The source, issues and example sites are on [GitHub](https://github.com/demonjic/Osirion.Blazor).

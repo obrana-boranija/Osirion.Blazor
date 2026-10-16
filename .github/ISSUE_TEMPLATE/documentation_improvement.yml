@@ -28,7 +28,7 @@ body:
     attributes:
       label: Documentation Location
       description: Where is the documentation you're referring to? (URL or file path)
-      placeholder: "https://github.com/obrana-boranija/Osirion.Blazor/blob/master/README.md"
+      placeholder: "https://github.com/demonjic/Osirion.Blazor/blob/master/README.md"
   - type: textarea
     id: current_issue
     attributes:

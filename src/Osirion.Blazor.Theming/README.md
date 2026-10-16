@@ -1,7 +1,7 @@
 # Osirion.Blazor.Theming
 
 [![NuGet](https://img.shields.io/nuget/v/Osirion.Blazor.Theming)](https://www.nuget.org/packages/Osirion.Blazor.Theming)
-[![License](https://img.shields.io/github/license/obrana-boranija/Osirion.Blazor)](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/LICENSE.txt)
+[![License](https://img.shields.io/github/license/demonjic/Osirion.Blazor)](https://github.com/demonjic/Osirion.Blazor/blob/master/LICENSE.txt)
 
 Theming and styling system for Blazor applications with CSS framework integration and dark mode support.
 
@@ -125,8 +125,8 @@ Core variables available for customization:
 
 ## Documentation
 
-For more detailed documentation, see [Styling Documentation](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/docs/STYLING.md).
+For more detailed documentation, see [Styling Documentation](https://github.com/demonjic/Osirion.Blazor/blob/master/docs/STYLING.md).
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/LICENSE.txt) file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/demonjic/Osirion.Blazor/blob/master/LICENSE.txt) file for details.

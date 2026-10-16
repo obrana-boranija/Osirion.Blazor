@@ -1,6 +1,6 @@
 # Troubleshooting Guide
 
-[![Documentation](https://img.shields.io/badge/Documentation-Troubleshooting-red)](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/docs/TROUBLESHOOTING.md)
+[![Documentation](https://img.shields.io/badge/Documentation-Troubleshooting-red)](https://github.com/demonjic/Osirion.Blazor/blob/master/docs/TROUBLESHOOTING.md)
 [![Version](https://img.shields.io/nuget/v/Osirion.Blazor)](https://www.nuget.org/packages/Osirion.Blazor)
 
 This guide helps you diagnose and resolve common issues when working with Osirion.Blazor.
@@ -601,7 +601,7 @@ public static class MemoryDebugger
    - Look at example implementations
 
 2. **Search Existing Issues:**
-   - Browse [GitHub Issues](https://github.com/obrana-boranija/Osirion.Blazor/issues)
+   - Browse [GitHub Issues](https://github.com/demonjic/Osirion.Blazor/issues)
    - Check closed issues for solutions
    - Search discussions for similar problems
 

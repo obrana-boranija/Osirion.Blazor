@@ -67,7 +67,7 @@ A landing page header with a side image, two buttons and a background pattern:
              PrimaryButtonText="Read the docs"
              PrimaryButtonUrl="/docs"
              SecondaryButtonText="Source on GitHub"
-             SecondaryButtonUrl="https://github.com/obrana-boranija/Osirion.Blazor" />
+             SecondaryButtonUrl="https://github.com/demonjic/Osirion.Blazor" />
 ```
 
 An article header with the image behind the text and the author, date and reading time:

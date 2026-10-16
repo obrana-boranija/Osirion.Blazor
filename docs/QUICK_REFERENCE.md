@@ -1,6 +1,6 @@
 # Quick Reference Guide
 
-[![Documentation](https://img.shields.io/badge/Documentation-Complete-green)](https://github.com/obrana-boranija/Osirion.Blazor/tree/master/docs)
+[![Documentation](https://img.shields.io/badge/Documentation-Complete-green)](https://github.com/demonjic/Osirion.Blazor/tree/master/docs)
 [![Version](https://img.shields.io/nuget/v/Osirion.Blazor)](https://www.nuget.org/packages/Osirion.Blazor)
 
 This guide provides a quick overview of all components available in the Osirion.Blazor ecosystem.
@@ -669,6 +669,6 @@ builder.Services.AddOsirionStyle(CssFramework.Bootstrap);
 ## ?? Getting Help
 
 - ?? Check the [Documentation](../README.md)
-- ?? Report issues on [GitHub](https://github.com/obrana-boranija/Osirion.Blazor/issues)
-- ?? Ask questions in [Discussions](https://github.com/obrana-boranija/Osirion.Blazor/discussions)
-- ?? Contact via the [Repository](https://github.com/obrana-boranija/Osirion.Blazor)
+- ?? Report issues on [GitHub](https://github.com/demonjic/Osirion.Blazor/issues)
+- ?? Ask questions in [Discussions](https://github.com/demonjic/Osirion.Blazor/discussions)
+- ?? Contact via the [Repository](https://github.com/demonjic/Osirion.Blazor)

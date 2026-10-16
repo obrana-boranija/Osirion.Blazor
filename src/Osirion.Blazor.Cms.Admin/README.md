@@ -1,7 +1,7 @@
 # Osirion.Blazor.Cms.Admin
 
 [![NuGet](https://img.shields.io/nuget/v/Osirion.Blazor.Cms.Admin)](https://www.nuget.org/packages/Osirion.Blazor.Cms.Admin)
-[![License](https://img.shields.io/github/license/obrana-boranija/Osirion.Blazor)](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/LICENSE.txt)
+[![License](https://img.shields.io/github/license/demonjic/Osirion.Blazor)](https://github.com/demonjic/Osirion.Blazor/blob/master/LICENSE.txt)
 
 Content Management System (CMS) Administration module for Osirion.Blazor, providing a robust, flexible admin interface for managing content across different providers.
 
@@ -200,12 +200,12 @@ builder.Services.AddOsirionCmsAdmin(options =>
 
 ## Documentation
 
-For more detailed documentation, see [CMS Admin Documentation](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/docs/CMS_ADMIN.md).
+For more detailed documentation, see [CMS Admin Documentation](https://github.com/demonjic/Osirion.Blazor/blob/master/docs/CMS_ADMIN.md).
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/LICENSE.txt) file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/demonjic/Osirion.Blazor/blob/master/LICENSE.txt) file for details.
 
 ## Contributing
 
-We welcome contributions! Please see our [contributing guidelines](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/CONTRIBUTING.md).
+We welcome contributions! Please see our [contributing guidelines](https://github.com/demonjic/Osirion.Blazor/blob/master/CONTRIBUTING.md).

@@ -141,5 +141,5 @@ announcement bar, a reading progress bar, a sitemap with RSS and Atom feeds, and
 
 ## Source
 
-The source code, issues and examples are on [GitHub](https://github.com/obrana-boranija/Osirion.Blazor), and the
+The source code, issues and examples are on [GitHub](https://github.com/demonjic/Osirion.Blazor), and the
 packages are on [NuGet](https://www.nuget.org/packages/Osirion.Blazor).

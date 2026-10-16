@@ -39,7 +39,7 @@ cd Osirion.Blazor
 3. Add the upstream repository as a remote:
 
 ```bash
-git remote add upstream https://github.com/obrana-boranija/Osirion.Blazor.git
+git remote add upstream https://github.com/demonjic/Osirion.Blazor.git
 ```
 
 4. Create a new branch for your work:

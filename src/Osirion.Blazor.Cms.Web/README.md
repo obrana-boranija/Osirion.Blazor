@@ -1,7 +1,7 @@
 # Osirion.Blazor.Cms.Web
 
 [![NuGet](https://img.shields.io/nuget/v/Osirion.Blazor.Cms.Web)](https://www.nuget.org/packages/Osirion.Blazor.Cms.Web)
-[![License](https://img.shields.io/github/license/obrana-boranija/Osirion.Blazor)](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/LICENSE.txt)
+[![License](https://img.shields.io/github/license/demonjic/Osirion.Blazor)](https://github.com/demonjic/Osirion.Blazor/blob/master/LICENSE.txt)
 
 Frontend components and web interfaces for the Osirion.Blazor CMS ecosystem, providing content display, navigation, and search capabilities.
 
@@ -104,7 +104,7 @@ app.MapOsirionFeeds(feeds =>
 });
 ```
 
-See "Sitemap and Feeds" in [GITHUB_CMS.md](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/docs/GITHUB_CMS.md)
+See "Sitemap and Feeds" in [GITHUB_CMS.md](https://github.com/demonjic/Osirion.Blazor/blob/master/docs/GITHUB_CMS.md)
 for every option.
 
 ## Components
@@ -264,4 +264,4 @@ For advanced scenarios, you can directly inject and use the content service:
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/LICENSE.txt) file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/demonjic/Osirion.Blazor/blob/master/LICENSE.txt) file for details.

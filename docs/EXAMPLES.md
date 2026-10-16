@@ -1,6 +1,6 @@
 # Examples and Tutorials
 
-[![Documentation](https://img.shields.io/badge/Documentation-Examples-green)](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/docs/EXAMPLES.md)
+[![Documentation](https://img.shields.io/badge/Documentation-Examples-green)](https://github.com/demonjic/Osirion.Blazor/blob/master/docs/EXAMPLES.md)
 [![Version](https://img.shields.io/nuget/v/Osirion.Blazor)](https://www.nuget.org/packages/Osirion.Blazor)
 
 This document provides practical examples and step-by-step tutorials for building real-world applications with Osirion.Blazor.

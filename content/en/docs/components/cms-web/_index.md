@@ -183,4 +183,4 @@ The editing interface is a separate package, `Osirion.Blazor.Cms.Admin`.
 
 - [GitHub as a CMS for Blazor](/blog/github-cms-with-blazor)
 - [Structuring content repositories](/blog/structuring-content-repositories)
-- [Source on GitHub](https://github.com/obrana-boranija/Osirion.Blazor)
+- [Source on GitHub](https://github.com/demonjic/Osirion.Blazor)
