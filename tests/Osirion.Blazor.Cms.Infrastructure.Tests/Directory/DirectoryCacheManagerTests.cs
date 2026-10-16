@@ -32,7 +32,8 @@ public class DirectoryCacheManagerTests
 
         // Act
         var result = await _cacheManager.GetCachedDirectoriesAsync(
-            ct => {
+            ct =>
+            {
                 loaderCalled = true;
                 return Task.FromResult(directories);
             });
@@ -54,7 +55,8 @@ public class DirectoryCacheManagerTests
 
         var loadCount = 0;
         Func<CancellationToken, Task<Dictionary<string, DirectoryItem>>> loader =
-            ct => {
+            ct =>
+            {
                 loadCount++;
                 return Task.FromResult(directories);
             };
@@ -89,14 +91,16 @@ public class DirectoryCacheManagerTests
 
         // First call to populate cache
         await _cacheManager.GetCachedDirectoriesAsync(
-            ct => {
+            ct =>
+            {
                 loadCount++;
                 return Task.FromResult(directories1);
             });
 
         // Act - Force refresh
         var result = await _cacheManager.GetCachedDirectoriesAsync(
-            ct => {
+            ct =>
+            {
                 loadCount++;
                 return Task.FromResult(directories2);
             },
@@ -125,7 +129,8 @@ public class DirectoryCacheManagerTests
 
         // First call to populate cache
         await _cacheManager.GetCachedDirectoriesAsync(
-            ct => {
+            ct =>
+            {
                 loadCount++;
                 return Task.FromResult(directories1);
             });
@@ -135,7 +140,8 @@ public class DirectoryCacheManagerTests
 
         // Act - Next call should load fresh data
         var result = await _cacheManager.GetCachedDirectoriesAsync(
-            ct => {
+            ct =>
+            {
                 loadCount++;
                 return Task.FromResult(directories2);
             });

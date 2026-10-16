@@ -188,7 +188,7 @@ public class ThemeService : IThemeService
             {
                 // Write only the osirion cookie
                 httpContext.Response.Cookies.Append(ThemeCookieKey, value, options);
-                
+
                 // Remove legacy cookie if it exists
                 if (httpContext.Request?.Cookies.ContainsKey("preferred-theme") == true)
                 {

@@ -175,7 +175,7 @@ public class GitHubDirectoryRepositoryTests
             "Dir to Delete",
             "github");
 
-        
+
 
         var files = new List<GitHubItem>
         {

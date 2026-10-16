@@ -6,7 +6,7 @@ using Osirion.Blazor.Cms.Domain.Models;
 
 namespace Osirion.Blazor.Cms.Admin.Features.ContentEditor.Components;
 
-    /// <summary>Defines the public member type.</summary>
+/// <summary>Defines the public member type.</summary>
 public partial class ContentEditor : IDisposable
 {
     /// <summary>Performs the ViewModel operation.</summary>

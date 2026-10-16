@@ -200,7 +200,7 @@ public partial class OsirionTestimonialCard : OsirionComponentBase
         {
             return $"Profile photo of {Name} from {Company}";
         }
-        
+
         return $"Profile photo of {Name}";
     }
 
@@ -279,11 +279,11 @@ public partial class OsirionTestimonialCard : OsirionComponentBase
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        
+
         // Validate rating range
         if (Rating < 0) Rating = 0;
         if (Rating > 5) Rating = 5;
-        
+
         // Set default image size based on variant
         if (ImageSize == 64) // Only change if using default
         {

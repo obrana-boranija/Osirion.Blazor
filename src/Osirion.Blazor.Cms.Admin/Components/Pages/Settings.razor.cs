@@ -5,7 +5,7 @@ using Osirion.Blazor.Cms.Domain.Interfaces;
 
 namespace Osirion.Blazor.Cms.Admin.Components.Pages;
 
-    /// <summary>Defines the public member type.</summary>
+/// <summary>Defines the public member type.</summary>
 public partial class Settings : IDisposable
 {
     private const string SignOutFailedMessage = "Signing out failed. Please try again.";

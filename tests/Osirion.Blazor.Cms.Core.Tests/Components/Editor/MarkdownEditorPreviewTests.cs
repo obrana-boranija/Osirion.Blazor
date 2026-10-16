@@ -22,8 +22,8 @@ public class MarkdownEditorPreviewTests : BunitContext, IDisposable
 
         // Setup MarkdownRenderer
         _markdownRenderer = Substitute.For<IMarkdownRendererService>();
-        Services.AddSingleton(_markdownRenderer); 
-        
+        Services.AddSingleton(_markdownRenderer);
+
         SetRendererInfo(new RendererInfo("Server", true));
 
         // Configure default behavior

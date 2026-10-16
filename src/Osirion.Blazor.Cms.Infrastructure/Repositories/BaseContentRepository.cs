@@ -457,7 +457,7 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
             // Keep the source next to the sanitized HTML so a save writes the original markdown back,
             // not a conversion of the sanitized HTML (SetContent alone resets the source to null)
             contentItem.SetContent(html, result.Content);
-            
+
             // Map all FrontMatter properties to ContentItem (in order of FrontMatter class)
             contentItem.SetContentId(contentItem.Metadata?.Id ?? contentItem.ContentId);
             contentItem.SetOrderIndex(contentItem.Metadata?.Order ?? contentItem.OrderIndex);
@@ -469,12 +469,12 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
             contentItem.SetFeatured(contentItem.Metadata?.IsFeatured ?? contentItem.IsFeatured);
             contentItem.SetSlug(contentItem.Metadata?.Slug ?? contentItem.Slug);
             contentItem.SetLocale(contentItem.Metadata?.Lang ?? contentItem.Locale);
-            
+
             // Map Published to Status and IsPublished
             var isPublished = contentItem.Metadata?.Published ?? true;
             contentItem.IsPublished = isPublished;
             contentItem.SetStatus(isPublished ? ContentStatus.Published : ContentStatus.Draft);
-            
+
             // CustomFields and SeoProperties are stored in Metadata only
 
             // Parse and set date

@@ -9,7 +9,7 @@ using Osirion.Blazor.Cms.Domain.ValueObjects;
 
 namespace Osirion.Blazor.Cms.Admin.Components.Pages;
 
-    /// <summary>Defines the public member type.</summary>
+/// <summary>Defines the public member type.</summary>
 public partial class EditContent : IDisposable
 {
     [Inject]

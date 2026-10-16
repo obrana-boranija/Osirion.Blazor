@@ -37,7 +37,8 @@ public class NavigationBuilderTests
         var builder = new NavigationBuilder(services);
 
         // Act
-        builder.AddEnhancedNavigation(options => {
+        builder.AddEnhancedNavigation(options =>
+        {
             options.Behavior = ScrollBehavior.Smooth;
             options.ResetScrollOnNavigation = false;
             options.PreserveScrollForSamePageNavigation = false;
@@ -96,7 +97,8 @@ public class NavigationBuilderTests
         var builder = new NavigationBuilder(services);
 
         // Act
-        builder.AddScrollToTop(options => {
+        builder.AddScrollToTop(options =>
+        {
             options.Position = Position.TopLeft;
             options.Behavior = ScrollBehavior.Instant;
             options.VisibilityThreshold = 500;
