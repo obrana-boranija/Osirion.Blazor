@@ -56,4 +56,12 @@ public class FileSystemOptions : ContentProviderOptions
     /// Gets or sets the content root path (for URL generation)
     /// </summary>
     public string? ContentRoot { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether a file's write time stands in for the content's last-modified date when its front matter
+    /// declares no <c>last_modified</c>. Off by default: a fresh checkout gives every file the time of the checkout,
+    /// which then reaches <c>dateModified</c>, <c>article:modified_time</c> and the sitemap's <c>lastmod</c> as a date
+    /// nobody edited anything. Turn it on only where files are edited in place and their times are kept.
+    /// </summary>
+    public bool UseFileWriteTimeAsLastModified { get; set; }
 }

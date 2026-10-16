@@ -1,5 +1,6 @@
 using Bunit;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.DependencyInjection;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.ValueObjects;
@@ -65,7 +66,8 @@ public class SeoMetadataRendererMetaTagTests : CmsWebComponentTestBase
         Meta(cut, "publish_date").ShouldBe("2020-01-02");
         Meta(cut, "last_modified").ShouldBe("2020-02-03");
         Meta(cut, "estimated_reading_time").ShouldBe("1");
-        cut.Find("link[rel='preload']").GetAttribute("href").ShouldBe("http://localhost/images/cover.png");
+        // The share image is not shown on the page, so preloading it only made browsers warn that it went unused.
+        cut.FindAll("link[rel='preload']").ShouldBeEmpty();
         cut.Find("link[rel='dns-prefetch']").GetAttribute("href").ShouldBe(SeoTestContent.Origin);
     }
 
@@ -458,6 +460,76 @@ public class SeoMetadataRendererMetaTagTests : CmsWebComponentTestBase
         Property(cut, "og:image:alt").ShouldBe("localhost");
         cut.FindAll("meta[name='description']").ShouldBeEmpty();
     }
+
+    [Fact]
+    public void SeoMetadataRenderer_LongTitle_WritesThePageTitleWholeWithTheSiteName()
+    {
+        const string title = "This is a very long title that keeps going well beyond the sixty character limit for titles";
+
+        var cut = RenderPage(p => p.Add(c => c.Content, SeoTestContent.Article(title: title)));
+
+        PageTitleText(cut).ShouldBe($"{title} | localhost");
+    }
+
+    [Fact]
+    public void SeoMetadataRenderer_SeoOptionsDisallowAiTraining_RendersTheTrainingOptOut()
+    {
+        Services.AddSingleton(Microsoft.Extensions.Options.Options.Create(new SeoMetadataOptions { AllowAiTraining = false }));
+
+        var cut = RenderPage(p => p.Add(c => c.Content, SeoTestContent.Article()));
+
+        Meta(cut, "ai-crawling").ShouldBe("all");
+        Meta(cut, "ai-training").ShouldBe("disallow");
+        Meta(cut, "Google-Extended").ShouldBe("noindex");
+    }
+
+    [Fact]
+    public void SeoMetadataRenderer_SeoOptionsDisallowAiDiscoveryAndIndexing_RendersBothOptOuts()
+    {
+        Services.AddSingleton(Microsoft.Extensions.Options.Options.Create(new SeoMetadataOptions
+        {
+            AllowAiDiscovery = false,
+            AllowSearchIndexing = false,
+        }));
+
+        var cut = RenderPage(p => p.Add(c => c.Content, SeoTestContent.Article()));
+
+        Meta(cut, "ai-crawling").ShouldBe("none");
+        Meta(cut, "robots").ShouldBe("noindex, nofollow");
+    }
+
+    [Fact]
+    public void SeoMetadataRenderer_SeoOptionsTurnGeoAndAeoOff_LeavesOutTheirTags()
+    {
+        Services.AddSingleton(Microsoft.Extensions.Options.Options.Create(new SeoMetadataOptions
+        {
+            EnableGeoOptimization = false,
+            EnableAeoOptimization = false,
+            EnableGeneratedFaq = true,
+        }));
+
+        var cut = RenderPage(p => p.Add(c => c.Content, SeoTestContent.Article()));
+
+        cut.FindAll("meta[name='entity-summary']").ShouldBeEmpty();
+        cut.FindAll("meta[name='answers-to']").ShouldBeEmpty();
+    }
+
+    // The component's own default is true, so only the parameter's presence, not its value, can tell a page's choice
+    // from the default.
+    [Fact]
+    public void SeoMetadataRenderer_ExplicitSwitchSetToItsDefault_WinsOverTheSeoOptions()
+    {
+        Services.AddSingleton(Microsoft.Extensions.Options.Options.Create(new SeoMetadataOptions { AllowAiTraining = false }));
+
+        var cut = RenderPage(p => p
+            .Add(c => c.Content, SeoTestContent.Article())
+            .Add(c => c.AllowAiTraining, true));
+
+        Meta(cut, "ai-training").ShouldBe("allow");
+    }
+
+    private string PageTitleText(IRenderedComponent<SeoMetadataRenderer> cut) =>
+        Render(cut.FindComponent<PageTitle>().Instance.ChildContent!).Markup;
 
     private IRenderedComponent<SeoMetadataRenderer> RenderPage(Action<ComponentParameterCollectionBuilder<SeoMetadataRenderer>> parameters)
     {

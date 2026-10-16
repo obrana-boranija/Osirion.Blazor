@@ -12,7 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Osirion.Blazor.Cms.Infrastructure: a file's write time no longer stands in for a content item's last-modified date. Without `last_modified` in its front matter, an item was last modified when it was created (its `date`). A fresh checkout gives every file the time of the checkout, which reached `dateModified`, `article:modified_time` and the sitemap's `lastmod`, often hours before the published date. `FileSystemOptions.UseFileWriteTimeAsLastModified` turns the old behaviour back on where files are edited in place
+
 ### Added
+- Osirion.Blazor.Cms.Web: `SeoMetadataOptions.AuthorUrl` and the `AuthorUrl` parameter of `SeoMetadataRenderer` name a page that identifies the author, such as `/about`, as the author's `url` in every article and posting
 - Osirion.Blazor.Cms.Web: `ItemTemplate` on `ContentList`, `ContentListPage` and `OsirionContentListSection` renders each item through the host's markup, in an `ol.osirion-content-index`, instead of the built-in cards. Paging, the page `h1`, feeds and structured data are unchanged
 - Osirion.Blazor.Cms.Web: `ArticlePage.HeaderContent` replaces the hero with the host's article header
 - Osirion.Blazor: `Osirion:Site:Copyright` and `Osirion:Site:SocialTitle` reach the footer `OsirionSiteLayout` renders
@@ -22,6 +26,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Osirion.Blazor.Core: the skip link's address is relative to the document's base instead of absolute, so a page rendered on one host (a static export) works on another; with script running it moves focus to `main` without following the link
 - Osirion.Blazor.Theming: `OsirionStyles` no longer links `Osirion.Blazor.Core.bundle.scp.css`, which the host's `{App}.styles.css` already imports; every page downloaded it (about 250 KB) twice
 - Osirion.Blazor.Core: `OsirionFooter`'s default copyright line no longer uses an em dash
+- Osirion.Blazor.Cms.Web: `SeoMetadataRenderer` applies `AllowAiDiscovery`, `AllowAiTraining`, `AllowSearchIndexing`, `EnableGeoOptimization`, `EnableAeoOptimization` and `GenerateMultipleSchemas` from `SeoMetadataOptions` unless the page sets the parameter. The component's own default of `true` won over the configuration, so `AllowAiTraining: false` still rendered `ai-training: allow`
+- Osirion.Blazor.Cms.Web: the `<title>` element is no longer cut at 60 characters. The cut took the site name with it ("Title | Site..."); search engines shorten a title link themselves. `og:title` and `twitter:title` keep their lengths
+- Osirion.Blazor.Cms.Web: the structured data author no longer carries a URL guessed from the name (`/author/{name}`), a page that does not exist; it carries `AuthorUrl` when one is configured and no URL otherwise
+- Osirion.Blazor.Cms.Web: the publisher logo no longer declares a fixed `width` of 600 and `height` of 60, whatever the logo's real size
+- Osirion.Blazor.Cms.Web: `SeoMetadataRenderer` no longer preloads the share image. The page does not show it, so browsers warned on every page that a preloaded resource went unused
 
 ## [4.0.0] - 2026-10-11
 
