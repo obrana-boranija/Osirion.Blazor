@@ -101,6 +101,15 @@ public partial class OsirionHtmlRenderer
     [Parameter]
     public bool EnableDemos { get; set; } = true;
 
+    /// <summary>
+    /// Gets or sets whether code blocks and tables take a place in the tab order (<c>tabindex="0"</c>). The renderer's
+    /// styles let wide code, and tables on small screens, scroll sideways inside the text, and a scroll box with nothing
+    /// focusable inside it cannot be scrolled from a keyboard (WCAG 2.1.1). An element that already has a
+    /// <c>tabindex</c> keeps it. Defaults to <see langword="true"/>.
+    /// </summary>
+    [Parameter]
+    public bool FocusableScrollBlocks { get; set; } = true;
+
     [Inject]
     private IServiceProvider ServiceProvider { get; set; } = default!;
 
@@ -187,6 +196,11 @@ public partial class OsirionHtmlRenderer
         }
 
         ProcessedHtml = !HasCodeBlocks || !EnableSyntaxHighlighting ? content : EnhanceCodeBlocks(content);
+        if (FocusableScrollBlocks)
+        {
+            ProcessedHtml = MakeScrollBlocksFocusable(ProcessedHtml);
+        }
+
         Segments = demos.Count == 0 ? null : SplitAroundDemos(ProcessedHtml, demos);
     }
 
@@ -361,6 +375,34 @@ public partial class OsirionHtmlRenderer
         }
 
         return demos;
+    }
+
+    /// <summary>
+    /// Gives every pre and table element without a <c>tabindex</c> the value 0. The change is made on the parsed
+    /// fragment, so text that only looks like a tag (in an attribute value, say) is never touched. Content without such
+    /// an element is returned unchanged, without being parsed.
+    /// </summary>
+    private static string MakeScrollBlocksFocusable(string html)
+    {
+        if (!html.Contains("<pre", StringComparison.OrdinalIgnoreCase) && !html.Contains("<table", StringComparison.OrdinalIgnoreCase))
+        {
+            return html;
+        }
+
+        var parser = new HtmlParser();
+        var context = parser.ParseDocument(string.Empty).Body!;
+        var nodes = parser.ParseFragment(html, context);
+        var changed = false;
+        foreach (var element in nodes.OfType<IElement>().SelectMany(node => node.QuerySelectorAll("pre, table").Prepend(node)))
+        {
+            if (element.LocalName is "pre" or "table" && !element.HasAttribute("tabindex"))
+            {
+                element.SetAttribute("tabindex", "0");
+                changed = true;
+            }
+        }
+
+        return changed ? string.Concat(nodes.Select(node => node.ToHtml())) : html;
     }
 
     private List<HtmlSegment> SplitAroundDemos(string html, List<ContentDemo> demos)

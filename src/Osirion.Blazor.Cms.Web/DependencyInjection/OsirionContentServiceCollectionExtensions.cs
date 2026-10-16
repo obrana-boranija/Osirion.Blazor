@@ -1,3 +1,4 @@
+using BlazorJSComponents;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -29,6 +30,7 @@ public static class OsirionContentServiceCollectionExtensions
 
         // Add core CMS services
         services.AddCms(services.BuildServiceProvider().GetRequiredService<IConfiguration>());
+        AddScriptComponents(services);
 
         // Create builder and apply configuration
         var serviceProvider = services.BuildServiceProvider();
@@ -57,6 +59,7 @@ public static class OsirionContentServiceCollectionExtensions
 
         // Add core CMS services
         services.AddCms(configuration);
+        AddScriptComponents(services);
 
         // Configure providers based on configuration
         var cmsSection = configuration.GetSection("Osirion:Cms");
@@ -111,5 +114,15 @@ public static class OsirionContentServiceCollectionExtensions
 
         services.Configure<SeoMetadataOptions>(configuration);
         return services;
+    }
+
+    // The table of contents loads its script as a JS component, which needs the element reference scope. A host
+    // that composes the content services without AddOsirion would otherwise fail on the first article.
+    private static void AddScriptComponents(IServiceCollection services)
+    {
+        if (!services.Any(descriptor => descriptor.ServiceType == typeof(JSElementReferenceScope)))
+        {
+            services.AddJSComponents();
+        }
     }
 }

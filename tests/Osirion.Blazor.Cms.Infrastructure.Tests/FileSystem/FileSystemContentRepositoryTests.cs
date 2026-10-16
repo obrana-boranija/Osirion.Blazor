@@ -46,13 +46,26 @@ public class FileSystemContentRepositoryTests
             _fileSystem);
     }
 
+    // A fresh checkout gives every file the checkout's time, so by default a write time is not a modification date.
     [Fact]
-    public async Task GetAllAsync_NoFrontMatterLastModified_UsesTheFileWriteTime()
+    public async Task GetAllAsync_NoFrontMatterLastModified_WasLastModifiedWhenCreated()
+    {
+        _markdownProcessor.ExtractFrontMatterAndContent(Arg.Any<string>())
+            .Returns(call => ((FrontMatter?)new FrontMatter { Title = "Post", Date = "2026-01-02" }, call.Arg<string>()));
+        _fileSystem.AddFile(Path.Combine(ContentRoot, "post.md"), new MockFileData("Body") { LastWriteTime = new DateTime(2026, 3, 4, 5, 6, 7, DateTimeKind.Utc) });
+
+        var item = (await _repository.GetAllAsync()).ShouldHaveSingleItem();
+
+        item.LastModified.ShouldBe(new DateTime(2026, 1, 2, 0, 0, 0, DateTimeKind.Utc));
+    }
+
+    [Fact]
+    public async Task GetAllAsync_FileWriteTimeOptedIn_StandsInForAMissingLastModified()
     {
         var written = new DateTime(2026, 3, 4, 5, 6, 7, DateTimeKind.Utc);
         _fileSystem.AddFile(Path.Combine(ContentRoot, "post.md"), new MockFileData("Body") { LastWriteTime = written });
 
-        var item = (await _repository.GetAllAsync()).ShouldHaveSingleItem();
+        var item = (await RepositoryUsingFileWriteTimes().GetAllAsync()).ShouldHaveSingleItem();
 
         item.LastModified.ShouldBe(written);
     }
@@ -64,10 +77,23 @@ public class FileSystemContentRepositoryTests
             .Returns(call => ((FrontMatter?)new FrontMatter { Title = "Post", LastModified = "2026-05-06" }, call.Arg<string>()));
         _fileSystem.AddFile(Path.Combine(ContentRoot, "post.md"), new MockFileData("Body") { LastWriteTime = new DateTime(2026, 3, 4, 0, 0, 0, DateTimeKind.Utc) });
 
-        var item = (await _repository.GetAllAsync()).ShouldHaveSingleItem();
+        var item = (await RepositoryUsingFileWriteTimes().GetAllAsync()).ShouldHaveSingleItem();
 
         item.LastModified.ShouldBe(new DateTime(2026, 5, 6, 0, 0, 0, DateTimeKind.Utc));
     }
+
+    private FileSystemContentRepository RepositoryUsingFileWriteTimes() => new(
+        _markdownProcessor,
+        Substitute.For<IContentQueryFilter>(),
+        Options.Create(new FileSystemOptions
+        {
+            BasePath = ContentRoot,
+            WatchForChanges = false,
+            CreateDirectoriesIfNotExist = true,
+            UseFileWriteTimeAsLastModified = true
+        }),
+        NullLogger<FileSystemContentRepository>.Instance,
+        _fileSystem);
 
     [Theory]
     [InlineData("../outside.md")]

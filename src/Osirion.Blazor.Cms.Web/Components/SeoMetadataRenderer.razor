@@ -249,11 +249,6 @@
     <link rel="dns-prefetch" href="@_baseUrl" />
     <link rel="preconnect" href="@_baseUrl" crossorigin />
 
-    @if (!string.IsNullOrWhiteSpace(_ogImage))
-    {
-        <link rel="preload" as="image" href="@_ogImage" />
-    }
-
     <!-- ===== Security Headers ===== -->
     <meta name="referrer" content="no-referrer-when-downgrade" />
 

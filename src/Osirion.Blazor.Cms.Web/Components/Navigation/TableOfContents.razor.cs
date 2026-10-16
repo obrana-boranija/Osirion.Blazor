@@ -39,6 +39,14 @@ public partial class TableOfContents(NavigationManager navigationManager)
     public string EmptyText { get; set; } = "No headings found.";
 
     /// <summary>
+    /// Gets or sets whether the link to the section being read is marked as it scrolls by: the link gets the
+    /// <c>osirion-toc-link-active</c> class and <c>aria-current="location"</c>. A script does it, so without script
+    /// the contents work as plain links.
+    /// </summary>
+    [Parameter]
+    public bool TrackActiveHeading { get; set; } = true;
+
+    /// <summary>
     /// Gets the extracted headings
     /// </summary>
     private IReadOnlyList<HeadingItem> Headings { get; set; } = Array.Empty<HeadingItem>();
