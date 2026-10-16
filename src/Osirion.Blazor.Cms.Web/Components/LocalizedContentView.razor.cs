@@ -117,7 +117,7 @@ public partial class LocalizedContentView
     /// <summary>Gets or sets the OnAfterRender value.</summary>
     protected override void OnAfterRender(bool firstRender)
     {
-        if(firstRender)
+        if (firstRender)
         {
             IsLoading = false;
             StateHasChanged();
@@ -138,7 +138,7 @@ public partial class LocalizedContentView
                 {
                     Item = await provider.GetItemByPathAsync(path);
                 }
-                
+
 
                 if (Item is not null)
                 {

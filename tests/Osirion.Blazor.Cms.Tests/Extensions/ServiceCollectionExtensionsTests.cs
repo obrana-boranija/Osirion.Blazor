@@ -49,7 +49,8 @@ public class ServiceCollectionExtensionsTests
         var services = new ServiceCollection();
 
         // Act
-        services.AddOsirionGitHubContentProvider(options => {
+        services.AddOsirionGitHubContentProvider(options =>
+        {
             options.Owner = "test-owner";
             options.Repository = "test-repository";
             options.Branch = "main";
@@ -69,7 +70,8 @@ public class ServiceCollectionExtensionsTests
         var services = new ServiceCollection();
 
         // Act
-        services.AddOsirionFileSystemContentProvider(options => {
+        services.AddOsirionFileSystemContentProvider(options =>
+        {
             options.BasePath = "test/path";
             options.WatchForChanges = true;
         });

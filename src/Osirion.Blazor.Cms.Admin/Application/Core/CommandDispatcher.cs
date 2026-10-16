@@ -2,7 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Osirion.Blazor.Cms.Admin.Application.Core;
 
-    /// <summary>Defines the public member API contract.</summary>
+/// <summary>Defines the public member API contract.</summary>
 [Obsolete("Duplicate of Osirion.Blazor.Cms.Application.Commands.CommandDispatcher, which the admin resolves. It will be removed in the next major release.")]
 public class CommandDispatcher : ICommandDispatcher
 {

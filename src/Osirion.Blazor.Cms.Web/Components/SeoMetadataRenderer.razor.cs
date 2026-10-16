@@ -27,12 +27,12 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
     private string _baseUrl = string.Empty;
     private string _currentUrl = string.Empty;
     private string _locale = "en_US";
-    
+
     // Meta tags
     private string _metaTitle = string.Empty;
     private string? _metaDescription;
     private string? _metaKeywords;
-    
+
     // Open Graph
     private string? _ogTitle;
     private string? _ogDescription;
@@ -41,22 +41,22 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
     private int? _ogImageWidth;
     private int? _ogImageHeight;
     private string? _ogImageAlt;
-    
+
     // Twitter Card
     private string? _twitterTitle;
     private string? _twitterDescription;
     private string? _twitterImage;
     private string? _twitterCard;
-    
+
     // SEO essentials
     private string? _canonicalUrl;
     private string? _robotsDirective;
     private string? _languageCode;
-    
+
     // Structured data
     private string? _jsonLdContent;
     private List<string>? _additionalJsonLdSchemas;
-    
+
     // GEO & AEO optimization
     private string? _entitySummary;
     private List<string>? _answersTo;

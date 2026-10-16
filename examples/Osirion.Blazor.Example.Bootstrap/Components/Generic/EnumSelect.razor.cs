@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components;
 using System.ComponentModel;
 
 namespace Osirion.Blazor.Example.Bootstrap.Components.Generic;
+
 public partial class EnumSelect<TEnum> where TEnum : struct, Enum
 {
     [Parameter] public string Label { get; set; } = "Select option";

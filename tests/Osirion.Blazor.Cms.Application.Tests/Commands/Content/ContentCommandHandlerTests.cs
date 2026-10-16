@@ -87,7 +87,10 @@ public class ContentCommandHandlerTests
 
         await CreateHandler().HandleAsync(new CreateContentCommand
         {
-            Title = "Post", Content = Markdown, Path = "blog/post.md", ProviderId = "github"
+            Title = "Post",
+            Content = Markdown,
+            Path = "blog/post.md",
+            ProviderId = "github"
         });
 
         _unitOfWorkFactory.Received(1).Create("github");
@@ -171,7 +174,12 @@ public class ContentCommandHandlerTests
 
         await UpdateHandler().HandleAsync(new UpdateContentCommand
         {
-            Id = "post-1", Title = "Post", Content = Markdown, Path = " ", Author = " ", Slug = null
+            Id = "post-1",
+            Title = "Post",
+            Content = Markdown,
+            Path = " ",
+            Author = " ",
+            Slug = null
         });
 
         _saved.ShouldNotBeNull();
@@ -188,7 +196,10 @@ public class ContentCommandHandlerTests
 
         await UpdateHandler().HandleAsync(new UpdateContentCommand
         {
-            Id = "post-1", Title = "Post", Content = Markdown, ProviderId = "github"
+            Id = "post-1",
+            Title = "Post",
+            Content = Markdown,
+            ProviderId = "github"
         });
 
         _unitOfWorkFactory.Received(1).Create("github");

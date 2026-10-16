@@ -36,7 +36,8 @@ public class AnalyticsBuilderTests
         var builder = new AnalyticsBuilder(services);
 
         // Act
-        builder.AddClarity(options => {
+        builder.AddClarity(options =>
+        {
             options.SiteId = "test-clarity-id";
             options.Enabled = true;
         });
@@ -60,7 +61,8 @@ public class AnalyticsBuilderTests
         var builder = new AnalyticsBuilder(services);
 
         // Act
-        builder.AddMatomo(options => {
+        builder.AddMatomo(options =>
+        {
             options.SiteId = "test-matomo-id";
             options.TrackerUrl = "https://matomo.test/";
             options.Enabled = true;
@@ -85,7 +87,8 @@ public class AnalyticsBuilderTests
         var builder = new AnalyticsBuilder(services);
 
         // Act
-        builder.AddGA4(options => {
+        builder.AddGA4(options =>
+        {
             options.MeasurementId = "G-TESTID";
             options.Enabled = true;
         });
@@ -109,7 +112,8 @@ public class AnalyticsBuilderTests
         var builder = new AnalyticsBuilder(services);
 
         // Act
-        builder.AddYandexMetrica(options => {
+        builder.AddYandexMetrica(options =>
+        {
             options.CounterId = "12345678";
             options.Enabled = true;
         });
@@ -134,7 +138,8 @@ public class AnalyticsBuilderTests
         var customProvider = Substitute.For<IAnalyticsProvider>();
 
         // Act
-        builder.AddProvider<TestAnalyticsProvider>(provider => {
+        builder.AddProvider<TestAnalyticsProvider>(provider =>
+        {
             provider.CustomSetting = "test-value";
         });
 
@@ -181,7 +186,8 @@ public class AnalyticsBuilderTests
         // Act
         builder
             .AddClarity(options => options.SiteId = "clarity-id")
-            .AddMatomo(options => {
+            .AddMatomo(options =>
+            {
                 options.SiteId = "matomo-id";
                 options.TrackerUrl = "https://matomo.test/";
             })

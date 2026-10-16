@@ -29,9 +29,9 @@ public class SmtpEmailService(IOptions<EmailOptions> emailOptions, ILogger<SmtpE
             using var message = CreateMailMessage(contactForm);
 
             logger.LogInformation("Sending email via SMTP to {ToEmail}", _emailOptions.ToEmail);
-            
+
             await client.SendMailAsync(message, cancellationToken);
-            
+
             logger.LogInformation("Email sent successfully via SMTP");
             return EmailResult.Success("Email sent via SMTP");
         }
@@ -49,7 +49,7 @@ public class SmtpEmailService(IOptions<EmailOptions> emailOptions, ILogger<SmtpE
     private SmtpClient CreateSmtpClient()
     {
         var smtp = _emailOptions.Smtp;
-        
+
         var client = new SmtpClient(smtp.Host, smtp.Port)
         {
             EnableSsl = smtp.EnableSsl,
@@ -69,7 +69,7 @@ public class SmtpEmailService(IOptions<EmailOptions> emailOptions, ILogger<SmtpE
     {
         var smtp = _emailOptions.Smtp;
         var subject = _emailOptions.SubjectTemplate.Replace("{subject}", contactForm.Subject);
-        
+
         var message = new MailMessage
         {
             From = new MailAddress(smtp.FromEmail, _emailOptions.FromName),

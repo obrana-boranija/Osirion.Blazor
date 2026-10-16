@@ -46,7 +46,7 @@ public class SendGridEmailService : IEmailService
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _emailOptions.SendGrid.ApiKey);
 
             using var response = await _httpClient.SendAsync(request, cancellationToken);
-            
+
             if (response.IsSuccessStatusCode)
             {
                 _logger.LogInformation("Email sent successfully via SendGrid");

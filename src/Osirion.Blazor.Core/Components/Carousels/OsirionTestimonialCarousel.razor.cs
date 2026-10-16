@@ -13,19 +13,19 @@ public partial class OsirionTestimonialCarousel : OsirionComponentBase
     /// </summary>
     [Parameter]
     public string? Title { get; set; }
-    
+
     /// <summary>
     /// Section aria-label for accessibility
     /// </summary>
     [Parameter]
     public string SectionTitle { get; set; } = "Customer Testimonials";
-    
+
     /// <summary>
     /// Animation duration in seconds (default: 60)
     /// </summary>
     [Parameter]
     public int AnimationDuration { get; set; } = 60;
-    
+
     /// <summary>
     /// Custom list of testimonials. If not provided, uses sample testimonials.
     /// </summary>
@@ -130,7 +130,7 @@ public partial class OsirionTestimonialCarousel : OsirionComponentBase
     private string GetCarouselClass()
     {
         var cssClass = "osirion-testimonial-carousel";
-        
+
         if (PauseOnHover)
             cssClass += " osirion-testimonial-carousel-pausable";
 
@@ -140,7 +140,7 @@ public partial class OsirionTestimonialCarousel : OsirionComponentBase
 
         // Add speed class
         cssClass += $" osirion-testimonial-carousel-{Speed.ToString().ToLower()}";
-            
+
         return CombineCssClasses(cssClass);
     }
 
@@ -209,8 +209,8 @@ public partial class OsirionTestimonialCarousel : OsirionComponentBase
     {
         return new List<TestimonialItem>
         {
-            new("Sarah Johnson", 
-                "Senior Developer", 
+            new("Sarah Johnson",
+                "Senior Developer",
                 "Tech Solutions Inc.",
                 "This product has completely transformed our development workflow. The team's responsiveness and attention to detail is outstanding.",
                 "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face&auto=format&q=80",
@@ -219,8 +219,8 @@ public partial class OsirionTestimonialCarousel : OsirionComponentBase
                 Rating: 5,
                 ReadMoreHref: "/testimonials/sarah-johnson", ReadMoreText: "Find more in Case Study"),
 
-            new("Michael Chen", 
-                "CTO", 
+            new("Michael Chen",
+                "CTO",
                 "Innovation Labs",
                 "Exceptional quality and support. Our team productivity increased by 40% after implementation. The integration was seamless.",
                 "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face&auto=format&q=80",
@@ -228,8 +228,8 @@ public partial class OsirionTestimonialCarousel : OsirionComponentBase
                 ShowRating: true,
                 Rating: 5),
 
-            new("Lisa Rodriguez", 
-                "Product Manager", 
+            new("Lisa Rodriguez",
+                "Product Manager",
                 "Digital Dynamics",
                 "The integration was seamless and the results exceeded our expectations. This platform has become essential to our operations.",
                 "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face&auto=format&q=80",
@@ -238,8 +238,8 @@ public partial class OsirionTestimonialCarousel : OsirionComponentBase
                 ReadMoreHref: "/testimonials/lisa-rodriguez",
                 ReadMoreText: "Read full case study"),
 
-            new("David Park", 
-                "Founder & CEO", 
+            new("David Park",
+                "Founder & CEO",
                 "StartupCo",
                 "This solution has been a game-changer for our startup. The ROI was evident within the first month.",
                 "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face&auto=format&q=80",
@@ -247,16 +247,16 @@ public partial class OsirionTestimonialCarousel : OsirionComponentBase
                 ShowRating: true,
                 Rating: 5),
 
-            new("Anna Thompson", 
-                "Lead Designer", 
+            new("Anna Thompson",
+                "Lead Designer",
                 "Creative Agency",
                 "Clean, efficient, and reliable. The user experience is exceptional and our clients love the results.",
                 "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face&auto=format&q=80",
                 ShowRating: true,
                 Rating: 4),
 
-            new("Robert Kim", 
-                "Lead Engineer", 
+            new("Robert Kim",
+                "Lead Engineer",
                 "Enterprise Corp",
                 "Outstanding platform with excellent developer experience. The documentation and support are top-notch.",
                 "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150&h=150&fit=crop&crop=face&auto=format&q=80",
@@ -264,8 +264,8 @@ public partial class OsirionTestimonialCarousel : OsirionComponentBase
                 ShowRating: true,
                 Rating: 5),
 
-            new("Maria Garcia", 
-                "UX Designer", 
+            new("Maria Garcia",
+                "UX Designer",
                 "Design Studio",
                 "Intuitive design and powerful features. Our design process has become much more efficient and collaborative.",
                 "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face&auto=format&q=80",

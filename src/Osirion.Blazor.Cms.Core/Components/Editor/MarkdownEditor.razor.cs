@@ -17,82 +17,82 @@ public partial class MarkdownEditor : IAsyncDisposable
     /// <summary>
     /// Gets or sets the markdown content.
     /// </summary>
-        /// <summary>
-        /// Gets or sets the markdown content.
-        /// </summary>
-        [Parameter] public string Content { get; set; } = string.Empty;
+    /// <summary>
+    /// Gets or sets the markdown content.
+    /// </summary>
+    [Parameter] public string Content { get; set; } = string.Empty;
 
     /// <summary>
     /// Event callback for when the content changes.
     /// </summary>
-        /// <summary>
-        /// Event callback for when the content changes.
-        /// </summary>
-        [Parameter] public EventCallback<string> ContentChanged { get; set; }
+    /// <summary>
+    /// Event callback for when the content changes.
+    /// </summary>
+    [Parameter] public EventCallback<string> ContentChanged { get; set; }
 
     /// <summary>
     /// Gets or sets the placeholder text for the editor.
     /// </summary>
-        /// <summary>
-        /// Gets or sets the placeholder text for the editor.
-        /// </summary>
-        [Parameter] public string Placeholder { get; set; } = "Enter markdown here...";
+    /// <summary>
+    /// Gets or sets the placeholder text for the editor.
+    /// </summary>
+    [Parameter] public string Placeholder { get; set; } = "Enter markdown here...";
 
     /// <summary>
     /// Gets or sets a value indicating whether the toolbar is shown.
     /// </summary>
-        /// <summary>
-        /// Gets or sets a value indicating whether the toolbar is shown.
-        /// </summary>
-        [Parameter] public bool ShowToolbar { get; set; } = true;
+    /// <summary>
+    /// Gets or sets a value indicating whether the toolbar is shown.
+    /// </summary>
+    [Parameter] public bool ShowToolbar { get; set; } = true;
 
     /// <summary>
     /// Gets or sets a value indicating whether the header is shown.
     /// </summary>
-        /// <summary>
-        /// Gets or sets a value indicating whether the header is shown.
-        /// </summary>
-        [Parameter] public bool ShowHeader { get; set; } = true;
+    /// <summary>
+    /// Gets or sets a value indicating whether the header is shown.
+    /// </summary>
+    [Parameter] public bool ShowHeader { get; set; } = true;
 
     /// <summary>
     /// Gets or sets the title of the editor.
     /// </summary>
-        /// <summary>
-        /// Gets or sets the title of the editor.
-        /// </summary>
-        [Parameter] public string Title { get; set; } = "Editor";
+    /// <summary>
+    /// Gets or sets the title of the editor.
+    /// </summary>
+    [Parameter] public string Title { get; set; } = "Editor";
 
     /// <summary>
     /// Gets or sets a value indicating whether the editor should autofocus.
     /// </summary>
-        /// <summary>
-        /// Gets or sets a value indicating whether the editor should autofocus.
-        /// </summary>
-        [Parameter] public bool AutoFocus { get; set; } = false;
+    /// <summary>
+    /// Gets or sets a value indicating whether the editor should autofocus.
+    /// </summary>
+    [Parameter] public bool AutoFocus { get; set; } = false;
 
     /// <summary>
     /// Gets or sets a value indicating whether scroll is synchronized.
     /// </summary>
-        /// <summary>
-        /// Gets or sets a value indicating whether scroll synchronization is enabled.
-        /// </summary>
-        [Parameter] public bool SyncScroll { get; set; } = true;
+    /// <summary>
+    /// Gets or sets a value indicating whether scroll synchronization is enabled.
+    /// </summary>
+    [Parameter] public bool SyncScroll { get; set; } = true;
 
     /// <summary>
     /// Event callback for scroll events.
     /// </summary>
-        /// <summary>
-        /// Event callback for scroll events.
-        /// </summary>
-        [Parameter] public EventCallback<double> OnScroll { get; set; }
+    /// <summary>
+    /// Event callback for scroll events.
+    /// </summary>
+    [Parameter] public EventCallback<double> OnScroll { get; set; }
 
     /// <summary>
     /// Gets or sets the toolbar actions.
     /// </summary>
-        /// <summary>
-        /// Gets or sets the toolbar actions.
-        /// </summary>
-        [Parameter] public List<ToolbarAction>? ToolbarActions { get; set; }
+    /// <summary>
+    /// Gets or sets the toolbar actions.
+    /// </summary>
+    [Parameter] public List<ToolbarAction>? ToolbarActions { get; set; }
 
     private ElementReference TextAreaRef;
     private ElementReference EditorContainer;
