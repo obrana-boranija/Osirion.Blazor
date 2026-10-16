@@ -94,8 +94,9 @@ Nothing else changes in the layout: [`OsirionStyles`](/docs/components/theming/o
 stylesheet and applies the palette.
 
 To let visitors choose, set `AllowPaletteSelection` to `true` (or call `AllowPaletteSelection()` on the builder) and
-store their choice with `IThemeService.SetPalette`. With the option set, every page links the palette stylesheet, so a
-palette chosen on one page is painted on the next without a flash.
+place a [`ThemePicker`](/docs/components/theming/theme-picker); on the server, `IThemeService.SetPalette` stores a
+choice too. With the option set, every page links the palette stylesheet, so a palette chosen on one page is painted on
+the next without a flash.
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -165,4 +166,5 @@ Osirion.Blazor.Theming package. Studio approximates Visual Studio's themes, whic
 
 - [Theming](/docs/components/theming): setup, options and adapters.
 - [OsirionStyles](/docs/components/theming/osirion-styles): links the stylesheets and applies mode and palette.
+- [ThemePicker](/docs/components/theming/theme-picker): lets visitors pick a palette.
 - [ThemeToggle](/docs/components/theming/theme-toggle): switches between light and dark.

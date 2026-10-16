@@ -46,7 +46,8 @@ namespace Osirion.Blazor.Theming.Components
             _ => string.Empty
         };
 
-        private const string PaletteStylesheet = "_content/Osirion.Blazor.Theming/css/palettes.min.css";
+        /// <summary>The address of the palette stylesheet; <see cref="ThemePicker"/> adds it when a page lacks it.</summary>
+        internal const string PaletteStylesheet = "_content/Osirion.Blazor.Theming/css/palettes.min.css";
 
         // Linked whenever a palette may be in use, so it is painted with the first frame, not after a script loads it.
         private bool LinksPalettes =>
