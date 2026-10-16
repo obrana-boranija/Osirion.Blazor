@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Osirion.Blazor.Components;
@@ -73,6 +74,37 @@ public class ThemingBuilderTests
         services.ShouldContain(d => d.ServiceType == typeof(IThemeService)
             && d.ImplementationType == typeof(AutoThemeService)
             && d.Lifetime == ServiceLifetime.Scoped);
+    }
+
+    [Fact]
+    public void ThemingBuilder_PaletteCalls_SetTheDefaultPaletteAndAllowSelection()
+    {
+        var services = new ServiceCollection();
+
+        services.AddOsirionTheming(theming => theming.UsePalette(ThemePalette.Editor).AllowPaletteSelection());
+
+        var options = Resolve(services);
+        options.DefaultPalette.ShouldBe(ThemePalette.Editor);
+        options.AllowPaletteSelection.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void ThemingBuilder_Configuration_BindsThePaletteOptions()
+    {
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                [$"{ThemingOptions.Section}:DefaultPalette"] = "StudioBlue",
+                [$"{ThemingOptions.Section}:AllowPaletteSelection"] = "true",
+            })
+            .Build();
+        var services = new ServiceCollection();
+
+        services.AddOsirionTheming(configuration);
+
+        var options = Resolve(services);
+        options.DefaultPalette.ShouldBe(ThemePalette.StudioBlue);
+        options.AllowPaletteSelection.ShouldBeTrue();
     }
 
     private static ThemingOptions Resolve(IServiceCollection services)

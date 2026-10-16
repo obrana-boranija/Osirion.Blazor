@@ -15,6 +15,7 @@ public class ThemeService : IThemeService
     private readonly IHttpContextAccessor? _httpContextAccessor;
     private readonly ILogger<ThemeService>? _logger;
     private ThemeMode _currentMode;
+    private ThemePalette? _chosenPalette;
 
     private const string ThemeCookieKey = "osirion-preferred-theme";
 
@@ -52,6 +53,29 @@ public class ThemeService : IThemeService
 
     /// <inheritdoc/>
     public event EventHandler<ThemeChangedEventArgs>? ThemeChanged;
+
+    /// <inheritdoc/>
+    public ThemePalette CurrentPalette => _chosenPalette ?? ReadPaletteFromCookie() ?? _options.DefaultPalette;
+
+    /// <inheritdoc/>
+    public void SetPalette(ThemePalette palette)
+    {
+        if (!Enum.IsDefined(palette))
+        {
+            throw new ArgumentOutOfRangeException(nameof(palette), palette, "Not a palette Osirion ships.");
+        }
+
+        var previous = CurrentPalette;
+        _chosenPalette = palette;
+        WritePaletteToCookie(palette);
+
+        if (previous != palette)
+        {
+            _logger?.LogInformation("Palette changed: {Previous} -> {Current}", previous, palette);
+            // The mode is unchanged; subscribers re-render and read CurrentPalette.
+            ThemeChanged?.Invoke(this, new ThemeChangedEventArgs(CurrentMode, CurrentMode));
+        }
+    }
 
     /// <inheritdoc/>
     public string GenerateThemeVariables()
@@ -148,6 +172,52 @@ public class ThemeService : IThemeService
         return null;
     }
 
+    private ThemePalette? ReadPaletteFromCookie()
+    {
+        try
+        {
+            var cookies = _httpContextAccessor?.HttpContext?.Request?.Cookies;
+            if (cookies is not null
+                && cookies.TryGetValue(ThemePaletteNames.CookieName, out var value)
+                && ThemePaletteNames.TryParse(value, out var palette))
+            {
+                return palette;
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogDebug(ex, "Failed reading palette cookie");
+        }
+
+        return null;
+    }
+
+    private void WritePaletteToCookie(ThemePalette palette)
+    {
+        try
+        {
+            var httpContext = _httpContextAccessor?.HttpContext;
+            if (httpContext is null || httpContext.Response.HasStarted)
+            {
+                return;
+            }
+
+            httpContext.Response.Cookies.Append(ThemePaletteNames.CookieName, palette.ToId(), new CookieOptions
+            {
+                Expires = DateTimeOffset.UtcNow.AddYears(1),
+                // The page's script reads it before first paint, so a static site can apply the palette too.
+                HttpOnly = false,
+                Secure = httpContext.Request.IsHttps,
+                SameSite = SameSiteMode.Lax,
+                Path = "/"
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogDebug(ex, "Failed writing palette cookie");
+        }
+    }
+
     private static ThemeMode? ParseTheme(string? value)
     {
         return value?.ToLowerInvariant() switch
@@ -188,7 +258,7 @@ public class ThemeService : IThemeService
             {
                 // Write only the osirion cookie
                 httpContext.Response.Cookies.Append(ThemeCookieKey, value, options);
-                
+
                 // Remove legacy cookie if it exists
                 if (httpContext.Request?.Cookies.ContainsKey("preferred-theme") == true)
                 {
