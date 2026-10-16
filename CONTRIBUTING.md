@@ -314,15 +314,11 @@ We use [Semantic Versioning](https://semver.org/) (SemVer) for versioning:
 
 ### Version Update Process
 
-1. Update version numbers in project files
-2. Update CHANGELOG.md with new version section
-3. Create a pull request for the version update
-4. Tag the release commit once merged
-
-We have automated workflows for:
-- Preparing releases
-- Publishing to NuGet
-- Creating GitHub releases
+1. Run the "Prepare Release" workflow with the new version. It opens the pull request `release/<version>`, which sets
+   the version in every package under `src` and moves the Unreleased notes in CHANGELOG.md under the new version.
+2. Read the notes in that pull request: they become the GitHub release text. Then merge it.
+3. Push the tag `v<version>` on the merge commit. "Publish to NuGet" checks that the tag, every package and
+   CHANGELOG.md name the same version, runs the tests, publishes the packages and creates the GitHub release.
 
 ## Thank You!
 

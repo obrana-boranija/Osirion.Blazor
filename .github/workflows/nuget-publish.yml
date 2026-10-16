@@ -1,354 +1,163 @@
-name: NuGet Package Publish
+name: Publish to NuGet
+
+# Builds, tests and packs every package under src at the version its project file carries, pushes them to nuget.org
+# and creates the GitHub release. Start it by pushing the tag v<version>, or run it on master by hand.
+#
+# Publishing uses NuGet trusted publishing: nuget.org trades this workflow's GitHub OIDC token for an API key that
+# lasts one hour. The policy on nuget.org names the repository owner, the repository and this file name
+# (nuget-publish.yml), so renaming the file stops publishing until the policy is updated.
 
 on:
   push:
-    tags:
-      - 'v*' # Trigger on version tags
-  workflow_dispatch: # Allow manual trigger
-    inputs:
-      version_override:
-        description: 'Override version (leave empty to use tag or project version)'
-        required: false
-        type: string
-      pre_release:
-        description: 'Publish as pre-release'
-        required: false
-        type: boolean
-        default: false
+    tags: [ 'v*' ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Two publishes of the same version must not race each other.
+concurrency:
+  group: nuget-publish
+  cancel-in-progress: false
 
 env:
-  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-  DOTNET_CLI_TELEMETRY_OPTOUT: true
   DOTNET_NOLOGO: true
-  NuGetDirectory: ${{ github.workspace }}/nuget
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
 
 jobs:
-  create_nuget:
+  pack:
+    name: Build, test and pack
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.get_version.outputs.version }}
+      version: ${{ steps.version.outputs.version }}
     steps:
-      - uses: actions/checkout@v5
-        with:
-          fetch-depth: 0 # Get all history for versioning
-      
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v5
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: |
             9.0.x
             10.0.x
-      
-      - name: Determine Version
-        id: get_version
+
+      # Every package ships at one version, the one CHANGELOG.md describes; a tag must name the same version.
+      - name: Check the version
+        id: version
         run: |
-          if [ -n "${{ github.event.inputs.version_override }}" ]; then
-            VERSION="${{ github.event.inputs.version_override }}"
-            echo "Using override version: $VERSION"
-          elif [[ "${{ github.ref }}" == refs/tags/v* ]]; then
-            VERSION="${{ github.ref_name }}"
-            VERSION="${VERSION#v}"
-            echo "Using tag version: $VERSION"
-          else
-            # Extract version from main project file
-            VERSION=$(grep -oP '(?<=<Version>).*?(?=</Version>)' src/Osirion.Blazor/Osirion.Blazor.csproj)
-            echo "Using project version: $VERSION"
-          fi
-          
-          # Validate semantic versioning format
-          if ! [[ $VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.]+)?$ ]]; then
-            echo "Error: Version must follow semantic versioning format (e.g., 2.0.3 or 2.0.3-beta.1)"
+          version=$(grep -oP '(?<=<Version>)[^<]+' src/Osirion.Blazor/Osirion.Blazor.csproj)
+          if ! [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$ ]]; then
+            echo "::error::'$version' is not a semantic version"
             exit 1
           fi
-          
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "::notice title=Package Version::Will publish version $VERSION"
-      
-      - name: Create NuGet Directory
-        run: mkdir -p ${{ env.NuGetDirectory }}
-      
-      # Full restore first
-      - name: Restore dependencies
-        run: dotnet restore
-      
-      # Optimized build and pack process - build projects and their dependencies together
-      - name: Build and Pack Core Module
-        run: |
-          echo "Building and packing Core..."
-          dotnet pack src/Osirion.Blazor.Core/Osirion.Blazor.Core.csproj -c Release -o ${{ env.NuGetDirectory }}
-      
-      # Build and pack modules in parallel
-      - name: Build and Pack Feature Modules
-        run: |
-          echo "Building and packing feature modules..."
-          # Run a combined pack operation for all modules that depend on Core
-          dotnet pack src/Osirion.Blazor.Analytics/Osirion.Blazor.Analytics.csproj -c Release -o ${{ env.NuGetDirectory }} &
-          dotnet pack src/Osirion.Blazor.Navigation/Osirion.Blazor.Navigation.csproj -c Release -o ${{ env.NuGetDirectory }} &
-          dotnet pack src/Osirion.Blazor.Theming/Osirion.Blazor.Theming.csproj -c Release -o ${{ env.NuGetDirectory }} &
-          
-          # Wait for all background processes to complete
-          wait
-          
-          # CMS modules need to be built in the correct order due to dependencies
-          echo "Building and packing CMS Domain..."
-          dotnet pack src/Osirion.Blazor.Cms.Domain/Osirion.Blazor.Cms.Domain.csproj -c Release -o ${{ env.NuGetDirectory }}
-          
-          echo "Building and packing CMS Application..."
-          dotnet pack src/Osirion.Blazor.Cms.Application/Osirion.Blazor.Cms.Application.csproj -c Release -o ${{ env.NuGetDirectory }}
-          
-          echo "Building and packing CMS Infrastructure..."
-          dotnet pack src/Osirion.Blazor.Cms.Infrastructure/Osirion.Blazor.Cms.Infrastructure.csproj -c Release -o ${{ env.NuGetDirectory }}
-          
-          echo "Building and packing CMS modules..."
-          dotnet pack src/Osirion.Blazor.Cms.Core/Osirion.Blazor.Cms.Core.csproj -c Release -o ${{ env.NuGetDirectory }}
-          dotnet pack src/Osirion.Blazor.Cms.Admin/Osirion.Blazor.Cms.Admin.csproj -c Release -o ${{ env.NuGetDirectory }}
-          dotnet pack src/Osirion.Blazor.Cms.Web/Osirion.Blazor.Cms.Web.csproj -c Release -o ${{ env.NuGetDirectory }}
-          dotnet pack src/Osirion.Blazor.Cms/Osirion.Blazor.Cms.csproj -c Release -o ${{ env.NuGetDirectory }}
-      
-      # Build and pack main package last
-      - name: Build and Pack Main Package
-        run: |
-          echo "Building and packing main package..."
-          dotnet pack src/Osirion.Blazor/Osirion.Blazor.csproj -c Release -o ${{ env.NuGetDirectory }}
-      
-      # List packages to verify they exist
-      - name: List packages
-        run: |
-          echo "Generated NuGet packages:"
-          ls -la ${{ env.NuGetDirectory }}
-          
-          # Check package count
-          package_count=$(ls -1 ${{ env.NuGetDirectory }}/*.nupkg 2>/dev/null | wc -l)
-          if [ "$package_count" -eq 0 ]; then
-            echo "Error: No packages were created!"
-            exit 1
-          else
-            echo "Successfully created $package_count packages"
-          fi
-      
-      # Upload artifacts
-      - name: Upload NuGet packages as artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: nuget-packages
-          path: ${{ env.NuGetDirectory }}/*.nupkg
-          if-no-files-found: error
-  
-  validate_version:
-    needs: create_nuget
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download NuGet packages
-        uses: actions/download-artifact@v5
-        with:
-          name: nuget-packages
-          path: ${{ env.NuGetDirectory }}
-      
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v5
-        with:
-          dotnet-version: '10.0.x'
-      
-      # Check if version exists
-      - name: Check for existing packages
-        id: check_versions
-        run: |
-          # Initialize flags
-          echo "has_duplicates=false" >> $GITHUB_OUTPUT
-          conflict_packages=""
-          
-          # Check each package
-          for package in ${{ env.NuGetDirectory }}/*.nupkg; do
-            basename=$(basename "$package")
-            packageId=$(echo "$basename" | sed -E 's/(.*)\.[0-9]+\.[0-9]+\.[0-9]+.*\.nupkg/\1/')
-            version=$(echo "$basename" | sed -E 's/.*\.([0-9]+\.[0-9]+\.[0-9]+.*)\.nupkg/\1/')
-            
-            echo "Checking package: $packageId, version: $version"
-            
-            # Use dotnet nuget to check if package exists
-            status=$(dotnet nuget list source --format Short | grep -q "nuget.org" && \
-                    curl -s -o /dev/null -w "%{http_code}" "https://api.nuget.org/v3-flatcontainer/$packageId/$version/$packageId.$version.nupkg")
-            
-            if [ "$status" == "200" ]; then
-              echo "::warning::Package $packageId version $version already exists on NuGet"
-              conflict_packages="$conflict_packages $packageId@$version"
-              echo "has_duplicates=true" >> $GITHUB_OUTPUT
-            else
-              echo "Package $packageId version $version is new and can be published"
+          errors=0
+          for project in src/*/*.csproj; do
+            found=$(grep -oP '(?<=<Version>)[^<]+' "$project" || true)
+            if [ "$found" != "$version" ]; then
+              echo "::error file=$project::Version is '$found', expected '$version'"
+              errors=$((errors + 1))
             fi
           done
-          
-          # Store conflicts for later use
-          if [ -n "$conflict_packages" ]; then
-            echo "conflict_packages=$conflict_packages" >> $GITHUB_OUTPUT
+          if [ "$GITHUB_REF_TYPE" = "tag" ] && [ "${GITHUB_REF_NAME#v}" != "$version" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match the project version $version"
+            errors=$((errors + 1))
           fi
-  
-  publish_nuget:
-    needs: [create_nuget, validate_version]
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
-    outputs:
-      nuget_packages_published: ${{ steps.publish.outputs.nuget_packages_published }}
-      nuget_packages_skipped: ${{ steps.publish.outputs.nuget_packages_skipped }}
-    steps:
-      - name: Download NuGet packages
-        uses: actions/download-artifact@v5
+          if ! grep -q "^## \[$version\]" CHANGELOG.md; then
+            echo "::error file=CHANGELOG.md::No '## [$version]' section"
+            errors=$((errors + 1))
+          fi
+          [ "$errors" -eq 0 ] || exit 1
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "::notice title=Version::Packing $version"
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Test
+        run: dotnet test --no-build --configuration Release
+
+      - name: Pack
+        run: |
+          projects=(src/*/*.csproj)
+          for project in "${projects[@]}"; do
+            dotnet pack "$project" --no-build --configuration Release --output ./nupkgs
+          done
+          packed=$(find ./nupkgs -name '*.nupkg' | wc -l)
+          if [ "$packed" -ne "${#projects[@]}" ]; then
+            echo "::error::Packed $packed packages from ${#projects[@]} projects"
+            exit 1
+          fi
+          ls -l ./nupkgs
+
+      - name: Upload packages
+        uses: actions/upload-artifact@v7
         with:
           name: nuget-packages
-          path: ${{ env.NuGetDirectory }}
-      
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v5
+          path: |
+            ./nupkgs/*.nupkg
+            ./nupkgs/*.snupkg
+          if-no-files-found: error
+          retention-days: 30
+
+  publish:
+    name: Publish
+    needs: pack
+    # Only a version tag or master publishes; a run started on any other branch stops after packing.
+    if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # creates the GitHub release and, for a run started by hand, its tag
+      id-token: write # trusted publishing
+    env:
+      VERSION: ${{ needs.pack.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Download packages
+        uses: actions/download-artifact@v8
+        with:
+          name: nuget-packages
+          path: ./nupkgs
+
+      - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: '10.0.x'
 
-      - name: NuGet login with trusted publishing
-        id: nuget_login
+      # Requested right before the push because the key expires after an hour.
+      - name: NuGet login
+        id: login
         uses: NuGet/login@v1
         with:
           user: obrana-boranija
-      
-      # Publish to NuGet
-      - name: Publish NuGet packages
-        id: publish
-        env:
-          NUGET_API_KEY: ${{ steps.nuget_login.outputs.NUGET_API_KEY }}
-        run: |
-          # Initialize counters
-          published=0
-          skipped=0
-          failed=0
 
-          if [ -z "$NUGET_API_KEY" ]; then
-            echo "::error::NuGet trusted publishing did not return a temporary API key. Check the NuGet.org trusted publishing policy and the NuGet/login step."
-            exit 1
-          fi
-          
-          for package in ${{ env.NuGetDirectory }}/*.nupkg; do
-            basename=$(basename "$package")
-            packageId=$(echo "$basename" | sed -E 's/(.*)\.[0-9]+\.[0-9]+\.[0-9]+.*\.nupkg/\1/')
-            version=$(echo "$basename" | sed -E 's/.*\.([0-9]+\.[0-9]+\.[0-9]+.*)\.nupkg/\1/')
-            
-            echo "Publishing package: $packageId, version: $version"
-            
-            if output=$(dotnet nuget push "$package" \
-              --api-key "$NUGET_API_KEY" \
-              --source https://api.nuget.org/v3/index.json \
-              --skip-duplicate 2>&1); then
-              exit_code=0
-            else
-              exit_code=$?
-            fi
-            
-            if echo "$output" | grep -q "already exists"; then
-              echo "Package $packageId version $version already exists, skipped"
-              skipped=$((skipped + 1))
-            elif [ $exit_code -eq 0 ]; then
-              echo "Successfully published $packageId version $version"
-              published=$((published + 1))
-            else
-              echo "Failed to publish $packageId version $version: $output"
-              failed=$((failed + 1))
-
-              if echo "$output" | grep -q "403\|API key is invalid, has expired, or does not have permission"; then
-                echo "::error::NuGet.org rejected the trusted publishing token. Verify the trusted publishing policy owner, repository, and workflow file, then rerun the workflow."
-                break
-              fi
-            fi
-          done
-          
-          # Report results
-          echo "::notice::Published: $published, Skipped: $skipped, Failed: $failed"
-          
-          if [ $failed -gt 0 ]; then
-            echo "::error::$failed packages failed to publish"
-            exit 1
-          fi
-          
-          echo "nuget_packages_published=$published" >> $GITHUB_OUTPUT
-          echo "nuget_packages_skipped=$skipped" >> $GITHUB_OUTPUT
-  
-  create_release:
-    needs: [create_nuget, publish_nuget]
-    if: |
-      (startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch') && 
-      needs.publish_nuget.outputs.nuget_packages_published > 0
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
-      
-      - name: Get version for release
-        id: get_release_version
-        run: |
-          VERSION="${{ needs.create_nuget.outputs.version }}"
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          
-          # Determine if this is a pre-release
-          if [[ "$VERSION" == *-* ]] || [ "${{ github.event.inputs.pre_release }}" = "true" ]; then
-            echo "is_prerelease=true" >> $GITHUB_OUTPUT
-          else
-            echo "is_prerelease=false" >> $GITHUB_OUTPUT
-          fi
-      
-      - name: Extract Changelog
-        id: extract_changelog
-        run: |
-          # Extract release notes from CHANGELOG.md
-          VERSION="${{ steps.get_release_version.outputs.version }}"
-          
-          # Look for version with or without pre-release marker
-          CHANGELOG_SECTION=$(awk "/## \[$VERSION\]|## \[$VERSION \(Pre-release\)\]/{flag=1; print; next} /## \[/{flag=0} flag" CHANGELOG.md)
-          
-          if [ -z "$CHANGELOG_SECTION" ]; then
-            echo "::warning::No changelog entry found for version $VERSION"
-            CHANGELOG_SECTION="Release version $VERSION"
-          fi
-          
-          # Save to file for the GitHub release
-          echo "$CHANGELOG_SECTION" > release_notes.txt
-      
-      - name: Download Packages for Release
-        uses: actions/download-artifact@v5
-        with:
-          name: nuget-packages
-          path: nuget-packages
-      
-      - name: Create GitHub Release
+      # A version already on nuget.org is skipped, so a failed run can be started again. Symbol packages
+      # (.snupkg) next to the packages are pushed with them.
+      - name: Push to nuget.org
         env:
-          GITHUB_TOKEN: ${{ github.token }}
-          VERSION: ${{ steps.get_release_version.outputs.version }}
-          IS_PRERELEASE: ${{ steps.get_release_version.outputs.is_prerelease }}
+          NUGET_API_KEY: ${{ steps.login.outputs.NUGET_API_KEY }}
         run: |
-          # Create a tag if running manually without a tag
-          if [[ "${{ github.ref }}" != refs/tags/* ]]; then
-            git config user.name "GitHub Actions"
-            git config user.email "actions@github.com"
-            git tag "v$VERSION"
-            git push origin "v$VERSION"
-            echo "Created and pushed tag v$VERSION"
+          dotnet nuget push "./nupkgs/*.nupkg" \
+            --api-key "$NUGET_API_KEY" \
+            --source https://api.nuget.org/v3/index.json \
+            --skip-duplicate
+
+      - name: Create the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="v$VERSION"
+          if gh release view "$tag" > /dev/null 2>&1; then
+            echo "Release $tag already exists"
+            exit 0
           fi
-          
-          TAG="v$VERSION"
-          TITLE="Release $TAG"
-          
-          if [ "$IS_PRERELEASE" = "true" ]; then
-            PRERELEASE_FLAG="--prerelease"
-            TITLE="$TITLE (Pre-release)"
-          else
-            PRERELEASE_FLAG=""
-          fi
-          
-          # Create the release
-          gh release create "$TAG" \
-            --title "$TITLE" \
-            --notes-file release_notes.txt \
-            $PRERELEASE_FLAG \
-            nuget-packages/*.nupkg
-          
-          echo "::notice::Created GitHub release $TAG"
+          awk -v heading="## [$VERSION]" 'index($0, heading) == 1 { found = 1; next } /^## \[/ { found = 0 } found' \
+            CHANGELOG.md > release-notes.md
+          prerelease=()
+          if [[ "$VERSION" == *-* ]]; then prerelease=(--prerelease); fi
+          gh release create "$tag" ./nupkgs/*.nupkg \
+            --target "$GITHUB_SHA" \
+            --title "$VERSION" \
+            --notes-file release-notes.md \
+            "${prerelease[@]}"

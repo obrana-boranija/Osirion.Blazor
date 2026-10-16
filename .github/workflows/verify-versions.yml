@@ -1,69 +1,39 @@
-﻿name: Verify Package Versions
+name: Verify Package Versions
+
+# A release branch (release/<version>) must carry that version in every package and in CHANGELOG.md,
+# because the publish workflow packs exactly what the project files say.
 
 on:
   pull_request:
     branches: [ master ]
-    paths:
-      - '**/*.csproj'
-      - 'CHANGELOG.md'
+
+permissions:
+  contents: read
 
 jobs:
   verify-versions:
+    name: verify-versions
     runs-on: ubuntu-latest
-    if: contains(github.head_ref, 'release/')
-    
+    if: startsWith(github.head_ref, 'release/')
     steps:
-    - uses: actions/checkout@v5
-      with:
-        fetch-depth: 0
-    
-    - name: Extract release version
-      id: extract_version
-      run: |
-        VERSION=$(echo ${{ github.head_ref }} | sed 's/release\///')
-        echo "version=$VERSION" >> $GITHUB_OUTPUT
-        echo "Checking version: $VERSION"
-    
-    - name: Check project files
-      id: check_projects
-      run: |
-        PROJECTS=(
-          "src/Osirion.Blazor/Osirion.Blazor.csproj"
-          "src/Osirion.Blazor.Core/Osirion.Blazor.Core.csproj"
-          "src/Osirion.Blazor.Analytics/Osirion.Blazor.Analytics.csproj"
-          "src/Osirion.Blazor.Navigation/Osirion.Blazor.Navigation.csproj"
-          "src/Osirion.Blazor.Cms/Osirion.Blazor.Cms.csproj"
-          "src/Osirion.Blazor.Cms.Admin/Osirion.Blazor.Cms.Admin.csproj"
-          "src/Osirion.Blazor.Cms.Core/Osirion.Blazor.Cms.Core.csproj"
-          "src/Osirion.Blazor.Cms.Web/Osirion.Blazor.Cms.Web.csproj"
-          "src/Osirion.Blazor.Theming/Osirion.Blazor.Theming.csproj"
-        )
-        
-        ERRORS=0
-        for PROJECT in "${PROJECTS[@]}"; do
-          if [ -f "$PROJECT" ]; then
-            VERSION_IN_PROJECT=$(grep -oP '(?<=<Version>).*?(?=</Version>)' "$PROJECT")
-            if [ "$VERSION_IN_PROJECT" != "${{ steps.extract_version.outputs.version }}" ]; then
-              echo "::error::Version mismatch in $PROJECT: Found $VERSION_IN_PROJECT, expected ${{ steps.extract_version.outputs.version }}"
-              ERRORS=$((ERRORS + 1))
-            else
-              echo "✅ $PROJECT has correct version: $VERSION_IN_PROJECT"
+      - uses: actions/checkout@v7
+
+      - name: Every package and the changelog name the release version
+        env:
+          HEAD_REF: ${{ github.head_ref }}
+        run: |
+          version="${HEAD_REF#release/}"
+          errors=0
+          for project in src/*/*.csproj; do
+            found=$(grep -oP '(?<=<Version>)[^<]+' "$project" || true)
+            if [ "$found" != "$version" ]; then
+              echo "::error file=$project::Version is '$found', expected '$version'"
+              errors=$((errors + 1))
             fi
-          else
-            echo "::warning::File $PROJECT does not exist, skipping"
+          done
+          if ! grep -q "^## \[$version\]" CHANGELOG.md; then
+            echo "::error file=CHANGELOG.md::No '## [$version]' section"
+            errors=$((errors + 1))
           fi
-        done
-        
-        if [ $ERRORS -gt 0 ]; then
-          echo "::error::$ERRORS version mismatches found!"
-          exit 1
-        fi
-    
-    - name: Check CHANGELOG.md
-      run: |
-        if ! grep -q "## \[${{ steps.extract_version.outputs.version }}\]" CHANGELOG.md; then
-          echo "::error::Version ${{ steps.extract_version.outputs.version }} not found in CHANGELOG.md"
-          exit 1
-        fi
-        
-        echo "✅ CHANGELOG.md contains entry for version ${{ steps.extract_version.outputs.version }}"
+          [ "$errors" -eq 0 ] || exit 1
+          echo "Every package and CHANGELOG.md name $version"
