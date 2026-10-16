@@ -1,6 +1,6 @@
 namespace Osirion.Blazor.Cms.Admin.Application.Core;
 
-    /// <summary>Defines the public member API contract.</summary>
+/// <summary>Defines the public member API contract.</summary>
 public interface ICommandDispatcher
 {
     /// <summary>Gets or sets the public member value.</summary>

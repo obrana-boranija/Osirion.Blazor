@@ -4,7 +4,7 @@ using Osirion.Blazor.Cms.Application.Commands;
 
 namespace Osirion.Blazor.Cms.Admin.Application.Commands;
 
-    /// <summary>Defines the public member API contract.</summary>
+/// <summary>Defines the public member API contract.</summary>
 public class SaveContentCommandHandler : ICommandHandler<SaveContentCommand, SaveContentResult>
 {
     private readonly IContentRepositoryAdapter _repositoryAdapter;

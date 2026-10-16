@@ -172,7 +172,8 @@ public class FileSystemContentProvider : ContentProviderBase
         }
 
         // Pre-load some data in the background
-        _ = Task.Run(async () => {
+        _ = Task.Run(async () =>
+        {
             try
             {
                 await _contentRepository.RefreshCacheAsync(cancellationToken);

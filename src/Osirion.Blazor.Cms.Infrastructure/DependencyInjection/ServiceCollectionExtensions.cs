@@ -128,7 +128,8 @@ public static class ServiceCollectionExtensions
         if (!string.IsNullOrWhiteSpace(providerName))
         {
             // Configure options for this specific provider
-            services.Configure<GitHubOptions>($"GitHub_{providerName}", options => {
+            services.Configure<GitHubOptions>($"GitHub_{providerName}", options =>
+            {
                 // Try to load from new structure first
                 var providerSection = configuration.GetSection($"Osirion:Cms:Web:GitHub:{providerName}");
                 if (!providerSection.Exists())
@@ -150,7 +151,8 @@ public static class ServiceCollectionExtensions
             // Legacy registration - configure default options
             if (configureOptions is not null)
             {
-                services.Configure<GitHubOptions>(options => {
+                services.Configure<GitHubOptions>(options =>
+                {
                     // First apply configuration from settings
                     configuration.GetSection(GitHubOptions.Section).Bind(options);
                     // Then apply custom configuration
@@ -176,7 +178,8 @@ public static class ServiceCollectionExtensions
             sp => sp.GetRequiredService<GitHubContentProvider>());
 
         // Register default setter
-        services.TryAddSingleton<IDefaultProviderSetter>(sp => {
+        services.TryAddSingleton<IDefaultProviderSetter>(sp =>
+        {
             var options = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<GitHubOptions>>().Value;
             var providerId = options.ProviderId ?? $"github-{options.Owner}-{options.Repository}";
             return new DefaultProviderSetter(providerId, options.IsDefault);
@@ -202,7 +205,8 @@ public static class ServiceCollectionExtensions
         // Configure options
         if (configureOptions is not null)
         {
-            services.Configure<FileSystemOptions>(options => {
+            services.Configure<FileSystemOptions>(options =>
+            {
                 // First apply configuration from settings
                 FileSystemConfiguration.GetSection(configuration).Bind(options);
                 // Then apply custom configuration
@@ -231,7 +235,8 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IContentProvider>(sp => sp.GetRequiredService<FileSystemContentProvider>());
 
         // Register default setter
-        services.AddSingleton<IDefaultProviderSetter>(sp => {
+        services.AddSingleton<IDefaultProviderSetter>(sp =>
+        {
             var options = sp.GetRequiredService<IOptions<FileSystemOptions>>().Value;
             var providerId = FileSystemProviderId.For(options);
             return new DefaultProviderSetter(providerId, options.IsDefault);
@@ -260,7 +265,8 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<TProvider>();
 
         // Register as IContentProvider
-        services.AddSingleton<IContentProvider>(sp => {
+        services.AddSingleton<IContentProvider>(sp =>
+        {
             var provider = sp.GetRequiredService<TProvider>();
 
             // Apply configuration if provided
@@ -272,7 +278,8 @@ public static class ServiceCollectionExtensions
         // If default, register the default setter
         if (isDefault)
         {
-            services.AddSingleton<IDefaultProviderSetter>(sp => {
+            services.AddSingleton<IDefaultProviderSetter>(sp =>
+            {
                 var provider = sp.GetRequiredService<TProvider>();
                 return new DefaultProviderSetter(provider.ProviderId, true);
             });

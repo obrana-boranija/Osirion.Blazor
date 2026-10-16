@@ -3,7 +3,7 @@ using Osirion.Blazor.Cms.Domain.ValueObjects;
 
 namespace Osirion.Blazor.Cms.Admin.Features.ContentEditor.Components.Shared;
 
-    /// <summary>Defines the public member type.</summary>
+/// <summary>Defines the public member type.</summary>
 public partial class SocialMetadataForm
 {
     /// <summary>Performs the SeoMetadata operation.</summary>

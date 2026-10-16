@@ -55,12 +55,12 @@ public enum EmailProviderType
     /// SMTP provider
     /// </summary>
     Smtp,
-    
+
     /// <summary>
     /// SendGrid provider
     /// </summary>
     SendGrid,
-    
+
     /// <summary>
     /// Infobip provider
     /// </summary>

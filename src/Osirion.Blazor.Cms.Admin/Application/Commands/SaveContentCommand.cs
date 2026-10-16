@@ -2,7 +2,7 @@ using Osirion.Blazor.Cms.Application.Commands;
 
 namespace Osirion.Blazor.Cms.Admin.Application.Commands;
 
-    /// <summary>Defines the public member API contract.</summary>
+/// <summary>Defines the public member API contract.</summary>
 public class SaveContentCommand : ICommand
 {
     /// <summary>Gets or sets the Path value.</summary>

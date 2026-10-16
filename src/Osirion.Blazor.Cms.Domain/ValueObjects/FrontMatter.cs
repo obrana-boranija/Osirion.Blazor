@@ -140,7 +140,7 @@ public class FrontMatter : ValueObject
     /// <summary>
     /// Factory method to create a new FrontMatter instance
     /// </summary>
-    public static FrontMatter Create(string title, string description,  DateTime dateCreated)
+    public static FrontMatter Create(string title, string description, DateTime dateCreated)
     {
         var frontMatter = new FrontMatter
         {

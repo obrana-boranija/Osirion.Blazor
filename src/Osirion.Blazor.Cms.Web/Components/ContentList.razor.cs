@@ -242,7 +242,7 @@ public partial class ContentList : IDisposable
     ///// </summary>
     //protected override async Task OnInitializedAsync()
     //{
-        // Implement IDisposable pattern here
+    // Implement IDisposable pattern here
     //}
 
     /// <summary>
@@ -386,7 +386,7 @@ public partial class ContentList : IDisposable
             return PageTitle!;
 
         var title = "";
-        
+
         if (!string.IsNullOrWhiteSpace(Category))
             title = $"Category: {Category}";
         else if (!string.IsNullOrWhiteSpace(Tag))
@@ -410,18 +410,18 @@ public partial class ContentList : IDisposable
     {
         // Remove leading/trailing slashes
         directory = directory.Trim('/');
-        
+
         // Get last segment
         var lastSegment = directory.Split('/').LastOrDefault() ?? directory;
-        
+
         // Convert slug-case to Title Case
         var words = lastSegment.Split('-', '_');
-        var titleCased = string.Join(" ", words.Select(word => 
+        var titleCased = string.Join(" ", words.Select(word =>
         {
             if (string.IsNullOrEmpty(word)) return word;
             return char.ToUpper(word[0]) + (word.Length > 1 ? word[1..].ToLower() : "");
         }));
-        
+
         return titleCased;
     }
 
@@ -435,10 +435,10 @@ public partial class ContentList : IDisposable
 
         if (!string.IsNullOrWhiteSpace(Category))
             return $"Browse all articles in the {Category} category.";
-        
+
         if (!string.IsNullOrWhiteSpace(Tag))
             return $"Browse all articles tagged with {Tag}.";
-        
+
         if (!string.IsNullOrWhiteSpace(Directory))
             return $"Browse all articles in {FormatDirectoryName(Directory)}.";
 

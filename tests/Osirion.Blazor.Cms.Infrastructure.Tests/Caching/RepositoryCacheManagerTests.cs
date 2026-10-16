@@ -33,7 +33,8 @@ public class RepositoryCacheManagerTests
 
         bool loaderCalled = false;
         Func<CancellationToken, Task<Dictionary<string, DirectoryItem>>> loader =
-            (ct) => {
+            (ct) =>
+            {
                 loaderCalled = true;
                 return Task.FromResult(dictionary);
             };
@@ -63,7 +64,8 @@ public class RepositoryCacheManagerTests
         int loadCount = 0;
 
         Func<CancellationToken, Task<Dictionary<string, DirectoryItem>>> loader =
-            (ct) => {
+            (ct) =>
+            {
                 loadCount++;
                 return Task.FromResult(loadCount == 1 ? dictionary1 : dictionary2);
             };
@@ -97,7 +99,8 @@ public class RepositoryCacheManagerTests
         int loadCount = 0;
 
         Func<CancellationToken, Task<Dictionary<string, DirectoryItem>>> loader =
-            (ct) => {
+            (ct) =>
+            {
                 loadCount++;
                 return Task.FromResult(loadCount == 1 ? dictionary1 : dictionary2);
             };
@@ -131,7 +134,8 @@ public class RepositoryCacheManagerTests
         int loadCount = 0;
 
         Func<CancellationToken, Task<Dictionary<string, DirectoryItem>>> loader =
-            (ct) => {
+            (ct) =>
+            {
                 loadCount++;
                 return Task.FromResult(loadCount == 1 ? dictionary1 : dictionary2);
             };
@@ -181,7 +185,8 @@ public class RepositoryCacheManagerTests
         int loadCount = 0;
 
         Func<CancellationToken, Task<Dictionary<string, DirectoryItem>>> successLoader =
-            (ct) => {
+            (ct) =>
+            {
                 loadCount++;
                 return Task.FromResult(dictionary);
             };

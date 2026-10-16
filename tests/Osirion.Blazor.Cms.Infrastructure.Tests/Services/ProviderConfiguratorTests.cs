@@ -22,7 +22,8 @@ namespace Osirion.Blazor.Cms.Infrastructure.Tests.Services
             var provider = Substitute.For<IContentProvider>();
             bool configureCalled = false;
 
-            var configurator = new ProviderConfigurator<IContentProvider>(p => {
+            var configurator = new ProviderConfigurator<IContentProvider>(p =>
+            {
                 p.ShouldBeSameAs(provider);
                 configureCalled = true;
             });
@@ -42,7 +43,8 @@ namespace Osirion.Blazor.Cms.Infrastructure.Tests.Services
             provider.ProviderId.Returns("test-provider");
             IContentProvider capturedProvider = null!;
 
-            var configurator = new ProviderConfigurator<IContentProvider>(p => {
+            var configurator = new ProviderConfigurator<IContentProvider>(p =>
+            {
                 capturedProvider = p;
             });
 
@@ -62,7 +64,8 @@ namespace Osirion.Blazor.Cms.Infrastructure.Tests.Services
             var mockProvider = Substitute.For<TestContentProvider>();
             var configureCalled = false;
 
-            var configurator = new ProviderConfigurator<TestContentProvider>(p => {
+            var configurator = new ProviderConfigurator<TestContentProvider>(p =>
+            {
                 p.ShouldBeSameAs(mockProvider);
                 configureCalled = true;
             });

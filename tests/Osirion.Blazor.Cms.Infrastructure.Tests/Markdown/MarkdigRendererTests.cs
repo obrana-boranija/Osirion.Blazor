@@ -61,7 +61,8 @@ public class MarkdigRendererTests
         bool configureOptionsCalled = false;
 
         // Act
-        var result = _renderer.RenderToHtml(markdown, options => {
+        var result = _renderer.RenderToHtml(markdown, options =>
+        {
             // Verify that options is a MarkdownPipelineBuilder
             options.ShouldBeOfType<MarkdownPipelineBuilder>();
             configureOptionsCalled = true;
@@ -97,7 +98,8 @@ public class MarkdigRendererTests
         bool configureOptionsCalled = false;
 
         // Act
-        var result = await _renderer.RenderToHtmlAsync(markdown, options => {
+        var result = await _renderer.RenderToHtmlAsync(markdown, options =>
+        {
             options.ShouldBeOfType<MarkdownPipelineBuilder>();
             configureOptionsCalled = true;
         });
@@ -134,13 +136,15 @@ public class MarkdigRendererTests
         var markdownObject = Substitute.For<MarkdownObject>();
 
         // Act
-        _renderer.ObjectWriteBefore += (renderer, obj) => {
+        _renderer.ObjectWriteBefore += (renderer, obj) =>
+        {
             renderer.ShouldBe(_renderer);
             obj.ShouldBe(markdownObject);
             beforeEventFired = true;
         };
 
-        _renderer.ObjectWriteAfter += (renderer, obj) => {
+        _renderer.ObjectWriteAfter += (renderer, obj) =>
+        {
             renderer.ShouldBe(_renderer);
             obj.ShouldBe(markdownObject);
             afterEventFired = true;

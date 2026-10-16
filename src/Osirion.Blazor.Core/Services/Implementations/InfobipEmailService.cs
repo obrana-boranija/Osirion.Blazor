@@ -46,7 +46,7 @@ public class InfobipEmailService : IEmailService
             request.Headers.Authorization = new AuthenticationHeaderValue("App", _emailOptions.Infobip.ApiKey);
 
             using var response = await _httpClient.SendAsync(request, cancellationToken);
-            
+
             if (response.IsSuccessStatusCode)
             {
                 _logger.LogInformation("Email sent successfully via Infobip");

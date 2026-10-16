@@ -254,7 +254,7 @@ public partial class OsirionReadMoreLink
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        
+
         // Set aria-label if not provided
         if (string.IsNullOrWhiteSpace(AriaLabel))
         {

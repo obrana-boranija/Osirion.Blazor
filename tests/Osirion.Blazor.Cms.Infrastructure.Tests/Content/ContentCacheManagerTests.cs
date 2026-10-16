@@ -30,7 +30,8 @@ public class ContentCacheManagerTests
 
         bool loaderCalled = false;
         Func<CancellationToken, Task<Dictionary<string, ContentItem>>> loader =
-            (ct) => {
+            (ct) =>
+            {
                 loaderCalled = true;
                 return Task.FromResult(dictionary);
             };
@@ -60,7 +61,8 @@ public class ContentCacheManagerTests
         int loadCount = 0;
 
         Func<CancellationToken, Task<Dictionary<string, ContentItem>>> loader =
-            (ct) => {
+            (ct) =>
+            {
                 loadCount++;
                 return Task.FromResult(loadCount == 1 ? dictionary1 : dictionary2);
             };
@@ -94,7 +96,8 @@ public class ContentCacheManagerTests
         int loadCount = 0;
 
         Func<CancellationToken, Task<Dictionary<string, ContentItem>>> loader =
-            (ct) => {
+            (ct) =>
+            {
                 loadCount++;
                 return Task.FromResult(loadCount == 1 ? dictionary1 : dictionary2);
             };
@@ -128,7 +131,8 @@ public class ContentCacheManagerTests
         int loadCount = 0;
 
         Func<CancellationToken, Task<Dictionary<string, ContentItem>>> loader =
-            (ct) => {
+            (ct) =>
+            {
                 loadCount++;
                 return Task.FromResult(loadCount == 1 ? dictionary1 : dictionary2);
             };
@@ -178,7 +182,8 @@ public class ContentCacheManagerTests
         int loadCount = 0;
 
         Func<CancellationToken, Task<Dictionary<string, ContentItem>>> successLoader =
-            (ct) => {
+            (ct) =>
+            {
                 loadCount++;
                 return Task.FromResult(dictionary);
             };

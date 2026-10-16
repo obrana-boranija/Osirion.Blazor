@@ -312,7 +312,7 @@ public class ContentQueryFilter : IContentQueryFilter
     /// </summary>
     private string GetDirectoryPath(string? filePath)
     {
-        if(string.IsNullOrWhiteSpace(filePath))
+        if (string.IsNullOrWhiteSpace(filePath))
         {
             return string.Empty;
         }
