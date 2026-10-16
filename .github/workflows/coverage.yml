@@ -54,7 +54,7 @@ jobs:
 
     - name: Upload test results
       if: always()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: test-results
         path: ./coverage/**/*.trx
@@ -69,7 +69,7 @@ jobs:
         title: 'Osirion.Blazor Coverage Report'
 
     - name: Upload coverage report artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: coverage-report
         path: coveragereport
@@ -96,7 +96,7 @@ jobs:
 
     - name: Upload CRAP reports
       if: always()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: crap-reports
         path: docs/crap/*.json
