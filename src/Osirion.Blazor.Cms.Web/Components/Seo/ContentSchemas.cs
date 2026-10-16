@@ -18,22 +18,16 @@ internal static class ContentSchemas
             ["headline"] = content.Title,
             ["description"] = content.Description,
             ["image"] = context.NormalizeImageUrl(content.FeaturedImageUrl),
-            ["author"] = new Dictionary<string, object?>
-            {
-                ["@type"] = "Person",
-                ["name"] = content.Author,
-                ["url"] = $"{context.BaseUrl}/author/{content.Author.ToLowerInvariant().Replace(" ", "-")}"
-            },
+            ["author"] = Author(content.Author, context.AuthorUrl),
             ["publisher"] = new Dictionary<string, object?>
             {
                 ["@type"] = "Organization",
                 ["name"] = context.SiteName,
+                // No width or height: the logo's real size is not known here, and an invented one is wrong data.
                 ["logo"] = new Dictionary<string, object?>
                 {
                     ["@type"] = "ImageObject",
-                    ["url"] = context.PublisherLogoUrl,
-                    ["width"] = 600,
-                    ["height"] = 60
+                    ["url"] = context.PublisherLogoUrl
                 }
             },
             ["datePublished"] = ContentUrls.FormatUtc(content.PublishDate),
@@ -447,6 +441,19 @@ internal static class ContentSchemas
         ["@type"] = "Person",
         ["name"] = name
     };
+
+    // A url only when the site names a page for the author: Google asks for "a link to a web page that uniquely
+    // identifies the author", and an address guessed from the name answers 404.
+    internal static Dictionary<string, object?> Author(string name, string? url)
+    {
+        var author = Person(name);
+        if (url is not null)
+        {
+            author["url"] = url;
+        }
+
+        return author;
+    }
 
     private static Dictionary<string, object?> Organization(string name) => new()
     {

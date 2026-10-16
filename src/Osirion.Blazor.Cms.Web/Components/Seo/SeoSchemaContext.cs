@@ -44,6 +44,9 @@ internal sealed record SeoSchemaContext
     /// <summary>The page author, the fallback author of collection items.</summary>
     public string? Author { get; init; }
 
+    /// <summary>The absolute address of a page that identifies the author, or <see langword="null"/>.</summary>
+    public string? AuthorUrl { get; init; }
+
     /// <summary>The <c>applicationCategory</c> of the SoftwareApplication schema.</summary>
     public string ApplicationCategory { get; init; } = "DeveloperApplication";
 
