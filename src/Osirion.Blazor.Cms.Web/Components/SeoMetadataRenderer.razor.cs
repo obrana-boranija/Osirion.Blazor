@@ -179,6 +179,14 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
     public bool GenerateMultipleSchemas { get; set; } = true;
 
     /// <summary>
+    /// A page that identifies the author, such as an About page, named as the author's <c>url</c> in structured data.
+    /// It is meant for a site with one author: every article and every posting in a list names it. Without one the
+    /// author is named alone, because a guessed address that answers 404 is worse than none.
+    /// </summary>
+    [Parameter]
+    public string? AuthorUrl { get; set; }
+
+    /// <summary>
     /// Default fallback image URL when content has no featured image.
     /// </summary>
     [Parameter]
@@ -279,6 +287,20 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
         ["Product"] = "product",
         ["VideoObject"] = "video.other"
     };
+
+    private readonly HashSet<string> _explicitParameters = new(StringComparer.Ordinal);
+
+    /// <inheritdoc/>
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        _explicitParameters.Clear();
+        foreach (var parameter in parameters)
+        {
+            _explicitParameters.Add(parameter.Name);
+        }
+
+        return base.SetParametersAsync(parameters);
+    }
 
     /// <summary>
     /// Recomputes all SEO metadata whenever the parameters are set, so a reused component instance never
@@ -413,6 +435,7 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
         FacebookAppId ??= options.FacebookAppId;
         DefaultImageUrl ??= options.DefaultImageUrl;
         OrganizationName ??= options.OrganizationName;
+        AuthorUrl ??= options.AuthorUrl;
     }
 
     private void ApplyRenderingDefaults(SeoMetadataOptions options)
@@ -425,6 +448,15 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
 
         EmitMobileMetaTags |= options.EmitMobileMetaTags;
         EnableGeneratedFaq |= options.EnableGeneratedFaq;
+
+        // The switches have defaults of their own, so a switch the page did not set takes the site's configuration;
+        // reading the value alone cannot tell "left at true" from "set to true".
+        if (!_explicitParameters.Contains(nameof(AllowAiDiscovery))) AllowAiDiscovery = options.AllowAiDiscovery;
+        if (!_explicitParameters.Contains(nameof(AllowAiTraining))) AllowAiTraining = options.AllowAiTraining;
+        if (!_explicitParameters.Contains(nameof(AllowSearchIndexing))) AllowSearchIndexing = options.AllowSearchIndexing;
+        if (!_explicitParameters.Contains(nameof(EnableGeoOptimization))) EnableGeoOptimization = options.EnableGeoOptimization;
+        if (!_explicitParameters.Contains(nameof(EnableAeoOptimization))) EnableAeoOptimization = options.EnableAeoOptimization;
+        if (!_explicitParameters.Contains(nameof(GenerateMultipleSchemas))) GenerateMultipleSchemas = options.GenerateMultipleSchemas;
 
         // Apply schema types if not set
         SchemaTypes ??= options.DefaultSchemaTypes;
@@ -630,8 +662,9 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
         if (string.IsNullOrWhiteSpace(title))
             return _siteName;
 
-        // Optimal title length: 50-60 characters
-        return SeoText.TruncateTitle($"{title} | {_siteName}", 60) ?? _siteName;
+        // Never cut: Google shortens a title link itself "as needed, typically to fit the device width", and a cut
+        // here took the site name with it. Open Graph and Twitter titles keep their own lengths below.
+        return $"{title} | {_siteName}";
     }
 
     private string? BuildCanonicalUrl()
@@ -700,6 +733,7 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
         CurrentUrl = _currentUrl,
         LanguageCode = _languageCode,
         SiteLogoUrl = SiteLogoUrl,
+        AuthorUrl = string.IsNullOrWhiteSpace(AuthorUrl) ? null : SeoText.NormalizeImageUrl(AuthorUrl, _baseUrl),
         BreadcrumbHomeText = BreadcrumbHomeText,
         CustomBreadcrumbs = CustomBreadcrumbs,
         CollectionTitle = CollectionTitle,

@@ -39,4 +39,18 @@ public class ThemingOptions
     /// Gets or sets custom CSS variables
     /// </summary>
     public string? CustomVariables { get; set; }
+
+    /// <summary>
+    /// Gets or sets the palette a visitor sees until they pick another one. <see cref="ThemePalette.Framework"/>, the
+    /// default, applies no palette, so the site looks as it did before palettes existed.
+    /// </summary>
+    public ThemePalette DefaultPalette { get; set; } = ThemePalette.Framework;
+
+    /// <summary>
+    /// Gets or sets whether visitors can pick a palette (with <c>ThemePicker</c>). When it is set, every page links the
+    /// palette stylesheet, so a palette chosen on one page is painted on the next without a flash, also on a site
+    /// exported to static files. Without it the stylesheet is linked only while a palette other than
+    /// <see cref="ThemePalette.Framework"/> is in use.
+    /// </summary>
+    public bool AllowPaletteSelection { get; set; }
 }

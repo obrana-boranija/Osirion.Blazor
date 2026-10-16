@@ -1,3 +1,4 @@
+using BlazorJSComponents;
 using Bunit;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,6 +26,7 @@ public abstract class CmsWebComponentTestBase : BunitContext
     {
         Services.AddSingleton(Microsoft.Extensions.Options.Options.Create(new ThemingOptions()));
         Services.AddSingleton(Substitute.For<IContentProviderManager>());
+        Services.AddJSComponents();
         JSInterop.Mode = JSRuntimeMode.Loose;
     }
 

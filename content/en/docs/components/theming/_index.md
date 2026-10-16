@@ -7,7 +7,7 @@ permalink: /docs/components/theming
 description: Light and dark themes for Osirion components, adapters for Bootstrap, Fluent UI, MudBlazor and Radzen, and a theme toggle that works under static SSR.
 author: Dejan Demonjić
 date: 2025-09-03
-last_modified: 2026-10-11
+last_modified: 2026-10-16
 featured_image: /assets/images/blazor-cover.png
 categories:
 - Components
@@ -56,6 +56,10 @@ Fluent UI, MudBlazor or Radzen, and lets visitors switch between the themes. It 
 - [`OsirionStyles`](/docs/components/theming/osirion-styles) links the stylesheets and applies the visitor's theme.
   Render it once, in your main layout.
 - [`ThemeToggle`](/docs/components/theming/theme-toggle) is a button that switches between light and dark.
+
+On top of the mode, a [palette](/docs/components/theming/palettes) can set the colours: Osirion, Commit, Editor,
+Studio, Studio Blue or Contrast, each with a light and a dark variant.
+[`ThemePicker`](/docs/components/theming/theme-picker) lets visitors choose one.
 
 Neither needs an interactive render mode. Both load a small script, so the theme switch needs JavaScript.
 
@@ -125,6 +129,8 @@ These are the `ThemingOptions` the components read, bound from `Osirion:Theming`
 | `DefaultMode` | `ThemeMode` | `System` | The theme before the visitor picks one: `Light`, `Dark` or `System` (follow the operating system). |
 | `UseDefaultStyles` | `bool` | `false` | When `true`, only the Core stylesheets are linked; the adapter and the theme stylesheet are left out. |
 | `CustomVariables` | `string?` | `null` | CSS declarations written into a `:root` block, for example `--osirion-font-family-base: Inter, sans-serif;`. They do not override the theme colors or an adapter's values; see Styling. |
+| `DefaultPalette` | `ThemePalette` | `Framework` | The [palette](/docs/components/theming/palettes) before the visitor picks one. `Framework` applies none. |
+| `AllowPaletteSelection` | `bool` | `false` | Links the palette stylesheet on every page, so visitors can switch palettes without a flash. |
 
 `EnableDarkMode` only affects `IThemeService.SetThemeMode` on the server; `ThemeToggle` switches in the browser and
 ignores it. `FollowSystemPreference` is bound but not read by the components; set `DefaultMode` to `System` instead.
@@ -183,5 +189,7 @@ also sets `--osirion-font-family-base` from the framework's font, so with an ada
 
 - [OsirionStyles](/docs/components/theming/osirion-styles)
 - [ThemeToggle](/docs/components/theming/theme-toggle)
+- [Palettes](/docs/components/theming/palettes)
+- [ThemePicker](/docs/components/theming/theme-picker)
 - [Navigation](/docs/components/navigation): place the toggle in a `Menu`.
 - [Osirion.Blazor.Theming on NuGet](https://www.nuget.org/packages/Osirion.Blazor.Theming)

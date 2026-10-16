@@ -1,0 +1,18 @@
+@namespace Osirion.Blazor.Theming.Components
+@using Osirion.Blazor.Components
+@inherits OsirionComponentBase
+
+@* A native select inside its label: named for screen readers, operable from the keyboard, no id needed. *@
+<label class="@CombineCssClasses("osirion-theme-picker")" style="@Style" @attributes="Attributes">
+    <span class="osirion-theme-picker-label">@Label</span>
+    <select class="osirion-theme-picker-select"
+            data-osirion-palette-picker
+            data-osirion-palettes-href="@OsirionStyles.PaletteStylesheet">
+        @foreach (var palette in OfferedPalettes)
+        {
+            <option value="@palette.ToId()" selected="@(palette == SelectedPalette)">@OptionText(palette)</option>
+        }
+    </select>
+</label>
+
+@LoadScript("./_content/Osirion.Blazor.Theming/js/theme-picker.js")

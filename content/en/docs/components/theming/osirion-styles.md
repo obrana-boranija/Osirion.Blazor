@@ -7,7 +7,7 @@ permalink: /docs/components/theming/osirion-styles
 description: OsirionStyles links the Osirion stylesheets and the CSS framework adapter, and applies the visitor's light or dark theme as the page loads.
 author: Dejan Demonjić
 date: 2025-09-03
-last_modified: 2026-10-11
+last_modified: 2026-10-16
 featured_image: /assets/images/blazor-cover.png
 categories:
 - Components
@@ -103,14 +103,17 @@ parameter on its own links the adapter stylesheet without the class it needs.
 
 The component renders, in this order:
 
-1. `_content/Osirion.Blazor.Core/css/index.min.css` and `_content/Osirion.Blazor.Core/Osirion.Blazor.Core.bundle.scp.css`.
+1. `_content/Osirion.Blazor.Core/css/index.min.css`. The scoped component styles come from your app's
+   `{App}.styles.css`, which imports every referenced package's bundle.
 2. Unless `UseStyles` (or `UseDefaultStyles`) is `true`, the framework adapter from
    `_content/Osirion.Blazor.Theming/css/adapters/` and `_content/Osirion.Blazor.Theming/css/index.min.css`.
-3. A `<style>` block with the `CustomVariables` parameter, then one with the configured `CustomVariables`. Both are
+3. `_content/Osirion.Blazor.Theming/css/palettes.min.css` when a [palette](/docs/components/theming/palettes) is in use
+   or `AllowPaletteSelection` is set.
+4. A `<style>` block with the `CustomVariables` parameter, then one with the configured `CustomVariables`. Both are
    `:root` rules, so for the same property the configured value, written last, wins.
-4. `osirion-styles.js`, loaded through the script loader that `builder.Services.AddJSComponents()` registers.
-5. A short inline script that sets `data-osirion-theme`, `data-osirion-framework`, the framework class and the
-   framework's own dark-mode marker on `<html>` while the page is parsed.
+5. `osirion-styles.js`, loaded through the script loader that `builder.Services.AddJSComponents()` registers.
+6. A short inline script that sets `data-osirion-theme`, `data-osirion-palette`, `data-osirion-framework`, the
+   framework class and the framework's own dark-mode marker on `<html>` while the page is parsed.
 
 The theme is resolved in this order: the `osirion-preferred-theme` cookie, then `Mode` or `DefaultMode`. `System`
 follows the operating system's `prefers-color-scheme` and reacts when it changes, as long as the visitor has not
@@ -137,6 +140,7 @@ After the script runs, `<html>` carries:
 | Marker | Values |
 | --- | --- |
 | `data-osirion-theme` | `light` or `dark` |
+| `data-osirion-palette` | `osirion`, `commit`, `editor`, `studio`, `studio-blue` or `contrast`; absent for `Framework` |
 | `data-osirion-framework` | `None`, `Bootstrap`, `FluentUI`, `MudBlazor` or `Radzen` |
 | Framework class | `osirion-bootstrap-integration`, `osirion-fluent-integration`, `osirion-mudblazor-integration` or `osirion-radzen-integration` |
 | Dark-mode marker | `data-bs-theme` (Bootstrap), `mud-theme-dark` (MudBlazor), `fluent-dark-theme` or `fluent-light-theme` (Fluent UI), `rz-dark-theme` (Radzen) |
@@ -154,3 +158,4 @@ your own stylesheet; to change a color an adapter provides, change the framework
 
 - [Theming](/docs/components/theming): setup, options and adapters.
 - [ThemeToggle](/docs/components/theming/theme-toggle): the button that switches the theme.
+- [Palettes](/docs/components/theming/palettes): named colour sets with light and dark variants.

@@ -9,6 +9,7 @@
 .osirion-theme-dark,
 :root[data-bs-theme=dark],
 [data-bs-theme=dark],
+:root[data-osirion-palette=osirion][data-osirion-theme=dark],
 :root[data-osirion-theme=dark],
 [data-osirion-theme=dark] {
   /* ========== COLOR SYSTEM SCALE MAPPINGS FOR DARK THEME ========== */
@@ -140,13 +141,13 @@
   --osirion-status-danger: var(--osirion-color-danger-600); /* #f87171 - Bright red */
   --osirion-status-danger-bg: var(--osirion-color-danger-100); /* #7f1d1d - Very dark red */
   --osirion-status-danger-border: var(--osirion-color-danger-300); /* #b91c1c - Dark red */
-  --osirion-status-danger-text: var(--osirion-color-danger-600); /* #f87171 - Bright red */
+  --osirion-status-danger-text: var(--osirion-color-danger-700); /* #fca5a5 - Light red */
   --osirion-status-danger-focus: var(--osirion-color-danger-500); /* #ef4444 - Medium red */
   --osirion-status-danger-hover: var(--osirion-color-danger-700); /* #fca5a5 - Light red */
   --osirion-status-info: var(--osirion-color-info-600); /* #60a5fa - Bright blue */
   --osirion-status-info-bg: var(--osirion-color-info-100); /* #1e3a8a - Very dark blue */
   --osirion-status-info-border: var(--osirion-color-info-300); /* #1d4ed8 - Dark blue */
-  --osirion-status-info-text: var(--osirion-color-info-600); /* #60a5fa - Bright blue */
+  --osirion-status-info-text: var(--osirion-color-info-700); /* #93c5fd - Light blue */
   --osirion-status-info-focus: var(--osirion-color-info-500); /* #3b82f6 - Medium blue */
   --osirion-status-info-hover: var(--osirion-color-info-700); /* #93c5fd - Light blue */
   /* Component specific */
@@ -188,7 +189,7 @@
   --osirion-nav-border: var(--osirion-border-color); /* #4b5563 - Medium-dark gray */
   --osirion-nav-text: var(--osirion-text-secondary); /* #d1d5db - Medium-light gray */
   --osirion-nav-active-background: var(--osirion-color-primary-200); /* #1e40af - Very dark blue */
-  --osirion-nav-active-text: var(--osirion-color-primary-600); /* #60a5fa - Bright blue */
+  --osirion-nav-active-text: var(--osirion-color-primary-700); /* #93c5fd - Light blue */
   --osirion-nav-active-border: var(--osirion-color-primary-600); /* #60a5fa - Bright blue */
   --osirion-nav-hover-background: var(--osirion-color-neutral-300); /* #374151 - Medium-dark gray */
   --osirion-nav-hover-text: var(--osirion-text-primary); /* #f3f4f6 - Light gray */

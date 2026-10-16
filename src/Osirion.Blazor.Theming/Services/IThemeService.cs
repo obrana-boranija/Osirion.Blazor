@@ -45,4 +45,20 @@ public interface IThemeService
     /// </summary>
     /// <returns>The theme in effect after the toggle; unchanged when dark mode is disabled</returns>
     string ToggleTheme();
+
+    /// <summary>
+    /// Gets the palette in effect for this request: the visitor's choice from the <c>osirion-preferred-palette</c>
+    /// cookie, else <see cref="ThemingOptions.DefaultPalette"/>. Implementations written before palettes existed
+    /// report <see cref="ThemePalette.Framework"/>.
+    /// </summary>
+    ThemePalette CurrentPalette => ThemePalette.Framework;
+
+    /// <summary>
+    /// Sets the visitor's palette and keeps it in the <c>osirion-preferred-palette</c> cookie when a response can
+    /// still carry one. Implementations written before palettes existed ignore it.
+    /// </summary>
+    /// <param name="palette">The palette to use</param>
+    void SetPalette(ThemePalette palette)
+    {
+    }
 }
