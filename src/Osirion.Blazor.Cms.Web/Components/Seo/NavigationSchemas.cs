@@ -97,11 +97,7 @@ internal static class NavigationSchemas
             ["image"] = context.NormalizeImageUrl(item.FeaturedImageUrl) ?? context.OgImage,
             ["datePublished"] = ContentUrls.FormatUtc(item.PublishDate),
             ["dateModified"] = ContentUrls.FormatUtc(item.LastModified ?? item.PublishDate),
-            ["author"] = new Dictionary<string, object?>
-            {
-                ["@type"] = "Person",
-                ["name"] = PostingAuthor(item, context)
-            },
+            ["author"] = ContentSchemas.Author(PostingAuthor(item, context), context.AuthorUrl),
             ["publisher"] = new Dictionary<string, object?>
             {
                 ["@type"] = "Organization",

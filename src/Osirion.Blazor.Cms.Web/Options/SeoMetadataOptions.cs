@@ -102,6 +102,13 @@ public class SeoMetadataOptions
     public string? OrganizationName { get; set; }
 
     /// <summary>
+    /// Gets or sets a page that identifies the author, such as <c>/about</c>, named as the author's <c>url</c> in
+    /// structured data. It is meant for a site with one author: every article and every posting in a list names it.
+    /// Without one the author is named alone.
+    /// </summary>
+    public string? AuthorUrl { get; set; }
+
+    /// <summary>
     /// Gets or sets the default text label for the home breadcrumb.
     /// </summary>
     public string BreadcrumbHomeText { get; set; } = "Home";
