@@ -66,7 +66,7 @@ public class PaletteStylesheetTests
         // Act
         var differing = full
             .Where(v => !v.Tokens.Select(token => token.Key).Except(["menu-background", "menu-color", "menu-muted-color",
-                "menu-hover-background", "menu-active-background", "menu-accent", "menu-border-color"]).ToHashSet().SetEquals(expected))
+                "menu-hover-background", "menu-border-color"]).ToHashSet().SetEquals(expected))
             .Select(v => $"{v.Palette} {v.Mode}")
             .ToList();
 

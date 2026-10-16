@@ -54,6 +54,7 @@ internal static class PaletteBuilder
         new("action-secondary-text", "action-secondary", textContrast),
         new("action-secondary-text", "action-secondary-hover", textContrast),
         new("nav-active-text", "nav-active-background", textContrast),
+        new("menu-accent", "menu-active-background", textContrast),
         new("status-success-text", "status-success-bg", textContrast),
         new("status-warning-text", "status-warning-bg", textContrast),
         new("status-danger-text", "status-danger-bg", textContrast),
@@ -148,6 +149,11 @@ internal static class PaletteBuilder
         tokens.Set("nav-active-border", action);
         tokens.Set("nav-hover-background", surface);
         tokens.Set("nav-hover-text", tokens.Readable("nav-hover-text", text, surface, target));
+
+        // Menu draws its active item in the accent on a tint of that accent; left to the component, the tint is
+        // mixed from the link colour and takes it below the target. The palette sets both.
+        tokens.Set("menu-active-background", navActiveBackground);
+        tokens.Set("menu-accent", tokens.Readable("menu-accent", link, HarderBackground(link, background, surface, navActiveBackground), target));
 
         tokens.Set("focus-ring-color", focus);
         var inputBackground = spec.InputBackground is null ? background : Colour(spec.InputBackground);

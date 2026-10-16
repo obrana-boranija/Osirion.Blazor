@@ -92,5 +92,8 @@ internal static class PaletteStylesheet
         {
             yield return (classes.Select(name => $"{Scope} .token.{name}").ToArray(), [$"color: var(--osirion-{token})"]);
         }
+
+        // Prism's themes fade namespaces, which would take their colour below the contrast target.
+        yield return ([$"{Scope} .token.namespace"], ["opacity: 1"]);
     }
 }
