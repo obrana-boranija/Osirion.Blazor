@@ -260,10 +260,13 @@ public class ContentQueryFilterBehaviorTests
 
     [Theory]
     [InlineData("web-dev", "a,b")]
-    [InlineData("dev", "a,b")]
+    [InlineData("WEB-DEV", "a,b")]
+    [InlineData("Web Dev", "a,b")]
     [InlineData(" TOOLS ", "b,c")]
+    [InlineData("dev", "")]
+    [InlineData("web", "")]
     [InlineData("design", "")]
-    public void ApplyFilters_WithCategory_MatchesPartOfACategoryWithHyphensAsSpaces(string category, string expected)
+    public void ApplyFilters_WithCategory_MatchesACategoryByItsNameOrItsSlug(string category, string expected)
     {
         // Arrange
         var query = AllStatuses();
@@ -274,6 +277,44 @@ public class ContentQueryFilterBehaviorTests
 
         // Assert
         result.ShouldBe(expected);
+    }
+
+    // The address of "Multi-tenant platforms" is multi-tenant-platforms; reading the hyphens as spaces never matched it.
+    [Theory]
+    [InlineData("multi-tenant-platforms")]
+    [InlineData("Multi-tenant platforms")]
+    public void ApplyFilters_WithCategory_MatchesANameThatHasAHyphenOfItsOwn(string category)
+    {
+        // Arrange
+        var item = CreateItem("m", "Schemas", "blog/schemas.md", "text");
+        item.AddCategory("Multi-tenant platforms");
+        var query = AllStatuses();
+        query.Category = category;
+
+        // Act
+        var result = _filter.ApplyFilters(new[] { item }.AsQueryable(), query).Select(i => i.Id).ToList();
+
+        // Assert
+        result.ShouldBe(["m"]);
+    }
+
+    // Tags are matched the same way, so a tag with a space is found from its address too.
+    [Theory]
+    [InlineData("rate-limiting")]
+    [InlineData("Rate limiting")]
+    public void ApplyFilters_WithTag_MatchesATagByItsNameOrItsSlug(string tag)
+    {
+        // Arrange
+        var item = CreateItem("r", "Limits", "blog/limits.md", "text");
+        item.AddTag("Rate limiting");
+        var query = AllStatuses();
+        query.Tag = tag;
+
+        // Act
+        var result = _filter.ApplyFilters(new[] { item }.AsQueryable(), query).Select(i => i.Id).ToList();
+
+        // Assert
+        result.ShouldBe(["r"]);
     }
 
     [Fact]

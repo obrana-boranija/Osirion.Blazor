@@ -1,5 +1,6 @@
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Enums;
+using Osirion.Blazor.Cms.Domain.Extensions;
 using Osirion.Blazor.Cms.Domain.Interfaces.Content;
 using Osirion.Blazor.Cms.Domain.Interfaces.Directory;
 using Osirion.Blazor.Cms.Domain.Repositories;
@@ -98,13 +99,21 @@ public class ContentQueryFilter : IContentQueryFilter
         itemDirectory.Equals(directory, StringComparison.OrdinalIgnoreCase)
         || itemDirectory.StartsWith(directory + "/", StringComparison.OrdinalIgnoreCase);
 
+    /// <summary>
+    /// Whether a category or tag is the one a query names: by its name, ignoring case, or by its slug, the way an
+    /// address carries it. Turning a slug back into a name cannot work, because a name may hold a hyphen of its own
+    /// ("Multi-tenant platforms" is <c>multi-tenant-platforms</c>), and a partial match let "Dev" list "Web Dev".
+    /// </summary>
+    private static bool IsNamedBy(string value, string nameOrSlug) =>
+        value.Trim().Equals(nameOrSlug, StringComparison.OrdinalIgnoreCase)
+        || value.GenerateSlug().Equals(nameOrSlug, StringComparison.OrdinalIgnoreCase);
+
     private static IQueryable<ContentItem> ApplyCategoryFilters(IQueryable<ContentItem> items, ContentQuery query)
     {
         if (!string.IsNullOrWhiteSpace(query.Category))
         {
-            var normalizedCategory = query.Category.Replace("-", " ").Trim();
-            items = items.Where(item =>
-                item.Categories.Any(c => c.Trim().Contains(normalizedCategory, StringComparison.OrdinalIgnoreCase)));
+            var category = query.Category.Trim();
+            items = items.Where(item => item.Categories.Any(c => IsNamedBy(c, category)));
         }
 
         if (query.Categories is not null && query.Categories.Any())
@@ -123,9 +132,8 @@ public class ContentQueryFilter : IContentQueryFilter
     {
         if (!string.IsNullOrWhiteSpace(query.Tag))
         {
-            var normalizedTag = query.Tag.Trim();
-            items = items.Where(item =>
-                item.Tags.Any(t => t.Trim().Equals(normalizedTag, StringComparison.OrdinalIgnoreCase)));
+            var tag = query.Tag.Trim();
+            items = items.Where(item => item.Tags.Any(t => IsNamedBy(t, tag)));
         }
 
         if (query.Tags is not null && query.Tags.Any())

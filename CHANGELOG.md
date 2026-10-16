@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Osirion.Blazor.Core: the skip link's address is relative to the document's base instead of absolute, so a page rendered on one host (a static export) works on another; with script running it moves focus to `main` without following the link
 - Osirion.Blazor.Theming: `OsirionStyles` no longer links `Osirion.Blazor.Core.bundle.scp.css`, which the host's `{App}.styles.css` already imports; every page downloaded it (about 250 KB) twice
 - Osirion.Blazor.Core: `OsirionFooter`'s default copyright line no longer uses an em dash
+- Osirion.Blazor.Cms.Infrastructure: a `Category` or `Tag` query matches a category or tag by its name (ignoring case) or by its slug, exactly. The category filter turned the slug back into a name by replacing hyphens with spaces and then matched part of a name, so a category with a hyphen of its own ("Multi-tenant platforms") listed nothing at its address, and "Dev" listed "Web Dev". A tag with a space is now found from its address too
 
 ## [4.0.0] - 2026-10-11
 
