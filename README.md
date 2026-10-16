@@ -1,243 +1,154 @@
 ﻿# Osirion.Blazor
 
 [![NuGet](https://img.shields.io/nuget/v/Osirion.Blazor)](https://www.nuget.org/packages/Osirion.Blazor)
+[![CI](https://github.com/demonjic/Osirion.Blazor/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/demonjic/Osirion.Blazor/actions/workflows/ci.yml)
 [![License](https://img.shields.io/github/license/demonjic/Osirion.Blazor)](https://github.com/demonjic/Osirion.Blazor/blob/master/LICENSE.txt)
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=demonjic_Osirion.Blazor&metric=security_rating)](https://sonarcloud.io/dashboard?id=demonjic_Osirion.Blazor)
 [![codecov](https://codecov.io/gh/demonjic/Osirion.Blazor/branch/master/graph/badge.svg)](https://codecov.io/gh/demonjic/Osirion.Blazor)
 
-A modular, high-performance component library for Blazor applications with SSR compatibility and zero-JS dependencies (when possible).
+Components, a Markdown CMS and SEO for Blazor Web Apps. Pages render with static server-side rendering and work
+without JavaScript; where a component loads a script, the script only enhances what the server already rendered.
 
-## ✨ Features
+## 📦 Packages
 
-Osirion.Blazor is composed of specialized modules that can be used independently or together:
+`Osirion.Blazor` brings in every module and the `AddOsirion` registration method. Each module is also published on
+its own.
 
-### 🎯 Core Components
+| Package | What it adds |
+|---|---|
+| [Osirion.Blazor](https://www.nuget.org/packages/Osirion.Blazor) | Every module below, `AddOsirion` and `OsirionSiteLayout` |
+| [Osirion.Blazor.Core](https://www.nuget.org/packages/Osirion.Blazor.Core) | Layout, section, card and form components, the HTML renderer and its sanitizer, cookie consent, email services ([README](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Core/README.md)) |
+| [Osirion.Blazor.Cms](https://www.nuget.org/packages/Osirion.Blazor.Cms) | The content management modules, Web and Admin, in one reference ([README](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Cms/README.md)) |
+| [Osirion.Blazor.Cms.Web](https://www.nuget.org/packages/Osirion.Blazor.Cms.Web) | Content lists, article and page templates, table of contents, SEO metadata and structured data, sitemap and feeds ([README](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Cms.Web/README.md)) |
+| [Osirion.Blazor.Cms.Admin](https://www.nuget.org/packages/Osirion.Blazor.Cms.Admin) | An admin interface that edits content in a GitHub repository ([README](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Cms.Admin/README.md)) |
+| [Osirion.Blazor.Cms.Core](https://www.nuget.org/packages/Osirion.Blazor.Cms.Core), [Domain](https://www.nuget.org/packages/Osirion.Blazor.Cms.Domain), [Application](https://www.nuget.org/packages/Osirion.Blazor.Cms.Application), [Infrastructure](https://www.nuget.org/packages/Osirion.Blazor.Cms.Infrastructure) | The CMS layers the two modules share: content model, queries, and the file system and GitHub providers |
+| [Osirion.Blazor.Navigation](https://www.nuget.org/packages/Osirion.Blazor.Navigation) | Menus, enhanced navigation and scroll to top ([README](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Navigation/README.md)) |
+| [Osirion.Blazor.Analytics](https://www.nuget.org/packages/Osirion.Blazor.Analytics) | Trackers for Microsoft Clarity, Google Analytics 4, Matomo, Plausible, Umami and Yandex Metrica ([README](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Analytics/README.md)) |
+| [Osirion.Blazor.Theming](https://www.nuget.org/packages/Osirion.Blazor.Theming) | `OsirionStyles`, light and dark themes, named palettes, `ThemePicker`, and adapters for Bootstrap, FluentUI, MudBlazor and Radzen ([README](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Theming/README.md)) |
 
-[![Docs](https://img.shields.io/badge/docs-Core_README.md-blue)](src/Osirion.Blazor.Core/README.md)
+## 🚀 Quick start
 
-- **Layout Components**: HeroSection, PageLayout, Footer, Sticky Sidebar
-- **Navigation Components**: Breadcrumbs, Article Metadata
-- **Content Components**: HTML Renderer, Background Patterns
-- **State Components**: Loading indicators, 404 pages
-- **Interactive Components**: Cookie Consent, Logo Carousel
-- **SSR Compatible**: All components work without JavaScript
-- **Framework Integration**: Bootstrap, FluentUI, MudBlazor, Radzen support
-
-### 📊 Analytics
-
-[![Docs](https://img.shields.io/badge/docs-ANALYTICS.md-blue)](docs/ANALYTICS.md)
-
-- Multiple provider support (Microsoft Clarity, Matomo, GA4, Yandex Metrica, Plausible, Umami)
-- SSR compatibility with progressive enhancement
-- Privacy-focused with consent management
-- Easily extendable with your own providers
-
-### 🧭 Navigation
-
-[![Docs](https://img.shields.io/badge/docs-NAVIGATION.md-blue)](docs/NAVIGATION.md)
-
-- Enhanced navigation with scroll restoration
-- Smooth scrolling and "back to top" functionality
-- Menu components with hierarchical support
-- Works without JavaScript through progressive enhancement
-- Fully customizable appearance
-
-### 📝 Content Management
-
-[![Docs](https://img.shields.io/badge/docs-GITHUB_CMS.md-blue)](docs/GITHUB_CMS.md)
-
-- GitHub and file system content providers
-- Markdown rendering with frontmatter support
-- Content organization with categories and tags
-- Directory-based navigation and search
-- SEO optimization out of the box
-- Localization support with multi-language content
-- Admin interface for content editing
-
-### 🎨 Theming
-
-[![Docs](https://img.shields.io/badge/docs-STYLING.md-blue)](docs/STYLING.md)
-
-- Integration with popular CSS frameworks (Bootstrap, FluentUI, MudBlazor, Radzen)
-- Dark mode support with system preference detection
-- CSS variable-based styling system
-- Minimal JavaScript with progressive enhancement
-
-## 📦 Installation
-
-Install the complete package:
+These steps put a Markdown blog into a new Blazor Web App. The
+[getting started guide](https://github.com/demonjic/Osirion.Blazor/blob/master/content/en/docs/getting-started.md)
+covers each step in full, including a GitHub repository as the content source.
 
 ```bash
+dotnet new blazor -n MySite
+cd MySite
 dotnet add package Osirion.Blazor
 ```
 
-Or just the modules you need:
-
-```bash
-dotnet add package Osirion.Blazor.Core
-dotnet add package Osirion.Blazor.Analytics
-dotnet add package Osirion.Blazor.Navigation
-dotnet add package Osirion.Blazor.Cms
-dotnet add package Osirion.Blazor.Theming
-```
-
-## 🚀 Quick Start
-
-### Service Registration
+Register the services in `Program.cs`:
 
 ```csharp
-// In Program.cs
 using Osirion.Blazor.Extensions;
 
-// Register all services at once with fluent API
-builder.Services.AddOsirionBlazor(osirion => {
-    osirion
-        .AddGitHubCms(options => {
-            options.Owner = "username";
-            options.Repository = "content-repo";
-        })
-        .AddScrollToTop()
-        .AddClarityTracker(options => {
-            options.SiteId = "clarity-id";
-        })
-        .AddOsirionStyle(CssFramework.Bootstrap);
-});
-
-// Or from configuration
-builder.Services.AddOsirionBlazor(builder.Configuration);
+builder.Services.AddOsirion(builder.Configuration);
+builder.Services.AddJSComponents();
 ```
 
-### Component Usage
+`AddOsirion(builder.Configuration)` reads the `Osirion` section. Point it at a folder of Markdown files in
+`appsettings.json`:
+
+```json
+{
+  "Osirion": {
+    "Theming": { "Framework": "Bootstrap" },
+    "Cms": {
+      "Web": {
+        "FileSystem": { "BasePath": "content", "IsDefault": true }
+      }
+    }
+  }
+}
+```
+
+Add the namespaces to `Components/_Imports.razor` and render `OsirionStyles` once in the layout:
 
 ```razor
 @using Osirion.Blazor.Components
-
-<!-- In your layout -->
-<OsirionStyles FrameworkIntegration="CssFramework.Bootstrap" />
-<EnhancedNavigation Behavior="ScrollBehavior.Smooth" />
-<ScrollToTop Position="Position.BottomRight" />
-<ClarityTracker />
-
-<!-- Hero section for landing pages -->
-<HeroSection 
-    Title="Welcome to Our Platform"
-    Subtitle="Build amazing applications with ease"
-    Summary="Experience the power of modern web development."
-    PrimaryButtonText="Get Started"
-    PrimaryButtonUrl="/getting-started"
-    ImageUrl="/images/hero.jpg"
-    UseBackgroundImage="true" />
-
-<!-- Breadcrumb navigation -->
-<OsirionBreadcrumbs Path="@Navigation.Uri" />
-
-<!-- Content management -->
-<ContentList Directory="blog" />
-<ContentView Path="blog/my-post.md" />
-<SearchBox />
-<TagCloud />
-
-<!-- Cookie consent (GDPR compliant) -->
-<OsirionCookieConsent 
-    PolicyLink="/privacy-policy"
-    ShowCustomizeButton="true" />
-
-<!-- Logo carousel -->
-<InfiniteLogoCarousel 
-    Title="Our Partners"
-    CustomLogos="@partnerLogos" />
+@using Osirion.Blazor.Cms.Components
+@using Osirion.Blazor.Cms.Web.Components
+@using Osirion.Blazor.Theming.Components
 ```
+
+```razor
+@inherits LayoutComponentBase
+
+@Body
+
+<OsirionStyles />
+```
+
+Then a list page and an article page in one component:
+
+```razor
+@page "/blog"
+@page "/blog/{Slug}"
+
+@if (string.IsNullOrWhiteSpace(Slug))
+{
+    <ContentList Directory="blog" ShowPagination />
+}
+else
+{
+    <ArticlePage DirectoryName="blog" ItemSlug="@Slug" SchemaTypes="new[] { SchemaType.BlogPosting }" />
+}
+
+@code {
+    [Parameter]
+    public string? Slug { get; set; }
+}
+```
+
+Posts are Markdown files with front matter in `content/blog`. To serve `/sitemap.xml`, `/feed.xml` and `/atom.xml`,
+add `app.MapOsirionFeeds(feeds => feeds.SiteUrl = "https://example.com");` after `builder.Build()`.
+
+## 🆕 What's new in 4.1
+
+- **Theming**: named palettes (`ThemePalette`) with light and dark variants, and `ThemePicker` for visitors. In the
+  dark theme, the active navigation item and the danger and info messages now reach a 4.5:1 contrast ratio.
+- **Table of contents**: `TableOfContents` marks the section being read as the page scrolls.
+- **Content lists**: `ItemTemplate` on `ContentList`, `ContentListPage` and `OsirionContentListSection` renders each
+  item through your own markup; `ArticlePage.HeaderContent` replaces the hero.
+- **SEO**: the AI, indexing and schema switches in `SeoMetadataOptions` apply unless a page sets them; titles are no
+  longer cut at 60 characters; `AuthorUrl` names the author's page in structured data.
+- **Accessibility**: code blocks and tables in rendered content can be scrolled from the keyboard.
+- **Content queries**: a category or tag matches by its name or its slug, exactly.
+- **Last modified dates**: a file's write time no longer stands in for `last_modified`;
+  `FileSystemOptions.UseFileWriteTimeAsLastModified` restores the old behaviour.
+
+The [changelog](https://github.com/demonjic/Osirion.Blazor/blob/master/CHANGELOG.md) lists every change.
 
 ## 📚 Documentation
 
-- [Quick Reference](docs/QUICK_REFERENCE.md) - Quick overview of all components
-- [Core Components](src/Osirion.Blazor.Core/README.md) - Layout, navigation, and content components
-- [Analytics](docs/ANALYTICS.md) - Analytics integration documentation
-- [Navigation](docs/NAVIGATION.md) - Navigation components documentation
-- [GitHub CMS](docs/GITHUB_CMS.md) - Content management documentation
-- [Styling](docs/STYLING.md) - Theming and styling documentation
-- [Migration Guide](docs/MIGRATION.md) - Guide for upgrading between versions
-
-### Component-Specific Documentation
-
-- [HeroSection](src/Osirion.Blazor.Core/Components/Sections/HeroSection.md) - Comprehensive hero section component
-- [OsirionBreadcrumbs](src/Osirion.Blazor.Core/Components/Navigation/OsirionBreadcrumbs.md) - Automatic breadcrumb navigation
-- [OsirionCookieConsent](src/Osirion.Blazor.Core/Components/Popups/OsirionCookieConsent.md) - GDPR-compliant cookie consent
-- [InfiniteLogoCarousel](src/Osirion.Blazor.Core/Components/InfiniteLogoCarousel.md) - Self-contained logo carousel
-- [Markdown Editor](src/Osirion.Blazor.Cms.Core/Components/Editor/MARKDOWN_EDITOR.md) - Admin markdown editor components
-
-## 🌟 Key Principles
-
-- **SSR First**: All components designed for Server-Side Rendering compatibility
-- **Zero-JS Dependencies**: No JavaScript dependencies where possible
-- **Progressive Enhancement**: Core functionality works without JavaScript, enhanced with JS when available
-- **Framework Integration**: Seamless integration with popular CSS frameworks
-- **Multi-Platform**: Supports .NET 9 and .NET 10
-- **Provider Pattern**: Easily extend with your own providers for analytics, content, etc.
-- **Accessibility**: WCAG 2.1 compliant components with full keyboard and screen reader support
-- **GDPR Compliance**: Built-in privacy and consent management features
+- [Getting started](https://github.com/demonjic/Osirion.Blazor/blob/master/content/en/docs/getting-started.md)
+- [Component reference](https://github.com/demonjic/Osirion.Blazor/tree/master/docs/components), one page per component
+- [Analytics](https://github.com/demonjic/Osirion.Blazor/blob/master/docs/ANALYTICS.md),
+  [Navigation](https://github.com/demonjic/Osirion.Blazor/blob/master/docs/NAVIGATION.md),
+  [GitHub CMS](https://github.com/demonjic/Osirion.Blazor/blob/master/docs/GITHUB_CMS.md) and
+  [Styling](https://github.com/demonjic/Osirion.Blazor/blob/master/docs/STYLING.md)
+- [Migration guide](https://github.com/demonjic/Osirion.Blazor/blob/master/docs/MIGRATION.md)
+- [Examples](https://github.com/demonjic/Osirion.Blazor/tree/master/examples): the same site built with Bootstrap,
+  FluentUI and MudBlazor
 
 ## 📋 Requirements
 
-- .NET 9.0 or higher
-- Blazor (Server, WebAssembly, or Auto)
-
-## 🆕 What's New in v1.5.0
-
-### Major Features
-
-- **Fluent API**: New `AddOsirionBlazor()` method for streamlined service registration
-- **CSS Framework Integration**: Automatic integration with Bootstrap, FluentUI, MudBlazor, and Radzen
-- **Comprehensive Core Components**: HeroSection, Breadcrumbs, Cookie Consent, and more
-- **Enhanced Documentation**: Component-specific documentation with examples
-- **Improved Styling**: Renamed `osirion-cms.css` to `osirion.css` for broader scope
-
-### Breaking Changes
-
-- `osirion-cms.css` renamed to `osirion.css`
-- Styling options moved from `GitHubCmsOptions` to dedicated `OsirionStyleOptions`
-- Service registration methods updated (legacy methods still supported)
-
-See [Migration Guide](docs/MIGRATION.md) for upgrade instructions.
-
-## 🧪 Features Coming Soon
-
-- Headless CMS support with Contentful, Sanity, and Strapi providers
-- Form validation and submission components
-- Authentication integration
-- Enhanced SEO components with structured data
-- Performance optimizations for large content repositories
-- Visual component editor for admin interface
-- Multi-tenant content management
+- .NET 9 or .NET 10
+- A Blazor Web App. Content pages need no interactive render mode; the admin interface runs on Interactive Server.
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
-
-### Current Focus Areas
-
-- Additional CSS framework integrations
-- Performance optimizations
-- Accessibility improvements
-- Documentation enhancements
-- Test coverage expansion
+Contributions are welcome. [CONTRIBUTING.md](https://github.com/demonjic/Osirion.Blazor/blob/master/CONTRIBUTING.md)
+explains how to build, test and measure coverage, and how a release is made. Report bugs and ask questions in
+[issues](https://github.com/demonjic/Osirion.Blazor/issues).
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE.txt) file for details.
+MIT. See [LICENSE.txt](https://github.com/demonjic/Osirion.Blazor/blob/master/LICENSE.txt).
 
 ## 🙏 Acknowledgments
 
 - Built with [Blazor](https://blazor.net/) and [ASP.NET Core](https://asp.net/)
 - Markdown processing by [Markdig](https://github.com/xoofx/markdig)
 - Testing with [bUnit](https://bunit.dev/) and [Shouldly](https://shouldly.io/)
-- Icons and examples use resources from various open-source projects
-
-## 📊 Project Stats
-
-- **Components**: 15+ production-ready components
-- **Packages**: 10+ NuGet packages
-- **Frameworks**: .NET 9 & .NET 10 support
-- **CSS Frameworks**: 4 major frameworks supported
-- **Test Coverage**: 85%+ code coverage
-- **Documentation**: Comprehensive guides and examples
