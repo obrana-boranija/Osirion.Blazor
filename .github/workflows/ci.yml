@@ -1,117 +1,191 @@
 name: CI
 
+# One workflow for every check a change has to pass. Each job builds what it needs, so a failure names its cause:
+# formatting, a test on one operating system, coverage, or a missing component page.
+
 on:
   push:
     branches: [ master ]
-    paths-ignore:
-      - '**.md'
-      - 'docs/**'
-      - '.github/*.md'
   pull_request:
     branches: [ master ]
-    paths-ignore:
-      - '**.md'
-      - 'docs/**'
-      - '.github/*.md'
   workflow_dispatch:
 
+# A newer push to the same pull request or branch makes the older run worthless.
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+
 jobs:
-  build_and_test:
-    name: Build and Test
+  format:
+    name: Format
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v5
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: |
             9.0.x
             10.0.x
-      
-      - name: Restore dependencies
-        run: dotnet restore
-      
-      - name: Build
-        run: dotnet build --configuration Release --no-restore
-      
-      - name: Test
-        run: dotnet test --configuration Release --no-build --verbosity normal
-      
-      - name: Check formatting
-        run: |
-          dotnet format --verify-no-changes --verbosity diagnostic
-          if [ $? -ne 0 ]; then
-            echo "::error::Code formatting violations found. Run 'dotnet format' locally to fix."
-            exit 1
-          fi
 
-  analyze:
-    name: Code Analysis
-    runs-on: ubuntu-latest
-    needs: build_and_test
+      - name: Restore
+        run: dotnet restore
+
+      # Whitespace, code style and analyzer rules from .editorconfig. Fix locally with `dotnet format`.
+      - name: Check formatting
+        run: dotnet format --no-restore --verify-no-changes --verbosity minimal
+
+  test:
+    name: Test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # Linux runs in the coverage job, which runs every test project too.
+        os: [ windows-latest, macos-latest ]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: |
+            9.0.x
+            10.0.x
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Test
+        run: dotnet test --no-build --configuration Release
+
+  coverage:
+    name: Test and coverage (ubuntu-latest)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v5
+
+      - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: |
             9.0.x
             10.0.x
-      
-      - name: Install dotnet tools
+
+      - name: Restore
         run: |
-          dotnet tool install --global dotnet-reportgenerator-globaltool
-          dotnet tool install --global dotnet-coverage
-      
-      # Check for common issues and patterns
-      - name: Run Code Analysis
+          dotnet restore
+          dotnet tool restore
+
+      - name: Build
+        run: dotnet build --no-restore --configuration Release
+
+      # Every test project except the Playwright suite, whose tests are all skipped until it is fixed.
+      # A failing or undiscovered test fails this step, so a partial report is never uploaded.
+      - name: Test with coverage
         run: |
-          # Check solution file for projects not included
-          dotnet sln list | grep -v "Project(s)" > projects_in_sln.txt
-          find ./src -name "*.csproj" | sort > all_projects.txt
-          
-          echo "Checking for projects missing from solution file..."
-          projects_missing=false
-          while IFS= read -r project; do
-            if ! grep -q "$project" projects_in_sln.txt; then
-              echo "::warning::Project not in solution: $project"
-              projects_missing=true
-            fi
-          done < all_projects.txt
-          
-          if [ "$projects_missing" = true ]; then
-            echo "::notice::Some projects are not included in the solution file. Consider adding them."
-          fi
-          
-          # Check for consistent project properties in csproj files
-          echo "Checking for consistency in project properties..."
-          declare -A target_frameworks=()
-          declare -A lang_versions=()
-          declare -A nullable_settings=()
-          
-          while IFS= read -r project; do
-            tf=$(grep -o '<TargetFrameworks>.*</TargetFrameworks>' "$project" | sed 's/<TargetFrameworks>\(.*\)<\/TargetFrameworks>/\1/')
-            lv=$(grep -o '<LangVersion>.*</LangVersion>' "$project" | sed 's/<LangVersion>\(.*\)<\/LangVersion>/\1/')
-            ns=$(grep -o '<Nullable>.*</Nullable>' "$project" | sed 's/<Nullable>\(.*\)<\/Nullable>/\1/')
-            
-            # Most projects inherit these from Directory.Build.props; an empty key would abort bash
-            [ -n "$tf" ] && target_frameworks["$tf"]=1
-            [ -n "$lv" ] && lang_versions["$lv"]=1
-            [ -n "$ns" ] && nullable_settings["$ns"]=1
-          done < all_projects.txt
-          
-          if [ ${#target_frameworks[@]} -gt 1 ]; then
-            echo "::warning::Inconsistent TargetFrameworks across projects: ${!target_frameworks[@]}"
-          fi
-          
-          if [ ${#lang_versions[@]} -gt 1 ]; then
-            echo "::warning::Inconsistent LangVersion across projects: ${!lang_versions[@]}"
-          fi
-          
-          if [ ${#nullable_settings[@]} -gt 1 ]; then
-            echo "::warning::Inconsistent Nullable settings across projects: ${!nullable_settings[@]}"
-          fi
+          status=0
+          for project in tests/*/*.csproj; do
+            name=$(basename "$project" .csproj)
+            if [ "$name" = "Osirion.Blazor.E2ETests" ]; then continue; fi
+            dotnet test "$project" --no-build --configuration Release \
+              --settings coverlet.runsettings \
+              --collect:"XPlat Code Coverage" \
+              --results-directory "./coverage/$name" \
+              --logger "trx;LogFileName=$name.trx" || status=1
+          done
+          exit $status
+
+      - name: Upload test results
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-results
+          path: ./coverage/**/*.trx
+          retention-days: 7
+
+      - name: Merge coverage reports
+        uses: danielpalme/ReportGenerator-GitHub-Action@5.5.11
+        with:
+          reports: './coverage/**/coverage.cobertura.xml'
+          targetdir: 'coveragereport'
+          reporttypes: 'HtmlInline;Cobertura;MarkdownSummaryGithub'
+          title: 'Osirion.Blazor Coverage Report'
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-report
+          path: coveragereport
+          retention-days: 30
+
+      - name: Publish coverage summary
+        run: cat coveragereport/SummaryGithub.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload to Codecov
+        uses: codecov/codecov-action@v7
+        with:
+          files: ./coveragereport/Cobertura.xml
+          disable_search: true
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: false
+          verbose: true
+
+      # Fails the build when a method exceeds CRAP 30 or a package has more offenders than the last snapshot.
+      - name: CRAP gate
+        shell: pwsh
+        run: |
+          ./tools/run-crap.ps1 -CoverageDirectory ./coverage -SkipTests
+          ./tools/verify-crap.ps1 -MaxCrap 30
+
+      - name: Upload CRAP reports
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: crap-reports
+          path: docs/crap/*.json
+          retention-days: 30
+
+      - name: Comment coverage on the pull request
+        # Posted even when the CRAP gate fails, so the coverage numbers are visible on a red pull request.
+        # A pull request from a fork gets a read-only token, so it is skipped there.
+        if: ${{ !cancelled() && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && hashFiles('coveragereport/SummaryGithub.md') != '' }}
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: test-coverage
+          path: coveragereport/SummaryGithub.md
+
+  docs:
+    name: Component docs
+    # The checker builds Windows paths.
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Every component has a page
+        shell: pwsh
+        run: |
+          ./tools/check_component_docs.ps1
+          $report = './tools/missing_component_docs.json'
+          if (-not (Test-Path $report)) { Write-Error "Missing report file"; exit 1 }
+          $items = Get-Content $report -Raw | ConvertFrom-Json
+          $missing = $items | Where-Object { $_.Component -notlike '_*' }
+          if ($missing.Count -gt 0) {
+            Write-Host "Components without a page under docs/components:"; $missing | Format-Table -AutoSize
+            exit 1
+          }
+          Write-Host "All components documented"
