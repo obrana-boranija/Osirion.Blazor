@@ -13,19 +13,19 @@ public partial class InfiniteLogoCarousel : OsirionComponentBase
     /// </summary>
     [Parameter]
     public string? Title { get; set; }
-    
+
     /// <summary>
     /// Section aria-label for accessibility
     /// </summary>
     [Parameter]
     public string SectionTitle { get; set; } = "Our Clients";
-    
+
     /// <summary>
     /// Auto-scroll interval in seconds when <see cref="EnableAutoScroll"/> is enabled.
     /// </summary>
     [Parameter]
     public int AnimationDuration { get; set; } = 60;
-    
+
     /// <summary>
     /// Custom list of client logos. If not provided, uses default logos.
     /// </summary>
@@ -87,7 +87,7 @@ public partial class InfiniteLogoCarousel : OsirionComponentBase
     public int? MaxVisibleLogos { get; set; }
 
     private IReadOnlyList<LogoItem> LogoList => CustomLogos ?? GetDefaultLogos();
-    private IReadOnlyList<LogoItem> VisibleLogos 
+    private IReadOnlyList<LogoItem> VisibleLogos
     {
         get
         {
@@ -105,7 +105,7 @@ public partial class InfiniteLogoCarousel : OsirionComponentBase
     private string GetCarouselClass()
     {
         var cssClass = "osirion-infinite-carousel";
-        
+
         if (PauseOnHover)
             cssClass += " osirion-infinite-carousel-pausable";
 
@@ -149,7 +149,7 @@ public partial class InfiniteLogoCarousel : OsirionComponentBase
     private string GetLogoClass(LogoItem logoItem)
     {
         var baseClass = "osirion-logo-item";
-        
+
         // Add grayscale class if enabled globally and not disabled for this specific logo
         var logoGrayscale = logoItem.EnableGrayscale ?? EnableGrayscale;
         if (logoGrayscale)
@@ -177,12 +177,12 @@ public partial class InfiniteLogoCarousel : OsirionComponentBase
         {
             attributes["href"] = logo.Url;
             attributes["target"] = logo.Target ?? "_blank";
-            
+
             // Default to nofollow and noopener for external links
             var relValues = new List<string>();
             if (logo.NoFollow ?? true) relValues.Add("nofollow");
             if (logo.NoOpener ?? true) relValues.Add("noopener");
-            
+
             if (relValues.Any())
                 attributes["rel"] = string.Join(" ", relValues);
 
@@ -209,8 +209,8 @@ public partial class InfiniteLogoCarousel : OsirionComponentBase
                 Url: "https://hexavera.com"),
                 
             // Single logo examples
-            new("https://placehold.co/200x80/28a745/ffffff?text=Company+B", 
-                "Company B - Software Development", 
+            new("https://placehold.co/200x80/28a745/ffffff?text=Company+B",
+                "Company B - Software Development",
                 Url: "https://example.com/company-b"),
 
             new("https://cdn.tridesetri.com/hexavera-storage/hexavera-inline-logo-light-transparent.png",
@@ -220,20 +220,20 @@ public partial class InfiniteLogoCarousel : OsirionComponentBase
                 Url: "https://hexavera.com"),
                 
             // Logo without grayscale
-            new("https://placehold.co/200x80/ffc107/000000?text=No+Grayscale", 
-                "Company D - Always Colorful", 
+            new("https://placehold.co/200x80/ffc107/000000?text=No+Grayscale",
+                "Company D - Always Colorful",
                 Url: "https://example.com/company-d",
                 EnableGrayscale: false),
                 
             // Another dual logo example
-            new("https://placehold.co/200x80/007bff/ffffff?text=DUAL+LIGHT", 
-                "Another Dual Logo", 
+            new("https://placehold.co/200x80/007bff/ffffff?text=DUAL+LIGHT",
+                "Another Dual Logo",
                 LightImageUrl: "https://placehold.co/200x80/007bff/ffffff?text=DUAL+LIGHT",
                 DarkImageUrl: "https://placehold.co/200x80/6c757d/ffffff?text=DUAL+DARK",
                 Url: "https://example.com/another-dual"),
-                
-            new("https://placehold.co/200x80/fd7e14/ffffff?text=Company+F", 
-                "Company F - Strategic Alliance", 
+
+            new("https://placehold.co/200x80/fd7e14/ffffff?text=Company+F",
+                "Company F - Strategic Alliance",
                 Url: "https://example.com/company-f")
         };
     }
@@ -254,13 +254,13 @@ public enum AnimationDirection
 /// Represents a logo item with URL and accessibility text
 /// </summary>
 public record LogoItem(
-    string ImageUrl, 
-    string AltText, 
+    string ImageUrl,
+    string AltText,
     string? LightImageUrl = null,
     string? DarkImageUrl = null,
-    string? Url = null, 
-    string? Target = null, 
-    bool? NoFollow = null, 
+    string? Url = null,
+    string? Target = null,
+    bool? NoFollow = null,
     bool? NoOpener = null,
     bool? EnableGrayscale = null)
 {

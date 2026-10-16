@@ -2,7 +2,8 @@ using Microsoft.AspNetCore.Components;
 using Osirion.Blazor.Cms.Admin.Features.Layouts.Models;
 
 namespace Osirion.Blazor.Cms.Admin.Components.Layouts;
-    /// <summary>Displays the title and optional navigation content for an admin page.</summary>
+
+/// <summary>Displays the title and optional navigation content for an admin page.</summary>
 public partial class Header
 {
     /// <summary>Gets or sets the page title shown in the header.</summary>

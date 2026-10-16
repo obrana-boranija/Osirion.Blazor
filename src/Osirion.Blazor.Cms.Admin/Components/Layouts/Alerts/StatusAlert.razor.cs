@@ -37,13 +37,13 @@ public partial class StatusAlert
     /// <summary>Defines the public member API contract.</summary>
     public enum AlertType
     {
-    /// <summary>Performs the public member operation.</summary>
+        /// <summary>Performs the public member operation.</summary>
         Success,
-    /// <summary>Performs the public member operation.</summary>
+        /// <summary>Performs the public member operation.</summary>
         Error,
-    /// <summary>Performs the public member operation.</summary>
+        /// <summary>Performs the public member operation.</summary>
         Warning,
-    /// <summary>Performs the public member operation.</summary>
+        /// <summary>Performs the public member operation.</summary>
         Info
     }
 }

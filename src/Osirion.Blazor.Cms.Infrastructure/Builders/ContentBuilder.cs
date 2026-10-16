@@ -35,7 +35,8 @@ public class ContentBuilder : CmsBuilderBase, IContentBuilder
         // Configure GitHub options
         if (configure is not null)
         {
-            Services.Configure<GitHubOptions>(options => {
+            Services.Configure<GitHubOptions>(options =>
+            {
                 // First apply configuration from appsettings
                 Configuration.GetSection(GitHubOptions.Section).Bind(options);
 
@@ -75,7 +76,8 @@ public class ContentBuilder : CmsBuilderBase, IContentBuilder
         // Configure FileSystem options
         if (configure is not null)
         {
-            Services.Configure<FileSystemOptions>(options => {
+            Services.Configure<FileSystemOptions>(options =>
+            {
                 // First apply configuration from appsettings
                 FileSystemConfiguration.GetSection(Configuration).Bind(options);
 
@@ -118,7 +120,8 @@ public class ContentBuilder : CmsBuilderBase, IContentBuilder
         Services.AddSingleton<TProvider>();
 
         // Register as IContentProvider
-        Services.AddSingleton<IContentProvider>(sp => {
+        Services.AddSingleton<IContentProvider>(sp =>
+        {
             var provider = sp.GetRequiredService<TProvider>();
 
             // Apply configuration if provided

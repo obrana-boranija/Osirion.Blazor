@@ -33,7 +33,7 @@ public class TagInputTests : AdminComponentTestContext
     {
         SetRendererInfo(new RendererInfo("Static", false));
 
-                var empty = Render<TagInput>(parameters => parameters.Add(p => p.Placeholder, "Add one"));
+        var empty = Render<TagInput>(parameters => parameters.Add(p => p.Placeholder, "Add one"));
         var filled = Render<TagInput>(parameters => parameters.Add(p => p.Tags, ["a", "b"]));
 
         empty.Find("input.tag-input").GetAttribute("placeholder").ShouldBe("Add one");

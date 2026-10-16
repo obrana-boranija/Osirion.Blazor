@@ -1,193 +1,62 @@
 ﻿name: Prepare Release
 
+# Opens the pull request release/<version>: the version in every package under src, and the Unreleased notes in
+# CHANGELOG.md moved under a new version heading. After the merge, push the tag v<version> to publish.
+#
+# The pull request is opened with PAT_TOKEN rather than the workflow token, because GitHub does not run workflows
+# for pull requests that the workflow token opens, and the release pull request needs CI.
+
 on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version number (e.g., 2.0.3)'
+        description: 'Version number (e.g., 4.1.0 or 4.1.0-beta.1)'
         required: true
         type: string
-      pre_release:
-        description: 'Is this a pre-release?'
-        required: false
-        type: boolean
-        default: false
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
 
 jobs:
   prepare_release:
     runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ inputs.version }}
     steps:
-      - uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
+      - uses: actions/checkout@v7
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v5
-        with:
-          dotnet-version: |
-            9.0.x
-            10.0.x
-
-      - name: Validate version format
+      - name: Check the version
         run: |
-          # Validate semantic versioning format
-          if ! [[ ${{ github.event.inputs.version }} =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.]+)?$ ]]; then
-            echo "Error: Version must follow semantic versioning format (e.g., 2.0.3 or 2.0.3-beta.1)"
+          if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$ ]]; then
+            echo "::error::'$VERSION' is not a semantic version"
+            exit 1
+          fi
+          if grep -q "^## \[$VERSION\]" CHANGELOG.md; then
+            echo "::error file=CHANGELOG.md::CHANGELOG.md already has a section for $VERSION"
             exit 1
           fi
 
-      - name: Update version in project files
+      - name: Set the version and date the changelog
         run: |
-          # Track if any files were changed
-          changed=0
-
-          # List of projects to update
-          projects=(
-            "src/Osirion.Blazor.Core/Osirion.Blazor.Core.csproj"
-            "src/Osirion.Blazor.Analytics/Osirion.Blazor.Analytics.csproj"
-            "src/Osirion.Blazor.Navigation/Osirion.Blazor.Navigation.csproj"
-            "src/Osirion.Blazor.Cms/Osirion.Blazor.Cms.csproj"
-            "src/Osirion.Blazor.Cms.Core/Osirion.Blazor.Cms.Core.csproj"
-            "src/Osirion.Blazor.Cms.Domain/Osirion.Blazor.Cms.Domain.csproj"
-            "src/Osirion.Blazor.Cms.Infrastructure/Osirion.Blazor.Cms.Infrastructure.csproj"
-            "src/Osirion.Blazor.Cms.Application/Osirion.Blazor.Cms.Application.csproj"
-            "src/Osirion.Blazor.Cms.Admin/Osirion.Blazor.Cms.Admin.csproj"
-            "src/Osirion.Blazor.Cms.Web/Osirion.Blazor.Cms.Web.csproj"
-            "src/Osirion.Blazor.Theming/Osirion.Blazor.Theming.csproj"
-            "src/Osirion.Blazor/Osirion.Blazor.csproj"
-          )
-
-          # Update version in the specified projects
-          for file in "${projects[@]}"; do
-            if [ -f "$file" ]; then
-              # Use grep to check the current version
-              current_version=$(grep -oP '(?<=<Version>).*?(?=</Version>)' "$file")
-              
-              if [ "$current_version" != "${{ github.event.inputs.version }}" ]; then
-                sed -i "s/<Version>.*<\/Version>/<Version>${{ github.event.inputs.version }}<\/Version>/" "$file"
-                echo "Updated version in $file from $current_version to ${{ github.event.inputs.version }}"
-                changed=$((changed + 1))
-              else
-                echo "Version in $file is already set to ${{ github.event.inputs.version }}"
-              fi
-            else
-              echo "Warning: File $file does not exist"
-            fi
+          for project in src/*/*.csproj; do
+            sed -i "s|<Version>[^<]*</Version>|<Version>$VERSION</Version>|" "$project"
           done
+          sed -i "0,/^## \[Unreleased\]/s//## [Unreleased]\n\n## [$VERSION] - $(date -u +%Y-%m-%d)/" CHANGELOG.md
+          git diff --stat
 
-          # Update CHANGELOG.md
-          TODAY=$(date +%Y-%m-%d)
-          
-          # Check if there's already an entry for this version
-          if grep -q "## \[${{ github.event.inputs.version }}\]" CHANGELOG.md; then
-            echo "CHANGELOG.md already has an entry for version ${{ github.event.inputs.version }}"
-          else
-            # Add pre-release indicator if needed
-            VERSION_HEADER="${{ github.event.inputs.version }}"
-            if [ "${{ github.event.inputs.pre_release }}" = "true" ]; then
-              VERSION_HEADER="${VERSION_HEADER} (Pre-release)"
-            fi
-            
-            sed -i "0,/## \[Unreleased\]/s/## \[Unreleased\]/## [Unreleased]\n\n## [$VERSION_HEADER] - $TODAY/" CHANGELOG.md
-            echo "Updated CHANGELOG.md with new version $VERSION_HEADER"
-            changed=$((changed + 1))
-          fi
-
-          # Exit with an error if no changes were made
-          if [ $changed -eq 0 ]; then
-            echo "No changes were detected. Ensure the version is different from the current one."
-            exit 1
-          fi
-
-      - name: Check for Release Notes
-        id: check_notes
-        run: |
-          # Extract release notes from CHANGELOG.md
-          RELEASE_NOTES=$(awk "/## \[${{ github.event.inputs.version }}/{flag=1; next} /## \[/{flag=0} flag" CHANGELOG.md)
-          RELEASE_NOTES="${RELEASE_NOTES#"${RELEASE_NOTES%%[![:space:]]*}"}"  # trim leading whitespace
-          
-          if [ -z "$RELEASE_NOTES" ]; then
-            echo "release_notes_exist=false" >> $GITHUB_OUTPUT
-            echo "WARNING: No release notes found for version ${{ github.event.inputs.version }} in CHANGELOG.md"
-            echo "Please add release notes before merging the PR."
-          else
-            echo "release_notes_exist=true" >> $GITHUB_OUTPUT
-            echo "Found release notes for version ${{ github.event.inputs.version }}"
-          fi
-          
-          # Save release notes to a file for later use
-          echo "$RELEASE_NOTES" > release_notes.txt
-
-      - name: Ensure Labels Exist
-        env:
-          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
-        run: |
-          # Install GitHub CLI if not already installed
-          if ! command -v gh &> /dev/null; then
-            echo "Installing GitHub CLI..."
-            curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
-            echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
-            sudo apt update
-            sudo apt install gh
-          fi
-          
-          # Function to create label if it doesn't exist
-          create_label_if_not_exists() {
-            local label_name="$1"
-            local color="$2"
-            local description="$3"
-            
-            # Check if label exists
-            if gh label list | grep -q "$label_name"; then
-              echo "Label '$label_name' already exists"
-            else
-              echo "Creating label '$label_name'"
-              gh label create "$label_name" --color "$color" --description "$description" || echo "Failed to create label, may already exist"
-            fi
-          }
-          
-          # Create required labels
-          create_label_if_not_exists "release" "f29513" "Release related changes"
-          create_label_if_not_exists "automated pr" "0e8a16" "PR created by automation"
-          
-          if [ "${{ github.event.inputs.pre_release }}" = "true" ]; then
-            create_label_if_not_exists "pre-release" "fbca04" "Pre-release version"
-          fi
-
-      - name: Create Pull Request
-        id: create_pr
-        uses: peter-evans/create-pull-request@v5
+      - name: Open the pull request
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
         with:
           token: ${{ secrets.PAT_TOKEN }}
-          commit-message: "Prepare release ${{ github.event.inputs.version }}"
-          branch: "release/${{ github.event.inputs.version }}"
+          commit-message: "chore(release): ${{ inputs.version }}"
+          branch: "release/${{ inputs.version }}"
           delete-branch: true
-          title: "Release ${{ github.event.inputs.version }}"
+          title: "chore(release): ${{ inputs.version }}"
           body: |
-            # Automated PR to prepare release ${{ github.event.inputs.version }}
-            
-            ## Changes
-            - Updated version numbers to ${{ github.event.inputs.version }} across all project files
-            - Updated CHANGELOG.md with new version entry
-            
-            ## Pre-merge Checklist
-            - [ ] Ensure release notes are added to CHANGELOG.md
-            - [ ] Verify all tests pass
-            - [ ] Review version numbers in all projects
-            
-            ## Post-merge Actions
-            Once this PR is merged, a GitHub release and NuGet packages will be created automatically.
-            
-            ${{ steps.check_notes.outputs.release_notes_exist == 'false' && '⚠️ **WARNING: No release notes found in CHANGELOG.md!** Please add release notes before merging.' || '' }}
-          labels: |
-            release
-            automated pr
-            ${{ github.event.inputs.pre_release == 'true' && 'pre-release' || '' }}
+            Sets every package under `src` to ${{ inputs.version }} and moves the Unreleased notes in CHANGELOG.md under
+            `## [${{ inputs.version }}]`.
 
-      - name: PR Summary
-        run: |
-          echo "::notice::Created PR #${{ steps.create_pr.outputs.pull-request-number }} for release ${{ github.event.inputs.version }}"
+            Before merging, read the notes: they become the GitHub release text.
+
+            After merging, push the tag `v${{ inputs.version }}` on the merge commit. That starts "Publish to NuGet",
+            which checks the version again, runs the tests, publishes the packages and creates the release.

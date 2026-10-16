@@ -325,14 +325,14 @@ public partial class OsirionSubscriptionCard : OsirionComponentBase
 
     private void ProcessCategorySelections()
     {
-        if(!ShowSubscriptionCategories)
+        if (!ShowSubscriptionCategories)
         {
             return;
         }
 
         // In Static SSR, process the selected categories from the form submission
         FormModel.SubscriptionCategories.Clear();
-        
+
         // Add categories from checkbox selections (both dropdown and inline versions use same name)
         if (SelectedCategoryIds is not null)
         {
@@ -344,7 +344,7 @@ public partial class OsirionSubscriptionCard : OsirionComponentBase
                 }
             }
         }
-        
+
         // Always ensure required categories are included
         if (SubscriptionCategories is not null)
         {

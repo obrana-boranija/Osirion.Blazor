@@ -1,6 +1,6 @@
 namespace Osirion.Blazor.Cms.Application.Commands;
 
-    /// <summary>Defines the public member API contract.</summary>
+/// <summary>Defines the public member API contract.</summary>
 public class SaveContentResult
 {
     /// <summary>Gets or sets the IsSuccess value.</summary>

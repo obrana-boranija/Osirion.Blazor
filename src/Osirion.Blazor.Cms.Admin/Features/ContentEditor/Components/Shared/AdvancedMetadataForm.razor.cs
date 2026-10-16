@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace Osirion.Blazor.Cms.Admin.Features.ContentEditor.Components.Shared;
 
-    /// <summary>Defines the public member type.</summary>
+/// <summary>Defines the public member type.</summary>
 public partial class AdvancedMetadataForm
 {
     /// <summary>Performs the Metadata operation.</summary>

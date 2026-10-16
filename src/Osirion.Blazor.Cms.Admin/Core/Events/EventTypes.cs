@@ -72,14 +72,14 @@ public record ErrorOccurredEvent(string Message, Exception? Exception = null) : 
 /// <summary>Identifies the severity of a CMS status notification.</summary>
 public enum StatusType
 {
-	/// <summary>Informational notification.</summary>
-	Info,
-	/// <summary>Successful operation notification.</summary>
-	Success,
-	/// <summary>Warning notification.</summary>
-	Warning,
-	/// <summary>Error notification.</summary>
-	Error
+    /// <summary>Informational notification.</summary>
+    Info,
+    /// <summary>Successful operation notification.</summary>
+    Success,
+    /// <summary>Warning notification.</summary>
+    Warning,
+    /// <summary>Error notification.</summary>
+    Error
 }
 
 /// <summary>

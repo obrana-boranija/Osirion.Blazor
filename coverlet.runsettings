@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   Coverage settings for the XPlat code coverage collector (coverlet.collector), passed explicitly
-  together with the collector so that plain test runs stay fast. Used by .github/workflows/coverage.yml
+  together with the collector so that plain test runs stay fast. Used by the coverage job of .github/workflows/ci.yml
   and tools/run-crap.ps1; CONTRIBUTING.md shows the dotnet test command line.
 -->
 <RunSettings>

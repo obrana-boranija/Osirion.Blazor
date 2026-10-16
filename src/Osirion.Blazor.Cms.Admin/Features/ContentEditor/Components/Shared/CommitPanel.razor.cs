@@ -3,7 +3,7 @@ using Osirion.Blazor.Cms.Admin.Shared.Components;
 
 namespace Osirion.Blazor.Cms.Admin.Features.ContentEditor.Components.Shared;
 
-    /// <summary>Defines the public member type.</summary>
+/// <summary>Defines the public member type.</summary>
 public partial class CommitPanel : BaseComponent
 {
     /// <summary>Gets or sets the Title value.</summary>

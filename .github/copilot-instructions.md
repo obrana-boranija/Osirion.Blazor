@@ -138,7 +138,7 @@ The CMS follows DDD patterns:
 - **bUnit**: Blazor component testing
 - **Shouldly**: Fluent assertions
 - **NSubstitute**: Mocking and substitutes
-- **E2E Tests**: Playwright (see `tests/Osirion.Blazor.E2ETests/`, run via `e2e.yml`)
+- **E2E Tests**: Playwright (see `tests/Osirion.Blazor.E2ETests/`); every test is skipped until the suite is fixed, and CI does not run it
 - **Base Class**: Component tests inherit from `OsirionComponentTestBase` which configures `ThemingOptions` and JSInterop
 
 ### Test Organization
@@ -175,8 +175,11 @@ found) through `examples/Osirion.Blazor.Examples.Shared`. A site keeps only what
 `MainLayout`, `Routes` and the pages written with the framework's own components. Change shared parts once, there.
 
 ### CI/CD
-- **.github/workflows/build.yml**: Runs on push to `master`, executes `dotnet build` and `dotnet test`
-- **e2e.yml** (repository root, not run by GitHub Actions): Playwright tests, installs Chromium dependencies on Ubuntu
+- **.github/workflows/ci.yml**: every pull request and push to `master`: format check, tests on Windows and macOS, tests with coverage, Codecov upload and the CRAP gate on Linux, and the component docs check
+- **.github/workflows/codeql-analysis.yml**: CodeQL for C#, also weekly
+- **.github/workflows/prepare-release.yml** and **verify-versions.yml**: open and check the `release/<version>` pull request
+- **.github/workflows/nuget-publish.yml**: on a `v<version>` tag, tests, packs and publishes every package with NuGet trusted publishing, then creates the GitHub release
+- SonarCloud analyzes `master` and pull requests on its own (automatic analysis), outside GitHub Actions
 - Workflows install the .NET 9 and .NET 10 SDKs; `global.json` pins the .NET 10 SDK
 
 ### CSS Build Process

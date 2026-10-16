@@ -32,7 +32,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.Tests.Decorators
                 Arg.Any<Func<CancellationToken, Task<ContentItem>>>())!
                 .Returns(callInfo =>
                 {
-                    var factory = callInfo.Arg<Func<CancellationToken, Task<ContentItem>>>(); 
+                    var factory = callInfo.Arg<Func<CancellationToken, Task<ContentItem>>>();
                     return factory(CancellationToken.None);
                 });
 

@@ -4,7 +4,7 @@ using Osirion.Blazor.Cms.Domain.Services;
 
 namespace Osirion.Blazor.Examples.Shared.Pages;
 
-public partial class Home(IContentProviderManager contentProviderManager) 
+public partial class Home(IContentProviderManager contentProviderManager)
 {
     [Parameter]
     public string? Locale { get; set; } = "en";
