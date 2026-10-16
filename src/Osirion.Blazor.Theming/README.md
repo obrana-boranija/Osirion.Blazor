@@ -9,6 +9,8 @@ Theming and styling system for Blazor applications with CSS framework integratio
 
 - **CSS Framework Integration**: Seamless integration with Bootstrap, FluentUI, MudBlazor, and Radzen
 - **Dark Mode Support**: Built-in light/dark theme toggle with system preference detection
+- **Palettes**: Osirion, Commit, Editor, Studio, Studio Blue and Contrast, each with a light and a dark variant that
+  meets WCAG 2.2 AA (Contrast: AAA), applied before the first paint; code highlighting follows the palette
 - **CSS Variables**: Consistent theming across components
 - **SSR Compatible**: Works with Server-Side Rendering and Static SSG
 - **Minimal JavaScript**: Progressive enhancement for interactive features

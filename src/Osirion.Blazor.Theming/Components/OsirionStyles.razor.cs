@@ -29,7 +29,9 @@ namespace Osirion.Blazor.Theming.Components
                     Framework = Framework ?? options.Framework,
                     DefaultMode = Mode ?? options.DefaultMode,
                     EnableDarkMode = options.EnableDarkMode,
-                    FollowSystemPreference = options.FollowSystemPreference
+                    FollowSystemPreference = options.FollowSystemPreference,
+                    DefaultPalette = options.DefaultPalette,
+                    AllowPaletteSelection = options.AllowPaletteSelection
                 };
             }
         }
@@ -43,6 +45,12 @@ namespace Osirion.Blazor.Theming.Components
             CssFramework.None => string.Empty,
             _ => string.Empty
         };
+
+        private const string PaletteStylesheet = "_content/Osirion.Blazor.Theming/css/palettes.min.css";
+
+        // Linked whenever a palette may be in use, so it is painted with the first frame, not after a script loads it.
+        private bool LinksPalettes =>
+            EffectiveOptions.AllowPaletteSelection || ThemeService.CurrentPalette != ThemePalette.Framework;
 
         private string GeneratedVariables => ThemeService.GenerateThemeVariables();
         private string GetFrameworkClass => ThemeService.GetFrameworkClass();

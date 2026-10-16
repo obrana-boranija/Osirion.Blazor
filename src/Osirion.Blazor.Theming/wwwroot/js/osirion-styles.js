@@ -3,6 +3,8 @@
   'use strict';
 
   const GLOBAL_KEY = '__osirionStyles__';
+  // The ids of ThemePalette; 'framework' means no palette attribute.
+  const PALETTES = ['framework', 'osirion', 'commit', 'editor', 'studio', 'studio-blue', 'contrast'];
 
   function ensureState(){
     if(!window[GLOBAL_KEY]){
@@ -12,7 +14,8 @@
           frameworkClass: '', 
           selectedFramework: 'Bootstrap', 
           defaultTheme: 'system', 
-          currentTheme: 'system' 
+          currentTheme: 'system',
+          defaultPalette: 'framework'
         },
         lastAppliedTheme: null,
         observer: null,
@@ -73,6 +76,25 @@
     return normalizeTheme(defaultTheme, defaultTheme);
   }
 
+  function resolvePalette(state){
+    const chosen = (readCookie('osirion-preferred-palette') || '').toLowerCase();
+    if(PALETTES.indexOf(chosen) >= 0){
+      return chosen;
+    }
+    return PALETTES.indexOf(state.config.defaultPalette) >= 0 ? state.config.defaultPalette : 'framework';
+  }
+
+  function applyPalette(state){
+    const html = document.documentElement;
+    if (!html) return;
+    const palette = resolvePalette(state);
+    if(palette === 'framework'){
+      html.removeAttribute('data-osirion-palette');
+    } else if(html.getAttribute('data-osirion-palette') !== palette){
+      html.setAttribute('data-osirion-palette', palette);
+    }
+  }
+
   function applyTheme(state, theme){
     const html = document.documentElement;
     if (!html) return;
@@ -82,6 +104,7 @@
 
     html.setAttribute('data-osirion-theme', normalizedTheme);
     html.setAttribute('data-osirion-framework', state.config.selectedFramework);
+    applyPalette(state);
 
     const frameworkClass = state.config.frameworkClass;
     if(frameworkClass && !html.classList.contains(frameworkClass)){
@@ -182,6 +205,12 @@
                 break;
               }
             }
+            // Enhanced navigation copies the server's <html> attributes, which do not include the palette
+            if(mutation.attributeName === 'data-osirion-palette'
+              && (html.getAttribute('data-osirion-palette') || 'framework') !== resolvePalette(state)){
+              needsReapply = true;
+              break;
+            }
             if(mutation.attributeName === 'data-bs-theme' && state.config.selectedFramework === 'Bootstrap'){
               const value = html.getAttribute(mutation.attributeName);
               if(!value){
@@ -199,7 +228,7 @@
       
       state.observer.observe(document.documentElement, { 
         attributes: true, 
-        attributeFilter: ['data-osirion-theme', 'data-bs-theme', 'class']
+        attributeFilter: ['data-osirion-theme', 'data-osirion-palette', 'data-bs-theme', 'class']
       });
     }
   }
@@ -212,6 +241,7 @@
     state.config.selectedFramework = config.selectedFramework || state.config.selectedFramework;
     state.config.defaultTheme = config.defaultTheme || state.config.defaultTheme;
     state.config.currentTheme = config.currentTheme || state.config.currentTheme;
+    state.config.defaultPalette = config.defaultPalette || state.config.defaultPalette;
     state.configReceived = true;
 
     if(!state.initialized){

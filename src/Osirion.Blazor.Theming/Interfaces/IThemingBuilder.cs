@@ -47,4 +47,17 @@ public interface IThemingBuilder
     /// <param name="variables">The custom CSS variables</param>
     /// <returns>The builder for chaining</returns>
     IThemingBuilder WithCustomVariables(string variables);
+
+    /// <summary>
+    /// Sets the palette visitors see until they pick another one (<see cref="ThemingOptions.DefaultPalette"/>).
+    /// </summary>
+    /// <param name="palette">The palette; <see cref="ThemePalette.Framework"/> applies none</param>
+    /// <returns>The builder for chaining</returns>
+    IThemingBuilder UsePalette(ThemePalette palette) => Configure(options => options.DefaultPalette = palette);
+
+    /// <summary>
+    /// Lets visitors pick a palette with <c>ThemePicker</c> (<see cref="ThemingOptions.AllowPaletteSelection"/>).
+    /// </summary>
+    /// <returns>The builder for chaining</returns>
+    IThemingBuilder AllowPaletteSelection() => Configure(options => options.AllowPaletteSelection = true);
 }

@@ -23,6 +23,7 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\..\src\Osirion.Blazor.Theming\Osirion.Blazor.Theming.csproj" />
+	  <ProjectReference Include="..\..\tools\Osirion.Blazor.Palettes\Osirion.Blazor.Palettes.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
