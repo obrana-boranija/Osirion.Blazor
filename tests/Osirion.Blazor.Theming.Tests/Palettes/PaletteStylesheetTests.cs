@@ -100,6 +100,7 @@ public class PaletteStylesheetTests
         var scripts = new[]
         {
             File.ReadAllText(RepositoryFiles.Theming("wwwroot", "js", "osirion-styles.js")),
+            File.ReadAllText(RepositoryFiles.Theming("wwwroot", "js", "theme-picker.js")),
             File.ReadAllText(RepositoryFiles.Theming("Components", "OsirionStyles.razor")),
         };
 

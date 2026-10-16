@@ -59,6 +59,7 @@ Fluent UI, MudBlazor or Radzen, and lets visitors switch between the themes. It 
 
 On top of the mode, a [palette](/docs/components/theming/palettes) can set the colours: Osirion, Commit, Editor,
 Studio, Studio Blue or Contrast, each with a light and a dark variant.
+[`ThemePicker`](/docs/components/theming/theme-picker) lets visitors choose one.
 
 Neither needs an interactive render mode. Both load a small script, so the theme switch needs JavaScript.
 
@@ -189,5 +190,6 @@ also sets `--osirion-font-family-base` from the framework's font, so with an ada
 - [OsirionStyles](/docs/components/theming/osirion-styles)
 - [ThemeToggle](/docs/components/theming/theme-toggle)
 - [Palettes](/docs/components/theming/palettes)
+- [ThemePicker](/docs/components/theming/theme-picker)
 - [Navigation](/docs/components/navigation): place the toggle in a `Menu`.
 - [Osirion.Blazor.Theming on NuGet](https://www.nuget.org/packages/Osirion.Blazor.Theming)
