@@ -11,3 +11,13 @@
   white-space: nowrap !important;
   border: 0 !important;
 }
+
+/* Osirion's components are laid out for border-box sizing, which CSS frameworks set on every element. A site without
+   one (Framework None) kept content-box, so full-width elements with padding (the footer, the menu, buttons on small
+   screens) grew wider than their container and scrolled the page sideways. This sets it on Osirion's own elements
+   only; the host's elements keep whatever the host chose. */
+[class*="osirion-"],
+[class*="osirion-"]::before,
+[class*="osirion-"]::after {
+  box-sizing: border-box;
+}

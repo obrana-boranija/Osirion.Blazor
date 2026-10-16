@@ -44,7 +44,7 @@
     }
     else
     {
-        <OsirionContentListSection Items="ContentItems" Layout="grid" PostCount="ItemsPerPage" Columns="3" PostUrlFormatter="ContentUrlFormatter" />
+        <OsirionContentListSection Items="ContentItems" Layout="grid" PostCount="ItemsPerPage" Columns="3" PostUrlFormatter="ContentUrlFormatter" ItemTemplate="ItemTemplate" />
 
 
         @if (ShowPagination && TotalPages > 1)

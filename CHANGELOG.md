@@ -12,6 +12,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Osirion.Blazor.Cms.Web: `ItemTemplate` on `ContentList`, `ContentListPage` and `OsirionContentListSection` renders each item through the host's markup, in an `ol.osirion-content-index`, instead of the built-in cards. Paging, the page `h1`, feeds and structured data are unchanged
+- Osirion.Blazor.Cms.Web: `ArticlePage.HeaderContent` replaces the hero with the host's article header
+- Osirion.Blazor: `Osirion:Site:Copyright` and `Osirion:Site:SocialTitle` reach the footer `OsirionSiteLayout` renders
+
+### Fixed
+- Osirion.Blazor.Core: Osirion's own elements use border-box sizing. Without a CSS framework (`Framework: None`) they kept content-box, so the footer, the menu and full-width buttons were wider than their container and the page scrolled sideways
+- Osirion.Blazor.Core: the skip link's address is relative to the document's base instead of absolute, so a page rendered on one host (a static export) works on another; with script running it moves focus to `main` without following the link
+- Osirion.Blazor.Theming: `OsirionStyles` no longer links `Osirion.Blazor.Core.bundle.scp.css`, which the host's `{App}.styles.css` already imports; every page downloaded it (about 250 KB) twice
+- Osirion.Blazor.Core: `OsirionFooter`'s default copyright line no longer uses an em dash
+
 ## [4.0.0] - 2026-10-11
 
 ### Security

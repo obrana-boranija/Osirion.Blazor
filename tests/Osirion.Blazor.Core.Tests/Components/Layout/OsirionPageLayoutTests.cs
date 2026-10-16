@@ -30,8 +30,20 @@ public class OsirionPageLayoutTests : OsirionComponentTestBase
         var main = cut.Find("main");
         main.Id.ShouldBe("osirion-main-content");
         main.GetAttribute("tabindex").ShouldBe("-1");
-        // The site sets <base href="/">, so a bare "#id" would resolve to the home page: keep the current address.
-        link.GetAttribute("href").ShouldBe("http://localhost/blog/post?page=2#osirion-main-content");
+        // The site sets <base href="/">, so a bare "#id" would resolve to the home page: keep the current page, written
+        // relative to the base so that HTML exported from one host still works on another.
+        link.GetAttribute("href").ShouldBe("blog/post?page=2#osirion-main-content");
+    }
+
+    // Fails before the fix: the address was absolute, so a static export carried the build host into every page.
+    [Fact]
+    public void OsirionPageLayout_HomePage_PointsAtMainWithoutTheHost()
+    {
+        Services.GetRequiredService<BunitNavigationManager>().NavigateTo("http://localhost/");
+
+        var cut = RenderLayout(_ => { });
+
+        cut.Find("a.osirion-skip-link").GetAttribute("href").ShouldBe("#osirion-main-content");
     }
 
     [Fact]
@@ -41,7 +53,7 @@ public class OsirionPageLayoutTests : OsirionComponentTestBase
 
         var cut = RenderLayout(_ => { });
 
-        cut.Find("a.osirion-skip-link").GetAttribute("href").ShouldBe("http://localhost/docs#osirion-main-content");
+        cut.Find("a.osirion-skip-link").GetAttribute("href").ShouldBe("docs#osirion-main-content");
     }
 
     [Fact]

@@ -25,6 +25,10 @@ Notes
   `<AuthorContent><OsirionAuthorCard Name="@context.Author" /></AuthorContent>`. `CustomFooterContent` (HTML,
   sanitized) follows it. `RelatedContentTitle` names the related section.
 
+- `HeaderContent` (`RenderFragment<ContentItem>`) replaces the hero with the site's own article header, for example a
+  title, a lede and a metadata block. It must render the page's `h1`; an opening `# Title` line in the Markdown is
+  left out of the body, as it is under the hero.
+
 - With `ShowHero` (the default) the hero shows the title as the page's `h1`, so an opening `# Title` line in the
   Markdown is left out of the body. `HomePage` and `LandingPage` do the same while they show their hero, and
   `ContentView`, `DocumentPage` and `LocalizedContentView` (with its header) do it under their own title heading.

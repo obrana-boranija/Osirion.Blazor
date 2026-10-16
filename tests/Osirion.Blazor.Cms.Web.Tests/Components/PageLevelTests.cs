@@ -178,6 +178,22 @@ public class PageLevelTests : CmsWebComponentTestBase
     }
 
     [Fact]
+    public void ArticlePage_HeaderContent_ReplacesTheHeroAndKeepsOneH1()
+    {
+        ReturnFromQuery(TitledArticle());
+
+        var cut = RenderStatic<ArticlePage>(p => p
+            .Add(c => c.ItemSlug, "titled")
+            .Add(c => c.ShowRelatedContent, false)
+            .Add(c => c.HeaderContent, item => builder => builder.AddMarkupContent(0, $"<h1 class=\"custom-title\">{item.Title}</h1>")));
+
+        cut.FindAll(".osirion-hero-section, .osirion-hero").ShouldBeEmpty();
+        cut.Find(".osirion-article-header h1.custom-title").TextContent.ShouldBe("Titled");
+        cut.FindAll("h1").Select(h => h.TextContent.Trim()).ShouldBe(["Titled"]);
+        cut.Find(".osirion-article-main").TextContent.ShouldContain("Body");
+    }
+
+    [Fact]
     public void ArticlePage_WithoutItsHero_KeepsTheContentsTitle()
     {
         ReturnFromQuery(TitledArticle());

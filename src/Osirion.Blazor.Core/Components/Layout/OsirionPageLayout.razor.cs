@@ -73,14 +73,15 @@ public partial class OsirionPageLayout
     private NavigationManager Navigation { get; set; } = default!;
 
     /// <summary>
-    /// Gets the skip link's address: the current page with the main element's fragment. A bare "#id" would resolve
-    /// against the document's base address, which Blazor apps set to "/", and so lead to the home page.
+    /// Gets the skip link's address: the current page, relative to the document's base address, with the main
+    /// element's fragment. A bare "#id" would resolve against the base, which Blazor apps set to "/", and so lead to
+    /// the home page. The address is relative so that HTML rendered on one host (a static export) works on another.
     /// </summary>
     private string SkipLinkHref
     {
         get
         {
-            var current = Navigation.Uri;
+            var current = Navigation.ToBaseRelativePath(Navigation.Uri);
             var fragmentStart = current.IndexOf('#');
             var withoutFragment = fragmentStart < 0 ? current : current[..fragmentStart];
             return $"{withoutFragment}#{MainContentId}";

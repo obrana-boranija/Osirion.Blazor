@@ -79,6 +79,13 @@ public partial class ContentListPage
     public string? WebsiteName { get; set; }
 
     /// <summary>
+    /// Gets or sets the markup of one item, rendered in an ordered list instead of the built-in cards. See
+    /// <see cref="ContentList.ItemTemplate"/>.
+    /// </summary>
+    [Parameter]
+    public RenderFragment<ContentItem>? ItemTemplate { get; set; }
+
+    /// <summary>
     /// Gets or sets the URL of the RSS feed, for example <c>/feed.xml</c> from <c>MapOsirionFeeds</c>. When set, the
     /// page links the feed in its head for feed readers and below the list for people.
     /// </summary>

@@ -30,13 +30,15 @@ export default class extends BlazorJSComponents.Component {
         }, { passive: true });
     }
 
-    // Blazor's enhanced navigation scrolls to a fragment on the same page without moving focus, so the skip link
-    // would leave keyboard focus in the header. Move it to the main element, as the browser does without Blazor.
+    // The link's address is the page as the server saw it, which differs from the browser's address where a page is
+    // served in place of another (a not-found page, a static 404.html). With script running there is no reason to
+    // follow it at all: move focus to the main element, which also scrolls it into view, as the browser would.
     attachSkipLink(refs) {
         if (!refs.skip || !refs.main) return;
 
-        this.setEventListener(refs.skip, 'click', () => {
-            window.requestAnimationFrame(() => refs.main.focus());
+        this.setEventListener(refs.skip, 'click', event => {
+            event.preventDefault();
+            refs.main.focus();
         });
     }
 }

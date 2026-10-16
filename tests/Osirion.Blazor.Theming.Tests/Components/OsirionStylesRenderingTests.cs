@@ -71,11 +71,17 @@ public class OsirionStylesRenderingTests : BunitContext
             .Add(c => c.UseStyles, true)
             .Add(c => c.Framework, CssFramework.Bootstrap));
 
-        Hrefs(cut).ShouldBe(
-        [
-            "_content/Osirion.Blazor.Core/css/index.min.css",
-            "_content/Osirion.Blazor.Core/Osirion.Blazor.Core.bundle.scp.css"
-        ]);
+        Hrefs(cut).ShouldBe(["_content/Osirion.Blazor.Core/css/index.min.css"]);
+    }
+
+    // Fails before the fix: the component linked the Core scoped bundle, which the host's {App}.styles.css already
+    // imports, so every page downloaded it twice.
+    [Fact]
+    public void OsirionStyles_DoesNotLinkTheScopedBundleTheHostAlreadyImports()
+    {
+        var cut = Render<OsirionStyles>();
+
+        Hrefs(cut).ShouldNotContain(h => h.EndsWith(".bundle.scp.css", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -85,7 +91,7 @@ public class OsirionStylesRenderingTests : BunitContext
 
         var cut = Render<OsirionStyles>();
 
-        cut.FindAll("link").Count.ShouldBe(2);
+        cut.FindAll("link").Count.ShouldBe(1);
     }
 
     [Fact]

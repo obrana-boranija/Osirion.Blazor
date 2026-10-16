@@ -50,6 +50,14 @@ public partial class ArticlePage
     public RenderFragment<ContentItem>? AuthorContent { get; set; }
 
     /// <summary>
+    /// Gets or sets the article's header, shown instead of the hero. It must render the page's <c>h1</c>, usually from
+    /// <c>context.Title</c>; a leading <c>h1</c> in the body is still left out, as it is under the hero. When
+    /// <see langword="null"/>, the hero is shown as configured by <c>ShowHero</c>.
+    /// </summary>
+    [Parameter]
+    public RenderFragment<ContentItem>? HeaderContent { get; set; }
+
+    /// <summary>
     /// Gets or sets additional sidebar content
     /// </summary>
     [Parameter]
