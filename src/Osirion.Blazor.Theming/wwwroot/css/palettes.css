@@ -30,6 +30,8 @@
     --osirion-code-regex: #b45309;
     --osirion-code-inserted: #15803d;
     --osirion-code-deleted: #b91c1c;
+    --osirion-menu-active-background: var(--osirion-nav-active-background);
+    --osirion-menu-accent: var(--osirion-nav-active-text);
 }
 
 :root[data-osirion-palette="osirion"][data-osirion-theme="dark"] {
@@ -48,6 +50,8 @@
     --osirion-code-regex: #ffb86c;
     --osirion-code-inserted: #50fa7b;
     --osirion-code-deleted: #ff79c6;
+    --osirion-menu-active-background: var(--osirion-nav-active-background);
+    --osirion-menu-accent: var(--osirion-nav-active-text);
 }
 
 :root[data-osirion-palette="commit"][data-osirion-theme="light"] {

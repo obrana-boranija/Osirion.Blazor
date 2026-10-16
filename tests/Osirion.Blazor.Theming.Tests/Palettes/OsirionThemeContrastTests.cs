@@ -8,7 +8,8 @@ namespace Osirion.Blazor.Theming.Tests.Palettes;
 public partial class OsirionThemeContrastTests
 {
     // The focus ring is translucent by design and drawn around the control, not under text. The theme files leave the
-    // menu tokens to Menu, which derives them from the link colour (its active item reaches 4.36:1 in the light theme).
+    // menu tokens to Menu, which derives them from the link colour: without a palette its active item reaches 4.36:1
+    // in the light theme. The Osirion palette points them at the nav-active pair checked here.
     private static readonly string[] Excluded = ["focus-ring-color", "menu-accent"];
 
     [Theory]

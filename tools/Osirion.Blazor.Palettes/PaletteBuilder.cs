@@ -4,7 +4,7 @@ namespace Osirion.Blazor.Palettes;
 /// <param name="Palette">The palette id.</param>
 /// <param name="Mode"><c>light</c> or <c>dark</c>.</param>
 /// <param name="Selectors">The selectors the variant's tokens are declared under.</param>
-/// <param name="Tokens">Token names without the <c>--osirion-</c> prefix, and their <c>#rrggbb</c> values, in writing order.</param>
+/// <param name="Tokens">Token names without the <c>--osirion-</c> prefix, and their <c>#rrggbb</c> values (or <c>var()</c> references to theme tokens), in writing order.</param>
 /// <param name="TextContrast">The contrast ratio the variant's text pairs are held to.</param>
 internal sealed record PaletteVariant(
     string Palette,
@@ -178,12 +178,17 @@ internal static class PaletteBuilder
         return new PaletteVariant(spec.Palette, spec.Mode, Selectors([spec.Palette, .. spec.AlsoFor], spec.Mode), tokens.Values, target);
     }
 
-    /// <summary>Builds the code colours of the Osirion palette, whose other tokens come from the theme files.</summary>
+    /// <summary>
+    /// Builds the code colours of the Osirion palette, whose other tokens come from the theme files, and points Menu's
+    /// active item at the theme's own active pair, which the theme files hold to 4.5:1.
+    /// </summary>
     public static PaletteVariant BuildCodeOnly(string palette, string mode, CodeColours code, ICollection<string> adjustments)
     {
         var tokens = new Tokens(palette, mode, adjustments);
         const double target = 4.5;
         AddCode(tokens, code, target);
+        tokens.SetReference("menu-active-background", "nav-active-background");
+        tokens.SetReference("menu-accent", "nav-active-text");
         return new PaletteVariant(palette, mode, Selectors([palette], mode), tokens.Values, target);
     }
 
@@ -258,10 +263,15 @@ internal static class PaletteBuilder
 
         public IReadOnlyList<KeyValuePair<string, string>> Values => _values;
 
-        public void Set(string name, Rgb colour)
+        public void Set(string name, Rgb colour) => Set(name, colour.ToHex());
+
+        /// <summary>Sets a token to another token's value, for tokens whose colour the theme files own.</summary>
+        public void SetReference(string name, string token) => Set(name, $"var(--osirion-{token})");
+
+        private void Set(string name, string value)
         {
             var index = _values.FindIndex(pair => pair.Key == name);
-            var entry = new KeyValuePair<string, string>(name, colour.ToHex());
+            var entry = new KeyValuePair<string, string>(name, value);
             if (index >= 0)
             {
                 _values[index] = entry;
