@@ -2,7 +2,7 @@
 
 [![NuGet](https://img.shields.io/nuget/v/Osirion.Blazor)](https://www.nuget.org/packages/Osirion.Blazor)
 [![License](https://img.shields.io/github/license/obrana-boranija/Osirion.Blazor)](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/LICENSE.txt)
-[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=obrana-boranija_Osirion.Blazor&metric=security_rating)](https://sonarcloud.io/dashboard?id=obrana-boranija_Osirion.Blazor)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=demonjic_Osirion.Blazor&metric=security_rating)](https://sonarcloud.io/dashboard?id=demonjic_Osirion.Blazor)
 [![codecov](https://codecov.io/gh/obrana-boranija/Osirion.Blazor/branch/master/graph/badge.svg)](https://codecov.io/gh/obrana-boranija/Osirion.Blazor)
 
 A modular, high-performance component library for Blazor applications with SSR compatibility and zero-JS dependencies (when possible).
