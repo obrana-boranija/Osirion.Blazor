@@ -3,8 +3,8 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
     <CentralPackageFloatingVersionsEnabled>false</CentralPackageFloatingVersionsEnabled>
-    <Net9MicrosoftVersion>9.0.20</Net9MicrosoftVersion>
-    <Net10MicrosoftVersion>10.0.12</Net10MicrosoftVersion>
+    <Net9MicrosoftVersion>10.0.13</Net9MicrosoftVersion>
+    <Net10MicrosoftVersion>10.0.13</Net10MicrosoftVersion>
   </PropertyGroup>
 
   <ItemGroup Label="Common packages">
@@ -14,7 +14,7 @@
     <PackageVersion Include="FluentValidation" Version="12.2.0" />
     <PackageVersion Include="HtmlSanitizer" Version="9.2.1039" />
     <PackageVersion Include="Markdig" Version="1.4.0" />
-    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.401" />
+    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.402" />
     <PackageVersion Include="Octokit" Version="14.0.0" />
     <PackageVersion Include="Scrutor" Version="7.0.0" />
     <PackageVersion Include="System.IO.Abstractions" Version="22.3.0" />
@@ -26,7 +26,7 @@
     <PackageVersion Include="bUnit" Version="2.11.3" />
     <PackageVersion Include="coverlet.collector" Version="10.1.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="$(Net10MicrosoftVersion)" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.10.1" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.11.0" />
     <PackageVersion Include="Microsoft.Playwright" Version="1.63.0" />
     <PackageVersion Include="Microsoft.Playwright.TestAdapter" Version="1.63.0" />
     <PackageVersion Include="NSubstitute" Version="6.2.0" />
