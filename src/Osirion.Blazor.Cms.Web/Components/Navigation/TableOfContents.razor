@@ -1,6 +1,9 @@
 ﻿@namespace Osirion.Blazor.Cms.Web.Components
+@using BlazorJSComponents
+@attribute [DiscoverCollocatedJS]
+@inject JSElementReferenceScope Refs
 
-<nav class="@GetTableOfContentsClass()" aria-label="Table of Contents">
+<nav class="@GetTableOfContentsClass()" aria-label="Table of Contents" data-ref="@Refs["nav"]">
     @if (Headings.Any())
     {
         <ol class="osirion-toc-list">
@@ -28,3 +31,8 @@
         <p class="osirion-toc-empty">@EmptyText</p>
     }
 </nav>
+
+@if (Headings.Any() && TrackActiveHeading)
+{
+    <JS Src="./_content/Osirion.Blazor.Cms.Web/Components/Navigation/TableOfContents.razor.js" Args="[Refs]" />
+}
