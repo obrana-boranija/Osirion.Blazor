@@ -16,6 +16,62 @@ public class OsirionHtmlRendererOptionsTests : OsirionComponentTestBase
         Services.AddJSComponents();
     }
 
+    private const string Table = "<table><tr><td>1</td></tr></table>";
+
+    // Wide code, and tables on small screens, scroll sideways; a keyboard can scroll only what it can focus.
+    [Fact]
+    public void OsirionHtmlRenderer_CodeBlocksAndTables_AreInTheTabOrder()
+    {
+        var cut = RenderStatic<OsirionHtmlRenderer>(parameters => parameters
+            .Add(p => p.HtmlContent, CodeBlock + Table + "<ul><li>" + Table + "</li></ul>"));
+
+        cut.Find("pre").GetAttribute("tabindex").ShouldBe("0");
+        cut.FindAll("table").Select(table => table.GetAttribute("tabindex")).ShouldBe(["0", "0"]);
+    }
+
+    [Fact]
+    public void OsirionHtmlRenderer_CodeBlockInTheCopyButtonWrapper_StaysInTheTabOrder()
+    {
+        var cut = RenderStatic<OsirionHtmlRenderer>(parameters => parameters
+            .Add(p => p.HtmlContent, CodeBlock)
+            .Add(p => p.EnableCopyButton, true));
+
+        cut.Find(".osirion-code-wrapper pre").GetAttribute("tabindex").ShouldBe("0");
+    }
+
+    [Fact]
+    public void OsirionHtmlRenderer_FocusableScrollBlocksOff_LeavesThemOutOfTheTabOrder()
+    {
+        var cut = RenderStatic<OsirionHtmlRenderer>(parameters => parameters
+            .Add(p => p.HtmlContent, CodeBlock + Table)
+            .Add(p => p.FocusableScrollBlocks, false));
+
+        cut.Find("pre").HasAttribute("tabindex").ShouldBeFalse();
+        cut.Find("table").HasAttribute("tabindex").ShouldBeFalse();
+    }
+
+    [Fact]
+    public void OsirionHtmlRenderer_ElementWithItsOwnTabIndex_KeepsIt()
+    {
+        var cut = RenderStatic<OsirionHtmlRenderer>(parameters => parameters
+            .Add(p => p.HtmlContent, "<pre tabindex=\"-1\"><code>x</code></pre>")
+            .Add(p => p.SanitizeHtml, false));
+
+        cut.Find("pre").GetAttribute("tabindex").ShouldBe("-1");
+    }
+
+    // The elements are found in the parsed content, so text that only looks like a tag is never rewritten.
+    [Fact]
+    public void OsirionHtmlRenderer_TagLikeTextInAnAttribute_IsLeftAsWritten()
+    {
+        var cut = RenderStatic<OsirionHtmlRenderer>(parameters => parameters
+            .Add(p => p.HtmlContent, "<p aria-label=\"a <table> and a <pre>\">x</p>" + CodeBlock));
+
+        cut.Find("p").GetAttribute("aria-label").ShouldBe("a <table> and a <pre>");
+        cut.FindAll("table").ShouldBeEmpty();
+        cut.Find("pre").GetAttribute("tabindex").ShouldBe("0");
+    }
+
     [Fact]
     public void OsirionHtmlRenderer_CodeBlocksWithAccessibleTheme_AddsTheThemeClassAndStyles()
     {
