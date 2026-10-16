@@ -7,130 +7,76 @@ Application layer for the Osirion.Blazor CMS ecosystem, implementing core busine
 
 ## Overview
 
-The Application project represents the application layer in the Clean Architecture pattern, bridging the domain models with the infrastructure and presentation layers. It contains application services, DTOs, validators, mappers, and command/query handlers.
+The Application project represents the application layer in the Clean Architecture pattern, bridging the domain models with the infrastructure and presentation layers. It uses a command/query split: commands and queries are plain classes, each handled by one handler, and two dispatchers resolve the handler from the service provider. This package ships handlers for the content commands, for `GetContentByIdQuery`, `GetContentByPathQuery`, `SearchContentQuery`, `GetDirectoryByPathQuery` and `GetDirectoryTreeQuery`; the other commands and queries need a handler registered by the host. Input is validated with FluentValidation before a command runs.
 
 ## Components
 
-### Application Services
+### Commands
 
-Services that orchestrate the application logic:
+A command implements `ICommand` and is handled by an `ICommandHandler<TCommand>` (namespace `Osirion.Blazor.Cms.Application.Commands`):
 
 ```csharp
-public class ContentApplicationService : IContentApplicationService
+public interface ICommandHandler<in TCommand> where TCommand : ICommand
 {
-    private readonly IContentRepository _repository;
-    private readonly IMarkdownProcessor _markdownProcessor;
-    private readonly ILogger<ContentApplicationService> _logger;
-
-    public ContentApplicationService(
-        IContentRepository repository, 
-        IMarkdownProcessor markdownProcessor,
-        ILogger<ContentApplicationService> logger)
-    {
-        _repository = repository;
-        _markdownProcessor = markdownProcessor;
-        _logger = logger;
-    }
-
-    public async Task<ContentDto> GetContentByPathAsync(string path)
-    {
-        var content = await _repository.GetByPathAsync(path);
-        if (content is null)
-        {
-            _logger.LogWarning("Content not found for path: {Path}", path);
-            throw new ContentNotFoundException(path);
-        }
-
-        var processedContent = await _markdownProcessor.ProcessAsync(content.Content);
-        return MapToDto(content, processedContent);
-    }
-
-    // Additional methods
+    Task HandleAsync(TCommand command, CancellationToken cancellationToken = default);
 }
 ```
 
-### DTOs (Data Transfer Objects)
-
-Objects used to transfer data between the application and presentation layers:
+Content commands (`Osirion.Blazor.Cms.Application.Commands.Content`) are `CreateContentCommand`, `UpdateContentCommand` and `DeleteContentCommand`. Directory commands (`Osirion.Blazor.Cms.Application.Commands.Directory`) are `CreateDirectoryCommand`, `UpdateDirectoryCommand`, `MoveDirectoryCommand` and `DeleteDirectoryCommand`.
 
 ```csharp
-public class ContentDto
+await commandDispatcher.DispatchAsync(new CreateContentCommand
 {
-    public string Path { get; set; } = string.Empty;
-    public string Title { get; set; } = string.Empty;
-    public string ProcessedContent { get; set; } = string.Empty;
-    public string RawContent { get; set; } = string.Empty;
-    public Dictionary<string, object> Metadata { get; set; } = new();
-    public DateTime? PublishedDate { get; set; }
-    public string? Author { get; set; }
-    public List<string> Tags { get; set; } = new();
-    public List<string> Categories { get; set; } = new();
-    public bool IsFeatured { get; set; }
-    public string? FeaturedImage { get; set; }
+    Title = "Hello",
+    Content = "# Hello",
+    Path = "blog/hello.md",
+    CommitMessage = "Add hello post"
+});
+```
+
+`ICommandDispatcher.DispatchAsync<TCommand>(command, cancellationToken)` is implemented by `ValidatingCommandDispatcher`. It runs the registered validator, if there is one, and throws `ContentValidationException` when validation fails.
+
+### Queries
+
+A query implements `IQuery<TResult>` and is handled by an `IQueryHandler<TQuery, TResult>` (namespace `Osirion.Blazor.Cms.Application.Queries`):
+
+```csharp
+public interface IQueryHandler<in TQuery, TResult> where TQuery : IQuery<TResult>
+{
+    Task<TResult> HandleAsync(TQuery query, CancellationToken cancellationToken = default);
 }
+```
+
+Content queries (`Osirion.Blazor.Cms.Application.Queries.Content`) include `GetContentByPathQuery`, `GetContentByIdQuery`, `GetContentByUrlQuery`, `GetAllContentQuery`, `SearchContentQuery`, `GetContentCategoriesQuery` and `GetContentTagsQuery`. Directory queries (`Osirion.Blazor.Cms.Application.Queries.Directory`) are `GetDirectoryByIdQuery`, `GetDirectoryByPathQuery` and `GetDirectoryTreeQuery`.
+
+```csharp
+var item = await queryDispatcher.DispatchAsync<GetContentByPathQuery, ContentItem?>(
+    new GetContentByPathQuery { Path = "blog/hello.md" });
 ```
 
 ### Validators
 
-Input validation using FluentValidation:
+Input validation uses FluentValidation. `CreateContentCommandValidator` and `UpdateContentCommandValidator` (namespace `Osirion.Blazor.Cms.Application.Validation.Content`) are `AbstractValidator<T>` classes, for example:
 
 ```csharp
-public class ContentQueryValidator : AbstractValidator<ContentQueryDto>
+public class CreateContentCommandValidator : AbstractValidator<CreateContentCommand>
 {
-    public ContentQueryValidator()
+    public CreateContentCommandValidator()
     {
-        RuleFor(x => x.Path)
-            .NotEmpty()
-            .When(x => x.Directory is null && x.Tag is null && x.Category is null);
-        
-        RuleFor(x => x.Skip)
-            .GreaterThanOrEqualTo(0);
-        
-        RuleFor(x => x.Count)
-            .GreaterThanOrEqualTo(1)
-            .When(x => x.Count.HasValue);
+        RuleFor(x => x.Title)
+            .NotEmpty().WithMessage("Title is required")
+            .MaximumLength(200).WithMessage("Title cannot exceed 200 characters");
+
+        // Further rules for Content, Path and Slug
     }
 }
 ```
 
-## Key Features
+`FluentValidationAdapter<T>` exposes a FluentValidation validator through the application's own `IValidator<T>`.
 
-### Markdown Processing
+## Registration
 
-Advanced markdown processing with support for:
-
-- Front matter extraction and parsing
-- Syntax highlighting
-- Table rendering
-- Task lists
-- Automatic linking
-- Diagrams and charts
-- Custom extensions
-
-### Content Caching
-
-Efficient content handling with caching:
-
-```csharp
-public async Task<ContentDto> GetContentByPathAsync(string path)
-{
-    var cacheKey = $"content:{path}";
-    
-    if (_cache.TryGetValue(cacheKey, out ContentDto? cachedContent))
-        return cachedContent!;
-        
-    var content = await _repository.GetByPathAsync(path);
-    // Process and map content
-    
-    var options = new MemoryCacheEntryOptions()
-        .SetSlidingExpiration(TimeSpan.FromMinutes(30))
-        .SetAbsoluteExpiration(TimeSpan.FromHours(2));
-        
-    _cache.Set(cacheKey, result, options);
-    
-    return result;
-}
-```
+This package does not register its services. `AddOsirionCqrs()` in the `Osirion.Blazor.Cms.Infrastructure` package (namespace `Osirion.Blazor.Cms.Infrastructure.DependencyInjection`) registers the dispatchers, the command and query handlers, the validators and their adapters.
 
 ## Dependencies
 
@@ -138,7 +84,7 @@ The application layer has the following dependencies:
 
 - **Osirion.Blazor.Cms.Domain**: For domain entities and interfaces
 - **FluentValidation**: For input validation
-- **Markdig**: For Markdown processing
+- **Microsoft.Extensions.DependencyInjection** and **Microsoft.Extensions.Logging.Abstractions**: For service resolution and logging
 
 ## License
 

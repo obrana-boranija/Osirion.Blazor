@@ -12,7 +12,7 @@ Enhanced navigation components for Blazor applications that work seamlessly with
 - **ScrollToTop**: Adds a customizable "back to top" button
 - **SSR Compatible**: Works with Server-Side Rendering and Static SSG
 - **Minimal JavaScript**: Uses progressive enhancement for interactive features
-- **Framework Integration**: Works with any CSS framework
+- **Framework Integration**: The scroll button takes the button classes of the framework set in the theming options (Bootstrap, FluentUI, MudBlazor or Radzen)
 
 ## Installation
 
@@ -30,12 +30,13 @@ using Osirion.Blazor.Navigation.Extensions;
 
 builder.Services.AddOsirionNavigation(navigation => {
     navigation
-        .UseEnhancedNavigation()
+        .AddEnhancedNavigation()
         .AddScrollToTop();
 });
 ```
 
 ```razor
+@using Osirion.Blazor.Components
 @using Osirion.Blazor.Navigation.Components
 
 <!-- In your layout -->
@@ -69,15 +70,11 @@ builder.Services.AddOsirionNavigation(navigation => {
 
 ## Customizing with CSS Variables
 
-Customize the appearance with CSS variables:
+Set the size of the scroll to top button with a CSS variable (the default is 45px):
 
 ```css
 :root {
-    --osirion-scroll-background: rgba(0, 0, 0, 0.3);
-    --osirion-scroll-color: #ffffff;
     --osirion-scroll-size: 40px;
-    --osirion-scroll-margin: 20px;
-    --osirion-scroll-border-radius: 4px;
 }
 ```
 

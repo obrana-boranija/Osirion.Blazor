@@ -12,7 +12,6 @@ Content Management System (CMS) Administration module for Osirion.Blazor, provid
 - **SSR Compatible**: Works with Server-Side Rendering and Static SSG
 - **Policy-Protected Admin**: Every admin page requires the `Osirion.Cms.Admin` authorization policy, which the host can replace (see [Securing the Admin](#securing-the-admin))
 - **Multi-Provider Support**: Seamless integration with existing Osirion.Blazor CMS providers
-- **Real-time Collaboration**: Draft sharing and collaborative editing features
 
 ## Installation
 
@@ -26,6 +25,8 @@ dotnet add package Osirion.Blazor.Cms.Admin
 
 ```csharp
 // In Program.cs
+using Osirion.Blazor.Cms.Admin.DependencyInjection;
+
 builder.Services.AddOsirionCmsAdmin(options => 
 {
     options.UseGitHubProvider(github => 
@@ -38,46 +39,34 @@ builder.Services.AddOsirionCmsAdmin(options =>
 
 The admin pages also need the host's authentication; see [Securing the Admin](#securing-the-admin). They also need interactive server components (`AddInteractiveServerComponents`), because the GitHub credential stores use protected browser storage.
 
+Settings under `Osirion:Cms:Admin` in configuration (for example the `Authentication` keys below) are bound by `AddOsirionCmsAdmin(IConfiguration)` and by `AddOsirion(configuration)`. The overload shown above, which takes a builder action, does not bind them.
+
 ### Basic Usage
 
-```razor
-@page "/admin"
-@using Microsoft.AspNetCore.Authorization
-@using Osirion.Blazor.Cms.Admin.Components
-@using Osirion.Blazor.Cms.Admin.Features.Security
-@attribute [Authorize(Policy = CmsAdminAuthorization.PolicyName)]
+The package ships routed admin pages. Once the package assembly is added to routing (see [Securing the Admin](#securing-the-admin)), they are served at:
 
-<CmsAdminDashboard>
-    <ContentEditor />
-    <MediaLibrary />
-    <UserManagement />
-</CmsAdminDashboard>
-```
+| Route | Page |
+|-------|------|
+| `/osirion`, `/osirion/dashboard`, `/osirion/content` | Dashboard: repository and branch selection, file browser |
+| `/osirion/content/edit` | Content editor |
+| `/osirion/settings` | Settings |
+| `/osirion/login` | GitHub sign-in |
 
 ## Core Components
 
 ### ContentEditor
-- Advanced markdown editing
-- Front matter management
-- Live preview
-- Draft saving
-- Version history
+- Markdown editing with live preview
+- Front matter editing (basic, advanced, SEO and social metadata forms)
+- Commit panel for saving to the repository
+- Unpublished posts are saved as drafts
 
-### MediaLibrary
-- Upload and manage media files
-- Image optimization
-- Folder organization
-- File metadata management
+### Repository and file components
+- `RepositorySelector` and `BranchSelector` choose the repository and branch to work on
+- `FileExplorer` browses the files of the selected repository
 
-### UserManagement
-- Role-based access control
-- User invitation
-- Permissions configuration
-
-### Analytics Dashboard
-- Content performance tracking
-- User engagement metrics
-- SEO insights
+### Layout and security components
+- `CmsAdminDashboard` and `OsirionAdminLayout` frame the admin pages
+- `AuthGuard` shows its content only to users who satisfy an authorization policy
 
 ## Securing the Admin
 
@@ -148,15 +137,15 @@ builder.Services.AddOsirionCmsAdmin(options =>
     // UI Customization
     options.ConfigureTheme(theme => 
     {
-        theme.UseDarkMode();
-        theme.SetPrimaryColor("#007b31");
+        theme.UseDarkMode = true;
+        theme.PrimaryColor = "#007b31";
     });
 
     // Content Restrictions
     options.ConfigureContentRules(rules => 
     {
-        rules.RequireApproval();
-        rules.SetMaximumDraftAge(30);
+        rules.RequireApproval = true;
+        rules.MaximumDraftAge = 30;
     });
 });
 ```
@@ -200,7 +189,7 @@ builder.Services.AddOsirionCmsAdmin(options =>
 
 ## Documentation
 
-For more detailed documentation, see [CMS Admin Documentation](https://github.com/demonjic/Osirion.Blazor/blob/master/docs/CMS_ADMIN.md).
+For more detailed documentation, see [CMS Admin component documentation](https://github.com/demonjic/Osirion.Blazor/tree/master/docs/components/cms.admin).
 
 ## License
 

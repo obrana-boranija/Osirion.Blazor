@@ -14,6 +14,10 @@ Frontend components and web interfaces for the Osirion.Blazor CMS ecosystem, pro
 - **Responsive Design**: Mobile-friendly content display
 - **Metadata Rendering**: SEO-optimized content rendering with OpenGraph support
 - **Content List Views**: Customizable list displays for content collections
+- **Custom Item Markup**: `ItemTemplate` on `ContentList`, `ContentListPage` and `OsirionContentListSection` renders each item through your own markup
+- **Article Header**: `ArticlePage.HeaderContent` replaces the hero with your own article header
+- **Table of Contents**: `TableOfContents` marks the section being read as the page scrolls; `TrackActiveHeading="false"` turns it off
+- **Author URL**: `SeoMetadataOptions.AuthorUrl` (or the `AuthorUrl` parameter of `SeoMetadataRenderer`) sets the author's `url` in structured data
 - **User Interface Elements**: User-friendly components for content consumption
 
 ## Installation
@@ -27,22 +31,23 @@ dotnet add package Osirion.Blazor.Cms.Web
 ### Basic Content Display
 
 ```razor
+@using Osirion.Blazor.Cms.Domain.Enums
 @using Osirion.Blazor.Cms.Web.Components
 
 <!-- Display a specific content item -->
 <ContentView Path="blog/my-post.md" />
 
 <!-- Display a list of content items -->
-<ContentList 
-    Directory="blog" 
-    SortBy="SortField.Date" 
+<ContentList
+    Directory="blog"
+    SortBy="SortField.Date"
     SortDirection="SortDirection.Descending" />
 
-<!-- Add search functionality -->
+<!-- Add search functionality (a GET form that submits to /search) -->
 <SearchBox Placeholder="Search..." />
 
-<!-- Add directory navigation -->
-<DirectoryNavigation CurrentDirectory="blog" />
+<!-- Add directory navigation (pass the directories to show) -->
+<DirectoryNavigation Directories="@directories" CurrentDirectory="blog" />
 
 <!-- Display categories and tags -->
 <CategoriesList />
@@ -52,16 +57,13 @@ dotnet add package Osirion.Blazor.Cms.Web
 ### Content View Customization
 
 ```razor
-<ContentView 
+<ContentView
     Path="blog/my-post.md"
-    ShowTitle="true"
-    ShowMetadata="true"
-    ShowDate="true"
-    ShowAuthor="true"
-    ShowTags="true"
-    ShowCategories="true"
-    ShowImage="true"
-    ImageClass="my-featured-image" />
+    ShowNavigationLinks="true"
+    PreviousItem="@previousItem"
+    NextItem="@nextItem"
+    CategoryUrlFormatter="@(category => $"/categories/{category}")"
+    TagUrlFormatter="@(tag => $"/tags/{tag}")" />
 ```
 
 ### Custom Content List Templates
@@ -71,7 +73,7 @@ dotnet add package Osirion.Blazor.Cms.Web
     <ItemTemplate>
         <div class="custom-content-card">
             <h2>@context.Title</h2>
-            <p class="date">@context.Date?.ToString("MMMM d, yyyy")</p>
+            <p class="date">@context.DateCreated.ToString("MMMM d, yyyy")</p>
             <p class="author">By: @context.Author</p>
             <p class="description">@context.Description</p>
             <a href="@($"/content/{context.Path}")">Read more...</a>
@@ -83,12 +85,14 @@ dotnet add package Osirion.Blazor.Cms.Web
 ### SEO Metadata
 
 ```razor
-<SeoMetadataRenderer 
-    Content="@currentContent" 
-    SiteName="My Website" 
-    BaseUrl="https://mysite.com" 
-    DefaultImage="/images/default-social.jpg" />
+<SeoMetadataRenderer
+    Content="@currentContent"
+    SiteNameOverride="My Website"
+    DefaultImageUrl="/images/default-social.jpg" />
 ```
+
+The base URL comes from the current request. Site-wide defaults can be set with `AddOsirionSeoMetadata` (in
+`Osirion.Blazor.Cms.Web.DependencyInjection`), which configures `SeoMetadataOptions`.
 
 ### Sitemap, RSS and Atom
 
@@ -114,10 +118,7 @@ for every option.
 The primary component for displaying a single content item.
 
 ```razor
-<ContentView 
-    Path="blog/my-post.md"
-    ProviderId="github" 
-    RenderOptions="@renderOptions" />
+<ContentView Path="blog/my-post.md" />
 ```
 
 #### Parameters
@@ -125,127 +126,143 @@ The primary component for displaying a single content item.
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `Path` | string | | The path to the content item |
-| `ProviderId` | string | null | Optional provider ID |
-| `ShowTitle` | bool | true | Whether to show the content title |
-| `ShowMetadata` | bool | true | Whether to show metadata |
-| `ShowDate` | bool | true | Whether to show the publication date |
-| `ShowAuthor` | bool | true | Whether to show the author |
-| `ShowTags` | bool | true | Whether to show tags |
-| `ShowCategories` | bool | true | Whether to show categories |
-| `ShowImage` | bool | true | Whether to show the featured image |
-| `TitleClass` | string | null | CSS class for the title |
-| `ContentClass` | string | null | CSS class for the content |
-| `MetadataClass` | string | null | CSS class for the metadata |
-| `ImageClass` | string | null | CSS class for the image |
-| `RenderOptions` | MarkdownRenderOptions | null | Options for markdown rendering |
+| `Item` | ContentItem? | null | An item to render instead of loading one by `Path` |
+| `PreviousItem` | ContentItem? | null | The previous item, for the navigation links |
+| `NextItem` | ContentItem? | null | The next item, for the navigation links |
+| `ShowNavigationLinks` | bool | false | Whether to show links to the previous and next items |
+| `LoadingText` | string | "Loading content..." | Text shown while loading |
+| `NotFoundText` | string | "Content not found." | Text shown when the item does not exist |
+| `CategoryUrlFormatter` | Func<string, string>? | null | Builds the address of a category |
+| `TagUrlFormatter` | Func<string, string>? | null | Builds the address of a tag |
+| `AuthorUrlFormatter` | Func<string, string>? | null | Builds the address of an author |
+| `ContentUrlFormatter` | Func<ContentItem, string>? | null | Builds the address of an item |
 
 ### ContentList
 
 A component for displaying a list of content items.
 
 ```razor
-<ContentList 
-    Directory="blog" 
-    SortBy="SortField.Date" 
-    SortDirection="SortDirection.Descending" 
-    Count="10" 
-    ProviderId="github" />
+<ContentList
+    Directory="blog"
+    SortBy="SortField.Date"
+    SortDirection="SortDirection.Descending"
+    ShowPagination="true"
+    ItemsPerPage="10" />
 ```
 
 #### Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `Directory` | string | null | Filter by directory |
-| `Tag` | string | null | Filter by tag |
-| `Category` | string | null | Filter by category |
-| `Author` | string | null | Filter by author |
-| `Query` | string | null | Search query |
-| `Count` | int? | null | Maximum number of items |
-| `Skip` | int | 0 | Number of items to skip |
+| `Directory` | string? | null | Filter by directory |
+| `Category` | string? | null | Filter by category |
+| `Tag` | string? | null | Filter by tag |
+| `Author` | string? | null | Filter by author (ignoring case) |
+| `SearchQuery` | string? | null | Search query |
+| `OnlyFeatured` | bool? | null | Show only featured items |
+| `FeaturedCount` | int? | null | Number of featured items to show |
+| `Locale` | string? | null | Filter by locale |
 | `SortBy` | SortField | Date | Field to sort by |
 | `SortDirection` | SortDirection | Descending | Sort direction |
-| `ProviderId` | string | null | Optional provider ID |
-| `IsFeatured` | bool? | null | Filter by featured status |
-| `HasFeaturedImage` | bool? | null | Filter by presence of featured image |
-| `FromDate` | DateTime? | null | Filter by date range (start) |
-| `ToDate` | DateTime? | null | Filter by date range (end) |
-| `ListClass` | string | null | CSS class for the list |
-| `ItemClass` | string | null | CSS class for list items |
+| `ShowPagination` | bool | false | Whether to page the list |
+| `ItemsPerPage` | int | 10 | Items per page |
+| `CurrentPage` | int | 1 | The page to show |
+| `PageChanged` | EventCallback<int> | | Raised when the page changes |
+| `PaginationUrlFormatter` | Func<int, string>? | null | Builds the address of a page |
+| `ContentUrlFormatter` | Func<ContentItem, string>? | null | Builds the address of an item |
+| `ItemTemplate` | RenderFragment<ContentItem>? | null | Renders each item through your own markup |
+| `ReadMoreText` | string | "Read more" | Text of the link on each card |
+| `LoadingText` | string | "Loading content..." | Text shown while loading |
+| `NoContentText` | string | "No content available." | Text shown when the list is empty |
+| `ShowTitle` | bool | false | Opens the list with its title as the page `h1` |
+| `PageTitle` | string? | null | Title for the list and its structured data |
+| `PageDescription` | string? | null | Description for the list and its structured data |
+| `EnableSeoMetadata` | bool | true | Whether to render SEO metadata |
 
 ### SearchBox
 
-A component for searching content.
+A component for searching content. It renders a GET form; the results page handles the query.
 
 ```razor
-<SearchBox 
-    Placeholder="Search..." 
-    MinLength="3" 
-    DebounceTime="300" 
-    OnSearch="HandleSearch" />
+<SearchBox
+    ActionUrl="/search"
+    QueryParameterName="q"
+    Placeholder="Search..." />
 ```
 
 #### Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `Placeholder` | string | "Search..." | Placeholder text |
-| `MinLength` | int | 3 | Minimum search query length |
-| `DebounceTime` | int | 300 | Debounce time in milliseconds |
-| `OnSearch` | EventCallback<string> | | Event callback when search is performed |
-| `CssClass` | string | null | CSS class for the search box |
-| `ButtonText` | string | "Search" | Text for the search button |
-| `ShowButton` | bool | true | Whether to show the search button |
+| `ActionUrl` | string | "/search" | Address the form submits to |
+| `QueryParameterName` | string | "q" | Name of the query string key |
+| `SearchQuery` | string | "" | Initial value of the input |
+| `Placeholder` | string | "Search content..." | Placeholder text |
+| `SearchButtonText` | string | "Search" | Text for the search button |
+| `Title` | string? | null | Optional heading above the form |
 
 ### DirectoryNavigation
 
-A component for navigating content directories.
+A component for navigating content directories. It renders the directories you pass in.
 
 ```razor
-<DirectoryNavigation 
-    CurrentDirectory="blog" 
-    ShowItemCount="true" 
-    MaxDepth="2" />
+<DirectoryNavigation
+    Directories="@directories"
+    CurrentDirectory="blog"
+    ShowItemCount="true" />
 ```
 
 #### Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `CurrentDirectory` | string | null | Currently active directory |
-| `ProviderId` | string | null | Optional provider ID |
+| `Directories` | IReadOnlyList<DirectoryItem>? | null | The directories to show |
+| `CurrentDirectory` | string? | null | Currently active directory |
+| `ExpandedDirectory` | string? | null | Directory to show expanded |
+| `ExpandAllSubdirectories` | bool | false | Whether to expand every directory |
 | `ShowItemCount` | bool | true | Whether to show item counts |
-| `MaxDepth` | int? | null | Maximum directory depth to display |
-| `CssClass` | string | null | CSS class for the navigation |
-| `ActiveClass` | string | "active" | CSS class for active items |
+| `ShowSubdirectories` | bool | true | Whether to show subdirectories |
+| `DirectoryUrlFormatter` | Func<DirectoryItem, string>? | null | Builds the address of a directory |
+| `DirectoryClicked` | EventCallback<DirectoryItem> | | Raised when a directory is selected |
+| `Title` | string? | null | Optional heading |
+| `IsLoading` | bool | false | Shows `LoadingText` instead of the list |
+| `LoadingText` | string | "Loading navigation..." | Text shown while loading |
+| `NoContentText` | string | "No directories available." | Text shown when there are none |
 
 ### CategoriesList and TagCloud
 
-Components for displaying content organization.
+Components for displaying content organization. Both load their data from the registered content provider.
 
 ```razor
-<CategoriesList 
-    ShowItemCount="true" 
-    ProviderId="github" />
+<CategoriesList
+    ShowCount="true"
+    SortByCount="true" />
 
-<TagCloud 
-    MaxTags="20" 
-    ShowItemCount="true" 
-    ProviderId="github" />
+<TagCloud
+    MaxTags="20"
+    ShowCount="true" />
 ```
+
+`CategoriesList` parameters: `Title`, `LoadingText`, `NoContentText`, `CategoryUrlFormatter`, `ActiveCategory`,
+`ShowCount` (true), `SortByCount` (true) and `MaxCategories`.
+
+`TagCloud` parameters: `Title`, `LoadingText`, `NoContentText`, `TagUrlFormatter`, `ActiveTag`, `ShowCount` (true),
+`SortByCount` (true), `MaxTags` and `Tags` (a list to show instead of loading one).
 
 ## Service-Based Content Retrieval
 
-For advanced scenarios, you can directly inject and use the content service:
+For advanced scenarios, you can directly inject and use the content provider:
 
 ```razor
-@using Osirion.Blazor.Cms.Core.Providers
-@using Osirion.Blazor.Cms.Core.Models
+@using Osirion.Blazor.Cms.Domain.Entities
+@using Osirion.Blazor.Cms.Domain.Enums
+@using Osirion.Blazor.Cms.Domain.Repositories
+@using Osirion.Blazor.Cms.Domain.Services
 @inject IContentProvider ContentProvider
 
 @code {
     private List<ContentItem> featuredContent = new();
-    
+
     protected override async Task OnInitializedAsync()
     {
         var query = new ContentQuery
@@ -253,11 +270,11 @@ For advanced scenarios, you can directly inject and use the content service:
             IsFeatured = true,
             SortBy = SortField.Date,
             SortDirection = SortDirection.Descending,
-            Count = 5
+            Take = 5
         };
-        
+
         var result = await ContentProvider.GetItemsByQueryAsync(query);
-        featuredContent = result.ToList();
+        featuredContent = result?.ToList() ?? new();
     }
 }
 ```

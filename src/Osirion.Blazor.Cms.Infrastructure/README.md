@@ -11,119 +11,67 @@ The Infrastructure project implements the Infrastructure layer in the Clean Arch
 
 ## Features
 
-- **GitHub Provider**: Content repository implementation using GitHub API
-- **File System Provider**: Local file system content repository
-- **Caching Integration**: Memory and distributed cache implementations
-- **HTTP Clients**: Typed HTTP clients for external service communication
-- **Local Storage**: Browser local storage adapter for client-side persistence
-- **Dependency Injection**: Infrastructure service registration extensions
+- **GitHub Provider**: Content provider and repositories that read and write through the GitHub API (`GitHubContentProvider`, `GitHubContentRepository`)
+- **File System Provider**: Local file system content repository (`FileSystemContentRepository`). Without `last_modified` in a file's front matter, an item is last modified when it was created; set `FileSystemOptions.UseFileWriteTimeAsLastModified` to use the file's write time instead
+- **Caching Integration**: In-memory, stale-while-revalidate caching of repository results, configured with `CacheOptions`
+- **HTTP Clients**: Typed HTTP clients for the GitHub API (`GitHubApiClient`, `GitHubTokenProvider`)
+- **Local Storage**: `LocalStorageService`, an `IStateStorageService` implementation backed by Blazored.LocalStorage
+- **Dependency Injection**: Service registration extensions in `Osirion.Blazor.Cms.Infrastructure.DependencyInjection`
+- **Category and tag queries**: A `Category` or `Tag` query matches by name (ignoring case) or by slug, exactly
 
-## GitHub Provider
-
-Content provider implementation using the GitHub API via Octokit.NET:
+## Registration
 
 ```csharp
-public class GitHubContentRepository : IContentRepository
-{
-    private readonly GitHubClient _client;
-    private readonly IMemoryCache _cache;
-    private readonly ILogger<GitHubContentRepository> _logger;
-    private readonly GitHubContentOptions _options;
+using Osirion.Blazor.Cms.Infrastructure.DependencyInjection;
 
-    public GitHubContentRepository(
-        IHttpClientFactory httpClientFactory,
-        IMemoryCache cache,
-        IOptions<GitHubContentOptions> options,
-        ILogger<GitHubContentRepository> logger)
-    {
-        _cache = cache;
-        _logger = logger;
-        _options = options.Value;
-        
-        _client = new GitHubClient(new ProductHeaderValue("Osirion.Blazor.Cms"));
-        
-        if (!string.IsNullOrWhiteSpace(_options.PersonalAccessToken))
-        {
-            _client.Credentials = new Credentials(_options.PersonalAccessToken);
-        }
-    }
-
-    public async Task<ContentItem?> GetByPathAsync(string path)
-    {
-        try
-        {
-            var cacheKey = $"github:content:{path}";
-            
-            if (_cache.TryGetValue(cacheKey, out ContentItem? cachedItem))
-            {
-                return cachedItem;
-            }
-            
-            var contentResponse = await _client.Repository.Content.GetAllContents(
-                _options.Owner, 
-                _options.Repository,
-                Path.Combine(_options.ContentPath, path));
-                
-            var content = contentResponse.FirstOrDefault();
-            
-            if (content is null)
-            {
-                return null;
-            }
-            
-            var decodedContent = content.Encoding == ContentEncoding.Base64
-                ? Encoding.UTF8.GetString(Convert.FromBase64String(content.Content))
-                : content.Content;
-                
-            var contentItem = await ProcessContentAsync(path, decodedContent);
-            
-            var cacheOptions = new MemoryCacheEntryOptions()
-                .SetSlidingExpiration(TimeSpan.FromMinutes(_options.CacheExpirationMinutes));
-                
-            _cache.Set(cacheKey, contentItem, cacheOptions);
-            
-            return contentItem;
-        }
-        catch (NotFoundException)
-        {
-            _logger.LogWarning("Content not found in GitHub repository: {Path}", path);
-            return null;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error fetching content from GitHub: {Path}", path);
-            throw;
-        }
-    }
-    
-    // Additional repository methods
-}
+builder.Services.AddCms(builder.Configuration, cms => cms
+    .AddGitHub()
+    .AddFileSystem(options => options.BasePath = "content"));
 ```
+
+`AddCms(IConfiguration, Action<OsirionCmsBuilder>?)` registers the core services. Without the delegate it registers a provider for each configuration section it finds under `Osirion:Cms` (`GitHub` and `FileSystem`). `AddGitHubContentProvider`, `AddFileSystemContentProvider`, `AddCustomContentProvider<TProvider>` and `AddOsirionCqrs` are available as separate `IServiceCollection` extensions.
 
 ## Configuration Options
 
-Configuration options for the infrastructure providers:
+Both option classes derive from `ContentProviderOptions` (namespace `Osirion.Blazor.Cms.Domain.Options`), which adds `ProviderId`, `IsDefault`, `ContentPath`, `EnableLocalization`, `DefaultLocale`, `SupportedLocales`, `SupportedExtensions` and `ValidateContent`.
+
+`GitHubOptions` binds from `Osirion:Cms:GitHub`. A named provider (`AddGitHubContentProvider(configuration, "Blog")`) binds from `Osirion:Cms:Web:GitHub:{name}`, or `Osirion:Cms:Admin:GitHub:{name}` when that section is absent:
 
 ```csharp
-public class GitHubContentOptions
+public class GitHubOptions : ContentProviderOptions
 {
     public string Owner { get; set; } = string.Empty;
     public string Repository { get; set; } = string.Empty;
     public string Branch { get; set; } = "main";
-    public string ContentPath { get; set; } = "content";
-    public string? PersonalAccessToken { get; set; }
-    public bool UseCache { get; set; } = true;
-    public int CacheExpirationMinutes { get; set; } = 60;
-}
-
-public class FileSystemContentOptions
-{
-    public string BasePath { get; set; } = "content";
-    public bool WatchForChanges { get; set; } = false;
-    public bool UseCache { get; set; } = true;
-    public int CacheExpirationMinutes { get; set; } = 60;
+    public string ApiToken { get; set; } = string.Empty;
+    public string? ApiUrl { get; set; } = "https://api.github.com";
+    public string? WebhookSecret { get; set; }
+    public bool EnablePolling { get; set; } = false;
+    public int PollingIntervalSeconds { get; set; } = 86400;
+    public bool UseBackgroundCacheUpdate { get; set; } = true;
+    public List<string> ExcludePatterns { get; set; } = new() { ".*", "_*" };
+    // Authentication and inherited properties
 }
 ```
+
+`FileSystemOptions` binds from `Osirion:Cms:Web:FileSystem`, or from `Osirion:Cms:FileSystem:Web` when the first section is absent:
+
+```csharp
+public class FileSystemOptions : ContentProviderOptions
+{
+    public string BasePath { get; set; } = string.Empty;
+    public bool WatchForChanges { get; set; } = true;
+    public int PollingIntervalMs { get; set; } = 30000;
+    public bool IncludeSubdirectories { get; set; } = true;
+    public bool CreateDirectoriesIfNotExist { get; set; } = false;
+    public List<string> IncludePatterns { get; set; } = new() { "**/*.md", "**/*.markdown" };
+    public List<string> ExcludePatterns { get; set; } = new() { "**/node_modules/**", "**/bin/**", "**/obj/**" };
+    public string? ContentRoot { get; set; }
+    public bool UseFileWriteTimeAsLastModified { get; set; }
+}
+```
+
+`CacheOptions` binds from `Osirion:Cms:Cache` (`Enabled`, `StaleTimeMinutes`, `MaxAgeMinutes`, `UseStaleWhileRevalidate`, `SizeLimitMB`, `CompactionPercentage`).
 
 ## GitHub API Clients and Credentials
 
@@ -142,10 +90,11 @@ The infrastructure layer has the following dependencies:
 
 - **Osirion.Blazor.Cms.Domain**: For domain entities and interfaces
 - **Osirion.Blazor.Cms.Application**: For application services and interfaces
-- **Octokit**: For GitHub API integration
+- **Osirion.Blazor.Core**: For shared Osirion components and services
 - **Blazored.LocalStorage**: For browser local storage access
-- **Microsoft.Extensions.Caching.Memory**: For memory caching
-- **Microsoft.Extensions.Http**: For HTTP client factory
+- **Scrutor**: For assembly scanning in `AddOsirionCqrs`
+- **System.IO.Abstractions**: For file system access in the file system provider
+- **Microsoft.AspNetCore.App**: Shared framework reference
 
 ## License
 

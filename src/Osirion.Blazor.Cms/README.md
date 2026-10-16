@@ -17,6 +17,8 @@ Content management components for Blazor applications with multiple provider sup
 - **Caching**: Efficient content delivery with built-in caching
 - **Content Organization**: Categories, tags, and directory-based navigation
 - **Search**: Full-text content search capabilities
+- **Custom list markup**: `ItemTemplate` on `ContentList`, `ContentListPage` and `OsirionContentListSection` renders each item through your own markup
+- **Last-modified dates**: an item without `last_modified` in its front matter is last modified on its `date`; set `FileSystemOptions.UseFileWriteTimeAsLastModified` to use file write times instead
 
 ## Installation
 
@@ -30,7 +32,7 @@ dotnet add package Osirion.Blazor.Cms
 
 ```csharp
 // In Program.cs
-using Osirion.Blazor.Cms.Extensions;
+using Osirion.Blazor.Cms.Web.DependencyInjection;
 
 builder.Services.AddOsirionContent(content => {
     content.AddGitHub(options => {
@@ -43,7 +45,7 @@ builder.Services.AddOsirionContent(content => {
 ```
 
 ```razor
-@using Osirion.Blazor.Cms.Components
+@using Osirion.Blazor.Cms.Web.Components
 
 <!-- Display a list of content items -->
 <ContentList />
@@ -58,15 +60,15 @@ builder.Services.AddOsirionContent(content => {
 <!-- Add search functionality -->
 <SearchBox />
 
-<!-- Add directory navigation -->
-<DirectoryNavigation />
+<!-- Add directory navigation (pass the directories to show) -->
+<DirectoryNavigation Directories="@directories" />
 
 <!-- For localized content -->
 <LocalizedNavigation CurrentLocale="en" />
 <LocalizedContentView Path="blog/my-post.md" CurrentLocale="en" />
 
 <!-- Add SEO metadata to your layout -->
-<SeoMetadataRenderer Content="@CurrentContent" SiteName="My Website" BaseUrl="https://mysite.com" />
+<SeoMetadataRenderer Content="@CurrentContent" SiteNameOverride="My Website" />
 ```
 
 ### File System Provider
@@ -85,22 +87,22 @@ builder.Services.AddOsirionContent(content => {
 The CMS module has built-in support for multi-language content. You can enable or disable localization as needed:
 
 ```csharp
-// With localization enabled (default)
+// With localization enabled (it is off by default)
 builder.Services.AddOsirionContent(content => {
     content.AddGitHub(options => {
         options.Owner = "username";
         options.Repository = "content-repo";
-        options.EnableLocalization = true; // Default is true
-        options.DefaultLocale = "en"; // Default locale
+        options.EnableLocalization = true; // Default is false
+        options.DefaultLocale = "en"; // Default is "en"
     });
 });
 
-// Disable localization
+// Localization stays off when EnableLocalization is false (the default)
 builder.Services.AddOsirionContent(content => {
     content.AddGitHub(options => {
         options.Owner = "username";
         options.Repository = "content-repo";
-        options.EnableLocalization = false; // Disable localization
+        options.EnableLocalization = false;
     });
 });
 ```
@@ -124,7 +126,10 @@ When localization is enabled:
 
 ### Content Queries
 
-```csharp
+```razor
+@using Osirion.Blazor.Cms.Domain.Enums
+@using Osirion.Blazor.Cms.Domain.Repositories
+@using Osirion.Blazor.Cms.Domain.Services
 @inject IContentProvider ContentProvider
 
 @code {
@@ -190,10 +195,14 @@ Your markdown content here...
 ## Creating Custom Providers
 
 ```csharp
+// ContentProviderBase is in Osirion.Blazor.Cms.Infrastructure.Providers
 public class CustomProvider : ContentProviderBase
 {
-    public CustomProvider(ILogger<CustomProvider> logger, IMemoryCache memoryCache) 
-        : base(logger, memoryCache)
+    public CustomProvider(
+        IMemoryCache memoryCache,
+        IOptions<ContentProviderOptions> options,
+        ILogger<CustomProvider> logger)
+        : base(memoryCache, options, logger)
     {
     }
 
@@ -211,10 +220,13 @@ public class CustomProvider : ContentProviderBase
         // Your implementation
     }
 
-    public override Task<IReadOnlyList<ContentItem>> GetItemsByQueryAsync(ContentQuery query, CancellationToken cancellationToken = default)
+    public override Task<IReadOnlyList<ContentItem>?> GetItemsByQueryAsync(ContentQuery query, CancellationToken cancellationToken = default)
     {
         // Your implementation
     }
+
+    // Implement the remaining abstract members of IContentProvider as well
+    // (GetItemByIdAsync, GetItemByUrlAsync, GetCategoriesAsync, GetTagsAsync, the directory methods, ...)
 }
 
 // Register the provider

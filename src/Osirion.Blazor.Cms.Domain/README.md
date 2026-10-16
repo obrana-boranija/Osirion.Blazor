@@ -13,57 +13,62 @@ The Domain project implements the Domain layer in the Clean Architecture pattern
 
 ### Entities
 
-Core business objects defined by their identity:
+Core business objects defined by their identity. `ContentItem` (namespace `Osirion.Blazor.Cms.Domain.Entities`) derives from `DomainEntity<string>`, which derives from `Entity<TId>`:
 
 ```csharp
-public class ContentItem : Entity<Guid>
+public class ContentItem : DomainEntity<string>
 {
-    public string Path { get; set; } = string.Empty;
     public string Title { get; set; } = string.Empty;
+    public string Author { get; set; } = string.Empty;
     public string Content { get; set; } = string.Empty;
-    public IReadOnlyDictionary<string, object> Metadata { get; set; } 
-        = new Dictionary<string, object>();
+    public string Path { get; set; } = string.Empty;
+    public string Slug { get; set; } = string.Empty;
+    public ContentStatus Status { get; set; } = ContentStatus.Published;
+    public IReadOnlyList<string> Tags { get; }
+    public IReadOnlyList<string> Categories { get; }
+    public FrontMatter? Metadata { get; set; }
     // Additional properties
 }
 ```
 
+`ContentItem.Create(id, title, content, path, providerId)` builds a validated item. `DirectoryItem` models a content folder.
+
 ### Value Objects
 
-Immutable objects defined by their properties:
+Objects that derive from `ValueObject` and are compared by value. `FrontMatter` (namespace `Osirion.Blazor.Cms.Domain.ValueObjects`) holds the parsed front matter of a content file, and `SeoMetadata` holds search engine metadata. `FrontMatter` is changed through copies:
 
 ```csharp
-public class ContentMetadata : ValueObject
-{
-    public string? Title { get; }
-    public string? Description { get; }
-    public DateTime? PublishedDate { get; }
-    public string? Author { get; }
-    public IReadOnlyList<string> Tags { get; } 
-    public IReadOnlyList<string> Categories { get; }
-    public bool IsFeatured { get; }
-    
-    // Constructor, Equals, GetHashCode implementations
-}
+var frontMatter = FrontMatter.Create("My first post")
+    .WithAuthor("Jane Doe")
+    .WithTags(new[] { "blazor", "cms" })
+    .WithFeatured(true);
 ```
 
 ### Enumerations
 
-Strong typing for domain concepts:
+Strong typing for domain concepts (namespace `Osirion.Blazor.Cms.Domain.Enums`):
 
 ```csharp
 public enum ContentStatus
 {
     Draft,
     Published,
-    Archived
+    Scheduled,
+    Archived,
+    InReview
 }
 
 public enum SortField
 {
-    Title,
     Date,
+    Title,
     Author,
-    Path
+    LastModified,
+    Order,
+    Created,
+    PublishDate,
+    Slug,
+    ReadTime
 }
 
 public enum SortDirection
@@ -73,19 +78,25 @@ public enum SortDirection
 }
 ```
 
-### Domain Services
+### Domain Services and Repositories
 
-Core business logic not naturally fitting into entities:
+Contracts that infrastructure implements. `IContentProvider` (namespace `Osirion.Blazor.Cms.Domain.Services`) is the abstraction over a content source such as GitHub or the file system:
 
 ```csharp
-public interface IContentService
+public interface IContentProvider
 {
-    Task<IReadOnlyList<ContentItem>> GetContentItemsAsync(ContentQuery query);
-    Task<ContentItem?> GetContentItemByPathAsync(string path);
-    Task<IReadOnlyList<string>> GetAvailableTagsAsync();
-    Task<IReadOnlyList<string>> GetAvailableCategoriesAsync();
+    string ProviderId { get; }
+    string DisplayName { get; }
+    bool IsReadOnly { get; }
+
+    Task<IReadOnlyList<ContentItem>> GetAllItemsAsync(CancellationToken cancellationToken = default);
+    Task<ContentItem?> GetItemByPathAsync(string path, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<ContentItem>?> GetItemsByQueryAsync(ContentQuery query, CancellationToken cancellationToken = default);
+    // Additional members for ids, urls, categories, tags and directories
 }
 ```
+
+`IContentRepository` (namespace `Osirion.Blazor.Cms.Domain.Repositories`) adds `GetByPathAsync`, `FindByQueryAsync` and related persistence operations.
 
 ## Design Principles
 
@@ -93,7 +104,7 @@ This project follows these design principles:
 
 1. **Persistence Ignorance**: Domain entities know nothing about how they are stored
 2. **Rich Domain Model**: Domain entities contain both data and behavior
-3. **Immutability**: Value objects are immutable
+3. **Value semantics**: Value objects are compared by value and changed through copies
 4. **Encapsulation**: Internal state is protected
 5. **Domain-Driven Design**: Modeling based on the ubiquitous language of the domain
 
@@ -101,9 +112,10 @@ This project follows these design principles:
 
 The domain layer has minimal dependencies:
 
-- **.NET 8.0/.NET 9.0**: Target frameworks
-- **Microsoft.Extensions.DependencyInjection**: For dependency injection
-- **Microsoft.Extensions.Logging.Abstractions**: For logging abstractions
+- **.NET 9 and .NET 10**: Target frameworks
+- **Markdig**: For Markdown processing
+- **YamlDotNet**: For front matter parsing
+- **Microsoft.AspNetCore.App**: Shared framework reference
 
 ## License
 
