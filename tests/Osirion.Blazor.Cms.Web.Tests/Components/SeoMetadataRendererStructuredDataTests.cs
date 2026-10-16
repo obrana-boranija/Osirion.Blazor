@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.ValueObjects;
 using Osirion.Blazor.Cms.Web.Components;
+using Osirion.Blazor.Cms.Web.Options;
 using Osirion.Blazor.Cms.Web.Tests.Base;
 using Shouldly;
 
@@ -283,6 +284,49 @@ public class SeoMetadataRendererStructuredDataTests : CmsWebComponentTestBase
         schemas[1].ShouldBe(Normalize(FaqPageJson));
     }
 
+    [Fact]
+    public void SeoMetadataRenderer_AuthorUrl_NamesTheAuthorsPageAbsolute()
+    {
+        var schemas = RenderJsonLd(p => p
+            .Add(c => c.Content, SeoTestContent.Article())
+            .Add(c => c.SchemaTypes, [SchemaType.Article])
+            .Add(c => c.AuthorUrl, "/about"));
+
+        schemas[0].ShouldContain(Normalize(AuthorWithAboutPage));
+    }
+
+    [Fact]
+    public void SeoMetadataRenderer_SeoOptionsAuthorUrl_ReachesEveryPostingInACollection()
+    {
+        Services.AddSingleton(Microsoft.Extensions.Options.Options.Create(new SeoMetadataOptions { AuthorUrl = "/about" }));
+
+        var schemas = RenderJsonLd(p => p
+            .Add(c => c.ContentItems, [SeoTestContent.Article()])
+            .Add(c => c.CollectionTitle, "All posts"));
+
+        schemas.ShouldHaveSingleItem().ShouldContain(Normalize(AuthorWithAboutPage));
+    }
+
+    [Fact]
+    public void SeoMetadataRenderer_SeoOptionsTurnMultipleSchemasOff_RendersOnlyTheRequestedSchema()
+    {
+        Services.AddSingleton(Microsoft.Extensions.Options.Options.Create(new SeoMetadataOptions { GenerateMultipleSchemas = false }));
+
+        var schemas = RenderJsonLd(p => p
+            .Add(c => c.Content, SeoTestContent.Article())
+            .Add(c => c.SchemaTypes, [SchemaType.Article]));
+
+        schemas.ShouldBe([Normalize(ArticleJson)]);
+    }
+
+    private const string AuthorWithAboutPage = """
+          "author": {
+            "@type": "Person",
+            "name": "Jane Doe",
+            "url": "http://localhost/about"
+          }
+        """;
+
     private List<string> RenderJsonLd(Action<ComponentParameterCollectionBuilder<SeoMetadataRenderer>> parameters)
     {
         Services.GetRequiredService<NavigationManager>().NavigateTo(SeoTestContent.PageUrl);
@@ -305,17 +349,14 @@ public class SeoMetadataRendererStructuredDataTests : CmsWebComponentTestBase
           "image": "http://localhost/images/cover.png",
           "author": {
             "@type": "Person",
-            "name": "Jane Doe",
-            "url": "http://localhost/author/jane-doe"
+            "name": "Jane Doe"
           },
           "publisher": {
             "@type": "Organization",
             "name": "localhost",
             "logo": {
               "@type": "ImageObject",
-              "url": "http://localhost/logo.png",
-              "width": 600,
-              "height": 60
+              "url": "http://localhost/logo.png"
             }
           },
           "datePublished": "2020-01-02T03:04:05Z",
