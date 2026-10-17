@@ -435,6 +435,23 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
         contentItem.SetContentId(IdGenerator.GenerateStableId(pathWithoutExtension));
     }
 
+    // A front matter without a title has an empty one, which SetTitle rejects, so the page was dropped. A folder's
+    // _index.md takes the folder's name; any other file keeps the file name the item was created with.
+    private static string ResolveTitle(ContentItem contentItem)
+    {
+        var frontMatterTitle = contentItem.Metadata?.Title;
+        if (!string.IsNullOrWhiteSpace(frontMatterTitle))
+        {
+            return frontMatterTitle;
+        }
+
+        var segments = contentItem.Path.Replace('\\', '/').Split('/', StringSplitOptions.RemoveEmptyEntries);
+        var isSectionPage = segments.Length > 1
+            && string.Equals(Path.GetFileNameWithoutExtension(segments[^1]), "_index", StringComparison.OrdinalIgnoreCase);
+
+        return isSectionPage ? segments[^2] : contentItem.Title;
+    }
+
     /// <summary>
     /// Processes a markdown file to create a content item
     /// </summary>
@@ -469,7 +486,7 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
             contentItem.SetContentId(contentItem.Metadata?.Id ?? contentItem.ContentId);
             contentItem.SetOrderIndex(contentItem.Metadata?.Order ?? contentItem.OrderIndex);
             // Layout and Permalink are stored in Metadata only
-            contentItem.SetTitle(contentItem.Metadata?.Title ?? contentItem.Title);
+            contentItem.SetTitle(ResolveTitle(contentItem));
             contentItem.SetDescription(contentItem.Metadata?.Description ?? contentItem.Description);
             contentItem.SetAuthor(contentItem.Metadata?.Author ?? contentItem.Author);
             contentItem.SetFeaturedImage(contentItem.Metadata?.FeaturedImage ?? contentItem.FeaturedImageUrl);

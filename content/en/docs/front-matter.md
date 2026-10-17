@@ -64,7 +64,7 @@ is the creation time of the file and every other value takes its default.
 
 | Key | Type | Default | Effect |
 | --- | --- | --- | --- |
-| `title` | string | none | The page's heading, its link text in lists and the base of the `<title>`. Required once the file has a front matter block: an empty title stops the file from loading. |
+| `title` | string | none | The page's heading, its link text in lists and the base of the `<title>`. Without one the page takes its file name, and a folder's `_index.md` takes the folder's name. In 4.1.0 a file with a front matter block and no title does not load, so write one there. |
 | `description` | string | empty | The meta description (cut to 160 characters), the summary in lists and the feed description. |
 | `slug` | string | from the file name | The last part of the address. Lowercase letters, digits and hyphens only; anything else stops the file from loading. |
 | `date` | date text | the file's creation time (the load time with a GitHub provider) | The publication date: list order, the feed `pubDate`, `datePublished`. In 4.1.0 a missing `date` is the day the content was loaded. See step 3. |
