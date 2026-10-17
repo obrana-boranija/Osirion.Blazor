@@ -272,6 +272,23 @@ public partial class SiteTests(SiteFactory factory) : IClassFixture<SiteFactory>
         failures.ShouldBeEmpty();
     }
 
+    [Theory]
+    [InlineData("/components/content-renderer")]
+    [InlineData("/components/content-view")]
+    [InlineData("/components/localized-content-view")]
+    [InlineData("/components/content-page")]
+    public async Task CmsPageDemos_ShowThisSitesOwnReleaseNotesPage(string address)
+    {
+        // Arrange
+        using var client = CreateClient();
+
+        // Act
+        var html = await client.GetStringAsync(address);
+
+        // Assert
+        html.ShouldContain("Version 1.5.0 was released on 21 April 2025");
+    }
+
     private HttpClient CreateClient() =>
         factory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
 

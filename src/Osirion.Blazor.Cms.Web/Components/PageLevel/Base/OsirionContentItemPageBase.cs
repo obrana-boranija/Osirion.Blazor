@@ -14,31 +14,40 @@ public abstract class OsirionContentItemPageBase : OsirionContentPageBase
     #region Content
 
     /// <summary>
-    /// Gets or sets the content item to display
+    /// The item to show. When you set it, the page shows it and loads nothing; otherwise the page finds the first
+    /// match of <see cref="OsirionContentPageBase.Query"/> or of the <c>ItemPath</c>, <c>ItemUrl</c>,
+    /// <c>ItemSlug</c>, locale and directory parameters, and sets this property. Used by <c>ArticlePage</c>,
+    /// <c>AboutPage</c> and <c>ContactPage</c>; <c>HomePage</c> and <c>DocumentPage</c> take their item as
+    /// <c>Content</c>.
     /// </summary>
     [Parameter]
     public ContentItem? Item { get; set; }
 
     /// <summary>
-    /// Gets or sets the path to the article content (eg. "en/articles/my-article.md")
+    /// The source path of the item to find (<c>ContentItem.Path</c>, for example <c>en/articles/my-article.md</c>). A
+    /// change of it, of <c>ItemUrl</c>, <c>ItemSlug</c>, the locale or the directory makes the page look the item up
+    /// again.
     /// </summary>
     [Parameter]
     public string? ItemPath { get; set; }
 
     /// <summary>
-    /// Gets or sets the url to the article content (eg. "articles/my-article")
+    /// The public URL of the item to find (<c>ContentItem.Url</c>, for example <c>articles/my-article</c>), without a
+    /// locale folder.
     /// </summary>
     [Parameter]
     public string? ItemUrl { get; set; }
 
     /// <summary>
-    /// Gets or sets the slug to the article content (eg. "my-article")
+    /// The slug of the item to find (<c>ContentItem.Slug</c>, for example <c>my-article</c>). Combine it with
+    /// <c>DirectoryName</c> when slugs repeat across directories.
     /// </summary>
     [Parameter]
     public string? ItemSlug { get; set; }
 
     /// <summary>
-    /// Gets or sets the content URL formatter
+    /// Builds the links of the other parts of a series from the item. Passed on by <c>ArticlePage</c> to its series
+    /// navigation; no other page reads it.
     /// </summary>
     [Parameter]
     public Func<ContentItem, string>? ItemUrlFormatter { get; set; }

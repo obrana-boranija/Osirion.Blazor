@@ -57,6 +57,10 @@ internal static class SiteDemos
         Add<ContentNotFoundDemo>(demos, "content-not-found", "A content not found state");
         Add<ThemeToggleDemo>(demos, "theme-toggle", "A theme toggle");
         Add<ThemePickerDemo>(demos, "theme-picker", "A palette picker");
+        Add<ContentRendererDemo>(demos, "content-renderer", "A content body");
+        Add<ContentViewDemo>(demos, "content-view", "A content view");
+        Add<LocalizedContentViewDemo>(demos, "localized-content-view", "A localized content view");
+        Add<ContentPageDemo>(demos, "content-page", "A content page in a frame");
     }
 
     private static void Add<TDemo>(ContentDemoRegistry demos, string key, string title)

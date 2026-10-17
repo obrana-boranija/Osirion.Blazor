@@ -16,23 +16,37 @@ public partial class ContentView(IContentProviderManager contentProviderManager)
     [Inject]
     private ILogger<ContentView> Logger { get; set; } = default!;
 
-    /// <summary>Gets or sets the content path to load.</summary>
+    /// <summary>
+    /// The source path of the item to load from the default provider (<c>ContentItem.Path</c>, for example
+    /// <c>blog/getting-started.md</c>) while <see cref="Item"/> is not set. A null or white-space path loads nothing.
+    /// </summary>
     [Parameter]
     public string Path { get; set; } = string.Empty;
 
-    /// <summary>Gets or sets the loading message.</summary>
+    /// <summary>
+    /// The text shown while the item loads, in interactive render modes only. A statically rendered response is sent
+    /// once the item has loaded.
+    /// </summary>
     [Parameter]
     public string LoadingText { get; set; } = "Loading content...";
 
-    /// <summary>Gets or sets the message shown when content is not found.</summary>
+    /// <summary>
+    /// The message of the not-found block, shown under a fixed <c>Content Not Found</c> heading and above a link back
+    /// to <c>/</c>. The block appears when no item is found, when loading fails (the error is logged) and when
+    /// neither <see cref="Item"/> nor <see cref="Path"/> is set.
+    /// </summary>
     [Parameter]
     public string NotFoundText { get; set; } = "Content not found.";
 
-    /// <summary>Gets or sets a formatter for category URLs.</summary>
+    /// <summary>
+    /// Builds a category link from the category name. Without it the link is <c>/category/{slug}</c>.
+    /// </summary>
     [Parameter]
     public Func<string, string>? CategoryUrlFormatter { get; set; }
 
-    /// <summary>Gets or sets a formatter for tag URLs.</summary>
+    /// <summary>
+    /// Builds a tag link from the tag name. Without it the link is <c>/tag/{slug}</c>.
+    /// </summary>
     [Parameter]
     public Func<string, string>? TagUrlFormatter { get; set; }
 
@@ -43,23 +57,38 @@ public partial class ContentView(IContentProviderManager contentProviderManager)
     [Parameter]
     public Func<string, string>? AuthorUrlFormatter { get; set; }
 
-    /// <summary>Gets or sets a formatter for content URLs.</summary>
+    /// <summary>
+    /// Builds the links of the previous and next items from the item. Without it a link is <c>/{item.Path}</c>, the
+    /// source path, which is usually not the public address, so set it whenever navigation links are shown.
+    /// </summary>
     [Parameter]
     public Func<ContentItem, string>? ContentUrlFormatter { get; set; }
 
-    /// <summary>Gets or sets the content item to display.</summary>
+    /// <summary>
+    /// The item to render: header, sanitized body, categories, tags and navigation. An item the parent sets is never
+    /// replaced by loading by <see cref="Path"/>.
+    /// </summary>
     [Parameter]
     public ContentItem? Item { get; set; }
 
-    /// <summary>Gets or sets the previous content item.</summary>
+    /// <summary>
+    /// The item the previous link points to. Loading by <see cref="Path"/> with <see cref="ShowNavigationLinks"/> on
+    /// fills it, and clears what it filled when the path changes; a value you set is left alone until then.
+    /// </summary>
     [Parameter]
     public ContentItem? PreviousItem { get; set; }
 
-    /// <summary>Gets or sets the next content item.</summary>
+    /// <summary>
+    /// The item the next link points to. See <see cref="PreviousItem"/>.
+    /// </summary>
     [Parameter]
     public ContentItem? NextItem { get; set; }
 
-    /// <summary>Gets or sets a value indicating whether navigation links are shown.</summary>
+    /// <summary>
+    /// Whether the footer shows previous and next links. When the component loads by <see cref="Path"/> it also looks
+    /// the neighbors up with a directory query built from the folder part of the path, newest first. For an item you
+    /// pass in <see cref="Item"/>, set <see cref="PreviousItem"/> and <see cref="NextItem"/> yourself.
+    /// </summary>
     [Parameter]
     public bool ShowNavigationLinks { get; set; } = false;
 

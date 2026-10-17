@@ -68,11 +68,10 @@ Register the services in `Program.cs`:
 using Osirion.Blazor.Extensions;
 
 builder.Services.AddOsirion(builder.Configuration);
-
-// Components that enhance themselves with a script (page layout, carousels, metric cards,
-// image gallery, reveal, video embeds, the HTML renderer) load it through BlazorJSComponents.
-builder.Services.AddJSComponents();
 ```
+
+`AddOsirion` also registers the BlazorJSComponents loader through which the components that enhance themselves with a
+script (page layout, carousels, metric cards, image gallery, reveal, video embeds, the HTML renderer) load it.
 
 Add the namespaces to `_Imports.razor`:
 
