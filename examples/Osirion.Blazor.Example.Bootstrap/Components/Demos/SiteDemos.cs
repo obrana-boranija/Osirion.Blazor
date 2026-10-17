@@ -19,6 +19,11 @@ internal static class SiteDemos
         Add<SubscriptionCardDemo>(demos, "subscription-card", "A subscription card");
         Add<AuthorCardDemo>(demos, "author-card", "An author card");
         Add<MetricCardDemo>(demos, "metric-card", "Metric cards");
+        Add<PageLayoutDemo>(demos, "page-layout", "A page layout in a frame");
+        Add<PageLoadingDemo>(demos, "page-loading", "Page loading spinners");
+        Add<FooterDemo>(demos, "footer", "A footer");
+        Add<StickySidebarDemo>(demos, "sticky-sidebar", "A sticky sidebar");
+        Add<BackgroundPatternDemo>(demos, "background-pattern", "Background patterns");
     }
 
     private static void Add<TDemo>(ContentDemoRegistry demos, string key, string title)

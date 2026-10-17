@@ -7,7 +7,7 @@ permalink: /components/footer
 description: A site footer with link sections, social links, a copyright line, legal links and free content slots, rendered on the server without script.
 author: Dejan Demonjić
 date: 2025-09-03
-last_modified: 2026-10-11
+last_modified: 2026-10-17
 featured_image: /assets/images/blazor-cover.png
 categories:
 - Components
@@ -29,7 +29,7 @@ redirect_from:
 custom_fields:
   group: layout
 seo_properties:
-  title: 'OsirionFooter: Blazor site footer with link sections | Osirion.Blazor'
+  title: 'OsirionFooter: site footer for Blazor'
   description: 'A Blazor site footer with link sections, social links, a copyright line, legal links and content slots, rendered without script.'
   image: /assets/images/blazor-cover.png
   canonical: 'https://getosirion.com/components/footer'
@@ -53,6 +53,16 @@ seo_properties:
 `OsirionFooter` renders a site footer: a top row with your logo and description, columns of links and social links,
 then a bottom row with the copyright line and legal links. Everything is plain markup, so it works the same under
 static SSR and interactive rendering.
+
+Package `Osirion.Blazor.Core`, namespace `Osirion.Blazor.Components`. [Source on GitHub](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Core/Components/Layout/OsirionFooter.razor).
+
+```demo
+footer
+```
+
+The demo uses the `minimal` variant with sample text. On its own the footer renders a `footer` element, so it adds a
+second contentinfo landmark to this page; in a real layout, put it in the `Footer` slot of
+[OsirionPageLayout](/components/page-layout) instead.
 
 ## Usage
 
@@ -117,35 +127,42 @@ A fuller footer passes link data from code:
 
 ## Parameters
 
+<!-- osirion:parameters OsirionFooter -->
+
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `CompanyName` | `string` | `"Company"` | Name in the default copyright line. |
-| `CompanyUrl` | `string` | `"/"` | Link in the default copyright line; an address starting with `http` opens in a new tab. |
-| `Description` | `string?` | `null` | Text under the logo, rendered as HTML. Shown only when the top row renders (see Behavior). |
-| `Copyright` | `string?` | `null` | Replaces the default copyright line; rendered as HTML. |
-| `ShowCopyright` | `bool` | `true` | Shows the default copyright line when `Copyright` is empty. |
-| `Logo` | `RenderFragment?` | `null` | Logo in the top row. |
-| `LeftContent` | `RenderFragment?` | `null` | Free content in the left column of the top row, above the logo. |
-| `RightContent` | `RenderFragment?` | `null` | Free content in the right column of the top row. |
-| `Links` | `IReadOnlyList<FooterSection>?` | `null` | Link columns, each with an optional `Title` and a list of `FooterLink`. |
-| `SocialLinks` | `IReadOnlyList<FooterSocialLink>?` | `null` | Social links; each shows its `Icon` fragment, or its `Text` when there is no icon. |
-| `ShowSocialLinks` | `bool` | `true` | Shows the social links. |
-| `SocialTitle` | `string` | `"Follow Us"` | Heading above the social links; empty hides it. |
-| `BottomLinks` | `IReadOnlyList<FooterLink>?` | `null` | Legal links in the bottom row. |
-| `ShowDivider` | `bool` | `true` | Line between the top and bottom rows. |
-| `ShowTopSection` | `bool` | `true` | Renders the top row. |
-| `ShowBottomSection` | `bool` | `true` | Renders the bottom row. |
-| `Variant` | `string` | `"default"` | Adds `osirion-footer-{Variant}`; the stylesheet styles `minimal` and `centered`. |
-| `GridLayout` | `string` | `"auto"` | Adds `osirion-footer-grid-{GridLayout}`; `2-column`, `3-column` and `4-column` set fixed link columns. |
-| `Docked` | `bool` | `false` | Docks the footer with `DockingMode`. |
-| `DockingMode` | `string` | `"sticky"` | `"sticky"` pushes the footer down with `margin-top: auto`; `"fixed"` fixes it to the bottom of the viewport. |
-| `ChildContent` | `RenderFragment?` | `null` | Extra content below the bottom row. |
-| `Theme` | `ThemeMode` | `System` | `Light` or `Dark` forces that palette on the footer; `System` follows the site. |
+| `CompanyName` | `string` | `"Company"` | The name linked in the default copyright line (`&copy; year name. All rights reserved.`). Ignored when `Copyright` is set or `ShowCopyright` is `false`. |
+| `CompanyUrl` | `string` | `"/"` | The address the company name links to in the default copyright line. An address that starts with `http` opens in a new tab; any other opens in the same tab. |
+| `Description` | `string?` | `null` | The text under the logo, rendered as raw HTML, so pass only text you control. It is shown only when the top row renders, which needs at least one of `Logo`, `Links`, `SocialLinks`, `LeftContent` or `RightContent`. |
+| `Copyright` | `string?` | `null` | Custom copyright text, rendered as raw HTML, so pass only text you control. It replaces the default line built from `CompanyName`, `CompanyUrl` and the current year. |
+| `ShowCopyright` | `bool` | `true` | Whether the default copyright line is shown when `Copyright` is empty. |
+| `Logo` | `RenderFragment?` | `null` | The logo, shown in the top row above `Description`. |
+| `LeftContent` | `RenderFragment?` | `null` | Free content for the left column of the top row, such as contact details. It renders above the logo and description. |
+| `RightContent` | `RenderFragment?` | `null` | Free content for the right column of the top row. |
+| `Links` | `IReadOnlyList<FooterSection>?` | `null` | The link columns: each `FooterSection` has an optional `Title` (an `h2`) and a list of `FooterLink`. |
+| `SocialLinks` | `IReadOnlyList<FooterSocialLink>?` | `null` | The social links. Each shows its `Icon`, or its `Text` when there is no icon, and always opens in a new tab; set `AriaLabel` on icon-only links. |
+| `BottomLinks` | `IReadOnlyList<FooterLink>?` | `null` | The links in the bottom row, such as privacy and terms. They sit in a `nav` labelled "Footer legal navigation". |
+| `ShowSocialLinks` | `bool` | `true` | Whether `SocialLinks` are shown. |
+| `SocialTitle` | `string` | `"Follow Us"` | The `h2` above the social links. An empty value hides it. |
+| `ShowDivider` | `bool` | `true` | Whether a line separates the top and bottom rows. It shows only when both rows render. |
+| `ShowTopSection` | `bool` | `true` | Whether the top row (logo, description, links, social links, left and right content) renders. |
+| `ShowBottomSection` | `bool` | `true` | Whether the bottom row (copyright line and `BottomLinks`) renders. |
+| `Variant` | `string` | `"default"` | The variant, added as the class `osirion-footer-{value}`. The stylesheet styles `minimal` and `centered`; `default` and any other value add a class with no rules. |
+| `GridLayout` | `string` | `"auto"` | The number of link columns, added as the class `osirion-footer-grid-{value}`. The stylesheet defines `2-column`, `3-column` and `4-column`; `auto` and any other value use the default layout. |
+| `ChildContent` | `RenderFragment?` | `null` | Extra content rendered below the bottom row. |
+| `Docked` | `bool` | `false` | Whether the footer is docked, adding the class `osirion-footer-docked-{DockingMode}`. |
+| `DockingMode` | `string` | `"sticky"` | How a docked footer is placed: `"sticky"` adds `margin-top: auto`, which pushes the footer to the bottom of a flex column; `"fixed"` fixes it to the bottom of the viewport, where it covers the end of the page. Used only when `Docked` is `true`. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
+| `Style` | `string?` | `null` | An inline style for the component's root element. |
+
+<!-- /osirion:parameters -->
 
 `Class`, `Style` and unmatched attributes go on the outer element.
 
-`FooterLink` has `Text`, `Href` (default `"#"`) and `OpenInNewTab`, which adds `target="_blank"` and
-`rel="noopener noreferrer"`. `FooterSocialLink` adds `Icon` and `AriaLabel`; social links always open in a new tab.
+`FooterSection` has `Title` (optional) and `Links`. `FooterLink` has `Text`, `Href` (default `"#"`) and
+`OpenInNewTab`, which adds `target="_blank"` and `rel="noopener noreferrer"`. `FooterSocialLink` extends `FooterLink`
+with `Icon` and `AriaLabel`; social links always open in a new tab.
 
 ## Behavior
 
@@ -157,8 +174,13 @@ A fuller footer passes link data from code:
 - **Legal links** are wrapped in a `nav` labelled "Footer legal navigation".
 - **Top row.** It renders when at least one of `Logo`, `Links`, `SocialLinks`, `LeftContent` or `RightContent` is set.
   `Description` alone does not make it render.
+- **Copyright year.** The default line uses the server's current year each time the component renders, so a static
+  export shows the year of the export.
+- **Small screens.** Below 768 pixels the top row stacks into one column: the links, the left content, then the
+  right content. With a `Logo`, the logo and description come first.
 - **Social links without text.** When a link has only an icon, set `AriaLabel` so screen reader users hear where it
   goes.
+- **Printing.** The footer is hidden when the page is printed.
 
 > [!WARNING]
 > `Description` and `Copyright` are rendered as raw HTML. Pass only text you control, never visitor or CMS input.

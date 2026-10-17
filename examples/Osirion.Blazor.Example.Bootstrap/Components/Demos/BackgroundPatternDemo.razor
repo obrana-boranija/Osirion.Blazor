@@ -1,0 +1,24 @@
+@using Osirion.Blazor.Components
+
+@* Each tile is a positioned container: the pattern layer fills it and the label sits above the layer *@
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: 1rem;">
+    @foreach (var pattern in patterns)
+    {
+        <div style="position: relative; height: 8rem; border: 1px solid var(--osirion-border-color, #d1d5db); border-radius: 0.5rem; overflow: hidden;">
+            <OsirionBackgroundPattern BackgroundPattern="pattern" />
+            <div style="position: relative; z-index: 1; padding: 0.75rem;">
+                <code>@pattern</code>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private static readonly BackgroundPatternType[] patterns =
+    [
+        BackgroundPatternType.Dots,
+        BackgroundPatternType.Grid,
+        BackgroundPatternType.Diagonal,
+        BackgroundPatternType.Honeycomb
+    ];
+}
