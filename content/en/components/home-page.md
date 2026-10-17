@@ -131,8 +131,8 @@ nothing, and the table says which: `ContentPath`, `ContentUrlFormatter`, and the
 | `ReadMoreText` | `string` | `"Read more"` | Has no effect: it belongs to the recent section, which is never rendered. |
 | `ChildContent` | `RenderFragment?` | `null` | Content shown after the body and before the featured section. Child content alone keeps the page from the not-found state. |
 | `ShowNavigation` | `bool` | `true` | Whether `ArticlePage` shows the previous and next articles under the body. The other pages do not read it. |
-| `PreviousItem` | `ContentItem?` | `null` | The item of the previous link. Read by `DocumentPage`, which looks the neighbors up when this or `NextItem` is null; `ArticlePage` finds its own neighbors and ignores it. |
-| `NextItem` | `ContentItem?` | `null` | The item of the next link. Read by `DocumentPage`, which looks the neighbors up when this or `PreviousItem` is null; `ArticlePage` finds its own neighbors and ignores it. |
+| `PreviousItem` | `ContentItem?` | `null` | The item of the previous link. Read by `DocumentPage`, which looks it up when it is null and keeps a value you pass; `ArticlePage` finds its own neighbors and ignores it. |
+| `NextItem` | `ContentItem?` | `null` | The item of the next link. Read by `DocumentPage`, which looks it up when it is null and keeps a value you pass; `ArticlePage` finds its own neighbors and ignores it. |
 | `RelatedItems` | `IReadOnlyList<ContentItem>?` | `null` | The items of the related section of `ArticlePage`. When it is null and `ShowRelatedContent` is on, the page picks items of the same locale and directory that share a tag or a category with the article, most shared first, up to `RelatedItemsCount`. An empty list shows no section. |
 | `ShowRelatedContent` | `bool` | `true` | Whether `ArticlePage` shows a related section. The other pages do not read it, although the page base still loads related items for them. |
 | `RelatedContentTitle` | `string` | `"Related Articles"` | The heading of the related section of `ArticlePage`. |

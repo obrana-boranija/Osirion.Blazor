@@ -120,7 +120,7 @@ and the SEO parameters that are not forwarded. Use `Content` and `ContentPath` i
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `ContentPath` | `string?` | `null` | The source path of the document to load from the default provider while `Content` is not set. When nothing is found, the page shows the not-found state and signals 404. A change of the path on a page that already shows a document does not load another. |
+| `ContentPath` | `string?` | `null` | The source path of the document to load from the default provider while `Content` is not set. When nothing is found, the page shows the not-found state and signals 404. A change of the path loads the new document, also on a page that is interactive; a `Content` you pass is never replaced by loading. |
 | `Content` | `ContentItem?` | `null` | The document to show. Pass it when you have loaded it, as this documentation site does; the page then loads only what is missing: the side navigation entries and the previous and next documents. Without `Content` and `ContentPath` the page renders its frame without a document. |
 | `ShowSideNavigation` | `bool` | `true` | Whether to show the side navigation, a list of pages beside the document. On narrow screens it folds behind a button. |
 | `NavigationTitle` | `string?` | `null` | The heading of the side navigation. No heading is shown when it is empty. |
@@ -132,15 +132,15 @@ and the SEO parameters that are not forwarded. Use `Content` and `ContentPath` i
 | `TableOfContentsTitle` | `string` | `"On this page"` | The table of contents title |
 | `TocMinLevel` | `int` | `2` | The highest heading level in the table of contents: `2` starts at `h2`. |
 | `TocMaxLevel` | `int` | `4` | The lowest heading level in the table of contents: `4` goes down to `h4`. |
-| `ShowNavigationLinks` | `bool` | `true` | Whether to show previous and next links under the document. When `OsirionContentDetailPageBase.PreviousItem` or `OsirionContentDetailPageBase.NextItem` is null, the page looks both up in the document's folder, in `order`, and replaces your values with what it finds. |
+| `ShowNavigationLinks` | `bool` | `true` | Whether to show previous and next links under the document. When `OsirionContentDetailPageBase.PreviousItem` or `OsirionContentDetailPageBase.NextItem` is null, the page looks the missing one up in the document's folder, in `order`. A value you pass is kept. |
 | `CustomFooterContent` | `string?` | `null` | HTML shown under the document in a highlighted section. It is written through `OsirionHtmlRenderer`, which sanitizes it with the registered HTML sanitizer. |
 | `EditUrlFormatter` | `Func<ContentItem, string>?` | `null` | How the address of a page's source for editing is built, for example `item => $"https://github.com/owner/repo/edit/main/content/{item.Path}"`. When it returns an address, the page links to it after the body; no link is shown when it is `null` or returns nothing. |
 | `EditLinkText` | `string` | `"Edit this page"` | The text of the edit link. Defaults to `Edit this page`. |
 | `ContentUrlFormatter` | `Func<ContentItem, string>?` | `null` | Builds the links of the previous and next documents and of the folder entries the page lists itself from the item. Without it a link is `/{item.Url}`. |
 | `NavigationUrlFormatter` | `Func<DocumentNavigationItem, string>?` | `null` | Builds the link of a side navigation entry. Without it the link is the entry's `Url`. |
 | `ShowNavigation` | `bool` | `true` | Whether `ArticlePage` shows the previous and next articles under the body. The other pages do not read it. |
-| `PreviousItem` | `ContentItem?` | `null` | The item of the previous link. Read by `DocumentPage`, which looks the neighbors up when this or `NextItem` is null; `ArticlePage` finds its own neighbors and ignores it. |
-| `NextItem` | `ContentItem?` | `null` | The item of the next link. Read by `DocumentPage`, which looks the neighbors up when this or `PreviousItem` is null; `ArticlePage` finds its own neighbors and ignores it. |
+| `PreviousItem` | `ContentItem?` | `null` | The item of the previous link. Read by `DocumentPage`, which looks it up when it is null and keeps a value you pass; `ArticlePage` finds its own neighbors and ignores it. |
+| `NextItem` | `ContentItem?` | `null` | The item of the next link. Read by `DocumentPage`, which looks it up when it is null and keeps a value you pass; `ArticlePage` finds its own neighbors and ignores it. |
 | `RelatedItems` | `IReadOnlyList<ContentItem>?` | `null` | The items of the related section of `ArticlePage`. When it is null and `ShowRelatedContent` is on, the page picks items of the same locale and directory that share a tag or a category with the article, most shared first, up to `RelatedItemsCount`. An empty list shows no section. |
 | `ShowRelatedContent` | `bool` | `true` | Whether `ArticlePage` shows a related section. The other pages do not read it, although the page base still loads related items for them. |
 | `RelatedContentTitle` | `string` | `"Related Articles"` | The heading of the related section of `ArticlePage`. |
@@ -216,9 +216,11 @@ and the SEO parameters that are not forwarded. Use `Content` and `ContentPath` i
 
 - **Rendering.** The page renders on the server and needs no script; it does not use streaming rendering. The side
   navigation folds behind a button on narrow screens with a hidden checkbox, not script.
-- **Loading.** The page loads by `ContentPath` only while `Content` is null, so on a page that stays interactive while
-  its address changes, pass `Content` instead of a new `ContentPath`. With `Content` set, the page loads only what is
-  missing: the folder's entries for the side navigation, and the previous and next documents.
+- **Loading.** The page loads by `ContentPath` while `Content` is not set, and loads again when the path changes, so a
+  page that stays interactive while its address changes shows the new document. A `Content` you pass is never replaced
+  by loading. The page then loads only what is missing: the folder's entries for the side navigation, and the previous
+  and next documents, each one only when you did not pass it. They are looked up again when the document or the
+  parameters that decide what is missing change, not on every render.
 - **Head.** When a document is shown, the page writes a `SeoMetadataRenderer` for it, with `TechArticle` structured
   data unless `SchemaTypes` says otherwise. The first of `SchemaTypes` is also the article's microdata type; `FAQ`
   becomes `FAQPage`. `WebsiteName`, `OrganizationName`, `SiteLogoUrl`, `GenerateMultipleSchemas`, `PrevPageUrl`,

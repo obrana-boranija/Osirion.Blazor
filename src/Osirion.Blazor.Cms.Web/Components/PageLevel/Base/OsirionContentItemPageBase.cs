@@ -60,8 +60,18 @@ public abstract class OsirionContentItemPageBase : OsirionContentPageBase
     protected override async Task OnParametersSetAsync()
     {
         await base.OnParametersSetAsync();
-        await LoadContentAsync();
+        if (LoadsItem)
+        {
+            await LoadContentAsync();
+        }
     }
+
+    /// <summary>
+    /// Whether the page looks <see cref="Item"/> up when the parent does not supply it. A page that takes its item
+    /// in another parameter, as <c>HomePage</c> and <c>DocumentPage</c> take <c>Content</c>, returns
+    /// <see langword="false"/>: the lookup would query the provider for an item the page never renders.
+    /// </summary>
+    protected virtual bool LoadsItem => true;
 
     // What this page loaded itself, so a change of ItemPath, ItemUrl, ItemSlug, Locale or Directory replaces it,
     // while an Item supplied by the parent is left alone.
