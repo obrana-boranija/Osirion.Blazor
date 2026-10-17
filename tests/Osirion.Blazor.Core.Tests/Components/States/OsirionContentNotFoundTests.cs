@@ -118,6 +118,32 @@ public class OsirionContentNotFoundTests : OsirionComponentTestBase
         cut.FindAll(".osirion-content-not-found-actions a").ShouldBeEmpty();
     }
 
+    // Fails before the fix: a javascript: button or suggestion URL was written to href unchecked.
+    [Fact]
+    public void ContentNotFound_UnsafeAddresses_RenderWithoutALink()
+    {
+        var cut = RenderStatic<OsirionContentNotFound>(parameters => parameters
+            .Add(p => p.PrimaryButtonText, "Home")
+            .Add(p => p.PrimaryButtonUrl, "javascript:alert(1)")
+            .Add(p => p.SecondaryButtonText, "Docs")
+            .Add(p => p.SecondaryButtonUrl, "data:text/html,x")
+            .Add(p => p.ShowSuggestions, true)
+            .Add(p => p.Suggestions,
+            [
+                new ContentNotFoundSuggestion { Text = "Bad", Url = "javascript:alert(2)", Description = "Still shown" },
+                new ContentNotFoundSuggestion { Text = "Good", Url = "/blog" }
+            ]));
+
+        cut.Markup.ShouldNotContain("javascript:");
+        cut.Markup.ShouldNotContain("data:text");
+        cut.FindAll(".osirion-content-not-found-actions a").ShouldBeEmpty();
+        var links = cut.FindAll(".osirion-content-not-found-suggestion-link");
+        links.Count.ShouldBe(1);
+        links[0].GetAttribute("href").ShouldBe("/blog");
+        cut.Markup.ShouldContain("Bad");
+        cut.Markup.ShouldContain("Still shown");
+    }
+
     [Fact]
     public void ContentNotFound_Suggestions_RendersEachLinkWithTargetAndDescription()
     {

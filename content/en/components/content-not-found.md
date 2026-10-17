@@ -121,9 +121,9 @@ use this where the empty state is the page's main content, such as a blog index 
 | `IconUrl` | `string?` | `null` | The address of an image used as the icon, when `Icon` is not set. |
 | `IconAlt` | `string` | `"Not Found"` | The alternative text of the `IconUrl` image. |
 | `PrimaryButtonText` | `string?` | `"Go to Homepage"` | The text of the primary button, a link to `PrimaryButtonUrl`. Null or empty hides the button. |
-| `PrimaryButtonUrl` | `string` | `"/"` | The address of the primary button. |
+| `PrimaryButtonUrl` | `string` | `"/"` | The address of the primary button. An address that is not a local path or an http, https or mailto URL leaves the button out. |
 | `SecondaryButtonText` | `string?` | `null` | The text of the outlined secondary button, a link to `SecondaryButtonUrl`. Null or empty, the default, hides it. |
-| `SecondaryButtonUrl` | `string` | `"/"` | The address of the secondary button. |
+| `SecondaryButtonUrl` | `string` | `"/"` | The address of the secondary button. An unsafe address leaves the button out. |
 | `Actions` | `RenderFragment?` | `null` | More buttons or links, rendered after the two buttons. |
 | `ShowSuggestions` | `bool` | `false` | Whether the `Suggestions` list is shown. |
 | `SuggestionsTitle` | `string` | `"Here are some helpful links:"` | The text above the suggestions. |
@@ -149,7 +149,8 @@ Unmatched attributes are written to the root `<div>`. A `ContentNotFoundSuggesti
 ## Behavior
 
 - The component renders plain HTML and needs no script.
-- All text is HTML-encoded. Button and suggestion addresses are written as given, so pass addresses you control.
+- All text is HTML-encoded. A button or suggestion address must be a local path or an http, https or mailto URL. Any other
+  address, such as `javascript:`, leaves the button out and renders the suggestion text without a link.
 - `Title` is an `<h1>`, so use the component as the main content of the page, not inside a page that already has
   one.
 - The buttons take the configured CSS framework's primary and outlined secondary button classes.

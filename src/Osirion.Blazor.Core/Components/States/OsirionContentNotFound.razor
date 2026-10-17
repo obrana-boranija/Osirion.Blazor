@@ -1,5 +1,6 @@
 ﻿@namespace Osirion.Blazor.Components
 @inherits OsirionComponentBase
+@using Osirion.Blazor.Core.Utils
 
 <div class="@GetContentNotFoundClass()" @attributes="Attributes">
     @if (ShowIcon && Icon is not null)
@@ -48,9 +49,16 @@
                     @foreach (var suggestion in Suggestions)
                     {
                         <li class="osirion-content-not-found-suggestion-item">
-                            <a href="@suggestion.Url" class="osirion-content-not-found-suggestion-link" target="@suggestion.Target">
-                                @suggestion.Text
-                            </a>
+                            @if (SafeLink.IsSafe(suggestion.Url))
+                            {
+                                <a href="@suggestion.Url" class="osirion-content-not-found-suggestion-link" target="@suggestion.Target">
+                                    @suggestion.Text
+                                </a>
+                            }
+                            else
+                            {
+                                <span class="osirion-content-not-found-suggestion-text">@suggestion.Text</span>
+                            }
                             @if (!string.IsNullOrWhiteSpace(suggestion.Description))
                             {
                                 <p>
@@ -80,14 +88,14 @@
         }
 
         <div class="osirion-content-not-found-actions">
-            @if (!string.IsNullOrWhiteSpace(PrimaryButtonText))
+            @if (!string.IsNullOrWhiteSpace(PrimaryButtonText) && SafeLink.IsSafe(PrimaryButtonUrl))
             {
                 <a href="@PrimaryButtonUrl" class="@BuildButtonClass(ButtonVariant.Primary, ButtonSize.Normal)" style="text-decoration: none;">
                     @PrimaryButtonText
                 </a>
             }
 
-            @if (!string.IsNullOrWhiteSpace(SecondaryButtonText))
+            @if (!string.IsNullOrWhiteSpace(SecondaryButtonText) && SafeLink.IsSafe(SecondaryButtonUrl))
             {
                 <a href="@SecondaryButtonUrl" class="@BuildButtonClass(ButtonVariant.OutlinedSecondary, ButtonSize.Normal)" style="text-decoration: none;">
                     @SecondaryButtonText

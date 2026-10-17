@@ -203,6 +203,44 @@ public class OsirionStylesRenderingTests : BunitContext
         cut.Find("script").TextContent.ShouldContain("currentTheme: 'dark'");
     }
 
+    // Fails before the fix: the inline script and style elements carried no nonce, so a policy with script-src 'self'
+    // blocked the first-paint script and style-src 'self' blocked the variables.
+    [Fact]
+    public void OsirionStyles_Nonce_IsWrittenOnTheInlineScriptAndEveryInlineStyle()
+    {
+        _themeService.GenerateThemeVariables().Returns("--generated: 1px;");
+
+        var cut = Render<OsirionStyles>(p => p
+            .Add(c => c.CustomVariables, "--brand: #123456;")
+            .Add(c => c.Nonce, "abc123=="));
+
+        cut.FindAll("script").Count.ShouldBe(1);
+        cut.FindAll("style").Count.ShouldBe(2);
+        cut.FindAll("script, style").ShouldAllBe(element => element.GetAttribute("nonce") == "abc123==");
+    }
+
+    [Fact]
+    public void OsirionStyles_NonceWithMarkup_IsAttributeEncoded()
+    {
+        var cut = Render<OsirionStyles>(p => p.Add(c => c.Nonce, "\"><img src=x onerror=alert(1)>"));
+
+        cut.FindAll("img").ShouldBeEmpty();
+        cut.Find("script").GetAttribute("nonce").ShouldBe("\"><img src=x onerror=alert(1)>");
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    public void OsirionStyles_NoNonce_WritesNoNonceAttribute(string? nonce)
+    {
+        var cut = Render<OsirionStyles>(p => p
+            .Add(c => c.CustomVariables, "--brand: #123456;")
+            .Add(c => c.Nonce, nonce));
+
+        cut.FindAll("script, style").ShouldNotBeEmpty();
+        cut.FindAll("[nonce]").ShouldBeEmpty();
+    }
+
     private static List<string> Hrefs(IRenderedComponent<OsirionStyles> cut) =>
         cut.FindAll("link").Select(l => l.GetAttribute("href") ?? "<none>").ToList();
 }

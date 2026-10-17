@@ -244,6 +244,26 @@ public class OsirionSubscriptionCardTests : OsirionComponentTestBase
         CurrentUri().ShouldContain("SubmissionResultValue=1");
     }
 
+    // Fails before the fix: with PrivacyPolicyText empty the checkbox was not rendered but the model still required it,
+    // so a valid submission never reached OnSubscribe.
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    public void SubscriptionCard_NoPrivacyPolicyText_SubmitsWithoutTheCheckbox(string? text)
+    {
+        SubscriptionModel? received = null;
+        var cut = RenderStatic<OsirionSubscriptionCard>(parameters => parameters
+            .Add(p => p.PrivacyPolicyText, text)
+            .Add(p => p.OnSubscribe, (SubscriptionModel model) => received = model));
+        cut.Find("input[type=email]").Change(Email);
+
+        cut.Find("form").Submit();
+
+        cut.FindAll("input[type=checkbox]").ShouldBeEmpty();
+        received.ShouldNotBeNull();
+        CurrentUri().ShouldContain("SubmissionResultValue=1");
+    }
+
     [Fact]
     public void SubscriptionCard_ValidSubmit_ShowsSuccessStatusAfterNavigation()
     {

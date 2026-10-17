@@ -99,6 +99,7 @@ configured value applies. `CustomVariables` does not replace the configured valu
 | `CustomVariables` | `string?` | `null` | CSS declarations written into a `:root` block. Every `<` is replaced by the CSS escape `\3C `, so a value cannot end the `<style>` element or add markup; a valid declaration, which never contains `<` outside a string, is written unchanged. The configured `ThemingOptions.CustomVariables` value is written the same way in a second block after this one, so for the same property the configured value wins. Still pass only values from your own code or configuration. |
 | `Framework` | `CssFramework?` | `null` | Which framework adapter stylesheet is linked: `Bootstrap`, `FluentUI`, `MudBlazor` or `Radzen`; `None` links none. When `null`, `ThemingOptions.Framework` applies. The framework class on `<html>` comes from the configured framework, so set the framework in configuration as well. |
 | `Mode` | `ThemeMode?` | `null` | The theme used when the visitor has not picked one: `Light`, `Dark` or `System`. `Inverted` is not handled by the page script, which then follows the operating system. When `null`, `ThemingOptions.DefaultMode` applies (`System` unless configured). |
+| `Nonce` | `string?` | `null` | The Content Security Policy nonce written as the `nonce` attribute of the inline `<script>` that sets the theme before first paint and of each inline `<style>` element. Pass the nonce your policy header carries for this response, so `script-src` and `style-src` can use `'nonce-...'` instead of `'unsafe-inline'`. It must be a new random value for every response; a fixed value defeats the policy. When `null` or empty, no attribute is written. |
 | `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
 | `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
 | `Style` | `string?` | `null` | An inline style for the component's root element. |
@@ -147,8 +148,14 @@ follow the Osirion theme.
 `CustomVariables`, and the configured `ThemingOptions.CustomVariables`, are written into a `<style>` element. Every
 `<` in the value is replaced by the CSS escape `\3C `, so a value such as `</style><script>` cannot end the element
 or add markup; a valid declaration never contains `<` outside a string and is written unchanged. The value is not
-validated as CSS otherwise, so pass only values from your code or configuration, never text a visitor supplied. The component writes an inline script and does not add a nonce, so a
-Content Security Policy must allow it.
+validated as CSS otherwise, so pass only values from your code or configuration, never text a visitor supplied. 
+The component writes an inline script that sets the theme attributes before first paint, and an inline `<style>`
+element for `CustomVariables` and for generated theme variables. Under a Content Security Policy without
+`'unsafe-inline'`, pass the nonce of the response in `Nonce`: it is written as the `nonce` attribute of the script and
+of every `<style>` element, and `script-src 'nonce-...'` and `style-src 'nonce-...'` then allow them while the first
+paint still applies the theme without a flash. Use a new random value per response; a fixed value does not protect
+anything. `osirion-styles.js` and the stylesheets are files from your own origin, covered by `'self'`. The
+[security guide](/docs/security#4-write-a-content-security-policy) shows the middleware and the layout.
 
 ## Styling
 

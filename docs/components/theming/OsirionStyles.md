@@ -6,6 +6,7 @@ Parameters
 ----------
 - `CustomVariables` (string): CSS variables to include inside a `<style>` tag. Every `<` is replaced by the CSS escape `\3C `, so a value cannot end the element.
 - `GeneratedVariables` (string): CSS variables generated at runtime, written the same way.
+- `Nonce` (string): the Content Security Policy nonce of the response, written as the `nonce` attribute of the inline script and every inline `<style>`. Use a new random value per response.
 
 Example
 -------

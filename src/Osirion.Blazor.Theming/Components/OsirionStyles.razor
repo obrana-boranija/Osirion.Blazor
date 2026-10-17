@@ -27,7 +27,7 @@
 
 @if (!string.IsNullOrWhiteSpace(CustomVariables))
 {
-    <style>
+    <style nonce="@NonceAttribute">
         :root {
             @((MarkupString)NeutralizeStyleEnd(CustomVariables!))
         }
@@ -36,7 +36,7 @@
 
 @if (!string.IsNullOrWhiteSpace(GeneratedVariables))
 {
-    <style>
+    <style nonce="@NonceAttribute">
         :root {
             @((MarkupString)NeutralizeStyleEnd(GeneratedVariables))
         }
@@ -45,7 +45,7 @@
 
 @LoadScript("./_content/Osirion.Blazor.Theming/js/osirion-styles.js")
 
-<script>
+<script nonce="@NonceAttribute">
     (function(){
         const config = {
             frameworkClass: '@GetFrameworkClass',

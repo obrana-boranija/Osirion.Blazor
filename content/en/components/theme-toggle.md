@@ -128,8 +128,9 @@ without the fade. The scroll position is kept.
 
 The toggle writes no inline script and no event handler attribute. Its settings (`data-default-theme` and
 `data-framework`) travel on the button, and a click listener in `theme-toggle.js` does the work, so the button runs
-under a Content Security Policy without `'unsafe-inline'`. `OsirionStyles`, which the page also needs, still writes a
-short inline script; see [its page](/components/osirion-styles#security).
+under a Content Security Policy without `'unsafe-inline'`. `OsirionStyles`, which the page also needs, writes a short
+inline script; pass it a `Nonce` so the policy can allow that script, as [its page](/components/osirion-styles#security)
+describes.
 
 ### Accessibility
 
