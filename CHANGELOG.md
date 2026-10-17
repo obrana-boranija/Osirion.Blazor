@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+- All packages: the Microsoft.AspNetCore and Microsoft.Extensions dependencies move to the October servicing releases, 9.0.21 for net9.0 and 10.0.13 for net10.0, and AngleSharp to 1.8.5
 - Osirion.Blazor.Cms.Infrastructure: a file's write time no longer stands in for a content item's last-modified date. Without `last_modified` in its front matter, an item was last modified when it was created (its `date`). A fresh checkout gives every file the time of the checkout, which reached `dateModified`, `article:modified_time` and the sitemap's `lastmod`, often hours before the published date. `FileSystemOptions.UseFileWriteTimeAsLastModified` turns the old behaviour back on where files are edited in place
 
 ### Added
