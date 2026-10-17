@@ -2,7 +2,7 @@
 @inherits OsirionComponentBase
 @using Osirion.Blazor.Core.Models
 
-<div class="@GetContactInfoSectionClass() @Class" style="@Style" @attributes="Attributes">
+<div class="@GetContactInfoSectionClass()" style="@Style" @attributes="Attributes">
     @if (!string.IsNullOrWhiteSpace(Title))
     {
         <h2 class="osirion-contact-info-title">@Sanitized(Title)</h2>
