@@ -34,7 +34,7 @@
         @((MarkupString)RenderMetaTag("author", _author))
     }
     @((MarkupString)RenderMetaTag("generator", "Osirion Blazor CMS"))
-    @foreach (var (name, value) in _frontMatterMetaTags)
+    @foreach (var (name, value) in _extraMetaTags)
     {
         @((MarkupString)RenderMetaTag(name, value))
     }
@@ -205,10 +205,7 @@
     <!-- ===== AI Discovery and Training Meta Tags ===== -->
     @if (AllowAiDiscovery)
     {
-        <!-- AI content discovery and attribution -->
-        <meta name="ai-content-declaration" content="human-created" />
-        <meta name="ai-content-detection" content="allow" />
-        <meta name="ai-content-attribution" content="original" />
+        <!-- AI crawling and training opt-in. An AI content declaration is written only from the options or the front matter. -->
         <meta name="ai-crawling" content="all" />
 
         @if (AllowAiTraining)

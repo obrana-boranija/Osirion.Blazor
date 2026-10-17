@@ -188,7 +188,7 @@ public class SeoMetadataRendererMetaTagTests : CmsWebComponentTestBase
     {
         var cut = RenderPage(p => p.Add(c => c.Content, SeoTestContent.Article()));
 
-        Meta(cut, "ai-content-declaration").ShouldBe("human-created");
+        cut.FindAll("meta[name='ai-content-declaration']").ShouldBeEmpty();
         Meta(cut, "ai-training").ShouldBe("allow");
         Meta(cut, "Google-Extended").ShouldBe("allow");
     }

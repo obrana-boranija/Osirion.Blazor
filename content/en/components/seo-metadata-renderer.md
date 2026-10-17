@@ -131,8 +131,8 @@ effect.
 | `GenerateMultipleSchemas` | `bool` | `true` | Whether a `BreadcrumbList` is added when exactly one schema type is generated for an item with a path. Several types given in `SchemaTypes` are used as listed. When not set, the configured value applies, then `true`. |
 | `AuthorUrl` | `string?` | `null` | A page that identifies the author, such as an About page, named as the author `url` in structured data. It is meant for a site with one author: every article and every posting in a list names it. Without one the author is named alone, because a guessed address that answers 404 is worse than none. |
 | `DefaultImageUrl` | `string?` | `null` | The social image used when the item has no `og_image_url`, no `image` and no featured image. A relative address becomes absolute with the site address. |
-| `DefaultImageWidth` | `int` | `1200` | The width written as `og:image:width`, in pixels. A value of `1200` is replaced by the configured width when there is one. |
-| `DefaultImageHeight` | `int` | `630` | The height written as `og:image:height`, in pixels. A value of `630` is replaced by the configured height when there is one. |
+| `DefaultImageWidth` | `int?` | `null` | The width written as `og:image:width`, in pixels. When not set, the configured width applies, then `1200`. |
+| `DefaultImageHeight` | `int?` | `null` | The height written as `og:image:height`, in pixels. When not set, the configured height applies, then `630`. |
 | `OrganizationName` | `string?` | `null` | The publisher name in structured data. It is also the site name when no site name is set. |
 | `ApplicationCategory` | `string` | `"DeveloperApplication"` | The `applicationCategory` of the `SchemaType.SoftwareApplication` schema, one of the app types search engines support, such as `DeveloperApplication` or `BusinessApplication`. |
 | `AlternateLanguageUrls` | `List<string>?` | `null` | The `hreflang` links of other language versions, each entry a language code and an address joined by a vertical bar, such as `de\|https://example.com/de/page`. Malformed entries are skipped with a logged warning. |
@@ -141,8 +141,8 @@ effect.
 | `BreadcrumbHomeText` | `string` | `"Home"` | The name of the first `BreadcrumbList` entry. When empty, the configured value applies. |
 | `CustomBreadcrumbs` | `List<ValueTuple<string, string>>?` | `null` | The breadcrumb entries after the home entry, as name and address pairs, in place of the ones built from the item path. |
 | `CanonicalQueryParameters` | `IReadOnlyCollection<string>?` | `null` | The query parameters kept in the canonical URL, `og:url` and structured data addresses (for example `page` for paginated lists, where each page is its own document). All other parameters and the fragment are dropped. A canonical address declared in the front matter always wins. |
-| `EmitMobileMetaTags` | `bool` | `false` | Whether the viewport, theme-color and mobile web app meta tags are written. Off by default: the host document owns these, and writing them again duplicates its tags. The configured value can also turn it on. |
-| `EnableGeneratedFaq` | `bool` | `false` | Whether FAQ structured data and answer meta tags are built from the title and description (requires `EnableAeoOptimization`). Off by default because the question is derived, not authored. The configured value can also turn it on. |
+| `EmitMobileMetaTags` | `bool` | `false` | Whether the viewport, theme-color and mobile web app meta tags are written. Off by default: the host document owns these, and writing them again duplicates its tags. When not set, the configured value applies, then `false`; a value set on the page wins over the configured one in both directions. |
+| `EnableGeneratedFaq` | `bool` | `false` | Whether FAQ structured data and answer meta tags are built from the title and description (requires `EnableAeoOptimization`). Off by default because the question is derived, not authored. When not set, the configured value applies, then `false`; a value set on the page wins over the configured one in both directions. |
 | `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
 | `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
 | `Style` | `string?` | `null` | An inline style for the component's root element. |
@@ -201,15 +201,15 @@ Relative image URLs become absolute with the site's base URL.
   `preconnect` hints for the site's own address. The Article schema gives the author a `url` only when `AuthorUrl` is
   set.
 - **Crawler tags.** With `AllowAiDiscovery` on, it writes `ai-crawling`, `ai-training` and a tag per named crawler;
-  with it off, the opt-out versions. The set also includes `ai-content-declaration` with the fixed value
-  `human-created`, which the component cannot know.
+  with it off, the opt-out versions. The component makes no AI content declaration of its own: write
+  `ai-content-declaration` (or `ai-content-detection`, `ai-content-attribution`) under `meta_tags` in the front matter, or under `AdditionalMetaTags` in `SeoMetadataOptions` for every page. These names are not a standard either.
 - **Options.** `SeoMetadataOptions` fills the parameters you leave unset: `SiteName` (as `SiteNameOverride`),
   `SiteDescription`, `OrganizationName`, `SiteLogoUrl`, `DefaultImageUrl`, `DefaultImageWidth`, `DefaultImageHeight`,
-  `TwitterSite`, `TwitterCreator`, `FacebookAppId`, `AuthorUrl`, `EmitMobileMetaTags`, `EnableGeneratedFaq` and
-  `DefaultSchemaTypes`. The switches `AllowSearchIndexing`, `AllowAiDiscovery`, `AllowAiTraining`,
+  `TwitterSite`, `TwitterCreator`, `FacebookAppId`, `AuthorUrl` and
+  `DefaultSchemaTypes`. The switches `AllowSearchIndexing`, `AllowAiDiscovery`, `AllowAiTraining`, `EmitMobileMetaTags`, `EnableGeneratedFaq`,
   `EnableGeoOptimization`, `EnableAeoOptimization` and `GenerateMultipleSchemas` come from the options unless the
-  page sets them as parameters. `BreadcrumbHomeText` applies when the parameter is empty. `DefaultImageWidth` and
-  `DefaultImageHeight` take the option only while the parameter is still `1200` and `630`.
+  page sets them as parameters, `true` or `false`. `BreadcrumbHomeText` applies when the parameter is empty. `DefaultImageWidth` and
+  `DefaultImageHeight` are nullable: the option applies when the parameter is not set, and an explicit `1200` or `630` stands.
 - **Public address.** `SiteUrl` (for example `https://example.com`) makes the canonical URL, `og:url` and the
   addresses in structured data use the site's address with the page's path, whatever host served the request: a
   proxy, a preview host or a second domain. Only an absolute `http` or `https` address is used; otherwise they follow
