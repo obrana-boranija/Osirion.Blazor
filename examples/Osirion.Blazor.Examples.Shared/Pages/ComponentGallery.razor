@@ -1,0 +1,61 @@
+@page "/components"
+@using Osirion.Blazor.Cms.Web.Components
+@using Osirion.Blazor.Examples.Shared.Docs
+
+@* The component gallery: the heading and introduction from content/en/components/_index.md, then every group with a
+   card per component, built from the pages' front matter. *@
+@if (_page is not null && _outline is not null)
+{
+    <HeadContent>
+        <SeoMetadataRenderer Content="_page" SchemaTypes="[SchemaType.CollectionPage]" />
+    </HeadContent>
+
+    <div class="components-gallery">
+        <header class="components-gallery-header">
+            <h1>@_page.Title</h1>
+            <ContentRenderer Item="_page" OmitLeadingTitle="true" />
+        </header>
+
+        <nav class="components-gallery-index" aria-label="Component groups">
+            <ul>
+                @foreach (var section in GallerySections)
+                {
+                    <li><a href="@($"{DocsOutline.GalleryUrl}#{section.Group.Key}")">@section.Group.Title</a></li>
+                }
+            </ul>
+        </nav>
+
+        @foreach (var section in GallerySections)
+        {
+            <section class="components-group" aria-labelledby="@section.Group.Key">
+                <h2 id="@section.Group.Key">@section.Group.Title</h2>
+
+                @if (section.Page is not null)
+                {
+                    <p class="components-group-summary">
+                        @section.Page.Description
+                        <a href="@section.HeadingUrl">When to use each</a>
+                    </p>
+                }
+
+                @if (section.Members.Count > 0)
+                {
+                    <ul class="components-cards">
+                        @foreach (var member in section.Members)
+                        {
+                            <li @key="member.Path" class="components-card">
+                                <h3><a href="@DocsOutline.UrlOf(member)">@member.Title</a></h3>
+                                <p>@member.Description</p>
+                            </li>
+                        }
+                    </ul>
+                }
+
+                @if (section.Group.SeeAlso is { } seeAlso)
+                {
+                    <p class="components-group-see-also"><a href="@seeAlso.Url">@seeAlso.Text</a></p>
+                }
+            </section>
+        }
+    </div>
+}

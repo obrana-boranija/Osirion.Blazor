@@ -1,0 +1,12 @@
+@using Osirion.Blazor.Cms.Components
+
+@* One documentation page: the sidebar of every group, breadcrumbs, the table of contents and the previous and next
+   pages in sidebar order. An address with no page answers 404. *@
+@if (_page is not null && _outline is not null)
+{
+    <DocumentPage Content="_page"
+                  NavigationItems="_outline.SidebarFor(_page)"
+                  PreviousItem="_previous"
+                  NextItem="_next"
+                  EditUrlFormatter="EditUrl" />
+}
