@@ -172,6 +172,8 @@
     color: var(--osirion-text-primary, #111827);
     margin: 0 0 var(--osirion-spacing-4, 1rem);
     line-height: var(--osirion-line-height-tight, 1.25);
+    /* A component name used as the title is one long word, which would push a phone screen sideways. */
+    overflow-wrap: break-word;
 }
 
 .osirion-document-meta {

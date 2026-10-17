@@ -132,8 +132,8 @@ A fuller footer passes link data from code:
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
 | `CompanyName` | `string` | `"Company"` | The name linked in the default copyright line (`&copy; year name. All rights reserved.`). Ignored when `Copyright` is set or `ShowCopyright` is `false`. |
-| `CompanyUrl` | `string` | `"/"` | The address the company name links to in the default copyright line. An address that starts with `http` opens in a new tab; any other opens in the same tab. |
-| `Description` | `string?` | `null` | The text under the logo, rendered as raw HTML, so pass only text you control. It is shown only when the top row renders, which needs at least one of `Logo`, `Links`, `SocialLinks`, `LeftContent` or `RightContent`. |
+| `CompanyUrl` | `string` | `"/"` | The address the company name links to in the default copyright line. An address that starts with `http` opens in a new tab with `rel="noopener noreferrer"`; any other opens in the same tab. |
+| `Description` | `string?` | `null` | The text under the logo, rendered as raw HTML, so pass only text you control. It is shown only when the top row renders, which needs at least one of `Logo`, `Links`, `SocialLinks` (while `ShowSocialLinks` is on), `LeftContent` or `RightContent`. |
 | `Copyright` | `string?` | `null` | Custom copyright text, rendered as raw HTML, so pass only text you control. It replaces the default line built from `CompanyName`, `CompanyUrl` and the current year. |
 | `ShowCopyright` | `bool` | `true` | Whether the default copyright line is shown when `Copyright` is empty. |
 | `Logo` | `RenderFragment?` | `null` | The logo, shown in the top row above `Description`. |
@@ -173,7 +173,8 @@ with `Icon` and `AriaLabel`; social links always open in a new tab.
   page's `h1`.
 - **Legal links** are wrapped in a `nav` labelled "Footer legal navigation".
 - **Top row.** It renders when at least one of `Logo`, `Links`, `SocialLinks`, `LeftContent` or `RightContent` is set.
-  `Description` alone does not make it render.
+  `SocialLinks` count only while `ShowSocialLinks` is on, so switching them off leaves no empty row. `Description` alone
+  does not make it render.
 - **Copyright year.** The default line uses the server's current year each time the component renders, so a static
   export shows the year of the export.
 - **Small screens.** Below 768 pixels the top row stacks into one column: the links, the left content, then the

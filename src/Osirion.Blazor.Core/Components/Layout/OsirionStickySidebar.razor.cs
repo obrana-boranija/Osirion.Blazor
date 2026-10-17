@@ -14,12 +14,12 @@ public partial class OsirionStickySidebar
     public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
-    /// Gets or sets the intended offset from the top of the viewport, in pixels (default 40, which is 2.5rem). The
-    /// value is not written to the markup, so it has no effect; set the CSS custom property
-    /// <c>--osirion-header-height</c> instead.
+    /// Gets or sets the offset from the top of the viewport, in pixels (default 40, which is 2.5rem). A value other
+    /// than the default is written to the <c>aside</c> as <c>--osirion-header-height</c>; at the default the
+    /// stylesheet decides, so a site that sets the custom property itself keeps working.
     /// </summary>
     [Parameter]
-    public int TopOffset { get; set; } = (int)(2.5 * 16);
+    public int TopOffset { get; set; } = DefaultTopOffset;
 
     /// <summary>
     /// Gets or sets whether the scrollbar is hidden (class <c>osirion-no-scrollbar</c>). The sidebar still scrolls with
@@ -35,10 +35,13 @@ public partial class OsirionStickySidebar
     [Parameter]
     public bool IsSticky { get; set; } = true;
 
+    private const int DefaultTopOffset = 40;
+
     /// <summary>
-    /// Gets the CSS variable declaration for the top offset
+    /// Gets the CSS variable declaration for the top offset, or <see langword="null"/> at the default so an ancestor's
+    /// <c>--osirion-header-height</c> is not shadowed.
     /// </summary>
-    private string TopOffsetStyle => $"--osirion-header-height: {TopOffset}px;";
+    private string? TopOffsetStyle => TopOffset == DefaultTopOffset ? null : FormattableString.Invariant($"--osirion-header-height: {TopOffset}px;");
 
     /// <summary>
     /// Gets the CSS class for the sidebar

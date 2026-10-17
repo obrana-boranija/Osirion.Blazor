@@ -1,6 +1,7 @@
 @namespace Osirion.Blazor.Components
 @inherits OsirionComponentBase
 @using BlazorJSComponents
+@using Osirion.Blazor.Core.Utils
 @inject JSElementReferenceScope Refs
 
 <section class="@GetCarouselClass()" 
@@ -27,7 +28,7 @@
                 @foreach (var logo in VisibleLogos)
                 {
                     <li class="@GetLogoClass(logo)" role="listitem">
-                        @if (!string.IsNullOrWhiteSpace(logo.Url))
+                        @if (SafeLink.IsSafe(logo.Url))
                         {
                             <a @attributes="GetLogoLinkAttributes(logo)">
                                 @if (logo.HasDualLogos)

@@ -24,6 +24,13 @@
     margin-bottom: var(--osirion-spacing-4, 1rem);
 }
 
+/* A still ring with a colored arc still reads as a loading indicator, and the optional text says what is happening. */
+@media (prefers-reduced-motion: reduce) {
+    .osirion-spinner {
+        animation: none;
+    }
+}
+
 @keyframes osirion-spin {
     to {
         transform: rotate(360deg);
