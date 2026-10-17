@@ -194,6 +194,6 @@ fragment shown next to the text.
 
 ## Related
 
-- [Cookie consent component reference](/docs/components/core/popups/cookie-consent)
+- [Cookie consent component reference](/components/cookie-consent)
 - [Analytics in Blazor with Osirion.Blazor](/blog/analytics-integration-in-blazor)
-- [Analytics components](/docs/components/analytics)
+- [Analytics components](/docs/packages/analytics)

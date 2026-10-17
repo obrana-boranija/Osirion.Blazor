@@ -1,0 +1,125 @@
+---
+id: 'osirion-sticky-sidebar'
+order: 4
+layout: docs
+title: OsirionStickySidebar
+permalink: /components/sticky-sidebar
+description: An aside that stays in view while the page scrolls, with its own scroll area, for a table of contents or docs navigation. Pure CSS.
+author: Dejan Demonjić
+date: 2025-09-03
+last_modified: 2026-10-11
+featured_image: /assets/images/blazor-cover.png
+categories:
+- Components
+- Core Components
+- Layout
+tags:
+- blazor
+- sidebar
+- sticky
+- layout
+- table-of-contents
+- css
+is_featured: true
+published: true
+slug: sticky-sidebar
+lang: en
+redirect_from:
+- /docs/components/core/layout/sticky-sidebar
+custom_fields:
+  group: layout
+seo_properties:
+  title: 'OsirionStickySidebar: sticky aside for Blazor pages | Osirion.Blazor'
+  description: 'A Blazor aside that stays in view while the page scrolls, for a table of contents or docs navigation. Pure CSS, no script.'
+  image: /assets/images/blazor-cover.png
+  canonical: 'https://getosirion.com/components/sticky-sidebar'
+  lang: en
+  robots: index, follow
+  og_title: 'OsirionStickySidebar - Osirion.Blazor'
+  og_description: 'A sticky aside with its own scroll area for a table of contents or docs navigation.'
+  og_image_url: /assets/images/blazor-cover.png
+  og_type: article
+  json_ld: ''
+  type: Article
+  twitter_card: summary_large_image
+  twitter_title: 'OsirionStickySidebar - Osirion.Blazor'
+  twitter_description: 'A sticky aside for a table of contents or docs navigation.'
+  twitter_image_url: /assets/images/blazor-cover.png
+  meta_tags: {}
+---
+
+# OsirionStickySidebar
+
+`OsirionStickySidebar` renders an `aside` that sticks below your header while the page scrolls and scrolls on its
+own when its content is taller than the viewport. Use it for a table of contents or documentation navigation next to
+long content. It is pure CSS, so it works under static SSR without script.
+
+## Usage
+
+```razor
+@using Osirion.Blazor.Components
+
+<div class="docs-grid">
+    <article>
+        <h1>Installation</h1>
+    </article>
+
+    <OsirionStickySidebar>
+        <nav aria-label="Documentation">
+            <a href="/docs/installation">Installation</a>
+            <a href="/docs/configuration">Configuration</a>
+        </nav>
+    </OsirionStickySidebar>
+</div>
+```
+
+The CMS article page uses it the same way for its table of contents. Give the sidebar a column in a grid or flex
+layout; `position: sticky` only takes effect while the parent is taller than the sidebar and no ancestor between
+them sets `overflow: hidden`.
+
+When your header is taller than 2.5rem, set the offset with the custom property the stylesheet reads:
+
+```css
+.docs-grid {
+    --osirion-header-height: 4rem;
+}
+```
+
+## Parameters
+
+| Parameter | Type | Default | Description |
+| --- | --- | --- | --- |
+| `ChildContent` | `RenderFragment?` | `null` | Sidebar content. |
+| `IsSticky` | `bool` | `true` | `false` adds `osirion-non-sticky`, which renders a normal, non-sticky aside. |
+| `HideScrollbar` | `bool` | `true` | Hides the sidebar's scrollbar; it still scrolls with the wheel, touch and keyboard. |
+| `TopOffset` | `int` | `40` | Intended top offset in pixels. In the current release the value is not written to the markup, so set `--osirion-header-height` in CSS instead. |
+| `Class` | `string?` | `null` | Extra CSS classes on the `aside`. |
+
+`Style`, `Theme` and unmatched attributes are not applied to the markup.
+
+## Behavior
+
+- **Sticky area.** The `aside` is `position: sticky` with `top` and `height` derived from `--osirion-header-height`
+  (default `2.5rem`), so it fills the viewport below the header and scrolls internally (`overflow-y: auto`).
+- **Small screens.** At 768 pixels wide or less the sidebar is static, with its natural height and no scroll area of
+  its own, so it flows with the page. Hide or
+  move it with your own CSS if a mobile layout needs that.
+- **Motion.** Smooth scrolling inside the sidebar is turned off when the visitor prefers reduced motion.
+- **Accessibility.** The element is an `aside`, a complementary landmark. Put a labelled `nav` inside it when it holds
+  navigation, as in the example, so screen reader users can tell several landmarks apart. With `HideScrollbar`, make
+  sure the content is reachable by keyboard (links are) because there is no visible scrollbar to drag.
+
+## Styling
+
+| Class or property | Purpose |
+| --- | --- |
+| `osirion-sticky-sidebar` | The `aside`. |
+| `osirion-no-scrollbar` | Added by `HideScrollbar`. |
+| `osirion-non-sticky` | Added when `IsSticky` is `false`. |
+| `--osirion-header-height` | Top offset and height reduction, default `2.5rem`. |
+| `--osirion-scrollbar-thumb`, `--osirion-scrollbar-thumb-hover` | Scrollbar thumb colors in WebKit browsers when the scrollbar is shown. |
+
+## Related
+
+- [OsirionPageLayout](/components/page-layout)
+- [Layout overview](/components/layout)

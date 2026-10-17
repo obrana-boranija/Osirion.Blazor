@@ -118,7 +118,7 @@ builder.Services.AddOsirionTheming(theming => {
 A palette sets the colours on top of the light or dark mode: `Osirion`, `Commit`, `Editor`, `Studio`, `StudioBlue` or
 `Contrast` (`Framework`, the default, applies none). Choose it with `ThemingOptions.DefaultPalette` or
 `UsePalette(ThemePalette.Editor)`; a visitor's choice is kept in the `osirion-preferred-palette` cookie. See the
-[Palettes page](https://getosirion.com/docs/components/theming/palettes) for the list, the contrast checks and the
+[Palettes page](https://getosirion.com/components/palettes) for the list, the contrast checks and the
 colour sources.
 
 ## Dark Mode Support

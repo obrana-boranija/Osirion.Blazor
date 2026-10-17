@@ -9,18 +9,6 @@ author: 'Dejan Demonjić'
 date: '2024-12-29'
 last_modified: 2026-10-11
 featured_image: '/images/osirion-hero.png'
-categories:
-  - 'Blazor'
-  - 'CMS'
-  - 'Components'
-tags:
-  - 'blazor'
-  - 'ssr'
-  - 'markdown'
-  - 'cms'
-  - 'github'
-  - 'components'
-is_featured: true
 published: true
 slug: 'homepage'
 lang: 'en'
@@ -127,10 +115,10 @@ The repository has complete example sites on Bootstrap, MudBlazor and Fluent UI.
 ## Documentation
 
 - [Getting started](/docs/getting-started)
-- [Components overview](/docs/components)
-- [CMS web components](/docs/components/cms-web)
-- [Core components](/docs/components/core)
-- [Theming](/docs/components/theming)
+- [Components overview](/components)
+- [CMS web components](/docs/packages/cms-web)
+- [Core components](/docs/packages/core)
+- [Theming](/docs/packages/theming)
 - [Blog](/blog)
 
 ## New in 4.0

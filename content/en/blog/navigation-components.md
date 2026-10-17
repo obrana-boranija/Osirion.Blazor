@@ -141,6 +141,6 @@ turned into spaces and each word capitalized ("navigation-components" becomes "N
 
 ## Related
 
-- [Navigation components](/docs/components/navigation)
-- [Breadcrumbs](/docs/components/core/navigation/breadcrumbs)
+- [Navigation components](/docs/packages/navigation)
+- [Breadcrumbs](/components/breadcrumbs)
 - [Scroll position after enhanced navigation](/blog/enhanced-navigation-interceptor)

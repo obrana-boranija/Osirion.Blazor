@@ -147,8 +147,8 @@ Next Paint. Measure a long article and a list page, on a throttled mobile profil
 
 ## Related
 
-- [Responsive image](/docs/components/core/content/responsive-image)
-- [Video embed](/docs/components/core/content/video-embed)
-- [HTML renderer](/docs/components/core/rendering/html-renderer)
+- [Responsive image](/components/responsive-image)
+- [Video embed](/components/video-embed)
+- [HTML renderer](/components/html-renderer)
 - [Blazor SEO checklist for static SSR content sites](/blog/blazor-seo-ssr-ssg-checklist)
 - [Structuring content repositories](/blog/structuring-content-repositories)
