@@ -37,6 +37,7 @@ public sealed class DocsOutline
     public static IReadOnlyList<DocsGroup> Groups { get; } =
     [
         new("getting-started", "Getting started", DocsGroupKind.Start),
+        new("guides", "Guides", DocsGroupKind.Section, PageUrl: "/docs/guides"),
         new("packages", "Packages", DocsGroupKind.Section, PageUrl: "/docs/packages"),
         new("layout", "Layout", DocsGroupKind.Section, "/components/layout", InGallery: true),
         new("navigation", "Navigation", DocsGroupKind.Section, "/components/navigation", InGallery: true,
