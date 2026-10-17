@@ -11,9 +11,9 @@ h1:focus {
     outline: none;
 }
 
-/* Lined up with ContentListPage, which centres its content in the same width. */
-.blog-more,
-.blog-message {
+/* Lined up with Osirion's page components, which centre their content in the same width. */
+.page-more,
+.page-message {
     box-sizing: border-box;
     max-width: var(--osirion-container-xxl, 1320px);
     margin: 0 auto 3rem;
@@ -21,8 +21,8 @@ h1:focus {
 }
 
 /* A link that stands alone needs the theme's link colour and a 24 by 24 pixel target (WCAG 2.2, 2.5.8). */
-.blog-more a,
-.blog-message a {
+.page-more a,
+.page-message a {
     display: inline-flex;
     align-items: center;
     min-height: 24px;

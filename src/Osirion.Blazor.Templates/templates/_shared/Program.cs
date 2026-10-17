@@ -1,7 +1,7 @@
 using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Web.Feeds;
 using Osirion.Blazor.Extensions;
-using OsirionBlog_CSharp.Components;
+using OsirionApp_CSharp.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,7 +11,7 @@ builder.Services.AddRazorComponents();
 // Content, theming, SEO and the site shell (menu and footer), all from the Osirion section of appsettings.json.
 builder.Services.AddOsirion(builder.Configuration);
 
-// The posts live in the content folder; resolve it against the project, whatever folder the app starts from.
+// The Markdown files live in the content folder; resolve it against the project, whatever folder the app starts from.
 builder.Services.PostConfigure<FileSystemOptions>(options =>
     options.BasePath = Path.GetFullPath(options.BasePath, builder.Environment.ContentRootPath));
 
@@ -30,9 +30,10 @@ app.UseAntiforgery();
 
 app.MapStaticAssets();
 
-// /sitemap.xml, /feed.xml and /atom.xml, built from the same posts as the pages.
+// /sitemap.xml, and /feed.xml and /atom.xml unless the Feeds section turns them off, built from the same Markdown files
+// as the pages.
 app.MapOsirionFeeds(feeds => app.Configuration.GetSection("Feeds").Bind(feeds));
 
 app.MapRazorComponents<App>();
 
-app.Run();
+await app.RunAsync();

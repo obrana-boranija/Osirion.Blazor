@@ -9,10 +9,13 @@ public class TemplatePackageTests
     private static readonly string Root = FindRoot();
     private static readonly string TemplatesFolder = Path.Combine(Root, "src", "Osirion.Blazor.Templates", "templates");
 
+    // Files every template uses, copied into each generated project through the templates' second source.
+    private static readonly string SharedFolder = Path.Combine(TemplatesFolder, "_shared");
+
     public static TheoryData<string> Templates()
     {
         var data = new TheoryData<string>();
-        foreach (var folder in Directory.GetDirectories(TemplatesFolder))
+        foreach (var folder in TemplateFolders())
         {
             data.Add(Path.GetFileName(folder));
         }
@@ -81,7 +84,7 @@ public class TemplatePackageTests
     public void Templates_HaveDistinctIdentities()
     {
         // Act
-        var identities = Directory.GetDirectories(TemplatesFolder)
+        var identities = TemplateFolders()
             .Select(folder => TemplateConfig(Path.GetFileName(folder)).GetProperty("identity").GetString())
             .ToList();
 
@@ -94,8 +97,9 @@ public class TemplatePackageTests
     public void Template_HasNoBuildOutputOrLocalState(string template)
     {
         // Act: only what dotnet new should copy belongs in the package
-        var stray = Directory.EnumerateFileSystemEntries(Path.Combine(TemplatesFolder, template), "*", SearchOption.AllDirectories)
-            .Select(path => Path.GetRelativePath(Path.Combine(TemplatesFolder, template), path).Replace('\\', '/'))
+        var stray = new[] { Path.Combine(TemplatesFolder, template), SharedFolder }
+            .SelectMany(folder => Directory.EnumerateFileSystemEntries(folder, "*", SearchOption.AllDirectories)
+                .Select(path => Path.GetRelativePath(folder, path).Replace('\\', '/')))
             .Where(path => path.StartsWith("bin", StringComparison.Ordinal) || path.StartsWith("obj", StringComparison.Ordinal)
                 || path.StartsWith(".vs", StringComparison.Ordinal) || path.EndsWith(".user", StringComparison.Ordinal))
             .ToList();
@@ -111,6 +115,7 @@ public class TemplatePackageTests
         // Arrange: a parameter whose default is in no file would silently do nothing
         var config = TemplateConfig(template);
         var files = Directory.EnumerateFiles(Path.Combine(TemplatesFolder, template), "*", SearchOption.AllDirectories)
+            .Concat(Directory.EnumerateFiles(SharedFolder, "*", SearchOption.AllDirectories))
             .Where(path => !path.Contains(".template.config", StringComparison.Ordinal))
             .Select(File.ReadAllText)
             .ToList();
@@ -126,8 +131,48 @@ public class TemplatePackageTests
         unused.ShouldBeEmpty();
     }
 
+    // With the startup code copied into each template, Sonar measured 10.9% duplication on the second one; the shared
+    // folder holds what every template uses. A file in both places would leave dotnet new to pick one.
+    [Theory]
+    [MemberData(nameof(Templates))]
+    public void Template_TakesTheSharedFilesAndRepeatsNoneOfThem(string template)
+    {
+        // Arrange
+        var sources = TemplateConfig(template).GetProperty("sources").EnumerateArray()
+            .Select(source => source.GetProperty("source").GetString())
+            .ToList();
+        var own = Directory.EnumerateFiles(Path.Combine(TemplatesFolder, template), "*", SearchOption.AllDirectories)
+            .Select(path => Path.GetRelativePath(Path.Combine(TemplatesFolder, template), path));
+        var shared = Directory.EnumerateFiles(SharedFolder, "*", SearchOption.AllDirectories)
+            .Select(path => Path.GetRelativePath(SharedFolder, path));
+
+        // Assert
+        sources.ShouldBe(["./", "../_shared/"]);
+        own.Intersect(shared).ShouldBeEmpty();
+    }
+
+    // Fails before the fix: a project called Blog.One-Site or Docs.Two-Site did not build, because inside Blog.razor
+    // and Docs.razor the name Blog or Docs means the page itself, so "@using Blog.One_Site" looked for a nested type.
+    [Fact]
+    public void SharedImports_QualifyTheProjectNamespaceWithGlobal()
+    {
+        // Act
+        var imports = File.ReadAllLines(Path.Combine(SharedFolder, "Components", "_Imports.razor"))
+            .Where(line => line.StartsWith("@using", StringComparison.Ordinal) && line.Contains("OsirionApp_CSharp", StringComparison.Ordinal))
+            .ToList();
+
+        // Assert
+        imports.ShouldNotBeEmpty();
+        imports.ShouldAllBe(line => line.StartsWith("@using global::", StringComparison.Ordinal));
+    }
+
+    private static IEnumerable<string> TemplateFolders() =>
+        Directory.GetDirectories(TemplatesFolder).Where(folder => Directory.Exists(Path.Combine(folder, ".template.config")));
+
+    // The project file is shared; a template may still bring its own.
     private static string ProjectFile(string template) =>
-        Directory.GetFiles(Path.Combine(TemplatesFolder, template), "*.csproj").Single();
+        Directory.GetFiles(Path.Combine(TemplatesFolder, template), "*.csproj").SingleOrDefault()
+        ?? Directory.GetFiles(SharedFolder, "*.csproj").Single();
 
     private static JsonElement TemplateConfig(string template) =>
         JsonDocument.Parse(File.ReadAllText(Path.Combine(TemplatesFolder, template, ".template.config", "template.json"))).RootElement;

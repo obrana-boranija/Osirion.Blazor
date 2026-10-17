@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- The posts are read from this folder at run time, so publishing copies it next to the application. -->
+    <!-- The Markdown files are read from this folder at run time, so publishing copies it next to the application. -->
     <Content Include="content\**" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
