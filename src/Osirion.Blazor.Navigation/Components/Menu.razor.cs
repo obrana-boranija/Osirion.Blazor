@@ -4,35 +4,44 @@ using Osirion.Blazor.Components;
 
 namespace Osirion.Blazor.Navigation.Components;
 
-/// <summary>Defines the Menu type.</summary>
+/// <summary>
+/// Renders a site menu: a <c>nav</c> with an optional brand link, your items and an optional actions slot. Submenus and
+/// the mobile drawer open with CSS only, from visually hidden checkboxes, so it works under static SSR without script.
+/// </summary>
 public partial class Menu
 {
     /// <summary>
-    /// Gets or sets the menu items to be displayed.
+    /// Gets or sets the menu items: <see cref="MenuItem"/>, <see cref="MenuDivider"/> and the other menu parts.
     /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
-    /// Gets or sets href
+    /// Gets or sets the destination of the brand link. A scheme other than a relative URL, <c>http</c>, <c>https</c>,
+    /// <c>mailto</c> or <c>tel</c> leaves the link without an <c>href</c>.
     /// </summary>
     [Parameter]
     public string? Href { get; set; } = "/";
 
     /// <summary>
-    /// Gets or sets the branding logo to display in the navigation header.
+    /// Gets or sets the address of the logo image, shown before <see cref="BrandText"/> inside the brand link. The image
+    /// is drawn square at <c>--osirion-menu-logo-size</c> (2.25rem by default) and declares 36 by 36 pixels, the size
+    /// of that default, so the bar does not shift while it loads. Beside <see cref="BrandText"/> its alternative text
+    /// is empty, because the text already names the link; without <see cref="BrandText"/> the logo is the whole link
+    /// and its alternative text is <c>Home</c>.
     /// </summary>
     [Parameter]
     public string? BrandLogo { get; set; }
 
     /// <summary>
-    /// Gets or sets the branding text to display in the navigation header.
+    /// Gets or sets the brand name, rendered as the text of the brand link. Without a logo it is the whole link.
     /// </summary>
     [Parameter]
     public string? BrandText { get; set; }
 
     /// <summary>
-    /// Gets or sets a custom branding template.
+    /// Gets or sets your own brand markup. It replaces the brand link, <see cref="BrandLogo"/> and
+    /// <see cref="BrandText"/> and is not wrapped in a link.
     /// </summary>
     [Parameter]
     public RenderFragment? BrandingTemplate { get; set; }
@@ -46,62 +55,71 @@ public partial class Menu
     public RenderFragment? Actions { get; set; }
 
     /// <summary>
-    /// Gets or sets whether the menu should stick to the top when scrolling.
-    /// Only applies to horizontal menus.
+    /// Gets or sets whether a horizontal menu stays at the top of the page while it scrolls. It has no effect on a
+    /// vertical menu. Turn it off for a menu inside a page.
     /// </summary>
     [Parameter]
     public bool Sticky { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the z-index to use when the menu is sticky.
+    /// Gets or sets the <c>z-index</c> written to the container's inline style while the menu is sticky.
     /// </summary>
     [Parameter]
     public int StickyZIndex { get; set; } = 1000;
 
     /// <summary>
-    /// Gets or sets the menu orientation: Horizontal or Vertical.
+    /// Gets or sets the layout: <c>Horizontal</c>, a bar with dropdown submenus, or <c>Vertical</c>, a stack whose
+    /// submenus open in place.
     /// </summary>
     [Parameter]
     public MenuOrientation Orientation { get; set; } = MenuOrientation.Horizontal;
 
     /// <summary>
-    /// Gets or sets the alignment of horizontal menu items.
+    /// Gets or sets where a horizontal bar places its items: <c>Left</c>, <c>Center</c> or <c>Right</c>. A vertical
+    /// menu ignores it.
     /// </summary>
     [Parameter]
     public MenuAlignment Alignment { get; set; } = MenuAlignment.Center;
 
     /// <summary>
-    /// Gets or sets whether to collapse the menu on mobile devices.
+    /// Gets or sets whether the items collapse behind a hamburger toggle and a drawer below the breakpoint in
+    /// <see cref="CollapseBreakpoint"/>.
     /// </summary>
     [Parameter]
     public bool CollapseOnMobile { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the viewport breakpoint at which a collapsible menu is displayed as a toggle.
+    /// Gets or sets the viewport width below which a collapsible menu shows the toggle: <c>Mobile</c> (768px and below),
+    /// <c>Large</c> (below 1200px) or <c>ExtraLarge</c> (below 1440px). Pick the narrowest width at which the bar still
+    /// fits on one line. It applies only while <see cref="CollapseOnMobile"/> is on.
     /// </summary>
     [Parameter]
     public MenuCollapseBreakpoint CollapseBreakpoint { get; set; } = MenuCollapseBreakpoint.Mobile;
 
     /// <summary>
-    /// Gets or sets whether to auto-expand active items in vertical mode.
+    /// Gets or sets whether a vertical menu keeps the submenu of the active item open. The menu gets the
+    /// <c>osirion-menu-auto-expand</c> class on its container, and the stylesheet shows the submenu of an active item,
+    /// its toggle then no longer closes it. The other submenus open and close from their toggle as usual. A horizontal
+    /// menu ignores it.
     /// </summary>
     [Parameter]
     public bool AutoExpandActive { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the menu accessibility label.
+    /// Gets or sets the accessible name of the <c>nav</c> landmark. Give each menu on a page a different one.
     /// </summary>
     [Parameter]
     public string AriaLabel { get; set; } = "Navigation menu";
 
     /// <summary>
-    /// Gets or sets the mobile toggle button's accessibility label.
+    /// Gets or sets the accessible name of the hamburger toggle.
     /// </summary>
     [Parameter]
     public string ToggleAriaLabel { get; set; } = "Toggle navigation menu";
 
     /// <summary>
-    /// Gets or sets the menu identifier (useful for multiple menus on same page).
+    /// Gets or sets the id of the container; the toggle and navigation ids derive from it. Without it each menu
+    /// gets a unique generated id, so two menus on one page do not clash.
     /// </summary>
     [Parameter]
     public string? Id { get; set; }
@@ -111,6 +129,10 @@ public partial class Menu
     /// that is not safe (for example <c>javascript:</c>).
     /// </summary>
     private string? RenderedHref => SafeHref.Sanitize(Href);
+
+    // A logo beside the brand text is decorative: the text names the link, and a name on the image too would be read
+    // twice. A logo alone is the link's only content, so it has to carry the name.
+    private string LogoAlt => string.IsNullOrWhiteSpace(BrandText) ? "Home" : string.Empty;
 
     // Generated once per instance. A fixed per-orientation default would give two menus with the same
     // orientation the same id, and the toggle label would then switch the wrong menu.
@@ -151,6 +173,12 @@ public partial class Menu
         };
     }
 
+    private static string WithTrailingSemicolon(string style)
+    {
+        var trimmed = style.TrimEnd();
+        return trimmed.EndsWith(';') ? trimmed : trimmed + ";";
+    }
+
     /// <summary>Recomputes the container classes and attributes from the current parameters.</summary>
     protected override void OnParametersSet()
     {
@@ -168,7 +196,7 @@ public partial class Menu
         if (Orientation == MenuOrientation.Vertical && AutoExpandActive)
             classes.Add("osirion-menu-auto-expand");
 
-        // The collapsible class is critical for the mobile behaviour.
+        // The collapsible class is critical for the mobile behavior.
         if (CollapseOnMobile)
             classes.Add("osirion-menu-collapsible");
 
@@ -190,13 +218,18 @@ public partial class Menu
 
         var attributes = new Dictionary<string, object>(Attributes ?? new Dictionary<string, object>());
 
+        // The sticky z-index goes last, so it still wins over a z-index in Style.
+        var styles = new List<string>();
+        // A style attribute always binds to Style (parameter names match regardless of case), so Attributes never
+        // holds one.
+        if (!string.IsNullOrWhiteSpace(Style))
+            styles.Add(WithTrailingSemicolon(Style));
+
         if (Sticky && Orientation == MenuOrientation.Horizontal)
-        {
-            var zIndex = $"z-index: {StickyZIndex};";
-            attributes["style"] = attributes.TryGetValue("style", out var existingStyle)
-                ? $"{existingStyle} {zIndex}"
-                : zIndex;
-        }
+            styles.Add($"z-index: {StickyZIndex};");
+
+        if (styles.Count > 0)
+            attributes["style"] = string.Join(' ', styles);
 
         if (!attributes.ContainsKey("id"))
             attributes["id"] = MenuId;

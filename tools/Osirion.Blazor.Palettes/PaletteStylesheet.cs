@@ -7,7 +7,7 @@ internal static class PaletteStylesheet
 {
     private const string Scope = ":root[data-osirion-palette][data-osirion-theme]";
 
-    // Prism's token classes and the code token that colours them. Prism's own themes group them the same way.
+    // Prism's token classes and the code token that colors them. Prism's own themes group them the same way.
     private static readonly (string Token, string[] Classes)[] PrismRules =
     [
         ("code-comment", ["comment", "prolog", "doctype", "cdata"]),
@@ -25,7 +25,7 @@ internal static class PaletteStylesheet
         ("code-deleted", ["deleted"]),
     ];
 
-    /// <summary>Builds every variant; the colours moved to reach a contrast target are reported to <paramref name="adjustments"/>.</summary>
+    /// <summary>Builds every variant; the colors moved to reach a contrast target are reported to <paramref name="adjustments"/>.</summary>
     public static IReadOnlyList<PaletteVariant> BuildVariants(ICollection<string> adjustments) =>
     [
         .. PaletteDefinitions.OsirionCode.Select(code => PaletteBuilder.BuildCodeOnly("osirion", code.Mode, code.Code, adjustments)),
@@ -46,7 +46,7 @@ internal static class PaletteStylesheet
         css.Append(" */\n");
 
         var minified = new StringBuilder();
-        minified.Append("/*! Osirion palettes. Colour sources and licenses: THIRD-PARTY-NOTICES.md in Osirion.Blazor.Theming */");
+        minified.Append("/*! Osirion palettes. Color sources and licenses: THIRD-PARTY-NOTICES.md in Osirion.Blazor.Theming */");
 
         foreach (var variant in variants)
         {
@@ -93,7 +93,7 @@ internal static class PaletteStylesheet
             yield return (classes.Select(name => $"{Scope} .token.{name}").ToArray(), [$"color: var(--osirion-{token})"]);
         }
 
-        // Prism's themes fade namespaces, which would take their colour below the contrast target.
+        // Prism's themes fade namespaces, which would take their color below the contrast target.
         yield return ([$"{Scope} .token.namespace"], ["opacity: 1"]);
     }
 }

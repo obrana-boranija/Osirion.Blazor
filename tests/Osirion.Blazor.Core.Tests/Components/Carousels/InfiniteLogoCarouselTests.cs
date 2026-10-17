@@ -124,6 +124,20 @@ public class InfiniteLogoCarouselTests : OsirionComponentTestBase
         link.QuerySelector("img.osirion-logo-dark")!.GetAttribute("src").ShouldBe("/dark.png");
     }
 
+    [Theory]
+    [InlineData("javascript:alert(1)")]
+    [InlineData("data:text/html,x")]
+    [InlineData("//evil.example/x")]
+    public void LogoCarousel_UnsafeUrl_RendersLogoWithoutLink(string url)
+    {
+        // Fails before the fix: the unsafe address was written into href as given, so a javascript: URL ran on click.
+        var cut = RenderStatic<InfiniteLogoCarousel>(parameters => parameters
+            .Add(p => p.CustomLogos, [new LogoItem("/acme.png", "Acme", Url: url)]));
+
+        cut.FindAll("a").ShouldBeEmpty();
+        cut.Find("li img").GetAttribute("src").ShouldBe("/acme.png");
+    }
+
     [Fact]
     public void LogoCarousel_LinkDefaults_OpenInNewTabWithNofollowNoopenerAndTitle()
     {

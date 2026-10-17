@@ -10,97 +10,103 @@ namespace Osirion.Blazor.Components;
 public partial class OsirionBaseSection
 {
     /// <summary>
-    /// Gets or sets the section content
+    /// The section's content, inside the container below the heading.
     /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
-    /// Gets or sets the unique identifier for the section element
+    /// The section's <c>id</c>, for in-page links; the section keeps a 3rem scroll margin so a link does not land
+    /// under a sticky header.
     /// </summary>
     [Parameter, EditorRequired]
     public string? Id { get; set; }
 
     /// <summary>
-    /// Gets or sets the section title text
+    /// The heading, rendered as an <c>h2</c>. Written as raw HTML without sanitizing, so pass only text you control;
+    /// use <see cref="TitleContent"/> for text you do not control. Ignored when <see cref="TitleContent"/> is set.
     /// </summary>
     [Parameter]
     public string? Title { get; set; }
 
     /// <summary>
-    /// Gets or sets custom title content. When provided, this overrides the Title parameter.
+    /// Your own heading markup in place of <see cref="Title"/>. Blazor encodes any text in it.
     /// </summary>
     [Parameter]
     public RenderFragment? TitleContent { get; set; }
 
     /// <summary>
-    /// Gets or sets the section description text
+    /// The paragraph under the heading. Written as raw HTML without sanitizing, so pass only text you control. Shown
+    /// only together with a title, and ignored when <see cref="DescriptionContent"/> is set.
     /// </summary>
     [Parameter]
     public string? Description { get; set; }
 
     /// <summary>
-    /// Gets or sets custom description content. When provided, this overrides the Description parameter.
+    /// Your own markup in place of <see cref="Description"/>. Shown only together with a title.
     /// </summary>
     [Parameter]
     public RenderFragment? DescriptionContent { get; set; }
 
     /// <summary>
-    /// Gets or sets the container CSS class. Different frameworks use different container classes.
+    /// The class of the inner container; when it is empty the configured CSS framework's container class is used.
     /// </summary>
     [Parameter]
     public string? ContainerClass { get; set; }
 
     /// <summary>
-    /// Gets or sets the text alignment: Left, Center, Right, or Justify
+    /// The alignment of the heading and the content: <c>Left</c>, <c>Center</c>, <c>Right</c> or <c>Justify</c>.
     /// </summary>
     [Parameter]
     public Alignment TextAlignment { get; set; } = Alignment.Center;
 
     /// <summary>
-    /// Gets or sets the background image URL
+    /// The background image, CSS-escaped and written as a <c>url()</c> to the inline style. The text turns white while
+    /// it is set.
     /// </summary>
     [Parameter]
     public string? BackgroundImageUrl { get; set; }
 
     /// <summary>
-    /// Gets or sets the background color
+    /// A CSS color for the background, written to the inline style as given.
     /// </summary>
     [Parameter]
     public string? BackgroundColor { get; set; }
 
     /// <summary>
-    /// Gets or sets the text color override
+    /// A CSS color for the text, written to the inline style as given.
     /// </summary>
     [Parameter]
     public string? TextColor { get; set; }
 
     /// <summary>
-    /// Gets or sets whether to show an overlay when using background images for better text readability
+    /// Whether a dark overlay is drawn over the background image so the text stays readable. Has no effect without
+    /// <see cref="BackgroundImageUrl"/>.
     /// </summary>
     [Parameter]
     public bool ShowOverlay { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the background pattern type
+    /// A decorative pattern, drawn when <see cref="ShowPattern"/> is on.
     /// </summary>
     [Parameter]
     public BackgroundPatternType? BackgroundPattern { get; set; }
 
     /// <summary>
-    /// Gets or sets whether to show the background pattern
+    /// Whether <see cref="BackgroundPattern"/> is drawn behind the content.
     /// </summary>
     [Parameter]
     public bool ShowPattern { get; set; } = false;
 
     /// <summary>
-    /// Gets or sets the padding size: Small, Medium, Large, or None
+    /// The vertical padding: <c>None</c>, <c>Small</c> (2rem), <c>Medium</c> (3rem) or <c>Large</c> (4rem); smaller on
+    /// narrow screens.
     /// </summary>
     [Parameter]
     public SectionPadding Padding { get; set; } = SectionPadding.Medium;
 
     /// <summary>
-    /// Gets or sets whether the section has a divider/shadow effect
+    /// Whether a shadow under the section separates it from the next.
     /// </summary>
     [Parameter]
     public bool HasDivider { get; set; } = false;

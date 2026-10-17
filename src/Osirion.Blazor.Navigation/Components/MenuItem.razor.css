@@ -1,7 +1,7 @@
 /*
  * MenuItem Component Styles
  * Pure CSS menu item with SSR compatibility. A horizontal bar opens submenus as dropdown panels on hover and focus;
- * a vertical menu or a drawer stacks them, opened by their toggle. Colours come from the Menu's theming hooks.
+ * a vertical menu or a drawer stacks them, opened by their toggle. Colors come from the Menu's theming hooks.
  */
 
 /* Child component theme inheritance - MenuItem inherits parent Menu's component theme */
@@ -69,7 +69,7 @@
         outline-offset: -2px;
     }
 
-/* The tint behind the active item is 6% of the accent: at 12% Osirion's light theme link colour fell to 4.37:1 on it;
+/* The tint behind the active item is 6% of the accent: at 12% Osirion's light theme link color fell to 4.37:1 on it;
    at 6% it keeps 4.77:1 on white and 4.56:1 on the light surface. */
 .osirion-menu-item-active,
 .osirion-menu-item-active:hover {
@@ -500,6 +500,22 @@
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
+}
+
+/* AutoExpandActive: the submenu of the active item stays open, so the page the reader is on is visible in the tree.
+   It is a rule on the class and not on the toggle's checked state, which only the reader's click can set. */
+.osirion-menu-vertical.osirion-menu-auto-expand .osirion-menu-item-wrapper-active.osirion-menu-item-has-submenu > .osirion-submenu {
+    display: block;
+}
+
+.osirion-menu-vertical.osirion-menu-auto-expand .osirion-menu-item-wrapper-active.osirion-menu-item-has-submenu > .osirion-submenu-mega {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.osirion-menu-vertical.osirion-menu-auto-expand .osirion-menu-inner .osirion-menu-item-wrapper-active.osirion-menu-item-has-submenu > .osirion-submenu-toggle .osirion-menu-item-chevron {
+    transform: rotate(-90deg);
 }
 
 .osirion-menu-vertical .osirion-submenu .osirion-menu-item {

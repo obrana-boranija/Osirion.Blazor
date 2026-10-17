@@ -1,0 +1,29 @@
+@using Osirion.Blazor.Cms.Domain.Entities
+@using Osirion.Blazor.Cms.Domain.Enums
+@using Osirion.Blazor.Cms.Domain.Repositories
+@using Osirion.Blazor.Cms.Domain.Services
+@using Osirion.Blazor.Cms.Web.Components
+@inject IContentProviderManager Content
+
+@* The trail follows the directories of a blog post from this site's own content: Home, Blog and the post's title *@
+@if (post is not null)
+{
+    <ContentBreadcrumbs Content="@post" />
+}
+
+@code {
+    private ContentItem? post;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var posts = await Content.GetContentByQueryAsync(new ContentQuery
+        {
+            Locale = "en",
+            Directory = "blog",
+            SortBy = SortField.Order,
+            SortDirection = SortDirection.Ascending
+        });
+
+        post = posts.FirstOrDefault(item => !item.Path.EndsWith("_index.md", StringComparison.OrdinalIgnoreCase));
+    }
+}

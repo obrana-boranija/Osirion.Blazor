@@ -40,7 +40,7 @@ public class MenuBrandingAndPanelTests : BunitContext
         link.GetAttribute("href").ShouldBe("/home");
         var logo = link.QuerySelector("img.osirion-brand-logo")!;
         logo.GetAttribute("src").ShouldBe("/logo.svg");
-        logo.GetAttribute("alt").ShouldBe("Osirion brand logo");
+        logo.GetAttribute("alt").ShouldBe(string.Empty);
         link.QuerySelector("span.osirion-brand-text")!.TextContent.ShouldBe("Osirion");
     }
 
@@ -52,15 +52,6 @@ public class MenuBrandingAndPanelTests : BunitContext
         var link = cut.Find(".osirion-nav-branding > a.osirion-brand-link");
         link.QuerySelector("img")!.GetAttribute("src").ShouldBe("/logo.svg");
         link.QuerySelector("span.osirion-brand-text").ShouldBeNull();
-    }
-
-    // Known defect, pinned as current behavior: without BrandText the logo alt text is " brand logo" with a leading space. Update this expectation when it is fixed.
-    [Fact]
-    public void Menu_BrandLogoOnly_AltTextHasALeadingSpace()
-    {
-        var cut = Render<Menu>(p => p.Add(c => c.BrandLogo, "/logo.svg"));
-
-        cut.Find(".osirion-nav-branding img").GetAttribute("alt").ShouldBe(" brand logo");
     }
 
     [Fact]

@@ -1,0 +1,15 @@
+@using Osirion.Blazor.Components
+
+@* Sample metrics, not facts about anything *@
+<OsirionMetricGrid Columns="MetricGridColumns.Three"
+                   AriaLabel="Sample shop metrics"
+                   Metrics="metrics" />
+
+@code {
+    private static readonly IReadOnlyList<OsirionMetricGrid.MetricGridItem> metrics =
+    [
+        new("1250", "Orders this month", Kicker: "Sample", Animate: true),
+        new("2-4 days", "Delivery time", Kicker: "Sample", Accent: MetricCardAccent.Blue),
+        new("98%", "Delivered on time", "Sample figure", MetricCardAccent.Purple, Elevated: true)
+    ];
+}

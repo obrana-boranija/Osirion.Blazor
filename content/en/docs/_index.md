@@ -47,7 +47,7 @@ seo_properties:
 # Documentation
 
 Osirion.Blazor is a set of Blazor components for content sites, for .NET 9 and .NET 10. These pages describe
-version 4.0: how to set it up and what each component renders. Features marked "Available from 4.0" are new in 4.0
+version 4.1: how to set it up and what each component renders. Features marked "Available from 4.0" are new in 4.0
 and not in 3.x.
 
 ## Start here

@@ -16,13 +16,18 @@ namespace Osirion.Blazor.Cms.Web.Components;
 public abstract partial class OsirionContentPageBase : OsirionComponentBase
 {
     /// <summary>
-    /// Gets or sets the locale of article content
+    /// The locale of the content the page looks up (<c>en</c> by default): the item found with <c>ItemPath</c>,
+    /// <c>ItemUrl</c> or <c>ItemSlug</c>, and the related items, must have it. Used by <c>ArticlePage</c>,
+    /// <c>AboutPage</c>, <c>ContactPage</c> and <c>ContentListPage</c>. <c>HomePage</c> and <c>DocumentPage</c> show
+    /// the item you pass as <c>Content</c>.
     /// </summary>
     [Parameter]
     public string? Locale { get; set; } = "en";
 
     /// <summary>
-    /// Gets or sets the content to display
+    /// A complete content query that finds the item in place of <c>ItemPath</c>, <c>ItemUrl</c>, <c>ItemSlug</c>,
+    /// <see cref="Locale"/> and <see cref="DirectoryName"/>; the first match is shown. Used by <c>ArticlePage</c>,
+    /// <c>AboutPage</c> and <c>ContactPage</c>. Changing it alone does not make a displayed page load again.
     /// </summary>
     [Parameter]
     public ContentQuery? Query { get; set; }
@@ -30,127 +35,153 @@ public abstract partial class OsirionContentPageBase : OsirionComponentBase
     #region SEO Metadata
 
     /// <summary>
-    /// Gets or sets the schema.org type
+    /// The schema.org types written as the page's structured data, passed to <c>SeoMetadataRenderer</c>. When it is
+    /// null, <c>AboutPage</c> uses <c>AboutPage</c>, <c>ContactPage</c> uses <c>ContactPage</c>, <c>DocumentPage</c>
+    /// uses <c>TechArticle</c> and the other pages leave the choice to the renderer. <c>DocumentPage</c> also takes
+    /// the first value as the article's microdata type.
     /// </summary>
     [Parameter]
     public SchemaType[]? SchemaTypes { get; set; }
 
     /// <summary>
-    /// Generate multiple schema types when applicable (e.g., Article + BreadcrumbList).
+    /// Whether to write more than one structured data type when it applies, for example the main type and a
+    /// breadcrumb list. Used by <c>AboutPage</c>, <c>ContactPage</c> and <c>DocumentPage</c>; the other pages do not
+    /// pass it on.
     /// </summary>
     [Parameter]
     public bool GenerateMultipleSchemas { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the website name
+    /// The site name that structured data and titles use, passed to <c>SeoMetadataRenderer</c> as
+    /// <c>SiteNameOverride</c>. Used by every page component except <c>LandingPage</c>; <c>ContentListPage</c> passes
+    /// it to its list.
     /// </summary>
     [Parameter]
     public string? WebsiteName { get; set; }
 
     /// <summary>
-    /// Site-wide description used for organization schema.
+    /// Has no effect: no page component passes it to <c>SeoMetadataRenderer</c>. Set the site-wide value with
+    /// <c>AddOsirionSeoMetadata</c> or the <c>Osirion:Seo</c> configuration section instead.
     /// </summary>
     [Parameter]
     public string? SiteDescription { get; set; }
 
     /// <summary>
-    /// URL to the site logo (recommended: square format, min 112x112px).
+    /// The address of the site logo for the organization's structured data (square, at least 112 by 112 pixels is
+    /// recommended). Used by <c>AboutPage</c>, <c>ContactPage</c> and <c>DocumentPage</c>; the other pages do not
+    /// pass it on.
     /// </summary>
     [Parameter]
     public string? SiteLogoUrl { get; set; }
 
     /// <summary>
-    /// Twitter handle for the site (e.g., "@yoursite").
+    /// Has no effect: no page component passes it to <c>SeoMetadataRenderer</c>. Set the site-wide value with
+    /// <c>AddOsirionSeoMetadata</c> or the <c>Osirion:Seo</c> configuration section instead.
     /// </summary>
     [Parameter]
     public string? TwitterSite { get; set; }
 
     /// <summary>
-    /// Twitter handle for the content creator (e.g., "@author").
+    /// Has no effect: no page component passes it to <c>SeoMetadataRenderer</c>. Set the site-wide value with
+    /// <c>AddOsirionSeoMetadata</c> or the <c>Osirion:Seo</c> configuration section instead.
     /// </summary>
     [Parameter]
     public string? TwitterCreator { get; set; }
 
     /// <summary>
-    /// Facebook App ID for Facebook Insights.
+    /// Has no effect: no page component passes it to <c>SeoMetadataRenderer</c>. Set the site-wide value with
+    /// <c>AddOsirionSeoMetadata</c> or the <c>Osirion:Seo</c> configuration section instead.
     /// </summary>
     [Parameter]
     public string? FacebookAppId { get; set; }
 
     /// <summary>
-    /// Allow AI systems to discover and index this content.
+    /// Has no effect: no page component passes it to <c>SeoMetadataRenderer</c>. Set the site-wide value with
+    /// <c>AddOsirionSeoMetadata</c> or the <c>Osirion:Seo</c> configuration section instead.
     /// </summary>
     [Parameter]
     public bool AllowAiDiscovery { get; set; } = true;
 
     /// <summary>
-    /// Allow AI systems to use this content for training purposes.
+    /// Has no effect: no page component passes it to <c>SeoMetadataRenderer</c>. Set the site-wide value with
+    /// <c>AddOsirionSeoMetadata</c> or the <c>Osirion:Seo</c> configuration section instead.
     /// </summary>
     [Parameter]
     public bool AllowAiTraining { get; set; } = true;
 
     /// <summary>
-    /// Allow traditional search engines to index this content.
+    /// Has no effect: no page component passes it to <c>SeoMetadataRenderer</c>. Set the site-wide value with
+    /// <c>AddOsirionSeoMetadata</c> or the <c>Osirion:Seo</c> configuration section instead.
     /// </summary>
     [Parameter]
     public bool AllowSearchIndexing { get; set; } = true;
 
     /// <summary>
-    /// Enable Generative Engine Optimization (GEO) meta tags.
+    /// Has no effect: no page component passes it to <c>SeoMetadataRenderer</c>. Set the site-wide value with
+    /// <c>AddOsirionSeoMetadata</c> or the <c>Osirion:Seo</c> configuration section instead.
     /// </summary>
     [Parameter]
     public bool EnableGeoOptimization { get; set; } = true;
 
     /// <summary>
-    /// Enable Answer Engine Optimization (AEO) structured answers.
+    /// Has no effect: no page component passes it to <c>SeoMetadataRenderer</c>. Set the site-wide value with
+    /// <c>AddOsirionSeoMetadata</c> or the <c>Osirion:Seo</c> configuration section instead.
     /// </summary>
     [Parameter]
     public bool EnableAeoOptimization { get; set; } = true;
 
     /// <summary>
-    /// Default fallback image URL when content has no featured image.
+    /// Has no effect: no page component passes it to <c>SeoMetadataRenderer</c>. Set the site-wide value with
+    /// <c>AddOsirionSeoMetadata</c> or the <c>Osirion:Seo</c> configuration section instead.
     /// </summary>
     [Parameter]
     public string? DefaultImageUrl { get; set; }
 
     /// <summary>
-    /// Default image width for Open Graph (recommended: 1200px).
+    /// Has no effect: no page component passes it to <c>SeoMetadataRenderer</c>. Set the site-wide value with
+    /// <c>AddOsirionSeoMetadata</c> or the <c>Osirion:Seo</c> configuration section instead.
     /// </summary>
     [Parameter]
     public int DefaultImageWidth { get; set; } = 1200;
 
     /// <summary>
-    /// Default image height for Open Graph (recommended: 630px).
+    /// Has no effect: no page component passes it to <c>SeoMetadataRenderer</c>. Set the site-wide value with
+    /// <c>AddOsirionSeoMetadata</c> or the <c>Osirion:Seo</c> configuration section instead.
     /// </summary>
     [Parameter]
     public int DefaultImageHeight { get; set; } = 630;
 
     /// <summary>
-    /// Organization name for structured data.
+    /// The organization name for the structured data. Used by <c>AboutPage</c>, <c>ContactPage</c> and
+    /// <c>DocumentPage</c>; the other pages do not pass it on.
     /// </summary>
     [Parameter]
     public string? OrganizationName { get; set; }
 
     /// <summary>
-    /// Gets or sets custom breadcrumb items to override automatic generation
+    /// Name and address pairs that replace the breadcrumb list in the page's structured data. They do not change the
+    /// visible breadcrumbs. Used by <c>ArticlePage</c> and <c>HomePage</c>.
     /// </summary>
     [Parameter]
     public List<(string Name, string Url)>? CustomBreadcrumbs { get; set; }
 
     /// <summary>
-    /// Gets or sets the URL to the previous page in a series or pagination
+    /// The address of the previous page in a series, written as a <c>rel="prev"</c> link in the head. Used by
+    /// <c>ArticlePage</c>, <c>HomePage</c> and <c>DocumentPage</c>.
     /// </summary>
     [Parameter]
     public string? PrevPageUrl { get; set; }
 
     /// <summary>
-    /// Gets or sets the URL to the next page in a series or pagination
+    /// The address of the next page in a series, written as a <c>rel="next"</c> link in the head. Used by
+    /// <c>ArticlePage</c>, <c>HomePage</c> and <c>DocumentPage</c>.
     /// </summary>
     [Parameter]
     public string? NextPageUrl { get; set; }
 
     /// <summary>
-    /// Gets or sets alternate language versions of this page for hreflang tags
+    /// The addresses of the page's other language versions, written as <c>hreflang</c> links in the head. Used by
+    /// every page component that writes head metadata except <c>LandingPage</c>.
     /// </summary>
     [Parameter]
     public List<string>? AlternateLanguageUrls { get; set; }
@@ -165,43 +196,47 @@ public abstract partial class OsirionContentPageBase : OsirionComponentBase
     protected bool IsLoading { get; set; } = false;
 
     /// <summary>
-    /// Gets or sets the loading text
+    /// The text beside the spinner while an interactive render waits for the item. A statically rendered response is
+    /// sent once the item has loaded, so it never contains it. Used by <c>ArticlePage</c>, <c>HomePage</c>,
+    /// <c>DocumentPage</c>, <c>AboutPage</c> and <c>ContactPage</c>; <c>LandingPage</c> has its own.
     /// </summary>
     [Parameter]
     public string LoadingText { get; set; } = "Loading article...";
 
     /// <summary>
-    /// Gets or sets the loading text
+    /// Whether the loading spinner shows <see cref="LoadingText"/>.
     /// </summary>
     [Parameter]
     public bool ShowLoadingText { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the not found title
+    /// Has no effect: the page components render the not-found state of <c>OsirionContentNotFound</c> with its own
+    /// texts.
     /// </summary>
     [Parameter]
     public string NotFoundTitle { get; set; } = "Article Not Found";
 
     /// <summary>
-    /// Gets or sets the not found text
+    /// Has no effect: the page components render the not-found state of <c>OsirionContentNotFound</c> with its own
+    /// texts. <c>LandingPage</c> has a parameter of its own.
     /// </summary>
     [Parameter]
     public string NotFoundText { get; set; } = "The requested article could not be found.";
 
     /// <summary>
-    /// Gets or sets whether to show a back link when not found
+    /// Has no effect: the not-found state the page components render has no back link.
     /// </summary>
     [Parameter]
     public bool ShowBackLink { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the back link URL
+    /// Has no effect: the not-found state the page components render has no back link.
     /// </summary>
     [Parameter]
     public string BackLinkUrl { get; set; } = "/";
 
     /// <summary>
-    /// Gets or sets the back link text
+    /// Has no effect: the not-found state the page components render has no back link.
     /// </summary>
     [Parameter]
     public string BackLinkText { get; set; } = "Back to Home";
@@ -211,85 +246,100 @@ public abstract partial class OsirionContentPageBase : OsirionComponentBase
     #region Hero
 
     /// <summary>
-    /// Gets or sets whether to show the hero section
+    /// Whether the page's title and description appear in a <c>HeroSection</c> styled by the other <c>Hero</c>
+    /// parameters. When it is off, <c>ArticlePage</c> shows no heading unless <c>HeaderContent</c> is set, while
+    /// <c>AboutPage</c> and <c>ContactPage</c> show a plain <c>OsirionPageHeading</c>. <c>AboutPage</c> and
+    /// <c>ContactPage</c> start with it off. <c>DocumentPage</c> never shows a hero.
     /// </summary>
     [Parameter]
     public bool ShowHero { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets if image in hero section should be displayed as a background image. 
+    /// Whether the hero image is the hero's background instead of a picture beside the text. Used by
+    /// <c>ArticlePage</c>, <c>HomePage</c>, <c>AboutPage</c> and <c>ContactPage</c> while <see cref="ShowHero"/> is
+    /// on.
     /// </summary>
     [Parameter]
     public bool UseHeroBackgroundImage { get; set; }
 
     /// <summary>
-    /// Gets or sets an overlay if UseHeroBackgroundImage is set to true
+    /// Whether an overlay darkens the hero's background image so the text stays readable. It applies only with <see
+    /// cref="UseHeroBackgroundImage"/>.
     /// </summary>
     [Parameter]
     public bool HasOverlay { get; set; }
 
     /// <summary>
-    /// Gets or sets hero image. If not set, it will use Item?.FeaturedImageUrl property value. 
+    /// The hero's image. <c>ArticlePage</c> falls back to the item's featured image when it is not set;
+    /// <c>AboutPage</c> and <c>ContactPage</c> show no image without it; <c>HomePage</c> always uses the item's
+    /// featured image and ignores this parameter.
     /// </summary>
     [Parameter]
     public string? HeroImageUrl { get; set; }
 
     /// <summary>
-    /// Gets or sets the hero theme: "Light", "Dark", "System". Defaults "System".
+    /// The color mode of the hero: <c>Light</c>, <c>Dark</c> or <c>System</c>. Used by <c>ArticlePage</c>,
+    /// <c>HomePage</c>, <c>AboutPage</c> and <c>ContactPage</c>.
     /// </summary>
     [Parameter]
     public ThemeMode HeroTheme { get; set; } = ThemeMode.System;
 
     /// <summary>
-    /// Gets or sets the hero alignment: "left", "center", "right". Defaults to "left" or if justified is used, otherwise uses the specified alignment.
+    /// How the hero's text is aligned, an <c>Alignment</c> value such as <c>Left</c> or <c>Center</c>. Used by
+    /// <c>ArticlePage</c>, <c>HomePage</c>, <c>AboutPage</c> and <c>ContactPage</c>.
     /// </summary>
     [Parameter]
     public Alignment HeroAlignment { get; set; } = Alignment.Left;
 
     /// <summary>
-    /// Gets or sets the image position when not using background: "left", "right". Defaults to "right" or if image is on the left or justified, otherwise uses the specified alignment.
+    /// Which side of the hero text the image sits on when it is not a background, an <c>Alignment</c> value
+    /// (<c>Left</c> or <c>Right</c>). Used by <c>ArticlePage</c>, <c>HomePage</c>, <c>AboutPage</c> and
+    /// <c>ContactPage</c>.
     /// </summary>
     [Parameter]
     public Alignment HeroImagePosition { get; set; } = Alignment.Right;
 
     /// <summary>
-    /// Gets or sets hero layout variant: "hero", "jumbotron", "minimal". Defaults to "hero".
+    /// The hero's layout: <c>Hero</c>, <c>Jumbotron</c> or <c>Minimal</c>. Used by <c>ArticlePage</c>,
+    /// <c>HomePage</c>, <c>AboutPage</c> and <c>ContactPage</c>.
     /// </summary>
     [Parameter]
     public HeroVariant HeroVariant { get; set; } = HeroVariant.Hero;
 
     /// <summary>
-    /// Gets or sets whether to show hero buttons
+    /// Whether the hero of <c>AboutPage</c> and <c>ContactPage</c> shows its buttons. <c>ArticlePage</c> and
+    /// <c>HomePage</c> ignore it and show a button whenever its text and address are both set.
     /// </summary>
     [Parameter]
     public bool ShowHeroButtons { get; set; } = false;
 
     /// <summary>
-    /// Gets or sets the primary button text
+    /// The text of the hero's primary button. The button needs <see cref="HeroPrimaryButtonUrl"/> too.
     /// </summary>
     [Parameter]
     public string? HeroPrimaryButtonText { get; set; }
 
     /// <summary>
-    /// Gets or sets the primary button URL
+    /// The address of the hero's primary button. The button needs <see cref="HeroPrimaryButtonText"/> too.
     /// </summary>
     [Parameter]
     public string? HeroPrimaryButtonUrl { get; set; }
 
     /// <summary>
-    /// Gets or sets the secondary button text
+    /// The text of the hero's secondary button. The button needs <see cref="HeroSecondaryButtonUrl"/> too.
     /// </summary>
     [Parameter]
     public string? HeroSecondaryButtonText { get; set; }
 
     /// <summary>
-    /// Gets or sets the secondary button URL
+    /// The address of the hero's secondary button. The button needs <see cref="HeroSecondaryButtonText"/> too.
     /// </summary>
     [Parameter]
     public string? HeroSecondaryButtonUrl { get; set; }
 
     /// <summary>
-    /// Gets or sets background pattern
+    /// The decorative pattern behind the hero text, or <see langword="null"/> for none. Used by <c>ArticlePage</c>,
+    /// <c>HomePage</c>, <c>AboutPage</c> and <c>ContactPage</c>.
     /// </summary>
     [Parameter]
     public BackgroundPatternType? HeroBackgroundPattern { get; set; } = BackgroundPatternType.Grid;
@@ -299,25 +349,26 @@ public abstract partial class OsirionContentPageBase : OsirionComponentBase
     #region Breadcrumbs
 
     /// <summary>
-    /// Gets or sets whether to show breadcrumbs
+    /// Whether to show the visible breadcrumbs: <c>OsirionBreadcrumbs</c> in <c>ArticlePage</c>,
+    /// <c>ContentBreadcrumbs</c> in <c>DocumentPage</c>. The other pages show none.
     /// </summary>
     [Parameter]
     public bool ShowBreadcrumbs { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets whether to show the home link in breadcrumbs
+    /// Whether the breadcrumbs start with a home link. Used by <c>ArticlePage</c> and <c>DocumentPage</c>.
     /// </summary>
     [Parameter]
     public bool ShowBreadcrumbHome { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the home link text in breadcrumbs
+    /// The text of the breadcrumbs' home link. Used by <c>ArticlePage</c> and <c>DocumentPage</c>.
     /// </summary>
     [Parameter]
     public string BreadcrumbHomeText { get; set; } = "Home";
 
     /// <summary>
-    /// Gets or sets the home link URL in breadcrumbs
+    /// The address of the breadcrumbs' home link. Used by <c>ArticlePage</c> and <c>DocumentPage</c>.
     /// </summary>
     [Parameter]
     public string BreadcrumbHomeUrl { get; set; } = "/";
@@ -327,13 +378,15 @@ public abstract partial class OsirionContentPageBase : OsirionComponentBase
     #region Directory
 
     /// <summary>
-    /// Gets or sets the directory URL formatter
+    /// The name of the directory the item must be in, as a filter of the query that finds it. Used by
+    /// <c>ArticlePage</c>, <c>AboutPage</c> and <c>ContactPage</c>.
     /// </summary>
     [Parameter]
     public string? DirectoryName { get; set; }
 
     /// <summary>
-    /// Gets or sets the directory URL formatter
+    /// Builds the address of a breadcrumb that stands for a directory. Used by <c>DocumentPage</c>; the other pages
+    /// do not read it.
     /// </summary>
     [Parameter]
     public Func<DirectoryItem, string>? DirectoryUrlFormatter { get; set; }
@@ -343,19 +396,22 @@ public abstract partial class OsirionContentPageBase : OsirionComponentBase
     #region Categories
 
     /// <summary>
-    /// Gets or sets whether to show categories in sidebar
+    /// Whether the sidebar of <c>ArticlePage</c> lists the item's categories. The section appears only when the item
+    /// has categories.
     /// </summary>
     [Parameter]
     public bool ShowCategoriesSidebar { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the categories section title
+    /// The heading of the category list: in the sidebar of <c>ArticlePage</c>, and in the browse section of
+    /// <c>HomePage</c>.
     /// </summary>
     [Parameter]
     public string CategoriesSectionTitle { get; set; } = "Categories";
 
     /// <summary>
-    /// Gets or sets the category URL formatter
+    /// Builds a category link from the category name. Used by <c>ArticlePage</c> (sidebar) and <c>HomePage</c>
+    /// (browse section); without it the link is <c>/category/{slug}</c>.
     /// </summary>
     [Parameter]
     public Func<string, string>? CategoryUrlFormatter { get; set; }
@@ -365,19 +421,22 @@ public abstract partial class OsirionContentPageBase : OsirionComponentBase
     #region Tags
 
     /// <summary>
-    /// Gets or sets whether to show tags in sidebar
+    /// Whether the sidebar of <c>ArticlePage</c> lists the item's tags. The section appears only when the item has
+    /// tags.
     /// </summary>
     [Parameter]
     public bool ShowTagsSidebar { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the tags section title
+    /// The heading of the tag list: in the sidebar of <c>ArticlePage</c>, and in the browse section of
+    /// <c>HomePage</c>.
     /// </summary>
     [Parameter]
     public string TagsSectionTitle { get; set; } = "Tags";
 
     /// <summary>
-    /// Gets or sets the tag URL formatter
+    /// Builds a tag link from the tag name. Used by <c>ArticlePage</c> (sidebar) and <c>HomePage</c> (browse
+    /// section); without it the link is <c>/tag/{slug}</c>.
     /// </summary>
     [Parameter]
     public Func<string, string>? TagUrlFormatter { get; set; }

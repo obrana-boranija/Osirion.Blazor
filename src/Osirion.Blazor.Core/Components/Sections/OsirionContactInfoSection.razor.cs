@@ -11,37 +11,38 @@ namespace Osirion.Blazor.Components;
 public partial class OsirionContactInfoSection(NavigationManager navigationManager) : OsirionComponentBase
 {
     /// <summary>
-    /// Gets or sets the title for the contact information section.
+    /// The heading, rendered as an <c>h2</c>; nothing is rendered when it is empty. Simple markup is allowed and
+    /// passes through the registered HTML sanitizer.
     /// </summary>
     [Parameter]
     public string Title { get; set; } = "Contact information";
 
     /// <summary>
-    /// Gets or sets the contact information to display.
+    /// The details to show; only the fields that are filled in are rendered. Required.
     /// </summary>
     [Parameter, EditorRequired]
     public ContactInformation? ContactInfo { get; set; }
 
     /// <summary>
-    /// Gets or sets the label text for the address field.
+    /// The label of the address.
     /// </summary>
     [Parameter]
     public string AddressLabel { get; set; } = "Address:";
 
     /// <summary>
-    /// Gets or sets the label text for the phone field.
+    /// The label of the phone numbers.
     /// </summary>
     [Parameter]
     public string PhoneLabel { get; set; } = "Phone:";
 
     /// <summary>
-    /// Gets or sets the label text for the email field.
+    /// The label of the email addresses.
     /// </summary>
     [Parameter]
     public string EmailLabel { get; set; } = "Email:";
 
     /// <summary>
-    /// Gets or sets the label text for the website field.
+    /// The label of the websites.
     /// </summary>
     [Parameter]
     public string WebsiteLabel { get; set; } = "Website:";

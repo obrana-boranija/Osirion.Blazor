@@ -5,59 +5,70 @@ using Osirion.Blazor.Navigation.Internal;
 
 namespace Osirion.Blazor.Navigation.Components;
 
-/// <summary>Defines the MenuItem type.</summary>
+/// <summary>
+/// Renders one menu entry: a link, or a parent that opens a submenu. It marks itself active when the current path
+/// matches its <see cref="Href"/>. The submenu opens with CSS only.
+/// </summary>
 public partial class MenuItem : IDisposable
 {
     /// <summary>
-    /// Gets or sets the text content of the menu item.
+    /// Gets or sets the link text.
     /// </summary>
     [Parameter]
     public string Text { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets optional supporting text displayed below the menu item text.
+    /// Gets or sets supporting text under the link text.
     /// </summary>
     [Parameter]
     public string? Description { get; set; }
 
     /// <summary>
-    /// Gets or sets the icon name for the menu item.
+    /// Gets or sets the name of a built-in icon: <c>home</c>, <c>blog</c>, <c>document</c>, <c>docs</c>,
+    /// <c>documentation</c>, <c>user</c>, <c>profile</c>, <c>contact</c>, <c>about</c>, <c>info</c>, <c>settings</c>,
+    /// <c>gear</c> or <c>dashboard</c>. Any other name renders no icon. <see cref="IconTemplate"/> takes precedence.
     /// </summary>
     [Parameter]
     public string? Icon { get; set; }
 
     /// <summary>
-    /// Gets or sets a custom icon template.
+    /// Gets or sets your own icon markup, rendered instead of <see cref="Icon"/>.
     /// </summary>
     [Parameter]
     public RenderFragment? IconTemplate { get; set; }
 
     /// <summary>
-    /// Gets or sets the URL for the menu item.
+    /// Gets or sets the link address. Only a relative URL or the <c>http</c>, <c>https</c>, <c>mailto</c> and
+    /// <c>tel</c> schemes get an <c>href</c>; with another scheme, such as <c>javascript:</c>, the link is rendered
+    /// without one. A parent with <see cref="HasSubmenu"/> and no address (empty or <c>#</c>) renders as the submenu
+    /// toggle itself instead of a dead link.
     /// </summary>
     [Parameter]
     public string Href { get; set; } = "#";
 
     /// <summary>
-    /// Gets or sets whether this item is active.
+    /// Gets or sets whether the item is forced into the active state, with the <c>aria-current="page"</c> attribute
+    /// and the active style, whatever the current URL is.
     /// </summary>
     [Parameter]
     public bool IsActive { get; set; }
 
     /// <summary>
-    /// Gets or sets whether this item is disabled.
+    /// Gets or sets whether the item is disabled: it renders no <c>href</c>, sets <c>aria-disabled</c> and ignores
+    /// <see cref="OnClick"/>.
     /// </summary>
     [Parameter]
     public bool Disabled { get; set; }
 
     /// <summary>
-    /// Gets or sets whether this item has a submenu.
+    /// Gets or sets whether <see cref="ChildContent"/> is rendered as a submenu behind a disclosure toggle.
     /// </summary>
     [Parameter]
     public bool HasSubmenu { get; set; }
 
     /// <summary>
-    /// Gets or sets the submenu content.
+    /// Gets or sets the submenu content: menu items, or groups and other parts for a mega submenu. It is rendered only
+    /// when <see cref="HasSubmenu"/> is on.
     /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
@@ -71,38 +82,41 @@ public partial class MenuItem : IDisposable
     public RenderFragment? SubmenuAside { get; set; }
 
     /// <summary>
-    /// Gets or sets the visual presentation of the submenu.
+    /// Gets or sets the submenu presentation: <c>Regular</c> for a list or <c>Mega</c> for a grid of groups.
     /// </summary>
     [Parameter]
     public SubmenuVariant SubmenuVariant { get; set; } = SubmenuVariant.Regular;
 
     /// <summary>
-    /// Gets or sets the match behavior for automatic active state detection.
+    /// Gets or sets how the current path is compared with <see cref="Href"/>: <c>All</c> needs the same path,
+    /// <c>Prefix</c> also matches child paths on a segment boundary. The query string, the fragment and surrounding
+    /// slashes are ignored.
     /// </summary>
     [Parameter]
     public NavLinkMatch Match { get; set; } = NavLinkMatch.All;
 
     /// <summary>
-    /// Gets or sets how to open the link (useful for external links).
+    /// Gets or sets the <c>target</c> attribute of the link. <c>_blank</c> also adds <c>rel="noopener noreferrer"</c>.
     /// </summary>
     [Parameter]
     public string? Target { get; set; }
 
     /// <summary>
-    /// Event callback for when the menu item is clicked.
+    /// Gets or sets the callback raised when the link is clicked. It runs only in an interactive render mode. A parent
+    /// that has it renders as a link, not as the submenu toggle, even without an <see cref="Href"/>.
     /// </summary>
     [Parameter]
     public EventCallback<MouseEventArgs> OnClick { get; set; }
 
     /// <summary>
-    /// Gets or sets the identifier for the menu item.
+    /// Gets or sets the base of the submenu and toggle ids, <c>submenu-{Id}</c>. Without it a generated value is used.
     /// </summary>
     [Parameter]
     public string? Id { get; set; }
 
     /// <summary>
-    /// Gets or sets whether to enable automatic active state detection.
-    /// When true, the component will automatically detect if the current URL matches this menu item's href.
+    /// Gets or sets whether the active state is detected from the current URL. Under static SSR it is computed once
+    /// per request; in an interactive render mode the item also follows later navigations.
     /// </summary>
     [Parameter]
     public bool AutoDetectActive { get; set; } = true;

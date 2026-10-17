@@ -7,7 +7,7 @@ permalink: /components/osirion-styles
 description: OsirionStyles links the Osirion stylesheets and the CSS framework adapter, and applies the visitor's light or dark theme as the page loads.
 author: Dejan Demonjić
 date: 2025-09-03
-last_modified: 2026-10-16
+last_modified: 2026-10-17
 featured_image: /assets/images/blazor-cover.png
 categories:
 - Components
@@ -29,7 +29,7 @@ redirect_from:
 custom_fields:
   group: theming
 seo_properties:
-  title: 'OsirionStyles Component - Osirion.Blazor'
+  title: 'OsirionStyles: stylesheets and theme setup for Blazor'
   description: 'Link the Osirion stylesheets and framework adapter and apply the stored light or dark theme with OsirionStyles.'
   image: /assets/images/blazor-cover.png
   canonical: 'https://getosirion.com/components/osirion-styles'
@@ -51,7 +51,10 @@ seo_properties:
 # OsirionStyles
 
 `OsirionStyles` links the stylesheets that Osirion components need, adds the adapter for your CSS framework, and
-applies the visitor's light or dark theme while the page loads. Render it once per page, in your main layout.
+applies the visitor's light or dark theme while the page loads. Render it once per page, in your main layout. It writes
+stylesheets and a script into the page head, not visible markup, so this page has no live demo.
+
+Package `Osirion.Blazor.Theming`, namespace `Osirion.Blazor.Theming.Components`. [Source on GitHub](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Theming/Components/OsirionStyles.razor).
 
 ## Usage
 
@@ -88,15 +91,22 @@ adapter is used: every adapter sets `--osirion-font-family-base` from the framew
 `Mode`, `Framework` and `UseStyles` override the matching `ThemingOptions` value for this component; left unset, the
 configured value applies. `CustomVariables` does not replace the configured value: both are written (see Behavior).
 
+<!-- osirion:parameters OsirionStyles -->
+
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `Mode` | `ThemeMode?` | `null` | The theme used when the visitor has not picked one: `Light`, `Dark` or `System`. Overrides `DefaultMode`. |
-| `Framework` | `CssFramework?` | `null` | Which adapter stylesheet to link. Overrides `Framework`; see the note below. |
-| `UseStyles` | `bool?` | `null` | When `true`, only the Core stylesheets are linked; the adapter and the theme stylesheet are left out. Overrides `UseDefaultStyles`. |
-| `CustomVariables` | `string?` | `null` | CSS declarations written into a `:root` block. |
+| `UseStyles` | `bool?` | `null` | Whether only the Core stylesheet is linked. When `true`, the framework adapter and the theme stylesheet are left out. When `null`, `ThemingOptions.UseDefaultStyles` applies (`false` unless configured). |
+| `CustomVariables` | `string?` | `null` | CSS declarations written into a `:root` block. Every `<` is replaced by the CSS escape `\3C `, so a value cannot end the `<style>` element or add markup; a valid declaration, which never contains `<` outside a string, is written unchanged. The configured `ThemingOptions.CustomVariables` value is written the same way in a second block after this one, so for the same property the configured value wins. Still pass only values from your own code or configuration. |
+| `Framework` | `CssFramework?` | `null` | Which framework adapter stylesheet is linked: `Bootstrap`, `FluentUI`, `MudBlazor` or `Radzen`; `None` links none. When `null`, `ThemingOptions.Framework` applies. The framework class on `<html>` comes from the configured framework, so set the framework in configuration as well. |
+| `Mode` | `ThemeMode?` | `null` | The theme used when the visitor has not picked one: `Light`, `Dark` or `System`. `Inverted` is not handled by the page script, which then follows the operating system. When `null`, `ThemingOptions.DefaultMode` applies (`System` unless configured). |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
+| `Style` | `string?` | `null` | An inline style for the component's root element. |
 
-The inherited `Class`, `Style` and `Theme` parameters and any extra attributes have no effect: the component renders
-no wrapper element.
+<!-- /osirion:parameters -->
+
+The last three rows, `Theme`, `Class` and `Style`, are inherited from the component base class and have no effect
+here, nor do extra attributes: the component renders no wrapper element.
 
 Set the framework in configuration rather than only through the `Framework` parameter. The adapter's rules apply under
 a class on `<html>` (such as `osirion-bootstrap-integration`) that comes from the configured framework, so the
@@ -114,14 +124,16 @@ The component renders, in this order:
    or `AllowPaletteSelection` is set.
 4. A `<style>` block with the `CustomVariables` parameter, then one with the configured `CustomVariables`. Both are
    `:root` rules, so for the same property the configured value, written last, wins.
-5. `osirion-styles.js`, loaded through the script loader that `builder.Services.AddJSComponents()` registers.
+5. `osirion-styles.js`, loaded through the BlazorJSComponents script loader, which `AddOsirion` registers (a site
+   that registers theming alone with `AddOsirionTheming` calls `builder.Services.AddJSComponents()` itself).
 6. A short inline script that sets `data-osirion-theme`, `data-osirion-palette`, `data-osirion-framework`, the
    framework class and the framework's own dark-mode marker on `<html>` while the page is parsed.
 
 The theme is resolved in this order: the `osirion-preferred-theme` cookie, then `Mode` or `DefaultMode`. `System`
 follows the operating system's `prefers-color-scheme` and reacts when it changes, as long as the visitor has not
 picked a theme. `ThemeMode.Inverted` is not handled by the script: the page takes the operating system's theme, as
-with `System`, but does not react when it changes.
+with `System`, but does not react when it changes. On the server, `IThemeService` reads and writes `inverted` in the
+cookie like `light`, `dark` and `system`, so `CurrentMode` reports `Inverted` for such a visitor.
 
 The script applies the theme again after every Blazor enhanced navigation. Under Static SSR this is all that runs; no
 interactive render mode is needed. When `IThemeService` raises `ThemeChanged`, the component renders again, and it
@@ -132,8 +144,10 @@ follow the Osirion theme.
 
 ### Security
 
-`CustomVariables` is written into the page as raw CSS without encoding. Pass only values from your code or
-configuration, never text a visitor supplied. The component writes an inline script and does not add a nonce, so a
+`CustomVariables`, and the configured `ThemingOptions.CustomVariables`, are written into a `<style>` element. Every
+`<` in the value is replaced by the CSS escape `\3C `, so a value such as `</style><script>` cannot end the element
+or add markup; a valid declaration never contains `<` outside a string and is written unchanged. The value is not
+validated as CSS otherwise, so pass only values from your code or configuration, never text a visitor supplied. The component writes an inline script and does not add a nonce, so a
 Content Security Policy must allow it.
 
 ## Styling
@@ -161,4 +175,4 @@ your own stylesheet; to change a color an adapter provides, change the framework
 
 - [Theming](/docs/packages/theming): setup, options and adapters.
 - [ThemeToggle](/components/theme-toggle): the button that switches the theme.
-- [Palettes](/components/palettes): named colour sets with light and dark variants.
+- [Palettes](/components/palettes): named color sets with light and dark variants.

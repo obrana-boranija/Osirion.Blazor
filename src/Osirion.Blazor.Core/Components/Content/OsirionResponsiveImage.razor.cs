@@ -9,70 +9,76 @@ namespace Osirion.Blazor.Components;
 public partial class OsirionResponsiveImage
 {
     /// <summary>
-    /// Gets or sets the image URL, used by browsers that ignore <c>srcset</c> and as the base for
-    /// <see cref="SrcFormatter"/>.
+    /// Gets or sets the image URL, written to <c>src</c>. Browsers that ignore <c>srcset</c> load it, and it is the
+    /// first argument of <see cref="SrcFormatter"/>. Required.
     /// </summary>
     [Parameter, EditorRequired]
     public string Src { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets the text alternative. Describe what the image shows; use an empty string only for an image that
-    /// is purely decorative, which screen readers then skip.
+    /// is purely decorative, which screen readers then skip. Required.
     /// </summary>
     [Parameter, EditorRequired]
     public string Alt { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the image's intrinsic width in pixels. With <see cref="Height"/> it reserves the space before the
-    /// file arrives, so the content below does not jump (Cumulative Layout Shift).
+    /// Gets or sets the image's intrinsic width in pixels, written to <c>width</c>. With <see cref="Height"/> it
+    /// reserves the space before the file arrives, so the content below does not jump (Cumulative Layout Shift).
+    /// When set it must be greater than zero, or the component throws <see cref="ArgumentOutOfRangeException"/>.
     /// </summary>
     [Parameter]
     public int? Width { get; set; }
 
     /// <summary>
-    /// Gets or sets the image's intrinsic height in pixels. See <see cref="Width"/>.
+    /// Gets or sets the image's intrinsic height in pixels, written to <c>height</c>. See <see cref="Width"/>; the
+    /// same rule applies.
     /// </summary>
     [Parameter]
     public int? Height { get; set; }
 
     /// <summary>
-    /// Gets or sets the <c>srcset</c> candidates as written, for example <c>/img/a-640.jpg 640w, /img/a-1280.jpg 1280w</c>.
-    /// Takes precedence over <see cref="Widths"/>.
+    /// Gets or sets the <c>srcset</c> candidates as written, for example <c>/img/a-640.jpg 640w, /img/a-1280.jpg
+    /// 1280w</c>. Takes precedence over <see cref="Widths"/>.
     /// </summary>
     [Parameter]
     public string? SrcSet { get; set; }
 
     /// <summary>
-    /// Gets or sets the widths, in pixels, to offer in <c>srcset</c>. Each candidate's URL comes from
-    /// <see cref="SrcFormatter"/>; without one this parameter is ignored.
+    /// Gets or sets the widths, in pixels, to offer in <c>srcset</c>. They are sorted, and duplicates and values of
+    /// zero or less are dropped. Each candidate's URL comes from <see cref="SrcFormatter"/>; without one this
+    /// parameter is ignored.
     /// </summary>
     [Parameter]
     public IReadOnlyList<int>? Widths { get; set; }
 
     /// <summary>
-    /// Gets or sets how the URL of the file of a given width in pixels is built from <see cref="Src"/>, for an image
-    /// service such as <c>(src, width) =&gt; $"{src}?w={width}"</c>.
+    /// Gets or sets how the URL of the file of a given width in pixels is built from <see cref="Src"/>, for an
+    /// image service such as <c>(src, width) =&gt; $"{src}?w={width}"</c>. Used with <see cref="Widths"/>.
     /// </summary>
     [Parameter]
     public Func<string, int, string>? SrcFormatter { get; set; }
 
     /// <summary>
-    /// Gets or sets the <c>sizes</c> attribute: how wide the image is shown, for example
-    /// <c>(min-width: 768px) 50vw, 100vw</c>. When <c>srcset</c> is set and this is not, lazily loaded images use
-    /// <c>auto, 100vw</c> (the browser measures the layout where it can) and priority images use <c>100vw</c>.
+    /// Gets or sets the <c>sizes</c> attribute: how wide the image is shown, for example <c>(min-width: 768px)
+    /// 50vw, 100vw</c>. It is written only when a <c>srcset</c> exists. When it is not set, lazily loaded images
+    /// use <c>auto, 100vw</c> (the browser measures the layout where it can) and <see cref="Priority"/> images use
+    /// <c>100vw</c>.
     /// </summary>
     [Parameter]
     public string? Sizes { get; set; }
 
     /// <summary>
-    /// Gets or sets whether this is the page's main image (typically the largest one in the first view). It is then
-    /// loaded at once with high fetch priority instead of lazily, which speeds up Largest Contentful Paint.
+    /// Gets or sets whether this is the page's main image, typically the largest one in the first view. It then
+    /// loads at once (<c>loading="eager"</c>) with <c>fetchpriority="high"</c> instead of lazily, which speeds up
+    /// Largest Contentful Paint. Mark only one image per page.
     /// </summary>
     [Parameter]
     public bool Priority { get; set; }
 
     /// <summary>
-    /// Gets or sets a caption. When set, the image is wrapped in <c>&lt;figure&gt;</c> with a <c>&lt;figcaption&gt;</c>.
+    /// Gets or sets a caption. When it is not empty, the image is wrapped in <c>figure</c> with the caption in a
+    /// <c>figcaption</c>; the CSS classes and extra attributes stay on the <c>img</c>.
     /// </summary>
     [Parameter]
     public string? Caption { get; set; }

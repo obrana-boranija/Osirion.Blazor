@@ -7,7 +7,7 @@ Key parameters
 - Id (required), FormTitle, FormDescription
 - NamePlaceholder, EmailPlaceholder, SubjectPlaceholder, MessagePlaceholder, MessageRows
 - SubmitButtonText, SubmittingText, ShowResetButton, ResetButtonText
-- PrivacyPolicyText (null to hide)
+- PrivacyPolicyText (null or empty leaves the checkbox out; the form then submits without it)
 - ShowSubscribeOption, SubscribeText
 - ShowContactInformation, ContactInfoTitle, ContactInfo
 - SideBySideLayout (default true), UseDarkTheme

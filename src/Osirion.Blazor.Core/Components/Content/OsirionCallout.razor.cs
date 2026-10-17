@@ -9,22 +9,21 @@ namespace Osirion.Blazor.Components;
 public partial class OsirionCallout
 {
     /// <summary>
-    /// Gets or sets the kind of callout, which sets its color, icon and default title. Defaults to
-    /// <see cref="CalloutType.Note"/>.
+    /// Gets or sets the kind of callout: <c>Note</c>, <c>Tip</c>, <c>Important</c>, <c>Warning</c> or
+    /// <c>Caution</c>. It sets the color, the icon and the default <see cref="Title"/>.
     /// </summary>
     [Parameter]
     public CalloutType Type { get; set; } = CalloutType.Note;
 
     /// <summary>
-    /// Gets or sets the title. Defaults to the name of the <see cref="Type"/> ("Note", "Warning" and so on), as
-    /// Markdown alerts show; set it for other languages or a more specific heading.
+    /// Gets or sets the heading shown above the content. When empty or white space, the name of the
+    /// <see cref="Type"/> is shown ("Note", "Warning" and so on), as Markdown alerts show it; set it for other
+    /// languages or a more specific heading.
     /// </summary>
     [Parameter]
     public string? Title { get; set; }
 
-    /// <summary>
-    /// Gets or sets the callout's content.
-    /// </summary>
+    /// <summary>Gets or sets the callout's content, rendered in the body under the title.</summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 

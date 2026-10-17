@@ -20,7 +20,7 @@ This is the first news item. Replace it with your own announcement.
 | The About and Contact pages | `content/about.md` and `content/contact.md` |
 | The home page | `Components/Pages/Home.razor` |
 | Menu, footer and site name | `Osirion:Site` in `appsettings.json` |
-| Colours and dark mode | `Osirion:Theming` in `appsettings.json` |
+| Colors and dark mode | `Osirion:Theming` in `appsettings.json` |
 
 A news item needs front matter with a `title`, a `slug`, a `date` and a `description`; the date orders the list,
 newest first, and the item appears on the home page, in the RSS feed and in the sitemap.

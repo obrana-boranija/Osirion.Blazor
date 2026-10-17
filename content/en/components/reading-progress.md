@@ -2,12 +2,12 @@
 id: 'osirion-reading-progress'
 order: 7
 layout: docs
-title: Reading Progress
+title: OsirionReadingProgress
 permalink: /components/reading-progress
 description: "OsirionReadingProgress shows a bar at the top of the window that fills as the reader scrolls, driven by a CSS scroll-driven animation with no script."
 author: Dejan Demonjić
 date: 2026-10-11
-last_modified: 2026-10-11
+last_modified: 2026-10-17
 featured_image: /assets/images/blazor-cover.png
 categories:
 - Components
@@ -25,14 +25,36 @@ redirect_from:
 - /docs/components/core/content/reading-progress
 custom_fields:
   group: content
+seo_properties:
+  title: 'OsirionReadingProgress: reading progress bar for Blazor'
+  description: 'OsirionReadingProgress shows a bar at the top of the window that fills as the reader scrolls, driven by a CSS scroll-driven animation with no script.'
+  image: /assets/images/blazor-cover.png
+  canonical: 'https://getosirion.com/components/reading-progress'
+  lang: en
+  robots: index, follow
+  og_title: 'OsirionReadingProgress - Osirion.Blazor'
+  og_description: 'A bar at the top of the window that fills as the reader scrolls, with no script.'
+  og_image_url: '/assets/images/blazor-cover.png'
+  og_type: article
+  json_ld: ''
+  type: Article
+  twitter_card: summary_large_image
+  twitter_title: 'OsirionReadingProgress - Osirion.Blazor'
+  twitter_description: 'A bar at the top of the window that fills as the reader scrolls, with no script.'
+  twitter_image_url: '/assets/images/blazor-cover.png'
+  meta_tags: {}
 ---
 
-# Reading Progress
+# OsirionReadingProgress
 
 `OsirionReadingProgress` shows a thin bar at the top of the window that fills from left to right as the reader
 scrolls through the page. Use it on long articles. It is a CSS scroll-driven animation, so it needs no script.
 
-Available from 4.1.
+Package `Osirion.Blazor.Core`, namespace `Osirion.Blazor.Components`. [Source on GitHub](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Core/Components/Content/OsirionReadingProgress.razor). Available from 4.0.
+
+```demo
+reading-progress
+```
 
 ## Usage
 
@@ -55,13 +77,19 @@ To change its color and thickness, set its two custom properties in your stylesh
 
 ## Parameters
 
-The component has no parameters of its own.
+The component has no parameters of its own. It takes the ones every Osirion component inherits:
+
+<!-- osirion:parameters OsirionReadingProgress -->
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `Class` | `string?` | `null` | Extra classes on the bar. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
+| `Style` | `string?` | `null` | An inline style for the component's root element. |
 
-Unmatched attributes go on the bar `<div>`.
+<!-- /osirion:parameters -->
+
+Unmatched attributes and `Class` go on the bar `<div>`. `Style` is accepted but the component does not write it.
 
 ## Behavior
 
@@ -71,6 +99,8 @@ Unmatched attributes go on the bar `<div>`.
   checks support with `@supports (animation-timeline: scroll())`.
 - The bar is decorative: it has `aria-hidden="true"`, because the scroll position is already available to assistive
   technology, and it ignores the pointer, so it never blocks a click on a sticky header beneath it.
+- It does not check `prefers-reduced-motion`. The bar follows the scroll position rather than playing on its own, so
+  it does not animate by itself.
 - It renders the same in static SSR and in interactive render modes.
 
 ## Styling

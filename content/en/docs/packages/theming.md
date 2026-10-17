@@ -59,7 +59,7 @@ Fluent UI, MudBlazor or Radzen, and lets visitors switch between the themes. It 
   Render it once, in your main layout.
 - [`ThemeToggle`](/components/theme-toggle) is a button that switches between light and dark.
 
-On top of the mode, a [palette](/components/palettes) can set the colours: Osirion, Commit, Editor,
+On top of the mode, a [palette](/components/palettes) can set the colors: Osirion, Commit, Editor,
 Studio, Studio Blue or Contrast, each with a light and a dark variant.
 [`ThemePicker`](/components/theme-picker) lets visitors choose one.
 
@@ -80,8 +80,9 @@ Set the framework and the default theme in `appsettings.json`:
 }
 ```
 
-Register theming and the script loader in `Program.cs`. `AddOsirion(builder.Configuration)` from the meta-package
-reads the same section; with the `Osirion.Blazor.Theming` package alone, call `AddOsirionTheming`:
+Register theming in `Program.cs`. `AddOsirion(builder.Configuration)` from the meta-package reads the same section and
+also registers the script loader. With the `Osirion.Blazor.Theming` package alone, call `AddOsirionTheming` and
+`AddJSComponents`, because `AddOsirionTheming` does not register the loader:
 
 ```csharp
 using Osirion.Blazor.Theming.Extensions;
@@ -90,7 +91,8 @@ builder.Services.AddOsirionTheming(builder.Configuration);
 builder.Services.AddJSComponents();
 ```
 
-`AddJSComponents` registers the loader that Osirion components use for their scripts. The same setup in code:
+`AddJSComponents` registers the loader that `OsirionStyles` and other components use for their scripts. The same
+setup in code:
 
 ```csharp
 using Osirion.Blazor.Components;

@@ -10,14 +10,14 @@
     {
         <div class="osirion-loading">@LoadingText</div>
     }
-    else if (Tags is null || !Tags.Any())
+    else if (ShownTags.Count == 0)
     {
         <div class="osirion-no-tags">@NoContentText</div>
     }
     else
     {
         <div class="osirion-tags-container">
-            @foreach (var tag in Tags)
+            @foreach (var tag in ShownTags)
             {
                 <a href="@GetTagUrl(tag)" class="@GetTagLinkClass(tag)" rel="nofollow">
                     @tag.Name

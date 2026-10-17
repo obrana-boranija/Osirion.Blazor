@@ -137,6 +137,40 @@ public class OsirionContentNotFoundTests : OsirionComponentTestBase
         cut.FindAll(".osirion-content-not-found-suggestion-item small")[0].TextContent.Trim().ShouldBe("Latest posts");
     }
 
+    // Fails before the fix: a suggestion without a description still rendered an empty p and small, and an empty
+    // SuggestionsTitle rendered an empty p, which add stray spacing and empty elements for assistive technology.
+    [Fact]
+    public void ContentNotFound_EmptyTexts_RenderNoEmptyElements()
+    {
+        var cut = RenderStatic<OsirionContentNotFound>(parameters => parameters
+            .Add(p => p.ShowSuggestions, true)
+            .Add(p => p.SuggestionsTitle, "")
+            .Add(p => p.Suggestions, [new ContentNotFoundSuggestion { Text = "Blog", Url = "/blog" }]));
+
+        cut.FindAll(".osirion-content-not-found-suggestions-title").ShouldBeEmpty();
+        cut.FindAll(".osirion-content-not-found-suggestion-item p").ShouldBeEmpty();
+        cut.FindAll(".osirion-content-not-found-suggestion-item small").ShouldBeEmpty();
+    }
+
+    // Fails before the fix: Create403 pointed its button at javascript:history.back(), a script URL as an address.
+    [Fact]
+    public void ContentNotFound_Factories_UseOnlyLocalButtonAddresses()
+    {
+        OsirionContentNotFound[] configured =
+        [
+            OsirionContentNotFound.Create404(),
+            OsirionContentNotFound.Create403(),
+            OsirionContentNotFound.CreateEmptySearch("x"),
+            OsirionContentNotFound.CreateEmptyContent()
+        ];
+
+        foreach (var component in configured)
+        {
+            component.PrimaryButtonUrl.ShouldStartWith("/");
+            component.SecondaryButtonUrl.ShouldStartWith("/");
+        }
+    }
+
     [Fact]
     public void ContentNotFound_SuggestionsNotShown_RendersNoSuggestions()
     {
@@ -248,16 +282,16 @@ public class OsirionContentNotFoundTests : OsirionComponentTestBase
         component.ErrorCode.ShouldBe("403");
         component.Title.ShouldBe("Access Denied");
         component.Message.ShouldBe("You don't have permission to access this resource.");
-        component.PrimaryButtonText.ShouldBe("Go Back");
+        component.PrimaryButtonText.ShouldBe("Go to Homepage");
     }
 
-    // Known defect, pinned as current behavior: the Go Back link is a javascript: URL, which a strict Content Security Policy blocks. Update this expectation when it is fixed.
+    // Fails before the fix: the button was a javascript: URL, which a strict Content Security Policy blocks.
     [Fact]
-    public void Create403_GoBackLinkIsAJavaScriptUrl()
+    public void Create403_ButtonLeadsToTheHomePageInsteadOfAJavaScriptUrl()
     {
         var component = OsirionContentNotFound.Create403();
 
-        component.PrimaryButtonUrl.ShouldBe("javascript:history.back()");
+        component.PrimaryButtonUrl.ShouldBe("/");
     }
 
     [Fact]

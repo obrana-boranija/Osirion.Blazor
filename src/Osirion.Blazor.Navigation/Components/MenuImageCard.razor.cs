@@ -9,27 +9,35 @@ namespace Osirion.Blazor.Navigation.Components;
 /// </summary>
 public partial class MenuImageCard
 {
-    /// <summary>Gets or sets the image URL.</summary>
+    /// <summary>Gets or sets the address of the image, written as given. It loads lazily.</summary>
     [Parameter]
     public string ImageUrl { get; set; } = string.Empty;
 
-    /// <summary>Gets or sets the image alternative text.</summary>
+    /// <summary>
+    /// Gets or sets the alternative text of the image. Without it the image is rendered with <c>alt=""</c>, which
+    /// marks it as decorative so a screen reader skips it. Set it when the image says something the caption does not.
+    /// </summary>
     [Parameter]
     public string? ImageAlt { get; set; }
 
-    /// <summary>Gets or sets the caption title.</summary>
+    /// <summary>Gets or sets the caption title, shown over a dark scrim at the bottom of the image.</summary>
     [Parameter]
     public string Title { get; set; } = string.Empty;
 
-    /// <summary>Gets or sets optional caption supporting text.</summary>
+    /// <summary>Gets or sets supporting text under <see cref="Title"/>.</summary>
     [Parameter]
     public string? Description { get; set; }
 
-    /// <summary>Gets or sets the destination URL.</summary>
+    /// <summary>
+    /// Gets or sets the link address of the whole card. Only a relative URL or the <c>http</c>, <c>https</c>,
+    /// <c>mailto</c> and <c>tel</c> schemes get an <c>href</c>.
+    /// </summary>
     [Parameter]
     public string Href { get; set; } = "#";
 
-    /// <summary>Gets or sets how to open the destination.</summary>
+    /// <summary>
+    /// Gets or sets the <c>target</c> attribute. <c>_blank</c> also adds <c>rel="noopener noreferrer"</c>.
+    /// </summary>
     [Parameter]
     public string? Target { get; set; }
 

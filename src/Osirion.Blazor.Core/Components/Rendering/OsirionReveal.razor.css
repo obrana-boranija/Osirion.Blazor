@@ -1,21 +1,21 @@
+/* Hidden only once the script has taken over (it adds osirion-reveal-armed before it observes), so content stays
+   visible and in place when script is blocked or fails, with Animate off, and under reduced motion. */
 .osirion-reveal { opacity: 1; }
 
-.osirion-reveal[data-osirion-reveal="True"],
-.osirion-reveal[data-osirion-reveal="true"] {
+.osirion-reveal.osirion-reveal-armed {
     opacity: 0;
     transform: translateY(1.25rem);
     transition: opacity 0.55s ease, transform 0.55s ease;
 }
 
-.osirion-reveal-down { transform: translateY(-1.25rem) !important; }
-.osirion-reveal-left { transform: translateX(1.25rem) !important; }
-.osirion-reveal-right { transform: translateX(-1.25rem) !important; }
-.osirion-reveal-fade { transform: none !important; }
-.osirion-reveal-visible { opacity: 1 !important; transform: none !important; }
+.osirion-reveal-armed.osirion-reveal-down { transform: translateY(-1.25rem); }
+.osirion-reveal-armed.osirion-reveal-left { transform: translateX(1.25rem); }
+.osirion-reveal-armed.osirion-reveal-right { transform: translateX(-1.25rem); }
+.osirion-reveal-armed.osirion-reveal-fade { transform: none; }
+.osirion-reveal.osirion-reveal-visible { opacity: 1; transform: none; }
 
 @media (prefers-reduced-motion: reduce) {
-    .osirion-reveal[data-osirion-reveal="True"],
-    .osirion-reveal[data-osirion-reveal="true"] {
+    .osirion-reveal.osirion-reveal-armed {
         opacity: 1;
         transform: none;
         transition: none;

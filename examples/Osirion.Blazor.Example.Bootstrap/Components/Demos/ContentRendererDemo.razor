@@ -1,0 +1,28 @@
+@using Osirion.Blazor.Cms.Domain.Entities
+@using Osirion.Blazor.Cms.Domain.Services
+@using Osirion.Blazor.Cms.Web.Components
+@inject IContentProviderManager ContentProviders
+
+@* The item is a page of this site's own content. ContentRenderer writes only its body, so the page supplies the
+   title. OmitLeadingTitle leaves out the body's own "# Title" line, which keeps this documentation page at one h1. *@
+@if (item is not null)
+{
+    <div style="max-height: 24rem; overflow: auto; padding: 1rem; border: 1px solid var(--osirion-border-color, #d1d5db); border-radius: 0.5rem;"
+         tabindex="0" role="region" aria-label="Body of the release notes page">
+        <ContentRenderer Item="@item" OmitLeadingTitle="true" />
+    </div>
+}
+else
+{
+    <p>The sample page was not found in the content provider.</p>
+}
+
+@code {
+    private ContentItem? item;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var provider = ContentProviders.GetDefaultProvider();
+        item = provider is null ? null : await provider.GetItemByUrlAsync("blog/osirion-blazor-v1-5-release-notes");
+    }
+}

@@ -1,0 +1,29 @@
+@using Osirion.Blazor.Components
+
+<p>
+    <OsirionReadMoreLink Href="/docs/getting-started" />
+</p>
+
+<p>
+    <OsirionReadMoreLink Href="https://github.com/demonjic/Osirion.Blazor"
+                         Text="Source on GitHub"
+                         Variant="ReadMoreVariant.External"
+                         Target="_blank"
+                         rel="noopener" />
+</p>
+
+<p>
+    <OsirionReadMoreLink Href="/docs/getting-started"
+                         Text="Read the docs"
+                         Variant="ReadMoreVariant.Button"
+                         Size="LinkSize.Large" />
+</p>
+
+@* With Stretched, the whole card is the link; the card needs position: relative *@
+<article style="position: relative; max-width: 24rem; padding: 1rem; border: 1px solid var(--osirion-border-color, #d1d5db); border-radius: 0.5rem;">
+    <h3 style="margin-top: 0; font-size: 1.125rem;">A card with a stretched link</h3>
+    <p>The link is the last element, and its click area covers the card.</p>
+    <OsirionReadMoreLink Href="/docs/getting-started"
+                         AriaLabel="Read more: a card with a stretched link"
+                         Stretched="true" />
+</article>

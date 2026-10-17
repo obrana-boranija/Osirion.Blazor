@@ -7,7 +7,7 @@ permalink: /components/testimonial-carousel
 description: OsirionTestimonialCarousel shows testimonial cards in a continuously looping rail, driven by CSS, with a pause button and a static grid under reduced motion.
 author: Dejan Demonjić
 date: 2025-09-03
-last_modified: 2026-10-11
+last_modified: 2026-10-17
 featured_image: /assets/images/blazor-cover.png
 categories:
 - Components
@@ -29,7 +29,7 @@ redirect_from:
 custom_fields:
   group: sections
 seo_properties:
-  title: 'OsirionTestimonialCarousel Component - Osirion.Blazor'
+  title: 'OsirionTestimonialCarousel: testimonial rail for Blazor'
   description: 'Show testimonial cards in a looping rail with ratings, LinkedIn links and read more links; it pauses on focus and respects reduced motion.'
   image: /assets/images/blazor-cover.png
   canonical: 'https://getosirion.com/components/testimonial-carousel'
@@ -55,16 +55,22 @@ seo_properties:
 and optionally a photo, star rating and links. The loop is a CSS animation, so it runs under static server-side
 rendering without script.
 
+Package `Osirion.Blazor.Core`, namespace `Osirion.Blazor.Components`. [Source on GitHub](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Core/Components/Carousels/OsirionTestimonialCarousel.razor).
+
+```demo
+testimonial-carousel
+```
+
 ## Usage
 
-The enhancement script (dragging, wheel scrolling, pause button) loads through the BlazorJSComponents package.
-Register its services once in `Program.cs`:
+The enhancement script (dragging, wheel scrolling, pause button) loads through BlazorJSComponents, which `AddOsirion` registers. If you register
+Osirion.Blazor.Core without `AddOsirion`, add the loader in `Program.cs`:
 
 ```csharp
 builder.Services.AddJSComponents();
 ```
 
-Always pass your own testimonials. Without `CustomTestimonials`, the component shows built-in sample testimonials.
+Always pass your own testimonials. Without `CustomTestimonials`, the component shows eight built-in sample testimonials from invented people, with photos that load from `images.unsplash.com`.
 
 ```razor
 @using Osirion.Blazor.Components
@@ -113,28 +119,32 @@ A star rating shows only when both the carousel's `ShowRating` and the item's `S
 
 ## Parameters
 
+<!-- osirion:parameters OsirionTestimonialCarousel -->
+
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `CustomTestimonials` | `List<TestimonialItem>?` | `null` | The testimonials. When `null`, built-in samples are shown. |
-| `Title` | `string?` | `null` | Heading shown above the rail, as an `<h2>`. |
-| `SectionTitle` | `string` | `"Customer Testimonials"` | Accessible name (`aria-label`) of the `<section>`. |
-| `AnimationDuration` | `int` | `60` | Seconds for one full loop at `Normal` speed. Lower is faster. |
-| `Speed` | `CarouselSpeed` | `Normal` | `Slow` lengthens the loop, `Fast` shortens it. |
-| `Direction` | `AnimationDirection` | `Right` | `Right` moves the cards from right to left; `Left` reverses the direction. |
-| `PauseOnHover` | `bool` | `true` | Pauses the loop while the pointer is over the carousel. |
-| `CardWidth` | `int` | `400` | Card width in pixels. |
-| `CardHeight` | `int` | `300` | Fixed card height in pixels; size it for your longest quote. |
-| `CardGap` | `int` | `24` | Gap between cards in pixels. |
-| `MaxVisibleTestimonials` | `int?` | `null` | Shows only the first N testimonials. |
-| `CardVariant` | `TestimonialVariant` | `Default` | `Default`, `Minimal`, `Highlighted` or `Compact`. |
-| `CardSize` | `TestimonialSize` | `Normal` | `Small`, `Normal` or `Large`. |
-| `CardElevated` | `bool?` | `null` | Elevation for every card whose item does not set `Elevated`. |
-| `CardBorderless` | `bool` | `false` | Renders the cards without a border. |
-| `ShowRating` | `bool` | `false` | Allows star ratings on the cards. |
-| `InheritTheme` | `bool` | `false` | Gives the cards the carousel's `Theme` instead of `System`. |
-| `Class` | `string?` | `null` | Extra classes on the `<section>`. |
-| `Style` | `string?` | `null` | Inline style on the `<section>`. |
-| `Theme` | `ThemeMode` | `System` | The carousel's theme; reaches the cards only with `InheritTheme`. |
+| `Title` | `string?` | `null` | The heading above the rail, rendered as an `h2`; nothing is rendered when it is empty. |
+| `SectionTitle` | `string` | `"Customer Testimonials"` | The accessible name (`aria-label`) of the `section`. |
+| `AnimationDuration` | `int` | `60` | The seconds one full loop takes at `Normal` speed. Lower is faster. |
+| `CustomTestimonials` | `List<TestimonialItem>?` | `null` | The testimonials. Without it the carousel shows built-in sample testimonials, so always pass your own. Fewer than three are repeated on the rail to close the loop; your list is not changed. |
+| `PauseOnHover` | `bool` | `true` | Whether the loop pauses while the pointer is over the carousel. Keyboard focus inside it always pauses the loop. |
+| `Direction` | `AnimationDirection` | `AnimationDirection.Right` | `Right` moves the cards from right to left, `Left` from left to right. |
+| `CardWidth` | `int` | `400` | The width of each card in pixels. |
+| `CardHeight` | `int` | `300` | The fixed height of each card in pixels; size it for your longest quote. |
+| `CardGap` | `int` | `24` | The gap between cards in pixels. |
+| `MaxVisibleTestimonials` | `int?` | `null` | Shows only the first N testimonials. A value of zero or less, or none, shows all of them. |
+| `CardVariant` | `TestimonialVariant` | `TestimonialVariant.Default` | The cards' look: `Default`, `Minimal`, `Highlighted` or `Compact`. |
+| `CardSize` | `TestimonialSize` | `TestimonialSize.Normal` | The cards' size: `Small`, `Normal` or `Large`. |
+| `CardElevated` | `bool?` | `null` | Whether the cards are elevated, for every testimonial that does not set its own `Elevated`. |
+| `CardBorderless` | `bool` | `false` | Whether the cards are drawn without a border. |
+| `Speed` | `CarouselSpeed` | `CarouselSpeed.Normal` | Changes the loop time: `Slow` adds 30 seconds to `AnimationDuration`, `Fast` takes 30 off, to a minimum of 10. |
+| `ShowRating` | `bool` | `false` | Whether star ratings are allowed; a card shows its rating only when its testimonial's `ShowRating` is also on. |
+| `InheritTheme` | `bool` | `false` | Whether the cards take the carousel's `OsirionComponentBase.Theme` instead of following the system. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
+| `Style` | `string?` | `null` | An inline style for the component's root element. |
+
+<!-- /osirion:parameters -->
 
 Unmatched attributes go on the `<section>`.
 
@@ -172,11 +182,8 @@ values named.
   Translate the pause button with `data-pause-label` and `data-play-label` attributes on the component.
 - **Reduced motion.** Under `prefers-reduced-motion: reduce` the animation stops and every testimonial is shown once,
   in a wrapped grid of two columns (one on narrow screens).
-- **Fewer than three items.** The carousel repeats items until there are three, and it does so by adding to the list
-  you passed in. Pass at least three testimonials, or a list you do not reuse elsewhere. An empty list throws.
-- **MaxVisibleTestimonials.** When it is set to a positive number, the visible items must still number three or more:
-  a value of 1 or 2, or a list of fewer than three items combined with this parameter, keeps the component from
-  finishing its first render. Leave it unset unless you pass more testimonials than you want to show.
+- **Fewer than three items.** The rail repeats items until it holds three, so the loop has no gap. The repeats are real cards, not hidden copies, and the list you passed is not changed. Pass at least three testimonials to avoid them. An empty list renders an empty rail.
+- **MaxVisibleTestimonials.** When it is a positive number, only that many testimonials are shown, and a value below three is padded by repeating them as above. Zero or less shows all of them.
 - **Images.** The photos of the first two cards load eagerly with high fetch priority; the rest load lazily.
 - **Text and URLs.** Names, roles and quotes are rendered as text, so Razor encodes them. `LinkedInUrl`,
   `ReadMoreHref` and `ProfileImageUrl` are written as given, so pass only URLs you trust.

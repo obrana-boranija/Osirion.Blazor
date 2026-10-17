@@ -1,0 +1,26 @@
+@using Osirion.Blazor.Components
+
+@* A fixed-height frame stands in for the viewport, so the sticky footer shows with little content. The skip link and
+   the scroll behavior are off here because the demo sits inside a page that has its own. *@
+<div style="height: 16rem; border: 1px solid var(--osirion-border-color, #d1d5db); border-radius: 0.5rem; overflow: hidden;">
+    <OsirionPageLayout MinHeightStrategy="content"
+                       ShowSkipLink="false"
+                       EnableHeaderScrollBehavior="false"
+                       MainContentId="page-layout-demo-main">
+        <Header>
+            <div style="padding: 0.75rem 1rem; border-bottom: 1px solid var(--osirion-border-color, #d1d5db);">
+                <strong>Example Ltd</strong>
+            </div>
+        </Header>
+        <Body>
+            <div style="padding: 1rem;">
+                <p style="margin: 0;">The page content goes in the Body slot. It is short here, and the footer still sits at the bottom of the frame.</p>
+            </div>
+        </Body>
+        <Footer>
+            <div style="padding: 0.75rem 1rem; border-top: 1px solid var(--osirion-border-color, #d1d5db);">
+                <small>Footer slot</small>
+            </div>
+        </Footer>
+    </OsirionPageLayout>
+</div>

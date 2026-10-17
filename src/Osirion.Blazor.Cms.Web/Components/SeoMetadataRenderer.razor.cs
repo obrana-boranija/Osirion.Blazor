@@ -75,198 +75,225 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
     #region Parameters
 
     /// <summary>
-    /// The content item to render metadata for (required for single content pages).
+    /// Gets or sets the item a single content page writes its metadata for. Set this or <see cref="ContentItems"/>, not both.
+    /// With neither (or an empty list), the component writes only an empty page title and no other tag.
     /// </summary>
     [Parameter]
     public ContentItem? Content { get; set; }
 
     /// <summary>
-    /// Collection of content items for collection pages (Blog, Category, Tag pages).
-    /// Used to generate CollectionPage schema with itemListElement.
+    /// Gets or sets the items of a list page. The title becomes <c>{CollectionTitle} | {site name}</c>, <c>og:type</c> is
+    /// <c>website</c>, and the JSON-LD holds a <c>BlogPosting</c> per item, plus a <c>CollectionPage</c> when
+    /// <see cref="SchemaTypes"/> lists it. An empty list counts as not set.
     /// </summary>
     [Parameter]
     public IReadOnlyList<ContentItem>? ContentItems { get; set; }
 
     /// <summary>
-    /// Title for the collection page (used when ContentItems is provided).
+    /// Gets or sets the title of a list page, used in the page title as <c>{CollectionTitle} | {site name}</c> and, cut to
+    /// 60 characters, as <c>og:title</c>. Read only with <see cref="ContentItems"/>.
     /// </summary>
     [Parameter]
     public string? CollectionTitle { get; set; }
 
     /// <summary>
-    /// Description for the collection page (used when ContentItems is provided).
+    /// Gets or sets the description of a list page: the meta description (cut to 160 characters), <c>og:description</c>
+    /// (cut to 200) and the source of the summary tags. Read only with <see cref="ContentItems"/>.
     /// </summary>
     [Parameter]
     public string? CollectionDescription { get; set; }
 
     /// <summary>
-    /// Override the default site name extracted from the domain.
+    /// Gets or sets the site name written after the title and as <c>og:site_name</c>. When empty, the configured
+    /// <c>SiteName</c> applies, then <see cref="OrganizationName"/>, then the host name of the site address.
     /// </summary>
     [Parameter]
     public string? SiteNameOverride { get; set; }
 
     /// <summary>
-    /// Site-wide description used for organization schema.
+    /// Gets or sets a site description. The component accepts it but writes nothing from it. <c>MapOsirionFeeds</c>
+    /// uses the configured <c>SiteDescription</c> as the feed description when the feed options set none.
     /// </summary>
     [Parameter]
     public string? SiteDescription { get; set; }
 
     /// <summary>
-    /// URL to the site logo (recommended: square format, min 112x112px).
+    /// Gets or sets the address of the publisher logo in structured data, absolute or relative to the site address.
+    /// When empty, the configured value applies, then <c>/logo.png</c> on the site address.
     /// </summary>
     [Parameter]
     public string? SiteLogoUrl { get; set; }
 
     /// <summary>
-    /// Twitter handle for the site (e.g., "@yoursite").
+    /// Gets or sets the handle of the site for <c>twitter:site</c>, for example <c>@contoso</c>. Nothing is written when empty.
     /// </summary>
     [Parameter]
     public string? TwitterSite { get; set; }
 
     /// <summary>
-    /// Twitter handle for the content creator (e.g., "@author").
+    /// Gets or sets the handle of the author for <c>twitter:creator</c>, for example <c>@author</c>. Nothing is written when empty.
     /// </summary>
     [Parameter]
     public string? TwitterCreator { get; set; }
 
     /// <summary>
-    /// Facebook App ID for Facebook Insights.
+    /// Gets or sets the Facebook app ID written as <c>fb:app_id</c>. Nothing is written when empty.
     /// </summary>
     [Parameter]
     public string? FacebookAppId { get; set; }
 
     /// <summary>
-    /// Schema types to generate for structured data. Multiple schemas can be specified.
-    /// Example: new[] { SchemaType.BlogPosting, SchemaType.BreadcrumbList, SchemaType.FAQ }
+    /// Gets or sets the JSON-LD types to generate, such as <c>Article</c>, <c>BlogPosting</c>, <c>TechArticle</c>,
+    /// <c>WebPage</c>, <c>HowTo</c>, <c>BreadcrumbList</c> or <c>CollectionPage</c>. When empty, the configured
+    /// <c>DefaultSchemaTypes</c> apply, then the front matter <c>type</c>, then <c>WebPage</c>. The first type also sets
+    /// <c>og:type</c> when the front matter has no <c>og_type</c>. <c>FAQ</c> generates no data: use
+    /// <see cref="EnableGeneratedFaq"/>. A single type gets a <c>BreadcrumbList</c> added when
+    /// <see cref="GenerateMultipleSchemas"/> is on.
     /// </summary>
     [Parameter]
     public SchemaType[]? SchemaTypes { get; set; }
 
     /// <summary>
-    /// Allow AI systems to discover and index this content.
+    /// Gets or sets whether the crawler opt-in meta tags are written (<c>true</c>) or the opt-out tags (<c>false</c>). With
+    /// <c>false</c>, the training tag says disallow whatever <see cref="AllowAiTraining"/> is. These meta names are not a
+    /// standard; use <c>robots.txt</c> to control crawlers. When not set, the configured value applies, then <c>true</c>.
     /// </summary>
     [Parameter]
     public bool AllowAiDiscovery { get; set; } = true;
 
     /// <summary>
-    /// Allow AI systems to use this content for training purposes.
+    /// Gets or sets whether the training tags (<c>ai-training</c> and <c>Google-Extended</c>) opt in (<c>true</c>) or out
+    /// (<c>false</c>). Ignored when <see cref="AllowAiDiscovery"/> is <c>false</c>. When not set, the configured value
+    /// applies, then <c>true</c>.
     /// </summary>
     [Parameter]
     public bool AllowAiTraining { get; set; } = true;
 
     /// <summary>
-    /// Allow traditional search engines to index this content.
+    /// Gets or sets whether search engines may index the page. <c>false</c> writes <c>noindex, nofollow</c> as <c>robots</c>,
+    /// <c>googlebot</c> and <c>bingbot</c>; <c>true</c> writes the front matter <c>robots</c> value, or
+    /// <c>index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1</c> when it has none. When not set,
+    /// the configured value applies, then <c>true</c>.
     /// </summary>
     [Parameter]
     public bool AllowSearchIndexing { get; set; } = true;
 
     /// <summary>
-    /// Enable Generative Engine Optimization (GEO) meta tags.
+    /// Gets or sets whether the summary meta tags are written (<c>entity-summary</c>, <c>content-type</c>,
+    /// <c>primary-category</c>, <c>content-author</c>, <c>content-expertise-level</c> and <c>content-freshness</c>). They are
+    /// written only when the item or list has a description. When not set, the configured value applies, then <c>true</c>.
     /// </summary>
     [Parameter]
     public bool EnableGeoOptimization { get; set; } = true;
 
     /// <summary>
-    /// Enable Answer Engine Optimization (AEO) structured answers.
+    /// Gets or sets whether the generated answer tags are allowed. It must be on for <see cref="EnableGeneratedFaq"/> to
+    /// have an effect. When not set, the configured value applies, then <c>true</c>.
     /// </summary>
     [Parameter]
     public bool EnableAeoOptimization { get; set; } = true;
 
     /// <summary>
-    /// Generate multiple schema types when applicable (e.g., Article + BreadcrumbList).
+    /// Gets or sets whether a <c>BreadcrumbList</c> is added when exactly one schema type is generated for an item with a
+    /// path. Several types given in <see cref="SchemaTypes"/> are used as listed. When not set, the configured value
+    /// applies, then <c>true</c>.
     /// </summary>
     [Parameter]
     public bool GenerateMultipleSchemas { get; set; } = true;
 
     /// <summary>
-    /// A page that identifies the author, such as an About page, named as the author's <c>url</c> in structured data.
-    /// It is meant for a site with one author: every article and every posting in a list names it. Without one the
+    /// Gets or sets a page that identifies the author, such as an About page, named as the author <c>url</c> in structured
+    /// data. It is meant for a site with one author: every article and every posting in a list names it. Without one the
     /// author is named alone, because a guessed address that answers 404 is worse than none.
     /// </summary>
     [Parameter]
     public string? AuthorUrl { get; set; }
 
     /// <summary>
-    /// Default fallback image URL when content has no featured image.
+    /// Gets or sets the social image used when the item has neither <c>og_image_url</c> nor a featured image. A relative
+    /// address becomes absolute with the site address.
     /// </summary>
     [Parameter]
     public string? DefaultImageUrl { get; set; }
 
     /// <summary>
-    /// Default image width for Open Graph (recommended: 1200px).
+    /// Gets or sets the width written as <c>og:image:width</c>, in pixels. A value of <c>1200</c> is replaced by the configured
+    /// width when there is one.
     /// </summary>
     [Parameter]
     public int DefaultImageWidth { get; set; } = 1200;
 
     /// <summary>
-    /// Default image height for Open Graph (recommended: 630px).
+    /// Gets or sets the height written as <c>og:image:height</c>, in pixels. A value of <c>630</c> is replaced by the configured
+    /// height when there is one.
     /// </summary>
     [Parameter]
     public int DefaultImageHeight { get; set; } = 630;
 
     /// <summary>
-    /// Organization name for structured data.
+    /// Gets or sets the publisher name in structured data. It is also the site name when no site name is set.
     /// </summary>
     [Parameter]
     public string? OrganizationName { get; set; }
 
     /// <summary>
-    /// Gets or sets the <c>applicationCategory</c> of the <see cref="SchemaType.SoftwareApplication"/> schema, one of
-    /// the app types search engines support, such as <c>DeveloperApplication</c> or <c>BusinessApplication</c>.
-    /// Defaults to <c>DeveloperApplication</c>.
+    /// Gets or sets the <c>applicationCategory</c> of the <see cref="SchemaType.SoftwareApplication"/> schema, one of the app
+    /// types search engines support, such as <c>DeveloperApplication</c> or <c>BusinessApplication</c>.
     /// </summary>
     [Parameter]
     public string ApplicationCategory { get; set; } = "DeveloperApplication";
 
     /// <summary>
-    /// Alternate language versions of this page for hreflang tags.
+    /// Gets or sets the <c>hreflang</c> links of other language versions, each entry a language code and an address joined by
+    /// a vertical bar, such as <c>de|https://example.com/de/page</c>. Malformed entries are skipped with a logged warning.
     /// </summary>
     [Parameter]
     public List<string>? AlternateLanguageUrls { get; set; }
 
     /// <summary>
-    /// URL to the previous page in a series or pagination.
+    /// Gets or sets the address written as <c>rel="prev"</c>. Nothing is written when empty.
     /// </summary>
     [Parameter]
     public string? PrevPageUrl { get; set; }
 
     /// <summary>
-    /// URL to the next page in a series or pagination.
+    /// Gets or sets the address written as <c>rel="next"</c>. Nothing is written when empty.
     /// </summary>
     [Parameter]
     public string? NextPageUrl { get; set; }
 
     /// <summary>
-    /// Text label for the home breadcrumb (default: "Home").
+    /// Gets or sets the name of the first <c>BreadcrumbList</c> entry. When empty, the configured value applies.
     /// </summary>
     [Parameter]
     public string BreadcrumbHomeText { get; set; } = "Home";
 
     /// <summary>
-    /// Custom breadcrumb items to override automatic generation from path.
-    /// Format: List of tuples (name, url) or use automatic path parsing if null.
+    /// Gets or sets the breadcrumb entries after the home entry, as name and address pairs, in place of the ones built from
+    /// the item path.
     /// </summary>
     [Parameter]
     public List<(string Name, string Url)>? CustomBreadcrumbs { get; set; }
 
     /// <summary>
-    /// Query parameters kept in the canonical URL, og:url and structured data URLs (for example <c>page</c> for
-    /// paginated lists, where each page is its own document). All other parameters and the fragment are dropped.
-    /// A canonical URL declared in the content front matter always wins.
+    /// Gets or sets the query parameters kept in the canonical URL, <c>og:url</c> and structured data addresses (for example
+    /// <c>page</c> for paginated lists, where each page is its own document). All other parameters and the fragment are
+    /// dropped. A canonical address declared in the front matter always wins.
     /// </summary>
     [Parameter]
     public IReadOnlyCollection<string>? CanonicalQueryParameters { get; set; }
 
     /// <summary>
-    /// Emits the viewport, theme-color and mobile web app meta tags. Off by default: the host document owns
-    /// these, and emitting them again duplicates its tags.
+    /// Gets or sets whether the viewport, theme-color and mobile web app meta tags are written. Off by default: the host
+    /// document owns these, and writing them again duplicates its tags. The configured value can also turn it on.
     /// </summary>
     [Parameter]
     public bool EmitMobileMetaTags { get; set; }
 
     /// <summary>
-    /// Generates FAQ structured data and answer meta tags from content titles and descriptions
-    /// (requires <see cref="EnableAeoOptimization"/>). Off by default because the questions are derived, not authored.
+    /// Gets or sets whether FAQ structured data and answer meta tags are built from the title and description (requires
+    /// <see cref="EnableAeoOptimization"/>). Off by default because the question is derived, not authored. The configured
+    /// value can also turn it on.
     /// </summary>
     [Parameter]
     public bool EnableGeneratedFaq { get; set; }

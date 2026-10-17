@@ -7,7 +7,7 @@ permalink: /components/infinite-logo-carousel
 description: InfiniteLogoCarousel shows client or partner logos in a row that can loop continuously, with light and dark logo variants and optional links.
 author: Dejan Demonjić
 date: 2025-09-03
-last_modified: 2026-10-11
+last_modified: 2026-10-17
 featured_image: /assets/images/blazor-cover.png
 categories:
 - Components
@@ -29,7 +29,7 @@ redirect_from:
 custom_fields:
   group: sections
 seo_properties:
-  title: 'InfiniteLogoCarousel Component - Osirion.Blazor'
+  title: 'InfiniteLogoCarousel: logo carousel for Blazor'
   description: 'Show client or partner logos in a looping row with light and dark variants, links, grayscale and a pause button, rendered under static SSR.'
   image: /assets/images/blazor-cover.png
   canonical: 'https://getosirion.com/components/infinite-logo-carousel'
@@ -54,15 +54,22 @@ seo_properties:
 loops continuously; leave it off for a static row. Logos can link somewhere and can have separate light and dark
 images.
 
+Package `Osirion.Blazor.Core`, namespace `Osirion.Blazor.Components`. [Source on GitHub](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Core/Components/Carousels/InfiniteLogoCarousel.razor).
+
+```demo
+infinite-logo-carousel
+```
+
 ## Usage
 
-The enhancement script loads through the BlazorJSComponents package. Register its services once in `Program.cs`:
+The enhancement script loads through BlazorJSComponents, which `AddOsirion` registers. If you register
+Osirion.Blazor.Core without `AddOsirion`, add the loader in `Program.cs`:
 
 ```csharp
 builder.Services.AddJSComponents();
 ```
 
-Always pass your own logos. Without `CustomLogos`, the component shows built-in sample logos with placeholder links.
+Always pass your own logos. Without `CustomLogos`, the component shows built-in sample logos that load from external addresses (`cdn.tridesetri.com` and `placehold.co`) and link to other sites.
 
 ```razor
 @using Osirion.Blazor.Components
@@ -104,24 +111,28 @@ A looping strip with a heading, links and a logo that has light and dark version
 
 ## Parameters
 
+<!-- osirion:parameters InfiniteLogoCarousel -->
+
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `CustomLogos` | `IReadOnlyList<LogoItem>?` | `null` | The logos. When `null`, built-in sample logos are shown. |
-| `Title` | `string?` | `null` | Heading shown above the logos, as an `<h2>`. |
-| `SectionTitle` | `string` | `"Our Clients"` | Accessible name (`aria-label`) of the `<section>`. |
-| `EnableAutoScroll` | `bool` | `false` | Loops the row continuously with a CSS animation. |
-| `AnimationDuration` | `int` | `60` | Seconds for one full loop when `EnableAutoScroll` is on. Lower is faster. |
-| `Direction` | `AnimationDirection` | `Right` | `Right` moves the logos from right to left; `Left` moves them from left to right. |
-| `PauseOnHover` | `bool` | `true` | Pauses the loop while the pointer is over the carousel. |
-| `EnableGrayscale` | `bool` | `true` | Shows logos in grayscale until hovered. A logo can override it. |
-| `LogoWidth` | `int` | `200` | Width of each logo slot in pixels; also the images' `width` attribute. |
-| `LogoHeight` | `int` | `80` | Height of each logo slot in pixels; also the images' `height` attribute. |
-| `LogoGap` | `int` | `24` | Gap between logos in pixels. |
-| `MaxVisibleLogos` | `int?` | `null` | Shows only the first N logos. |
+| `Title` | `string?` | `null` | The heading above the logos, rendered as an `h2`; nothing is rendered when it is empty. |
+| `SectionTitle` | `string` | `"Our Clients"` | The accessible name (`aria-label`) of the `section`; set it to something that describes the logos. |
+| `AnimationDuration` | `int` | `60` | The seconds one full loop takes when `EnableAutoScroll` is on. Lower is faster. |
+| `CustomLogos` | `IReadOnlyList<LogoItem>?` | `null` | The logos. Without it the carousel shows built-in sample logos that load from external addresses, so always pass your own. |
 | `ChildContent` | `RenderFragment?` | `null` | Extra content rendered as one more item after the logos. |
-| `Class` | `string?` | `null` | Extra classes on the `<section>`. |
-| `Style` | `string?` | `null` | Inline style on the `<section>`. |
-| `Theme` | `ThemeMode` | `System` | `Dark` makes logos with light and dark images use the dark image inside this carousel. |
+| `EnableAutoScroll` | `bool` | `false` | Whether the row loops continuously with a CSS animation. With it off the row is static. |
+| `PauseOnHover` | `bool` | `true` | Whether the loop pauses while the pointer is over the carousel. Keyboard focus inside it always pauses the loop. |
+| `Direction` | `AnimationDirection` | `AnimationDirection.Right` | `Right` moves the logos from right to left, `Left` from left to right. |
+| `EnableGrayscale` | `bool` | `true` | Whether logos are shown in grayscale until hovered; with script, the logos nearest the center are in color too. A logo's own `EnableGrayscale` overrides it. |
+| `LogoWidth` | `int` | `200` | The width of each logo slot in pixels, also written as the images' `width`; slots are 160px wide below 768px. |
+| `LogoHeight` | `int` | `80` | The height of each logo slot in pixels, also written as the images' `height`. |
+| `LogoGap` | `int` | `24` | The gap between logos in pixels. |
+| `MaxVisibleLogos` | `int?` | `null` | Shows only the first N logos. A value of zero or less, or none, shows all of them. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
+| `Style` | `string?` | `null` | An inline style for the component's root element. |
+
+<!-- /osirion:parameters -->
 
 Unmatched attributes go on the `<section>`.
 
@@ -158,8 +169,9 @@ Unmatched attributes go on the `<section>`.
 - **Dark mode.** For a logo with both light and dark images, CSS shows the dark image when an ancestor has
   `data-bs-theme="dark"`, `data-theme="dark"` or one of the classes `dark-theme`, `theme-dark` or
   `osirion-theme-dark`, and follows `prefers-color-scheme` when the `<html>` element has no theme attribute.
-- **Links.** Logo links open in a new tab with `rel="nofollow noopener"` unless the logo says otherwise. `Url` is
-  written as given, so pass only URLs you trust.
+- **Links.** Logo links open in a new tab with `rel="nofollow noopener"` unless the logo says otherwise. A `Url` that is not a path on the site or an
+  absolute http, https or mailto address, such as a `javascript:` or `data:` URL, is not written: the logo shows
+  without a link.
 - Images load lazily and cannot be dragged as files, so dragging moves the row.
 
 ## Styling

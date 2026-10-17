@@ -1,0 +1,24 @@
+@using Osirion.Blazor.Components
+@using Osirion.Blazor.Core.Models
+
+<OsirionAccordion AllowMultiple="false">
+    <OsirionAccordionItem Title="Requirements" Open="true">
+        <p>A Blazor app on a .NET version the package supports.</p>
+    </OsirionAccordionItem>
+    <OsirionAccordionItem Title="Installation">
+        <pre><code>dotnet add package Osirion.Blazor.Core</code></pre>
+    </OsirionAccordionItem>
+</OsirionAccordion>
+
+@* IncludeStructuredData is off because this page is not an FAQ page and already has structured data of its own *@
+<OsirionFaq Items="faq" IncludeStructuredData="false" />
+
+@code {
+    private readonly FaqItem[] faq =
+    [
+        new("Does the accordion need JavaScript?",
+            "No. It is built on the native details element, so it opens and closes in the browser."),
+        new("Can I keep only one answer open?",
+            "Yes. Set AllowMultiple to false and the browser closes the others when one opens."),
+    ];
+}

@@ -10,7 +10,7 @@ Key parameters
 - Target: how to open the destination, for example `_blank`
 - IconTemplate: optional leading icon, a `RenderFragment`
 - Class: extra CSS classes, added after `osirion-menu-panel-link` (inherited from `OsirionComponentBase`)
-- Style: inherited from `OsirionComponentBase`; this component's markup does not render it
+- Style: inherited from `OsirionComponentBase`, written on the root element
 - Theme: `ThemeMode.System` (default), `Light` or `Dark`; a non-System value is written as `data-theme` (or
   `data-bs-theme` when the Bootstrap framework is configured) on the anchor (inherited)
 - Attributes: any other attribute, captured and applied to the anchor (inherited)

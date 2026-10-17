@@ -9,52 +9,54 @@ namespace Osirion.Blazor.Core.Components.Sections;
 public partial class OsirionResponsiveShowcaseSection : ComponentBase
 {
     /// <summary>
-    /// Gets or sets the title displayed in the showcase header.
+    /// The heading above the frame, rendered as an <c>h3</c>.
     /// </summary>
     [Parameter] public string Title { get; set; } = "Component Preview";
 
     /// <summary>
-    /// Gets or sets the child content to be displayed in the viewport.
+    /// The content to preview inside the frame; without it a placeholder is shown.
     /// </summary>
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
-    /// Gets or sets whether to show viewport dimensions information.
+    /// Whether the current width is described under the frame.
     /// </summary>
     [Parameter] public bool ShowDimensions { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets whether to show code snippet section.
+    /// Whether a Show Code button appears; it needs <see cref="CodeSnippet"/>.
     /// </summary>
     [Parameter] public bool ShowCode { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the code snippet to display.
+    /// The code shown under the preview when the button is pressed, rendered as encoded text.
     /// </summary>
     [Parameter] public string? CodeSnippet { get; set; }
 
     /// <summary>
-    /// Gets or sets the initial viewport mode.
+    /// The width the frame starts in: <c>Desktop</c> (1200px), <c>Tablet</c> (768px) or <c>Mobile</c> (375px), each
+    /// capped at the available width.
     /// </summary>
     [Parameter] public ViewportMode InitialViewport { get; set; } = ViewportMode.Desktop;
 
     /// <summary>
-    /// Gets or sets whether the viewport should include browser chrome styling.
+    /// Whether the frame shows the browser bar (dots and address) above the content; <see langword="false"/> leaves it
+    /// out and the frame loses the <c>with-chrome</c> class.
     /// </summary>
     [Parameter] public bool ShowBrowserChrome { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets additional CSS classes to apply to the component.
+    /// Extra CSS classes on the component's root element.
     /// </summary>
     [Parameter] public string? Class { get; set; }
 
     /// <summary>
-    /// Gets or sets additional CSS styles to apply to the component.
+    /// An inline style for the frame, added after its width declarations.
     /// </summary>
     [Parameter] public string? Style { get; set; }
 
     /// <summary>
-    /// Gets or sets additional attributes to apply to the component root element.
+    /// Unmatched attributes, written to the root element.
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)]
     public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }

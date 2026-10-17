@@ -48,6 +48,28 @@ public class ThemeToggleTests : BunitContext
         cut.Find(".theme-text").ClassList.ShouldContain("osirion-visually-hidden");
     }
 
+    // Fails before the fix: the button had an inline onclick and the component wrote an inline script, so a Content
+    // Security Policy without 'unsafe-inline' blocked both and the toggle did nothing.
+    [Fact]
+    public void ThemeToggle_Markup_HasNoInlineHandlerAndNoInlineScript()
+    {
+        var cut = Render<ThemeToggle>();
+
+        cut.FindAll("[onclick]").ShouldBeEmpty();
+        cut.FindAll("script").ShouldBeEmpty();
+    }
+
+    // Fails before the fix: the configuration was written into an inline script, not onto the button.
+    [Fact]
+    public void ThemeToggle_Configuration_TravelsOnTheButtonForTheScriptFile()
+    {
+        var cut = Render<ThemeToggle>();
+
+        var button = cut.Find("button.theme-toggle-btn");
+        button.GetAttribute("data-default-theme").ShouldBe("system");
+        button.GetAttribute("data-framework").ShouldBe("None");
+    }
+
     // Fails before the fix: a hidden form posted to /theme-toggle, which no endpoint maps, with no antiforgery token.
     [Fact]
     public void ThemeToggle_Markup_HasNoDeadFormAndNoFixedIds()

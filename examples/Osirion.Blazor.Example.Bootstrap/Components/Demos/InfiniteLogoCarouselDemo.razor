@@ -1,0 +1,17 @@
+@using Osirion.Blazor.Components
+
+@* Sample logos from the example's own files; pass your own images in a real page *@
+<InfiniteLogoCarousel SectionTitle="Sample logos"
+                      CustomLogos="logos"
+                      LogoWidth="160"
+                      LogoHeight="64" />
+
+@code {
+    private static readonly LogoItem[] logos =
+    [
+        new("/favicon.png", "A round purple badge with a leaf rising from a cupped hand"),
+        new("/images/osirion-hero.png", "A browser window showing the Blazor logo, on a purple background",
+            Url: "https://github.com/demonjic/Osirion.Blazor"),
+        new("/favicon.png", "A round purple badge with a leaf rising from a cupped hand", EnableGrayscale: false)
+    ];
+}

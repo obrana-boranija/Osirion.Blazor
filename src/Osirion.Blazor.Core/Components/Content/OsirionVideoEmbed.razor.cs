@@ -11,49 +11,59 @@ namespace Osirion.Blazor.Components;
 /// </summary>
 public partial class OsirionVideoEmbed
 {
-    /// <summary>Gets or sets the video host. Defaults to <see cref="VideoProvider.YouTube"/>.</summary>
+    /// <summary>
+    /// Gets or sets the video host: <see cref="VideoProvider.YouTube"/> or <see cref="VideoProvider.Vimeo"/>.
+    /// </summary>
     [Parameter]
     public VideoProvider Provider { get; set; } = VideoProvider.YouTube;
 
     /// <summary>
-    /// Gets or sets the video ID: the 11 characters after <c>v=</c> for YouTube, the number in the URL for Vimeo.
+    /// Gets or sets the video ID: the 11 characters after <c>v=</c> in a YouTube watch address (letters, digits,
+    /// <c>-</c> or <c>_</c>), or the number in a Vimeo address (digits). Any other text throws
+    /// <see cref="ArgumentException"/>. Required.
     /// </summary>
     [Parameter, EditorRequired]
     public string VideoId { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the video's title. It names the play link and the player for screen readers and shows on the
-    /// thumbnail.
+    /// Gets or sets the video's title. It is shown over the top of the thumbnail and names the play link and the
+    /// player for screen readers. Required.
     /// </summary>
     [Parameter, EditorRequired]
     public string Title { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the thumbnail. Defaults to YouTube's own thumbnail (from <c>i.ytimg.com</c>); Vimeo has no
-    /// public thumbnail URL, so without one a Vimeo embed shows a plain frame. Host the image yourself to send no
-    /// request to the video host before the click.
+    /// Gets or sets the thumbnail image. Defaults to YouTube's own thumbnail (from <c>i.ytimg.com</c>); Vimeo has
+    /// no public thumbnail address, so without one a Vimeo embed shows a plain black frame. Host the image yourself
+    /// to send no request to the video host before the click.
     /// </summary>
     [Parameter]
     public string? ThumbnailUrl { get; set; }
 
-    /// <summary>Gets or sets where playback starts, in seconds.</summary>
+    /// <summary>
+    /// Gets or sets where playback starts, in seconds, in the player address and in the link that works without
+    /// script. Not set by default; a negative value throws <see cref="ArgumentOutOfRangeException"/>.
+    /// </summary>
     [Parameter]
     public int? StartSeconds { get; set; }
 
     /// <summary>
     /// Gets or sets whether the player is asked not to track the visitor: YouTube's <c>youtube-nocookie.com</c>
-    /// domain, Vimeo's <c>dnt=1</c>. Defaults to <see langword="true"/>.
+    /// domain, or Vimeo's <c>dnt=1</c>.
     /// </summary>
     [Parameter]
     public bool PrivacyEnhanced { get; set; } = true;
 
-    /// <summary>Gets or sets the frame's shape. Defaults to <see cref="VideoAspectRatio.Widescreen"/>.</summary>
+    /// <summary>
+    /// Gets or sets the frame's shape: <c>Widescreen</c> (16:9), <c>Standard</c> (4:3), <c>Square</c> (1:1) or
+    /// <c>Vertical</c> (9:16, at most 22.5rem wide).
+    /// </summary>
     [Parameter]
     public VideoAspectRatio AspectRatio { get; set; } = VideoAspectRatio.Widescreen;
 
     /// <summary>
-    /// Gets or sets the accessible name of the play link. Defaults to "Play video: " followed by the title; set it for
-    /// other languages.
+    /// Gets or sets the accessible name of the play link. Defaults to "Play video: " followed by the
+    /// <see cref="Title"/>; set it for other languages.
     /// </summary>
     [Parameter]
     public string? PlayLabelText { get; set; }

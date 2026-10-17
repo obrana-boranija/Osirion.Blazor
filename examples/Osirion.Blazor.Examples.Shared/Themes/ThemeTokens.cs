@@ -1,10 +1,10 @@
 namespace Osirion.Blazor.Examples.Shared.Themes;
 
-/// <summary>A colour token of the Osirion themes, as the theme page lists it.</summary>
+/// <summary>A color token of the Osirion themes, as the theme page lists it.</summary>
 /// <param name="Name">The token without its <c>--osirion-</c> prefix, such as <c>text-primary</c>.</param>
-/// <param name="Colours">What the token colours.</param>
+/// <param name="Colors">What the token colors.</param>
 /// <param name="ReadsOn">The tokens it must stand out from, with the ratio, or <see langword="null"/> when it has no pair.</param>
-public sealed record ThemeToken(string Name, string Colours, string? ReadsOn = null)
+public sealed record ThemeToken(string Name, string Colors, string? ReadsOn = null)
 {
     /// <summary>The custom property, such as <c>--osirion-text-primary</c>.</summary>
     public string Property => "--osirion-" + Name;
@@ -16,7 +16,7 @@ public sealed record ThemeToken(string Name, string Colours, string? ReadsOn = n
 public sealed record ThemeTokenGroup(string Title, IReadOnlyList<ThemeToken> Tokens);
 
 /// <summary>
-/// The colour tokens every theme and palette sets, with the pairs the library's contrast tests hold them to (text pairs
+/// The color tokens every theme and palette sets, with the pairs the library's contrast tests hold them to (text pairs
 /// 4.5:1, focus indicators 3:1). A test checks that both theme files declare each one.
 /// </summary>
 public static class ThemeTokens

@@ -89,7 +89,7 @@ configured in `appsettings.json`.
 | Posts | Add Markdown files to `content/blog`; the folder is watched, so a new post appears on reload |
 | The About page | `content/about.md` |
 | Menu, footer, social links | `Osirion:Site` in `appsettings.json` |
-| Colours | `Osirion:Theming:DefaultPalette`: one of the [palettes](/components/palettes) |
+| Colors | `Osirion:Theming:DefaultPalette`: one of the [palettes](/components/palettes) |
 | Your own styles | `wwwroot/app.css` |
 | The public address | `Feeds:SiteUrl` in `appsettings.json` and the `Sitemap` line in `wwwroot/robots.txt` |
 
@@ -123,7 +123,7 @@ The template's interactive setup can stay as it is.
 
 ### 2. Register the services
 
-In `Program.cs`, add the `using` and the two `builder.Services` lines after `AddRazorComponents()`:
+In `Program.cs`, add the `using` and one `builder.Services` line after `AddRazorComponents()`:
 
 ```csharp
 using Osirion.Blazor.Extensions;
@@ -134,17 +134,14 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddOsirion(builder.Configuration);
-builder.Services.AddJSComponents();
 ```
 
 `AddOsirion(builder.Configuration)` reads the `Osirion` section of your configuration. It registers a content
 provider for each source under `Osirion:Cms`, and configures theming, analytics, navigation and SEO metadata when
 their sections (`Osirion:Theming`, `Osirion:Analytics`, `Osirion:Navigation`, `Osirion:Seo`) exist. It always
-registers enhanced navigation, scroll to top and the HTML sanitizer that cleans rendered Markdown.
-
-`AddJSComponents()` registers the services some Osirion components use to load their own small scripts, including
-`OsirionStyles`. Without it, the first page that renders one of them fails with "There is no registered service of
-type 'BlazorJSComponents.JSComponentManager'".
+registers enhanced navigation, scroll to top, the HTML sanitizer that cleans rendered Markdown and the services some
+Osirion components use to load their own small scripts, including `OsirionStyles`. You do not call `AddJSComponents()`
+yourself; a call you already have does no harm.
 
 ### 3. Point the provider at your content
 

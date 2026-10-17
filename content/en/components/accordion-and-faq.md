@@ -7,7 +7,7 @@ permalink: /components/accordion-and-faq
 description: "OsirionAccordion builds collapsible sections on the native details element; OsirionFaq renders questions and answers with FAQPage structured data."
 author: Dejan Demonjić
 date: 2026-10-11
-last_modified: 2026-10-11
+last_modified: 2026-10-17
 featured_image: /assets/images/blazor-cover.png
 categories:
 - Components
@@ -27,6 +27,24 @@ redirect_from:
 - /docs/components/core/content/accordion-and-faq
 custom_fields:
   group: content
+seo_properties:
+  title: 'OsirionAccordion and OsirionFaq: accordions for Blazor'
+  description: 'OsirionAccordion builds collapsible sections on the native details element; OsirionFaq renders questions and answers with FAQPage structured data.'
+  image: /assets/images/blazor-cover.png
+  canonical: 'https://getosirion.com/components/accordion-and-faq'
+  lang: en
+  robots: index, follow
+  og_title: 'Accordion and FAQ - Osirion.Blazor'
+  og_description: 'Collapsible sections on the native details element, and an FAQ with structured data.'
+  og_image_url: '/assets/images/blazor-cover.png'
+  og_type: article
+  json_ld: ''
+  type: Article
+  twitter_card: summary_large_image
+  twitter_title: 'Accordion and FAQ - Osirion.Blazor'
+  twitter_description: 'Collapsible sections on the native details element, and an FAQ with structured data.'
+  twitter_image_url: '/assets/images/blazor-cover.png'
+  meta_tags: {}
 ---
 
 # Accordion and FAQ
@@ -36,7 +54,11 @@ open and close without script and work with the keyboard as they are. `OsirionFa
 answers, and also writes FAQPage structured data so search engines can read the answers. Google stopped showing
 FAQ rich results in May 2026, so the data no longer changes how the page looks in Google results.
 
-Available from 4.1.
+Package `Osirion.Blazor.Core`, namespace `Osirion.Blazor.Components`. [Source on GitHub](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Core/Components/Content/OsirionAccordion.razor). Available from 4.0.
+
+```demo
+accordion-and-faq
+```
 
 ## Usage
 
@@ -83,31 +105,56 @@ also works on its own, outside an accordion, as a single collapsible section.
 
 ### OsirionAccordion
 
+<!-- osirion:parameters OsirionAccordion -->
+
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
 | `ChildContent` | `RenderFragment?` | `null` | The `OsirionAccordionItem` components. |
-| `AllowMultiple` | `bool` | `true` | Whether several items can be open at once. When `false`, the items share a `name` and the browser closes the others when one opens. |
-| `Class` | `string?` | `null` | Extra classes on the container `<div>`. |
+| `AllowMultiple` | `bool` | `true` | Whether several items can be open at once. When `false`, the items share a `name` and the browser closes the others when one opens; browsers without support for exclusive `details` elements let several stay open. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
+| `Style` | `string?` | `null` | An inline style for the component's root element. |
+
+<!-- /osirion:parameters -->
+
+Unmatched attributes go on the container `<div>`. `Class` is added to the container. `Style` is accepted but the
+component does not write it.
 
 ### OsirionAccordionItem
 
+<!-- osirion:parameters OsirionAccordionItem -->
+
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `Title` | `string` | `""` | The `<summary>` text the visitor clicks, or presses Enter on, to open and close the section. Marked `[EditorRequired]`. |
+| `Title` | `string` | `""` | The title, shown in the `summary` element, which the visitor clicks or presses Enter on to open and close the section. Required. |
 | `Open` | `bool` | `false` | Whether the section is open when the page renders. |
-| `ChildContent` | `RenderFragment?` | `null` | The section's content. |
-| `Class` | `string?` | `null` | Extra classes on the `<details>` element. |
+| `ChildContent` | `RenderFragment?` | `null` | The section's content, shown while the section is open. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
+| `Style` | `string?` | `null` | An inline style for the component's root element. |
+
+<!-- /osirion:parameters -->
+
+Unmatched attributes and `Class` go on the `<details>` element. `Style` is accepted but the component does not write
+it.
 
 ### OsirionFaq
 
+<!-- osirion:parameters OsirionFaq -->
+
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `Items` | `IReadOnlyList<FaqItem>` | empty | The questions and answers. With no items the component renders nothing. |
-| `IncludeStructuredData` | `bool` | `true` | Whether FAQPage structured data (JSON-LD) is written after the questions. |
-| `AllowMultiple` | `bool` | `true` | Whether several answers can be open at once. |
-| `Class` | `string?` | `null` | Extra classes on the accordion container, next to `osirion-faq`. |
+| `Items` | `IReadOnlyList<FaqItem>` | `[]` | The questions and answers, in the order they are shown. Answers are plain text: markup in an answer is shown as text, and line breaks are kept. Renders nothing when empty. |
+| `IncludeStructuredData` | `bool` | `true` | Whether FAQPage structured data (JSON-LD) is written after the questions. Turn it off when the page already describes these questions in its own structured data, and use one FAQPage per page. |
+| `AllowMultiple` | `bool` | `true` | Whether several answers can be open at once. When `false`, opening one answer closes the others, in browsers that support exclusive `details` elements. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
+| `Style` | `string?` | `null` | An inline style for the component's root element. |
 
-On all three components, unmatched attributes go on the root element (`OsirionFaq` passes them to its accordion).
+<!-- /osirion:parameters -->
+
+`OsirionFaq` passes `Class` (next to `osirion-faq`) and unmatched attributes to its accordion. `Style` is accepted but
+the component does not write it.
 
 ## Behavior
 

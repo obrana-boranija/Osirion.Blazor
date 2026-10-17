@@ -5,16 +5,25 @@ namespace Osirion.Blazor.Components;
 /// <summary>Renders a responsive, accessible list of metric cards.</summary>
 public partial class OsirionMetricGrid : OsirionComponentBase
 {
-    /// <summary>Gets or sets the metrics to render.</summary>
+    /// <summary>
+    /// The metrics, one <see cref="OsirionMetricCard"/> each; with none, nothing is rendered.
+    /// </summary>
     [Parameter] public IReadOnlyList<MetricGridItem> Metrics { get; set; } = [];
 
-    /// <summary>Gets or sets the number of columns used at larger viewport widths.</summary>
+    /// <summary>
+    /// The number of columns from 992px wide: <c>Two</c>, <c>Three</c> or <c>Four</c>. The grid has one column on
+    /// phones and two from 576px.
+    /// </summary>
     [Parameter] public MetricGridColumns Columns { get; set; } = MetricGridColumns.Four;
 
-    /// <summary>Gets or sets the accessible name for the metric list.</summary>
+    /// <summary>
+    /// The accessible name of the metric list.
+    /// </summary>
     [Parameter] public string AriaLabel { get; set; } = "Key metrics";
 
-    /// <summary>Gets or sets additional classes for the grid.</summary>
+    /// <summary>
+    /// Extra CSS classes on the list, added before <see cref="OsirionComponentBase.Class"/>.
+    /// </summary>
     [Parameter] public string? CssClass { get; set; }
 
     /// <summary>Describes a metric card rendered by the grid.</summary>

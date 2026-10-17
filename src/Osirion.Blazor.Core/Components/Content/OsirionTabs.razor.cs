@@ -13,26 +13,31 @@ public partial class OsirionTabs
     private int _registeredTabs;
 
     /// <summary>
-    /// Gets or sets the <see cref="OsirionTab"/> components.
+    /// Gets or sets the <see cref="OsirionTab"/> components. Each tab takes its position from the order in which
+    /// the tabs render.
     /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
-    /// Gets or sets the zero-based index of the tab selected when the page renders. Defaults to 0, the first tab.
+    /// Gets or sets the zero-based index of the tab selected when the page renders. An index with no tab leaves
+    /// every panel hidden. It sets only the starting choice: the visitor's later choices are not written back.
     /// </summary>
     [Parameter]
     public int SelectedIndex { get; set; }
 
     /// <summary>
-    /// Gets or sets the radio group name, also the prefix of each tab's ids (<c>{Id}-0</c> and so on). Defaults to a
-    /// generated value; set it for stable ids, for example to link to a tab.
+    /// Gets or sets the radio group name, also the prefix of each tab's ids: <c>{Id}-0</c> for the radio button,
+    /// <c>{Id}-0-label</c> for the label and <c>{Id}-0-panel</c> for the panel (then <c>-1</c> and so on). Defaults
+    /// to a value generated for each instance; set it for stable ids, for example to link to a tab, and use a
+    /// different value for each tab set on a page.
     /// </summary>
     [Parameter]
     public string? Id { get; set; }
 
     /// <summary>
-    /// Gets or sets the accessible name of the tab group, for example "Package manager".
+    /// Gets or sets the accessible name of the tab group, for example "Package manager". Without it the group has
+    /// no name.
     /// </summary>
     [Parameter]
     public string? AriaLabel { get; set; }

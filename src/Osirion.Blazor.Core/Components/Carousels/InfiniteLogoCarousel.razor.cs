@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Osirion.Blazor.Core.Utils;
 
 namespace Osirion.Blazor.Components;
 
@@ -9,79 +10,83 @@ namespace Osirion.Blazor.Components;
 public partial class InfiniteLogoCarousel : OsirionComponentBase
 {
     /// <summary>
-    /// Optional title to display above the logos
+    /// The heading above the logos, rendered as an <c>h2</c>; nothing is rendered when it is empty.
     /// </summary>
     [Parameter]
     public string? Title { get; set; }
 
     /// <summary>
-    /// Section aria-label for accessibility
+    /// The accessible name (<c>aria-label</c>) of the <c>section</c>; set it to something that describes the logos.
     /// </summary>
     [Parameter]
     public string SectionTitle { get; set; } = "Our Clients";
 
     /// <summary>
-    /// Auto-scroll interval in seconds when <see cref="EnableAutoScroll"/> is enabled.
+    /// The seconds one full loop takes when <see cref="EnableAutoScroll"/> is on. Lower is faster.
     /// </summary>
     [Parameter]
     public int AnimationDuration { get; set; } = 60;
 
     /// <summary>
-    /// Custom list of client logos. If not provided, uses default logos.
+    /// The logos. Without it the carousel shows built-in sample logos that load from external addresses, so always
+    /// pass your own.
     /// </summary>
     [Parameter]
     public IReadOnlyList<LogoItem>? CustomLogos { get; set; }
 
     /// <summary>
-    /// Additional arbitrary content to render as a carousel item after the logo items.
+    /// Extra content rendered as one more item after the logos.
     /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
-    /// Gets or sets whether the carousel advances automatically while it is not being interacted with.
+    /// Whether the row loops continuously with a CSS animation. With it off the row is static.
     /// </summary>
     [Parameter]
     public bool EnableAutoScroll { get; set; }
 
     /// <summary>
-    /// Gets or sets whether to pause animation on hover
+    /// Whether the loop pauses while the pointer is over the carousel. Keyboard focus inside it always pauses the
+    /// loop.
     /// </summary>
     [Parameter]
     public bool PauseOnHover { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the animation direction (left or right)
+    /// <c>Right</c> moves the logos from right to left, <c>Left</c> from left to right.
     /// </summary>
     [Parameter]
     public AnimationDirection Direction { get; set; } = AnimationDirection.Right;
 
     /// <summary>
-    /// Gets or sets whether to enable grayscale effect for logos (default: true)
+    /// Whether logos are shown in grayscale until hovered; with script, the logos nearest the center are in color too.
+    /// A logo's own <c>EnableGrayscale</c> overrides it.
     /// </summary>
     [Parameter]
     public bool EnableGrayscale { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the logo width in pixels
+    /// The width of each logo slot in pixels, also written as the images' <c>width</c>; slots are 160px wide below
+    /// 768px.
     /// </summary>
     [Parameter]
     public int LogoWidth { get; set; } = 200;
 
     /// <summary>
-    /// Gets or sets the logo height in pixels
+    /// The height of each logo slot in pixels, also written as the images' <c>height</c>.
     /// </summary>
     [Parameter]
     public int LogoHeight { get; set; } = 80;
 
     /// <summary>
-    /// Gets or sets the gap between logos in pixels
+    /// The gap between logos in pixels.
     /// </summary>
     [Parameter]
     public int LogoGap { get; set; } = 24;
 
     /// <summary>
-    /// Gets or sets the amount of logos to display before repeating (for performance)
+    /// Shows only the first N logos. A value of zero or less, or none, shows all of them.
     /// </summary>
     [Parameter]
     public int? MaxVisibleLogos { get; set; }
@@ -173,9 +178,9 @@ public partial class InfiniteLogoCarousel : OsirionComponentBase
     {
         var attributes = new Dictionary<string, object>();
 
-        if (!string.IsNullOrWhiteSpace(logo.Url))
+        if (logo.Url is { } url && SafeLink.IsSafe(url))
         {
-            attributes["href"] = logo.Url;
+            attributes["href"] = url;
             attributes["target"] = logo.Target ?? "_blank";
 
             // Default to nofollow and noopener for external links

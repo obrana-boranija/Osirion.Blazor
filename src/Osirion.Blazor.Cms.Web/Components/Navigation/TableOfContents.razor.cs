@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
 using System.Text.RegularExpressions;
 
 namespace Osirion.Blazor.Cms.Web.Components;
@@ -8,38 +9,54 @@ namespace Osirion.Blazor.Cms.Web.Components;
 /// </summary>
 public partial class TableOfContents(NavigationManager navigationManager)
 {
+    // The content is untrusted HTML, so every pattern has a timeout. Singleline lets a heading's text run over lines.
+    [GeneratedRegex(@"<h([1-6])(\s[^>]*)?>(.*?)</h\1\s*>", RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.CultureInvariant, matchTimeoutMilliseconds: 1000)]
+    private static partial Regex HeadingPattern();
+
+    // The id may follow other attributes and be quoted or bare; "data-id" must not count.
+    [GeneratedRegex(@"(?<![\w-])id\s*=\s*(?:""([^""]*)""|'([^']*)'|([^\s""'>]+))", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant, matchTimeoutMilliseconds: 1000)]
+    private static partial Regex IdAttributePattern();
+
+    [GeneratedRegex("<[^>]*>", RegexOptions.CultureInvariant, matchTimeoutMilliseconds: 1000)]
+    private static partial Regex HtmlTagPattern();
+
+    [GeneratedRegex(@"[^a-z0-9\s-]", RegexOptions.CultureInvariant, matchTimeoutMilliseconds: 1000)]
+    private static partial Regex NonIdCharacterPattern();
+
+    [GeneratedRegex(@"\s+", RegexOptions.CultureInvariant, matchTimeoutMilliseconds: 1000)]
+    private static partial Regex WhitespacePattern();
+
+    [Inject]
+    private ILogger<TableOfContents> Logger { get; set; } = default!;
+
     /// <summary>
-    /// Gets or sets the HTML content to extract headings from
+    /// Gets or sets the HTML to read the headings from, usually an item's rendered content. Nothing is listed when
+    /// it is empty.
     /// </summary>
     [Parameter]
     public string? Content { get; set; }
 
-    /// <summary>
-    /// Gets or sets the minimum heading level to include
-    /// </summary>
+    /// <summary>Gets or sets the lowest heading level included, so the page's <c>h1</c> is left out by default.</summary>
     [Parameter]
     public int MinLevel { get; set; } = 2;
 
-    /// <summary>
-    /// Gets or sets the maximum heading level to include
-    /// </summary>
+    /// <summary>Gets or sets the highest heading level included.</summary>
     [Parameter]
     public int MaxLevel { get; set; } = 6;
 
     /// <summary>
-    /// Gets or sets the maximum nesting depth
+    /// Gets or sets the nesting limit. <c>1</c> lists only top-level headings; the list renders at most two levels,
+    /// so a value above <c>2</c> changes nothing.
     /// </summary>
     [Parameter]
     public int MaxDepth { get; set; } = 3;
 
-    /// <summary>
-    /// Gets or sets the text to display when no headings are found
-    /// </summary>
+    /// <summary>Gets or sets the text shown when no heading matches.</summary>
     [Parameter]
     public string EmptyText { get; set; } = "No headings found.";
 
     /// <summary>
-    /// Gets or sets whether the link to the section being read is marked as it scrolls by: the link gets the
+    /// Gets or sets whether the link to the section being read is marked as it scrolls by: it gets the
     /// <c>osirion-toc-link-active</c> class and <c>aria-current="location"</c>. A script does it, so without script
     /// the contents work as plain links.
     /// </summary>
@@ -58,7 +75,15 @@ public partial class TableOfContents(NavigationManager navigationManager)
     {
         if (!string.IsNullOrWhiteSpace(Content))
         {
-            Headings = ExtractHeadings(Content);
+            try
+            {
+                Headings = ExtractHeadings(Content);
+            }
+            catch (RegexMatchTimeoutException ex)
+            {
+                Logger.LogWarning(ex, "The headings of the content could not be read within the match timeout");
+                Headings = Array.Empty<HeadingItem>();
+            }
         }
         else
         {
@@ -75,17 +100,15 @@ public partial class TableOfContents(NavigationManager navigationManager)
     private IReadOnlyList<HeadingItem> ExtractHeadings(string htmlContent)
     {
         var headings = new List<HeadingItem>();
-        var pattern = @"<h([1-6])(?:\s+id=[""']([^""']*)[""'])?[^>]*>(.*?)</h\1>";
-        var matches = Regex.Matches(htmlContent, pattern, RegexOptions.IgnoreCase);
 
-        foreach (Match match in matches)
+        foreach (Match match in HeadingPattern().Matches(htmlContent))
         {
             var level = int.Parse(match.Groups[1].Value);
 
             if (level < MinLevel || level > MaxLevel)
                 continue;
 
-            var id = match.Groups[2].Value;
+            var id = ReadId(match.Groups[2].Value);
             var text = StripHtmlTags(match.Groups[3].Value);
 
             // Generate ID if not present
@@ -104,6 +127,19 @@ public partial class TableOfContents(NavigationManager navigationManager)
         }
 
         return BuildHierarchy(headings);
+    }
+
+    private static string ReadId(string attributes)
+    {
+        var match = IdAttributePattern().Match(attributes);
+        if (!match.Success)
+        {
+            return string.Empty;
+        }
+
+        return match.Groups[1].Success ? match.Groups[1].Value
+            : match.Groups[2].Success ? match.Groups[2].Value
+            : match.Groups[3].Value;
     }
 
     /// <summary>
@@ -144,7 +180,7 @@ public partial class TableOfContents(NavigationManager navigationManager)
     /// </summary>
     private static string StripHtmlTags(string input)
     {
-        return Regex.Replace(input, "<[^>]*>", string.Empty).Trim();
+        return HtmlTagPattern().Replace(input, string.Empty).Trim();
     }
 
     /// <summary>
@@ -153,8 +189,8 @@ public partial class TableOfContents(NavigationManager navigationManager)
     private static string GenerateId(string text)
     {
         // Convert to lowercase and replace non-alphanumeric characters with hyphens
-        var id = Regex.Replace(text.ToLowerInvariant(), @"[^a-z0-9\s-]", "");
-        id = Regex.Replace(id, @"\s+", "-");
+        var id = NonIdCharacterPattern().Replace(text.ToLowerInvariant(), "");
+        id = WhitespacePattern().Replace(id, "-");
         id = id.Trim('-');
 
         return string.IsNullOrWhiteSpace(id) ? "heading" : id;

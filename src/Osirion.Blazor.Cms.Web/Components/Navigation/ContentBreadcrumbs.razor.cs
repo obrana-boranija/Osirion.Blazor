@@ -6,31 +6,45 @@ namespace Osirion.Blazor.Cms.Web.Components;
 /// <summary>Defines the ContentBreadcrumbs type.</summary>
 public partial class ContentBreadcrumbs
 {
-    /// <summary>Performs the Content operation.</summary>
+    /// <summary>
+    /// Gets or sets the item being shown. Its title is the last crumb, and its <c>Directory</c> is the deepest
+    /// directory of the trail when <see cref="Directory"/> is not set (read once, when the component is first
+    /// initialized).
+    /// </summary>
     [Parameter]
     public ContentItem? Content { get; set; }
 
-    /// <summary>Performs the Directory operation.</summary>
+    /// <summary>
+    /// Gets or sets the deepest directory of the trail. The crumbs are its parents up to the root, without a locale
+    /// folder such as <c>en</c>.
+    /// </summary>
     [Parameter]
     public DirectoryItem? Directory { get; set; }
 
-    /// <summary>Gets or sets the ShowHome value.</summary>
+    /// <summary>Gets or sets whether the home link is rendered first.</summary>
     [Parameter]
     public bool ShowHome { get; set; } = true;
 
-    /// <summary>Gets or sets the HomeText value.</summary>
+    /// <summary>Gets or sets the text of the home link.</summary>
     [Parameter]
     public string HomeText { get; set; } = "Home";
 
-    /// <summary>Gets or sets the HomeUrl value.</summary>
+    /// <summary>Gets or sets the target of the home link. Defaults to <c>/</c>.</summary>
     [Parameter]
     public string HomeUrl { get; set; } = "/";
 
-    /// <summary>Gets or sets the HideCurrentItem value.</summary>
+    /// <summary>
+    /// Gets or sets whether the item's title, the last crumb, is left out, for example when the page heading
+    /// already shows it.
+    /// </summary>
     [Parameter]
     public bool HideCurrentItem { get; set; } = false;
 
-    /// <summary>Gets or sets the DirectoryUrlFormatter value.</summary>
+    /// <summary>
+    /// Gets or sets a function that builds each directory link. Without it, a link goes to the address the
+    /// directory's <c>_index.md</c> declares in <c>permalink</c>, otherwise to the directory's path without the
+    /// locale folder.
+    /// </summary>
     [Parameter]
     public Func<DirectoryItem, string>? DirectoryUrlFormatter { get; set; }
 

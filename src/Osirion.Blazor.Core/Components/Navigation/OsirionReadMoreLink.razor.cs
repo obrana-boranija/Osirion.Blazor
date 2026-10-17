@@ -3,91 +3,97 @@ using Microsoft.AspNetCore.Components;
 namespace Osirion.Blazor.Components;
 
 /// <summary>
-/// Read more link component that provides a consistent "read more" or call-to-action link with optional icon.
-/// This component is framework-agnostic and supports various customization options.
+/// Renders an <c>a</c> element with text and an optional icon, for "read more" links in cards and lists and for small
+/// calls to action. It needs no script and takes its link class from the configured CSS framework.
 /// </summary>
 public partial class OsirionReadMoreLink
 {
     /// <summary>
-    /// Gets or sets the link URL
+    /// Gets or sets the link address. It is written to <c>href</c> as given, so pass only addresses you trust. Required.
     /// </summary>
     [Parameter, EditorRequired]
     public string Href { get; set; } = "#";
 
     /// <summary>
-    /// Gets or sets the link text
+    /// Gets or sets the visible text.
     /// </summary>
     [Parameter]
     public string Text { get; set; } = "Read more";
 
     /// <summary>
-    /// Gets or sets the aria-label for accessibility
+    /// Gets or sets the accessible name, written as <c>aria-label</c>. When empty, <see cref="Text"/> is used. Keep the
+    /// visible text at its start, as in <c>Read more: Static SSR with Blazor</c>, so speech input users can say what
+    /// they see.
     /// </summary>
     [Parameter]
     public string? AriaLabel { get; set; }
 
     /// <summary>
-    /// Gets or sets whether to show the text
+    /// Gets or sets whether <see cref="Text"/> is rendered. Turn it off for an icon-only link and set
+    /// <see cref="AriaLabel"/>.
     /// </summary>
     [Parameter]
     public bool ShowText { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets whether to show the icon
+    /// Gets or sets whether the icon is rendered, the built-in one or <see cref="IconContent"/>.
     /// </summary>
     [Parameter]
     public bool ShowIcon { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the icon position relative to text
+    /// Gets or sets which side of the text the icon sits on: <c>Left</c> or <c>Right</c>.
     /// </summary>
     [Parameter]
     public IconPosition IconPosition { get; set; } = IconPosition.Right;
 
     /// <summary>
-    /// Gets or sets custom icon content. When provided, this overrides the default icon.
+    /// Gets or sets your own icon, rendered in place of the built-in one inside an <c>aria-hidden</c> span.
     /// </summary>
     [Parameter]
     public RenderFragment? IconContent { get; set; }
 
     /// <summary>
-    /// Gets or sets the link variant for different styling
+    /// Gets or sets the look and the built-in icon: <c>Default</c> (chevron), <c>Arrow</c>, <c>External</c>,
+    /// <c>Download</c>, <c>Plain</c> (body text color, chevron) or <c>Button</c> (filled, chevron).
     /// </summary>
     [Parameter]
     public ReadMoreVariant Variant { get; set; } = ReadMoreVariant.Default;
 
     /// <summary>
-    /// Gets or sets the link size
+    /// Gets or sets the size: <c>Small</c>, <c>Normal</c> or <c>Large</c>.
     /// </summary>
     [Parameter]
     public LinkSize Size { get; set; } = LinkSize.Normal;
 
     /// <summary>
-    /// Gets or sets whether the link should be stretched (useful in cards)
+    /// Gets or sets whether the link covers its nearest positioned ancestor, such as a card, so the whole card is
+    /// clickable. The ancestor needs <c>position: relative</c>.
     /// </summary>
     [Parameter]
     public bool Stretched { get; set; } = false;
 
     /// <summary>
-    /// Gets or sets whether the link should be displayed as a block element
+    /// Gets or sets whether the link is displayed as a full-width block.
     /// </summary>
     [Parameter]
     public bool Block { get; set; } = false;
 
     /// <summary>
-    /// Gets or sets the link target (_blank, _self, etc.)
+    /// Gets or sets the <c>target</c> attribute, for example <c>_blank</c>. No <c>rel</c> is added; pass it as an
+    /// attribute when you need one.
     /// </summary>
     [Parameter]
     public string? Target { get; set; }
 
     /// <summary>
-    /// Gets or sets whether the link should have hover animation
+    /// Gets or sets whether the icon moves slightly on hover. Reduced motion turns it off.
     /// </summary>
     [Parameter]
     public bool Animated { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets additional child content to be rendered inside the link
+    /// Gets or sets extra content rendered inside the link, after the text and icon.
     /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
@@ -186,11 +192,17 @@ public partial class OsirionReadMoreLink
     }
 
     /// <summary>
-    /// Gets the effective aria-label
+    /// Gets the accessible name: <see cref="AriaLabel"/>, else the current <see cref="Text"/>. It is computed on every
+    /// render and never written back into the parameter, so a changed <see cref="Text"/> is not left behind.
     /// </summary>
     private string GetEffectiveAriaLabel()
     {
-        return AriaLabel ?? Text ?? "Read more";
+        if (!string.IsNullOrWhiteSpace(AriaLabel))
+        {
+            return AriaLabel;
+        }
+
+        return string.IsNullOrWhiteSpace(Text) ? "Read more" : Text;
     }
 
     /// <summary>
@@ -249,18 +261,6 @@ public partial class OsirionReadMoreLink
 
         builder.CloseElement();
     };
-
-    /// <inheritdoc/>
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-
-        // Set aria-label if not provided
-        if (string.IsNullOrWhiteSpace(AriaLabel))
-        {
-            AriaLabel = GetEffectiveAriaLabel();
-        }
-    }
 }
 
 /// <summary>
@@ -289,7 +289,7 @@ public enum ReadMoreVariant
     Download,
 
     /// <summary>
-    /// Plain text without icon
+    /// Body text color and normal weight. It keeps the chevron; set <c>ShowIcon</c> to <c>false</c> for text only.
     /// </summary>
     Plain,
 

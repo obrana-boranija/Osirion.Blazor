@@ -96,11 +96,21 @@
     transition: transform var(--osirion-transition-duration-150, 150ms) ease;
 }
 
-.osirion-menu-group-collapsible:not(.osirion-menu-group-expanded) .osirion-menu-group-items {
-    display: none;
+/* The label is the summary of a details element: drop the browser's own marker, since the chevron is the marker. */
+.osirion-menu-group-disclosure > summary {
+    list-style: none;
 }
 
-.osirion-menu-group-collapsible:not(.osirion-menu-group-expanded) .osirion-menu-group-toggle svg {
+    .osirion-menu-group-disclosure > summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .osirion-menu-group-disclosure > summary:focus-visible {
+        outline: 2px solid var(--osirion-menu-accent, var(--osirion-link-color, var(--osirion-action-primary, #2563eb)));
+        outline-offset: 2px;
+    }
+
+.osirion-menu-group-disclosure:not([open]) > summary .osirion-menu-group-toggle svg {
     transform: rotate(-90deg);
 }
 

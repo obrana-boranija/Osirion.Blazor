@@ -19,16 +19,17 @@ public abstract class AnalyticsTracker : OsirionComponentBase
     protected abstract IAnalyticsProvider? Provider { get; }
 
     /// <summary>
-    /// Gets or sets the site ID. When set it replaces the configured site ID for this render.
-    /// Used by the Clarity, Matomo and Umami trackers; the GA4 and Yandex Metrica trackers use
-    /// their own identifier parameters instead, and Plausible identifies the site by its script.
+    /// Gets or sets the site ID for this render, replacing the configured <c>SiteId</c>. <c>ClarityTracker</c> (the project
+    /// ID), <c>MatomoTracker</c> (the site ID) and <c>UmamiTracker</c> (the website ID, a GUID) use it. <c>GA4Tracker</c>,
+    /// <c>YandexMetricaTracker</c> and <c>PlausibleTracker</c> ignore it: they take their own ID parameter or none.
     /// </summary>
     [Parameter]
     public string? SiteId { get; set; }
 
     /// <summary>
-    /// Gets or sets whether the tracker is enabled. When set it replaces the configured
-    /// <c>Enabled</c> option for this render.
+    /// Gets or sets whether the tracker renders, replacing the configured <c>Enabled</c> for this render. <c>false</c> turns
+    /// the tracker off. <c>true</c> does not skip the other requirements: a valid ID, a registered service and, with the
+    /// consent gate on, the visitor consent.
     /// </summary>
     [Parameter]
     public bool? Enabled { get; set; }

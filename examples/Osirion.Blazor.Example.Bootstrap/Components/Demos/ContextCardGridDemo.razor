@@ -1,0 +1,17 @@
+@using Osirion.Blazor.Components
+
+@* Sample text, not claims about any product *@
+<OsirionContextCardGrid Title="Context by role"
+                        Description="Sample cards: each one has a label, a detail and an accent color."
+                        Id="demo-context-cards"
+                        HeadingId="demo-context-cards-heading"
+                        Items="items" />
+
+@code {
+    private static readonly OsirionContextCardGrid.ContextCardItem[] items =
+    [
+        new("Finance", "Sample detail for the first card.", "blue"),
+        new("Operations", "Sample detail for the second card."),
+        new("Security", "Sample detail for the third card.", "purple")
+    ];
+}
