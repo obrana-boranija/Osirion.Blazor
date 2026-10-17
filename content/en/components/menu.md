@@ -138,7 +138,7 @@ inherited by the link and the submenu. In a `Menu`, `Style` comes before the sti
 | `Alignment` | `MenuAlignment` | `MenuAlignment.Center` | Where a horizontal bar places its items: `Left`, `Center` or `Right`. A vertical menu ignores it. |
 | `CollapseOnMobile` | `bool` | `true` | Whether the items collapse behind a hamburger toggle and a drawer below the breakpoint in `CollapseBreakpoint`. |
 | `CollapseBreakpoint` | `MenuCollapseBreakpoint` | `MenuCollapseBreakpoint.Mobile` | The viewport width below which a collapsible menu shows the toggle: `Mobile` (768px and below), `Large` (below 1200px) or `ExtraLarge` (below 1440px). Pick the narrowest width at which the bar still fits on one line. It applies only while `CollapseOnMobile` is on. |
-| `AutoExpandActive` | `bool` | `true` | Whether a vertical menu gets the `osirion-menu-auto-expand` class on its container. The package's own styles do not use that class, so it only gives your CSS a hook. |
+| `AutoExpandActive` | `bool` | `true` | Whether a vertical menu keeps the submenu of the active item open. The menu gets the `osirion-menu-auto-expand` class on its container, and the stylesheet shows the submenu of an active item, its toggle then no longer closes it. The other submenus open and close from their toggle as usual. A horizontal menu ignores it. |
 | `AriaLabel` | `string` | `"Navigation menu"` | The accessible name of the `nav` landmark. Give each menu on a page a different one. |
 | `ToggleAriaLabel` | `string` | `"Toggle navigation menu"` | The accessible name of the hamburger toggle. |
 | `Id` | `string?` | `null` | The id of the container; the toggle and navigation ids derive from it. Without it each menu gets a unique generated id, so two menus on one page do not clash. |
@@ -321,8 +321,9 @@ as a mega menu aside for a customer story or a news item. Pass a real `ImageAlt`
   `MenuItem` also follows later navigations.
 - **Collapsible groups.** `MenuGroup` with `Collapsible` and `Expanded="false"` hides its items. Nothing in the package
   opens the group again, so leave `Collapsible` off unless you add your own control.
-- **Auto expand.** `AutoExpandActive` only adds the `osirion-menu-auto-expand` class to a vertical menu. The package's
-  styles do not use it, so it is a hook for your own CSS and does not expand anything by itself.
+- **Auto expand.** With `AutoExpandActive` a vertical menu keeps the submenu of the active item open, so the reader sees
+  where the page sits. Because the open state comes from the active item and not from the toggle, the toggle cannot close
+  that submenu while the item is active. Turn the parameter off for a menu where the reader should be able to close it.
 - **Several menus.** Each menu and each parent item generates a unique id, so two menus on one page do not toggle each
   other. Give each menu its own `AriaLabel`.
 

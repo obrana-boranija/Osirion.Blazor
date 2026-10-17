@@ -502,6 +502,22 @@
     gap: 0.25rem;
 }
 
+/* AutoExpandActive: the submenu of the active item stays open, so the page the reader is on is visible in the tree.
+   It is a rule on the class and not on the toggle's checked state, which only the reader's click can set. */
+.osirion-menu-vertical.osirion-menu-auto-expand .osirion-menu-item-wrapper-active.osirion-menu-item-has-submenu > .osirion-submenu {
+    display: block;
+}
+
+.osirion-menu-vertical.osirion-menu-auto-expand .osirion-menu-item-wrapper-active.osirion-menu-item-has-submenu > .osirion-submenu-mega {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.osirion-menu-vertical.osirion-menu-auto-expand .osirion-menu-inner .osirion-menu-item-wrapper-active.osirion-menu-item-has-submenu > .osirion-submenu-toggle .osirion-menu-item-chevron {
+    transform: rotate(-90deg);
+}
+
 .osirion-menu-vertical .osirion-submenu .osirion-menu-item {
     min-height: 2.75rem;
     padding: 0.625rem 0.75rem;

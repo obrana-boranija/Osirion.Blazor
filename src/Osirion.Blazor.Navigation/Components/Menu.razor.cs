@@ -97,8 +97,10 @@ public partial class Menu
     public MenuCollapseBreakpoint CollapseBreakpoint { get; set; } = MenuCollapseBreakpoint.Mobile;
 
     /// <summary>
-    /// Gets or sets whether a vertical menu gets the <c>osirion-menu-auto-expand</c> class on its container. The
-    /// package's own styles do not use that class, so it only gives your CSS a hook.
+    /// Gets or sets whether a vertical menu keeps the submenu of the active item open. The menu gets the
+    /// <c>osirion-menu-auto-expand</c> class on its container, and the stylesheet shows the submenu of an active item,
+    /// its toggle then no longer closes it. The other submenus open and close from their toggle as usual. A horizontal
+    /// menu ignores it.
     /// </summary>
     [Parameter]
     public bool AutoExpandActive { get; set; } = true;
