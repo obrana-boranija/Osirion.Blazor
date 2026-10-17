@@ -29,7 +29,7 @@
 {
     <style>
         :root {
-            @((MarkupString)CustomVariables)
+            @((MarkupString)NeutralizeStyleEnd(CustomVariables!))
         }
     </style>
 }
@@ -38,7 +38,7 @@
 {
     <style>
         :root {
-            @((MarkupString)GeneratedVariables)
+            @((MarkupString)NeutralizeStyleEnd(GeneratedVariables))
         }
     </style>
 }

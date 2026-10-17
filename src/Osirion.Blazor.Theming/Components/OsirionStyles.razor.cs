@@ -15,9 +15,11 @@ namespace Osirion.Blazor.Theming.Components
         /// </summary>
         [Parameter] public bool? UseStyles { get; set; }
         /// <summary>
-        /// Gets or sets CSS declarations written, as raw CSS without encoding, into a <c>:root</c> block. The configured
-        /// <c>ThemingOptions.CustomVariables</c> value is written in a second block after this one, so for the same
-        /// property the configured value wins. Pass only values from your own code or configuration.
+        /// Gets or sets CSS declarations written into a <c>:root</c> block. Every <c>&lt;</c> is replaced by the CSS escape
+        /// <c>\3C </c>, so a value cannot end the <c>&lt;style&gt;</c> element or add markup; a valid declaration, which
+        /// never contains <c>&lt;</c> outside a string, is written unchanged. The configured
+        /// <c>ThemingOptions.CustomVariables</c> value is written the same way in a second block after this one, so for
+        /// the same property the configured value wins. Still pass only values from your own code or configuration.
         /// </summary>
         [Parameter] public string? CustomVariables { get; set; }
         /// <summary>
@@ -69,6 +71,11 @@ namespace Osirion.Blazor.Theming.Components
         // Linked whenever a palette may be in use, so it is painted with the first frame, not after a script loads it.
         private bool LinksPalettes =>
             EffectiveOptions.AllowPaletteSelection || ThemeService.CurrentPalette != ThemePalette.Framework;
+
+        // A <style> element is raw text: only the sequence "</style" ends it, so HTML encoding would break values
+        // such as url("a?b=1&c=2"). "<" is never valid CSS outside a string, and inside a string the escape \3C
+        // is the same character, so replacing every "<" closes the way out without changing a valid value.
+        private static string NeutralizeStyleEnd(string css) => css.Replace("<", "\\3C ", StringComparison.Ordinal);
 
         private string GeneratedVariables => ThemeService.GenerateThemeVariables();
         private string GetFrameworkClass => ThemeService.GetFrameworkClass();

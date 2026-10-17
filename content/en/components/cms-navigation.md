@@ -7,7 +7,7 @@ permalink: /components/cms-navigation
 description: 'Components that link CMS content: categories, tags, breadcrumbs, directories, previous and next links, series, table of contents and search.'
 author: Dejan Demonjić
 date: 2025-09-03
-last_modified: 2026-10-11
+last_modified: 2026-10-17
 featured_image: /assets/images/blazor-cover.png
 categories:
 - Components
@@ -30,20 +30,20 @@ redirect_from:
 custom_fields:
   group: cms-navigation
 seo_properties:
-  title: 'CMS Navigation Components - Osirion.Blazor'
+  title: 'Blazor CMS navigation components'
   description: 'Blazor components that link CMS content: categories, tags, breadcrumbs, directories, previous and next links, series, table of contents and search.'
   image: /assets/images/blazor-cover.png
   canonical: 'https://getosirion.com/components/cms-navigation'
   lang: en
   robots: index, follow
-  og_title: 'CMS Navigation Components - Osirion.Blazor'
+  og_title: 'CMS navigation - Osirion.Blazor'
   og_description: 'Blazor components that link CMS content: categories, tags, breadcrumbs, directories, series, table of contents and search.'
   og_image_url: /assets/images/blazor-cover.png
   og_type: article
   json_ld: ''
   type: Article
   twitter_card: summary_large_image
-  twitter_title: 'CMS Navigation Components - Osirion.Blazor'
+  twitter_title: 'CMS navigation - Osirion.Blazor'
   twitter_description: 'Blazor components that link CMS content: categories, tags, breadcrumbs, directories, series, table of contents and search.'
   twitter_image_url: /assets/images/blazor-cover.png
   meta_tags: {}
@@ -87,7 +87,8 @@ builder.Services.AddOsirion(builder.Configuration);
 ## Rendering
 
 Every component here renders under static SSR. Links are plain anchors and the search box is a plain HTML form,
-so none of them needs script. Components that load data do it in `OnParametersSetAsync`; without streaming
+so none of them needs script (`TableOfContents` marks the section being read with a small script, as an enhancement).
+Components that load data do it in `OnParametersSetAsync`; without streaming
 rendering, a statically rendered page is sent once the data is there. Click callbacks such as `DirectoryClicked`
 run only in an interactive render mode.
 
@@ -97,7 +98,8 @@ Each component ships a scoped stylesheet whose colors, spacing and fonts come fr
 (`--osirion-text-primary`, `--osirion-action-primary`, `--osirion-background-tertiary` and others), so setting the
 tokens or using a framework adapter restyles them with the rest of the site. Scoped rules carry an extra attribute
 selector, so an override in your own stylesheet needs one more class or element than the rule it replaces, for
-example `.sidebar .osirion-categories-list .osirion-category-link`.
+example `.sidebar .osirion-categories-list .osirion-category-link`. The entries of `LocalizedNavigation` are built in
+code, so its scoped rules do not reach them; style those from your own stylesheet (see its page).
 
 ## Related
 

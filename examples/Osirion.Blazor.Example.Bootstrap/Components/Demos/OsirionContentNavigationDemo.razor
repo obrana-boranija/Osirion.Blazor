@@ -1,0 +1,36 @@
+@using Osirion.Blazor.Cms.Domain.Entities
+@using Osirion.Blazor.Cms.Domain.Enums
+@using Osirion.Blazor.Cms.Domain.Repositories
+@using Osirion.Blazor.Cms.Domain.Services
+@using Osirion.Blazor.Cms.Web.Components
+@inject IContentProviderManager Content
+
+@* The post is picked from this site's own blog, and the component finds its neighbours in the same directory *@
+@if (post is not null)
+{
+    <OsirionContentNavigation Item="@post"
+                              Variant="ContentNavigationVariant.Card"
+                              ShowDescription="true"
+                              PreviousLabel="Previous post"
+                              NextLabel="Next post"
+                              AriaLabel="Blog posts"
+                              UrlGenerator="@(item => "/" + item.Url.TrimStart('/'))" />
+}
+
+@code {
+    private ContentItem? post;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var posts = (await Content.GetContentByQueryAsync(new ContentQuery
+        {
+            Locale = "en",
+            Directory = "blog",
+            SortBy = SortField.Order,
+            SortDirection = SortDirection.Ascending
+        })).Where(item => !item.Path.EndsWith("_index.md", StringComparison.OrdinalIgnoreCase)).ToList();
+
+        // The second post has a neighbour on each side
+        post = posts.Count > 2 ? posts[1] : null;
+    }
+}
