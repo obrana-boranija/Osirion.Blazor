@@ -8,13 +8,30 @@ namespace Osirion.Blazor.Theming.Components
     /// <summary>Defines the OsirionStyles type.</summary>
     public partial class OsirionStyles : OsirionComponentBase, IDisposable
     {
-        /// <summary>Gets or sets whether the default Osirion styles are rendered.</summary>
+        /// <summary>
+        /// Gets or sets whether only the Core stylesheet is linked. When <see langword="true"/>, the framework adapter and
+        /// the theme stylesheet are left out. When <see langword="null"/>, <c>ThemingOptions.UseDefaultStyles</c> applies
+        /// (<see langword="false"/> unless configured).
+        /// </summary>
         [Parameter] public bool? UseStyles { get; set; }
-        /// <summary>Gets or sets custom CSS variables appended to the generated theme styles.</summary>
+        /// <summary>
+        /// Gets or sets CSS declarations written, as raw CSS without encoding, into a <c>:root</c> block. The configured
+        /// <c>ThemingOptions.CustomVariables</c> value is written in a second block after this one, so for the same
+        /// property the configured value wins. Pass only values from your own code or configuration.
+        /// </summary>
         [Parameter] public string? CustomVariables { get; set; }
-        /// <summary>Gets or sets the CSS framework adapter used by the component.</summary>
+        /// <summary>
+        /// Gets or sets which framework adapter stylesheet is linked: <c>Bootstrap</c>, <c>FluentUI</c>, <c>MudBlazor</c>
+        /// or <c>Radzen</c>; <c>None</c> links none. When <see langword="null"/>, <c>ThemingOptions.Framework</c> applies.
+        /// The framework class on <c>&lt;html&gt;</c> comes from the configured framework, so set the framework in
+        /// configuration as well.
+        /// </summary>
         [Parameter] public new CssFramework? Framework { get; set; }
-        /// <summary>Gets or sets the theme mode used for generated styles.</summary>
+        /// <summary>
+        /// Gets or sets the theme used when the visitor has not picked one: <c>Light</c>, <c>Dark</c> or <c>System</c>.
+        /// <c>Inverted</c> is not handled by the page script, which then follows the operating system. When
+        /// <see langword="null"/>, <c>ThemingOptions.DefaultMode</c> applies (<c>System</c> unless configured).
+        /// </summary>
         [Parameter] public ThemeMode? Mode { get; set; }
 
         private ThemingOptions EffectiveOptions
