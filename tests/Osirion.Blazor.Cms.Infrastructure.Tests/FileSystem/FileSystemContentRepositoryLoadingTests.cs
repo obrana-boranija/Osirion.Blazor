@@ -215,6 +215,39 @@ public sealed class FileSystemContentRepositoryLoadingTests : IDisposable
     }
 
     [Fact]
+    public async Task GetAllAsync_FrontMatterWithoutDate_TakesTheFilesCreationTime()
+    {
+        // Fails before the fix: FrontMatter.Date defaulted to today, so the item was dated the day it was loaded.
+        var created = new DateTimeOffset(2020, 1, 2, 3, 4, 5, TimeSpan.Zero);
+        _fileSystem.AddFile(
+            _fileSystem.Path.Combine(ContentRoot, "blog/post.md"),
+            new MockFileData("no-date") { CreationTime = created });
+        _markdownProcessor.ExtractFrontMatterAndContent("no-date")
+            .Returns(((FrontMatter?)new FrontMatter { Title = "Post" }, "# Post"));
+        var repository = Repository(CreateOptions());
+
+        var item = (await repository.GetAllAsync()).ShouldHaveSingleItem();
+
+        item.DateCreated.ShouldBe(created.UtcDateTime);
+        item.LastModified.ShouldBe(created.UtcDateTime);
+    }
+
+    [Fact]
+    public async Task GetAllAsync_FrontMatterWithDate_UsesTheDate()
+    {
+        _fileSystem.AddFile(
+            _fileSystem.Path.Combine(ContentRoot, "blog/post.md"),
+            new MockFileData("dated") { CreationTime = new DateTimeOffset(2020, 1, 2, 3, 4, 5, TimeSpan.Zero) });
+        _markdownProcessor.ExtractFrontMatterAndContent("dated")
+            .Returns(((FrontMatter?)new FrontMatter { Title = "Post", Date = "2024-05-06" }, "# Post"));
+        var repository = Repository(CreateOptions());
+
+        var item = (await repository.GetAllAsync()).ShouldHaveSingleItem();
+
+        item.DateCreated.ShouldBe(new DateTime(2024, 5, 6, 0, 0, 0, DateTimeKind.Utc));
+    }
+
+    [Fact]
     public async Task GetAllAsync_SubdirectoriesExcluded_LoadsOnlyTopLevelFiles()
     {
         Write("top.md", "# Top");

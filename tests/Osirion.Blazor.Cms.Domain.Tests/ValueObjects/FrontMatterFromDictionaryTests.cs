@@ -77,7 +77,7 @@ public class FrontMatterFromDictionaryTests
         Assert.Null(frontMatter.Order);
         Assert.Null(frontMatter.Permalink);
         Assert.Equal(string.Empty, frontMatter.Lang);
-        Assert.True(DateTime.TryParseExact(frontMatter.Date, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out _));
+        Assert.Equal(string.Empty, frontMatter.Date);
     }
 
     [Fact]
@@ -111,8 +111,7 @@ public class FrontMatterFromDictionaryTests
     {
         var frontMatter = Parse(("date", "not a date"));
 
-        Assert.NotEqual("not a date", frontMatter.Date);
-        Assert.True(DateTime.TryParseExact(frontMatter.Date, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out _));
+        Assert.Equal(string.Empty, frontMatter.Date);
     }
 
     [Theory]

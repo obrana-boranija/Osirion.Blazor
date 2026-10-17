@@ -51,9 +51,10 @@ public class FrontMatter : ValueObject
     public string Author { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets the date in ISO format (yyyy-MM-dd)
+    /// Gets the date in ISO format (yyyy-MM-dd). Empty when the file does not say, so the repository dates the item
+    /// from its source (a file's creation time) instead of the day it was loaded.
     /// </summary>
-    public string Date { get; set; } = DateTime.Now.ToString("yyyy-MM-dd");
+    public string Date { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets the last modified date in ISO format (yyyy-MM-dd)
@@ -134,7 +135,8 @@ public class FrontMatter : ValueObject
     {
         var frontMatter = new FrontMatter
         {
-            Title = title
+            Title = title,
+            Date = DateTime.Now.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)
         };
 
         return frontMatter;
@@ -444,7 +446,8 @@ public class FrontMatter : ValueObject
         if (values is null)
             throw new ArgumentNullException(nameof(values));
 
-        var frontMatter = Create(values.TryGetValue("title", out var title) ? title : string.Empty);
+        // Not Create: a page whose keys have no date has none, and is not dated the day it is read
+        var frontMatter = new FrontMatter { Title = values.TryGetValue("title", out var title) ? title : string.Empty };
 
         foreach (var (keys, apply) in KeyReaders)
         {
