@@ -19,31 +19,36 @@ public partial class YandexMetricaTracker
     private YandexMetricaProvider? _provider => field ??= GetOptionalService<YandexMetricaProvider>();
 
     /// <summary>
-    /// Gets or sets the counter ID. When set it replaces the configured value for this render.
+    /// Gets or sets the counter ID for this render, replacing the configured <c>CounterId</c>. It must be a number of up to 18
+    /// digits; anything else renders nothing.
     /// </summary>
     [Parameter]
     public string? CounterId { get; set; }
 
     /// <summary>
-    /// Gets or sets whether to enable WebVisor session replay. When set it replaces the configured value for this render.
+    /// Gets or sets whether Webvisor session replay is on for this render, replacing the configured <c>WebVisor</c>, which is
+    /// <c>false</c> unless configured.
     /// </summary>
     [Parameter]
     public bool? WebVisor { get; set; }
 
     /// <summary>
-    /// Gets or sets whether to enable click map. When set it replaces the configured value for this render.
+    /// Gets or sets whether the click map is on for this render, replacing the configured <c>ClickMap</c>, which is <c>true</c>
+    /// unless configured.
     /// </summary>
     [Parameter]
     public bool? ClickMap { get; set; }
 
     /// <summary>
-    /// Gets or sets whether to track external links. When set it replaces the configured value for this render.
+    /// Gets or sets whether clicks on outbound links are tracked for this render, replacing the configured <c>TrackLinks</c>,
+    /// which is <c>true</c> unless configured.
     /// </summary>
     [Parameter]
     public bool? TrackLinks { get; set; }
 
     /// <summary>
-    /// Gets or sets whether to accurately track bounce rate. When set it replaces the configured value for this render.
+    /// Gets or sets whether accurate bounce rate tracking is on for this render, replacing the configured
+    /// <c>AccurateTrackBounce</c>, which is <c>true</c> unless configured.
     /// </summary>
     [Parameter]
     public bool? AccurateTrackBounce { get; set; }
