@@ -7,6 +7,8 @@ using Osirion.Blazor.Cms.Domain.Repositories;
 using Osirion.Blazor.Cms.Infrastructure.Caching;
 using Shouldly;
 
+#pragma warning disable CS0618 // The options under test are obsolete and keep working until they are removed.
+
 namespace Osirion.Blazor.Cms.Infrastructure.Tests.Caching;
 
 public class CacheDecoratorFactoryTests

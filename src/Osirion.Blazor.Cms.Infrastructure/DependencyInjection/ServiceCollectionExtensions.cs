@@ -15,6 +15,8 @@ using Osirion.Blazor.Cms.Infrastructure.Markdown;
 using Osirion.Blazor.Cms.Infrastructure.Providers;
 using Osirion.Blazor.Cms.Infrastructure.Services;
 
+#pragma warning disable CS0618 // CacheOptions is obsolete, and this code still honors it until it is removed.
+
 namespace Osirion.Blazor.Cms.Infrastructure.DependencyInjection;
 
 /// <summary>
@@ -228,8 +230,17 @@ public static class ServiceCollectionExtensions
         services.TryAddFileSystemDirectoryCache();
         services.TryAddSingleton(DirectoryExtensions.CreateFileSystemDirectoryRepository);
 
+        // Both AddCms (for the legacy Osirion:Cms:FileSystem section) and AddOsirionContent can reach this method
+        // for one host. A second provider registration would give the registry two providers with one id.
+        var providerRegistered = services.Any(descriptor => descriptor.ServiceType == typeof(FileSystemContentProvider));
+
         // Register provider
         services.TryAddSingleton<FileSystemContentProvider>();
+
+        if (providerRegistered)
+        {
+            return services;
+        }
 
         // Register as IContentProvider
         services.AddSingleton<IContentProvider>(sp => sp.GetRequiredService<FileSystemContentProvider>());

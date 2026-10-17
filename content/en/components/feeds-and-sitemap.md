@@ -82,7 +82,7 @@ request.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `SiteUrl` | `string?` | `null` | Public address used for every absolute URL, for example `https://example.com`. When empty, the request's scheme, host and path base are used. |
+| `SiteUrl` | `string?` | `null` | Public address used for every absolute URL, for example `https://example.com`. When empty, `Osirion:Seo:SiteUrl` is used (from the release after 4.1.0), and when that is empty too, the request's scheme, host and path base. |
 | `Title` | `string?` | `null` | Feed title; otherwise the SEO `SiteName`, then the host name. |
 | `Description` | `string?` | `null` | Feed description; otherwise the SEO `SiteDescription`, then the title. |
 | `FeedDirectory` | `string?` | `null` | Directory the feeds cover, for example `blog`; all content when empty. |
@@ -118,7 +118,7 @@ the application at startup instead of producing broken feeds.
 
 ## Security and caching
 
-Set `SiteUrl` in production. Without it, URLs follow whatever `Host` header a request sends, so a forged header could
+Set `SiteUrl`, or `Osirion:Seo:SiteUrl` from the release after 4.1.0, in production. Without either, URLs follow whatever `Host` header a request sends, so a forged header could
 put another host into a response that a cache or crawler stores. Responses are marked public, so browsers and
 shared caches may keep serving a document for up to `CacheDuration` after the content changes.
 

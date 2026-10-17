@@ -182,7 +182,6 @@ public class GitHubApiClientFactory : IGitHubApiClientFactory
             EnablePolling = options.EnablePolling,
             PollingIntervalSeconds = options.PollingIntervalSeconds,
             UseBackgroundCacheUpdate = options.UseBackgroundCacheUpdate,
-            ExcludePatterns = options.ExcludePatterns,
             Authentication = options.Authentication
         };
 

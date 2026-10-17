@@ -61,7 +61,7 @@ Neither has a live demo, because neither renders visible markup: the renderer wo
 page it sits on, and the feeds are XML documents.
 
 The site address matters for both. Set `SiteUrl` in `SeoMetadataOptions` for canonical URLs and in the feed options
-for the sitemap and feeds, so that no forged `Host` header can put another host into what a crawler or cache keeps.
+for the sitemap and feeds (from the release after 4.1.0 the feeds fall back to the `SeoMetadataOptions` address), so that no forged `Host` header can put another host into what a crawler or cache keeps.
 
 ## Related
 

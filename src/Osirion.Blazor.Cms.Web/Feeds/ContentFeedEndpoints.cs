@@ -89,10 +89,11 @@ public static class ContentFeedEndpoints
     {
         var services = context.RequestServices;
         var manager = services.GetRequiredService<IContentProviderManager>();
+        var seo = services.GetService<IOptions<SeoMetadataOptions>>()?.Value;
         var feed = new FeedContext(
-            ResolveSiteUrl(context.Request, options),
+            ResolveSiteUrl(context.Request, options, seo),
             options,
-            services.GetService<IOptions<SeoMetadataOptions>>()?.Value,
+            seo,
             context.Request.Host.Host);
 
         var query = kind == ContentFeedKind.Sitemap
@@ -282,10 +283,23 @@ public static class ContentFeedEndpoints
     private static bool IsNoIndex(ContentItem item) =>
         item.Metadata?.SeoProperties?.Robots?.Contains("noindex", StringComparison.OrdinalIgnoreCase) == true;
 
-    private static string ResolveSiteUrl(HttpRequest request, OsirionFeedOptions options) =>
-        !string.IsNullOrWhiteSpace(options.SiteUrl)
-            ? options.SiteUrl.TrimEnd('/')
-            : $"{request.Scheme}://{request.Host.ToUriComponent()}{request.PathBase.ToUriComponent()}";
+    // The feed's own SiteUrl, then the site-wide Osirion:Seo:SiteUrl, then the request. The SEO address is used only
+    // when it is an absolute http(s) address, the same rule the SEO metadata renderer applies.
+    private static string ResolveSiteUrl(HttpRequest request, OsirionFeedOptions options, SeoMetadataOptions? seo)
+    {
+        if (!string.IsNullOrWhiteSpace(options.SiteUrl))
+        {
+            return options.SiteUrl.TrimEnd('/');
+        }
+
+        if (Uri.TryCreate(seo?.SiteUrl, UriKind.Absolute, out var seoSiteUrl)
+            && (seoSiteUrl.Scheme == Uri.UriSchemeHttp || seoSiteUrl.Scheme == Uri.UriSchemeHttps))
+        {
+            return seoSiteUrl.GetLeftPart(UriPartial.Path).TrimEnd('/');
+        }
+
+        return $"{request.Scheme}://{request.Host.ToUriComponent()}{request.PathBase.ToUriComponent()}";
+    }
 
     private static DateTime ToUtc(DateTime value) => value.Kind switch
     {
