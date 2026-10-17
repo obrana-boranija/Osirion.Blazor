@@ -1,0 +1,36 @@
+@page "/"
+
+<PageTitle>My Product</PageTitle>
+<HeadContent>
+    <meta name="description" content="Say in one sentence what My Product does and who it is for." />
+</HeadContent>
+
+<HeroSection Title="My Product"
+             Summary="Say in one sentence what My Product does and who it is for."
+             Alignment="Alignment.Center"
+             PrimaryButtonText="Get in touch"
+             PrimaryButtonUrl="/contact"
+             SecondaryButtonText="Read the news"
+             SecondaryButtonUrl="/news" />
+
+<OsirionBaseSection Id="how-it-works" Title="How it works">
+    <OsirionSteps Items="steps" />
+</OsirionBaseSection>
+
+<OsirionBaseSection Id="latest-news" Title="Latest news">
+    <ContentList Directory="news"
+                 ItemsPerPage="3"
+                 EnableSeoMetadata="false"
+                 NoContentText="No news yet: add a Markdown file to content/news." />
+    <p class="page-more"><a href="/news">All news</a></p>
+</OsirionBaseSection>
+
+@code {
+    // Plain text; replace them with the three steps of your product.
+    private static readonly StepItem[] steps =
+    [
+        new("Describe the problem", "One sentence on what your visitors struggle with today."),
+        new("Show the answer", "One sentence on what your product does about it."),
+        new("Invite the next step", "One sentence on how to start: a call, a trial or a download."),
+    ];
+}

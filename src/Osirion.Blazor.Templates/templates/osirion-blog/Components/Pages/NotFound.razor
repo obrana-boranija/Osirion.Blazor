@@ -1,0 +1,12 @@
+@page "/not-found"
+
+@* Shown with status 404 for an address no page claims, a post that does not exist and a missing file. *@
+<NotFoundPage Suggestions="suggestions" />
+
+@code {
+    private static readonly IReadOnlyList<ContentNotFoundSuggestion> suggestions =
+    [
+        new() { Text = "Blog", Url = "/blog", Description = "Every post, newest first." },
+        new() { Text = "About", Url = "/about", Description = "Who writes here." },
+    ];
+}

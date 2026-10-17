@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Dejan Demonjić",
+  "classifications": [ "Web", "Blazor", "Website", "Osirion" ],
+  "identity": "Osirion.Blazor.Templates.Site",
+  "name": "Osirion product site",
+  "description": "A product or company site on Osirion.Blazor: a home page with a hero and steps, news from Markdown, About and Contact pages, RSS and a sitemap.",
+  "shortName": "osirion-site",
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "sourceName": "OsirionApp-CSharp",
+  "preferNameDirectory": true,
+  "sources": [
+    { "source": "./" },
+    { "source": "../_shared/", "target": "./" }
+  ],
+  "symbols": {
+    "SiteName": {
+      "type": "parameter",
+      "datatype": "text",
+      "description": "The product's or company's name, shown in the menu, the footer, the feeds and the page titles.",
+      "defaultValue": "My Product",
+      "replaces": "My Product"
+    },
+    "SiteUrl": {
+      "type": "parameter",
+      "datatype": "text",
+      "description": "The public address of the site, without a trailing slash; the feeds and the sitemap link to it.",
+      "defaultValue": "https://example.com",
+      "replaces": "https://example.com"
+    },
+    "HttpPort": {
+      "type": "generated",
+      "generator": "port",
+      "parameters": { "low": 5000, "high": 5300 },
+      "replaces": "5080"
+    },
+    "HttpsPort": {
+      "type": "generated",
+      "generator": "port",
+      "parameters": { "low": 7000, "high": 7300 },
+      "replaces": "7080"
+    },
+    "skipRestore": {
+      "type": "parameter",
+      "datatype": "bool",
+      "description": "Skips the automatic restore of the project after it is created.",
+      "defaultValue": "false"
+    }
+  },
+  "primaryOutputs": [
+    { "path": "OsirionApp-CSharp.csproj" }
+  ],
+  "postActions": [
+    {
+      "condition": "(!skipRestore)",
+      "description": "Restores the NuGet packages the project needs.",
+      "manualInstructions": [ { "text": "Run 'dotnet restore'" } ],
+      "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
+      "continueOnError": true
+    }
+  ]
+}

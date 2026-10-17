@@ -1,0 +1,14 @@
+@page "/{*path}"
+@inject NavigationManager Navigation
+
+@* Claims every address no other page does and renders the router's not-found page in place, with status 404, so the
+   reader keeps the address they asked for. *@
+
+@code {
+    /// <summary>The unknown address.</summary>
+    [Parameter]
+    public string? Path { get; set; }
+
+    /// <inheritdoc/>
+    protected override void OnInitialized() => Navigation.NotFound();
+}

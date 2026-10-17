@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Osirion.Blazor.Templates: a new template package. `dotnet new install Osirion.Blazor.Templates` then `dotnet new osirion-blog -n MyBlog` creates a Markdown blog on .NET 10 with static server-side rendering: the newest posts on the home page, a blog list, posts, an About page, a 404 page, RSS, Atom and a sitemap, with the menu and footer from `appsettings.json`. `--SiteName` and `--SiteUrl` fill in the name and public address. The template references the library version it is released with; tests hold the two equal. `tools/verify-template.sh` times the walkthrough on a clean NuGet cache against packed packages
+- Osirion.Blazor.Templates: `dotnet new osirion-docs` creates a Markdown documentation site: a home page, pages in `content/docs` with side navigation in front matter `order`, a table of contents, previous and next links, a 404 page and a sitemap; `/docs` leads to the first page
+- Osirion.Blazor.Templates: `dotnet new osirion-site` creates a product or company site: a home page with a hero, three steps and the latest news, news in `content/news` with RSS, About and Contact pages, and a sitemap. The contact page offers an email link; the comment beside it explains how to switch on the form with the email service
+- Docs: the getting started guide opens with the template, three commands to a running blog, before the steps for an existing app
 - Osirion.Blazor.Cms.Web: `SeoMetadataOptions.SiteUrl` (`Osirion:Seo:SiteUrl`). When it is an absolute http(s) address, the canonical URL, `og:url` and the addresses in structured data use it with the page's path instead of the host that served the request, so a site behind a proxy, on a preview host or on a second domain declares its public address
 
 ### Fixed
