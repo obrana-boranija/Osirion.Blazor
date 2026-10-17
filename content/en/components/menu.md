@@ -194,8 +194,8 @@ group becomes a list with a small uppercase label, and its description is left o
 | `FooterText` | `string?` | `null` | The text of the footer link, for example `All features`. The link is rendered only when `FooterHref` also gives a safe address. |
 | `FooterHref` | `string?` | `null` | The address of the footer link. A scheme other than a relative URL, `http`, `https`, `mailto` or `tel` leaves the footer link out. |
 | `FooterTarget` | `string?` | `null` | The `target` attribute of the footer link. `_blank` also adds `rel="noopener noreferrer"`. |
-| `Collapsible` | `bool` | `false` | Whether the group is styled as collapsible: its label gets a chevron and, with `Expanded` off, its items are hidden. Nothing in the package opens a collapsed group again, so leave it off unless your own script toggles the `osirion-menu-group-expanded` class. |
-| `Expanded` | `bool` | `true` | Whether a collapsible group shows its items. It has no effect unless `Collapsible` is on. |
+| `Collapsible` | `bool` | `false` | Whether the label opens and closes the group. The label becomes the `summary` of a `details` element with a chevron, so a click, Enter or Space toggles the items without script, also under static SSR. It needs a `Label`: without one the group stays open. |
+| `Expanded` | `bool` | `true` | Whether a collapsible group starts open. It is the initial state only: the reader's toggle is not reset when the parent renders again with the same value. It has no effect unless `Collapsible` is on. |
 | `ChildContent` | `RenderFragment?` | `null` | The items of the group, rendered in a `role="group"` container. |
 | `Id` | `string?` | `null` | The id of the group; the ids of its label and item container derive from it. Without it a unique id is generated. |
 | `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
@@ -319,8 +319,9 @@ as a mega menu aside for a customer story or a news item. Pass a real `ImageAlt`
   empty slot; use `IconTemplate` for your own icon.
 - **Active state.** Under static SSR the active state is computed once per request. In an interactive render mode
   `MenuItem` also follows later navigations.
-- **Collapsible groups.** `MenuGroup` with `Collapsible` and `Expanded="false"` hides its items. Nothing in the package
-  opens the group again, so leave `Collapsible` off unless you add your own control.
+- **Collapsible groups.** `MenuGroup` with `Collapsible` turns its label into the `summary` of a `details` element, so a
+  click, Enter or Space opens and closes the items without script. `Expanded` is the starting state. A collapsible group
+  needs a `Label`; without one it stays open.
 - **Auto expand.** With `AutoExpandActive` a vertical menu keeps the submenu of the active item open, so the reader sees
   where the page sits. Because the open state comes from the active item and not from the toggle, the toggle cannot close
   that submenu while the item is active. Turn the parameter off for a menu where the reader should be able to close it.

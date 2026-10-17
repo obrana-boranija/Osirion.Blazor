@@ -2,28 +2,35 @@
 @inherits OsirionComponentBase
 
 <div class="@_groupClass" style="@Style" @attributes="_groupAttributes">
-    @if (!string.IsNullOrWhiteSpace(Label))
+    @if (Collapsible && !string.IsNullOrWhiteSpace(Label))
     {
-        <div class="osirion-menu-group-label" id="@LabelId">
-            <span class="osirion-menu-group-text">@Label</span>
-            @if (Collapsible)
-            {
+        @* A native disclosure: the label is the summary, so the group opens and closes from a click, Enter or Space
+           without script, and under static SSR. The browser hides the items while it is closed. Without a label there
+           is nothing to click, so the group stays open and is rendered below as a plain group. *@
+        <details class="osirion-menu-group-disclosure" open="@Expanded">
+            <summary class="osirion-menu-group-label" id="@LabelId">
+                <span class="osirion-menu-group-text">@Label</span>
                 <span class="osirion-menu-group-toggle" aria-hidden="true">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="6 9 12 15 18 9" />
                     </svg>
                 </span>
-            }
-        </div>
+            </summary>
+            @DescriptionContent
+            @ItemsContent
+        </details>
     }
-    @if (!string.IsNullOrWhiteSpace(Description))
+    else
     {
-        <p class="osirion-menu-group-description">@Description</p>
+        @if (!string.IsNullOrWhiteSpace(Label))
+        {
+            <div class="osirion-menu-group-label" id="@LabelId">
+                <span class="osirion-menu-group-text">@Label</span>
+            </div>
+        }
+        @DescriptionContent
+        @ItemsContent
     }
-
-    <div class="osirion-menu-group-items" id="@ItemsId" role="group" aria-labelledby="@(string.IsNullOrWhiteSpace(Label) ? null : LabelId)">
-        @ChildContent
-    </div>
 
     @if (!string.IsNullOrWhiteSpace(FooterText) && _footerHref is not null)
     {
@@ -36,3 +43,16 @@
         </a>
     }
 </div>
+
+@code {
+    private RenderFragment DescriptionContent => @<text>
+    @if (!string.IsNullOrWhiteSpace(Description))
+    {
+        <p class="osirion-menu-group-description">@Description</p>
+    }
+    </text>;
+
+    private RenderFragment ItemsContent => @<div class="osirion-menu-group-items" id="@ItemsId" role="group" aria-labelledby="@(string.IsNullOrWhiteSpace(Label) ? null : LabelId)">
+        @ChildContent
+    </div>;
+}
