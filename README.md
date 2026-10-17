@@ -24,11 +24,22 @@ its own.
 | [Osirion.Blazor.Cms.Core](https://www.nuget.org/packages/Osirion.Blazor.Cms.Core), [Domain](https://www.nuget.org/packages/Osirion.Blazor.Cms.Domain), [Application](https://www.nuget.org/packages/Osirion.Blazor.Cms.Application), [Infrastructure](https://www.nuget.org/packages/Osirion.Blazor.Cms.Infrastructure) | The CMS layers the two modules share: content model, queries, and the file system and GitHub providers |
 | [Osirion.Blazor.Navigation](https://www.nuget.org/packages/Osirion.Blazor.Navigation) | Menus, enhanced navigation and scroll to top ([README](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Navigation/README.md)) |
 | [Osirion.Blazor.Analytics](https://www.nuget.org/packages/Osirion.Blazor.Analytics) | Trackers for Microsoft Clarity, Google Analytics 4, Matomo, Plausible, Umami and Yandex Metrica ([README](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Analytics/README.md)) |
+| [Osirion.Blazor.Templates](https://www.nuget.org/packages/Osirion.Blazor.Templates) | `dotnet new osirion-blog`: a Markdown blog served with static server-side rendering ([README](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Templates/README.md)) |
 | [Osirion.Blazor.Theming](https://www.nuget.org/packages/Osirion.Blazor.Theming) | `OsirionStyles`, light and dark themes, named palettes, `ThemePicker`, and adapters for Bootstrap, FluentUI, MudBlazor and Radzen ([README](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Theming/README.md)) |
 
 ## 🚀 Quick start
 
-These steps put a Markdown blog into a new Blazor Web App. The
+The fastest way in is the blog template: three commands to a running Markdown blog with a menu, a footer, light and
+dark themes, RSS, Atom and a sitemap.
+
+```bash
+dotnet new install Osirion.Blazor.Templates
+dotnet new osirion-blog -n MyBlog
+cd MyBlog
+dotnet run
+```
+
+To add Osirion to an existing app instead, these steps put a Markdown blog into a new Blazor Web App. The
 [getting started guide](https://github.com/demonjic/Osirion.Blazor/blob/master/content/en/docs/getting-started.md)
 covers each step in full, including a GitHub repository as the content source.
 

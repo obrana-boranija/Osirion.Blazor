@@ -1,0 +1,23 @@
+@page "/blog"
+@page "/blog/{Slug}"
+
+@if (string.IsNullOrWhiteSpace(Slug))
+{
+    <ContentListPage Directory="blog"
+                     Title="Blog"
+                     Description="Every post, newest first."
+                     FeedUrl="/feed.xml"
+                     FeedTitle="Follow by RSS"
+                     NoContentText="No posts yet: add a Markdown file to content/blog." />
+}
+else
+{
+    @* Renders the post in content/blog whose slug matches, or the not-found page with status 404. *@
+    <ArticlePage DirectoryName="blog" ItemSlug="@Slug" />
+}
+
+@code {
+    /// <summary>The post to show; without one the page lists every post.</summary>
+    [Parameter]
+    public string? Slug { get; set; }
+}
