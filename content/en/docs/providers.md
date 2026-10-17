@@ -81,6 +81,7 @@ in a repository without a deployment.
 | `BasePath` | empty | The folder that holds the content. Used as written: a relative path is resolved against the process's working directory, so `dotnet run` from the project folder finds `content` next to `Program.cs`, and a published app started from another folder does not. |
 | `WatchForChanges` | `true` | Watches `BasePath` and reloads the content when a Markdown file is created, changed, renamed or deleted. |
 | `IncludeSubdirectories` | `true` | Reads subfolders too. |
+| `ExcludePatterns` | `**/node_modules/**`, `**/bin/**`, `**/obj/**` | Globs for files to skip, matched against a file's path under `BasePath`, for example `**/drafts/**`. Applies from the release after 4.1.0; 4.1.0 loads every file. |
 | `CreateDirectoriesIfNotExist` | `false` | Creates `BasePath` when it is missing. |
 | `UseFileWriteTimeAsLastModified` | `false` | Uses a file's write time as the item's last-modified date when its front matter has no `last_modified`. Off by default because a fresh checkout gives every file the time of the checkout, and that date reaches the structured data and the sitemap's `lastmod`. |
 
@@ -122,6 +123,8 @@ start the app from the folder that holds `content`.
 | `ApiToken` | empty | The token the provider reads the repository with. Required; see below. |
 | `ApiUrl` | `https://api.github.com` | The base address of the GitHub API. |
 | `WebhookSecret` | none | The secret that verifies GitHub webhook deliveries; see step 6. |
+| `EnablePolling` | `false` | Checks the branch for new commits on a timer; see step 6. |
+| `PollingIntervalSeconds` | `86400` | Seconds between checks when `EnablePolling` is on, one day by default. |
 | `UseBackgroundCacheUpdate` | `true` | Applies the cache updates that polling triggers in the background instead of waiting for them. Webhook updates always run in the background. |
 
 ### The token is required
@@ -147,10 +150,9 @@ Set `IsDefault` to `true` on the provider you want. Without it, the first regist
 `AddOsirion` registers the GitHub providers first, in configuration order, then the file system provider. If two
 providers set it, the one registered last wins.
 
-One limit applies to GitHub providers, in 4.1.0 and in the code this guide was checked against. When several providers
-are configured, `IsDefault` on a GitHub provider takes effect only if the provider also sets `ProviderId`. Without it,
-the setting is ignored and the first registered provider stays the default. A provider id is any string that is unique
-among your providers:
+`IsDefault` on a GitHub provider works with or without `ProviderId` from the release after 4.1.0. In 4.1.0 it takes
+effect only if the provider also sets `ProviderId`: without it the setting is ignored and the first registered provider
+stays the default. If you run 4.1.0, set one. A provider id is any string that is unique among your providers:
 
 ```json
 {
@@ -228,12 +230,15 @@ How new content reaches a running site depends on the provider.
   `https://your-site/api/github/webhook` with content type `application/json` and the same secret. [Getting
   started](/docs/getting-started) walks through it. Deliveries are verified with the `X-Hub-Signature-256` header, and
   every delivery is rejected while no provider has a secret. Register the webhook only together with a GitHub
-  provider: with just the file system provider the handler cannot be built, so the app fails at startup in Development
-  and every request answers 500 in Production.
+  provider. From the release after 4.1.0, `UseGitHubWebhook` throws at startup when no GitHub provider is configured,
+  and the message names the missing provider. In 4.1.0 a site with just the file system provider fails differently: the
+  app does not start in Development, and every request answers 500 in Production.
 
-`EnablePolling` and `PollingIntervalSeconds` (default 86400, one day) exist on the GitHub options, but the polling
-service reads them from the single-provider section `Osirion:Cms:GitHub`, not from the named providers under
-`Osirion:Cms:Web:GitHub`. Do not rely on polling for a provider configured as in this guide; use the webhook.
+Polling is the alternative when GitHub cannot reach your site. Set `EnablePolling` to `true` on a provider, and
+`PollingIntervalSeconds` to how often it should check the branch (default 86400, one day). Each provider under
+`Osirion:Cms:Web:GitHub` polls with its own two settings from the release after 4.1.0, and the polling service is
+started by `AddGitHubWebhookAndPolling()` as above. In 4.1.0 the polling service reads them only from the
+single-provider section `Osirion:Cms:GitHub`, so for a named provider use the webhook.
 
 ## Check that it works
 

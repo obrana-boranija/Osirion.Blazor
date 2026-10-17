@@ -5,6 +5,7 @@ using Osirion.Blazor.Cms.Domain.Exceptions;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Interfaces.Content;
 using Osirion.Blazor.Cms.Domain.Options;
+using Osirion.Blazor.Cms.Infrastructure.Directory;
 using Osirion.Blazor.Cms.Infrastructure.Repositories;
 using Osirion.Blazor.Cms.Infrastructure.Utilities;
 using System.IO.Abstractions;
@@ -18,6 +19,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
     public class FileSystemContentRepository : BaseContentRepository
     {
         private readonly FileSystemOptions _options;
+        private readonly PathUtilities _globMatcher;
         private readonly Dictionary<string, string> _fileExtensionContentTypeMap;
         private readonly IFileSystem _fileSystem;
         private readonly FileSystemDirectoryRepository? _directoryRepository;
@@ -39,7 +41,8 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
             EnableLocalization = _options.EnableLocalization;
             DefaultLocale = _options.DefaultLocale;
             SupportedLocales = _options.GetEffectiveSupportedLocales();
-            ContentPath = _options.ContentRoot ?? string.Empty;
+            ContentPath = FileSystemConfiguration.GetContentRoot(_options);
+            _globMatcher = new PathUtilities(options);
 
             // Initialize file extension to content type mapping
             _fileExtensionContentTypeMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
@@ -70,6 +73,14 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
             : this(markdownProcessor, queryFilter, options, logger, fileSystem)
         {
             _directoryRepository = directoryRepository ?? throw new ArgumentNullException(nameof(directoryRepository));
+        }
+
+        // The patterns match the path under BasePath, so a content folder inside a bin or obj folder still loads.
+        // The leading slash lets "**/name/**" match a first-level folder too.
+        private bool IsExcluded(string filePath)
+        {
+            var relativePath = "/" + GetRelativePath(filePath);
+            return _options.ExcludePatterns.Any(pattern => _globMatcher.MatchesGlobPattern(relativePath, pattern));
         }
 
         private static string GetProviderId(FileSystemOptions options)
@@ -108,7 +119,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
                 }
 
                 // Process each file
-                foreach (var file in files)
+                foreach (var file in files.Where(file => !IsExcluded(file)))
                 {
                     try
                     {

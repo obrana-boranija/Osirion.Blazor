@@ -5,6 +5,8 @@ using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Domain.Services;
 using Osirion.Blazor.Cms.Infrastructure.Services;
 
+#pragma warning disable CS0618 // CacheOptions is obsolete, and this code still honors it until it is removed.
+
 namespace Osirion.Blazor.Cms.Infrastructure.DependencyInjection;
 
 /// <summary>

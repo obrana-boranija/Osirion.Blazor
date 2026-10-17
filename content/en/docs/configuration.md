@@ -102,8 +102,8 @@ Key names are not case sensitive, as with any ASP.NET Core configuration. A key 
 without a message, so check a new key by looking at its effect.
 
 `Osirion:Seo:SiteUrl` names the site's public address. When it is an absolute `http` or `https` address, the canonical
-URL, `og:url` and the addresses in structured data use it instead of the host that served the request. It arrives in the
-release after 4.1.0.
+URL, `og:url` and the addresses in structured data use it instead of the host that served the request. The sitemap and
+the feeds use it too when `Feeds:SiteUrl` is not set. It arrives in the release after 4.1.0.
 
 ## 3. Configure in code
 

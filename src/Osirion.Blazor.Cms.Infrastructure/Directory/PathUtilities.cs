@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Domain.Interfaces.Directory;
 using Osirion.Blazor.Cms.Domain.Options;
+using Osirion.Blazor.Cms.Infrastructure.FileSystem;
 using System.Text.RegularExpressions;
 
 namespace Osirion.Blazor.Cms.Infrastructure.Directory
@@ -20,7 +21,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.Directory
         {
             if (options is null) throw new ArgumentNullException(nameof(options));
 
-            _contentPath = options.Value.ContentRoot ?? string.Empty;
+            _contentPath = FileSystemConfiguration.GetContentRoot(options.Value);
             _enableLocalization = options.Value.EnableLocalization;
             _defaultLocale = options.Value.DefaultLocale;
             _supportedLocales = options.Value.GetEffectiveSupportedLocales();

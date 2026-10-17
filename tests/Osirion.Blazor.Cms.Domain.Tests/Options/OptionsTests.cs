@@ -1,5 +1,7 @@
 ﻿using Osirion.Blazor.Cms.Domain.Options;
 
+#pragma warning disable CS0618 // The options under test are obsolete and keep working until they are removed.
+
 namespace Osirion.Blazor.Cms.Domain.Tests.Domain.Options;
 
 public class OptionsTests

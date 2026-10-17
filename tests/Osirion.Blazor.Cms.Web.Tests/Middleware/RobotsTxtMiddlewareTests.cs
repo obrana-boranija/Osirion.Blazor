@@ -39,6 +39,26 @@ public class RobotsTxtMiddlewareTests
     }
 
     [Fact]
+    public async Task RobotsTxtMiddleware_RobotsKeptAsMarkdown_WritesTheRawTextNotTheRenderedHtml()
+    {
+        // Fails before the fix: the middleware wrote ContentItem.Content, which is the sanitized HTML
+        // (<p>User-agent: *</p>), under a text/plain content type.
+        var robots = ContentItem.Create("robots", "Robots", "<p>User-agent: *<br>Disallow: /private/</p>", "robots.md", "test");
+        robots.SetOriginalMarkdown("User-agent: *\nDisallow: /private/\nSitemap: https://example.com/sitemap.xml");
+        _manager.GetContentByQueryAsync(Arg.Is<ContentQuery>(q => q.Url == "robots"), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<IReadOnlyList<ContentItem>>([robots]));
+        var context = Request("/robots.txt");
+
+        await CreateMiddleware().InvokeAsync(context);
+
+        context.Response.ContentType.ShouldBe("text/plain");
+        var body = ReadBody(context);
+        body.ShouldStartWith("User-agent: *");
+        body.ShouldNotContain("<");
+        body.ShouldBe("User-agent: *\nDisallow: /private/\nSitemap: https://example.com/sitemap.xml");
+    }
+
+    [Fact]
     public async Task RobotsTxtMiddleware_NoRobotsContent_WritesTheDefaultRules()
     {
         var context = Request("/robots.txt");

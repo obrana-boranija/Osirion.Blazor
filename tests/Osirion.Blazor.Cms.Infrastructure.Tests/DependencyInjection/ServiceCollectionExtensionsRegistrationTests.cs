@@ -12,6 +12,8 @@ using Osirion.Blazor.Cms.Infrastructure.Tests.TestDoubles;
 using Shouldly;
 using CmsServiceCollectionExtensions = Osirion.Blazor.Cms.Infrastructure.DependencyInjection.ServiceCollectionExtensions;
 
+#pragma warning disable CS0618 // The options under test are obsolete and keep working until they are removed.
+
 namespace Osirion.Blazor.Cms.Infrastructure.Tests.DependencyInjection;
 
 public class ServiceCollectionExtensionsRegistrationTests
