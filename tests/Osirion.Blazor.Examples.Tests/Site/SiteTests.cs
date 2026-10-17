@@ -308,6 +308,139 @@ public partial class SiteTests(SiteFactory factory) : IClassFixture<SiteFactory>
         html.ShouldContain("Version 1.5.0 was released on 21 April 2025");
     }
 
+    [Fact]
+    public async Task AboutPage_ShowsTheProjectTheMaintainerTheLicenceAndHowToContribute()
+    {
+        // Arrange
+        using var client = CreateClient();
+
+        // Act
+        var html = await client.GetStringAsync("/about");
+
+        // Assert
+        html.ShouldContain(">About Osirion.Blazor</h1>");
+        html.ShouldContain(">The maintainer</h2>");
+        html.ShouldContain("href=\"https://tridesetri.com\"");
+        html.ShouldContain("href=\"https://hexavera.com\"");
+        html.ShouldContain("href=\"https://demonjic.com\"");
+        html.ShouldContain(">Licence</h2>");
+        html.ShouldContain("href=\"https://github.com/demonjic/Osirion.Blazor/blob/master/CONTRIBUTING.md\"");
+        html.ShouldContain("\"AboutPage\"");
+    }
+
+    [Fact]
+    public async Task ShowcasePage_ListsTheThreeSitesWithAScreenshotAndALinkEach()
+    {
+        // Arrange
+        using var client = CreateClient();
+
+        // Act
+        var html = await client.GetStringAsync("/showcase");
+
+        // Assert
+        html.ShouldContain(">Sites built with Osirion.Blazor</h1>");
+        foreach (var (name, address, image) in new[]
+        {
+            ("Tridesetri", "https://tridesetri.com", "tridesetri.webp"),
+            ("Hexavera", "https://hexavera.com", "hexavera.webp"),
+            ("demonjic.com", "https://demonjic.com", "demonjic.webp"),
+        })
+        {
+            html.ShouldContain($">{name}</a></h2>");
+            html.ShouldContain($"href=\"{address}\"");
+            html.ShouldContain($"/assets/images/showcase/{image}");
+            using var picture = await client.GetAsync($"/assets/images/showcase/{image}");
+            picture.StatusCode.ShouldBe(HttpStatusCode.OK);
+            picture.Content.Headers.ContentLength.GetValueOrDefault().ShouldBeInRange(1, 200 * 1024);
+        }
+
+        html.ShouldNotContain("OsirionPricingTable");
+    }
+
+    [Fact]
+    public async Task ContactPage_ListsTheChannelsAndOffersNoFormThatCouldNotDeliver()
+    {
+        // Arrange
+        using var client = CreateClient();
+
+        // Act
+        var html = await client.GetStringAsync("/contact");
+
+        // Assert
+        html.ShouldContain("href=\"https://github.com/demonjic/Osirion.Blazor/issues/new/choose\"");
+        html.ShouldContain("href=\"https://demonjic.com/contact\"");
+        html.ShouldNotContain("osirion-contact-form-wrapper");
+    }
+
+    [Fact]
+    public async Task PrivacyPolicy_NamesTheCookiesTheAnalyticsServicesAndHowToWithdrawConsent()
+    {
+        // Arrange
+        using var client = CreateClient();
+
+        // Act
+        var html = await client.GetStringAsync("/privacy-policy");
+
+        // Assert
+        html.ShouldContain(">Privacy policy</h1>");
+        foreach (var cookie in new[] { "osirion_cookie_consent", "osirion-preferred-theme", "osirion-preferred-palette", "osirion_announcement_" })
+        {
+            html.ShouldContain(cookie);
+        }
+
+        foreach (var service in new[] { "Google Analytics 4", "Microsoft Clarity", "Matomo", "Cloudflare" })
+        {
+            html.ShouldContain(service);
+        }
+
+        html.ShouldContain("Withdraw your consent");
+        html.ShouldContain("Last updated: 17 October 2026");
+    }
+
+    [Fact]
+    public async Task HomePage_HasOneHeadingAndLeadsToTheQuickestPathThemesPackagesComponentsAndPosts()
+    {
+        // Arrange
+        using var client = CreateClient();
+
+        // Act
+        var html = await client.GetStringAsync("/");
+
+        // Assert
+        Regex.Matches(html, "<h1[ >]").Count.ShouldBe(1);
+        foreach (var heading in new[] { "The quickest path", "Themes and frameworks", "What is in the box", "Featured components", "Server-rendered by default", "Latest posts" })
+        {
+            html.ShouldContain($">{heading}</h2>");
+        }
+
+        foreach (var link in new[] { "/docs/getting-started", "/themes", "/docs/packages", "/components", "/blog", "https://www.nuget.org/packages/Osirion.Blazor" })
+        {
+            html.ShouldContain($"href=\"{link}\"");
+        }
+    }
+
+    [Theory]
+    [InlineData("/")]
+    [InlineData("/about")]
+    [InlineData("/contact")]
+    [InlineData("/privacy-policy")]
+    [InlineData("/showcase")]
+    public async Task SitePage_UsesNoEmOrEnDashesAndHasOneHeadingAndADescription(string address)
+    {
+        // Arrange
+        using var client = CreateClient();
+
+        // Act
+        var html = await client.GetStringAsync(address);
+        var body = CodeSample().Replace(html, string.Empty);
+
+        // Assert
+        Regex.Matches(html, "<h1[ >]").Count.ShouldBe(1);
+        html.ShouldContain("name=\"description\"");
+        body.ShouldNotContain((char)0x2014);
+        body.ShouldNotContain((char)0x2013);
+    }
+
     private HttpClient CreateClient() =>
         factory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
 

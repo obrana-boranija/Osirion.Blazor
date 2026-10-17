@@ -1,0 +1,23 @@
+@page "/about"
+@using Osirion.Blazor.Cms.Web.Components
+@using Osirion.Blazor.Components
+@using Osirion.Blazor.Core.Models
+
+@* The project, its principles, the maintainer, the licence and how to contribute: content/en/about.md. *@
+<AboutPage>
+    <OsirionAuthorCard Name="Dejan Demonjić"
+                       Role="Maintainer of Osirion.Blazor"
+                       Bio="Principal software engineer in Belgrade. Co-founder of Tridesetri and Hexavera."
+                       ProfileUrl="https://demonjic.com"
+                       Links="authorLinks" />
+</AboutPage>
+
+@code {
+    private readonly AuthorLink[] authorLinks =
+    [
+        new("demonjic.com", "https://demonjic.com"),
+        new("Tridesetri", "https://tridesetri.com"),
+        new("Hexavera", "https://hexavera.com"),
+        new("GitHub", "https://github.com/demonjic"),
+    ];
+}
