@@ -120,6 +120,8 @@ are captured but not rendered.
 - Loaded tags come from the `tags` front matter of every item the default provider holds, across all locales and
   including unpublished items. Names that differ only in case count as one tag.
 - `MaxTags` and `SortByCount` apply only to tags the component loads; tags you pass in `Tags` are shown as given.
+- The loaded tags are kept inside the component, not in `Tags`, so changing `MaxTags` or `SortByCount` later shows the
+  new limit or order, and tags you pass in `Tags` win over loaded ones for as long as the list is not empty.
 - Under static SSR the response is sent with the finished list, and the loading text is never rendered.
 - With no default provider registered, or when the provider throws, `NoContentText` is shown. A provider error is
   logged through `ILogger`; its details never reach the page.
