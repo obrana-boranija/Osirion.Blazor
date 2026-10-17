@@ -225,6 +225,7 @@ public class ThemeService : IThemeService
             "light" => ThemeMode.Light,
             "dark" => ThemeMode.Dark,
             "system" => ThemeMode.System,
+            "inverted" => ThemeMode.Inverted,
             _ => null
         };
     }
@@ -251,6 +252,7 @@ public class ThemeService : IThemeService
                 ThemeMode.Dark => "dark",
                 ThemeMode.Light => "light",
                 ThemeMode.System => "system",
+                ThemeMode.Inverted => "inverted",
                 _ => string.Empty
             };
 

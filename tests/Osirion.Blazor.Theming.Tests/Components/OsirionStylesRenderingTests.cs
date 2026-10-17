@@ -104,6 +104,46 @@ public class OsirionStylesRenderingTests : BunitContext
         style.TextContent.ShouldContain("--brand: #123456;");
     }
 
+    private const string BreakoutValue = "--brand: red;</style><script>alert(1)</script><style>";
+
+    // Fails before the fix: the value was written as markup, so "</style>" ended the element and the script ran.
+    [Fact]
+    public void OsirionStyles_CustomVariablesContainStyleEnd_CannotLeaveTheStyleElement()
+    {
+        var cut = Render<OsirionStyles>(p => p.Add(c => c.CustomVariables, BreakoutValue));
+
+        AssertContained(cut);
+    }
+
+    // Fails before the fix: the configured value took the same unencoded path.
+    [Fact]
+    public void OsirionStyles_GeneratedVariablesContainStyleEnd_CannotLeaveTheStyleElement()
+    {
+        _themeService.GenerateThemeVariables().Returns(BreakoutValue);
+
+        var cut = Render<OsirionStyles>();
+
+        AssertContained(cut);
+    }
+
+    [Fact]
+    public void OsirionStyles_CustomVariablesWithQuotesAndAmpersands_AreWrittenUnchanged()
+    {
+        const string value = "--hero: url(\"/a.png?x=1&y=2\"); --pad: calc(1px > 0 ? 1px : 2px);";
+
+        var cut = Render<OsirionStyles>(p => p.Add(c => c.CustomVariables, value));
+
+        cut.Find("style").TextContent.ShouldContain(value);
+    }
+
+    private static void AssertContained(IRenderedComponent<OsirionStyles> cut)
+    {
+        cut.Markup.ShouldNotContain("<script>alert");
+        cut.FindAll("script").ShouldAllBe(script => !script.TextContent.Contains("alert(1)"));
+        cut.FindAll("style").Count.ShouldBe(1);
+        cut.Find("style").TextContent.ShouldContain("--brand: red;");
+    }
+
     [Fact]
     public void OsirionStyles_NoVariables_WritesNoStyleBlock()
     {

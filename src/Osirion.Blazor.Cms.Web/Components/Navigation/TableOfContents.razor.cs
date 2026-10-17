@@ -9,37 +9,33 @@ namespace Osirion.Blazor.Cms.Web.Components;
 public partial class TableOfContents(NavigationManager navigationManager)
 {
     /// <summary>
-    /// Gets or sets the HTML content to extract headings from
+    /// Gets or sets the HTML to read the headings from, usually an item's rendered content. Nothing is listed when
+    /// it is empty.
     /// </summary>
     [Parameter]
     public string? Content { get; set; }
 
-    /// <summary>
-    /// Gets or sets the minimum heading level to include
-    /// </summary>
+    /// <summary>Gets or sets the lowest heading level included, so the page's <c>h1</c> is left out by default.</summary>
     [Parameter]
     public int MinLevel { get; set; } = 2;
 
-    /// <summary>
-    /// Gets or sets the maximum heading level to include
-    /// </summary>
+    /// <summary>Gets or sets the highest heading level included.</summary>
     [Parameter]
     public int MaxLevel { get; set; } = 6;
 
     /// <summary>
-    /// Gets or sets the maximum nesting depth
+    /// Gets or sets the nesting limit. <c>1</c> lists only top-level headings; the list renders at most two levels,
+    /// so a value above <c>2</c> changes nothing.
     /// </summary>
     [Parameter]
     public int MaxDepth { get; set; } = 3;
 
-    /// <summary>
-    /// Gets or sets the text to display when no headings are found
-    /// </summary>
+    /// <summary>Gets or sets the text shown when no heading matches.</summary>
     [Parameter]
     public string EmptyText { get; set; } = "No headings found.";
 
     /// <summary>
-    /// Gets or sets whether the link to the section being read is marked as it scrolls by: the link gets the
+    /// Gets or sets whether the link to the section being read is marked as it scrolls by: it gets the
     /// <c>osirion-toc-link-active</c> class and <c>aria-current="location"</c>. A script does it, so without script
     /// the contents work as plain links.
     /// </summary>
