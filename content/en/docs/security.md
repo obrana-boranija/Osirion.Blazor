@@ -159,14 +159,14 @@ contains the current theme, so its text changes between requests and a fixed has
 
 | Cookie | Set by | Flags |
 | --- | --- | --- |
-| `osirion-preferred-theme` | `ThemeService` on the server; `ThemeToggle` in the browser | Path `/`, one year, `SameSite=Lax`, not `HttpOnly` (the page script reads it). `Secure` when the request is HTTPS; the script that `ThemeToggle` uses writes it without `Secure` |
-| `osirion-preferred-palette` | `ThemeService` on the server; `ThemePicker` in the browser | Path `/`, one year, `SameSite=Lax`, not `HttpOnly`. `Secure` when the request is HTTPS |
+| `osirion-preferred-theme` | `ThemeService` on the server; `ThemeToggle` in the browser | Path `/`, one year, `SameSite=Lax`, not `HttpOnly` (the page script reads and replaces it). `Secure` from the server; the toggle's script adds `Secure` on HTTPS pages |
+| `osirion-preferred-palette` | `ThemeService` on the server; `ThemePicker` in the browser | Path `/`, one year, `SameSite=Lax`, not `HttpOnly`. `Secure` from the server; the picker's script adds `Secure` on HTTPS pages |
 | `osirion_cookie_consent` | The cookie consent endpoint (`MapOsirionCookieConsent`) | Path `/`, `HttpOnly`, `Secure`, `SameSite=Lax`. Lifetime comes from `ConsentExpiryDays` (default 365) |
-| `osirion_announcement_<id>` | The announcement endpoint (`MapOsirionAnnouncements`) | Path `/`, `HttpOnly`, `SameSite=Lax`, essential. `Secure` when the request is HTTPS. 30 days unless the form posts 1 to 365 |
+| `osirion_announcement_<id>` | The announcement endpoint (`MapOsirionAnnouncements`) | Path `/`, `HttpOnly`, `Secure`, `SameSite=Lax`, essential. 30 days unless the form posts 1 to 365 |
 
-The theme and palette cookies hold a short name such as `dark`, no personal data. The consent cookie is always
-`Secure`, so a browser may drop it on plain HTTP: serve the site over HTTPS, also in development, or the banner can
-return on every page.
+The theme and palette cookies hold a short name such as `dark`, no personal data. Every cookie the server sets is
+`Secure`, so a browser drops it on plain HTTP other than `localhost`, which browsers treat as secure: serve the site
+over HTTPS, or the banners can return on every page.
 
 The consent and announcement endpoints require an antiforgery token, which their forms carry. See step 7.
 

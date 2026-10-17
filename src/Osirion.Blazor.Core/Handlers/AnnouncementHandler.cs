@@ -41,8 +41,9 @@ public static partial class AnnouncementHandler
         context.Response.Cookies.Append(CookiePrefix + id, DismissedValue, new CookieOptions
         {
             HttpOnly = true,
-            // A dismissal is not sensitive; over plain HTTP (local development) a Secure cookie would be dropped.
-            Secure = context.Request.IsHttps,
+            // Always Secure: behind a proxy that ends TLS the request can reach the app as HTTP, and a flag taken from
+            // the request would then be dropped on an HTTPS site. Browsers treat localhost as secure.
+            Secure = true,
             SameSite = SameSiteMode.Lax,
             Path = "/",
             Expires = DateTimeOffset.UtcNow.AddDays(GetDays(form["days"].FirstOrDefault())),
