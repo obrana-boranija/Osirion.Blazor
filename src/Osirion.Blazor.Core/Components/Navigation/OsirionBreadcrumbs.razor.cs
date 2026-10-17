@@ -52,8 +52,9 @@ public partial class OsirionBreadcrumbs
     public string UrlPrefix { get; set; } = "/";
 
     /// <summary>
-    /// Gets or sets a function that returns the text of a segment from its raw slug. Without it, hyphens become spaces
-    /// and each word starts with a capital letter. It does not apply to the last crumb while
+    /// Gets or sets a function that returns the text of a segment from its raw slug, exactly as it sits in
+    /// <see cref="Path"/>, so still percent-encoded. Without it, a percent-encoded segment is decoded, hyphens become
+    /// spaces and each word starts with a capital letter. It does not apply to the last crumb while
     /// <see cref="CurrentPageText"/> is set.
     /// </summary>
     [Parameter]
@@ -87,7 +88,9 @@ public partial class OsirionBreadcrumbs
             return CurrentPageText;
         }
 
-        return SegmentFormatter?.Invoke(segment.Name) ?? FormatSegmentName(segment.Name);
+        // The path is a URL, so a segment arrives percent-encoded. UnescapeDataString leaves an invalid escape such as
+        // "100%" as written instead of throwing, which a user typing into the address bar can reach.
+        return SegmentFormatter?.Invoke(segment.Name) ?? FormatSegmentName(Uri.UnescapeDataString(segment.Name));
     }
 
     /// <summary>

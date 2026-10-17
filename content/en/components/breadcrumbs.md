@@ -107,7 +107,7 @@ To change how every segment is written, pass a `SegmentFormatter`. It receives t
 | `HomeUrl` | `string` | `"/"` | The address of the home link, written as given. |
 | `LinkLastItem` | `bool` | `false` | Whether the last crumb, the current page, is a link instead of text. It carries `aria-current="page"` either way. |
 | `UrlPrefix` | `string` | `"/"` | The text put before each segment's cumulative path to form its link, for example `/en/` for a localized site. With `Path="/a/b/c"` and the default prefix the crumbs link to `/a` and `/a/b`, and to `/a/b/c` when `LinkLastItem` is set. The home link does not use it. |
-| `SegmentFormatter` | `Func<string, string>?` | `null` | A function that returns the text of a segment from its raw slug. Without it, hyphens become spaces and each word starts with a capital letter. It does not apply to the last crumb while `CurrentPageText` is set. |
+| `SegmentFormatter` | `Func<string, string>?` | `null` | A function that returns the text of a segment from its raw slug, exactly as it sits in `Path`, so still percent-encoded. Without it, a percent-encoded segment is decoded, hyphens become spaces and each word starts with a capital letter. It does not apply to the last crumb while `CurrentPageText` is set. |
 | `CurrentPageText` | `string?` | `null` | The text of the last crumb, the current page. Pass the page title: a slug turned into words loses its punctuation and casing ("Pre Mvp" for "Pre-MVP"). When empty, the last segment is formatted like the others. Available since 4.0. |
 | `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
 | `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
@@ -117,8 +117,8 @@ To change how every segment is written, pass a `SegmentFormatter`. It receives t
 
 Each link is `UrlPrefix` followed by the path up to that segment: with `Path="/a/b/c"` and the default prefix, the
 crumbs link to `/a` and `/a/b`, and to `/a/b/c` as well when `LinkLastItem` is set. The home link uses `HomeUrl`, not
-the prefix. The markup carries only what these parameters set: additional attributes, `Style` and `Theme` are accepted
-and not written.
+the prefix. The markup carries only what these parameters set, and `Style`, which goes on the `nav`: additional
+attributes and `Theme` are accepted and not written.
 
 ## Behavior
 
@@ -128,8 +128,9 @@ and not written.
   holding an ordered list.
 - The last crumb carries `aria-current="page"`, whether it is text or a link (`LinkLastItem`).
 - Segment text and `CurrentPageText` are written as text and HTML-encoded.
-- Segments are used as they appear in the path. A percent-encoded segment keeps its encoding in the crumb text and in
-  the link.
+- A percent-encoded segment is decoded for the crumb text, so `/docs/caf%C3%A9` shows "Café", and keeps its encoding in
+  the link. An invalid escape, such as the `%` in `100%`, is shown as written. `SegmentFormatter` receives the segment
+  as it sits in the path, still encoded.
 - The component writes no structured data. On CMS pages, `SeoMetadataRenderer` adds the `BreadcrumbList` JSON-LD
   and names its last item with the content title.
 
