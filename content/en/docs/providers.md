@@ -51,7 +51,9 @@ content refreshes. It is for developers who have [installed Osirion.Blazor](/doc
 | File system | A folder next to the app | `Osirion:Cms:Web:FileSystem` | One |
 | GitHub | A folder in a repository, through the GitHub API | `Osirion:Cms:Web:GitHub:<Name>` | One per child key; `<Name>` is only a label |
 
-`AddOsirion` registers a provider for each of those sections that exists. A provider of your own implements
+`AddOsirion` registers a provider for each of those sections that exists. Older single-provider spellings of these
+keys exist (`Osirion:Cms:FileSystem:Web` and `Osirion:Cms:GitHub`); this guide uses the keys above. A provider of your
+own implements
 `IContentProvider` and is registered with `AddCustomContentProvider<TProvider>`; that is not covered here.
 
 Use the file system provider when the content ships with the app, and the GitHub provider when editors change content
@@ -84,8 +86,10 @@ in a repository without a deployment.
 
 If `BasePath` does not exist, the app starts and serves no content. The log shows the warning `Cannot set up file
 watcher - base path does not exist` and, when content is first read, an error whose message names the folder:
-`Base content directory does not exist`. To make the path independent of the starting folder, resolve it against the
-project in `Program.cs`, as the templates do (see the [configuration guide](/docs/configuration)).
+`Base content directory does not exist`. The host's content root is the starting folder by default, so resolving the
+path against it in `Program.cs`, as the templates do, makes it absolute but does not move it. To be independent of the
+starting folder, set an absolute `BasePath` on the host (the [configuration guide](/docs/configuration) shows how) or
+start the app from the folder that holds `content`.
 
 ## 3. Read a GitHub repository
 
@@ -118,7 +122,7 @@ project in `Program.cs`, as the templates do (see the [configuration guide](/doc
 | `ApiToken` | empty | The token the provider reads the repository with. Required; see below. |
 | `ApiUrl` | `https://api.github.com` | The base address of the GitHub API. |
 | `WebhookSecret` | none | The secret that verifies GitHub webhook deliveries; see step 6. |
-| `UseBackgroundCacheUpdate` | `true` | Runs a content refresh in the background instead of waiting for it. |
+| `UseBackgroundCacheUpdate` | `true` | Applies the cache updates that polling triggers in the background instead of waiting for them. Webhook updates always run in the background. |
 
 ### The token is required
 
@@ -131,15 +135,16 @@ Use a token that can read the repository's contents. Never put it in `appsetting
 development and as the environment variable `Osirion__Cms__Web__GitHub__Blog__ApiToken` in production, with `Blog`
 replaced by your provider's name. The [configuration guide](/docs/configuration) shows both.
 
-If GitHub's rate limit is reached, the provider keeps the content it already has and does not call the API again
-until the limit resets.
+If GitHub's rate limit is reached, the provider keeps the content it already has and does not start another load
+before the limit resets.
 
 ## 4. Choose the default provider
 
 When more than one provider is registered, the components that show a page of content, such as `ContentList` and
 `ContentPage`, ask the default provider. The sitemap and the feeds read every provider.
 
-Set `IsDefault` to `true` on the provider you want. Without it, the first registered provider is the default. If two
+Set `IsDefault` to `true` on the provider you want. Without it, the first registered provider is the default, and
+`AddOsirion` registers the GitHub providers first, in configuration order, then the file system provider. If two
 providers set it, the one registered last wins.
 
 One limit applies to GitHub providers, in 4.1.0 and in the code this guide was checked against. When several providers
@@ -222,7 +227,9 @@ How new content reaches a running site depends on the provider.
   Then set `WebhookSecret` on the provider and add a webhook in the repository settings that sends `push` events to
   `https://your-site/api/github/webhook` with content type `application/json` and the same secret. [Getting
   started](/docs/getting-started) walks through it. Deliveries are verified with the `X-Hub-Signature-256` header, and
-  every delivery is rejected while no provider has a secret.
+  every delivery is rejected while no provider has a secret. Register the webhook only together with a GitHub
+  provider: with just the file system provider the handler cannot be built, so the app fails at startup in Development
+  and every request answers 500 in Production.
 
 `EnablePolling` and `PollingIntervalSeconds` (default 86400, one day) exist on the GitHub options, but the polling
 service reads them from the single-provider section `Osirion:Cms:GitHub`, not from the named providers under

@@ -63,9 +63,10 @@ templates do, or the published site starts with no content:
 </ItemGroup>
 ```
 
-A relative `BasePath` is resolved against the process's working directory. Start the app from the publish folder, or
-resolve the path against the app's content root in `Program.cs`, as shown in the
-[configuration guide](/docs/configuration). A site that reads a GitHub repository needs no content folder.
+A relative `BasePath` is resolved against the process's working directory, and the host's content root is that same
+folder, so resolving the path against the content root in `Program.cs` does not change where it points. Start the app
+from the publish folder, or set an absolute `Osirion__Cms__Web__FileSystem__BasePath` on the host (step 2). A site that
+reads a GitHub repository needs no content folder.
 
 ## 2. Give the host its settings
 
@@ -73,7 +74,7 @@ Set these on the host as environment variables. Nothing here belongs in a file y
 
 | Environment variable | Needed when |
 | --- | --- |
-| `ASPNETCORE_ENVIRONMENT=Production` | Always. It selects `appsettings.Production.json` and keeps user secrets out. |
+| `ASPNETCORE_ENVIRONMENT=Production` | Recommended. It selects `appsettings.Production.json` and keeps user secrets out; an unset variable already means `Production`, and setting it states the intent. |
 | `Osirion__Cms__Web__GitHub__Blog__ApiToken` | The site uses a GitHub provider named `Blog`. Replace `Blog` with your provider's name, the key under `Osirion:Cms:Web:GitHub`. |
 | `Osirion__Cms__Web__GitHub__Blog__WebhookSecret` | You register the GitHub webhook (step 5). |
 | `Osirion__Cms__Web__FileSystem__BasePath` | The content folder sits at an absolute path on the host. |

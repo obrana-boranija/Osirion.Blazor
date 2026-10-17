@@ -109,7 +109,8 @@ release after 4.1.0.
 
 Two ways, depending on whether the values come from `appsettings.json` too.
 
-To set everything in code, call the overload of `AddOsirion` that takes a builder. It does not read `appsettings.json`:
+To set everything in code, call the overload of `AddOsirion` that takes a builder. It does not read the `Osirion`
+section; each module takes the values you set in the delegate:
 
 ```csharp
 using Osirion.Blazor.Components;
@@ -133,8 +134,10 @@ builder.Services.AddOsirion(osirion => osirion
     })));
 ```
 
-In this form, add only the content builder's `AddFileSystem`; GitHub
-providers are read from configuration (see [Content providers](/docs/providers)).
+In this form the content builder offers `AddFileSystem` for a local folder. It starts from the
+`Osirion:Cms:Web:FileSystem` section when that exists, then runs your delegate. The named GitHub providers under
+`Osirion:Cms:Web:GitHub` are registered only by `AddOsirion(builder.Configuration)`, so a site with a GitHub provider
+uses the configuration overload (see [Content providers](/docs/providers)).
 
 To keep `appsettings.json` and still change one value in code, register with `AddOsirion(builder.Configuration)` and
 then use the options pipeline. `PostConfigure` runs after every other registration, so it has the last word:
@@ -152,8 +155,9 @@ builder.Services.PostConfigure<FileSystemOptions>(options =>
 builder.Services.PostConfigure<ThemingOptions>(options => options.DefaultMode = ThemeMode.Dark);
 ```
 
-The first `PostConfigure` is the one the templates use: it turns the relative `BasePath` into a path under the project,
-whatever folder the process starts from.
+The first `PostConfigure` is the one the templates use: it turns a relative `BasePath` into an absolute path under the
+host's content root and leaves an absolute path as it is. The content root is the folder the process starts in, so this
+does not make the path independent of the starting folder; the [providers guide](/docs/providers) says what does.
 
 ## 4. Vary settings per environment
 

@@ -39,7 +39,7 @@ site from a template instead, use [Getting started](/docs/getting-started).
 
 ## Before you start
 
-- The .NET 9 or .NET 10 SDK. Every package targets `net9.0` and `net10.0`.
+- The .NET 9 or .NET 10 SDK. Every library package targets `net9.0` and `net10.0`.
 - A Blazor Web App. `dotnet new blazor -n MySite` creates one. Osirion's content and layout components render with
   static server-side rendering, so no interactive render mode is needed.
 - This guide is written for Osirion.Blazor 4.1.0.
@@ -63,7 +63,10 @@ packages and adds the `AddOsirion` registration method and `OsirionSiteLayout`.
 `Osirion.Blazor.Cms.Core`, `.Application`, `.Domain` and `.Infrastructure` are internal layers of the content modules.
 They are restored for you; you do not reference them. With single modules instead of the meta-package you register each
 module with its own method (`AddOsirionTheming`, `AddOsirionContent`, `AddOsirionNavigation`, `AddOsirionAnalytics`),
-because `AddOsirion` ships only in `Osirion.Blazor`. See the [package pages](/docs/packages) for each module.
+because `AddOsirion` ships only in `Osirion.Blazor`. `AddOsirionContent` registers the script loader that some
+components use, but `AddOsirionTheming` does not, so a site that references `Osirion.Blazor.Theming` alone also calls
+`AddJSComponents()`, as the [Theming page](/docs/packages/theming) shows. See the [package pages](/docs/packages) for
+each module.
 
 ## 2. Add the package
 
@@ -117,7 +120,8 @@ builder.Services.AddOsirion(osirion => osirion
     .UseSite(site => site.Name = "My site"));
 ```
 
-This overload does not read `appsettings.json`. Use one of the two overloads, not both.
+This overload does not read the `Osirion` section; you set each value in the delegate. Use one of the two overloads,
+not both.
 
 ## 4. Link the stylesheets and scripts
 
