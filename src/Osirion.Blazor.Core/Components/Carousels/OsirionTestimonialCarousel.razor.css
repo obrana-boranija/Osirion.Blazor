@@ -32,7 +32,10 @@
     position: relative;
     box-sizing: border-box;
     padding: var(--osirion-spacing-8) var(--osirion-spacing-10);
-    overflow: visible;
+    /* clip-path alone hides the moving track but leaves it in the page's scrollable width; clip keeps it out without
+       making the stage a scroll container, and hidden is the fallback for browsers without clip. */
+    overflow: hidden;
+    overflow: clip;
     clip-path: inset(0);
 }
 

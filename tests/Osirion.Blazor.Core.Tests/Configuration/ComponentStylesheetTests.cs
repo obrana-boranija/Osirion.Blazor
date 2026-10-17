@@ -86,6 +86,20 @@ public partial class ComponentStylesheetTests
         css.ShouldContain("@media(prefers-reduced-motion:reduce){.osirion-spinner{animation:none;}}");
     }
 
+    // Fails before the fix: the stage clipped the moving track with clip-path alone, which hides it but still counts it
+    // as scrollable overflow, so every page with the carousel scrolled sideways (2,216 pixels on a 375 pixel screen).
+    [Fact]
+    public void TestimonialCarousel_Stage_ClipsTheTrackOutOfThePageWidth()
+    {
+        // Act
+        var stage = StageRule().Match(Squash(ComponentCss("Carousels", "OsirionTestimonialCarousel.razor.css"))).Value;
+
+        // Assert
+        stage.ShouldNotBeEmpty();
+        stage.ShouldContain("overflow:hidden;overflow:clip;");
+        stage.ShouldNotContain("overflow:visible");
+    }
+
     private static string Squash(string css) => WhitespaceRun().Replace(CssComment().Replace(css, string.Empty), string.Empty);
 
     private static string ComponentCss(string folder, string file)
@@ -100,6 +114,9 @@ public partial class ComponentStylesheetTests
 
         throw new InvalidOperationException("Osirion.Blazor.slnx not found above " + AppContext.BaseDirectory);
     }
+
+    [GeneratedRegex(@"(?:^|\})\.osirion-testimonial-carousel-shadow-stage\{[^}]*\}")]
+    private static partial Regex StageRule();
 
     [GeneratedRegex(@"/\*.*?\*/", RegexOptions.Singleline)]
     private static partial Regex CssComment();
