@@ -174,6 +174,27 @@ public class ContentQueryFilterBehaviorTests
         result.ShouldBe(expected);
     }
 
+    // Fails before the fix: the filter compared the directory's display name, which a folder's _index.md title replaces,
+    // and never its path, so DocumentPage (which asks by path) found no pages for its side navigation.
+    [Theory]
+    [InlineData("docs", "c")]
+    [InlineData("Documentation", "c")]
+    [InlineData("blog/sub", "b")]
+    [InlineData("BLOG", "a")]
+    public void ApplyFilters_WithDirectoryOnly_MatchesTheFolderOrPathAfterATitleRenamesTheDirectory(string directory, string expected)
+    {
+        // Arrange
+        _items.Single(item => item.Id == "c").Directory!.SetName("Documentation");
+        var query = AllStatuses();
+        query.Directory = directory;
+
+        // Act
+        var result = Apply(query);
+
+        // Assert
+        result.ShouldBe(expected);
+    }
+
     [Theory]
     [InlineData("blog", "a,b")]
     [InlineData("BLOG/SUB", "b")]

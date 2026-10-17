@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Fixed
+- Osirion.Blazor.Cms.Infrastructure: a `ContentQuery` for one directory matches it by folder (`guides`), path (`docs/guides`) or display name. It compared the display name only, which a folder's `_index.md` title replaces, so `DocumentPage`, which asks by path, showed an empty side navigation for such a folder, and nested folders never matched by path
 - Osirion.Blazor.Theming and Cms: active and hover states are readable in the dark theme. Eleven components read `--osirion-background-active` or `--osirion-background-hover`, which no theme defined, so their light fallbacks stayed in the dark theme under light text. The themes now define `--osirion-background-hover`; tinted active items (categories, languages, the document tree, the back link) use the theme's active-item pair, and solid ones (the current page number, the selected tag) use the button colours
 - Osirion.Blazor.Navigation: the tint behind the active menu item is 6% of the accent, not 12%. With the light theme's link colour the item read at 4.37:1; it now reads at 4.77:1. A site that sets `--osirion-menu-active-background` is unchanged
 - Osirion.Blazor.Theming: the Bootstrap adapter maps `--osirion-text-tertiary` to `--bs-secondary-color`. Bootstrap's tertiary colour is 50% opaque and made labels such as an article's Previous and Next read at 3.12:1
