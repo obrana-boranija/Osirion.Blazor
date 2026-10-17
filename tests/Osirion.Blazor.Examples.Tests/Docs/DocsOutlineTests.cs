@@ -42,6 +42,22 @@ public class DocsOutlineTests
     }
 
     [Fact]
+    public void Build_ThemePage_IsTheThemingGroupsPage()
+    {
+        // Arrange
+        var themes = Page("themes", "Themes", "theming");
+        var palettes = Page("components/palettes", "Palettes", "theming");
+
+        // Act
+        var outline = DocsOutline.Build([themes, palettes]);
+
+        // Assert
+        Section(outline, "theming").Page.ShouldBe(themes);
+        outline.Find(DocsOutline.ThemesUrl).ShouldBe(themes);
+        outline.SidebarFor(palettes).Single().Url.ShouldBe("/themes");
+    }
+
+    [Fact]
     public void HeadingUrl_GroupWithoutAPage_IsItsGallerySection()
     {
         // Act

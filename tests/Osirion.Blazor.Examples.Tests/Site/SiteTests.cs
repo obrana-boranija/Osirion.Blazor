@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Osirion.Blazor.Cms.Domain.Services;
 using Osirion.Blazor.Examples.Shared.Docs;
+using Osirion.Blazor.Examples.Shared.Themes;
 using Shouldly;
 
 namespace Osirion.Blazor.Examples.Tests.Site;
@@ -144,6 +145,38 @@ public partial class SiteTests(SiteFactory factory) : IClassFixture<SiteFactory>
         sidebar.ShouldContain("href=\"/components/callout\"");
         sidebar.ShouldContain("href=\"/components/cards\"");
         sidebar.ShouldNotContain("href=\"/components/feature-card\"");
+    }
+
+    [Fact]
+    public async Task ThemePage_OffersThePickerAndListsEveryTokenWithItsChip()
+    {
+        // Arrange
+        using var client = CreateClient();
+
+        // Act
+        var html = await client.GetStringAsync(DocsOutline.ThemesUrl);
+
+        // Assert
+        html.ShouldContain("osirion-theme-picker-select");
+        foreach (var token in ThemeTokens.Groups.SelectMany(group => group.Tokens))
+        {
+            html.ShouldContain($">{token.Property}</code>");
+            html.ShouldContain($"background-color: var({token.Property})");
+        }
+    }
+
+    [Fact]
+    public async Task ComponentPage_ThemingHeadingLeadsToTheThemePage()
+    {
+        // Arrange
+        using var client = CreateClient();
+
+        // Act
+        var html = await client.GetStringAsync("/components/palettes");
+        var sidebar = SideNavigation().Match(html).Value;
+
+        // Assert
+        sidebar.ShouldContain("href=\"/themes\"");
     }
 
     private HttpClient CreateClient() =>

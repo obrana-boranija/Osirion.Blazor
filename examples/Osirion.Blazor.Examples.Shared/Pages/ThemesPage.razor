@@ -1,0 +1,73 @@
+@page "/themes"
+@using Osirion.Blazor.Cms.Web.Components
+@using Osirion.Blazor.Examples.Shared.Themes
+@using Osirion.Blazor.Theming.Components
+
+@* The theme page: the switcher, the palettes and how to make one from content/en/themes.md, then every colour token
+   with a chip that shows the value the current palette and mode give it. *@
+@if (_page is not null)
+{
+    <HeadContent>
+        <SeoMetadataRenderer Content="_page" />
+    </HeadContent>
+
+    <div class="themes-page">
+        <ContentBreadcrumbs Content="_page" />
+
+        <header class="themes-header">
+            <h1>@_page.Title</h1>
+            <p class="themes-lead">@_page.Description</p>
+        </header>
+
+        <section class="themes-try" aria-labelledby="try-a-palette">
+            <h2 id="try-a-palette">Try a palette</h2>
+            <p>The whole site changes, and the chips in the token table show the colours the palette sets.</p>
+            <div class="themes-controls">
+                <ThemePicker />
+                <ThemeToggle />
+            </div>
+        </section>
+
+        <div class="themes-body">
+            <ContentRenderer Item="_page" OmitLeadingTitle="true" />
+        </div>
+
+        <section class="themes-tokens" aria-labelledby="colour-tokens">
+            <h2 id="colour-tokens">Colour tokens</h2>
+            <p>
+                Every palette and both theme files set these custom properties. Components read them, and so can your own
+                styles.
+            </p>
+
+            @foreach (var group in ThemeTokens.Groups)
+            {
+                <h3>@group.Title</h3>
+                @* Scrolls sideways on a phone; focusable and named so a keyboard can scroll it too *@
+                <div class="themes-table" tabindex="0" role="region" aria-label="@($"{group.Title} tokens")">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th scope="col">Token</th>
+                                <th scope="col">Colours</th>
+                                <th scope="col">Stands out from</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var token in group.Tokens)
+                            {
+                                <tr @key="token.Name">
+                                    <td>
+                                        <span class="themes-chip" style="@($"background-color: var({token.Property})")" aria-hidden="true"></span>
+                                        <code>@token.Property</code>
+                                    </td>
+                                    <td>@token.Colours</td>
+                                    <td>@(token.ReadsOn ?? "-")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </section>
+    </div>
+}

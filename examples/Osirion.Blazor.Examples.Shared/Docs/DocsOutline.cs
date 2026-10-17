@@ -23,6 +23,9 @@ public sealed class DocsOutline
     /// <summary>The address of the component gallery.</summary>
     public const string GalleryUrl = "/components";
 
+    /// <summary>The address of the theme page, the theming group's own page.</summary>
+    public const string ThemesUrl = "/themes";
+
     private const string GroupField = "group";
 
     private readonly List<ContentItem> _sequence;
@@ -44,7 +47,7 @@ public sealed class DocsOutline
         new("seo-and-feeds", "SEO and feeds", DocsGroupKind.Section, InGallery: true),
         new("analytics", "Analytics", DocsGroupKind.Section, InGallery: true,
             SeeAlso: new("Trackers for Microsoft Clarity, Matomo, Google Analytics 4 and Yandex Metrica", "/docs/packages/analytics")),
-        new("theming", "Theming", DocsGroupKind.Section, InGallery: true,
+        new("theming", "Theming", DocsGroupKind.Section, ThemesUrl, InGallery: true,
             SeeAlso: new("Setup, options and the CSS framework adapters", "/docs/packages/theming")),
     ];
 
@@ -59,13 +62,15 @@ public sealed class DocsOutline
     /// <summary>Every group with its pages, including groups that have none yet.</summary>
     public IReadOnlyList<DocsSection> Sections { get; }
 
-    /// <summary>The published pages under <c>/docs</c> and <c>/components</c>.</summary>
+    /// <summary>The published pages under <c>/docs</c> and <c>/components</c>, and the theme page.</summary>
     public IReadOnlyList<ContentItem> Pages { get; }
 
-    /// <summary>Pages under <c>/docs</c> or <c>/components</c> that name no known group, so no link leads to them.</summary>
+    /// <summary>Documentation pages that name no known group, so no link leads to them.</summary>
     public IReadOnlyList<ContentItem> Unplaced { get; }
 
-    /// <summary>Builds the outline from content items; items outside <c>/docs</c> and <c>/components</c> are ignored.</summary>
+    /// <summary>
+    /// Builds the outline from content items; items outside <c>/docs</c>, <c>/components</c> and the theme page are ignored.
+    /// </summary>
     /// <param name="items">The published content.</param>
     /// <returns>The outline.</returns>
     public static DocsOutline Build(IEnumerable<ContentItem> items)
@@ -173,7 +178,7 @@ public sealed class DocsOutline
             : null;
 
     private static bool IsDocsUrl(string url) =>
-        url is "/docs" or GalleryUrl
+        url is "/docs" or GalleryUrl or ThemesUrl
         || url.StartsWith("/docs/", StringComparison.Ordinal)
         || url.StartsWith(GalleryUrl + "/", StringComparison.Ordinal);
 }
