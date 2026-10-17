@@ -112,10 +112,10 @@ public partial class ArticlePage
         return TagUrlFormatter?.Invoke(tag) ?? ContentUrls.TagUrl(tag);
     }
 
-    /// <summary>Number of colour variants in <c>ArticlePage.razor.css</c> (<c>osirion-tag-badge-0</c> and up).</summary>
+    /// <summary>Number of color variants in <c>ArticlePage.razor.css</c> (<c>osirion-tag-badge-0</c> and up).</summary>
     private const int TagBadgeColorCount = 8;
 
-    // Stable across processes and restarts, so a tag keeps its colour (and cached pages stay identical).
+    // Stable across processes and restarts, so a tag keeps its color (and cached pages stay identical).
     private static string GetTagBadgeClass(string tag) =>
         $"osirion-tag-badge osirion-tag-badge-{ContentUrls.StableHash(tag.Trim().ToLowerInvariant()) % TagBadgeColorCount}";
 }

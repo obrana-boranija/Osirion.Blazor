@@ -13,7 +13,7 @@ public class ShippedStylesheetTests
     [Theory]
     [InlineData("index.min.css")]
     [InlineData("base/base-styles.min.css")]
-    public void MinifiedStylesheet_FrameworkNone_PaintsTheBodyInTheThemeColours(string file)
+    public void MinifiedStylesheet_FrameworkNone_PaintsTheBodyInTheThemeColors(string file)
     {
         // Act
         var css = File.ReadAllText(CoreCss(file));
@@ -65,7 +65,7 @@ public class ShippedStylesheetTests
     // Fails before the fix: the value took the accent as it is; green on the Bootstrap adapter's light card read 2.78:1
     // and indigo on its dark card 1.83:1, below the 3:1 large text needs.
     [Fact]
-    public void MetricCard_Value_MovesTheAccentTowardTheTextColour()
+    public void MetricCard_Value_MovesTheAccentTowardTheTextColor()
     {
         // Act
         var css = Squash(File.ReadAllText(ComponentCss("Cards", "OsirionMetricCard.razor.css")));

@@ -13,13 +13,13 @@ internal sealed record PaletteVariant(
     IReadOnlyList<KeyValuePair<string, string>> Tokens,
     double TextContrast);
 
-/// <summary>Two tokens whose colours are checked against each other, and the ratio they must reach.</summary>
+/// <summary>Two tokens whose colors are checked against each other, and the ratio they must reach.</summary>
 /// <param name="Foreground">The foreground token, without the <c>--osirion-</c> prefix.</param>
 /// <param name="Background">The background token, without the <c>--osirion-</c> prefix.</param>
 /// <param name="Minimum">The minimum WCAG 2 contrast ratio.</param>
 internal sealed record ContrastPair(string Foreground, string Background, double Minimum);
 
-/// <summary>Turns a <see cref="PaletteSpec"/> into the full set of <c>--osirion-*</c> colour tokens.</summary>
+/// <summary>Turns a <see cref="PaletteSpec"/> into the full set of <c>--osirion-*</c> color tokens.</summary>
 internal static class PaletteBuilder
 {
     /// <summary>WCAG 2.2 1.4.11: the focus indicator and other user interface parts against what is next to them.</summary>
@@ -27,7 +27,7 @@ internal static class PaletteBuilder
 
     private static readonly string[] Steps = ["50", "100", "200", "300", "400", "500", "600", "700", "800", "900", "950"];
 
-    // Where each neutral step sits between the background (0) and the text colour (1). Light themes start the
+    // Where each neutral step sits between the background (0) and the text color (1). Light themes start the
     // scale at the page background; dark themes, as Osirion's dark theme does, put step 50 below it.
     private static readonly double[] LightNeutral = [0.03, 0.06, 0.12, 0.2, 0.36, 0.5, 0.62, 0.75, 0.87, 1, 1.06];
     private static readonly double[] DarkNeutral = [-0.03, 0, 0.08, 0.16, 0.28, 0.42, 0.56, 0.7, 0.84, 1, 1.06];
@@ -65,7 +65,7 @@ internal static class PaletteBuilder
         .. CodeContrastPairs(textContrast),
     ];
 
-    /// <summary>The code colour pairs: every syntax colour against the code background.</summary>
+    /// <summary>The code color pairs: every syntax color against the code background.</summary>
     public static IReadOnlyList<ContrastPair> CodeContrastPairs(double textContrast) =>
         CodeTokens.Select(token => new ContrastPair(token, "code-background", textContrast)).ToList();
 
@@ -75,20 +75,20 @@ internal static class PaletteBuilder
         "code-variable", "code-tag", "code-attribute", "code-regex", "code-inserted", "code-deleted",
     ];
 
-    /// <summary>Builds a full palette variant. Each colour moved to reach its contrast target is reported to <paramref name="adjustments"/>.</summary>
+    /// <summary>Builds a full palette variant. Each color moved to reach its contrast target is reported to <paramref name="adjustments"/>.</summary>
     public static PaletteVariant Build(PaletteSpec spec, ICollection<string> adjustments)
     {
         var background = Rgb.Parse(spec.Background);
-        Rgb Colour(string hex) => Rgb.Parse(hex, background);
+        Rgb Color(string hex) => Rgb.Parse(hex, background);
         var dark = spec.Mode == "dark";
         var tokens = new Tokens(spec.Palette, spec.Mode, adjustments);
 
-        var surface = Colour(spec.Surface);
-        var surfaceAlt = Colour(spec.SurfaceAlt);
-        var muted = Colour(spec.Muted);
-        var text = Colour(spec.Text);
-        var accent = Colour(spec.Accent);
-        var accentText = Colour(spec.AccentText);
+        var surface = Color(spec.Surface);
+        var surfaceAlt = Color(spec.SurfaceAlt);
+        var muted = Color(spec.Muted);
+        var text = Color(spec.Text);
+        var accent = Color(spec.Accent);
+        var accentText = Color(spec.AccentText);
 
         AddNeutralScale(tokens, background, text, dark);
         AddPrimaryScale(tokens, background, accent, dark);
@@ -102,19 +102,19 @@ internal static class PaletteBuilder
         var target = spec.TextContrast;
         var hardest = HarderBackground(text, background, surface, surfaceAlt);
         tokens.Set("text-primary", tokens.Readable("text-primary", text, hardest, target));
-        tokens.Set("text-secondary", tokens.Readable("text-secondary", Colour(spec.TextSecondary), HarderBackground(text, background, surface), target));
-        tokens.Set("text-tertiary", tokens.Readable("text-tertiary", Colour(spec.TextMuted), HarderBackground(text, background, surface), target));
+        tokens.Set("text-secondary", tokens.Readable("text-secondary", Color(spec.TextSecondary), HarderBackground(text, background, surface), target));
+        tokens.Set("text-tertiary", tokens.Readable("text-tertiary", Color(spec.TextMuted), HarderBackground(text, background, surface), target));
         tokens.Set("text-inverted", background);
-        tokens.Set("text-disabled", Colour(spec.TextDisabled));
+        tokens.Set("text-disabled", Color(spec.TextDisabled));
 
-        tokens.Set("border-color", Colour(spec.Border));
-        tokens.Set("border-color-hover", Colour(spec.BorderStrong));
-        var focus = tokens.Readable("border-color-focus", Colour(spec.Focus), background, NonTextContrast);
+        tokens.Set("border-color", Color(spec.Border));
+        tokens.Set("border-color-hover", Color(spec.BorderStrong));
+        var focus = tokens.Readable("border-color-focus", Color(spec.Focus), background, NonTextContrast);
         tokens.Set("border-color-focus", focus);
 
-        // The button colour moves, not its label: a label is white or black, the button carries the palette's hue.
+        // The button color moves, not its label: a label is white or black, the button carries the palette's hue.
         var action = tokens.Readable("action-primary", accent, accentText, target);
-        var actionHover = tokens.Readable("action-primary-hover", Colour(spec.AccentHover), accentText, target);
+        var actionHover = tokens.Readable("action-primary-hover", Color(spec.AccentHover), accentText, target);
         tokens.Set("action-primary", action);
         tokens.Set("action-primary-hover", actionHover);
         tokens.Set("action-primary-active", tokens.Readable("action-primary-active", Rgb.Mix(actionHover, accentText.Luminance > 0.5 ? new Rgb(0, 0, 0) : new Rgb(1, 1, 1), 0.12), accentText, target));
@@ -129,38 +129,38 @@ internal static class PaletteBuilder
         tokens.Set("action-secondary-focus", focus);
         tokens.Set("action-secondary-disabled", surfaceAlt);
 
-        var link = tokens.Readable("link-color", Colour(spec.Link), HarderBackground(Colour(spec.Link), background, surface), target);
+        var link = tokens.Readable("link-color", Color(spec.Link), HarderBackground(Color(spec.Link), background, surface), target);
         tokens.Set("link-color", link);
         tokens.Set("link-hover-color", link);
         tokens.Set("link-active-color", link);
         tokens.Set("link-visited-color", link);
 
-        AddStatus(tokens, "success", Colour(spec.Success), spec.SuccessBackground, background, target);
-        AddStatus(tokens, "warning", Colour(spec.Warning), spec.WarningBackground, background, target);
-        AddStatus(tokens, "danger", Colour(spec.Danger), spec.DangerBackground, background, target);
-        AddStatus(tokens, "info", Colour(spec.Info), spec.InfoBackground, background, target);
+        AddStatus(tokens, "success", Color(spec.Success), spec.SuccessBackground, background, target);
+        AddStatus(tokens, "warning", Color(spec.Warning), spec.WarningBackground, background, target);
+        AddStatus(tokens, "danger", Color(spec.Danger), spec.DangerBackground, background, target);
+        AddStatus(tokens, "info", Color(spec.Info), spec.InfoBackground, background, target);
 
-        var navActiveBackground = Colour(spec.NavActiveBackground);
+        var navActiveBackground = Color(spec.NavActiveBackground);
         tokens.Set("nav-background", background);
-        tokens.Set("nav-border", Colour(spec.Border));
-        tokens.Set("nav-text", tokens.Readable("nav-text", Colour(spec.TextSecondary), background, target));
+        tokens.Set("nav-border", Color(spec.Border));
+        tokens.Set("nav-text", tokens.Readable("nav-text", Color(spec.TextSecondary), background, target));
         tokens.Set("nav-active-background", navActiveBackground);
-        tokens.Set("nav-active-text", tokens.Readable("nav-active-text", Colour(spec.NavActiveText), navActiveBackground, target));
+        tokens.Set("nav-active-text", tokens.Readable("nav-active-text", Color(spec.NavActiveText), navActiveBackground, target));
         tokens.Set("nav-active-border", action);
         tokens.Set("nav-hover-background", surface);
         tokens.Set("nav-hover-text", tokens.Readable("nav-hover-text", text, surface, target));
 
         // Menu draws its active item in the accent on a tint of that accent; left to the component, the tint is
-        // mixed from the link colour and takes it below the target. The palette sets both.
+        // mixed from the link color and takes it below the target. The palette sets both.
         tokens.Set("menu-active-background", navActiveBackground);
         tokens.Set("menu-accent", tokens.Readable("menu-accent", link, HarderBackground(link, background, surface, navActiveBackground), target));
 
         tokens.Set("focus-ring-color", focus);
-        var inputBackground = spec.InputBackground is null ? background : Colour(spec.InputBackground);
+        var inputBackground = spec.InputBackground is null ? background : Color(spec.InputBackground);
         tokens.Set("input-background", inputBackground);
-        tokens.Set("input-border", Colour(spec.BorderStrong));
+        tokens.Set("input-border", Color(spec.BorderStrong));
         tokens.Set("input-text", tokens.Readable("input-text", text, inputBackground, target));
-        tokens.Set("input-placeholder", tokens.Readable("input-placeholder", Colour(spec.TextMuted), inputBackground, target));
+        tokens.Set("input-placeholder", tokens.Readable("input-placeholder", Color(spec.TextMuted), inputBackground, target));
         tokens.Set("input-focus-border", focus);
 
         tokens.Set("active-background", navActiveBackground);
@@ -179,10 +179,10 @@ internal static class PaletteBuilder
     }
 
     /// <summary>
-    /// Builds the code colours of the Osirion palette, whose other tokens come from the theme files, and points Menu's
+    /// Builds the code colors of the Osirion palette, whose other tokens come from the theme files, and points Menu's
     /// active item at the theme's own active pair, which the theme files hold to 4.5:1.
     /// </summary>
-    public static PaletteVariant BuildCodeOnly(string palette, string mode, CodeColours code, ICollection<string> adjustments)
+    public static PaletteVariant BuildCodeOnly(string palette, string mode, CodeColors code, ICollection<string> adjustments)
     {
         var tokens = new Tokens(palette, mode, adjustments);
         const double target = 4.5;
@@ -222,19 +222,19 @@ internal static class PaletteBuilder
         }
     }
 
-    private static void AddStatus(Tokens tokens, string name, Rgb colour, string? backgroundHex, Rgb page, double target)
+    private static void AddStatus(Tokens tokens, string name, Rgb color, string? backgroundHex, Rgb page, double target)
     {
-        var background = backgroundHex is null ? Rgb.Mix(page, colour, 0.12) : Rgb.Parse(backgroundHex, page);
-        var text = tokens.Readable($"status-{name}-text", colour, HarderBackground(colour, background, page), target);
+        var background = backgroundHex is null ? Rgb.Mix(page, color, 0.12) : Rgb.Parse(backgroundHex, page);
+        var text = tokens.Readable($"status-{name}-text", color, HarderBackground(color, background, page), target);
         tokens.Set($"status-{name}", text);
         tokens.Set($"status-{name}-bg", background);
-        tokens.Set($"status-{name}-border", Rgb.Mix(page, colour, 0.35));
+        tokens.Set($"status-{name}-border", Rgb.Mix(page, color, 0.35));
         tokens.Set($"status-{name}-text", text);
-        tokens.Set($"status-{name}-focus", colour);
+        tokens.Set($"status-{name}-focus", color);
         tokens.Set($"status-{name}-hover", text);
     }
 
-    private static void AddCode(Tokens tokens, CodeColours code, double target)
+    private static void AddCode(Tokens tokens, CodeColors code, double target)
     {
         var background = Rgb.Parse(code.Background);
         tokens.Set("code-background", background);
@@ -263,9 +263,9 @@ internal static class PaletteBuilder
 
         public IReadOnlyList<KeyValuePair<string, string>> Values => _values;
 
-        public void Set(string name, Rgb colour) => Set(name, colour.ToHex());
+        public void Set(string name, Rgb color) => Set(name, color.ToHex());
 
-        /// <summary>Sets a token to another token's value, for tokens whose colour the theme files own.</summary>
+        /// <summary>Sets a token to another token's value, for tokens whose color the theme files own.</summary>
         public void SetReference(string name, string token) => Set(name, $"var(--osirion-{token})");
 
         private void Set(string name, string value)
@@ -282,14 +282,14 @@ internal static class PaletteBuilder
             }
         }
 
-        public Rgb Readable(string token, Rgb colour, Rgb against, double minimum)
+        public Rgb Readable(string token, Rgb color, Rgb against, double minimum)
         {
-            var adjusted = colour.EnsureContrast(against, minimum);
-            if (adjusted.ToHex() != colour.ToHex())
+            var adjusted = color.EnsureContrast(against, minimum);
+            if (adjusted.ToHex() != color.ToHex())
             {
                 adjustments.Add(
-                    $"{palette} {mode} {token}: {colour.ToHex()} -> {adjusted.ToHex()} " +
-                    $"({Rgb.Contrast(colour, against):0.00} -> {Rgb.Contrast(adjusted, against):0.00} against {against.ToHex()})");
+                    $"{palette} {mode} {token}: {color.ToHex()} -> {adjusted.ToHex()} " +
+                    $"({Rgb.Contrast(color, against):0.00} -> {Rgb.Contrast(adjusted, against):0.00} against {against.ToHex()})");
             }
 
             return adjusted;

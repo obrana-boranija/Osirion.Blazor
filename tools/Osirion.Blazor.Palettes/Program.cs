@@ -14,7 +14,7 @@ File.WriteAllText(Path.Combine(folder, "palettes.css"), css, utf8);
 File.WriteAllText(Path.Combine(folder, "palettes.min.css"), minified, utf8);
 
 Console.WriteLine($"Wrote palettes.css and palettes.min.css to {folder}");
-Console.WriteLine(adjustments.Count == 0 ? "No colour needed a contrast adjustment." : "Adjusted for contrast:");
+Console.WriteLine(adjustments.Count == 0 ? "No color needed a contrast adjustment." : "Adjusted for contrast:");
 adjustments.ForEach(adjustment => Console.WriteLine("  " + adjustment));
 return 0;
 

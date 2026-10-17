@@ -20,7 +20,7 @@ public partial class OsirionMetricCard : OsirionComponentBase
     [Parameter] public string? Description { get; set; }
 
     /// <summary>
-    /// Gets or sets the accent colour: a theme colour (<c>Primary</c>, <c>Secondary</c>, <c>Success</c>, <c>Warning</c>,
+    /// Gets or sets the accent color: a theme color (<c>Primary</c>, <c>Secondary</c>, <c>Success</c>, <c>Warning</c>,
     /// <c>Danger</c>, <c>Info</c>) or a fixed one (<c>Blue</c>, <c>Teal</c>, <c>Green</c>, <c>Amber</c>, <c>Purple</c>,
     /// <c>Indigo</c>).
     /// </summary>

@@ -1,6 +1,6 @@
 ---
 title: "Configuration"
-description: "The settings in appsettings.json that shape the site: name, menu, footer, colours and public address."
+description: "The settings in appsettings.json that shape the site: name, menu, footer, colors and public address."
 slug: "configuration"
 order: 3
 author: "My Docs"
@@ -23,9 +23,9 @@ Everything that is not a page is in `appsettings.json`.
 }
 ```
 
-## Colours
+## Colors
 
-`Osirion:Theming:DefaultPalette` picks the colours: `Osirion`, `Commit`, `Editor`, `Studio`, `StudioBlue` or
+`Osirion:Theming:DefaultPalette` picks the colors: `Osirion`, `Commit`, `Editor`, `Studio`, `StudioBlue` or
 `Contrast`, each with a light and a dark variant. `DefaultMode` is `Light`, `Dark` or `System`.
 
 ## Public address

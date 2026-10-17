@@ -1,7 +1,7 @@
 /*
  * MenuItem Component Styles
  * Pure CSS menu item with SSR compatibility. A horizontal bar opens submenus as dropdown panels on hover and focus;
- * a vertical menu or a drawer stacks them, opened by their toggle. Colours come from the Menu's theming hooks.
+ * a vertical menu or a drawer stacks them, opened by their toggle. Colors come from the Menu's theming hooks.
  */
 
 /* Child component theme inheritance - MenuItem inherits parent Menu's component theme */
@@ -69,7 +69,7 @@
         outline-offset: -2px;
     }
 
-/* The tint behind the active item is 6% of the accent: at 12% Osirion's light theme link colour fell to 4.37:1 on it;
+/* The tint behind the active item is 6% of the accent: at 12% Osirion's light theme link color fell to 4.37:1 on it;
    at 6% it keeps 4.77:1 on white and 4.56:1 on the light surface. */
 .osirion-menu-item-active,
 .osirion-menu-item-active:hover {

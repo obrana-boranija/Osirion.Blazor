@@ -161,4 +161,4 @@ your own stylesheet; to change a color an adapter provides, change the framework
 
 - [Theming](/docs/packages/theming): setup, options and adapters.
 - [ThemeToggle](/components/theme-toggle): the button that switches the theme.
-- [Palettes](/components/palettes): named colour sets with light and dark variants.
+- [Palettes](/components/palettes): named color sets with light and dark variants.

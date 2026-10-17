@@ -28,7 +28,7 @@ public partial class ThemePicker : IDisposable
 
     /// <summary>
     /// Gets or sets the text of the <see cref="ThemePalette.Framework"/> option, which applies no palette and shows the
-    /// site's own colours.
+    /// site's own colors.
     /// </summary>
     [Parameter]
     public string FrameworkLabel { get; set; } = "Default";

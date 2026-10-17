@@ -12,7 +12,7 @@ namespace Osirion.Blazor.Components;
 /// styles, the scroll-to-top button and, when turned on, the cookie consent banner. Everything comes from
 /// <see cref="OsirionSiteOptions"/> (the <c>Osirion:Site</c> configuration section). Use it as the router's default
 /// layout (<c>DefaultLayout="typeof(OsirionSiteLayout)"</c>), or wrap it in your own layout to replace the header or
-/// footer. It renders without script; the menu and theme toggle add behaviour where script runs.
+/// footer. It renders without script; the menu and theme toggle add behavior where script runs.
 /// </summary>
 public partial class OsirionSiteLayout
 {

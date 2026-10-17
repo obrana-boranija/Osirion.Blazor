@@ -83,7 +83,7 @@
     white-space: nowrap;
 }
 
-/* The chip shows the token's colour; its outline keeps a chip that matches the page visible */
+/* The chip shows the token's color; its outline keeps a chip that matches the page visible */
 .themes-chip {
     display: inline-block;
     width: 1.25rem;
