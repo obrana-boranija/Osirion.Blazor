@@ -71,7 +71,7 @@ builder.Services.AddOsirionHtmlSanitizer(options =>
     options.AllowElement("chart", "type", "title", "caption", "colors"));
 ```
 
-`AllowElement` keeps only the attributes you list, on that element only. An element you allow becomes your
+`AllowElement` keeps the attributes you list on that element only, in addition to the attributes every element may carry. An element you allow becomes your
 responsibility: if your own script writes one of its attribute values into `innerHTML`, the browser can turn escaped
 text back into markup. Read such values with `textContent` or `setAttribute`.
 
@@ -79,10 +79,10 @@ text back into markup. Read such values with `textContent` or `setAttribute`.
 itself, never for content, user input or anything read from a repository:
 
 ```razor
-<OsirionHtmlRenderer Html="@fromYourCode" SanitizeHtml="false" />
+<OsirionHtmlRenderer HtmlContent="@fromYourCode" SanitizeHtml="false" />
 ```
 
-Front matter `json_ld` is parsed and written again with `<`, `>` and `&` escaped before it goes into a script element;
+Front matter `json_ld` (under `seo_properties`) is parsed and written again with `<`, `>` and `&` escaped before it goes into a script element;
 invalid JSON-LD is dropped and a warning is logged.
 
 ## 2. Know the URL rules
@@ -232,13 +232,16 @@ app.UseRateLimiter();
 app.UseAntiforgery();
 ```
 
-The numbers are an example; choose your own. Behind a reverse proxy, `RemoteIpAddress` is the proxy's address unless you
+The numbers are an example; choose your own. The limiter counts every post from an address, including the cookie
+consent and announcement forms, and it sees the contact form only when the page handles it as a post, which is what
+happens without an interactive render mode. Under Interactive Server the submit travels over the circuit, so limit it in
+your `OnSubmit` handler instead. Behind a reverse proxy, `RemoteIpAddress` is the proxy's address unless you
 configure forwarded headers, and then every visitor shares one limit.
 
 ## Check that it works
 
 - A post that contains `<script>alert(1)</script>` in its Markdown shows the text or nothing, and no script runs.
-- `curl -I https://your-site/` shows your `Content-Security-Policy` header.
+- `curl -s -D - -o /dev/null https://your-site/` shows your `Content-Security-Policy` header. A `HEAD` request (`curl -I`) answers 405 on a page, so read the headers of a `GET`.
 - In the browser's cookie view, `osirion_cookie_consent` shows `HttpOnly`, `Secure` and `Lax` after you accept the banner.
 - `git grep -n -e ghp_ -e github_pat_` finds no GitHub token in your repository.
 - The sixth rapid post of the contact form from one address gets status 429.

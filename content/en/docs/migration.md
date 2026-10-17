@@ -140,7 +140,10 @@ app.UseAntiforgery();
 
 The configured `Osirion:Cms:Admin:Authentication:PersonalAccessToken` no longer signs in every visitor of
 `/osirion/login`. Rotate it: earlier versions applied it to every visitor and wrote it to their browser storage. Admin
-services never use a content provider's `ApiToken`. A site that never maps the admin needs none of this.
+services never use a content provider's `ApiToken`. GitHub sign-in with OAuth now redirects to `{BaseUri}osirion/login`
+(it was `/osirion/auth/callback`, which has no route): register `https://<your host>/osirion/login` as the callback of
+your OAuth app, or set `Osirion:Cms:Admin:Authentication:GitHubRedirectUri` to the address you registered. A site that never maps the admin needs none of
+this.
 
 ### 7. Move the FileSystem section
 
@@ -180,12 +183,18 @@ remove `_index.md` files you do not want published.
 | Calls `IMarkdownProcessor.RenderToHtml` expecting unsanitized HTML | It defaults `sanitizeHtml` to `true`; pass `false` only for markup you produced |
 | Implements `IGitHubTokenProvider` | Implement the new `ExchangeCodeForTokenAsync(code, clientId, clientSecret, redirectUri, codeVerifier, cancellationToken)` |
 | Uses `AuthGuard.ShowLoginForm`, `AuthGuard.OnAuthResult` or `AdminPage.ShowLoginForm` | Remove them; they do nothing and are `[Obsolete]` |
+| Calls `LoginViewModel.LoginWithGitHubAsync(code)` or `IAuthenticationService.AuthenticateWithGitHubAsync(code)` (both `[Obsolete]`) | The first always fails: use `StartGitHubLoginAsync()` and `LoginWithGitHubAsync(code, state)`. The second still works but skips the OAuth `state` check and PKCE: check the state, exchange the code with `IGitHubTokenProvider`, then call `SetAccessTokenAsync` |
+| Creates `LoginViewModel` with `new` | The constructor also takes `IGitHubTokenProvider`, `IGitHubTokenStore` and `IGitHubOAuthStateStore`. Resolution through DI is unaffected |
+| Keeps one `IGitHubApiClientFactory.GetClient` or `GetDefaultClient` result and expects other callers to see its changes | Each call now returns a new client the caller owns: configure the client you use |
+| Registers a custom `IAuthenticationService` or `IGitHubAdminService`, or resolves the admin event buses (`IEventPublisher`, `IEventSubscriber`, `CmsEventMediator`) from the root provider | These are scoped now, and the Osirion registration methods replace earlier registrations: register yours after the Osirion calls and resolve scoped services inside a scope |
+| Passes a rooted path, or a path with `.`, `..` or empty segments, to content save, directory operations or the GitHub provider | These are rejected: the FileSystem provider and the command validators reject them, and the GitHub provider throws `ArgumentException` before it sends a request. Use paths relative to `BasePath` |
+| Registers a custom content provider (`AddContentProvider<T>`, `ContentBuilder.AddProvider<T>`) that depends on scoped services | The FileSystem provider and these providers are singletons now: resolve scoped services through `IServiceScopeFactory` |
 | Uses a removed admin type: `ContentRepositoryAdapter`, `RepositoryAdapterBase`, `AdminContentRepository`, `StatePersistenceService`, `EditableComponent`, `LoadableComponentBase`, `ContentValidators`, `ComponentExtensions`, `ExceptionHandlingMiddleware` | Remove the use; nothing in the library used them |
 | Passes a `Theme` string to `LoginPage`, `Login`, `Settings`, `AdminLayout`, `AdminPage`, `CmsAdminDashboard` or `CmsLayoutEditor` | Remove it; the duplicate parameter is gone |
 
 The changelog also deprecates `DomainEntityBase<TId>`, `CommandDispatcher`, `StateManager`, `ErrorHandlingService`,
-`CmsAdminStartupService` and `BaseContentRepository.GenerateMarkdownWithFrontMatter`. They still compile and will go
-in the next major release; use `GenerateMarkdownWithFrontMatterAsync` instead of the last one.
+`CmsAdminStartupService` and `BaseContentRepository.GenerateMarkdownWithFrontMatter`. They still compile. The first five
+will be removed in the next major release; use `GenerateMarkdownWithFrontMatterAsync` instead of the last one.
 
 ### 9. Check markup and CSS you depend on
 
@@ -206,6 +215,8 @@ If you wrote CSS or script against Osirion markup, check these:
 - **Stored ids.** Content, directory, localization and FileSystem provider ids are now SHA-256 based and stable. They
   used to change on every restart, so a site that stored them (bookmarks, database rows, cache keys) must look them up
   again. No data migration is needed.
+- **Navigation.** Configured `Osirion:Navigation:Enhanced` values now apply when the `EnhancedNavigation` parameter is
+  not set, so `PreserveScrollForSamePageNavigation` set to `false` now scrolls same-page navigations to the top.
 - **Analytics.** An invalid tracker setting stops the app at startup with an `OptionsValidationException` that names
   the key. The consent gate (`Osirion:Analytics:Consent:RequireConsent`) is off by default. Yandex Metrica options bind
   from `Osirion:Analytics:YandexMetrica`; the old `YandexMetrica` key is still read. Matomo and Yandex Metrica add an
@@ -214,7 +225,8 @@ If you wrote CSS or script against Osirion markup, check these:
   with `CanonicalQueryParameters`), emits viewport and theme-color tags only with `EmitMobileMetaTags`, and writes
   generated FAQ data only with `EnableGeneratedFaq`.
 - **404.** `ArticlePage`, `DocumentPage` and `HomePage` answer missing content with status 404. On .NET 10 the router's
-  `NotFoundPage` renders, so set one:
+  `NotFoundPage` renders, so set one. The page needs its own route, for example `@page "/not-found"`; the router
+  throws `InvalidOperationException` for a type without a `Route` attribute:
 
 ```razor
 <Router AppAssembly="typeof(Program).Assembly" NotFoundPage="typeof(Pages.NotFound)">

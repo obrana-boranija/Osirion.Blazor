@@ -165,11 +165,13 @@ model always requires `AgreeToPrivacyPolicy` to be `true`, and no message is sho
 
 **Symptom.** After a valid submission the form shows the error message. The log has one of these:
 
-- `Contact form submitted without OnSubmit or UseBuiltInEmailService; the message was not delivered`
+- `Contact form submitted without OnSubmit or UseBuiltInEmailService; the message was not delivered` (this warning and
+  its error message arrive in the release after 4.1.0; 4.1.0 tells the visitor the message was sent and loses it without a
+  log line)
 - `Email service factory not registered but UseBuiltInEmailService is true`
 - `Email sending failed: ...`
 
-**Cause.** In order: nothing is set up to deliver the message; `UseBuiltInEmailService` is on but no email service is
+**Cause.** In order: nothing is set up to deliver the message (after 4.1.0); `UseBuiltInEmailService` is on but no email service is
 registered; or the provider refused the message.
 
 **Fix.** Handle `OnSubmit`, or register the email service and configure a provider. `AddOsirion` registers the email
@@ -257,7 +259,8 @@ Two warnings tell you that the library did not use what you gave it:
 - `Ignoring custom JSON-LD for content ... because it is not a valid JSON object or array; generated structured data is
   used instead`. Fix the `json_ld` in the page's front matter.
 - `Subscription submitted without an OnSubscribe handler; the address was not stored`. `OsirionSubscriptionCard` stores
-  nothing itself; handle `OnSubscribe`.
+  nothing itself; handle `OnSubscribe`. This warning arrives in the release after 4.1.0; 4.1.0 thanks the visitor without
+  storing anything.
 
 ## Check that it works
 

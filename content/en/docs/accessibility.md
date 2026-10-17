@@ -53,7 +53,7 @@ This is what the code of the 4.1.0 release does. Each row names the component, s
 | Area | What it does | Component |
 | --- | --- | --- |
 | Skip link | A link to the main content is the first focusable element. It is off screen until it gets focus. `ShowSkipLink` (default `true`), `SkipLinkText` (default "Skip to main content") and `MainContentId` (default `osirion-main-content`) configure it. | [`OsirionPageLayout`](/components/page-layout) |
-| Landmarks | The layout renders `header`, `main` and `footer`. The `main` element has `tabindex="-1"` so the skip link moves focus there. `OsirionFooter` inside the layout's footer slot renders a `div`, so the page keeps one footer landmark. | [`OsirionPageLayout`](/components/page-layout), [`OsirionFooter`](/components/footer) |
+| Landmarks | The layout always renders `main`, and renders `header` and `footer` when you fill the `Header` and `Footer` slots. The `main` element has `tabindex="-1"` so the skip link moves focus there. `OsirionFooter` inside the layout's footer slot renders a `div`, so the page keeps one footer landmark. | [`OsirionPageLayout`](/components/page-layout), [`OsirionFooter`](/components/footer) |
 | Named navigation | `nav` elements carry an `aria-label`: `Menu` ("Navigation menu", set with `AriaLabel`), breadcrumbs ("breadcrumb"), the table of contents ("Table of Contents"), and the document navigation and pagination of `DocumentPage`. The search box is a form with `role="search"`. | [`Menu`](/docs/packages/navigation), [`SearchBox`](/components/search-box) |
 | Focus styles | Interactive elements get an outline on keyboard focus (`:focus-visible`), drawn from `--osirion-focus-ring-color`, `--osirion-focus-ring-width` and `--osirion-focus-ring-offset`. | Theming, `Menu`, `ThemeToggle` |
 | Reduced motion | Under `prefers-reduced-motion: reduce` the header does not hide on scroll, the carousels and the metric count-up do not animate, and `ThemeToggle` switches themes without its fade. | Core, Theming |
@@ -75,10 +75,11 @@ The contrast of the theme colors is held by tests in `tests/Osirion.Blazor.Themi
 - `PaletteStylesheetTests` holds each variant of each [palette](/components/palettes) to the text contrast target of
   that variant, and the code colors to the code background.
 - `AdapterContrastTests` holds the active navigation item to 4.5:1 under the Bootstrap, Fluent UI, MudBlazor and
-  Radzen adapters, in both themes.
+  Radzen adapters, in both themes. This test arrives in the release after 4.1.0, together with the color changes it
+  checks.
 
 `tests/Osirion.Blazor.Core.Tests` checks the skip link and the landmarks of `OsirionPageLayout`. The continuous
-integration workflow runs `dotnet test`, so these tests run on every change. The workflows do not run an automated
+integration workflow runs `dotnet test` on every pull request and every push to `master`, so these tests run there. The workflows do not run an automated
 checker such as axe, so read these results as checks of the library's own markup and colors, not of your pages.
 
 Run the contrast tests yourself from a clone of the repository:
@@ -119,14 +120,17 @@ The library renders what you give it. These stay your job:
 
 - **Alt text.** `OsirionResponsiveImage` takes `Alt`, which defaults to an empty string: the image is then decorative.
   Write a description for every image that carries information.
-- **Heading order.** Write one `h1` per page and do not skip levels in your Markdown. The page components render the
-  page title as the `h1` and leave an opening `# Title` out of the body, so start your sections at `##`.
+- **Heading order.** Write one `h1` per page and do not skip levels in your Markdown. `ArticlePage` (with its hero),
+  `DocumentPage`, `HomePage` (with its hero), `AboutPage` and `ContactPage` render the page title as the `h1` and leave an
+  opening `# Title` out of the body, so start your sections at `##`.
 - **Link text.** Write links that make sense out of context. "Read the migration guide" works, "click here" does not.
 - **Your own colors.** The tests hold the theme and palette colors only. If you set custom properties or write your
-  own CSS, check the contrast of what you changed, including the focus outline:
+  own CSS, check the contrast of what you changed, including the focus outline. The themes and palettes set the focus
+  ring variables on the `html` element, so load your stylesheet after Osirion's and match their selectors:
 
 ```css
-:root {
+:root[data-osirion-theme],
+:root[data-osirion-palette][data-osirion-theme] {
     --osirion-focus-ring-color: #1d4ed8;
     --osirion-focus-ring-width: 3px;
 }
