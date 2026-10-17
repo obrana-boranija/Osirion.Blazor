@@ -1,13 +1,35 @@
-.showcase {
-    max-width: 960px;
-    margin: 0 auto;
-    padding: var(--osirion-spacing-8, 2rem) var(--osirion-spacing-4, 1rem);
+.showcase-sites {
+    display: grid;
+    gap: 3rem;
+    margin: 2rem 0 0;
+    padding: 0;
+    list-style: none;
 }
 
-    .showcase section {
-        margin-top: var(--osirion-spacing-8, 2rem);
-    }
+.showcase-site {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+    gap: 1.5rem;
+    align-items: start;
+}
 
-    .showcase h3 {
-        margin-top: var(--osirion-spacing-8, 2rem);
-    }
+.showcase-site-image img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--osirion-border-color, #d0d7de);
+    border-radius: var(--osirion-radius-md, 0.5rem);
+}
+
+.showcase-site-text h2 {
+    margin-top: 0;
+}
+
+/* 24px targets (WCAG 2.2, 2.5.8); underlined like every link in running text */
+.showcase-site-text a {
+    display: inline-block;
+    min-height: 24px;
+    line-height: 24px;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+}
