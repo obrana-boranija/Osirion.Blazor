@@ -1,0 +1,11 @@
+@using Osirion.Blazor.Components
+
+@* Each trail links to pages of this site: the home page, /docs and /docs/packages *@
+<OsirionBreadcrumbs Path="/docs/packages/navigation" />
+
+<OsirionBreadcrumbs Path="/docs/packages/navigation"
+                    CurrentPageText="The navigation package" />
+
+<OsirionBreadcrumbs Path="/docs/packages/navigation"
+                    ShowHome="false"
+                    SegmentFormatter="@(segment => segment.ToUpperInvariant())" />

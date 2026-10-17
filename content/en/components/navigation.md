@@ -4,10 +4,10 @@ order: 1
 layout: docs
 title: Navigation
 permalink: /components/navigation
-description: Breadcrumbs and read more links from Osirion.Blazor Core. Both render plain links under static SSR and need no script.
+description: The navigation components in Osirion.Blazor (breadcrumbs, read more link, menu, scroll to top and enhanced navigation) and when to use each.
 author: Dejan Demonjić
 date: 2025-09-03
-last_modified: 2026-10-11
+last_modified: 2026-10-17
 featured_image: /assets/images/blazor-cover.png
 categories:
 - Components
@@ -28,8 +28,8 @@ redirect_from:
 custom_fields:
   group: navigation
 seo_properties:
-  title: 'Core Navigation Components - Osirion.Blazor'
-  description: 'OsirionBreadcrumbs and OsirionReadMoreLink: breadcrumb trails and call-to-action links for Blazor that render without script.'
+  title: 'Blazor navigation components'
+  description: 'The navigation components in Osirion.Blazor (breadcrumbs, read more link, menu, scroll to top and enhanced navigation) and when to use each.'
   image: /assets/images/blazor-cover.png
   canonical: 'https://getosirion.com/components/navigation'
   lang: en
@@ -49,34 +49,40 @@ seo_properties:
 
 # Navigation
 
-Osirion.Blazor Core has two small navigation components: a breadcrumb trail built from a URL path, and a link for
-"read more" and other calls to action. Both render ordinary `<a>` elements, so they behave the same under static SSR,
-Interactive Server and WebAssembly, and need no script.
+Osirion.Blazor has five navigation components in two packages. Breadcrumbs and read more links are in
+Osirion.Blazor.Core and render plain links. The menu, the scroll to top button and enhanced navigation scroll handling
+are in Osirion.Blazor.Navigation. All of them work under static SSR; only the scroll to top button and
+`EnhancedNavigation` write a small inline script.
 
-They live in the `Osirion.Blazor.Components` namespace of the Osirion.Blazor.Core package:
+| Component | Use it for | Package | Script |
+| --- | --- | --- | --- |
+| [OsirionBreadcrumbs](/components/breadcrumbs) | A trail of links built from a URL path, with the current page last. | `Osirion.Blazor.Core` | None |
+| [OsirionReadMoreLink](/components/read-more-link) | A "read more" link or small call to action with an optional icon, in several variants and sizes. | `Osirion.Blazor.Core` | None |
+| [Menu](/components/menu) | A site menu with submenus, mega menus and a mobile drawer, and the parts that fill it. | `Osirion.Blazor.Navigation` | None |
+| [ScrollToTop](/components/scroll-to-top) | A fixed "back to top" button that appears after a scroll threshold, and its provider. | `Osirion.Blazor.Navigation` | Inline script |
+| [EnhancedNavigation](/components/enhanced-navigation) | Scrolling to the top of the new page after a Blazor enhanced navigation. No visible output. | `Osirion.Blazor.Navigation` | Inline script |
+
+The Core components are in the `Osirion.Blazor.Components` namespace and the Navigation components in
+`Osirion.Blazor.Navigation.Components`:
 
 ```razor
 @using Osirion.Blazor.Components
+@using Osirion.Blazor.Navigation.Components
 ```
 
-## Components
+`OsirionBreadcrumbs` and `OsirionReadMoreLink` are available from 4.0.
 
-| Component | What it renders | Script | Available |
-| --- | --- | --- | --- |
-| [Breadcrumbs](/components/breadcrumbs) | A `<nav>` with an ordered list of links, one per path segment | None | 4.0 |
-| [Read more link](/components/read-more-link) | A link with an optional icon, in several variants and sizes | None | 4.0 |
+The Navigation package needs registration for the scroll components; see the
+[package page](/docs/packages/navigation).
 
 ## Other navigation
 
-These two cover links inside a page. Site navigation lives elsewhere:
-
-- The Osirion.Blazor.Navigation package has the menu (`Menu`, `MenuItem`, `MenuGroup` and panels),
-  `EnhancedNavigation` for scroll handling after enhanced navigation, and `ScrollToTop`.
-- The CMS has components that read your content: `ContentBreadcrumbs`, `DirectoryNavigation`, `TableOfContents`,
-  `TagCloud`, `CategoriesList`, `SearchBox` and previous and next links.
+These components cover site navigation and links inside a page. The CMS has components that read your content:
+`ContentBreadcrumbs`, `DirectoryNavigation`, `TableOfContents`, `TagCloud`, `CategoriesList`, `SearchBox` and previous
+and next links. See [CMS navigation](/components/cms-navigation).
 
 ## Related
 
-- [Navigation package](/docs/packages/navigation)
-- [CMS Web navigation](/components/cms-navigation)
+- [Navigation package](/docs/packages/navigation): setup and configuration
+- [CMS navigation](/components/cms-navigation)
 - [Core components](/docs/packages/core)
