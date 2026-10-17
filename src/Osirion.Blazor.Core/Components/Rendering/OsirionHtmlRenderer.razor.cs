@@ -15,44 +15,50 @@ namespace Osirion.Blazor.Components;
 /// </summary>
 public partial class OsirionHtmlRenderer
 {
-    /// <summary>
-    /// The HTML content to render
-    /// </summary>
+    /// <summary>Gets or sets the HTML to render. Renders nothing when empty or white space.</summary>
     [Parameter]
     public string? HtmlContent { get; set; }
 
     /// <summary>
-    /// Whether to enable syntax highlighting for code blocks
+    /// Gets or sets whether Prism highlights the code blocks. Prism loads only when the HTML has a code block (a
+    /// <c>pre</c> element whose first child is a <c>code</c> element). When <see langword="false"/>, line numbers
+    /// and copy buttons are not added either.
     /// </summary>
     [Parameter]
     public bool EnableSyntaxHighlighting { get; set; } = true;
 
     /// <summary>
-    /// Whether to show line numbers for code blocks
+    /// Gets or sets whether code blocks show line numbers (Prism's line-numbers plugin). Needs
+    /// <see cref="EnableSyntaxHighlighting"/>. Each number is a button that highlights its line.
     /// </summary>
     [Parameter]
     public bool ShowLineNumbers { get; set; } = false;
 
     /// <summary>
-    /// Whether to enable the copy button for code blocks
+    /// Gets or sets whether each code block is wrapped with a header that shows its language and a Copy button.
+    /// Needs <see cref="EnableSyntaxHighlighting"/>.
     /// </summary>
     [Parameter]
     public bool EnableCopyButton { get; set; } = false;
 
     /// <summary>
-    /// Whether to enable line highlighting functionality
+    /// Gets or sets whether line highlighting is enabled. The value is written to the page as
+    /// <c>data-enable-line-highlighting</c>, but the bundled line highlighting script does not read it: with
+    /// <see cref="ShowLineNumbers"/> on, line numbers can be selected whatever this says.
     /// </summary>
     [Parameter]
     public bool EnableLineHighlighting { get; set; } = false;
 
     /// <summary>
-    /// Whether to use the WCAG AAA compliant theme
+    /// Gets or sets whether the built-in high-contrast dark theme styles the code. When <see langword="false"/>,
+    /// Prism's Okaidia theme is loaded instead.
     /// </summary>
     [Parameter]
     public bool UseAccessibleTheme { get; set; } = true;
 
     /// <summary>
-    /// Custom CSS classes for specific languages
+    /// Gets or sets CSS classes for specific languages. Obsolete and ignored: the component never read it. Style
+    /// code blocks with CSS selectors on the <c>language-*</c> classes instead.
     /// </summary>
     /// <remarks>
     /// This parameter has never been read by the component. Style code blocks with CSS selectors on the
@@ -62,9 +68,7 @@ public partial class OsirionHtmlRenderer
     [Parameter]
     public Dictionary<string, string>? LanguageClasses { get; set; }
 
-    /// <summary>
-    /// Whether to sanitize the HTML content before rendering it. Defaults to <see langword="true"/>.
-    /// </summary>
+    /// <summary>Gets or sets whether the HTML is sanitized before it is rendered.</summary>
     /// <remarks>
     /// Sanitization uses the registered <see cref="IHtmlContentSanitizer"/> (see <c>AddOsirionHtmlSanitizer</c>),
     /// or the default allow-list when none is registered. Set to <see langword="false"/> only for markup the
@@ -74,16 +78,16 @@ public partial class OsirionHtmlRenderer
     public bool SanitizeHtml { get; set; } = true;
 
     /// <summary>
-    /// Optional custom sanitizer used instead of the registered <see cref="IHtmlContentSanitizer"/>
-    /// when <see cref="SanitizeHtml"/> is <see langword="true"/>.
+    /// Gets or sets a sanitizer to use instead of the registered <see cref="IHtmlContentSanitizer"/>. Used only
+    /// while <see cref="SanitizeHtml"/> is <see langword="true"/>.
     /// </summary>
     [Parameter]
     public Func<string, string>? HtmlSanitizer { get; set; }
 
     /// <summary>
-    /// Optional base address Prism is loaded from, for hosts that serve it themselves (for example
+    /// Gets or sets the base address Prism is loaded from, for hosts that serve it themselves (for example
     /// <c>/lib/prism/1.29.0/</c>). When empty, the pinned cdnjs release is used and every file is verified with its
-    /// Subresource Integrity hash.
+    /// Subresource Integrity hash. Files from a custom address load without an integrity check.
     /// </summary>
     /// <remarks>
     /// Files from a custom base address are loaded without an integrity check, because the library cannot know
@@ -95,17 +99,15 @@ public partial class OsirionHtmlRenderer
 
     /// <summary>
     /// Gets or sets whether fenced <c>demo</c> blocks whose text is a registered demo key (see
-    /// <c>AddOsirionContentDemos</c>) render the live demo instead of the code block. Defaults to <see langword="true"/>.
-    /// Only blocks at the top level of the content are replaced; a block inside a list or quote stays a code block.
+    /// <c>AddOsirionContentDemos</c>) render the live demo instead of the code block. Only blocks at the top level
+    /// of the content are replaced; a block inside a list or quote stays a code block.
     /// </summary>
     [Parameter]
     public bool EnableDemos { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets whether code blocks and tables take a place in the tab order (<c>tabindex="0"</c>). The renderer's
-    /// styles let wide code, and tables on small screens, scroll sideways inside the text, and a scroll box with nothing
-    /// focusable inside it cannot be scrolled from a keyboard (WCAG 2.1.1). An element that already has a
-    /// <c>tabindex</c> keeps it. Defaults to <see langword="true"/>.
+    /// Gets or sets whether code blocks and tables take a place in the tab order (<c>tabindex="0"</c>), so a
+    /// keyboard user can scroll them sideways (WCAG 2.1.1). An element that already has a <c>tabindex</c> keeps it.
     /// </summary>
     [Parameter]
     public bool FocusableScrollBlocks { get; set; } = true;

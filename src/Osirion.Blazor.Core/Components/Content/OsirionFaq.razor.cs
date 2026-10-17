@@ -13,20 +13,22 @@ namespace Osirion.Blazor.Components;
 public partial class OsirionFaq
 {
     /// <summary>
-    /// Gets or sets the questions and answers. Renders nothing when empty.
+    /// Gets or sets the questions and answers, in the order they are shown. Answers are plain text: markup in an
+    /// answer is shown as text, and line breaks are kept. Renders nothing when empty.
     /// </summary>
     [Parameter]
     public IReadOnlyList<FaqItem> Items { get; set; } = [];
 
     /// <summary>
-    /// Gets or sets whether FAQPage structured data (JSON-LD) is written with the questions. Defaults to
-    /// <see langword="true"/>; turn it off when the page already describes these questions in its own structured data.
+    /// Gets or sets whether FAQPage structured data (JSON-LD) is written after the questions. Turn it off when the
+    /// page already describes these questions in its own structured data, and use one FAQPage per page.
     /// </summary>
     [Parameter]
     public bool IncludeStructuredData { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets whether several answers can be open at once. Defaults to <see langword="true"/>.
+    /// Gets or sets whether several answers can be open at once. When <see langword="false"/>, opening one answer
+    /// closes the others, in browsers that support exclusive <c>details</c> elements.
     /// </summary>
     [Parameter]
     public bool AllowMultiple { get; set; } = true;

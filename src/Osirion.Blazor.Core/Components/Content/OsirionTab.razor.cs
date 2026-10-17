@@ -12,15 +12,11 @@ public partial class OsirionTab
     [CascadingParameter]
     private OsirionTabs? Parent { get; set; }
 
-    /// <summary>
-    /// Gets or sets the tab's label.
-    /// </summary>
+    /// <summary>Gets or sets the tab's label, shown in the tab row. Required.</summary>
     [Parameter, EditorRequired]
     public string Title { get; set; } = string.Empty;
 
-    /// <summary>
-    /// Gets or sets the panel content shown while the tab is selected.
-    /// </summary>
+    /// <summary>Gets or sets the panel content, shown while this tab is selected.</summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 

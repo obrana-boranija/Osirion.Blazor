@@ -15,23 +15,32 @@ public partial class OsirionContentDemo
     [Inject]
     private IServiceProvider Services { get; set; } = default!;
 
-    /// <summary>Gets or sets the demo to render. Takes precedence over <see cref="Key"/>.</summary>
+    /// <summary>
+    /// Gets or sets the demo to render, with its component, parameters, title and source. Takes precedence over
+    /// <see cref="Key"/>.
+    /// </summary>
     [Parameter]
     public ContentDemo? Demo { get; set; }
 
-    /// <summary>Gets or sets the key of a demo registered with <c>AddOsirionContentDemos</c>.</summary>
+    /// <summary>
+    /// Gets or sets the key of a demo registered with <c>AddOsirionContentDemos</c>, used when <see cref="Demo"/>
+    /// is not set. The component renders nothing when neither resolves to a demo.
+    /// </summary>
     [Parameter]
     public string? Key { get; set; }
 
-    /// <summary>Gets or sets whether the source code has a copy button. Defaults to <see langword="true"/>.</summary>
+    /// <summary>
+    /// Gets or sets whether the source code on the Code tab has a language header and a Copy button. The button
+    /// needs the copy script that <see cref="OsirionHtmlRenderer"/> loads.
+    /// </summary>
     [Parameter]
     public bool EnableCopyButton { get; set; } = true;
 
-    /// <summary>Gets or sets the label of the preview tab. Defaults to <c>Preview</c>.</summary>
+    /// <summary>Gets or sets the label of the preview tab. Shown only when the demo has source code.</summary>
     [Parameter]
     public string PreviewText { get; set; } = "Preview";
 
-    /// <summary>Gets or sets the label of the code tab. Defaults to <c>Code</c>.</summary>
+    /// <summary>Gets or sets the label of the Code tab. Shown only when the demo has source code.</summary>
     [Parameter]
     public string CodeText { get; set; } = "Code";
 
