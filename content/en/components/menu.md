@@ -127,7 +127,7 @@ of the other parts.
 | --- | --- | --- | --- |
 | `ChildContent` | `RenderFragment?` | `null` | The menu items: `MenuItem`, `MenuDivider` and the other menu parts. |
 | `Href` | `string?` | `"/"` | The destination of the brand link. A scheme other than a relative URL, `http`, `https`, `mailto` or `tel` leaves the link without an `href`. |
-| `BrandLogo` | `string?` | `null` | The address of the logo image, shown before `BrandText` inside the brand link. The image is rendered 60 by 60 pixels, and its alternative text is the brand text followed by `brand logo`. |
+| `BrandLogo` | `string?` | `null` | The address of the logo image, shown before `BrandText` inside the brand link. The image is drawn square at `--osirion-menu-logo-size` (2.25rem by default) and declares 36 by 36 pixels, the size of that default, so the bar does not shift while it loads. Beside `BrandText` its alternative text is empty, because the text already names the link; without `BrandText` the logo is the whole link and its alternative text is `Home`. |
 | `BrandText` | `string?` | `null` | The brand name, rendered as the text of the brand link. Without a logo it is the whole link. |
 | `BrandingTemplate` | `RenderFragment?` | `null` | Your own brand markup. It replaces the brand link, `BrandLogo` and `BrandText` and is not wrapped in a link. |
 | `Actions` | `RenderFragment?` | `null` | Content shown at the end of the bar, after the menu items: a search box, a theme toggle or a call to action button. A horizontal menu aligns it to the trailing edge; a collapsed menu shows it at the bottom of its drawer. |

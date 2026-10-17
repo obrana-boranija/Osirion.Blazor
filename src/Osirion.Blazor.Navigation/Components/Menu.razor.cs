@@ -25,7 +25,10 @@ public partial class Menu
 
     /// <summary>
     /// Gets or sets the address of the logo image, shown before <see cref="BrandText"/> inside the brand link. The image
-    /// is rendered 60 by 60 pixels, and its alternative text is the brand text followed by <c>brand logo</c>.
+    /// is drawn square at <c>--osirion-menu-logo-size</c> (2.25rem by default) and declares 36 by 36 pixels, the size
+    /// of that default, so the bar does not shift while it loads. Beside <see cref="BrandText"/> its alternative text
+    /// is empty, because the text already names the link; without <see cref="BrandText"/> the logo is the whole link
+    /// and its alternative text is <c>Home</c>.
     /// </summary>
     [Parameter]
     public string? BrandLogo { get; set; }
@@ -124,6 +127,10 @@ public partial class Menu
     /// that is not safe (for example <c>javascript:</c>).
     /// </summary>
     private string? RenderedHref => SafeHref.Sanitize(Href);
+
+    // A logo beside the brand text is decorative: the text names the link, and a name on the image too would be read
+    // twice. A logo alone is the link's only content, so it has to carry the name.
+    private string LogoAlt => string.IsNullOrWhiteSpace(BrandText) ? "Home" : string.Empty;
 
     // Generated once per instance. A fixed per-orientation default would give two menus with the same
     // orientation the same id, and the toggle label would then switch the wrong menu.
