@@ -7,7 +7,7 @@ permalink: /components/theme-toggle
 description: ThemeToggle renders a button that switches the site between light and dark in the browser and remembers the choice in a cookie.
 author: Dejan Demonjić
 date: 2025-09-03
-last_modified: 2026-10-11
+last_modified: 2026-10-17
 featured_image: /assets/images/blazor-cover.png
 categories:
 - Components
@@ -28,7 +28,7 @@ redirect_from:
 custom_fields:
   group: theming
 seo_properties:
-  title: 'ThemeToggle Component - Osirion.Blazor'
+  title: 'ThemeToggle: light and dark mode button for Blazor'
   description: 'A light and dark mode button for Blazor that works under static SSR and remembers the visitor choice in a cookie.'
   image: /assets/images/blazor-cover.png
   canonical: 'https://getosirion.com/components/theme-toggle'
@@ -52,7 +52,14 @@ seo_properties:
 `ThemeToggle` renders a round button with a sun or moon icon that switches the site between the light and the dark
 theme. The switch happens in the browser, so it works on statically rendered pages, and the choice is kept in a cookie
 for the next visit. Use it in your header or menu, together with
-[`OsirionStyles`](/components/osirion-styles) in the layout.
+[`OsirionStyles`](/components/osirion-styles) in the layout. The demo below changes this site's own mode, which is the
+point of the component, and your choice stays in your browser.
+
+Package `Osirion.Blazor.Theming`, namespace `Osirion.Blazor.Theming.Components`. [Source on GitHub](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Theming/Components/ThemeToggle.razor).
+
+```demo
+theme-toggle
+```
 
 ## Usage
 
@@ -81,12 +88,20 @@ which loads its script. See [Theming](/docs/packages/theming) for the setup.
 
 ## Parameters
 
+<!-- osirion:parameters ThemeToggle -->
+
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `Id` | `string?` | `null` | The `id` of the button. No `id` is written by default, so several toggles can share a page. Set it only when your own CSS or script needs to address one toggle. |
-| `OnThemeChanged` | `EventCallback<string>` | none | Declared but not raised: the theme changes in the browser and the server is not notified. Listen for the `osirion-theme-update` browser event instead (see Behavior). |
+| `Id` | `string?` | `null` | The id of the toggle button. No id is written when it is `null`, so several toggles can share a page without repeating an id; set it only when a host stylesheet or script needs to address one. |
+| `OnThemeChanged` | `EventCallback<string>` | - | A callback that is declared but never raised: the theme changes in the browser and the server is not notified. Listen for the `osirion-theme-update` browser event on `window` instead. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
+| `Style` | `string?` | `null` | An inline style for the component's root element. |
 
-The inherited `Class`, `Style` and `Theme` parameters and any extra attributes are not written to the markup.
+<!-- /osirion:parameters -->
+
+The last three rows, `Theme`, `Class` and `Style`, are inherited from the component base class. They are not written to
+the markup, and neither are extra attributes.
 
 ## Behavior
 

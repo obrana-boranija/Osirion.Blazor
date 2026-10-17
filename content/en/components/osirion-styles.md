@@ -7,7 +7,7 @@ permalink: /components/osirion-styles
 description: OsirionStyles links the Osirion stylesheets and the CSS framework adapter, and applies the visitor's light or dark theme as the page loads.
 author: Dejan Demonjić
 date: 2025-09-03
-last_modified: 2026-10-16
+last_modified: 2026-10-17
 featured_image: /assets/images/blazor-cover.png
 categories:
 - Components
@@ -29,7 +29,7 @@ redirect_from:
 custom_fields:
   group: theming
 seo_properties:
-  title: 'OsirionStyles Component - Osirion.Blazor'
+  title: 'OsirionStyles: stylesheets and theme setup for Blazor'
   description: 'Link the Osirion stylesheets and framework adapter and apply the stored light or dark theme with OsirionStyles.'
   image: /assets/images/blazor-cover.png
   canonical: 'https://getosirion.com/components/osirion-styles'
@@ -51,7 +51,10 @@ seo_properties:
 # OsirionStyles
 
 `OsirionStyles` links the stylesheets that Osirion components need, adds the adapter for your CSS framework, and
-applies the visitor's light or dark theme while the page loads. Render it once per page, in your main layout.
+applies the visitor's light or dark theme while the page loads. Render it once per page, in your main layout. It writes
+stylesheets and a script into the page head, not visible markup, so this page has no live demo.
+
+Package `Osirion.Blazor.Theming`, namespace `Osirion.Blazor.Theming.Components`. [Source on GitHub](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Theming/Components/OsirionStyles.razor).
 
 ## Usage
 
@@ -88,15 +91,22 @@ adapter is used: every adapter sets `--osirion-font-family-base` from the framew
 `Mode`, `Framework` and `UseStyles` override the matching `ThemingOptions` value for this component; left unset, the
 configured value applies. `CustomVariables` does not replace the configured value: both are written (see Behavior).
 
+<!-- osirion:parameters OsirionStyles -->
+
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `Mode` | `ThemeMode?` | `null` | The theme used when the visitor has not picked one: `Light`, `Dark` or `System`. Overrides `DefaultMode`. |
-| `Framework` | `CssFramework?` | `null` | Which adapter stylesheet to link. Overrides `Framework`; see the note below. |
-| `UseStyles` | `bool?` | `null` | When `true`, only the Core stylesheets are linked; the adapter and the theme stylesheet are left out. Overrides `UseDefaultStyles`. |
-| `CustomVariables` | `string?` | `null` | CSS declarations written into a `:root` block. |
+| `UseStyles` | `bool?` | `null` | Whether only the Core stylesheet is linked. When `true`, the framework adapter and the theme stylesheet are left out. When `null`, `ThemingOptions.UseDefaultStyles` applies (`false` unless configured). |
+| `CustomVariables` | `string?` | `null` | CSS declarations written, as raw CSS without encoding, into a `:root` block. The configured `ThemingOptions.CustomVariables` value is written in a second block after this one, so for the same property the configured value wins. Pass only values from your own code or configuration. |
+| `Framework` | `CssFramework?` | `null` | Which framework adapter stylesheet is linked: `Bootstrap`, `FluentUI`, `MudBlazor` or `Radzen`; `None` links none. When `null`, `ThemingOptions.Framework` applies. The framework class on `<html>` comes from the configured framework, so set the framework in configuration as well. |
+| `Mode` | `ThemeMode?` | `null` | The theme used when the visitor has not picked one: `Light`, `Dark` or `System`. `Inverted` is not handled by the page script, which then follows the operating system. When `null`, `ThemingOptions.DefaultMode` applies (`System` unless configured). |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
+| `Style` | `string?` | `null` | An inline style for the component's root element. |
 
-The inherited `Class`, `Style` and `Theme` parameters and any extra attributes have no effect: the component renders
-no wrapper element.
+<!-- /osirion:parameters -->
+
+The last three rows, `Theme`, `Class` and `Style`, are inherited from the component base class and have no effect
+here, nor do extra attributes: the component renders no wrapper element.
 
 Set the framework in configuration rather than only through the `Framework` parameter. The adapter's rules apply under
 a class on `<html>` (such as `osirion-bootstrap-integration`) that comes from the configured framework, so the
