@@ -95,7 +95,8 @@ configured in `appsettings.json`.
 includes, shows the front matter a post needs.
 
 For documentation instead of a blog, use `dotnet new osirion-docs -n MyDocs`: pages in `content/docs` with side
-navigation, a table of contents and previous and next links.
+navigation, a table of contents and previous and next links. For a product or company site, use
+`dotnet new osirion-site -n MySite`: a home page with a hero, steps and the latest news, plus News, About and Contact.
 
 ## Add Osirion to an existing Blazor app
 

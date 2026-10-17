@@ -18,12 +18,13 @@ dotnet run
 | --- | --- |
 | `osirion-blog` | A Markdown blog on .NET 10 with static server-side rendering: home page with the newest posts, a blog list, post pages, an About page, a 404 page, RSS, Atom and a sitemap. The menu and footer come from `appsettings.json`. |
 | `osirion-docs` | A Markdown documentation site: a home page, pages with side navigation in front matter order, a table of contents, previous and next links, a 404 page and a sitemap. |
+| `osirion-site` | A product or company site: a home page with a hero, three steps and the latest news, news from Markdown, About and Contact pages, RSS and a sitemap. |
 
 ## Options
 
 | Option | Default | Description |
 | --- | --- | --- |
-| `--SiteName` | `My Blog` (`My Docs`) | The name in the menu, the footer, the feeds and the page titles |
+| `--SiteName` | `My Blog`, `My Docs`, `My Product` | The name in the menu, the footer, the feeds and the page titles |
 | `--SiteUrl` | `https://example.com` | The public address the feeds, the sitemap and `robots.txt` link to |
 | `--skipRestore` | `false` | Skips the restore after the project is created |
 

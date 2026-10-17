@@ -1,0 +1,23 @@
+@page "/news"
+@page "/news/{Slug}"
+
+@if (string.IsNullOrWhiteSpace(Slug))
+{
+    <ContentListPage Directory="news"
+                     Title="News"
+                     Description="Announcements and updates, newest first."
+                     FeedUrl="/feed.xml"
+                     FeedTitle="Follow by RSS"
+                     NoContentText="No news yet: add a Markdown file to content/news." />
+}
+else
+{
+    @* Renders the item in content/news whose slug matches, or the not-found page with status 404. *@
+    <ArticlePage DirectoryName="news" ItemSlug="@Slug" />
+}
+
+@code {
+    /// <summary>The news item to show; without one the page lists every item.</summary>
+    [Parameter]
+    public string? Slug { get; set; }
+}
