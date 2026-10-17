@@ -2,7 +2,7 @@
 @using Osirion.Blazor.Cms.Web.Components
 @inherits OsirionContentDetailPageBase
 
-<div class="@GetDocumentPageClass() @Class" style="@Style" @attributes="Attributes">
+<div class="@GetDocumentPageClass()" style="@Style" @attributes="Attributes">
     @if (IsLoading)
     {
         <OsirionPageLoading ShowText="ShowLoadingText" Text="@LoadingText" />
