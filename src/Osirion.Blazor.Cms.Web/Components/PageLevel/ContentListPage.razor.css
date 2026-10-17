@@ -18,7 +18,11 @@
     font-size: var(--osirion-font-size-sm, 0.875rem);
 }
 
+/* The link stands alone, not inside a sentence, so it needs a 24 by 24 pixel target (WCAG 2.2, 2.5.8). */
 .osirion-content-list-page-feed a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
     color: var(--osirion-link-color, var(--osirion-action-primary, #2563eb));
 }
 

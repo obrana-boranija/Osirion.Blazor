@@ -21,3 +21,12 @@
 [class*="osirion-"]::after {
   box-sizing: border-box;
 }
+
+/* Without a CSS framework (Framework None), Osirion is the site's design system, so it paints the page in the theme's
+   colours; otherwise a dark theme draws light text on the browser's white page. OsirionStyles marks the page before
+   the first paint. A framework paints its own body, and :where() keeps this at zero specificity, so a site's own body
+   rule always wins. */
+:where(html[data-osirion-framework="None"]) body {
+  background-color: var(--osirion-background-primary, #fff);
+  color: var(--osirion-text-primary, #111827);
+}
