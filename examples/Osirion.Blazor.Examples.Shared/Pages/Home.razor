@@ -1,17 +1,99 @@
-﻿@page "/"
+@page "/"
 @using Osirion.Blazor.Cms.Components
 @using Osirion.Blazor.Cms.Web.Components
 @using Osirion.Blazor.Components
 @using Osirion.Blazor.Core.Models
+@using Osirion.Blazor.Theming.Components
 
+@* The headline and sub-line come from content/en/home.md. The hero is the page's only h1. The Markdown body holds the
+   quickest path and the themes text; the rest of the page follows in the order the site plan gives: the live
+   switcher, what is in the box, featured components, what server rendering means here, the latest posts and the
+   calls to action. *@
 <HomePage Content="Content"
           HeroAlignment="Alignment.Center"
-          HeroPrimaryButtonText="Get Started"
+          HeroPrimaryButtonText="Get started"
           HeroVariant="HeroVariant.Jumbotron"
-          HeroPrimaryButtonUrl="docs"
-          HeroSecondaryButtonText="Star on GitHub"
+          HeroPrimaryButtonUrl="/docs/getting-started"
+          HeroSecondaryButtonText="View on GitHub"
           HeroSecondaryButtonUrl="https://github.com/demonjic/Osirion.Blazor"
           ShowCategories="false"
+          ShowFeaturedContent="false"
+          ShowRecentContent="false"
           SchemaTypes="[ SchemaType.WebSite ]"
           ShowTags="false">
+    <div class="home-switcher">
+        <ThemePicker />
+        <ThemeToggle />
+        <a href="/themes">All palettes and tokens</a>
+    </div>
+
+    <section class="home-section" aria-labelledby="home-box">
+        <h2 id="home-box">What is in the box</h2>
+        <p>
+            <code>Osirion.Blazor</code> brings in every module below and the <code>AddOsirion</code> registration. You can
+            also reference single modules. <a href="/docs/packages">The packages page</a> has the setup for each.
+        </p>
+        <table class="home-table">
+            <thead>
+                <tr><th scope="col">Package</th><th scope="col">What it gives you</th></tr>
+            </thead>
+            <tbody>
+                <tr><th scope="row"><a href="/docs/packages/core"><code>Osirion.Blazor.Core</code></a></th><td>Layout, sections, cards, carousels, the contact form, cookie consent, loading and not-found states, and the HTML sanitizer.</td></tr>
+                <tr><th scope="row"><a href="/docs/packages/cms-web"><code>Osirion.Blazor.Cms.Web</code></a></th><td>Content lists, articles and whole pages (home, about, contact, documents), search, tags, categories, table of contents and SEO metadata.</td></tr>
+                <tr><th scope="row"><a href="/docs/packages/navigation"><code>Osirion.Blazor.Navigation</code></a></th><td><code>Menu</code>, <code>EnhancedNavigation</code> and <code>ScrollToTop</code>.</td></tr>
+                <tr><th scope="row"><a href="/docs/packages/theming"><code>Osirion.Blazor.Theming</code></a></th><td><code>OsirionStyles</code>, <code>ThemeToggle</code>, <code>ThemePicker</code> and the CSS framework adapters.</td></tr>
+                <tr><th scope="row"><a href="/docs/packages/analytics"><code>Osirion.Blazor.Analytics</code></a></th><td>Tracker components for Google Analytics 4, Microsoft Clarity, Matomo, Plausible, Umami and Yandex Metrica, held back until the visitor consents.</td></tr>
+                <tr><th scope="row"><code>Osirion.Blazor.Cms.Admin</code></th><td>Admin pages under <code>/osirion</code> for editing content in a GitHub repository, behind an authorization policy.</td></tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="home-section" aria-labelledby="home-components">
+        <h2 id="home-components">Featured components</h2>
+        <ul class="home-cards">
+            @foreach (var card in Cards)
+            {
+                <li class="home-card">
+                    <h3><a href="@card.Href">@card.Title</a></h3>
+                    <p>@card.Text</p>
+                </li>
+            }
+        </ul>
+        <p><a href="/components">Browse every component</a></p>
+    </section>
+
+    <section class="home-section" aria-labelledby="home-ssr">
+        <h2 id="home-ssr">Server-rendered by default</h2>
+        <p>
+            Every component renders its HTML on the server, so this page, its menu and its links are in the response before any
+            script runs, and search engines and other tools read the complete page. The pages need no interactive render mode.
+            A component that needs the browser, such as the theme toggle above, loads a small script only on a page that uses it.
+            The <a href="/docs/seo">SEO guide</a> shows what each page writes into its head.
+        </p>
+    </section>
+
+    <section class="home-section" aria-labelledby="home-posts">
+        <h2 id="home-posts">Latest posts</h2>
+        <ul class="home-cards">
+            @foreach (var post in LatestPosts)
+            {
+                <li class="home-card">
+                    <h3><a href="@("/" + post.Url.Trim('/'))">@post.Title</a></h3>
+                    <p><time datetime="@post.DateCreated.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture)">@post.DateCreated.ToString("d MMMM yyyy", System.Globalization.CultureInfo.InvariantCulture)</time></p>
+                    <p>@post.Description</p>
+                </li>
+            }
+        </ul>
+        <p><a href="/blog">All posts</a> and the <a href="/changelog">release notes</a></p>
+    </section>
+
+    <section class="home-section home-actions" aria-labelledby="home-source">
+        <h2 id="home-source">Use it, read it, improve it</h2>
+        <p>Osirion.Blazor is MIT licensed. The source, the issues and the example sites are on GitHub, and the packages are on NuGet.</p>
+        <p>
+            <a class="home-button" href="https://github.com/demonjic/Osirion.Blazor">Osirion.Blazor on GitHub</a>
+            <a class="home-button" href="https://www.nuget.org/packages/Osirion.Blazor">Osirion.Blazor on NuGet</a>
+            <a href="/about">About the project</a>
+        </p>
+    </section>
 </HomePage>

@@ -1,0 +1,95 @@
+.home-switcher {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.home-section {
+    max-width: 72rem;
+    margin: 3rem auto 0;
+    padding: 0 1rem;
+}
+
+/* 24px targets (WCAG 2.2, 2.5.8); underlined like every link in running text */
+.home-switcher a,
+.home-section a:not(.home-button) {
+    display: inline-block;
+    min-height: 24px;
+    line-height: 24px;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+}
+
+.home-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.home-table th,
+.home-table td,
+.home-table code {
+    overflow-wrap: anywhere;
+}
+
+@media (min-width: 48rem) {
+    .home-table th[scope="row"],
+    .home-table th[scope="row"] code {
+        overflow-wrap: normal;
+        white-space: nowrap;
+    }
+}
+
+.home-table th,
+.home-table td {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--osirion-border-color, #d0d7de);
+    text-align: left;
+    vertical-align: top;
+}
+
+.home-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+    gap: 1rem;
+    margin: 1.25rem 0;
+    padding: 0;
+    list-style: none;
+}
+
+.home-card {
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--osirion-border-color, #d0d7de);
+    border-radius: var(--osirion-radius-md, 0.5rem);
+    background: var(--osirion-background-primary, transparent);
+}
+
+.home-card h3 {
+    margin: 0 0 0.5rem;
+    font-size: 1.0625rem;
+}
+
+.home-card p {
+    margin: 0 0 0.5rem;
+}
+
+.home-actions p:last-child {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1rem;
+}
+
+.home-button {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--osirion-action-primary, currentColor);
+    border-radius: var(--osirion-radius-md, 0.5rem);
+    background: var(--osirion-action-primary, transparent);
+    color: var(--osirion-action-primary-text, inherit);
+    font-weight: 600;
+    text-decoration: none;
+}
