@@ -1,19 +1,12 @@
 @page "/contact"
 @using Osirion.Blazor.Cms.Web.Components
-@using Osirion.Blazor.Core.Models
 
-<ContactPage Description="Questions about Osirion.Blazor, bug reports and ideas for the next release."
-             FormTitle="Get in touch"
-             FormDescription="Have questions about Osirion.Blazor? We'd love to hear from you!"
-             ContactInfo="@contactInfo"
-             UseBuiltInEmailService />
+@* The channels are in content/en/contact.md. The site has no email provider configured (no Osirion:Email section), so
+   a contact form could not deliver a message and is replaced by an empty FormContent. *@
+<ContactPage FormContent="NoForm" />
 
 @code {
-    private readonly ContactInformation contactInfo = new()
+    private static void NoForm(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder)
     {
-        Address = "Belgrade, Serbia",
-        Phone = "+381 65 248 38 33",
-        Website = "https://getosirion.com",
-        Message = "We're here to help you build amazing Blazor applications!"
-    };
+    }
 }
