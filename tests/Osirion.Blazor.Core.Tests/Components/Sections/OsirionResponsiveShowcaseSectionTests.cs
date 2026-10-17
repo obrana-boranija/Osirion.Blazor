@@ -46,6 +46,33 @@ public class OsirionResponsiveShowcaseSectionTests : OsirionComponentTestBase
         cut.Find(".osirion-responsive-showcase").ClassList.ShouldBe(["osirion-responsive-showcase"]);
     }
 
+    // Fails before the fix: each button held only an aria-hidden icon, so a screen reader announced an unnamed button.
+    [Fact]
+    public void Showcase_ViewportButtons_HaveAnAccessibleName()
+    {
+        var cut = RenderStatic<OsirionResponsiveShowcaseSection>(_ => { });
+
+        cut.FindAll(".viewport-btn").Select(b => b.GetAttribute("aria-label")).ShouldBe(["Desktop", "Tablet", "Mobile"]);
+    }
+
+    // Fails before the fix: the bar was always rendered, because the parameter only toggled a class no stylesheet uses.
+    [Fact]
+    public void Showcase_BrowserChromeDisabled_LeavesOutTheBrowserBar()
+    {
+        var cut = RenderStatic<OsirionResponsiveShowcaseSection>(parameters => parameters
+            .Add(p => p.ShowBrowserChrome, false));
+
+        cut.FindAll(".viewport-chrome").ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void Showcase_BrowserChromeEnabled_RendersTheBrowserBar()
+    {
+        var cut = RenderStatic<OsirionResponsiveShowcaseSection>(_ => { });
+
+        cut.FindAll(".viewport-chrome").Count.ShouldBe(1);
+    }
+
     [Fact]
     public void Showcase_Defaults_MarksOnlyTheDesktopButtonActive()
     {
