@@ -237,9 +237,11 @@
 
 /* Code wrapper with header - applies to all themes */
     .osirion-html-renderer .osirion-code-wrapper {
+        --osirion-code-block-background: var(--osirion-code-background, var(--osirion-syntax-background-color, #151b23));
+        --osirion-code-block-text: var(--osirion-code-text, #f8f8f2);
         position: relative;
         margin: var(--osirion-spacing-4, 1rem) 0;
-        background-color: var(--osirion-syntax-background-color);
+        background-color: var(--osirion-code-block-background);
     }
 
     .osirion-html-renderer .osirion-code-header {
@@ -250,10 +252,11 @@
         border-radius: var(--osirion-radius-md, 0.375rem) var(--osirion-radius-md, 0.375rem) 0 0;
         border: 1px solid #444;
         border-bottom: none;
+        background-color: var(--osirion-code-block-background);
     }
 
     .osirion-html-renderer .osirion-language-label {
-        color: var(--osirion-color-primary);
+        color: var(--osirion-code-block-text);
         font-family: var(--osirion-font-family-mono, 'Consolas', 'Monaco', monospace);
         font-size: 0.875rem;
         font-weight: 600;
@@ -294,7 +297,7 @@
         border-radius: 0 0 var(--osirion-radius-md, 0.375rem) var(--osirion-radius-md, 0.375rem);
         border: 1px solid #444;
         border-top: none;
-        background-color: var(--osirion-syntax-background-color);
+        background-color: var(--osirion-code-block-background);
     }
 
 /* Line highlighting styles */
@@ -306,7 +309,7 @@
 
         .osirion-html-renderer .line-numbers-rows > span:hover {
             background: rgba(139, 148, 158, 0.2);
-            color: #f8f8f2;
+            color: var(--osirion-code-block-text);
         }
 
     /* Highlighted lines */

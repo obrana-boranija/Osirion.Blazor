@@ -92,6 +92,27 @@ public class ShippedStylesheetTests
         script.ShouldContain("classList.add('osirion-reveal-armed')");
     }
 
+    // Fails before the fix: the code block header and copy button used #f8f8f2 text on a background taken from
+    // --osirion-syntax-background-color, which only the palettes define, so in the light theme the button read 1.06:1
+    // on white and under a light palette its light text sat on a light header.
+    [Theory]
+    [InlineData("osirion-html-renderer.css")]
+    [InlineData("osirion-html-renderer.min.css")]
+    public void HtmlRenderer_CodeHeaderAndCopyButton_UseOnePairOfBlockColors(string file)
+    {
+        // Act
+        var css = Squash(File.ReadAllText(CoreCss(file)));
+
+        // Assert: one pair, from the palette tokens, with a dark fallback that matches the Okaidia code theme
+        css.ShouldContain("--osirion-code-block-background:var(--osirion-code-background,var(--osirion-syntax-background-color,#151b23));");
+        css.ShouldContain("--osirion-code-block-text:var(--osirion-code-text,#f8f8f2);");
+        System.Text.RegularExpressions.Regex.Matches(css, @"osirion-code-header\{[^}]*\}")[0].Value
+            .ShouldContain("background-color:var(--osirion-code-block-background)");
+        var button = System.Text.RegularExpressions.Regex.Matches(css, @"osirion-copy-button\{[^}]*\}")[0].Value;
+        button.ShouldContain(";color:var(--osirion-code-block-text);");
+        button.ShouldNotContain("#f8f8f2");
+    }
+
     private static string Squash(string css) => System.Text.RegularExpressions.Regex.Replace(
         System.Text.RegularExpressions.Regex.Replace(css, @"/\*.*?\*/", string.Empty, System.Text.RegularExpressions.RegexOptions.Singleline),
         @"\s+",
