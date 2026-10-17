@@ -42,6 +42,8 @@ internal static class SiteDemos
         Add<FooterDemo>(demos, "footer", "A footer");
         Add<StickySidebarDemo>(demos, "sticky-sidebar", "A sticky sidebar");
         Add<BackgroundPatternDemo>(demos, "background-pattern", "Background patterns");
+        Add<ThemeToggleDemo>(demos, "theme-toggle", "A theme toggle");
+        Add<ThemePickerDemo>(demos, "theme-picker", "A palette picker");
     }
 
     private static void Add<TDemo>(ContentDemoRegistry demos, string key, string title)

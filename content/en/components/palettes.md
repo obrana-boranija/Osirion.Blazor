@@ -7,7 +7,7 @@ permalink: /components/palettes
 description: Named color palettes for Osirion components, each with a light and a dark variant that meets WCAG 2.2 AA, chosen in configuration or by the visitor, applied before the first paint.
 author: Dejan Demonjić
 date: 2026-10-16
-last_modified: 2026-10-16
+last_modified: 2026-10-17
 featured_image: /assets/images/blazor-cover.png
 categories:
 - Components
@@ -29,7 +29,7 @@ redirect_from:
 custom_fields:
   group: theming
 seo_properties:
-  title: 'Color palettes for Blazor - Osirion.Blazor'
+  title: 'Palettes: named color palettes for Blazor'
   description: 'Six named palettes with light and dark variants, checked for WCAG 2.2 contrast and applied before the first paint.'
   image: /assets/images/blazor-cover.png
   canonical: 'https://getosirion.com/components/palettes'
@@ -52,7 +52,9 @@ seo_properties:
 
 A palette is a named set of colors for Osirion components. The mode (light, dark or system) stays separate: every
 palette has a light and a dark variant, and the [theme toggle](/components/theme-toggle) switches between
-them.
+them. To try the palettes on this site, see [Themes](/themes).
+
+Package `Osirion.Blazor.Theming`; the `ThemePalette` enum is in `Osirion.Blazor.Core`, namespace `Osirion.Blazor.Components`. [Source on GitHub](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Core/Enums/ThemePalette.cs).
 
 ## The palettes
 
@@ -167,6 +169,7 @@ Osirion.Blazor.Theming package. Studio approximates Visual Studio's themes, whic
 
 ## Related
 
+- [Themes](/themes): try the palettes and see every color token.
 - [Theming](/docs/packages/theming): setup, options and adapters.
 - [OsirionStyles](/components/osirion-styles): links the stylesheets and applies mode and palette.
 - [ThemePicker](/components/theme-picker): lets visitors pick a palette.
