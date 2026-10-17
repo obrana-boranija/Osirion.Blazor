@@ -84,4 +84,17 @@ public class SocialMetadataFormTests : AdminComponentTestContext
 
         seo.OgTitle.ShouldBe("only local");
     }
+
+    [Fact]
+    public void SocialMetadataForm_EmptyOgType_OffersADefaultOption()
+    {
+        // Fails before the fix: the select had no empty option, so an empty OgType showed "Article" and could not be
+        // chosen again once a type was picked.
+        var cut = Render<SocialMetadataForm>(parameters => parameters.Add(p => p.SeoMetadata, SeoMetadata.Create("t", "d")));
+
+        var options = cut.FindAll("#ogType option");
+        options[0].GetAttribute("value").ShouldBe(string.Empty);
+        options[0].TextContent.ShouldContain("Default");
+        cut.Find("#ogType").GetAttribute("value").ShouldBe(string.Empty);
+    }
 }

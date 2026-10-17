@@ -65,6 +65,7 @@
                     id="ogType"
                     @bind="SeoMetadata.OgType"
                     @bind:after="NotifySeoMetadataChanged">
+                <option value="">Default (from the schema type)</option>
                 <option value="article">Article</option>
                 <option value="website">Website</option>
                 <option value="blog">Blog</option>

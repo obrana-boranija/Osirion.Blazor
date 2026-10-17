@@ -133,4 +133,29 @@ public class MetadataPreviewTests : AdminComponentTestContext
 
         cut.FindAll("button[title='Refresh preview']").ShouldBeEmpty();
     }
+
+    [Fact]
+    public void MetadataPreview_EmptyRobotsAndOgType_LeavesTheirTagsOut()
+    {
+        // Fails before the fix: the preview printed content="" for both, tags no page would carry.
+        var cut = RenderPreview(FrontMatter.Create("Post"), SeoMetadata.Create("", ""));
+
+        var tags = MetaTags(cut);
+        tags.ShouldNotContain("name=\"robots\"");
+        tags.ShouldNotContain("og:type");
+    }
+
+    [Fact]
+    public void MetadataPreview_RobotsAndOgTypeSet_RendersTheirTags()
+    {
+        var seo = SeoMetadata.Create("", "");
+        seo.Robots = "noindex, follow";
+        seo.OgType = "website";
+
+        var cut = RenderPreview(FrontMatter.Create("Post"), seo);
+
+        var tags = MetaTags(cut);
+        tags.ShouldContain("<meta name=\"robots\" content=\"noindex, follow\" />");
+        tags.ShouldContain("<meta property=\"og:type\" content=\"website\" />");
+    }
 }

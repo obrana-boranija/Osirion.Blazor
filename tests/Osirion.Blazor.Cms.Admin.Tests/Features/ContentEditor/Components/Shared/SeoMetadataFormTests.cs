@@ -193,4 +193,17 @@ public class SeoMetadataFormTests : AdminComponentTestContext
 
         cut.Find("#jsonLd").GetAttribute("value").ShouldNotBeNull().ShouldContain("\"name\": \"My Title\"");
     }
+
+    [Fact]
+    public void SeoMetadataForm_EmptyRobots_OffersADefaultOption()
+    {
+        // Fails before the fix: the select had no empty option, so an empty Robots value showed "Index, Follow"
+        // and could not be chosen again once a robots value was picked.
+        var cut = RenderForm(SeoMetadata.Create("t", "d"));
+
+        var options = cut.FindAll("#robots option");
+        options[0].GetAttribute("value").ShouldBe(string.Empty);
+        options[0].TextContent.ShouldContain("Default");
+        cut.Find("#robots").GetAttribute("value").ShouldBe(string.Empty);
+    }
 }
