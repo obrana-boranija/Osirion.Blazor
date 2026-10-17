@@ -22,8 +22,6 @@
         var text = codeElement.textContent || codeElement.innerText || '';
         var textSpan = button.querySelector('.osirion-copy-text') || button;
         var originalText = textSpan.textContent;
-        // The renderer puts the language in the label ("Copy C# code to clipboard"), so put that one back, not a generic one
-        var originalLabel = button.getAttribute('aria-label');
 
         // Copy function
         function copyWithFallback() {
@@ -70,11 +68,7 @@
             setTimeout(function () {
                 textSpan.textContent = originalText;
                 button.classList.remove('copied');
-                if (originalLabel === null) {
-                    button.removeAttribute('aria-label');
-                } else {
-                    button.setAttribute('aria-label', originalLabel);
-                }
+                button.setAttribute('aria-label', 'Copy code to clipboard');
             }, 2000);
         }
 
