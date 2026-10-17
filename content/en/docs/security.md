@@ -122,14 +122,15 @@ not control, use the component's template parameter (`TitleContent` on `OsirionB
 
 ## 4. Write a Content Security Policy
 
-Osirion.Blazor 4.1.0 does not support a Content Security Policy without `'unsafe-inline'`: it writes inline script and
-inline style, and it adds no nonce. The table shows what each component needs, so you know what a stricter policy would
-break:
+`OsirionStyles` takes a `Nonce` parameter and writes it on its inline script and inline `style` elements, so a site that
+uses only `OsirionStyles` and `ThemeToggle` or `ThemePicker` can run a policy without `'unsafe-inline'` for them (see
+the nonce example below). The other components in the table still write inline script or style and add no nonce, so a
+site that uses them still needs `'unsafe-inline'` or must leave them out. The table shows what each component needs:
 
 | Component | Needs |
 | --- | --- |
-| `OsirionStyles` | An inline script that sets the theme attributes before first paint and starts `osirion-styles.js`, and inline `style` elements when `CustomVariables` are set |
-| `ThemeToggle` | An inline `onclick` attribute and an inline script. Under a strict policy the button does nothing |
+| `OsirionStyles` | An inline script that sets the theme attributes before first paint, and inline `style` elements when `CustomVariables` or generated theme variables are written. All of them carry the `Nonce` parameter as a `nonce` attribute, so `'nonce-...'` allows them. `osirion-styles.js` is a file from your own origin |
+| `ThemeToggle` | Nothing inline: a click listener in `theme-toggle.js` does the work, and the page needs `OsirionStyles` as well |
 | `ThemePicker` | Nothing inline: no inline script and no event handler attribute |
 | `ScrollToTop`, `EnhancedNavigation` | One inline script each |
 | `OsirionHtmlRenderer` | An inline `style` element for the accessible code theme (`UseAccessibleTheme`) and an inline `onclick` on the Copy button; Prism from `cdnjs.cloudflare.com`, or from `PrismBaseUrl` when you serve it yourself |
@@ -153,7 +154,34 @@ app.Use(async (context, next) =>
 
 Be clear about what this gives you: with `'unsafe-inline'` in `script-src`, the policy no longer stops an injected inline
 script. The sanitizer of step 1 is then the defense that matters, so do not weaken it. The script of `OsirionStyles`
-contains the current theme, so its text changes between requests and a fixed hash would not cover it.
+contains the current theme, so its text changes between requests and a fixed hash would not cover it; use a nonce.
+
+A strict policy for `OsirionStyles` needs a new random nonce for every response, the same value in the header and in the
+`Nonce` parameter. Generate it in middleware and hand it to the layout:
+
+```csharp
+app.Use(async (context, next) =>
+{
+    var nonce = Convert.ToBase64String(RandomNumberGenerator.GetBytes(16));
+    context.Items["csp-nonce"] = nonce;
+    context.Response.Headers.ContentSecurityPolicy =
+        $"default-src 'self'; script-src 'self' 'nonce-{nonce}'; style-src 'self' 'nonce-{nonce}'";
+    await next();
+});
+```
+
+```razor
+@* App.razor, a static server rendered component *@
+<OsirionStyles Nonce="@(HttpContext?.Items["csp-nonce"] as string)" />
+
+@code {
+    [CascadingParameter]
+    private HttpContext? HttpContext { get; set; }
+}
+```
+
+The nonce does not cover inline `style` attributes: a component with a `Style` parameter, or one that writes a `style`
+attribute, still needs `style-src-attr 'unsafe-inline'` or `style-src 'unsafe-inline'` without a nonce.
 
 ## 5. Know which cookies the library sets
 
