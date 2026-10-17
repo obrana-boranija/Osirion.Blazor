@@ -9,7 +9,8 @@
     <button id="@Id" type="button" class="theme-toggle-btn"
             title="@GetTooltipText()"
             aria-label="@GetAriaLabel()"
-            onclick="toggleThemeWithTransition()">
+            data-default-theme="@GetDefaultTheme()"
+            data-framework="@GetFramework()">
         @if (CurrentTheme == "dark")
         {
             <svg width="16" height="16" fill="currentColor" class="bi bi-sun theme-icon" viewBox="0 0 16 16" aria-hidden="true">
@@ -27,20 +28,3 @@
 </div>
 
 @LoadScript("./_content/Osirion.Blazor.Theming/js/theme-toggle.js")
-
-<script>
-    (function() {
-        const defaultTheme = '@GetDefaultTheme()';
-        const framework = '@GetFramework()';
-        
-        function setConfig() {
-            if (typeof window.setThemeToggleConfig === 'function') {
-                window.setThemeToggleConfig(defaultTheme, framework);
-            } else {
-                setTimeout(setConfig, 50);
-            }
-        }
-        
-        setConfig();
-    })();
-</script>

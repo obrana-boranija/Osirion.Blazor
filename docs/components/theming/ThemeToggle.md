@@ -15,5 +15,5 @@ Example
 
 Notes
 -----
-- The component wires client-side scripts that handle theme initialization and toggling. The button needs JavaScript; there is no server-side fallback form.
+- The component loads a script file that handles toggling through a click listener; it writes no inline script and no `onclick` attribute, so a strict Content Security Policy does not block it. The button needs JavaScript; there is no server-side fallback form.
 - For customization, update `ThemingOptions` or the theme service implementation.

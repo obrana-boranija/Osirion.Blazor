@@ -105,8 +105,8 @@ the markup, and neither are extra attributes.
 
 ## Behavior
 
-The button has `type="button"` and calls a function from `_content/Osirion.Blazor.Theming/js/theme-toggle.js` when
-clicked. It needs JavaScript, but no interactive render mode; there is no fallback without JavaScript. One click:
+The button has `type="button"`, and a click listener in `_content/Osirion.Blazor.Theming/js/theme-toggle.js` handles
+the click. It needs JavaScript, but no interactive render mode; there is no fallback without JavaScript. One click:
 
 1. switches `data-osirion-theme` on `<html>` between `light` and `dark`, and updates the framework's dark-mode marker
    (`data-bs-theme`, `mud-theme-dark`, `fluent-dark-theme` and `fluent-light-theme`, or `rz-dark-theme`);
@@ -124,8 +124,10 @@ corrects it once the page loads. The script also refreshes the button after enha
 The change fades through a short full-screen overlay. With `prefers-reduced-motion: reduce`, the theme changes at once
 without the fade. The scroll position is kept.
 
-The button calls the script through an inline `onclick` attribute, and the component writes a short inline script
-with no nonce, so a Content Security Policy must allow inline script.
+The toggle writes no inline script and no event handler attribute. Its settings (`data-default-theme` and
+`data-framework`) travel on the button, and a click listener in `theme-toggle.js` does the work, so the button runs
+under a Content Security Policy without `'unsafe-inline'`. `OsirionStyles`, which the page also needs, still writes a
+short inline script; see [its page](/components/osirion-styles#security).
 
 ### Accessibility
 
