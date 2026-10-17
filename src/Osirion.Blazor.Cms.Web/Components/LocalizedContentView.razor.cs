@@ -69,8 +69,10 @@ public partial class LocalizedContentView
 
     /// <summary>
     /// Builds a translation link from the localization id and the target locale. Without it the link is the
-    /// translation's <c>Url</c> under a leading slash, which the built-in providers store without the locale folder,
-    /// so add the locale here.
+    /// translation's <c>Url</c> under a leading slash. The built-in providers store that <c>Url</c> without the
+    /// locale folder, so when it is the same address as the shown item's, the link puts the translation's locale in
+    /// front (<c>/sr/blog/post</c>); a translation whose <c>Url</c> differs, for example from a <c>permalink</c>, keeps
+    /// its own. Set this when your routes are built another way.
     /// </summary>
     [Parameter]
     public Func<string, string, string>? TranslationUrlFormatter { get; set; }
@@ -102,8 +104,9 @@ public partial class LocalizedContentView
     public ContentItem? Item { get; set; }
 
     /// <summary>
-    /// The item the previous link points to. Loading with <see cref="ShowNavigationLinks"/> on replaces it when the
-    /// neighbor query finds the item.
+    /// The item the previous link points to. Loading with <see cref="ShowNavigationLinks"/> on looks the neighbors up
+    /// only when you pass neither this nor <see cref="NextItem"/>; values you pass are kept, as <c>ContentPage</c>
+    /// relies on for the neighbors it computed.
     /// </summary>
     [Parameter]
     public ContentItem? PreviousItem { get; set; }
@@ -115,8 +118,9 @@ public partial class LocalizedContentView
     public ContentItem? NextItem { get; set; }
 
     /// <summary>
-    /// Whether to show previous and next links to items in the same directory and locale, newest first. The component
-    /// looks the neighbors up whenever it loads, also for an item you pass.
+    /// Whether to show previous and next links to items in the same directory (matched by its path) and locale, newest
+    /// first. The component looks the neighbors up whenever it loads, also for an item you pass, unless you pass <see
+    /// cref="PreviousItem"/> or <see cref="NextItem"/>.
     /// </summary>
     [Parameter]
     public bool ShowNavigationLinks { get; set; } = false;
@@ -206,9 +210,25 @@ public partial class LocalizedContentView
         base.OnAfterRender(firstRender);
     }
 
+    // The neighbors this component found itself, so loading another item replaces them while neighbors the parent
+    // supplied (ContentPage computes its own) are left alone.
+    private ContentItem? _loadedPrevious;
+    private ContentItem? _loadedNext;
+
     private async Task LoadContentAsync()
     {
         IsLoading = true;
+        if (ReferenceEquals(PreviousItem, _loadedPrevious))
+        {
+            PreviousItem = null;
+        }
+
+        if (ReferenceEquals(NextItem, _loadedNext))
+        {
+            NextItem = null;
+        }
+
+        _loadedPrevious = _loadedNext = null;
         try
         {
             var provider = ContentProviderManager.GetDefaultProvider();
@@ -225,12 +245,12 @@ public partial class LocalizedContentView
                     LocalizationId = Item.ContentId;
                     await LoadTranslationsAsync();
 
-                    if (ShowNavigationLinks)
+                    if (ShowNavigationLinks && PreviousItem is null && NextItem is null)
                     {
-                        // If we need previous and next items, load them
+                        // Providers match a directory by its path, as ContentPage and DocumentPage ask for it
                         var allItems = await provider.GetItemsByQueryAsync(new ContentQuery
                         {
-                            Directory = Item.Directory?.Name,
+                            Directory = Item.Directory?.Path,
                             Locale = CurrentLocale,
                             SortBy = SortField.Date,
                             SortDirection = SortDirection.Descending
@@ -249,12 +269,12 @@ public partial class LocalizedContentView
 
                         if (currentIndex > 0)
                         {
-                            PreviousItem = allItems[currentIndex - 1];
+                            PreviousItem = _loadedPrevious = allItems[currentIndex - 1];
                         }
 
                         if (currentIndex >= 0 && currentIndex < allItems.Count - 1)
                         {
-                            NextItem = allItems[currentIndex + 1];
+                            NextItem = _loadedNext = allItems[currentIndex + 1];
                         }
                     }
                 }
@@ -318,9 +338,19 @@ public partial class LocalizedContentView
 
     private string GetTranslationUrl(string locale)
     {
+        if (TranslationUrlFormatter is { } formatter)
+        {
+            return formatter(LocalizationId ?? string.Empty, locale);
+        }
+
         // A leading slash on the stored URL must not produce "//", which browsers read as another host.
-        return TranslationUrlFormatter?.Invoke(LocalizationId ?? string.Empty, locale)
-            ?? "/" + AvailableTranslations[locale].TrimStart('/');
+        var url = AvailableTranslations[locale].Trim('/');
+
+        // Providers store the same URL for every translation, so a link that would point at the address the visitor is
+        // on already puts the translation's locale in front of it.
+        return Item is not null && string.Equals(url, Item.Url.Trim('/'), StringComparison.OrdinalIgnoreCase)
+            ? $"/{Uri.EscapeDataString(locale)}/{url}"
+            : "/" + url;
     }
 
     private string GetTranslationClass(string locale)

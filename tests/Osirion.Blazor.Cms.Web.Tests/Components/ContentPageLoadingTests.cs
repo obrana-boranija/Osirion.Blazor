@@ -191,6 +191,10 @@ public class ContentPageLoadingTests : CmsWebComponentTestBase
         directory.AddItem(item);
         _provider.GetItemByUrlAsync("first").Returns(item);
 
+        // With a neighbor found, the page hands both to its view, which then runs no query of its own.
+        _provider.GetItemsByQueryAsync(Arg.Any<ContentQuery>())
+            .Returns(Task.FromResult<IReadOnlyList<ContentItem>?>([item, Item("second")]));
+
         RenderPage(p => p.Add(c => c.Path, "first"));
 
         _provider.Received(1).GetItemsByQueryAsync(Arg.Is<ContentQuery>(q =>

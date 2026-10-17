@@ -103,14 +103,14 @@ is left out.
 | `LoadingText` | `string` | `"Loading content..."` | The text shown while the item loads, in interactive render modes only. A statically rendered response is sent once the item has loaded. |
 | `NotFoundText` | `string` | `"Content not found."` | The message shown when no item is found, when loading fails (the error is logged) and when neither `Item` nor `Path` is set. |
 | `LocaleNameFormatter` | `Func<string, string>?` | `null` | Builds the link text of a translation from its locale code. Without it the text is the code in upper case, such as `SR`. |
-| `TranslationUrlFormatter` | `Func<string, string, string>?` | `null` | Builds a translation link from the localization id and the target locale. Without it the link is the translation's `Url` under a leading slash, which the built-in providers store without the locale folder, so add the locale here. |
+| `TranslationUrlFormatter` | `Func<string, string, string>?` | `null` | Builds a translation link from the localization id and the target locale. Without it the link is the translation's `Url` under a leading slash. The built-in providers store that `Url` without the locale folder, so when it is the same address as the shown item's, the link puts the translation's locale in front (`/sr/blog/post`); a translation whose `Url` differs, for example from a `permalink`, keeps its own. Set this when your routes are built another way. |
 | `CategoryUrlFormatter` | `Func<string, string>?` | `null` | Builds a category link from the category name. Without it the link is `/{CurrentLocale}/category/{slug}`. |
 | `TagUrlFormatter` | `Func<string, string>?` | `null` | Builds a tag link from the tag name. Without it the link is `/{CurrentLocale}/tag/{slug}`. |
 | `ContentUrlFormatter` | `Func<ContentItem, string>?` | `null` | Builds the links of the previous and next items from the item. Without it a link is `/{item.Path}`, the source path, which is usually not the public address. |
 | `Item` | `ContentItem?` | `null` | The item to render. When it is set, the component loads its translations (and the neighbors when `ShowNavigationLinks` is on) and never loads by `Path`. |
-| `PreviousItem` | `ContentItem?` | `null` | The item the previous link points to. Loading with `ShowNavigationLinks` on replaces it when the neighbor query finds the item. |
+| `PreviousItem` | `ContentItem?` | `null` | The item the previous link points to. Loading with `ShowNavigationLinks` on looks the neighbors up only when you pass neither this nor `NextItem`; values you pass are kept, as `ContentPage` relies on for the neighbors it computed. |
 | `NextItem` | `ContentItem?` | `null` | The item the next link points to. See `PreviousItem`. |
-| `ShowNavigationLinks` | `bool` | `false` | Whether to show previous and next links to items in the same directory and locale, newest first. The component looks the neighbors up whenever it loads, also for an item you pass. |
+| `ShowNavigationLinks` | `bool` | `false` | Whether to show previous and next links to items in the same directory (matched by its path) and locale, newest first. The component looks the neighbors up whenever it loads, also for an item you pass, unless you pass `PreviousItem` or `NextItem`. |
 | `ShowJumbotron` | `bool` | `true` | Whether to render the header: the title as the page's `h1`, the author ("By ..."), the date, the reading time and the featured image. When it is on, the body leaves out its own leading `h1` so the title appears once; when it is off, the body is written as it is. |
 | `EnableLocalization` | `bool` | `true` | Whether to look up the item's translations and list them. The links appear only when the item has more than one translation, and the current locale is left out. |
 | `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
@@ -129,9 +129,18 @@ The `Theme` and `Style` rows come from the base class. `LocalizedContentView` do
   address, pass `Item` rather than a new `Path`.
 - **Header.** With `ShowJumbotron` on, the header shows the title as the page's `h1`, and the body leaves out its
   own leading `h1` so the title appears once. With it off, the body is written as it is, leading `h1` included.
-- **Default URLs.** The built-in providers drop the locale folder from an item's `Url`, so the default translation
-  link is the same path for every language. Add the locale with `TranslationUrlFormatter`. The default previous and
-  next link is the item's source path; set `ContentUrlFormatter` when you show navigation links.
+- **Default URLs.** The built-in providers drop the locale folder from an item's `Url`, so every translation stores the
+  same address. When a translation's `Url` is the same address as the shown item's, its link puts the translation's
+  locale in front (`/sr/blog/post`), so it does not point at the page the visitor is on. A translation whose `Url`
+  differs, for example from a `permalink`, keeps its own. Set `TranslationUrlFormatter` when your routes are built
+  another way, such as a default language without a prefix. The default previous and next link is the item's source
+  path; set `ContentUrlFormatter` when you show navigation links.
+- **Neighbors.** With `ShowNavigationLinks` on, the component looks up the previous and next items of the item's
+  directory, matched by its path, and locale, unless you pass `PreviousItem` or `NextItem`; what you pass is kept and
+  nothing is looked up. Inside [ContentPage](/components/content-page) the neighbors the page computed are the ones
+  shown.
+- **Locale changes.** `OnLocaleChanged` is never raised. The translation links are ordinary links that load another
+  page, so the component never changes locale itself; read the locale from the new page's route instead.
 - **Not found.** Without an item the component renders `NotFoundText` in a plain block and signals 404, as
   `ArticlePage` does: `NavigationManager.NotFound()` on .NET 10, the status code of the request on .NET 9, while the
   response has not started. Render it only when you have an item or a path to load.
