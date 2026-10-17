@@ -106,7 +106,7 @@ Each member goes to the parameter of the same name on `OsirionMetricCard`; the c
   metrics. With no metrics nothing is rendered.
 - `Class`, `CssClass` and `Style` are applied to the `ul`, as are unmatched attributes. The list has `role="list"`, which
   keeps its list semantics where the browser drops them for an unstyled list.
-- The grid's own CSS makes each card fill its cell, so the cards of a row are equally tall with or without Bootstrap.
+- Each card fills its cell with its own CSS, not a framework class, so the cards of a row are equally tall with or without Bootstrap.
 
 ## Styling
 

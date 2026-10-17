@@ -18,17 +18,17 @@ public partial class ComponentStylesheetTests
         css.ShouldNotContain("#123b2b");
     }
 
-    // Fails before the fix: the grid passed the Bootstrap-only class h-100 to each card and had no rule of its own
-    // that makes a card fill its cell.
+    // The grid no longer passes the Bootstrap-only class h-100 to each card. A rule in the grid's scoped stylesheet
+    // cannot reach the card's root, which carries the card's scope, so the card's own rule is what fills the cell.
     [Fact]
     public void MetricGrid_Cells_StretchTheirCardWithoutAFrameworkClass()
     {
         // Act
-        var css = Squash(ComponentCss("Sections", "OsirionMetricGrid.razor.css"));
+        var card = System.Text.RegularExpressions.Regex.Match(
+            Squash(ComponentCss("Cards", "OsirionMetricCard.razor.css")), @"(?:^|\})\.osirion-metric-card\{[^}]*\}").Value;
 
         // Assert
-        css.ShouldContain(".osirion-metric-grid>li>*{");
-        css.ShouldContain(".osirion-metric-grid>li>*{height:100%;}");
+        card.ShouldContain("height:100%;");
     }
 
     // Fails before the fix: rgba(var(--token, #hex), .05) is invalid when the token holds a color, so the browser
