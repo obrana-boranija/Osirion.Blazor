@@ -140,8 +140,19 @@ public partial class LocalizedContentView
     [Parameter]
     public bool EnableLocalization { get; set; } = true;
 
+    /// <summary>
+    /// The level of the heading that holds the title, <c>1</c> to <c>6</c> (<c>h1</c> to <c>h6</c>). It defaults to
+    /// <c>1</c>, the page's own heading; set <c>2</c> for a view embedded in a page that has its own <c>h1</c>, so the
+    /// page keeps a single one. A value outside the range is moved to the nearest level. The title keeps its look at
+    /// every level.
+    /// </summary>
+    [Parameter]
+    public int HeadingLevel { get; set; } = 1;
+
     private Dictionary<string, string> AvailableTranslations { get; set; } = new();
     private bool IsLoading { get; set; } = true;
+
+    private int TitleLevel => Math.Clamp(HeadingLevel, 1, 6);
     private bool HasMultipleTranslations => AvailableTranslations.Count > 1;
     private bool ShowTranslations => EnableLocalization && HasMultipleTranslations;
 

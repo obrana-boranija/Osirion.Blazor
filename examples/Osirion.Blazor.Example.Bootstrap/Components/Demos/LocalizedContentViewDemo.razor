@@ -11,6 +11,7 @@
     <div style="max-height: 28rem; overflow: auto; padding: 1rem; border: 1px solid var(--osirion-border-color, #d1d5db); border-radius: 0.5rem;"
          tabindex="0" role="region" aria-label="The release notes page in a LocalizedContentView">
         <LocalizedContentView Item="@item"
+                              HeadingLevel="2"
                               CurrentLocale="en"
                               LocaleNameFormatter="@(code => code switch { "en" => "English", "sr" => "Srpski", _ => code })"
                               TranslationUrlFormatter="@((id, locale) => $"/{locale}/{item?.Url}")"

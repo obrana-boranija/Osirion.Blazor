@@ -17,7 +17,7 @@
     margin: 0 auto;
 }
 
-    .osirion-content-article h1 {
+    .osirion-content-article .osirion-content-title {
         font-size: var(--osirion-font-size-3xl, 2.25rem);
         line-height: 1.2;
         margin-bottom: var(--osirion-spacing-6, 1.5rem);
@@ -297,7 +297,7 @@
 
 /* Responsive adjustments */
 @media (max-width: 1024px) {
-    .osirion-content-article h1 {
+    .osirion-content-article .osirion-content-title {
         font-size: var(--osirion-font-size-2xl, 1.5rem);
     }
 
@@ -311,7 +311,7 @@
         padding: var(--osirion-spacing-4, 1rem);
     }
 
-    .osirion-content-article h1 {
+    .osirion-content-article .osirion-content-title {
         font-size: var(--osirion-font-size-xl, 1.25rem);
         margin-bottom: var(--osirion-spacing-4, 1rem);
     }

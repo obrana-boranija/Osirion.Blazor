@@ -59,8 +59,8 @@ localized-content-view
 
 The demo loads this site's own page for the 1.5 release notes and shows it in a scrolling frame. This site's content is
 written in English only, so the item has no translations and the language links do not appear; they show above the
-article once a second language exists. `LocalizedContentView` writes the title as an `h1`, so the demo adds a second
-`h1` to this documentation page.
+article once a second language exists. `LocalizedContentView` writes the title as an `h1` unless you set
+`HeadingLevel`; the demo sets it to `2`, because this documentation page has its own `h1`.
 
 ## Usage
 
@@ -113,6 +113,7 @@ is left out.
 | `ShowNavigationLinks` | `bool` | `false` | Whether to show previous and next links to items in the same directory (matched by its path) and locale, newest first. The component looks the neighbors up whenever it loads, also for an item you pass, unless you pass `PreviousItem` or `NextItem`. |
 | `ShowJumbotron` | `bool` | `true` | Whether to render the header: the title as the page's `h1`, the author ("By ..."), the date, the reading time and the featured image. When it is on, the body leaves out its own leading `h1` so the title appears once; when it is off, the body is written as it is. |
 | `EnableLocalization` | `bool` | `true` | Whether to look up the item's translations and list them. The links appear only when the item has more than one translation, and the current locale is left out. |
+| `HeadingLevel` | `int` | `1` | The level of the heading that holds the title, `1` to `6` (`h1` to `h6`). It defaults to `1`, the page's own heading; set `2` for a view embedded in a page that has its own `h1`, so the page keeps a single one. A value outside the range is moved to the nearest level. The title keeps its look at every level. |
 | `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
 | `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
 | `Style` | `string?` | `null` | An inline style for the component's root element. |
@@ -127,8 +128,9 @@ The `Theme` and `Style` rows come from the base class. `LocalizedContentView` do
   script. Translation, category, tag and navigation links are ordinary links.
 - **Loading.** The component loads by `Path` only while `Item` is null, so in an interactive page that changes
   address, pass `Item` rather than a new `Path`.
-- **Header.** With `ShowJumbotron` on, the header shows the title as the page's `h1`, and the body leaves out its
-  own leading `h1` so the title appears once. With it off, the body is written as it is, leading `h1` included.
+- **Header.** With `ShowJumbotron` on, the header shows the title as an `h1` (set `HeadingLevel`, 1 to 6, for another
+  level, `2` when the page has its own `h1`), and the body leaves out its own leading `h1` so the title appears once.
+  With it off, the body is written as it is, leading `h1` included.
 - **Default URLs.** The built-in providers drop the locale folder from an item's `Url`, so every translation stores the
   same address. When a translation's `Url` is the same address as the shown item's, its link puts the translation's
   locale in front (`/sr/blog/post`), so it does not point at the page the visitor is on. A translation whose `Url`
@@ -146,7 +148,7 @@ The `Theme` and `Style` rows come from the base class. `LocalizedContentView` do
   response has not started. Render it only when you have an item or a path to load.
 - **Security.** The body passes through the registered `IHtmlContentSanitizer` before it is written as HTML, the
   same allow-list `ContentView` uses. Titles, names and locale labels are encoded as text.
-- **Images.** The featured image uses the title as `alt` text and, from 4.0, loads eagerly with
+- **Images.** The featured image takes its `alt` text from the `featured_image_alt` entry of the front matter's `custom_fields`, for example `custom_fields:` with `featured_image_alt: A bridge at dusk` below it. The front matter model has no property of its own for it, and a `featured_image_alt` key outside `custom_fields` is ignored. Without the entry the `alt` is empty, which marks the image as decorative, instead of repeating the title that the heading beside it already shows. From 4.0 the image loads eagerly with
   `fetchpriority="high"`.
 - **SEO.** Nothing is written to the head. For `hreflang` links, pass the translations to
   [SeoMetadataRenderer](/components/seo-metadata-renderer) as `AlternateLanguageUrls`.

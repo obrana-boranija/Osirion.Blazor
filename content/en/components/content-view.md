@@ -59,7 +59,8 @@ content-view
 
 The demo loads this site's own page for the 1.5 release notes and shows it in a scrolling frame. The neighbors come
 from the same folder, newest first, and the formatters point the links at this site's routes. `ContentView` writes
-the title as an `h1`, so the demo adds a second `h1` to this documentation page.
+the title as an `h1` unless you set `HeadingLevel`; the demo sets it to `2`, because this documentation page has
+its own `h1`.
 
 ## Usage
 
@@ -98,6 +99,7 @@ Or let the component load it by the item's source path (`ContentItem.Path`, as t
 | `PreviousItem` | `ContentItem?` | `null` | The item the previous link points to. Loading by `Path` with `ShowNavigationLinks` on fills it, and clears what it filled when the path changes; a value you set is left alone until then. |
 | `NextItem` | `ContentItem?` | `null` | The item the next link points to. See `PreviousItem`. |
 | `ShowNavigationLinks` | `bool` | `false` | Whether the footer shows previous and next links. When the component loads by `Path` it also looks the neighbors up with a directory query built from the folder part of the path, newest first. For an item you pass in `Item`, set `PreviousItem` and `NextItem` yourself. |
+| `HeadingLevel` | `int` | `1` | The level of the heading that holds the title, `1` to `6` (`h1` to `h6`). It defaults to `1`, the page's own heading; set `2` for a view embedded in a page that has its own `h1`, so the page keeps a single one. A value outside the range is moved to the nearest level. The title keeps its look at every level. |
 | `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
 | `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
 | `Style` | `string?` | `null` | An inline style for the component's root element. |
@@ -124,9 +126,11 @@ show navigation links, set `ContentUrlFormatter`, for example `item => "/" + ite
   inline styles (apart from table cell alignment) are removed. The result is cached until the content changes. To allow a custom element, register it with
   `AddOsirionHtmlSanitizer(options => options.AllowElement("chart", "type", "data"))`. Title, author and tags are
   encoded as text.
-- **Headings.** The title is the page's `h1`. The body's own leading `h1` (the `# Title` line of the Markdown) is left
-  out, so the title appears once; a top-level heading further down is kept.
-- **Images.** The featured image uses the item title as its `alt` text. From 4.0 it loads eagerly with
+- **Headings.** The title is an `h1` by default, the page's own heading. Set `HeadingLevel` (1 to 6) to write another
+  level, `2` for a view embedded in a page that has its own `h1`; the title keeps its look. The body's own leading
+  `h1` (the `# Title` line of the Markdown) is left out, so the title appears once; a top-level heading further down is
+  kept.
+- **Images.** The featured image takes its `alt` text from the `featured_image_alt` entry of the front matter's `custom_fields`, for example `custom_fields:` with `featured_image_alt: A bridge at dusk` below it. The front matter model has no property of its own for it, and a `featured_image_alt` key outside `custom_fields` is ignored. Without the entry the `alt` is empty, which marks the image as decorative, instead of repeating the title that the heading beside it already shows. From 4.0 the image loads eagerly with
   `fetchpriority="high"` and async decoding, because it is usually the largest element on an article page.
 - **Dates.** The date is `DateCreated` (the `date` front matter), formatted as `MMM d, yyyy`.
 - **SEO.** `ContentView` writes nothing to the page head. Render a

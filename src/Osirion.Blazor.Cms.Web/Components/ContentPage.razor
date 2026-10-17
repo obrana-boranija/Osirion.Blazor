@@ -100,7 +100,7 @@
                                 @if (!string.IsNullOrWhiteSpace(item.FeaturedImageUrl))
                                 {
                                     <div class="osirion-content-related-image-container">
-                                        <img src="@item.FeaturedImageUrl" alt="@item.Title" class="osirion-content-related-image" loading="lazy" />
+                                        <img src="@item.FeaturedImageUrl" alt="@ContentImages.FeaturedImageAlt(item)" class="osirion-content-related-image" loading="lazy" />
                                     </div>
                                 }
                                 <div class="osirion-content-related-body">
