@@ -8,25 +8,29 @@ namespace Osirion.Blazor.Components;
 public partial class OsirionStickySidebar
 {
     /// <summary>
-    /// Gets or sets the content to display in the sidebar
+    /// Gets or sets the content of the <c>aside</c> element.
     /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
-    /// Gets or sets the offset from the top of the viewport (in pixels). Default 2.5rem
+    /// Gets or sets the intended offset from the top of the viewport, in pixels (default 40, which is 2.5rem). The
+    /// value is not written to the markup, so it has no effect; set the CSS custom property
+    /// <c>--osirion-header-height</c> instead.
     /// </summary>
     [Parameter]
     public int TopOffset { get; set; } = (int)(2.5 * 16);
 
     /// <summary>
-    /// Gets or sets whether to hide the scrollbar
+    /// Gets or sets whether the scrollbar is hidden (class <c>osirion-no-scrollbar</c>). The sidebar still scrolls with
+    /// the wheel, touch and keyboard.
     /// </summary>
     [Parameter]
     public bool HideScrollbar { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets whether the sidebar should stick to the top
+    /// Gets or sets whether the sidebar sticks below the header. <see langword="false"/> adds <c>osirion-non-sticky</c>,
+    /// which renders a normal, static <c>aside</c> with its natural height.
     /// </summary>
     [Parameter]
     public bool IsSticky { get; set; } = true;
