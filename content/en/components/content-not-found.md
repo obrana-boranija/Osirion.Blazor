@@ -7,7 +7,7 @@ permalink: /components/content-not-found
 description: OsirionContentNotFound renders a 404 or empty state with an error code, message, buttons, suggested links, a search slot and a contact address.
 author: Dejan Demonjić
 date: 2025-09-03
-last_modified: 2026-10-11
+last_modified: 2026-10-17
 featured_image: /assets/images/blazor-cover.png
 categories:
 - Components
@@ -29,7 +29,7 @@ redirect_from:
 custom_fields:
   group: forms-and-feedback
 seo_properties:
-  title: 'OsirionContentNotFound - Osirion.Blazor'
+  title: 'OsirionContentNotFound: 404 and empty state for Blazor'
   description: 'A 404 or empty state for Blazor with an error code, message, buttons, suggested links and a contact address, rendered without script.'
   image: /assets/images/blazor-cover.png
   canonical: 'https://getosirion.com/components/content-not-found'
@@ -54,6 +54,15 @@ seo_properties:
 buttons back into the site, with optional suggested links, a search slot and a contact address. With the error code
 removed, it also works as an empty state for a list or search. The CMS page components show it when their content
 is missing.
+
+Package `Osirion.Blazor.Core`, namespace `Osirion.Blazor.Components`. [Source on GitHub](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Core/Components/States/OsirionContentNotFound.razor).
+
+```demo
+content-not-found
+```
+
+The demo only renders the markup. It does not set the status code of this page, which stays 200. The component's
+title is an `<h1>`, so the demo adds a second one to this page; on your own page it would be the only one.
 
 ## Usage
 
@@ -99,34 +108,40 @@ use this where the empty state is the page's main content, such as a blog index 
 
 ## Parameters
 
+<!-- osirion:parameters OsirionContentNotFound -->
+
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `ErrorCode` | `string?` | `"404"` | Large code above the title. Hidden when empty. |
-| `Title` | `string` | `"Page Not Found"` | Heading, rendered as an `<h1>`. |
-| `Message` | `string` | `"The page you're looking for doesn't exist or has been moved."` | Paragraph under the title. Hidden when empty. |
-| `ShowIcon` | `bool` | `true` | Shows an icon above the text. |
-| `Icon` | `RenderFragment?` | `null` | Your own icon markup. Takes precedence over `IconUrl`. |
-| `IconUrl` | `string?` | `null` | An image used as the icon. |
-| `IconAlt` | `string` | `"Not Found"` | Alternative text of the `IconUrl` image. |
-| `UseDefaultIcon` | `bool` | `true` | Shows the built-in magnifier icon when neither `Icon` nor `IconUrl` is set. |
-| `PrimaryButtonText` | `string?` | `"Go to Homepage"` | Text of the primary button. Hidden when empty. |
-| `PrimaryButtonUrl` | `string` | `"/"` | Address of the primary button. |
-| `SecondaryButtonText` | `string?` | `null` | Text of the outlined secondary button. Hidden when empty. |
-| `SecondaryButtonUrl` | `string` | `"/"` | Address of the secondary button. |
-| `Actions` | `RenderFragment?` | `null` | More buttons or links, after the two buttons. |
-| `ShowSuggestions` | `bool` | `false` | Shows the `Suggestions` list. |
-| `SuggestionsTitle` | `string` | `"Here are some helpful links:"` | Text above the suggestions. |
-| `Suggestions` | `IReadOnlyList<ContentNotFoundSuggestion>?` | `null` | Links to suggest. |
-| `ShowSearchBox` | `bool` | `false` | Renders `SearchContent`. |
-| `SearchContent` | `RenderFragment?` | `null` | A search form of your choice, such as the CMS `SearchBox`. |
-| `ShowContactInfo` | `bool` | `false` | Shows `ContactMessage` and a `mailto:` link when `ContactEmail` is set. |
-| `ContactMessage` | `string` | `"Need help? Contact us at"` | Text before the email address. |
-| `ContactEmail` | `string?` | `null` | Address for the contact line. |
-| `ChildContent` | `RenderFragment?` | `null` | Any other content, after the search slot. |
-| `Variant` | `string` | `"default"` | `default`, `minimal`, `centered` or `hero`; see Styling. |
-| `Size` | `string` | `"medium"` | `small`, `medium`, `large` or `full`; sets the minimum height. |
-| `BackgroundPattern` | `BackgroundPatternType?` | `null` | A decorative pattern behind the content. |
-| `Class` | `string?` | `null` | Extra CSS classes on the root element. |
+| `ErrorCode` | `string?` | `"404"` | The large code above the title, such as `404`. Null or empty hides it, which suits an empty state. |
+| `Title` | `string` | `"Page Not Found"` | The heading, rendered as an `h1`. |
+| `Message` | `string` | `"The page you're looking for doesn't exist or has been moved."` | The paragraph under the title. Empty hides it. |
+| `ShowIcon` | `bool` | `true` | Whether an icon is shown above the text. |
+| `UseDefaultIcon` | `bool` | `true` | Whether the built-in magnifier icon is shown when neither `Icon` nor `IconUrl` is set. |
+| `Icon` | `RenderFragment?` | `null` | Your own icon markup. It takes precedence over `IconUrl` and the default icon. |
+| `IconUrl` | `string?` | `null` | The address of an image used as the icon, when `Icon` is not set. |
+| `IconAlt` | `string` | `"Not Found"` | The alternative text of the `IconUrl` image. |
+| `PrimaryButtonText` | `string?` | `"Go to Homepage"` | The text of the primary button, a link to `PrimaryButtonUrl`. Null or empty hides the button. |
+| `PrimaryButtonUrl` | `string` | `"/"` | The address of the primary button. |
+| `SecondaryButtonText` | `string?` | `null` | The text of the outlined secondary button, a link to `SecondaryButtonUrl`. Null or empty, the default, hides it. |
+| `SecondaryButtonUrl` | `string` | `"/"` | The address of the secondary button. |
+| `Actions` | `RenderFragment?` | `null` | More buttons or links, rendered after the two buttons. |
+| `ShowSuggestions` | `bool` | `false` | Whether the `Suggestions` list is shown. |
+| `SuggestionsTitle` | `string` | `"Here are some helpful links:"` | The text above the suggestions. |
+| `Suggestions` | `IReadOnlyList<ContentNotFoundSuggestion>?` | `null` | The links to suggest. They are shown only when `ShowSuggestions` is true and the list is not empty. |
+| `ShowSearchBox` | `bool` | `false` | Whether `SearchContent` is rendered. |
+| `SearchContent` | `RenderFragment?` | `null` | A search form of your choice. It is rendered only when `ShowSearchBox` is true. |
+| `ShowContactInfo` | `bool` | `false` | Whether the contact line is shown. It also needs `ContactEmail`. |
+| `ContactMessage` | `string` | `"Need help? Contact us at"` | The text before the email address. |
+| `ContactEmail` | `string?` | `null` | The address in the contact line, written as a `mailto:` link. |
+| `Variant` | `string` | `"default"` | The look: `default` (plain), `minimal` (smaller text and icon), `centered` (a rounded panel in the secondary background) or `hero` (full window height with a gradient). Added as the class `osirion-content-not-found-{Variant}`. |
+| `Size` | `string` | `"medium"` | The minimum height: `small`, `medium`, `large` or `full` (the window below the header). Added as the class `osirion-content-not-found-{Size}`. |
+| `BackgroundPattern` | `BackgroundPatternType?` | `null` | A decorative pattern behind the content. Null, the default, shows none. |
+| `ChildContent` | `RenderFragment?` | `null` | Other content, rendered after the search slot and before the buttons. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
+| `Style` | `string?` | `null` | An inline style for the component's root element. |
+
+<!-- /osirion:parameters -->
 
 Unmatched attributes are written to the root `<div>`. A `ContentNotFoundSuggestion` has `Text`, `Url`, an optional
 `Description` shown under the link, and `Target` (default `_self`).
@@ -179,13 +194,14 @@ The root has `osirion-content-not-found`, `osirion-content-not-found-{Variant}` 
 | `centered` | On a rounded panel in `--osirion-background-secondary` |
 | `hero` | Full window height below the header, with a gradient background and a large gradient error code |
 
-The `full` size fills the window below the header, using `--osirion-header-height` (default `4rem`). Inner elements
-use `osirion-content-not-found-code`, `-title`, `-message`, `-suggestions`, `-search`, `-custom`, `-actions` and
+The sizes set a minimum height: 300px for `small`, 400px for `medium`, 500px for `large`. The `full` size fills the
+window below the header, using `--osirion-header-height` (default `4rem`). Inner elements use
+`osirion-content-not-found-code`, `-title`, `-message`, `-suggestions`, `-search`, `-custom`, `-actions` and
 `-contact`, each prefixed with `osirion-content-not-found`. Colors and sizes come from the theme tokens
 (`--osirion-text-primary`, `--osirion-text-secondary`, `--osirion-action-primary`, `--osirion-font-size-*`).
 
 ## Related
 
-- [Core state components](/components/forms-and-feedback)
+- [Forms and feedback](/components/forms-and-feedback)
 - [Page loading](/components/page-loading)
 - [Background pattern](/components/background-pattern)

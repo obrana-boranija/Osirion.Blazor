@@ -42,6 +42,8 @@ internal static class SiteDemos
         Add<FooterDemo>(demos, "footer", "A footer");
         Add<StickySidebarDemo>(demos, "sticky-sidebar", "A sticky sidebar");
         Add<BackgroundPatternDemo>(demos, "background-pattern", "Background patterns");
+        Add<ContactFormDemo>(demos, "contact-form", "A contact form that sends nothing");
+        Add<ContentNotFoundDemo>(demos, "content-not-found", "A content not found state");
     }
 
     private static void Add<TDemo>(ContentDemoRegistry demos, string key, string title)
