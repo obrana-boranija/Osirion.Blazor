@@ -154,6 +154,49 @@ public class PlausibleAndUmamiTests : BunitContext
         Render<UmamiTracker>(p => p.Add(t => t.SiteId, other)).Markup.ShouldContain(other);
     }
 
+    // The Bootstrap example renders both trackers while its settings configure other providers only, and its privacy
+    // policy says nothing else loads. Passes before the change: it pins that behavior.
+    [Fact]
+    public void Trackers_WithoutTheirSettings_RenderNothing()
+    {
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["Osirion:Analytics:Matomo:TrackerUrl"] = "https://analytics.example.com/",
+                ["Osirion:Analytics:Matomo:SiteId"] = "1",
+            })
+            .Build();
+        Services.AddOsirionAnalytics(configuration);
+        SetRendererInfo(new RendererInfo("Server", false));
+
+        Render<PlausibleTracker>().Markup.Trim().ShouldBeEmpty();
+        Render<UmamiTracker>().Markup.Trim().ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void Trackers_RegisteredWithDefaultOptions_RenderNothing()
+    {
+        // Plausible has no script address and Umami no website ID until one is set, so neither can load a script.
+        Services.AddOsirionAnalytics(a =>
+        {
+            a.AddPlausible();
+            a.AddUmami();
+        });
+        SetRendererInfo(new RendererInfo("Server", false));
+
+        Render<PlausibleTracker>().Markup.Trim().ShouldBeEmpty();
+        Render<UmamiTracker>().Markup.Trim().ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void Trackers_WithoutAnyAnalyticsRegistration_RenderNothing()
+    {
+        SetRendererInfo(new RendererInfo("Server", false));
+
+        Render<PlausibleTracker>().Markup.Trim().ShouldBeEmpty();
+        Render<UmamiTracker>().Markup.Trim().ShouldBeEmpty();
+    }
+
     [Fact]
     public void PlausibleTracker_EnabledFalse_RendersNothing()
     {
