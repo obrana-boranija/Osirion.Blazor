@@ -86,9 +86,13 @@ from loading, and the error goes to the log. An `_index.md` uses its folder's pa
 The exception is an `_index.md` with no folder above it, in the content root or, with localization on, directly in a
 language folder: it has no path to use, so its address is its slug, which is `index` unless you set one.
 
-The `permalink` key does not change the address of a page. It is read, and an `_index.md` uses it as the address of its
-folder, but a page keeps the folder path and slug. To serve a page at another address, route to it yourself, or pass a
-`ContentUrlFormatter` to the components, the feeds and the redirects.
+A page with a `permalink` is served at that address. A leading or trailing slash is optional (`/custom/place` and
+`custom/place` are the same address), the language folder is not added, and the value is used as written: placeholders
+such as `:year` are not expanded. The address of the item, the sitemap, the feeds and the redirects all come from this
+one value. An `_index.md` keeps its folder's address, and uses its `permalink` as the address folder links use. This
+arrives in the release after 4.1.0; in 4.1.0 the `permalink` of a page is read but ignored, and a page keeps the folder
+path and slug. To serve a page at another address in 4.1.0, route to it yourself, or pass a `ContentUrlFormatter` to the
+components, the feeds and the redirects.
 
 ## 3. Keep the language folder out of the address
 

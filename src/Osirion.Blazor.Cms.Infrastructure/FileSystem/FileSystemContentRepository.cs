@@ -280,7 +280,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
                 await ProcessMarkdownAsync(content, contentItem, _options.UseFileWriteTimeAsLastModified ? fileInfo.LastWriteTimeUtc : null, cancellationToken);
 
                 // Set URL
-                var url = UrlGenerator.GenerateUrl(contentItem.Url, contentItem.Path, contentItem.Slug, EnableLocalization, SupportedLocales, ContentPath);
+                var url = UrlGenerator.GenerateUrl(contentItem.Metadata?.Permalink ?? string.Empty, contentItem.Path, contentItem.Slug, EnableLocalization, SupportedLocales, ContentPath);
                 contentItem.SetUrl(url);
 
                 AssignDefaultLocalizationId(contentItem);

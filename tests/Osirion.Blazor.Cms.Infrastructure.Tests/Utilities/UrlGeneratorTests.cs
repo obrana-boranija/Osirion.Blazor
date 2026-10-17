@@ -170,4 +170,35 @@ public class UrlGeneratorTests
     {
         UrlGenerator.NormalizePath(path).ShouldBe(expected);
     }
+
+    [Theory]
+    [InlineData("/custom/place", "custom/place")]
+    [InlineData("custom/place", "custom/place")]
+    [InlineData("/custom/place/", "custom/place")]
+    [InlineData(@"\custom\place", "custom/place")]
+    public void GenerateUrl_WithPermalink_UsesItNormalizedWithoutLocaleFolder(string permalink, string expected)
+    {
+        // Fails before the fix: the permalink parameter was never read, so the address came from the path and slug.
+        var withoutLocalization = UrlGenerator.GenerateUrl(permalink, "blog/post.md", "post", false, null);
+        var withLocalization = UrlGenerator.GenerateUrl(permalink, "de/blog/post.md", "post", true, ["de"]);
+
+        withoutLocalization.ShouldBe(expected);
+        withLocalization.ShouldBe(expected);
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    [InlineData("/")]
+    public void GenerateUrl_WithBlankPermalink_BuildsTheAddressFromPathAndSlug(string permalink)
+    {
+        UrlGenerator.GenerateUrl(permalink, "blog/post.md", "post", false, null).ShouldBe("blog/post");
+    }
+
+    [Fact]
+    public void GenerateUrl_IndexFileWithPermalink_KeepsTheFolderAddress()
+    {
+        // The folder's own permalink is applied to the folder by the directory metadata, not to its index file here.
+        UrlGenerator.GenerateUrl("/elsewhere", "blog/_index.md", "blog", false, null).ShouldBe("blog");
+    }
 }

@@ -10,6 +10,16 @@ public static class UrlGenerator
     /// <summary>
     /// Generates a URL for content
     /// </summary>
+    /// <param name="permalink">
+    /// The item's <c>permalink</c> front matter. When it has text, it is the address, with outer slashes removed and
+    /// no locale folder. A folder's <c>_index.md</c> ignores it here: the folder's own permalink is applied to the folder.
+    /// </param>
+    /// <param name="path">The file's path, with its file name.</param>
+    /// <param name="slug">The item's slug, the last segment of an address built from the path.</param>
+    /// <param name="enableLocalization">Whether a leading locale folder is left out of the address.</param>
+    /// <param name="supportedLocales">The folder names that count as locales; null accepts any language code shape.</param>
+    /// <param name="skipSegment">A leading folder, such as the content root, to leave out of the address.</param>
+    /// <returns>The address, without a leading slash.</returns>
     public static string GenerateUrl(string permalink, string path, string slug, bool enableLocalization, List<string>? supportedLocales, string? skipSegment = null)
     {
 
@@ -26,6 +36,12 @@ public static class UrlGenerator
         }
 
         var isIndexFile = path.Contains("_index.md", StringComparison.OrdinalIgnoreCase);
+
+        var normalizedPermalink = string.IsNullOrWhiteSpace(permalink) ? string.Empty : NormalizePath(permalink.Trim());
+        if (!isIndexFile && normalizedPermalink.Length > 0)
+        {
+            return normalizedPermalink;
+        }
 
         // Step 2: Remove the filename from the path
         path = GetDirectoryPath(path);

@@ -149,6 +149,23 @@ public sealed class FileSystemContentRepositoryLoadingTests : IDisposable
     }
 
     [Fact]
+    public async Task GetByUrlAsync_ItemWithPermalink_IsFoundAtThePermalinkAndNotAtItsPath()
+    {
+        // Fails before the fix: the permalink was ignored, so the item was only served at "blog/post".
+        Write("blog/post.md", "permalinked");
+        _markdownProcessor.ExtractFrontMatterAndContent("permalinked")
+            .Returns(((FrontMatter?)new FrontMatter { Title = "Post", Permalink = "/custom/place" }, "# Post"));
+        var repository = Repository(CreateOptions());
+
+        var atPermalink = await repository.GetByUrlAsync("custom/place");
+        var atPath = await repository.GetByUrlAsync("blog/post");
+
+        atPermalink.ShouldNotBeNull().Path.ShouldBe("blog/post.md");
+        atPermalink.Url.ShouldBe("custom/place");
+        atPath.ShouldBeNull();
+    }
+
+    [Fact]
     public async Task GetAllAsync_SubdirectoriesExcluded_LoadsOnlyTopLevelFiles()
     {
         Write("top.md", "# Top");

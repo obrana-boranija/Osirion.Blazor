@@ -81,7 +81,7 @@ is the creation time of the file and every other value takes its default.
 | `redirect_from` | list of strings | empty | Earlier addresses that redirect to this page, with `UseOsirionRedirects`. |
 | `series` | string | none | Pages with the same series name are listed together by `ContentSeriesNavigation`. |
 | `series_order` | integer | none | The page's position in its series, starting at 1. |
-| `permalink` | string | none | Read, but it does not change a page's address. An `_index.md` uses it as its folder's address. |
+| `permalink` | string | none | The address the page is served at, such as `/docs/deploy`; slashes at the ends are optional, no language folder is added, and placeholders such as `:year` are not expanded. An `_index.md` uses it as its folder's address. Arrives in the release after 4.1.0; 4.1.0 reads it but does not change the page's address. |
 | `layout` | string | none | Stored on the item as `Metadata.Layout`. No library component picks a template from it; your own code can. |
 | `custom_fields` | map | empty | Your own values. See step 4. |
 | `seo_properties` | map | see step 5 | Search and social overrides. |
@@ -186,7 +186,7 @@ id: 'guide-deploy'                  # pairs translations of this page
 order: 4                            # position in an order-sorted list
 layout: docs                        # stored on the item; your code may read it
 title: "Deploy the site"            # heading, link text, base of the <title>
-permalink: /docs/deploy             # read, but the address comes from folder and slug
+permalink: /docs/deploy             # the page's address (release after 4.1.0)
 description: "Publish the site to a web host."   # meta description, summaries
 author: Your Name                   # byline and structured data
 date: 2026-10-17                    # publication date

@@ -33,8 +33,10 @@ public class FrontMatter : ValueObject
     public string Title { get; set; } = string.Empty;
 
     /// <summary>
-    /// Custom URL for this content. Can use placeholders like :year, :title.
-    /// Example: "/blog/:year/:title/" or "/custom-url/"
+    /// The address this content is served at, instead of the one built from its folder and slug. A leading or
+    /// trailing slash is optional, the locale folder is not added, and the value is used as written: placeholders
+    /// such as <c>:year</c> are not expanded. Example: "/custom-url/". A folder's <c>_index.md</c> uses it for the
+    /// folder's address.
     /// </summary>
     public string? Permalink { get; set; }
 
