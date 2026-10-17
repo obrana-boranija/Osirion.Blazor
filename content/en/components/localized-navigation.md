@@ -111,6 +111,7 @@ The default links go to the public pages: a content link to the item's `Url` and
 | `ContentUrlFormatter` | `Func<ContentItem, string>?` | `null` | A function that builds each content link. Without it, a link goes to the item's URL from the site root, the address its page is served at. |
 | `LocaleNameFormatter` | `Func<string, string>?` | `null` | A function that turns a locale code into the text of its button. Not used in 4.0: the locale buttons never render. |
 | `EnableLocalization` | `bool` | `true` | Whether `CurrentLocale` is used. When `false`, the root directories are loaded. |
+| `AriaLabel` | `string` | `"Localized navigation"` | The accessible name of the `nav` element. |
 | `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
 | `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
 | `Style` | `string?` | `null` | An inline style for the component's root element. |
@@ -142,7 +143,8 @@ not written, and other attributes on the tag are captured but not rendered.
 - Under static SSR the links are plain links and the callbacks are not raised. In an interactive render mode a link
   stops the browser from navigating only when its callback is set (`OnDirectorySelected` for directories,
   `OnContentSelected` for content items); without a callback the link navigates, and no handler attribute is written.
-- Names and titles are written as text, so they are HTML-encoded.
+- The `nav` is named by `AriaLabel`, `"Localized navigation"` by default. Names and titles are written as text, so
+  they are HTML-encoded.
 
 ## Styling
 

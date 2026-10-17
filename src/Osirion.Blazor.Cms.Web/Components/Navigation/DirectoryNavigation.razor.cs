@@ -78,9 +78,13 @@ public partial class DirectoryNavigation
     [Parameter]
     public EventCallback<DirectoryItem> DirectoryClicked { get; set; }
 
+    /// <summary>Gets or sets the accessible name of the <c>nav</c> element.</summary>
+    [Parameter]
+    public string AriaLabel { get; set; } = "Directory navigation";
+
     private string GetDirectoryNavClass()
     {
-        return $"osirion-directory-navigation".Trim();
+        return $"osirion-directory-navigation {Class}".Trim();
     }
 
     private string GetDirectoryUrl(DirectoryItem directory)

@@ -105,6 +105,10 @@ public partial class LocalizedNavigation
     [Parameter]
     public bool EnableLocalization { get; set; } = true;
 
+    /// <summary>Gets or sets the accessible name of the <c>nav</c> element.</summary>
+    [Parameter]
+    public string AriaLabel { get; set; } = "Localized navigation";
+
     private IReadOnlyList<DirectoryItem>? Directories { get; set; }
     private List<string> AvailableLocales { get; set; } = new();
     private bool IsLoading { get; set; } = true;

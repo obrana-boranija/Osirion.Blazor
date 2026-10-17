@@ -1,6 +1,6 @@
 ﻿@namespace Osirion.Blazor.Cms.Web.Components
 
-<nav class="@GetNavClass()">
+<nav class="@GetNavClass()" aria-label="@AriaLabel">
     @if (Title is not null)
     {
         <h3 class="osirion-nav-title">@Title</h3>

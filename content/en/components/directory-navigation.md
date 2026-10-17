@@ -122,14 +122,15 @@ compared with `DirectoryItem.Path`, the folder path in the content source.
 | `DirectoryUrlFormatter` | `Func<DirectoryItem, string>?` | `null` | A function that builds each link. Without it, a link goes to the address the directory's `_index.md` declares in `permalink`, otherwise to the directory's path without the locale folder. |
 | `Title` | `string?` | `null` | The heading above the list, rendered as an `h3`. No heading when `null`. |
 | `DirectoryClicked` | `EventCallback<DirectoryItem>` | - | The callback run with the directory when its link is clicked in an interactive render mode. When it is set, the click no longer navigates. Under static SSR it is not called. |
+| `AriaLabel` | `string` | `"Directory navigation"` | The accessible name of the `nav` element. |
 | `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
 | `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
 | `Style` | `string?` | `null` | An inline style for the component's root element. |
 
 <!-- /osirion:parameters -->
 
-This component does not apply `Class`, `Style` or `Theme`, and other attributes on the tag are captured but not
-rendered. Wrap it in your own element to style it.
+`Class` goes on the `nav`. This component does not apply `Style` or `Theme`, and other attributes on the tag are
+captured but not rendered. Wrap it in your own element to style it.
 
 ## Behavior
 
@@ -140,14 +141,14 @@ rendered. Wrap it in your own element to style it.
   `title` from its `_index.md`.
 - Under static SSR the links are plain links and `DirectoryClicked` is not called. In an interactive render mode
   with `DirectoryClicked` set, the click runs your callback instead of navigating, so you decide what happens.
-- The list is wrapped in a `nav` without an accessible name. Directory names are written as text, so they are
-  HTML-encoded.
+- The list is wrapped in a `nav` named by `AriaLabel`, `"Directory navigation"` by default. Directory names are
+  written as text, so they are HTML-encoded.
 
 ## Styling
 
 | Class | Element |
 | --- | --- |
-| `osirion-directory-navigation` | The `nav` |
+| `osirion-directory-navigation` | The `nav`, plus your `Class` |
 | `osirion-directory-title` | The `h3` heading |
 | `osirion-directory-list` | The top-level `ul` |
 | `osirion-subdirectory-list` | The `ul` of subdirectories |
