@@ -53,31 +53,15 @@ public partial class ContentBreadcrumbs
         return DirectoryUrlFormatter?.Invoke(directory) ?? $"/{directory.Path}";
     }
 
-    private RenderFragment RenderDirectoryPath(DirectoryItem directory) => builder =>
+    /// <summary>The directories from the root to <see cref="Directory"/>, in that order.</summary>
+    private List<DirectoryItem> DirectoryPath()
     {
-        // Build the directory path from root to current
         var path = new List<DirectoryItem>();
-        var current = directory;
-
-        while (current is not null)
+        for (var current = Directory; current is not null; current = current.Parent)
         {
-            path.Add(current);
-            current = current.Parent;
+            path.Insert(0, current);
         }
 
-        // Render directories in reverse order (root to leaf)
-        foreach (var dir in path.AsEnumerable().Reverse())
-        {
-            builder.OpenElement(0, "li");
-            builder.AddAttribute(1, "class", "osirion-breadcrumbs-item");
-
-            builder.OpenElement(2, "a");
-            builder.AddAttribute(3, "href", GetDirectoryUrl(dir));
-            builder.AddAttribute(4, "class", "osirion-breadcrumbs-link");
-            builder.AddContent(5, dir.Name);
-            builder.CloseElement(); // a
-
-            builder.CloseElement(); // li
-        }
-    };
+        return path;
+    }
 }

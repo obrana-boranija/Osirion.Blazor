@@ -311,13 +311,6 @@ public partial class DocumentPage
     }
 
     private string GetContentUrl(ContentItem item) => ContentUrls.ItemUrl(item, ContentUrlFormatter);
-
-    private readonly SanitizedContentCache _sanitizedContent = new();
-
-    private MarkupString GetSanitizedContent(string? content)
-    {
-        return _sanitizedContent.Get(ServiceProvider, content);
-    }
 }
 
 /// <summary>
