@@ -22,6 +22,8 @@ public class ContentViewHeadingAndAltTests : CmsPageComponentTestBase
     [Theory]
     [InlineData(2, "h2")]
     [InlineData(3, "h3")]
+    [InlineData(4, "h4")]
+    [InlineData(5, "h5")]
     [InlineData(6, "h6")]
     public void ContentView_HeadingLevel_SetsTheTitleElement(int level, string tag)
     {
@@ -58,7 +60,10 @@ public class ContentViewHeadingAndAltTests : CmsPageComponentTestBase
     // Fails before the fix: the title was always an h1.
     [Theory]
     [InlineData(2, "h2")]
+    [InlineData(3, "h3")]
     [InlineData(4, "h4")]
+    [InlineData(5, "h5")]
+    [InlineData(6, "h6")]
     public void LocalizedContentView_HeadingLevel_SetsTheTitleElement(int level, string tag)
     {
         var cut = RenderStatic<LocalizedContentView>(p => p
