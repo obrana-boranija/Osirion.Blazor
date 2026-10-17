@@ -61,7 +61,7 @@ public partial class DirectoryNavigation
 
     private string GetDirectoryUrl(DirectoryItem directory)
     {
-        return DirectoryUrlFormatter?.Invoke(directory) ?? $"/{directory.Url}";
+        return DirectoryUrlFormatter?.Invoke(directory) ?? ContentUrls.DirectoryUrl(directory);
     }
 
     private string GetLinkClass(DirectoryItem directory)

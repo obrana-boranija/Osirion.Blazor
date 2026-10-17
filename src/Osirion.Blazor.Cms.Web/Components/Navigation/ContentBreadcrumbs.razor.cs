@@ -50,16 +50,22 @@ public partial class ContentBreadcrumbs
 
     private string GetDirectoryUrl(DirectoryItem directory)
     {
-        return DirectoryUrlFormatter?.Invoke(directory) ?? $"/{directory.Path}";
+        return DirectoryUrlFormatter?.Invoke(directory) ?? ContentUrls.DirectoryUrl(directory);
     }
 
-    /// <summary>The directories from the root to <see cref="Directory"/>, in that order.</summary>
+    /// <summary>
+    /// The directories from the root to <see cref="Directory"/>, in that order, without the locale folder of localized
+    /// content (<c>content/en</c>), which has no page.
+    /// </summary>
     private List<DirectoryItem> DirectoryPath()
     {
         var path = new List<DirectoryItem>();
         for (var current = Directory; current is not null; current = current.Parent)
         {
-            path.Insert(0, current);
+            if (!ContentUrls.IsLocaleFolder(current))
+            {
+                path.Insert(0, current);
+            }
         }
 
         return path;
