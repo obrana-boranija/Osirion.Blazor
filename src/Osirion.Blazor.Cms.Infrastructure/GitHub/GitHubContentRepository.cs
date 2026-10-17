@@ -440,6 +440,13 @@ public class GitHubContentRepository : BaseContentRepository
         // Process the markdown content
         await ProcessMarkdownAsync(markdownContent, contentItem, cancellationToken);
 
+        // Asked for only after the front matter is read, so a page with a date costs no extra request, and
+        // an unchanged file is not asked again because its item is reused by SHA.
+        if (string.IsNullOrWhiteSpace(contentItem.Metadata?.Date))
+        {
+            await ApplyLastCommitDateAsync(contentItem, cancellationToken);
+        }
+
         // Set URL
         var url = UrlGenerator.GenerateUrl(contentItem.Metadata?.Permalink ?? string.Empty, contentItem.Path, contentItem.Slug, EnableLocalization, SupportedLocales, ContentPath);
         contentItem.SetUrl(url);
@@ -447,6 +454,34 @@ public class GitHubContentRepository : BaseContentRepository
         AssignDefaultLocalizationId(contentItem);
 
         return contentItem;
+    }
+
+    // Without a date in the front matter a page would take the time of the load and move on every restart. The date
+    // of the file's last commit does not, so it stands in; a lookup that fails keeps the page and its load time.
+    private async Task ApplyLastCommitDateAsync(ContentItem contentItem, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var commitDate = await _apiClient.GetLastCommitDateAsync(contentItem.Path, cancellationToken);
+            if (commitDate is null)
+            {
+                return;
+            }
+
+            contentItem.SetCreatedDate(commitDate.Value);
+            if (string.IsNullOrWhiteSpace(contentItem.Metadata?.LastModified))
+            {
+                contentItem.SetLastModifiedDate(commitDate.Value);
+            }
+        }
+        catch (GitHubRateLimitException)
+        {
+            throw;
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            Logger.LogWarning(ex, "Could not read the last commit date of {Path}; the page keeps its load time", contentItem.Path);
+        }
     }
 
     private bool IsSupportedFile(string fileName)

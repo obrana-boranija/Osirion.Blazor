@@ -506,6 +506,52 @@ public class GitHubApiClient : IGitHubApiClient
     }
 
     /// <summary>
+    /// Gets the date of the last commit that changed a file on the configured branch
+    /// </summary>
+    /// <exception cref="ArgumentException">The path contains an empty, "." or ".." segment.</exception>
+    public async Task<DateTime?> GetLastCommitDateAsync(string path, CancellationToken cancellationToken = default!)
+    {
+        var settings = CurrentSettings;
+
+        try
+        {
+            if (!ValidateRepositoryConfig(settings))
+            {
+                return null;
+            }
+
+            var url = $"{GetRepositoryUrl(settings)}/commits?path={GitHubApiPath.EncodePath(path, nameof(path))}";
+            if (!string.IsNullOrWhiteSpace(settings.Branch))
+            {
+                url += $"&sha={GitHubApiPath.EncodeQueryValue(settings.Branch)}";
+            }
+
+            var content = await GetResponseBodyAsync(HttpMethod.Get, $"{url}&per_page=1", settings, cancellationToken);
+
+            // Only the newest commit's date is read, so the commit objects get no model of their own
+            using var document = JsonDocument.Parse(content);
+            if (document.RootElement.ValueKind != JsonValueKind.Array || document.RootElement.GetArrayLength() == 0)
+            {
+                return null;
+            }
+
+            var commit = document.RootElement[0].TryGetProperty("commit", out var commitElement) ? commitElement : default;
+            return commit.ValueKind == JsonValueKind.Object
+                && commit.TryGetProperty("committer", out var committer)
+                && committer.ValueKind == JsonValueKind.Object
+                && committer.TryGetProperty("date", out var date)
+                && date.TryGetDateTimeOffset(out var committed)
+                    ? committed.UtcDateTime
+                    : null;
+        }
+        catch (Exception ex) when (ex is not GitHubRateLimitException)
+        {
+            _logger.LogError(ex, "Error fetching the last commit date for {Path}", path);
+            throw;
+        }
+    }
+
+    /// <summary>
     /// Sets the owner and repository for subsequent requests made through this instance only
     /// </summary>
     public void SetRepository(string owner, string repository)

@@ -96,6 +96,17 @@ public interface IGitHubApiClient
     Task<GitHubTree?> GetTreeAsync(CancellationToken cancellationToken = default!) => Task.FromResult<GitHubTree?>(null);
 
     /// <summary>
+    /// Gets the date of the last commit that changed a file on the configured branch, with one request
+    /// </summary>
+    /// <param name="path">Path to the file</param>
+    /// <param name="cancellationToken">Cancellation Token</param>
+    /// <returns>
+    /// The commit date in UTC, or <see langword="null"/> when the client does not support the operation, the repository
+    /// is not configured or no commit touched the path. A page without a <c>date</c> uses it as its creation date.
+    /// </returns>
+    Task<DateTime?> GetLastCommitDateAsync(string path, CancellationToken cancellationToken = default!) => Task.FromResult<DateTime?>(null);
+
+    /// <summary>
     /// Sets the owner and repository for subsequent requests made through this instance
     /// </summary>
     /// <remarks>The change applies to this instance only and never to other clients.</remarks>
