@@ -94,6 +94,23 @@ public class BaseContentRepositoryTests
         (await repository.GetAllAsync()).Count.ShouldBe(1);
     }
 
+    // Fails before the fix: a refresh whose token was already cancelled still started a load, so the next refresh
+    // joined that load and had to wait for a second one; and when the load finished first, the cancelled call
+    // completed instead of throwing.
+    [Fact]
+    public async Task RefreshCacheAsync_TokenAlreadyCancelled_ThrowsWithoutStartingALoad()
+    {
+        var repository = new GatedRepository();
+
+        await Should.ThrowAsync<OperationCanceledException>(() => repository.RefreshCacheAsync(new CancellationToken(true)));
+        var refresh = repository.RefreshCacheAsync();
+        await repository.WaitForLoadStartAsync(1);
+        repository.ReleaseLoad(1, Item("a"));
+        await refresh.WaitAsync(Timeout);
+
+        repository.LoadCount.ShouldBe(1);
+    }
+
     // Fails before the fix: slug, lang and featured_image were written without escaping.
     [Fact]
     public async Task GenerateMarkdown_SlugWithQuoteAndNewline_CannotInjectMetadata()
