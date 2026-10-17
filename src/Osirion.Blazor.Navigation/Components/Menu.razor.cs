@@ -220,11 +220,10 @@ public partial class Menu
 
         // The sticky z-index goes last, so it still wins over a z-index in Style.
         var styles = new List<string>();
+        // A style attribute always binds to Style (parameter names match regardless of case), so Attributes never
+        // holds one.
         if (!string.IsNullOrWhiteSpace(Style))
             styles.Add(WithTrailingSemicolon(Style));
-
-        if (attributes.TryGetValue("style", out var existingStyle) && !string.IsNullOrWhiteSpace(existingStyle?.ToString()))
-            styles.Add(WithTrailingSemicolon(existingStyle.ToString()!));
 
         if (Sticky && Orientation == MenuOrientation.Horizontal)
             styles.Add($"z-index: {StickyZIndex};");

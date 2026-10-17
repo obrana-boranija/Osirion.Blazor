@@ -64,6 +64,11 @@ public class MenuStyleParameterTests : BunitContext
             .Find(".osirion-menu-container").GetAttribute("style").ShouldBe("color: red; z-index: 7;");
 
     [Fact]
+    public void Menu_StyleEndingInASemicolon_GetsNoSecondOne() =>
+        Render<Menu>(p => p.Add(c => c.Style, "color: red; ").Add(c => c.StickyZIndex, 7))
+            .Find(".osirion-menu-container").GetAttribute("style").ShouldBe("color: red; z-index: 7;");
+
+    [Fact]
     public void Menu_StyleWithoutSticky_IsTheOnlyStyle() =>
         Render<Menu>(p => p.Add(c => c.Style, Written).Add(c => c.Sticky, false))
             .Find(".osirion-menu-container").GetAttribute("style").ShouldBe(Written);
