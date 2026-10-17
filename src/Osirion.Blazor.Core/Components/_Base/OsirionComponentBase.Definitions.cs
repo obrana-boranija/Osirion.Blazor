@@ -7,13 +7,13 @@ namespace Osirion.Blazor.Components;
 public abstract partial class OsirionComponentBase : ComponentBase
 {
     /// <summary>
-    /// Gets or sets the CSS class(es) for the component.
+    /// Gets or sets extra CSS classes for the component's root element.
     /// </summary>
     [Parameter]
     public string? Class { get; set; }
 
     /// <summary>
-    /// Gets or sets the inline style(s) for the component.
+    /// Gets or sets an inline style for the component's root element.
     /// </summary>
     [Parameter]
     public string? Style { get; set; }

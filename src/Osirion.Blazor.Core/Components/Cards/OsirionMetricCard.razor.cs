@@ -6,38 +6,52 @@ namespace Osirion.Blazor.Components;
 /// <summary>Displays a prominent metric with optional viewport-triggered count-up animation.</summary>
 public partial class OsirionMetricCard : OsirionComponentBase
 {
-    /// <summary>Gets or sets the complete display value, such as 99.99% or 18-32%.</summary>
+    /// <summary>
+    /// Gets or sets the value as it is shown, such as <c>99.99%</c> or <c>18-32%</c>. Its number, or a range's two
+    /// numbers, are what <see cref="Animate"/> counts up; the text around them stays. Required.
+    /// </summary>
     [Parameter, EditorRequired]
     public string Value { get; set; } = string.Empty;
 
-    /// <summary>Gets or sets the label below the value.</summary>
+    /// <summary>Gets or sets the label under the value.</summary>
     [Parameter] public string? Label { get; set; }
 
-    /// <summary>Gets or sets supporting text below the label.</summary>
+    /// <summary>Gets or sets supporting text under the label.</summary>
     [Parameter] public string? Description { get; set; }
 
-    /// <summary>Gets or sets the accent used by the component styles.</summary>
+    /// <summary>
+    /// Gets or sets the accent colour: a theme colour (<c>Primary</c>, <c>Secondary</c>, <c>Success</c>, <c>Warning</c>,
+    /// <c>Danger</c>, <c>Info</c>) or a fixed one (<c>Blue</c>, <c>Teal</c>, <c>Green</c>, <c>Amber</c>, <c>Purple</c>,
+    /// <c>Indigo</c>).
+    /// </summary>
     [Parameter] public MetricCardAccent Accent { get; set; } = MetricCardAccent.Green;
 
-    /// <summary>Gets or sets optional text above the metric.</summary>
+    /// <summary>Gets or sets short text above the value.</summary>
     [Parameter] public string? Kicker { get; set; }
 
-    /// <summary>Gets or sets the card border treatment.</summary>
+    /// <summary>Gets or sets the border: <c>None</c>, <c>Default</c> (the theme border) or <c>Accent</c>.</summary>
     [Parameter] public MetricCardBorder Border { get; set; } = MetricCardBorder.Accent;
 
-    /// <summary>Gets or sets the card shadow treatment.</summary>
+    /// <summary>
+    /// Gets or sets the shadow: <c>None</c>, <c>Small</c>, <c>Medium</c> or <c>Large</c>, or the same sizes tinted with
+    /// the accent (<c>SmallAccent</c>, <c>MediumAccent</c>, <c>LargeAccent</c>). A card with a shadow lifts on hover.
+    /// </summary>
     [Parameter] public MetricCardShadow Shadow { get; set; } = MetricCardShadow.Medium;
 
     /// <summary>
-    /// Gets or sets whether to upgrade shadows smaller than <see cref="MetricCardShadow.Large" /> to a large neutral shadow.
-    /// This legacy convenience parameter never downgrades an explicitly selected shadow.
+    /// Gets or sets whether the shadow is made large: <c>Large</c>, or <c>LargeAccent</c> for an accent shadow, whatever
+    /// <see cref="Shadow"/> says.
     /// </summary>
     [Parameter] public bool Elevated { get; set; }
 
-    /// <summary>Gets or sets additional CSS classes.</summary>
+    /// <summary>Gets or sets extra CSS classes on the card, as <c>Class</c> does.</summary>
     [Parameter] public string? CssClass { get; set; }
 
-    /// <summary>Gets or sets whether the numeric portion animates into view.</summary>
+    /// <summary>
+    /// Gets or sets whether the numbers count up from zero, once, when the card scrolls into view. The server renders
+    /// the final value, so the card reads correctly before and without script; with reduced motion requested, nothing
+    /// moves.
+    /// </summary>
     [Parameter] public bool Animate { get; set; }
 
     private string NumericValue { get; set; } = string.Empty;

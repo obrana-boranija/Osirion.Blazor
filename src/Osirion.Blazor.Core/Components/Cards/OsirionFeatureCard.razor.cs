@@ -12,25 +12,25 @@ public partial class OsirionFeatureCard : OsirionComponentBase
     #region Content Properties
 
     /// <summary>
-    /// Gets or sets the feature card title.
+    /// The card title, rendered as a paragraph with the class <c>osirion-feature-card-title</c>.
     /// </summary>
     [Parameter]
     public string? Title { get; set; }
 
     /// <summary>
-    /// Gets or sets the feature card description.
+    /// The text under the title.
     /// </summary>
     [Parameter]
     public string? Description { get; set; }
 
     /// <summary>
-    /// Gets or sets whether to display the description.
+    /// Whether <see cref="Description"/> is shown.
     /// </summary>
     [Parameter]
     public bool ShowDescription { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the child content of the feature card.
+    /// Extra content between the description and the links.
     /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
@@ -40,7 +40,7 @@ public partial class OsirionFeatureCard : OsirionComponentBase
     #region Navigation Properties
 
     /// <summary>
-    /// Gets or sets the general URL for the entire card.
+    /// The link around the image, and the read more link's target when <see cref="ReadMoreHref"/> is not set.
     /// </summary>
     [Parameter]
     public string? Url { get; set; }
@@ -50,32 +50,31 @@ public partial class OsirionFeatureCard : OsirionComponentBase
     #region Image Properties
 
     /// <summary>
-    /// Gets or sets the feature card image URL.
+    /// The image source. Without it the card shows a placeholder icon.
     /// </summary>
     [Parameter]
     public string? ImageUrl { get; set; }
 
     /// <summary>
-    /// Gets or sets the feature card image alt text.
-    /// Defaults to Title if not specified.
+    /// The image's alternative text; when it is not set, <see cref="Title"/> is used, then <c>Feature image</c>.
     /// </summary>
     [Parameter]
     public string? ImageAlt { get; set; }
 
     /// <summary>
-    /// Gets or sets whether image should use lazy loading.
+    /// Whether the image renders <c>loading="lazy"</c>. Set it to <see langword="false"/> for a card above the fold.
     /// </summary>
     [Parameter]
     public bool ImageLazyLoading { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets whether image should transform on hover.
+    /// Whether the image zooms on hover.
     /// </summary>
     [Parameter]
     public bool ImageTransformOnHover { get; set; } = false;
 
     /// <summary>
-    /// Gets or sets the image position relative to content.
+    /// Where the image sits: <c>Top</c>, <c>Bottom</c>, <c>Left</c> or <c>Right</c>.
     /// </summary>
     [Parameter]
     public ImagePosition ImagePosition { get; set; } = ImagePosition.Left;
@@ -85,19 +84,19 @@ public partial class OsirionFeatureCard : OsirionComponentBase
     #region Layout Properties
 
     /// <summary>
-    /// Gets or sets the card size which determines dimensions.
+    /// The card's dimensions, from <c>ExtraExtraSmall</c> to <c>ExtraExtraLarge</c>.
     /// </summary>
     [Parameter]
     public CardSize CardSize { get; set; } = CardSize.Normal;
 
     /// <summary>
-    /// Gets or sets the content alignment within the card.
+    /// Where the text sits in the card: one of nine positions, from <c>TopLeft</c> to <c>BottomRight</c>.
     /// </summary>
     [Parameter]
     public ContentAlignment ContentAlignment { get; set; } = ContentAlignment.CenterLeft;
 
     /// <summary>
-    /// Gets or sets the content font size variant.
+    /// The text size, from <c>ExtraExtraSmall</c> to <c>ExtraExtraLarge</c>.
     /// </summary>
     [Parameter]
     public FontSizeVariant ContentFontSize { get; set; } = FontSizeVariant.Normal;
@@ -107,31 +106,31 @@ public partial class OsirionFeatureCard : OsirionComponentBase
     #region Visual Effect Properties
 
     /// <summary>
-    /// Gets or sets when border should be visible.
+    /// When the border shows: <c>Never</c>, <c>Always</c> or <c>OnHover</c>.
     /// </summary>
     [Parameter]
     public EffectTiming BorderTiming { get; set; } = EffectTiming.Always;
 
     /// <summary>
-    /// Gets or sets the border color theme.
+    /// The border colour: <c>Primary</c>, <c>Secondary</c>, <c>Tertiary</c> or <c>Neutral</c>.
     /// </summary>
     [Parameter]
     public ThemeColor BorderColor { get; set; } = ThemeColor.Neutral;
 
     /// <summary>
-    /// Gets or sets when shadow should be visible.
+    /// When the shadow shows: <c>Never</c>, <c>Always</c> or <c>OnHover</c>.
     /// </summary>
     [Parameter]
     public EffectTiming ShadowTiming { get; set; } = EffectTiming.OnHover;
 
     /// <summary>
-    /// Gets or sets the shadow color theme.
+    /// The shadow colour: <c>Primary</c>, <c>Secondary</c>, <c>Tertiary</c> or <c>Neutral</c>.
     /// </summary>
     [Parameter]
     public ThemeColor ShadowColor { get; set; } = ThemeColor.Neutral;
 
     /// <summary>
-    /// Gets or sets when transform/translate effect should be applied.
+    /// When the card lifts: <c>Never</c>, <c>Always</c> or <c>OnHover</c>.
     /// </summary>
     [Parameter]
     public EffectTiming TransformTiming { get; set; } = EffectTiming.OnHover;
@@ -141,37 +140,38 @@ public partial class OsirionFeatureCard : OsirionComponentBase
     #region Action Properties
 
     /// <summary>
-    /// Gets or sets whether to show the read more link.
+    /// Whether a read more link is shown; it needs <see cref="ReadMoreHref"/> or <see cref="Url"/>.
     /// </summary>
     [Parameter]
     public bool ShowReadMoreLink { get; set; } = false;
 
     /// <summary>
-    /// Gets or sets the read more link text.
+    /// The read more link's text.
     /// </summary>
     [Parameter]
     public string ReadMoreText { get; set; } = "Read more";
 
     /// <summary>
-    /// Gets or sets the read more link href.
+    /// The read more link's target; falls back to <see cref="Url"/>.
     /// </summary>
     [Parameter]
     public string? ReadMoreHref { get; set; }
 
     /// <summary>
-    /// Gets or sets whether to stretch the read more link.
+    /// With pillow buttons shown, ends the read more link's clickable area 50 pixels above the bottom of the text, so
+    /// the buttons stay clickable.
     /// </summary>
     [Parameter]
     public bool ReadMoreStretched { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets whether to show the pillow buttons.
+    /// Whether <see cref="PillowButtons"/> are shown.
     /// </summary>
     [Parameter]
     public bool ShowPillowButtons { get; set; } = false;
 
     /// <summary>
-    /// Gets or sets pillow button links (category-style buttons).
+    /// Small category-style links under the text.
     /// </summary>
     [Parameter]
     public List<PillowButton>? PillowButtons { get; set; }

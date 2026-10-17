@@ -9,129 +9,129 @@ namespace Osirion.Blazor.Components;
 public partial class OsirionTestimonialCard : OsirionComponentBase
 {
     /// <summary>
-    /// Gets or sets the profile image URL
+    /// The person's photo. Its alternative text is built from the name, position and company.
     /// </summary>
     [Parameter]
     public string? ProfileImageUrl { get; set; }
 
     /// <summary>
-    /// Gets or sets the person's name
+    /// The person's name, rendered in a <c>cite</c> element. Required.
     /// </summary>
     [Parameter, EditorRequired]
     public string Name { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the person's company
+    /// The company's name.
     /// </summary>
     [Parameter]
     public string? Company { get; set; }
 
     /// <summary>
-    /// Gets or sets the person's position/title
+    /// The person's job title. With <see cref="Company"/> it reads "Position at Company".
     /// </summary>
     [Parameter]
     public string? Position { get; set; }
 
     /// <summary>
-    /// Gets or sets the LinkedIn profile URL
+    /// A profile address. When set, the name is a link that opens in a new tab with <c>rel="noopener noreferrer"</c>.
     /// </summary>
     [Parameter]
     public string? LinkedInUrl { get; set; }
 
     /// <summary>
-    /// Gets or sets the testimonial text
+    /// The quote as plain text.
     /// </summary>
     [Parameter]
     public string? TestimonialText { get; set; }
 
     /// <summary>
-    /// Gets or sets custom testimonial content. When provided, this overrides TestimonialText.
+    /// The quote as markup; replaces <see cref="TestimonialText"/>.
     /// </summary>
     [Parameter]
     public RenderFragment? TestimonialContent { get; set; }
 
     /// <summary>
-    /// Gets or sets the read more link URL (optional)
+    /// The read more link's target. The link shows only when this is set.
     /// </summary>
     [Parameter]
     public string? ReadMoreHref { get; set; }
 
     /// <summary>
-    /// Gets or sets the read more link text
+    /// The read more link's text.
     /// </summary>
     [Parameter]
     public string ReadMoreText { get; set; } = "Read full testimonial";
 
     /// <summary>
-    /// Gets or sets the read more link variant
+    /// The read more link's look: <c>Default</c>, <c>Arrow</c>, <c>External</c>, <c>Download</c>, <c>Plain</c> or
+    /// <c>Button</c>.
     /// </summary>
     [Parameter]
     public ReadMoreVariant ReadMoreVariant { get; set; } = ReadMoreVariant.Default;
 
     /// <summary>
-    /// Gets or sets the read more link target
+    /// The read more link's <c>target</c>, for example <c>_blank</c>.
     /// </summary>
     [Parameter]
     public string? ReadMoreTarget { get; set; }
 
     /// <summary>
-    /// Gets or sets whether to show rating stars
+    /// Whether the star rating is shown.
     /// </summary>
     [Parameter]
     public bool ShowRating { get; set; } = false;
 
     /// <summary>
-    /// Gets or sets the rating (1-5 stars)
+    /// The number of filled stars, clamped to 0 to 5; 0 hides the rating.
     /// </summary>
     [Parameter]
     public int Rating { get; set; } = 5;
 
     /// <summary>
-    /// Gets or sets the card variant for different styling
+    /// The card's look: <c>Default</c>, <c>Minimal</c>, <c>Highlighted</c> or <c>Compact</c>.
     /// </summary>
     [Parameter]
     public TestimonialVariant Variant { get; set; } = TestimonialVariant.Default;
 
     /// <summary>
-    /// Gets or sets the card size
+    /// The card's size: <c>Small</c>, <c>Normal</c> or <c>Large</c>.
     /// </summary>
     [Parameter]
     public TestimonialSize Size { get; set; } = TestimonialSize.Normal;
 
     /// <summary>
-    /// Gets or sets the image size in pixels
+    /// The photo's width and height in pixels. Left at 64, it becomes 48 for <c>Small</c> and 80 for <c>Large</c>.
     /// </summary>
     [Parameter]
     public int ImageSize { get; set; } = 64;
 
     /// <summary>
-    /// Gets or sets whether the card should have an elevated appearance. When null, elevation is enabled by default.
+    /// Whether the card is raised with a drop shadow; <see langword="null"/> means it is.
     /// </summary>
     [Parameter]
     public bool? Elevated { get; set; }
 
     /// <summary>
-    /// Gets or sets whether the card should be borderless
+    /// Whether the border and background are removed.
     /// </summary>
     [Parameter]
     public bool Borderless { get; set; } = false;
 
     /// <summary>
-    /// Gets or sets whether this testimonial card is hidden from assistive technology.
-    /// This affects the tabindex of interactive elements to prevent them from being focusable
-    /// when the parent container has aria-hidden="true".
+    /// Sets <c>tabindex="-1"</c> on the card's links, for copies inside an <c>aria-hidden</c> container such as a
+    /// looping carousel.
     /// </summary>
     [Parameter]
     public bool IsHiddenFromAssistiveTech { get; set; } = false;
 
     /// <summary>
-    /// Gets or sets additional child content
+    /// Extra content under the quote.
     /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
-    /// Gets or sets whether this is the first visible testimonial card (for LCP optimization)
+    /// Loads the photo eagerly with <c>fetchpriority="high"</c>, for a card above the fold; otherwise it loads lazily.
     /// </summary>
     [Parameter]
     public bool IsFirstVisible { get; set; } = false;
