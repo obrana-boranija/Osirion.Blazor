@@ -53,9 +53,12 @@
     box-sizing: border-box;
 }
 /* Grid layout */
+/* The content takes grid-area: content, so the area has to exist: without it the browser adds implicit columns for the
+   name and a hero without a side image put its text in the right half of the page. */
 .osirion-hero-grid {
     display: grid;
     grid-template-columns: 1fr;
+    grid-template-areas: "content";
     gap: var(--osirion-spacing-6, 1.5rem);
     align-items: center;
     width: 100%;
