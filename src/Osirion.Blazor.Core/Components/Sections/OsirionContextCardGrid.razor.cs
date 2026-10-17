@@ -22,10 +22,10 @@ public partial class OsirionContextCardGrid : OsirionComponentBase
     [Parameter] public ContextCardItem[] Items { get; set; } = [];
 
     /// <summary>
-    /// The <c>id</c> of the heading, which the section's <c>aria-labelledby</c> points at. Each grid gets its own
-    /// generated value unless one is set.
+    /// The <c>id</c> of the heading, which the section's <c>aria-labelledby</c> points at. Without a value each grid
+    /// generates its own, so several grids on a page never repeat an id.
     /// </summary>
-    [Parameter] public string HeadingId { get; set; } = $"osirion-context-card-grid-{Guid.NewGuid():N}";
+    [Parameter] public string? HeadingId { get; set; }
 
     /// <summary>
     /// The section's <c>id</c>, for in-page links.
@@ -42,6 +42,10 @@ public partial class OsirionContextCardGrid : OsirionComponentBase
     /// frameworks.
     /// </summary>
     [Parameter] public string ContainerClass { get; set; } = "container";
+
+    private readonly string _generatedHeadingId = $"osirion-context-card-grid-{Guid.NewGuid():N}";
+
+    private string EffectiveHeadingId => string.IsNullOrWhiteSpace(HeadingId) ? _generatedHeadingId : HeadingId;
 
     private bool HasTitle => !string.IsNullOrWhiteSpace(Title);
 

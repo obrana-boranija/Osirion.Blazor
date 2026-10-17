@@ -87,7 +87,7 @@ context-card-grid
 | `Title` | `string` | `"Context by category"` | The section's heading, rendered as an `h2`; with an empty value no heading is rendered and the section has no `aria-labelledby`. |
 | `Description` | `string?` | `null` | Supporting text under the heading; nothing is rendered when it is empty. |
 | `Items` | `ContextCardItem[]` | `[]` | The cards. With none, only the heading is rendered. |
-| `HeadingId` | `string` | `"osirion-context-card-grid-de59ec070cd94059af1de3b34bf6cd10"` | The `id` of the heading, which the section's `aria-labelledby` points at. Each grid gets its own generated value unless one is set. |
+| `HeadingId` | `string?` | `null` | The `id` of the heading, which the section's `aria-labelledby` points at. Without a value each grid generates its own, so several grids on a page never repeat an id. |
 | `Id` | `string?` | `null` | The section's `id`, for in-page links. |
 | `SectionClass` | `string?` | `null` | Extra CSS classes on the section. |
 | `ContainerClass` | `string` | `"container"` | CSS classes of the inner container; `container` is a Bootstrap class, so set another value for other frameworks. |
@@ -106,7 +106,7 @@ The accent is a string written into a class name, `osirion-context-card-grid-ite
 
 - The component is plain markup and CSS and needs no script.
 - The section is a landmark named by its heading: `aria-labelledby` points at the `h2`. Each grid generates its own
-  `HeadingId`, so several grids on a page never repeat an id; set the parameter when you need a stable id to link to.
+  heading id unless you set `HeadingId`, so several grids on a page never repeat an id. Set the parameter when you need a stable id to link to.
 - Each card is an `article` with the label as an `h3` and the description as a paragraph, so the headings nest under the section's `h2`.
 - With an empty `Title` no heading is rendered and the section has no `aria-labelledby`. With no items, only the heading
   is rendered.
