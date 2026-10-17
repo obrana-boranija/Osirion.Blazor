@@ -57,7 +57,8 @@ setup. This page lists the components by module and links to their reference pag
 
 - **Server-rendered markup.** Components render their HTML on the server, so pages work under static SSR. A few
   (for example the carousels, `OsirionImageGallery` and `OsirionPageLayout`) load a small script of their own for
-  behavior that needs the browser; register `AddJSComponents()` so they can.
+  behavior that needs the browser. `AddOsirion` registers the script loader they use; with single modules, see the
+  [installation guide](/docs/installation).
 - **Common parameters.** Components inherit `OsirionComponentBase`, which adds `Class` and `Style` for the root
   element, `Attributes` (any unmatched attribute is passed through) and `Theme` (a `ThemeMode`: `Light`, `Dark`,
   `System` or `Inverted`, default `System`). The old `SetInteractive` parameter is obsolete and setting it is a
