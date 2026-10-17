@@ -100,7 +100,7 @@ Start in the mobile width and offer the markup under the preview:
 | `ShowCode` | `bool` | `true` | Whether a Show Code button appears; it needs `CodeSnippet`. |
 | `CodeSnippet` | `string?` | `null` | The code shown under the preview when the button is pressed, rendered as encoded text. |
 | `InitialViewport` | `ViewportMode` | `ViewportMode.Desktop` | The width the frame starts in: `Desktop` (1200px), `Tablet` (768px) or `Mobile` (375px), each capped at the available width. |
-| `ShowBrowserChrome` | `bool` | `true` | Whether the frame gets the `with-chrome` class. The browser bar itself is always rendered. |
+| `ShowBrowserChrome` | `bool` | `true` | Whether the frame shows the browser bar (dots and address) above the content; `false` leaves it out and the frame loses the `with-chrome` class. |
 | `Class` | `string?` | `null` | Extra CSS classes on the component's root element. |
 | `Style` | `string?` | `null` | An inline style for the frame, added after its width declarations. |
 
@@ -119,9 +119,10 @@ Start in the mobile width and offer the markup under the preview:
   `InitialViewport` with the code hidden, and the buttons do nothing. Because `ChildContent` cannot cross a render
   mode boundary, make the whole page interactive rather than setting `@rendermode` on this component.
 - The frame's address bar shows fixed text (`example.com - Desktop View`, and the same for tablet and mobile), not your page's address.
-- The browser bar is always rendered. `ShowBrowserChrome` only adds or removes the `with-chrome` class on the root; no stylesheet rule uses it. On screens 600px wide or narrower the bar is hidden by CSS.
-- The width buttons report their state with `aria-pressed`, but they contain only icons hidden from assistive
-  technology and have no accessible name.
+- The browser bar (dots and address) is shown unless `ShowBrowserChrome` is `false`, which leaves it out of the markup
+  and the `with-chrome` class off the root. On screens 600px wide or narrower the bar is hidden by CSS.
+- The width buttons report their state with `aria-pressed` and are named "Desktop", "Tablet" and "Mobile" with
+  `aria-label`; their icons are hidden from assistive technology.
 
 ## Styling
 

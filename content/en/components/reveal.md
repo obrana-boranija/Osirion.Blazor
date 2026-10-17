@@ -101,15 +101,14 @@ so put your own classes on the content inside. `Theme` is written to the root el
   `Animate` value. The component adds no ARIA roles.
 - A script observes the root with an `IntersectionObserver`. When at least 12% of it is visible, the script adds the
   class `osirion-reveal-visible` and stops observing, so the reveal happens once.
-- The stylesheet starts the element at `opacity: 0`, moved 1.25rem away in the direction of `Animation` (`Fade` has no
-  movement), with a 0.55 second transition, only when `data-osirion-reveal` is true.
-- The hidden starting state comes from the page's CSS and the reveal from the script, so with script blocked or
-  failing to load, an element with `Animate` on stays hidden.
-- With `Animate="false"` the script does nothing and the stylesheet applies no starting state.
-- Under `prefers-reduced-motion: reduce` the script does not observe, and the stylesheet shows the element at full
-  opacity with no transition. Known issue: the `Down`, `Left` and `Right` directions keep their offset in both of
-  these cases (reduced motion, and `Animate="false"`), because their `transform` rules are `!important`. Use `Up` or
-  `Fade` where the content must sit in place without the reveal.
+- Before it starts observing, the script adds the class `osirion-reveal-armed`. Only then does the stylesheet start the
+  element at `opacity: 0`, moved 1.25rem away in the direction of `Animation` (`Fade` has no movement), with a 0.55
+  second transition.
+- Without the script (blocked, failing to load, or before it runs) the element is server-rendered visible and in
+  place: nothing hides it until the script has armed it.
+- With `Animate="false"` the script does nothing, so the content is visible and in place.
+- Under `prefers-reduced-motion: reduce` the script does not arm or observe, so the content is visible and in place for
+  every direction.
 
 ## Styling
 
@@ -117,6 +116,7 @@ so put your own classes on the content inside. `Theme` is written to the root el
 | --- | --- |
 | `osirion-reveal` | The root element |
 | `osirion-reveal-up`, `-down`, `-left`, `-right`, `-fade` | The direction, from `Animation` |
+| `osirion-reveal-armed` | Added by the script when it takes over; the hidden starting state applies only with it |
 | `osirion-reveal-visible` | Added by the script once the element has been revealed |
 
 The component's rules are scoped to it, so to restyle the transition, target the content you place inside, or

@@ -122,8 +122,8 @@ two properties yourself, as above.
 | `Circuit` | `osirion-bg-circuit` | Dots and short lines like a circuit board. | 0.3 |
 | `DotsFade` | `osirion-bg-dots-fade` | Dots that fade out toward the edges. | 0.2 |
 
-`TechWave` and `Circuit` wrap the theme color in `rgba()`, which browsers reject when the token holds a color value
-(the default tokens do), so these two currently show little or nothing. Prefer the other patterns.
+`TechWave` and `Circuit` mix the theme color into a transparent one with `color-mix()`, so they follow the theme like
+the other patterns.
 
 Under a dark theme (`data-theme="dark"` on the root or a parent; the stylesheet does not look for Bootstrap's
 `data-bs-theme`), every pattern except `GradientMesh` and `TechWave` is drawn as dots at 0.15 opacity, and
@@ -136,8 +136,8 @@ Under a dark theme (`data-theme="dark"` on the root or a parent; the stylesheet 
 - **Accessibility.** The layer is an empty `div` with no text, so assistive technology has nothing to announce. Keep
   enough contrast between your text and the pattern; the patterns use low opacity for that reason. With
   `prefers-contrast: more` the layer's opacity drops to 0.05.
-- **Motion.** `AnimatedGrid` and `TechWave` animate continuously, and the component's stylesheet has no
-  reduced-motion rule of its own. Choose a static pattern where motion is a concern.
+- **Motion.** `AnimatedGrid` and `TechWave` animate continuously, and stop under `prefers-reduced-motion: reduce`,
+  leaving a still pattern.
 
 ## Styling
 

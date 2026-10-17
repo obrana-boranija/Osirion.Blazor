@@ -127,7 +127,7 @@ element to position or restyle it.
 
 - **Rendering.** The spinner is a CSS animation, so it works under static SSR, streaming rendering and interactive
   rendering alike.
-- **Motion.** The spinner turns continuously. The component's stylesheet has no `prefers-reduced-motion` rule.
+- **Motion.** The spinner turns continuously, and stops under `prefers-reduced-motion: reduce`, leaving a still ring.
 - **Accessibility.** The text is a plain paragraph; the component sets no `role="status"` or live region. If screen
   reader users should hear that content is loading, wrap it in an element with `role="status"` yourself:
 

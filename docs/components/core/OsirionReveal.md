@@ -29,10 +29,10 @@ Notes
   `data-osirion-reveal` set to the `Animate` value. The component adds no ARIA roles.
 - The enum is nested in the component, so outside the component write `OsirionReveal.RevealAnimation.Left`.
 - A collocated script (loaded through `BlazorJSComponents`) observes the root element and adds the class
-  `osirion-reveal-visible` once at least 12% of it is visible, then stops observing. The stylesheet starts the
-  element at `opacity: 0` with a 1.25rem offset (direction depends on `Animation`; `Fade` has no offset) and a 0.55s
-  transition when `data-osirion-reveal` is true.
-- Reduced motion: both the script (it does not observe) and the stylesheet (opacity 1, no transform, no transition)
-  keep the content visible under `prefers-reduced-motion: reduce`.
-- With `Animate="false"` the script does nothing and the stylesheet applies no starting state, so the content is
-  visible.
+  `osirion-reveal-visible` once at least 12% of it is visible, then stops observing. Before it observes, the script
+  adds `osirion-reveal-armed`; only then does the stylesheet start the element at `opacity: 0` with a 1.25rem offset
+  (direction depends on `Animation`; `Fade` has no offset) and a 0.55s transition. Without the script the content is
+  visible and in place.
+- Reduced motion: the script does not arm or observe, so the content stays visible and in place under
+  `prefers-reduced-motion: reduce`.
+- With `Animate="false"` the script does nothing, so the content is visible and in place.

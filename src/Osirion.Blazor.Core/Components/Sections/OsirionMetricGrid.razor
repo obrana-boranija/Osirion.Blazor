@@ -3,7 +3,7 @@
 
 @if (Metrics.Count > 0)
 {
-    <ul class="osirion-metric-grid osirion-metric-grid-columns-@((int)Columns) @CssClass" aria-label="@AriaLabel" @attributes="Attributes">
+    <ul class="osirion-metric-grid osirion-metric-grid-columns-@((int)Columns) @CssClass @Class" style="@Style" role="list" aria-label="@AriaLabel" @attributes="Attributes">
         @foreach (var metric in Metrics)
         {
             <li @key="metric">
@@ -13,8 +13,7 @@
                                    Accent="@metric.Accent"
                                    Kicker="@metric.Kicker"
                                    Elevated="@metric.Elevated"
-                                   Animate="@metric.Animate"
-                                   CssClass="h-100" />
+                                   Animate="@metric.Animate" />
             </li>
         }
     </ul>

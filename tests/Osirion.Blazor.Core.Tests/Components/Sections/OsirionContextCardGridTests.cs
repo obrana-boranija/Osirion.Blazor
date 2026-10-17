@@ -18,12 +18,38 @@ public class OsirionContextCardGridTests : OsirionComponentTestBase
         var cut = RenderGrid();
 
         var section = cut.Find("section.osirion-context-card-grid");
-        section.GetAttribute("aria-labelledby").ShouldBe("osirion-context-card-grid-heading");
         section.HasAttribute("id").ShouldBeFalse();
         cut.Find(".osirion-context-card-grid-container").ClassList.ShouldContain("container");
         var heading = cut.Find("h2");
-        heading.Id.ShouldBe("osirion-context-card-grid-heading");
+        section.GetAttribute("aria-labelledby").ShouldBe(heading.Id);
         heading.TextContent.ShouldBe("Context by category");
+    }
+
+    // Fails before the fix: the default heading id was a fixed string, so two grids on a page repeated the id.
+    [Fact]
+    public void ContextCardGrid_TwoGridsWithDefaults_GetDifferentHeadingIds()
+    {
+        var first = RenderGrid().Find("h2").Id;
+        var second = RenderGrid().Find("h2").Id;
+
+        first.ShouldNotBeNullOrWhiteSpace();
+        second.ShouldNotBe(first);
+    }
+
+    // Fails before the fix: an empty title rendered an empty h2 and the section still pointed aria-labelledby at it.
+    [Theory]
+    [InlineData("")]
+    [InlineData("  ")]
+    public void ContextCardGrid_EmptyTitle_RendersNoHeadingAndNoLabelReference(string title)
+    {
+        var cut = RenderGrid(p => p
+            .Add(c => c.Title, title)
+            .Add(c => c.Description, "Where it applies")
+            .Add(c => c.Items, [new ContextCardItem("A", "B")]));
+
+        cut.FindAll("h2").ShouldBeEmpty();
+        cut.Find("section").HasAttribute("aria-labelledby").ShouldBeFalse();
+        cut.Find(".osirion-context-card-grid-heading p").TextContent.ShouldBe("Where it applies");
     }
 
     [Fact]
