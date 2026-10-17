@@ -870,7 +870,7 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
         {
             schemaTypes = [.. SchemaTypes];
         }
-        else if (!string.IsNullOrWhiteSpace(declaredType) && Enum.TryParse<SchemaType>(declaredType, out var contentSchemaType))
+        else if (!string.IsNullOrWhiteSpace(declaredType) && Enum.TryParse<SchemaType>(declaredType, ignoreCase: true, out var contentSchemaType))
         {
             schemaTypes = [contentSchemaType];
         }

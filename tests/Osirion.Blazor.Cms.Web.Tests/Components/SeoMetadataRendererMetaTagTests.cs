@@ -132,7 +132,7 @@ public class SeoMetadataRendererMetaTagTests : CmsWebComponentTestBase
         var cut = RenderPage(p => p.Add(c => c.Content, item));
 
         Meta(cut, "description").ShouldBe("SEO description");
-        Meta(cut, "robots").ShouldBe("index, follow");
+        Meta(cut, "robots").ShouldBe(DefaultRobots);
         Property(cut, "og:title").ShouldBe("OG title");
         Property(cut, "og:description").ShouldBe("OG description");
         Property(cut, "og:type").ShouldBe("product");
@@ -556,6 +556,45 @@ public class SeoMetadataRendererMetaTagTests : CmsWebComponentTestBase
             .Add(c => c.AllowAiTraining, true));
 
         Meta(cut, "ai-training").ShouldBe("allow");
+    }
+
+    // Fails before the fix: the model defaulted robots to "index, follow", so an item with front matter never got
+    // the renderer's default with max-snippet, max-image-preview and max-video-preview.
+    [Fact]
+    public void SeoMetadataRenderer_FrontMatterWithoutRobots_UsesTheRendererDefault()
+    {
+        var item = SeoTestContent.Article();
+        item.Metadata = new FrontMatter { SeoProperties = new SeoMetadata() };
+
+        var cut = RenderPage(p => p.Add(c => c.Content, item));
+
+        Meta(cut, "robots").ShouldBe(DefaultRobots);
+    }
+
+    [Fact]
+    public void SeoMetadataRenderer_FrontMatterRobots_WinsOverTheRendererDefault()
+    {
+        var item = SeoTestContent.Article();
+        item.Metadata = new FrontMatter { SeoProperties = new SeoMetadata { Robots = "noindex, follow" } };
+
+        var cut = RenderPage(p => p.Add(c => c.Content, item));
+
+        Meta(cut, "robots").ShouldBe("noindex, follow");
+    }
+
+    // Fails before the fix: the model defaulted og:type to "article", so a ProfilePage with front matter said
+    // "article" instead of the "profile" its schema type computes.
+    [Fact]
+    public void SeoMetadataRenderer_FrontMatterWithoutOgType_ComputesItFromTheSchemaType()
+    {
+        var item = SeoTestContent.Article();
+        item.Metadata = new FrontMatter { SeoProperties = new SeoMetadata() };
+
+        var cut = RenderPage(p => p
+            .Add(c => c.Content, item)
+            .Add(c => c.SchemaTypes, [SchemaType.ProfilePage]));
+
+        Property(cut, "og:type").ShouldBe("profile");
     }
 
     private string PageTitleText(IRenderedComponent<SeoMetadataRenderer> cut) =>

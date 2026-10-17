@@ -159,9 +159,9 @@ The crawler tags controlled by `AllowAiDiscovery` and `AllowAiTraining` use meta
 | `<title>` | `seo_properties.title`, then `title`; the site name follows after a vertical bar. The title is not cut |
 | description | `seo_properties.description`, then `description`, cut to 160 characters |
 | canonical | `seo_properties.canonical`, then the current URL without query string and fragment, on `SiteUrl` when it is set |
-| robots | `AllowSearchIndexing`, then `seo_properties.robots` (the front matter default is `index, follow`); an item with no value gets `index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1` |
+| robots | `AllowSearchIndexing`, then `seo_properties.robots`; an item that sets none gets `index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1` |
 | `og:title`, `og:description` | `seo_properties.og_title` and `og_description`, then the title and description above; cut to 60 and 200 characters |
-| `og:type` | `seo_properties.og_type` (front matter default `article`), then `article` when the first schema type is Article, BlogPosting or TechArticle, `product` for Product, `video.other` for VideoObject, `profile` for ProfilePage, otherwise `website` |
+| `og:type` | `seo_properties.og_type`, then `article` when the first schema type is Article, BlogPosting or TechArticle, `product` for Product, `video.other` for VideoObject, `profile` for ProfilePage, otherwise `website` |
 | `og:image` | `seo_properties.og_image_url`, then `featured_image`, then `DefaultImageUrl`; the width, height and alt tags are written only when there is an image |
 | Twitter Card | `seo_properties.twitter_card`, `twitter_title`, `twitter_description`, `twitter_image_url`, then Open Graph; the title is cut to 70 characters and the description to 200, and `twitter:image:alt` repeats the Twitter title |
 | keywords | `tags` |

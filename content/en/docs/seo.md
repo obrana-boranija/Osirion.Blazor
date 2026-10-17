@@ -189,7 +189,7 @@ as described in [How content is organized](/docs/content). A 301 tells search en
 
 JSON-LD is chosen by the `SchemaTypes` parameter, else `seo_properties.type`, else `WebPage`. A page with a front matter
 block has `type: Article` unless it sets another, so it gets `Article`; a file with no front matter gets `WebPage`.
-Write the type name exactly: an unrecognized spelling gives `WebPage`. The generated types are
+The name is read ignoring case (`techarticle` is `TechArticle`); an unrecognized name gives `WebPage`. The generated types are
 `Article`, `BlogPosting`, `TechArticle`, `WebPage`, `AboutPage`, `ContactPage`, `ProfilePage`, `SoftwareApplication`,
 `Product`, `Organization`, `Person`, `LocalBusiness`, `Event`, `Recipe`, `Course`, `Review`, `VideoObject`, `WebSite`,
 `BreadcrumbList` and `CollectionPage`, plus `HowTo`. With one type and `GenerateMultipleSchemas` on (the default), a

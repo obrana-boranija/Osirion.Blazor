@@ -110,6 +110,21 @@ public class SeoMetadataRendererPageTypeTests : CmsWebComponentTestBase
         FindSchema(cut, "TechArticle").ShouldNotBeNull();
     }
 
+    // Fails before the fix: the front matter type was parsed with a case-sensitive Enum.TryParse, so
+    // "techarticle" silently became a WebPage.
+    [Theory]
+    [InlineData("techarticle")]
+    [InlineData("TECHARTICLE")]
+    public void SeoMetadataRenderer_TypeFromFrontMatterInAnyCase_IsParsed(string declaredType)
+    {
+        var item = CreatePage("Install");
+        item.Metadata!.SeoProperties!.Type = declaredType;
+
+        var cut = RenderStatic<SeoMetadataRenderer>(p => p.Add(c => c.Content, item));
+
+        FindSchema(cut, "TechArticle").ShouldNotBeNull();
+    }
+
     private IRenderedComponent<SeoMetadataRenderer> Render(ContentItem item, SchemaType type) =>
         RenderStatic<SeoMetadataRenderer>(p => p
             .Add(c => c.Content, item)
