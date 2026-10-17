@@ -1,0 +1,96 @@
+.themes-page {
+    max-width: 60rem;
+    margin: 0 auto;
+    padding: 2rem 1rem 4rem;
+}
+
+.themes-header h1 {
+    margin: 1rem 0;
+}
+
+.themes-lead {
+    font-size: 1.125rem;
+    color: var(--osirion-text-secondary, inherit);
+}
+
+.themes-try {
+    margin: 2rem 0;
+    padding: 1.25rem 1.5rem;
+    border: 1px solid var(--osirion-border-color, #d0d7de);
+    border-radius: var(--osirion-radius-md, 0.5rem);
+    background: var(--osirion-background-secondary, transparent);
+}
+
+.themes-try h2 {
+    margin-top: 0;
+}
+
+.themes-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 1.5rem;
+}
+
+/* The palette names in the Markdown table stay on one line */
+.themes-body ::deep td:first-child {
+    white-space: nowrap;
+}
+
+.themes-tokens {
+    margin-top: 3rem;
+}
+
+.themes-tokens h3 {
+    margin-top: 2rem;
+}
+
+/* Wide tables scroll inside their block on a phone instead of widening the page */
+.themes-table {
+    overflow-x: auto;
+}
+
+.themes-table:focus-visible {
+    outline: 2px solid var(--osirion-border-color-focus, currentColor);
+    outline-offset: 2px;
+}
+
+/* One set of column widths for every group's table, so the columns line up down the page */
+.themes-table table {
+    width: 100%;
+    min-width: 44rem;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+
+.themes-table th:nth-child(1) {
+    width: 45%;
+}
+
+.themes-table th:nth-child(2) {
+    width: 30%;
+}
+
+.themes-table th,
+.themes-table td {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--osirion-border-color, #d0d7de);
+    text-align: left;
+    vertical-align: middle;
+}
+
+.themes-table td:first-child {
+    white-space: nowrap;
+}
+
+/* The chip shows the token's colour; its outline keeps a chip that matches the page visible */
+.themes-chip {
+    display: inline-block;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-right: 0.5rem;
+    vertical-align: middle;
+    border-radius: 0.25rem;
+    outline: 1px solid var(--osirion-text-tertiary, currentColor);
+    outline-offset: 1px;
+}
