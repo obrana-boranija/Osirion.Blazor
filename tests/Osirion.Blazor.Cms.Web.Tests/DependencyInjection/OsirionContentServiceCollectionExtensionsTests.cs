@@ -1,5 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Options;
@@ -86,6 +88,51 @@ public class OsirionContentServiceCollectionExtensionsTests
         services.ShouldContain(d => d.ServiceType == typeof(FileSystemContentProvider));
         using var provider = services.BuildServiceProvider();
         provider.GetRequiredService<IOptions<FileSystemOptions>>().Value.BasePath.ShouldBe("content");
+    }
+
+    [Theory]
+    [InlineData("Osirion:Cms:Web:FileSystem:BasePath")]
+    [InlineData("Osirion:Cms:FileSystem:Web:BasePath")]
+    public void AddOsirionContent_FileSystemSection_RegistersTheFileSystemProviderOnce(string key)
+    {
+        // Fails before the fix for the legacy key: AddCms auto-registered the provider for the Osirion:Cms:FileSystem
+        // section and AddOsirionContent registered it again, so the registry saw two providers with one id.
+        var services = new ServiceCollection();
+
+        services.AddOsirionContent(Configuration(new() { [key] = "content" }));
+
+        services.Count(d => d.ServiceType == typeof(IContentProvider) && !d.IsKeyedService).ShouldBe(1);
+        services.Count(d => d.ServiceType == typeof(IDefaultProviderSetter)).ShouldBe(1);
+    }
+
+    [Fact]
+    public void AddOsirionContent_WithBuilder_BuildsNoServiceProviderWhileConfiguring()
+    {
+        // Fails before the fix: the method built the service collection twice to read IConfiguration and the logger,
+        // which created every singleton those resolutions need, here the logger provider.
+        var loggerProvidersCreated = 0;
+        var services = new ServiceCollection()
+            .AddLogging()
+            .AddSingleton<IConfiguration>(Configuration());
+        services.AddSingleton<ILoggerProvider>(_ =>
+        {
+            loggerProvidersCreated++;
+            return NullLoggerProvider.Instance;
+        });
+
+        services.AddOsirionContent(_ => { });
+
+        loggerProvidersCreated.ShouldBe(0);
+    }
+
+    [Fact]
+    public void AddOsirionContent_WithBuilderAndNoConfigurationInstance_ExplainsWhatToDo()
+    {
+        var services = new ServiceCollection().AddLogging();
+
+        var act = () => services.AddOsirionContent(_ => { });
+
+        act.ShouldThrow<InvalidOperationException>().Message.ShouldContain("AddOsirionContent(IConfiguration)");
     }
 
     [Fact]

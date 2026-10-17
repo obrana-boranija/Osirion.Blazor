@@ -1,7 +1,7 @@
 using BlazorJSComponents;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Infrastructure.Builders;
@@ -28,20 +28,31 @@ public static class OsirionContentServiceCollectionExtensions
         if (services is null) throw new ArgumentNullException(nameof(services));
         if (configure is null) throw new ArgumentNullException(nameof(configure));
 
+        // The configuration is read from its registration: building a provider here would create a second set of
+        // every singleton the host registered so far.
+        var configuration = GetRegisteredConfiguration(services);
+
         // Add core CMS services
-        services.AddCms(services.BuildServiceProvider().GetRequiredService<IConfiguration>());
+        services.AddCms(configuration);
         AddScriptComponents(services);
 
-        // Create builder and apply configuration
-        var serviceProvider = services.BuildServiceProvider();
-        var builder = new ContentBuilder(
-            services,
-            serviceProvider.GetRequiredService<IConfiguration>(),
-            serviceProvider.GetRequiredService<ILogger<ContentBuilder>>());
+        // Create builder and apply configuration. No logger is resolved for the same reason; the builder only
+        // logs which providers it added.
+        var builder = new ContentBuilder(services, configuration, NullLogger<ContentBuilder>.Instance);
 
         configure(builder);
 
         return services;
+    }
+
+    private static IConfiguration GetRegisteredConfiguration(IServiceCollection services)
+    {
+        var descriptor = services.LastOrDefault(item => item.ServiceType == typeof(IConfiguration) && !item.IsKeyedService);
+
+        return descriptor?.ImplementationInstance as IConfiguration
+            ?? throw new InvalidOperationException(
+                "AddOsirionContent(Action<IContentBuilder>) reads the configuration registered as an IConfiguration instance, " +
+                "which WebApplicationBuilder registers, and found none. Use AddOsirionContent(IConfiguration) to pass it explicitly.");
     }
 
     /// <summary>

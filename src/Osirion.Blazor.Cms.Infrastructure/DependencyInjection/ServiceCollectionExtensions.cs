@@ -228,8 +228,17 @@ public static class ServiceCollectionExtensions
         services.TryAddFileSystemDirectoryCache();
         services.TryAddSingleton(DirectoryExtensions.CreateFileSystemDirectoryRepository);
 
+        // Both AddCms (for the legacy Osirion:Cms:FileSystem section) and AddOsirionContent can reach this method
+        // for one host. A second provider registration would give the registry two providers with one id.
+        var providerRegistered = services.Any(descriptor => descriptor.ServiceType == typeof(FileSystemContentProvider));
+
         // Register provider
         services.TryAddSingleton<FileSystemContentProvider>();
+
+        if (providerRegistered)
+        {
+            return services;
+        }
 
         // Register as IContentProvider
         services.AddSingleton<IContentProvider>(sp => sp.GetRequiredService<FileSystemContentProvider>());
