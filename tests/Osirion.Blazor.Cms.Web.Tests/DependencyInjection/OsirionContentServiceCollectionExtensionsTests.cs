@@ -126,7 +126,22 @@ public class OsirionContentServiceCollectionExtensionsTests
     }
 
     [Fact]
-    public void AddOsirionContent_WithBuilderAndNoConfigurationInstance_ExplainsWhatToDo()
+    public void AddOsirionContent_WithBuilderAndConfigurationFromAFactory_Works()
+    {
+        // WebApplicationBuilder, HostApplicationBuilder and Host.CreateDefaultBuilder all register IConfiguration
+        // through a factory, not as an instance; the builder overload must work there.
+        var configuration = Configuration(new() { ["Osirion:Cms:Web:FileSystem:BasePath"] = "content" });
+        var services = new ServiceCollection()
+            .AddLogging()
+            .AddSingleton<IConfiguration>(_ => configuration);
+
+        var act = () => services.AddOsirionContent(_ => { });
+
+        act.ShouldNotThrow();
+    }
+
+    [Fact]
+    public void AddOsirionContent_WithBuilderAndNoConfiguration_ExplainsWhatToDo()
     {
         var services = new ServiceCollection().AddLogging();
 
