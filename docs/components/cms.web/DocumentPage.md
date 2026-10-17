@@ -14,7 +14,9 @@ Usage
 Key parameters
 - Content: `ContentPath` or `Content`
 - Side navigation: `ShowSideNavigation` (true), `NavigationTitle`, `NavigationItems`; without `NavigationItems` it
-  lists the pages of the document's folder in their `order`, with the current page marked
+  lists the pages of the document's folder in their `order`, with the current page marked. On screens 768 pixels
+  wide or less it folds behind a button labelled `SideNavigationToggleText` ("Documentation menu"), so the page starts
+  with its content
 - `ShowMetadata` (true): author and "Last updated", the front matter `last_modified` date or the publication date
 - `ShowTableOfContents` (true), `TableOfContentsTitle`, `TocMinLevel`, `TocMaxLevel`
 - `EditUrlFormatter`: builds the address of the page's source; when it returns one, an `EditLinkText` link follows

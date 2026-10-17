@@ -32,41 +32,48 @@
             @if (ShowSideNavigation)
             {
                 <nav class="osirion-document-sidenav" aria-label="Document navigation">
-                    @if (!string.IsNullOrWhiteSpace(NavigationTitle))
-                    {
-                        <h2 class="osirion-sidenav-title">@NavigationTitle</h2>
-                    }
+                    @* On narrow screens the list folds behind this toggle, so the page starts with its content: a
+                       visually hidden but focusable checkbox, labelled by the visible button. No script. *@
+                    <input type="checkbox" id="@SideNavigationToggleId" class="osirion-sidenav-toggler" aria-controls="@SideNavigationPanelId" />
+                    <label for="@SideNavigationToggleId" class="osirion-sidenav-toggle">@SideNavigationToggleText</label>
 
-                    @if (SideNavigationItems is { Count: > 0 } sideNavigationItems)
-                    {
-                        <ul class="osirion-sidenav-list">
-                            @foreach (var item in sideNavigationItems)
-                            {
-                                <li class="osirion-sidenav-item">
-                                    <a href="@GetNavigationUrl(item)"
-                                       class="@GetNavigationLinkClass(item)"
-                                       aria-current="@(IsCurrentPage(item) ? "page" : null)">
-                                        @item.Title
-                                    </a>
-                                    @if (item.Children is not null && item.Children.Any() && (item.IsExpanded || IsParentOfCurrentPage(item)))
-                                    {
-                                        <ul class="osirion-sidenav-sublist">
-                                            @foreach (var child in item.Children)
-                                            {
-                                                <li class="osirion-sidenav-item">
-                                                    <a href="@GetNavigationUrl(child)"
-                                                       class="@GetNavigationLinkClass(child)"
-                                                       aria-current="@(IsCurrentPage(child) ? "page" : null)">
-                                                        @child.Title
-                                                    </a>
-                                                </li>
-                                            }
-                                        </ul>
-                                    }
-                                </li>
-                            }
-                        </ul>
-                    }
+                    <div id="@SideNavigationPanelId" class="osirion-sidenav-panel">
+                        @if (!string.IsNullOrWhiteSpace(NavigationTitle))
+                        {
+                            <h2 class="osirion-sidenav-title">@NavigationTitle</h2>
+                        }
+
+                        @if (SideNavigationItems is { Count: > 0 } sideNavigationItems)
+                        {
+                            <ul class="osirion-sidenav-list">
+                                @foreach (var item in sideNavigationItems)
+                                {
+                                    <li class="osirion-sidenav-item">
+                                        <a href="@GetNavigationUrl(item)"
+                                           class="@GetNavigationLinkClass(item)"
+                                           aria-current="@(IsCurrentPage(item) ? "page" : null)">
+                                            @item.Title
+                                        </a>
+                                        @if (item.Children is not null && item.Children.Any() && (item.IsExpanded || IsParentOfCurrentPage(item)))
+                                        {
+                                            <ul class="osirion-sidenav-sublist">
+                                                @foreach (var child in item.Children)
+                                                {
+                                                    <li class="osirion-sidenav-item">
+                                                        <a href="@GetNavigationUrl(child)"
+                                                           class="@GetNavigationLinkClass(child)"
+                                                           aria-current="@(IsCurrentPage(child) ? "page" : null)">
+                                                            @child.Title
+                                                        </a>
+                                                    </li>
+                                                }
+                                            </ul>
+                                        }
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    </div>
                 </nav>
             }
 

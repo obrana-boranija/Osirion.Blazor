@@ -48,6 +48,41 @@ internal static class ContentUrls
     internal static string ItemUrl(ContentItem item, Func<ContentItem, string>? formatter = null) =>
         formatter?.Invoke(item) ?? "/" + item.Url.TrimStart('/');
 
+    /// <summary>
+    /// Builds the link to a folder: the address its <c>_index.md</c> declares, otherwise its path from the site root
+    /// without the locale folder, as content URLs leave it out.
+    /// </summary>
+    internal static string DirectoryUrl(DirectoryItem directory)
+    {
+        if (!string.IsNullOrWhiteSpace(directory.Url))
+        {
+            return "/" + directory.Url.Trim('/');
+        }
+
+        var path = directory.Path.Trim('/');
+        var root = directory;
+        while (root.Parent is not null)
+        {
+            root = root.Parent;
+        }
+
+        if (!ReferenceEquals(root, directory) && IsLocaleFolder(root))
+        {
+            path = path[root.Path.Trim('/').Length..].TrimStart('/');
+        }
+
+        return "/" + path;
+    }
+
+    /// <summary>
+    /// Whether a folder only sorts content by language: a top-level folder named after its locale, such as
+    /// <c>content/en</c>. It has no page of its own.
+    /// </summary>
+    internal static bool IsLocaleFolder(DirectoryItem directory) =>
+        directory.Parent is null
+        && !string.IsNullOrWhiteSpace(directory.Locale)
+        && string.Equals(directory.Path.Trim('/'), directory.Locale, StringComparison.OrdinalIgnoreCase);
+
     /// <summary>Builds the default tag page URL, optionally below a locale segment.</summary>
     internal static string TagUrl(string tag, string? locale = null) => $"{LocalePrefix(locale)}/tag/{Slug(tag)}";
 
