@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Dejan Demonjić",
+  "classifications": [ "Web", "Blazor", "Documentation", "Osirion" ],
+  "identity": "Osirion.Blazor.Templates.Docs",
+  "name": "Osirion documentation site",
+  "description": "A Markdown documentation site on Osirion.Blazor: server-rendered pages with side navigation, a table of contents, previous and next links, and a sitemap.",
+  "shortName": "osirion-docs",
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "sourceName": "OsirionDocs-CSharp",
+  "preferNameDirectory": true,
+  "symbols": {
+    "SiteName": {
+      "type": "parameter",
+      "datatype": "text",
+      "description": "The site's name, shown in the menu, the footer and the page titles.",
+      "defaultValue": "My Docs",
+      "replaces": "My Docs"
+    },
+    "SiteUrl": {
+      "type": "parameter",
+      "datatype": "text",
+      "description": "The public address of the site, without a trailing slash; the sitemap and robots.txt link to it.",
+      "defaultValue": "https://example.com",
+      "replaces": "https://example.com"
+    },
+    "HttpPort": {
+      "type": "generated",
+      "generator": "port",
+      "parameters": { "low": 5000, "high": 5300 },
+      "replaces": "5080"
+    },
+    "HttpsPort": {
+      "type": "generated",
+      "generator": "port",
+      "parameters": { "low": 7000, "high": 7300 },
+      "replaces": "7080"
+    },
+    "skipRestore": {
+      "type": "parameter",
+      "datatype": "bool",
+      "description": "Skips the automatic restore of the project after it is created.",
+      "defaultValue": "false"
+    }
+  },
+  "primaryOutputs": [
+    { "path": "OsirionDocs-CSharp.csproj" }
+  ],
+  "postActions": [
+    {
+      "condition": "(!skipRestore)",
+      "description": "Restores the NuGet packages the project needs.",
+      "manualInstructions": [ { "text": "Run 'dotnet restore'" } ],
+      "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
+      "continueOnError": true
+    }
+  ]
+}

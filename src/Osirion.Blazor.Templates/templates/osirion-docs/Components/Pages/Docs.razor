@@ -1,0 +1,25 @@
+@page "/docs"
+@page "/docs/{*Slug}"
+@inject NavigationManager Navigation
+
+@* Renders content/docs/{Slug}.md with the folder's pages beside it, in their front matter order; a page that does not
+   exist gets the not-found page with status 404. *@
+@if (!string.IsNullOrWhiteSpace(Slug))
+{
+    <DocumentPage ContentPath="@($"docs/{Slug}.md")" NavigationTitle="Documentation" />
+}
+
+@code {
+    /// <summary>The page to show, such as <c>introduction</c> for content/docs/introduction.md.</summary>
+    [Parameter]
+    public string? Slug { get; set; }
+
+    /// <summary>Sends /docs to the first page, so the section has one address per page.</summary>
+    protected override void OnParametersSet()
+    {
+        if (string.IsNullOrWhiteSpace(Slug))
+        {
+            Navigation.NavigateTo("/docs/introduction");
+        }
+    }
+}

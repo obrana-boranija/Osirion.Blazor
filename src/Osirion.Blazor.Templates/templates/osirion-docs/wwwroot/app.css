@@ -1,0 +1,28 @@
+/* Your styles. Osirion's components read --osirion-* custom properties; to change one, use a selector more specific
+   than the theme's, so your rule wins whatever order the stylesheets load in:
+
+   html:root[data-osirion-theme="light"] { --osirion-action-primary: #0b5ed7; }
+   html:root[data-osirion-theme="dark"] { --osirion-action-primary: #6ea8fe; }
+*/
+
+/* After each navigation Blazor moves focus to the page heading (FocusOnNavigate in Routes.razor), so screen readers
+   announce the new page; the heading is not a control, so it shows no focus ring. */
+h1:focus {
+    outline: none;
+}
+
+/* Lined up with ContentListPage, which centres its content in the same width. */
+.docs-message {
+    box-sizing: border-box;
+    max-width: var(--osirion-container-xxl, 1320px);
+    margin: 0 auto 3rem;
+    padding: 0 var(--osirion-spacing-4, 1rem);
+}
+
+/* A link that stands alone needs the theme's link colour and a 24 by 24 pixel target (WCAG 2.2, 2.5.8). */
+.docs-message a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+    color: var(--osirion-link-color);
+}

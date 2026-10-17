@@ -94,6 +94,9 @@ configured in `appsettings.json`.
 `dotnet publish` copies the `content` folder with the app. The post "Write your first post", which the template
 includes, shows the front matter a post needs.
 
+For documentation instead of a blog, use `dotnet new osirion-docs -n MyDocs`: pages in `content/docs` with side
+navigation, a table of contents and previous and next links.
+
 ## Add Osirion to an existing Blazor app
 
 This guide takes a new Blazor Web App to a running blog: a list page and an article page rendered from Markdown
