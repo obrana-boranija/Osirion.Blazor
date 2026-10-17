@@ -35,6 +35,17 @@ namespace Osirion.Blazor.Theming.Components
         /// <see langword="null"/>, <c>ThemingOptions.DefaultMode</c> applies (<c>System</c> unless configured).
         /// </summary>
         [Parameter] public ThemeMode? Mode { get; set; }
+        /// <summary>
+        /// Gets or sets the Content Security Policy nonce written as the <c>nonce</c> attribute of the inline
+        /// <c>&lt;script&gt;</c> that sets the theme before first paint and of each inline <c>&lt;style&gt;</c> element.
+        /// Pass the nonce your policy header carries for this response, so <c>script-src</c> and <c>style-src</c> can use
+        /// <c>'nonce-...'</c> instead of <c>'unsafe-inline'</c>. It must be a new random value for every response; a
+        /// fixed value defeats the policy. When <see langword="null"/> or empty, no attribute is written.
+        /// </summary>
+        [Parameter] public string? Nonce { get; set; }
+
+        // A null attribute value is not rendered, and an empty nonce would only make an invalid policy source.
+        private string? NonceAttribute => string.IsNullOrEmpty(Nonce) ? null : Nonce;
 
         private ThemingOptions EffectiveOptions
         {

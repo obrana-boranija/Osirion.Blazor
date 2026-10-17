@@ -7,7 +7,7 @@ Key parameters
 - Id (required), Title, Description
 - ShowNameField, NamePlaceholder, EmailPlaceholder
 - SubscribeButtonText, SubscribingText, ShowRequiredIndicators
-- PrivacyPolicyText (null to hide)
+- PrivacyPolicyText (null or empty hides the checkbox and records no consent)
 - ShowSubscriptionCategories, SubscriptionCategories, CategoriesText
 - ShowCategoriesAsDropdown, CategoriesDropdownText
 - CompactLayout, UseDarkTheme, ShowBorder, ShowShadow
