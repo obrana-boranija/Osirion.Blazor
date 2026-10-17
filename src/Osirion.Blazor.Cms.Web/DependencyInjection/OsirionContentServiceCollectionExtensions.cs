@@ -2,6 +2,7 @@ using BlazorJSComponents;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Infrastructure.Builders;
@@ -28,20 +29,39 @@ public static class OsirionContentServiceCollectionExtensions
         if (services is null) throw new ArgumentNullException(nameof(services));
         if (configure is null) throw new ArgumentNullException(nameof(configure));
 
+        var (configuration, logger) = ResolveConfiguration(services);
+
         // Add core CMS services
-        services.AddCms(services.BuildServiceProvider().GetRequiredService<IConfiguration>());
+        services.AddCms(configuration);
         AddScriptComponents(services);
 
-        // Create builder and apply configuration
-        var serviceProvider = services.BuildServiceProvider();
-        var builder = new ContentBuilder(
-            services,
-            serviceProvider.GetRequiredService<IConfiguration>(),
-            serviceProvider.GetRequiredService<ILogger<ContentBuilder>>());
+        var builder = new ContentBuilder(services, configuration, logger);
 
         configure(builder);
 
         return services;
+    }
+
+    private static (IConfiguration Configuration, ILogger<ContentBuilder> Logger) ResolveConfiguration(IServiceCollection services)
+    {
+        var descriptor = services.LastOrDefault(item => item.ServiceType == typeof(IConfiguration) && !item.IsKeyedService);
+        if (descriptor is null)
+        {
+            throw new InvalidOperationException(
+                "AddOsirionContent(Action<IContentBuilder>) needs an IConfiguration registration and found none. " +
+                "Use AddOsirionContent(IConfiguration) to pass the configuration explicitly.");
+        }
+
+        // An instance is read directly, so no second set of singletons is created.
+        if (descriptor.ImplementationInstance is IConfiguration instance)
+        {
+            return (instance, NullLogger<ContentBuilder>.Instance);
+        }
+
+        // The hosts register IConfiguration through a factory, which needs a provider to run. One is built once and
+        // left undisposed: disposing it would dispose the host's configuration, which the factory returns.
+        var provider = services.BuildServiceProvider();
+        return (provider.GetRequiredService<IConfiguration>(), provider.GetRequiredService<ILogger<ContentBuilder>>());
     }
 
     /// <summary>

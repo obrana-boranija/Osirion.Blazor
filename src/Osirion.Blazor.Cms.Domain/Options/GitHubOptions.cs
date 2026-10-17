@@ -72,5 +72,6 @@ public class GitHubOptions : ContentProviderOptions
     /// <summary>
     /// Gets or sets patterns for excluding files/directories
     /// </summary>
+    [Obsolete("The GitHub provider does not read exclude patterns. Use ContentPath to limit the folder and SupportedExtensions to limit the file types. Removed in the next major version.")]
     public List<string> ExcludePatterns { get; set; } = new() { ".*", "_*" };
 }

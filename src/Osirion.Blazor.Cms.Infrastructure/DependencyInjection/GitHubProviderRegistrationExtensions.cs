@@ -176,19 +176,17 @@ public static class GitHubProviderRegistrationExtensions
             return provider;
         });
 
-        // Register default setter if this provider is marked as default
-        var isDefault = providerSection.GetValue<bool>("IsDefault");
-        if (isDefault)
-        {
-            var providerId = providerSection.GetValue<string>("ProviderId");
-            if (string.IsNullOrWhiteSpace(providerId))
-            {
-                var owner = providerSection.GetValue<string>("Owner");
-                var repository = providerSection.GetValue<string>("Repository");
-                providerId = $"github-{providerName}-{owner}-{repository}";
-            }
+        var registeredOptions = new GitHubOptions();
+        providerSection.Bind(registeredOptions);
 
-            services.AddSingleton<IDefaultProviderSetter>(new DefaultProviderSetter(providerId, true));
+        // The polling service reads EnablePolling and PollingIntervalSeconds from here, not from IOptions<GitHubOptions>.
+        services.AddSingleton(new GitHubPollingTarget(providerName, registeredOptions));
+
+        // Register default setter if this provider is marked as default
+        if (providerSection.GetValue<bool>("IsDefault"))
+        {
+            // The id the provider reports, not a second derivation: the registry matches that exact string.
+            services.AddSingleton<IDefaultProviderSetter>(new DefaultProviderSetter(GitHubProviderId.For(registeredOptions), true));
         }
 
         return services;

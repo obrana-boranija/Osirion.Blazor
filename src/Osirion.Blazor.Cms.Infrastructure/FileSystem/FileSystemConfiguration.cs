@@ -23,4 +23,15 @@ internal static class FileSystemConfiguration
         var webSection = configuration.GetSection(FileSystemOptions.WebSection);
         return webSection.Exists() ? webSection : configuration.GetSection(FileSystemOptions.Section);
     }
+
+    /// <summary>
+    /// Returns the prefix removed from content paths when URLs are built: <see cref="FileSystemOptions.ContentRoot"/>, or
+    /// the inherited <see cref="ContentProviderOptions.ContentPath"/> when no content root is set.
+    /// </summary>
+    /// <param name="options">The file system options.</param>
+    /// <returns>The prefix, or an empty string when neither option is set.</returns>
+    internal static string GetContentRoot(FileSystemOptions options)
+    {
+        return !string.IsNullOrWhiteSpace(options.ContentRoot) ? options.ContentRoot : options.ContentPath;
+    }
 }

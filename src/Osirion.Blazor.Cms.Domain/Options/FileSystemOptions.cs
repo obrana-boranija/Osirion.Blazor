@@ -30,6 +30,7 @@ public class FileSystemOptions : ContentProviderOptions
     /// <summary>
     /// Gets or sets the polling interval in milliseconds when file system watchers are not available
     /// </summary>
+    [Obsolete("The file system provider does not poll. Use WatchForChanges to refresh content when files change. Removed in the next major version.")]
     public int PollingIntervalMs { get; set; } = 30000;
 
     /// <summary>
@@ -45,6 +46,7 @@ public class FileSystemOptions : ContentProviderOptions
     /// <summary>
     /// Gets or sets the file glob patterns to include
     /// </summary>
+    [Obsolete("The file system provider does not read include patterns. Use SupportedExtensions to choose the file types to load, and ExcludePatterns to skip paths. Removed in the next major version.")]
     public List<string> IncludePatterns { get; set; } = new() { "**/*.md", "**/*.markdown" };
 
     /// <summary>

@@ -143,7 +143,7 @@ app.UseRewriter(rewriteOptions);
 
   Alternatively, `app.UseOsirionRobotsGenerator()` answers `/robots.txt` with the content item whose URL is `robots`
   (a `robots.txt` at the root of the content folder, when the provider loads `.txt` files) and otherwise returns a
-  default that disallows `/search/`. Use one approach, not both: registered before the static files, as in the
+  default that disallows `/search/`. From the release after 4.1.0 it serves the item's source text, as plain text. Use one approach, not both: registered before the static files, as in the
   example app, the middleware answers and the static file is never served.
 
 ## 5. Describe the page with structured data

@@ -3,6 +3,7 @@ namespace Osirion.Blazor.Cms.Domain.Options;
 /// <summary>
 /// Configuration options for caching
 /// </summary>
+[Obsolete("The providers keep their own content caches, so Osirion:Cms:Cache only configures IContentCacheService and CacheDecoratorFactory, which no CMS component uses. Remove the Osirion:Cms:Cache section. This type is removed in the next major version.")]
 public class CacheOptions
 {
     /// <summary>
