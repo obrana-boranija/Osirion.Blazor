@@ -9,103 +9,107 @@ namespace Osirion.Blazor.Components;
 public partial class OsirionTestimonialCarousel : OsirionComponentBase
 {
     /// <summary>
-    /// Optional title to display above the testimonials
+    /// The heading above the rail, rendered as an <c>h2</c>; nothing is rendered when it is empty.
     /// </summary>
     [Parameter]
     public string? Title { get; set; }
 
     /// <summary>
-    /// Section aria-label for accessibility
+    /// The accessible name (<c>aria-label</c>) of the <c>section</c>.
     /// </summary>
     [Parameter]
     public string SectionTitle { get; set; } = "Customer Testimonials";
 
     /// <summary>
-    /// Animation duration in seconds (default: 60)
+    /// The seconds one full loop takes at <c>Normal</c> speed. Lower is faster.
     /// </summary>
     [Parameter]
     public int AnimationDuration { get; set; } = 60;
 
     /// <summary>
-    /// Custom list of testimonials. If not provided, uses sample testimonials.
+    /// The testimonials. Without it the carousel shows built-in sample testimonials, so always pass your own. Fewer
+    /// than three are repeated on the rail to close the loop; your list is not changed.
     /// </summary>
     [Parameter]
     public List<TestimonialItem>? CustomTestimonials { get; set; }
 
     /// <summary>
-    /// Gets or sets whether to pause animation on hover
+    /// Whether the loop pauses while the pointer is over the carousel. Keyboard focus inside it always pauses the
+    /// loop.
     /// </summary>
     [Parameter]
     public bool PauseOnHover { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the animation direction (left or right)
+    /// <c>Right</c> moves the cards from right to left, <c>Left</c> from left to right.
     /// </summary>
     [Parameter]
     public AnimationDirection Direction { get; set; } = AnimationDirection.Right;
 
     /// <summary>
-    /// Gets or sets the card width in pixels
+    /// The width of each card in pixels.
     /// </summary>
     [Parameter]
     public int CardWidth { get; set; } = 400;
 
     /// <summary>
-    /// Gets or sets the fixed testimonial card height in pixels.
+    /// The fixed height of each card in pixels; size it for your longest quote.
     /// </summary>
     [Parameter]
     public int CardHeight { get; set; } = 300;
 
     /// <summary>
-    /// Gets or sets the gap between cards in pixels
+    /// The gap between cards in pixels.
     /// </summary>
     [Parameter]
     public int CardGap { get; set; } = 24;
 
     /// <summary>
-    /// Gets or sets the amount of testimonials to display before repeating (for performance)
+    /// Shows only the first N testimonials. A value of zero or less, or none, shows all of them.
     /// </summary>
     [Parameter]
     public int? MaxVisibleTestimonials { get; set; }
 
     /// <summary>
-    /// Gets or sets the testimonial card variant
+    /// The cards' look: <c>Default</c>, <c>Minimal</c>, <c>Highlighted</c> or <c>Compact</c>.
     /// </summary>
     [Parameter]
     public TestimonialVariant CardVariant { get; set; } = TestimonialVariant.Default;
 
     /// <summary>
-    /// Gets or sets the testimonial card size
+    /// The cards' size: <c>Small</c>, <c>Normal</c> or <c>Large</c>.
     /// </summary>
     [Parameter]
     public TestimonialSize CardSize { get; set; } = TestimonialSize.Normal;
 
     /// <summary>
-    /// Gets or sets the elevation for all cards when an individual testimonial does not specify it.
+    /// Whether the cards are elevated, for every testimonial that does not set its own <c>Elevated</c>.
     /// </summary>
     [Parameter]
     public bool? CardElevated { get; set; }
 
     /// <summary>
-    /// Gets or sets whether cards should be borderless
+    /// Whether the cards are drawn without a border.
     /// </summary>
     [Parameter]
     public bool CardBorderless { get; set; } = false;
 
     /// <summary>
-    /// Gets or sets the animation speed (slow, normal, fast)
+    /// Changes the loop time: <c>Slow</c> adds 30 seconds to <see cref="AnimationDuration"/>, <c>Fast</c> takes 30
+    /// off, to a minimum of 10.
     /// </summary>
     [Parameter]
     public CarouselSpeed Speed { get; set; } = CarouselSpeed.Normal;
 
     /// <summary>
-    /// Gets or sets whether to show rating stars on testimonial cards
+    /// Whether star ratings are allowed; a card shows its rating only when its testimonial's <c>ShowRating</c> is also
+    /// on.
     /// </summary>
     [Parameter]
     public bool ShowRating { get; set; } = false;
 
     /// <summary>
-    /// Gets or sets whether cards should inherit the carousel's theme instead of using System
+    /// Whether the cards take the carousel's <see cref="OsirionComponentBase.Theme"/> instead of following the system.
     /// </summary>
     [Parameter]
     public bool InheritTheme { get; set; } = false;

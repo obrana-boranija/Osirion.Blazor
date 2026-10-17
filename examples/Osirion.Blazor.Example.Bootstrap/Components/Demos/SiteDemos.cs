@@ -28,6 +28,20 @@ internal static class SiteDemos
         Add<RevealDemo>(demos, "reveal", "Reveal on scroll");
         Add<HtmlRendererDemo>(demos, "html-renderer", "Sanitized HTML with code");
         Add<ContentDemoDemo>(demos, "content-demo", "A registered demo");
+        Add<HeroSectionDemo>(demos, "hero-section", "A hero section");
+        Add<BaseSectionDemo>(demos, "base-section", "A base section");
+        Add<ContactInfoSectionDemo>(demos, "contact-info-section", "A contact info section");
+        Add<PricingTableDemo>(demos, "pricing-table", "A pricing table and feature comparison");
+        Add<StepsDemo>(demos, "steps", "Numbered steps");
+        Add<MetricGridDemo>(demos, "metric-grid", "A metric grid");
+        Add<ContextCardGridDemo>(demos, "context-card-grid", "A context card grid");
+        Add<InfiniteLogoCarouselDemo>(demos, "infinite-logo-carousel", "A logo carousel");
+        Add<TestimonialCarouselDemo>(demos, "testimonial-carousel", "A testimonial carousel");
+        Add<PageLayoutDemo>(demos, "page-layout", "A page layout in a frame");
+        Add<PageLoadingDemo>(demos, "page-loading", "Page loading spinners");
+        Add<FooterDemo>(demos, "footer", "A footer");
+        Add<StickySidebarDemo>(demos, "sticky-sidebar", "A sticky sidebar");
+        Add<BackgroundPatternDemo>(demos, "background-pattern", "Background patterns");
     }
 
     private static void Add<TDemo>(ContentDemoRegistry demos, string key, string title)

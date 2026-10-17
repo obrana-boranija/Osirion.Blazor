@@ -1,0 +1,43 @@
+@using Osirion.Blazor.Components
+
+@* Link targets are pages of this documentation site *@
+<OsirionFooter CompanyName="Example Ltd"
+               Variant="minimal"
+               Description="A sample footer with link columns, a social link and legal links."
+               Links="links"
+               SocialLinks="socialLinks"
+               BottomLinks="legalLinks" />
+
+@code {
+    private readonly IReadOnlyList<FooterSection> links =
+    [
+        new FooterSection
+        {
+            Title = "Components",
+            Links =
+            [
+                new FooterLink { Text = "Layout", Href = "/components/layout" },
+                new FooterLink { Text = "Page layout", Href = "/components/page-layout" }
+            ]
+        },
+        new FooterSection
+        {
+            Title = "Project",
+            Links =
+            [
+                new FooterLink { Text = "Source code", Href = "https://github.com/demonjic/Osirion.Blazor", OpenInNewTab = true }
+            ]
+        }
+    ];
+
+    private readonly IReadOnlyList<FooterSocialLink> socialLinks =
+    [
+        new FooterSocialLink { Text = "GitHub", Href = "https://github.com/demonjic/Osirion.Blazor", AriaLabel = "Osirion.Blazor on GitHub" }
+    ];
+
+    private readonly IReadOnlyList<FooterLink> legalLinks =
+    [
+        new FooterLink { Text = "Layout overview", Href = "/components/layout" },
+        new FooterLink { Text = "Footer", Href = "/components/footer" }
+    ];
+}

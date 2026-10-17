@@ -7,7 +7,7 @@ permalink: /components/sections
 description: Page sections from Osirion.Blazor Core, from heroes and content sections to pricing tables and numbered steps, rendering under static SSR.
 author: Dejan Demonjić
 date: 2025-09-03
-last_modified: 2026-10-11
+last_modified: 2026-10-17
 featured_image: /assets/images/blazor-cover.png
 categories:
 - Components
@@ -29,7 +29,7 @@ redirect_from:
 custom_fields:
   group: sections
 seo_properties:
-  title: 'Core Section Components - Osirion.Blazor'
+  title: 'Blazor section components'
   description: 'Hero, content section, contact details, pricing table, feature comparison and steps components for Blazor pages, rendering under static SSR.'
   image: /assets/images/blazor-cover.png
   canonical: 'https://getosirion.com/components/sections'
@@ -51,8 +51,8 @@ seo_properties:
 # Sections
 
 Section components build the blocks of a landing page or the top of an article: a hero, a titled content band,
-contact details, pricing and the steps of a process. Each renders complete HTML under static SSR and needs no script,
-except the responsive showcase, which is a demo tool for interactive pages.
+contact details, pricing, the steps of a process, metrics and detail cards. Each renders complete HTML under static SSR and needs no script,
+except the responsive showcase, which is a demo tool for interactive pages, and the count-up of a metric card with `Animate`.
 
 Most of them live in the `Osirion.Blazor.Components` namespace of the Osirion.Blazor.Core package, and their data
 types in `Osirion.Blazor.Core.Models`:
@@ -72,8 +72,9 @@ types in `Osirion.Blazor.Core.Models`:
 | [Pricing table and feature comparison](/components/pricing-table) | Plans side by side, and a table comparing their features | None | 4.0 |
 | [Steps](/components/steps) | Numbered "how it works" steps as an ordered list | None | 4.0 |
 | [Responsive showcase](/components/responsive-showcase-section) | A preview frame that switches between desktop, tablet and mobile widths | Interactive render mode | 4.0 |
-
-The same folder holds `OsirionMetricGrid` and `OsirionContextCardGrid`, which do not have pages yet.
+| [Metric grid](/components/metric-grid) | Metric cards in a responsive list | Only for animated cards | 3.0 |
+| [Context card grid](/components/context-card-grid) | A heading and labeled detail cards, each with an accent color | None | 3.0 |
+| [Page heading](/components/page-heading) | A page title as the `h1` with an optional sentence, for pages without a hero | None | 4.0 |
 
 ## Carousels
 
@@ -91,7 +92,7 @@ dragging, horizontal wheel scrolling and a pause button.
 - **Setup.** The enhancement script loads through the BlazorJSComponents package, which Osirion.Blazor.Core
   references. Register its services once in `Program.cs`: `builder.Services.AddJSComponents();`.
 - **Your own items.** Pass your logos or testimonials. Without them, both components show built-in sample content
-  meant for demos.
+  meant for demos, with images that load from external addresses.
 - **Motion.** The animation pauses while the pointer is over the carousel (unless `PauseOnHover` is off) and while
   keyboard focus is inside it. While the carousel animates, the script adds a pause button, and it runs its
   per-frame work only while the carousel is on screen and moving. Vertical wheel scrolling always reaches the page.
