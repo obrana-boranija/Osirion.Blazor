@@ -41,3 +41,7 @@ copy, and a check that it worked. For the parameters of a single component, use 
 | [Configure Osirion.Blazor](/docs/configuration) | The `Osirion` section, configuring in code, per environment, secrets and what is validated at startup |
 | [Content providers](/docs/providers) | The file system and GitHub providers: options, the default provider, locales, the GitHub token and refresh |
 | [Deploy an Osirion.Blazor site](/docs/deployment) | Publishing with content, environment settings, HTTPS behind a proxy, the public address, sitemap and feeds |
+| [Accessibility](/docs/accessibility) | What the components do for keyboard and screen reader users, the checks the repository runs, how to test your own site, and what stays your job |
+| [Security](/docs/security) | Content and URL sanitizing, raw HTML parameters, a Content Security Policy, cookie flags, secrets, the contact form honeypot, rate limiting and antiforgery |
+| [Migration](/docs/migration) | Upgrading from 3.x to 4.0 and from 4.0 to 4.1: what changed and the code to change |
+| [Troubleshooting](/docs/troubleshooting) | Symptom, cause and fix for the problems a site is most likely to hit, taken from the library's own log messages |
