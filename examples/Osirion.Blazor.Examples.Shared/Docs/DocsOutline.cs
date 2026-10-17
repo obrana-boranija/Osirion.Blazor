@@ -46,9 +46,9 @@ public sealed class DocsOutline
         new("forms-and-feedback", "Forms and feedback", DocsGroupKind.Section, "/components/forms-and-feedback", InGallery: true),
         new("cms-pages", "CMS pages", DocsGroupKind.Section, "/components/cms-pages", InGallery: true),
         new("cms-navigation", "CMS navigation", DocsGroupKind.Section, "/components/cms-navigation", InGallery: true),
-        new("seo-and-feeds", "SEO and feeds", DocsGroupKind.Section, InGallery: true),
-        new("analytics", "Analytics", DocsGroupKind.Section, InGallery: true,
-            SeeAlso: new("Trackers for Microsoft Clarity, Matomo, Google Analytics 4 and Yandex Metrica", "/docs/packages/analytics")),
+        new("seo-and-feeds", "SEO and feeds", DocsGroupKind.Section, "/components/seo-and-feeds", InGallery: true),
+        new("analytics", "Analytics", DocsGroupKind.Section, "/components/analytics", InGallery: true,
+            SeeAlso: new("Install, registration, configuration and the consent gate for all six trackers", "/docs/packages/analytics")),
         new("theming", "Theming", DocsGroupKind.Section, ThemesUrl, InGallery: true,
             SeeAlso: new("Setup, options and the CSS framework adapters", "/docs/packages/theming")),
     ];

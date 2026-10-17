@@ -24,6 +24,24 @@ redirect_from:
 - /docs/components/cms-web/core/seo-metadata-renderer
 custom_fields:
   group: seo-and-feeds
+seo_properties:
+  title: 'SeoMetadataRenderer: head metadata and JSON-LD for Blazor'
+  description: 'Write the title, description, canonical URL, robots, Open Graph, Twitter Card and JSON-LD tags for a Blazor content page with SeoMetadataRenderer.'
+  image: /assets/images/blazor-cover.png
+  canonical: 'https://getosirion.com/components/seo-metadata-renderer'
+  lang: en
+  robots: index, follow
+  og_title: 'SeoMetadataRenderer - Osirion.Blazor'
+  og_description: 'Writes the head metadata of a content page: title, canonical URL, robots, Open Graph, Twitter Card and JSON-LD.'
+  og_image_url: '/assets/images/blazor-cover.png'
+  og_type: article
+  json_ld: ''
+  type: Article
+  twitter_card: summary_large_image
+  twitter_title: 'SeoMetadataRenderer - Osirion.Blazor'
+  twitter_description: 'Writes the head metadata of a content page: title, canonical URL, robots, Open Graph, Twitter Card and JSON-LD.'
+  twitter_image_url: '/assets/images/blazor-cover.png'
+  meta_tags: {}
 ---
 
 # SeoMetadataRenderer
@@ -31,7 +49,10 @@ custom_fields:
 `SeoMetadataRenderer` writes the head metadata for a content page: the `<title>`, description, canonical URL,
 robots directives, Open Graph and Twitter Card tags, and schema.org JSON-LD. Give it one item (`Content`) for an
 article or several (`ContentItems`) for a list page. `ArticlePage` and `ContentList` already render it; add it
-yourself when you build a page from `ContentView` or `ContentPage`.
+yourself when you build a page from `ContentView` or `ContentPage`. It writes into the page head and renders nothing
+visible, and a live demo would replace the title and tags of this page, so this page has no demo.
+
+Package `Osirion.Blazor.Cms.Web`, namespace `Osirion.Blazor.Cms.Web.Components`. [Source on GitHub](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Cms.Web/Components/SeoMetadataRenderer.razor).
 
 ## Usage
 
@@ -83,56 +104,68 @@ or in `appsettings.json` under `Osirion:Seo`, which `AddOsirion(builder.Configur
 
 ## Parameters
 
+A parameter you leave unset takes the matching `SeoMetadataOptions` value (see Behavior). The component renders no
+element of its own, so the `Theme`, `Class` and `Style` parameters it inherits from the component base class have no
+effect.
+
+<!-- osirion:parameters SeoMetadataRenderer -->
+
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `Content` | `ContentItem?` | `null` | The item for a single content page. |
-| `ContentItems` | `IReadOnlyList<ContentItem>?` | `null` | The items of a list page. |
-| `CollectionTitle` | `string?` | `null` | Title of a list page. |
-| `CollectionDescription` | `string?` | `null` | Description of a list page. |
-| `SchemaTypes` | `SchemaType[]?` | `null` | JSON-LD types to generate, for example `Article`, `BlogPosting`, `TechArticle`, `WebPage`, `HowTo`, `BreadcrumbList` or `CollectionPage`, and for whole pages `SoftwareApplication`, `ProfilePage`, `AboutPage` and `ContactPage`. `FAQ` generates no data; use `EnableGeneratedFaq` instead. Google no longer shows FAQ or HowTo rich results. The first type also sets `og:type` when the front matter has no `og_type`. |
-| `ApplicationCategory` | `string` | `"DeveloperApplication"` | `applicationCategory` of the SoftwareApplication schema, one of the app types search engines support. |
-| `GenerateMultipleSchemas` | `bool` | `true` | Adds a BreadcrumbList when exactly one type is generated. |
-| `SiteNameOverride` | `string?` | `null` | Site name in titles and Open Graph; otherwise `OrganizationName`, then the host name. |
-| `OrganizationName` | `string?` | `null` | Publisher name in structured data. |
-| `SiteLogoUrl` | `string?` | `null` | Publisher logo; default `/logo.png`. |
-| `DefaultImageUrl` | `string?` | `null` | Social image when the item has none. |
-| `DefaultImageWidth` | `int` | `1200` | `og:image:width`. |
-| `DefaultImageHeight` | `int` | `630` | `og:image:height`. |
-| `TwitterSite` | `string?` | `null` | `twitter:site` handle. |
-| `TwitterCreator` | `string?` | `null` | `twitter:creator` handle. |
-| `FacebookAppId` | `string?` | `null` | `fb:app_id`. |
-| `AllowSearchIndexing` | `bool` | `true` | `false` writes `noindex, nofollow`. |
-| `CanonicalQueryParameters` | `IReadOnlyCollection<string>?` | `null` | Query parameters kept in the canonical URL, for example `page`. |
-| `AlternateLanguageUrls` | `List<string>?` | `null` | `hreflang` links, each a language code and a URL joined by a vertical bar; malformed entries are skipped. |
-| `PrevPageUrl` | `string?` | `null` | `rel="prev"` link. |
-| `NextPageUrl` | `string?` | `null` | `rel="next"` link. |
-| `BreadcrumbHomeText` | `string` | `"Home"` | First BreadcrumbList entry. |
-| `CustomBreadcrumbs` | `List<(string Name, string Url)>?` | `null` | Breadcrumb entries after Home, in place of the ones built from the item's URL. |
-| `EmitMobileMetaTags` | `bool` | `false` | Also writes viewport, theme-color and mobile web app tags. |
-| `EnableGeneratedFaq` | `bool` | `false` | Builds FAQPage data and answer tags from the title and description. |
-| `EnableAeoOptimization` | `bool` | `true` | Must be on for `EnableGeneratedFaq`. |
-| `EnableGeoOptimization` | `bool` | `true` | Writes summary meta tags (`entity-summary`, `content-type`, `primary-category`, `content-author`, `content-expertise-level`, `content-freshness`) when the item or list has a description. |
-| `AllowAiDiscovery` | `bool` | `true` | Chooses between crawler opt-in and opt-out meta tags. |
-| `AllowAiTraining` | `bool` | `true` | Sets the training opt-in tag among them. |
-| `SiteDescription` | `string?` | `null` | Accepted but not written to the output. |
+| `Content` | `ContentItem?` | `null` | The item a single content page writes its metadata for. Set this or `ContentItems`, not both. With neither (or an empty list), the component writes only an empty page title and no other tag. |
+| `ContentItems` | `IReadOnlyList<ContentItem>?` | `null` | The items of a list page. The title becomes `{CollectionTitle} \| {site name}`, `og:type` is `website`, and the JSON-LD holds a `BlogPosting` per item, plus a `CollectionPage` when `SchemaTypes` lists it. An empty list counts as not set. |
+| `CollectionTitle` | `string?` | `null` | The title of a list page, used in the page title as `{CollectionTitle} \| {site name}` and, cut to 60 characters, as `og:title`. Read only with `ContentItems`. |
+| `CollectionDescription` | `string?` | `null` | The description of a list page: the meta description (cut to 160 characters), `og:description` (cut to 200) and the source of the summary tags. Read only with `ContentItems`. |
+| `SiteNameOverride` | `string?` | `null` | The site name written after the title and as `og:site_name`. When empty, the configured `SiteName` applies, then `OrganizationName`, then the host name of the site address. |
+| `SiteDescription` | `string?` | `null` | A site description. The component accepts it but writes nothing from it. `MapOsirionFeeds` uses the configured `SiteDescription` as the feed description when the feed options set none. |
+| `SiteLogoUrl` | `string?` | `null` | The address of the publisher logo in structured data, absolute or relative to the site address. When empty, the configured value applies, then `/logo.png` on the site address. |
+| `TwitterSite` | `string?` | `null` | The handle of the site for `twitter:site`, for example `@contoso`. Nothing is written when empty. |
+| `TwitterCreator` | `string?` | `null` | The handle of the author for `twitter:creator`, for example `@author`. Nothing is written when empty. |
+| `FacebookAppId` | `string?` | `null` | The Facebook app ID written as `fb:app_id`. Nothing is written when empty. |
+| `SchemaTypes` | `SchemaType[]?` | `null` | The JSON-LD types to generate, such as `Article`, `BlogPosting`, `TechArticle`, `WebPage`, `HowTo`, `BreadcrumbList` or `CollectionPage`. When empty, the configured `DefaultSchemaTypes` apply, then the front matter `type`, then `WebPage`. The first type also sets `og:type` when the front matter has no `og_type`. `FAQ` generates no data: use `EnableGeneratedFaq`. A single type gets a `BreadcrumbList` added when `GenerateMultipleSchemas` is on. |
+| `AllowAiDiscovery` | `bool` | `true` | Whether the crawler opt-in meta tags are written (`true`) or the opt-out tags (`false`). With `false`, the training tag says disallow whatever `AllowAiTraining` is. These meta names are not a standard; use `robots.txt` to control crawlers. When not set, the configured value applies, then `true`. |
+| `AllowAiTraining` | `bool` | `true` | Whether the training tags (`ai-training` and `Google-Extended`) opt in (`true`) or out (`false`). Ignored when `AllowAiDiscovery` is `false`. When not set, the configured value applies, then `true`. |
+| `AllowSearchIndexing` | `bool` | `true` | Whether search engines may index the page. `false` writes `noindex, nofollow` as `robots`, `googlebot` and `bingbot`; `true` writes the front matter `robots` value, or `index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1` when it has none. When not set, the configured value applies, then `true`. |
+| `EnableGeoOptimization` | `bool` | `true` | Whether the summary meta tags are written (`entity-summary`, `content-type`, `primary-category`, `content-author`, `content-expertise-level` and `content-freshness`). They are written only when the item or list has a description. When not set, the configured value applies, then `true`. |
+| `EnableAeoOptimization` | `bool` | `true` | Whether the generated answer tags are allowed. It must be on for `EnableGeneratedFaq` to have an effect. When not set, the configured value applies, then `true`. |
+| `GenerateMultipleSchemas` | `bool` | `true` | Whether a `BreadcrumbList` is added when exactly one schema type is generated for an item with a path. Several types given in `SchemaTypes` are used as listed. When not set, the configured value applies, then `true`. |
+| `AuthorUrl` | `string?` | `null` | A page that identifies the author, such as an About page, named as the author `url` in structured data. It is meant for a site with one author: every article and every posting in a list names it. Without one the author is named alone, because a guessed address that answers 404 is worse than none. |
+| `DefaultImageUrl` | `string?` | `null` | The social image used when the item has neither `og_image_url` nor a featured image. A relative address becomes absolute with the site address. |
+| `DefaultImageWidth` | `int` | `1200` | The width written as `og:image:width`, in pixels. A value of `1200` is replaced by the configured width when there is one. |
+| `DefaultImageHeight` | `int` | `630` | The height written as `og:image:height`, in pixels. A value of `630` is replaced by the configured height when there is one. |
+| `OrganizationName` | `string?` | `null` | The publisher name in structured data. It is also the site name when no site name is set. |
+| `ApplicationCategory` | `string` | `"DeveloperApplication"` | The `applicationCategory` of the `SchemaType.SoftwareApplication` schema, one of the app types search engines support, such as `DeveloperApplication` or `BusinessApplication`. |
+| `AlternateLanguageUrls` | `List<string>?` | `null` | The `hreflang` links of other language versions, each entry a language code and an address joined by a vertical bar, such as `de\|https://example.com/de/page`. Malformed entries are skipped with a logged warning. |
+| `PrevPageUrl` | `string?` | `null` | The address written as `rel="prev"`. Nothing is written when empty. |
+| `NextPageUrl` | `string?` | `null` | The address written as `rel="next"`. Nothing is written when empty. |
+| `BreadcrumbHomeText` | `string` | `"Home"` | The name of the first `BreadcrumbList` entry. When empty, the configured value applies. |
+| `CustomBreadcrumbs` | `List<ValueTuple<string, string>>?` | `null` | The breadcrumb entries after the home entry, as name and address pairs, in place of the ones built from the item path. |
+| `CanonicalQueryParameters` | `IReadOnlyCollection<string>?` | `null` | The query parameters kept in the canonical URL, `og:url` and structured data addresses (for example `page` for paginated lists, where each page is its own document). All other parameters and the fragment are dropped. A canonical address declared in the front matter always wins. |
+| `EmitMobileMetaTags` | `bool` | `false` | Whether the viewport, theme-color and mobile web app meta tags are written. Off by default: the host document owns these, and writing them again duplicates its tags. The configured value can also turn it on. |
+| `EnableGeneratedFaq` | `bool` | `false` | Whether FAQ structured data and answer meta tags are built from the title and description (requires `EnableAeoOptimization`). Off by default because the question is derived, not authored. The configured value can also turn it on. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
+| `Style` | `string?` | `null` | An inline style for the component's root element. |
 
-The crawler tags controlled by the last parameters use meta names that are not a standard; use `robots.txt` to
-control crawlers reliably.
+<!-- /osirion:parameters -->
+
+The crawler tags controlled by `AllowAiDiscovery` and `AllowAiTraining` use meta names that are not a standard; use
+`robots.txt` to control crawlers reliably.
 
 ## What is read from the item
 
 | Output | Source, first match wins |
 | --- | --- |
-| `<title>` | `seo_properties.title`, then `title`; the site name follows after a vertical bar, and the whole is cut to 60 characters |
+| `<title>` | `seo_properties.title`, then `title`; the site name follows after a vertical bar. The title is not cut |
 | description | `seo_properties.description`, then `description`, cut to 160 characters |
 | canonical | `seo_properties.canonical`, then the current URL without query string and fragment, on `SiteUrl` when it is set |
-| robots | `AllowSearchIndexing`, then `seo_properties.robots` (front matter default `index, follow`) |
-| `og:title`, `og:description` | `seo_properties.og_title` and `og_description`, then the title and description above |
+| robots | `AllowSearchIndexing`, then `seo_properties.robots` (the front matter default is `index, follow`); an item with no value gets `index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1` |
+| `og:title`, `og:description` | `seo_properties.og_title` and `og_description`, then the title and description above; cut to 60 and 200 characters |
 | `og:type` | `seo_properties.og_type` (front matter default `article`), then `article` when the first schema type is Article, BlogPosting or TechArticle, `product` for Product, `video.other` for VideoObject, `profile` for ProfilePage, otherwise `website` |
-| `og:image` | `seo_properties.og_image_url`, then `featured_image`, then `DefaultImageUrl` |
-| Twitter Card | `seo_properties.twitter_card`, `twitter_title`, `twitter_description`, `twitter_image_url`, then Open Graph |
-| keywords, `article:tag` | `tags` |
-| `article:section` | the first of `categories` |
+| `og:image` | `seo_properties.og_image_url`, then `featured_image`, then `DefaultImageUrl`; the width, height and alt tags are written only when there is an image |
+| Twitter Card | `seo_properties.twitter_card`, `twitter_title`, `twitter_description`, `twitter_image_url`, then Open Graph; the title is cut to 70 characters and the description to 200, and `twitter:image:alt` repeats the Twitter title |
+| keywords | `tags` |
+| `article:*` tags | Written only when `og:type` is `article`: `article:published_time`, `article:modified_time`, `article:author`, `article:section` (the first of `categories`) and one `article:tag` per tag |
 | JSON-LD | `seo_properties.json_ld`, then `SchemaTypes`, then `seo_properties.type` (front matter default `Article`), then `WebPage` |
 
 Relative image URLs become absolute with the site's base URL.
@@ -147,25 +180,34 @@ Relative image URLs become absolute with the site's base URL.
 | `AboutPage` | The about page | A WebPage with the site's organization as `mainEntity`. |
 | `ContactPage` | The contact page | A WebPage with the more specific type. |
 
+`FAQ` generates no data by itself, and Google no longer shows FAQ or HowTo rich results.
+
 ## Behavior
 
 - **Rendering.** It renders on the server as part of the head, with no script, and recomputes everything when its
   parameters change, so a reused instance never keeps the previous page's canonical URL or structured data.
-- **List pages.** With `ContentItems`, the title is `{CollectionTitle} | {site name}`, `og:type` is `website`, and
-  JSON-LD holds a CollectionPage (when listed in `SchemaTypes`) plus a BlogPosting per item.
+- **List pages.** With `ContentItems`, the title is `{CollectionTitle} | {site name}` (the site name alone when there
+  is no `CollectionTitle`), `og:type` is `website`, the image is the first item's featured image or
+  `DefaultImageUrl`, and JSON-LD holds a CollectionPage (when listed in `SchemaTypes`) plus a BlogPosting per item.
+- **Breadcrumbs.** A single schema type for an item with a path gets a BreadcrumbList added when
+  `GenerateMultipleSchemas` is on. Several types in `SchemaTypes` are used as listed.
 - **Security.** Meta values are HTML-encoded. JSON-LD is serialized with HTML-sensitive characters escaped; custom
   `json_ld` from front matter is parsed and re-serialized the same way, and ignored with a logged warning when it is
-  not a JSON object or array.
+  not a JSON object or array. When custom `json_ld` is used, `SchemaTypes` generates nothing.
 - **Fixed values.** It also writes `generator`, `referrer`, `language` and `content-language`, the robots value
   again as `googlebot` and `bingbot`, publish date, last-modified and reading time meta tags, `dns-prefetch` and
   `preconnect` hints for the site's own address. The Article schema gives the author a `url` only when `AuthorUrl` is
   set.
+- **Crawler tags.** With `AllowAiDiscovery` on, it writes `ai-crawling`, `ai-training` and a tag per named crawler;
+  with it off, the opt-out versions. The set also includes `ai-content-declaration` with the fixed value
+  `human-created`, which the component cannot know.
 - **Options.** `SeoMetadataOptions` fills the parameters you leave unset: `SiteName` (as `SiteNameOverride`),
-  `OrganizationName`, `SiteLogoUrl`, `DefaultImageUrl`, `DefaultImageWidth`, `DefaultImageHeight`, `TwitterSite`,
-  `TwitterCreator`, `FacebookAppId`, `AuthorUrl`, `EmitMobileMetaTags`, `EnableGeneratedFaq` and
+  `SiteDescription`, `OrganizationName`, `SiteLogoUrl`, `DefaultImageUrl`, `DefaultImageWidth`, `DefaultImageHeight`,
+  `TwitterSite`, `TwitterCreator`, `FacebookAppId`, `AuthorUrl`, `EmitMobileMetaTags`, `EnableGeneratedFaq` and
   `DefaultSchemaTypes`. The switches `AllowSearchIndexing`, `AllowAiDiscovery`, `AllowAiTraining`,
   `EnableGeoOptimization`, `EnableAeoOptimization` and `GenerateMultipleSchemas` come from the options unless the
-  page sets them as parameters. `BreadcrumbHomeText` applies when the parameter is empty.
+  page sets them as parameters. `BreadcrumbHomeText` applies when the parameter is empty. `DefaultImageWidth` and
+  `DefaultImageHeight` take the option only while the parameter is still `1200` and `630`.
 - **Public address.** `SiteUrl` (for example `https://example.com`) makes the canonical URL, `og:url` and the
   addresses in structured data use the site's address with the page's path, whatever host served the request: a
   proxy, a preview host or a second domain. Only an absolute `http` or `https` address is used; otherwise they follow

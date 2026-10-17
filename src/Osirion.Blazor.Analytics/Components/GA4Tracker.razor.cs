@@ -19,13 +19,15 @@ public partial class GA4Tracker
     private GA4Provider? _provider => field ??= GetOptionalService<GA4Provider>();
 
     /// <summary>
-    /// Gets or sets the Measurement ID. When set it replaces the configured value for this render.
+    /// Gets or sets the measurement ID for this render, replacing the configured <c>MeasurementId</c>. It must look like
+    /// <c>G-XXXXXXXXXX</c> (or <c>GT-</c> followed by letters and digits); anything else renders nothing.
     /// </summary>
     [Parameter]
     public string? MeasurementId { get; set; }
 
     /// <summary>
-    /// Gets or sets whether to enable debug mode. When set it replaces the configured value for this render.
+    /// Gets or sets whether GA4 debug mode is written for this render, replacing the configured <c>DebugMode</c>, which is
+    /// <c>false</c> unless configured.
     /// </summary>
     [Parameter]
     public bool? DebugMode { get; set; }
