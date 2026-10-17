@@ -50,6 +50,8 @@ internal static class SiteDemos
         Add<OsirionContentNavigationDemo>(demos, "osirion-content-navigation", "Previous and next links");
         Add<TableOfContentsDemo>(demos, "table-of-contents", "A table of contents");
         Add<SearchBoxDemo>(demos, "search-box", "A search box");
+        Add<ThemeToggleDemo>(demos, "theme-toggle", "A theme toggle");
+        Add<ThemePickerDemo>(demos, "theme-picker", "A palette picker");
     }
 
     private static void Add<TDemo>(ContentDemoRegistry demos, string key, string title)

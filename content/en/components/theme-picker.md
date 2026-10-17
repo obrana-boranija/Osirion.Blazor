@@ -7,7 +7,7 @@ permalink: /components/theme-picker
 description: ThemePicker renders a labelled list from which visitors pick a color palette; the choice applies at once and is remembered in a cookie.
 author: Dejan Demonjić
 date: 2026-10-16
-last_modified: 2026-10-16
+last_modified: 2026-10-17
 featured_image: /assets/images/blazor-cover.png
 categories:
 - Components
@@ -28,7 +28,7 @@ redirect_from:
 custom_fields:
   group: theming
 seo_properties:
-  title: 'ThemePicker Component - Osirion.Blazor'
+  title: 'ThemePicker: color palette picker for Blazor'
   description: 'Let visitors pick a color palette with a labelled list that works under static SSR and on static sites.'
   image: /assets/images/blazor-cover.png
   canonical: 'https://getosirion.com/components/theme-picker'
@@ -51,7 +51,14 @@ seo_properties:
 
 `ThemePicker` renders a labelled list of [palettes](/components/palettes). Choosing one applies it at once
 and keeps it in the `osirion-preferred-palette` cookie, so the next page, and the next visit, use it too. Light and dark
-stay with [`ThemeToggle`](/components/theme-toggle); the two sit well side by side.
+stay with [`ThemeToggle`](/components/theme-toggle); the two sit well side by side. The demo below changes this
+site's own palette, which is the point of the component, and your choice stays in your browser.
+
+Package `Osirion.Blazor.Theming`, namespace `Osirion.Blazor.Theming.Components`. [Source on GitHub](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Theming/Components/ThemePicker.razor).
+
+```demo
+theme-picker
+```
 
 ## Usage
 
@@ -90,13 +97,21 @@ Offer fewer palettes, in your order, and rename the option that applies none:
 
 ## Parameters
 
+<!-- osirion:parameters ThemePicker -->
+
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `Label` | `string` | `"Palette"` | The visible label of the list. |
-| `Palettes` | `IReadOnlyList<ThemePalette>?` | `null` (every palette) | The palettes offered, in this order. Duplicates and values outside the enum are dropped. The palette the visitor already uses is always offered, first when it is not in the list. |
-| `FrameworkLabel` | `string` | `"Default"` | The text of the `Framework` option, which applies no palette and shows the site's own colors. |
+| `Label` | `string` | `"Palette"` | The visible text of the list's label. |
+| `Palettes` | `IReadOnlyList<ThemePalette>?` | `null` | The palettes offered, in this order. When `null`, every palette is offered. Duplicates and values outside `ThemePalette` are dropped. The palette the visitor already uses is offered even when it is not listed (first, when it is missing), so the list always shows the palette in effect. |
+| `FrameworkLabel` | `string` | `"Default"` | The text of the `ThemePalette.Framework` option, which applies no palette and shows the site's own colors. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
+| `Style` | `string?` | `null` | An inline style for the component's root element. |
 
-`Class`, `Style` and any extra attributes go on the outer `<label>`.
+<!-- /osirion:parameters -->
+
+`Class`, `Style` and any extra attributes go on the outer `<label>`. `Theme`, inherited from the component base class,
+is not written to the markup.
 
 ## Behavior
 
