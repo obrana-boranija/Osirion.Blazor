@@ -130,6 +130,27 @@ public class ShippedStylesheetTests
         script.ShouldNotContain("Copy code to clipboard");
     }
 
+    // Fails before the fix: the renderer's text link rules also reached the links inside an embedded demo, so a
+    // component's own link color sat on the renderer's tinted link background (4.35:1 for the OsirionContentNotFound
+    // suggestions on its centered panel) and a demo did not look as the component does on a page of its own.
+    [Theory]
+    [InlineData("osirion-html-renderer.css")]
+    [InlineData("osirion-html-renderer.min.css")]
+    public void HtmlRenderer_TextLinkRules_LeaveEmbeddedDemosAlone(string file)
+    {
+        // Act
+        var css = System.Text.RegularExpressions.Regex.Replace(File.ReadAllText(CoreCss(file)), @"\s+", " ");
+        var linkSelectors = System.Text.RegularExpressions.Regex.Matches(
+                css,
+                @"\.osirion-html-renderer a(?:::?[\w-]+(?:\((?:[^()]|\([^()]*\))*\))?)+")
+            .Select(match => match.Value)
+            .ToList();
+
+        // Assert
+        linkSelectors.Count.ShouldBe(15);
+        linkSelectors.ShouldAllBe(selector => selector.Contains(":not(.osirion-content-demo-preview a)", StringComparison.Ordinal));
+    }
+
     private static string Squash(string css) => System.Text.RegularExpressions.Regex.Replace(
         System.Text.RegularExpressions.Regex.Replace(css, @"/\*.*?\*/", string.Empty, System.Text.RegularExpressions.RegexOptions.Singleline),
         @"\s+",
