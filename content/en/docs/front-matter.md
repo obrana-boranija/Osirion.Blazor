@@ -77,7 +77,7 @@ is the creation time of the file and every other value takes its default.
 | `published` | boolean | `true` | `false` keeps the page out of lists, the sitemap, feeds, redirects and the page components. |
 | `order` | integer | `0` | Position when a list sorts by order, and in documentation navigation. For an `_index.md`, the folder's position. |
 | `id` | string | none | Pairs translations: items with the same `id` are translations of each other. With localization on, a missing `id` is built from the path without the language folder. |
-| `lang` | string | `en` | The page's language: `og:locale`, `inLanguage`, the `Locale` filter of queries. A missing `lang` is `en`, even in a folder for another language. See the [localization guide](/docs/localization). |
+| `lang` | string | the folder's locale, or `DefaultLocale` | The page's language: `og:locale`, `inLanguage`, the `Locale` filter of queries. A missing `lang` takes the locale of the page's language folder, or `DefaultLocale`; this arrives in the release after 4.1.0, and 4.1.0 reads a missing `lang` as `en`, even in a folder for another language. See the [localization guide](/docs/localization). |
 | `redirect_from` | list of strings | empty | Earlier addresses that redirect to this page, with `UseOsirionRedirects`. |
 | `series` | string | none | Pages with the same series name are listed together by `ContentSeriesNavigation`. |
 | `series_order` | integer | none | The page's position in its series, starting at 1. |

@@ -44,7 +44,7 @@ public class DirectoryMetadataProcessor : IDirectoryMetadataProcessor
             directory.SetName(frontmatter?.Title ?? directory.Name);
             directory.SetDescription(frontmatter?.Description ?? directory.Description);
             directory.SetOrder(frontmatter?.Order ?? directory.Order);
-            directory.SetLocale(frontmatter?.Lang ?? directory.Locale);
+            directory.SetLocale(string.IsNullOrWhiteSpace(frontmatter?.Lang) ? directory.Locale : frontmatter.Lang);
             directory.SetUrl(frontmatter?.Permalink ?? directory.Url);
             directory.SetFeaturedImage(frontmatter?.FeaturedImage ?? directory.FeaturedImageUrl);
             return directory;

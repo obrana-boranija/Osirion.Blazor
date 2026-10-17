@@ -110,9 +110,10 @@ public class FrontMatter : ValueObject
     public List<string> RedirectFrom { get; set; } = new List<string>();
 
     /// <summary>
-    /// Gets the language
+    /// Gets the language. Empty when the file does not say, so the repository gives the item the locale of its
+    /// folder, or the provider's default locale.
     /// </summary>
-    public string Lang { get; set; } = "en";
+    public string Lang { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets custom fields

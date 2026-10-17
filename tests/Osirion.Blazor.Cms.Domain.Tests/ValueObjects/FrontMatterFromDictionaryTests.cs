@@ -76,7 +76,7 @@ public class FrontMatterFromDictionaryTests
         Assert.Equal(string.Empty, frontMatter.Id);
         Assert.Null(frontMatter.Order);
         Assert.Null(frontMatter.Permalink);
-        Assert.Equal("en", frontMatter.Lang);
+        Assert.Equal(string.Empty, frontMatter.Lang);
         Assert.True(DateTime.TryParseExact(frontMatter.Date, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out _));
     }
 
@@ -295,7 +295,7 @@ public class FrontMatterFromDictionaryTests
         Assert.Equal(string.Empty, frontMatter.Id);
         Assert.Null(frontMatter.Order);
         Assert.Null(frontMatter.Permalink);
-        Assert.Equal("en", frontMatter.Lang);
+        Assert.Equal(string.Empty, frontMatter.Lang);
         Assert.Equal("abc", frontMatter.CustomFields["id"]);
         Assert.Equal(3, frontMatter.CustomFields["order"]);
         Assert.Equal("/x/", frontMatter.CustomFields["permalink"]);
@@ -407,7 +407,7 @@ public class FrontMatterFromDictionaryTests
         Assert.Equal(string.Empty, roundTripped.Id);
         Assert.Null(roundTripped.Order);
         Assert.Null(roundTripped.Permalink);
-        Assert.Equal("en", roundTripped.Lang);
+        Assert.Equal(string.Empty, roundTripped.Lang);
         Assert.False(roundTripped.IsFeatured);
         Assert.Equal("post-1", roundTripped.CustomFields["id"]);
         Assert.Equal(3, roundTripped.CustomFields["order"]);

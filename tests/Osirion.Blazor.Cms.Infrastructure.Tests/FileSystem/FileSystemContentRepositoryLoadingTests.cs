@@ -166,6 +166,55 @@ public sealed class FileSystemContentRepositoryLoadingTests : IDisposable
     }
 
     [Fact]
+    public async Task GetAllAsync_LocalizedFolderAndNoLang_TakesTheFolderLocale()
+    {
+        // Fails before the fix: a file with front matter and no lang was read as "en" inside the sr folder.
+        Write("sr/blog/hello.md", "no-lang");
+        _markdownProcessor.ExtractFrontMatterAndContent("no-lang")
+            .Returns(((FrontMatter?)new FrontMatter { Title = "Zdravo" }, "# Zdravo"));
+        var repository = Repository(CreateOptions(options =>
+        {
+            options.EnableLocalization = true;
+            options.SupportedLocales = ["en", "sr"];
+        }));
+
+        var items = await repository.GetAllAsync();
+
+        items.ShouldHaveSingleItem().Locale.ShouldBe("sr");
+    }
+
+    [Fact]
+    public async Task GetAllAsync_LocalizedFolderAndExplicitLang_KeepsTheLang()
+    {
+        Write("sr/blog/hello.md", "explicit-lang");
+        _markdownProcessor.ExtractFrontMatterAndContent("explicit-lang")
+            .Returns(((FrontMatter?)new FrontMatter { Title = "Hello", Lang = "en" }, "# Hello"));
+        var repository = Repository(CreateOptions(options =>
+        {
+            options.EnableLocalization = true;
+            options.SupportedLocales = ["en", "sr"];
+        }));
+
+        var items = await repository.GetAllAsync();
+
+        items.ShouldHaveSingleItem().Locale.ShouldBe("en");
+    }
+
+    [Fact]
+    public async Task GetAllAsync_LocalizationOffAndNoLang_TakesTheDefaultLocale()
+    {
+        // Fails before the fix: the default "en" of the front matter won over the provider's DefaultLocale.
+        Write("blog/hello.md", "no-lang");
+        _markdownProcessor.ExtractFrontMatterAndContent("no-lang")
+            .Returns(((FrontMatter?)new FrontMatter { Title = "Zdravo" }, "# Zdravo"));
+        var repository = Repository(CreateOptions(options => options.DefaultLocale = "sr"));
+
+        var items = await repository.GetAllAsync();
+
+        items.ShouldHaveSingleItem().Locale.ShouldBe("sr");
+    }
+
+    [Fact]
     public async Task GetAllAsync_SubdirectoriesExcluded_LoadsOnlyTopLevelFiles()
     {
         Write("top.md", "# Top");

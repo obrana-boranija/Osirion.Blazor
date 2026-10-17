@@ -62,6 +62,20 @@ public class DirectoryMetadataProcessorTests
     }
 
     [Fact]
+    public void ProcessMetadata_WithoutLang_KeepsTheLocaleTheFolderGave()
+    {
+        // Fails before the fix: the front matter's default "en" replaced the folder's locale "sr".
+        var directory = DirectoryItem.Create("dir-id", "content/sr/blog", "Blog", "test-provider");
+        directory.SetLocale("sr");
+        _markdownProcessor.ExtractFrontMatterAndContent(Arg.Any<string>())
+            .Returns((new FrontMatter { Title = "Blog" }, string.Empty));
+
+        _processor.ProcessMetadata(directory, "---\ntitle: Blog\n---");
+
+        directory.Locale.ShouldBe("sr");
+    }
+
+    [Fact]
     public void ProcessMetadata_WithCustomMetadata_AddsMetadataToDirectory()
     {
         // Arrange

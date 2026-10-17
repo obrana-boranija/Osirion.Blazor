@@ -62,7 +62,7 @@ content/
 Each folder becomes a directory named after the folder. A file called `_index.md` describes its folder and takes
 these keys from its front matter: `title` (the directory's display name), `description`, `order`, `lang`,
 `featured_image` and `permalink` (the address folder links use; the `_index.md` page itself stays at the folder's
-path). Like any page, an `_index.md` with front matter needs a `title`, and its `lang` is `en` unless you write it. A
+path). Like any page, an `_index.md` with front matter needs a `title`, and its `lang` is the locale of its folder unless you write it (in 4.1.0 it is `en` unless you write it). A
 folder without an `_index.md` keeps its folder name.
 
 An `_index.md` is also a page of its own, at the folder's address. A list of that folder includes it, except on the

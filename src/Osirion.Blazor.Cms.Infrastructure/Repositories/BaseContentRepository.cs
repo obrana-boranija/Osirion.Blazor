@@ -475,7 +475,11 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
             contentItem.SetFeaturedImage(contentItem.Metadata?.FeaturedImage ?? contentItem.FeaturedImageUrl);
             contentItem.SetFeatured(contentItem.Metadata?.IsFeatured ?? contentItem.IsFeatured);
             contentItem.SetSlug(contentItem.Metadata?.Slug ?? contentItem.Slug);
-            contentItem.SetLocale(contentItem.Metadata?.Lang ?? contentItem.Locale);
+            // The item already has the locale of its folder or the provider's default, which a missing lang keeps
+            if (!string.IsNullOrWhiteSpace(contentItem.Metadata?.Lang))
+            {
+                contentItem.SetLocale(contentItem.Metadata.Lang);
+            }
 
             // Map Published to Status and IsPublished
             var isPublished = contentItem.Metadata?.Published ?? true;

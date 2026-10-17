@@ -94,10 +94,12 @@ lang: sr
 ---
 ```
 
-Today the `lang` key is required. A file with front matter and no `lang` gets the locale `en`, whatever its folder or
-`DefaultLocale`, so a Serbian file without `lang: sr` is treated as a second English page and the lookup of its
-translations fails. Write `lang` in every file, the default language included. The same holds for a folder's `_index.md`: its `lang` is
-`en` unless written, and the folder then counts as English when navigation asks for the folders of one language.
+A file without `lang` gets the locale of its folder, or `DefaultLocale` when its path has no locale folder. An explicit
+`lang` always wins. A folder's `_index.md` follows the same rule for the locale of the folder. This arrives in the
+release after 4.1.0. In 4.1.0 the `lang` key is required: a file with front matter and no `lang` gets the locale `en`,
+whatever its folder or `DefaultLocale`, so a Serbian file without `lang: sr` is treated as a second English page and the
+lookup of its translations fails, and a folder's `_index.md` without `lang` counts as English when navigation asks for
+the folders of one language. On 4.1.0, write `lang` in every file, the default language included.
 
 Translations are paired by an id the provider builds from the path without the language folder and the extension, so
 `en/blog/hello.md` and `sr/blog/hello.md` belong together even when their slugs differ. Files at different paths, such as
@@ -215,14 +217,15 @@ locale you expect (`sr` for the Serbian files). Then open `/sr/blog/hello`, choo
 <link rel="alternate" hreflang="x-default" href="https://localhost:5001/blog/hello" />
 ```
 
-The host and port are yours. If a Serbian file shows `en`, it has no `lang`. If a page has no `hreflang` links, its
-translations were not found: check that the files share a path or an `id`. Two files of one id that claim the same
-locale (a missing `lang`) show up twice in the list above, and `LocalizedContentView` logs
-`Error retrieving translations dictionary` for them.
+The host and port are yours. If a Serbian file shows `en` on 4.1.0, it has no `lang`. If a page has no `hreflang`
+links, its translations were not found: check that the files share a path or an `id`. Two files of one id that claim the
+same locale show up once in the list above, the first of them, and the provider logs a warning that names the locale. On
+4.1.0 they make the lookup fail, and `LocalizedContentView` logs `Error retrieving translations dictionary`.
 
 ## What does not work yet
 
-- **`lang` is required** (step 3), and `DefaultLocale` does not apply to a file that has front matter.
+- **`lang` is required in 4.1.0** (step 3): `DefaultLocale` does not apply to a file that has front matter. The release
+  after 4.1.0 reads a missing `lang` from the folder or `DefaultLocale`.
 - **Addresses carry no language.** Translations share one `Url`, so routes, sitemap and redirect addresses need the
   formatters above.
 - **`LocalizedNavigation` has no language switcher.** It does not load the list of available locales, so the selector

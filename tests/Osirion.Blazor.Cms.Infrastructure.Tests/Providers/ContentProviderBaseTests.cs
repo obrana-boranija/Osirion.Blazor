@@ -120,17 +120,19 @@ public class ContentProviderBaseTests
     }
 
     [Fact]
-    public async Task GetContentTranslationsDictionary_WithTwoItemsInOneLocale_LogsAndReturnsEmpty()
+    public async Task GetContentTranslationsDictionary_WithTwoItemsInOneLocale_KeepsTheFirstAndLogsOnce()
     {
-        // Arrange
-        _provider.QueryResult = [Item("en-1", "en"), Item("en-2", "en")];
+        // Fails before the fix: the duplicate key threw, and the translations came back empty.
+        var first = Item("en-1", "en");
+        var french = Item("fr-1", "fr");
+        _provider.QueryResult = [first, Item("en-2", "en"), french, Item("en-3", "en")];
 
-        // Act
         var result = await _provider.GetContentTranslationsAsync("loc-1");
 
-        // Assert
-        result.ShouldBeEmpty();
-        _logger.Entries.ShouldContain(e => e.Level == LogLevel.Error && e.Exception is ArgumentException);
+        result.Count.ShouldBe(2);
+        result["en"].ShouldBeSameAs(first);
+        result["fr"].ShouldBeSameAs(french);
+        _logger.Entries.Count(e => e.Level == LogLevel.Warning).ShouldBe(1);
     }
 
     [Fact]

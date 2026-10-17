@@ -11,7 +11,7 @@ public class FrontMatterTests
 
         Assert.Equal("Hello", frontMatter.Title);
         Assert.True(frontMatter.Published);
-        Assert.Equal("en", frontMatter.Lang);
+        Assert.Equal(string.Empty, frontMatter.Lang);
         Assert.NotNull(frontMatter.SeoProperties);
     }
 
