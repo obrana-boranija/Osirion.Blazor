@@ -2,6 +2,13 @@
 (function() {
     'use strict';
 
+    // The script can be requested more than once (every toggle renders its own loader); a second run would add a
+    // second click listener and the button would switch the theme twice.
+    if (window.__osirionThemeToggle__) {
+        return;
+    }
+    window.__osirionThemeToggle__ = true;
+
     let config = {
         defaultTheme: 'light',
         framework: 'Bootstrap',
@@ -17,6 +24,26 @@
             updateButtonFromClientState();
         }
     };
+
+    // The component writes its settings onto the button (data attributes), so no inline script has to pass them and a
+    // Content Security Policy without 'unsafe-inline' can run the toggle.
+    function readConfigFromButton() {
+        const button = document.querySelector('.theme-toggle-btn');
+        if (!button) {
+            return;
+        }
+        config.defaultTheme = button.getAttribute('data-default-theme') || config.defaultTheme;
+        config.framework = button.getAttribute('data-framework') || config.framework;
+        config.isConfigured = true;
+    }
+
+    document.addEventListener('click', function (event) {
+        const target = event.target;
+        if (target && target.closest && target.closest('.theme-toggle-btn')) {
+            readConfigFromButton();
+            window.toggleThemeWithTransition();
+        }
+    });
 
     window.toggleThemeWithTransition = function () {
         const html = document.documentElement;
@@ -80,7 +107,9 @@
             html.classList.toggle('rz-dark-theme', newTheme === 'dark');
         }
 
-        document.cookie = `osirion-preferred-theme=${newTheme}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax`;
+        // Same flags as ThemeService and theme-picker.js, which write this cookie too; Secure would be dropped over plain HTTP.
+        const secure = window.location.protocol === 'https:' ? '; Secure' : '';
+        document.cookie = `osirion-preferred-theme=${newTheme}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax${secure}`;
         document.cookie = `preferred-theme=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
 
         window.dispatchEvent(new CustomEvent('osirion-theme-update'));
@@ -137,11 +166,8 @@
             return;
         }
         
-        if (!config.isConfigured) {
-            setTimeout(updateButtonFromClientState, 100);
-            return;
-        }
-        
+        readConfigFromButton();
+
         const clientTheme = getClientTheme();
         window.updateThemeToggleButton(clientTheme);
     }

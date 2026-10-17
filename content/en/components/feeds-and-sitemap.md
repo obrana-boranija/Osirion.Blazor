@@ -4,7 +4,7 @@ title: Feeds and Sitemap
 description: "Serve /sitemap.xml, an RSS feed at /feed.xml and an Atom feed at /atom.xml from your published content with MapOsirionFeeds and OsirionFeedOptions."
 author: Dejan Demonjić
 date: 2026-10-11
-last_modified: 2026-10-11
+last_modified: 2026-10-17
 featured_image: /assets/images/blazor-cover.png
 categories:
 - Components
@@ -23,15 +23,34 @@ redirect_from:
 - /docs/components/cms-web/core/feeds-and-sitemap
 custom_fields:
   group: seo-and-feeds
+seo_properties:
+  title: 'Feeds and sitemap: sitemap.xml, RSS and Atom for Blazor'
+  description: 'Serve /sitemap.xml, an RSS feed at /feed.xml and an Atom feed at /atom.xml from your published Blazor content with MapOsirionFeeds.'
+  image: /assets/images/blazor-cover.png
+  canonical: 'https://getosirion.com/components/feeds-and-sitemap'
+  lang: en
+  robots: index, follow
+  og_title: 'Feeds and sitemap - Osirion.Blazor'
+  og_description: 'MapOsirionFeeds serves an XML sitemap, an RSS feed and an Atom feed built from your published content.'
+  og_image_url: '/assets/images/blazor-cover.png'
+  og_type: article
+  json_ld: ''
+  type: Article
+  twitter_card: summary_large_image
+  twitter_title: 'Feeds and sitemap - Osirion.Blazor'
+  twitter_description: 'MapOsirionFeeds serves an XML sitemap, an RSS feed and an Atom feed built from your published content.'
+  twitter_image_url: '/assets/images/blazor-cover.png'
+  meta_tags: {}
 ---
 
 # Feeds and sitemap
 
 `MapOsirionFeeds` maps three endpoints built from the published content of your content providers: an XML sitemap
 at `/sitemap.xml`, an RSS 2.0 feed at `/feed.xml` and an Atom 1.0 feed at `/atom.xml`. Search engines read the
-sitemap; feed readers subscribe to either feed.
+sitemap; feed readers subscribe to either feed. These are endpoints, not components, so this page has no demo and no
+parameter table.
 
-Available from 4.1.
+Package `Osirion.Blazor.Cms.Web`, namespace `Osirion.Blazor.Cms.Web.Feeds`. [Source on GitHub](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Cms.Web/Feeds/ContentFeedEndpoints.cs). Available from 4.0.
 
 ## Usage
 
@@ -53,11 +72,13 @@ request.
 
 | Path | Format | Content |
 | --- | --- | --- |
-| `/sitemap.xml` | sitemaps.org XML sitemap | `AdditionalSitemapUrls`, then every published item (at most 50,000 URLs) |
-| `/feed.xml` | RSS 2.0 | The newest `FeedItemCount` items of `FeedDirectory` and `FeedLocale` |
+| `/sitemap.xml` | sitemaps.org XML sitemap | `AdditionalSitemapUrls`, then every published item (the first 50,000 items a provider returns) |
+| `/feed.xml` | RSS 2.0 | The newest `FeedItemCount` items by creation date, within `FeedDirectory` and `FeedLocale` |
 | `/atom.xml` | Atom 1.0 | The same items as the RSS feed |
 
-## OsirionFeedOptions
+## Configuration
+
+`OsirionFeedOptions` has these properties:
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -80,16 +101,19 @@ the application at startup instead of producing broken feeds.
 
 ## What goes into each document
 
-- **Sitemap.** Each URL has a `lastmod` from the item's `last_modified` front matter, then the file's write time
-  (file system provider), then its `date`. Set `last_modified` when dates must survive a fresh checkout or a new
-  deployment. Items whose `seo_properties.robots` contains `noindex` are left out, and duplicate URLs are written
+- **Sitemap.** Each URL has a `lastmod` from the item's `last_modified` front matter, then, with the file system
+  provider and `FileSystemOptions.UseFileWriteTimeAsLastModified` turned on (it is off by default), the file's write
+  time, then the item's creation date: its `date` front matter, or for a file the file's creation time. Set
+  `last_modified` when dates must survive a fresh checkout or a new deployment. Items whose `seo_properties.robots` contains `noindex` are left out, and duplicate URLs are written
   once. The sitemap covers all content; `FeedDirectory` and `FeedLocale` do not apply to it.
-- **RSS.** Each item has its title, link, a permalink `guid`, `pubDate` from `date` and the `description` front
-  matter. The channel carries an `atom:link rel="self"` pointing to `/feed.xml`.
-- **Atom.** Each entry has an id (its URL), title, link, `published`, `updated`, the author when set, and the
-  description as its summary. The feed-level author is the feed title, which satisfies Atom's rule that every entry
-  has an author.
-- Feeds carry descriptions, not full article bodies. Unpublished items (`published: false`) never appear.
+- **RSS.** Each item has its title, link, a permalink `guid`, `pubDate` from the creation date (`date`) and the
+  `description` front matter. The channel carries an `atom:link rel="self"` pointing to `/feed.xml`.
+- **Atom.** Each entry has an id (its URL), title, link, `published` (the creation date), `updated` (the last-modified
+  date, or the creation date), the author when set, and the description as its summary. The feed's own `updated` is
+  the newest entry's, or the current time for an empty feed. The feed-level author is the feed title, which satisfies
+  Atom's rule that every entry has an author.
+- Feeds carry descriptions, not full article bodies. Unpublished items (`published: false`) never appear, and a
+  feed lists items by creation date even when a provider ignores the sort order.
 - Characters that XML cannot represent are dropped from titles and descriptions rather than failing the request.
 
 ## Security and caching

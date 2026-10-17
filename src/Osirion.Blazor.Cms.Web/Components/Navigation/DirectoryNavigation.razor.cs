@@ -6,57 +6,85 @@ namespace Osirion.Blazor.Cms.Web.Components;
 /// <summary>Displays navigable content directories.</summary>
 public partial class DirectoryNavigation
 {
-    /// <summary>Gets or sets the directories to display.</summary>
+    /// <summary>
+    /// Gets or sets the directories to list. Nothing is loaded: when <c>null</c> or empty, <see
+    /// cref="NoContentText"/> is shown.
+    /// </summary>
     [Parameter]
     public IReadOnlyList<DirectoryItem>? Directories { get; set; }
 
-    /// <summary>Gets or sets the current directory path.</summary>
+    /// <summary>
+    /// Gets or sets the path of the current directory, compared with the directory's <c>Path</c>. Its link gets the
+    /// <c>osirion-active</c> class.
+    /// </summary>
     [Parameter]
     public string? CurrentDirectory { get; set; }
 
-    /// <summary>Gets or sets the directory path that is expanded.</summary>
+    /// <summary>
+    /// Gets or sets the path of the top-level directory whose subdirectories are shown, compared with the
+    /// directory's <c>Path</c>.
+    /// </summary>
     [Parameter]
     public string? ExpandedDirectory { get; set; }
 
-    /// <summary>Gets or sets a value indicating whether all subdirectories are expanded.</summary>
+    /// <summary>Gets or sets whether the subdirectories of every top-level directory are shown.</summary>
     [Parameter]
     public bool ExpandAllSubdirectories { get; set; } = false;
 
-    /// <summary>Gets or sets a value indicating whether the component is loading.</summary>
+    /// <summary>
+    /// Gets or sets whether <see cref="LoadingText"/> is shown instead of the list, for a page that loads the
+    /// directories itself.
+    /// </summary>
     [Parameter]
     public bool IsLoading { get; set; }
 
-    /// <summary>Gets or sets a value indicating whether item counts are shown.</summary>
+    /// <summary>
+    /// Gets or sets whether a count is shown after each name. The count is the number of subdirectories, not of
+    /// content items.
+    /// </summary>
     [Parameter]
     public bool ShowItemCount { get; set; } = true;
 
-    /// <summary>Gets or sets a value indicating whether subdirectories are shown.</summary>
+    /// <summary>
+    /// Gets or sets whether subdirectories can be shown at all. One level is rendered, and only for an expanded
+    /// directory.
+    /// </summary>
     [Parameter]
     public bool ShowSubdirectories { get; set; } = true;
 
-    /// <summary>Gets or sets the loading message.</summary>
+    /// <summary>Gets or sets the text shown while <see cref="IsLoading"/> is <c>true</c>.</summary>
     [Parameter]
     public string LoadingText { get; set; } = "Loading navigation...";
 
-    /// <summary>Gets or sets the empty-state message.</summary>
+    /// <summary>Gets or sets the text shown when <see cref="Directories"/> is <c>null</c> or empty.</summary>
     [Parameter]
     public string NoContentText { get; set; } = "No directories available.";
 
-    /// <summary>Gets or sets a formatter for directory URLs.</summary>
+    /// <summary>
+    /// Gets or sets a function that builds each link. Without it, a link goes to the address the directory's
+    /// <c>_index.md</c> declares in <c>permalink</c>, otherwise to the directory's path without the locale folder.
+    /// </summary>
     [Parameter]
     public Func<DirectoryItem, string>? DirectoryUrlFormatter { get; set; }
 
-    /// <summary>Gets or sets the navigation title.</summary>
+    /// <summary>Gets or sets the heading above the list, rendered as an <c>h3</c>. No heading when <c>null</c>.</summary>
     [Parameter]
     public string? Title { get; set; }
 
-    /// <summary>Gets or sets the callback invoked when a directory is clicked.</summary>
+    /// <summary>
+    /// Gets or sets the callback run with the directory when its link is clicked in an interactive render mode.
+    /// When it is set, the click no longer navigates. Under static SSR it is not called.
+    /// </summary>
     [Parameter]
     public EventCallback<DirectoryItem> DirectoryClicked { get; set; }
 
+    /// <summary>Gets or sets the accessible name of the <c>nav</c> element.</summary>
+    [Parameter]
+    public string AriaLabel { get; set; } = "Directory navigation";
+
     private string GetDirectoryNavClass()
     {
-        return $"osirion-directory-navigation".Trim();
+        return $"osirion-directory-navigation {Class}".Trim();
     }
 
     private string GetDirectoryUrl(DirectoryItem directory)

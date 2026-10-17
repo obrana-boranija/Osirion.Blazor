@@ -12,55 +12,58 @@ namespace Osirion.Blazor.Cms.Web.Components;
 public partial class TagCloud(IContentProviderManager contentProviderManager)
 {
     /// <summary>
-    /// 
+    /// Gets or sets the number of loaded tags to show, taken from the start after sorting. All tags when
+    /// <c>null</c>. Tags passed in <see cref="Tags"/> are shown as given.
     /// </summary>
     [Parameter]
     public int? MaxTags { get; set; }
 
-    /// <summary>
-    /// 
-    /// </summary>
+    /// <summary>Gets or sets the heading above the tags, rendered as an <c>h3</c>. No heading when <c>null</c>.</summary>
     [Parameter]
     public string? Title { get; set; }
 
     /// <summary>
-    /// 
+    /// Gets or sets the text shown while the tags load. Only an interactive render mode can show it: under static
+    /// SSR the response is sent with the finished list.
     /// </summary>
     [Parameter]
     public string LoadingText { get; set; } = "Loading tags...";
 
     /// <summary>
-    /// No content text to display when there are no tags available.
+    /// Gets or sets the text shown when there are no tags to show, when no default content provider is registered
+    /// or when loading failed.
     /// </summary>
     [Parameter]
     public string NoContentText { get; set; } = "No tags available.";
 
     /// <summary>
-    /// 
+    /// Gets or sets the slug or name of the current tag, compared ignoring case. Its link gets the
+    /// <c>osirion-tag-active</c> class; <c>aria-current</c> is not written.
     /// </summary>
     [Parameter]
     public string? ActiveTag { get; set; }
 
     /// <summary>
-    /// /// A custom URL formatter for tags. If provided, it will be used to generate the URL for each tag.
+    /// Gets or sets a function that builds each link from its tag (<c>Name</c>, <c>Slug</c> and <c>Count</c>).
+    /// Without it, links go to <c>/tag/{Slug}</c>.
     /// </summary>
     [Parameter]
     public Func<ContentTag, string>? TagUrlFormatter { get; set; }
 
-    /// <summary>
-    /// 
-    /// </summary>
+    /// <summary>Gets or sets whether each tag's item count is shown after its name.</summary>
     [Parameter]
     public bool ShowCount { get; set; } = true;
 
     /// <summary>
-    /// Whether to sort tags by count
+    /// Gets or sets how loaded tags are ordered: <c>true</c> by item count, highest first; <c>false</c> by name.
+    /// Tags passed in <see cref="Tags"/> keep their order.
     /// </summary>
     [Parameter]
     public bool SortByCount { get; set; } = true;
 
     /// <summary>
-    /// 
+    /// Gets or sets the tags to show. When <c>null</c> or empty, the component loads the tags of every item from
+    /// the default content provider.
     /// </summary>
     [Parameter]
     public IReadOnlyList<ContentTag>? Tags { get; set; }
@@ -70,6 +73,11 @@ public partial class TagCloud(IContentProviderManager contentProviderManager)
 
     private bool IsLoading { get; set; } = true;
 
+    // The loaded tags live here, not in the Tags parameter, so a later change of MaxTags, SortByCount or Tags is honored.
+    private IReadOnlyList<ContentTag> _loadedTags = [];
+    private (int? MaxTags, bool SortByCount)? _loadedFor;
+
+    private IReadOnlyList<ContentTag> ShownTags => Tags is { Count: > 0 } ? Tags : _loadedTags;
 
     /// <summary>Performs the OnParametersSet operation asynchronously.</summary>
     protected override async Task OnParametersSetAsync()
@@ -79,7 +87,7 @@ public partial class TagCloud(IContentProviderManager contentProviderManager)
 
     private async Task LoadTagsAsync()
     {
-        if (Tags is null || Tags.Any() == false)
+        if (Tags is not { Count: > 0 } && _loadedFor != (MaxTags, SortByCount))
         {
             IsLoading = true;
             try
@@ -98,15 +106,17 @@ public partial class TagCloud(IContentProviderManager contentProviderManager)
                         allTags = allTags.OrderBy(t => t.Name).ToList();
                     }
 
-                    Tags = MaxTags.HasValue
+                    _loadedTags = MaxTags.HasValue
                         ? allTags.Take(MaxTags.Value).ToList()
                         : allTags;
+                    _loadedFor = (MaxTags, SortByCount);
                 }
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, "Failed to load the tag cloud");
-                Tags = Array.Empty<ContentTag>();
+                _loadedTags = [];
+                _loadedFor = (MaxTags, SortByCount);
             }
             finally
             {

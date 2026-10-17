@@ -1,0 +1,18 @@
+@using Osirion.Blazor.Navigation.Components
+
+@* A contained menu: Sticky is off so it stays in the page, and the frame keeps room for the open submenu. The links go
+   to pages of this site. *@
+<div style="min-height: 13rem; border: 1px solid var(--osirion-border-color, #d1d5db); border-radius: 0.5rem;">
+    <Menu AriaLabel="Demo menu"
+          BrandText="Example Ltd"
+          Sticky="false"
+          Alignment="MenuAlignment.Left">
+        <MenuItem Text="Home" Href="/" Icon="home" />
+        <MenuItem Text="Docs" Href="/docs" Icon="docs" HasSubmenu="true">
+            <MenuItem Text="Getting started" Href="/docs/getting-started" />
+            <MenuItem Text="Packages" Href="/docs/packages" />
+            <MenuItem Text="Components" Href="/components" />
+        </MenuItem>
+        <MenuItem Text="GitHub" Href="https://github.com/demonjic/Osirion.Blazor" Target="_blank" />
+    </Menu>
+</div>

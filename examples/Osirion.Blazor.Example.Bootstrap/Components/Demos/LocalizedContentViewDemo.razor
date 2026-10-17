@@ -1,0 +1,36 @@
+@using Osirion.Blazor.Cms.Domain.Entities
+@using Osirion.Blazor.Cms.Domain.Services
+@using Osirion.Blazor.Cms.Web.Components
+@inject IContentProviderManager ContentProviders
+
+@* The item is a page of this site's own content, which is written in English only, so it has no translations and no
+   translation links show. On a site that pairs files such as en/blog/post.md and sr/blog/post.md, the links to the
+   other languages appear above the article. *@
+@if (item is not null)
+{
+    <div style="max-height: 28rem; overflow: auto; padding: 1rem; border: 1px solid var(--osirion-border-color, #d1d5db); border-radius: 0.5rem;"
+         tabindex="0" role="region" aria-label="The release notes page in a LocalizedContentView">
+        <LocalizedContentView Item="@item"
+                              CurrentLocale="en"
+                              LocaleNameFormatter="@(code => code switch { "en" => "English", "sr" => "Srpski", _ => code })"
+                              TranslationUrlFormatter="@((id, locale) => $"/{locale}/{item?.Url}")"
+                              CategoryUrlFormatter="@(category => "/category/" + Slug(category))"
+                              TagUrlFormatter="@(tag => "/tag/" + Slug(tag))" />
+    </div>
+}
+else
+{
+    <p>The sample page was not found in the content provider.</p>
+}
+
+@code {
+    private ContentItem? item;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var provider = ContentProviders.GetDefaultProvider();
+        item = provider is null ? null : await provider.GetItemByUrlAsync("blog/osirion-blazor-v1-5-release-notes");
+    }
+
+    private static string Slug(string name) => Uri.EscapeDataString(name.Trim().ToLowerInvariant().Replace(' ', '-'));
+}

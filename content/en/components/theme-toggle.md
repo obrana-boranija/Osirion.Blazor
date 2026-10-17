@@ -83,8 +83,8 @@ In a navigation menu, after the links:
 </Menu>
 ```
 
-The toggle needs theming registered (`AddOsirionTheming` or `AddOsirion`) and `builder.Services.AddJSComponents()`,
-which loads its script. See [Theming](/docs/packages/theming) for the setup.
+The toggle needs theming registered: `AddOsirion`, or `AddOsirionTheming` together with
+`builder.Services.AddJSComponents()`, which loads its script. See [Theming](/docs/packages/theming) for the setup.
 
 ## Parameters
 
@@ -93,7 +93,7 @@ which loads its script. See [Theming](/docs/packages/theming) for the setup.
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
 | `Id` | `string?` | `null` | The id of the toggle button. No id is written when it is `null`, so several toggles can share a page without repeating an id; set it only when a host stylesheet or script needs to address one. |
-| `OnThemeChanged` | `EventCallback<string>` | - | A callback that is declared but never raised: the theme changes in the browser and the server is not notified. Listen for the `osirion-theme-update` browser event on `window` instead. |
+| `OnThemeChanged` | `EventCallback<string>` | - | A callback raised with `light` or `dark` after the visitor switches the theme. It runs only when the toggle itself is interactive (Interactive Server, WebAssembly or Auto): under Static SSR the browser switches the theme and the server is not notified, so the callback is never raised there. Listen for the `osirion-theme-update` browser event on `window` to react in every render mode. |
 | `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
 | `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
 | `Style` | `string?` | `null` | An inline style for the component's root element. |
@@ -105,13 +105,15 @@ the markup, and neither are extra attributes.
 
 ## Behavior
 
-The button has `type="button"` and calls a function from `_content/Osirion.Blazor.Theming/js/theme-toggle.js` when
-clicked. It needs JavaScript, but no interactive render mode; there is no fallback without JavaScript. One click:
+The button has `type="button"`, and a click listener in `_content/Osirion.Blazor.Theming/js/theme-toggle.js` handles
+the click. It needs JavaScript, but no interactive render mode; there is no fallback without JavaScript. One click:
 
 1. switches `data-osirion-theme` on `<html>` between `light` and `dark`, and updates the framework's dark-mode marker
    (`data-bs-theme`, `mud-theme-dark`, `fluent-dark-theme` and `fluent-light-theme`, or `rz-dark-theme`);
 2. stores the choice in the `osirion-preferred-theme` cookie (path `/`, one year, `SameSite=Lax`);
 3. raises the `osirion-theme-update` event on `window`, which `OsirionStyles` and your own scripts can listen to;
+   when the toggle is interactive and has an `OnThemeChanged` callback, that callback is raised too, with `light` or
+   `dark`;
 4. updates every toggle on the page to show the new state.
 
 The toggle has two states, light and dark. Before the visitor clicks, the site follows the configured `DefaultMode`,
@@ -124,8 +126,10 @@ corrects it once the page loads. The script also refreshes the button after enha
 The change fades through a short full-screen overlay. With `prefers-reduced-motion: reduce`, the theme changes at once
 without the fade. The scroll position is kept.
 
-The button calls the script through an inline `onclick` attribute, and the component writes a short inline script
-with no nonce, so a Content Security Policy must allow inline script.
+The toggle writes no inline script and no event handler attribute. Its settings (`data-default-theme` and
+`data-framework`) travel on the button, and a click listener in `theme-toggle.js` does the work, so the button runs
+under a Content Security Policy without `'unsafe-inline'`. `OsirionStyles`, which the page also needs, still writes a
+short inline script; see [its page](/components/osirion-styles#security).
 
 ### Accessibility
 

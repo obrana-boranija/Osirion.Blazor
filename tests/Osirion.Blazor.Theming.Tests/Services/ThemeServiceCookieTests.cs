@@ -15,6 +15,9 @@ public class ThemeServiceCookieTests
     [InlineData("dark", ThemeMode.Dark)]
     [InlineData("LIGHT", ThemeMode.Light)]
     [InlineData("System", ThemeMode.System)]
+    // Fails before the fix: "inverted" was not parsed, so an inverted theme fell back to the default mode.
+    [InlineData("inverted", ThemeMode.Inverted)]
+    [InlineData("Inverted", ThemeMode.Inverted)]
     public void CurrentMode_ThemeCookiePresent_ReturnsCookieMode(string cookieValue, ThemeMode expected)
     {
         // Arrange
@@ -111,6 +114,8 @@ public class ThemeServiceCookieTests
     [Theory]
     [InlineData(ThemeMode.Dark, "dark")]
     [InlineData(ThemeMode.System, "system")]
+    // Fails before the fix: Inverted wrote no cookie, so the choice did not survive the next request.
+    [InlineData(ThemeMode.Inverted, "inverted")]
     public void SetThemeMode_HttpContextAvailable_WritesThemeCookie(ThemeMode mode, string expectedValue)
     {
         // Arrange
@@ -127,7 +132,7 @@ public class ThemeServiceCookieTests
         setCookie.ShouldContain("samesite=lax");
         setCookie.ShouldContain("expires=");
         setCookie.ShouldNotContain("httponly");
-        setCookie.ShouldNotContain("secure");
+        setCookie.ShouldContain("secure");
     }
 
     [Fact]

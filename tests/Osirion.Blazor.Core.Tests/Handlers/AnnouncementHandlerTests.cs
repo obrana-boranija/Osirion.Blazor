@@ -27,14 +27,15 @@ public class AnnouncementHandlerTests
     }
 
     [Fact]
-    public async Task HandleDismissAsync_PlainHttp_SetsANonSecureCookieSoTheBrowserKeepsIt()
+    public async Task HandleDismissAsync_RequestSeenAsHttp_StillSetsASecureCookie()
     {
+        // Behind a proxy that ends TLS the app sees HTTP while the visitor is on HTTPS.
         var context = CreateContext(new() { ["id"] = "news", ["returnUrl"] = "/" });
         context.Request.Scheme = "http";
 
         await AnnouncementHandler.HandleDismissAsync(context);
 
-        context.Response.Headers.SetCookie.ToString().ShouldNotContain("secure", Case.Insensitive);
+        context.Response.Headers.SetCookie.ToString().ShouldContain("secure", Case.Insensitive);
     }
 
     [Theory]

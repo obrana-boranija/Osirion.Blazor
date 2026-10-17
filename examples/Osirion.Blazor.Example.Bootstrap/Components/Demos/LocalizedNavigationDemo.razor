@@ -1,0 +1,20 @@
+@using Osirion.Blazor.Cms.Domain.Services
+@using Osirion.Blazor.Cms.Web.Components
+@inject IContentProviderManager Content
+
+@* The English directories of this site's own content, with the pages of the docs directory listed *@
+<LocalizedNavigation Title="Documentation"
+                     CurrentLocale="en"
+                     ExpandedDirectoryId="@docsId" />
+
+@code {
+    private string? docsId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var directories = await Content.GetDirectoryTreeFromDefaultAsync("en");
+        docsId = directories
+            .FirstOrDefault(directory => directory.Path.Trim('/').EndsWith("docs", StringComparison.OrdinalIgnoreCase))
+            ?.Id;
+    }
+}

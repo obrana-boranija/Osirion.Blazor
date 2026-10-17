@@ -89,6 +89,8 @@ public class ThemeServicePaletteTests
         header.ShouldContain("path=/");
         header.ShouldContain("samesite=lax");
         header.ShouldNotContain("httponly");
+        // Fails before the fix: the flag followed the request scheme, so a site behind a TLS-ending proxy lost it.
+        header.ShouldContain("secure");
         service.CurrentPalette.ShouldBe(ThemePalette.StudioBlue);
         raised.ShouldBe(1);
     }

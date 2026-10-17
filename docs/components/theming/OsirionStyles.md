@@ -4,8 +4,8 @@ Injects the core and theme styles into the page and optionally emits CSS custom 
 
 Parameters
 ----------
-- `CustomVariables` (string) — Raw CSS variables to include inside a `<style>` tag.
-- `GeneratedVariables` (string) — CSS variables generated at runtime.
+- `CustomVariables` (string): CSS variables to include inside a `<style>` tag. Every `<` is replaced by the CSS escape `\3C `, so a value cannot end the element.
+- `GeneratedVariables` (string): CSS variables generated at runtime, written the same way.
 
 Example
 -------

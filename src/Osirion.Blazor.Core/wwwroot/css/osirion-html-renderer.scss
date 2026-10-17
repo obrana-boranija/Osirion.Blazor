@@ -174,7 +174,7 @@
     }
 
     /* ========== AUTOMATIC LINK STYLES ========== */
-    .osirion-html-renderer a:not(:has(img)):not(:has(svg)):not(:has(span)):not(:has(div)):not(:has(i)) {
+    .osirion-html-renderer a:not(:has(img)):not(:has(svg)):not(:has(span)):not(:has(div)):not(:has(i)):not(.osirion-content-demo-preview a) {
         display: inline-block;
         position: relative;
         padding: 0.125rem 0.5rem;
@@ -190,11 +190,11 @@
 
     /* Only a link that leaves the site carries the external-link icon, so only it keeps room for it. A relative
        address such as /blog/post is internal: it showed the icon before. */
-    .osirion-html-renderer a:is([href^="http:"], [href^="https:"], [href^="//"]):not(:has(img)):not(:has(svg)):not(:has(span)):not(:has(div)):not(:has(i)) {
+    .osirion-html-renderer a:is([href^="http:"], [href^="https:"], [href^="//"]):not(:has(img)):not(:has(svg)):not(:has(span)):not(:has(div)):not(:has(i)):not(.osirion-content-demo-preview a) {
         padding-right: 2rem;
     }
 
-        .osirion-html-renderer a:not(:has(img)):not(:has(svg)):not(:has(span)):not(:has(div)):not(:has(i)):hover {
+        .osirion-html-renderer a:not(:has(img)):not(:has(svg)):not(:has(span)):not(:has(div)):not(:has(i)):not(.osirion-content-demo-preview a):hover {
             color: var(--osirion-link-primary-hover);
             background-color: var(--osirion-link-bg-hover);
             transform: translateY(-1px);
@@ -296,9 +296,12 @@
     /* ========== CODE BLOCKS & SYNTAX HIGHLIGHTING ========== */
     /* Code wrapper with header */
     .osirion-html-renderer .osirion-code-wrapper {
+        /* One pair for the header, the copy button and the code, so text always sits on the background it was chosen for */
+        --osirion-code-block-background: var(--osirion-code-background, var(--osirion-syntax-background-color, #151b23));
+        --osirion-code-block-text: var(--osirion-code-text, #f8f8f2);
         position: relative;
         margin: var(--osirion-spacing-4, 1rem) 0;
-        background-color: var(--osirion-syntax-background-color);
+        background-color: var(--osirion-code-block-background);
         border-radius: var(--osirion-radius-md, 0.375rem);
     }
 
@@ -310,11 +313,11 @@
         border-radius: var(--osirion-radius-md, 0.375rem) var(--osirion-radius-md, 0.375rem) 0 0;
         border: 1px solid #444;
         border-bottom: none;
-        background-color: var(--osirion-syntax-background-color);
+        background-color: var(--osirion-code-block-background);
     }
 
     .osirion-html-renderer .osirion-language-label {
-        color: var(--osirion-color-primary-600, #60a5fa);
+        color: var(--osirion-code-block-text);
         font-family: var(--osirion-font-family-mono, 'Consolas', 'Monaco', monospace);
         font-size: 0.875rem;
         font-weight: 600;
@@ -328,15 +331,15 @@
         border-radius: var(--osirion-radius-sm, 0.125rem);
         font-size: 0.8rem;
         transition: all var(--osirion-transition-duration-200, 0.2s) ease;
-        background-color: rgba(255, 255, 255, 0.1);
-        color: #f8f8f2;
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        background-color: color-mix(in srgb, var(--osirion-code-block-text) 10%, transparent);
+        color: var(--osirion-code-block-text);
+        border: 1px solid color-mix(in srgb, var(--osirion-code-block-text) 35%, transparent);
         cursor: pointer;
     }
 
         .osirion-html-renderer .osirion-copy-button:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-            border-color: rgba(255, 255, 255, 0.3);
+            background-color: color-mix(in srgb, var(--osirion-code-block-text) 20%, transparent);
+            border-color: color-mix(in srgb, var(--osirion-code-block-text) 50%, transparent);
         }
 
         .osirion-html-renderer .osirion-copy-button.copied {
@@ -351,7 +354,7 @@
         border-radius: 0 0 var(--osirion-radius-md, 0.375rem) var(--osirion-radius-md, 0.375rem);
         border: 1px solid #444;
         border-top: none;
-        background-color: var(--osirion-syntax-background-color);
+        background-color: var(--osirion-code-block-background);
     }
 
     /* Line numbers and highlighting */
@@ -363,7 +366,7 @@
 
         .osirion-html-renderer .line-numbers-rows > span:hover {
             background: rgba(139, 148, 158, 0.2);
-            color: #f8f8f2;
+            color: var(--osirion-code-block-text);
         }
 
         /* Highlighted lines */
@@ -400,7 +403,7 @@
 
 /* ========== HIGH CONTRAST MODE ========== */
 @media (prefers-contrast: high) {
-    .osirion-html-renderer a:not(:has(img)):not(:has(svg)):not(:has(span)):not(:has(div)):not(:has(i)) {
+    .osirion-html-renderer a:not(:has(img)):not(:has(svg)):not(:has(span)):not(:has(div)):not(:has(i)):not(.osirion-content-demo-preview a) {
         /* Maximum contrast colors */
         color: #0000ff !important; /* Pure blue */
         background-color: transparent !important;
@@ -409,7 +412,7 @@
         font-weight: bold !important;
     }
 
-        .osirion-html-renderer a:not(:has(img)):not(:has(svg)):not(:has(span)):not(:has(div)):not(:has(i)):hover {
+        .osirion-html-renderer a:not(:has(img)):not(:has(svg)):not(:has(span)):not(:has(div)):not(:has(i)):not(.osirion-content-demo-preview a):hover {
             color: #ffffff !important;
             background-color: #0000ff !important;
             border-color: #0000ff !important;
@@ -427,7 +430,7 @@
 
 /* Reduced contrast preference */
 @media (prefers-contrast: less) {
-    .osirion-html-renderer a:not(:has(img)):not(:has(svg)):not(:has(span)):not(:has(div)):not(:has(i)) {
+    .osirion-html-renderer a:not(:has(img)):not(:has(svg)):not(:has(span)):not(:has(div)):not(:has(i)):not(.osirion-content-demo-preview a) {
         /* Still WCAG AA compliant but softer */
         color: #0066cc; /* 4.8:1 contrast - AA compliant */
         background-color: rgba(0, 102, 204, 0.05);
@@ -436,13 +439,13 @@
 
 /* Windows High Contrast Mode */
 @media (forced-colors: active) {
-    .osirion-html-renderer a:not(:has(img)):not(:has(svg)):not(:has(span)):not(:has(div)):not(:has(i)) {
+    .osirion-html-renderer a:not(:has(img)):not(:has(svg)):not(:has(span)):not(:has(div)):not(:has(i)):not(.osirion-content-demo-preview a) {
         color: LinkText !important;
         background-color: transparent !important;
         border: 1px solid LinkText !important;
     }
 
-        .osirion-html-renderer a:not(:has(img)):not(:has(svg)):not(:has(span)):not(:has(div)):not(:has(i)):hover {
+        .osirion-html-renderer a:not(:has(img)):not(:has(svg)):not(:has(span)):not(:has(div)):not(:has(i)):not(.osirion-content-demo-preview a):hover {
             color: HighlightText !important;
             background-color: Highlight !important;
             border-color: Highlight !important;
@@ -450,7 +453,7 @@
 }
 
 /* ========== FOCUS STATES (WCAG 2.2 Compliant) ========== */
-.osirion-html-renderer a:not(:has(img)):not(:has(svg)):not(:has(span)):not(:has(div)):not(:has(i)):focus-visible {
+.osirion-html-renderer a:not(:has(img)):not(:has(svg)):not(:has(span)):not(:has(div)):not(:has(i)):not(.osirion-content-demo-preview a):focus-visible {
     outline: none;
     /* Double ring focus indicator */
     box-shadow: 0 0 0 2px var(--osirion-link-focus-offset), 0 0 0 4px var(--osirion-link-focus);
@@ -482,19 +485,19 @@
 
 /* Reduce transparency on smaller screens for better readability */
 @media (max-width: 768px) {
-    .osirion-html-renderer a:not(:has(img)):not(:has(svg)):not(:has(span)):not(:has(div)):not(:has(i)) {
+    .osirion-html-renderer a:not(:has(img)):not(:has(svg)):not(:has(span)):not(:has(div)):not(:has(i)):not(.osirion-content-demo-preview a) {
         background-color: rgba(0, 82, 204, 0.12);
         padding: 0.25rem 0.75rem;
     }
 
-    .osirion-html-renderer a:is([href^="http:"], [href^="https:"], [href^="//"]):not(:has(img)):not(:has(svg)):not(:has(span)):not(:has(div)):not(:has(i)) {
+    .osirion-html-renderer a:is([href^="http:"], [href^="https:"], [href^="//"]):not(:has(img)):not(:has(svg)):not(:has(span)):not(:has(div)):not(:has(i)):not(.osirion-content-demo-preview a) {
         padding-right: 2.5rem;
     }
 }
 
 /* Print styles - maximum contrast */
 @media print {
-    .osirion-html-renderer a:not(:has(img)):not(:has(svg)):not(:has(span)):not(:has(div)):not(:has(i)) {
+    .osirion-html-renderer a:not(:has(img)):not(:has(svg)):not(:has(span)):not(:has(div)):not(:has(i)):not(.osirion-content-demo-preview a) {
         color: #000000 !important;
         background-color: transparent !important;
         text-decoration: underline !important;
@@ -502,13 +505,13 @@
         font-weight: bold !important;
     }
 
-        .osirion-html-renderer a:is([href^="http:"], [href^="https:"], [href^="//"]):not(:has(img)):not(:has(svg)):not(:has(span)):not(:has(div)):not(:has(i))::after {
+        .osirion-html-renderer a:is([href^="http:"], [href^="https:"], [href^="//"]):not(:has(img)):not(:has(svg)):not(:has(span)):not(:has(div)):not(:has(i)):not(.osirion-content-demo-preview a)::after {
             display: none !important;
         }
 }
 
 /* ========== ICON STYLING ========== */
-.osirion-html-renderer a:is([href^="http:"], [href^="https:"], [href^="//"]):not(:has(img)):not(:has(svg)):not(:has(span)):not(:has(div)):not(:has(i))::after {
+.osirion-html-renderer a:is([href^="http:"], [href^="https:"], [href^="//"]):not(:has(img)):not(:has(svg)):not(:has(span)):not(:has(div)):not(:has(i)):not(.osirion-content-demo-preview a)::after {
     content: '';
     position: absolute;
     right: 0.25rem;
@@ -528,6 +531,6 @@
     transition: opacity 0.2s ease;
 }
 
-.osirion-html-renderer a:is([href^="http:"], [href^="https:"], [href^="//"]):not(:has(img)):not(:has(svg)):not(:has(span)):not(:has(div)):not(:has(i)):hover::after {
+.osirion-html-renderer a:is([href^="http:"], [href^="https:"], [href^="//"]):not(:has(img)):not(:has(svg)):not(:has(span)):not(:has(div)):not(:has(i)):not(.osirion-content-demo-preview a):hover::after {
     opacity: 1;
 }

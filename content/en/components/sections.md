@@ -89,8 +89,8 @@ dragging, horizontal wheel scrolling and a pause button.
 
 ### What they share
 
-- **Setup.** The enhancement script loads through the BlazorJSComponents package, which Osirion.Blazor.Core
-  references. Register its services once in `Program.cs`: `builder.Services.AddJSComponents();`.
+- **Setup.** The enhancement script loads through BlazorJSComponents, which `AddOsirion` registers. Without
+  `AddOsirion`, add `builder.Services.AddJSComponents();` in `Program.cs`.
 - **Your own items.** Pass your logos or testimonials. Without them, both components show built-in sample content
   meant for demos, with images that load from external addresses.
 - **Motion.** The animation pauses while the pointer is over the carousel (unless `PauseOnHover` is off) and while

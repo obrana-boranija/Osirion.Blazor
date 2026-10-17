@@ -60,4 +60,62 @@ public class OsirionBreadcrumbsTests : OsirionComponentTestBase
 
         cut.Find("[aria-current]").TextContent.Trim().ShouldBe("Pre Mvp Make It Right");
     }
+
+    // Fails before the fix: segments were shown as they sit in the URL, so "/docs/caf%C3%A9" read "Caf%C3%A9".
+    [Fact]
+    public void Breadcrumbs_PercentEncodedSegment_IsDecodedForDisplayAndKeptEncodedInTheHref()
+    {
+        var cut = RenderStatic<OsirionBreadcrumbs>(parameters => parameters
+            .Add(p => p.Path, "/caf%C3%A9/menu")
+            .Add(p => p.LinkLastItem, true));
+
+        var links = cut.FindAll("li a");
+        links.Select(a => a.TextContent.Trim()).ShouldBe(["Home", "Café", "Menu"]);
+        links.Select(a => a.GetAttribute("href")).ShouldBe(["/", "/caf%C3%A9", "/caf%C3%A9/menu"]);
+    }
+
+    // Fails before the fix: see Breadcrumbs_PercentEncodedSegment_IsDecodedForDisplayAndKeptEncodedInTheHref.
+    [Fact]
+    public void Breadcrumbs_PercentEncodedLastSegment_IsDecodedForDisplay()
+    {
+        var cut = RenderStatic<OsirionBreadcrumbs>(parameters => parameters
+            .Add(p => p.Path, "/docs/caf%C3%A9"));
+
+        cut.Find("[aria-current]").TextContent.Trim().ShouldBe("Café");
+    }
+
+    [Theory]
+    [InlineData("100%", "100%")]
+    [InlineData("%E0%A4%A", "%E0%A4%A")]
+    [InlineData("50%zz-off", "50%zz Off")]
+    public void Breadcrumbs_InvalidEscape_IsShownAsWrittenWithoutThrowing(string segment, string shown)
+    {
+        var cut = RenderStatic<OsirionBreadcrumbs>(parameters => parameters
+            .Add(p => p.Path, "/docs/" + segment));
+
+        cut.Find("[aria-current]").TextContent.Trim().ShouldBe(shown);
+    }
+
+    [Fact]
+    public void Breadcrumbs_SegmentFormatter_StillReceivesTheRawSlug()
+    {
+        string? received = null;
+        RenderStatic<OsirionBreadcrumbs>(parameters => parameters
+            .Add(p => p.Path, "/caf%C3%A9")
+            .Add(p => p.SegmentFormatter, slug => received = slug));
+
+        received.ShouldBe("caf%C3%A9");
+    }
+
+    // Fails before the fix: Style is declared on the base component but the nav never wrote it, so a style in the
+    // markup was dropped.
+    [Fact]
+    public void Breadcrumbs_Style_IsWrittenOnTheNav()
+    {
+        var cut = RenderStatic<OsirionBreadcrumbs>(parameters => parameters
+            .Add(p => p.Path, "/docs")
+            .Add(p => p.Style, "color: red;"));
+
+        cut.Find("nav").GetAttribute("style").ShouldBe("color: red;");
+    }
 }

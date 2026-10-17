@@ -89,7 +89,8 @@ Pick the color with `Accent` and the frame with `Border` and `Shadow`:
 ## Behavior
 
 - The card renders complete HTML under static SSR: the value, as written, is in the page before any script runs.
-- The card's script loads through BlazorJSComponents, which `builder.Services.AddJSComponents()` registers. With
+- The card's script loads through BlazorJSComponents, which `AddOsirion` registers (or
+  `builder.Services.AddJSComponents()` without it). With
   `Animate` on, it counts up once, over about a second, when at least 30% of the value is in view. With reduced
   motion requested in the operating system it leaves the value as it is.
 - A number with a thousands separator, such as `1,250`, is not counted up; write `1250` or leave `Animate` off.

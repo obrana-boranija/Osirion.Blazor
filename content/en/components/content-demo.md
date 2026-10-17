@@ -107,7 +107,7 @@ On a Razor page, name the key:
 | --- | --- | --- | --- |
 | `Demo` | `ContentDemo?` | `null` | The demo to render, with its component, parameters, title and source. Takes precedence over `Key`. |
 | `Key` | `string?` | `null` | The key of a demo registered with `AddOsirionContentDemos`, used when `Demo` is not set. The component renders nothing when neither resolves to a demo. |
-| `EnableCopyButton` | `bool` | `true` | Whether the source code on the Code tab has a language header and a Copy button. The button needs the copy script that `OsirionHtmlRenderer` loads. |
+| `EnableCopyButton` | `bool` | `true` | Whether the source code on the Code tab has a language header and a Copy button. The component loads the copy script itself, once per page, so the button works with or without `OsirionHtmlRenderer`. |
 | `PreviewText` | `string` | `"Preview"` | The label of the preview tab. Shown only when the demo has source code. |
 | `CodeText` | `string` | `"Code"` | The label of the Code tab. Shown only when the demo has source code. |
 | `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
@@ -134,10 +134,11 @@ accepted but the component does not write it.
 - The tabs are an [OsirionTabs](/components/tabs) with a group name of their own for each instance, so several demos
   on a page do not share radio buttons. The tab group is named by the demo's `Title` followed by "example".
 - Demos render under static SSR like any component. A demo that needs interactivity sets its own render mode.
-- The Copy button on the source has the same markup as the HTML renderer's code blocks, and its script is loaded by
-  `OsirionHtmlRenderer` when it renders a demo that has source. `OsirionContentDemo` loads no script itself, so used
-  directly on a page, set `EnableCopyButton="false"` unless the page loads
-  `_content/Osirion.Blazor.Core/js/osirion-copy-button.es5.min.js`.
+- The Copy button on the source has the same markup as the HTML renderer's code blocks. `OsirionContentDemo` loads
+  the copy script (`_content/Osirion.Blazor.Core/js/osirion-copy-button.es5.min.js`) itself when `EnableCopyButton` is
+  on and the demo has source, and it runs once per page load, so the button works used directly on a page and inside
+  `OsirionHtmlRenderer`. The script is loaded through BlazorJSComponents, which `AddOsirion` registers; without
+  `AddOsirion`, call `builder.Services.AddJSComponents()` yourself.
 
 ## Styling
 

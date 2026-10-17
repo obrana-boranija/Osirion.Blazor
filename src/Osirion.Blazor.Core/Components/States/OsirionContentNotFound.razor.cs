@@ -8,151 +8,157 @@ namespace Osirion.Blazor.Components;
 public partial class OsirionContentNotFound
 {
     /// <summary>
-    /// Gets or sets the error code (e.g., "404")
+    /// Gets or sets the large code above the title, such as <c>404</c>. Null or empty hides it, which suits an empty state.
     /// </summary>
     [Parameter]
     public string? ErrorCode { get; set; } = "404";
 
     /// <summary>
-    /// Gets or sets the main title
+    /// Gets or sets the heading, rendered as an <c>h1</c>.
     /// </summary>
     [Parameter]
     public string Title { get; set; } = "Page Not Found";
 
     /// <summary>
-    /// Gets or sets the descriptive message
+    /// Gets or sets the paragraph under the title. Empty hides it.
     /// </summary>
     [Parameter]
     public string Message { get; set; } = "The page you're looking for doesn't exist or has been moved.";
 
     /// <summary>
-    /// Gets or sets whether to show an icon
+    /// Gets or sets whether an icon is shown above the text.
     /// </summary>
     [Parameter]
     public bool ShowIcon { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets whether to use the default icon when no custom icon is provided
+    /// Gets or sets whether the built-in magnifier icon is shown when neither <see cref="Icon"/> nor <see cref="IconUrl"/> is
+    /// set.
     /// </summary>
     [Parameter]
     public bool UseDefaultIcon { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets custom icon content
+    /// Gets or sets your own icon markup. It takes precedence over <see cref="IconUrl"/> and the default icon.
     /// </summary>
     [Parameter]
     public RenderFragment? Icon { get; set; }
 
     /// <summary>
-    /// Gets or sets the icon image URL
+    /// Gets or sets the address of an image used as the icon, when <see cref="Icon"/> is not set.
     /// </summary>
     [Parameter]
     public string? IconUrl { get; set; }
 
     /// <summary>
-    /// Gets or sets the icon image alt text
+    /// Gets or sets the alternative text of the <see cref="IconUrl"/> image.
     /// </summary>
     [Parameter]
     public string IconAlt { get; set; } = "Not Found";
 
     /// <summary>
-    /// Gets or sets the primary button text
+    /// Gets or sets the text of the primary button, a link to <see cref="PrimaryButtonUrl"/>. Null or empty hides the button.
     /// </summary>
     [Parameter]
     public string? PrimaryButtonText { get; set; } = "Go to Homepage";
 
     /// <summary>
-    /// Gets or sets the primary button URL
+    /// Gets or sets the address of the primary button.
     /// </summary>
     [Parameter]
     public string PrimaryButtonUrl { get; set; } = "/";
 
     /// <summary>
-    /// Gets or sets the secondary button text
+    /// Gets or sets the text of the outlined secondary button, a link to <see cref="SecondaryButtonUrl"/>. Null or empty, the
+    /// default, hides it.
     /// </summary>
     [Parameter]
     public string? SecondaryButtonText { get; set; }
 
     /// <summary>
-    /// Gets or sets the secondary button URL
+    /// Gets or sets the address of the secondary button.
     /// </summary>
     [Parameter]
     public string SecondaryButtonUrl { get; set; } = "/";
 
     /// <summary>
-    /// Gets or sets custom action buttons content
+    /// Gets or sets more buttons or links, rendered after the two buttons.
     /// </summary>
     [Parameter]
     public RenderFragment? Actions { get; set; }
 
     /// <summary>
-    /// Gets or sets whether to show suggestions
+    /// Gets or sets whether the <see cref="Suggestions"/> list is shown.
     /// </summary>
     [Parameter]
     public bool ShowSuggestions { get; set; } = false;
 
     /// <summary>
-    /// Gets or sets the suggestions title
+    /// Gets or sets the text above the suggestions.
     /// </summary>
     [Parameter]
     public string SuggestionsTitle { get; set; } = "Here are some helpful links:";
 
     /// <summary>
-    /// Gets or sets the list of suggested links
+    /// Gets or sets the links to suggest. They are shown only when <see cref="ShowSuggestions"/> is true and the list is not
+    /// empty.
     /// </summary>
     [Parameter]
     public IReadOnlyList<ContentNotFoundSuggestion>? Suggestions { get; set; }
 
     /// <summary>
-    /// Gets or sets whether to show a search box
+    /// Gets or sets whether <see cref="SearchContent"/> is rendered.
     /// </summary>
     [Parameter]
     public bool ShowSearchBox { get; set; } = false;
 
     /// <summary>
-    /// Gets or sets the search box content
+    /// Gets or sets a search form of your choice. It is rendered only when <see cref="ShowSearchBox"/> is true.
     /// </summary>
     [Parameter]
     public RenderFragment? SearchContent { get; set; }
 
     /// <summary>
-    /// Gets or sets whether to show contact information
+    /// Gets or sets whether the contact line is shown. It also needs <see cref="ContactEmail"/>.
     /// </summary>
     [Parameter]
     public bool ShowContactInfo { get; set; } = false;
 
     /// <summary>
-    /// Gets or sets the contact message
+    /// Gets or sets the text before the email address.
     /// </summary>
     [Parameter]
     public string ContactMessage { get; set; } = "Need help? Contact us at";
 
     /// <summary>
-    /// Gets or sets the contact email
+    /// Gets or sets the address in the contact line, written as a <c>mailto:</c> link.
     /// </summary>
     [Parameter]
     public string? ContactEmail { get; set; }
 
     /// <summary>
-    /// Gets or sets the component variant: "default", "minimal", "centered", "hero"
+    /// Gets or sets the look: <c>default</c> (plain), <c>minimal</c> (smaller text and icon), <c>centered</c> (a rounded panel in the
+    /// secondary background) or <c>hero</c> (full window height with a gradient). Added as the class
+    /// <c>osirion-content-not-found-{Variant}</c>.
     /// </summary>
     [Parameter]
     public string Variant { get; set; } = "default";
 
     /// <summary>
-    /// Gets or sets the component size: "small", "medium", "large", "full"
+    /// Gets or sets the minimum height: <c>small</c>, <c>medium</c>, <c>large</c> or <c>full</c> (the window below the header). Added
+    /// as the class <c>osirion-content-not-found-{Size}</c>.
     /// </summary>
     [Parameter]
     public string Size { get; set; } = "medium";
 
     /// <summary>
-    /// Gets or sets the background pattern
+    /// Gets or sets a decorative pattern behind the content. Null, the default, shows none.
     /// </summary>
     [Parameter]
     public BackgroundPatternType? BackgroundPattern { get; set; }
 
     /// <summary>
-    /// Gets or sets additional child content
+    /// Gets or sets other content, rendered after the search slot and before the buttons.
     /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
@@ -188,6 +194,10 @@ public partial class OsirionContentNotFound
     /// <summary>
     /// Creates a default 404 configuration
     /// </summary>
+    /// <remarks>
+    /// The returned instance only holds the preset values. Blazor creates component instances itself, so it cannot be rendered;
+    /// set the same parameters in markup.
+    /// </remarks>
     public static OsirionContentNotFound Create404()
     {
         return new OsirionContentNotFound
@@ -203,6 +213,9 @@ public partial class OsirionContentNotFound
     /// <summary>
     /// Creates a default 403 configuration
     /// </summary>
+    /// <remarks>
+    /// The returned instance only holds the preset values and cannot be rendered. Its button leads to the home page.
+    /// </remarks>
     public static OsirionContentNotFound Create403()
     {
         return new OsirionContentNotFound
@@ -210,8 +223,9 @@ public partial class OsirionContentNotFound
             ErrorCode = "403",
             Title = "Access Denied",
             Message = "You don't have permission to access this resource.",
-            PrimaryButtonText = "Go Back",
-            PrimaryButtonUrl = "javascript:history.back()"
+            // A javascript: address is not a link: it is unsafe and does nothing without script, so lead to the home page.
+            PrimaryButtonText = "Go to Homepage",
+            PrimaryButtonUrl = "/"
         };
     }
 

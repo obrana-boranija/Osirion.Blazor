@@ -6,14 +6,14 @@ submenu to feature customer stories or news. It works in static SSR and needs no
 
 Key parameters
 - ImageUrl: the image URL (default: empty string)
-- ImageAlt: the image alternative text (default: `null`, which leaves the `alt` attribute off)
+- ImageAlt: the image alternative text (default: `null`, which renders `alt=""` and marks the image as decorative)
 - Title: the caption title (default: empty string)
 - Description: optional caption supporting text
 - Href: destination URL (default: `"#"`). A value whose scheme is not `http`, `https`, `mailto` or `tel` (for example
   `javascript:`) is not rendered, so the anchor has no `href`. Relative URLs are kept as written
 - Target: how to open the destination, for example `_blank`
 - Class: extra CSS classes, added after `osirion-menu-image-card` (inherited from `OsirionComponentBase`)
-- Style: inherited from `OsirionComponentBase`; this component's markup does not render it
+- Style: inherited from `OsirionComponentBase`, written on the root element
 - Theme: `ThemeMode.System` (default), `Light` or `Dark`; a non-System value is written as `data-theme` (or
   `data-bs-theme` when the Bootstrap framework is configured) on the anchor (inherited)
 - Attributes: any other attribute, captured and applied to the anchor (inherited)

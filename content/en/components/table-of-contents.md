@@ -6,7 +6,7 @@ permalink: /components/table-of-contents
 description: "TableOfContents reads the headings of an HTML string, such as a rendered CMS item, and renders links to them as a nested list."
 author: Dejan Demonjić
 date: "2024-12-29"
-last_modified: 2026-10-11
+last_modified: 2026-10-17
 featured_image: /assets/images/blazor-cover.png
 categories:
 - Components
@@ -25,16 +25,38 @@ redirect_from:
 custom_fields:
   group: cms-navigation
 seo_properties:
-  title: "TableOfContents Component - Osirion.Blazor CMS"
-  description: "Build a table of contents from the headings of rendered Markdown or any HTML string, with heading level limits and no script."
+  title: 'TableOfContents: a heading outline for Blazor'
+  description: 'Build a table of contents from the headings of rendered Markdown or any HTML string, with heading level limits and no script.'
   image: /assets/images/blazor-cover.png
-  canonical: "https://getosirion.com/components/table-of-contents"
+  canonical: 'https://getosirion.com/components/table-of-contents'
+  lang: en
+  robots: index, follow
+  og_title: 'TableOfContents - Osirion.Blazor'
+  og_description: 'A nested list of links to the headings of an HTML string, with the section being read marked as you scroll.'
+  og_image_url: '/assets/images/blazor-cover.png'
+  og_type: article
+  json_ld: ''
+  type: Article
+  twitter_card: summary_large_image
+  twitter_title: 'TableOfContents - Osirion.Blazor'
+  twitter_description: 'A nested list of links to the headings of an HTML string, with the section being read marked as you scroll.'
+  twitter_image_url: '/assets/images/blazor-cover.png'
+  meta_tags: {}
 ---
 
 # TableOfContents
 
 `TableOfContents` reads the `h1` to `h6` headings of an HTML string and renders a nested list of links to them. Pass
 it the rendered content of a CMS item to give long articles and documentation pages an outline.
+
+Package `Osirion.Blazor.Cms.Web`, namespace `Osirion.Blazor.Cms.Web.Components`. [Source on GitHub](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Cms.Web/Components/Navigation/TableOfContents.razor).
+
+```demo
+table-of-contents
+```
+
+The demo builds the outline from a small sample HTML string and renders that HTML below it, so the links have headings
+to go to.
 
 ## Usage
 
@@ -69,16 +91,24 @@ heading.
 
 ## Parameters
 
+<!-- osirion:parameters TableOfContents -->
+
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `Content` | `string?` | `null` | The HTML to read headings from. |
-| `MinLevel` | `int` | `2` | Lowest heading level included, so the page's `h1` is left out by default. |
-| `MaxLevel` | `int` | `6` | Highest heading level included. |
-| `MaxDepth` | `int` | `3` | Nesting limit. `1` lists only top-level headings; the list renders at most two levels, so values above `2` change nothing. |
-| `EmptyText` | `string` | `"No headings found."` | Shown when no heading matches. |
-| `Class` | `string?` | `null` | Extra CSS classes on the `nav`. |
+| `Content` | `string?` | `null` | The HTML to read the headings from, usually an item's rendered content. Nothing is listed when it is empty. |
+| `MinLevel` | `int` | `2` | The lowest heading level included, so the page's `h1` is left out by default. |
+| `MaxLevel` | `int` | `6` | The highest heading level included. |
+| `MaxDepth` | `int` | `3` | The nesting limit. `1` lists only top-level headings; the list renders at most two levels, so a value above `2` changes nothing. |
+| `EmptyText` | `string` | `"No headings found."` | The text shown when no heading matches. |
+| `TrackActiveHeading` | `bool` | `true` | Whether the link to the section being read is marked as it scrolls by: it gets the `osirion-toc-link-active` class and `aria-current="location"`. A script does it, so without script the contents work as plain links. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
+| `Style` | `string?` | `null` | An inline style for the component's root element. |
 
-Other attributes on the tag are captured but not rendered.
+<!-- /osirion:parameters -->
+
+`Class` goes on the `nav`. `Style` and `Theme` are accepted but not written, and other attributes on the tag are
+captured but not rendered.
 
 ## Behavior
 
@@ -86,15 +116,23 @@ Other attributes on the tag are captured but not rendered.
   HTML sanitizer keeps it, so the links work for CMS content. For a heading without an `id`, the component makes one
   from the text (lower case, letters and digits, spaces turned into hyphens), and the link only works if your page
   has an element with that id.
-- The heading's `id` is read only when it is the first attribute of the tag, as in the renderer's output.
+- The heading's `id` is read wherever it sits among the attributes of the tag, quoted or bare. A heading whose text
+  runs over several lines is found.
+- The search for headings stops after one second. On HTML that makes it take longer, such as thousands of unclosed
+  heading tags, the outline is empty and a warning is logged.
 - Headings are nested by level: an `h3` goes under the `h2` before it. The list shows two levels, the top-level
   headings and the headings directly under them. Deeper headings are not shown.
 - Tags inside a heading are stripped and the remaining text is written as text, so it is HTML-encoded. Character
   references are not decoded first, so a heading such as `Q&A`, which the Markdown renderer writes as `Q&amp;A`,
   shows as `Q&amp;A` in the outline.
 - The component always renders a `nav` with the accessible name "Table of Contents" (fixed English text), and the
-  `EmptyText` paragraph when there is nothing to list. Headings are read on every parameter change, with no
-  script, so the outline is part of the static SSR response.
+  `EmptyText` paragraph when there is nothing to list. Headings are read on every parameter change, so the outline
+  is part of the static SSR response.
+- With `TrackActiveHeading` on and at least one heading listed, a small script (loaded through BlazorJSComponents,
+  which `AddOsirion` registers) marks the link of the section being read as the page scrolls:
+  the last heading whose top has passed a line a quarter of the viewport below the top (plus the
+  `--osirion-anchor-offset` of a sticky header). At the end of the page the last heading wins. Without script the
+  links work as they are.
 
 ## Styling
 
@@ -104,11 +142,12 @@ Other attributes on the tag are captured but not rendered.
 | `osirion-toc-list` | The top-level `ol` |
 | `osirion-toc-sublist` | The nested `ol` |
 | `osirion-toc-item` | Each `li`, together with `osirion-toc-level-{n}` for the heading level |
-| `osirion-toc-link` | Each link |
+| `osirion-toc-link` | Each link; the script adds `osirion-toc-link-active` to the one being read |
 | `osirion-toc-empty` | The empty-state paragraph |
 
 Links use `--osirion-text-secondary` and `--osirion-action-primary`, with `--osirion-focus-ring-color` for keyboard
-focus. The stylesheet also has print rules.
+focus. The marked link reads `--osirion-toc-active-color`, `--osirion-toc-active-accent` and
+`--osirion-toc-active-background`. The stylesheet also has print rules.
 
 ## Related
 

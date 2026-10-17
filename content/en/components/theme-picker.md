@@ -121,8 +121,9 @@ is not written to the markup.
 - Choosing an option sets `data-osirion-palette` on `<html>` (or removes it for `Framework`), writes the cookie for one
   year (`SameSite=Lax`, `Secure` on HTTPS) and keeps every picker on the page in step. When the page has no palette
   stylesheet (`AllowPaletteSelection` off), the script adds it.
-- No interactive render mode is needed. The script, `theme-picker.js`, is loaded once through the script loader that
-  `builder.Services.AddJSComponents()` registers, and listens on the document, so pickers that enhanced navigation adds
+- No interactive render mode is needed. The script, `theme-picker.js`, is loaded once through the BlazorJSComponents
+  script loader (registered by `AddOsirion`, or by `builder.Services.AddJSComponents()` next to `AddOsirionTheming`),
+  and listens on the document, so pickers that enhanced navigation adds
   work without further setup. It writes no inline script and no event handler attributes.
 - Without JavaScript the list renders but choosing does nothing, as with `ThemeToggle`.
 

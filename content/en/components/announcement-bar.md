@@ -7,7 +7,7 @@ permalink: /components/announcement-bar
 description: A site-wide announcement above the page that visitors can close without script; the dismissal is remembered in a cookie per announcement.
 author: Dejan Demonjić
 date: 2026-10-11
-last_modified: 2026-10-11
+last_modified: 2026-10-17
 featured_image: /assets/images/blazor-cover.png
 categories:
 - Components
@@ -29,7 +29,7 @@ redirect_from:
 custom_fields:
   group: forms-and-feedback
 seo_properties:
-  title: 'OsirionAnnouncementBar: dismissible site announcement for Blazor | Osirion.Blazor'
+  title: 'OsirionAnnouncementBar: site announcement for Blazor'
   description: 'A site-wide Blazor announcement bar that visitors can close without script, remembered per announcement in a cookie.'
   image: /assets/images/blazor-cover.png
   canonical: 'https://getosirion.com/components/announcement-bar'
@@ -54,7 +54,14 @@ seo_properties:
 with a close button. Closing posts a small form; an endpoint in your app remembers the choice in a cookie and
 redirects back, so it works under static SSR without script.
 
-Available from 4.1.
+Package `Osirion.Blazor.Core`, namespace `Osirion.Blazor.Components`. [Source on GitHub](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Core/Components/Popups/OsirionAnnouncementBar.razor). Available from 4.0.
+
+## Working example
+
+There is no live demo on this page, because closing the bar posts to an endpoint of the site that serves it and sets
+a real cookie there. This site shows the component itself: the announcement bar above the menu is an
+`OsirionAnnouncementBar` in the header of the page layout. Close it and it stays closed for 30 days, the default
+`RememberDays`, until the announcement gets a new `Id`.
 
 ## Setup
 
@@ -105,15 +112,22 @@ To announce something new, change `Id`. Visitors who closed the previous announc
 
 ## Parameters
 
+<!-- osirion:parameters OsirionAnnouncementBar -->
+
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `Id` | `string` | empty | Required. 1 to 40 lowercase letters, digits or hyphens, such as `release-4-0`. A dismissal is remembered per ID. |
-| `ChildContent` | `RenderFragment?` | `null` | The announcement; it may contain links. |
-| `Dismissible` | `bool` | `true` | Shows the close button. |
-| `RememberDays` | `int` | `30` | How long a dismissal lasts, 1 to 365 days. |
-| `DismissText` | `string` | `"Dismiss announcement"` | Accessible name of the close button. |
-| `RegionLabel` | `string` | `"Announcement"` | Accessible name of the region. |
-| `DismissEndpoint` | `string` | `"/api/announcement/dismiss"` | Where the close form posts; match the pattern given to `MapOsirionAnnouncements`. |
+| `Id` | `string` | `""` | The announcement's ID: 1 to 40 lowercase letters, digits or hyphens, such as `release-4-1`. A dismissal is remembered per ID, so a new announcement needs a new one. |
+| `ChildContent` | `RenderFragment?` | `null` | The announcement, a normal Razor fragment that may contain links. It is encoded like any Razor output. |
+| `Dismissible` | `bool` | `true` | Whether the bar has a close button. |
+| `RememberDays` | `int` | `30` | How many days a dismissal lasts, from 1 to 365. Any other value throws an `ArgumentOutOfRangeException`. |
+| `DismissText` | `string` | `"Dismiss announcement"` | The accessible name of the close button. |
+| `RegionLabel` | `string` | `"Announcement"` | The accessible name of the bar, which is a region landmark. |
+| `DismissEndpoint` | `string` | `"/api/announcement/dismiss"` | Where the close form posts. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
+| `Style` | `string?` | `null` | An inline style for the component's root element. |
+
+<!-- /osirion:parameters -->
 
 `Class` and unmatched attributes go on the bar element.
 
@@ -124,8 +138,8 @@ An invalid `Id` throws `ArgumentException`, and a `RememberDays` outside 1 to 36
 
 - **Closing without script.** The close button submits a form with the ID, the lifetime and the current path. The
   endpoint sets the cookie `osirion_announcement_{Id}` and redirects back; the next render leaves the bar out.
-- **The cookie.** `HttpOnly`, `SameSite=Lax`, path `/`, and `Secure` when the request is HTTPS, so local development
-  over HTTP also works.
+- **The cookie.** `HttpOnly`, `Secure`, `SameSite=Lax`, path `/`. Browsers treat `localhost` as secure, so local
+  development keeps the dismissal; another plain HTTP host drops it.
 - **Security.** The form carries an antiforgery token. A post without a valid token or with an invalid ID gets 400,
   the lifetime is bounded to 365 days, and the endpoint redirects only to local paths.
 - **Rendering.** The bar reads the cookie from the request, so it renders under static SSR and while prerendering.
@@ -158,4 +172,4 @@ theme and the CSS framework adapter. Override them on the bar to use other color
 
 - [OsirionCookieConsent](/components/cookie-consent)
 - [OsirionPageLayout](/components/page-layout)
-- [Popups overview](/components/forms-and-feedback)
+- [Forms and feedback](/components/forms-and-feedback)

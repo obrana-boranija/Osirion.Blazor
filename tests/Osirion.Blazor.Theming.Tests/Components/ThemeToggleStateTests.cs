@@ -68,13 +68,13 @@ public class ThemeToggleStateTests : BunitContext
     }
 
     [Fact]
-    public void ThemeToggle_Script_CarriesDefaultThemeAndFramework()
+    public void ThemeToggle_Button_CarriesDefaultThemeAndFramework()
     {
         var cut = Render<ThemeToggle>();
 
-        var script = cut.Find("script").TextContent;
-        script.ShouldContain("const defaultTheme = 'dark';");
-        script.ShouldContain("const framework = 'FluentUI';");
+        var button = cut.Find("button.theme-toggle-btn");
+        button.GetAttribute("data-default-theme").ShouldBe("dark");
+        button.GetAttribute("data-framework").ShouldBe("FluentUI");
     }
 
     [Fact]

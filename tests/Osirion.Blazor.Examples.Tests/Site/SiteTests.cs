@@ -102,6 +102,8 @@ public partial class SiteTests(SiteFactory factory) : IClassFixture<SiteFactory>
     [InlineData("/weather")]
     [InlineData("/no-such-page")]
     [InlineData("/a/b/c")]
+    [InlineData("/tag/no-such-tag")]
+    [InlineData("/category/no-such-category")]
     public async Task AddressWithoutAPage_AnswersNotFound(string address)
     {
         // Arrange
@@ -114,6 +116,23 @@ public partial class SiteTests(SiteFactory factory) : IClassFixture<SiteFactory>
         // Assert: the site's not-found page, not an empty 404
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
         html.ShouldContain("<title>Page not found");
+    }
+
+    [Theory]
+    [InlineData("/tag/seo")]
+    [InlineData("/category/seo")]
+    [InlineData("/tag")]
+    [InlineData("/category")]
+    public async Task ListPage_ForANameAPostUsesOrWithoutAName_AnswersOk(string address)
+    {
+        // Arrange
+        using var client = CreateClient();
+
+        // Act
+        using var response = await client.GetAsync(address);
+
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     [Theory]
@@ -270,6 +289,23 @@ public partial class SiteTests(SiteFactory factory) : IClassFixture<SiteFactory>
         // Assert
         pagesWithDemos.ShouldNotBeEmpty();
         failures.ShouldBeEmpty();
+    }
+
+    [Theory]
+    [InlineData("/components/content-renderer")]
+    [InlineData("/components/content-view")]
+    [InlineData("/components/localized-content-view")]
+    [InlineData("/components/content-page")]
+    public async Task CmsPageDemos_ShowThisSitesOwnReleaseNotesPage(string address)
+    {
+        // Arrange
+        using var client = CreateClient();
+
+        // Act
+        var html = await client.GetStringAsync(address);
+
+        // Assert
+        html.ShouldContain("Version 1.5.0 was released on 21 April 2025");
     }
 
     private HttpClient CreateClient() =>

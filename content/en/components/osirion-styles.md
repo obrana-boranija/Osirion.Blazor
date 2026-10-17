@@ -96,7 +96,7 @@ configured value applies. `CustomVariables` does not replace the configured valu
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
 | `UseStyles` | `bool?` | `null` | Whether only the Core stylesheet is linked. When `true`, the framework adapter and the theme stylesheet are left out. When `null`, `ThemingOptions.UseDefaultStyles` applies (`false` unless configured). |
-| `CustomVariables` | `string?` | `null` | CSS declarations written, as raw CSS without encoding, into a `:root` block. The configured `ThemingOptions.CustomVariables` value is written in a second block after this one, so for the same property the configured value wins. Pass only values from your own code or configuration. |
+| `CustomVariables` | `string?` | `null` | CSS declarations written into a `:root` block. Every `<` is replaced by the CSS escape `\3C `, so a value cannot end the `<style>` element or add markup; a valid declaration, which never contains `<` outside a string, is written unchanged. The configured `ThemingOptions.CustomVariables` value is written the same way in a second block after this one, so for the same property the configured value wins. Still pass only values from your own code or configuration. |
 | `Framework` | `CssFramework?` | `null` | Which framework adapter stylesheet is linked: `Bootstrap`, `FluentUI`, `MudBlazor` or `Radzen`; `None` links none. When `null`, `ThemingOptions.Framework` applies. The framework class on `<html>` comes from the configured framework, so set the framework in configuration as well. |
 | `Mode` | `ThemeMode?` | `null` | The theme used when the visitor has not picked one: `Light`, `Dark` or `System`. `Inverted` is not handled by the page script, which then follows the operating system. When `null`, `ThemingOptions.DefaultMode` applies (`System` unless configured). |
 | `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
@@ -124,14 +124,16 @@ The component renders, in this order:
    or `AllowPaletteSelection` is set.
 4. A `<style>` block with the `CustomVariables` parameter, then one with the configured `CustomVariables`. Both are
    `:root` rules, so for the same property the configured value, written last, wins.
-5. `osirion-styles.js`, loaded through the script loader that `builder.Services.AddJSComponents()` registers.
+5. `osirion-styles.js`, loaded through the BlazorJSComponents script loader, which `AddOsirion` registers (a site
+   that registers theming alone with `AddOsirionTheming` calls `builder.Services.AddJSComponents()` itself).
 6. A short inline script that sets `data-osirion-theme`, `data-osirion-palette`, `data-osirion-framework`, the
    framework class and the framework's own dark-mode marker on `<html>` while the page is parsed.
 
 The theme is resolved in this order: the `osirion-preferred-theme` cookie, then `Mode` or `DefaultMode`. `System`
 follows the operating system's `prefers-color-scheme` and reacts when it changes, as long as the visitor has not
 picked a theme. `ThemeMode.Inverted` is not handled by the script: the page takes the operating system's theme, as
-with `System`, but does not react when it changes.
+with `System`, but does not react when it changes. On the server, `IThemeService` reads and writes `inverted` in the
+cookie like `light`, `dark` and `system`, so `CurrentMode` reports `Inverted` for such a visitor.
 
 The script applies the theme again after every Blazor enhanced navigation. Under Static SSR this is all that runs; no
 interactive render mode is needed. When `IThemeService` raises `ThemeChanged`, the component renders again, and it
@@ -142,8 +144,10 @@ follow the Osirion theme.
 
 ### Security
 
-`CustomVariables` is written into the page as raw CSS without encoding. Pass only values from your code or
-configuration, never text a visitor supplied. The component writes an inline script and does not add a nonce, so a
+`CustomVariables`, and the configured `ThemingOptions.CustomVariables`, are written into a `<style>` element. Every
+`<` in the value is replaced by the CSS escape `\3C `, so a value such as `</style><script>` cannot end the element
+or add markup; a valid declaration never contains `<` outside a string and is written unchanged. The value is not
+validated as CSS otherwise, so pass only values from your code or configuration, never text a visitor supplied. The component writes an inline script and does not add a nonce, so a
 Content Security Policy must allow it.
 
 ## Styling

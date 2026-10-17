@@ -49,11 +49,11 @@
 
         @if (ShowPagination && TotalPages > 1)
         {
-            <div class="osirion-content-pagination">
+            <nav class="osirion-content-pagination" aria-label="Pagination">
                 @if (CurrentPage > 1)
                 {
-                    <a href="@GetPaginationUrl(CurrentPage - 1)" class="osirion-pagination-link" @onclick="() => OnPageChanged(CurrentPage - 1)" @onclick:preventDefault>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <a href="@GetPaginationUrl(CurrentPage - 1)" class="osirion-pagination-link" aria-label="Previous page" @onclick="() => OnPageChanged(CurrentPage - 1)" @onclick:preventDefault>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
                             <polyline points="15 18 9 12 15 6"></polyline>
                         </svg>
                     </a>
@@ -84,6 +84,7 @@
                     int pageNumber = i;
                     <a href="@GetPaginationUrl(pageNumber)"
                        class="osirion-pagination-link @(pageNumber == CurrentPage ? "osirion-active" : "")"
+                       aria-current="@(pageNumber == CurrentPage ? "page" : null)"
                        @onclick="() => OnPageChanged(pageNumber)"
                        @onclick:preventDefault>
                         @pageNumber
@@ -102,13 +103,13 @@
 
                 @if (CurrentPage < TotalPages)
                 {
-                    <a href="@GetPaginationUrl(CurrentPage + 1)" class="osirion-pagination-link" @onclick="() => OnPageChanged(CurrentPage + 1)" @onclick:preventDefault>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <a href="@GetPaginationUrl(CurrentPage + 1)" class="osirion-pagination-link" aria-label="Next page" @onclick="() => OnPageChanged(CurrentPage + 1)" @onclick:preventDefault>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
                             <polyline points="9 18 15 12 9 6"></polyline>
                         </svg>
                     </a>
                 }
-            </div>
+            </nav>
         }
     }
 </div>

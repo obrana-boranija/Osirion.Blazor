@@ -1,0 +1,22 @@
+@using Osirion.Blazor.Cms.Domain.Entities
+@using Osirion.Blazor.Cms.Domain.Services
+@using Osirion.Blazor.Cms.Web.Components
+@inject IContentProviderManager Content
+
+@* The sections of this site's own content: the folders inside the locale folder, with the folders inside them *@
+<DirectoryNavigation Title="Sections"
+                     Directories="@sections"
+                     IsLoading="@(sections is null)"
+                     ExpandAllSubdirectories="true"
+                     ShowItemCount="false" />
+
+@code {
+    private IReadOnlyList<DirectoryItem>? sections;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // With a locale, the list holds every directory below the locale folder, at any depth. Keep the top level.
+        var directories = await Content.GetDirectoryTreeFromDefaultAsync("en");
+        sections = directories.Where(directory => directory.Parent?.Parent is null).ToList();
+    }
+}

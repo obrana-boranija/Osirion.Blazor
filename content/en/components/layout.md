@@ -80,7 +80,8 @@ SSR; only `OsirionPageLayout` loads a small script, for the header that hides on
 </OsirionPageLayout>
 ```
 
-`OsirionPageLayout` needs `builder.Services.AddJSComponents()` in `Program.cs` for its script. From 4.0, an
+`OsirionPageLayout` loads its script through BlazorJSComponents, which `AddOsirion` registers (without `AddOsirion`,
+call `builder.Services.AddJSComponents()`). From 4.0, an
 `OsirionFooter` inside the `Footer` slot renders a `div`, so the page has one footer landmark.
 
 ## Related
