@@ -6,7 +6,7 @@
    target="@Target"
    rel="@(Target == "_blank" ? "noopener noreferrer" : null)"
    @attributes="Attributes">
-    <img class="osirion-menu-image-card-image" src="@ImageUrl" alt="@ImageAlt" loading="lazy" />
+    <img class="osirion-menu-image-card-image" src="@ImageUrl" alt="@(ImageAlt ?? string.Empty)" loading="lazy" />
     <span class="osirion-menu-image-card-scrim" aria-hidden="true"></span>
     <span class="osirion-menu-image-card-caption">
         <span class="osirion-menu-image-card-title">@Title</span>

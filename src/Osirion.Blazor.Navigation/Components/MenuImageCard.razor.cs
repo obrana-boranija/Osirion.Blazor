@@ -14,8 +14,8 @@ public partial class MenuImageCard
     public string ImageUrl { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the alternative text of the image. Set it: without it the image is rendered with no
-    /// <c>alt</c> attribute.
+    /// Gets or sets the alternative text of the image. Without it the image is rendered with <c>alt=""</c>, which
+    /// marks it as decorative so a screen reader skips it. Set it when the image says something the caption does not.
     /// </summary>
     [Parameter]
     public string? ImageAlt { get; set; }

@@ -286,7 +286,7 @@ as a mega menu aside for a customer story or a news item. Pass a real `ImageAlt`
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
 | `ImageUrl` | `string` | `""` | The address of the image, written as given. It loads lazily. |
-| `ImageAlt` | `string?` | `null` | The alternative text of the image. Set it: without it the image is rendered with no `alt` attribute. |
+| `ImageAlt` | `string?` | `null` | The alternative text of the image. Without it the image is rendered with `alt=""`, which marks it as decorative so a screen reader skips it. Set it when the image says something the caption does not. |
 | `Title` | `string` | `""` | The caption title, shown over a dark scrim at the bottom of the image. |
 | `Description` | `string?` | `null` | Supporting text under `Title`. |
 | `Href` | `string` | `"#"` | The link address of the whole card. Only a relative URL or the `http`, `https`, `mailto` and `tel` schemes get an `href`. |
