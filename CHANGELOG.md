@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Osirion.Blazor.Core: a site without a CSS framework (`Framework: None`) gets its page painted in the theme's colours and font. No shipped stylesheet styled `body`, so in the dark theme light text sat on the browser's white page (1.1:1), and text outside Osirion's components fell back to the browser's serif font. The rule applies only while `OsirionStyles` marks the page `data-osirion-framework="None"` and has zero specificity, so a framework's or a site's own `body` rule still wins
+- Osirion.Blazor.Cms.Web: `DocumentPage`'s active side navigation item uses the theme's active-item colours (`--osirion-nav-active-text` on `--osirion-nav-active-background`). It read `--osirion-background-active`, which no theme defines, so the dark theme showed light blue text on a light blue box (2.21:1)
+- Osirion.Blazor.Cms.Web: a `DocumentPage` with a long line of code no longer makes the page wider than a phone screen; its grid columns can shrink, so the code block scrolls
 - Osirion.Blazor.Cms.Web: the feed link under `ContentListPage` has a 24 pixel target (WCAG 2.2, 2.5.8); it stands alone, not in a sentence, and was 15 pixels tall
 
 ## [4.1.0] - 2026-10-17

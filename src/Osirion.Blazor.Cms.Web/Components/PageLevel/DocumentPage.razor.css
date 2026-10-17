@@ -67,14 +67,16 @@
     }
 
 /* Document layout */
+/* minmax(0, 1fr), not 1fr: a column is otherwise at least as wide as its widest content, so a long line of code made the
+   page wider than a phone screen instead of scrolling inside its block. */
 .osirion-document-layout {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     min-height: 100vh;
 }
 
 .osirion-document-with-sidenav .osirion-document-layout {
-    grid-template-columns: 280px 1fr;
+    grid-template-columns: 280px minmax(0, 1fr);
 }
 
 /* Side navigation */
@@ -130,9 +132,11 @@
         border-left-color: var(--osirion-action-primary, #2563eb);
     }
 
+    /* The theme's active-item pair, which both themes and every palette hold to 4.5:1; --osirion-background-active is
+       defined by no theme, so its light fallback showed in the dark theme (2.21:1). */
     .osirion-sidenav-link.osirion-sidenav-active {
-        color: var(--osirion-action-primary, #2563eb);
-        background-color: var(--osirion-background-active, #e0f2fe);
+        color: var(--osirion-nav-active-text, #1d4ed8);
+        background-color: var(--osirion-nav-active-background, #eff6ff);
         border-left-color: var(--osirion-action-primary, #2563eb);
         font-weight: var(--osirion-font-weight-semibold, 600);
     }
@@ -407,7 +411,7 @@
 /* Responsive design */
 @media (max-width: 1024px) {
     .osirion-document-with-sidenav .osirion-document-layout {
-        grid-template-columns: 240px 1fr;
+        grid-template-columns: 240px minmax(0, 1fr);
     }
 
     .osirion-document-sidenav {
@@ -421,7 +425,7 @@
 
 @media (max-width: 768px) {
     .osirion-document-with-sidenav .osirion-document-layout {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 
     .osirion-document-sidenav {
