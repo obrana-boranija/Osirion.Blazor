@@ -1,3 +1,4 @@
+using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Web.Components;
 using Osirion.Blazor.Cms.Web.Components.Seo;
 using Shouldly;
@@ -55,6 +56,38 @@ public class SeoSchemasTests
         schema.ShouldContain("\"name\": \"How?\"");
         schema.ShouldContain("\"text\": \"Because.\"");
     }
+
+    // Fails before the fix: an item URL without a leading slash was appended to the host as it was, so the
+    // item list held "https://site.testdocs/install".
+    [Theory]
+    [InlineData("docs/install")]
+    [InlineData("/docs/install")]
+    public void CollectionPage_ItemUrl_IsJoinedToTheHostWithOneSlash(string itemUrl)
+    {
+        var context = CreateContext() with { ContentItems = [CreateItem(itemUrl)] };
+
+        var schema = SeoSchemas.Serialize(NavigationSchemas.CollectionPage(context));
+
+        schema.ShouldContain("\"url\": \"https://site.test/docs/install\"");
+    }
+
+    // Fails before the fix: same missing slash in the blog posting written for each collection item.
+    [Theory]
+    [InlineData("docs/install")]
+    [InlineData("/docs/install")]
+    public void CollectionItemPosting_ItemUrl_IsJoinedToTheHostWithOneSlash(string itemUrl)
+    {
+        var schema = SeoSchemas.Serialize(NavigationSchemas.CollectionItemPosting(CreateItem(itemUrl), CreateContext()));
+
+        schema.ShouldContain("\"url\": \"https://site.test/docs/install\"");
+    }
+
+    private static ContentItem CreateItem(string url) => new()
+    {
+        Title = "Install",
+        Path = "docs/install.md",
+        Url = url,
+    };
 
     private static SeoSchemaContext CreateContext() => new()
     {
