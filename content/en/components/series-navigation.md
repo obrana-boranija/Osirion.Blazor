@@ -6,7 +6,7 @@ permalink: /components/series-navigation
 description: "ContentSeriesNavigation shows an item's place in a series, lists the parts and links the previous and next part, from series front matter."
 author: Dejan Demonjić
 date: 2026-10-11
-last_modified: 2026-10-11
+last_modified: 2026-10-17
 featured_image: /assets/images/blazor-cover.png
 categories:
 - Components
@@ -26,19 +26,35 @@ redirect_from:
 custom_fields:
   group: cms-navigation
 seo_properties:
-  title: "ContentSeriesNavigation Component - Osirion.Blazor CMS"
-  description: "Link the parts of a multi-part article with series and series_order front matter: Part 2 of 5, a list of parts and previous and next links."
+  title: 'ContentSeriesNavigation: series links for Blazor'
+  description: 'Link the parts of a multi-part article with series and series_order front matter: Part 2 of 5, a list of parts and previous and next links.'
   image: /assets/images/blazor-cover.png
-  canonical: "https://getosirion.com/components/series-navigation"
+  canonical: 'https://getosirion.com/components/series-navigation'
+  lang: en
+  robots: index, follow
+  og_title: 'ContentSeriesNavigation - Osirion.Blazor'
+  og_description: 'Shows where an item stands in a series, lists the parts and links the previous and next part.'
+  og_image_url: '/assets/images/blazor-cover.png'
+  og_type: article
+  json_ld: ''
+  type: Article
+  twitter_card: summary_large_image
+  twitter_title: 'ContentSeriesNavigation - Osirion.Blazor'
+  twitter_description: 'Shows where an item stands in a series, lists the parts and links the previous and next part.'
+  twitter_image_url: '/assets/images/blazor-cover.png'
+  meta_tags: {}
 ---
 
 # ContentSeriesNavigation
 
-Available from 4.1.
-
 `ContentSeriesNavigation` shows where an item stands in a series ("Part 2 of 5"), lists every part and links the
 previous and next part. Use it on multi-part tutorials and article series. The series comes from front matter, so
 adding a part is a matter of writing its Markdown file.
+
+Package `Osirion.Blazor.Cms.Web`, namespace `Osirion.Blazor.Cms.Web.Components`. [Source on GitHub](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Cms.Web/Components/Navigation/ContentSeriesNavigation.razor).
+
+This page has no live demo. The component reads the parts of a series from the content provider, and no content on
+this site has `series` front matter, so it would render nothing.
 
 ## Usage
 
@@ -58,6 +74,21 @@ Then render the component with the item being shown:
 @using Osirion.Blazor.Cms.Web.Components
 
 <ContentSeriesNavigation Item="@Item" />
+```
+
+With three published parts of that series, on the third part it renders like this (abridged):
+
+```html
+<nav class="osirion-series-nav" aria-label="Build a blog with Osirion: Part 3 of 3">
+  <p class="osirion-series-nav-heading">
+    <span class="osirion-series-nav-position">Part 3 of 3</span>
+    <span class="osirion-series-nav-name">Build a blog with Osirion</span>
+  </p>
+  <ol class="osirion-series-nav-parts"> ...one li per part, the current one with aria-current="page"... </ol>
+  <div class="osirion-series-nav-pager">
+    <a class="osirion-series-nav-previous" href="/blog/part-two" rel="prev">...</a>
+  </div>
+</nav>
 ```
 
 A tutorial page that shows the position and part list at the top and only the previous and next links at the
@@ -85,17 +116,24 @@ bottom, with its own wording:
 
 ## Parameters
 
+<!-- osirion:parameters ContentSeriesNavigation -->
+
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `Item` | `ContentItem?` | `null` | The item being shown. Required; nothing renders without it. |
-| `ShowPartList` | `bool` | `true` | Lists every part, not only the previous and next one. |
-| `PositionFormat` | `string` | `"Part {0} of {1}"` | Position text; `{0}` is the part number, `{1}` the number of parts. Formatted with the current culture. |
-| `PreviousText` | `string` | `"Previous"` | Label of the previous-part link. |
-| `NextText` | `string` | `"Next"` | Label of the next-part link. |
-| `ContentUrlFormatter` | `Func<ContentItem, string>?` | `null` | Builds each part's link. Without it, links go to `/{item.Url}`, the address the content lists use. |
-| `Class` | `string?` | `null` | Extra CSS classes on the `nav`. |
+| `Item` | `ContentItem?` | `null` | The item being shown. Required: nothing renders without it, nor when the item has no `series`, when the series has fewer than two published parts or when the item is not among them. |
+| `ContentUrlFormatter` | `Func<ContentItem, string>?` | `null` | A function that builds each part's link. Without it, links go to `/{Url}` of the item, the path the content lists link to. |
+| `ShowPartList` | `bool` | `true` | Whether every part is listed, not only the previous and next one. |
+| `PositionFormat` | `string` | `"Part {0} of {1}"` | The position text, a format string where `{0}` is the part number and `{1}` the number of parts. Formatted with the current culture. Defaults to `Part {0} of {1}`. |
+| `PreviousText` | `string` | `"Previous"` | The label of the previous-part link. |
+| `NextText` | `string` | `"Next"` | The label of the next-part link. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
+| `Style` | `string?` | `null` | An inline style for the component's root element. |
 
-Other attributes on the tag are added to the `nav`.
+<!-- /osirion:parameters -->
+
+`Class` goes on the `nav`, and other attributes on the tag are added to it, `Theme` included. `Style` is accepted but
+not written.
 
 ## Behavior
 
@@ -111,6 +149,7 @@ Other attributes on the tag are added to the `nav`.
   and `rel="next"`.
 - Titles and the series name are written as text, so they are HTML-encoded. The links are plain anchors, so it
   works under static SSR without script.
+- The built-in `ArticlePage` renders it when its `ShowSeriesNavigation` is on, which is the default.
 
 ## Styling
 

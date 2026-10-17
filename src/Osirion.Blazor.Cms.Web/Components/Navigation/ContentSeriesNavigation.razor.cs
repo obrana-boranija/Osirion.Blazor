@@ -20,32 +20,36 @@ public partial class ContentSeriesNavigation
     [Inject]
     private ILogger<ContentSeriesNavigation> Logger { get; set; } = default!;
 
-    /// <summary>Gets or sets the item being shown.</summary>
+    /// <summary>
+    /// Gets or sets the item being shown. Required: nothing renders without it, nor when the item has no
+    /// <c>series</c>, when the series has fewer than two published parts or when the item is not among them.
+    /// </summary>
     [Parameter, EditorRequired]
     public ContentItem? Item { get; set; }
 
     /// <summary>
-    /// Gets or sets how an item's URL is built. Defaults to <c>/{item.Url}</c>, the path the content lists link to.
+    /// Gets or sets a function that builds each part's link. Without it, links go to <c>/{Url}</c> of the item, the
+    /// path the content lists link to.
     /// </summary>
     [Parameter]
     public Func<ContentItem, string>? ContentUrlFormatter { get; set; }
 
-    /// <summary>Gets or sets whether every part is listed, not only the previous and next one. Defaults to true.</summary>
+    /// <summary>Gets or sets whether every part is listed, not only the previous and next one.</summary>
     [Parameter]
     public bool ShowPartList { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the position text, a format string where <c>{0}</c> is the part number and <c>{1}</c> the number
-    /// of parts. Defaults to <c>Part {0} of {1}</c>.
+    /// Gets or sets the position text, a format string where <c>{0}</c> is the part number and <c>{1}</c> the
+    /// number of parts. Formatted with the current culture. Defaults to <c>Part {0} of {1}</c>.
     /// </summary>
     [Parameter]
     public string PositionFormat { get; set; } = "Part {0} of {1}";
 
-    /// <summary>Gets or sets the label of the previous-part link. Defaults to <c>Previous</c>.</summary>
+    /// <summary>Gets or sets the label of the previous-part link.</summary>
     [Parameter]
     public string PreviousText { get; set; } = "Previous";
 
-    /// <summary>Gets or sets the label of the next-part link. Defaults to <c>Next</c>.</summary>
+    /// <summary>Gets or sets the label of the next-part link.</summary>
     [Parameter]
     public string NextText { get; set; } = "Next";
 

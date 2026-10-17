@@ -1,0 +1,22 @@
+@using Osirion.Blazor.Cms.Web.Components
+
+@* The headings come from the sample HTML below. It is rendered under the contents so the links have somewhere to go. *@
+<TableOfContents Content="@sampleHtml" />
+
+<div class="mt-3">
+    @((MarkupString)sampleHtml)
+</div>
+
+@code {
+    // A constant written for this demo, not content from a reader, so it is safe to render as markup.
+    private const string sampleHtml = """
+        <h2 id="toc-demo-install">Install</h2>
+        <p>Sample text for the first section.</p>
+        <h3 id="toc-demo-package">Add the package</h3>
+        <p>Sample text for a subsection.</p>
+        <h3 id="toc-demo-register">Register the services</h3>
+        <p>Sample text for a second subsection.</p>
+        <h2 id="toc-demo-use">Use it</h2>
+        <p>Sample text for the last section.</p>
+        """;
+}

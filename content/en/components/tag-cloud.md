@@ -6,7 +6,7 @@ permalink: /components/tag-cloud
 description: "TagCloud renders a link to every content tag with its item count, loaded from the default CMS provider or from a list you pass."
 author: Dejan Demonjić
 date: "2024-12-29"
-last_modified: 2026-10-11
+last_modified: 2026-10-17
 featured_image: /assets/images/blazor-cover.png
 categories:
 - Components
@@ -25,10 +25,23 @@ redirect_from:
 custom_fields:
   group: cms-navigation
 seo_properties:
-  title: "TagCloud Component - Osirion.Blazor CMS"
-  description: "Render links to every CMS tag with item counts, sorting, a limit, an active tag and your own URL scheme."
+  title: 'TagCloud: tag links with counts for Blazor'
+  description: 'Render links to every CMS tag with item counts, sorting, a limit, an active tag and your own URL scheme.'
   image: /assets/images/blazor-cover.png
-  canonical: "https://getosirion.com/components/tag-cloud"
+  canonical: 'https://getosirion.com/components/tag-cloud'
+  lang: en
+  robots: index, follow
+  og_title: 'TagCloud - Osirion.Blazor'
+  og_description: 'A wrapping row of tag links with item counts, loaded from the default content provider or passed in.'
+  og_image_url: '/assets/images/blazor-cover.png'
+  og_type: article
+  json_ld: ''
+  type: Article
+  twitter_card: summary_large_image
+  twitter_title: 'TagCloud - Osirion.Blazor'
+  twitter_description: 'A wrapping row of tag links with item counts, loaded from the default content provider or passed in.'
+  twitter_image_url: '/assets/images/blazor-cover.png'
+  meta_tags: {}
 ---
 
 # TagCloud
@@ -36,6 +49,14 @@ seo_properties:
 `TagCloud` renders a wrapping row of tag links, each with the number of items that carry the tag. It loads the
 tags from the default content provider, or shows the tags you pass. Every tag is drawn at the same size; the
 component does not scale tags by count.
+
+Package `Osirion.Blazor.Cms.Web`, namespace `Osirion.Blazor.Cms.Web.Components`. [Source on GitHub](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Cms.Web/Components/Navigation/TagCloud.razor).
+
+```demo
+tag-cloud
+```
+
+The demo shows the twelve most used tags of this site's own content.
 
 ## Usage
 
@@ -45,7 +66,7 @@ component does not scale tags by count.
 <TagCloud Title="Tags" MaxTags="20" />
 ```
 
-A tag page that keeps the tag name in the query string, so tags with spaces or symbols work:
+A tag page that keeps the tag name in the query string:
 
 ```razor
 @page "/tags"
@@ -66,34 +87,42 @@ A tag page that keeps the tag name in the query string, so tags with spaces or s
 }
 ```
 
-`ContentList` matches its `Tag` against tag names exactly, ignoring case, which is why this page passes the name
-rather than the slug of the default `/tag/{slug}` links.
+`ContentList` passes `Tag` to the content query, which matches a tag by its name or by its slug, ignoring case. The
+default `/tag/{slug}` links therefore work with a route that takes the slug, and a formatter like the one above works
+with the name.
 
 ## Parameters
 
+<!-- osirion:parameters TagCloud -->
+
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `Tags` | `IReadOnlyList<ContentTag>?` | `null` | Tags to show. When null or empty, the component loads them from the default provider. |
-| `MaxTags` | `int?` | `null` | Shows only the first N loaded tags after sorting. |
-| `SortByCount` | `bool` | `true` | For loaded tags: `true` sorts by count, highest first; `false` sorts by name. |
-| `ShowCount` | `bool` | `true` | Shows each tag's item count after its name. |
-| `ActiveTag` | `string?` | `null` | Slug or name of the current tag, compared ignoring case; its link gets the `osirion-tag-active` class. |
-| `TagUrlFormatter` | `Func<ContentTag, string>?` | `null` | Builds each link from the tag (`Name`, `Slug`, `Count`). Without it, links go to `/tag/{Slug}`. |
-| `Title` | `string?` | `null` | Heading rendered as an `h3` above the tags. No heading when null. |
-| `LoadingText` | `string` | `"Loading tags..."` | Shown while the tags load, in interactive render modes only. |
-| `NoContentText` | `string` | `"No tags available."` | Shown when there are no tags or loading failed. |
-| `Class` | `string?` | `null` | Extra CSS classes on the outer `div`. |
+| `MaxTags` | `int?` | `null` | The number of loaded tags to show, taken from the start after sorting. All tags when `null`. Tags passed in `Tags` are shown as given. |
+| `Title` | `string?` | `null` | The heading above the tags, rendered as an `h3`. No heading when `null`. |
+| `LoadingText` | `string` | `"Loading tags..."` | The text shown while the tags load. Only an interactive render mode can show it: under static SSR the response is sent with the finished list. |
+| `NoContentText` | `string` | `"No tags available."` | The text shown when there are no tags to show, when no default content provider is registered or when loading failed. |
+| `ActiveTag` | `string?` | `null` | The slug or name of the current tag, compared ignoring case. Its link gets the `osirion-tag-active` class; `aria-current` is not written. |
+| `TagUrlFormatter` | `Func<ContentTag, string>?` | `null` | A function that builds each link from its tag (`Name`, `Slug` and `Count`). Without it, links go to `/tag/{Slug}`. |
+| `ShowCount` | `bool` | `true` | Whether each tag's item count is shown after its name. |
+| `SortByCount` | `bool` | `true` | How loaded tags are ordered: `true` by item count, highest first; `false` by name. Tags passed in `Tags` keep their order. |
+| `Tags` | `IReadOnlyList<ContentTag>?` | `null` | The tags to show. When `null` or empty, the component loads the tags of every item from the default content provider. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
+| `Style` | `string?` | `null` | An inline style for the component's root element. |
 
-`MaxTags` and `SortByCount` apply only to tags the component loads; tags you pass in `Tags` are shown as given.
-Other attributes on the tag are captured but not rendered.
+<!-- /osirion:parameters -->
+
+`Class` goes on the outer `div`. `Style` and `Theme` are accepted but not written, and other attributes on the tag
+are captured but not rendered.
 
 ## Behavior
 
 - Loaded tags come from the `tags` front matter of every item the default provider holds, across all locales and
   including unpublished items. Names that differ only in case count as one tag.
+- `MaxTags` and `SortByCount` apply only to tags the component loads; tags you pass in `Tags` are shown as given.
 - Under static SSR the response is sent with the finished list, and the loading text is never rendered.
-- If the provider throws, the error is logged through `ILogger` and the empty-state text is shown. Exception
-  details never reach the page.
+- With no default provider registered, or when the provider throws, `NoContentText` is shown. A provider error is
+  logged through `ILogger`; its details never reach the page.
 - Links carry `rel="nofollow"`. Tag names are written as text, so they are HTML-encoded.
 - The current tag is marked with a class only, not with `aria-current`.
 
@@ -110,7 +139,7 @@ Other attributes on the tag are captured but not rendered.
 
 Tag colors use `--osirion-tag-background-color`, `--osirion-tag-text-color` and
 `--osirion-tag-hover-background-color`, which fall back to the theme's background and text tokens. The active tag
-uses `--osirion-background-active` (falling back to `--osirion-action-primary`) and `--osirion-action-primary-text`.
+uses `--osirion-action-primary` and `--osirion-action-primary-text`.
 
 ## Related
 
