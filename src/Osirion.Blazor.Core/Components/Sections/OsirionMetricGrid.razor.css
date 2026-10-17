@@ -11,6 +11,10 @@
     min-width: 0;
 }
 
+.osirion-metric-grid > li > * {
+    height: 100%;
+}
+
 @media (min-width: 576px) {
     .osirion-metric-grid-columns-2,
     .osirion-metric-grid-columns-3,

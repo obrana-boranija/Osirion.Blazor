@@ -18,6 +18,19 @@ public partial class ComponentStylesheetTests
         css.ShouldNotContain("#123b2b");
     }
 
+    // Fails before the fix: the grid passed the Bootstrap-only class h-100 to each card and had no rule of its own
+    // that makes a card fill its cell.
+    [Fact]
+    public void MetricGrid_Cells_StretchTheirCardWithoutAFrameworkClass()
+    {
+        // Act
+        var css = Squash(ComponentCss("Sections", "OsirionMetricGrid.razor.css"));
+
+        // Assert
+        css.ShouldContain(".osirion-metric-grid>li>*{");
+        css.ShouldContain(".osirion-metric-grid>li>*{height:100%;}");
+    }
+
     private static string Squash(string css) => WhitespaceRun().Replace(CssComment().Replace(css, string.Empty), string.Empty);
 
     private static string ComponentCss(string folder, string file)
