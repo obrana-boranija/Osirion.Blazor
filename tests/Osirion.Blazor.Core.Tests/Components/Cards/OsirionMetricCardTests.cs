@@ -35,6 +35,22 @@ public class OsirionMetricCardTests : OsirionComponentTestBase
         cut.Find(".osirion-metric-card-value").GetAttribute("data-osirion-metric").ShouldBe("false");
     }
 
+    // Fails before the fix: the card took only CssClass, so Class and Style, which every other component applies to
+    // its root element and the parameter table lists, were dropped.
+    [Fact]
+    public void MetricCard_ClassAndStyle_GoOnTheRootElementWithCssClass()
+    {
+        var cut = RenderCard("42", p => p
+            .Add(c => c.CssClass, "legacy")
+            .Add(c => c.Class, "wide")
+            .Add(c => c.Style, "max-width: 20rem"));
+
+        var card = cut.Find("article.osirion-metric-card");
+        card.ClassList.ShouldContain("legacy");
+        card.ClassList.ShouldContain("wide");
+        card.GetAttribute("style").ShouldBe("max-width: 20rem");
+    }
+
     [Fact]
     public void MetricCard_OptionalTexts_RenderWhenProvided()
     {
