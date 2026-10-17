@@ -1,12 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-	<!-- A template package: `dotnet new install Osirion.Blazor.Templates` adds osirion-blog and osirion-docs. It
-	     contains no code of its own; the templates under templates/ are packed as content and compiled only after
-	     `dotnet new` copies them. -->
+	<!-- A template package: `dotnet new install Osirion.Blazor.Templates` adds osirion-blog, osirion-docs and
+	     osirion-site. It contains no code of its own; the templates under templates/ are packed as content and
+	     compiled only after `dotnet new` copies them. -->
 	<PropertyGroup>
 		<PackageId>Osirion.Blazor.Templates</PackageId>
 		<Version>4.1.0</Version>
-		<Description>Project templates for Osirion.Blazor, served with static server-side rendering: `dotnet new osirion-blog` for a Markdown blog and `dotnet new osirion-docs` for a documentation site.</Description>
+		<Description>Project templates for Osirion.Blazor, served with static server-side rendering: `dotnet new osirion-blog` for a Markdown blog, `dotnet new osirion-docs` for a documentation site and `dotnet new osirion-site` for a product site.</Description>
 		<PackageTags>blazor;templates;dotnet-new;blog;markdown;static-ssr;osirion</PackageTags>
 		<PackageType>Template</PackageType>
 		<!-- Overrides the net9.0;net10.0 pair of src/Directory.Build.props: the package only needs one framework to pack. -->
