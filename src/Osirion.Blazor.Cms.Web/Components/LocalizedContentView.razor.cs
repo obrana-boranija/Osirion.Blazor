@@ -191,6 +191,14 @@ public partial class LocalizedContentView
     private HttpContext? HttpContext { get; set; }
 #endif
 
+    // Under static SSR on .NET 9 a closed connection stops the provider calls; on .NET 10 and in interactive render
+    // modes there is no request to follow.
+#if NET10_0_OR_GREATER
+    private static CancellationToken RequestAborted => CancellationToken.None;
+#else
+    private CancellationToken RequestAborted => HttpContext?.RequestAborted ?? CancellationToken.None;
+#endif
+
     private readonly NotFoundSignal _notFound = new();
 
     // The not-found block is the page's answer, so the response says 404 with it instead of a soft 404.
@@ -247,7 +255,7 @@ public partial class LocalizedContentView
             {
                 if (Item is null && Path is { } path && !string.IsNullOrWhiteSpace(path))
                 {
-                    Item = await provider.GetItemByPathAsync(path);
+                    Item = await provider.GetItemByPathAsync(path, RequestAborted);
                 }
 
 
@@ -265,7 +273,7 @@ public partial class LocalizedContentView
                             Locale = CurrentLocale,
                             SortBy = SortField.Date,
                             SortDirection = SortDirection.Descending
-                        }) ?? [];
+                        }, RequestAborted) ?? [];
 
                         // Find the index manually
                         int currentIndex = -1;

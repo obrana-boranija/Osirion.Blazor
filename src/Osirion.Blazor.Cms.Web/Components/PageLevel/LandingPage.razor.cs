@@ -315,6 +315,14 @@ public partial class LandingPage
     private HttpContext? HttpContext { get; set; }
 #endif
 
+    // Under static SSR on .NET 9 a closed connection stops the provider calls; on .NET 10 and in interactive render
+    // modes there is no request to follow.
+#if NET10_0_OR_GREATER
+    private static CancellationToken RequestAborted => CancellationToken.None;
+#else
+    private CancellationToken RequestAborted => HttpContext?.RequestAborted ?? CancellationToken.None;
+#endif
+
     private readonly NotFoundSignal _notFound = new();
 
     // The not-found block is the page's answer, so the response says 404 with it instead of a soft 404.
@@ -341,7 +349,7 @@ public partial class LandingPage
             var provider = ContentProviderManager.GetDefaultProvider();
             if (provider is not null && ContentPath is { } contentPath && !string.IsNullOrWhiteSpace(contentPath))
             {
-                Content = await provider.GetItemByPathAsync(contentPath);
+                Content = await provider.GetItemByPathAsync(contentPath, RequestAborted);
             }
         }
         catch (Exception ex)
