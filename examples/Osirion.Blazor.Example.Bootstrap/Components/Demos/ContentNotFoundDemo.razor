@@ -1,0 +1,20 @@
+@using Osirion.Blazor.Components
+
+@* The buttons are links to pages of this site, and the size keeps the empty state compact inside the page. *@
+<OsirionContentNotFound Title="This page has moved"
+                        Message="We reorganized the docs, and one of these pages may have what you need."
+                        ShowIcon="false"
+                        ShowSuggestions="true"
+                        Suggestions="suggestions"
+                        PrimaryButtonText="All components"
+                        PrimaryButtonUrl="/components"
+                        Variant="centered"
+                        Size="small" />
+
+@code {
+    private static readonly ContentNotFoundSuggestion[] suggestions =
+    [
+        new() { Text = "Contact form", Url = "/components/contact-form", Description = "A form that validates on the server." },
+        new() { Text = "Forms and feedback", Url = "/components/forms-and-feedback" }
+    ];
+}

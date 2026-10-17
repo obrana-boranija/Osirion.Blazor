@@ -7,7 +7,7 @@ permalink: /components/forms-and-feedback
 description: The contact form, the cookie and announcement banners, and the not-found state from Osirion.Blazor.Core. All of them post or render on the server under static SSR.
 author: Dejan Demonjić
 date: 2025-09-03
-last_modified: 2026-10-11
+last_modified: 2026-10-17
 featured_image: /assets/images/blazor-cover.png
 categories:
 - Components
@@ -30,8 +30,8 @@ redirect_from:
 custom_fields:
   group: forms-and-feedback
 seo_properties:
-  title: 'Forms - Osirion.Blazor'
-  description: 'Form components in Osirion.Blazor.Core: a contact form that validates on the server and sends mail under static SSR.'
+  title: 'Blazor forms and feedback components'
+  description: 'The contact form, cookie consent banner, announcement bar and not found state in Osirion.Blazor.Core, and when to use each.'
   image: /assets/images/blazor-cover.png
   canonical: 'https://getosirion.com/components/forms-and-feedback'
   lang: en
@@ -62,7 +62,7 @@ with data annotations on the server, and needs no script.
 
 | Component | What it does |
 | --- | --- |
-| [OsirionContactForm](/components/contact-form) | Name, email, subject and message fields with a privacy checkbox, a honeypot spam check and optional delivery through SMTP, SendGrid or Infobip. |
+| [OsirionContactForm](/components/contact-form) | Name, email, subject and message fields with a privacy checkbox, a honeypot spam check and delivery through SMTP, SendGrid or Infobip, or through your own `OnSubmit` callback. |
 
 ### Quick start
 
@@ -74,7 +74,8 @@ with data annotations on the server, and needs no script.
 
 `UseBuiltInEmailService` needs the email service registered, either from an `Osirion:Email` configuration section
 read by `AddOsirion(builder.Configuration)` or in code with `UseEmailServices`. Without it, handle the message
-yourself through `OnSubmit`. The [contact form page](/components/contact-form) covers both.
+yourself through `OnSubmit`. With neither, the form has nothing to deliver the message with and shows its error
+message instead of claiming success. The [contact form page](/components/contact-form) covers both.
 
 The newsletter sign-up form lives with the cards: see
 [OsirionSubscriptionCard](/components/subscription-card).
@@ -101,7 +102,7 @@ var app = builder.Build();
 
 app.UseAntiforgery();
 app.MapOsirionCookieConsent();  // POST /api/cookie-consent
-app.MapOsirionAnnouncements();  // POST /api/announcement/dismiss (4.0)
+app.MapOsirionAnnouncements();  // POST /api/announcement/dismiss (4.1)
 ```
 
 ```razor
@@ -126,8 +127,8 @@ is empty, or the content is still on its way.
 
 | Component | What it renders | Script | Available |
 | --- | --- | --- | --- |
-| [Content not found](/components/content-not-found) | A 404 or empty state with a message, buttons, suggested links and a contact address | None | 4.0 |
-| [Page loading](/components/page-loading) | A loading indicator; documented with the layout components | See its page | 4.0 |
+| [OsirionContentNotFound](/components/content-not-found) | A 404 or empty state with a message, buttons, suggested links and a contact address | None | 4.0 |
+| [OsirionPageLoading](/components/page-loading) | A loading indicator; documented with the layout components | See its page | 4.0 |
 
 ### Status codes
 
