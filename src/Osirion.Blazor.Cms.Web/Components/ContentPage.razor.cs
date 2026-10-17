@@ -1,4 +1,7 @@
 using Microsoft.AspNetCore.Components;
+#if !NET10_0_OR_GREATER
+using Microsoft.AspNetCore.Http;
+#endif
 using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Enums;
@@ -302,7 +305,40 @@ public partial class ContentPage
             await LoadContentAsync();
         }
 
+        SignalWhenNotFound(ContentItem is null && !IsLoading);
         await base.OnParametersSetAsync();
+    }
+
+#if !NET10_0_OR_GREATER
+    /// <summary>The request context; only available during static server-side rendering.</summary>
+    [CascadingParameter]
+    private HttpContext? HttpContext { get; set; }
+#endif
+
+    // Under static SSR on .NET 9 a closed connection stops the provider calls; on .NET 10 and in interactive render
+    // modes there is no request to follow.
+#if NET10_0_OR_GREATER
+    private static CancellationToken RequestAborted => CancellationToken.None;
+#else
+    private CancellationToken RequestAborted => HttpContext?.RequestAborted ?? CancellationToken.None;
+#endif
+
+    private readonly NotFoundSignal _notFound = new();
+
+    // The not-found block is the page's answer, so the response says 404 with it instead of a soft 404.
+    private void SignalWhenNotFound(bool notFound)
+    {
+        if (!notFound)
+        {
+            _notFound.Reset();
+            return;
+        }
+
+#if NET10_0_OR_GREATER
+        _notFound.Send(NavigationManager);
+#else
+        _notFound.Send(HttpContext);
+#endif
     }
 
     // What this component produced itself, so a later Path change replaces it without touching values the parent supplied.
@@ -327,7 +363,7 @@ public partial class ContentPage
             var provider = ContentProviderManager.GetDefaultProvider();
             if (provider is not null && !string.IsNullOrWhiteSpace(Path))
             {
-                ContentItem = await provider.GetItemByUrlAsync(BuildSearchPath(Path));
+                ContentItem = await provider.GetItemByUrlAsync(BuildSearchPath(Path), RequestAborted);
                 await LoadSupplementaryContentAsync(provider);
             }
         }
@@ -463,7 +499,7 @@ public partial class ContentPage
                 SortDirection = SortDirection.Descending
             };
 
-            var items = await provider.GetItemsByQueryAsync(query) ?? [];
+            var items = await provider.GetItemsByQueryAsync(query, RequestAborted) ?? [];
 
             // Find the current item's index
             int currentIndex = -1;
@@ -513,7 +549,7 @@ public partial class ContentPage
                 SortDirection = SortDirection.Descending
             };
 
-            var allItems = await provider.GetItemsByQueryAsync(query) ?? [];
+            var allItems = await provider.GetItemsByQueryAsync(query, RequestAborted) ?? [];
 
             // Find related items (excluding the current item)
             var related = allItems

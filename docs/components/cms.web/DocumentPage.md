@@ -24,7 +24,8 @@ Key parameters
 - `ShowNavigationLinks` (true): previous and next pages of the folder, linked by their URLs (`ContentUrlFormatter`
   overrides)
 - SEO: `SchemaTypes` (default `TechArticle`, plus a BreadcrumbList while `GenerateMultipleSchemas` is on),
-  `WebsiteName`, `OrganizationName`, `SiteLogoUrl`
+  `WebsiteName`, `OrganizationName`, `SiteLogoUrl`, `SiteDescription`, `TwitterSite`, `TwitterCreator`, `FacebookAppId`, `DefaultImageUrl`, `DefaultImageWidth`, `DefaultImageHeight`, and the switches `AllowAiDiscovery`, `AllowAiTraining`, `AllowSearchIndexing`, `EnableGeoOptimization` and `EnableAeoOptimization` (each passed on only when you set it, so a switch you leave out keeps the configured value)
+- Not found: `NotFoundTitle`, `NotFoundText`, and a button to `BackLinkUrl` labeled `BackLinkText` unless `ShowBackLink` is off
 
 Notes
 - The page body is a `div`; the layout's `main` stays the page's only main landmark.

@@ -119,8 +119,12 @@ The `Theme` and `Style` rows come from the base class. `ContentRenderer` does no
 
 The root element is a `div` with the class `osirion-content-view` (the same class as `ContentView`), containing
 `osirion-content-body` and the renderer's `article`. The body takes its line height and text color from the theme
-tokens `--osirion-line-height-relaxed` and `--osirion-text-primary`. The renderer also links its own stylesheet,
-`_content/Osirion.Blazor.Core/css/osirion-html-renderer.min.css`.
+tokens `--osirion-line-height-relaxed` and `--osirion-text-primary`. The renderer links its own stylesheet,
+`_content/Osirion.Blazor.Core/css/osirion-html-renderer.min.css`, which is not scoped to a component and styles the
+body's headings, paragraphs, lists, blockquotes, tables, code and images; that is where the body's typography comes
+from. This component's own stylesheet sets only the body's line height, color and bottom margin: rules for the body's
+elements that it used to carry never matched, because the body's elements do not have the component's scope
+attribute.
 
 ## Related
 

@@ -2,14 +2,14 @@
 @using Osirion.Blazor.Cms.Components
 @inherits OsirionContentDetailPageBase
 
-<div class="@GetArticlePageClass() @Class" style="@Style" @attributes="Attributes">
+<div class="@GetArticlePageClass()" style="@Style" @attributes="Attributes">
     @if (IsLoading)
     {
         <OsirionPageLoading ShowText="ShowLoadingText" Text="@LoadingText" />
     }
     else if (Item is null)
     {
-        <OsirionContentNotFound ErrorCode="404" />
+        @RenderNotFound
     }
     else if (Item is not null)
     {
@@ -20,7 +20,11 @@
                                  CustomBreadcrumbs="@CustomBreadcrumbs"
                                  PrevPageUrl="@PrevPageUrl"
                                  NextPageUrl="@NextPageUrl"
-                                 AlternateLanguageUrls="@AlternateLanguageUrls" />
+                                 AlternateLanguageUrls="@AlternateLanguageUrls"
+                                 OrganizationName="@OrganizationName"
+                                 SiteLogoUrl="@SiteLogoUrl"
+                                 GenerateMultipleSchemas="@GenerateMultipleSchemas"
+                                 @attributes="SeoRendererParameters" />
         </HeadContent>
 
         @if (HeaderContent is not null)

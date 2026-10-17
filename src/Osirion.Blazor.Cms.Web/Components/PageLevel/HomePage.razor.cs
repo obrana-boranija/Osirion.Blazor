@@ -1,5 +1,8 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Entities;
+using Osirion.Blazor.Cms.Domain.Enums;
+using Osirion.Blazor.Cms.Domain.Repositories;
 
 namespace Osirion.Blazor.Cms.Components;
 
@@ -24,9 +27,9 @@ public partial class HomePage
     public ContentItem? Content { get; set; }
 
     /// <summary>
-    /// Whether to show the featured section, an <c>OsirionContentListSection</c>. As <c>HomePage</c> configures it,
-    /// the section loads the newest <see cref="FeaturedCount"/> items from the default provider, whatever their
-    /// locale, directory or featured flag.
+    /// Whether to show the featured section, an <c>OsirionContentListSection</c> of the newest <see
+    /// cref="FeaturedCount"/> items of the page's <c>Locale</c> that are marked <c>featured: true</c> in their front
+    /// matter. Without such items the section is left out.
     /// </summary>
     [Parameter]
     public bool ShowFeaturedContent { get; set; } = true;
@@ -93,19 +96,20 @@ public partial class HomePage
     public bool ShowFeaturedViewAll { get; set; } = true;
 
     /// <summary>
-    /// Has no effect: the recent section renders only when its items are set, and nothing sets them.
+    /// Whether to show the recent section: the newest <see cref="RecentCount"/> items of the page's <c>Locale</c>,
+    /// featured or not, under <see cref="RecentSectionTitle"/>. Without items the section is left out.
     /// </summary>
     [Parameter]
     public bool ShowRecentContent { get; set; } = true;
 
     /// <summary>
-    /// Has no effect: the recent section is never rendered.
+    /// The heading of the recent section.
     /// </summary>
     [Parameter]
     public string RecentSectionTitle { get; set; } = "Recent Posts";
 
     /// <summary>
-    /// Has no effect: the recent section is never rendered.
+    /// The number of items the recent section shows.
     /// </summary>
     [Parameter]
     public int RecentCount { get; set; } = 6;
@@ -160,13 +164,14 @@ public partial class HomePage
     public string? CustomContent { get; set; }
 
     /// <summary>
-    /// Has no effect: nothing in the page reads it.
+    /// Builds the link of each item in the featured and recent sections from the item. Without it a link is
+    /// <c>/{item.Url}</c>.
     /// </summary>
     [Parameter]
     public Func<ContentItem, string>? ContentUrlFormatter { get; set; }
 
     /// <summary>
-    /// Has no effect: it belongs to the recent section, which is never rendered.
+    /// The text of the link under each item of the recent section. No link is shown when it is empty.
     /// </summary>
     [Parameter]
     public string ReadMoreText { get; set; } = "Read more";
@@ -194,9 +199,16 @@ public partial class HomePage
     }
 
     /// <inheritdoc/>
+    protected override bool LoadsItem => false;
+
+    // What the sections were loaded for, so the page queries again only when one of these changes.
+    private (string? Locale, bool Featured, int FeaturedCount, bool Recent, int RecentCount)? _loadedSections;
+
+    /// <inheritdoc/>
     protected override async Task OnParametersSetAsync()
     {
         await base.OnParametersSetAsync();
+        await LoadSectionsAsync();
 
         if (NoContent() && !IsLoading)
         {
@@ -205,6 +217,47 @@ public partial class HomePage
         else
         {
             ResetNotFoundSignal();
+        }
+    }
+
+    private async Task LoadSectionsAsync()
+    {
+        var sections = (Locale, ShowFeaturedContent, FeaturedCount, ShowRecentContent, RecentCount);
+        if (_loadedSections == sections)
+        {
+            return;
+        }
+
+        _loadedSections = sections;
+        IsLoading = true;
+        try
+        {
+            FeaturedItems = ShowFeaturedContent && FeaturedCount > 0
+                ? await QueryAsync(new ContentQuery { IsFeatured = true, Locale = Locale, Take = FeaturedCount })
+                : null;
+            RecentItems = ShowRecentContent && RecentCount > 0
+                ? await QueryAsync(new ContentQuery { Locale = Locale, Take = RecentCount })
+                : null;
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    // A failed query leaves the section out and keeps the page, as the lists do.
+    private async Task<IReadOnlyList<ContentItem>?> QueryAsync(ContentQuery query)
+    {
+        query.SortBy = SortField.Date;
+        query.SortDirection = Osirion.Blazor.Cms.Domain.Enums.SortDirection.Descending;
+        try
+        {
+            return await ContentProviderManager.GetContentByQueryAsync(query);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to load the home page items (featured {Featured}, locale {Locale})", query.IsFeatured, query.Locale);
+            return null;
         }
     }
 

@@ -20,7 +20,8 @@ Key parameters
   parameters of the page base instead
 - `ChildContent`: shown after the body, for example author cards
 - SEO: `SchemaTypes` (default `AboutPage`, plus a BreadcrumbList while `GenerateMultipleSchemas` is on),
-  `WebsiteName`, `OrganizationName`, `SiteLogoUrl`, `AlternateLanguageUrls`
+  `WebsiteName`, `OrganizationName`, `SiteLogoUrl`, `AlternateLanguageUrls`, `SiteDescription`, `TwitterSite`, `TwitterCreator`, `FacebookAppId`, `DefaultImageUrl`, `DefaultImageWidth`, `DefaultImageHeight`, and the switches `AllowAiDiscovery`, `AllowAiTraining`, `AllowSearchIndexing`, `EnableGeoOptimization` and `EnableAeoOptimization` (each passed on only when you set it, so a switch you leave out keeps the configured value)
+- Not found: `NotFoundTitle`, `NotFoundText`, and a button to `BackLinkUrl` labeled `BackLinkText` unless `ShowBackLink` is off
 
 Notes
 - An opening `# Title` in the Markdown is left out, since the heading already shows the title.

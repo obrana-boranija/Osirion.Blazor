@@ -18,8 +18,8 @@ public partial class DocumentPage
 
     /// <summary>
     /// The source path of the document to load from the default provider while <see cref="Content"/> is not set. When
-    /// nothing is found, the page shows the not-found state and signals 404. A change of the path on a page that
-    /// already shows a document does not load another.
+    /// nothing is found, the page shows the not-found state and signals 404. A change of the path loads the new
+    /// document, also on a page that is interactive; a <see cref="Content"/> you pass is never replaced by loading.
     /// </summary>
     [Parameter]
     public string? ContentPath { get; set; }
@@ -102,8 +102,7 @@ public partial class DocumentPage
     /// <summary>
     /// Whether to show previous and next links under the document. When <see
     /// cref="OsirionContentDetailPageBase.PreviousItem"/> or <see cref="OsirionContentDetailPageBase.NextItem"/> is
-    /// null, the page looks both up in the document's folder, in <c>order</c>, and replaces your values with what it
-    /// finds.
+    /// null, the page looks the missing one up in the document's folder, in <c>order</c>. A value you pass is kept.
     /// </summary>
     [Parameter]
     public bool ShowNavigationLinks { get; set; } = true;
@@ -141,26 +140,44 @@ public partial class DocumentPage
     public Func<DocumentNavigationItem, string>? NavigationUrlFormatter { get; set; }
 
     /// <inheritdoc/>
+    protected override bool LoadsItem => false;
+
+    // What the page loaded or derived itself, so a change of ContentPath replaces it while values the parent supplied
+    // stay as they are.
+    private string? _loadedPath;
+    private ContentItem? _loadedContent;
+    private ContentItem? _loadedPrevious;
+    private ContentItem? _loadedNext;
+    private string? _derivedCurrentPath;
+    private ContentItem? _navigationContent;
+    private (bool ShowNavigationLinks, bool ShowSideNavigation, bool OwnSideNavigation, bool PreviousSupplied, bool NextSupplied) _navigationInputs;
+
+    /// <inheritdoc/>
     protected override async Task OnParametersSetAsync()
     {
-        if (Content is null && ContentPath is { } contentPath && !string.IsNullOrWhiteSpace(contentPath))
+        await base.OnParametersSetAsync();
+
+        var contentSuppliedByParent = Content is not null && !ReferenceEquals(Content, _loadedContent);
+        if (!contentSuppliedByParent && !string.IsNullOrWhiteSpace(ContentPath)
+            && (Content is null || !string.Equals(ContentPath, _loadedPath, StringComparison.Ordinal)))
         {
             await LoadContentAsync();
         }
-        else if (Content is not null)
-        {
-            await LoadNavigationItemsAsync();
-            IsLoading = false;
-        }
         else
         {
+            if (Content is not null)
+            {
+                await LoadNavigationItemsAsync();
+            }
+
             IsLoading = false;
         }
 
-        // Set current path for navigation highlighting
-        if (string.IsNullOrWhiteSpace(CurrentPath) && Content is not null)
+        // The page marks the shown document as current unless the parent names another path.
+        if (Content is not null
+            && (string.IsNullOrWhiteSpace(CurrentPath) || string.Equals(CurrentPath, _derivedCurrentPath, StringComparison.Ordinal)))
         {
-            CurrentPath = Content.Path;
+            CurrentPath = _derivedCurrentPath = Content.Path;
         }
 
         if (Content is null && !string.IsNullOrWhiteSpace(ContentPath) && !IsLoading)
@@ -176,16 +193,31 @@ public partial class DocumentPage
     private new async Task LoadContentAsync()
     {
         IsLoading = true;
+        if (!string.Equals(ContentPath, _loadedPath, StringComparison.Ordinal))
+        {
+            ResetNotFoundSignal();
+        }
+
+        // The previous document and what was found around it must not stay while, or after, the new one loads.
+        Content = null;
+        ForgetLoadedNavigation();
+        if (string.Equals(CurrentPath, _derivedCurrentPath, StringComparison.Ordinal))
+        {
+            CurrentPath = null;
+        }
+
+        _derivedCurrentPath = null;
+        _loadedPath = ContentPath;
+        _loadedContent = null;
         try
         {
             var provider = ContentProviderManager.GetDefaultProvider();
             if (provider is not null && ContentPath is { } contentPath && !string.IsNullOrWhiteSpace(contentPath))
             {
-                Content = await provider.GetItemByPathAsync(contentPath);
+                Content = _loadedContent = await provider.GetItemByPathAsync(contentPath);
 
                 if (Content is not null)
                 {
-                    CurrentPath = Content.Path;
                     await LoadNavigationItemsAsync();
                 }
             }
@@ -194,6 +226,7 @@ public partial class DocumentPage
         {
             Logger.LogError(ex, "Failed to load document {ContentPath}", ContentPath);
             Content = null;
+            _loadedContent = null;
         }
         finally
         {
@@ -215,12 +248,49 @@ public partial class DocumentPage
 
     private IReadOnlyList<DocumentNavigationItem>? SideNavigationItems => NavigationItems ?? _folderNavigation;
 
+    // Clears the neighbors and the folder list the page found, leaving the ones the parent supplied.
+    private void ForgetLoadedNavigation()
+    {
+        if (ReferenceEquals(PreviousItem, _loadedPrevious))
+        {
+            PreviousItem = null;
+        }
+
+        if (ReferenceEquals(NextItem, _loadedNext))
+        {
+            NextItem = null;
+        }
+
+        _loadedPrevious = _loadedNext = null;
+        _folderNavigation = null;
+        _navigationContent = null;
+    }
+
     private async Task LoadNavigationItemsAsync()
     {
-        _folderNavigation = null;
+        if (Content is not { } content)
+        {
+            return;
+        }
+
+        var inputs = (
+            ShowNavigationLinks,
+            ShowSideNavigation,
+            NavigationItems is null,
+            PreviousItem is not null && !ReferenceEquals(PreviousItem, _loadedPrevious),
+            NextItem is not null && !ReferenceEquals(NextItem, _loadedNext));
+        if (ReferenceEquals(content, _navigationContent) && inputs == _navigationInputs)
+        {
+            return;
+        }
+
+        ForgetLoadedNavigation();
+        _navigationContent = content;
+        _navigationInputs = inputs;
+
         var needsPager = ShowNavigationLinks && (PreviousItem is null || NextItem is null);
         var needsSideNavigation = ShowSideNavigation && NavigationItems is null;
-        if (!(needsPager || needsSideNavigation) || Content is not { } content)
+        if (!(needsPager || needsSideNavigation))
             return;
 
         try
@@ -265,14 +335,14 @@ public partial class DocumentPage
                     }
                 }
 
-                if (currentIndex > 0)
+                if (PreviousItem is null && currentIndex > 0)
                 {
-                    PreviousItem = items[currentIndex - 1];
+                    PreviousItem = _loadedPrevious = items[currentIndex - 1];
                 }
 
-                if (currentIndex >= 0 && currentIndex < items.Count - 1)
+                if (NextItem is null && currentIndex >= 0 && currentIndex < items.Count - 1)
                 {
-                    NextItem = items[currentIndex + 1];
+                    NextItem = _loadedNext = items[currentIndex + 1];
                 }
             }
         }

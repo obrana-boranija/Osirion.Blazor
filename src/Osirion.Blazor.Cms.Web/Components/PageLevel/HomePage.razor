@@ -2,14 +2,14 @@
 @using Osirion.Blazor.Cms.Web.Components
 @inherits OsirionContentDetailPageBase
 
-<div class="@GetHomePageClass() @Class" style="@Style" @attributes="Attributes">
+<div class="@GetHomePageClass()" style="@Style" @attributes="Attributes">
     @if (IsLoading)
     {
         <OsirionPageLoading ShowText="ShowLoadingText" Text="@LoadingText" />
     }
     else if (NoContent() && !IsLoading)
     {
-        <OsirionContentNotFound ErrorCode="404" />
+        @RenderNotFound
     }
     else
     {
@@ -20,7 +20,11 @@
                                  CustomBreadcrumbs="@CustomBreadcrumbs"
                                  PrevPageUrl="@PrevPageUrl"
                                  NextPageUrl="@NextPageUrl"
-                                 AlternateLanguageUrls="@AlternateLanguageUrls" />
+                                 AlternateLanguageUrls="@AlternateLanguageUrls"
+                                 OrganizationName="@OrganizationName"
+                                 SiteLogoUrl="@SiteLogoUrl"
+                                 GenerateMultipleSchemas="@GenerateMultipleSchemas"
+                                 @attributes="SeoRendererParameters" />
         </HeadContent>
 
         @if (ShowHero)
@@ -29,7 +33,7 @@
                          Subtitle="@Content?.Description"
                          BackgroundPattern="HeroBackgroundPattern"
                          UseBackgroundImage="UseHeroBackgroundImage"
-                         ImageUrl="@Content?.FeaturedImageUrl"
+                         ImageUrl="@(HeroImageUrl ?? Content?.FeaturedImageUrl)"
                          ImageAlt="@Content?.Title"
                          ImagePosition="HeroImagePosition"
                          Alignment="HeroAlignment"
@@ -55,7 +59,8 @@
                 </div>
             }
 
-            @if (ShowFeaturedContent)
+            @* With nothing featured, the section would render the list's "not found" block under its heading *@
+            @if (ShowFeaturedContent && FeaturedItems is { Count: > 0 })
             {
                 <OsirionContentListSection Title="@FeaturedSectionTitle"
                                            Description="@FeaturedSectionDescription"
@@ -63,6 +68,7 @@
                                            Layout="@FeaturedLayout"
                                            Columns="@FeaturedColumns"
                                            PostCount="@FeaturedCount"
+                                           PostUrlFormatter="@ContentUrlFormatter"
                                            ShowExcerpt="@ShowFeaturedExcerpt"
                                            ShowAuthor="@ShowFeaturedAuthor"
                                            ShowCategories="@ShowFeaturedCategories"
@@ -71,11 +77,17 @@
             }
 
 
-            @if (ShowRecentContent && RecentItems is not null && RecentItems.Any())
+            @if (ShowRecentContent && RecentItems is { Count: > 0 })
             {
                 <ContentSection Title="@RecentSectionTitle">
-                    <ContentList ShowPagination="false"
-                                 ReadMoreText="@ReadMoreText" />
+                    <OsirionContentListSection Items="@RecentItems"
+                                               Layout="grid"
+                                               Columns="@FeaturedColumns"
+                                               PostCount="@RecentCount"
+                                               PostUrlFormatter="@ContentUrlFormatter"
+                                               ReadMoreText="@ReadMoreText"
+                                               ShowReadMoreLink="@(!string.IsNullOrWhiteSpace(ReadMoreText))"
+                                               ShowViewAllLink="false" />
                 </ContentSection>
             }
 

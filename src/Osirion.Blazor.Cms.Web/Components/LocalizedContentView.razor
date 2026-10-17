@@ -25,7 +25,27 @@
             @if(ShowJumbotron)
             {
                 <div class="osirion-content-header">
-                    <h1>@Item.Title</h1>
+                    @switch (TitleLevel)
+                    {
+                        case 2:
+                            <h2 class="osirion-content-title">@Item.Title</h2>
+                            break;
+                        case 3:
+                            <h3 class="osirion-content-title">@Item.Title</h3>
+                            break;
+                        case 4:
+                            <h4 class="osirion-content-title">@Item.Title</h4>
+                            break;
+                        case 5:
+                            <h5 class="osirion-content-title">@Item.Title</h5>
+                            break;
+                        case 6:
+                            <h6 class="osirion-content-title">@Item.Title</h6>
+                            break;
+                        default:
+                            <h1 class="osirion-content-title">@Item.Title</h1>
+                            break;
+                    }
                     <div class="osirion-content-meta">
                         @if (!string.IsNullOrWhiteSpace(Item.Author))
                         {
@@ -36,7 +56,7 @@
                     </div>
                     @if (!string.IsNullOrWhiteSpace(Item.FeaturedImageUrl))
                     {
-                        <img src="@Item.FeaturedImageUrl" alt="@Item.Title" class="osirion-content-featured-image" loading="eager" fetchpriority="high" decoding="async" />
+                        <img src="@Item.FeaturedImageUrl" alt="@ContentImages.FeaturedImageAlt(Item)" class="osirion-content-featured-image" loading="eager" fetchpriority="high" decoding="async" />
                     }
                 </div>
             }

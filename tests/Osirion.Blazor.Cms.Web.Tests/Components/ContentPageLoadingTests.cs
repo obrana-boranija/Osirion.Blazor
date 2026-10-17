@@ -191,6 +191,10 @@ public class ContentPageLoadingTests : CmsWebComponentTestBase
         directory.AddItem(item);
         _provider.GetItemByUrlAsync("first").Returns(item);
 
+        // With a neighbor found, the page hands both to its view, which then runs no query of its own.
+        _provider.GetItemsByQueryAsync(Arg.Any<ContentQuery>())
+            .Returns(Task.FromResult<IReadOnlyList<ContentItem>?>([item, Item("second")]));
+
         RenderPage(p => p.Add(c => c.Path, "first"));
 
         _provider.Received(1).GetItemsByQueryAsync(Arg.Is<ContentQuery>(q =>
@@ -349,7 +353,8 @@ public class ContentPageLoadingTests : CmsWebComponentTestBase
 
         var image = cut.Find("img.osirion-content-related-image");
         image.GetAttribute("src").ShouldBe("/img/pictured.png");
-        image.GetAttribute("alt").ShouldBe("pictured");
+        // Decorative: the title link beside it already names the item, so alt text would only repeat it.
+        image.GetAttribute("alt").ShouldBe(string.Empty);
         cut.Find("time.osirion-content-related-date").GetAttribute("datetime").ShouldBe("2026-03-04");
     }
 

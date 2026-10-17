@@ -2,14 +2,14 @@
 @using Osirion.Blazor.Cms.Web.Components
 @inherits OsirionContentDetailPageBase
 
-<div class="@GetDocumentPageClass() @Class" style="@Style" @attributes="Attributes">
+<div class="@GetDocumentPageClass()" style="@Style" @attributes="Attributes">
     @if (IsLoading)
     {
         <OsirionPageLoading ShowText="ShowLoadingText" Text="@LoadingText" />
     }
     else if (Content is null && !string.IsNullOrWhiteSpace(ContentPath))
     {
-        <OsirionContentNotFound ErrorCode="404" />
+        @RenderNotFound
     }
     else
     {
@@ -24,7 +24,8 @@
                                      GenerateMultipleSchemas="@GenerateMultipleSchemas"
                                      PrevPageUrl="@PrevPageUrl"
                                      NextPageUrl="@NextPageUrl"
-                                     AlternateLanguageUrls="@AlternateLanguageUrls" />
+                                     AlternateLanguageUrls="@AlternateLanguageUrls"
+                                     @attributes="SeoRendererParameters" />
             </HeadContent>
         }
 

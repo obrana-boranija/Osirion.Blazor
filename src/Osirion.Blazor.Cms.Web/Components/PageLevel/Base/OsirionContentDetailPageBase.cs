@@ -22,15 +22,15 @@ public abstract partial class OsirionContentDetailPageBase : OsirionContentItemP
     public bool ShowNavigation { get; set; } = true;
 
     /// <summary>
-    /// The item of the previous link. Read by <c>DocumentPage</c>, which looks the neighbors up when this or
-    /// <c>NextItem</c> is null; <c>ArticlePage</c> finds its own neighbors and ignores it.
+    /// The item of the previous link. Read by <c>DocumentPage</c>, which looks it up when it is null and keeps a value
+    /// you pass; <c>ArticlePage</c> finds its own neighbors and ignores it.
     /// </summary>
     [Parameter]
     public ContentItem? PreviousItem { get; set; }
 
     /// <summary>
-    /// The item of the next link. Read by <c>DocumentPage</c>, which looks the neighbors up when this or
-    /// <c>PreviousItem</c> is null; <c>ArticlePage</c> finds its own neighbors and ignores it.
+    /// The item of the next link. Read by <c>DocumentPage</c>, which looks it up when it is null and keeps a value you
+    /// pass; <c>ArticlePage</c> finds its own neighbors and ignores it.
     /// </summary>
     [Parameter]
     public ContentItem? NextItem { get; set; }

@@ -172,15 +172,16 @@ item you pass in `ContentItem` and loads no neighbors, related items or default 
   counts.
 - **Share links.** They open in a new tab with `rel="noopener noreferrer"`. The default links carry the page's
   absolute URL without query string or fragment.
-- **Related items.** Each shows its featured image (when it has one, with the title as alt text), its title as a
+- **Related items.** Each shows its featured image (when it has one, with the `featured_image_alt` custom field of its front matter as alt text, or an empty one), its title as a
   link and its date. The default link is the item's source path with `.md` removed; set `ContentUrlFormatter` when
   your routes differ.
 - **Security.** `FooterContent` and each `ShareLink.Icon` are written as raw HTML without sanitizing. Never put
   user-supplied or content-supplied text in them.
 - **Not found.** When no item matches, or the provider fails (the error is logged), the page shows the not-found
   state: a heading, a message and a back link. Without a `Path` and without a `ContentItem` it shows the same state.
-  The response keeps its status code, 200 under static SSR, so search engines read it as a soft 404; `ArticlePage`
-  answers 404 for a missing item.
+  The page also signals 404, as `ArticlePage` does: `NavigationManager.NotFound()` on .NET 10, the status code of the
+  request on .NET 9, while the response has not started. It has no effect in an interactive render, where the not-found
+  state is all that can be shown.
 
 ## Styling
 

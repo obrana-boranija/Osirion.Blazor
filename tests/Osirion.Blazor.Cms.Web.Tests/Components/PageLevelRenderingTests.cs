@@ -365,6 +365,9 @@ public class PageLevelRenderingTests : CmsWebComponentTestBase
         var head = Render<HeadOutlet>();
         var content = Doc("Welcome", "<p>Home body</p>");
         content.SetDescription("Start here");
+        // The section renders for the featured items of the locale; without any it is left out.
+        _manager.GetContentByQueryAsync(Arg.Is<ContentQuery>(q => q.IsFeatured == true), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<IReadOnlyList<ContentItem>>([Doc("Pick")]));
 
         var cut = RenderStatic<HomePage>(p => p
             .Add(c => c.Content, content)

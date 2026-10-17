@@ -100,7 +100,7 @@ Your own header and author block, in place of the hero and the default end of th
 
 The parameters come from three base classes besides the page itself: the lookup (`Item`, `ItemPath`, `ItemUrl`,
 `ItemSlug`, `Query`, `Locale`, `DirectoryName`), the page chrome (hero, breadcrumbs, sidebar sections, head
-metadata) and the neighbors and related items. Several shared parameters do nothing on this page; the table says which.
+metadata) and the neighbors and related items. A few shared parameters do nothing on this page; the table says which.
 
 <!-- osirion:parameters ArticlePage -->
 
@@ -115,8 +115,8 @@ metadata) and the neighbors and related items. Several shared parameters do noth
 | `HeaderContent` | `RenderFragment<ContentItem>?` | `null` | The article's header, shown instead of the hero. It must render the page's `h1`, usually from `context.Title`; a leading `h1` in the body is still left out, as it is under the hero. When `null`, the hero is shown as configured by `ShowHero`. |
 | `SidebarContent` | `RenderFragment?` | `null` | Content shown at the end of the sidebar, in a section of its own. It needs `ShowSidebar`. |
 | `ShowNavigation` | `bool` | `true` | Whether `ArticlePage` shows the previous and next articles under the body. The other pages do not read it. |
-| `PreviousItem` | `ContentItem?` | `null` | The item of the previous link. Read by `DocumentPage`, which looks the neighbors up when this or `NextItem` is null; `ArticlePage` finds its own neighbors and ignores it. |
-| `NextItem` | `ContentItem?` | `null` | The item of the next link. Read by `DocumentPage`, which looks the neighbors up when this or `PreviousItem` is null; `ArticlePage` finds its own neighbors and ignores it. |
+| `PreviousItem` | `ContentItem?` | `null` | The item of the previous link. Read by `DocumentPage`, which looks it up when it is null and keeps a value you pass; `ArticlePage` finds its own neighbors and ignores it. |
+| `NextItem` | `ContentItem?` | `null` | The item of the next link. Read by `DocumentPage`, which looks it up when it is null and keeps a value you pass; `ArticlePage` finds its own neighbors and ignores it. |
 | `RelatedItems` | `IReadOnlyList<ContentItem>?` | `null` | The items of the related section of `ArticlePage`. When it is null and `ShowRelatedContent` is on, the page picks items of the same locale and directory that share a tag or a category with the article, most shared first, up to `RelatedItemsCount`. An empty list shows no section. |
 | `ShowRelatedContent` | `bool` | `true` | Whether `ArticlePage` shows a related section. The other pages do not read it, although the page base still loads related items for them. |
 | `RelatedContentTitle` | `string` | `"Related Articles"` | The heading of the related section of `ArticlePage`. |
@@ -126,40 +126,40 @@ metadata) and the neighbors and related items. Several shared parameters do noth
 | `ItemUrl` | `string?` | `null` | The public URL of the item to find (`ContentItem.Url`, for example `articles/my-article`), without a locale folder. |
 | `ItemSlug` | `string?` | `null` | The slug of the item to find (`ContentItem.Slug`, for example `my-article`). Combine it with `DirectoryName` when slugs repeat across directories. |
 | `ItemUrlFormatter` | `Func<ContentItem, string>?` | `null` | Builds the links of the other parts of a series from the item. Passed on by `ArticlePage` to its series navigation; no other page reads it. |
-| `Locale` | `string?` | `"en"` | The locale of the content the page looks up (`en` by default): the item found with `ItemPath`, `ItemUrl` or `ItemSlug`, and the related items, must have it. Used by `ArticlePage`, `AboutPage`, `ContactPage` and `ContentListPage`. `HomePage` and `DocumentPage` show the item you pass as `Content`. |
+| `Locale` | `string?` | `"en"` | The locale of the content the page looks up (`en` by default): the item found with `ItemPath`, `ItemUrl` or `ItemSlug`, and the related items, must have it. Used by `ArticlePage`, `AboutPage`, `ContactPage` and `ContentListPage`. `HomePage` and `DocumentPage` show the item you pass as `Content`; `HomePage` lists the featured and recent items of this locale. |
 | `Query` | `ContentQuery?` | `null` | A complete content query that finds the item in place of `ItemPath`, `ItemUrl`, `ItemSlug`, `Locale` and `DirectoryName`; the first match is shown. Used by `ArticlePage`, `AboutPage` and `ContactPage`. Changing it alone does not make a displayed page load again. |
 | `SchemaTypes` | `SchemaType[]?` | `null` | The schema.org types written as the page's structured data, passed to `SeoMetadataRenderer`. When it is null, `AboutPage` uses `AboutPage`, `ContactPage` uses `ContactPage`, `DocumentPage` uses `TechArticle` and the other pages leave the choice to the renderer. `DocumentPage` also takes the first value as the article's microdata type. |
-| `GenerateMultipleSchemas` | `bool` | `true` | Whether to write more than one structured data type when it applies, for example the main type and a breadcrumb list. Used by `AboutPage`, `ContactPage` and `DocumentPage`; the other pages do not pass it on. |
+| `GenerateMultipleSchemas` | `bool` | `true` | Whether to write more than one structured data type when it applies, for example the main type and a breadcrumb list. Used by `ArticlePage`, `HomePage`, `AboutPage`, `ContactPage` and `DocumentPage`. |
 | `WebsiteName` | `string?` | `null` | The site name that structured data and titles use, passed to `SeoMetadataRenderer` as `SiteNameOverride`. Used by every page component except `LandingPage`; `ContentListPage` passes it to its list. |
-| `SiteDescription` | `string?` | `null` | Has no effect: no page component passes it to `SeoMetadataRenderer`. Set the site-wide value with `AddOsirionSeoMetadata` or the `Osirion:Seo` configuration section instead. |
-| `SiteLogoUrl` | `string?` | `null` | The address of the site logo for the organization's structured data (square, at least 112 by 112 pixels is recommended). Used by `AboutPage`, `ContactPage` and `DocumentPage`; the other pages do not pass it on. |
-| `TwitterSite` | `string?` | `null` | Has no effect: no page component passes it to `SeoMetadataRenderer`. Set the site-wide value with `AddOsirionSeoMetadata` or the `Osirion:Seo` configuration section instead. |
-| `TwitterCreator` | `string?` | `null` | Has no effect: no page component passes it to `SeoMetadataRenderer`. Set the site-wide value with `AddOsirionSeoMetadata` or the `Osirion:Seo` configuration section instead. |
-| `FacebookAppId` | `string?` | `null` | Has no effect: no page component passes it to `SeoMetadataRenderer`. Set the site-wide value with `AddOsirionSeoMetadata` or the `Osirion:Seo` configuration section instead. |
-| `AllowAiDiscovery` | `bool` | `true` | Has no effect: no page component passes it to `SeoMetadataRenderer`. Set the site-wide value with `AddOsirionSeoMetadata` or the `Osirion:Seo` configuration section instead. |
-| `AllowAiTraining` | `bool` | `true` | Has no effect: no page component passes it to `SeoMetadataRenderer`. Set the site-wide value with `AddOsirionSeoMetadata` or the `Osirion:Seo` configuration section instead. |
-| `AllowSearchIndexing` | `bool` | `true` | Has no effect: no page component passes it to `SeoMetadataRenderer`. Set the site-wide value with `AddOsirionSeoMetadata` or the `Osirion:Seo` configuration section instead. |
-| `EnableGeoOptimization` | `bool` | `true` | Has no effect: no page component passes it to `SeoMetadataRenderer`. Set the site-wide value with `AddOsirionSeoMetadata` or the `Osirion:Seo` configuration section instead. |
-| `EnableAeoOptimization` | `bool` | `true` | Has no effect: no page component passes it to `SeoMetadataRenderer`. Set the site-wide value with `AddOsirionSeoMetadata` or the `Osirion:Seo` configuration section instead. |
-| `DefaultImageUrl` | `string?` | `null` | Has no effect: no page component passes it to `SeoMetadataRenderer`. Set the site-wide value with `AddOsirionSeoMetadata` or the `Osirion:Seo` configuration section instead. |
-| `DefaultImageWidth` | `int` | `1200` | Has no effect: no page component passes it to `SeoMetadataRenderer`. Set the site-wide value with `AddOsirionSeoMetadata` or the `Osirion:Seo` configuration section instead. |
-| `DefaultImageHeight` | `int` | `630` | Has no effect: no page component passes it to `SeoMetadataRenderer`. Set the site-wide value with `AddOsirionSeoMetadata` or the `Osirion:Seo` configuration section instead. |
-| `OrganizationName` | `string?` | `null` | The organization name for the structured data. Used by `AboutPage`, `ContactPage` and `DocumentPage`; the other pages do not pass it on. |
+| `SiteDescription` | `string?` | `null` | The site description, passed to `SeoMetadataRenderer`, which uses it as the feed description when the feed options set none. Without it the value of `AddOsirionSeoMetadata` or the `Osirion:Seo` section applies. |
+| `SiteLogoUrl` | `string?` | `null` | The address of the site logo for the organization's structured data (square, at least 112 by 112 pixels is recommended). Used by `ArticlePage`, `HomePage`, `AboutPage`, `ContactPage` and `DocumentPage`. |
+| `TwitterSite` | `string?` | `null` | The handle of the site for `twitter:site`, for example `@contoso`, passed to `SeoMetadataRenderer`. Without it the value of `AddOsirionSeoMetadata` or the `Osirion:Seo` section applies. |
+| `TwitterCreator` | `string?` | `null` | The handle of the author for `twitter:creator`, for example `@author`, passed to `SeoMetadataRenderer`. Without it the value of `AddOsirionSeoMetadata` or the `Osirion:Seo` section applies. |
+| `FacebookAppId` | `string?` | `null` | The Facebook app ID written as `fb:app_id`, passed to `SeoMetadataRenderer`. Without it the value of `AddOsirionSeoMetadata` or the `Osirion:Seo` section applies. |
+| `AllowAiDiscovery` | `bool` | `true` | Whether the crawler opt-in meta tags are written (`true`) or the opt-out tags (`false`), passed to `SeoMetadataRenderer` only when you set it. Without it the configured value of `AddOsirionSeoMetadata` or the `Osirion:Seo` section applies, which is `true` unless changed. |
+| `AllowAiTraining` | `bool` | `true` | Whether the training tags opt in (`true`) or out (`false`) of AI training, passed to `SeoMetadataRenderer` only when you set it. Without it the configured value applies. It has no effect when `AllowAiDiscovery` is `false`. |
+| `AllowSearchIndexing` | `bool` | `true` | Whether search engines may index the page, passed to `SeoMetadataRenderer` only when you set it. `false` writes `noindex, nofollow` as the robots tags. Without it the configured value applies. |
+| `EnableGeoOptimization` | `bool` | `true` | Whether the summary meta tags (`entity-summary`, `content-type` and the like) are written, when the item has a description, passed to `SeoMetadataRenderer` only when you set it. Without it the configured value applies. |
+| `EnableAeoOptimization` | `bool` | `true` | Whether the generated answer tags are allowed, passed to `SeoMetadataRenderer` only when you set it. Without it the configured value applies. |
+| `DefaultImageUrl` | `string?` | `null` | The image of the social cards for a page whose item has no featured image, passed to `SeoMetadataRenderer`. Without it the value of `AddOsirionSeoMetadata` or the `Osirion:Seo` section applies. |
+| `DefaultImageWidth` | `int` | `1200` | The width in pixels of `DefaultImageUrl`, passed to `SeoMetadataRenderer`. The default `1200` yields to the configured width. |
+| `DefaultImageHeight` | `int` | `630` | The height in pixels of `DefaultImageUrl`, passed to `SeoMetadataRenderer`. The default `630` yields to the configured height. |
+| `OrganizationName` | `string?` | `null` | The organization name for the structured data. Used by `ArticlePage`, `HomePage`, `AboutPage`, `ContactPage` and `DocumentPage`. |
 | `CustomBreadcrumbs` | `List<ValueTuple<string, string>>?` | `null` | Name and address pairs that replace the breadcrumb list in the page's structured data. They do not change the visible breadcrumbs. Used by `ArticlePage` and `HomePage`. |
 | `PrevPageUrl` | `string?` | `null` | The address of the previous page in a series, written as a `rel="prev"` link in the head. Used by `ArticlePage`, `HomePage` and `DocumentPage`. |
 | `NextPageUrl` | `string?` | `null` | The address of the next page in a series, written as a `rel="next"` link in the head. Used by `ArticlePage`, `HomePage` and `DocumentPage`. |
 | `AlternateLanguageUrls` | `List<string>?` | `null` | The addresses of the page's other language versions, written as `hreflang` links in the head. Used by every page component that writes head metadata except `LandingPage`. |
-| `LoadingText` | `string` | `"Loading article..."` | The text beside the spinner while an interactive render waits for the item. A statically rendered response is sent once the item has loaded, so it never contains it. Used by `ArticlePage`, `HomePage`, `DocumentPage`, `AboutPage` and `ContactPage`; `LandingPage` has its own. |
+| `LoadingText` | `string` | `"Loading article..."` | The text beside the spinner while an interactive render waits for the item (for `HomePage`, for its featured and recent items). A statically rendered response is sent once they have loaded, so it never contains it. Used by `ArticlePage`, `HomePage`, `DocumentPage`, `AboutPage` and `ContactPage`; `LandingPage` has its own. |
 | `ShowLoadingText` | `bool` | `true` | Whether the loading spinner shows `LoadingText`. |
-| `NotFoundTitle` | `string` | `"Article Not Found"` | Has no effect: the page components render the not-found state of `OsirionContentNotFound` with its own texts. |
-| `NotFoundText` | `string` | `"The requested article could not be found."` | Has no effect: the page components render the not-found state of `OsirionContentNotFound` with its own texts. `LandingPage` has a parameter of its own. |
-| `ShowBackLink` | `bool` | `true` | Has no effect: the not-found state the page components render has no back link. |
-| `BackLinkUrl` | `string` | `"/"` | Has no effect: the not-found state the page components render has no back link. |
-| `BackLinkText` | `string` | `"Back to Home"` | Has no effect: the not-found state the page components render has no back link. |
+| `NotFoundTitle` | `string` | `"Page Not Found"` | The heading of the not-found state, shown when the page finds no item. Used by `ArticlePage`, `HomePage`, `DocumentPage` and `AboutPage`. |
+| `NotFoundText` | `string` | `"The page you're looking for doesn't exist or has been moved."` | The message of the not-found state. `LandingPage` has a parameter of its own. |
+| `ShowBackLink` | `bool` | `true` | Whether the not-found state has a button back, to `BackLinkUrl` with the text `BackLinkText`. It is not shown when the address is empty. |
+| `BackLinkUrl` | `string` | `"/"` | The address of the back link in the not-found state. It is written as given, so build it from values you control. |
+| `BackLinkText` | `string` | `"Go to Homepage"` | The text of the back link in the not-found state. |
 | `ShowHero` | `bool` | `true` | Whether the page's title and description appear in a `HeroSection` styled by the other `Hero` parameters. When it is off, `ArticlePage` shows no heading unless `HeaderContent` is set, while `AboutPage` and `ContactPage` show a plain `OsirionPageHeading`. `AboutPage` and `ContactPage` start with it off. `DocumentPage` never shows a hero. |
 | `UseHeroBackgroundImage` | `bool` | `false` | Whether the hero image is the hero's background instead of a picture beside the text. Used by `ArticlePage`, `HomePage`, `AboutPage` and `ContactPage` while `ShowHero` is on. |
 | `HasOverlay` | `bool` | `false` | Whether an overlay darkens the hero's background image so the text stays readable. It applies only with `UseHeroBackgroundImage`. |
-| `HeroImageUrl` | `string?` | `null` | The hero's image. `ArticlePage` falls back to the item's featured image when it is not set; `AboutPage` and `ContactPage` show no image without it; `HomePage` always uses the item's featured image and ignores this parameter. |
+| `HeroImageUrl` | `string?` | `null` | The hero's image. `ArticlePage` falls back to the item's featured image when it is not set; `AboutPage` and `ContactPage` show no image without it; `HomePage` falls back to the item's featured image, as `ArticlePage` does. |
 | `HeroTheme` | `ThemeMode` | `ThemeMode.System` | The color mode of the hero: `Light`, `Dark` or `System`. Used by `ArticlePage`, `HomePage`, `AboutPage` and `ContactPage`. |
 | `HeroAlignment` | `Alignment` | `Alignment.Left` | How the hero's text is aligned, an `Alignment` value such as `Left` or `Center`. Used by `ArticlePage`, `HomePage`, `AboutPage` and `ContactPage`. |
 | `HeroImagePosition` | `Alignment` | `Alignment.Right` | Which side of the hero text the image sits on when it is not a background, an `Alignment` value (`Left` or `Right`). Used by `ArticlePage`, `HomePage`, `AboutPage` and `ContactPage`. |
@@ -193,8 +193,9 @@ metadata) and the neighbors and related items. Several shared parameters do noth
 - **Rendering.** The page renders on the server and needs no script; it does not use streaming rendering. While an
   interactive render waits for the item it shows a spinner with `LoadingText`.
 - **Head.** The page writes a `SeoMetadataRenderer` for the item: title, description, canonical address, Open Graph,
-  Twitter Card and structured data. `SchemaTypes`, `WebsiteName`, `CustomBreadcrumbs`, `PrevPageUrl`, `NextPageUrl`
-  and `AlternateLanguageUrls` reach it; the other SEO parameters of the base class do not.
+  Twitter Card and structured data. `SchemaTypes`, `WebsiteName`, `OrganizationName`, `SiteLogoUrl`,
+  `GenerateMultipleSchemas`, `CustomBreadcrumbs`, `PrevPageUrl`, `NextPageUrl` and `AlternateLanguageUrls` reach it.
+  `SiteDescription`, `TwitterSite`, `TwitterCreator`, `FacebookAppId`, `DefaultImageUrl`, `DefaultImageWidth` and `DefaultImageHeight` reach the renderer when set, and so do `AllowAiDiscovery`, `AllowAiTraining`, `AllowSearchIndexing`, `EnableGeoOptimization` and `EnableAeoOptimization` when you set them: a switch you leave out keeps the value of `AddOsirionSeoMetadata` or the `Osirion:Seo` section.
 - **Header.** `HeaderContent`, when set, replaces the hero. Otherwise, with `ShowHero` on, a hero shows the item's
   title and description, its featured image (or `HeroImageUrl`), and the author, publication date and reading time.
   With `ShowHero` off and no `HeaderContent` the page has no heading. Whenever a hero or `HeaderContent` supplies the
@@ -212,10 +213,9 @@ metadata) and the neighbors and related items. Several shared parameters do noth
   `/category/{slug}` and `/tag/{slug}`. Tags take one of eight badge colors, chosen from the tag's name so a tag keeps
   its color between requests.
 - **Not found.** Without an item the page renders the not-found state of
-  [OsirionContentNotFound](/components/content-not-found) with its own texts (the `NotFound*` and `BackLink*`
-  parameters are not used) and answers with status 404: `NavigationManager.NotFound()` on .NET 10, the status code of
+  [OsirionContentNotFound](/components/content-not-found) and answers with status 404: `NavigationManager.NotFound()` on .NET 10, the status code of
   the request on .NET 9. The status is only set while the response has not started, and not during interactive
-  rendering.
+  rendering. `NotFoundTitle` and `NotFoundText` are its heading and message, and a button leads to `BackLinkUrl` with the text `BackLinkText` unless `ShowBackLink` is off or the address is empty.
 - **Security.** The body is sanitized by `ContentRenderer`, and `CustomFooterContent` is sanitized the same way.
   `HeaderContent`, `AuthorContent` and `SidebarContent` are your own markup, written as you give it.
 - **Attributes.** `Class`, `Style` and unmatched attributes go to the root element, and so does `Theme` as

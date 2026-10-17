@@ -1,4 +1,7 @@
 using Microsoft.AspNetCore.Components;
+#if !NET10_0_OR_GREATER
+using Microsoft.AspNetCore.Http;
+#endif
 using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Enums;
@@ -15,6 +18,9 @@ public partial class ContentView(IContentProviderManager contentProviderManager)
 
     [Inject]
     private ILogger<ContentView> Logger { get; set; } = default!;
+
+    [Inject]
+    private NavigationManager NavigationManager { get; set; } = default!;
 
     /// <summary>
     /// The source path of the item to load from the default provider (<c>ContentItem.Path</c>, for example
@@ -92,7 +98,18 @@ public partial class ContentView(IContentProviderManager contentProviderManager)
     [Parameter]
     public bool ShowNavigationLinks { get; set; } = false;
 
+    /// <summary>
+    /// The level of the heading that holds the title, <c>1</c> to <c>6</c> (<c>h1</c> to <c>h6</c>). It defaults to
+    /// <c>1</c>, the page's own heading; set <c>2</c> for a view embedded in a page that has its own <c>h1</c>, so the
+    /// page keeps a single one. A value outside the range is moved to the nearest level. The title keeps its look at
+    /// every level.
+    /// </summary>
+    [Parameter]
+    public int HeadingLevel { get; set; } = 1;
+
     private bool IsLoading { get; set; } = true;
+
+    private int TitleLevel => Math.Clamp(HeadingLevel, 1, 6);
 
     // What this component loaded itself, so a later Path change can tell it apart from values the parent supplied.
     private string? _loadedPath;
@@ -113,6 +130,40 @@ public partial class ContentView(IContentProviderManager contentProviderManager)
         {
             IsLoading = false;
         }
+
+        SignalWhenNotFound(Item is null);
+    }
+
+#if !NET10_0_OR_GREATER
+    /// <summary>The request context; only available during static server-side rendering.</summary>
+    [CascadingParameter]
+    private HttpContext? HttpContext { get; set; }
+#endif
+
+    // Under static SSR on .NET 9 a closed connection stops the provider calls; on .NET 10 and in interactive render
+    // modes there is no request to follow.
+#if NET10_0_OR_GREATER
+    private static CancellationToken RequestAborted => CancellationToken.None;
+#else
+    private CancellationToken RequestAborted => HttpContext?.RequestAborted ?? CancellationToken.None;
+#endif
+
+    private readonly NotFoundSignal _notFound = new();
+
+    // The not-found block is the page's answer, so the response says 404 with it instead of a soft 404.
+    private void SignalWhenNotFound(bool notFound)
+    {
+        if (!notFound)
+        {
+            _notFound.Reset();
+            return;
+        }
+
+#if NET10_0_OR_GREATER
+        _notFound.Send(NavigationManager);
+#else
+        _notFound.Send(HttpContext);
+#endif
     }
 
     private async Task LoadContentAsync()
@@ -138,7 +189,7 @@ public partial class ContentView(IContentProviderManager contentProviderManager)
             var provider = contentProviderManager.GetDefaultProvider();
             if (provider is not null)
             {
-                Item = await provider.GetItemByPathAsync(Path);
+                Item = await provider.GetItemByPathAsync(Path, RequestAborted);
                 _loadedItem = Item;
 
                 if (Item is not null && ShowNavigationLinks)
@@ -149,7 +200,7 @@ public partial class ContentView(IContentProviderManager contentProviderManager)
                         Directory = System.IO.Path.GetDirectoryName(Path)?.Replace('\\', '/'),
                         SortBy = SortField.Date,
                         SortDirection = SortDirection.Descending
-                    }) ?? [];
+                    }, RequestAborted) ?? [];
 
                     var item = Item;
                     if (item is null)

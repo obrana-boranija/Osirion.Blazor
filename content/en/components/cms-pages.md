@@ -73,8 +73,8 @@ Most live in the `Osirion.Blazor.Cms.Web.Components` namespace. `DocumentPage`, 
 | [ContentRenderer](/components/content-renderer) | Only the body, with code highlighting, inside a layout you build. |
 | [ArticlePage](/components/article-page) | A whole article page from one item: head metadata, hero, breadcrumbs, related articles and a sidebar. |
 | [DocumentPage](/components/document-page) | A whole documentation page: side navigation, table of contents, edit link and previous and next links. |
-| [HomePage](/components/home-page) | A home page from one item: hero, body, a section of content items and a browse section. |
-| [LandingPage](/components/landing-page) | A marketing page: a tall hero, the body in a section you size and style, and your own content. |
+| [HomePage](/components/home-page) | A home page from one item: hero, body, featured and recent items of the locale and a browse section. |
+| [LandingPage](/components/landing-page) | A marketing page: a tall hero, the body in a section you size and style, features, testimonials, a call to action and your own content. |
 | [AboutPage](/components/about-page) | An about page from the item with the slug `about`, with room for author cards. |
 | [ContactPage](/components/contact-page) | A contact page: a heading, an optional Markdown introduction and a contact form. |
 | [NotFoundPage](/components/not-found-page) | A page not found page with a way home, a search box and suggested pages. Answers 404. |
@@ -104,3 +104,10 @@ Most live in the `Osirion.Blazor.Cms.Web.Components` namespace. `DocumentPage`, 
 - Category and tag links default to `/category/{slug}` and `/tag/{slug}`; `LocalizedContentView`, and therefore
   `ContentPage`, puts the locale in front (`/en/category/{slug}`). Each component takes formatter parameters when your
   routes differ.
+- A page or view that renders a not-found state also answers HTTP 404 (`NavigationManager.NotFound()` on .NET 10, the
+  status code of the request on .NET 9): `ArticlePage`, `AboutPage`, `HomePage`, `DocumentPage`, `ContentPage`,
+  `ContentView`, `LocalizedContentView` and `LandingPage` with a `ContentPath`. The page components also take their
+  `NotFound*` and `BackLink*` parameters for that state and pass their SEO parameters on to `SeoMetadataRenderer`.
+- `ContentView` and `LocalizedContentView` write the title as an `h1`; set `HeadingLevel` when you embed one in a page
+  that has its own. Their images take the `alt` text from the `featured_image_alt` entry of `custom_fields` in the
+  front matter, and are decorative (empty `alt`) without it.
