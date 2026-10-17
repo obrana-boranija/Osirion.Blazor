@@ -152,7 +152,7 @@ With enhanced navigation, Blazor replaces the page content without a full page l
 view on load sees only the first page. Each provider deals with it in its own way:
 
 - **Matomo and Yandex Metrica**: while `AutoTrackPageViews` is on (the default), the tracker adds a static script,
-  `_content/Osirion.Blazor.Analytics/js/osirion-analytics.js`, that listens for Blazor's `enhancedload` event and
+  `/_content/Osirion.Blazor.Analytics/js/osirion-analytics.js`, that listens for Blazor's `enhancedload` event and
   reports the new URL. It is an external file, not an inline script.
 - **GA4**: turn on "Page changes based on browser history events" in the Enhanced Measurement settings of your GA4 web
   data stream.

@@ -40,7 +40,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
             // Set base class properties
             EnableLocalization = _options.EnableLocalization;
             DefaultLocale = _options.DefaultLocale;
-            SupportedLocales = _options.SupportedLocales;
+            SupportedLocales = _options.GetEffectiveSupportedLocales();
             ContentPath = FileSystemConfiguration.GetContentRoot(_options);
             _globMatcher = new PathUtilities(options);
 
@@ -291,7 +291,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.FileSystem
                 await ProcessMarkdownAsync(content, contentItem, _options.UseFileWriteTimeAsLastModified ? fileInfo.LastWriteTimeUtc : null, cancellationToken);
 
                 // Set URL
-                var url = UrlGenerator.GenerateUrl(contentItem.Url, contentItem.Path, contentItem.Slug, EnableLocalization, SupportedLocales, ContentPath);
+                var url = UrlGenerator.GenerateUrl(contentItem.Metadata?.Permalink ?? string.Empty, contentItem.Path, contentItem.Slug, EnableLocalization, SupportedLocales, ContentPath);
                 contentItem.SetUrl(url);
 
                 AssignDefaultLocalizationId(contentItem);

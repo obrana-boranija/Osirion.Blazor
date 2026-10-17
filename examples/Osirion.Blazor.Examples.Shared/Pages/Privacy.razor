@@ -1,19 +1,31 @@
 @page "/privacy-policy"
+@using Osirion.Blazor.Cms.Web.Components
 @using Osirion.Blazor.Components
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
 
-<PageTitle>Privacy policy</PageTitle>
+@* The subscription card, the contact form and the cookie banner link here. The example sites share this page. One that
+   runs real analytics sets Example:SitePrivacyPolicy to true and shows the policy in content/en/privacy-policy.md,
+   which describes getosirion.com (the Bootstrap example); the others show this placeholder, because that policy
+   would be false for them. *@
+@if (Configuration.GetValue<bool>("Example:SitePrivacyPolicy"))
+{
+    <AboutPage ItemSlug="privacy-policy" SchemaTypes="[SchemaType.WebPage]" />
+}
+else
+{
+    <PageTitle>Privacy policy</PageTitle>
 
-@* The subscription card, the contact form and the cookie banner link here. A real site replaces this placeholder
-   with its own policy. *@
-<OsirionPageHeading Title="Privacy policy"
-                    Description="This is an example site, so this page is a placeholder." />
+    <OsirionPageHeading Title="Privacy policy"
+                        Description="This is an example site, so this page is a placeholder." />
 
-<OsirionBaseSection Id="privacy-policy" TextAlignment="Alignment.Left">
-    <p>A real site describes here:</p>
-    <ul>
-        <li>which cookies it sets and why;</li>
-        <li>which analytics services it runs, and when they load;</li>
-        <li>what happens to the data sent through its contact and newsletter forms;</li>
-        <li>how a visitor can ask for that data to be changed or removed.</li>
-    </ul>
-</OsirionBaseSection>
+    <OsirionBaseSection Id="privacy-policy" TextAlignment="Alignment.Left">
+        <p>A real site describes here:</p>
+        <ul>
+            <li>which cookies it sets and why;</li>
+            <li>which analytics services it runs, and when they load;</li>
+            <li>what happens to the data sent through its contact and newsletter forms;</li>
+            <li>how a visitor can ask for that data to be changed or removed.</li>
+        </ul>
+    </OsirionBaseSection>
+}

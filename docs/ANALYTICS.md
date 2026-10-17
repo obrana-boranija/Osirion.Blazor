@@ -158,8 +158,8 @@ builder.Services.AddOsirionAnalytics(analytics => {
 - `SiteId`: Your Microsoft Clarity site ID
 - `Enabled`: Whether the tracker is enabled (default: true)
 - `TrackerUrl`: The URL for the Clarity script (default: "https://www.clarity.ms/tag/")
-- `TrackUserAttributes`: Whether to track user attributes (default: true)
-- `AutoTrackPageViews`: Whether to automatically track page views (default: true)
+- `TrackUserAttributes`: Obsolete, no effect. Call `clarity("identify", ...)` from your own code
+- `AutoTrackPageViews`: No effect for Clarity, which records every page (default: true)
 
 ### Matomo Options
 
@@ -167,9 +167,9 @@ builder.Services.AddOsirionAnalytics(analytics => {
 - `Enabled`: Whether the tracker is enabled (default: true)
 - `TrackerUrl`: The URL to your Matomo installation
 - `TrackLinks`: Whether to track link clicks (default: true)
-- `TrackDownloads`: Whether to track downloads (default: true)
+- `TrackDownloads`: Obsolete, no effect. Matomo tracks downloads together with outlinks when `TrackLinks` is on
 - `RequireConsent`: Whether to require cookie consent (default: false)
-- `AutoTrackPageViews`: Whether to automatically track page views (default: true)
+- `AutoTrackPageViews`: `false` leaves out the script that reports enhanced navigations; the loaded page is always counted (default: true)
 
 ### Yandex Metrica Options
 
@@ -179,7 +179,7 @@ builder.Services.AddOsirionAnalytics(analytics => {
 - `ClickMap`: Create a map of clicks on your site (default: true)
 - `TrackLinks`: Track clicks on outbound links (default: true)
 - `AccurateTrackBounce`: Accurately track bounce rate (default: true)
-- `TrackHash`: Collect data for all pages, not just ones with counter code (default: null)
+- `TrackHash`: Track hash changes in the address bar, written as `trackHash` when set (default: null). `HashTracking: true` does the same while this is not set
 - `DeferLoad`: Disable automatic sending of page view data (default: false)
 - `AlternativeCdn`: Use alternative CDN domain (optional)
 - `Params`: Custom parameters to track (optional)

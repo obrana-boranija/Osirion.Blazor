@@ -71,8 +71,9 @@ A file's locale is the first folder below `ContentPath` when that folder is list
 without regard to case); otherwise it is `DefaultLocale`. With an empty `SupportedLocales` list, any two-letter code
 or a code such as `sr-RS` counts as a locale folder.
 
-Then set `lang` in the front matter of every file. The `lang` key wins over the folder, and a file whose front matter
-has no `lang` is read as `en`, whatever folder it is in:
+Then set `lang` in the front matter of every file. The `lang` key wins over the folder. In 4.1.0 a file whose front matter
+has no `lang` is read as `en`, whatever folder it is in; the release after 4.1.0 reads the locale from the folder, or from
+`DefaultLocale`, when `lang` is missing:
 
 ```yaml
 ---

@@ -20,9 +20,20 @@ public class SeoMetadataTests
         Assert.Equal(metaDescription, seo.OgDescription);
         Assert.Equal(metaTitle, seo.TwitterTitle);
         Assert.Equal(metaDescription, seo.TwitterDescription);
-        Assert.Equal("index, follow", seo.Robots);
-        Assert.Equal("article", seo.OgType);
+        Assert.Equal(string.Empty, seo.Robots);
+        Assert.Equal(string.Empty, seo.OgType);
         Assert.Equal("summary_large_image", seo.TwitterCard);
+    }
+
+    // Fails before the fix: a new instance said "index, follow" and "article", so the renderer never reached
+    // its own robots value or its computed og:type for an item with front matter.
+    [Fact]
+    public void NewInstance_LeavesRobotsAndOgTypeEmptyForTheRendererToDecide()
+    {
+        var seo = new SeoMetadata();
+
+        Assert.Equal(string.Empty, seo.Robots);
+        Assert.Equal(string.Empty, seo.OgType);
     }
 
     [Fact]

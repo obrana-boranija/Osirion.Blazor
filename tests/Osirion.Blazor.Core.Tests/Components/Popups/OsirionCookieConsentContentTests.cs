@@ -175,6 +175,46 @@ public class OsirionCookieConsentContentTests : BunitContext
         cut.Markup.Trim().ShouldBeEmpty();
     }
 
+    // Fails before the fix: once the visitor had answered, the banner never rendered again, so a "cookie settings" link
+    // with ?customize-cookies could not reopen it and consent could only be withdrawn by deleting the cookie.
+    [Fact]
+    public void OsirionCookieConsent_AnsweredAndCustomizeQuery_ReopensThePanel()
+    {
+        GivenConsent("""{"Version":"1.0","ConsentType":"customize","Categories":{"necessary":true,"analytics":false}}""");
+        _httpContext.Request.QueryString = new QueryString("?customize-cookies=true");
+
+        var cut = RenderOnPage(parameters => { });
+
+        cut.FindAll(".osirion-cookie-consent-customize").Count.ShouldBe(1);
+    }
+
+    // Fails before the fix: the reopened panel showed each category's default, not the visitor's saved choice.
+    [Fact]
+    public void OsirionCookieConsent_ReopenedPanel_ShowsTheSavedChoices()
+    {
+        GivenConsent("""{"Version":"1.0","ConsentType":"customize","Categories":{"necessary":true,"analytics":true,"marketing":false}}""");
+        _httpContext.Request.QueryString = new QueryString("?customize-cookies=true");
+
+        var cut = RenderOnPage(parameters => { });
+
+        cut.Find("input[name=category_analytics]").HasAttribute("checked").ShouldBeTrue();
+        cut.Find("input[name=category_marketing]").HasAttribute("checked").ShouldBeFalse();
+        cut.Find("input[name=category_necessary]").HasAttribute("checked").ShouldBeTrue();
+    }
+
+    [Fact]
+    public void OsirionCookieConsent_AnsweredWithoutTheQuery_StaysHidden()
+    {
+        GivenConsent("""{"Version":"1.0","ConsentType":"accept","Categories":{"necessary":true,"analytics":true}}""");
+
+        var cut = RenderOnPage(parameters => { });
+
+        cut.Markup.Trim().ShouldBeEmpty();
+    }
+
+    private void GivenConsent(string json) =>
+        _httpContext.Request.Headers.Cookie = "osirion_cookie_consent=" + Uri.EscapeDataString(json);
+
     private IRenderedComponent<OsirionCookieConsent> RenderOnPage(
         Action<ComponentParameterCollectionBuilder<OsirionCookieConsent>> parameterBuilder)
     {

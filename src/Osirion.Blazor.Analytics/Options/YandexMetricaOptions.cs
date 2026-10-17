@@ -42,12 +42,14 @@ public class YandexMetricaOptions : AnalyticsOptions
     public bool ClickMap { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets whether to collect data for all pages, not just pages with the counter code
+    /// Gets or sets whether the counter tracks hash changes in the address bar (the <c>trackHash</c> init parameter, which
+    /// Yandex Metrica leaves off). When set, it wins over <see cref="HashTracking"/>.
     /// </summary>
     public bool? TrackHash { get; set; } = null;
 
     /// <summary>
-    /// Gets or sets whether to automatically send the hash part of the URL
+    /// Gets or sets whether to track hash changes in the address bar. It is the same as setting <see cref="TrackHash"/> to
+    /// <c>true</c> and is used only while <see cref="TrackHash"/> is not set.
     /// </summary>
     public bool HashTracking { get; set; } = false;
 

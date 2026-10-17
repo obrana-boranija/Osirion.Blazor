@@ -17,8 +17,8 @@ public class OptionsTests
         Assert.False(options.IsDefault);
         Assert.False(options.EnableLocalization);
         Assert.Equal("en", options.DefaultLocale);
-        Assert.Single(options.SupportedLocales);
-        Assert.Equal("en", options.SupportedLocales[0]);
+        Assert.Empty(options.SupportedLocales);
+        Assert.Equal(["en"], options.GetEffectiveSupportedLocales());
         Assert.Equal(2, options.SupportedExtensions.Count);
         Assert.Contains(".md", options.SupportedExtensions);
         Assert.Contains(".markdown", options.SupportedExtensions);

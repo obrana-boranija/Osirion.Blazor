@@ -175,7 +175,7 @@ public class GitHubApiClientFactory : IGitHubApiClientFactory
             ContentPath = options.ContentPath,
             EnableLocalization = options.EnableLocalization,
             DefaultLocale = options.DefaultLocale,
-            SupportedLocales = options.SupportedLocales,
+            SupportedLocales = options.GetEffectiveSupportedLocales(),
             SupportedExtensions = options.SupportedExtensions,
             ValidateContent = options.ValidateContent,
             WebhookSecret = options.WebhookSecret,

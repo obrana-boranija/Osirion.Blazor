@@ -150,6 +150,9 @@ A banner with your own text and categories:
 - **Flow without script.** Accept and Decline post the form, the endpoint writes the cookie and redirects to the
   same page, and the banner is no longer rendered. Customize redirects to the page with `?customize-cookies=true`,
   where the banner shows the category checkboxes; Save Preferences records the checked ones.
+- **Changing the answer.** A link to any page with `?customize-cookies=true`, such as a "Cookie settings" link in the
+  footer, reopens the panel after the visitor answered, with their saved choices checked; Save Preferences replaces
+  the recorded consent, so withdrawing it takes the same few clicks as giving it. Arrives in the release after 4.1.0.
 - **What is recorded.** Accept sets `necessary`, `analytics`, `marketing` and `preferences` to true; Decline sets
   `necessary` to true and the other three to false. Save Preferences records `necessary` plus each category the
   visitor checked; unchecked ones are left out, which counts as no consent. Custom category IDs are therefore

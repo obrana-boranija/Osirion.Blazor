@@ -13,6 +13,23 @@ internal static class SeoText
 
     private const string Ellipsis = "...";
 
+    private const int MaxMetaNameLength = 64;
+
+    /// <summary>
+    /// Whether <paramref name="name"/> can be written unencoded as the <c>name</c> attribute of a meta element: a letter,
+    /// then letters, digits, hyphens, underscores, periods and colons, at most 64 characters. Front matter is
+    /// content, so a name with a quote, an angle bracket or white space could otherwise change the markup around it.
+    /// </summary>
+    internal static bool IsSafeMetaName(string? name)
+    {
+        if (string.IsNullOrEmpty(name) || name.Length > MaxMetaNameLength || !char.IsAsciiLetter(name[0]))
+        {
+            return false;
+        }
+
+        return name.All(character => char.IsAsciiLetterOrDigit(character) || character is '-' or '_' or '.' or ':');
+    }
+
     /// <summary>Returns the first value that is not null, empty or white space.</summary>
     internal static string? FirstNonBlank(params string?[] values) =>
         values.FirstOrDefault(value => !string.IsNullOrWhiteSpace(value));

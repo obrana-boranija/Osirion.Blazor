@@ -49,7 +49,7 @@ internal static class NavigationSchemas
             {
                 ["@type"] = "ListItem",
                 ["position"] = index + 1,
-                ["url"] = $"{context.BaseUrl}{item.Url}",
+                ["url"] = AbsoluteItemUrl(item, context),
                 ["name"] = item.Title,
                 ["description"] = item.Description,
                 ["datePublished"] = ContentUrls.FormatUtc(item.PublishDate),
@@ -84,10 +84,17 @@ internal static class NavigationSchemas
         };
     }
 
+    /// <summary>
+    /// The absolute URL of a listed item. Item URLs are stored with or without a leading slash, so the join
+    /// supplies exactly one.
+    /// </summary>
+    private static string AbsoluteItemUrl(ContentItem item, SeoSchemaContext context) =>
+        $"{context.BaseUrl.TrimEnd('/')}/{item.Url.TrimStart('/')}";
+
     /// <summary>A blog posting for one item of a collection page.</summary>
     internal static object CollectionItemPosting(ContentItem item, SeoSchemaContext context)
     {
-        var itemUrl = $"{context.BaseUrl.TrimEnd('/')}{item.Url}";
+        var itemUrl = AbsoluteItemUrl(item, context);
         return new Dictionary<string, object?>
         {
             ["@context"] = SchemaContext,

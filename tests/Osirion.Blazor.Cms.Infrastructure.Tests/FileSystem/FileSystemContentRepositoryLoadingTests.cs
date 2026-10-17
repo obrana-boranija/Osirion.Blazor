@@ -149,6 +149,105 @@ public sealed class FileSystemContentRepositoryLoadingTests : IDisposable
     }
 
     [Fact]
+    public async Task GetByUrlAsync_ItemWithPermalink_IsFoundAtThePermalinkAndNotAtItsPath()
+    {
+        // Fails before the fix: the permalink was ignored, so the item was only served at "blog/post".
+        Write("blog/post.md", "permalinked");
+        _markdownProcessor.ExtractFrontMatterAndContent("permalinked")
+            .Returns(((FrontMatter?)new FrontMatter { Title = "Post", Permalink = "/custom/place" }, "# Post"));
+        var repository = Repository(CreateOptions());
+
+        var atPermalink = await repository.GetByUrlAsync("custom/place");
+        var atPath = await repository.GetByUrlAsync("blog/post");
+
+        atPermalink.ShouldNotBeNull().Path.ShouldBe("blog/post.md");
+        atPermalink.Url.ShouldBe("custom/place");
+        atPath.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task GetAllAsync_LocalizedFolderAndNoLang_TakesTheFolderLocale()
+    {
+        // Fails before the fix: a file with front matter and no lang was read as "en" inside the sr folder.
+        Write("sr/blog/hello.md", "no-lang");
+        _markdownProcessor.ExtractFrontMatterAndContent("no-lang")
+            .Returns(((FrontMatter?)new FrontMatter { Title = "Zdravo" }, "# Zdravo"));
+        var repository = Repository(CreateOptions(options =>
+        {
+            options.EnableLocalization = true;
+            options.SupportedLocales = ["en", "sr"];
+        }));
+
+        var items = await repository.GetAllAsync();
+
+        items.ShouldHaveSingleItem().Locale.ShouldBe("sr");
+    }
+
+    [Fact]
+    public async Task GetAllAsync_LocalizedFolderAndExplicitLang_KeepsTheLang()
+    {
+        Write("sr/blog/hello.md", "explicit-lang");
+        _markdownProcessor.ExtractFrontMatterAndContent("explicit-lang")
+            .Returns(((FrontMatter?)new FrontMatter { Title = "Hello", Lang = "en" }, "# Hello"));
+        var repository = Repository(CreateOptions(options =>
+        {
+            options.EnableLocalization = true;
+            options.SupportedLocales = ["en", "sr"];
+        }));
+
+        var items = await repository.GetAllAsync();
+
+        items.ShouldHaveSingleItem().Locale.ShouldBe("en");
+    }
+
+    [Fact]
+    public async Task GetAllAsync_LocalizationOffAndNoLang_TakesTheDefaultLocale()
+    {
+        // Fails before the fix: the default "en" of the front matter won over the provider's DefaultLocale.
+        Write("blog/hello.md", "no-lang");
+        _markdownProcessor.ExtractFrontMatterAndContent("no-lang")
+            .Returns(((FrontMatter?)new FrontMatter { Title = "Zdravo" }, "# Zdravo"));
+        var repository = Repository(CreateOptions(options => options.DefaultLocale = "sr"));
+
+        var items = await repository.GetAllAsync();
+
+        items.ShouldHaveSingleItem().Locale.ShouldBe("sr");
+    }
+
+    [Fact]
+    public async Task GetAllAsync_FrontMatterWithoutDate_TakesTheFilesCreationTime()
+    {
+        // Fails before the fix: FrontMatter.Date defaulted to today, so the item was dated the day it was loaded.
+        var created = new DateTimeOffset(2020, 1, 2, 3, 4, 5, TimeSpan.Zero);
+        _fileSystem.AddFile(
+            _fileSystem.Path.Combine(ContentRoot, "blog/post.md"),
+            new MockFileData("no-date") { CreationTime = created });
+        _markdownProcessor.ExtractFrontMatterAndContent("no-date")
+            .Returns(((FrontMatter?)new FrontMatter { Title = "Post" }, "# Post"));
+        var repository = Repository(CreateOptions());
+
+        var item = (await repository.GetAllAsync()).ShouldHaveSingleItem();
+
+        item.DateCreated.ShouldBe(created.UtcDateTime);
+        item.LastModified.ShouldBe(created.UtcDateTime);
+    }
+
+    [Fact]
+    public async Task GetAllAsync_FrontMatterWithDate_UsesTheDate()
+    {
+        _fileSystem.AddFile(
+            _fileSystem.Path.Combine(ContentRoot, "blog/post.md"),
+            new MockFileData("dated") { CreationTime = new DateTimeOffset(2020, 1, 2, 3, 4, 5, TimeSpan.Zero) });
+        _markdownProcessor.ExtractFrontMatterAndContent("dated")
+            .Returns(((FrontMatter?)new FrontMatter { Title = "Post", Date = "2024-05-06" }, "# Post"));
+        var repository = Repository(CreateOptions());
+
+        var item = (await repository.GetAllAsync()).ShouldHaveSingleItem();
+
+        item.DateCreated.ShouldBe(new DateTime(2024, 5, 6, 0, 0, 0, DateTimeKind.Utc));
+    }
+
+    [Fact]
     public async Task GetAllAsync_SubdirectoriesExcluded_LoadsOnlyTopLevelFiles()
     {
         Write("top.md", "# Top");

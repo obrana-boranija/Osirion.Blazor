@@ -24,7 +24,7 @@ namespace Osirion.Blazor.Cms.Infrastructure.Directory
             _contentPath = FileSystemConfiguration.GetContentRoot(options.Value);
             _enableLocalization = options.Value.EnableLocalization;
             _defaultLocale = options.Value.DefaultLocale;
-            _supportedLocales = options.Value.SupportedLocales;
+            _supportedLocales = options.Value.GetEffectiveSupportedLocales();
         }
 
         /// <summary>Gets or sets the NormalizePath value.</summary>
