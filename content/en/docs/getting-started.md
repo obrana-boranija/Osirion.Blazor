@@ -1,6 +1,6 @@
 ---
 id: 'getting-started'
-order: 1
+order: 2
 layout: docs
 title: "Getting started"
 permalink: /docs/getting-started
@@ -22,6 +22,8 @@ tags:
 published: true
 slug: getting-started
 lang: en
+custom_fields:
+  group: getting-started
 seo_properties:
   title: 'Getting started with Osirion.Blazor'
   description: 'Start a Markdown blog with the osirion-blog template in three commands, or add Osirion.Blazor to an existing Blazor Web App.'
@@ -87,7 +89,7 @@ configured in `appsettings.json`.
 | Posts | Add Markdown files to `content/blog`; the folder is watched, so a new post appears on reload |
 | The About page | `content/about.md` |
 | Menu, footer, social links | `Osirion:Site` in `appsettings.json` |
-| Colours | `Osirion:Theming:DefaultPalette`: one of the [palettes](/docs/components/theming/palettes) |
+| Colours | `Osirion:Theming:DefaultPalette`: one of the [palettes](/components/palettes) |
 | Your own styles | `wwwroot/app.css` |
 | The public address | `Feeds:SiteUrl` in `appsettings.json` and the `Sitemap` line in `wwwroot/robots.txt` |
 
@@ -267,7 +269,7 @@ Render `OsirionStyles` once in `Components/Layout/MainLayout.razor`, as the exam
 `OsirionStyles` loads the Osirion stylesheets and, for the `Framework` you configured (`Bootstrap`, `FluentUI`,
 `MudBlazor` or `Radzen`), the adapter that maps the framework's colors onto Osirion's. It does not load the framework
 itself; the Blazor template already loads Bootstrap. Leave `Framework` out to use Osirion's own palette. See
-[OsirionStyles](/docs/components/theming/osirion-styles) for its parameters.
+[OsirionStyles](/components/osirion-styles) for its parameters.
 
 ### 5. Add a list page and an article page
 
@@ -336,12 +338,12 @@ Open `/blog` to see the list, then select the post.
 
 ## Next steps
 
-- Browse the [components overview](/docs/components) and the [CMS web components](/docs/components/cms-web).
-- Wrap the site in [OsirionPageLayout](/docs/components/core/layout/page-layout) for a header that hides while you
+- Browse the [components overview](/components) and the [CMS web components](/docs/packages/cms-web).
+- Wrap the site in [OsirionPageLayout](/components/page-layout) for a header that hides while you
   scroll down and a footer that stays at the bottom of short pages.
-- Pick a [palette](/docs/components/theming/palettes) and let visitors choose one with
-  [ThemePicker](/docs/components/theming/theme-picker).
-- Add analytics from the [analytics components](/docs/components/analytics).
+- Pick a [palette](/components/palettes) and let visitors choose one with
+  [ThemePicker](/components/theme-picker).
+- Add analytics from the [analytics components](/docs/packages/analytics).
 - Compare with the complete
   [Bootstrap example](https://github.com/demonjic/Osirion.Blazor/tree/master/examples/Osirion.Blazor.Example.Bootstrap),
   which also adds the home page, search, tags, categories and cookie consent.

@@ -179,6 +179,6 @@ refreshes only the providers whose owner, repository, branch and secret match th
 
 ## Related
 
-- [CMS web components](/docs/components/cms-web)
-- [CMS navigation components](/docs/components/cms-web/navigation)
+- [CMS web components](/docs/packages/cms-web)
+- [CMS navigation components](/components/cms-navigation)
 - [Build a blog with GitHub as the CMS](/blog/github-cms-with-blazor)

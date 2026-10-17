@@ -247,4 +247,4 @@ repository and branch match it. The refresh downloads only the files that change
 - [The Osirion.Blazor CMS components](/blog/github-cms-components) describes each component used here and the ones
   that were not.
 - [Hero sections in Blazor](/blog/modern-hero-sections-blazor) covers the hero `ArticlePage` renders.
-- The [CMS web components](/docs/components/cms-web) reference lists every parameter.
+- The [CMS web components](/docs/packages/cms-web) reference lists every parameter.

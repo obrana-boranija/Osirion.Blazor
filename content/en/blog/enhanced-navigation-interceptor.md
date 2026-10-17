@@ -117,6 +117,6 @@ navigation, through the static `osirion-analytics.js` script. See
 
 ## Related
 
-- [Navigation components](/docs/components/navigation)
+- [Navigation components](/docs/packages/navigation)
 - [Navigation in Osirion.Blazor: menus, scroll and breadcrumbs](/blog/navigation-components)
 - [Osirion.Blazor.Navigation on NuGet](https://www.nuget.org/packages/Osirion.Blazor.Navigation)
