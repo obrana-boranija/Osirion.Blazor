@@ -6,6 +6,7 @@ using Osirion.Blazor.Cms.Domain.Interfaces;
 using Osirion.Blazor.Cms.Domain.Options;
 using Osirion.Blazor.Cms.Domain.Services;
 using Osirion.Blazor.Cms.Infrastructure.Builders;
+using Osirion.Blazor.Cms.Infrastructure.DependencyInjection;
 using Osirion.Blazor.Cms.Infrastructure.FileSystem;
 using Osirion.Blazor.Cms.Infrastructure.GitHub;
 using Osirion.Blazor.Cms.Infrastructure.Providers;
@@ -150,5 +151,20 @@ public class ContentBuilderTests
         var contentProvider = provider.GetServices<IContentProvider>().Single().ShouldBeOfType<NamedContentProvider>();
         contentProvider.ConfiguredBy.ShouldBeNull();
         _services.Single(d => d.ServiceType == typeof(NamedContentProvider)).Lifetime.ShouldBe(ServiceLifetime.Singleton);
+    }
+
+    // Fails before the fix: AddFileSystem registered the provider and the default setter again when the legacy
+    // registration (AddCms for Osirion:Cms:FileSystem) had added them, so the registry held two providers with one id.
+    [Fact]
+    public void AddFileSystem_AfterTheFileSystemProviderIsRegistered_RegistersItOnce()
+    {
+        var builder = CreateBuilder(("Osirion:Cms:FileSystem:BasePath", "content"));
+        _services.AddFileSystemContentProvider(new ConfigurationBuilder().Build());
+
+        builder.AddFileSystem();
+        builder.AddFileSystem();
+
+        _services.Count(descriptor => descriptor.ServiceType == typeof(IContentProvider)).ShouldBe(1);
+        _services.Count(descriptor => descriptor.ServiceType == typeof(IDefaultProviderSetter)).ShouldBe(1);
     }
 }

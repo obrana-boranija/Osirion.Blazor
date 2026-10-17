@@ -91,6 +91,14 @@ public class ContentBuilder : CmsBuilderBase, IContentBuilder
             Services.Configure<FileSystemOptions>(FileSystemConfiguration.GetSection(Configuration));
         }
 
+        // AddFileSystemContentProvider (reached through AddCms for the legacy section) may have registered the provider
+        // already. A second registration would give the registry two providers with one id.
+        if (Services.Any(descriptor => descriptor.ServiceType == typeof(FileSystemContentProvider)))
+        {
+            Logger.LogInformation("The FileSystem content provider is already registered");
+            return this;
+        }
+
         // Register FileSystem repositories
         Services.AddSingleton<FileSystemContentRepository>();
         Services.TryAddFileSystemDirectoryCache();

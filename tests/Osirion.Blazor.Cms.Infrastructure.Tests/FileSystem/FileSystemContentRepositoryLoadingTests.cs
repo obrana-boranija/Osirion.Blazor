@@ -149,6 +149,38 @@ public sealed class FileSystemContentRepositoryLoadingTests : IDisposable
     }
 
     [Fact]
+    public async Task GetAllAsync_IndexFileWithoutTitle_LoadsAsAPageTitledWithItsFolder()
+    {
+        // Fails before the fix: the empty front matter title reached ContentItem.SetTitle, which threw, so the
+        // section page was dropped and only a log entry showed it.
+        Write("blog/_index.md", "section");
+        _markdownProcessor.ExtractFrontMatterAndContent("section")
+            .Returns(((FrontMatter?)new FrontMatter { Description = "All posts" }, "# Blog"));
+        var repository = Repository(CreateOptions());
+
+        var items = await repository.GetAllAsync();
+
+        var section = items.ShouldHaveSingleItem();
+        section.Path.ShouldBe("blog/_index.md");
+        section.Title.ShouldBe("blog");
+        section.Description.ShouldBe("All posts");
+    }
+
+    [Fact]
+    public async Task GetAllAsync_PageWithoutTitle_LoadsTitledWithItsFileName()
+    {
+        // Fails before the fix: the empty front matter title made SetTitle throw and the page was not loaded.
+        Write("blog/post.md", "untitled");
+        _markdownProcessor.ExtractFrontMatterAndContent("untitled")
+            .Returns(((FrontMatter?)new FrontMatter { Description = "A post" }, "# Post"));
+        var repository = Repository(CreateOptions());
+
+        var items = await repository.GetAllAsync();
+
+        items.ShouldHaveSingleItem().Title.ShouldBe("post");
+    }
+
+    [Fact]
     public async Task GetByUrlAsync_ItemWithPermalink_IsFoundAtThePermalinkAndNotAtItsPath()
     {
         // Fails before the fix: the permalink was ignored, so the item was only served at "blog/post".

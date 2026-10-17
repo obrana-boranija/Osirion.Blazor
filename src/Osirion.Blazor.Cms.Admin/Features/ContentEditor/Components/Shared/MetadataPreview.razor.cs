@@ -158,12 +158,21 @@ public partial class MetadataPreview
             sb.AppendLine($"<link rel=\"canonical\" href=\"{SeoMetadata.Canonical}\" />");
         }
 
-        sb.AppendLine($"<meta name=\"robots\" content=\"{SeoMetadata.Robots}\" />");
+        // An empty value means the page renderer decides, so no tag is previewed for it
+        if (!string.IsNullOrWhiteSpace(SeoMetadata.Robots))
+        {
+            sb.AppendLine($"<meta name=\"robots\" content=\"{SeoMetadata.Robots}\" />");
+        }
 
         // Open Graph tags
         sb.AppendLine($"<meta property=\"og:title\" content=\"{GetOgTitle()}\" />");
         sb.AppendLine($"<meta property=\"og:description\" content=\"{GetOgDescription()}\" />");
-        sb.AppendLine($"<meta property=\"og:type\" content=\"{SeoMetadata.OgType}\" />");
+
+        if (!string.IsNullOrWhiteSpace(SeoMetadata.OgType))
+        {
+            sb.AppendLine($"<meta property=\"og:type\" content=\"{SeoMetadata.OgType}\" />");
+        }
+
         sb.AppendLine($"<meta property=\"og:url\" content=\"{GetPreviewUrl()}\" />");
 
         if (!string.IsNullOrWhiteSpace(GetOgImage()))

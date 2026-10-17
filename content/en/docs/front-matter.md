@@ -64,10 +64,10 @@ is the creation time of the file and every other value takes its default.
 
 | Key | Type | Default | Effect |
 | --- | --- | --- | --- |
-| `title` | string | none | The page's heading, its link text in lists and the base of the `<title>`. Required once the file has a front matter block: an empty title stops the file from loading. |
+| `title` | string | none | The page's heading, its link text in lists and the base of the `<title>`. Without one the page takes its file name, and a folder's `_index.md` takes the folder's name. In 4.1.0 a file with a front matter block and no title does not load, so write one there. |
 | `description` | string | empty | The meta description (cut to 160 characters), the summary in lists and the feed description. |
 | `slug` | string | from the file name | The last part of the address. Lowercase letters, digits and hyphens only; anything else stops the file from loading. |
-| `date` | date text | the file's creation time (the load time with a GitHub provider) | The publication date: list order, the feed `pubDate`, `datePublished`. In 4.1.0 a missing `date` is the day the content was loaded. See step 3. |
+| `date` | date text | the file's creation time (the date of its last commit with a GitHub provider) | The publication date: list order, the feed `pubDate`, `datePublished`. In 4.1.0 a missing `date` is the day the content was loaded. See step 3. |
 | `last_modified` | date text | `date` | When the page last changed: `dateModified`, `article:modified_time`, sitemap `lastmod`. See step 3. |
 | `author` | string | empty | The byline, `article:author` and the author in structured data. |
 | `categories` | list of strings | empty | Category pages and lists. The first one is `article:section`. |
@@ -104,11 +104,13 @@ last_modified: 2026-10-17T09:30:00Z
 ```
 
 A date without a time zone is taken as UTC. A page without a `date` key is not an error either: it gets the creation
-time of its file (the load time with a GitHub provider), the same as a `date` that cannot be parsed and a file with no
-front matter block. This arrives in the release after 4.1.0; in 4.1.0 a page with front matter and no `date` key gets
-the day the content was loaded, so it changes on every restart. Even with the fix, a file's creation time changes with a
-fresh checkout or deployment, and the load time of a GitHub page changes on every restart, so an undated page can still
-jump to the top of newest-first lists and move its sitemap `lastmod` and feed date. Always write `date`.
+time of its file (the date of the file's last commit with a GitHub provider, which costs one more request to GitHub for
+each undated file the first time it is read), the same as a `date` that cannot be parsed and a file with no front matter
+block. This arrives in the release after 4.1.0; in 4.1.0 a page with front matter and no `date` key gets the day the
+content was loaded, so it changes on every restart, and the GitHub provider still does. Even with the fix, a file's
+creation time changes with a fresh checkout or deployment, and the date of a last commit moves when the file is edited,
+so an undated page can still jump to the top of newest-first lists and move its sitemap `lastmod` and feed date. Always
+write `date`.
 
 `last_modified` is what search engines and feed readers see as the change date. When it is missing, the page was
 last modified on its `date`. The file's write time is not used, because a fresh checkout gives every file the time of

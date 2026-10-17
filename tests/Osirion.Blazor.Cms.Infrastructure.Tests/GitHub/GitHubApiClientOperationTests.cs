@@ -370,4 +370,55 @@ public class GitHubApiClientOperationTests
         Should.Throw<ArgumentNullException>(() => new GitHubApiClient(null!, options, NullLogger<GitHubApiClient>.Instance));
         Should.Throw<ArgumentNullException>(() => new GitHubApiClient(new HttpClient(), options, null!));
     }
+
+    [Fact]
+    public async Task GetLastCommitDateAsync_AsksForTheNewestCommitOfThePathOnTheBranch()
+    {
+        var client = CreateClient(_ => Json("""[{"sha":"c1","commit":{"author":{"date":"2025-03-10T08:00:00Z"},"committer":{"date":"2025-03-14T09:30:00Z"}}}]"""));
+
+        var date = await client.GetLastCommitDateAsync("content/blog/my post.md");
+
+        date.ShouldBe(new DateTime(2025, 3, 14, 9, 30, 0, DateTimeKind.Utc));
+        date.ShouldNotBeNull().Kind.ShouldBe(DateTimeKind.Utc);
+        _handler.Requests.ShouldHaveSingleItem().Uri.PathAndQuery
+            .ShouldBe("/repos/o/r/commits?path=content/blog/my%20post.md&sha=main&per_page=1");
+    }
+
+    [Fact]
+    public async Task GetLastCommitDateAsync_WithoutBranch_LeavesTheBranchOut()
+    {
+        var client = CreateClient(_ => Json("[]"), branch: string.Empty);
+
+        (await client.GetLastCommitDateAsync("a.md")).ShouldBeNull();
+
+        _handler.Requests.ShouldHaveSingleItem().Uri.PathAndQuery.ShouldBe("/repos/o/r/commits?path=a.md&per_page=1");
+    }
+
+    [Theory]
+    [InlineData("[]")]
+    [InlineData("""[{"sha":"c1"}]""")]
+    public async Task GetLastCommitDateAsync_NoCommitDate_ReturnsNull(string body)
+    {
+        var client = CreateClient(_ => Json(body));
+
+        (await client.GetLastCommitDateAsync("a.md")).ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task GetLastCommitDateAsync_WithoutOwner_ReturnsNullWithoutSendingRequest()
+    {
+        var client = CreateUnconfiguredClient(owner: string.Empty, token: "t1");
+
+        (await client.GetLastCommitDateAsync("a.md")).ShouldBeNull();
+
+        _handler.Requests.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task GetLastCommitDateAsync_WhenGitHubFails_Throws()
+    {
+        var client = CreateClient(_ => Json("{}", HttpStatusCode.InternalServerError));
+
+        await Should.ThrowAsync<HttpRequestException>(() => client.GetLastCommitDateAsync("a.md"));
+    }
 }

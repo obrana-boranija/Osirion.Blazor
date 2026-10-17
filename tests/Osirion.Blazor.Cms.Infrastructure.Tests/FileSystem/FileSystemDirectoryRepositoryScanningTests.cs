@@ -39,7 +39,7 @@ public sealed class FileSystemDirectoryRepositoryScanningTests : IDisposable
 
         _pathUtilities.NormalizePath(Arg.Any<string>()).Returns(call => call.Arg<string>().Replace('\\', '/').Trim('/'));
         _pathUtilities.MatchesGlobPattern(Arg.Any<string>(), Arg.Any<string>())
-            .Returns(call => Path.GetFileName(call.ArgAt<string>(0)).StartsWith("skip", StringComparison.Ordinal));
+            .Returns(call => Path.GetFileName(call.ArgAt<string>(0).TrimEnd('/')).StartsWith("skip", StringComparison.Ordinal));
         _pathUtilities.ExtractLocaleFromPath(Arg.Any<string>())
             .Returns(call => call.Arg<string>().Split('/')[0] is "de" ? "de" : "en");
     }
@@ -133,7 +133,7 @@ public sealed class FileSystemDirectoryRepositoryScanningTests : IDisposable
     {
         CreateOnDisk("broken");
         CreateOnDisk("docs");
-        _pathUtilities.MatchesGlobPattern(Arg.Is<string>(path => path.EndsWith("broken", StringComparison.Ordinal)), Arg.Any<string>())
+        _pathUtilities.MatchesGlobPattern(Arg.Is<string>(path => path.TrimEnd('/').EndsWith("broken", StringComparison.Ordinal)), Arg.Any<string>())
             .Returns(_ => throw new ArgumentException("bad pattern"));
         var repository = Repository();
 

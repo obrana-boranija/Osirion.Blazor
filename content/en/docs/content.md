@@ -64,8 +64,8 @@ these keys from its front matter: `title` (the directory's display name), `descr
 `featured_image` and `permalink` (the address folder links use; the `_index.md` page itself stays at the folder's
 path). Without a `title` the folder keeps its folder name and the other keys still apply; in 4.1.0 an `_index.md` with
 front matter and no `title` applies none of them. Its `lang` is the locale of its folder unless you write it (in 4.1.0 it
-is `en` unless you write it). The `_index.md` is also a page, and like any page it needs a `title` when it has front
-matter, or it does not load. A folder without an `_index.md` keeps its folder name.
+is `en` unless you write it). The `_index.md` is also a page. Without a `title` its page takes the folder's name; in 4.1.0
+a page with front matter and no `title` does not load, so write one. A folder without an `_index.md` keeps its folder name.
 
 An `_index.md` is also a page of its own, at the folder's address. A list of that folder includes it, except on the
 page it is shown on, so put real text in it or leave it out of lists you build yourself.
@@ -208,7 +208,7 @@ Each line shows a file, its address and whether it is published. Delete the page
 
 If a file is missing from the list, the front matter could not be read. The provider logs
 `Error processing markdown file` with the reason and carries on. The usual causes are a `slug` with a character that is
-not allowed, a `title` that is empty when the file has front matter, a list key such as `tags` written as one value
+not allowed, in 4.1.0 a missing `title` when the file has front matter, a list key such as `tags` written as one value
 instead of a list, and a value of the wrong type such as `order: abc` or `published: maybe`. A `date` that cannot be
 read is not an error: the page gets the creation time of its file, which a fresh checkout changes (see the
 [front matter reference](/docs/front-matter)). A file that is empty or only white space is skipped without a message.
