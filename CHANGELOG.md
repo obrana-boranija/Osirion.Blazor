@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Osirion.Blazor.Core: a site without a CSS framework (`Framework: None`) gets its page painted in the theme's colours. No shipped stylesheet styled `body`, so in the dark theme light text sat on the browser's white page (1.1:1). The rule applies only while `OsirionStyles` marks the page `data-osirion-framework="None"` and has zero specificity, so a framework's or a site's own `body` rule still wins
+- Osirion.Blazor.Cms.Web: the feed link under `ContentListPage` has a 24 pixel target (WCAG 2.2, 2.5.8); it stands alone, not in a sentence, and was 15 pixels tall
+
 ## [4.1.0] - 2026-10-17
 
 ### Changed
