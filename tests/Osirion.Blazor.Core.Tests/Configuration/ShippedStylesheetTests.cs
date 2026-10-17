@@ -50,6 +50,38 @@ public class ShippedStylesheetTests
         iconRules.ShouldAllBe(selector => selector.Contains("a:is([href^=\"http:\"],[href^=\"https:\"],[href^=\"//\"])", StringComparison.Ordinal));
     }
 
+    // Fails before the fix: the medium card was 450 pixels wide whatever its column, so on a 375 pixel screen it pushed
+    // the page 116 pixels wider than the screen.
+    [Fact]
+    public void FeatureCard_FixedSizes_NeverGrowPastTheirContainer()
+    {
+        // Act
+        var css = Squash(File.ReadAllText(ComponentCss("Cards", "OsirionFeatureCard.razor.css")));
+
+        // Assert
+        css.ShouldContain(".osirion-feature-card,.osirion-feature-card-image-container,.osirion-feature-card-image{max-width:100%;}");
+    }
+
+    // Fails before the fix: the value took the accent as it is; green on the Bootstrap adapter's light card read 2.78:1
+    // and indigo on its dark card 1.83:1, below the 3:1 large text needs.
+    [Fact]
+    public void MetricCard_Value_MovesTheAccentTowardTheTextColour()
+    {
+        // Act
+        var css = Squash(File.ReadAllText(ComponentCss("Cards", "OsirionMetricCard.razor.css")));
+
+        // Assert
+        css.ShouldContain(".osirion-metric-card-value{margin-bottom:0.5rem;color:color-mix(insrgb,var(--osirion-metric-card-accent)65%,var(--osirion-text-primary,#111827));");
+    }
+
+    private static string Squash(string css) => System.Text.RegularExpressions.Regex.Replace(
+        System.Text.RegularExpressions.Regex.Replace(css, @"/\*.*?\*/", string.Empty, System.Text.RegularExpressions.RegexOptions.Singleline),
+        @"\s+",
+        string.Empty);
+
+    private static string ComponentCss(string folder, string file) =>
+        Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(CoreCss(file))!)!, "..", "Components", folder, file);
+
     private static string CoreCss(string file)
     {
         for (var directory = new DirectoryInfo(AppContext.BaseDirectory); directory is not null; directory = directory.Parent)

@@ -8,7 +8,10 @@ export default class extends BlazorJSComponents.Component {
         const valueElement = refs.value;
         if (!animate || !valueElement || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-        const parts = (valueElement.dataset.count || '').split(/[-\u2013]/);
+        // A range keeps the separator it was written with, so "2-4 days" counts up to "2-4 days" again.
+        const count = valueElement.dataset.count || '';
+        const separator = (count.match(/[-\u2013]/) || ['-'])[0];
+        const parts = count.split(/[-\u2013]/);
         const targets = parts.map(Number);
         if (targets.length === 0 || targets.some(Number.isNaN)) return;
 
@@ -26,7 +29,7 @@ export default class extends BlazorJSComponents.Component {
                 const value = targets.map((target, index) => {
                     const amount = target * eased;
                     return decimals[index] ? amount.toFixed(decimals[index]) : Math.round(amount);
-                }).join('–');
+                }).join(separator);
 
                 valueElement.textContent = `${prefix}${value}${suffix}`;
                 if (progress < 1) requestAnimationFrame(tick);

@@ -17,6 +17,14 @@
     min-height: 0;
 }
 
+/* The fixed card sizes never grow past the space the card is given, so a card in a phone-width column shrinks to fit
+   instead of widening the page. */
+.osirion-feature-card,
+.osirion-feature-card-image-container,
+.osirion-feature-card-image {
+    max-width: 100%;
+}
+
 /* ================================================ */
 /* Image Layout Configurations */
 /* ================================================ */
