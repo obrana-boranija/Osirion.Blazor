@@ -138,8 +138,8 @@ An invalid `Id` throws `ArgumentException`, and a `RememberDays` outside 1 to 36
 
 - **Closing without script.** The close button submits a form with the ID, the lifetime and the current path. The
   endpoint sets the cookie `osirion_announcement_{Id}` and redirects back; the next render leaves the bar out.
-- **The cookie.** `HttpOnly`, `SameSite=Lax`, path `/`, and `Secure` when the request is HTTPS, so local development
-  over HTTP also works.
+- **The cookie.** `HttpOnly`, `Secure`, `SameSite=Lax`, path `/`. Browsers treat `localhost` as secure, so local
+  development keeps the dismissal; another plain HTTP host drops it.
 - **Security.** The form carries an antiforgery token. A post without a valid token or with an invalid ID gets 400,
   the lifetime is bounded to 365 days, and the endpoint redirects only to local paths.
 - **Rendering.** The bar reads the cookie from the request, so it renders under static SSR and while prerendering.
