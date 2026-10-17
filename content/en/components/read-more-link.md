@@ -161,8 +161,9 @@ icon `osirion-read-more-icon`.
 The color is `--osirion-link-color`, which falls back to `--osirion-action-primary`, and the hover color is
 `--osirion-read-more-hover-color`, which falls back to `--osirion-color-primary-700`. When the browser prefers a dark
 color scheme, the hover color is `--osirion-link-hover-color` instead, which falls back to
-`--osirion-action-primary-hover`. The `Button` variant takes its fill from `--osirion-action-primary`. Set the
-variables on the link (through `Style`) or a container to recolor it:
+`--osirion-action-primary-hover`. The `Button` variant takes its fill from `--osirion-action-primary` and its text
+color from `--osirion-action-primary-text`. Set the variables on the link (through `Style`) or a container to recolor
+it:
 
 ```razor
 <OsirionReadMoreLink Href="/pricing"
