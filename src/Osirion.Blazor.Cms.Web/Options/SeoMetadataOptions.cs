@@ -15,6 +15,14 @@ public class SeoMetadataOptions
     public string? SiteName { get; set; }
 
     /// <summary>
+    /// Gets or sets the site's public address, such as <c>https://example.com</c>. When set, the canonical URL,
+    /// <c>og:url</c> and the addresses in structured data use it with the page's path, whatever host served the
+    /// request (a proxy, a preview host, a second domain). Only an absolute <c>http</c> or <c>https</c> address is
+    /// used; without one they follow the request, as before.
+    /// </summary>
+    public string? SiteUrl { get; set; }
+
+    /// <summary>
     /// Gets or sets the site-wide description used for organization schema.
     /// </summary>
     public string? SiteDescription { get; set; }

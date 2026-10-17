@@ -320,9 +320,12 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
         InitializeHelperProperties();
 
         // Core setup
-        _siteName = SiteNameOverride ?? OrganizationName ?? SeoText.ExtractSiteName(navigationManager.BaseUri);
-        _baseUrl = navigationManager.BaseUri.TrimEnd('/');
-        _currentUrl = ResolvePageUrl();
+        var siteUrl = ConfiguredSiteUrl();
+        _siteName = SiteNameOverride ?? OrganizationName ?? SeoText.ExtractSiteName(siteUrl ?? navigationManager.BaseUri);
+        _baseUrl = (siteUrl ?? navigationManager.BaseUri).TrimEnd('/');
+        _currentUrl = siteUrl is null
+            ? ResolvePageUrl()
+            : _baseUrl + "/" + navigationManager.ToBaseRelativePath(ResolvePageUrl());
         _locale = SeoText.ToOpenGraphLocale(Content?.Locale);
         _languageCode = Content?.Locale ?? "en";
         _alternateLinks = ParseAlternateLanguageUrls();
@@ -393,6 +396,23 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
     /// </summary>
     private string ResolvePageUrl() =>
         ContentUrls.StripQueryAndFragment(navigationManager.Uri, CanonicalQueryParameters);
+
+    /// <summary>
+    /// The site's public address from <see cref="SeoMetadataOptions.SiteUrl"/>, ending in a slash like
+    /// <see cref="NavigationManager.BaseUri"/>, or <see langword="null"/> when none is set or it is not an absolute
+    /// http(s) address.
+    /// </summary>
+    private string? ConfiguredSiteUrl()
+    {
+        var configured = SeoOptions?.Value?.SiteUrl;
+        if (!Uri.TryCreate(configured, UriKind.Absolute, out var uri)
+            || (uri.Scheme != Uri.UriSchemeHttps && uri.Scheme != Uri.UriSchemeHttp))
+        {
+            return null;
+        }
+
+        return uri.GetLeftPart(UriPartial.Path).TrimEnd('/') + "/";
+    }
 
     private List<(string HrefLang, string Href)> ParseAlternateLanguageUrls()
     {
