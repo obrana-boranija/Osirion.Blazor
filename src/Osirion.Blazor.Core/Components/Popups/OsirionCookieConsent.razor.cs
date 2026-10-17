@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Osirion.Blazor.Core.Handlers;
 
 namespace Osirion.Blazor.Components;
 
@@ -126,6 +127,21 @@ public partial class OsirionCookieConsent
     /// </summary>
     private bool ShowBanner { get; set; }
 
+    private CookieConsentData? _savedConsent;
+
+    // A reopened panel shows the visitor's saved choice for each category; a first visit shows the defaults.
+    private bool IsChecked(CookieCategory category)
+    {
+        if (category.IsRequired)
+        {
+            return true;
+        }
+
+        return _savedConsent is not null && _savedConsent.Categories.TryGetValue(category.Id, out var consented)
+            ? consented
+            : category.IsEnabled;
+    }
+
     /// <summary>
     /// Gets or sets whether the customization panel is shown
     /// </summary>
@@ -155,13 +171,12 @@ public partial class OsirionCookieConsent
         if (httpContext is not null)
         {
             var consentCookie = httpContext.Request.Cookies[ConsentCookieName];
-            ShowBanner = string.IsNullOrWhiteSpace(consentCookie);
+            IsCustomizing = httpContext.Request.Query.ContainsKey("customize-cookies");
 
-            // Check if we're in customize mode from query string
-            if (httpContext.Request.Query.ContainsKey("customize-cookies"))
-            {
-                IsCustomizing = true;
-            }
+            // A link with ?customize-cookies (a site's "cookie settings" link) reopens the panel after an answer, so
+            // a visitor can change or withdraw consent as easily as they gave it.
+            ShowBanner = string.IsNullOrWhiteSpace(consentCookie) || (IsCustomizing && ShowCustomizationPanel);
+            _savedConsent = CookieConsentHandler.GetConsentData(httpContext);
         }
     }
 
