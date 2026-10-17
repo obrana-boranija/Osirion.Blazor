@@ -283,6 +283,12 @@ public partial class ContentList : IDisposable
     {
         IsLoading = true;
         var loaded = false;
+#if NET10_0_OR_GREATER
+        var cancellationToken = CancellationToken.None;
+#else
+        // Under static SSR a closed connection stops the query; interactively there is no request to follow.
+        var cancellationToken = HttpContext?.RequestAborted ?? CancellationToken.None;
+#endif
         try
         {
             var provider = ContentProviderManager.GetDefaultProvider();
@@ -314,7 +320,7 @@ public partial class ContentList : IDisposable
                 else if (ShowPagination)
                 {
                     // One fetch: the full result gives the total and the requested page is sliced from it.
-                    var allItems = WithoutCurrentPage(await provider.GetItemsByQueryAsync(query) ?? []);
+                    var allItems = WithoutCurrentPage(await provider.GetItemsByQueryAsync(query, cancellationToken) ?? []);
                     TotalItems = allItems.Count;
 
                     // page=0, negative or past the last page (including int overflow) falls back to the nearest valid page.
@@ -327,10 +333,14 @@ public partial class ContentList : IDisposable
                     return;
                 }
 
-                var items = await provider.GetItemsByQueryAsync(query);
+                var items = await provider.GetItemsByQueryAsync(query, cancellationToken);
                 ContentItems = items is null ? null : WithoutCurrentPage(items);
                 loaded = true;
             }
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            // The request was aborted; there is no visitor left to render the list for.
         }
         catch (Exception ex)
         {
