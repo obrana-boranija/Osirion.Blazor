@@ -62,6 +62,23 @@ public class DirectoryMetadataProcessorTests
     }
 
     [Fact]
+    public void ProcessMetadata_WithoutTitle_KeepsTheFolderNameAndAppliesTheOtherKeys()
+    {
+        // Fails before the fix: the empty title made SetName throw, so description, order, locale and permalink were skipped.
+        var directory = DirectoryItem.Create("dir-id", "content/blog", "blog", "test-provider");
+        _markdownProcessor.ExtractFrontMatterAndContent(Arg.Any<string>())
+            .Returns((new FrontMatter { Description = "Posts", Order = 5, Lang = "sr", Permalink = "writing" }, string.Empty));
+
+        _processor.ProcessMetadata(directory, "---\ndescription: Posts\n---");
+
+        directory.Name.ShouldBe("blog");
+        directory.Description.ShouldBe("Posts");
+        directory.Order.ShouldBe(5);
+        directory.Locale.ShouldBe("sr");
+        directory.Url.ShouldBe("writing");
+    }
+
+    [Fact]
     public void ProcessMetadata_WithoutLang_KeepsTheLocaleTheFolderGave()
     {
         // Fails before the fix: the front matter's default "en" replaced the folder's locale "sr".

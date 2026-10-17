@@ -41,7 +41,12 @@ public class DirectoryMetadataProcessor : IDirectoryMetadataProcessor
             var frontmatter = _markdownProcessor.ExtractFrontMatterAndContent(metadataContent).FrontMatter;
 
             directory.SetMetadata(frontmatter);
-            directory.SetName(frontmatter?.Title ?? directory.Name);
+            // Front matter without a title parses to an empty one, which SetName rejects and which would skip every key below
+            if (!string.IsNullOrWhiteSpace(frontmatter?.Title))
+            {
+                directory.SetName(frontmatter.Title);
+            }
+
             directory.SetDescription(frontmatter?.Description ?? directory.Description);
             directory.SetOrder(frontmatter?.Order ?? directory.Order);
             directory.SetLocale(string.IsNullOrWhiteSpace(frontmatter?.Lang) ? directory.Locale : frontmatter.Lang);
