@@ -1,5 +1,7 @@
 ﻿using Osirion.Blazor.Cms.Domain.Options;
 
+#pragma warning disable CS0618 // The options under test are obsolete and keep working until they are removed.
+
 namespace Osirion.Blazor.Cms.Domain.Tests.Domain.Options;
 
 public class OptionsTests
@@ -15,8 +17,8 @@ public class OptionsTests
         Assert.False(options.IsDefault);
         Assert.False(options.EnableLocalization);
         Assert.Equal("en", options.DefaultLocale);
-        Assert.Single(options.SupportedLocales);
-        Assert.Equal("en", options.SupportedLocales[0]);
+        Assert.Empty(options.SupportedLocales);
+        Assert.Equal(["en"], options.GetEffectiveSupportedLocales());
         Assert.Equal(2, options.SupportedExtensions.Count);
         Assert.Contains(".md", options.SupportedExtensions);
         Assert.Contains(".markdown", options.SupportedExtensions);

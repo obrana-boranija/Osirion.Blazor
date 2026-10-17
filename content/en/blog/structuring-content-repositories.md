@@ -93,8 +93,8 @@ logged, so check the logs after adding content.
 Choose slugs once. Renaming a file without a `slug` key changes its URL and breaks every link to it. Setting `slug`
 explicitly keeps the URL when you rename the file.
 
-`permalink` sets the URL of a folder when you write it in that folder's `_index.md`. It does not change the URL of an
-ordinary content file.
+`permalink` sets the URL of a folder when you write it in that folder's `_index.md`. In 4.1.0 it does not change the URL
+of an ordinary content file; the release after 4.1.0 serves a file with a `permalink` at that address.
 
 ## Folder metadata in _index.md
 
@@ -126,7 +126,7 @@ without an error. `featured_image` works; `featuredImage` is silently ignored. T
 | `date` | Publication date, `yyyy-MM-dd`, read as UTC. Lists sort by it. |
 | `last_modified` | Date of the last meaningful change; from 4.0 it drives `dateModified` and the sitemap's `lastmod`. |
 | `slug` | The last URL segment (see above). |
-| `lang` | The item's locale. Without it, an item with front matter is read as `en`. |
+| `lang` | The item's locale. Without it, an item takes the locale of its folder, or `DefaultLocale` (the release after 4.1.0; 4.1.0 reads an item with front matter as `en`). |
 | `id` | Localization id that pairs translations. |
 | `categories`, `tags` | Lists of names. Their pages are `/category/{name}` and `/tag/{name}` by default, with the name in lower case and spaces as hyphens. |
 | `featured_image` | Image for the page header, lists and social previews. |

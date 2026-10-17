@@ -2,65 +2,27 @@
 id: 'homepage'
 order: 1
 layout: landing
-title: 'Osirion.Blazor'
+title: 'Blazor sites from Markdown, rendered on the server'
 permalink: /
-description: 'SSR-first Blazor components for content sites. Render Markdown from GitHub or a local folder as pages, lists and articles. For .NET 9 and .NET 10.'
+description: 'Osirion.Blazor is an open-source (MIT) Blazor component library. It turns Markdown from GitHub or a local folder into blogs, docs and product sites, with static SSR.'
 author: 'Dejan Demonjić'
 date: '2024-12-29'
-last_modified: 2026-10-11
+last_modified: 2026-10-17
 featured_image: '/images/osirion-hero.png'
 published: true
 slug: 'homepage'
 lang: 'en'
 seo_properties:
-  title: 'Osirion.Blazor - SSR-first Blazor components for content sites'
-  description: 'Open-source Blazor components that render Markdown from GitHub or a local folder as pages, lists and articles, with static SSR.'
+  title: 'Osirion.Blazor: Blazor components for content sites'
+  description: 'Open-source Blazor components that render Markdown from GitHub or a local folder as blogs, docs and product sites with static server-side rendering.'
   canonical: 'https://getosirion.com'
   robots: 'index, follow'
 ---
 
-Osirion.Blazor is an open-source (MIT) component library for Blazor sites built from content: blogs, documentation
-and marketing pages. It reads Markdown with front matter from a GitHub repository or a local folder and renders it as
-lists and articles. Every component renders its HTML on the server, so pages work under static server-side rendering
-and add script only where a component needs the browser.
+## The quickest path
 
-## What it does
-
-- **Content from Markdown.** Lists with paging, sorting and filters by folder, category or tag; article pages
-  with breadcrumbs, a table of contents and tags; search, a tag cloud and a category list. Localized content lives in
-  language folders.
-- **SEO.** Title, description, canonical URL, Open Graph and Twitter tags and schema.org structured data for each
-  page, and a missing article answers with HTTP 404.
-- **Safe output.** Rendered Markdown is cleaned with an allow-list, so script and event handler attributes in content
-  never reach the page.
-- **Page building blocks.** A page layout with header and footer, hero and other sections, cards, carousels, a
-  contact form and a cookie consent banner.
-- **Navigation.** Menus up to mega menus, scroll handling for Blazor's enhanced navigation and a scroll to top
-  button.
-- **Analytics.** Microsoft Clarity, Matomo, Google Analytics 4 and Yandex Metrica, optionally held back until the
-  visitor accepts analytics cookies.
-- **Theming.** Light and dark themes with a toggle, and adapters that make the components follow your CSS
-  framework.
-
-## Packages
-
-| Package | What it gives you |
-| --- | --- |
-| `Osirion.Blazor` | All modules below and `AddOsirion`, which configures them from `appsettings.json`. Start here. |
-| `Osirion.Blazor.Core` | Layout, sections, cards, carousels, the contact form, cookie consent, loading and not-found states, and the HTML sanitizer. |
-| `Osirion.Blazor.Cms.Web` | Content components: `ContentList`, `ContentView`, `ArticlePage`, `HomePage`, search, tags, categories, table of contents and SEO metadata. |
-| `Osirion.Blazor.Cms.Admin` | Admin pages under `/osirion` for editing content in a GitHub repository, behind an authorization policy. |
-| `Osirion.Blazor.Cms` | CMS web and CMS admin together. |
-| `Osirion.Blazor.Navigation` | `Menu`, `EnhancedNavigation` and `ScrollToTop`. |
-| `Osirion.Blazor.Analytics` | Tracker components for the analytics providers above. |
-| `Osirion.Blazor.Theming` | `OsirionStyles`, `ThemeToggle` and the CSS framework adapters. |
-
-The CMS packages also bring in their layers (`Cms.Domain`, `Cms.Application`, `Cms.Infrastructure` and `Cms.Core`);
-the GitHub and local folder content providers live in `Osirion.Blazor.Cms.Infrastructure`.
-
-## Quick start
-
-Add the package to a Blazor Web App:
+Osirion.Blazor runs on .NET 9 and .NET 10. In a Blazor Web App you already have (or a new one from `dotnet new blazor`),
+add the package:
 
 ```bash
 dotnet add package Osirion.Blazor
@@ -100,33 +62,16 @@ Then put `<OsirionStyles />` in your layout and list the posts in `content/blog`
 <ContentList Directory="blog" ShowPagination />
 ```
 
-[Getting started](/docs/getting-started) walks through every step, including the article page and a GitHub
-repository as the source.
+[Getting started](/docs/getting-started) walks through every step, including the article page and a GitHub repository
+as the content source. It also describes the `osirion-blog`, `osirion-docs` and `osirion-site` templates, which create
+a running site in three commands. The template package, `Osirion.Blazor.Templates`, is not on nuget.org yet, so use the
+steps above until it is. The [templates page](/templates) lists what each template creates.
 
-## CSS frameworks
+## Themes and frameworks
 
 Set `Osirion:Theming:Framework` to `Bootstrap`, `FluentUI`, `MudBlazor` or `Radzen` and `OsirionStyles` loads an
-adapter that maps the framework's colors onto Osirion's, so the components match the rest of the site in light and
-dark mode. Your app still loads the framework itself. Without a framework, the components use Osirion's own palette.
-
-The repository has complete example sites on Bootstrap, MudBlazor and Fluent UI.
-
-## Documentation
-
-- [Getting started](/docs/getting-started)
-- [Components overview](/components)
-- [CMS web components](/docs/packages/cms-web)
-- [Core components](/docs/packages/core)
-- [Theming](/docs/packages/theming)
-- [Blog](/blog)
-
-## New in 4.0
-
-Callouts, tabs, accordions and FAQ, steps, pricing tables, responsive images, video embeds, an
-announcement bar, a reading progress bar, a sitemap with RSS and Atom feeds, and Plausible and Umami analytics. The
-[component showcase](/showcase) renders the new content components with static SSR.
-
-## Source
-
-The source code, issues and examples are on [GitHub](https://github.com/demonjic/Osirion.Blazor), and the
-packages are on [NuGet](https://www.nuget.org/packages/Osirion.Blazor).
+adapter that maps the framework's colors onto Osirion's, so the components match the rest of the site in light and dark
+mode. Your app still loads the framework itself. On top of that, named [palettes](/components/palettes) (Osirion,
+Commit, Editor, Studio, Studio Blue and Contrast) change the colors of the whole page, and the choice is kept in a
+cookie so the server renders it without a flash. The picker below is the component itself: choose a palette and this
+page changes. The [themes page](/themes) shows every palette and the tokens behind them.

@@ -33,8 +33,10 @@ public class FrontMatter : ValueObject
     public string Title { get; set; } = string.Empty;
 
     /// <summary>
-    /// Custom URL for this content. Can use placeholders like :year, :title.
-    /// Example: "/blog/:year/:title/" or "/custom-url/"
+    /// The address this content is served at, instead of the one built from its folder and slug. A leading or
+    /// trailing slash is optional, the locale folder is not added, and the value is used as written: placeholders
+    /// such as <c>:year</c> are not expanded. Example: "/custom-url/". A folder's <c>_index.md</c> uses it for the
+    /// folder's address.
     /// </summary>
     public string? Permalink { get; set; }
 
@@ -49,9 +51,10 @@ public class FrontMatter : ValueObject
     public string Author { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets the date in ISO format (yyyy-MM-dd)
+    /// Gets the date in ISO format (yyyy-MM-dd). Empty when the file does not say, so the repository dates the item
+    /// from its source (a file's creation time) instead of the day it was loaded.
     /// </summary>
-    public string Date { get; set; } = DateTime.Now.ToString("yyyy-MM-dd");
+    public string Date { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets the last modified date in ISO format (yyyy-MM-dd)
@@ -108,9 +111,10 @@ public class FrontMatter : ValueObject
     public List<string> RedirectFrom { get; set; } = new List<string>();
 
     /// <summary>
-    /// Gets the language
+    /// Gets the language. Empty when the file does not say, so the repository gives the item the locale of its
+    /// folder, or the provider's default locale.
     /// </summary>
-    public string Lang { get; set; } = "en";
+    public string Lang { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets custom fields
@@ -131,7 +135,8 @@ public class FrontMatter : ValueObject
     {
         var frontMatter = new FrontMatter
         {
-            Title = title
+            Title = title,
+            Date = DateTime.Now.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)
         };
 
         return frontMatter;
@@ -441,7 +446,8 @@ public class FrontMatter : ValueObject
         if (values is null)
             throw new ArgumentNullException(nameof(values));
 
-        var frontMatter = Create(values.TryGetValue("title", out var title) ? title : string.Empty);
+        // Not Create: a page whose keys have no date has none, and is not dated the day it is read
+        var frontMatter = new FrontMatter { Title = values.TryGetValue("title", out var title) ? title : string.Empty };
 
         foreach (var (keys, apply) in KeyReaders)
         {

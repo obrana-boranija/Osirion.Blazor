@@ -170,4 +170,46 @@ public class UrlGeneratorTests
     {
         UrlGenerator.NormalizePath(path).ShouldBe(expected);
     }
+
+    [Theory]
+    [InlineData("/custom/place", "custom/place")]
+    [InlineData("custom/place", "custom/place")]
+    [InlineData("/custom/place/", "custom/place")]
+    [InlineData(@"\custom\place", "custom/place")]
+    public void GenerateUrl_WithPermalink_UsesItNormalizedWithoutLocaleFolder(string permalink, string expected)
+    {
+        // Fails before the fix: the permalink parameter was never read, so the address came from the path and slug.
+        var withoutLocalization = UrlGenerator.GenerateUrl(permalink, "blog/post.md", "post", false, null);
+        var withLocalization = UrlGenerator.GenerateUrl(permalink, "de/blog/post.md", "post", true, ["de"]);
+
+        withoutLocalization.ShouldBe(expected);
+        withLocalization.ShouldBe(expected);
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    [InlineData("/")]
+    public void GenerateUrl_WithBlankPermalink_BuildsTheAddressFromPathAndSlug(string permalink)
+    {
+        UrlGenerator.GenerateUrl(permalink, "blog/post.md", "post", false, null).ShouldBe("blog/post");
+    }
+
+    [Theory]
+    [InlineData("misc/my_index.md", "my-index", "misc/my-index")]
+    [InlineData("misc/_index.md.bak", "bak", "misc/bak")]
+    [InlineData("misc/x_index.md", "x-index", "misc/x-index")]
+    [InlineData("_index.md/post.md", "post", "_index.md/post")]
+    public void GenerateUrl_FileNameOnlyContainingIndexName_IsNotAFolderIndex(string path, string slug, string expected)
+    {
+        // Fails before the fix: any path containing "_index.md" was taken for a folder index, so misc/my_index.md got "misc".
+        UrlGenerator.GenerateUrl("", path, slug, false, null).ShouldBe(expected);
+    }
+
+    [Fact]
+    public void GenerateUrl_IndexFileWithPermalink_KeepsTheFolderAddress()
+    {
+        // The folder's own permalink is applied to the folder by the directory metadata, not to its index file here.
+        UrlGenerator.GenerateUrl("/elsewhere", "blog/_index.md", "blog", false, null).ShouldBe("blog");
+    }
 }

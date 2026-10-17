@@ -9,8 +9,9 @@ public sealed class OsirionFeedOptions
 {
     /// <summary>
     /// Gets or sets the site's public address, for example <c>https://getosirion.com</c>, used for every absolute URL
-    /// in the sitemap and feeds. When empty, the request's scheme, host and path base are used; set it in production
-    /// so a forged <c>Host</c> header cannot change the URLs a cache or crawler stores.
+    /// in the sitemap and feeds. When empty, <c>Osirion:Seo:SiteUrl</c> is used, and when that is empty too, the
+    /// request's scheme, host and path base; set one of them in production so a forged <c>Host</c> header cannot
+    /// change the URLs a cache or crawler stores.
     /// </summary>
     public string? SiteUrl { get; set; }
 

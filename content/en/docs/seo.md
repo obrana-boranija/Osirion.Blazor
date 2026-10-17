@@ -52,7 +52,7 @@ HTML.
 | `hreflang` links | `SeoMetadataRenderer` | Only from the `AlternateLanguageUrls` you pass; see [Localization](/docs/localization) |
 | `/sitemap.xml`, `/feed.xml` (RSS 2.0), `/atom.xml` | `MapOsirionFeeds` | From published content; available since 4.0 |
 | 301 redirects from old addresses | `UseOsirionRedirects` | From `redirect_from` front matter; available since 4.0 |
-| `/robots.txt` | `UseOsirionRobotsGenerator`, optional | See step 5; a static file is the better route |
+| `/robots.txt` | `UseOsirionRobotsGenerator`, optional | See step 5; a static file works in every release |
 
 What the library does not do: write your titles and descriptions, choose your addresses, set your public host, submit the
 sitemap to a search engine, or measure anything. That is the site's job.
@@ -78,7 +78,7 @@ In `appsettings.json`, under `Osirion:Seo`, which `AddOsirion(builder.Configurat
 `SiteName` follows the page title (`Page title | My Blog`) and is the name of the publisher in structured data;
 `OrganizationName` takes its place only when `SiteName` is missing, and with neither the name is taken from the host.
 `SiteLogoUrl` is the publisher logo (`/logo.png` on your site when unset, whether or not that file exists), and
-`DefaultImageUrl` is the share image for pages that have no `featured_image`. The other options and the parameters that
+`DefaultImageUrl` is the share image for pages that have no `og_image_url`, `image` or `featured_image`. The other options and the parameters that
 override them are on the [SeoMetadataRenderer](/components/seo-metadata-renderer) page.
 
 ## 3. Write a title and description for every page
@@ -139,7 +139,7 @@ The `Feeds` section name belongs to the templates; any name works, or set the pr
 
 | Option | Default | Effect |
 | --- | --- | --- |
-| `SiteUrl` | the request's address | Public address in every URL. Set it in production, so a forged `Host` header cannot change the URLs a cache stores. |
+| `SiteUrl` | `Osirion:Seo:SiteUrl`, then the request's address | Public address in every URL. Set one of them in production, so a forged `Host` header cannot change the URLs a cache stores. The `Osirion:Seo:SiteUrl` fallback arrives in the release after 4.1.0; in 4.1.0 set this option. |
 | `Title`, `Description` | `Osirion:Seo` `SiteName` and `SiteDescription` | Feed title and description. |
 | `FeedDirectory` | all content | The folder the feeds list, for example `blog`: the pages directly in it, not those of its subfolders. In 4.1.0 it matches the folder's display name (the `title` of its `_index.md` when it has one); the release after 4.1.0 also accepts the folder name. |
 | `FeedLocale` | every language | The language the feeds list. |
@@ -165,10 +165,12 @@ Allow: /
 Sitemap: https://example.com/sitemap.xml
 ```
 
-The library can also answer `/robots.txt` (`app.UseOsirionRobotsGenerator()`), but it answers with the rendered HTML of
-a content item at the address `robots`, or with a fixed `User-agent: *` and `Disallow: /search/` when there is none.
-Markdown cannot produce a valid robots file that way, so use the static file. `robots.txt` also does not keep a page out of
-search results; use `robots: noindex` in `seo_properties` for that.
+The library can also answer `/robots.txt` (`app.UseOsirionRobotsGenerator()`) from a content item at the address
+`robots`, or with a fixed `User-agent: *` and `Disallow: /search/` when there is none. From the release after 4.1.0 it
+answers with the item's source text, so a `robots.md` that holds plain robots rules is served as those rules. In 4.1.0 it
+answers with the item's rendered HTML (`<p>User-agent: *</p>`) under a `text/plain` type, which crawlers cannot use, so on
+4.1.0 use the static file. `robots.txt` also does not keep a page out of search results; use `robots: noindex` in
+`seo_properties` for that.
 
 Let browsers and feed readers find the feeds from your layout, in `App.razor`:
 
@@ -189,7 +191,7 @@ as described in [How content is organized](/docs/content). A 301 tells search en
 
 JSON-LD is chosen by the `SchemaTypes` parameter, else `seo_properties.type`, else `WebPage`. A page with a front matter
 block has `type: Article` unless it sets another, so it gets `Article`; a file with no front matter gets `WebPage`.
-Write the type name exactly: an unrecognized spelling gives `WebPage`. The generated types are
+The name is read ignoring case (`techarticle` is `TechArticle`); an unrecognized name gives `WebPage`. The generated types are
 `Article`, `BlogPosting`, `TechArticle`, `WebPage`, `AboutPage`, `ContactPage`, `ProfilePage`, `SoftwareApplication`,
 `Product`, `Organization`, `Person`, `LocalBusiness`, `Event`, `Recipe`, `Course`, `Review`, `VideoObject`, `WebSite`,
 `BreadcrumbList` and `CollectionPage`, plus `HowTo`. With one type and `GenerateMultipleSchemas` on (the default), a

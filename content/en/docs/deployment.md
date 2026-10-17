@@ -78,8 +78,8 @@ Set these on the host as environment variables. Nothing here belongs in a file y
 | `Osirion__Cms__Web__GitHub__Blog__ApiToken` | The site uses a GitHub provider named `Blog`. Replace `Blog` with your provider's name, the key under `Osirion:Cms:Web:GitHub`. |
 | `Osirion__Cms__Web__GitHub__Blog__WebhookSecret` | You register the GitHub webhook (step 5). |
 | `Osirion__Cms__Web__FileSystem__BasePath` | The content folder sits at an absolute path on the host. |
-| `Feeds__SiteUrl` | The site maps the sitemap and feeds and binds a `Feeds` section, as the templates do (step 4). |
-| `Osirion__Seo__SiteUrl` | You want canonical URLs to use your public address. Arrives in the release after 4.1.0. |
+| `Feeds__SiteUrl` | The site maps the sitemap and feeds and binds a `Feeds` section, as the templates do (step 4). From the release after 4.1.0 `Osirion__Seo__SiteUrl` can stand in for it. |
+| `Osirion__Seo__SiteUrl` | You want canonical URLs, and from the release after 4.1.0 the sitemap and feeds, to use your public address. Arrives in the release after 4.1.0. |
 | `Osirion__Email__Smtp__Password` or an API key | The contact form sends email. |
 
 The double underscore stands for the colon in a configuration key. Without a GitHub token the provider loads no content
@@ -144,7 +144,9 @@ app.MapOsirionFeeds(feeds => app.Configuration.GetSection("Feeds").Bind(feeds));
 ```
 
 Without `SiteUrl`, the addresses follow whatever scheme and `Host` the request carried, so a forged `Host` header can
-put another host into a response that a cache stores. Set it in production. `MapOsirionFeeds` throws at startup if
+put another host into a response that a cache stores. Set it in production. From the release after 4.1.0 the feeds fall
+back to `Osirion:Seo:SiteUrl` before they use the request, so a site that sets that address once needs no `Feeds`
+section for it; in 4.1.0 set `Feeds:SiteUrl`. `MapOsirionFeeds` throws at startup if
 `SiteUrl` is not an absolute `http` or `https` address. The options are on the
 [feeds and sitemap page](/components/feeds-and-sitemap).
 
@@ -221,7 +223,8 @@ starts with your public address, not an internal host name or `http://`.
 - A sitemap that holds only the paths you listed in `AdditionalSitemapUrls` means the provider has no content. For the
   file system, the content folder was not published or `BasePath` is wrong; for GitHub, the token is missing or
   wrong. The log names which one (see the [providers guide](/docs/providers)).
-- `http://` addresses in the sitemap behind an HTTPS proxy: set `SiteUrl`, and add the forwarded headers from step 3.
+- `http://` addresses in the sitemap behind an HTTPS proxy: set `SiteUrl` (or, from the release after 4.1.0,
+  `Osirion:Seo:SiteUrl`), and add the forwarded headers from step 3.
 - A 404 for `/sitemap.xml`: `MapOsirionFeeds` is not called in `Program.cs`.
 
 ## Next steps

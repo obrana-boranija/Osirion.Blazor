@@ -175,14 +175,13 @@ public class GitHubApiClientFactory : IGitHubApiClientFactory
             ContentPath = options.ContentPath,
             EnableLocalization = options.EnableLocalization,
             DefaultLocale = options.DefaultLocale,
-            SupportedLocales = options.SupportedLocales,
+            SupportedLocales = options.GetEffectiveSupportedLocales(),
             SupportedExtensions = options.SupportedExtensions,
             ValidateContent = options.ValidateContent,
             WebhookSecret = options.WebhookSecret,
             EnablePolling = options.EnablePolling,
             PollingIntervalSeconds = options.PollingIntervalSeconds,
             UseBackgroundCacheUpdate = options.UseBackgroundCacheUpdate,
-            ExcludePatterns = options.ExcludePatterns,
             Authentication = options.Authentication
         };
 

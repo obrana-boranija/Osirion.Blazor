@@ -71,7 +71,9 @@ public class FileSystemOptions : ContentProviderOptions
 }
 ```
 
-`CacheOptions` binds from `Osirion:Cms:Cache` (`Enabled`, `StaleTimeMinutes`, `MaxAgeMinutes`, `UseStaleWhileRevalidate`, `SizeLimitMB`, `CompactionPercentage`).
+`ExcludePatterns` skips files whose path under `BasePath` matches a glob, such as `**/drafts/**`. `ContentRoot` is the prefix removed when URLs are built, and the inherited `ContentPath` stands in for it when `ContentRoot` is empty. `PollingIntervalMs` and `IncludePatterns` are obsolete because nothing reads them: use `WatchForChanges` to refresh content, and `SupportedExtensions` to choose the file types. `GitHubOptions.ExcludePatterns` is obsolete for the same reason: use `ContentPath` and `SupportedExtensions`.
+
+`CacheOptions` binds from `Osirion:Cms:Cache` and is obsolete: the providers keep their own content caches, and the options only configure `IContentCacheService` and `CacheDecoratorFactory`, which no CMS component uses. Remove the section; the type goes in the next major version.
 
 ## GitHub API Clients and Credentials
 

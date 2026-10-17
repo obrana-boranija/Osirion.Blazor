@@ -122,6 +122,51 @@ public class ContentFeedEndpointsTests
     }
 
     [Fact]
+    public async Task Sitemap_NoFeedSiteUrl_UsesTheSeoSiteUrl()
+    {
+        // Fails before the fix: only OsirionFeedOptions.SiteUrl was read, so the sitemap listed the request's
+        // address (http://request.example behind a proxy) although Osirion:Seo:SiteUrl named the site.
+        var (_, body) = await InvokeAsync(ContentFeedKind.Sitemap, new OsirionFeedOptions(), seoSiteUrl: "https://example.com/");
+
+        XDocument.Parse(body).Root!.Elements(Sitemap + "url").Select(u => u.Element(Sitemap + "loc")!.Value)
+            .ShouldBe(["https://example.com/blog/second-post", "https://example.com/blog/first-post"]);
+    }
+
+    [Fact]
+    public async Task Rss_NoFeedSiteUrl_UsesTheSeoSiteUrlForTheChannelAndItems()
+    {
+        var (_, body) = await InvokeAsync(ContentFeedKind.Rss, new OsirionFeedOptions(), seoSiteUrl: "https://example.com");
+
+        var channel = XDocument.Parse(body).Root!.Element("channel")!;
+        channel.Element("link")!.Value.ShouldBe("https://example.com/");
+        channel.Element("item")!.Element("link")!.Value.ShouldBe("https://example.com/blog/second-post");
+    }
+
+    [Fact]
+    public async Task Feed_FeedSiteUrlAndSeoSiteUrl_FeedSiteUrlWins()
+    {
+        var (_, body) = await InvokeAsync(
+            ContentFeedKind.Rss,
+            new OsirionFeedOptions { SiteUrl = "https://feeds.example.com" },
+            seoSiteUrl: "https://example.com");
+
+        XDocument.Parse(body).Root!.Element("channel")!.Element("item")!.Element("link")!.Value
+            .ShouldBe("https://feeds.example.com/blog/second-post");
+    }
+
+    [Theory]
+    [InlineData("not a url")]
+    [InlineData("/relative")]
+    [InlineData("ftp://example.com")]
+    public async Task Feed_SeoSiteUrlNotAnAbsoluteHttpUrl_FallsBackToTheRequest(string seoSiteUrl)
+    {
+        var (_, body) = await InvokeAsync(ContentFeedKind.Rss, new OsirionFeedOptions(), seoSiteUrl: seoSiteUrl);
+
+        XDocument.Parse(body).Root!.Element("channel")!.Element("item")!.Element("link")!.Value
+            .ShouldBe("https://request.example/blog/second-post");
+    }
+
+    [Fact]
     public async Task Feed_TitleWithMarkup_IsEscapedAndRoundTrips()
     {
         _manager.GetContentByQueryAsync(Arg.Any<ContentQuery>(), Arg.Any<CancellationToken>()).Returns(new List<ContentItem>
@@ -215,11 +260,11 @@ public class ContentFeedEndpointsTests
     }
 
     private async Task<(HttpContext Context, string Body)> InvokeAsync(
-        ContentFeedKind kind, OsirionFeedOptions options, Action<HttpRequest>? configureRequest = null)
+        ContentFeedKind kind, OsirionFeedOptions options, Action<HttpRequest>? configureRequest = null, string? seoSiteUrl = null)
     {
         var services = new ServiceCollection();
         services.AddSingleton(_manager);
-        services.AddSingleton(Microsoft.Extensions.Options.Options.Create(new SeoMetadataOptions { SiteName = "Osirion", SiteDescription = "Docs" }));
+        services.AddSingleton(Microsoft.Extensions.Options.Options.Create(new SeoMetadataOptions { SiteName = "Osirion", SiteDescription = "Docs", SiteUrl = seoSiteUrl }));
         var context = new DefaultHttpContext { RequestServices = services.BuildServiceProvider() };
         context.Request.Scheme = "https";
         context.Request.Host = new HostString("request.example");

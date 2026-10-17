@@ -12,6 +12,8 @@ using Osirion.Blazor.Cms.Infrastructure.Providers;
 using Osirion.Blazor.Cms.Infrastructure.Services;
 using Shouldly;
 
+#pragma warning disable CS0618 // The options under test are obsolete and keep working until they are removed.
+
 namespace Osirion.Blazor.Cms.Infrastructure.Tests.Builders;
 
 public class OsirionCmsBuilderTests

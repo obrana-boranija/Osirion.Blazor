@@ -30,10 +30,31 @@ public class ContentProviderOptions
     /// </summary>
     public string DefaultLocale { get; set; } = "en";
 
+    private List<string> _supportedLocales = new();
+    private bool _supportedLocalesAssigned;
+
     /// <summary>
-    /// Gets or sets the supported locales
+    /// Gets or sets the supported locales: the folder names that count as locales. Empty until configured, so a
+    /// configured list (for example <c>["en", "sr"]</c> in appsettings) is exactly the list, not appended to a default.
+    /// Read the list a provider uses with <see cref="GetEffectiveSupportedLocales"/>.
     /// </summary>
-    public List<string> SupportedLocales { get; set; } = new() { "en" };
+    public List<string> SupportedLocales
+    {
+        get => _supportedLocales;
+        set
+        {
+            _supportedLocales = value ?? new List<string>();
+            _supportedLocalesAssigned = true;
+        }
+    }
+
+    /// <summary>
+    /// Gets the locales the provider uses: <see cref="SupportedLocales"/>, or <c>en</c> when none was configured.
+    /// A list assigned as empty stays empty, which accepts any language code shaped folder name as a locale.
+    /// </summary>
+    /// <returns>The locales to use.</returns>
+    public List<string> GetEffectiveSupportedLocales() =>
+        _supportedLocalesAssigned || _supportedLocales.Count > 0 ? _supportedLocales : new List<string> { "en" };
 
     /// <summary>
     /// Gets or sets the supported file extensions

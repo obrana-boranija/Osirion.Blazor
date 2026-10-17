@@ -76,7 +76,7 @@
                                         <input type="checkbox"
                                                name="category_@category.Id"
                                                value="true"
-                                               checked="@(category.IsRequired || category.IsEnabled)"
+                                               checked="@IsChecked(category)"
                                                disabled="@category.IsRequired"
                                                class="@GetCheckboxClass()" />
                                         <div class="osirion-cookie-consent-category-info">

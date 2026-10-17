@@ -67,7 +67,7 @@ is the creation time of the file and every other value takes its default.
 | `title` | string | none | The page's heading, its link text in lists and the base of the `<title>`. Required once the file has a front matter block: an empty title stops the file from loading. |
 | `description` | string | empty | The meta description (cut to 160 characters), the summary in lists and the feed description. |
 | `slug` | string | from the file name | The last part of the address. Lowercase letters, digits and hyphens only; anything else stops the file from loading. |
-| `date` | date text | the day the content was loaded | The publication date: list order, the feed `pubDate`, `datePublished`. See step 3. |
+| `date` | date text | the file's creation time (the load time with a GitHub provider) | The publication date: list order, the feed `pubDate`, `datePublished`. In 4.1.0 a missing `date` is the day the content was loaded. See step 3. |
 | `last_modified` | date text | `date` | When the page last changed: `dateModified`, `article:modified_time`, sitemap `lastmod`. See step 3. |
 | `author` | string | empty | The byline, `article:author` and the author in structured data. |
 | `categories` | list of strings | empty | Category pages and lists. The first one is `article:section`. |
@@ -77,11 +77,11 @@ is the creation time of the file and every other value takes its default.
 | `published` | boolean | `true` | `false` keeps the page out of lists, the sitemap, feeds, redirects and the page components. |
 | `order` | integer | `0` | Position when a list sorts by order, and in documentation navigation. For an `_index.md`, the folder's position. |
 | `id` | string | none | Pairs translations: items with the same `id` are translations of each other. With localization on, a missing `id` is built from the path without the language folder. |
-| `lang` | string | `en` | The page's language: `og:locale`, `inLanguage`, the `Locale` filter of queries. A missing `lang` is `en`, even in a folder for another language. See the [localization guide](/docs/localization). |
+| `lang` | string | the folder's locale, or `DefaultLocale` | The page's language: `og:locale`, `inLanguage`, the `Locale` filter of queries. A missing `lang` takes the locale of the page's language folder, or `DefaultLocale`; this arrives in the release after 4.1.0, and 4.1.0 reads a missing `lang` as `en`, even in a folder for another language. See the [localization guide](/docs/localization). |
 | `redirect_from` | list of strings | empty | Earlier addresses that redirect to this page, with `UseOsirionRedirects`. |
 | `series` | string | none | Pages with the same series name are listed together by `ContentSeriesNavigation`. |
 | `series_order` | integer | none | The page's position in its series, starting at 1. |
-| `permalink` | string | none | Read, but it does not change a page's address. An `_index.md` uses it as its folder's address. |
+| `permalink` | string | none | The address the page is served at, such as `/docs/deploy`; slashes at the ends are optional, no language folder is added, and placeholders such as `:year` are not expanded. An `_index.md` uses it as its folder's address. Arrives in the release after 4.1.0; 4.1.0 reads it but does not change the page's address. |
 | `layout` | string | none | Stored on the item as `Metadata.Layout`. No library component picks a template from it; your own code can. |
 | `custom_fields` | map | empty | Your own values. See step 4. |
 | `seo_properties` | map | see step 5 | Search and social overrides. |
@@ -103,11 +103,12 @@ date: 2026-10-17
 last_modified: 2026-10-17T09:30:00Z
 ```
 
-A date without a time zone is taken as UTC. A page without a `date` key gets the day the content was loaded. A `date`
-that cannot be parsed is not an error either: the page gets the creation time of its file (the load time with a GitHub
-provider), and so does a file with no front matter block. None of these values is stable. A new day, a restart or a
-fresh checkout changes them, so an undated page jumps to the top of newest-first lists and moves its sitemap `lastmod`
-and feed date. Always write `date`.
+A date without a time zone is taken as UTC. A page without a `date` key is not an error either: it gets the creation
+time of its file (the load time with a GitHub provider), the same as a `date` that cannot be parsed and a file with no
+front matter block. This arrives in the release after 4.1.0; in 4.1.0 a page with front matter and no `date` key gets
+the day the content was loaded, so it changes on every restart. Even with the fix, a file's creation time changes with a
+fresh checkout or deployment, and the load time of a GitHub page changes on every restart, so an undated page can still
+jump to the top of newest-first lists and move its sitemap `lastmod` and feed date. Always write `date`.
 
 `last_modified` is what search engines and feed readers see as the change date. When it is missing, the page was
 last modified on its `date`. The file's write time is not used, because a fresh checkout gives every file the time of
@@ -156,21 +157,23 @@ key is optional.
 | `title` | the page `title` | The `<title>`, followed by a vertical bar and the site name. Never cut by the library. |
 | `description` | the page `description` | The meta description, cut to 160 characters. |
 | `canonical` | the page's own address | The `rel="canonical"` link, `og:url` and the address in structured data. Use it only when another address is the preferred one. |
-| `robots` | `index, follow` | The robots meta tag. A value with `noindex` also keeps the page out of the sitemap. |
+| `robots` | `index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1` | The robots meta tag. A value with `noindex` also keeps the page out of the sitemap. |
 | `og_title` | the page `title` | `og:title`, cut to 60 characters. |
 | `og_description` | the meta description | `og:description`, cut to 200 characters. |
-| `og_image_url` | `featured_image`, then the site's `DefaultImageUrl` | `og:image`. A relative address becomes absolute. |
-| `og_type` | `article` | `og:type`. The default is `article` for every page, so set `website` on pages that are not articles. |
+| `og_image_url` | `image`, then `featured_image`, then the site's `DefaultImageUrl` | `og:image`. A relative address becomes absolute. |
+| `og_type` | from the schema type | `og:type`. Without it the first schema type decides: `article` for Article, BlogPosting and TechArticle, `profile`, `product`, `video.other`, otherwise `website`. |
 | `twitter_card` | `summary_large_image` | `twitter:card`. |
 | `twitter_title` | `og_title` | `twitter:title`, cut to 70 characters. |
 | `twitter_description` | the meta description | `twitter:description`, cut to 200 characters. |
 | `twitter_image_url` | the Open Graph image | `twitter:image`. |
-| `type` | `Article` | The schema.org type, used when the component is not given `SchemaTypes`. Write the exact `SchemaType` name, such as `TechArticle`: another spelling or case falls back to `WebPage` without a message. |
+| `type` | `Article` | The schema.org type, used when the component is not given `SchemaTypes`. Write a `SchemaType` name, such as `TechArticle`; case does not matter, but another spelling falls back to `WebPage` without a message. |
 | `json_ld` | none | Your own JSON-LD, as a JSON string. It replaces the generated data; text that is not a JSON object or array is ignored and a warning is logged. |
-| `image`, `lang`, `meta_tags` | none | Read into the model, but `SeoMetadataRenderer` writes nothing from them. Use `og_image_url` and the page's `lang` instead. |
+| `image` | none | The default social image: `og:image` and `twitter:image` use it when `og_image_url` is not set, before `featured_image`. |
+| `lang` | the page locale | `og:locale`, for example `de-DE` is written as `de_DE`. The `lang` meta tag and the structured data language keep the page locale. |
+| `meta_tags` | none | Extra meta elements, a map of name to content. A name starts with a letter and holds only letters, digits and `- _ . :` (at most 64 characters); other names are skipped with a logged warning, and so are the names the renderer writes itself (`description`, `keywords`, `author`, `generator`, `language`, `robots`, `googlebot`, `bingbot`, `referrer`). Values are HTML encoded. |
 
-These defaults come with a front matter block. A file with none gets `website` for `og:type`, `WebPage` for the schema
-type and a robots tag that adds `max-snippet`, `max-image-preview` and `max-video-preview` directives to `index, follow`.
+These defaults apply to every page. A page with a front matter block has `type: Article` unless it sets another, so it gets `Article`; a file with none gets `WebPage` for the schema
+type, and `og:type` follows the schema type for both.
 
 The page components pick their own schema types (`DocumentPage` uses `TechArticle`, `ArticlePage` takes the types you
 pass), so `type` matters mainly when you call the renderer yourself. See the [SEO guide](/docs/seo) for what the
@@ -186,7 +189,7 @@ id: 'guide-deploy'                  # pairs translations of this page
 order: 4                            # position in an order-sorted list
 layout: docs                        # stored on the item; your code may read it
 title: "Deploy the site"            # heading, link text, base of the <title>
-permalink: /docs/deploy             # read, but the address comes from folder and slug
+permalink: /docs/deploy             # the page's address (release after 4.1.0)
 description: "Publish the site to a web host."   # meta description, summaries
 author: Your Name                   # byline and structured data
 date: 2026-10-17                    # publication date

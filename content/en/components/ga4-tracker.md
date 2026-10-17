@@ -125,7 +125,6 @@ With the defaults and these placeholder values (not real ones), the tracker writ
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
     gtag('config', "G-XXXXXXXXXX", {"anonymize_ip":true,"send_page_view":true,"transport_type":"beacon"});
-    gtag('require', 'linkid');
     document.addEventListener('click', function (e) {
         if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) { return; }
         var el = e.target && e.target.closest ? e.target.closest('a[href]') : null;
@@ -158,8 +157,8 @@ The keys live under `Osirion:Analytics:GA4`. Every service also has `Enabled` (d
 | `SendPageView` | `true` | Writes `send_page_view`; `false` leaves the first page view to your own code. |
 | `TransportType` | `beacon` | Writes `transport_type`. |
 | `TrackOutboundLinks` | `true` | Adds the outbound link click handler. |
-| `LinkAttribution` | `true` | Adds `gtag('require', 'linkid')`. |
-| `DebugMode` | `false` | Writes `window.ga_debug = {debug_mode: true}` before the config call. |
+| `LinkAttribution` | `true` | Obsolete and without effect. It wrote `gtag('require', 'linkid')`, a Universal Analytics command that is not part of gtag.js. |
+| `DebugMode` | `false` | Writes `debug_mode: true` in the `config` call, the form the [DebugView page](https://support.google.com/analytics/answer/7201382) documents. `false` writes nothing, because Google turns debug mode off by leaving the parameter out. |
 | `CookieDomain`, `CookieFlags`, `CookieExpires` | none | Written into the config call when set (`CookieExpires` is an integer). |
 | `RestrictDataProcessing` | `false` | Writes `restricted_data_processing: true`. |
 | `ConfigParameters` | none | A dictionary of extra parameters merged into the config call; a key of the same name replaces the one above. |

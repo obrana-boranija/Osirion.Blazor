@@ -21,12 +21,15 @@ public class GA4Options : AnalyticsOptions
     public bool AnonymizeIp { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets whether to enable enhanced link attribution
+    /// Gets or sets whether to enable enhanced link attribution. It has no effect: it wrote <c>gtag("require", "linkid")</c>,
+    /// a Universal Analytics command that the gtag.js command reference does not list.
     /// </summary>
+    [Obsolete("Has no effect: gtag(\"require\", \"linkid\") was a Universal Analytics command and is not part of gtag.js.")]
     public bool LinkAttribution { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets whether to enable debug mode
+    /// Gets or sets whether to enable debug mode. It writes <c>debug_mode: true</c> in the <c>config</c> call, so the visits of
+    /// this browser appear in the DebugView report of Google Analytics.
     /// </summary>
     public bool DebugMode { get; set; } = false;
 

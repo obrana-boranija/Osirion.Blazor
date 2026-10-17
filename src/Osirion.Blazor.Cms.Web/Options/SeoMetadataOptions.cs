@@ -23,7 +23,8 @@ public class SeoMetadataOptions
     public string? SiteUrl { get; set; }
 
     /// <summary>
-    /// Gets or sets the site-wide description used for organization schema.
+    /// Gets or sets the site-wide description. <c>MapOsirionFeeds</c> uses it as the feed description when the feed
+    /// options set none. <c>SeoMetadataRenderer</c> writes no tag and no structured data from it.
     /// </summary>
     public string? SiteDescription { get; set; }
 
@@ -125,4 +126,12 @@ public class SeoMetadataOptions
     /// Gets or sets the default schema types to generate for content pages.
     /// </summary>
     public SchemaType[]? DefaultSchemaTypes { get; set; }
+
+    /// <summary>
+    /// Gets or sets meta elements written on every page, as name and content pairs, such as
+    /// <c>ai-content-declaration</c>. The renderer makes no such declaration on its own. A front matter
+    /// <c>meta_tags</c> entry with the same name replaces the value for that page. Names follow the rules of
+    /// <c>meta_tags</c>: a letter, then letters, digits and <c>- _ . :</c>, and not a name the renderer writes itself.
+    /// </summary>
+    public Dictionary<string, string> AdditionalMetaTags { get; set; } = [];
 }
