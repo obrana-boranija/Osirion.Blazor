@@ -17,7 +17,10 @@ public partial class ThemeToggle : IDisposable
     [Parameter]
     public string? Id { get; set; }
 
-    /// <summary>Gets or sets the OnThemeChanged value.</summary>
+    /// <summary>
+    /// Gets or sets a callback that is declared but never raised: the theme changes in the browser and the server is
+    /// not notified. Listen for the <c>osirion-theme-update</c> browser event on <c>window</c> instead.
+    /// </summary>
     [Parameter]
     public EventCallback<string> OnThemeChanged { get; set; }
 
