@@ -155,7 +155,7 @@ A banner with your own text and categories:
   visitor checked; unchecked ones are left out, which counts as no consent. Custom category IDs are therefore
   recorded only through the panel.
 - **The cookie.** `osirion_cookie_consent` holds JSON with `Version`, `ConsentDate`, `ConsentType` and
-  `Categories`. It is `HttpOnly`, `Secure` and `SameSite=Lax`, so serve the site over HTTPS. Script cannot read it;
+  `Categories`. It is `HttpOnly` and `SameSite=Lax`, and `Secure` whenever the request is HTTPS, so serve the site over HTTPS in production (over plain HTTP, as in local development, it is kept without `Secure`). Script cannot read it;
   decisions are made on the server.
 - **Security.** The form carries an antiforgery token. A post without a valid token gets 400 and records nothing,
   and the endpoint redirects only to local paths.

@@ -222,6 +222,33 @@ public class CookieConsentHandlerTests
         (expires - DateTimeOffset.UtcNow).TotalDays.ShouldBe(expectedDays, tolerance: 0.01);
     }
 
+    // Fails before the fix: the cookie always carried Secure, so on plain HTTP the browser dropped it and the banner
+    // came back on every page.
+    [Fact]
+    public async Task HandleConsentAsync_PlainHttp_SetsANonSecureCookieSoTheBrowserKeepsIt()
+    {
+        var context = CreateContext(Form("accepted", "/"));
+        context.Request.Scheme = "http";
+
+        await CookieConsentHandler.HandleConsentAsync(context);
+
+        var cookie = context.Response.Headers.SetCookie.ToString();
+        cookie.ShouldStartWith($"{ConsentCookieName}=");
+        cookie.ShouldNotContain("secure", Case.Insensitive);
+        cookie.ShouldContain("httponly", Case.Insensitive);
+    }
+
+    [Fact]
+    public async Task HandleConsentAsync_Https_SetsASecureCookie()
+    {
+        var context = CreateContext(Form("accepted", "/"));
+        context.Request.Scheme = "https";
+
+        await CookieConsentHandler.HandleConsentAsync(context);
+
+        context.Response.Headers.SetCookie.ToString().ShouldContain("secure", Case.Insensitive);
+    }
+
     private static Dictionary<string, StringValues> Form(string consent, string returnUrl) => new()
     {
         ["consent"] = consent,

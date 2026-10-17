@@ -93,7 +93,8 @@ public static class CookieConsentHandler
         var cookieOptions = new CookieOptions
         {
             HttpOnly = true,
-            Secure = true,
+            // Over plain HTTP (local development) a Secure cookie is dropped and the banner would return on every page.
+            Secure = context.Request.IsHttps,
             SameSite = SameSiteMode.Lax,
             Expires = DateTimeOffset.UtcNow.AddDays(GetExpiryDays(form["expiryDays"].FirstOrDefault())),
             Path = "/"

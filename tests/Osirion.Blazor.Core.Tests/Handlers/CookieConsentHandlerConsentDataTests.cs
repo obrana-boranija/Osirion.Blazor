@@ -92,6 +92,7 @@ public class CookieConsentHandlerConsentDataTests
     public async Task HandleConsentAsync_ConsentCookie_IsHttpOnlySecureLaxAndSiteWide()
     {
         var context = CreateContext(new() { ["consent"] = "accepted", ["returnUrl"] = "/" });
+        context.Request.Scheme = "https";
 
         await CookieConsentHandler.HandleConsentAsync(context);
 
