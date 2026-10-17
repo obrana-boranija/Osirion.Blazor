@@ -87,7 +87,8 @@ The CMS article page uses it the same way for its table of contents. Give the si
 layout; `position: sticky` only takes effect while the parent is taller than the sidebar and no ancestor between
 them sets `overflow: hidden`.
 
-When your header is taller than 2.5rem, set the offset with the custom property the stylesheet reads:
+When your header is taller than 2.5rem, set `TopOffset` in pixels (`<OsirionStickySidebar TopOffset="64">`), or set the
+custom property the stylesheet reads, which applies while `TopOffset` is left at its default:
 
 ```css
 .docs-grid {
@@ -102,7 +103,7 @@ When your header is taller than 2.5rem, set the offset with the custom property 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
 | `ChildContent` | `RenderFragment?` | `null` | The content of the `aside` element. |
-| `TopOffset` | `int` | `40` | The intended offset from the top of the viewport, in pixels (default 40, which is 2.5rem). The value is not written to the markup, so it has no effect; set the CSS custom property `--osirion-header-height` instead. |
+| `TopOffset` | `int` | `40` | The offset from the top of the viewport, in pixels (default 40, which is 2.5rem). A value other than the default is written to the `aside` as `--osirion-header-height`; at the default the stylesheet decides, so a site that sets the custom property itself keeps working. |
 | `HideScrollbar` | `bool` | `true` | Whether the scrollbar is hidden (class `osirion-no-scrollbar`). The sidebar still scrolls with the wheel, touch and keyboard. |
 | `IsSticky` | `bool` | `true` | Whether the sidebar sticks below the header. `false` adds `osirion-non-sticky`, which renders a normal, static `aside` with its natural height. |
 | `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
@@ -111,9 +112,8 @@ When your header is taller than 2.5rem, set the offset with the custom property 
 
 <!-- /osirion:parameters -->
 
-`TopOffset` has no effect in the current release: the component builds the custom property from it but does not
-write it to the markup, so set `--osirion-header-height` in CSS as shown above. `Style`, `Theme` and unmatched
-attributes are not applied to the markup.
+A `TopOffset` other than the default is written to the `aside` as an inline `--osirion-header-height`, which wins over
+a value set in CSS. `Style`, `Theme` and unmatched attributes are not applied to the markup.
 
 ## Behavior
 

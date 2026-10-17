@@ -20,6 +20,17 @@ public class OsirionContactInfoSectionTests : OsirionComponentTestBase
         cut.Find("a[href='mailto:a@b.example']").TextContent.ShouldBe("a@b.example");
     }
 
+    // Fails before the fix: Class was written twice on the root, once by CombineCssClasses and once by the markup.
+    [Fact]
+    public void ContactInfoSection_Class_IsWrittenOnceOnTheRoot()
+    {
+        var cut = RenderStatic<OsirionContactInfoSection>(parameters => parameters
+            .Add(p => p.ContactInfo, new ContactInformation { Email = "a@b.example" })
+            .Add(p => p.Class, "extra"));
+
+        cut.Find("div.osirion-contact-info-section").GetAttribute("class")!.Trim().ShouldBe("osirion-contact-info-section extra");
+    }
+
     // Fails before the fix: StartsWith made a lookalike host count as the current site.
     [Fact]
     public void ContactInfoSection_LookalikeHostOfTheCurrentSite_IsAnExternalLink()

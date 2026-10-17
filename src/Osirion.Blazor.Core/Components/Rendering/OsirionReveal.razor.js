@@ -5,6 +5,7 @@ export default class extends BlazorJSComponents.Component {
 
     setParameters(refs, animate) {
         this.observer?.disconnect();
+        refs.root?.classList.remove('osirion-reveal-armed');
         if (!animate || !refs.root || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
         this.observer = new IntersectionObserver(entries => entries.forEach(entry => {
@@ -14,6 +15,7 @@ export default class extends BlazorJSComponents.Component {
             }
         }), { threshold: 0.12 });
 
+        refs.root.classList.add('osirion-reveal-armed');
         this.observer.observe(refs.root);
     }
 

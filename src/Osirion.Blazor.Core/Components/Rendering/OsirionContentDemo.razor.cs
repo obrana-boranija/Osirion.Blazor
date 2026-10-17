@@ -30,8 +30,8 @@ public partial class OsirionContentDemo
     public string? Key { get; set; }
 
     /// <summary>
-    /// Gets or sets whether the source code on the Code tab has a language header and a Copy button. The button
-    /// needs the copy script that <see cref="OsirionHtmlRenderer"/> loads.
+    /// Gets or sets whether the source code on the Code tab has a language header and a Copy button. The component
+    /// loads the copy script itself, once per page, so the button works with or without <see cref="OsirionHtmlRenderer"/>.
     /// </summary>
     [Parameter]
     public bool EnableCopyButton { get; set; } = true;

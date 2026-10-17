@@ -16,14 +16,14 @@
 
 .osirion-context-card-grid-heading h2 {
     margin: 0 0 0.75rem;
-    color: var(--osirion-context-card-grid-heading-color, #123b2b);
+    color: var(--osirion-context-card-grid-heading-color, var(--osirion-text-primary, #111827));
     font-size: clamp(1.75rem, 3vw, 2.5rem);
     line-height: 1.15;
 }
 
 .osirion-context-card-grid-heading p {
     margin: 0;
-    color: var(--osirion-context-card-grid-description-color, #666);
+    color: var(--osirion-context-card-grid-description-color, var(--osirion-text-secondary, #4b5563));
     line-height: 1.6;
 }
 
