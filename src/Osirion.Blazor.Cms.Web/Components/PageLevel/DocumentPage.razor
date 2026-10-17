@@ -9,7 +9,7 @@
     }
     else if (Content is null && !string.IsNullOrWhiteSpace(ContentPath))
     {
-        <OsirionContentNotFound ErrorCode="404" />
+        @RenderNotFound
     }
     else
     {
@@ -24,7 +24,8 @@
                                      GenerateMultipleSchemas="@GenerateMultipleSchemas"
                                      PrevPageUrl="@PrevPageUrl"
                                      NextPageUrl="@NextPageUrl"
-                                     AlternateLanguageUrls="@AlternateLanguageUrls" />
+                                     AlternateLanguageUrls="@AlternateLanguageUrls"
+                                     @attributes="SeoRendererParameters" />
             </HeadContent>
         }
 

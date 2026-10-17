@@ -42,8 +42,10 @@ Used by `HomePage` from its base classes (`OsirionContentPageBase`, `OsirionCont
   `UseHeroBackgroundImage`, `HeroImageUrl` (falls back to the item's featured image), `HeroImagePosition` (`Alignment`, default `Right`), `HeroAlignment` (`Alignment`, default
   `Left`), `HeroVariant` (default `Hero`), `HeroTheme` (`ThemeMode`, default `System`), `HeroPrimaryButtonText`,
   `HeroPrimaryButtonUrl`, `HeroSecondaryButtonText`, `HeroSecondaryButtonUrl`
-- SEO: `SchemaTypes` (`SchemaType[]?`), `WebsiteName` (passed as the site name), `CustomBreadcrumbs`
-  (`List<(string Name, string Url)>?`), `PrevPageUrl`, `NextPageUrl`, `AlternateLanguageUrls` (`List<string>?`)
+- SEO: `SchemaTypes` (`SchemaType[]?`), `WebsiteName` (passed as the site name), `OrganizationName`, `SiteLogoUrl`,
+  `GenerateMultipleSchemas`, `CustomBreadcrumbs` (`List<(string Name, string Url)>?`), `PrevPageUrl`, `NextPageUrl`,
+  `AlternateLanguageUrls` (`List<string>?`), `SiteDescription`, `TwitterSite`, `TwitterCreator`, `FacebookAppId`, `DefaultImageUrl`, `DefaultImageWidth`, `DefaultImageHeight`, and the switches `AllowAiDiscovery`, `AllowAiTraining`, `AllowSearchIndexing`, `EnableGeoOptimization` and `EnableAeoOptimization` (each passed on only when you set it, so a switch you leave out keeps the configured value)
+- Not found: `NotFoundTitle`, `NotFoundText`, and a button to `BackLinkUrl` labeled `BackLinkText` unless `ShowBackLink` is off
 - Browse links: `CategoryUrlFormatter` and `TagUrlFormatter` (`Func<string, string>?`, given the category or tag
   name), `CategoriesSectionTitle` (default `"Categories"`), `TagsSectionTitle` (default `"Tags"`)
 - Loading: `LoadingText` (default `"Loading article..."`), `ShowLoadingText` (default `true`)
@@ -51,11 +53,8 @@ Used by `HomePage` from its base classes (`OsirionContentPageBase`, `OsirionCont
   class (`Item`, `ItemPath`, `ItemUrl`, `ItemSlug`, `Query`, `DirectoryName`) are not used: the page runs no lookup.
 
 Inherited and not read by the `HomePage` markup: `ShowNavigation`, `PreviousItem`, `NextItem`, `RelatedItems`,
-`ItemUrlFormatter`, `ShowRelatedContent`, `RelatedContentTitle`, `RelatedItemsCount`, `GenerateMultipleSchemas`,
-`SiteDescription`, `SiteLogoUrl`, `TwitterSite`, `TwitterCreator`, `FacebookAppId`, `AllowAiDiscovery`,
-`AllowAiTraining`, `AllowSearchIndexing`, `EnableGeoOptimization`, `EnableAeoOptimization`, `DefaultImageUrl`,
-`DefaultImageWidth`, `DefaultImageHeight`, `OrganizationName`, `NotFoundTitle`, `NotFoundText`, `ShowBackLink`,
-`BackLinkUrl`, `BackLinkText`, `HasOverlay`, `ShowHeroButtons`, `ShowBreadcrumbs`,
+`ItemUrlFormatter`, `ShowRelatedContent`, `RelatedContentTitle`, `RelatedItemsCount`, `HasOverlay`,
+`ShowHeroButtons`, `ShowBreadcrumbs`,
 `ShowBreadcrumbHome`, `BreadcrumbHomeText`, `BreadcrumbHomeUrl`, `DirectoryUrlFormatter`, `ShowCategoriesSidebar`,
 `ShowTagsSidebar`.
 From `OsirionComponentBase`: `Class`, `Style`, `Theme` and `Attributes`; the first, second and last are rendered on the

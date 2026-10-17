@@ -45,8 +45,8 @@ public abstract partial class OsirionContentPageBase : OsirionComponentBase
 
     /// <summary>
     /// Whether to write more than one structured data type when it applies, for example the main type and a
-    /// breadcrumb list. Used by <c>AboutPage</c>, <c>ContactPage</c> and <c>DocumentPage</c>; the other pages do not
-    /// pass it on.
+    /// breadcrumb list. Used by <c>ArticlePage</c>, <c>HomePage</c>, <c>AboutPage</c>, <c>ContactPage</c> and
+    /// <c>DocumentPage</c>.
     /// </summary>
     [Parameter]
     public bool GenerateMultipleSchemas { get; set; } = true;
@@ -60,100 +60,88 @@ public abstract partial class OsirionContentPageBase : OsirionComponentBase
     public string? WebsiteName { get; set; }
 
     /// <summary>
-    /// Has no effect: no page component passes it to <c>SeoMetadataRenderer</c>. Set the site-wide value with
-    /// <c>AddOsirionSeoMetadata</c> or the <c>Osirion:Seo</c> configuration section instead.
+    /// The site description, passed to <c>SeoMetadataRenderer</c>, which uses it as the feed description when the feed options set none. Without it the value of <c>AddOsirionSeoMetadata</c> or the <c>Osirion:Seo</c> section applies.
     /// </summary>
     [Parameter]
     public string? SiteDescription { get; set; }
 
     /// <summary>
     /// The address of the site logo for the organization's structured data (square, at least 112 by 112 pixels is
-    /// recommended). Used by <c>AboutPage</c>, <c>ContactPage</c> and <c>DocumentPage</c>; the other pages do not
-    /// pass it on.
+    /// recommended). Used by <c>ArticlePage</c>, <c>HomePage</c>, <c>AboutPage</c>, <c>ContactPage</c> and
+    /// <c>DocumentPage</c>.
     /// </summary>
     [Parameter]
     public string? SiteLogoUrl { get; set; }
 
     /// <summary>
-    /// Has no effect: no page component passes it to <c>SeoMetadataRenderer</c>. Set the site-wide value with
-    /// <c>AddOsirionSeoMetadata</c> or the <c>Osirion:Seo</c> configuration section instead.
+    /// The handle of the site for <c>twitter:site</c>, for example <c>@contoso</c>, passed to <c>SeoMetadataRenderer</c>. Without it the value of <c>AddOsirionSeoMetadata</c> or the <c>Osirion:Seo</c> section applies.
     /// </summary>
     [Parameter]
     public string? TwitterSite { get; set; }
 
     /// <summary>
-    /// Has no effect: no page component passes it to <c>SeoMetadataRenderer</c>. Set the site-wide value with
-    /// <c>AddOsirionSeoMetadata</c> or the <c>Osirion:Seo</c> configuration section instead.
+    /// The handle of the author for <c>twitter:creator</c>, for example <c>@author</c>, passed to <c>SeoMetadataRenderer</c>. Without it the value of <c>AddOsirionSeoMetadata</c> or the <c>Osirion:Seo</c> section applies.
     /// </summary>
     [Parameter]
     public string? TwitterCreator { get; set; }
 
     /// <summary>
-    /// Has no effect: no page component passes it to <c>SeoMetadataRenderer</c>. Set the site-wide value with
-    /// <c>AddOsirionSeoMetadata</c> or the <c>Osirion:Seo</c> configuration section instead.
+    /// The Facebook app ID written as <c>fb:app_id</c>, passed to <c>SeoMetadataRenderer</c>. Without it the value of <c>AddOsirionSeoMetadata</c> or the <c>Osirion:Seo</c> section applies.
     /// </summary>
     [Parameter]
     public string? FacebookAppId { get; set; }
 
     /// <summary>
-    /// Has no effect: no page component passes it to <c>SeoMetadataRenderer</c>. Set the site-wide value with
-    /// <c>AddOsirionSeoMetadata</c> or the <c>Osirion:Seo</c> configuration section instead.
+    /// Whether the crawler opt-in meta tags are written (<c>true</c>) or the opt-out tags (<c>false</c>), passed to <c>SeoMetadataRenderer</c> only when you set it. Without it the configured value of <c>AddOsirionSeoMetadata</c> or the <c>Osirion:Seo</c> section applies, which is <c>true</c> unless changed.
     /// </summary>
     [Parameter]
     public bool AllowAiDiscovery { get; set; } = true;
 
     /// <summary>
-    /// Has no effect: no page component passes it to <c>SeoMetadataRenderer</c>. Set the site-wide value with
-    /// <c>AddOsirionSeoMetadata</c> or the <c>Osirion:Seo</c> configuration section instead.
+    /// Whether the training tags opt in (<c>true</c>) or out (<c>false</c>) of AI training, passed to <c>SeoMetadataRenderer</c> only when you set it. Without it the configured value applies. It has no effect when <c>AllowAiDiscovery</c> is <c>false</c>.
     /// </summary>
     [Parameter]
     public bool AllowAiTraining { get; set; } = true;
 
     /// <summary>
-    /// Has no effect: no page component passes it to <c>SeoMetadataRenderer</c>. Set the site-wide value with
-    /// <c>AddOsirionSeoMetadata</c> or the <c>Osirion:Seo</c> configuration section instead.
+    /// Whether search engines may index the page, passed to <c>SeoMetadataRenderer</c> only when you set it. <c>false</c> writes <c>noindex, nofollow</c> as the robots tags. Without it the configured value applies.
     /// </summary>
     [Parameter]
     public bool AllowSearchIndexing { get; set; } = true;
 
     /// <summary>
-    /// Has no effect: no page component passes it to <c>SeoMetadataRenderer</c>. Set the site-wide value with
-    /// <c>AddOsirionSeoMetadata</c> or the <c>Osirion:Seo</c> configuration section instead.
+    /// Whether the summary meta tags (<c>entity-summary</c>, <c>content-type</c> and the like) are written, when the item has a description, passed to <c>SeoMetadataRenderer</c> only when you set it. Without it the configured value applies.
     /// </summary>
     [Parameter]
     public bool EnableGeoOptimization { get; set; } = true;
 
     /// <summary>
-    /// Has no effect: no page component passes it to <c>SeoMetadataRenderer</c>. Set the site-wide value with
-    /// <c>AddOsirionSeoMetadata</c> or the <c>Osirion:Seo</c> configuration section instead.
+    /// Whether the generated answer tags are allowed, passed to <c>SeoMetadataRenderer</c> only when you set it. Without it the configured value applies.
     /// </summary>
     [Parameter]
     public bool EnableAeoOptimization { get; set; } = true;
 
     /// <summary>
-    /// Has no effect: no page component passes it to <c>SeoMetadataRenderer</c>. Set the site-wide value with
-    /// <c>AddOsirionSeoMetadata</c> or the <c>Osirion:Seo</c> configuration section instead.
+    /// The image of the social cards for a page whose item has no featured image, passed to <c>SeoMetadataRenderer</c>. Without it the value of <c>AddOsirionSeoMetadata</c> or the <c>Osirion:Seo</c> section applies.
     /// </summary>
     [Parameter]
     public string? DefaultImageUrl { get; set; }
 
     /// <summary>
-    /// Has no effect: no page component passes it to <c>SeoMetadataRenderer</c>. Set the site-wide value with
-    /// <c>AddOsirionSeoMetadata</c> or the <c>Osirion:Seo</c> configuration section instead.
+    /// The width in pixels of <see cref="DefaultImageUrl"/>, passed to <c>SeoMetadataRenderer</c>. The default <c>1200</c> yields to the configured width.
     /// </summary>
     [Parameter]
     public int DefaultImageWidth { get; set; } = 1200;
 
     /// <summary>
-    /// Has no effect: no page component passes it to <c>SeoMetadataRenderer</c>. Set the site-wide value with
-    /// <c>AddOsirionSeoMetadata</c> or the <c>Osirion:Seo</c> configuration section instead.
+    /// The height in pixels of <see cref="DefaultImageUrl"/>, passed to <c>SeoMetadataRenderer</c>. The default <c>630</c> yields to the configured height.
     /// </summary>
     [Parameter]
     public int DefaultImageHeight { get; set; } = 630;
 
     /// <summary>
-    /// The organization name for the structured data. Used by <c>AboutPage</c>, <c>ContactPage</c> and
-    /// <c>DocumentPage</c>; the other pages do not pass it on.
+    /// The organization name for the structured data. Used by <c>ArticlePage</c>, <c>HomePage</c>, <c>AboutPage</c>,
+    /// <c>ContactPage</c> and <c>DocumentPage</c>.
     /// </summary>
     [Parameter]
     public string? OrganizationName { get; set; }
@@ -210,33 +198,34 @@ public abstract partial class OsirionContentPageBase : OsirionComponentBase
     public bool ShowLoadingText { get; set; } = true;
 
     /// <summary>
-    /// Has no effect: the page components render the not-found state of <c>OsirionContentNotFound</c> with its own
-    /// texts.
+    /// The heading of the not-found state, shown when the page finds no item. Used by <c>ArticlePage</c>,
+    /// <c>HomePage</c>, <c>DocumentPage</c> and <c>AboutPage</c>.
     /// </summary>
     [Parameter]
     public string NotFoundTitle { get; set; } = "Article Not Found";
 
     /// <summary>
-    /// Has no effect: the page components render the not-found state of <c>OsirionContentNotFound</c> with its own
-    /// texts. <c>LandingPage</c> has a parameter of its own.
+    /// The message of the not-found state. <c>LandingPage</c> has a parameter of its own.
     /// </summary>
     [Parameter]
     public string NotFoundText { get; set; } = "The requested article could not be found.";
 
     /// <summary>
-    /// Has no effect: the not-found state the page components render has no back link.
+    /// Whether the not-found state has a button back, to <see cref="BackLinkUrl"/> with the text <see
+    /// cref="BackLinkText"/>. It is not shown when the address is empty.
     /// </summary>
     [Parameter]
     public bool ShowBackLink { get; set; } = true;
 
     /// <summary>
-    /// Has no effect: the not-found state the page components render has no back link.
+    /// The address of the back link in the not-found state. It is written as given, so build it from values you
+    /// control.
     /// </summary>
     [Parameter]
     public string BackLinkUrl { get; set; } = "/";
 
     /// <summary>
-    /// Has no effect: the not-found state the page components render has no back link.
+    /// The text of the back link in the not-found state.
     /// </summary>
     [Parameter]
     public string BackLinkText { get; set; } = "Back to Home";

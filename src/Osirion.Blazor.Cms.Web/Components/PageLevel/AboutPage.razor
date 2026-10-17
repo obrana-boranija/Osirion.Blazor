@@ -8,7 +8,7 @@
     }
     else if (Item is null)
     {
-        <OsirionContentNotFound ErrorCode="404" />
+        @RenderNotFound
     }
     else
     {
@@ -19,7 +19,8 @@
                                  SiteLogoUrl="@SiteLogoUrl"
                                  SchemaTypes="@(SchemaTypes ?? DefaultSchemaTypes)"
                                  GenerateMultipleSchemas="@GenerateMultipleSchemas"
-                                 AlternateLanguageUrls="@AlternateLanguageUrls" />
+                                 AlternateLanguageUrls="@AlternateLanguageUrls"
+                                 @attributes="SeoRendererParameters" />
         </HeadContent>
 
         @RenderPageHeading(Item.Title, Item.Description)

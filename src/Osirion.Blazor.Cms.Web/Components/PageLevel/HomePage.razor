@@ -9,7 +9,7 @@
     }
     else if (NoContent() && !IsLoading)
     {
-        <OsirionContentNotFound ErrorCode="404" />
+        @RenderNotFound
     }
     else
     {
@@ -20,7 +20,11 @@
                                  CustomBreadcrumbs="@CustomBreadcrumbs"
                                  PrevPageUrl="@PrevPageUrl"
                                  NextPageUrl="@NextPageUrl"
-                                 AlternateLanguageUrls="@AlternateLanguageUrls" />
+                                 AlternateLanguageUrls="@AlternateLanguageUrls"
+                                 OrganizationName="@OrganizationName"
+                                 SiteLogoUrl="@SiteLogoUrl"
+                                 GenerateMultipleSchemas="@GenerateMultipleSchemas"
+                                 @attributes="SeoRendererParameters" />
         </HeadContent>
 
         @if (ShowHero)
