@@ -13,97 +13,103 @@ public partial class OsirionCookieConsent
     private const string ConsentCookieVersion = "1.0";
 
     /// <summary>
-    /// Gets or sets the consent title
+    /// Gets or sets the banner heading (<c>h3</c>), which is also the accessible name of the banner region.
     /// </summary>
     [Parameter]
     public string Title { get; set; } = "Cookie Consent";
 
     /// <summary>
-    /// Gets or sets the consent message
+    /// Gets or sets the banner text, rendered as encoded text.
     /// </summary>
     [Parameter]
     public string Message { get; set; } = "We use cookies to improve your experience on our website. By continuing to browse, you agree to our use of cookies.";
 
     /// <summary>
-    /// Gets or sets the accept button text
+    /// Gets or sets the text of the button that accepts every category.
     /// </summary>
     [Parameter]
     public string AcceptButtonText { get; set; } = "Accept All";
 
     /// <summary>
-    /// Gets or sets the decline button text
+    /// Gets or sets the text of the button that declines every optional category.
     /// </summary>
     [Parameter]
     public string DeclineButtonText { get; set; } = "Decline";
 
     /// <summary>
-    /// Gets or sets the customize button text
+    /// Gets or sets the text of the button that opens the category choices.
     /// </summary>
     [Parameter]
     public string CustomizeButtonText { get; set; } = "Customize";
 
     /// <summary>
-    /// Gets or sets the save preferences button text
+    /// Gets or sets the text of the button that saves the ticked categories.
     /// </summary>
     [Parameter]
     public string SavePreferencesButtonText { get; set; } = "Save Preferences";
 
     /// <summary>
-    /// Gets or sets whether to show the decline button
+    /// Gets or sets whether the decline button is shown.
     /// </summary>
     [Parameter]
     public bool ShowDeclineButton { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets whether to show the customize button
+    /// Gets or sets whether the customize button is shown.
     /// </summary>
     [Parameter]
     public bool ShowCustomizeButton { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets whether to show the customization panel
+    /// Gets or sets whether the category checkboxes are shown once the visitor chose to customize.
+    /// When it is <see langword="false"/>, the customize button reloads the page without any choices.
     /// </summary>
     [Parameter]
     public bool ShowCustomizationPanel { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the customize panel title
+    /// Gets or sets the heading (<c>h4</c>) of the category panel.
     /// </summary>
     [Parameter]
     public string CustomizePanelTitle { get; set; } = "Cookie Preferences";
 
     /// <summary>
-    /// Gets or sets the privacy policy link
+    /// Gets or sets the address of your privacy or cookie policy, shown as a link after the message. Null or empty, the
+    /// default, shows no link.
     /// </summary>
     [Parameter]
     public string? PolicyLink { get; set; }
 
     /// <summary>
-    /// Gets or sets the privacy policy link text
+    /// Gets or sets the text of the policy link.
     /// </summary>
     [Parameter]
     public string PolicyLinkText { get; set; } = "Learn more";
 
     /// <summary>
-    /// Gets or sets the icon content
+    /// Gets or sets the markup shown beside the text. Null, the default, shows no icon.
     /// </summary>
     [Parameter]
     public RenderFragment? Icon { get; set; }
 
     /// <summary>
-    /// Gets or sets the cookie categories
+    /// Gets or sets the categories shown in the panel. Defaults to <c>necessary</c> (required), <c>analytics</c>,
+    /// <c>marketing</c> and <c>preferences</c>. Accept All records only those four IDs, so a custom ID is recorded
+    /// only when the visitor ticks it in the panel.
     /// </summary>
     [Parameter]
     public IReadOnlyList<CookieCategory> Categories { get; set; } = GetDefaultCategories();
 
     /// <summary>
-    /// Gets or sets the consent endpoint for form submission
+    /// Gets or sets where the form posts. Defaults to <c>/api/cookie-consent</c>, the pattern <c>MapOsirionCookieConsent</c>
+    /// maps; change it only together with that call.
     /// </summary>
     [Parameter]
     public string ConsentEndpoint { get; set; } = "/api/cookie-consent";
 
     /// <summary>
-    /// Gets or sets the position: "bottom", "top"
+    /// Gets or sets the banner position, added as the class <c>osirion-cookie-consent-{Position}</c>. The stylesheet defines
+    /// <c>bottom</c> (the default) and <c>top</c>.
     /// </summary>
     [Parameter]
     public string Position { get; set; } = "bottom";
