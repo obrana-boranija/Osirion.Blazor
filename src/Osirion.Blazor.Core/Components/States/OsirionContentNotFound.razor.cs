@@ -63,7 +63,7 @@ public partial class OsirionContentNotFound
     public string? PrimaryButtonText { get; set; } = "Go to Homepage";
 
     /// <summary>
-    /// Gets or sets the address of the primary button.
+    /// Gets or sets the address of the primary button. An address that is not a local path or an http, https or mailto URL leaves the button out.
     /// </summary>
     [Parameter]
     public string PrimaryButtonUrl { get; set; } = "/";
@@ -76,7 +76,7 @@ public partial class OsirionContentNotFound
     public string? SecondaryButtonText { get; set; }
 
     /// <summary>
-    /// Gets or sets the address of the secondary button.
+    /// Gets or sets the address of the secondary button. An unsafe address leaves the button out.
     /// </summary>
     [Parameter]
     public string SecondaryButtonUrl { get; set; } = "/";
@@ -269,7 +269,7 @@ public class ContentNotFoundSuggestion
     public string Text { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the suggestion URL
+    /// Gets or sets the suggestion URL. An unsafe address renders the text without a link.
     /// </summary>
     public string Url { get; set; } = string.Empty;
 
