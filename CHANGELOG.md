@@ -28,6 +28,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Osirion.Blazor.Cms.Web: `SeoMetadataOptions.SiteUrl` (`Osirion:Seo:SiteUrl`). When it is an absolute http(s) address, the canonical URL, `og:url` and the addresses in structured data use it with the page's path instead of the host that served the request, so a site behind a proxy, on a preview host or on a second domain declares its public address
 
 ### Fixed
+- Osirion.Blazor.Core: the `OsirionReadMoreLink` `Button` variant keeps its text in `--osirion-action-primary-text` under a dark system preference. The dark scheme's link color rule came later at the same specificity and recolored the text on the fill: #9090d6 on #5c5cb0, 1.97:1
+- Osirion.Blazor.Cms.Web: the active `CategoriesList` count uses the active link's own colors with a ring. It drew the link color on a primary tint, 3.39:1 in the light theme and 2.78:1 in the dark one
+- Osirion.Blazor.Cms.Web: the `TagCloud` count keeps the tag's text color. It was faded to 75% opacity, 3.66:1 on the tag background
 - Osirion.Blazor.Core: `OsirionSubscriptionCard` reports an error, and logs a warning, when nothing stores the address. Without an `OnSubscribe` handler, or with `UseBuiltInEmailService` on (the email service has no subscription handling and only logged the address), it thanked the visitor for a subscription that did not exist. The example sites drop the footer sign-up form, which had no handler
 - Osirion.Blazor.Core: `OsirionMetricCard` applies `Class` and `Style` to its root element, as every other component does; it took only `CssClass`, which still works
 - Osirion.Blazor.Core: `OsirionFeatureCard`'s fixed sizes no longer grow past their column, so a card on a phone shrinks to fit; a medium card was 450 pixels wide whatever its container and made a 375 pixel page scroll sideways
