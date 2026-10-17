@@ -253,7 +253,7 @@ html.osirion-bootstrap-integration[data-theme=dark],
   --osirion-color-primary-400: #3a6db2; /* Derived */
   --osirion-color-primary-500: var(--bs-primary, #0d6efd);
   --osirion-color-primary-600: var(--bs-primary-text-emphasis, #6ea8fe);
-  --osirion-color-primary-700: #8ab9fe; /* Derived */
+  --osirion-color-primary-700: #9ec5fe; /* Bootstrap blue-200: the active item, on primary-200, reads 4.99:1 */
   --osirion-color-primary-800: #a7caff; /* Derived */
   --osirion-color-primary-900: #c3daff; /* Derived */
   --osirion-color-primary-950: #e0eaff; /* Derived - lightest foreground */
