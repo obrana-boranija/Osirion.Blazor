@@ -74,8 +74,8 @@ reveal
 ```
 
 The enum is nested in the component, so outside it you write `OsirionReveal.RevealAnimation.Fade`. The component
-loads its script through the BlazorJSComponents package, so register its services once with
-`builder.Services.AddJSComponents();`, as the example apps do.
+loads its script through BlazorJSComponents, which `AddOsirion` registers; without `AddOsirion`, call
+`builder.Services.AddJSComponents();`.
 
 ## Parameters
 

@@ -27,7 +27,7 @@ Usage
 ```
 
 Notes
-- Requires `builder.Services.AddJSComponents()`, like the other Osirion components with collocated scripts.
+- Loads its script through BlazorJSComponents, which `AddOsirion` registers; without `AddOsirion`, call `builder.Services.AddJSComponents()`.
 - The player is an iframe with `autoplay`, so one click starts the video; focus moves to it.
 - The default YouTube thumbnail comes from `i.ytimg.com`, a Google host. Set `ThumbnailUrl` to an image on your own
   site when no request may reach the video host before the visitor chooses to play.

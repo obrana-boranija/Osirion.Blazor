@@ -128,8 +128,8 @@ captured but not rendered.
 - The component always renders a `nav` with the accessible name "Table of Contents" (fixed English text), and the
   `EmptyText` paragraph when there is nothing to list. Headings are read on every parameter change, so the outline
   is part of the static SSR response.
-- With `TrackActiveHeading` on and at least one heading listed, a small script (loaded through the BlazorJSComponents
-  package, so `AddJSComponents()` must be registered) marks the link of the section being read as the page scrolls:
+- With `TrackActiveHeading` on and at least one heading listed, a small script (loaded through BlazorJSComponents,
+  which `AddOsirion` registers) marks the link of the section being read as the page scrolls:
   the last heading whose top has passed a line a quarter of the viewport below the top (plus the
   `--osirion-anchor-offset` of a sticky header). At the end of the page the last heading wins. Without script the
   links work as they are.

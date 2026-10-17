@@ -57,7 +57,7 @@ Osirion.Blazor.Core has five card components. All of them render complete HTML u
 | [OsirionFeatureCard](/components/feature-card) | A feature, service or article teaser: image, title, description, a read more link and category links. |
 | [OsirionTestimonialCard](/components/testimonial-card) | A quote with the person's name, photo, role and an optional star rating. |
 | [OsirionSubscriptionCard](/components/subscription-card) | A newsletter signup form that posts without script, with validation and topic choices. |
-| [OsirionAuthorCard](/components/author-card) | An author's avatar or initials, name, role, bio and profile links. Available from 4.1. |
+| [OsirionAuthorCard](/components/author-card) | An author's avatar or initials, name, role, bio and profile links. Available from 4.0. |
 | [OsirionMetricCard](/components/metric-card) | One figure with a label and description, optionally counting up when it scrolls into view. |
 
 ```razor

@@ -101,7 +101,7 @@ Each member goes to the parameter of the same name on `OsirionMetricCard`; the c
 ## Behavior
 
 - The grid is plain markup and CSS. Only a card with `Animate` loads the count-up script, through BlazorJSComponents, which
-  `builder.Services.AddJSComponents()` registers; see [OsirionMetricCard](/components/metric-card).
+  `AddOsirion` registers; see [OsirionMetricCard](/components/metric-card).
 - The grid is a `ul` named by `AriaLabel`, and each metric is an `li` holding a card, so screen readers announce the number of
   metrics. With no metrics nothing is rendered.
 - `Class`, `CssClass` and `Style` are applied to the `ul`, as are unmatched attributes. The list has `role="list"`, which

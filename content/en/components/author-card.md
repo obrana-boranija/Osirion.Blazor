@@ -4,7 +4,7 @@ order: 4
 layout: docs
 title: OsirionAuthorCard
 permalink: /components/author-card
-description: OsirionAuthorCard introduces an author with avatar or initials, name, role, bio and profile links. Renders without script. Available from 4.1.
+description: OsirionAuthorCard introduces an author with avatar or initials, name, role, bio and profile links. Renders without script.
 author: Dejan Demonjić
 date: 2026-10-11
 last_modified: 2026-10-17
@@ -28,7 +28,7 @@ custom_fields:
   group: cards
 seo_properties:
   title: 'OsirionAuthorCard: author cards for Blazor'
-  description: 'OsirionAuthorCard introduces an author with avatar or initials, name, role, bio and profile links. Renders without script. Available from 4.1.'
+  description: 'OsirionAuthorCard introduces an author with avatar or initials, name, role, bio and profile links. Renders without script.'
   image: /assets/images/blazor-cover.png
   canonical: 'https://getosirion.com/components/author-card'
   lang: en
@@ -51,7 +51,7 @@ seo_properties:
 `OsirionAuthorCard` introduces a person: an avatar (or their initials), the name, a role, a short bio and links to
 their profiles. Put it under an article or at the top of an author's page. It renders without script.
 
-Package `Osirion.Blazor.Core`, namespace `Osirion.Blazor.Components`. [Source on GitHub](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Core/Components/Cards/OsirionAuthorCard.razor). Available from 4.1.
+Package `Osirion.Blazor.Core`, namespace `Osirion.Blazor.Components`. [Source on GitHub](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Core/Components/Cards/OsirionAuthorCard.razor). Available from 4.0.
 
 ```demo
 author-card
