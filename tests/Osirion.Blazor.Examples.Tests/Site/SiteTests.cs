@@ -96,8 +96,31 @@ public partial class SiteTests(SiteFactory factory) : IClassFixture<SiteFactory>
     [InlineData("/components/no-such-component")]
     [InlineData("/components/Tabs")]
     [InlineData("/docs/no-such-page")]
-    [InlineData("/en/docs/getting-started")]
+    [InlineData("/xx/blog")]
+    [InlineData("/counter")]
+    [InlineData("/weather")]
+    [InlineData("/no-such-page")]
+    [InlineData("/a/b/c")]
     public async Task AddressWithoutAPage_AnswersNotFound(string address)
+    {
+        // Arrange
+        using var client = CreateClient();
+
+        // Act
+        using var response = await client.GetAsync(address);
+        var html = await response.Content.ReadAsStringAsync();
+
+        // Assert: the site's not-found page, not an empty 404
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+        html.ShouldContain("<title>Page not found");
+    }
+
+    [Theory]
+    [InlineData("/en", "/")]
+    [InlineData("/en/blog", "/blog")]
+    [InlineData("/en/blog/navigation-components", "/blog/navigation-components")]
+    [InlineData("/en/docs/getting-started", "/docs/getting-started")]
+    public async Task LocaleAddress_RedirectsPermanentlyToTheSamePathWithoutIt(string address, string target)
     {
         // Arrange
         using var client = CreateClient();
@@ -106,7 +129,43 @@ public partial class SiteTests(SiteFactory factory) : IClassFixture<SiteFactory>
         using var response = await client.GetAsync(address);
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.MovedPermanently);
+        response.Headers.Location?.OriginalString.ShouldBe(target);
+    }
+
+    [Fact]
+    public async Task Changelog_RendersTheRepositoryChangelogWithItsReleasesInTheContents()
+    {
+        // Arrange
+        using var client = CreateClient();
+
+        // Act
+        var html = await client.GetStringAsync("/changelog");
+
+        // Assert
+        html.ShouldContain("<h1 class=\"osirion-document-title\"");
+        html.ShouldContain(">Changelog</h1>");
+        html.ShouldContain(">Releases</h2>");
+        html.ShouldContain("Unreleased");
+        html.ShouldNotContain("date: 2025-04-23");
+    }
+
+    [Fact]
+    public async Task Sitemap_ListsTheNewPages()
+    {
+        // Arrange
+        using var client = CreateClient();
+
+        // Act
+        var sitemap = await client.GetStringAsync("/sitemap.xml");
+
+        // Assert
+        foreach (var path in new[] { "/components</loc>", "/themes</loc>", "/templates</loc>", "/changelog</loc>", "/docs/packages</loc>" })
+        {
+            sitemap.ShouldContain(path);
+        }
+
+        sitemap.ShouldNotContain("/docs/components");
     }
 
     [Fact]

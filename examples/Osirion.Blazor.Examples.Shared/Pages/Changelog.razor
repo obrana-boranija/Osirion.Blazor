@@ -1,0 +1,13 @@
+@page "/changelog"
+@using Osirion.Blazor.Cms.Components
+
+@* The repository's CHANGELOG.md, embedded at build time, with its releases in the table of contents *@
+@if (_page is not null)
+{
+    <DocumentPage Content="_page"
+                  ShowSideNavigation="false"
+                  ShowNavigationLinks="false"
+                  ShowMetadata="false"
+                  TableOfContentsTitle="Releases"
+                  TocMaxLevel="2" />
+}

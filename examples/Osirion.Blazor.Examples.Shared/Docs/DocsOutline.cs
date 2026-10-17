@@ -26,6 +26,9 @@ public sealed class DocsOutline
     /// <summary>The address of the theme page, the theming group's own page.</summary>
     public const string ThemesUrl = "/themes";
 
+    // Documentation pages outside /docs and /components.
+    private static readonly string[] RootPages = ["/docs", GalleryUrl, ThemesUrl, "/templates"];
+
     private const string GroupField = "group";
 
     private readonly List<ContentItem> _sequence;
@@ -62,14 +65,15 @@ public sealed class DocsOutline
     /// <summary>Every group with its pages, including groups that have none yet.</summary>
     public IReadOnlyList<DocsSection> Sections { get; }
 
-    /// <summary>The published pages under <c>/docs</c> and <c>/components</c>, and the theme page.</summary>
+    /// <summary>The published pages under <c>/docs</c> and <c>/components</c>, the theme page and the templates page.</summary>
     public IReadOnlyList<ContentItem> Pages { get; }
 
     /// <summary>Documentation pages that name no known group, so no link leads to them.</summary>
     public IReadOnlyList<ContentItem> Unplaced { get; }
 
     /// <summary>
-    /// Builds the outline from content items; items outside <c>/docs</c>, <c>/components</c> and the theme page are ignored.
+    /// Builds the outline from content items; items outside <c>/docs</c>, <c>/components</c>, <c>/themes</c> and
+    /// <c>/templates</c> are ignored.
     /// </summary>
     /// <param name="items">The published content.</param>
     /// <returns>The outline.</returns>
@@ -178,7 +182,7 @@ public sealed class DocsOutline
             : null;
 
     private static bool IsDocsUrl(string url) =>
-        url is "/docs" or GalleryUrl or ThemesUrl
+        RootPages.Contains(url, StringComparer.Ordinal)
         || url.StartsWith("/docs/", StringComparison.Ordinal)
         || url.StartsWith(GalleryUrl + "/", StringComparison.Ordinal);
 }
