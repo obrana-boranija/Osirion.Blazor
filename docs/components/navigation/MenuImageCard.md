@@ -13,7 +13,7 @@ Key parameters
   `javascript:`) is not rendered, so the anchor has no `href`. Relative URLs are kept as written
 - Target: how to open the destination, for example `_blank`
 - Class: extra CSS classes, added after `osirion-menu-image-card` (inherited from `OsirionComponentBase`)
-- Style: inherited from `OsirionComponentBase`; this component's markup does not render it
+- Style: inherited from `OsirionComponentBase`, written on the root element
 - Theme: `ThemeMode.System` (default), `Light` or `Dark`; a non-System value is written as `data-theme` (or
   `data-bs-theme` when the Bootstrap framework is configured) on the anchor (inherited)
 - Attributes: any other attribute, captured and applied to the anchor (inherited)

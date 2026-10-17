@@ -1,7 +1,7 @@
 @namespace Osirion.Blazor.Navigation.Components
 @inherits OsirionComponentBase
 
-<aside class="@CombineCssClasses("osirion-menu-panel")" aria-label="@(AriaLabel ?? Title)" @attributes="Attributes">
+<aside class="@CombineCssClasses("osirion-menu-panel")" aria-label="@(AriaLabel ?? Title)" style="@Style" @attributes="Attributes">
     @if (!string.IsNullOrWhiteSpace(Title))
     {
         <div class="osirion-menu-panel-title">@Title</div>

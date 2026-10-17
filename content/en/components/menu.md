@@ -115,9 +115,10 @@ aligns it to the trailing edge, and a collapsed menu shows it at the bottom of t
 ## Parameters
 
 Every part of the menu also takes `Class`, `Style` and `Theme` from the Osirion component base, and passes unmatched
-attributes to its root element. None of the parts writes `Style`, so it has no effect; use `Class` or a CSS variable
-instead. `Class` goes on the container of `Menu`, on the link (or toggle label) of `MenuItem`, and on the root element
-of the other parts.
+attributes to its root element. `Style` is written on the root element of every part. `Class` goes on the container of
+`Menu`, on the link (or toggle label) of `MenuItem`, and on the root element of the other parts, so on a `MenuItem` the
+two reach different elements: `Style` lands on its wrapper, where a CSS variable such as `--osirion-menu-accent` is
+inherited by the link and the submenu. In a `Menu`, `Style` comes before the sticky `z-index`, which still wins.
 
 ### Menu
 

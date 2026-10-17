@@ -171,6 +171,12 @@ public partial class Menu
         };
     }
 
+    private static string WithTrailingSemicolon(string style)
+    {
+        var trimmed = style.TrimEnd();
+        return trimmed.EndsWith(';') ? trimmed : trimmed + ";";
+    }
+
     /// <summary>Recomputes the container classes and attributes from the current parameters.</summary>
     protected override void OnParametersSet()
     {
@@ -210,13 +216,19 @@ public partial class Menu
 
         var attributes = new Dictionary<string, object>(Attributes ?? new Dictionary<string, object>());
 
+        // The sticky z-index goes last, so it still wins over a z-index in Style.
+        var styles = new List<string>();
+        if (!string.IsNullOrWhiteSpace(Style))
+            styles.Add(WithTrailingSemicolon(Style));
+
+        if (attributes.TryGetValue("style", out var existingStyle) && !string.IsNullOrWhiteSpace(existingStyle?.ToString()))
+            styles.Add(WithTrailingSemicolon(existingStyle.ToString()!));
+
         if (Sticky && Orientation == MenuOrientation.Horizontal)
-        {
-            var zIndex = $"z-index: {StickyZIndex};";
-            attributes["style"] = attributes.TryGetValue("style", out var existingStyle)
-                ? $"{existingStyle} {zIndex}"
-                : zIndex;
-        }
+            styles.Add($"z-index: {StickyZIndex};");
+
+        if (styles.Count > 0)
+            attributes["style"] = string.Join(' ', styles);
 
         if (!attributes.ContainsKey("id"))
             attributes["id"] = MenuId;

@@ -30,7 +30,7 @@ Key parameters
 - Id: base identifier for the submenu ids (default: eight characters of a GUID generated once per instance)
 - Class: extra CSS classes, added to the link (or to the label of a toggle-only item), not to the wrapper (inherited
   from `OsirionComponentBase`)
-- Style: inherited from `OsirionComponentBase`; this component's markup does not render it
+- Style: inherited from `OsirionComponentBase`, written on the root element
 - Theme: `ThemeMode.System` (default), `Light` or `Dark`; a non-System value is written as `data-theme` (or
   `data-bs-theme` when the Bootstrap framework is configured) on the wrapper (inherited)
 - Attributes: any other attribute, applied to the wrapper `div` (inherited)

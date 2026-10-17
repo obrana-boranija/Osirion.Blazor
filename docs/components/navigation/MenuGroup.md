@@ -17,7 +17,7 @@ Key parameters
 - ChildContent: the items of the group, typically `MenuItem`
 - Id: base identifier for the group (default: `osirion-menu-group-` plus a GUID generated once per instance)
 - Class: extra CSS classes on the root element (inherited from `OsirionComponentBase`)
-- Style: inherited from `OsirionComponentBase`; this component's markup does not render it
+- Style: inherited from `OsirionComponentBase`, written on the root element
 - Theme: `ThemeMode.System` (default), `Light` or `Dark`; a non-System value is written as `data-theme` (or
   `data-bs-theme` when the Bootstrap framework is configured) on the root element (inherited)
 - Attributes: any other attribute, applied to the root element (inherited). An `id` supplied here wins over `Id`
