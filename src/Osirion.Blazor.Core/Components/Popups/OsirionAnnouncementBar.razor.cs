@@ -34,28 +34,39 @@ public partial class OsirionAnnouncementBar
     [Parameter, EditorRequired]
     public string Id { get; set; } = string.Empty;
 
-    /// <summary>Gets or sets the announcement.</summary>
+    /// <summary>
+    /// Gets or sets the announcement, a normal Razor fragment that may contain links. It is encoded like any Razor output.
+    /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
-    /// <summary>Gets or sets whether visitors can close the bar. Defaults to true.</summary>
+    /// <summary>
+    /// Gets or sets whether the bar has a close button.
+    /// </summary>
     [Parameter]
     public bool Dismissible { get; set; } = true;
 
-    /// <summary>Gets or sets how many days a dismissal lasts, from 1 to 365. Defaults to 30.</summary>
+    /// <summary>
+    /// Gets or sets how many days a dismissal lasts, from 1 to 365. Any other value throws an
+    /// <see cref="ArgumentOutOfRangeException"/>.
+    /// </summary>
     [Parameter]
     public int RememberDays { get; set; } = 30;
 
-    /// <summary>Gets or sets the close button's accessible name. Defaults to <c>Dismiss announcement</c>.</summary>
+    /// <summary>
+    /// Gets or sets the accessible name of the close button.
+    /// </summary>
     [Parameter]
     public string DismissText { get; set; } = "Dismiss announcement";
 
-    /// <summary>Gets or sets the region's accessible name. Defaults to <c>Announcement</c>.</summary>
+    /// <summary>
+    /// Gets or sets the accessible name of the bar, which is a region landmark.
+    /// </summary>
     [Parameter]
     public string RegionLabel { get; set; } = "Announcement";
 
     /// <summary>
-    /// Gets or sets where the close form posts. Defaults to <see cref="AnnouncementExtensions.DefaultDismissPattern"/>.
+    /// Gets or sets where the close form posts.
     /// </summary>
     [Parameter]
     public string DismissEndpoint { get; set; } = AnnouncementExtensions.DefaultDismissPattern;

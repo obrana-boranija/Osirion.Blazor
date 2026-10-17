@@ -22,79 +22,80 @@ public partial class OsirionContactForm : OsirionComponentBase
     #region Form Parameters
 
     /// <summary>
-    /// Gets or sets the Id of contact form.
+    /// Gets or sets the form name and the prefix of every field id, such as <c>contact-name-contact</c>. Required; use a
+    /// unique value for each form on a page.
     /// </summary>
     [Parameter, EditorRequired]
     public string Id { get; set; } = "contact-form";
 
     /// <summary>
-    /// Gets or sets the title displayed above the contact form.
+    /// Gets or sets the heading (<c>h2</c>) above the form. An empty value hides it.
     /// </summary>
     [Parameter]
     public string FormTitle { get; set; } = "Write us";
 
     /// <summary>
-    /// Gets or sets the description text displayed below the form title.
+    /// Gets or sets the text under the heading. Empty by default, which renders nothing.
     /// </summary>
     [Parameter]
     public string FormDescription { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the placeholder text for the name field.
+    /// Gets or sets the placeholder of the name field.
     /// </summary>
     [Parameter]
     public string NamePlaceholder { get; set; } = "Your name";
 
     /// <summary>
-    /// Gets or sets the placeholder text for the email field.
+    /// Gets or sets the placeholder of the email field.
     /// </summary>
     [Parameter]
     public string EmailPlaceholder { get; set; } = "Your email address";
 
     /// <summary>
-    /// Gets or sets the placeholder text for the subject field.
+    /// Gets or sets the placeholder of the subject field.
     /// </summary>
     [Parameter]
     public string SubjectPlaceholder { get; set; } = "Subject";
 
     /// <summary>
-    /// Gets or sets the placeholder text for the message field.
+    /// Gets or sets the placeholder of the message field.
     /// </summary>
     [Parameter]
     public string MessagePlaceholder { get; set; } = "Your message";
 
     /// <summary>
-    /// Gets or sets the number of rows for the message textarea.
+    /// Gets or sets the number of rows of the message textarea.
     /// </summary>
     [Parameter]
     public int MessageRows { get; set; } = 6;
 
     /// <summary>
-    /// Gets or sets the text for the submit button.
+    /// Gets or sets the text of the submit button.
     /// </summary>
     [Parameter]
     public string SubmitButtonText { get; set; } = "Send Message";
 
     /// <summary>
-    /// Gets or sets the text displayed on the submit button while submitting.
+    /// Gets or sets a text for the submit button while sending. Not used by the current markup.
     /// </summary>
     [Parameter]
     public string SubmittingText { get; set; } = "Sending...";
 
     /// <summary>
-    /// Gets or sets whether to show the reset button.
+    /// Gets or sets whether a reset button, which clears the fields in the browser, is shown next to the submit button.
     /// </summary>
     [Parameter]
     public bool ShowResetButton { get; set; } = false;
 
     /// <summary>
-    /// Gets or sets the text for the reset button.
+    /// Gets or sets the text of the reset button.
     /// </summary>
     [Parameter]
     public string ResetButtonText { get; set; } = "Reset";
 
     /// <summary>
-    /// Gets or sets whether to show required field indicators (*).
+    /// Gets or sets whether a <c>*</c> follows the label of each required field and of the privacy checkbox.
     /// </summary>
     [Parameter]
     public bool ShowRequiredIndicators { get; set; } = true;
@@ -104,20 +105,22 @@ public partial class OsirionContactForm : OsirionComponentBase
     #region Privacy and Subscription Parameters
 
     /// <summary>
-    /// Gets or sets the privacy policy agreement text (supports HTML markup).
-    /// If null or empty, the privacy policy checkbox will not be shown.
+    /// Gets or sets the label of the privacy checkbox, rendered as raw HTML, so pass only text you wrote. The default
+    /// text links to <c>/privacy-policy</c>. The checkbox is left out when the value is null or empty, but the model
+    /// still requires it to be ticked, so such a form can never pass validation.
     /// </summary>
     [Parameter]
     public string? PrivacyPolicyText { get; set; } = "I agree to the <a href=\"/privacy-policy\" target=\"_blank\">privacy policy</a>";
 
     /// <summary>
-    /// Gets or sets whether to show the subscription option checkbox.
+    /// Gets or sets whether the newsletter checkbox is shown. Its value reaches your
+    /// code as <c>ContactFormModel.SubscribeToUpdates</c>.
     /// </summary>
     [Parameter]
     public bool ShowSubscribeOption { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the text for the subscription checkbox.
+    /// Gets or sets the label of the newsletter checkbox.
     /// </summary>
     [Parameter]
     public string SubscribeText { get; set; } = "I would like to receive updates and newsletters";
@@ -127,20 +130,21 @@ public partial class OsirionContactForm : OsirionComponentBase
     #region Contact Information Parameters
 
     /// <summary>
-    /// Gets or sets whether to show the contact information section.
+    /// Gets or sets whether the contact information section is shown when <see cref="ContactInfo"/> is set.
     /// </summary>
     [Parameter]
     public bool ShowContactInformation { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the title for the contact information section.
+    /// Gets or sets the title of the contact information section.
     /// </summary>
     [Parameter]
     public string ContactInfoTitle { get; set; } = "Contact information";
 
     /// <summary>
-    /// Gets or sets the contact information to display. When it is <see langword="null"/> no contact information
-    /// section is rendered; the form never invents placeholder details.
+    /// Gets or sets the address, phone, email, website and message shown beside or below the form. When it is
+    /// <see langword="null"/>, which is the default, no contact information section is rendered; the form never invents
+    /// placeholder details.
     /// </summary>
     [Parameter]
     public ContactInformation? ContactInfo { get; set; }
@@ -150,20 +154,22 @@ public partial class OsirionContactForm : OsirionComponentBase
     #region Event Parameters
 
     /// <summary>
-    /// Event callback invoked when the form is submitted with valid data. Without it, and without
+    /// Gets or sets the callback that receives the validated message. It runs for a submission that is valid and whose
+    /// honeypot field is empty. With <see cref="UseBuiltInEmailService"/> it runs after the email was sent; without it, it is
+    /// the only delivery. When it throws, <see cref="ErrorMessage"/> is shown. Without it, and without
     /// <see cref="UseBuiltInEmailService"/>, nothing can deliver the message, so the form reports an error.
     /// </summary>
     [Parameter]
     public EventCallback<ContactFormModel> OnSubmit { get; set; }
 
     /// <summary>
-    /// Event callback invoked when the form is reset.
+    /// Gets or sets a callback for a form reset. Not used by the current markup.
     /// </summary>
     [Parameter]
     public EventCallback OnReset { get; set; }
 
     /// <summary>
-    /// Event callback invoked when form validation fails.
+    /// Gets or sets a callback for failed validation. Not used by the current markup.
     /// </summary>
     [Parameter]
     public EventCallback<EditContext> OnValidationFailed { get; set; }
@@ -173,25 +179,29 @@ public partial class OsirionContactForm : OsirionComponentBase
     #region Success/Error Message Parameters
 
     /// <summary>
-    /// Gets or sets the success message to display after successful submission.
+    /// Gets or sets the message shown after a successful submission.
     /// </summary>
     [Parameter]
     public string SuccessMessage { get; set; } = "Thank you! Your message has been sent successfully. We'll get back to you soon.";
 
     /// <summary>
-    /// Gets or sets the error message to display when submission fails.
+    /// Gets or sets the message shown when sending fails, when <see cref="OnSubmit"/> throws, or when nothing can deliver the
+    /// message.
     /// </summary>
     [Parameter]
     public string ErrorMessage { get; set; } = "Sorry, there was an error sending your message. Please try again later.";
 
     /// <summary>
-    /// Gets or sets the error message to display when spam is detected.
+    /// Gets or sets the message shown when the hidden honeypot field was filled. Nothing is sent and <see cref="OnSubmit"/> is
+    /// not called.
     /// </summary>
     [Parameter]
     public string SpamMessage { get; set; } = "Your submission appears to be spam and has been blocked.";
 
     /// <summary>
-    /// Gets or sets whether to use the built-in email service (requires service registration)
+    /// Gets or sets whether the message is sent through the email service registered with <c>AddOsirion</c> or
+    /// <c>AddOsirionEmailServices</c> (SMTP, SendGrid or Infobip). When the service is
+    /// not registered, the form logs a warning and shows <see cref="ErrorMessage"/>.
     /// </summary>
     [Parameter]
     public bool UseBuiltInEmailService { get; set; } = false;
@@ -201,13 +211,13 @@ public partial class OsirionContactForm : OsirionComponentBase
     #region Layout Parameters
 
     /// <summary>
-    /// Gets or sets whether to show the form and contact info side by side (true) or stacked (false).
+    /// Gets or sets whether the contact information sits beside the form (<see langword="true"/>, the default) or below it.
     /// </summary>
     [Parameter]
     public bool SideBySideLayout { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets whether to use a dark theme styling.
+    /// Gets or sets whether the form uses its dark palette instead of the theme colors.
     /// </summary>
     [Parameter]
     public bool UseDarkTheme { get; set; } = false;

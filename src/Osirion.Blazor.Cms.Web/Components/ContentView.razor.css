@@ -110,19 +110,6 @@
         margin-top: 0;
     }
 
-    /* Link styling with smooth transitions */
-    .osirion-content-body a {
-        color: var(--osirion-link-color, var(--osirion-action-primary, #2563eb));
-        text-decoration: none;
-        border-bottom: 1px solid transparent;
-        transition: color var(--osirion-transition-duration-200, 0.2s), border-color var(--osirion-transition-duration-200, 0.2s);
-    }
-
-        .osirion-content-body a:hover {
-            color: var(--osirion-link-hover-color, var(--osirion-action-primary-hover, #1d4ed8));
-            border-bottom-color: var(--osirion-action-primary-hover, #1d4ed8);
-        }
-
     /* Enhanced image display */
     .osirion-content-body img {
         max-width: 100%;
@@ -366,11 +353,6 @@
     .osirion-content-categories,
     .osirion-content-tags {
         display: none;
-    }
-
-    .osirion-content-body a {
-        text-decoration: underline;
-        color: inherit;
     }
 
     .osirion-content-body img {

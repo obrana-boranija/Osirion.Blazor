@@ -1,0 +1,15 @@
+@using Osirion.Blazor.Components
+@using Osirion.Blazor.Core.Models
+
+@* A demo: OnSubmit does nothing, so the message goes nowhere, and the success message says so. *@
+<OsirionContactForm Id="demo-contact"
+                    FormTitle="Ask about the library"
+                    FormDescription="This form is a demo: it validates your input like the real one, then sends nothing."
+                    PrivacyPolicyText="I understand that this demo keeps nothing"
+                    ShowSubscribeOption="false"
+                    SuccessMessage="This demo sends nothing: your message was not stored or delivered."
+                    OnSubmit="IgnoreAsync" />
+
+@code {
+    private static Task IgnoreAsync(ContactFormModel message) => Task.CompletedTask;
+}
