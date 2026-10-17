@@ -10,5 +10,5 @@ Key parameters
 - IsSticky (default true)
 
 Notes
-- CSS var --osirion-header-height is set from TopOffset
+- CSS var --osirion-header-height is set inline from TopOffset when it differs from the default (40)
 - Use in docs/blog layouts with secondary navigation or TOC.
