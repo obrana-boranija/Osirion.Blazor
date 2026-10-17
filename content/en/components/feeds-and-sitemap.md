@@ -50,7 +50,7 @@ at `/sitemap.xml`, an RSS 2.0 feed at `/feed.xml` and an Atom 1.0 feed at `/atom
 sitemap; feed readers subscribe to either feed. These are endpoints, not components, so this page has no demo and no
 parameter table.
 
-Package `Osirion.Blazor.Cms.Web`, namespace `Osirion.Blazor.Cms.Web.Feeds`. [Source on GitHub](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Cms.Web/Feeds/ContentFeedEndpoints.cs). Available from 4.1.
+Package `Osirion.Blazor.Cms.Web`, namespace `Osirion.Blazor.Cms.Web.Feeds`. [Source on GitHub](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Cms.Web/Feeds/ContentFeedEndpoints.cs). Available from 4.0.
 
 ## Usage
 
