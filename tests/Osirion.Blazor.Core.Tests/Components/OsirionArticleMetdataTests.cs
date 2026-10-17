@@ -66,4 +66,35 @@ public class OsirionArticleMetdataTests : OsirionComponentTestBase
         cut.Find(".osirion-article-metadata").Children.Length.ShouldBe(1);
         cut.Find(expectedSelector).ShouldNotBeNull();
     }
+
+    // Fails before the fix: the author icon carried only osirion-article-meta-icon, which no stylesheet defines, so it
+    // lacked the shrink and opacity rules the other two icons get.
+    [Fact]
+    public void ArticleMetadata_AuthorIcon_CarriesTheStylesheetClassAndTheOldOne()
+    {
+        var cut = RenderStatic<OsirionArticleMetdata>(parameters => parameters.Add(p => p.Author, "Ada"));
+
+        var icon = cut.Find(".osirion-article-metadata-author svg");
+        icon.ClassList.ShouldContain("osirion-article-metadata-icon");
+        icon.ClassList.ShouldContain("osirion-article-meta-icon");
+    }
+
+    // Fails before the fix: the root rendered as <div class="osirion-article-metadata"> whatever Class, Style, Theme and
+    // unmatched attributes were passed.
+    [Fact]
+    public void ArticleMetadata_ClassStyleThemeAndAttributes_ReachTheRoot()
+    {
+        var cut = RenderStatic<OsirionArticleMetdata>(parameters => parameters
+            .Add(p => p.Author, "Ada")
+            .Add(p => p.Class, "extra")
+            .Add(p => p.Style, "margin: 0")
+            .Add(p => p.Theme, ThemeMode.Dark)
+            .AddUnmatched("data-test", "meta"));
+
+        var root = cut.Find(".osirion-article-metadata");
+        root.ClassList.ShouldContain("extra");
+        root.GetAttribute("style").ShouldBe("margin: 0");
+        root.GetAttribute("data-theme").ShouldBe("dark");
+        root.GetAttribute("data-test").ShouldBe("meta");
+    }
 }

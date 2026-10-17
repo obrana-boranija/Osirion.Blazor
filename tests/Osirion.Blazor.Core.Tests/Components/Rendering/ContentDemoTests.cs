@@ -1,4 +1,5 @@
 using Bunit;
+using Bunit.TestDoubles;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.Extensions.DependencyInjection;
@@ -118,6 +119,32 @@ public class ContentDemoTests : OsirionComponentTestBase
         var registry = new ContentDemoRegistry().Add<GreetingDemo>("greeting");
 
         Should.Throw<ArgumentException>(() => registry.Add<GreetingDemo>("greeting"));
+    }
+
+    // Fails before the fix: used directly on a page, the demo rendered a Copy button with an inline handler and loaded
+    // no script, so the button did nothing.
+    [Fact]
+    public void Demo_UsedDirectlyWithSource_LoadsTheCopyScript()
+    {
+        Services.AddOsirionContentDemos(demos => demos.Add<GreetingDemo>("greeting", source: "<GreetingDemo />"));
+
+        var cut = RenderStatic<OsirionContentDemo>(p => p.Add(d => d.Key, "greeting"));
+
+        cut.Find("button.osirion-copy-button").ShouldNotBeNull();
+        cut.FindComponents<Stub<BlazorJSComponents.JS>>()
+            .Select(stub => stub.Instance.Parameters.Get(js => js.Src))
+            .ShouldContain("./_content/Osirion.Blazor.Core/js/osirion-copy-button.es5.min.js");
+    }
+
+    [Fact]
+    public void Demo_CopyButtonOff_LoadsNoScript()
+    {
+        Services.AddOsirionContentDemos(demos => demos.Add<GreetingDemo>("greeting", source: "<GreetingDemo />"));
+
+        var cut = RenderStatic<OsirionContentDemo>(p => p.Add(d => d.Key, "greeting").Add(d => d.EnableCopyButton, false));
+
+        cut.FindComponents<Stub<BlazorJSComponents.JS>>().ShouldBeEmpty();
+        cut.FindAll("button.osirion-copy-button").ShouldBeEmpty();
     }
 
     private sealed class GreetingDemo : ComponentBase
