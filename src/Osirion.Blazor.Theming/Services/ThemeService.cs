@@ -202,21 +202,28 @@ public class ThemeService : IThemeService
                 return;
             }
 
-            httpContext.Response.Cookies.Append(ThemePaletteNames.CookieName, palette.ToId(), new CookieOptions
-            {
-                Expires = DateTimeOffset.UtcNow.AddYears(1),
-                // The page's script reads it before first paint, so a static site can apply the palette too.
-                HttpOnly = false,
-                Secure = httpContext.Request.IsHttps,
-                SameSite = SameSiteMode.Lax,
-                Path = "/"
-            });
+            httpContext.Response.Cookies.Append(ThemePaletteNames.CookieName, palette.ToId(), PreferenceCookie());
         }
         catch (Exception ex)
         {
             _logger?.LogDebug(ex, "Failed writing palette cookie");
         }
     }
+
+    // The theme and palette cookies hold a display preference, nothing sensitive. The page's script must read them
+    // before first paint, and the toggle and the picker must overwrite them, so they cannot be HttpOnly: the browser
+    // lets script neither read nor replace an HttpOnly cookie. They are always Secure, so a site behind a proxy that
+    // ends TLS keeps the flag even when the request reaches the app as HTTP; browsers treat localhost as secure.
+#pragma warning disable S3330 // HttpOnly would hide the preference from the script that applies it
+    private static CookieOptions PreferenceCookie() => new()
+    {
+        Expires = DateTimeOffset.UtcNow.AddYears(1),
+        HttpOnly = false,
+        Secure = true,
+        SameSite = SameSiteMode.Lax,
+        Path = "/"
+    };
+#pragma warning restore S3330
 
     private static ThemeMode? ParseTheme(string? value)
     {
@@ -237,15 +244,7 @@ public class ThemeService : IThemeService
             var httpContext = _httpContextAccessor?.HttpContext;
             if (httpContext is null) return; // No HTTP context (e.g., WASM prerender) - skip persistence
 
-            var secure = httpContext.Request?.IsHttps ?? false;
-            var options = new CookieOptions
-            {
-                Expires = DateTimeOffset.UtcNow.AddYears(1),
-                HttpOnly = false,
-                Secure = secure,
-                SameSite = SameSiteMode.Lax,
-                Path = "/"
-            };
+            var options = PreferenceCookie();
 
             var value = mode switch
             {
