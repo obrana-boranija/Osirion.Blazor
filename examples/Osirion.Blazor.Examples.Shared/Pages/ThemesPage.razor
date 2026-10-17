@@ -3,7 +3,7 @@
 @using Osirion.Blazor.Examples.Shared.Themes
 @using Osirion.Blazor.Theming.Components
 
-@* The theme page: the switcher, the palettes and how to make one from content/en/themes.md, then every colour token
+@* The theme page: the switcher, the palettes and how to make one from content/en/themes.md, then every color token
    with a chip that shows the value the current palette and mode give it. *@
 @if (_page is not null)
 {
@@ -21,7 +21,7 @@
 
         <section class="themes-try" aria-labelledby="try-a-palette">
             <h2 id="try-a-palette">Try a palette</h2>
-            <p>The whole site changes, and the chips in the token table show the colours the palette sets.</p>
+            <p>The whole site changes, and the chips in the token table show the colors the palette sets.</p>
             <div class="themes-controls">
                 <ThemePicker />
                 <ThemeToggle />
@@ -32,8 +32,8 @@
             <ContentRenderer Item="_page" OmitLeadingTitle="true" />
         </div>
 
-        <section class="themes-tokens" aria-labelledby="colour-tokens">
-            <h2 id="colour-tokens">Colour tokens</h2>
+        <section class="themes-tokens" aria-labelledby="color-tokens">
+            <h2 id="color-tokens">Color tokens</h2>
             <p>
                 Every palette and both theme files set these custom properties. Components read them, and so can your own
                 styles.
@@ -48,7 +48,7 @@
                         <thead>
                             <tr>
                                 <th scope="col">Token</th>
-                                <th scope="col">Colours</th>
+                                <th scope="col">Colors</th>
                                 <th scope="col">Stands out from</th>
                             </tr>
                         </thead>
@@ -60,7 +60,7 @@
                                         <span class="themes-chip" style="@($"background-color: var({token.Property})")" aria-hidden="true"></span>
                                         <code>@token.Property</code>
                                     </td>
-                                    <td>@token.Colours</td>
+                                    <td>@token.Colors</td>
                                     <td>@(token.ReadsOn ?? "-")</td>
                                 </tr>
                             }

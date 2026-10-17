@@ -1,21 +1,21 @@
 namespace Osirion.Blazor.Components;
 
 /// <summary>
-/// A named colour palette. The palette sets the colours; <see cref="ThemeMode"/> still picks light or dark, and each
+/// A named color palette. The palette sets the colors; <see cref="ThemeMode"/> still picks light or dark, and each
 /// palette has a variant for both.
 /// </summary>
 public enum ThemePalette
 {
     /// <summary>
     /// No palette: the light and dark theme files apply, with the active CSS framework adapter's mappings on top.
-    /// This is the behaviour without palettes, and the default.
+    /// This is the behavior without palettes, and the default.
     /// </summary>
     Framework,
 
-    /// <summary>Osirion's own colours, kept even when a CSS framework adapter is active.</summary>
+    /// <summary>Osirion's own colors, kept even when a CSS framework adapter is active.</summary>
     Osirion,
 
-    /// <summary>Inspired by GitHub's Primer colours.</summary>
+    /// <summary>Inspired by GitHub's Primer colors.</summary>
     Commit,
 
     /// <summary>Inspired by Visual Studio Code's Light Modern and Dark Modern themes.</summary>

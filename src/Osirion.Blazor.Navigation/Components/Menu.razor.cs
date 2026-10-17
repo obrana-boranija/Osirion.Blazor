@@ -168,7 +168,7 @@ public partial class Menu
         if (Orientation == MenuOrientation.Vertical && AutoExpandActive)
             classes.Add("osirion-menu-auto-expand");
 
-        // The collapsible class is critical for the mobile behaviour.
+        // The collapsible class is critical for the mobile behavior.
         if (CollapseOnMobile)
             classes.Add("osirion-menu-collapsible");
 
