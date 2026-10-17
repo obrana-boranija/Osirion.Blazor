@@ -188,7 +188,7 @@ seconds.
 | `ShowResetButton` | `bool` | `false` | Whether a reset button, which clears the fields in the browser, is shown next to the submit button. |
 | `ResetButtonText` | `string` | `"Reset"` | The text of the reset button. |
 | `ShowRequiredIndicators` | `bool` | `true` | Whether a `*` follows the label of each required field and of the privacy checkbox. |
-| `PrivacyPolicyText` | `string?` | `"I agree to the <a href="/privacy-policy" target="_blank">privacy policy</a>"` | The label of the privacy checkbox, rendered as raw HTML, so pass only text you wrote. The default text links to `/privacy-policy`. The checkbox is left out when the value is null or empty, but the model still requires it to be ticked, so such a form can never pass validation. |
+| `PrivacyPolicyText` | `string?` | `"I agree to the <a href="/privacy-policy" target="_blank">privacy policy</a>"` | The label of the privacy checkbox, rendered as raw HTML, so pass only text you wrote. The default text links to `/privacy-policy`. The checkbox is left out when the value is null or empty, and the form then submits without it: `ContactFormModel.AgreeToPrivacyPolicy` is set to true so the model validates, which means it records no consent and must not be stored as consent. |
 | `ShowSubscribeOption` | `bool` | `true` | Whether the newsletter checkbox is shown. Its value reaches your code as `ContactFormModel.SubscribeToUpdates`. |
 | `SubscribeText` | `string` | `"I would like to receive updates and newsletters"` | The label of the newsletter checkbox. |
 | `ShowContactInformation` | `bool` | `true` | Whether the contact information section is shown when `ContactInfo` is set. |
@@ -233,9 +233,10 @@ seconds.
 > [!WARNING]
 > `PrivacyPolicyText` is rendered as raw HTML. Use only text you wrote; never pass visitor or CMS input.
 
-> [!CAUTION]
-> The model always requires `AgreeToPrivacyPolicy`. If you hide the checkbox by setting `PrivacyPolicyText` to null
-> or empty, the form can no longer pass validation, so keep the checkbox.
+> [!NOTE]
+> Set `PrivacyPolicyText` to null or empty to leave the checkbox out. The form then submits without it, and
+> `AgreeToPrivacyPolicy` on the model `OnSubmit` receives is `true` so the model validates. It then records no
+> consent, so do not store it as consent. Keep the checkbox if you need the visitor's consent.
 
 Rate-limit the page that hosts the form: the honeypot stops simple bots, not a determined sender.
 

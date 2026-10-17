@@ -17,10 +17,9 @@ Basic usage
 
 Presets
 
-```razor
-@* Static helpers *@
-@* OsirionContentNotFound.Create404(); OsirionContentNotFound.Create403(); *@
-```
+The static `Create404`, `Create403`, `CreateEmptySearch` and `CreateEmptyContent` methods return a component
+instance that only carries the preset values. Blazor creates component instances itself, so such an instance cannot be
+rendered; set the same parameters in markup instead (see Basic usage). `Create403` leads to the home page.
 
 Notes
 

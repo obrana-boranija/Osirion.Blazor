@@ -107,7 +107,9 @@
             html.classList.toggle('rz-dark-theme', newTheme === 'dark');
         }
 
-        document.cookie = `osirion-preferred-theme=${newTheme}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax`;
+        // Same flags as ThemeService and theme-picker.js, which write this cookie too; Secure would be dropped over plain HTTP.
+        const secure = window.location.protocol === 'https:' ? '; Secure' : '';
+        document.cookie = `osirion-preferred-theme=${newTheme}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax${secure}`;
         document.cookie = `preferred-theme=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
 
         window.dispatchEvent(new CustomEvent('osirion-theme-update'));
