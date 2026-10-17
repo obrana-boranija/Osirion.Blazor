@@ -247,7 +247,8 @@ public class OsirionSubscriptionCardTests : OsirionComponentTestBase
     [Fact]
     public void SubscriptionCard_ValidSubmit_ShowsSuccessStatusAfterNavigation()
     {
-        var cut = RenderStatic<OsirionSubscriptionCard>(parameters => { });
+        var cut = RenderStatic<OsirionSubscriptionCard>(parameters => parameters
+            .Add(p => p.OnSubscribe, (SubscriptionModel _) => { }));
         Fill(cut);
 
         cut.Find("form").Submit();
@@ -298,9 +299,10 @@ public class OsirionSubscriptionCardTests : OsirionComponentTestBase
         CurrentUri().ShouldContain("SubmissionResultValue=3");
     }
 
-    // Known defect, pinned as current behavior: with the built-in email service registered the card reports success without sending or recording the subscription. Update this expectation when it is fixed.
+    // Fails before the fix: with the built-in email service registered the card reported success, and thanked the
+    // visitor, without sending or storing anything.
     [Fact]
-    public void SubscriptionCard_BuiltInEmailServiceRegistered_ReportsSuccessWithoutSendingAnything()
+    public void SubscriptionCard_BuiltInEmailServiceRegistered_ReportsServerErrorBecauseNothingStoresTheAddress()
     {
         Services.AddSingleton(Options.Create(new EmailOptions { Provider = EmailProviderType.Smtp }));
         Services.AddSingleton<SmtpEmailService>();
@@ -314,7 +316,21 @@ public class OsirionSubscriptionCardTests : OsirionComponentTestBase
         cut.Find("form").Submit();
 
         invoked.ShouldBeFalse();
-        CurrentUri().ShouldContain("SubmissionResultValue=1");
+        CurrentUri().ShouldContain("SubmissionResultValue=3");
+    }
+
+    // Fails before the fix: without an OnSubscribe handler the card said "Thank you for subscribing!" and the address
+    // went nowhere.
+    [Fact]
+    public void SubscriptionCard_NoOnSubscribeHandler_ReportsServerError()
+    {
+        var cut = RenderStatic<OsirionSubscriptionCard>(parameters => { });
+        Fill(cut);
+
+        cut.Find("form").Submit();
+
+        CurrentUri().ShouldContain("SubmissionResultValue=3");
+        cut.Find("div.osirion-alert-error span").TextContent.ShouldStartWith("Sorry, there was an error");
     }
 
     // Fails before the fix: the result started as SpamDetected, so a missing email service flagged a genuine visitor as spam.
