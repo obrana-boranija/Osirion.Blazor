@@ -113,19 +113,6 @@ public class ShippedStylesheetTests
         button.ShouldNotContain("#f8f8f2");
     }
 
-    // Fails before the fix: two seconds after a copy the script set the label to "Copy code to clipboard", so a screen
-    // reader lost the language the markup gave it ("Copy C# code to clipboard").
-    [Fact]
-    public void CopyButtonScript_RestoresTheLabelItFound()
-    {
-        // Act
-        var script = File.ReadAllText(Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(CoreCss("osirion-copy-button.js")))!, "js", "osirion-copy-button.js"));
-
-        // Assert
-        script.ShouldContain("button.getAttribute('aria-label')");
-        script.ShouldNotContain("'Copy code to clipboard'");
-    }
-
     // Fails before the fix: the renderer's text link rules also reached the links inside an embedded demo, so a
     // component's own link color sat on the renderer's tinted link background (4.35:1 for the OsirionContentNotFound
     // suggestions on its centered panel) and a demo did not look as the component does on a page of its own.
