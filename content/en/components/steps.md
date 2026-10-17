@@ -53,7 +53,7 @@ seo_properties:
 "getting started" section. The steps sit side by side on wide screens and stack on narrow ones, or always stack with
 a line joining their numbers.
 
-Package `Osirion.Blazor.Core`, namespace `Osirion.Blazor.Components`. [Source on GitHub](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Core/Components/Sections/OsirionSteps.razor). Available from 4.1.
+Package `Osirion.Blazor.Core`, namespace `Osirion.Blazor.Components`. [Source on GitHub](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Core/Components/Sections/OsirionSteps.razor). Available from 4.0.
 
 ```demo
 steps
@@ -93,7 +93,7 @@ For a longer process, or a narrow column, stack them:
 | --- | --- | --- | --- |
 | `Items` | `IReadOnlyList<StepItem>` | `[]` | The steps, in order. Required; with no steps nothing is rendered. |
 | `Vertical` | `bool` | `false` | Whether the steps are always stacked, with a line joining their numbers; otherwise they sit side by side on wide screens. |
-| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's colour mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
 | `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
 | `Style` | `string?` | `null` | An inline style for the component's root element. |
 

@@ -104,7 +104,7 @@ With an image, the text turns white and a dark overlay (`ShowOverlay`, on by def
 | `ShowPattern` | `bool` | `false` | Whether `BackgroundPattern` is drawn behind the content. |
 | `Padding` | `SectionPadding` | `SectionPadding.Medium` | The vertical padding: `None`, `Small` (2rem), `Medium` (3rem) or `Large` (4rem); smaller on narrow screens. |
 | `HasDivider` | `bool` | `false` | Whether a shadow under the section separates it from the next. |
-| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's colour mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
 | `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
 | `Style` | `string?` | `null` | An inline style for the component's root element. |
 

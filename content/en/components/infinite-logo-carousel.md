@@ -127,7 +127,7 @@ A looping strip with a heading, links and a logo that has light and dark version
 | `LogoHeight` | `int` | `80` | The height of each logo slot in pixels, also written as the images' `height`. |
 | `LogoGap` | `int` | `24` | The gap between logos in pixels. |
 | `MaxVisibleLogos` | `int?` | `null` | Shows only the first N logos. A value of zero or less, or none, shows all of them. |
-| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's colour mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
 | `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
 | `Style` | `string?` | `null` | An inline style for the component's root element. |
 

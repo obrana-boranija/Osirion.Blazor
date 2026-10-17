@@ -87,7 +87,7 @@ The figures above are placeholders; show only numbers you can stand behind.
 | `Columns` | `MetricGridColumns` | `MetricGridColumns.Four` | The number of columns from 992px wide: `Two`, `Three` or `Four`. The grid has one column on phones and two from 576px. |
 | `AriaLabel` | `string` | `"Key metrics"` | The accessible name of the metric list. |
 | `CssClass` | `string?` | `null` | Extra CSS classes on the list. `OsirionComponentBase.Class` is not applied by this component. |
-| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's colour mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
 | `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
 | `Style` | `string?` | `null` | An inline style for the component's root element. |
 

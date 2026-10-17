@@ -131,7 +131,7 @@ An article header with the image behind the text and the author, date and readin
 | `Variant` | `HeroVariant` | `HeroVariant.Hero` | `Hero`, `Jumbotron` or `Minimal`: changes the spacing, the text sizes and the side image's size. |
 | `ChildContent` | `RenderFragment?` | `null` | Extra content under the buttons, in a `div` with the class `osirion-hero-additional`. |
 | `HasDivider` | `bool` | `true` | Whether a shadow in the primary color is drawn along the section's top edge. |
-| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's colour mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
 | `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
 | `Style` | `string?` | `null` | An inline style for the component's root element. |
 

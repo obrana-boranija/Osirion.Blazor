@@ -140,7 +140,7 @@ A star rating shows only when both the carousel's `ShowRating` and the item's `S
 | `Speed` | `CarouselSpeed` | `CarouselSpeed.Normal` | Changes the loop time: `Slow` adds 30 seconds to `AnimationDuration`, `Fast` takes 30 off, to a minimum of 10. |
 | `ShowRating` | `bool` | `false` | Whether star ratings are allowed; a card shows its rating only when its testimonial's `ShowRating` is also on. |
 | `InheritTheme` | `bool` | `false` | Whether the cards take the carousel's `OsirionComponentBase.Theme` instead of following the system. |
-| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's colour mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
 | `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
 | `Style` | `string?` | `null` | An inline style for the component's root element. |
 

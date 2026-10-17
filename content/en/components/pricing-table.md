@@ -53,7 +53,7 @@ seo_properties:
 action, with the recommended plan set apart. `OsirionFeatureComparison` follows it with a table that compares the
 plans feature by feature. Both render without script.
 
-Package `Osirion.Blazor.Core`, namespace `Osirion.Blazor.Components`. [Source on GitHub](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Core/Components/Sections/OsirionPricingTable.razor). Available from 4.1.
+Package `Osirion.Blazor.Core`, namespace `Osirion.Blazor.Components`. [Source on GitHub](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Core/Components/Sections/OsirionPricingTable.razor). Available from 4.0.
 
 ```demo
 pricing-table
@@ -129,7 +129,7 @@ so rows can mix both. `ComparisonCell.Yes` and `ComparisonCell.No` are the same 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
 | `Plans` | `IReadOnlyList<PricingPlan>` | `[]` | The plans, in the order they are shown. Required; with no plans nothing is rendered. |
-| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's colour mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
 | `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
 | `Style` | `string?` | `null` | An inline style for the component's root element. |
 
@@ -162,7 +162,7 @@ so rows can mix both. `ComparisonCell.Yes` and `ComparisonCell.No` are the same 
 | `FeatureColumnText` | `string` | `"Feature"` | The header of the feature column, read by screen readers only. |
 | `IncludedText` | `string` | `"Included"` | What screen readers say for a check mark. |
 | `NotIncludedText` | `string` | `"Not included"` | What screen readers say for a dash. |
-| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's colour mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
 | `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
 | `Style` | `string?` | `null` | An inline style for the component's root element. |
 
