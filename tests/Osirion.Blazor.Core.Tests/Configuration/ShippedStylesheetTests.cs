@@ -74,6 +74,19 @@ public class ShippedStylesheetTests
         css.ShouldContain(".osirion-metric-card-value{margin-bottom:0.5rem;color:color-mix(insrgb,var(--osirion-metric-card-accent)65%,var(--osirion-text-primary,#111827));");
     }
 
+    // Fails before the fix: two seconds after a copy the script set the label to "Copy code to clipboard", so a screen
+    // reader lost the language the markup gave it ("Copy C# code to clipboard").
+    [Fact]
+    public void CopyButtonScript_RestoresTheLabelItFound()
+    {
+        // Act
+        var script = File.ReadAllText(Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(CoreCss("osirion-copy-button.js")))!, "js", "osirion-copy-button.js"));
+
+        // Assert
+        script.ShouldContain("button.getAttribute('aria-label')");
+        script.ShouldNotContain("'Copy code to clipboard'");
+    }
+
     private static string Squash(string css) => System.Text.RegularExpressions.Regex.Replace(
         System.Text.RegularExpressions.Regex.Replace(css, @"/\*.*?\*/", string.Empty, System.Text.RegularExpressions.RegexOptions.Singleline),
         @"\s+",
