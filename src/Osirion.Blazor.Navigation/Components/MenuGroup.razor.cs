@@ -43,16 +43,16 @@ public partial class MenuGroup
     public string? FooterTarget { get; set; }
 
     /// <summary>
-    /// Gets or sets whether the group is styled as collapsible: its label gets a chevron and, with
-    /// <see cref="Expanded"/> off, its items are hidden. Nothing in the package opens a collapsed group again, so
-    /// leave it off unless your own script toggles the <c>osirion-menu-group-expanded</c> class.
+    /// Gets or sets whether the label opens and closes the group. The label becomes the <c>summary</c> of a
+    /// <c>details</c> element with a chevron, so a click, Enter or Space toggles the items without script, also under
+    /// static SSR. It needs a <see cref="Label"/>: without one the group stays open.
     /// </summary>
     [Parameter]
     public bool Collapsible { get; set; }
 
     /// <summary>
-    /// Gets or sets whether a collapsible group shows its items. It has no effect unless <see cref="Collapsible"/> is
-    /// on.
+    /// Gets or sets whether a collapsible group starts open. It is the initial state only: the reader's toggle is not
+    /// reset when the parent renders again with the same value. It has no effect unless <see cref="Collapsible"/> is on.
     /// </summary>
     [Parameter]
     public bool Expanded { get; set; } = true;

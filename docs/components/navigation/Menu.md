@@ -63,7 +63,7 @@ rendering and WebAssembly. Open and closed states are kept in visually hidden ch
 | `CollapseOnMobile` | `bool` | `true` | Shows the hamburger and drawer below the collapse breakpoint. |
 | `CollapseBreakpoint` | `MenuCollapseBreakpoint` | `Mobile` | `Mobile` collapses at 768px and below, `Large` below 1200px, `ExtraLarge` below 1440px. Pick the narrowest breakpoint at which the bar still fits on one line. |
 | `Sticky`, `StickyZIndex` | `bool`, `int` | `true`, `1000` | Keeps a horizontal menu at the top while the page scrolls. |
-| `AutoExpandActive` | `bool` | `true` | Vertical menus only. |
+| `AutoExpandActive` | `bool` | `true` | Vertical menus only. Keeps the submenu of the active item open; its toggle cannot close it while the item is active. |
 | `AriaLabel`, `ToggleAriaLabel`, `Id` | `string` | | Accessible names and the id the generated ids derive from. |
 
 `MenuItem`, `MenuGroup` and the mega menu building blocks are described in [MenuItems.md](MenuItems.md).

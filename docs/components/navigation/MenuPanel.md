@@ -10,7 +10,7 @@ Key parameters
 - AriaLabel: the accessible name; falls back to `Title` when not set
 - ChildContent: the panel content, typically `MenuPanelLink` items
 - Class: extra CSS classes, added after `osirion-menu-panel` (inherited from `OsirionComponentBase`)
-- Style: inherited from `OsirionComponentBase`; this component's markup does not render it
+- Style: inherited from `OsirionComponentBase`, written on the root element
 - Theme: `ThemeMode.System` (default), `Light` or `Dark`; a non-System value is written as `data-theme` (or
   `data-bs-theme` when the Bootstrap framework is configured) on the panel (inherited)
 - Attributes: any other attribute, captured and applied to the panel (inherited)

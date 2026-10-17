@@ -115,9 +115,10 @@ aligns it to the trailing edge, and a collapsed menu shows it at the bottom of t
 ## Parameters
 
 Every part of the menu also takes `Class`, `Style` and `Theme` from the Osirion component base, and passes unmatched
-attributes to its root element. None of the parts writes `Style`, so it has no effect; use `Class` or a CSS variable
-instead. `Class` goes on the container of `Menu`, on the link (or toggle label) of `MenuItem`, and on the root element
-of the other parts.
+attributes to its root element. `Style` is written on the root element of every part. `Class` goes on the container of
+`Menu`, on the link (or toggle label) of `MenuItem`, and on the root element of the other parts, so on a `MenuItem` the
+two reach different elements: `Style` lands on its wrapper, where a CSS variable such as `--osirion-menu-accent` is
+inherited by the link and the submenu. In a `Menu`, `Style` comes before the sticky `z-index`, which still wins.
 
 ### Menu
 
@@ -127,7 +128,7 @@ of the other parts.
 | --- | --- | --- | --- |
 | `ChildContent` | `RenderFragment?` | `null` | The menu items: `MenuItem`, `MenuDivider` and the other menu parts. |
 | `Href` | `string?` | `"/"` | The destination of the brand link. A scheme other than a relative URL, `http`, `https`, `mailto` or `tel` leaves the link without an `href`. |
-| `BrandLogo` | `string?` | `null` | The address of the logo image, shown before `BrandText` inside the brand link. The image is rendered 60 by 60 pixels, and its alternative text is the brand text followed by `brand logo`. |
+| `BrandLogo` | `string?` | `null` | The address of the logo image, shown before `BrandText` inside the brand link. The image is drawn square at `--osirion-menu-logo-size` (2.25rem by default) and declares 36 by 36 pixels, the size of that default, so the bar does not shift while it loads. Beside `BrandText` its alternative text is empty, because the text already names the link; without `BrandText` the logo is the whole link and its alternative text is `Home`. |
 | `BrandText` | `string?` | `null` | The brand name, rendered as the text of the brand link. Without a logo it is the whole link. |
 | `BrandingTemplate` | `RenderFragment?` | `null` | Your own brand markup. It replaces the brand link, `BrandLogo` and `BrandText` and is not wrapped in a link. |
 | `Actions` | `RenderFragment?` | `null` | Content shown at the end of the bar, after the menu items: a search box, a theme toggle or a call to action button. A horizontal menu aligns it to the trailing edge; a collapsed menu shows it at the bottom of its drawer. |
@@ -137,7 +138,7 @@ of the other parts.
 | `Alignment` | `MenuAlignment` | `MenuAlignment.Center` | Where a horizontal bar places its items: `Left`, `Center` or `Right`. A vertical menu ignores it. |
 | `CollapseOnMobile` | `bool` | `true` | Whether the items collapse behind a hamburger toggle and a drawer below the breakpoint in `CollapseBreakpoint`. |
 | `CollapseBreakpoint` | `MenuCollapseBreakpoint` | `MenuCollapseBreakpoint.Mobile` | The viewport width below which a collapsible menu shows the toggle: `Mobile` (768px and below), `Large` (below 1200px) or `ExtraLarge` (below 1440px). Pick the narrowest width at which the bar still fits on one line. It applies only while `CollapseOnMobile` is on. |
-| `AutoExpandActive` | `bool` | `true` | Whether a vertical menu gets the `osirion-menu-auto-expand` class on its container. The package's own styles do not use that class, so it only gives your CSS a hook. |
+| `AutoExpandActive` | `bool` | `true` | Whether a vertical menu keeps the submenu of the active item open. The menu gets the `osirion-menu-auto-expand` class on its container, and the stylesheet shows the submenu of an active item, its toggle then no longer closes it. The other submenus open and close from their toggle as usual. A horizontal menu ignores it. |
 | `AriaLabel` | `string` | `"Navigation menu"` | The accessible name of the `nav` landmark. Give each menu on a page a different one. |
 | `ToggleAriaLabel` | `string` | `"Toggle navigation menu"` | The accessible name of the hamburger toggle. |
 | `Id` | `string?` | `null` | The id of the container; the toggle and navigation ids derive from it. Without it each menu gets a unique generated id, so two menus on one page do not clash. |
@@ -193,8 +194,8 @@ group becomes a list with a small uppercase label, and its description is left o
 | `FooterText` | `string?` | `null` | The text of the footer link, for example `All features`. The link is rendered only when `FooterHref` also gives a safe address. |
 | `FooterHref` | `string?` | `null` | The address of the footer link. A scheme other than a relative URL, `http`, `https`, `mailto` or `tel` leaves the footer link out. |
 | `FooterTarget` | `string?` | `null` | The `target` attribute of the footer link. `_blank` also adds `rel="noopener noreferrer"`. |
-| `Collapsible` | `bool` | `false` | Whether the group is styled as collapsible: its label gets a chevron and, with `Expanded` off, its items are hidden. Nothing in the package opens a collapsed group again, so leave it off unless your own script toggles the `osirion-menu-group-expanded` class. |
-| `Expanded` | `bool` | `true` | Whether a collapsible group shows its items. It has no effect unless `Collapsible` is on. |
+| `Collapsible` | `bool` | `false` | Whether the label opens and closes the group. The label becomes the `summary` of a `details` element with a chevron, so a click, Enter or Space toggles the items without script, also under static SSR. It needs a `Label`: without one the group stays open. |
+| `Expanded` | `bool` | `true` | Whether a collapsible group starts open. It is the initial state only: the reader's toggle is not reset when the parent renders again with the same value. It has no effect unless `Collapsible` is on. |
 | `ChildContent` | `RenderFragment?` | `null` | The items of the group, rendered in a `role="group"` container. |
 | `Id` | `string?` | `null` | The id of the group; the ids of its label and item container derive from it. Without it a unique id is generated. |
 | `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
@@ -286,7 +287,7 @@ as a mega menu aside for a customer story or a news item. Pass a real `ImageAlt`
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
 | `ImageUrl` | `string` | `""` | The address of the image, written as given. It loads lazily. |
-| `ImageAlt` | `string?` | `null` | The alternative text of the image. Set it: without it the image is rendered with no `alt` attribute. |
+| `ImageAlt` | `string?` | `null` | The alternative text of the image. Without it the image is rendered with `alt=""`, which marks it as decorative so a screen reader skips it. Set it when the image says something the caption does not. |
 | `Title` | `string` | `""` | The caption title, shown over a dark scrim at the bottom of the image. |
 | `Description` | `string?` | `null` | Supporting text under `Title`. |
 | `Href` | `string` | `"#"` | The link address of the whole card. Only a relative URL or the `http`, `https`, `mailto` and `tel` schemes get an `href`. |
@@ -318,10 +319,12 @@ as a mega menu aside for a customer story or a news item. Pass a real `ImageAlt`
   empty slot; use `IconTemplate` for your own icon.
 - **Active state.** Under static SSR the active state is computed once per request. In an interactive render mode
   `MenuItem` also follows later navigations.
-- **Collapsible groups.** `MenuGroup` with `Collapsible` and `Expanded="false"` hides its items. Nothing in the package
-  opens the group again, so leave `Collapsible` off unless you add your own control.
-- **Auto expand.** `AutoExpandActive` only adds the `osirion-menu-auto-expand` class to a vertical menu. The package's
-  styles do not use it, so it is a hook for your own CSS and does not expand anything by itself.
+- **Collapsible groups.** `MenuGroup` with `Collapsible` turns its label into the `summary` of a `details` element, so a
+  click, Enter or Space opens and closes the items without script. `Expanded` is the starting state. A collapsible group
+  needs a `Label`; without one it stays open.
+- **Auto expand.** With `AutoExpandActive` a vertical menu keeps the submenu of the active item open, so the reader sees
+  where the page sits. Because the open state comes from the active item and not from the toggle, the toggle cannot close
+  that submenu while the item is active. Turn the parameter off for a menu where the reader should be able to close it.
 - **Several menus.** Each menu and each parent item generates a unique id, so two menus on one page do not toggle each
   other. Give each menu its own `AriaLabel`.
 

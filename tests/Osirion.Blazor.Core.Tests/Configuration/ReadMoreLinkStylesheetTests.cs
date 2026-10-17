@@ -23,6 +23,20 @@ public partial class ReadMoreLinkStylesheetTests
         css.ShouldNotContain("color:white");
     }
 
+    // Fails before the fix: every focus indicator keyed off :focus, so a mouse click on the link drew the outline and the
+    // button ring, which only keyboard users need.
+    [Fact]
+    public void FocusIndicators_UseFocusVisible()
+    {
+        // Act
+        var css = Squash(ReadMoreLinkCss());
+
+        // Assert
+        css.ShouldContain(".osirion-read-more:focus-visible{outline:");
+        css.ShouldContain(".osirion-read-more-button:focus-visible{box-shadow:");
+        Regex.IsMatch(css, @":focus(?![-\w])").ShouldBeFalse();
+    }
+
     private static string Squash(string css) => WhitespaceRun().Replace(CssComment().Replace(css, string.Empty), string.Empty);
 
     private static string ReadMoreLinkCss()

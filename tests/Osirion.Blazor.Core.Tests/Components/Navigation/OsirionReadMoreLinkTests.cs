@@ -61,6 +61,39 @@ public class OsirionReadMoreLinkTests : OsirionComponentTestBase
         cut.Find("a").GetAttribute("aria-label").ShouldBe("Continue");
     }
 
+    // Fails before the fix: OnInitialized copied Text into the AriaLabel parameter once, so after Text changed the
+    // link still announced the first text.
+    [Fact]
+    public void ReadMoreLink_NoAriaLabel_FollowsTextWhenItChanges()
+    {
+        var cut = RenderStatic<OsirionReadMoreLink>(parameters => parameters
+            .Add(p => p.Href, "/post")
+            .Add(p => p.Text, "Continue"));
+
+        cut.Render(parameters => parameters
+            .Add(p => p.Href, "/post")
+            .Add(p => p.Text, "Keep reading"));
+
+        cut.Find("a").GetAttribute("aria-label").ShouldBe("Keep reading");
+        cut.Instance.AriaLabel.ShouldBeNull();
+    }
+
+    [Fact]
+    public void ReadMoreLink_ExplicitAriaLabel_IsKeptWhenTextChanges()
+    {
+        var cut = RenderStatic<OsirionReadMoreLink>(parameters => parameters
+            .Add(p => p.Href, "/post")
+            .Add(p => p.Text, "Continue")
+            .Add(p => p.AriaLabel, "Continue reading the post"));
+
+        cut.Render(parameters => parameters
+            .Add(p => p.Href, "/post")
+            .Add(p => p.Text, "Keep reading")
+            .Add(p => p.AriaLabel, "Continue reading the post"));
+
+        cut.Find("a").GetAttribute("aria-label").ShouldBe("Continue reading the post");
+    }
+
     [Fact]
     public void ReadMoreLink_IconOnTheLeft_RendersLeftIconOnly()
     {

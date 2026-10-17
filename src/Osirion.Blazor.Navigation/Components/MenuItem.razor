@@ -1,7 +1,7 @@
 ﻿@namespace Osirion.Blazor.Navigation.Components
 @inherits OsirionComponentBase
 
-<div class="@WrapperCssClass" @attributes="Attributes">
+<div class="@WrapperCssClass" style="@Style" @attributes="Attributes">
     @if (HasSubmenu)
     {
         @* Disclosure toggle: a visually hidden but focusable checkbox, so the submenu opens from the keyboard
