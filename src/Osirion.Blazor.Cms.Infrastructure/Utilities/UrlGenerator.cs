@@ -7,6 +7,8 @@ namespace Osirion.Blazor.Cms.Infrastructure.Utilities;
 /// </summary>
 public static class UrlGenerator
 {
+    private const string IndexFileName = "_index.md";
+
     /// <summary>
     /// Generates a URL for content
     /// </summary>
@@ -35,7 +37,7 @@ public static class UrlGenerator
             path = RemoveLeadingSegment(path, skipSegment!);
         }
 
-        var isIndexFile = path.Contains("_index.md", StringComparison.OrdinalIgnoreCase);
+        var isIndexFile = string.Equals(path[(path.LastIndexOf('/') + 1)..], IndexFileName, StringComparison.OrdinalIgnoreCase);
 
         var normalizedPermalink = string.IsNullOrWhiteSpace(permalink) ? string.Empty : NormalizePath(permalink.Trim());
         if (!isIndexFile && normalizedPermalink.Length > 0)

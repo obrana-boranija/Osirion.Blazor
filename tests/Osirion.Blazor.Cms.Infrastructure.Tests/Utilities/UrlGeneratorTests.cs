@@ -195,6 +195,17 @@ public class UrlGeneratorTests
         UrlGenerator.GenerateUrl(permalink, "blog/post.md", "post", false, null).ShouldBe("blog/post");
     }
 
+    [Theory]
+    [InlineData("misc/my_index.md", "my-index", "misc/my-index")]
+    [InlineData("misc/_index.md.bak", "bak", "misc/bak")]
+    [InlineData("misc/x_index.md", "x-index", "misc/x-index")]
+    [InlineData("_index.md/post.md", "post", "_index.md/post")]
+    public void GenerateUrl_FileNameOnlyContainingIndexName_IsNotAFolderIndex(string path, string slug, string expected)
+    {
+        // Fails before the fix: any path containing "_index.md" was taken for a folder index, so misc/my_index.md got "misc".
+        UrlGenerator.GenerateUrl("", path, slug, false, null).ShouldBe(expected);
+    }
+
     [Fact]
     public void GenerateUrl_IndexFileWithPermalink_KeepsTheFolderAddress()
     {
