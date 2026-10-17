@@ -177,6 +177,33 @@ public class OsirionContactFormBehaviorTests : OsirionComponentTestBase
         Navigation.Uri.ShouldContain("SubmissionResultValue=1");
     }
 
+    // Fails before the fix: with nothing to deliver the message the form told the visitor it was sent, and it was lost.
+    [Fact]
+    public void ContactForm_NoHandlerAndNoEmailService_ReportsServerErrorInsteadOfSuccess()
+    {
+        var cut = RenderStatic<OsirionContactForm>(parameters => { });
+        Fill(cut);
+
+        cut.Find("form").Submit();
+
+        Navigation.Uri.ShouldContain("SubmissionResultValue=3");
+    }
+
+    [Fact]
+    public void ContactForm_BuiltInEmailServiceNotRegistered_ReportsServerError()
+    {
+        var submitted = false;
+        var cut = RenderStatic<OsirionContactForm>(parameters => parameters
+            .Add(p => p.UseBuiltInEmailService, true)
+            .Add(p => p.OnSubmit, (ContactFormModel _) => submitted = true));
+        Fill(cut);
+
+        cut.Find("form").Submit();
+
+        submitted.ShouldBeFalse();
+        Navigation.Uri.ShouldContain("SubmissionResultValue=3");
+    }
+
     [Fact]
     public void ContactForm_OnSubmitThrows_ReportsServerError()
     {
