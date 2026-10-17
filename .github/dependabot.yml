@@ -13,6 +13,13 @@ updates:
     commit-message:
       prefix: "deps"
       include: "scope"
+    # Net9MicrosoftVersion sets the Microsoft packages of the net9.0 target and must stay on 9.x; a grouped update
+    # once moved it to 10.x. A new major version means a new target framework, which is changed by hand.
+    ignore:
+      - dependency-name: "Microsoft.AspNetCore.*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "Microsoft.Extensions.*"
+        update-types: ["version-update:semver-major"]
     # Group updates to reduce PR spam
     groups:
       microsoft-dependencies:
