@@ -202,13 +202,13 @@ public abstract partial class OsirionContentPageBase : OsirionComponentBase
     /// <c>HomePage</c>, <c>DocumentPage</c> and <c>AboutPage</c>.
     /// </summary>
     [Parameter]
-    public string NotFoundTitle { get; set; } = "Article Not Found";
+    public string NotFoundTitle { get; set; } = "Page Not Found";
 
     /// <summary>
     /// The message of the not-found state. <c>LandingPage</c> has a parameter of its own.
     /// </summary>
     [Parameter]
-    public string NotFoundText { get; set; } = "The requested article could not be found.";
+    public string NotFoundText { get; set; } = "The page you're looking for doesn't exist or has been moved.";
 
     /// <summary>
     /// Whether the not-found state has a button back, to <see cref="BackLinkUrl"/> with the text <see
@@ -228,7 +228,7 @@ public abstract partial class OsirionContentPageBase : OsirionComponentBase
     /// The text of the back link in the not-found state.
     /// </summary>
     [Parameter]
-    public string BackLinkText { get; set; } = "Back to Home";
+    public string BackLinkText { get; set; } = "Go to Homepage";
 
     #endregion
 

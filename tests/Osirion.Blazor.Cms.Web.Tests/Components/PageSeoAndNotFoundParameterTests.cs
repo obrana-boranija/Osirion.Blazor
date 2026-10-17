@@ -288,7 +288,7 @@ public class PageSeoAndNotFoundParameterTests : CmsPageComponentTestBase
     {
         var cut = RenderStatic<ArticlePage>(p => p.Add(c => c.ItemSlug, "missing"));
 
-        AssertNotFound(cut.Find(".osirion-content-not-found"), "Article Not Found", "The requested article could not be found.", "/", "Back to Home");
+        AssertNotFound(cut.Find(".osirion-content-not-found"), "Page Not Found", "The page you're looking for doesn't exist or has been moved.", "/", "Go to Homepage");
         Navigation.NotFoundCalls.ShouldBe(1);
     }
 
