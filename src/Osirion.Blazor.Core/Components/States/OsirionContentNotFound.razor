@@ -40,7 +40,10 @@
         @if (Suggestions?.Any() == true && ShowSuggestions)
         {
             <div class="osirion-content-not-found-suggestions">
-                <p class="osirion-content-not-found-suggestions-title">@SuggestionsTitle</p>
+                @if (!string.IsNullOrWhiteSpace(SuggestionsTitle))
+                {
+                    <p class="osirion-content-not-found-suggestions-title">@SuggestionsTitle</p>
+                }
                 <ul class="osirion-content-not-found-suggestions-list">
                     @foreach (var suggestion in Suggestions)
                     {
@@ -48,11 +51,14 @@
                             <a href="@suggestion.Url" class="osirion-content-not-found-suggestion-link" target="@suggestion.Target">
                                 @suggestion.Text
                             </a>
-                            <p>
-                                <small>
-                                    @suggestion.Description
-                                </small>
-                            </p>
+                            @if (!string.IsNullOrWhiteSpace(suggestion.Description))
+                            {
+                                <p>
+                                    <small>
+                                        @suggestion.Description
+                                    </small>
+                                </p>
+                            }
                         </li>
                     }
                 </ul>

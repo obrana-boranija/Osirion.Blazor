@@ -106,8 +106,9 @@ public partial class OsirionContactForm : OsirionComponentBase
 
     /// <summary>
     /// Gets or sets the label of the privacy checkbox, rendered as raw HTML, so pass only text you wrote. The default
-    /// text links to <c>/privacy-policy</c>. The checkbox is left out when the value is null or empty, but the model
-    /// still requires it to be ticked, so such a form can never pass validation.
+    /// text links to <c>/privacy-policy</c>. The checkbox is left out when the value is null or empty, and the form
+    /// then submits without it: <c>ContactFormModel.AgreeToPrivacyPolicy</c> is set to true so the model validates, which
+    /// means it records no consent and must not be stored as consent.
     /// </summary>
     [Parameter]
     public string? PrivacyPolicyText { get; set; } = "I agree to the <a href=\"/privacy-policy\" target=\"_blank\">privacy policy</a>";
@@ -224,6 +225,19 @@ public partial class OsirionContactForm : OsirionComponentBase
 
     [SupplyParameterFromForm]
     private ContactFormModel FormModel { get; set; }
+
+    /// <inheritdoc />
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        // The model requires a ticked privacy box, so when the box is not rendered nothing could ever satisfy it.
+        // No checkbox means no consent was asked for, and the form must still be submittable.
+        if (string.IsNullOrWhiteSpace(PrivacyPolicyText))
+        {
+            FormModel.AgreeToPrivacyPolicy = true;
+        }
+    }
 
     [SupplyParameterFromQuery]
     private int? SubmissionResultValue { get; set; }

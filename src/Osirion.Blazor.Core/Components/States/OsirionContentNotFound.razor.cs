@@ -194,6 +194,10 @@ public partial class OsirionContentNotFound
     /// <summary>
     /// Creates a default 404 configuration
     /// </summary>
+    /// <remarks>
+    /// The returned instance only holds the preset values. Blazor creates component instances itself, so it cannot be rendered;
+    /// set the same parameters in markup.
+    /// </remarks>
     public static OsirionContentNotFound Create404()
     {
         return new OsirionContentNotFound
@@ -209,6 +213,9 @@ public partial class OsirionContentNotFound
     /// <summary>
     /// Creates a default 403 configuration
     /// </summary>
+    /// <remarks>
+    /// The returned instance only holds the preset values and cannot be rendered. Its button leads to the home page.
+    /// </remarks>
     public static OsirionContentNotFound Create403()
     {
         return new OsirionContentNotFound
@@ -216,8 +223,9 @@ public partial class OsirionContentNotFound
             ErrorCode = "403",
             Title = "Access Denied",
             Message = "You don't have permission to access this resource.",
-            PrimaryButtonText = "Go Back",
-            PrimaryButtonUrl = "javascript:history.back()"
+            // A javascript: address is not a link: it is unsafe and does nothing without script, so lead to the home page.
+            PrimaryButtonText = "Go to Homepage",
+            PrimaryButtonUrl = "/"
         };
     }
 
