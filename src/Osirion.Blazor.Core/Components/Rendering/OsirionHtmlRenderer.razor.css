@@ -99,7 +99,7 @@
 
     /* ========== LINKS ========== */
     .osirion-html-renderer a {
-        color: var(--osirion-action-primary, #2563eb);
+        color: var(--osirion-link-color, var(--osirion-action-primary, #2563eb));
         text-decoration: underline;
         text-decoration-thickness: 0.1em;
         text-underline-offset: 0.15em;
@@ -107,7 +107,7 @@
     }
 
         .osirion-html-renderer a:hover {
-            color: var(--osirion-action-primary-hover, #1d4ed8);
+            color: var(--osirion-link-hover-color, var(--osirion-action-primary-hover, #1d4ed8));
         }
 
         .osirion-html-renderer a:focus {

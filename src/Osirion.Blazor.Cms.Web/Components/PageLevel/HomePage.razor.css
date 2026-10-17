@@ -71,13 +71,13 @@
     }
 
     .osirion-homepage-content a {
-        color: var(--osirion-action-primary, #2563eb);
+        color: var(--osirion-link-color, var(--osirion-action-primary, #2563eb));
         text-decoration: none;
         transition: color var(--osirion-transition-duration-200, 0.2s) ease;
     }
 
         .osirion-homepage-content a:hover {
-            color: var(--osirion-action-primary-hover, #1d4ed8);
+            color: var(--osirion-link-hover-color, var(--osirion-action-primary-hover, #1d4ed8));
             text-decoration: underline;
         }
 

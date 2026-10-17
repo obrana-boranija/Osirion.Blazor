@@ -37,10 +37,33 @@ public partial class ThemeTokenTests
         HoverToken().IsMatch(body).ShouldBeTrue();
     }
 
+    // Fails before the fix: 74 rules coloured text with --osirion-action-primary, a button fill that the palettes and
+    // adapters only hold to contrast under the button's own label. Under the Bootstrap adapter in the dark theme a read
+    // more link read 2.83:1 and the not-found page's links 3.47:1. Text takes --osirion-link-color, which every theme
+    // and palette keeps at 4.5:1 on the page.
+    [Fact]
+    public void Stylesheets_ColourTextWithTheLinkColourNotTheButtonColour()
+    {
+        // Act
+        var offenders = Directory.EnumerateFiles(RepositoryFiles.Source(), "*.*", SearchOption.AllDirectories)
+            .Where(file => file.EndsWith(".css", StringComparison.Ordinal) || file.EndsWith(".scss", StringComparison.Ordinal))
+            .Where(file => !file.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}", StringComparison.Ordinal)
+                && !file.Contains($"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}", StringComparison.Ordinal))
+            .SelectMany(file => ButtonColourText().Matches(File.ReadAllText(file))
+                .Select(match => $"{Path.GetRelativePath(RepositoryFiles.Source(), file)}: {match.Value}"))
+            .ToList();
+
+        // Assert
+        offenders.ShouldBeEmpty();
+    }
+
     private static IEnumerable<string> ComponentStylesheets() =>
         Directory.EnumerateFiles(RepositoryFiles.Source(), "*.razor.css", SearchOption.AllDirectories)
             .Where(file => !file.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}", StringComparison.Ordinal)
                 && !file.Contains($"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}", StringComparison.Ordinal));
+
+    [GeneratedRegex(@"(?<![\w-])color:\s*var\(--osirion-action-primary(-hover)?(?=[,)])")]
+    private static partial Regex ButtonColourText();
 
     [GeneratedRegex(@"--osirion-background-hover:var\(--osirion-nav-hover-background\)")]
     private static partial Regex HoverToken();

@@ -77,7 +77,7 @@ a {
     text-decoration: underline;
     text-decoration-thickness: 0.1em;
     text-underline-offset: 0.1em;
-    color: var(--osirion-action-primary, #2563eb);
+    color: var(--osirion-link-color, var(--osirion-action-primary, #2563eb));
 }
 
 /* Ensure easy readability for all text */

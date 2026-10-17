@@ -112,14 +112,14 @@
 
     /* Link styling with smooth transitions */
     .osirion-content-body a {
-        color: var(--osirion-action-primary, #2563eb);
+        color: var(--osirion-link-color, var(--osirion-action-primary, #2563eb));
         text-decoration: none;
         border-bottom: 1px solid transparent;
         transition: color var(--osirion-transition-duration-200, 0.2s), border-color var(--osirion-transition-duration-200, 0.2s);
     }
 
         .osirion-content-body a:hover {
-            color: var(--osirion-action-primary-hover, #1d4ed8);
+            color: var(--osirion-link-hover-color, var(--osirion-action-primary-hover, #1d4ed8));
             border-bottom-color: var(--osirion-action-primary-hover, #1d4ed8);
         }
 

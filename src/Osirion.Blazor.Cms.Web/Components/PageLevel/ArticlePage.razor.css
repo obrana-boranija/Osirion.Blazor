@@ -212,7 +212,7 @@
         }
 
             .osirion-related-content-body h3 a:hover {
-                color: var(--osirion-action-primary, #2563eb);
+                color: var(--osirion-link-color, var(--osirion-action-primary, #2563eb));
             }
 
 .osirion-related-description {

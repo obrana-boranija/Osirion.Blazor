@@ -57,7 +57,7 @@
     flex-shrink: 0;
     width: 24px;
     height: 24px;
-    color: var(--osirion-action-primary);
+    color: var(--osirion-link-color, var(--osirion-action-primary));
 }
 
 /* Text content */
@@ -79,13 +79,13 @@
 
 /* Link in description */
 .osirion-cookie-consent-link {
-    color: var(--osirion-action-primary);
+    color: var(--osirion-link-color, var(--osirion-action-primary));
     text-decoration: underline;
     transition: color var(--osirion-transition-duration-200, 0.2s) ease;
 }
 
     .osirion-cookie-consent-link:hover {
-        color: var(--osirion-action-primary-hover);
+        color: var(--osirion-link-hover-color, var(--osirion-action-primary-hover));
     }
 
     .osirion-cookie-consent-link:focus {
