@@ -19,7 +19,7 @@
     text-decoration: none;
 }
 
-.osirion-read-more:focus {
+.osirion-read-more:focus-visible {
     outline: 2px solid var(--osirion-color-primary-500, #008a35);
     outline-offset: 2px;
 }
@@ -160,7 +160,7 @@
     color: var(--osirion-action-primary-text, #fff);
 }
 
-.osirion-read-more-button:focus {
+.osirion-read-more-button:focus-visible {
     box-shadow: 0 0 0 3px rgba(0, 123, 49, 0.25);
 }
 
@@ -256,7 +256,7 @@
     }
     
     .osirion-read-more:hover,
-    .osirion-read-more:focus {
+    .osirion-read-more:focus-visible {
         border-color: currentColor;
     }
 }

@@ -32,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Osirion.Blazor.Cms.Web: `SeoMetadataOptions.SiteUrl` (`Osirion:Seo:SiteUrl`). When it is an absolute http(s) address, the canonical URL, `og:url` and the addresses in structured data use it with the page's path instead of the host that served the request, so a site behind a proxy, on a preview host or on a second domain declares its public address
 
 ### Fixed
+- Osirion.Blazor.Core: `OsirionReadMoreLink` computes its accessible name on every render, `AriaLabel` or else the current `Text`, and draws its focus outline and button ring on `:focus-visible`. `OnInitialized` copied `Text` into the `AriaLabel` parameter once, so after `Text` changed the link still announced the first text, and a mouse click drew the keyboard focus outline
 - Osirion.Blazor.Core: `OsirionBreadcrumbs` writes `Style` on its `nav` element. It never wrote it, so `style="..."` in the markup was dropped
 - Osirion.Blazor.Core: `OsirionBreadcrumbs` decodes percent-encoded segments for the crumb text and keeps the links encoded, and shows an invalid escape as written. Segments were shown as they sit in the URL, so `/docs/caf%C3%A9` read "Caf%C3%A9"
 - Osirion.Blazor.Navigation: `Menu`, `MenuItem`, `MenuGroup`, `MenuDivider`, `MenuCallToAction`, `MenuImageCard`, `MenuPanel` and `MenuPanelLink` write `Style` on their root element. None of them did, so `style="..."` in the markup bound to the parameter and was dropped from the output. `Menu` writes it before the sticky `z-index`

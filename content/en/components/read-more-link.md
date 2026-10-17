@@ -143,8 +143,8 @@ component; the link does not use it.
   name.
 - `aria-label` replaces the link's content as its accessible name. Keep the visible text at the start of it ("Read
   more: Static SSR with Blazor") so speech input users can say what they see.
-- When `AriaLabel` is empty, the component sets it to `Text` once, when it is first created. A `Text` that changes
-  later does not change the accessible name; set `AriaLabel` if the text is dynamic.
+- When `AriaLabel` is empty, the accessible name is the current `Text`, read on every render, so a `Text` that
+  changes later changes the name too. `AriaLabel` is never overwritten.
 - `Target` is written as given and no `rel` is added; pass `rel` as an attribute when you need one.
 - `Href` is written as given. Pass only addresses you trust, such as a path in your own site or a URL from your own
   content.

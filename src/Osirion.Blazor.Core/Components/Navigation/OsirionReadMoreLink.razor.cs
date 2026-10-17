@@ -192,11 +192,17 @@ public partial class OsirionReadMoreLink
     }
 
     /// <summary>
-    /// Gets the effective aria-label
+    /// Gets the accessible name: <see cref="AriaLabel"/>, else the current <see cref="Text"/>. It is computed on every
+    /// render and never written back into the parameter, so a changed <see cref="Text"/> is not left behind.
     /// </summary>
     private string GetEffectiveAriaLabel()
     {
-        return AriaLabel ?? Text ?? "Read more";
+        if (!string.IsNullOrWhiteSpace(AriaLabel))
+        {
+            return AriaLabel;
+        }
+
+        return string.IsNullOrWhiteSpace(Text) ? "Read more" : Text;
     }
 
     /// <summary>
@@ -255,18 +261,6 @@ public partial class OsirionReadMoreLink
 
         builder.CloseElement();
     };
-
-    /// <inheritdoc/>
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-
-        // Set aria-label if not provided
-        if (string.IsNullOrWhiteSpace(AriaLabel))
-        {
-            AriaLabel = GetEffectiveAriaLabel();
-        }
-    }
 }
 
 /// <summary>
