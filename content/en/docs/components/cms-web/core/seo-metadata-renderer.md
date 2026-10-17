@@ -3,7 +3,7 @@ title: "SeoMetadataRenderer - Osirion Blazor"
 description: "Write the page title, meta description, canonical URL, robots, Open Graph, Twitter Card and JSON-LD tags for a content item or a list of items."
 author: "Osirion Team"
 date: 2025-01-26
-last_modified: 2026-10-11
+last_modified: 2026-10-17
 featured_image: /assets/images/blazor-cover.png
 categories:
 - Components
@@ -67,6 +67,7 @@ or in `appsettings.json` under `Osirion:Seo`, which `AddOsirion(builder.Configur
   "Osirion": {
     "Seo": {
       "SiteName": "Contoso Docs",
+      "SiteUrl": "https://docs.contoso.com",
       "SiteLogoUrl": "/logo.png",
       "DefaultImageUrl": "/assets/images/cover.png"
     }
@@ -118,7 +119,7 @@ control crawlers reliably.
 | --- | --- |
 | `<title>` | `seo_properties.title`, then `title`; the site name follows after a vertical bar, and the whole is cut to 60 characters |
 | description | `seo_properties.description`, then `description`, cut to 160 characters |
-| canonical | `seo_properties.canonical`, then the current URL without query string and fragment |
+| canonical | `seo_properties.canonical`, then the current URL without query string and fragment, on `SiteUrl` when it is set |
 | robots | `AllowSearchIndexing`, then `seo_properties.robots` (front matter default `index, follow`) |
 | `og:title`, `og:description` | `seo_properties.og_title` and `og_description`, then the title and description above |
 | `og:type` | `seo_properties.og_type` (front matter default `article`), then `article` when the first schema type is Article, BlogPosting or TechArticle, `product` for Product, `video.other` for VideoObject, `profile` for ProfilePage, otherwise `website` |
@@ -151,13 +152,18 @@ Relative image URLs become absolute with the site's base URL.
   not a JSON object or array.
 - **Fixed values.** It also writes `generator`, `referrer`, `language` and `content-language`, the robots value
   again as `googlebot` and `bingbot`, publish date, last-modified and reading time meta tags, `dns-prefetch` and
-  `preconnect` hints for the site's own address, and a `preload` for the social image. The Article schema links the author to `/author/{name-slug}`.
+  `preconnect` hints for the site's own address. The Article schema gives the author a `url` only when `AuthorUrl` is
+  set.
 - **Options.** `SeoMetadataOptions` fills the parameters you leave unset: `SiteName` (as `SiteNameOverride`),
   `OrganizationName`, `SiteLogoUrl`, `DefaultImageUrl`, `DefaultImageWidth`, `DefaultImageHeight`, `TwitterSite`,
-  `TwitterCreator`, `FacebookAppId`, `EmitMobileMetaTags`, `EnableGeneratedFaq` and `DefaultSchemaTypes`. Its
-  `AllowSearchIndexing`, `AllowAiDiscovery`, `AllowAiTraining`, `EnableGeoOptimization`, `EnableAeoOptimization`
-  and `GenerateMultipleSchemas` properties are not applied by the renderer; set those as parameters. Its
-  `BreadcrumbHomeText` applies only when the parameter is set to an empty string.
+  `TwitterCreator`, `FacebookAppId`, `AuthorUrl`, `EmitMobileMetaTags`, `EnableGeneratedFaq` and
+  `DefaultSchemaTypes`. The switches `AllowSearchIndexing`, `AllowAiDiscovery`, `AllowAiTraining`,
+  `EnableGeoOptimization`, `EnableAeoOptimization` and `GenerateMultipleSchemas` come from the options unless the
+  page sets them as parameters. `BreadcrumbHomeText` applies when the parameter is empty.
+- **Public address.** `SiteUrl` (for example `https://example.com`) makes the canonical URL, `og:url` and the
+  addresses in structured data use the site's address with the page's path, whatever host served the request: a
+  proxy, a preview host or a second domain. Only an absolute `http` or `https` address is used; otherwise they follow
+  the request.
 
 ## Related
 

@@ -20,4 +20,6 @@ internal static class RepositoryFiles
         Path.Combine([Root.Value, "src", "Osirion.Blazor.Theming", .. parts]);
 
     public static string ThemingCss(string file) => Theming("wwwroot", "css", file);
+
+    public static string Source() => Path.Combine(Root.Value, "src");
 }

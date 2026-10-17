@@ -51,7 +51,7 @@
     }
 
     .osirion-markdown-toolbar-button:active {
-        background-color: var(--osirion-background-active, #d1d5db);
+        background-color: var(--osirion-background-muted, #d1d5db);
         transform: translateY(1px);
     }
 

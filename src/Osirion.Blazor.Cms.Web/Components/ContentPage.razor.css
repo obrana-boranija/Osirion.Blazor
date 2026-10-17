@@ -57,12 +57,12 @@
     display: inline-flex;
     align-items: center;
     gap: var(--osirion-spacing-2, 0.5rem);
-    color: var(--osirion-action-primary, #0369a1);
+    color: var(--osirion-nav-active-text, #1d4ed8);
     text-decoration: none;
     font-weight: var(--osirion-font-weight-semibold, 600);
     padding: var(--osirion-spacing-3, 0.75rem) var(--osirion-spacing-6, 1.5rem);
     border-radius: var(--osirion-radius-lg, 0.5rem);
-    background-color: var(--osirion-background-active, #e0f2fe);
+    background-color: var(--osirion-nav-active-background, #eff6ff);
     transition: all var(--osirion-transition-duration-200, 0.2s) ease;
 }
 

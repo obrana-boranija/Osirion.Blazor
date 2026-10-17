@@ -178,7 +178,6 @@
         display: inline-block;
         position: relative;
         padding: 0.125rem 0.5rem;
-        padding-right: 2rem; /* Space for icon */
         border-radius: var(--osirion-radius-sm, 0.125rem);
         text-decoration: none;
         transition: all 0.2s ease;
@@ -187,6 +186,12 @@
         background-color: var(--osirion-link-bg);
         /* Ensure minimum contrast in all cases */
         font-weight: 500;
+    }
+
+    /* Only a link that leaves the site carries the external-link icon, so only it keeps room for it. A relative
+       address such as /blog/post is internal: it showed the icon before. */
+    .osirion-html-renderer a:is([href^="http:"], [href^="https:"], [href^="//"]):not(:has(img)):not(:has(svg)):not(:has(span)):not(:has(div)):not(:has(i)) {
+        padding-right: 2rem;
     }
 
         .osirion-html-renderer a:not(:has(img)):not(:has(svg)):not(:has(span)):not(:has(div)):not(:has(i)):hover {
@@ -480,6 +485,9 @@
     .osirion-html-renderer a:not(:has(img)):not(:has(svg)):not(:has(span)):not(:has(div)):not(:has(i)) {
         background-color: rgba(0, 82, 204, 0.12);
         padding: 0.25rem 0.75rem;
+    }
+
+    .osirion-html-renderer a:is([href^="http:"], [href^="https:"], [href^="//"]):not(:has(img)):not(:has(svg)):not(:has(span)):not(:has(div)):not(:has(i)) {
         padding-right: 2.5rem;
     }
 }
@@ -494,13 +502,13 @@
         font-weight: bold !important;
     }
 
-        .osirion-html-renderer a:not(:has(img)):not(:has(svg)):not(:has(span)):not(:has(div)):not(:has(i))::after {
+        .osirion-html-renderer a:is([href^="http:"], [href^="https:"], [href^="//"]):not(:has(img)):not(:has(svg)):not(:has(span)):not(:has(div)):not(:has(i))::after {
             display: none !important;
         }
 }
 
 /* ========== ICON STYLING ========== */
-.osirion-html-renderer a:not(:has(img)):not(:has(svg)):not(:has(span)):not(:has(div)):not(:has(i))::after {
+.osirion-html-renderer a:is([href^="http:"], [href^="https:"], [href^="//"]):not(:has(img)):not(:has(svg)):not(:has(span)):not(:has(div)):not(:has(i))::after {
     content: '';
     position: absolute;
     right: 0.25rem;
@@ -520,6 +528,6 @@
     transition: opacity 0.2s ease;
 }
 
-.osirion-html-renderer a:not(:has(img)):not(:has(svg)):not(:has(span)):not(:has(div)):not(:has(i)):hover::after {
+.osirion-html-renderer a:is([href^="http:"], [href^="https:"], [href^="//"]):not(:has(img)):not(:has(svg)):not(:has(span)):not(:has(div)):not(:has(i)):hover::after {
     opacity: 1;
 }

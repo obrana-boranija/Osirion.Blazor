@@ -150,7 +150,8 @@ public partial class OsirionContactForm : OsirionComponentBase
     #region Event Parameters
 
     /// <summary>
-    /// Event callback invoked when the form is submitted with valid data.
+    /// Event callback invoked when the form is submitted with valid data. Without it, and without
+    /// <see cref="UseBuiltInEmailService"/>, nothing can deliver the message, so the form reports an error.
     /// </summary>
     [Parameter]
     public EventCallback<ContactFormModel> OnSubmit { get; set; }
@@ -278,13 +279,18 @@ public partial class OsirionContactForm : OsirionComponentBase
                         Logger.LogWarning("Email service factory not registered but UseBuiltInEmailService is true");
                     }
                 }
-                else
+                else if (OnSubmit.HasDelegate)
                 {
                     // Invoke the submit callback for custom handling
                     await OnSubmit.InvokeAsync(FormModel);
 
                     // If no explicit navigation happened, assume success
                     contactFormSubmissionResult = ContactFormSubmissionResult.Success;
+                }
+                else
+                {
+                    // Nothing can deliver the message; telling the visitor it was sent would lose it silently.
+                    Logger.LogWarning("Contact form submitted without OnSubmit or UseBuiltInEmailService; the message was not delivered");
                 }
             }
             catch (Exception ex)

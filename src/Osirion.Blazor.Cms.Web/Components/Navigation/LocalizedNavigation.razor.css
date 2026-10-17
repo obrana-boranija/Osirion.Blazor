@@ -38,8 +38,8 @@
     }
 
     .osirion-locale-button.osirion-active {
-        background-color: var(--osirion-background-active, #e0f2fe);
-        color: var(--osirion-action-primary, #0369a1);
+        background-color: var(--osirion-nav-active-background, #eff6ff);
+        color: var(--osirion-nav-active-text, #1d4ed8);
         border-color: var(--osirion-action-primary, #0369a1);
         font-weight: var(--osirion-font-weight-medium, 500);
     }

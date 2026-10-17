@@ -33,6 +33,23 @@ public class ShippedStylesheetTests
         css.ShouldContain(":where(html[data-osirion-framework=None]) body{");
     }
 
+    // Fails before the fix: every text link in rendered Markdown carried the external-link icon, so a link to
+    // /blog/another-post looked as if it left the site.
+    [Fact]
+    public void HtmlRenderer_ExternalLinkIcon_IsOnlyOnAddressesThatLeaveTheSite()
+    {
+        // Act
+        var css = File.ReadAllText(CoreCss("osirion-html-renderer.min.css"));
+        var iconRules = System.Text.RegularExpressions.Regex.Matches(css, @"([^{}]*)::after\{content:")
+            .Select(match => match.Groups[1].Value)
+            .Where(selector => selector.Contains(".osirion-html-renderer a", StringComparison.Ordinal))
+            .ToList();
+
+        // Assert
+        iconRules.ShouldNotBeEmpty();
+        iconRules.ShouldAllBe(selector => selector.Contains("a:is([href^=\"http:\"],[href^=\"https:\"],[href^=\"//\"])", StringComparison.Ordinal));
+    }
+
     private static string CoreCss(string file)
     {
         for (var directory = new DirectoryInfo(AppContext.BaseDirectory); directory is not null; directory = directory.Parent)

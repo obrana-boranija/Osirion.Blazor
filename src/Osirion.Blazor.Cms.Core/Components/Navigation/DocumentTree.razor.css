@@ -49,8 +49,8 @@
     }
 
 .osirion-doc-tree-item.active > .osirion-doc-tree-link {
-    background-color: var(--osirion-background-active, #e0f2fe);
-    color: var(--osirion-action-primary, #0369a1);
+    background-color: var(--osirion-nav-active-background, #eff6ff);
+    color: var(--osirion-nav-active-text, #1d4ed8);
 }
 
 .osirion-doc-tree-children {
@@ -79,8 +79,8 @@
     }
 
 .osirion-doc-tree-child.active > .osirion-doc-tree-child-link {
-    background-color: var(--osirion-background-active, #e0f2fe);
-    color: var(--osirion-action-primary, #0369a1);
+    background-color: var(--osirion-nav-active-background, #eff6ff);
+    color: var(--osirion-nav-active-text, #1d4ed8);
 }
 
 /* Dark mode adjustments */
@@ -95,6 +95,6 @@
 .dark-theme .osirion-doc-tree-item.active > .osirion-doc-tree-link,
 .theme-dark .osirion-doc-tree-item.active > .osirion-doc-tree-link,
 .osirion-theme-dark .osirion-doc-tree-item.active > .osirion-doc-tree-link {
-    background-color: var(--osirion-background-active, #1e40af);
-    color: var(--osirion-color-active, #93c5fd);
+    background-color: var(--osirion-nav-active-background, #eff6ff);
+    color: var(--osirion-nav-active-text, #1d4ed8);
 }
