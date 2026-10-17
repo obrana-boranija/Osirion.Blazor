@@ -130,7 +130,9 @@
         {
             new FooterLink { Text = "License", Href = "https://github.com/demonjic/Osirion.Blazor/blob/master/LICENSE.txt", OpenInNewTab = true },
             new FooterLink { Text = "Security", Href = "https://github.com/demonjic/Osirion.Blazor/security", OpenInNewTab = true },
-            new FooterLink { Text = "Privacy policy", Href = "/privacy-policy" }
+            new FooterLink { Text = "Privacy policy", Href = "/privacy-policy" },
+            // Reopens the cookie banner with the visitor's saved choices, so consent can be changed or withdrawn.
+            new FooterLink { Text = "Cookie settings", Href = "/privacy-policy?customize-cookies=true" }
         };
     }
 }

@@ -38,9 +38,9 @@ The site sets four kinds of cookies. None of them carries your name or any other
 | Cookie | What it is for | When it is set | Lifetime and flags |
 | --- | --- | --- | --- |
 | `osirion_cookie_consent` | Remembers your answer to the cookie banner: the date, whether you accepted, declined or chose categories, and which categories. | When you answer the banner. | 365 days. `Path=/`, `HttpOnly`, `Secure`, `SameSite=Lax`. |
-| `osirion-preferred-theme` | Remembers whether you chose the light or the dark theme, so the page is drawn in it from the first byte. | When you choose a theme. | One year. `Path=/`, `SameSite=Lax`, `Secure` on HTTPS. Not `HttpOnly`, because the page script reads it. |
-| `osirion-preferred-palette` | Remembers the color palette you chose with the palette picker. | When you choose a palette. | One year. `Path=/`, `SameSite=Lax`, `Secure` on HTTPS. Not `HttpOnly`. |
-| `osirion_announcement_<id>` | Remembers that you closed the announcement bar at the top of the page, so it stays closed. `<id>` names the announcement. | When you close the bar. | 30 days. `Path=/`, `HttpOnly`, `SameSite=Lax`, `Secure` on HTTPS. |
+| `osirion-preferred-theme` | Remembers whether you chose the light or the dark theme, so the page is drawn in it from the first byte. | When you choose a theme. | One year. `Path=/`, `Secure`, `SameSite=Lax`. Not `HttpOnly`, because the page script reads it. |
+| `osirion-preferred-palette` | Remembers the color palette you chose with the palette picker. | When you choose a palette. | One year. `Path=/`, `Secure`, `SameSite=Lax`. Not `HttpOnly`, because the page script reads it. |
+| `osirion_announcement_<id>` | Remembers that you closed the announcement bar at the top of the page, so it stays closed. `<id>` names the announcement. | When you close the bar. | 30 days. `Path=/`, `HttpOnly`, `Secure`, `SameSite=Lax`. |
 
 The first one records a choice you made about cookies; the other three keep a display setting you chose. The
 [security guide](/docs/security) documents the same cookies and their flags from
@@ -65,10 +65,11 @@ for their names and lifetimes.
 
 The banner is shown until you answer, and then it stays away. To change your answer:
 
-1. Delete the `osirion_cookie_consent` cookie for getosirion.com in your browser's site data or cookie settings. The
-   banner appears again on the next page, and you can decline or customize.
-2. To remove what the analytics services already stored, delete the other cookies for getosirion.com in the same
-   place.
+1. Choose **Cookie settings** at the bottom of any page. The banner opens with your current choices; clear
+   Analytics and save. You can also delete the `osirion_cookie_consent` cookie for getosirion.com in your browser's
+   site data, and the banner appears again on the next page.
+2. To remove what the analytics services already stored, delete the other cookies for getosirion.com in your
+   browser's site data.
 
 Deleting the cookie does not delete data an analytics service already holds. Ask the service about that.
 
@@ -76,8 +77,8 @@ Deleting the cookie does not delete data an analytics service already holds. Ask
 
 - **Cloudflare.** The site is served through Cloudflare, so every request passes through its network, which sees your
   IP address and the request headers. Read [Cloudflare's privacy policy](https://www.cloudflare.com/privacypolicy/).
-- **Images and video.** A few pages show pictures from Unsplash, or the thumbnail of a YouTube video. Your browser
-  requests them from those services when it shows them, and they see that request.
+- **Images and video.** The site menu shows a picture from Unsplash, and the video embed page shows the thumbnail
+  of a YouTube video. Your browser requests them from those services when it shows them, and they see that request.
 - **GitHub.** The contact channels are on GitHub. What you write in an issue or pull request is public and handled by
   GitHub under [its privacy statement](https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement).
   Links to the maintainer's other sites ([demonjic.com](https://demonjic.com), [Tridesetri](https://tridesetri.com) and
