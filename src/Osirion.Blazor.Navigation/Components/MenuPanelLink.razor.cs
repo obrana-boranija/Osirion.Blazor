@@ -8,19 +8,24 @@ namespace Osirion.Blazor.Navigation.Components;
 /// </summary>
 public partial class MenuPanelLink
 {
-    /// <summary>Gets or sets the visible link text.</summary>
+    /// <summary>Gets or sets the visible text of the link.</summary>
     [Parameter]
     public string Text { get; set; } = string.Empty;
 
-    /// <summary>Gets or sets the destination URL.</summary>
+    /// <summary>
+    /// Gets or sets the link address. Only a relative URL or the <c>http</c>, <c>https</c>, <c>mailto</c> and
+    /// <c>tel</c> schemes get an <c>href</c>.
+    /// </summary>
     [Parameter]
     public string Href { get; set; } = "#";
 
-    /// <summary>Gets or sets how to open the destination.</summary>
+    /// <summary>
+    /// Gets or sets the <c>target</c> attribute. <c>_blank</c> also adds <c>rel="noopener noreferrer"</c>.
+    /// </summary>
     [Parameter]
     public string? Target { get; set; }
 
-    /// <summary>Gets or sets an optional leading icon.</summary>
+    /// <summary>Gets or sets an icon shown before the text, inside an <c>aria-hidden</c> span.</summary>
     [Parameter]
     public RenderFragment? IconTemplate { get; set; }
 

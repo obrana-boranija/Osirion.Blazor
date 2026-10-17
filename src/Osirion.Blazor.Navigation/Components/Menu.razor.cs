@@ -4,35 +4,41 @@ using Osirion.Blazor.Components;
 
 namespace Osirion.Blazor.Navigation.Components;
 
-/// <summary>Defines the Menu type.</summary>
+/// <summary>
+/// Renders a site menu: a <c>nav</c> with an optional brand link, your items and an optional actions slot. Submenus and
+/// the mobile drawer open with CSS only, from visually hidden checkboxes, so it works under static SSR without script.
+/// </summary>
 public partial class Menu
 {
     /// <summary>
-    /// Gets or sets the menu items to be displayed.
+    /// Gets or sets the menu items: <see cref="MenuItem"/>, <see cref="MenuDivider"/> and the other menu parts.
     /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
-    /// Gets or sets href
+    /// Gets or sets the destination of the brand link. A scheme other than a relative URL, <c>http</c>, <c>https</c>,
+    /// <c>mailto</c> or <c>tel</c> leaves the link without an <c>href</c>.
     /// </summary>
     [Parameter]
     public string? Href { get; set; } = "/";
 
     /// <summary>
-    /// Gets or sets the branding logo to display in the navigation header.
+    /// Gets or sets the address of the logo image, shown before <see cref="BrandText"/> inside the brand link. The image
+    /// is rendered 60 by 60 pixels, and its alternative text is the brand text followed by <c>brand logo</c>.
     /// </summary>
     [Parameter]
     public string? BrandLogo { get; set; }
 
     /// <summary>
-    /// Gets or sets the branding text to display in the navigation header.
+    /// Gets or sets the brand name, rendered as the text of the brand link. Without a logo it is the whole link.
     /// </summary>
     [Parameter]
     public string? BrandText { get; set; }
 
     /// <summary>
-    /// Gets or sets a custom branding template.
+    /// Gets or sets your own brand markup. It replaces the brand link, <see cref="BrandLogo"/> and
+    /// <see cref="BrandText"/> and is not wrapped in a link.
     /// </summary>
     [Parameter]
     public RenderFragment? BrandingTemplate { get; set; }
@@ -46,62 +52,69 @@ public partial class Menu
     public RenderFragment? Actions { get; set; }
 
     /// <summary>
-    /// Gets or sets whether the menu should stick to the top when scrolling.
-    /// Only applies to horizontal menus.
+    /// Gets or sets whether a horizontal menu stays at the top of the page while it scrolls. It has no effect on a
+    /// vertical menu. Turn it off for a menu inside a page.
     /// </summary>
     [Parameter]
     public bool Sticky { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the z-index to use when the menu is sticky.
+    /// Gets or sets the <c>z-index</c> written to the container's inline style while the menu is sticky.
     /// </summary>
     [Parameter]
     public int StickyZIndex { get; set; } = 1000;
 
     /// <summary>
-    /// Gets or sets the menu orientation: Horizontal or Vertical.
+    /// Gets or sets the layout: <c>Horizontal</c>, a bar with dropdown submenus, or <c>Vertical</c>, a stack whose
+    /// submenus open in place.
     /// </summary>
     [Parameter]
     public MenuOrientation Orientation { get; set; } = MenuOrientation.Horizontal;
 
     /// <summary>
-    /// Gets or sets the alignment of horizontal menu items.
+    /// Gets or sets where a horizontal bar places its items: <c>Left</c>, <c>Center</c> or <c>Right</c>. A vertical
+    /// menu ignores it.
     /// </summary>
     [Parameter]
     public MenuAlignment Alignment { get; set; } = MenuAlignment.Center;
 
     /// <summary>
-    /// Gets or sets whether to collapse the menu on mobile devices.
+    /// Gets or sets whether the items collapse behind a hamburger toggle and a drawer below the breakpoint in
+    /// <see cref="CollapseBreakpoint"/>.
     /// </summary>
     [Parameter]
     public bool CollapseOnMobile { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the viewport breakpoint at which a collapsible menu is displayed as a toggle.
+    /// Gets or sets the viewport width below which a collapsible menu shows the toggle: <c>Mobile</c> (768px and below),
+    /// <c>Large</c> (below 1200px) or <c>ExtraLarge</c> (below 1440px). Pick the narrowest width at which the bar still
+    /// fits on one line. It applies only while <see cref="CollapseOnMobile"/> is on.
     /// </summary>
     [Parameter]
     public MenuCollapseBreakpoint CollapseBreakpoint { get; set; } = MenuCollapseBreakpoint.Mobile;
 
     /// <summary>
-    /// Gets or sets whether to auto-expand active items in vertical mode.
+    /// Gets or sets whether a vertical menu gets the <c>osirion-menu-auto-expand</c> class on its container. The
+    /// package's own styles do not use that class, so it only gives your CSS a hook.
     /// </summary>
     [Parameter]
     public bool AutoExpandActive { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the menu accessibility label.
+    /// Gets or sets the accessible name of the <c>nav</c> landmark. Give each menu on a page a different one.
     /// </summary>
     [Parameter]
     public string AriaLabel { get; set; } = "Navigation menu";
 
     /// <summary>
-    /// Gets or sets the mobile toggle button's accessibility label.
+    /// Gets or sets the accessible name of the hamburger toggle.
     /// </summary>
     [Parameter]
     public string ToggleAriaLabel { get; set; } = "Toggle navigation menu";
 
     /// <summary>
-    /// Gets or sets the menu identifier (useful for multiple menus on same page).
+    /// Gets or sets the id of the container; the toggle and navigation ids derive from it. Without it each menu
+    /// gets a unique generated id, so two menus on one page do not clash.
     /// </summary>
     [Parameter]
     public string? Id { get; set; }

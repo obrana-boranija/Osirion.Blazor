@@ -7,41 +7,51 @@ using Osirion.Blazor.Navigation.Options;
 
 namespace Osirion.Blazor.Navigation.Components;
 
-/// <summary>Defines the ScrollToTop type.</summary>
+/// <summary>
+/// Renders a fixed "back to top" button that appears once the visitor has scrolled past a threshold and scrolls the
+/// window back to the top when clicked. An inline script shows and hides it, so the button needs JavaScript but no
+/// interactive render mode.
+/// </summary>
 public partial class ScrollToTop
 {
     /// <summary>
-    /// Gets or sets the position of the button
+    /// Gets or sets the corner the button is fixed to: <c>TopLeft</c>, <c>TopRight</c>, <c>BottomLeft</c> or
+    /// <c>BottomRight</c>. Left at its default, the configured <c>Position</c> applies.
     /// </summary>
     [Parameter]
     public Position Position { get; set; } = Position.BottomRight;
 
     /// <summary>
-    /// Gets or sets the scroll behavior
+    /// Gets or sets how the page scrolls up: <c>Auto</c>, <c>Instant</c> or <c>Smooth</c>. Left at its default, the
+    /// configured <c>Behavior</c> applies.
     /// </summary>
     [Parameter]
     public ScrollBehavior Behavior { get; set; } = ScrollBehavior.Smooth;
 
     /// <summary>
-    /// Gets or sets the visibility threshold in pixels
+    /// Gets or sets how many pixels the page must be scrolled before the button appears. Left at its default, the
+    /// configured <c>VisibilityThreshold</c> applies.
     /// </summary>
     [Parameter]
     public int VisibilityThreshold { get; set; } = 300;
 
     /// <summary>
-    /// Gets or sets the button text
+    /// Gets or sets visible text shown next to the icon. It is hidden at 768px and below. When unset, the configured
+    /// <c>Text</c> applies.
     /// </summary>
     [Parameter]
     public string? Text { get; set; }
 
     /// <summary>
-    /// Gets or sets the button title
+    /// Gets or sets the accessible name of the button, written as <c>aria-label</c>. Left at its default, the
+    /// configured <c>Title</c> applies.
     /// </summary>
     [Parameter]
     public string Title { get; set; } = "Scroll to top";
 
     /// <summary>
-    /// Gets or sets custom icon markup.
+    /// Gets or sets icon markup. It is sanitized before it is rendered, which removes <c>svg</c> elements, so an inline
+    /// SVG is dropped: use <see cref="IconCssClass"/> instead. Without a registered HTML sanitizer the markup is ignored.
     /// </summary>
     /// <remarks>
     /// The markup is passed through the Osirion HTML sanitizer before it is rendered, so scripts, event
@@ -53,14 +63,15 @@ public partial class ScrollToTop
     public string? CustomIcon { get; set; }
 
     /// <summary>
-    /// Gets or sets the CSS class of an icon element rendered inside the button, for example an icon
-    /// font class. It is used when <see cref="CustomIcon"/> yields no markup.
+    /// Gets or sets the class of an <c>aria-hidden</c> span rendered inside the button, for example an icon font class.
+    /// It is used when <see cref="CustomIcon"/> yields no markup; with neither, the button shows a built-in arrow.
     /// </summary>
     [Parameter]
     public string? IconCssClass { get; set; }
 
     /// <summary>
-    /// Enable Scroll to Top button
+    /// Gets or sets whether the button is rendered; <c>false</c> renders nothing. When unset, the configured
+    /// <c>Enabled</c> applies.
     /// </summary>
     [Parameter]
     public bool? Enabled { get; set; }
