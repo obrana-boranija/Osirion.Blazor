@@ -5,7 +5,7 @@
    <footer> would duplicate it; the same markup then renders in a <div>. *@
 @{
     RenderFragment content = @<div class="osirion-footer-container">
-        @if (ShowTopSection && (Logo is not null || Links?.Any() == true || SocialLinks?.Any() == true || LeftContent is not null || RightContent is not null))
+        @if (ShowTopSection && HasTopContent)
         {
             <div class="osirion-footer-main">
                 <div class="osirion-footer-main-left-content @(Logo is not null ? "osirion-footer-main-left-content-has-child" : "")">
@@ -122,7 +122,7 @@
                     else if (ShowCopyright)
                     {
                         <div class="osirion-footer-copyright">
-                            &copy; @DateTime.Now.Year <a class="osirion-footer-bottom-link" href="@CompanyUrl" target="@(CompanyUrl.StartsWith("http") ? "_blank" : "_self")">@CompanyName</a>. All rights reserved.
+                            &copy; @DateTime.Now.Year <a class="osirion-footer-bottom-link" href="@CompanyUrl" target="@(CompanyIsExternal ? "_blank" : "_self")" rel="@(CompanyIsExternal ? "noopener noreferrer" : null)">@CompanyName</a>. All rights reserved.
                         </div>
                     }
                 </div>

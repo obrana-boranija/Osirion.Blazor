@@ -31,6 +31,25 @@ public class OsirionFooterRenderingTests : OsirionComponentTestBase
         cut.Find(".osirion-footer-copyright a").GetAttribute("target").ShouldBe("_blank");
     }
 
+    // Fails before the fix: an external company link opened a new tab without rel, so the opened page got window.opener.
+    [Fact]
+    public void Footer_ExternalCompanyUrl_CannotReachTheOpener()
+    {
+        var cut = RenderStatic<OsirionFooter>(parameters => parameters
+            .Add(p => p.CompanyUrl, "https://example.com"));
+
+        cut.Find(".osirion-footer-copyright a").GetAttribute("rel").ShouldBe("noopener noreferrer");
+    }
+
+    [Fact]
+    public void Footer_SameSiteCompanyUrl_HasNoRel()
+    {
+        var cut = RenderStatic<OsirionFooter>(parameters => parameters
+            .Add(p => p.CompanyUrl, "/about"));
+
+        cut.Find(".osirion-footer-copyright a").HasAttribute("rel").ShouldBeFalse();
+    }
+
     [Fact]
     public void Footer_CustomCopyright_ReplacesTheDefaultCopyright()
     {
@@ -122,6 +141,29 @@ public class OsirionFooterRenderingTests : OsirionComponentTestBase
             .Add(p => p.SocialLinks, [new FooterSocialLink { Text = "GitHub", Href = "https://github.com" }])
             .Add(p => p.ShowSocialLinks, false));
 
+        cut.FindAll(".osirion-footer-social").ShouldBeEmpty();
+    }
+
+    // Fails before the fix: social links that were switched off still made the top row render, as an empty row.
+    [Fact]
+    public void Footer_OnlyHiddenSocialLinks_RendersNoTopRow()
+    {
+        var cut = RenderStatic<OsirionFooter>(parameters => parameters
+            .Add(p => p.SocialLinks, [new FooterSocialLink { Text = "GitHub", Href = "https://github.com" }])
+            .Add(p => p.ShowSocialLinks, false));
+
+        cut.FindAll(".osirion-footer-main").ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void Footer_HiddenSocialLinksWithALogo_StillRendersTheTopRow()
+    {
+        var cut = RenderStatic<OsirionFooter>(parameters => parameters
+            .Add(p => p.SocialLinks, [new FooterSocialLink { Text = "GitHub", Href = "https://github.com" }])
+            .Add(p => p.ShowSocialLinks, false)
+            .Add(p => p.Logo, (RenderFragment)(builder => builder.AddContent(0, "Logo"))));
+
+        cut.FindAll(".osirion-footer-main").Count.ShouldBe(1);
         cut.FindAll(".osirion-footer-social").ShouldBeEmpty();
     }
 

@@ -65,6 +65,29 @@ public class OsirionMetricGridTests : OsirionComponentTestBase
         list.GetAttribute("data-test").ShouldBe("grid");
     }
 
+    // Fails before the fix: Class and Style were ignored, unlike every other component.
+    [Fact]
+    public void MetricGrid_ClassAndStyle_AreAppliedToTheList()
+    {
+        var cut = RenderGrid([new MetricGridItem("42")], p => p
+            .Add(c => c.Class, "wide")
+            .Add(c => c.Style, "margin-top: 2rem"));
+
+        var list = cut.Find("ul");
+        list.ClassList.ShouldContain("wide");
+        list.GetAttribute("style").ShouldBe("margin-top: 2rem");
+    }
+
+    // Fails before the fix: the list style is removed in CSS, which drops the list semantics in Safari, and the
+    // list had no role to restore them.
+    [Fact]
+    public void MetricGrid_List_KeepsItsListRole()
+    {
+        var cut = RenderGrid([new MetricGridItem("42")]);
+
+        cut.Find("ul").GetAttribute("role").ShouldBe("list");
+    }
+
     [Fact]
     public void MetricGrid_Metrics_RenderOneFullHeightCardPerItemInOrder()
     {
@@ -76,7 +99,7 @@ public class OsirionMetricGridTests : OsirionComponentTestBase
 
         var items = cut.FindAll("ul > li > article.osirion-metric-card");
         items.Count.ShouldBe(2);
-        items[0].ClassList.ShouldContain("h-100");
+        items[0].ClassList.ShouldNotContain("h-100");
         items[0].ClassList.ShouldContain("osirion-metric-card-blue");
         items[0].ClassList.ShouldContain("osirion-metric-card-shadow-large");
         items[0].QuerySelector(".osirion-metric-card-kicker")!.TextContent.ShouldBe("SLA");

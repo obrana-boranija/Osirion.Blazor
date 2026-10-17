@@ -86,7 +86,7 @@ The figures above are placeholders; show only numbers you can stand behind.
 | `Metrics` | `IReadOnlyList<MetricGridItem>` | `[]` | The metrics, one `OsirionMetricCard` each; with none, nothing is rendered. |
 | `Columns` | `MetricGridColumns` | `MetricGridColumns.Four` | The number of columns from 992px wide: `Two`, `Three` or `Four`. The grid has one column on phones and two from 576px. |
 | `AriaLabel` | `string` | `"Key metrics"` | The accessible name of the metric list. |
-| `CssClass` | `string?` | `null` | Extra CSS classes on the list. `OsirionComponentBase.Class` is not applied by this component. |
+| `CssClass` | `string?` | `null` | Extra CSS classes on the list, added before `OsirionComponentBase.Class`. |
 | `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
 | `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
 | `Style` | `string?` | `null` | An inline style for the component's root element. |
@@ -104,9 +104,9 @@ Each member goes to the parameter of the same name on `OsirionMetricCard`; the c
   `builder.Services.AddJSComponents()` registers; see [OsirionMetricCard](/components/metric-card).
 - The grid is a `ul` named by `AriaLabel`, and each metric is an `li` holding a card, so screen readers announce the number of
   metrics. With no metrics nothing is rendered.
-- `Class` and `Style` are not applied by the grid; use `CssClass`. Unmatched attributes are written to the `ul`.
-- The grid passes the class `h-100` to every card, a Bootstrap utility that makes the cards of a row equally tall. Without
-  Bootstrap it has no effect.
+- `Class`, `CssClass` and `Style` are applied to the `ul`, as are unmatched attributes. The list has `role="list"`, which
+  keeps its list semantics where the browser drops them for an unstyled list.
+- Each card fills its cell with its own CSS, not a framework class, so the cards of a row are equally tall with or without Bootstrap.
 
 ## Styling
 

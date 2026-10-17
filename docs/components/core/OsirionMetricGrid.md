@@ -12,7 +12,7 @@ Key parameters
 - CssClass: string, optional. Extra CSS classes added to the list element
 - Theme: `ThemeMode` (default `System`), inherited from `OsirionComponentBase`. `Light`, `Dark` and `Inverted` add a
   `data-theme` attribute (`data-bs-theme` when the Bootstrap framework is configured)
-- Class and Style: strings, inherited from `OsirionComponentBase`. The grid's markup does not read them
+- Class and Style: strings, inherited from `OsirionComponentBase`. Both are applied to the list element
 - Attributes: captures unmatched attributes (`CaptureUnmatchedValues`) and renders them on the list element
 
 `MetricGridItem` is a record: `MetricGridItem(string Value, string? Label = null, string? Description = null,
@@ -37,8 +37,8 @@ Usage
 ```
 
 Notes
-- Emits `ul.osirion-metric-grid.osirion-metric-grid-columns-{2|3|4}` with `aria-label`, followed by `CssClass`. Each
-  metric is an `li` (keyed by the item record) containing an `OsirionMetricCard` with the extra class `h-100`.
+- Emits `ul.osirion-metric-grid.osirion-metric-grid-columns-{2|3|4}` with `role="list"` and `aria-label`, followed by
+  `CssClass` and `Class`. Each metric is an `li` (keyed by the item record) containing an `OsirionMetricCard`.
 - The list is one column by default, two columns from 576px, and three or four columns from 992px when `Columns` asks
   for them (`Two` stays at two). The gap is `--osirion-metric-grid-gap` (default 1rem).
 - Works in static SSR. Only the cards with `Animate: true` load their count-up script; see `OsirionMetricCard` for
