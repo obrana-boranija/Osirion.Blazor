@@ -49,6 +49,26 @@ public class ParameterTableTests
         rows["Class"].Type.ShouldBe("string?");
     }
 
+    [Theory]
+    [InlineData("Gets or sets the card title.", "The card title.")]
+    [InlineData("Gets or sets whether to show the description.", "Whether to show the description.")]
+    [InlineData("gets or sets  `Id` for the form.", "`Id` for the form.")]
+    [InlineData("The heading.", "The heading.")]
+    [InlineData("Gets or sets", "Gets or sets")]
+    public void AsDescription_DropsTheGetsOrSetsOpening(string summary, string description)
+    {
+        ParameterTable.AsDescription(summary).ShouldBe(description);
+    }
+
+    [Fact]
+    public void GetRows_ReferenceToASiblingParameter_ReadsAsItsName()
+    {
+        var rows = new ParameterTable().GetRows(typeof(SiblingSample)).ToDictionary(row => row.Name);
+
+        rows["Label"].Description.ShouldBe("The label, shown while `Visible` is on.");
+        rows["Visible"].Description.ShouldBe("Whether the label shows.");
+    }
+
     [Fact]
     public void GetRows_Description_ComesFromTheXmlSummary()
     {
@@ -124,6 +144,17 @@ public sealed class SampleComponent : SampleBase
     public string? Legacy { get; set; }
 
     public string? NotAParameter { get; set; }
+}
+
+public sealed class SiblingSample : ComponentBase
+{
+    /// <summary>Gets or sets the label, shown while <see cref="Visible"/> is on.</summary>
+    [Parameter]
+    public string? Label { get; set; }
+
+    /// <summary>Gets or sets whether the label shows.</summary>
+    [Parameter]
+    public bool Visible { get; set; }
 }
 
 public sealed class ThrowingComponent : ComponentBase

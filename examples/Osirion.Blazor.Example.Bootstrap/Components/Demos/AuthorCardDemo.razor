@@ -1,0 +1,15 @@
+@using Osirion.Blazor.Components
+@using Osirion.Blazor.Core.Models
+
+<OsirionAuthorCard Name="Jane Developer"
+                   Role="Principal engineer"
+                   Bio="Writes about server-rendered Blazor and the sites built with it."
+                   ProfileUrl="/blog"
+                   Links="links" />
+
+@code {
+    private static readonly IReadOnlyList<AuthorLink> links =
+    [
+        new("GitHub", "https://github.com/demonjic/Osirion.Blazor"),
+    ];
+}

@@ -7,7 +7,7 @@ permalink: /components/feature-card
 description: OsirionFeatureCard renders an image, a title, a description and optional links in one card. Parameters, behavior and styling.
 author: Dejan Demonjić
 date: 2025-09-03
-last_modified: 2026-10-11
+last_modified: 2026-10-17
 featured_image: /assets/images/blazor-cover.png
 categories:
 - Components
@@ -27,7 +27,7 @@ redirect_from:
 custom_fields:
   group: cards
 seo_properties:
-  title: 'OsirionFeatureCard - Osirion.Blazor'
+  title: 'OsirionFeatureCard: feature cards for Blazor'
   description: 'OsirionFeatureCard renders an image, a title, a description and optional links in one card. Parameters, behavior and styling.'
   image: /assets/images/blazor-cover.png
   canonical: 'https://getosirion.com/components/feature-card'
@@ -51,6 +51,12 @@ seo_properties:
 `OsirionFeatureCard` renders an image next to (or above or below) a title, a description and optional links. Use it
 for feature lists, service overviews and article teasers. It is plain markup and CSS, so it renders the same under
 static SSR and in interactive modes.
+
+Package `Osirion.Blazor.Core`, namespace `Osirion.Blazor.Components`. [Source on GitHub](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Core/Components/Cards/OsirionFeatureCard.razor).
+
+```demo
+feature-card
+```
 
 ## Usage
 
@@ -88,34 +94,39 @@ A teaser that links to an article, with the image on top and category links unde
 
 ## Parameters
 
+<!-- osirion:parameters OsirionFeatureCard -->
+
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `Title` | `string?` | `null` | Card title, rendered as a paragraph with the class `osirion-feature-card-title`. |
-| `Description` | `string?` | `null` | Text under the title. |
-| `ShowDescription` | `bool` | `true` | Set to `false` to hide `Description`. |
+| `Title` | `string?` | `null` | The card title, rendered as a paragraph with the class `osirion-feature-card-title`. |
+| `Description` | `string?` | `null` | The text under the title. |
+| `ShowDescription` | `bool` | `true` | Whether `Description` is shown. |
 | `ChildContent` | `RenderFragment?` | `null` | Extra content between the description and the links. |
-| `Url` | `string?` | `null` | Wraps the image in a link, and is the read more link's target when `ReadMoreHref` is not set. |
-| `ImageUrl` | `string?` | `null` | Image source. Without it the card shows a placeholder icon. |
-| `ImageAlt` | `string?` | `null` | Alternative text; when not set, `Title` is used, then `Feature image`. |
-| `ImageLazyLoading` | `bool` | `true` | Renders `loading="lazy"`; set to `false` for a card above the fold. |
-| `ImageTransformOnHover` | `bool` | `false` | Zooms the image on hover. |
-| `ImagePosition` | `ImagePosition` | `Left` | `Top`, `Bottom`, `Left` or `Right`. |
-| `CardSize` | `CardSize` | `Normal` | `ExtraExtraSmall` to `ExtraExtraLarge`; sets the card dimensions. |
-| `ContentAlignment` | `ContentAlignment` | `CenterLeft` | One of nine positions, from `TopLeft` to `BottomRight`. |
-| `ContentFontSize` | `FontSizeVariant` | `Normal` | `ExtraExtraSmall` to `ExtraExtraLarge`. |
-| `BorderTiming` | `EffectTiming` | `Always` | When the border shows: `Never`, `Always` or `OnHover`. |
-| `BorderColor` | `ThemeColor` | `Neutral` | `Primary`, `Secondary`, `Tertiary` or `Neutral`. |
-| `ShadowTiming` | `EffectTiming` | `OnHover` | When the shadow shows. |
-| `ShadowColor` | `ThemeColor` | `Neutral` | Shadow color. |
-| `TransformTiming` | `EffectTiming` | `OnHover` | When the card lifts. |
-| `ShowReadMoreLink` | `bool` | `false` | Shows a read more link when `ReadMoreHref` or `Url` is set. |
-| `ReadMoreText` | `string` | `"Read more"` | Link text. |
-| `ReadMoreHref` | `string?` | `null` | Link target; falls back to `Url`. |
-| `ReadMoreStretched` | `bool` | `true` | With pillow buttons shown, ends the link's clickable area 50px above the bottom of the text area so the buttons stay clickable. |
-| `ShowPillowButtons` | `bool` | `false` | Shows `PillowButtons`. |
-| `PillowButtons` | `List<PillowButton>?` | `null` | Small category-style links. |
-| `Class` | `string?` | `null` | Extra CSS classes on the card. |
-| `Style` | `string?` | `null` | Inline style on the card. |
+| `Url` | `string?` | `null` | The link around the image, and the read more link's target when `ReadMoreHref` is not set. |
+| `ImageUrl` | `string?` | `null` | The image source. Without it the card shows a placeholder icon. |
+| `ImageAlt` | `string?` | `null` | The image's alternative text; when it is not set, `Title` is used, then `Feature image`. |
+| `ImageLazyLoading` | `bool` | `true` | Whether the image renders `loading="lazy"`. Set it to `false` for a card above the fold. |
+| `ImageTransformOnHover` | `bool` | `false` | Whether the image zooms on hover. |
+| `ImagePosition` | `ImagePosition` | `ImagePosition.Left` | Where the image sits: `Top`, `Bottom`, `Left` or `Right`. |
+| `CardSize` | `CardSize` | `CardSize.Normal` | The card's dimensions, from `ExtraExtraSmall` to `ExtraExtraLarge`. |
+| `ContentAlignment` | `ContentAlignment` | `ContentAlignment.CenterLeft` | Where the text sits in the card: one of nine positions, from `TopLeft` to `BottomRight`. |
+| `ContentFontSize` | `FontSizeVariant` | `FontSizeVariant.Normal` | The text size, from `ExtraExtraSmall` to `ExtraExtraLarge`. |
+| `BorderTiming` | `EffectTiming` | `EffectTiming.Always` | When the border shows: `Never`, `Always` or `OnHover`. |
+| `BorderColor` | `ThemeColor` | `ThemeColor.Neutral` | The border colour: `Primary`, `Secondary`, `Tertiary` or `Neutral`. |
+| `ShadowTiming` | `EffectTiming` | `EffectTiming.OnHover` | When the shadow shows: `Never`, `Always` or `OnHover`. |
+| `ShadowColor` | `ThemeColor` | `ThemeColor.Neutral` | The shadow colour: `Primary`, `Secondary`, `Tertiary` or `Neutral`. |
+| `TransformTiming` | `EffectTiming` | `EffectTiming.OnHover` | When the card lifts: `Never`, `Always` or `OnHover`. |
+| `ShowReadMoreLink` | `bool` | `false` | Whether a read more link is shown; it needs `ReadMoreHref` or `Url`. |
+| `ReadMoreText` | `string` | `"Read more"` | The read more link's text. |
+| `ReadMoreHref` | `string?` | `null` | The read more link's target; falls back to `Url`. |
+| `ReadMoreStretched` | `bool` | `true` | With pillow buttons shown, ends the read more link's clickable area 50 pixels above the bottom of the text, so the buttons stay clickable. |
+| `ShowPillowButtons` | `bool` | `false` | Whether `PillowButtons` are shown. |
+| `PillowButtons` | `List<PillowButton>?` | `null` | Small category-style links under the text. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's colour mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
+| `Style` | `string?` | `null` | An inline style for the component's root element. |
+
+<!-- /osirion:parameters -->
 
 `PillowButton` has `Text`, `Href` (default `#`), `Color` (`ThemeColor`, default `Primary`), `Target` and `AriaLabel`,
 and a constructor `PillowButton(text, href, color)`. Unmatched attributes are passed to the card's root element.

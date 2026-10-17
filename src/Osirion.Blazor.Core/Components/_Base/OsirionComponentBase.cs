@@ -16,7 +16,8 @@ public abstract partial class OsirionComponentBase : ComponentBase
     public IDictionary<string, object> Attributes { get; set; } = new Dictionary<string, object>();
 
     /// <summary>
-    /// Gets or sets the component theme: "Light", "Dark", "System". Defaults "System".
+    /// Gets or sets the component's colour mode. <c>Light</c> or <c>Dark</c> writes it to <c>data-theme</c>
+    /// (<c>data-bs-theme</c> under Bootstrap) on the root element; <c>System</c> writes nothing.
     /// </summary>
     [Parameter]
     public ThemeMode Theme { get; set; } = ThemeMode.System;

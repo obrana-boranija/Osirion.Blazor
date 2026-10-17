@@ -22,55 +22,55 @@ public partial class OsirionSubscriptionCard : OsirionComponentBase
     #region Form Parameters
 
     /// <summary>
-    /// Gets or sets the Id of subscription card.
+    /// The form name and the prefix of the card's element ids; give each card on a page its own value. Required.
     /// </summary>
     [Parameter, EditorRequired]
     public string Id { get; set; } = "subscription-card";
 
     /// <summary>
-    /// Gets or sets the title displayed at the top of the subscription card.
+    /// The heading (<c>h3</c>). Rendered as HTML, not encoded, so never pass visitor input.
     /// </summary>
     [Parameter]
     public string Title { get; set; } = "Stay Updated";
 
     /// <summary>
-    /// Gets or sets the description text displayed below the title.
+    /// The text under the title. Rendered as HTML, not encoded, so never pass visitor input.
     /// </summary>
     [Parameter]
     public string Description { get; set; } = "Get the latest updates and insights delivered to your inbox.";
 
     /// <summary>
-    /// Gets or sets whether to show the name field.
+    /// Whether an optional name field (up to 100 characters) is shown.
     /// </summary>
     [Parameter]
     public bool ShowNameField { get; set; } = false;
 
     /// <summary>
-    /// Gets or sets the placeholder text for the name field.
+    /// The name field's placeholder.
     /// </summary>
     [Parameter]
     public string NamePlaceholder { get; set; } = "Your name (optional)";
 
     /// <summary>
-    /// Gets or sets the placeholder text for the email field.
+    /// The email field's placeholder.
     /// </summary>
     [Parameter]
     public string EmailPlaceholder { get; set; } = "Enter your email address";
 
     /// <summary>
-    /// Gets or sets the text for the subscribe button.
+    /// The button's text.
     /// </summary>
     [Parameter]
     public string SubscribeButtonText { get; set; } = "Subscribe";
 
     /// <summary>
-    /// Gets or sets the text displayed on the subscribe button while submitting.
+    /// Not rendered: the card has no busy state.
     /// </summary>
     [Parameter]
     public string SubscribingText { get; set; } = "Subscribing...";
 
     /// <summary>
-    /// Gets or sets whether to show required field indicators (*).
+    /// Whether an asterisk follows the labels of required fields.
     /// </summary>
     [Parameter]
     public bool ShowRequiredIndicators { get; set; } = true;
@@ -80,38 +80,38 @@ public partial class OsirionSubscriptionCard : OsirionComponentBase
     #region Privacy and Category Parameters
 
     /// <summary>
-    /// Gets or sets the privacy policy agreement text (supports HTML markup).
-    /// If null or empty, the privacy policy checkbox will not be shown.
+    /// The label of the consent checkbox, by default a link to <c>/privacy-policy</c>. Rendered as HTML, not encoded.
+    /// Without it the checkbox is not shown.
     /// </summary>
     [Parameter]
     public string? PrivacyPolicyText { get; set; } = "I agree to the <a class=\"osirion-subscribtion-link\" href=\"/privacy-policy\" target=\"_blank\">privacy policy</a>";
 
     /// <summary>
-    /// Gets or sets whether to show subscription categories for user selection.
+    /// Whether topics to choose from are shown.
     /// </summary>
     [Parameter]
     public bool ShowSubscriptionCategories { get; set; } = false;
 
     /// <summary>
-    /// Gets or sets the available subscription categories.
+    /// The topics. With <see cref="ShowSubscriptionCategories"/> on and no list, three sample topics are shown.
     /// </summary>
     [Parameter]
     public IReadOnlyList<SubscriptionCategory>? SubscriptionCategories { get; set; }
 
     /// <summary>
-    /// Gets or sets the text displayed above subscription categories.
+    /// The label above the topics.
     /// </summary>
     [Parameter]
     public string CategoriesText { get; set; } = "What would you like to receive?";
 
     /// <summary>
-    /// Gets or sets whether to show subscription categories as a dropdown instead of inline checkboxes.
+    /// Whether the topics are shown in a <c>details</c> drop-down instead of a list of checkboxes.
     /// </summary>
     [Parameter]
     public bool ShowCategoriesAsDropdown { get; set; } = false;
 
     /// <summary>
-    /// Gets or sets the text for the categories dropdown button.
+    /// The drop-down button's text.
     /// </summary>
     [Parameter]
     public string CategoriesDropdownText { get; set; } = "Select Categories";
@@ -137,25 +137,25 @@ public partial class OsirionSubscriptionCard : OsirionComponentBase
     #region Success/Error Message Parameters
 
     /// <summary>
-    /// Gets or sets the success message to display after successful subscription.
+    /// Shown after the address was handed over.
     /// </summary>
     [Parameter]
     public string SuccessMessage { get; set; } = "Thank you for subscribing! Please check your email to confirm your subscription.";
 
     /// <summary>
-    /// Gets or sets the error message to display when subscription fails.
+    /// Shown when handling the address failed.
     /// </summary>
     [Parameter]
     public string ErrorMessage { get; set; } = "Sorry, there was an error processing your subscription. Please try again later.";
 
     /// <summary>
-    /// Gets or sets the error message to display when spam is detected.
+    /// Shown when the hidden honeypot field was filled in.
     /// </summary>
     [Parameter]
     public string SpamMessage { get; set; } = "Your submission appears to be spam and has been blocked.";
 
     /// <summary>
-    /// Gets or sets the message to display when email is already subscribed.
+    /// Shown for the <c>AlreadySubscribed</c> result, which the card does not produce itself.
     /// </summary>
     [Parameter]
     public string AlreadySubscribedMessage { get; set; } = "This email address is already subscribed to our newsletter.";
@@ -171,25 +171,25 @@ public partial class OsirionSubscriptionCard : OsirionComponentBase
     #region Layout Parameters
 
     /// <summary>
-    /// Gets or sets whether to use a compact layout (smaller form).
+    /// Less padding and a smaller title and description.
     /// </summary>
     [Parameter]
     public bool CompactLayout { get; set; } = false;
 
     /// <summary>
-    /// Gets or sets whether to use a dark theme styling.
+    /// Adds <c>osirion-subscription-card-dark</c>, which takes input and option colours from the theme tokens.
     /// </summary>
     [Parameter]
     public bool UseDarkTheme { get; set; } = false;
 
     /// <summary>
-    /// Gets or sets whether to show the card border.
+    /// Whether the card has a border.
     /// </summary>
     [Parameter]
     public bool ShowBorder { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets whether to show the card shadow.
+    /// Whether the card has a shadow.
     /// </summary>
     [Parameter]
     public bool ShowShadow { get; set; } = true;

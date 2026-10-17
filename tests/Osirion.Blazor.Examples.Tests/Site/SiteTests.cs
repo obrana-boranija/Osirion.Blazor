@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Osirion.Blazor.Cms.Domain.Services;
+using Osirion.Blazor.Core.Services;
 using Osirion.Blazor.Examples.Shared.Docs;
 using Osirion.Blazor.Examples.Shared.Themes;
 using Shouldly;
@@ -238,6 +239,39 @@ public partial class SiteTests(SiteFactory factory) : IClassFixture<SiteFactory>
         sidebar.ShouldContain("href=\"/themes\"");
     }
 
+    [Fact]
+    public async Task ContentDemos_AreRegisteredAndRenderOnTheirPage()
+    {
+        // Arrange
+        using var client = CreateClient();
+        var registry = factory.Services.GetRequiredService<IContentDemoRegistry>();
+        var outline = await LoadOutlineAsync();
+        var failures = new List<string>();
+        var pagesWithDemos = outline.Pages.Where(page => page.OriginalMarkdown?.Contains("```demo", StringComparison.Ordinal) == true).ToList();
+
+        // Act
+        foreach (var page in pagesWithDemos)
+        {
+            var html = await client.GetStringAsync(DocsOutline.UrlOf(page));
+            foreach (Match demo in DemoBlock().Matches(page.OriginalMarkdown!))
+            {
+                var key = demo.Groups["key"].Value;
+                if (!registry.TryGet(key, out _))
+                {
+                    failures.Add($"{DocsOutline.UrlOf(page)}: no demo registered as {key}");
+                }
+                else if (!html.Contains("osirion-content-demo", StringComparison.Ordinal))
+                {
+                    failures.Add($"{DocsOutline.UrlOf(page)}: {key} rendered as a code block");
+                }
+            }
+        }
+
+        // Assert
+        pagesWithDemos.ShouldNotBeEmpty();
+        failures.ShouldBeEmpty();
+    }
+
     private HttpClient CreateClient() =>
         factory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
 
@@ -281,6 +315,11 @@ public partial class SiteTests(SiteFactory factory) : IClassFixture<SiteFactory>
 
     [GeneratedRegex(""""<a\b[^>]*\shref="(?<href>/[^"]*)"""", RegexOptions.IgnoreCase)]
     private static partial Regex Href();
+
+    [GeneratedRegex(@"^```demo?
+(?<key>[a-z0-9-]+)?
+```", RegexOptions.Multiline)]
+    private static partial Regex DemoBlock();
 
     [GeneratedRegex("""<nav class="osirion-document-sidenav".*?</nav>""", RegexOptions.Singleline)]
     private static partial Regex SideNavigation();

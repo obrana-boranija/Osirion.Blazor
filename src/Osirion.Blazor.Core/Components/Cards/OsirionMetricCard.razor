@@ -4,7 +4,8 @@
 @attribute [DiscoverCollocatedJS]
 @inject JSElementReferenceScope Refs
 
-<article class="osirion-metric-card osirion-metric-card-@Accent.ToString().ToLowerInvariant() osirion-metric-card-border-@Border.ToString().ToLowerInvariant() osirion-metric-card-shadow-@EffectiveShadow.ToString().ToLowerInvariant() @CssClass"
+<article class="osirion-metric-card osirion-metric-card-@Accent.ToString().ToLowerInvariant() osirion-metric-card-border-@Border.ToString().ToLowerInvariant() osirion-metric-card-shadow-@EffectiveShadow.ToString().ToLowerInvariant() @CssClass @Class"
+         style="@Style"
          data-ref="@Refs["root"]"
          @attributes="Attributes">
     @if (!string.IsNullOrWhiteSpace(Kicker))
