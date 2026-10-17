@@ -130,7 +130,7 @@ effect.
 | `EnableAeoOptimization` | `bool` | `true` | Whether the generated answer tags are allowed. It must be on for `EnableGeneratedFaq` to have an effect. When not set, the configured value applies, then `true`. |
 | `GenerateMultipleSchemas` | `bool` | `true` | Whether a `BreadcrumbList` is added when exactly one schema type is generated for an item with a path. Several types given in `SchemaTypes` are used as listed. When not set, the configured value applies, then `true`. |
 | `AuthorUrl` | `string?` | `null` | A page that identifies the author, such as an About page, named as the author `url` in structured data. It is meant for a site with one author: every article and every posting in a list names it. Without one the author is named alone, because a guessed address that answers 404 is worse than none. |
-| `DefaultImageUrl` | `string?` | `null` | The social image used when the item has neither `og_image_url` nor a featured image. A relative address becomes absolute with the site address. |
+| `DefaultImageUrl` | `string?` | `null` | The social image used when the item has no `og_image_url`, no `image` and no featured image. A relative address becomes absolute with the site address. |
 | `DefaultImageWidth` | `int` | `1200` | The width written as `og:image:width`, in pixels. A value of `1200` is replaced by the configured width when there is one. |
 | `DefaultImageHeight` | `int` | `630` | The height written as `og:image:height`, in pixels. A value of `630` is replaced by the configured height when there is one. |
 | `OrganizationName` | `string?` | `null` | The publisher name in structured data. It is also the site name when no site name is set. |
@@ -162,9 +162,11 @@ The crawler tags controlled by `AllowAiDiscovery` and `AllowAiTraining` use meta
 | robots | `AllowSearchIndexing`, then `seo_properties.robots`; an item that sets none gets `index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1` |
 | `og:title`, `og:description` | `seo_properties.og_title` and `og_description`, then the title and description above; cut to 60 and 200 characters |
 | `og:type` | `seo_properties.og_type`, then `article` when the first schema type is Article, BlogPosting or TechArticle, `product` for Product, `video.other` for VideoObject, `profile` for ProfilePage, otherwise `website` |
-| `og:image` | `seo_properties.og_image_url`, then `featured_image`, then `DefaultImageUrl`; the width, height and alt tags are written only when there is an image |
+| `og:image` | `seo_properties.og_image_url`, then `seo_properties.image`, then `featured_image`, then `DefaultImageUrl`; the width, height and alt tags are written only when there is an image |
 | Twitter Card | `seo_properties.twitter_card`, `twitter_title`, `twitter_description`, `twitter_image_url`, then Open Graph; the title is cut to 70 characters and the description to 200, and `twitter:image:alt` repeats the Twitter title |
 | keywords | `tags` |
+| `og:locale` | `seo_properties.lang`, then the item's locale, written with an underscore (`de-DE` becomes `de_DE`); `en_US` when neither is set |
+| extra meta elements | `seo_properties.meta_tags`, one `meta` element per entry. Names start with a letter and hold only letters, digits and `- _ . :`; others are skipped with a logged warning, as are the names the component writes itself (`description`, `keywords`, `author`, `generator`, `language`, `robots`, `googlebot`, `bingbot`, `referrer`). Values are HTML encoded |
 | `article:*` tags | Written only when `og:type` is `article`: `article:published_time`, `article:modified_time`, `article:author`, `article:section` (the first of `categories`) and one `article:tag` per tag |
 | JSON-LD | `seo_properties.json_ld`, then `SchemaTypes`, then `seo_properties.type` (front matter default `Article`), then `WebPage` |
 

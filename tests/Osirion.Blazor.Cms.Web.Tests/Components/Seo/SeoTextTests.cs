@@ -98,4 +98,29 @@ public class SeoTextTests
     {
         SeoText.FormatBreadcrumbSegment(segment).ShouldBe(expected);
     }
+
+    [Theory]
+    [InlineData("theme-color", true)]
+    [InlineData("dc.creator", true)]
+    [InlineData("og:video", true)]
+    [InlineData("a", true)]
+    [InlineData(null, false)]
+    [InlineData("", false)]
+    [InlineData("1abc", false)]
+    [InlineData("has space", false)]
+    [InlineData("a\"b", false)]
+    [InlineData("a<b", false)]
+    [InlineData("a>b", false)]
+    [InlineData("naïve", false)]
+    public void IsSafeMetaName_AcceptsOnlyPlainNames(string? name, bool expected)
+    {
+        SeoText.IsSafeMetaName(name).ShouldBe(expected);
+    }
+
+    [Fact]
+    public void IsSafeMetaName_NameOverSixtyFourCharacters_IsRejected()
+    {
+        SeoText.IsSafeMetaName(new string('a', 64)).ShouldBeTrue();
+        SeoText.IsSafeMetaName(new string('a', 65)).ShouldBeFalse();
+    }
 }

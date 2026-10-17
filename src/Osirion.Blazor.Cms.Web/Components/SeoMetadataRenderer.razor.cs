@@ -32,6 +32,7 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
     private string _metaTitle = string.Empty;
     private string? _metaDescription;
     private string? _metaKeywords;
+    private IReadOnlyList<(string Name, string Value)> _frontMatterMetaTags = [];
 
     // Open Graph
     private string? _ogTitle;
@@ -210,7 +211,7 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
     public string? AuthorUrl { get; set; }
 
     /// <summary>
-    /// Gets or sets the social image used when the item has neither <c>og_image_url</c> nor a featured image. A relative
+    /// Gets or sets the social image used when the item has no <c>og_image_url</c>, no <c>image</c> and no featured image. A relative
     /// address becomes absolute with the site address.
     /// </summary>
     [Parameter]
@@ -305,6 +306,12 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
     /// </summary>
     private List<(string HrefLang, string Href)> _alternateLinks = [];
 
+    /// <summary>The meta names the renderer writes for every page, which front matter <c>meta_tags</c> cannot repeat.</summary>
+    private static readonly HashSet<string> RendererMetaNames = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "description", "keywords", "author", "generator", "language", "robots", "googlebot", "bingbot", "referrer"
+    };
+
     private static readonly Dictionary<string, string> OgTypesBySchemaType = new(StringComparer.OrdinalIgnoreCase)
     {
         ["Article"] = "article",
@@ -353,7 +360,7 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
         _currentUrl = siteUrl is null
             ? ResolvePageUrl()
             : _baseUrl + "/" + navigationManager.ToBaseRelativePath(ResolvePageUrl());
-        _locale = SeoText.ToOpenGraphLocale(Content?.Locale);
+        _locale = SeoText.ToOpenGraphLocale(SeoText.FirstNonBlank(Content?.Metadata?.SeoProperties?.Lang, Content?.Locale));
         _languageCode = Content?.Locale ?? "en";
         _alternateLinks = ParseAlternateLanguageUrls();
 
@@ -386,6 +393,7 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
         _metaTitle = string.Empty;
         _metaDescription = null;
         _metaKeywords = null;
+        _frontMatterMetaTags = [];
         _ogTitle = null;
         _ogDescription = null;
         _ogImage = null;
@@ -562,7 +570,33 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
                 160
             );
             _metaKeywords = Content?.Tags.Any() == true ? string.Join(", ", Content.Tags) : null;
+            _frontMatterMetaTags = BuildFrontMatterMetaTags(Content?.Metadata?.SeoProperties?.MetaTags);
         }
+    }
+
+    /// <summary>
+    /// The <c>meta_tags</c> of the front matter that are safe to write: the name matches
+    /// <see cref="SeoText.IsSafeMetaName"/> and is not one the renderer writes itself, so a front matter entry cannot
+    /// repeat <c>robots</c> or <c>description</c> with another value. Skipped entries are logged.
+    /// </summary>
+    private List<(string Name, string Value)> BuildFrontMatterMetaTags(IReadOnlyDictionary<string, string>? metaTags)
+    {
+        var accepted = new List<(string, string)>();
+        foreach (var (name, value) in metaTags ?? new Dictionary<string, string>())
+        {
+            if (!SeoText.IsSafeMetaName(name) || RendererMetaNames.Contains(name))
+            {
+                Logger.LogWarning(
+                    "Skipping front matter meta tag '{Name}' for content {ContentPath}; the name is not a plain meta name or the renderer writes it itself",
+                    name,
+                    Content?.Path);
+                continue;
+            }
+
+            accepted.Add((name, value));
+        }
+
+        return accepted;
     }
 
     private void BuildOpenGraphMetadata()
@@ -594,7 +628,7 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
         var seo = Content?.Metadata?.SeoProperties;
         _ogTitle = SeoText.TruncateTitle(SeoText.FirstNonBlank(seo?.OgTitle, Content?.Title, _metaTitle), 60);
         _ogDescription = SeoText.TruncateDescription(SeoText.FirstNonBlank(seo?.OgDescription, _metaDescription), 200);
-        _ogImage = NormalizeImageUrl(SeoText.FirstNonBlank(seo?.OgImageUrl, Content?.FeaturedImageUrl, DefaultImageUrl));
+        _ogImage = NormalizeImageUrl(SeoText.FirstNonBlank(seo?.OgImageUrl, seo?.Image, Content?.FeaturedImageUrl, DefaultImageUrl));
         _ogType = SeoText.FirstNonBlank(seo?.OgType, DetermineOgType());
         _ogImageAlt = SeoText.FirstNonBlank(Content?.Title, _siteName);
     }

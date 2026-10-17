@@ -156,21 +156,23 @@ key is optional.
 | `title` | the page `title` | The `<title>`, followed by a vertical bar and the site name. Never cut by the library. |
 | `description` | the page `description` | The meta description, cut to 160 characters. |
 | `canonical` | the page's own address | The `rel="canonical"` link, `og:url` and the address in structured data. Use it only when another address is the preferred one. |
-| `robots` | `index, follow` | The robots meta tag. A value with `noindex` also keeps the page out of the sitemap. |
+| `robots` | `index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1` | The robots meta tag. A value with `noindex` also keeps the page out of the sitemap. |
 | `og_title` | the page `title` | `og:title`, cut to 60 characters. |
 | `og_description` | the meta description | `og:description`, cut to 200 characters. |
-| `og_image_url` | `featured_image`, then the site's `DefaultImageUrl` | `og:image`. A relative address becomes absolute. |
-| `og_type` | `article` | `og:type`. The default is `article` for every page, so set `website` on pages that are not articles. |
+| `og_image_url` | `image`, then `featured_image`, then the site's `DefaultImageUrl` | `og:image`. A relative address becomes absolute. |
+| `og_type` | from the schema type | `og:type`. Without it the first schema type decides: `article` for Article, BlogPosting and TechArticle, `profile`, `product`, `video.other`, otherwise `website`. |
 | `twitter_card` | `summary_large_image` | `twitter:card`. |
 | `twitter_title` | `og_title` | `twitter:title`, cut to 70 characters. |
 | `twitter_description` | the meta description | `twitter:description`, cut to 200 characters. |
 | `twitter_image_url` | the Open Graph image | `twitter:image`. |
-| `type` | `Article` | The schema.org type, used when the component is not given `SchemaTypes`. Write the exact `SchemaType` name, such as `TechArticle`: another spelling or case falls back to `WebPage` without a message. |
+| `type` | `Article` | The schema.org type, used when the component is not given `SchemaTypes`. Write a `SchemaType` name, such as `TechArticle`; case does not matter, but another spelling falls back to `WebPage` without a message. |
 | `json_ld` | none | Your own JSON-LD, as a JSON string. It replaces the generated data; text that is not a JSON object or array is ignored and a warning is logged. |
-| `image`, `lang`, `meta_tags` | none | Read into the model, but `SeoMetadataRenderer` writes nothing from them. Use `og_image_url` and the page's `lang` instead. |
+| `image` | none | The default social image: `og:image` and `twitter:image` use it when `og_image_url` is not set, before `featured_image`. |
+| `lang` | the page locale | `og:locale`, for example `de-DE` is written as `de_DE`. The `lang` meta tag and the structured data language keep the page locale. |
+| `meta_tags` | none | Extra meta elements, a map of name to content. A name starts with a letter and holds only letters, digits and `- _ . :` (at most 64 characters); other names are skipped with a logged warning, and so are the names the renderer writes itself (`description`, `keywords`, `author`, `generator`, `language`, `robots`, `googlebot`, `bingbot`, `referrer`). Values are HTML encoded. |
 
-These defaults come with a front matter block. A file with none gets `website` for `og:type`, `WebPage` for the schema
-type and a robots tag that adds `max-snippet`, `max-image-preview` and `max-video-preview` directives to `index, follow`.
+These defaults apply to every page. A page with a front matter block has `type: Article` unless it sets another, so it gets `Article`; a file with none gets `WebPage` for the schema
+type, and `og:type` follows the schema type for both.
 
 The page components pick their own schema types (`DocumentPage` uses `TechArticle`, `ArticlePage` takes the types you
 pass), so `type` matters mainly when you call the renderer yourself. See the [SEO guide](/docs/seo) for what the

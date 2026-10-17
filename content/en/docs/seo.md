@@ -78,7 +78,7 @@ In `appsettings.json`, under `Osirion:Seo`, which `AddOsirion(builder.Configurat
 `SiteName` follows the page title (`Page title | My Blog`) and is the name of the publisher in structured data;
 `OrganizationName` takes its place only when `SiteName` is missing, and with neither the name is taken from the host.
 `SiteLogoUrl` is the publisher logo (`/logo.png` on your site when unset, whether or not that file exists), and
-`DefaultImageUrl` is the share image for pages that have no `featured_image`. The other options and the parameters that
+`DefaultImageUrl` is the share image for pages that have no `og_image_url`, `image` or `featured_image`. The other options and the parameters that
 override them are on the [SeoMetadataRenderer](/components/seo-metadata-renderer) page.
 
 ## 3. Write a title and description for every page

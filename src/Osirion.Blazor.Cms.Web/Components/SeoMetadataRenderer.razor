@@ -34,6 +34,10 @@
         @((MarkupString)RenderMetaTag("author", _author))
     }
     @((MarkupString)RenderMetaTag("generator", "Osirion Blazor CMS"))
+    @foreach (var (name, value) in _frontMatterMetaTags)
+    {
+        @((MarkupString)RenderMetaTag(name, value))
+    }
 
     <!-- Language and Locale -->
     <meta name="language" content="@_languageCode" />
