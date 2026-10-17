@@ -24,8 +24,8 @@ public partial class SearchBox
     public string SearchQuery { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the placeholder of the field. It is also the field's <c>aria-label</c>, so screen readers
-    /// announce it as the field's name.
+    /// Gets or sets the placeholder of the field. It is a hint only: the field's accessible name is
+    /// <see cref="Label"/>.
     /// </summary>
     [Parameter]
     public string Placeholder { get; set; } = "Search content...";
@@ -39,6 +39,25 @@ public partial class SearchBox
     /// <summary>Gets or sets the heading above the form, rendered as an <c>h2</c>. No heading when <c>null</c>.</summary>
     [Parameter]
     public string? Title { get; set; }
+
+    /// <summary>
+    /// Gets or sets the text of the field's visually hidden label, which is its accessible name. Set it for another
+    /// language.
+    /// </summary>
+    [Parameter]
+    public string Label { get; set; } = "Search";
+
+    /// <summary>
+    /// Gets or sets the <c>id</c> of the input, which the label points to. Without it, the id is derived from
+    /// <see cref="ActionUrl"/> and <see cref="QueryParameterName"/>, so it is the same on every render and in every
+    /// process. Set it when one page holds two boxes with the same settings.
+    /// </summary>
+    [Parameter]
+    public string? Id { get; set; }
+
+    private string InputId => string.IsNullOrWhiteSpace(Id)
+        ? $"search-input-{ContentUrls.StableHash(ActionUrl + "?" + QueryParameterName)}"
+        : Id;
 
     private string GetWrapperClass()
     {

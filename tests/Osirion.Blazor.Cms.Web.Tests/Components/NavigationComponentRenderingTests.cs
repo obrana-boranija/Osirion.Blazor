@@ -216,7 +216,7 @@ public class NavigationComponentRenderingTests : CmsWebComponentTestBase
         var input = cut.Find("input");
         input.GetAttribute("name").ShouldBe("term");
         input.GetAttribute("value").ShouldBe("blazor");
-        input.GetAttribute("aria-label").ShouldBe("Type here");
+        input.GetAttribute("placeholder").ShouldBe("Type here");
         cut.Find("button span").TextContent.ShouldBe("Go");
     }
 
