@@ -202,7 +202,7 @@
     }
 
     .osirion-pagination-link.osirion-active {
-        background-color: var(--osirion-background-active, var(--osirion-action-primary, #2563eb));
+        background-color: var(--osirion-action-primary, #2563eb);
         color: var(--osirion-action-primary-text, #ffffff);
         border-color: var(--osirion-action-primary, #2563eb);
     }

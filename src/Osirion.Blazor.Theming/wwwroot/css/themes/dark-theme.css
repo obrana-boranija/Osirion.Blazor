@@ -192,6 +192,7 @@
   --osirion-nav-active-text: var(--osirion-color-primary-700); /* #93c5fd - Light blue */
   --osirion-nav-active-border: var(--osirion-color-primary-600); /* #60a5fa - Bright blue */
   --osirion-nav-hover-background: var(--osirion-color-neutral-300); /* #374151 - Medium-dark gray */
+  --osirion-background-hover: var(--osirion-nav-hover-background);
   --osirion-nav-hover-text: var(--osirion-text-primary); /* #f3f4f6 - Light gray */
   /* Focus states - more visible in dark mode */
   --osirion-focus-ring-color: rgba(96, 165, 250, 0.7); /* Semi-transparent bright blue */

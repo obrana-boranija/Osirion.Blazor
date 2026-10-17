@@ -39,7 +39,7 @@
     }
 
     .osirion-tag-link.osirion-tag-active {
-        background-color: var(--osirion-background-active, var(--osirion-action-primary, #2563eb));
+        background-color: var(--osirion-action-primary, #2563eb);
         color: var(--osirion-action-primary-text, white);
         font-weight: var(--osirion-font-weight-medium, 500);
     }

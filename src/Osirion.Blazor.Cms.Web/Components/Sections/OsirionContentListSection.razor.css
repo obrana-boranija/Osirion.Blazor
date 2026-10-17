@@ -300,7 +300,7 @@
     margin: 0 auto;
     width: 40px;
     height: 40px;
-    border: 3px solid var(--osirion-background-active, #e0f2fe);
+    border: 3px solid var(--osirion-nav-active-background, #eff6ff);
     border-top-color: var(--osirion-action-primary, #2563eb);
     border-radius: 50%;
     animation: osirion-spin 0.8s linear infinite;
