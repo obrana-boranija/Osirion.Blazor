@@ -1,5 +1,3 @@
-using System.Reflection;
-using Microsoft.AspNetCore.Components;
 using Osirion.Blazor.ApiDocs;
 
 // Regenerates the parameter tables in the site content from the components themselves.
@@ -20,15 +18,7 @@ if (!Directory.Exists(root))
 }
 
 // The meta package reference copies every module's assembly and XML docs next to this tool.
-var components = new Dictionary<string, Type>(StringComparer.Ordinal);
-foreach (var path in Directory.EnumerateFiles(AppContext.BaseDirectory, "Osirion.Blazor*.dll").Order(StringComparer.Ordinal))
-{
-    var assembly = Assembly.LoadFrom(path);
-    foreach (var type in assembly.GetExportedTypes().Where(type => typeof(IComponent).IsAssignableFrom(type) && !type.IsAbstract))
-    {
-        components.TryAdd(type.Name, type);
-    }
-}
+var components = ComponentCatalog.Load(AppContext.BaseDirectory);
 
 var tables = new ParameterTable();
 var stale = 0;

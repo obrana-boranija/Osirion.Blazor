@@ -179,7 +179,30 @@ internal sealed partial class ParameterTable
         var assembly = property.DeclaringType!.Assembly;
         LoadDocs(assembly);
         var key = "P:" + property.DeclaringType!.FullName!.Replace('+', '.') + "." + property.Name;
-        return _summaries.TryGetValue(key, out var summary) ? summary : string.Empty;
+        if (!_summaries.TryGetValue(key, out var summary))
+        {
+            return string.Empty;
+        }
+
+        // A reference to a sibling parameter reads as the parameter's name, the way the table lists it.
+        return AsDescription(summary.Replace("`" + property.DeclaringType.Name + ".", "`", StringComparison.Ordinal));
+    }
+
+    /// <summary>
+    /// Turns a property summary into a table description: the "Gets or sets" that C# documentation opens with says
+    /// nothing in a parameter table, so "Gets or sets the card title." reads "The card title." and "Gets or sets
+    /// whether to show it." reads "Whether to show it."
+    /// </summary>
+    internal static string AsDescription(string summary)
+    {
+        var match = GetsOrSets().Match(summary);
+        if (!match.Success || match.Length == summary.Length)
+        {
+            return summary;
+        }
+
+        var rest = summary[match.Length..];
+        return char.ToUpperInvariant(rest[0]) + rest[1..];
     }
 
     private void LoadDocs(Assembly assembly)
@@ -256,4 +279,7 @@ internal sealed partial class ParameterTable
 
     [GeneratedRegex(@"\s+")]
     private static partial Regex Whitespace();
+
+    [GeneratedRegex(@"^Gets or sets\s+", RegexOptions.IgnoreCase)]
+    private static partial Regex GetsOrSets();
 }
