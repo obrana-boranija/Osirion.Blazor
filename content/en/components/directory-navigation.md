@@ -7,7 +7,7 @@ permalink: /components/directory-navigation
 description: "DirectoryNavigation renders a list of CMS directories you pass, with one level of subdirectories, an active directory and click callbacks."
 author: "Osirion Team"
 date: 2025-01-26
-last_modified: 2026-10-11
+last_modified: 2026-10-17
 featured_image: /assets/images/blazor-cover.png
 categories:
 - Components
@@ -26,10 +26,23 @@ redirect_from:
 custom_fields:
   group: cms-navigation
 seo_properties:
-  title: "DirectoryNavigation Component - Osirion.Blazor CMS"
-  description: "Render a sidebar list of CMS directories with one level of subdirectories, an active directory and your own directory URLs."
+  title: 'DirectoryNavigation: a directory list for Blazor'
+  description: 'Render a sidebar list of CMS directories with one level of subdirectories, an active directory and your own directory URLs.'
   image: /assets/images/blazor-cover.png
-  canonical: "https://getosirion.com/components/directory-navigation"
+  canonical: 'https://getosirion.com/components/directory-navigation'
+  lang: en
+  robots: index, follow
+  og_title: 'DirectoryNavigation - Osirion.Blazor'
+  og_description: 'A sidebar list of CMS directories with one level of subdirectories, an active directory and click callbacks.'
+  og_image_url: '/assets/images/blazor-cover.png'
+  og_type: article
+  json_ld: ''
+  type: Article
+  twitter_card: summary_large_image
+  twitter_title: 'DirectoryNavigation - Osirion.Blazor'
+  twitter_description: 'A sidebar list of CMS directories with one level of subdirectories, an active directory and click callbacks.'
+  twitter_image_url: '/assets/images/blazor-cover.png'
+  meta_tags: {}
 ---
 
 # DirectoryNavigation
@@ -37,6 +50,15 @@ seo_properties:
 `DirectoryNavigation` renders a list of links to the CMS directories you give it, and can show one level of
 subdirectories under each. It does not load anything itself: you pass the directories, which keeps it usable for
 any part of the content tree.
+
+Package `Osirion.Blazor.Cms.Web`, namespace `Osirion.Blazor.Cms.Web.Components`. [Source on GitHub](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Cms.Web/Components/Navigation/DirectoryNavigation.razor).
+
+```demo
+directory-navigation
+```
+
+The demo lists the sections of this site's own content: the folders inside the English locale folder, and the folder
+inside Documentation.
 
 ## Usage
 
@@ -59,8 +81,7 @@ A sidebar that loads the top-level directories of one locale, marks the current 
                      IsLoading="@(directories is null)"
                      CurrentDirectory="@CurrentPath"
                      ExpandedDirectory="@CurrentPath"
-                     ShowItemCount="false"
-                     DirectoryUrlFormatter="@(directory => $"/{directory.Url.TrimStart('/')}")" />
+                     ShowItemCount="false" />
 
 @code {
     [Parameter]
@@ -70,41 +91,53 @@ A sidebar that loads the top-level directories of one locale, marks the current 
 
     protected override async Task OnInitializedAsync()
     {
-        directories = await ContentProviderManager.GetDirectoryTreeFromDefaultAsync("en");
+        // With a locale, the list holds every directory below the locale folder, at any depth: keep the top level
+        var all = await ContentProviderManager.GetDirectoryTreeFromDefaultAsync("en");
+        directories = all.Where(directory => directory.Parent?.Parent is null).ToList();
     }
 }
 ```
 
-`GetDirectoryTreeFromDefaultAsync` returns the directories without a parent; their subdirectories are in
-`Children`. If your content sits in locale folders such as `en/`, the locale folder is the only directory without a
-parent, so pass its `Children` to list the sections inside it. `CurrentDirectory` and `ExpandedDirectory` are compared with `DirectoryItem.Path`, the folder path in
-the content source.
+With a locale, `GetDirectoryTreeFromDefaultAsync` returns every directory of that locale below the locale folder, in
+one flat list and at every depth; without a locale it returns the root directories, which are the locale folders when
+your content sits in folders such as `en/`. Each directory's subdirectories are in `Children`, so to list the sections,
+keep the directories whose parent is the locale folder, as above. `CurrentDirectory` and `ExpandedDirectory` are
+compared with `DirectoryItem.Path`, the folder path in the content source.
 
 ## Parameters
 
+<!-- osirion:parameters DirectoryNavigation -->
+
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `Directories` | `IReadOnlyList<DirectoryItem>?` | `null` | The directories to list. |
-| `Title` | `string?` | `null` | Heading rendered as an `h3` above the list. No heading when null. |
-| `CurrentDirectory` | `string?` | `null` | Path of the current directory; its link gets the `osirion-active` class. |
-| `ExpandedDirectory` | `string?` | `null` | Path of the top-level directory whose subdirectories are shown. |
-| `ExpandAllSubdirectories` | `bool` | `false` | Shows the subdirectories of every top-level directory. |
-| `ShowSubdirectories` | `bool` | `true` | Allows subdirectories to be shown at all. |
-| `ShowItemCount` | `bool` | `true` | Shows a count after each name. The count is the number of subdirectories (`Children.Count`), not of content items. |
-| `IsLoading` | `bool` | `false` | Shows `LoadingText` instead of the list while you load the directories. |
-| `LoadingText` | `string` | `"Loading navigation..."` | Text shown while `IsLoading` is true. |
-| `NoContentText` | `string` | `"No directories available."` | Shown when `Directories` is null or empty. |
-| `DirectoryUrlFormatter` | `Func<DirectoryItem, string>?` | `null` | Builds each link. Without it, links go to `/{directory.Url}`. |
-| `DirectoryClicked` | `EventCallback<DirectoryItem>` | none | Called when a link is clicked in an interactive render mode. When set, the click no longer navigates. |
+| `Directories` | `IReadOnlyList<DirectoryItem>?` | `null` | The directories to list. Nothing is loaded: when `null` or empty, `NoContentText` is shown. |
+| `CurrentDirectory` | `string?` | `null` | The path of the current directory, compared with the directory's `Path`. Its link gets the `osirion-active` class. |
+| `ExpandedDirectory` | `string?` | `null` | The path of the top-level directory whose subdirectories are shown, compared with the directory's `Path`. |
+| `ExpandAllSubdirectories` | `bool` | `false` | Whether the subdirectories of every top-level directory are shown. |
+| `IsLoading` | `bool` | `false` | Whether `LoadingText` is shown instead of the list, for a page that loads the directories itself. |
+| `ShowItemCount` | `bool` | `true` | Whether a count is shown after each name. The count is the number of subdirectories, not of content items. |
+| `ShowSubdirectories` | `bool` | `true` | Whether subdirectories can be shown at all. One level is rendered, and only for an expanded directory. |
+| `LoadingText` | `string` | `"Loading navigation..."` | The text shown while `IsLoading` is `true`. |
+| `NoContentText` | `string` | `"No directories available."` | The text shown when `Directories` is `null` or empty. |
+| `DirectoryUrlFormatter` | `Func<DirectoryItem, string>?` | `null` | A function that builds each link. Without it, a link goes to the address the directory's `_index.md` declares in `permalink`, otherwise to the directory's path without the locale folder. |
+| `Title` | `string?` | `null` | The heading above the list, rendered as an `h3`. No heading when `null`. |
+| `DirectoryClicked` | `EventCallback<DirectoryItem>` | - | The callback run with the directory when its link is clicked in an interactive render mode. When it is set, the click no longer navigates. Under static SSR it is not called. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
+| `Style` | `string?` | `null` | An inline style for the component's root element. |
 
-This component does not apply `Class` or other attributes in 4.0. Wrap it in your own element to style it.
+<!-- /osirion:parameters -->
+
+This component does not apply `Class`, `Style` or `Theme`, and other attributes on the tag are captured but not
+rendered. Wrap it in your own element to style it.
 
 ## Behavior
 
-- Only one level of subdirectories is rendered, even when they have children of their own.
-- A directory's `Url` is the `permalink` from its `_index.md` and is empty when there is none, so the default
-  link is `/` for directories without a permalink. A permalink that starts with a slash would produce `//...`;
-  the formatter in the example trims it. A directory's name is its folder name, or the `title` from its `_index.md`.
+- Only one level of subdirectories is rendered, even when they have children of their own, and only under a top-level
+  directory that is expanded (`ExpandedDirectory`, or `ExpandAllSubdirectories`).
+- A link goes to the `permalink` from the directory's `_index.md` when it has one. Otherwise it goes to the folder
+  path without the locale folder, so `en/blog` links to `/blog`. A directory's name is its folder name, or the
+  `title` from its `_index.md`.
 - Under static SSR the links are plain links and `DirectoryClicked` is not called. In an interactive render mode
   with `DirectoryClicked` set, the click runs your callback instead of navigating, so you decide what happens.
 - The list is wrapped in a `nav` without an accessible name. Directory names are written as text, so they are
@@ -123,8 +156,8 @@ This component does not apply `Class` or other attributes in 4.0. Wrap it in you
 | `osirion-directory-count` | The count inside a link |
 | `osirion-loading`, `osirion-no-directories` | Loading and empty states |
 
-Colors come from `--osirion-text-primary`, `--osirion-text-secondary`, `--osirion-action-primary` and
-`--osirion-background-secondary`.
+Colors come from `--osirion-text-primary`, `--osirion-text-secondary`, `--osirion-link-color`,
+`--osirion-action-primary`, `--osirion-background-primary` and `--osirion-background-secondary`.
 
 ## Related
 

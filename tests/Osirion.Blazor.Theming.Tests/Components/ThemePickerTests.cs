@@ -37,6 +37,18 @@ public class ThemePickerTests : BunitContext
         ]);
     }
 
+    // Passes before the fix as well: the picker already keeps its script in a file, and this holds it there.
+    [Fact]
+    public void ThemePicker_Markup_HasNoInlineHandlerAndNoInlineScript()
+    {
+        var cut = Render<ThemePicker>();
+
+        cut.FindAll("script").ShouldBeEmpty();
+        cut.FindAll("*").SelectMany(element => element.Attributes)
+            .Where(attribute => attribute.Name.StartsWith("on", StringComparison.OrdinalIgnoreCase))
+            .ShouldBeEmpty();
+    }
+
     [Fact]
     public void ThemePicker_Markup_IsALabelledSelectTheScriptCanFind()
     {

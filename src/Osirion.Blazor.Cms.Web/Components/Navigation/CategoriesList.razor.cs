@@ -8,35 +8,50 @@ namespace Osirion.Blazor.Cms.Web.Components;
 /// <summary>Defines the CategoriesList type.</summary>
 public partial class CategoriesList(IContentProviderManager contentProviderManager)
 {
-    /// <summary>Gets or sets the list title.</summary>
+    /// <summary>Gets or sets the heading above the list, rendered as an <c>h3</c>. No heading when <c>null</c>.</summary>
     [Parameter]
     public string? Title { get; set; }
 
-    /// <summary>Gets or sets the loading message.</summary>
+    /// <summary>
+    /// Gets or sets the text shown while the categories load. Only an interactive render mode can show it: under
+    /// static SSR the response is sent with the finished list.
+    /// </summary>
     [Parameter]
     public string LoadingText { get; set; } = "Loading categories...";
 
-    /// <summary>Gets or sets the empty-state message.</summary>
+    /// <summary>
+    /// Gets or sets the text shown when there are no categories to list, when no default content provider is
+    /// registered or when loading failed.
+    /// </summary>
     [Parameter]
     public string NoContentText { get; set; } = "No categories available.";
 
-    /// <summary>Gets or sets a formatter for category URLs.</summary>
+    /// <summary>
+    /// Gets or sets a function that builds each link from its category (<c>Name</c>, <c>Slug</c> and <c>Count</c>).
+    /// Without it, links go to <c>/category/{Slug}</c>.
+    /// </summary>
     [Parameter]
     public Func<ContentCategory, string>? CategoryUrlFormatter { get; set; }
 
-    /// <summary>Gets or sets the active category.</summary>
+    /// <summary>
+    /// Gets or sets the slug or name of the current category, compared ignoring case. Its link gets the
+    /// <c>osirion-active</c> class; <c>aria-current</c> is not written.
+    /// </summary>
     [Parameter]
     public string? ActiveCategory { get; set; }
 
-    /// <summary>Gets or sets a value indicating whether category counts are shown.</summary>
+    /// <summary>Gets or sets whether each category's item count is shown after its name.</summary>
     [Parameter]
     public bool ShowCount { get; set; } = true;
 
-    /// <summary>Gets or sets a value indicating whether categories are sorted by count.</summary>
+    /// <summary>Gets or sets how categories are ordered: <c>true</c> by item count, highest first; <c>false</c> by name.</summary>
     [Parameter]
     public bool SortByCount { get; set; } = true;
 
-    /// <summary>Gets or sets the maximum number of categories to display.</summary>
+    /// <summary>
+    /// Gets or sets the number of categories to show, taken from the start after sorting. All categories when
+    /// <c>null</c>.
+    /// </summary>
     [Parameter]
     public int? MaxCategories { get; set; }
 

@@ -19,6 +19,9 @@ internal static class SiteDemos
         Add<SubscriptionCardDemo>(demos, "subscription-card", "A subscription card");
         Add<AuthorCardDemo>(demos, "author-card", "An author card");
         Add<MetricCardDemo>(demos, "metric-card", "Metric cards");
+        Add<BreadcrumbsDemo>(demos, "breadcrumbs", "Breadcrumb trails");
+        Add<ReadMoreLinkDemo>(demos, "read-more-link", "Read more links");
+        Add<MenuDemo>(demos, "menu", "A menu with a submenu");
         Add<ArticleMetadataDemo>(demos, "article-metadata", "Article metadata");
         Add<CalloutDemo>(demos, "callout", "Callouts");
         Add<AccordionFaqDemo>(demos, "accordion-and-faq", "An accordion and an FAQ");
@@ -42,6 +45,16 @@ internal static class SiteDemos
         Add<FooterDemo>(demos, "footer", "A footer");
         Add<StickySidebarDemo>(demos, "sticky-sidebar", "A sticky sidebar");
         Add<BackgroundPatternDemo>(demos, "background-pattern", "Background patterns");
+        Add<CategoriesListDemo>(demos, "categories-list", "A categories list");
+        Add<TagCloudDemo>(demos, "tag-cloud", "A tag cloud");
+        Add<ContentBreadcrumbsDemo>(demos, "content-breadcrumbs", "Content breadcrumbs");
+        Add<DirectoryNavigationDemo>(demos, "directory-navigation", "A directory navigation");
+        Add<LocalizedNavigationDemo>(demos, "localized-navigation", "A localized navigation tree");
+        Add<OsirionContentNavigationDemo>(demos, "osirion-content-navigation", "Previous and next links");
+        Add<TableOfContentsDemo>(demos, "table-of-contents", "A table of contents");
+        Add<SearchBoxDemo>(demos, "search-box", "A search box");
+        Add<ContactFormDemo>(demos, "contact-form", "A contact form that sends nothing");
+        Add<ContentNotFoundDemo>(demos, "content-not-found", "A content not found state");
         Add<ThemeToggleDemo>(demos, "theme-toggle", "A theme toggle");
         Add<ThemePickerDemo>(demos, "theme-picker", "A palette picker");
     }
