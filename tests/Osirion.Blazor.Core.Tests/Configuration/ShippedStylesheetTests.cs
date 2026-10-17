@@ -6,7 +6,7 @@ namespace Osirion.Blazor.Core.Tests.Configuration;
 public class ShippedStylesheetTests
 {
     private const string FrameworkNoneBody =
-        ":where(html[data-osirion-framework=None]) body{background-color:var(--osirion-background-primary,#fff);color:var(--osirion-text-primary,#111827)}";
+        ":where(html[data-osirion-framework=None]) body{background-color:var(--osirion-background-primary,#fff);color:var(--osirion-text-primary,#111827);font-family:var(--osirion-font-family-base,system-ui,sans-serif)}";
 
     // Fails before the fix: no shipped stylesheet painted the body, so a site without a CSS framework kept the browser's
     // white page in the dark theme and drew light text on it.
