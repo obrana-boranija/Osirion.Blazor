@@ -22,235 +22,266 @@ public partial class ContentPage
     private ILogger<ContentPage> Logger { get; set; } = default!;
 
     /// <summary>
-    /// Gets or sets the path of the content to display.
+    /// The URL of the item to load from the default content provider, as the provider stores it: no leading slash, no
+    /// file extension and, for localized content, no locale folder (<c>blog/my-post</c>). The match is exact,
+    /// including case. <see cref="IgnorePathSegment"/> and <see cref="PathReplacePattern"/> are applied first.
+    /// Without a path, the page shows the item in <see cref="ContentItem"/>, or the not-found state when that is null
+    /// too.
     /// </summary>
     [Parameter]
     public string? Path { get; set; }
 
     /// <summary>
-    /// Gets or sets the content item to display.
+    /// The item shown. When <see cref="Path"/> loads, the page sets this property and replaces a value you passed; it
+    /// is not two-way bound, so use <see cref="OnContentLoaded"/> to receive the item. Without a path the page shows
+    /// the item you pass and loads no neighbors, related items or default share links.
     /// </summary>
     [Parameter]
     public ContentItem? ContentItem { get; set; }
 
     /// <summary>
-    /// Gets or sets the previous content item for navigation.
+    /// The item the previous link points to. When <see cref="ShowNavigationLinks"/> is on and this or <see
+    /// cref="NextItem"/> is null, the page looks both up with a query for the item's directory and locale, newest
+    /// first, and replaces your values with what it finds.
     /// </summary>
     [Parameter]
     public ContentItem? PreviousItem { get; set; }
 
     /// <summary>
-    /// Gets or sets the next content item for navigation.
+    /// The item the next link points to. See <see cref="PreviousItem"/> for how a missing neighbor is looked up.
     /// </summary>
     [Parameter]
     public ContentItem? NextItem { get; set; }
 
     /// <summary>
-    /// Gets or sets the related content items to display.
+    /// The items shown in the related section. When <see cref="ShowRelatedContent"/> is on and this is null or empty,
+    /// the page picks up to three items of the same locale that share a tag or a category with the item, most shared
+    /// first, and sets this property.
     /// </summary>
     [Parameter]
     public IReadOnlyList<ContentItem>? RelatedItems { get; set; }
 
     /// <summary>
-    /// Gets or sets the loading text.
+    /// The text of the loading state, shown while the page waits for the item. It is not part of a statically
+    /// rendered response, which is sent once the item has loaded.
     /// </summary>
     [Parameter]
     public string LoadingText { get; set; } = "Loading content...";
 
     /// <summary>
-    /// Gets or sets the not found title.
+    /// The heading of the not-found state, shown when no item matches or the provider fails.
     /// </summary>
     [Parameter]
     public string NotFoundTitle { get; set; } = "Content Not Found";
 
     /// <summary>
-    /// Gets or sets the not found text.
+    /// The message of the not-found state.
     /// </summary>
     [Parameter]
     public string NotFoundText { get; set; } = "The requested content could not be found.";
 
     /// <summary>
-    /// Gets or sets whether to show a back link when content is not found.
+    /// Whether the not-found state has a link back, to <see cref="BackLinkUrl"/> with the text <see
+    /// cref="BackLinkText"/>. It is not shown when the URL is empty.
     /// </summary>
     [Parameter]
     public bool ShowBackLink { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the back link URL.
+    /// The address of the back link in the not-found state.
     /// </summary>
     [Parameter]
     public string BackLinkUrl { get; set; } = "/";
 
     /// <summary>
-    /// Gets or sets the back link text.
+    /// The text of the back link in the not-found state.
     /// </summary>
     [Parameter]
     public string BackLinkText { get; set; } = "Back to Home";
 
     /// <summary>
-    /// Gets or sets whether to show breadcrumbs.
+    /// Whether to render <c>ContentBreadcrumbs</c> for the item above the article.
     /// </summary>
     [Parameter]
     public bool ShowBreadcrumbs { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets whether to show the home link in breadcrumbs.
+    /// Whether the breadcrumbs start with a home link.
     /// </summary>
     [Parameter]
     public bool ShowBreadcrumbHome { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the home link URL in breadcrumbs.
+    /// The address of the breadcrumbs' home link.
     /// </summary>
     [Parameter]
     public string BreadcrumbHomeUrl { get; set; } = "/";
 
     /// <summary>
-    /// Gets or sets the home link text in breadcrumbs.
+    /// The text of the breadcrumbs' home link.
     /// </summary>
     [Parameter]
     public string BreadcrumbHomeText { get; set; } = "Home";
 
     /// <summary>
-    /// Gets or sets whether to show metadata.
+    /// Has no effect: the markup does not read it. The header with the author, date and reading time always renders.
     /// </summary>
     [Parameter]
     public bool ShowMetadata { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the caption for the featured image.
+    /// Has no effect: the markup does not read it.
     /// </summary>
     [Parameter]
     public string? FeaturedImageCaption { get; set; }
 
     /// <summary>
-    /// Gets or sets whether to show the footer.
+    /// Has no effect: the markup does not read it.
     /// </summary>
     [Parameter]
     public bool ShowFooter { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets whether to show categories.
+    /// Whether the sidebar lists categories. The list renders only when the item has categories, and it holds every
+    /// category of the site, not only the item's, without counts.
     /// </summary>
     [Parameter]
     public bool ShowCategories { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the categories title.
+    /// The heading of the sidebar's category list.
     /// </summary>
     [Parameter]
     public string CategoriesTitle { get; set; } = "Categories:";
 
     /// <summary>
-    /// Gets or sets whether to show tags.
+    /// Whether the sidebar shows a tag cloud. It renders only when the item has tags, and it holds every tag of the
+    /// site, not only the item's, without counts.
     /// </summary>
     [Parameter]
     public bool ShowTags { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the tags title.
+    /// The heading of the sidebar's tag cloud.
     /// </summary>
     [Parameter]
     public string TagsTitle { get; set; } = "Tags:";
 
     /// <summary>
-    /// Gets or sets whether to show navigation links.
+    /// Whether to show the previous and next links under the article. Missing neighbors are looked up by the page,
+    /// see <see cref="PreviousItem"/>.
     /// </summary>
     [Parameter]
     public bool ShowNavigationLinks { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the previous item label.
+    /// Has no effect: the markup does not read it. The previous link is labeled <c>Previous</c>.
     /// </summary>
     [Parameter]
     public string PreviousItemLabel { get; set; } = "Previous";
 
     /// <summary>
-    /// Gets or sets the next item label.
+    /// Has no effect: the markup does not read it. The next link is labeled <c>Next</c>.
     /// </summary>
     [Parameter]
     public string NextItemLabel { get; set; } = "Next";
 
     /// <summary>
-    /// Gets or sets whether to show share links.
+    /// Whether to show a share section. Without <see cref="ShareLinks"/> it offers Twitter, Facebook and LinkedIn
+    /// links that carry the page's absolute address without query string or fragment; those defaults are created only
+    /// when the page loads by <see cref="Path"/>.
     /// </summary>
     [Parameter]
     public bool ShowShareLinks { get; set; } = false;
 
     /// <summary>
-    /// Gets or sets the share links title.
+    /// The heading of the share section.
     /// </summary>
     [Parameter]
     public string ShareLinksTitle { get; set; } = "Share:";
 
     /// <summary>
-    /// Gets or sets the share links.
+    /// The share links to show, each with <c>Name</c> (also the suffix of its CSS class), <c>Label</c>, <c>Url</c>
+    /// and <c>Icon</c>. <c>Icon</c> is written as raw HTML without sanitizing, so never fill it from user or content
+    /// input. The links open in a new tab with <c>rel="noopener noreferrer"</c>.
     /// </summary>
     [Parameter]
     public List<ShareLink> ShareLinks { get; set; } = new();
 
     /// <summary>
-    /// Gets or sets custom footer content (HTML).
+    /// HTML written after the article and the share links as raw markup, without sanitizing. Use trusted markup only.
+    /// Nothing renders when it is null or white space.
     /// </summary>
     [Parameter]
     public string? FooterContent { get; set; }
 
     /// <summary>
-    /// Gets or sets whether to show related content.
+    /// Whether to show related items, from <see cref="RelatedItems"/> or, when that is empty, found by the page.
     /// </summary>
     [Parameter]
     public bool ShowRelatedContent { get; set; } = false;
 
     /// <summary>
-    /// Gets or sets the related content title.
+    /// The heading of the related section.
     /// </summary>
     [Parameter]
     public string RelatedContentTitle { get; set; } = "Related Content";
 
     /// <summary>
-    /// Gets or sets the schema.org type.
+    /// The schema.org type written into the article's <c>itemtype</c> attribute (<c>https://schema.org/Article</c> by
+    /// default). ContentPage writes no head metadata; render a <c>SeoMetadataRenderer</c> for that.
     /// </summary>
     [Parameter]
     public string SchemaType { get; set; } = "Article";
 
     /// <summary>
-    /// Gets or sets the directory URL formatter.
+    /// Has no effect: the page renders no directory links.
     /// </summary>
     [Parameter]
     public Func<DirectoryItem, string>? DirectoryUrlFormatter { get; set; }
 
     /// <summary>
-    /// Gets or sets the category URL formatter.
+    /// Builds a category link from the category name, for the links under the article and the sidebar list. Without
+    /// it the links under the article are <c>/{locale}/category/{slug}</c> and the sidebar list uses its own default.
     /// </summary>
     [Parameter]
     public Func<string, string>? CategoryUrlFormatter { get; set; }
 
     /// <summary>
-    /// Gets or sets the tag URL formatter.
+    /// Builds a tag link from the tag name, for the links under the article and the tag cloud. Without it the links
+    /// under the article are <c>/{locale}/tag/{slug}</c> and the tag cloud uses its own default.
     /// </summary>
     [Parameter]
     public Func<string, string>? TagUrlFormatter { get; set; }
 
     /// <summary>
-    /// Gets or sets the content URL formatter.
+    /// Builds the links of the previous, next and related items from the item. Without it a previous or next link is
+    /// <c>/{item.Path}</c> and a related link is the item's source path with <see cref="IgnorePathSegment"/> removed,
+    /// <see cref="PathReplacePattern"/> applied and the <c>.md</c> or <c>.markdown</c> extension dropped.
     /// </summary>
     [Parameter]
     public Func<ContentItem, string>? ContentUrlFormatter { get; set; }
 
     /// <summary>
-    /// Gets or sets the path segment to ignore in URL construction.
+    /// A path segment that the public address leaves out. It is put in front of <see cref="Path"/> (as
+    /// <c>segment/path</c>) when the path does not already contain it, before the lookup, and it is removed from the
+    /// default links of related items.
     /// </summary>
     [Parameter]
     public string? IgnorePathSegment { get; set; }
 
     /// <summary>
-    /// Gets or sets the custom path replacement pattern (regex).
+    /// A regular expression and its replacement, separated by one vertical bar (<c>pattern|replacement</c>), applied
+    /// to <see cref="Path"/> before the lookup and to the default links of related items. A value without exactly one
+    /// bar is ignored, so the pattern cannot contain a bar, and a pattern that runs longer than 250 milliseconds is
+    /// ignored too.
     /// </summary>
     [Parameter]
     public string? PathReplacePattern { get; set; }
 
     /// <summary>
-    /// Gets or sets the event callback for when the content item is loaded.
+    /// Raised with the item after the page loaded it by <see cref="Path"/>. It is not raised when nothing is found or
+    /// when you passed <see cref="ContentItem"/> yourself.
     /// </summary>
     [Parameter]
     public EventCallback<ContentItem> OnContentLoaded { get; set; }

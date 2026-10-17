@@ -17,247 +17,252 @@ public partial class LandingPage
     private IContentProviderManager ContentProviderManager { get; set; } = default!;
 
     /// <summary>
-    /// Gets or sets the path to the landing page content
+    /// The source path of the item to load from the default provider while <see cref="Content"/> is not set. When
+    /// nothing is found, the page shows <see cref="NotFoundText"/> and does not signal 404.
     /// </summary>
     [Parameter]
     public string? ContentPath { get; set; }
 
     /// <summary>
-    /// Gets or sets the content item to display
+    /// The item that makes the page: its title and description are the hero's, its featured image the hero's image
+    /// and its body follows the hero. Without an item the page shows what the other parameters give it.
     /// </summary>
     [Parameter]
     public ContentItem? Content { get; set; }
 
     /// <summary>
-    /// Gets or sets whether to show the hero section
+    /// Whether to show a hero with the title, the description, the image and up to two buttons.
     /// </summary>
     [Parameter]
     public bool ShowHero { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the hero title (override)
+    /// The hero's title when there is no <see cref="Content"/>. The item's title wins when both are set.
     /// </summary>
     [Parameter]
     public string? HeroTitle { get; set; }
 
     /// <summary>
-    /// Gets or sets the hero subtitle (override)
+    /// The hero's subtitle when there is no <see cref="Content"/>, or when the item has no description.
     /// </summary>
     [Parameter]
     public string? HeroSubtitle { get; set; }
 
     /// <summary>
-    /// Gets or sets the hero background image
+    /// The hero's image address when the item has no featured image.
     /// </summary>
     [Parameter]
     public string? HeroBackgroundImage { get; set; }
 
     /// <summary>
-    /// Gets or sets the hero alignment
+    /// Has no effect: the hero is not given the alignment.
     /// </summary>
     [Parameter]
     public string HeroAlignment { get; set; } = "center";
 
     /// <summary>
-    /// Gets or sets the hero height
+    /// The minimum height of the hero, as a CSS length such as <c>70vh</c> or <c>30rem</c>.
     /// </summary>
     [Parameter]
     public string HeroHeight { get; set; } = "70vh";
 
     /// <summary>
-    /// Gets or sets whether to show hero buttons
+    /// Has no effect: a hero button shows whenever its text and address are both set.
     /// </summary>
     [Parameter]
     public bool ShowHeroButtons { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the primary button text
+    /// The text of the hero's primary button. The button needs <see cref="HeroPrimaryButtonUrl"/> too.
     /// </summary>
     [Parameter]
     public string? HeroPrimaryButtonText { get; set; }
 
     /// <summary>
-    /// Gets or sets the primary button URL
+    /// The address of the hero's primary button.
     /// </summary>
     [Parameter]
     public string? HeroPrimaryButtonUrl { get; set; }
 
     /// <summary>
-    /// Gets or sets the secondary button text
+    /// The text of the hero's secondary button. The button needs <see cref="HeroSecondaryButtonUrl"/> too.
     /// </summary>
     [Parameter]
     public string? HeroSecondaryButtonText { get; set; }
 
     /// <summary>
-    /// Gets or sets the secondary button URL
+    /// The address of the hero's secondary button.
     /// </summary>
     [Parameter]
     public string? HeroSecondaryButtonUrl { get; set; }
 
     /// <summary>
-    /// Gets or sets the content width
+    /// The width of the section that holds the item's body: <c>narrow</c>, <c>normal</c>, <c>wide</c> or <c>full</c>.
     /// </summary>
     [Parameter]
     public string ContentWidth { get; set; } = "normal";
 
     /// <summary>
-    /// Gets or sets the content alignment
+    /// The text alignment of the body: <c>left</c>, <c>center</c> or <c>right</c>.
     /// </summary>
     [Parameter]
     public string ContentAlign { get; set; } = "left";
 
     /// <summary>
-    /// Gets or sets the content variant
+    /// The look of the section that holds the body: <c>default</c>, <c>highlight</c>, <c>bordered</c> or
+    /// <c>background</c>.
     /// </summary>
     [Parameter]
     public string ContentVariant { get; set; } = "default";
 
     /// <summary>
-    /// Gets or sets the content padding
+    /// The padding of the section that holds the body: <c>none</c>, <c>small</c>, <c>normal</c> or <c>large</c>.
     /// </summary>
     [Parameter]
     public string ContentPadding { get; set; } = "normal";
 
     /// <summary>
-    /// Gets or sets whether to show testimonials section
+    /// Has no effect: the page renders no testimonials section.
     /// </summary>
     [Parameter]
     public bool ShowTestimonials { get; set; } = false;
 
     /// <summary>
-    /// Gets or sets the testimonials section title
+    /// Has no effect: the page renders no testimonials section.
     /// </summary>
     [Parameter]
     public string TestimonialsSectionTitle { get; set; } = "What Our Customers Say";
 
     /// <summary>
-    /// Gets or sets the testimonials layout
+    /// Has no effect: the page renders no testimonials section.
     /// </summary>
     [Parameter]
     public string TestimonialsLayout { get; set; } = "grid";
 
     /// <summary>
-    /// Gets or sets whether to show testimonial images
+    /// Has no effect: the page renders no testimonials section.
     /// </summary>
     [Parameter]
     public bool ShowTestimonialImages { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the testimonial items
+    /// Has no effect: the page renders no testimonials section.
     /// </summary>
     [Parameter]
     public IReadOnlyList<TestimonialItem>? TestimonialItems { get; set; }
 
     /// <summary>
-    /// Gets or sets whether to show features section
+    /// Has no effect: the page renders no features section.
     /// </summary>
     [Parameter]
     public bool ShowFeatures { get; set; } = false;
 
     /// <summary>
-    /// Gets or sets the features section title
+    /// Has no effect: the page renders no features section.
     /// </summary>
     [Parameter]
     public string FeaturesSectionTitle { get; set; } = "Features";
 
     /// <summary>
-    /// Gets or sets the features section description
+    /// Has no effect: the page renders no features section.
     /// </summary>
     [Parameter]
     public string? FeaturesSectionDescription { get; set; }
 
     /// <summary>
-    /// Gets or sets the features layout
+    /// Has no effect: the page renders no features section.
     /// </summary>
     [Parameter]
     public string FeaturesLayout { get; set; } = "grid";
 
     /// <summary>
-    /// Gets or sets the number of features columns
+    /// Has no effect: the page renders no features section.
     /// </summary>
     [Parameter]
     public int FeaturesColumns { get; set; } = 3;
 
     /// <summary>
-    /// Gets or sets the feature items
+    /// Has no effect: the page renders no features section.
     /// </summary>
     [Parameter]
     public IReadOnlyList<FeatureItem>? FeatureItems { get; set; }
 
     /// <summary>
-    /// Gets or sets whether to show call to action section
+    /// Has no effect: the page renders no call to action section.
     /// </summary>
     [Parameter]
     public bool ShowCallToAction { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the CTA title
+    /// Has no effect: the page renders no call to action section.
     /// </summary>
     [Parameter]
     public string? CtaTitle { get; set; }
 
     /// <summary>
-    /// Gets or sets the CTA description
+    /// Has no effect: the page renders no call to action section.
     /// </summary>
     [Parameter]
     public string? CtaDescription { get; set; }
 
     /// <summary>
-    /// Gets or sets the CTA primary button text
+    /// Has no effect: the page renders no call to action section.
     /// </summary>
     [Parameter]
     public string? CtaPrimaryButtonText { get; set; }
 
     /// <summary>
-    /// Gets or sets the CTA primary button URL
+    /// Has no effect: the page renders no call to action section.
     /// </summary>
     [Parameter]
     public string? CtaPrimaryButtonUrl { get; set; }
 
     /// <summary>
-    /// Gets or sets the CTA secondary button text
+    /// Has no effect: the page renders no call to action section.
     /// </summary>
     [Parameter]
     public string? CtaSecondaryButtonText { get; set; }
 
     /// <summary>
-    /// Gets or sets the CTA secondary button URL
+    /// Has no effect: the page renders no call to action section.
     /// </summary>
     [Parameter]
     public string? CtaSecondaryButtonUrl { get; set; }
 
     /// <summary>
-    /// Gets or sets the CTA background color
+    /// Has no effect: the page renders no call to action section.
     /// </summary>
     [Parameter]
     public string? CtaBackgroundColor { get; set; }
 
     /// <summary>
-    /// Gets or sets the CTA variant
+    /// Has no effect: the page renders no call to action section.
     /// </summary>
     [Parameter]
     public string CtaVariant { get; set; } = "primary";
 
     /// <summary>
-    /// Gets or sets custom HTML content
+    /// HTML shown in a wide, highlighted section after the body. It is written through <c>OsirionHtmlRenderer</c>,
+    /// which sanitizes it with the registered HTML sanitizer.
     /// </summary>
     [Parameter]
     public string? CustomContent { get; set; }
 
     /// <summary>
-    /// Gets or sets the loading text
+    /// The text shown while the item loads, in interactive render modes only. A statically rendered response is sent
+    /// once the item has loaded.
     /// </summary>
     [Parameter]
     public string LoadingText { get; set; } = "Loading page...";
 
     /// <summary>
-    /// Gets or sets the not found text
+    /// The message shown when <see cref="ContentPath"/> finds no item. The response keeps its status code.
     /// </summary>
     [Parameter]
     public string NotFoundText { get; set; } = "Page content not found.";
 
     /// <summary>
-    /// Gets or sets additional child content
+    /// Content shown in a wide section after the body and the custom content.
     /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }

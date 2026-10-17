@@ -14,71 +14,121 @@ public partial class LocalizedContentView
     [Inject] private IServiceProvider ServiceProvider { get; set; } = default!;
     [Inject] private ILogger<LocalizedContentView> Logger { get; set; } = default!;
 
-    /// <summary>Gets or sets the content localization identifier.</summary>
+    /// <summary>
+    /// The id an item shares with its translations. The component sets it from the item's <c>ContentId</c>; leave it
+    /// unset.
+    /// </summary>
     [Parameter]
     public string? LocalizationId { get; set; }
 
-    /// <summary>Gets or sets the content path to load.</summary>
+    /// <summary>
+    /// The source path of the item to load from the default provider while <see cref="Item"/> is not set. A later
+    /// change of the path is ignored once an item is shown, so pass <see cref="Item"/> on a page that changes address
+    /// while it is interactive.
+    /// </summary>
     [Parameter]
     public string? Path { get; set; }
 
-    /// <summary>Gets or sets the current locale.</summary>
+    /// <summary>
+    /// The locale of the page. It is left out of the translation links, it is the locale of the default category and
+    /// tag links (<c>/{locale}/category/{slug}</c>) and of the neighbor query.
+    /// </summary>
     [Parameter]
     public string CurrentLocale { get; set; } = "en";
 
-    /// <summary>Gets or sets the callback invoked when the locale changes.</summary>
+    /// <summary>
+    /// Has no effect: translation links are plain links and nothing in the markup raises it.
+    /// </summary>
     [Parameter]
     public EventCallback<string> OnLocaleChanged { get; set; }
 
-    /// <summary>Gets or sets the loading message.</summary>
+    /// <summary>
+    /// The text shown while the item loads, in interactive render modes only. A statically rendered response is sent
+    /// once the item has loaded.
+    /// </summary>
     [Parameter]
     public string LoadingText { get; set; } = "Loading content...";
 
-    /// <summary>Gets or sets the not-found message.</summary>
+    /// <summary>
+    /// The message shown when no item is found, when loading fails (the error is logged) and when neither <see
+    /// cref="Item"/> nor <see cref="Path"/> is set.
+    /// </summary>
     [Parameter]
     public string NotFoundText { get; set; } = "Content not found.";
 
-    /// <summary>Gets or sets the locale display-name formatter.</summary>
+    /// <summary>
+    /// Builds the link text of a translation from its locale code. Without it the text is the code in upper case,
+    /// such as <c>SR</c>.
+    /// </summary>
     [Parameter]
     public Func<string, string>? LocaleNameFormatter { get; set; }
 
-    /// <summary>Gets or sets the translation URL formatter.</summary>
+    /// <summary>
+    /// Builds a translation link from the localization id and the target locale. Without it the link is the
+    /// translation's <c>Url</c> under a leading slash, which the built-in providers store without the locale folder,
+    /// so add the locale here.
+    /// </summary>
     [Parameter]
     public Func<string, string, string>? TranslationUrlFormatter { get; set; }
 
-    /// <summary>Gets or sets the category URL formatter.</summary>
+    /// <summary>
+    /// Builds a category link from the category name. Without it the link is <c>/{CurrentLocale}/category/{slug}</c>.
+    /// </summary>
     [Parameter]
     public Func<string, string>? CategoryUrlFormatter { get; set; }
 
-    /// <summary>Gets or sets the tag URL formatter.</summary>
+    /// <summary>
+    /// Builds a tag link from the tag name. Without it the link is <c>/{CurrentLocale}/tag/{slug}</c>.
+    /// </summary>
     [Parameter]
     public Func<string, string>? TagUrlFormatter { get; set; }
 
-    /// <summary>Gets or sets the content URL formatter.</summary>
+    /// <summary>
+    /// Builds the links of the previous and next items from the item. Without it a link is <c>/{item.Path}</c>, the
+    /// source path, which is usually not the public address.
+    /// </summary>
     [Parameter]
     public Func<ContentItem, string>? ContentUrlFormatter { get; set; }
 
-    /// <summary>Gets or sets the content item to display.</summary>
+    /// <summary>
+    /// The item to render. When it is set, the component loads its translations (and the neighbors when <see
+    /// cref="ShowNavigationLinks"/> is on) and never loads by <see cref="Path"/>.
+    /// </summary>
     [Parameter]
     public ContentItem? Item { get; set; }
 
-    /// <summary>Gets or sets the previous content item.</summary>
+    /// <summary>
+    /// The item the previous link points to. Loading with <see cref="ShowNavigationLinks"/> on replaces it when the
+    /// neighbor query finds the item.
+    /// </summary>
     [Parameter]
     public ContentItem? PreviousItem { get; set; }
 
-    /// <summary>Gets or sets the next content item.</summary>
+    /// <summary>
+    /// The item the next link points to. See <see cref="PreviousItem"/>.
+    /// </summary>
     [Parameter]
     public ContentItem? NextItem { get; set; }
 
-    /// <summary>Gets or sets whether previous and next navigation links are shown.</summary>
+    /// <summary>
+    /// Whether to show previous and next links to items in the same directory and locale, newest first. The component
+    /// looks the neighbors up whenever it loads, also for an item you pass.
+    /// </summary>
     [Parameter]
     public bool ShowNavigationLinks { get; set; } = false;
 
-    /// <summary>Gets or sets whether the jumbotron is shown.</summary>
+    /// <summary>
+    /// Whether to render the header: the title as the page's <c>h1</c>, the author ("By ..."), the date, the reading
+    /// time and the featured image. When it is on, the body leaves out its own leading <c>h1</c> so the title appears
+    /// once; when it is off, the body is written as it is.
+    /// </summary>
     [Parameter]
     public bool ShowJumbotron { get; set; } = true;
 
-    /// <summary>Gets or sets whether localization controls are enabled.</summary>
+    /// <summary>
+    /// Whether to look up the item's translations and list them. The links appear only when the item has more than
+    /// one translation, and the current locale is left out.
+    /// </summary>
     [Parameter]
     public bool EnableLocalization { get; set; } = true;
 

@@ -17,25 +17,30 @@ public partial class DocumentPage
     private IServiceProvider ServiceProvider { get; set; } = default!;
 
     /// <summary>
-    /// Gets or sets the path to the document content
+    /// The source path of the document to load from the default provider while <see cref="Content"/> is not set. When
+    /// nothing is found, the page shows the not-found state and signals 404. A change of the path on a page that
+    /// already shows a document does not load another.
     /// </summary>
     [Parameter]
     public string? ContentPath { get; set; }
 
     /// <summary>
-    /// Gets or sets the content item to display
+    /// The document to show. Pass it when you have loaded it, as this documentation site does; the page then loads
+    /// only what is missing: the side navigation entries and the previous and next documents. Without <see
+    /// cref="Content"/> and <see cref="ContentPath"/> the page renders its frame without a document.
     /// </summary>
     [Parameter]
     public ContentItem? Content { get; set; }
 
     /// <summary>
-    /// Gets or sets whether to show side navigation
+    /// Whether to show the side navigation, a list of pages beside the document. On narrow screens it folds behind a
+    /// button.
     /// </summary>
     [Parameter]
     public bool ShowSideNavigation { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the navigation title
+    /// The heading of the side navigation. No heading is shown when it is empty.
     /// </summary>
     [Parameter]
     public string? NavigationTitle { get; set; }
@@ -48,25 +53,30 @@ public partial class DocumentPage
     public string SideNavigationToggleText { get; set; } = "Documentation menu";
 
     /// <summary>
-    /// Gets or sets the navigation items
+    /// The entries of the side navigation, with optional children. When it is null, the page lists the documents of
+    /// the shown document's folder, in their <c>order</c>, linked with <see cref="ContentUrlFormatter"/>.
     /// </summary>
     [Parameter]
     public IReadOnlyList<DocumentNavigationItem>? NavigationItems { get; set; }
 
     /// <summary>
-    /// Gets or sets the current document path for navigation highlighting
+    /// The path or address that marks an entry of the side navigation as the current page
+    /// (<c>aria-current="page"</c>), compared without regard to case with each entry's <c>Path</c> or <c>Url</c>. It
+    /// defaults to the shown document's path.
     /// </summary>
     [Parameter]
     public string? CurrentPath { get; set; }
 
     /// <summary>
-    /// Gets or sets whether to show metadata
+    /// Whether to show the author and the "Last updated" date under the title. The date is the item's last
+    /// modification, or its publication date when there is none.
     /// </summary>
     [Parameter]
     public bool ShowMetadata { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets whether to show table of contents
+    /// Whether to show a table of contents of the document's headings, between <see cref="TocMinLevel"/> and <see
+    /// cref="TocMaxLevel"/>, above the body.
     /// </summary>
     [Parameter]
     public bool ShowTableOfContents { get; set; } = true;
@@ -78,25 +88,29 @@ public partial class DocumentPage
     public string TableOfContentsTitle { get; set; } = "On this page";
 
     /// <summary>
-    /// Gets or sets the minimum heading level for table of contents
+    /// The highest heading level in the table of contents: <c>2</c> starts at <c>h2</c>.
     /// </summary>
     [Parameter]
     public int TocMinLevel { get; set; } = 2;
 
     /// <summary>
-    /// Gets or sets the maximum heading level for table of contents
+    /// The lowest heading level in the table of contents: <c>4</c> goes down to <c>h4</c>.
     /// </summary>
     [Parameter]
     public int TocMaxLevel { get; set; } = 4;
 
     /// <summary>
-    /// Gets or sets whether to show navigation links
+    /// Whether to show previous and next links under the document. When <see
+    /// cref="OsirionContentDetailPageBase.PreviousItem"/> or <see cref="OsirionContentDetailPageBase.NextItem"/> is
+    /// null, the page looks both up in the document's folder, in <c>order</c>, and replaces your values with what it
+    /// finds.
     /// </summary>
     [Parameter]
     public bool ShowNavigationLinks { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets custom footer content
+    /// HTML shown under the document in a highlighted section. It is written through <c>OsirionHtmlRenderer</c>,
+    /// which sanitizes it with the registered HTML sanitizer.
     /// </summary>
     [Parameter]
     public string? CustomFooterContent { get; set; }
@@ -114,13 +128,14 @@ public partial class DocumentPage
     public string EditLinkText { get; set; } = "Edit this page";
 
     /// <summary>
-    /// Gets or sets the content URL formatter
+    /// Builds the links of the previous and next documents and of the folder entries the page lists itself from the
+    /// item. Without it a link is <c>/{item.Url}</c>.
     /// </summary>
     [Parameter]
     public Func<ContentItem, string>? ContentUrlFormatter { get; set; }
 
     /// <summary>
-    /// Gets or sets the navigation URL formatter
+    /// Builds the link of a side navigation entry. Without it the link is the entry's <c>Url</c>.
     /// </summary>
     [Parameter]
     public Func<DocumentNavigationItem, string>? NavigationUrlFormatter { get; set; }
