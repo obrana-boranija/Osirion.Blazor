@@ -1,0 +1,13 @@
+@page "/"
+
+@* The three newest posts; the whole list is at /blog. *@
+<ContentListPage Directory="blog"
+                 Title="Latest posts"
+                 Description="Notes, guides and ideas, written in Markdown."
+                 ItemsPerPage="3"
+                 ShowPagination="false"
+                 FeedUrl="/feed.xml"
+                 FeedTitle="Follow by RSS"
+                 NoContentText="No posts yet: add a Markdown file to content/blog." />
+
+<p class="blog-more"><a href="/blog">All posts</a></p>

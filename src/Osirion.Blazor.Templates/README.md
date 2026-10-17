@@ -1,0 +1,33 @@
+# Osirion.Blazor.Templates
+
+[![NuGet](https://img.shields.io/nuget/v/Osirion.Blazor.Templates)](https://www.nuget.org/packages/Osirion.Blazor.Templates)
+[![License](https://img.shields.io/github/license/demonjic/Osirion.Blazor)](https://github.com/demonjic/Osirion.Blazor/blob/master/LICENSE.txt)
+
+Project templates for [Osirion.Blazor](https://getosirion.com).
+
+```bash
+dotnet new install Osirion.Blazor.Templates
+dotnet new osirion-blog -n MyBlog
+cd MyBlog
+dotnet run
+```
+
+## Templates
+
+| Short name | What you get |
+| --- | --- |
+| `osirion-blog` | A Markdown blog on .NET 10 with static server-side rendering: home page with the newest posts, a blog list, post pages, an About page, a 404 page, RSS, Atom and a sitemap. The menu and footer come from `appsettings.json`. |
+
+## Options
+
+| Option | Default | Description |
+| --- | --- | --- |
+| `--SiteName` | `My Blog` | The name in the menu, the footer, the feeds and the page titles |
+| `--SiteUrl` | `https://example.com` | The public address the feeds, the sitemap and `robots.txt` link to |
+| `--skipRestore` | `false` | Skips the restore after the project is created |
+
+The template references the Osirion.Blazor version this package was released with.
+
+## Documentation
+
+The [getting started guide](https://getosirion.com/docs/getting-started) walks through the blog the template creates.
