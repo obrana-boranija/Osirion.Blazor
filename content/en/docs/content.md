@@ -61,7 +61,9 @@ content/
 
 Each folder becomes a directory named after the folder. A file called `_index.md` describes its folder and takes
 these keys from its front matter: `title` (the directory's display name), `description`, `order`, `lang`,
-`featured_image` and `permalink` (the directory's address). A folder without an `_index.md` keeps its folder name.
+`featured_image` and `permalink` (the address folder links use; the `_index.md` page itself stays at the folder's
+path). Like any page, an `_index.md` with front matter needs a `title`, and its `lang` is `en` unless you write it. A
+folder without an `_index.md` keeps its folder name.
 
 An `_index.md` is also a page of its own, at the folder's address. A list of that folder includes it, except on the
 page it is shown on, so put real text in it or leave it out of lists you build yourself.
@@ -77,9 +79,12 @@ A page's address is its folder path below `BasePath` plus its `slug`:
 | `blog/_index.md` | `slug: blog` | `blog` |
 
 Without a `slug`, the file name decides: it is lowercased, spaces become hyphens, and anything but letters, digits and
-hyphens is dropped, so `My Post.md` becomes `my-post`. A `slug` you write may contain only lowercase letters, digits
-and hyphens. Anything else (`Bad_Slug`) stops the file from loading, and the error goes to the log. An `_index.md`
-uses its folder's path as its address, whatever its slug.
+hyphens is dropped, so `My Post.md` becomes `my-post` and `my_post.md` becomes `mypost`. Accents are removed and
+Serbian letters are transliterated (`đ` becomes `dj`). The file name decides even when the page has a `title`. A
+`slug` you write may contain only lowercase letters, digits and hyphens. Anything else (`Bad_Slug`) stops the file
+from loading, and the error goes to the log. An `_index.md` uses its folder's path as its address, whatever its slug.
+The exception is an `_index.md` with no folder above it, in the content root or, with localization on, directly in a
+language folder: it has no path to use, so its address is its slug, which is `index` unless you set one.
 
 The `permalink` key does not change the address of a page. It is read, and an `_index.md` uses it as the address of its
 folder, but a page keeps the folder path and slug. To serve a page at another address, route to it yourself, or pass a
@@ -109,6 +114,10 @@ Lists show the newest page first, by `date`. To order by hand, give each page an
              SortBy="SortField.Order"
              SortDirection="SortDirection.Ascending" />
 ```
+
+`Directory` takes a folder's name (`docs`) or its path below `BasePath` (`en/docs`), and lists the pages directly in
+that folder, not those of its subfolders. In 4.1.0 it matches only the folder's display name, which is the `title` of
+its `_index.md` when it has one; the release after 4.1.0 also accepts the folder name and path.
 
 A page without `order` has 0 and comes first in an ascending list. The documentation components order by `order`
 ascending without being asked, including `DocumentPage` and the previous and next links of
@@ -195,7 +204,8 @@ If a file is missing from the list, the front matter could not be read. The prov
 `Error processing markdown file` with the reason and carries on. The usual causes are a `slug` with a character that is
 not allowed, a `title` that is empty when the file has front matter, a list key such as `tags` written as one value
 instead of a list, and a value of the wrong type such as `order: abc` or `published: maybe`. A `date` that cannot be
-read is not an error: the page gets the time the content was loaded.
+read is not an error: the page gets the creation time of its file, which a fresh checkout changes (see the
+[front matter reference](/docs/front-matter)). A file that is empty or only white space is skipped without a message.
 
 ## Next steps
 

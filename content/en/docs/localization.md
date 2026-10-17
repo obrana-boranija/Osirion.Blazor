@@ -96,7 +96,8 @@ lang: sr
 
 Today the `lang` key is required. A file with front matter and no `lang` gets the locale `en`, whatever its folder or
 `DefaultLocale`, so a Serbian file without `lang: sr` is treated as a second English page and the lookup of its
-translations fails. Write `lang` in every file, the default language included.
+translations fails. Write `lang` in every file, the default language included. The same holds for a folder's `_index.md`: its `lang` is
+`en` unless written, and the folder then counts as English when navigation asks for the folders of one language.
 
 Translations are paired by an id the provider builds from the path without the language folder and the extension, so
 `en/blog/hello.md` and `sr/blog/hello.md` belong together even when their slugs differ. Files at different paths, such as
@@ -215,8 +216,9 @@ locale you expect (`sr` for the Serbian files). Then open `/sr/blog/hello`, choo
 ```
 
 The host and port are yours. If a Serbian file shows `en`, it has no `lang`. If a page has no `hreflang` links, its
-translations were not found: check that the files share a path or an `id`. The application log holds
-`Error retrieving translations dictionary` when two files of one id claim the same locale.
+translations were not found: check that the files share a path or an `id`. Two files of one id that claim the same
+locale (a missing `lang`) show up twice in the list above, and `LocalizedContentView` logs
+`Error retrieving translations dictionary` for them.
 
 ## What does not work yet
 
@@ -225,9 +227,11 @@ translations were not found: check that the files share a path or an `id`. The a
   formatters above.
 - **`LocalizedNavigation` has no language switcher.** It does not load the list of available locales, so the selector
   never renders and `OnLocaleChanged` is never raised. Its links default to the folder and file paths of the source
-  (`/en/docs`, `/en/docs/page.md`); pass `DirectoryUrlFormatter` and `ContentUrlFormatter`. See
-  [LocalizedNavigation](/components/localized-navigation).
-- **`LocalizedContentView` links every translation to the same address** unless you pass `TranslationUrlFormatter`.
+  (`/en/docs`, `/en/docs/page.md`); pass `DirectoryUrlFormatter` and `ContentUrlFormatter`. Each link also raises
+  `OnDirectorySelected` or `OnContentSelected` and cancels the browser's navigation when the component is interactive,
+  so handle those events and navigate yourself. See [LocalizedNavigation](/components/localized-navigation).
+- **`LocalizedContentView` links each translation to its own `Url`**, which is the same address for translations at
+  the same path, so pass `TranslationUrlFormatter` to give each language its route.
   Its category and tag links start with the current locale, and its previous and next links use the source path by
   default. `OnLocaleChanged` is never raised, because the translation links are plain links. See
   [LocalizedContentView](/components/localized-content-view).

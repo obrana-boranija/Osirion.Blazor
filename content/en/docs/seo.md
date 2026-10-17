@@ -75,7 +75,9 @@ In `appsettings.json`, under `Osirion:Seo`, which `AddOsirion(builder.Configurat
 }
 ```
 
-`SiteName` follows the page title (`Page title | My Blog`), `OrganizationName` is the publisher in structured data, and
+`SiteName` follows the page title (`Page title | My Blog`) and is the name of the publisher in structured data;
+`OrganizationName` takes its place only when `SiteName` is missing, and with neither the name is taken from the host.
+`SiteLogoUrl` is the publisher logo (`/logo.png` on your site when unset, whether or not that file exists), and
 `DefaultImageUrl` is the share image for pages that have no `featured_image`. The other options and the parameters that
 override them are on the [SeoMetadataRenderer](/components/seo-metadata-renderer) page.
 
@@ -139,7 +141,7 @@ The `Feeds` section name belongs to the templates; any name works, or set the pr
 | --- | --- | --- |
 | `SiteUrl` | the request's address | Public address in every URL. Set it in production, so a forged `Host` header cannot change the URLs a cache stores. |
 | `Title`, `Description` | `Osirion:Seo` `SiteName` and `SiteDescription` | Feed title and description. |
-| `FeedDirectory` | all content | The folder the feeds list, for example `blog`. |
+| `FeedDirectory` | all content | The folder the feeds list, for example `blog`: the pages directly in it, not those of its subfolders. In 4.1.0 it matches the folder's display name (the `title` of its `_index.md` when it has one); the release after 4.1.0 also accepts the folder name. |
 | `FeedLocale` | every language | The language the feeds list. |
 | `FeedItemCount` | `20` | How many of the newest items the feeds list. |
 | `AdditionalSitemapUrls` | none | Addresses that are not content items, such as `/` and `/blog`. |
@@ -185,7 +187,9 @@ as described in [How content is organized](/docs/content). A 301 tells search en
 
 ## 7. Know the structured data
 
-JSON-LD is chosen by the `SchemaTypes` parameter, else `seo_properties.type`, else `WebPage`. The generated types are
+JSON-LD is chosen by the `SchemaTypes` parameter, else `seo_properties.type`, else `WebPage`. A page with a front matter
+block has `type: Article` unless it sets another, so it gets `Article`; a file with no front matter gets `WebPage`.
+Write the type name exactly: an unrecognized spelling gives `WebPage`. The generated types are
 `Article`, `BlogPosting`, `TechArticle`, `WebPage`, `AboutPage`, `ContactPage`, `ProfilePage`, `SoftwareApplication`,
 `Product`, `Organization`, `Person`, `LocalBusiness`, `Event`, `Recipe`, `Course`, `Review`, `VideoObject`, `WebSite`,
 `BreadcrumbList` and `CollectionPage`, plus `HowTo`. With one type and `GenerateMultipleSchemas` on (the default), a
@@ -213,7 +217,7 @@ is an RSS `channel` with your newest items. The last request should answer `301`
 
 ## Checklist for a new site
 
-- [ ] `Osirion:Seo` has `SiteName`, `SiteDescription` and `DefaultImageUrl`.
+- [ ] `Osirion:Seo` has `SiteName`, `SiteDescription`, `SiteLogoUrl` and `DefaultImageUrl`.
 - [ ] Every page has a `title`, a one or two sentence `description` and a `date`; changed pages carry `last_modified`.
 - [ ] The app sees the public scheme and host, so canonical URLs are right; or `canonical` is set where it matters.
 - [ ] `MapOsirionFeeds` is mapped with `SiteUrl`, and `/sitemap.xml` lists the pages you expect and none you do not.

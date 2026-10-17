@@ -57,7 +57,8 @@ Keys are snake_case (`last_modified`, not `lastModified`). Unknown keys are igno
 front matter model and skips what it does not know, without a warning. A typo in a key name therefore disappears
 silently. To keep values of your own, put them under `custom_fields` (step 4).
 
-A file with no front matter block still loads: its title is its file name and every other value takes its default.
+A file with no front matter block still loads: its title is its file name, its language comes from its folder, its date
+is the creation time of the file and every other value takes its default.
 
 ## 2. Use the keys
 
@@ -66,7 +67,7 @@ A file with no front matter block still loads: its title is its file name and ev
 | `title` | string | none | The page's heading, its link text in lists and the base of the `<title>`. Required once the file has a front matter block: an empty title stops the file from loading. |
 | `description` | string | empty | The meta description (cut to 160 characters), the summary in lists and the feed description. |
 | `slug` | string | from the file name | The last part of the address. Lowercase letters, digits and hyphens only; anything else stops the file from loading. |
-| `date` | date text | the time the content was loaded | The publication date: list order, the feed `pubDate`, `datePublished`. See step 3. |
+| `date` | date text | the day the content was loaded | The publication date: list order, the feed `pubDate`, `datePublished`. See step 3. |
 | `last_modified` | date text | `date` | When the page last changed: `dateModified`, `article:modified_time`, sitemap `lastmod`. See step 3. |
 | `author` | string | empty | The byline, `article:author` and the author in structured data. |
 | `categories` | list of strings | empty | Category pages and lists. The first one is `article:section`. |
@@ -76,7 +77,7 @@ A file with no front matter block still loads: its title is its file name and ev
 | `published` | boolean | `true` | `false` keeps the page out of lists, the sitemap, feeds, redirects and the page components. |
 | `order` | integer | `0` | Position when a list sorts by order, and in documentation navigation. For an `_index.md`, the folder's position. |
 | `id` | string | none | Pairs translations: items with the same `id` are translations of each other. With localization on, a missing `id` is built from the path without the language folder. |
-| `lang` | string | `en` | The page's language: `og:locale`, `inLanguage`, the `Locale` filter of queries. See the [localization guide](/docs/localization). |
+| `lang` | string | `en` | The page's language: `og:locale`, `inLanguage`, the `Locale` filter of queries. A missing `lang` is `en`, even in a folder for another language. See the [localization guide](/docs/localization). |
 | `redirect_from` | list of strings | empty | Earlier addresses that redirect to this page, with `UseOsirionRedirects`. |
 | `series` | string | none | Pages with the same series name are listed together by `ContentSeriesNavigation`. |
 | `series_order` | integer | none | The page's position in its series, starting at 1. |
@@ -102,9 +103,11 @@ date: 2026-10-17
 last_modified: 2026-10-17T09:30:00Z
 ```
 
-A date without a time zone is taken as UTC. A `date` that cannot be parsed is not an error: the page gets the time the
-content was loaded, which changes with every restart, so an undated page jumps to the top of newest-first lists and
-moves its sitemap `lastmod` and feed date. Always write `date`.
+A date without a time zone is taken as UTC. A page without a `date` key gets the day the content was loaded. A `date`
+that cannot be parsed is not an error either: the page gets the creation time of its file (the load time with a GitHub
+provider), and so does a file with no front matter block. None of these values is stable. A new day, a restart or a
+fresh checkout changes them, so an undated page jumps to the top of newest-first lists and moves its sitemap `lastmod`
+and feed date. Always write `date`.
 
 `last_modified` is what search engines and feed readers see as the change date. When it is missing, the page was
 last modified on its `date`. The file's write time is not used, because a fresh checkout gives every file the time of
@@ -162,9 +165,12 @@ key is optional.
 | `twitter_title` | `og_title` | `twitter:title`, cut to 70 characters. |
 | `twitter_description` | the meta description | `twitter:description`, cut to 200 characters. |
 | `twitter_image_url` | the Open Graph image | `twitter:image`. |
-| `type` | `Article` | The schema.org type, used when the component is not given `SchemaTypes`. |
+| `type` | `Article` | The schema.org type, used when the component is not given `SchemaTypes`. Write the exact `SchemaType` name, such as `TechArticle`: another spelling or case falls back to `WebPage` without a message. |
 | `json_ld` | none | Your own JSON-LD, as a JSON string. It replaces the generated data; text that is not a JSON object or array is ignored and a warning is logged. |
 | `image`, `lang`, `meta_tags` | none | Read into the model, but `SeoMetadataRenderer` writes nothing from them. Use `og_image_url` and the page's `lang` instead. |
+
+These defaults come with a front matter block. A file with none gets `website` for `og:type`, `WebPage` for the schema
+type and a robots tag that adds `max-snippet`, `max-image-preview` and `max-video-preview` directives to `index, follow`.
 
 The page components pick their own schema types (`DocumentPage` uses `TechArticle`, `ArticlePage` takes the types you
 pass), so `type` matters mainly when you call the renderer yourself. See the [SEO guide](/docs/seo) for what the
@@ -218,8 +224,8 @@ seo_properties:
 
 Copy the block into a file in your content folder and open the throwaway `/content-check` page from the
 [content guide](/docs/content). The page should be listed with the address you expect and the status `Published`. If
-it is missing, read the application log for `Error processing markdown file`: the message names the key and the
-value that could not be read. To see the tags a page writes, open it in the browser, choose View Source and look for
+it is missing, read the application log for `Error processing markdown file`: the message follows with the line and column of the value
+that could not be read, or the field that was refused (`Slug`, `Title`), and why. To see the tags a page writes, open it in the browser, choose View Source and look for
 `<title>`, `rel="canonical"`, `og:` and `application/ld+json` in the head.
 
 ## Next steps
