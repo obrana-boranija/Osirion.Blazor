@@ -38,6 +38,34 @@ public partial class AdapterContrastTests
         ratio.ShouldBeGreaterThanOrEqualTo(4.5, $"{adapter} {mode}: {text} {colors[text]} on {background} {colors[background]}");
     }
 
+    // Fails before the fix: in the dark theme a content category badge drew primary-600 on primary-200, 3.74:1 under
+    // the Bootstrap adapter with Bootstrap's own colors, and 4.45:1 on this repository's example site.
+    [Theory]
+    [InlineData("bootstrap", "light")]
+    [InlineData("bootstrap", "dark")]
+    [InlineData("fluentui", "light")]
+    [InlineData("fluentui", "dark")]
+    [InlineData("mudblazor", "light")]
+    [InlineData("mudblazor", "dark")]
+    [InlineData("radzen", "light")]
+    [InlineData("radzen", "dark")]
+    public void Adapter_CategoryBadgeText_ReachesWcagAaOnItsBackground(string adapter, string mode)
+    {
+        // Arrange: the theme names the scale steps, the adapter gives them colors
+        var theme = Block(RepositoryFiles.ThemingCss("index.min.css"),
+            selector => selector.Contains($":root[data-osirion-theme={mode}]", StringComparison.Ordinal), "category-text-color");
+        var colors = Block(RepositoryFiles.ThemingCss($"adapters/{adapter}-adapter.min.css"),
+            selector => selector.Contains("dark", StringComparison.Ordinal) == (mode == "dark"), "color-primary-700");
+        var text = Step(theme["category-text-color"]);
+        var background = Step(theme["category-background-color"]);
+
+        // Act
+        var ratio = Rgb.Contrast(Rgb.Parse(Hex(colors[text])), Rgb.Parse(Hex(colors[background])));
+
+        // Assert
+        ratio.ShouldBeGreaterThanOrEqualTo(4.5, $"{adapter} {mode}: {text} {colors[text]} on {background} {colors[background]}");
+    }
+
     // The custom properties of the first rule whose selector matches and which declares the token.
     private static Dictionary<string, string> Block(string file, Func<string, bool> selector, string token)
     {

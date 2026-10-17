@@ -28,6 +28,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Osirion.Blazor.Cms.Web: `SeoMetadataOptions.SiteUrl` (`Osirion:Seo:SiteUrl`). When it is an absolute http(s) address, the canonical URL, `og:url` and the addresses in structured data use it with the page's path instead of the host that served the request, so a site behind a proxy, on a preview host or on a second domain declares its public address
 
 ### Fixed
+- Osirion.Blazor.Theming: in the dark theme a content category badge draws `--osirion-color-primary-700` on `--osirion-color-primary-200`, the pair the active navigation item uses and the adapter contrast tests hold. It drew primary-600, 3.74:1 under the Bootstrap adapter with Bootstrap's own colors and below 4.5:1 under the MudBlazor and Fluent UI adapters too
+- Osirion.Blazor.Cms.Web: `ContentView` and `LocalizedContentView` no longer recolor their own category and tag links when they sit inside another component's content body. Their `.osirion-content-body a` rules never reached the rendered body, which carries no scope attribute, and only painted the badges in the link color: 4.37:1 in the light theme
 - Osirion.Blazor.Core: the `OsirionReadMoreLink` `Button` variant keeps its text in `--osirion-action-primary-text` under a dark system preference. The dark scheme's link color rule came later at the same specificity and recolored the text on the fill: #9090d6 on #5c5cb0, 1.97:1
 - Osirion.Blazor.Cms.Web: the active `CategoriesList` count uses the active link's own colors with a ring. It drew the link color on a primary tint, 3.39:1 in the light theme and 2.78:1 in the dark one
 - Osirion.Blazor.Cms.Web: the `TagCloud` count keeps the tag's text color. It was faded to 75% opacity, 3.66:1 on the tag background

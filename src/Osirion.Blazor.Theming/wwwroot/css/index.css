@@ -523,7 +523,7 @@
   --osirion-tag-background-color: var(--osirion-color-neutral-300); /* #374151 - Medium-dark gray */
   --osirion-tag-text-color: var(--osirion-text-primary); /* #f3f4f6 - Light gray */
   --osirion-category-background-color: var(--osirion-color-primary-200); /* #1e40af - Very dark blue */
-  --osirion-category-text-color: var(--osirion-color-primary-600); /* #60a5fa - Bright blue */
+  --osirion-category-text-color: var(--osirion-color-primary-700);
 }
 
 /* High Contrast Dark Mode */
