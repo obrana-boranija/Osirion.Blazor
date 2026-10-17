@@ -40,7 +40,8 @@ public partial class OsirionResponsiveShowcaseSection : ComponentBase
     [Parameter] public ViewportMode InitialViewport { get; set; } = ViewportMode.Desktop;
 
     /// <summary>
-    /// Whether the frame gets the <c>with-chrome</c> class. The browser bar itself is always rendered.
+    /// Whether the frame shows the browser bar (dots and address) above the content; <see langword="false"/> leaves it
+    /// out and the frame loses the <c>with-chrome</c> class.
     /// </summary>
     [Parameter] public bool ShowBrowserChrome { get; set; } = true;
 

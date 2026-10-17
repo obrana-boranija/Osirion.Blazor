@@ -14,8 +14,8 @@
 }
 
 .osirion-bg-image-mask {
-    -webkit-mask-image: linear-gradient(180deg,transparent 5%,rgba(0,0,0,1) 52%,rgba(0,0,0,1) 44%,transparent 95%);
-    mask-image: linear-gradient(180deg,transparent 0%,rgba(0,0,0,1) 0%,rgba(0,0,0,1) 0%,transparent 100%);
+    -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 100%);
+    mask-image: linear-gradient(180deg, #000 0%, transparent 100%);
 }
 
 /* Element that needs to appear above the background */
@@ -75,7 +75,7 @@
 
 /* 7. Tech wave - subtle tech-inspired pattern */
 .osirion-bg-tech-wave {
-    background: linear-gradient( 60deg, rgba(var(--osirion-action-primary, #1e40af), 0.05) 0%, rgba(var(--osirion-color-primary-400, #60a5fa), 0.05) 100% );
+    background: linear-gradient( 60deg, color-mix(in srgb, var(--osirion-action-primary, #1e40af) 5%, transparent) 0%, color-mix(in srgb, var(--osirion-color-primary-400, #60a5fa) 5%, transparent) 100% );
     position: relative;
 }
 
@@ -93,7 +93,7 @@
 /* 8. Circuit board pattern for tech themes */
 .osirion-bg-circuit {
     background-color: transparent;
-    background-image: radial-gradient(rgba(var(--osirion-action-primary, #93c5fd), 0.1) 2px, transparent 2px), linear-gradient(90deg, transparent 0, transparent 4px, rgba(var(--osirion-action-primary, #93c5fd), 0.1) 4px, transparent 5px), linear-gradient(0deg, transparent 0, transparent 4px, rgba(var(--osirion-color-primary-300, #93c5fd), 0.1) 4px, transparent 5px);
+    background-image: radial-gradient(color-mix(in srgb, var(--osirion-action-primary, #93c5fd) 10%, transparent) 2px, transparent 2px), linear-gradient(90deg, transparent 0, transparent 4px, color-mix(in srgb, var(--osirion-action-primary, #93c5fd) 10%, transparent) 4px, transparent 5px), linear-gradient(0deg, transparent 0, transparent 4px, color-mix(in srgb, var(--osirion-color-primary-300, #93c5fd) 10%, transparent) 4px, transparent 5px);
     background-size: 20px 20px, 40px 40px, 40px 40px;
     opacity: 0.3;
 }
@@ -162,6 +162,17 @@
 /* Add subtle shadow to ensure text readability on light backgrounds */
 .osirion-bg-light-text {
     text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+/* The two animated patterns would otherwise keep moving for visitors who ask for less motion. */
+@media (prefers-reduced-motion: reduce) {
+    .osirion-bg-grid-animated {
+        animation: none;
+    }
+
+    .osirion-bg-tech-wave::before {
+        animation: none;
+    }
 }
 
 /* High contrast mode adjustments */

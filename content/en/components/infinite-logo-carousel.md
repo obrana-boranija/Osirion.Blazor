@@ -168,8 +168,9 @@ Unmatched attributes go on the `<section>`.
 - **Dark mode.** For a logo with both light and dark images, CSS shows the dark image when an ancestor has
   `data-bs-theme="dark"`, `data-theme="dark"` or one of the classes `dark-theme`, `theme-dark` or
   `osirion-theme-dark`, and follows `prefers-color-scheme` when the `<html>` element has no theme attribute.
-- **Links.** Logo links open in a new tab with `rel="nofollow noopener"` unless the logo says otherwise. `Url` is
-  written as given, so pass only URLs you trust.
+- **Links.** Logo links open in a new tab with `rel="nofollow noopener"` unless the logo says otherwise. A `Url` that is not a path on the site or an
+  absolute http, https or mailto address, such as a `javascript:` or `data:` URL, is not written: the logo shows
+  without a link.
 - Images load lazily and cannot be dragged as files, so dragging moves the row.
 
 ## Styling
