@@ -9,11 +9,16 @@ namespace Osirion.Blazor.Components;
 /// </summary>
 public partial class OsirionSteps
 {
-    /// <summary>Gets or sets the steps, in order.</summary>
+    /// <summary>
+    /// The steps, in order. Required; with no steps nothing is rendered.
+    /// </summary>
     [Parameter, EditorRequired]
     public IReadOnlyList<StepItem> Items { get; set; } = [];
 
-    /// <summary>Gets or sets whether the steps are always stacked, with a line joining their numbers.</summary>
+    /// <summary>
+    /// Whether the steps are always stacked, with a line joining their numbers; otherwise they sit side by side on
+    /// wide screens.
+    /// </summary>
     [Parameter]
     public bool Vertical { get; set; }
 

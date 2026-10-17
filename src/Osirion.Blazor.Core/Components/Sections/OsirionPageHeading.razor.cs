@@ -8,15 +8,21 @@ namespace Osirion.Blazor.Components;
 /// </summary>
 public partial class OsirionPageHeading
 {
-    /// <summary>Gets or sets the page title, rendered as the <c>h1</c>.</summary>
+    /// <summary>
+    /// The page title, rendered as the page's <c>h1</c>. Required.
+    /// </summary>
     [Parameter, EditorRequired]
     public string Title { get; set; } = string.Empty;
 
-    /// <summary>Gets or sets the sentence under the title.</summary>
+    /// <summary>
+    /// The sentence under the title; nothing is rendered when it is empty.
+    /// </summary>
     [Parameter]
     public string? Description { get; set; }
 
-    /// <summary>Gets or sets content after the description, for example badges or a date.</summary>
+    /// <summary>
+    /// Extra content after the description, for example badges or a date.
+    /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 }

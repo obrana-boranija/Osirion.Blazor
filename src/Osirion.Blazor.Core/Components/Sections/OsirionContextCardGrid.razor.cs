@@ -5,25 +5,41 @@ namespace Osirion.Blazor.Components;
 /// <summary>Displays labeled detail cards in a responsive section.</summary>
 public partial class OsirionContextCardGrid : OsirionComponentBase
 {
-    /// <summary>Gets or sets the panel heading.</summary>
+    /// <summary>
+    /// The section's heading, rendered as an <c>h2</c>. It is rendered even when empty.
+    /// </summary>
     [Parameter] public string Title { get; set; } = "Context by category";
 
-    /// <summary>Gets or sets optional supporting text.</summary>
+    /// <summary>
+    /// Supporting text under the heading; nothing is rendered when it is empty.
+    /// </summary>
     [Parameter] public string? Description { get; set; }
 
-    /// <summary>Gets or sets the labeled detail cards.</summary>
+    /// <summary>
+    /// The cards. With none, only the heading is rendered.
+    /// </summary>
     [Parameter] public ContextCardItem[] Items { get; set; } = [];
 
-    /// <summary>Gets or sets an id used by the heading and section landmark.</summary>
+    /// <summary>
+    /// The <c>id</c> of the heading, which the section's <c>aria-labelledby</c> points at. Set a unique value when
+    /// more than one grid is on a page.
+    /// </summary>
     [Parameter] public string HeadingId { get; set; } = "osirion-context-card-grid-heading";
 
-    /// <summary>Gets or sets the optional section id used for in-page navigation.</summary>
+    /// <summary>
+    /// The section's <c>id</c>, for in-page links.
+    /// </summary>
     [Parameter] public string? Id { get; set; }
 
-    /// <summary>Gets or sets additional classes for the section.</summary>
+    /// <summary>
+    /// Extra CSS classes on the section.
+    /// </summary>
     [Parameter] public string? SectionClass { get; set; }
 
-    /// <summary>Gets or sets classes for the content container.</summary>
+    /// <summary>
+    /// CSS classes of the inner container; <c>container</c> is a Bootstrap class, so set another value for other
+    /// frameworks.
+    /// </summary>
     [Parameter] public string ContainerClass { get; set; } = "container";
 
     /// <summary>Describes a card label, detail, and optional accent.</summary>

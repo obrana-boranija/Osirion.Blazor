@@ -9,33 +9,46 @@ namespace Osirion.Blazor.Components;
 /// </summary>
 public partial class OsirionFeatureComparison
 {
-    /// <summary>Gets or sets the plan names, one column each.</summary>
+    /// <summary>
+    /// The plan names, one column each. Required; with no plan names or no rows nothing is rendered.
+    /// </summary>
     [Parameter, EditorRequired]
     public IReadOnlyList<string> PlanNames { get; set; } = [];
 
-    /// <summary>Gets or sets the features, one row each, with a value per plan. Missing values are left empty.</summary>
+    /// <summary>
+    /// The features, one row each, with a value per plan in the order of <see cref="PlanNames"/>. Missing values leave
+    /// the cell empty. Required.
+    /// </summary>
     [Parameter, EditorRequired]
     public IReadOnlyList<FeatureComparisonRow> Rows { get; set; } = [];
 
     /// <summary>
-    /// Gets or sets the table's caption, which also names the scrollable region. Defaults to <c>Compare plans</c>.
+    /// The table's caption, which also names the scrollable region.
     /// </summary>
     [Parameter]
     public string Caption { get; set; } = "Compare plans";
 
-    /// <summary>Gets or sets whether the caption is shown; otherwise only screen readers announce it.</summary>
+    /// <summary>
+    /// Whether the caption is shown; otherwise only screen readers announce it.
+    /// </summary>
     [Parameter]
     public bool ShowCaption { get; set; }
 
-    /// <summary>Gets or sets the header of the feature column, read by screen readers. Defaults to <c>Feature</c>.</summary>
+    /// <summary>
+    /// The header of the feature column, read by screen readers only.
+    /// </summary>
     [Parameter]
     public string FeatureColumnText { get; set; } = "Feature";
 
-    /// <summary>Gets or sets what screen readers say for a check mark. Defaults to <c>Included</c>.</summary>
+    /// <summary>
+    /// What screen readers say for a check mark.
+    /// </summary>
     [Parameter]
     public string IncludedText { get; set; } = "Included";
 
-    /// <summary>Gets or sets what screen readers say for a cross. Defaults to <c>Not included</c>.</summary>
+    /// <summary>
+    /// What screen readers say for a dash.
+    /// </summary>
     [Parameter]
     public string NotIncludedText { get; set; } = "Not included";
 
