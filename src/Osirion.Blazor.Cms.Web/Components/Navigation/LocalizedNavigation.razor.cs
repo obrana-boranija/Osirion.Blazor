@@ -30,9 +30,10 @@ public partial class LocalizedNavigation
     public string NoContentText { get; set; } = "No navigation available.";
 
     /// <summary>
-    /// Gets or sets the locale whose directories are loaded: every directory of that locale below the locale folder, at
-    /// any depth, as one list. When <c>null</c>, or when <see cref="EnableLocalization"/> is <c>false</c>, the root
-    /// directories are loaded, which are the locale folders when the content sits in them.
+    /// Gets or sets the locale whose directories are shown: the top-level directories of that locale, directly below
+    /// the locale folder. Their subdirectories are reached through each directory's children. When <c>null</c>, or
+    /// when <see cref="EnableLocalization"/> is <c>false</c>, the root directories are shown, which are the locale
+    /// folders when the content sits in them.
     /// </summary>
     [Parameter]
     public string? CurrentLocale { get; set; }
@@ -45,15 +46,15 @@ public partial class LocalizedNavigation
     public EventCallback<string> OnLocaleChanged { get; set; }
 
     /// <summary>
-    /// Gets or sets the callback run with the directory when its link is clicked in an interactive render mode. The
-    /// click then does not navigate. Under static SSR it is not called.
+    /// Gets or sets the callback run with the directory when its link is clicked in an interactive render mode. When
+    /// it is set, the click no longer navigates. Under static SSR it is not called.
     /// </summary>
     [Parameter]
     public EventCallback<DirectoryItem> OnDirectorySelected { get; set; }
 
     /// <summary>
     /// Gets or sets the callback run with the content item when its link is clicked in an interactive render mode.
-    /// The click then does not navigate. Under static SSR it is not called.
+    /// When it is set, the click no longer navigates. Under static SSR it is not called.
     /// </summary>
     [Parameter]
     public EventCallback<ContentItem> OnContentSelected { get; set; }
@@ -77,15 +78,16 @@ public partial class LocalizedNavigation
     public bool ShowContentItems { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets a function that builds each directory link. Without it, links go to <c>/{Path}</c>, the folder
-    /// path in the content source, which is not always a page of the site.
+    /// Gets or sets a function that builds each directory link. Without it, a link goes to the address the
+    /// directory's <c>_index.md</c> declares in <c>permalink</c>, otherwise to the directory's path without the locale
+    /// folder.
     /// </summary>
     [Parameter]
     public Func<DirectoryItem, string>? DirectoryUrlFormatter { get; set; }
 
     /// <summary>
-    /// Gets or sets a function that builds each content link. Without it, links go to <c>/{Path}</c>, the file path
-    /// in the content source, which is not a page of the site.
+    /// Gets or sets a function that builds each content link. Without it, a link goes to the item's URL from the site
+    /// root, the address its page is served at.
     /// </summary>
     [Parameter]
     public Func<ContentItem, string>? ContentUrlFormatter { get; set; }
@@ -146,9 +148,10 @@ public partial class LocalizedNavigation
                 //}
 
                 // Get directories for the current locale or all directories if localization is disabled
-                Directories = EnableLocalization
+                var directories = EnableLocalization
                     ? await provider.GetDirectoriesAsync(CurrentLocale)
                     : await provider.GetDirectoriesAsync();
+                Directories = TopLevelOnly(directories);
             }
         }
         catch (Exception ex)
@@ -167,14 +170,25 @@ public partial class LocalizedNavigation
         return $"osirion-localized-navigation {Class}".Trim();
     }
 
+    // A locale's list holds its directories at every depth, and each one is also reachable through its parent's
+    // Children, so keeping the nested ones would show them twice.
+    private static IReadOnlyList<DirectoryItem> TopLevelOnly(IReadOnlyList<DirectoryItem> directories)
+    {
+        var listed = directories.ToHashSet();
+        return directories.Where(directory => directory.Parent is null || !listed.Contains(directory.Parent)).ToList();
+    }
+
+    private static bool IsIndexPage(ContentItem item) =>
+        string.Equals(System.IO.Path.GetFileName(item.Path), "_index.md", StringComparison.OrdinalIgnoreCase);
+
     private string GetDirectoryUrl(DirectoryItem directory)
     {
-        return DirectoryUrlFormatter?.Invoke(directory) ?? $"/{directory.Path}";
+        return DirectoryUrlFormatter?.Invoke(directory) ?? ContentUrls.DirectoryUrl(directory);
     }
 
     private string GetContentUrl(ContentItem item)
     {
-        return ContentUrlFormatter?.Invoke(item) ?? $"/{item.Path}";
+        return ContentUrls.ItemUrl(item, ContentUrlFormatter);
     }
 
     private string GetLocaleName(string locale)
@@ -220,8 +234,11 @@ public partial class LocalizedNavigation
             builder.OpenElement(2, "a");
             builder.AddAttribute(3, "href", GetDirectoryUrl(directory));
             builder.AddAttribute(4, "class", "osirion-nav-link");
-            builder.AddAttribute(5, "onclick", EventCallback.Factory.Create<MouseEventArgs>(this, () => SelectDirectory(directory)));
-            builder.AddAttribute(6, "onclick:preventDefault", true);
+            if (OnDirectorySelected.HasDelegate)
+            {
+                builder.AddAttribute(5, "onclick", EventCallback.Factory.Create<MouseEventArgs>(this, () => SelectDirectory(directory)));
+                builder.AddAttribute(6, "onclick:preventDefault", true);
+            }
 
             builder.AddContent(7, directory.Name);
 
@@ -229,7 +246,7 @@ public partial class LocalizedNavigation
 
             // Content items and subdirectories
             bool shouldExpand = ExpandAllDirectories || directory.Id == ExpandedDirectoryId;
-            if (shouldExpand && (directory.Children.Any() || (ShowContentItems && directory.Items.Any())))
+            if (shouldExpand && (directory.Children.Any() || (ShowContentItems && directory.Items.Any(i => !IsIndexPage(i)))))
             {
                 builder.OpenElement(8, "ul");
                 builder.AddAttribute(9, "class", "osirion-nav-sublist");
@@ -237,7 +254,7 @@ public partial class LocalizedNavigation
                 // Show content items
                 if (ShowContentItems)
                 {
-                    foreach (var item in directory.Items.OrderBy(i => i.Title))
+                    foreach (var item in directory.Items.Where(i => !IsIndexPage(i)).OrderBy(i => i.Title))
                     {
                         builder.OpenElement(10, "li");
                         builder.AddAttribute(11, "class", "osirion-nav-content-item");
@@ -245,8 +262,11 @@ public partial class LocalizedNavigation
                         builder.OpenElement(12, "a");
                         builder.AddAttribute(13, "href", GetContentUrl(item));
                         builder.AddAttribute(14, "class", "osirion-nav-content-link");
-                        builder.AddAttribute(15, "onclick", EventCallback.Factory.Create<MouseEventArgs>(this, () => SelectContent(item)));
-                        builder.AddAttribute(16, "onclick:preventDefault", true);
+                        if (OnContentSelected.HasDelegate)
+                        {
+                            builder.AddAttribute(15, "onclick", EventCallback.Factory.Create<MouseEventArgs>(this, () => SelectContent(item)));
+                            builder.AddAttribute(16, "onclick:preventDefault", true);
+                        }
 
                         builder.AddContent(17, item.Title);
 

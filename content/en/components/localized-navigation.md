@@ -58,8 +58,8 @@ Package `Osirion.Blazor.Cms.Web`, namespace `Osirion.Blazor.Cms.Web.Components`.
 localized-navigation
 ```
 
-The demo loads the English directories of this site's own content and expands the `docs/packages` directory, which
-lists its pages. It sets `DirectoryUrlFormatter` and `ContentUrlFormatter` so the links go to pages of this site.
+The demo loads the English directories of this site's own content and expands the `docs` directory, which lists
+its pages and the `packages` directory under it. It sets no URL formatter: the default links go to pages of this site.
 
 ## Usage
 
@@ -69,7 +69,7 @@ lists its pages. It sets `DirectoryUrlFormatter` and `ContentUrlFormatter` so th
 <LocalizedNavigation CurrentLocale="en" ExpandAllDirectories="true" />
 ```
 
-A documentation sidebar that takes the locale from the route and links to the public URLs:
+A documentation sidebar that takes the locale from the route and opens one directory:
 
 ```razor
 @page "/{Locale}/docs"
@@ -77,20 +77,19 @@ A documentation sidebar that takes the locale from the route and links to the pu
 
 <LocalizedNavigation Title="Documentation"
                      CurrentLocale="@Locale"
-                     ExpandAllDirectories="true"
-                     DirectoryUrlFormatter="@(directory => $"/{directory.Url.TrimStart('/')}")"
-                     ContentUrlFormatter="@(item => $"/{item.Url.TrimStart('/')}")" />
+                     ExpandedDirectoryId="@OpenDirectoryId" />
 
 @code {
     [Parameter]
     public string Locale { get; set; } = "en";
+
+    private string? OpenDirectoryId { get; set; }
 }
 ```
 
-Pass both formatters. Without them, directory links go to `/{directory.Path}` and content links to
-`/{item.Path}`, the folder and file paths in the content source (a content path ends in `.md`), which are not
-pages on your site. A directory's `Url` is the `permalink` from its `_index.md`, empty when there is none; an item's
-`Url` is the address the CMS gives it.
+The default links go to the public pages: a content link to the item's `Url` and a directory link to the address its
+`_index.md` declares in `permalink`, otherwise to its path without the locale folder, as `ContentBreadcrumbs` and
+`DirectoryNavigation` build them. Set `DirectoryUrlFormatter` and `ContentUrlFormatter` only to link somewhere else.
 
 ## Parameters
 
@@ -101,15 +100,15 @@ pages on your site. A directory's `Url` is the `permalink` from its `_index.md`,
 | `Title` | `string?` | `null` | The heading above the tree, rendered as an `h3`. No heading when `null`. |
 | `LoadingText` | `string` | `"Loading navigation..."` | The text shown while the tree loads. |
 | `NoContentText` | `string` | `"No navigation available."` | The text shown when there are no directories, when no default content provider is registered or when loading failed. |
-| `CurrentLocale` | `string?` | `null` | The locale whose directories are loaded: every directory of that locale below the locale folder, at any depth, as one list. When `null`, or when `EnableLocalization` is `false`, the root directories are loaded, which are the locale folders when the content sits in them. |
+| `CurrentLocale` | `string?` | `null` | The locale whose directories are shown: the top-level directories of that locale, directly below the locale folder. Their subdirectories are reached through each directory's children. When `null`, or when `EnableLocalization` is `false`, the root directories are shown, which are the locale folders when the content sits in them. |
 | `OnLocaleChanged` | `EventCallback<string>` | - | The callback run when the locale changes. Not used in 4.0: the locale buttons never render, because the component does not load the available locales. |
-| `OnDirectorySelected` | `EventCallback<DirectoryItem>` | - | The callback run with the directory when its link is clicked in an interactive render mode. The click then does not navigate. Under static SSR it is not called. |
-| `OnContentSelected` | `EventCallback<ContentItem>` | - | The callback run with the content item when its link is clicked in an interactive render mode. The click then does not navigate. Under static SSR it is not called. |
+| `OnDirectorySelected` | `EventCallback<DirectoryItem>` | - | The callback run with the directory when its link is clicked in an interactive render mode. When it is set, the click no longer navigates. Under static SSR it is not called. |
+| `OnContentSelected` | `EventCallback<ContentItem>` | - | The callback run with the content item when its link is clicked in an interactive render mode. When it is set, the click no longer navigates. Under static SSR it is not called. |
 | `ExpandAllDirectories` | `bool` | `false` | Whether every directory is expanded, which shows the whole tree. |
 | `ExpandedDirectoryId` | `string?` | `null` | The `Id` of the directory to expand when `ExpandAllDirectories` is `false`. |
 | `ShowContentItems` | `bool` | `true` | Whether the content items of an expanded directory are listed, sorted by title, before its subdirectories. |
-| `DirectoryUrlFormatter` | `Func<DirectoryItem, string>?` | `null` | A function that builds each directory link. Without it, links go to `/{Path}`, the folder path in the content source, which is not always a page of the site. |
-| `ContentUrlFormatter` | `Func<ContentItem, string>?` | `null` | A function that builds each content link. Without it, links go to `/{Path}`, the file path in the content source, which is not a page of the site. |
+| `DirectoryUrlFormatter` | `Func<DirectoryItem, string>?` | `null` | A function that builds each directory link. Without it, a link goes to the address the directory's `_index.md` declares in `permalink`, otherwise to the directory's path without the locale folder. |
+| `ContentUrlFormatter` | `Func<ContentItem, string>?` | `null` | A function that builds each content link. Without it, a link goes to the item's URL from the site root, the address its page is served at. |
 | `LocaleNameFormatter` | `Func<string, string>?` | `null` | A function that turns a locale code into the text of its button. Not used in 4.0: the locale buttons never render. |
 | `EnableLocalization` | `bool` | `true` | Whether `CurrentLocale` is used. When `false`, the root directories are loaded. |
 | `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
@@ -118,8 +117,9 @@ pages on your site. A directory's `Url` is the `permalink` from its `_index.md`,
 
 <!-- /osirion:parameters -->
 
-`OnLocaleChanged` and `LocaleNameFormatter` are for a locale switcher. In 4.0 the component does not load the list of
-available locales, so the switcher never renders and these two parameters have no effect. Use your own language
+`OnLocaleChanged` and `LocaleNameFormatter` are for a locale switcher. The component does not load the list of
+available locales, because the content provider has no API that returns them, so the switcher never renders and these
+two parameters have no effect. Use your own language
 links and pass the chosen locale in `CurrentLocale`. `Class` goes on the `nav`. `Style` and `Theme` are accepted but
 not written, and other attributes on the tag are captured but not rendered.
 
@@ -129,19 +129,20 @@ not written, and other attributes on the tag are captured but not rendered.
   folder name, or the `title` from its `_index.md`.
 - An expanded directory shows its content items first (unless `ShowContentItems` is off), then its subdirectories. A
   subdirectory shows its own children only when it is expanded too, so `ExpandedDirectoryId` opens one level.
-- With `CurrentLocale` set, the component loads every directory of that locale below the locale folder, in one flat
-  list and at every depth. A nested directory therefore also appears at the top level, and again under its parent
-  when the parent is expanded, as `ExpandAllDirectories` does. Prefer `ExpandedDirectoryId` to open one directory.
-  Without a locale, the list holds the root directories, which are the locale folders when your content sits in
-  folders such as `en/`.
-- A directory's content items include its `_index.md`, which is listed under the directory's own title.
+- With `CurrentLocale` set, the component shows the top-level directories of that locale, the ones directly below
+  the locale folder. The provider returns the locale's directories at every depth as one list; the component keeps
+  the ones whose parent is not in that list and reaches the rest through each directory's `Children`, so a nested
+  directory appears once, under its parent. Without a locale, the list holds the root directories, which are the
+  locale folders when your content sits in folders such as `en/`.
+- A directory's `_index.md` is not listed as a page under its content items: its address is the directory's own
+  link.
 - The tree is loaded again on every parameter change. Under static SSR the response is sent with the finished tree.
 - With no default provider registered, or when the provider throws, `NoContentText` is shown. A provider error is
   logged through `ILogger`.
-- Under static SSR the links are plain links and the callbacks are not raised. In an interactive render mode every
-  directory and content link stops the browser from navigating, whether or not you set a callback, so there you
-  navigate from `OnDirectorySelected` and `OnContentSelected`.
-- The tree is a `nav` without an accessible name. Names and titles are written as text, so they are HTML-encoded.
+- Under static SSR the links are plain links and the callbacks are not raised. In an interactive render mode a link
+  stops the browser from navigating only when its callback is set (`OnDirectorySelected` for directories,
+  `OnContentSelected` for content items); without a callback the link navigates, and no handler attribute is written.
+- Names and titles are written as text, so they are HTML-encoded.
 
 ## Styling
 
@@ -156,7 +157,7 @@ not written, and other attributes on the tag are captured but not rendered.
 | `osirion-loading`, `osirion-no-directories` | Loading and empty states |
 
 The component's scoped stylesheet styles the `nav`, the heading, the outer list and the loading and empty states.
-In 4.0 the directory and content entries are built in code, so its rules for `osirion-nav-item`, `osirion-nav-link`,
+The directory and content entries are built in code, so its rules for `osirion-nav-item`, `osirion-nav-link`,
 `osirion-nav-sublist` and the content classes do not reach them. Style those classes from your own stylesheet, for
 example:
 

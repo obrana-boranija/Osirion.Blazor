@@ -242,20 +242,23 @@ public class ContentNavigationRenderingTests : CmsWebComponentTestBase
         _provider.DidNotReceive().GetDirectoriesAsync("de", Arg.Any<CancellationToken>());
     }
 
-    // Known defect, pinned as current behavior: the default content links keep the ".md" extension of the source file, while ContentPage strips it, so the two disagree on the item URL. Update this expectation when it is fixed.
     [Fact]
     public void LocalizedNavigation_ExpandAll_ShowsContentItemsByTitleAndSubdirectories()
     {
         var blog = Directory("blog", "Blog");
-        blog.AddItem(ContentItem.Create("z", "Zeta", "<p>x</p>", "blog/zeta.md", "test"));
-        blog.AddItem(ContentItem.Create("a", "Alpha", "<p>x</p>", "blog/alpha.md", "test"));
+        var zeta = ContentItem.Create("z", "Zeta", "<p>x</p>", "blog/zeta.md", "test");
+        zeta.SetUrl("/blog/zeta");
+        var alpha = ContentItem.Create("a", "Alpha", "<p>x</p>", "blog/alpha.md", "test");
+        alpha.SetUrl("/blog/alpha");
+        blog.AddItem(zeta);
+        blog.AddItem(alpha);
         var archive = Directory("blog/archive", "Archive");
         blog.AddChild(archive);
         ReturnDirectories(blog);
 
         var cut = RenderStatic<LocalizedNavigation>(p => p.Add(c => c.ExpandAllDirectories, true));
 
-        cut.FindAll("a.osirion-nav-content-link").Select(a => a.GetAttribute("href")).ShouldBe(["/blog/alpha.md", "/blog/zeta.md"]);
+        cut.FindAll("a.osirion-nav-content-link").Select(a => a.GetAttribute("href")).ShouldBe(["/blog/alpha", "/blog/zeta"]);
         cut.FindAll(".osirion-nav-sublist a.osirion-nav-link").Select(a => a.GetAttribute("href")).ShouldBe(["/blog/archive"]);
     }
 
