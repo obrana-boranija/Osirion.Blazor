@@ -41,7 +41,7 @@ public class GitHubContentRepository : BaseContentRepository
         // Set base class properties
         EnableLocalization = _options.EnableLocalization;
         DefaultLocale = _options.DefaultLocale;
-        SupportedLocales = _options.SupportedLocales;
+        SupportedLocales = _options.GetEffectiveSupportedLocales();
         ContentPath = _options.ContentPath;
 
         // Get the API client from factory
