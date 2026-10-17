@@ -157,7 +157,7 @@ The keys live under `Osirion:Analytics:YandexMetrica`. Every service also has `E
 | `Params`, `UserParams` | none | Dictionaries written as `params` and `userParams` when not empty. |
 | `EcommerceEnabled`, `EcommerceContainerName` | `false`, `dataLayer` | `EcommerceEnabled` writes `ecommerce` with the container name. |
 | `AutoTrackPageViews` | `true` | Adds the page view module script; `false` leaves it out. |
-| `HashTracking` | `false` | Bound from configuration, but nothing in the tracker reads it; use `TrackHash`. |
+| `HashTracking` | `false` | The older spelling of `TrackHash`: `true` writes `trackHash: true` while `TrackHash` is not set. |
 
 `CounterId` and `AlternativeCdn` are checked at startup when the service is enabled: a non-blank `CounterId` that is not numeric, or an `AlternativeCdn` that is not an absolute http(s) address, stops the app with a message that names the key.
 

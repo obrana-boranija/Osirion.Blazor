@@ -85,8 +85,10 @@ public class YandexMetricaProvider : IAnalyticsProvider
         if (options.WebVisor)
             initOptions["webvisor"] = true;
 
-        if (options.TrackHash.HasValue)
-            initOptions["trackHash"] = options.TrackHash.Value;
+        // HashTracking is the older spelling of TrackHash, so only an explicit TrackHash overrides it.
+        var trackHash = options.TrackHash ?? (options.HashTracking ? true : null);
+        if (trackHash.HasValue)
+            initOptions["trackHash"] = trackHash.Value;
 
         if (options.DeferLoad)
             initOptions["defer"] = true;

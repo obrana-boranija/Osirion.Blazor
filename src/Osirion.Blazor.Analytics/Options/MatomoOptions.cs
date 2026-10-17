@@ -21,8 +21,10 @@ public class MatomoOptions : AnalyticsOptions
     public bool TrackLinks { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets whether to track downloads
+    /// Gets or sets whether to track downloads. It has no effect: Matomo reports downloads and outlinks together when link
+    /// tracking is on (<see cref="TrackLinks"/>), and its tracker has no documented switch for downloads alone.
     /// </summary>
+    [Obsolete("Has no effect: Matomo tracks downloads together with outlinks when TrackLinks is on and has no documented switch for downloads alone.")]
     public bool TrackDownloads { get; set; } = true;
 
     /// <summary>

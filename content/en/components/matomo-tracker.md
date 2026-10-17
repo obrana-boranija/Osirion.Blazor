@@ -150,7 +150,7 @@ The keys live under `Osirion:Analytics:Matomo`. Every service also has `Enabled`
 | `TrackLinks` | `true` | Adds `enableLinkTracking`. |
 | `RequireConsent` | `false` | Matomo's own consent mode: adds `requireConsent`, so Matomo stays silent until your page pushes `setConsentGiven` or `rememberConsentGiven` onto `_paq`. |
 | `AutoTrackPageViews` | `true` | Adds the page view module script; `false` leaves it out. The first page view is always sent. |
-| `TrackDownloads` | `true` | Bound from configuration, but nothing in the tracker reads it. |
+| `TrackDownloads` | `true` | Obsolete and without effect: Matomo reports downloads together with outlinks when `TrackLinks` is on, and has no documented switch for downloads alone. |
 
 `TrackerUrl` is checked at startup when the service is enabled and not blank: a value that is neither an absolute http(s) address nor protocol-relative stops the app with a message that names the key.
 

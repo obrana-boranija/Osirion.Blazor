@@ -34,7 +34,9 @@ public class AnalyticsBuilder : IAnalyticsBuilder
             opt.Enabled = options.Enabled;
             opt.AutoTrackPageViews = options.AutoTrackPageViews;
             opt.TrackerUrl = options.TrackerUrl;
+#pragma warning disable CS0618 // still bound, so existing configuration keeps loading
             opt.TrackUserAttributes = options.TrackUserAttributes;
+#pragma warning restore CS0618
         });
 
         RegisterProvider<ClarityProvider, ClarityOptions, ClarityOptionsValidator>();
@@ -55,7 +57,9 @@ public class AnalyticsBuilder : IAnalyticsBuilder
             opt.Enabled = options.Enabled;
             opt.AutoTrackPageViews = options.AutoTrackPageViews;
             opt.TrackLinks = options.TrackLinks;
+#pragma warning disable CS0618 // still bound, so existing configuration keeps loading
             opt.TrackDownloads = options.TrackDownloads;
+#pragma warning restore CS0618
             opt.RequireConsent = options.RequireConsent;
         });
 
