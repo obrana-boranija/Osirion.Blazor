@@ -131,7 +131,8 @@ The component renders, in this order:
 The theme is resolved in this order: the `osirion-preferred-theme` cookie, then `Mode` or `DefaultMode`. `System`
 follows the operating system's `prefers-color-scheme` and reacts when it changes, as long as the visitor has not
 picked a theme. `ThemeMode.Inverted` is not handled by the script: the page takes the operating system's theme, as
-with `System`, but does not react when it changes.
+with `System`, but does not react when it changes. On the server, `IThemeService` reads and writes `inverted` in the
+cookie like `light`, `dark` and `system`, so `CurrentMode` reports `Inverted` for such a visitor.
 
 The script applies the theme again after every Blazor enhanced navigation. Under Static SSR this is all that runs; no
 interactive render mode is needed. When `IThemeService` raises `ThemeChanged`, the component renders again, and it
