@@ -1,0 +1,13 @@
+@using Osirion.Blazor.Components
+
+@* Sample HTML written for the demo. The script element and the onclick attribute are removed by the sanitizer. *@
+<OsirionHtmlRenderer HtmlContent="@SampleHtml" EnableCopyButton="true" />
+
+@code {
+    private const string SampleHtml = """
+        <h3>Release notes</h3>
+        <p onclick="alert('removed')">Content from a field or an API is sanitized before it is shown.</p>
+        <script>document.title = "removed";</script>
+        <pre><code class="language-csharp">builder.Services.AddOsirion(builder.Configuration);</code></pre>
+        """;
+}

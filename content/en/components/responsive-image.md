@@ -2,12 +2,12 @@
 id: 'osirion-responsive-image'
 order: 5
 layout: docs
-title: Responsive Image
+title: OsirionResponsiveImage
 permalink: /components/responsive-image
 description: "OsirionResponsiveImage renders an img with intrinsic size, srcset, sizes and lazy loading, so images neither shift the layout nor load too large."
 author: Dejan Demonjić
 date: 2026-10-11
-last_modified: 2026-10-11
+last_modified: 2026-10-17
 featured_image: /assets/images/blazor-cover.png
 categories:
 - Components
@@ -26,14 +26,36 @@ redirect_from:
 - /docs/components/core/content/responsive-image
 custom_fields:
   group: content
+seo_properties:
+  title: 'OsirionResponsiveImage: responsive images for Blazor'
+  description: 'OsirionResponsiveImage renders an img with intrinsic size, srcset, sizes and lazy loading, so images neither shift the layout nor load too large.'
+  image: /assets/images/blazor-cover.png
+  canonical: 'https://getosirion.com/components/responsive-image'
+  lang: en
+  robots: index, follow
+  og_title: 'OsirionResponsiveImage - Osirion.Blazor'
+  og_description: 'An img with intrinsic size, srcset, sizes and lazy loading. Renders without script.'
+  og_image_url: '/assets/images/blazor-cover.png'
+  og_type: article
+  json_ld: ''
+  type: Article
+  twitter_card: summary_large_image
+  twitter_title: 'OsirionResponsiveImage - Osirion.Blazor'
+  twitter_description: 'An img with intrinsic size, srcset, sizes and lazy loading. Renders without script.'
+  twitter_image_url: '/assets/images/blazor-cover.png'
+  meta_tags: {}
 ---
 
-# Responsive Image
+# OsirionResponsiveImage
 
 `OsirionResponsiveImage` renders an `<img>` that keeps its space while it loads, offers the browser files sized for
 the screen, and loads lazily unless it is the page's main image. It is plain HTML, so it needs no script.
 
-Available from 4.1.
+Package `Osirion.Blazor.Core`, namespace `Osirion.Blazor.Components`. [Source on GitHub](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Core/Components/Content/OsirionResponsiveImage.razor). Available from 4.0.
+
+```demo
+responsive-image
+```
 
 ## Usage
 
@@ -70,27 +92,41 @@ With an image service or CDN that resizes on request, give the widths to offer a
 The `srcset` becomes four candidates from 640 to 1600 pixels wide. `Priority` marks this as the main image of the
 page, so it loads at once instead of lazily. `images.example.com` stands for your own image service.
 
+Without an image service, write the candidates yourself with `SrcSet`, one file per width:
+
+```razor
+<OsirionResponsiveImage Src="/img/a-1280.jpg"
+                        Alt="A chart of monthly sign-ups"
+                        Width="1280"
+                        Height="720"
+                        SrcSet="/img/a-640.jpg 640w, /img/a-1280.jpg 1280w"
+                        Sizes="(min-width: 768px) 50vw, 100vw" />
+```
+
 ## Parameters
+
+<!-- osirion:parameters OsirionResponsiveImage -->
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `Src` | `string` | `""` | Image URL, used by browsers that ignore `srcset` and passed to `SrcFormatter`. Marked `[EditorRequired]`. |
-| `Alt` | `string` | `""` | Marked `[EditorRequired]`. Text alternative. Describe what the image shows; an empty string marks a purely decorative image. |
-| `Width` | `int?` | `null` | Intrinsic width in pixels. Set it with `Height` to reserve the space and avoid layout shift. |
-| `Height` | `int?` | `null` | Intrinsic height in pixels. |
+| `Src` | `string` | `""` | The image URL, written to `src`. Browsers that ignore `srcset` load it, and it is the first argument of `SrcFormatter`. Required. |
+| `Alt` | `string` | `""` | The text alternative. Describe what the image shows; use an empty string only for an image that is purely decorative, which screen readers then skip. Required. |
+| `Width` | `int?` | `null` | The image's intrinsic width in pixels, written to `width`. With `Height` it reserves the space before the file arrives, so the content below does not jump (Cumulative Layout Shift). When set it must be greater than zero, or the component throws `ArgumentOutOfRangeException`. |
+| `Height` | `int?` | `null` | The image's intrinsic height in pixels, written to `height`. See `Width`; the same rule applies. |
 | `SrcSet` | `string?` | `null` | The `srcset` candidates as written, for example `/img/a-640.jpg 640w, /img/a-1280.jpg 1280w`. Takes precedence over `Widths`. |
-| `Widths` | `IReadOnlyList<int>?` | `null` | Widths in pixels to offer in `srcset`. Ignored without `SrcFormatter`. |
-| `SrcFormatter` | `Func<string, int, string>?` | `null` | Builds the URL of the file of a given width from `Src`, for example `(src, width) => $"{src}?w={width}"`. |
-| `Sizes` | `string?` | see below | The `sizes` attribute: how wide the image is shown. |
-| `Priority` | `bool` | `false` | The page's main image: loads eagerly with `fetchpriority="high"` instead of lazily. |
-| `Caption` | `string?` | `null` | Wraps the image in `<figure>` with this text in a `<figcaption>`. |
-| `Class` | `string?` | `null` | Extra classes on the `<img>`. |
+| `Widths` | `IReadOnlyList<int>?` | `null` | The widths, in pixels, to offer in `srcset`. They are sorted, and duplicates and values of zero or less are dropped. Each candidate's URL comes from `SrcFormatter`; without one this parameter is ignored. |
+| `SrcFormatter` | `Func<string, int, string>?` | `null` | How the URL of the file of a given width in pixels is built from `Src`, for an image service such as `(src, width) => $"{src}?w={width}"`. Used with `Widths`. |
+| `Sizes` | `string?` | `null` | The `sizes` attribute: how wide the image is shown, for example `(min-width: 768px) 50vw, 100vw`. It is written only when a `srcset` exists. When it is not set, lazily loaded images use `auto, 100vw` (the browser measures the layout where it can) and `Priority` images use `100vw`. |
+| `Priority` | `bool` | `false` | Whether this is the page's main image, typically the largest one in the first view. It then loads at once (`loading="eager"`) with `fetchpriority="high"` instead of lazily, which speeds up Largest Contentful Paint. Mark only one image per page. |
+| `Caption` | `string?` | `null` | A caption. When it is not empty, the image is wrapped in `figure` with the caption in a `figcaption`; the CSS classes and extra attributes stay on the `img`. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's colour mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
+| `Style` | `string?` | `null` | An inline style for the component's root element. |
 
-Unmatched attributes go on the `<img>`, not on the `<figure>`.
+<!-- /osirion:parameters -->
 
-When there is a `srcset` and `Sizes` is not set, lazily loaded images get `sizes="auto, 100vw"` (the browser uses the
-laid-out width where it supports `auto`) and priority images get `100vw`. Without a `srcset`, no `sizes` attribute is
-written.
+Unmatched attributes and `Class` go on the `<img>`, not on the `<figure>`. `Style` is accepted but the component does
+not write it.
 
 ## Behavior
 
@@ -101,6 +137,7 @@ written.
 - Every file in the `srcset` should have the aspect ratio of `Width` and `Height`. The stylesheet sets
   `height: auto` and `max-width: 100%`, so the image scales down inside its container and keeps that ratio.
 - `Width` or `Height` set to zero or a negative number throws `ArgumentOutOfRangeException`.
+- Without `Width` and `Height` the attributes are left out and the browser cannot reserve the space.
 - URLs are written as attributes, so Razor encodes them. The component does not check where they point; pass URLs
   you control or have validated.
 

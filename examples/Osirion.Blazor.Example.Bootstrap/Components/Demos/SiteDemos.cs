@@ -19,6 +19,15 @@ internal static class SiteDemos
         Add<SubscriptionCardDemo>(demos, "subscription-card", "A subscription card");
         Add<AuthorCardDemo>(demos, "author-card", "An author card");
         Add<MetricCardDemo>(demos, "metric-card", "Metric cards");
+        Add<ArticleMetadataDemo>(demos, "article-metadata", "Article metadata");
+        Add<CalloutDemo>(demos, "callout", "Callouts");
+        Add<AccordionFaqDemo>(demos, "accordion-and-faq", "An accordion and an FAQ");
+        Add<ResponsiveImageDemo>(demos, "responsive-image", "A responsive image");
+        Add<VideoEmbedDemo>(demos, "video-embed", "A video embed");
+        Add<ReadingProgressDemo>(demos, "reading-progress", "A reading progress bar");
+        Add<RevealDemo>(demos, "reveal", "Reveal on scroll");
+        Add<HtmlRendererDemo>(demos, "html-renderer", "Sanitized HTML with code");
+        Add<ContentDemoDemo>(demos, "content-demo", "A registered demo");
     }
 
     private static void Add<TDemo>(ContentDemoRegistry demos, string key, string title)
