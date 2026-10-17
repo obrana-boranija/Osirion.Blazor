@@ -7,7 +7,7 @@ permalink: /components/cards
 description: The card components in Osirion.Blazor.Core (feature, testimonial, subscription, metric and author cards) and when to use each.
 author: Dejan Demonjić
 date: 2025-09-03
-last_modified: 2026-10-11
+last_modified: 2026-10-17
 featured_image: /assets/images/blazor-cover.png
 categories:
 - Components
@@ -28,7 +28,7 @@ redirect_from:
 custom_fields:
   group: cards
 seo_properties:
-  title: 'Cards - Osirion.Blazor Core components'
+  title: 'Blazor card components'
   description: 'The card components in Osirion.Blazor.Core (feature, testimonial, subscription, metric and author cards) and when to use each.'
   image: /assets/images/blazor-cover.png
   canonical: 'https://getosirion.com/components/cards'
@@ -58,7 +58,7 @@ Osirion.Blazor.Core has five card components. All of them render complete HTML u
 | [OsirionTestimonialCard](/components/testimonial-card) | A quote with the person's name, photo, role and an optional star rating. |
 | [OsirionSubscriptionCard](/components/subscription-card) | A newsletter signup form that posts without script, with validation and topic choices. |
 | [OsirionAuthorCard](/components/author-card) | An author's avatar or initials, name, role, bio and profile links. Available from 4.1. |
-| `OsirionMetricCard` | One figure with a label and description, optionally counting up when it scrolls into view. No page yet. |
+| [OsirionMetricCard](/components/metric-card) | One figure with a label and description, optionally counting up when it scrolls into view. |
 
 ```razor
 @using Osirion.Blazor.Components
@@ -74,8 +74,8 @@ To show several testimonials in a scrolling row, use the
 [testimonial carousel](/components/testimonial-carousel), which renders `OsirionTestimonialCard`
 for each item.
 
-Each card passes unmatched attributes to its root element and takes extra CSS classes in `Class` (`CssClass` on
-`OsirionMetricCard`). The cards take their colors, borders and spacing from the Osirion theme tokens, so a CSS
+Each card passes unmatched attributes to its root element and takes extra CSS classes in `Class` (`OsirionMetricCard`
+also takes `CssClass`, its older name). The cards take their colors, borders and spacing from the Osirion theme tokens, so a CSS
 framework adapter restyles them along with the rest of the site.
 
 ## Related

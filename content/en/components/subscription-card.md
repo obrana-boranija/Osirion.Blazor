@@ -7,7 +7,7 @@ permalink: /components/subscription-card
 description: OsirionSubscriptionCard is a newsletter signup form that works under static SSR, with validation, a honeypot and optional topic choices.
 author: Dejan Demonjić
 date: 2025-09-03
-last_modified: 2026-10-11
+last_modified: 2026-10-17
 featured_image: /assets/images/blazor-cover.png
 categories:
 - Components
@@ -29,7 +29,7 @@ redirect_from:
 custom_fields:
   group: cards
 seo_properties:
-  title: 'OsirionSubscriptionCard - Osirion.Blazor'
+  title: 'OsirionSubscriptionCard: a newsletter form for Blazor'
   description: 'OsirionSubscriptionCard is a newsletter signup form that works under static SSR, with validation, a honeypot and optional topic choices.'
   image: /assets/images/blazor-cover.png
   canonical: 'https://getosirion.com/components/subscription-card'
@@ -54,6 +54,12 @@ seo_properties:
 consent checkbox and optional topics to choose from. It posts as a normal form, so it works on static SSR pages
 without a circuit or WebAssembly. Your code receives the validated data in `OnSubscribe` and stores it wherever your
 mailing list lives.
+
+Package `Osirion.Blazor.Core`, namespace `Osirion.Blazor.Components`. [Source on GitHub](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Core/Components/Cards/OsirionSubscriptionCard.razor).
+
+```demo
+subscription-card
+```
 
 ## Usage
 
@@ -105,37 +111,42 @@ A card with a name field and topics, where one topic cannot be turned off:
 
 ## Parameters
 
+<!-- osirion:parameters OsirionSubscriptionCard -->
+
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `Id` | `string` | `"subscription-card"` | Required. The form name and the prefix of element ids; give each card on a page its own value. |
-| `Title` | `string` | `"Stay Updated"` | Heading (`h3`). Rendered as HTML, not encoded. |
-| `Description` | `string` | `"Get the latest updates and insights delivered to your inbox."` | Text under the title. Rendered as HTML, not encoded. |
-| `ShowNameField` | `bool` | `false` | Adds an optional name field (up to 100 characters). |
-| `NamePlaceholder` | `string` | `"Your name (optional)"` | Name field placeholder. |
-| `EmailPlaceholder` | `string` | `"Enter your email address"` | Email field placeholder. |
-| `SubscribeButtonText` | `string` | `"Subscribe"` | Button text. |
-| `SubscribingText` | `string` | `"Subscribing..."` | Declared, but not rendered in 4.0.0. |
-| `ShowRequiredIndicators` | `bool` | `true` | Shows `*` after required labels. |
-| `PrivacyPolicyText` | `string?` | a link to `/privacy-policy` | Label of the consent checkbox. Rendered as HTML, not encoded. Keep it set: see Behavior. |
-| `ShowSubscriptionCategories` | `bool` | `false` | Shows topics to choose from. |
+| `Id` | `string` | `"subscription-card"` | The form name and the prefix of the card's element ids; give each card on a page its own value. Required. |
+| `Title` | `string` | `"Stay Updated"` | The heading (`h3`). Rendered as HTML, not encoded, so never pass visitor input. |
+| `Description` | `string` | `"Get the latest updates and insights delivered to your inbox."` | The text under the title. Rendered as HTML, not encoded, so never pass visitor input. |
+| `ShowNameField` | `bool` | `false` | Whether an optional name field (up to 100 characters) is shown. |
+| `NamePlaceholder` | `string` | `"Your name (optional)"` | The name field's placeholder. |
+| `EmailPlaceholder` | `string` | `"Enter your email address"` | The email field's placeholder. |
+| `SubscribeButtonText` | `string` | `"Subscribe"` | The button's text. |
+| `SubscribingText` | `string` | `"Subscribing..."` | Not rendered: the card has no busy state. |
+| `ShowRequiredIndicators` | `bool` | `true` | Whether an asterisk follows the labels of required fields. |
+| `PrivacyPolicyText` | `string?` | `"I agree to the <a class="osirion-subscribtion-link" href="/privacy-policy" target="_blank">privacy policy</a>"` | The label of the consent checkbox, by default a link to `/privacy-policy`. Rendered as HTML, not encoded. Without it the checkbox is not shown. |
+| `ShowSubscriptionCategories` | `bool` | `false` | Whether topics to choose from are shown. |
 | `SubscriptionCategories` | `IReadOnlyList<SubscriptionCategory>?` | `null` | The topics. With `ShowSubscriptionCategories` on and no list, three sample topics are shown. |
-| `CategoriesText` | `string` | `"What would you like to receive?"` | Label above the topics. |
-| `ShowCategoriesAsDropdown` | `bool` | `false` | Shows the topics in a `details` drop-down instead of a list of checkboxes. |
-| `CategoriesDropdownText` | `string` | `"Select Categories"` | Drop-down button text. |
-| `OnSubscribe` | `EventCallback<SubscriptionModel>` | | Called with the validated data. |
-| `OnValidationFailed` | `EventCallback<EditContext>` | | Declared, but not called in 4.0.0. |
-| `SuccessMessage` | `string` | a thank-you text | Shown after `OnSubscribe` completes. |
-| `ErrorMessage` | `string` | an error text | Shown when `OnSubscribe` throws. |
-| `SpamMessage` | `string` | a blocked text | Shown when the honeypot field was filled in. |
-| `AlreadySubscribedMessage` | `string` | an already-subscribed text | Shown for the `AlreadySubscribed` result, which the card does not produce itself in 4.0.0. |
-| `UseBuiltInEmailService` | `bool` | `false` | Leave off. When on, `OnSubscribe` is skipped and, in 4.0.0, the address is only logged. |
+| `CategoriesText` | `string` | `"What would you like to receive?"` | The label above the topics. |
+| `ShowCategoriesAsDropdown` | `bool` | `false` | Whether the topics are shown in a `details` drop-down instead of a list of checkboxes. |
+| `CategoriesDropdownText` | `string` | `"Select Categories"` | The drop-down button's text. |
+| `OnSubscribe` | `EventCallback<SubscriptionModel>` | - | Event callback invoked when the subscription form is submitted with valid data. |
+| `OnValidationFailed` | `EventCallback<EditContext>` | - | Event callback invoked when form validation fails. |
+| `SuccessMessage` | `string` | `"Thank you for subscribing! Please check your email to confirm your subscription."` | Shown after the address was handed over. |
+| `ErrorMessage` | `string` | `"Sorry, there was an error processing your subscription. Please try again later."` | Shown when handling the address failed. |
+| `SpamMessage` | `string` | `"Your submission appears to be spam and has been blocked."` | Shown when the hidden honeypot field was filled in. |
+| `AlreadySubscribedMessage` | `string` | `"This email address is already subscribed to our newsletter."` | Shown for the `AlreadySubscribed` result, which the card does not produce itself. |
+| `UseBuiltInEmailService` | `bool` | `false` | Whether to use the built-in email service (requires service registration) |
 | `CompactLayout` | `bool` | `false` | Less padding and a smaller title and description. |
-| `UseDarkTheme` | `bool` | `false` | Adds `osirion-subscription-card-dark`, which takes input and option colors from the theme tokens. |
-| `ShowBorder` | `bool` | `true` | Card border. |
-| `ShowShadow` | `bool` | `true` | Card shadow. |
+| `UseDarkTheme` | `bool` | `false` | Adds `osirion-subscription-card-dark`, which takes input and option colours from the theme tokens. |
+| `ShowBorder` | `bool` | `true` | Whether the card has a border. |
+| `ShowShadow` | `bool` | `true` | Whether the card has a shadow. |
 | `ChildContent` | `RenderFragment?` | `null` | Footer content under the form. |
-| `Class` | `string?` | `null` | Extra CSS classes. |
-| `Style` | `string?` | `null` | Inline style. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's colour mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
+| `Style` | `string?` | `null` | An inline style for the component's root element. |
+
+<!-- /osirion:parameters -->
 
 `SubscriptionCategory` (namespace `Osirion.Blazor.Core.Models`) has `Id`, `Name`, `Description`, `IsDefault` (checked at
 first) and `IsRequired` (checked, disabled and always included). `SubscriptionModel` carries `Name`, `Email`,

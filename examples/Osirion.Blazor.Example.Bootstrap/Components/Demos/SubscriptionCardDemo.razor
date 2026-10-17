@@ -1,0 +1,13 @@
+@using Osirion.Blazor.Components
+@using Osirion.Blazor.Core.Models
+
+@* A demo: it hands the address to nothing, and says so after you subscribe. *@
+<OsirionSubscriptionCard Id="demo-newsletter"
+                         Title="Release notes by email"
+                         Description="One message per release, nothing else."
+                         SuccessMessage="This demo does not store addresses."
+                         OnSubscribe="IgnoreAsync" />
+
+@code {
+    private static Task IgnoreAsync(SubscriptionModel subscription) => Task.CompletedTask;
+}

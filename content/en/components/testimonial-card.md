@@ -7,7 +7,7 @@ permalink: /components/testimonial-card
 description: OsirionTestimonialCard shows a quote with the person's name, photo, role, an optional star rating and a link. Parameters and behavior.
 author: Dejan Demonjić
 date: 2025-09-03
-last_modified: 2026-10-11
+last_modified: 2026-10-17
 featured_image: /assets/images/blazor-cover.png
 categories:
 - Components
@@ -28,7 +28,7 @@ redirect_from:
 custom_fields:
   group: cards
 seo_properties:
-  title: 'OsirionTestimonialCard - Osirion.Blazor'
+  title: 'OsirionTestimonialCard: testimonial cards for Blazor'
   description: 'OsirionTestimonialCard shows a quote with the person''s name, photo, role, an optional star rating and a link. Parameters and behavior.'
   image: /assets/images/blazor-cover.png
   canonical: 'https://getosirion.com/components/testimonial-card'
@@ -52,6 +52,12 @@ seo_properties:
 `OsirionTestimonialCard` shows a quote with the name, photo, position and company of the person who said it, an
 optional one to five star rating and an optional link to the full text. Use it on its own or let
 `OsirionTestimonialCarousel` render a row of them. It needs no script.
+
+Package `Osirion.Blazor.Core`, namespace `Osirion.Blazor.Components`. [Source on GitHub](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Core/Components/Cards/OsirionTestimonialCard.razor).
+
+```demo
+testimonial-card
+```
 
 ## Usage
 
@@ -88,32 +94,36 @@ For formatted text, pass `TestimonialContent` instead of `TestimonialText`:
 
 ## Parameters
 
+<!-- osirion:parameters OsirionTestimonialCard -->
+
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `Name` | `string` | `""` | Required. The person's name, rendered in a `cite` element. |
-| `Position` | `string?` | `null` | Job title. With `Company` it reads "Position at Company". |
-| `Company` | `string?` | `null` | Company name. |
-| `ProfileImageUrl` | `string?` | `null` | Photo; its alternative text is built from the name, position and company. |
-| `ImageSize` | `int` | `64` | Photo width and height in pixels. Left at 64, it becomes 48 for `Small` and 80 for `Large`. |
-| `IsFirstVisible` | `bool` | `false` | Loads the photo eagerly with `fetchpriority="high"`; otherwise it loads lazily. |
-| `LinkedInUrl` | `string?` | `null` | Turns the name into a link that opens in a new tab with `rel="noopener noreferrer"`. |
+| `ProfileImageUrl` | `string?` | `null` | The person's photo. Its alternative text is built from the name, position and company. |
+| `Name` | `string` | `""` | The person's name, rendered in a `cite` element. Required. |
+| `Company` | `string?` | `null` | The company's name. |
+| `Position` | `string?` | `null` | The person's job title. With `Company` it reads "Position at Company". |
+| `LinkedInUrl` | `string?` | `null` | A profile address. When set, the name is a link that opens in a new tab with `rel="noopener noreferrer"`. |
 | `TestimonialText` | `string?` | `null` | The quote as plain text. |
 | `TestimonialContent` | `RenderFragment?` | `null` | The quote as markup; replaces `TestimonialText`. |
+| `ReadMoreHref` | `string?` | `null` | The read more link's target. The link shows only when this is set. |
+| `ReadMoreText` | `string` | `"Read full testimonial"` | The read more link's text. |
+| `ReadMoreVariant` | `ReadMoreVariant` | `ReadMoreVariant.Default` | The read more link's look: `Default`, `Arrow`, `External`, `Download`, `Plain` or `Button`. |
+| `ReadMoreTarget` | `string?` | `null` | The read more link's `target`, for example `_blank`. |
+| `ShowRating` | `bool` | `false` | Whether the star rating is shown. |
+| `Rating` | `int` | `5` | The number of filled stars, clamped to 0 to 5; 0 hides the rating. |
+| `Variant` | `TestimonialVariant` | `TestimonialVariant.Default` | The card's look: `Default`, `Minimal`, `Highlighted` or `Compact`. |
+| `Size` | `TestimonialSize` | `TestimonialSize.Normal` | The card's size: `Small`, `Normal` or `Large`. |
+| `ImageSize` | `int` | `64` | The photo's width and height in pixels. Left at 64, it becomes 48 for `Small` and 80 for `Large`. |
+| `Elevated` | `bool?` | `null` | Whether the card is raised with a drop shadow; `null` means it is. |
+| `Borderless` | `bool` | `false` | Whether the border and background are removed. |
+| `IsHiddenFromAssistiveTech` | `bool` | `false` | Sets `tabindex="-1"` on the card's links, for copies inside an `aria-hidden` container such as a looping carousel. |
 | `ChildContent` | `RenderFragment?` | `null` | Extra content under the quote. |
-| `ShowRating` | `bool` | `false` | Shows the star rating. |
-| `Rating` | `int` | `5` | Number of filled stars, clamped to 0 to 5; 0 hides the rating. |
-| `ReadMoreHref` | `string?` | `null` | Shows a read more link when set. |
-| `ReadMoreText` | `string` | `"Read full testimonial"` | Link text. |
-| `ReadMoreVariant` | `ReadMoreVariant` | `Default` | `Default`, `Arrow`, `External`, `Download`, `Plain` or `Button`. |
-| `ReadMoreTarget` | `string?` | `null` | Link `target`, for example `_blank`. |
-| `Variant` | `TestimonialVariant` | `Default` | `Default`, `Minimal`, `Highlighted` or `Compact`. |
-| `Size` | `TestimonialSize` | `Normal` | `Small`, `Normal` or `Large`. |
-| `Elevated` | `bool?` | `null` | Raised look with a drop shadow; `null` means on. |
-| `Borderless` | `bool` | `false` | Removes the border and background. |
-| `IsHiddenFromAssistiveTech` | `bool` | `false` | Sets `tabindex="-1"` on the links, for copies inside an `aria-hidden` container such as a looping carousel. |
-| `Theme` | `ThemeMode` | `System` | `Light` or `Dark` forces the card's colors; `System` follows the page. |
-| `Class` | `string?` | `null` | Extra CSS classes. |
-| `Style` | `string?` | `null` | Inline style. |
+| `IsFirstVisible` | `bool` | `false` | Loads the photo eagerly with `fetchpriority="high"`, for a card above the fold; otherwise it loads lazily. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's colour mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
+| `Style` | `string?` | `null` | An inline style for the component's root element. |
+
+<!-- /osirion:parameters -->
 
 ## Behavior
 
