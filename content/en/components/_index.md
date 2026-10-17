@@ -1,6 +1,6 @@
 ---
 id: 'components-gallery'
-order: 3
+order: 4
 layout: docs
 title: Components
 permalink: /components
