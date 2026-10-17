@@ -7,7 +7,7 @@ permalink: /components/page-loading
 description: A centered CSS spinner with an optional line of text, for content that is still loading during streaming rendering or an interactive render.
 author: Dejan Demonjić
 date: 2025-09-03
-last_modified: 2026-10-11
+last_modified: 2026-10-17
 featured_image: /assets/images/blazor-cover.png
 categories:
 - Components
@@ -29,7 +29,7 @@ redirect_from:
 custom_fields:
   group: layout
 seo_properties:
-  title: 'OsirionPageLoading: loading spinner for Blazor pages | Osirion.Blazor'
+  title: 'OsirionPageLoading: loading spinner for Blazor'
   description: 'A centered CSS spinner with optional text for Blazor content that is still loading, during streaming rendering or interactively.'
   image: /assets/images/blazor-cover.png
   canonical: 'https://getosirion.com/components/page-loading'
@@ -52,6 +52,15 @@ seo_properties:
 
 `OsirionPageLoading` renders a centered spinner with an optional line of text. Show it while a page or section
 waits for data: during streaming rendering in static SSR, or while an interactive component loads.
+
+Package `Osirion.Blazor.Core`, namespace `Osirion.Blazor.Components`. [Source on GitHub](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Core/Components/States/OsirionPageLoading.razor).
+
+```demo
+page-loading
+```
+
+The component is at least half a viewport high (`min-height: 50vh`). The demo shrinks it with a rule in its own
+stylesheet so it fits on this page.
 
 ## Usage
 
@@ -99,10 +108,17 @@ section) use it the same way while they load content.
 
 ## Parameters
 
+<!-- osirion:parameters OsirionPageLoading -->
+
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `ShowText` | `bool` | `true` | Shows the text below the spinner. |
-| `Text` | `string` | `"Loading content..."` | The text; when it is empty, no text element is rendered. |
+| `ShowText` | `bool` | `true` | Whether `Text` is shown under the spinner. |
+| `Text` | `string` | `"Loading content..."` | The text under the spinner, rendered as a paragraph. When it is empty or white space, no paragraph is rendered. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's colour mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
+| `Style` | `string?` | `null` | An inline style for the component's root element. |
+
+<!-- /osirion:parameters -->
 
 The component does not apply `Class`, `Style`, `Theme` or unmatched attributes to its markup; wrap it in your own
 element to position or restyle it.
@@ -111,6 +127,7 @@ element to position or restyle it.
 
 - **Rendering.** The spinner is a CSS animation, so it works under static SSR, streaming rendering and interactive
   rendering alike.
+- **Motion.** The spinner turns continuously. The component's stylesheet has no `prefers-reduced-motion` rule.
 - **Accessibility.** The text is a plain paragraph; the component sets no `role="status"` or live region. If screen
   reader users should hear that content is loading, wrap it in an element with `role="status"` yourself:
 
