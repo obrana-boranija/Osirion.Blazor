@@ -1,10 +1,13 @@
 @namespace Osirion.Blazor.Components
 @inherits OsirionComponentBase
 
-<section id="@Id" class="osirion-context-card-grid @SectionClass" aria-labelledby="@HeadingId" @attributes="Attributes">
+<section id="@Id" class="osirion-context-card-grid @SectionClass" aria-labelledby="@(HasTitle ? EffectiveHeadingId : null)" @attributes="Attributes">
     <div class="osirion-context-card-grid-container @ContainerClass">
         <div class="osirion-context-card-grid-heading">
-            <h2 id="@HeadingId">@Title</h2>
+            @if (HasTitle)
+            {
+                <h2 id="@EffectiveHeadingId">@Title</h2>
+            }
             @if (!string.IsNullOrWhiteSpace(Description))
             {
                 <p>@Description</p>

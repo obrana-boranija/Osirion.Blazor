@@ -5,6 +5,7 @@
             <button class="viewport-btn @(CurrentViewport == ViewportMode.Desktop ? "active" : "")"
                     type="button"
                     @onclick="() => SetViewport(ViewportMode.Desktop)"
+                    aria-label="Desktop"
                     aria-pressed="@(CurrentViewport == ViewportMode.Desktop ? "true" : "false")">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                     <path d="M21 2H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h7l-2 3v1h8v-1l-2-3h7c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 12H3V4h18v10z" />
@@ -13,6 +14,7 @@
             <button class="viewport-btn @(CurrentViewport == ViewportMode.Tablet ? "active" : "")"
                     type="button"
                     @onclick="() => SetViewport(ViewportMode.Tablet)"
+                    aria-label="Tablet"
                     aria-pressed="@(CurrentViewport == ViewportMode.Tablet ? "true" : "false")">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                     <path d="M19 1H5c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V3c0-1.1-.9-2-2-2zm0 18H5V5h14v14z" />
@@ -21,6 +23,7 @@
             <button class="viewport-btn @(CurrentViewport == ViewportMode.Mobile ? "active" : "")"
                     type="button"
                     @onclick="() => SetViewport(ViewportMode.Mobile)"
+                    aria-label="Mobile"
                     aria-pressed="@(CurrentViewport == ViewportMode.Mobile ? "true" : "false")">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                     <path d="M17 1H7c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-2-2-2zm0 18H7V5h10v14z" />
@@ -31,14 +34,17 @@
 
     <div class="showcase-body">
         <div class="viewport-container @GetViewportClass()" style="@GetViewportStyle()">
-            <div class="viewport-chrome">
-                <div class="chrome-dots">
-                    <span class="dot dot-red"></span>
-                    <span class="dot dot-yellow"></span>
-                    <span class="dot dot-green"></span>
+            @if (ShowBrowserChrome)
+            {
+                <div class="viewport-chrome">
+                    <div class="chrome-dots">
+                        <span class="dot dot-red"></span>
+                        <span class="dot dot-yellow"></span>
+                        <span class="dot dot-green"></span>
+                    </div>
+                    <div class="chrome-address">@GetViewportTitle()</div>
                 </div>
-                <div class="chrome-address">@GetViewportTitle()</div>
-            </div>
+            }
             <div class="component-wrapper">
                 @if (ChildContent != null)
                 {

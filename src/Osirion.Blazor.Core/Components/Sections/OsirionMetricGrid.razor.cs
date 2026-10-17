@@ -22,7 +22,7 @@ public partial class OsirionMetricGrid : OsirionComponentBase
     [Parameter] public string AriaLabel { get; set; } = "Key metrics";
 
     /// <summary>
-    /// Extra CSS classes on the list. <see cref="OsirionComponentBase.Class"/> is not applied by this component.
+    /// Extra CSS classes on the list, added before <see cref="OsirionComponentBase.Class"/>.
     /// </summary>
     [Parameter] public string? CssClass { get; set; }
 

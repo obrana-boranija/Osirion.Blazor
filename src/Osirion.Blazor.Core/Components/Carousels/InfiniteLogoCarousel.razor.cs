@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Osirion.Blazor.Core.Utils;
 
 namespace Osirion.Blazor.Components;
 
@@ -177,9 +178,9 @@ public partial class InfiniteLogoCarousel : OsirionComponentBase
     {
         var attributes = new Dictionary<string, object>();
 
-        if (!string.IsNullOrWhiteSpace(logo.Url))
+        if (logo.Url is { } url && SafeLink.IsSafe(url))
         {
-            attributes["href"] = logo.Url;
+            attributes["href"] = url;
             attributes["target"] = logo.Target ?? "_blank";
 
             // Default to nofollow and noopener for external links
