@@ -4,7 +4,7 @@ order: 5
 layout: docs
 title: UmamiTracker
 permalink: /components/umami-tracker
-description: UmamiTracker writes the Umami script tag, configured through data attributes, into the page head from configuration. Available from 4.1.
+description: UmamiTracker writes the Umami script tag, configured through data attributes, into the page head from configuration.
 author: Dejan Demonjić
 date: 2026-10-17
 last_modified: 2026-10-17
@@ -25,7 +25,7 @@ custom_fields:
   group: analytics
 seo_properties:
   title: 'UmamiTracker: Umami tracking script for Blazor'
-  description: 'UmamiTracker writes the Umami script tag, configured through data attributes, into the page head from configuration. Available from 4.1.'
+  description: 'UmamiTracker writes the Umami script tag, configured through data attributes, into the page head from configuration.'
   image: /assets/images/blazor-cover.png
   canonical: 'https://getosirion.com/components/umami-tracker'
   lang: en
@@ -48,7 +48,7 @@ seo_properties:
 `UmamiTracker` adds the Umami tracking script to a page. Use it when you measure a Blazor site with Umami Cloud or a self-hosted Umami. It renders a script, not visible markup, and a live demo would load Umami's script on this page, so this
 page has no demo and shows the markup it renders instead.
 
-Package `Osirion.Blazor.Analytics`, namespace `Osirion.Blazor.Analytics.Components`. [Source on GitHub](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Analytics/Components/UmamiTracker.razor). Available from 4.1.
+Package `Osirion.Blazor.Analytics`, namespace `Osirion.Blazor.Analytics.Components`. [Source on GitHub](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Analytics/Components/UmamiTracker.razor). Available from 4.0.
 
 ## Usage
 

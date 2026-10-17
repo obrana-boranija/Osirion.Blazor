@@ -89,7 +89,7 @@ SSR, and every post is protected by an antiforgery token.
 | Component | What it does |
 | --- | --- |
 | [OsirionCookieConsent](/components/cookie-consent) | Cookie banner with accept, decline and per-category choices; analytics trackers can wait for its consent. |
-| [OsirionAnnouncementBar](/components/announcement-bar) | Site-wide announcement that visitors can close; remembered per announcement ID. Available from 4.1. |
+| [OsirionAnnouncementBar](/components/announcement-bar) | Site-wide announcement that visitors can close; remembered per announcement ID. Available from 4.0. |
 
 ### Setup for both
 

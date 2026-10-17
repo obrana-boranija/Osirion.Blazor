@@ -55,7 +55,6 @@ Register the services in `Program.cs`:
 using Osirion.Blazor.Extensions;
 
 builder.Services.AddOsirion(builder.Configuration);
-builder.Services.AddJSComponents();
 ```
 
 `AddOsirion(builder.Configuration)` reads the `Osirion` section. Point it at a folder of Markdown files in

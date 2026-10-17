@@ -82,7 +82,8 @@ page has its own. On a real page the layout fills at least the height of the vie
 </OsirionPageLayout>
 ```
 
-The layout loads a small collocated script through BlazorJSComponents, so register its services in `Program.cs`:
+The layout's small collocated script loads through BlazorJSComponents, which `AddOsirion` registers. If you register
+Osirion.Blazor.Core without `AddOsirion`, add the loader in `Program.cs`:
 
 ```csharp
 builder.Services.AddJSComponents();

@@ -83,8 +83,8 @@ In a navigation menu, after the links:
 </Menu>
 ```
 
-The toggle needs theming registered (`AddOsirionTheming` or `AddOsirion`) and `builder.Services.AddJSComponents()`,
-which loads its script. See [Theming](/docs/packages/theming) for the setup.
+The toggle needs theming registered: `AddOsirion`, or `AddOsirionTheming` together with
+`builder.Services.AddJSComponents()`, which loads its script. See [Theming](/docs/packages/theming) for the setup.
 
 ## Parameters
 

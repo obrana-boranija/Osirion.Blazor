@@ -63,8 +63,8 @@ testimonial-carousel
 
 ## Usage
 
-The enhancement script (dragging, wheel scrolling, pause button) loads through the BlazorJSComponents package.
-Register its services once in `Program.cs`:
+The enhancement script (dragging, wheel scrolling, pause button) loads through BlazorJSComponents, which `AddOsirion` registers. If you register
+Osirion.Blazor.Core without `AddOsirion`, add the loader in `Program.cs`:
 
 ```csharp
 builder.Services.AddJSComponents();

@@ -62,7 +62,8 @@ infinite-logo-carousel
 
 ## Usage
 
-The enhancement script loads through the BlazorJSComponents package. Register its services once in `Program.cs`:
+The enhancement script loads through BlazorJSComponents, which `AddOsirion` registers. If you register
+Osirion.Blazor.Core without `AddOsirion`, add the loader in `Program.cs`:
 
 ```csharp
 builder.Services.AddJSComponents();

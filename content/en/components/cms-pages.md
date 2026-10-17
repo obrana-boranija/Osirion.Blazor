@@ -79,7 +79,7 @@ Most live in the `Osirion.Blazor.Cms.Web.Components` namespace. `DocumentPage`, 
 | [ContactPage](/components/contact-page) | A contact page: a heading, an optional Markdown introduction and a contact form. |
 | [NotFoundPage](/components/not-found-page) | A page not found page with a way home, a search box and suggested pages. Answers 404. |
 | [SeoMetadataRenderer](/components/seo-metadata-renderer) | Title, description, canonical URL, Open Graph, Twitter Card and JSON-LD in the page head. |
-| [Feeds and sitemap](/components/feeds-and-sitemap) | `/sitemap.xml`, `/feed.xml` and `/atom.xml` endpoints. Available from 4.1. |
+| [Feeds and sitemap](/components/feeds-and-sitemap) | `/sitemap.xml`, `/feed.xml` and `/atom.xml` endpoints. Available from 4.0. |
 
 ## Choosing one
 

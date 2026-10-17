@@ -55,7 +55,7 @@ feeds.
 | Part | What it does | Kind |
 | --- | --- | --- |
 | [SeoMetadataRenderer](/components/seo-metadata-renderer) | Writes the title, description, canonical URL, robots, Open Graph, Twitter Card and JSON-LD tags for a content item or a list. | Component, in the page head |
-| [Feeds and sitemap](/components/feeds-and-sitemap) | Serves `/sitemap.xml`, an RSS feed at `/feed.xml` and an Atom feed at `/atom.xml`. Available from 4.1. | Endpoints, mapped with `MapOsirionFeeds` |
+| [Feeds and sitemap](/components/feeds-and-sitemap) | Serves `/sitemap.xml`, an RSS feed at `/feed.xml` and an Atom feed at `/atom.xml`. Available from 4.0. | Endpoints, mapped with `MapOsirionFeeds` |
 
 Neither has a live demo, because neither renders visible markup: the renderer would replace the title and tags of the
 page it sits on, and the feeds are XML documents.

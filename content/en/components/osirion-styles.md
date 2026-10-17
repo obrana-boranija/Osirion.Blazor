@@ -124,7 +124,8 @@ The component renders, in this order:
    or `AllowPaletteSelection` is set.
 4. A `<style>` block with the `CustomVariables` parameter, then one with the configured `CustomVariables`. Both are
    `:root` rules, so for the same property the configured value, written last, wins.
-5. `osirion-styles.js`, loaded through the script loader that `builder.Services.AddJSComponents()` registers.
+5. `osirion-styles.js`, loaded through the BlazorJSComponents script loader, which `AddOsirion` registers (a site
+   that registers theming alone with `AddOsirionTheming` calls `builder.Services.AddJSComponents()` itself).
 6. A short inline script that sets `data-osirion-theme`, `data-osirion-palette`, `data-osirion-framework`, the
    framework class and the framework's own dark-mode marker on `<html>` while the page is parsed.
 

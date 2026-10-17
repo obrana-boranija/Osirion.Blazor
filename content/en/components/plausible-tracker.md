@@ -4,7 +4,7 @@ order: 4
 layout: docs
 title: PlausibleTracker
 permalink: /components/plausible-tracker
-description: PlausibleTracker writes the Plausible Analytics script and its init call into the page head from configuration. Available from 4.1.
+description: PlausibleTracker writes the Plausible Analytics script and its init call into the page head from configuration.
 author: Dejan Demonjić
 date: 2026-10-17
 last_modified: 2026-10-17
@@ -25,7 +25,7 @@ custom_fields:
   group: analytics
 seo_properties:
   title: 'PlausibleTracker: Plausible Analytics script for Blazor'
-  description: 'PlausibleTracker writes the Plausible Analytics script and its init call into the page head from configuration. Available from 4.1.'
+  description: 'PlausibleTracker writes the Plausible Analytics script and its init call into the page head from configuration.'
   image: /assets/images/blazor-cover.png
   canonical: 'https://getosirion.com/components/plausible-tracker'
   lang: en
@@ -48,7 +48,7 @@ seo_properties:
 `PlausibleTracker` adds the Plausible Analytics script to a page. Use it when you measure a Blazor site with Plausible, cloud or self-hosted. It renders a script, not visible markup, and a live demo would load Plausible's script on this page, so this
 page has no demo and shows the markup it renders instead.
 
-Package `Osirion.Blazor.Analytics`, namespace `Osirion.Blazor.Analytics.Components`. [Source on GitHub](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Analytics/Components/PlausibleTracker.razor). Available from 4.1.
+Package `Osirion.Blazor.Analytics`, namespace `Osirion.Blazor.Analytics.Components`. [Source on GitHub](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Analytics/Components/PlausibleTracker.razor). Available from 4.0.
 
 ## Usage
 

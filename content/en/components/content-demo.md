@@ -137,8 +137,8 @@ accepted but the component does not write it.
 - The Copy button on the source has the same markup as the HTML renderer's code blocks. `OsirionContentDemo` loads
   the copy script (`_content/Osirion.Blazor.Core/js/osirion-copy-button.es5.min.js`) itself when `EnableCopyButton` is
   on and the demo has source, and it runs once per page load, so the button works used directly on a page and inside
-  `OsirionHtmlRenderer`. The script is loaded through the BlazorJSComponents package, so register its services
-  (`AddJSComponents`) as for every component that loads a script.
+  `OsirionHtmlRenderer`. The script is loaded through BlazorJSComponents, which `AddOsirion` registers; without
+  `AddOsirion`, call `builder.Services.AddJSComponents()` yourself.
 
 ## Styling
 

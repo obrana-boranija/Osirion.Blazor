@@ -60,8 +60,8 @@ video-embed
 
 ## Usage
 
-The component loads its script through the BlazorJSComponents package, which Osirion.Blazor.Core references.
-Register its services once in `Program.cs`, as the example apps do:
+The component's script loads through BlazorJSComponents, which `AddOsirion` registers. If you register
+Osirion.Blazor.Core without `AddOsirion`, add the loader in `Program.cs`:
 
 ```csharp
 builder.Services.AddJSComponents();

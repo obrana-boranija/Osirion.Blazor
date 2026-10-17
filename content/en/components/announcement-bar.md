@@ -54,7 +54,7 @@ seo_properties:
 with a close button. Closing posts a small form; an endpoint in your app remembers the choice in a cookie and
 redirects back, so it works under static SSR without script.
 
-Package `Osirion.Blazor.Core`, namespace `Osirion.Blazor.Components`. [Source on GitHub](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Core/Components/Popups/OsirionAnnouncementBar.razor). Available from 4.1.
+Package `Osirion.Blazor.Core`, namespace `Osirion.Blazor.Components`. [Source on GitHub](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Core/Components/Popups/OsirionAnnouncementBar.razor). Available from 4.0.
 
 ## Working example
 
