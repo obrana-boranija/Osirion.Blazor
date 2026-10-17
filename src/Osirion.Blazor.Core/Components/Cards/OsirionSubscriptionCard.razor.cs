@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Core.Models;
 using Osirion.Blazor.Core.Services;
@@ -121,13 +120,15 @@ public partial class OsirionSubscriptionCard : OsirionComponentBase
     #region Event Parameters
 
     /// <summary>
-    /// Event callback invoked when the subscription form is submitted with valid data.
+    /// Receives the validated subscription; store the address here. The card shows <see cref="SuccessMessage"/> when
+    /// it returns and <see cref="ErrorMessage"/> when it throws. Without a handler the card reports an error and logs
+    /// a warning, because nothing would store the address.
     /// </summary>
     [Parameter]
     public EventCallback<SubscriptionModel> OnSubscribe { get; set; }
 
     /// <summary>
-    /// Event callback invoked when form validation fails.
+    /// Called with the form's edit context when validation fails.
     /// </summary>
     [Parameter]
     public EventCallback<EditContext> OnValidationFailed { get; set; }
@@ -137,13 +138,13 @@ public partial class OsirionSubscriptionCard : OsirionComponentBase
     #region Success/Error Message Parameters
 
     /// <summary>
-    /// Shown after the address was handed over.
+    /// Shown after <see cref="OnSubscribe"/> returned.
     /// </summary>
     [Parameter]
     public string SuccessMessage { get; set; } = "Thank you for subscribing! Please check your email to confirm your subscription.";
 
     /// <summary>
-    /// Shown when handling the address failed.
+    /// Shown when <see cref="OnSubscribe"/> throws, or when nothing handles the address.
     /// </summary>
     [Parameter]
     public string ErrorMessage { get; set; } = "Sorry, there was an error processing your subscription. Please try again later.";
@@ -161,7 +162,8 @@ public partial class OsirionSubscriptionCard : OsirionComponentBase
     public string AlreadySubscribedMessage { get; set; } = "This email address is already subscribed to our newsletter.";
 
     /// <summary>
-    /// Gets or sets whether to use the built-in email service (requires service registration)
+    /// Not supported for subscriptions: the email service has nothing to send or store for a sign-up, so with this on
+    /// the card reports an error and logs a warning. Handle <see cref="OnSubscribe"/> instead.
     /// </summary>
     [Parameter]
     public bool UseBuiltInEmailService { get; set; } = false;
@@ -207,9 +209,6 @@ public partial class OsirionSubscriptionCard : OsirionComponentBase
     #endregion
 
     #region Private Fields and Services
-
-    [Inject]
-    private IServiceProvider ServiceProvider { get; set; } = default!;
 
     [Inject]
     private ILogger<OsirionSubscriptionCard> Logger { get; set; } = default!;
@@ -286,31 +285,23 @@ public partial class OsirionSubscriptionCard : OsirionComponentBase
                 // Process category selections from form submission
                 ProcessCategorySelections();
 
-                // Use built-in email service if enabled and registered
+                // Success means something took the address. The email service has nothing to send or store for a
+                // sign-up, and without OnSubscribe nothing receives it, so both report an error instead of thanking a
+                // visitor for a subscription that does not exist.
                 if (UseBuiltInEmailService)
                 {
-                    var emailServiceFactory = ServiceProvider.GetService<EmailServiceFactory>();
-                    if (emailServiceFactory != null)
-                    {
-                        var emailService = emailServiceFactory.CreateEmailService();
-                        // For subscription, we'd need a different email service method
-                        // This is a placeholder for now
-                        Logger.LogInformation("Subscription submitted for {Email}", FormModel.Email);
-                        subscriptionSubmissionResult = SubscriptionSubmissionResult.Success;
-                    }
-                    else
-                    {
-                        Logger.LogWarning("Email service factory not registered but UseBuiltInEmailService is true");
-                        subscriptionSubmissionResult = SubscriptionSubmissionResult.ServerError;
-                    }
+                    Logger.LogWarning("UseBuiltInEmailService does not handle subscriptions; the address was not stored. Handle OnSubscribe instead");
+                    subscriptionSubmissionResult = SubscriptionSubmissionResult.ServerError;
+                }
+                else if (OnSubscribe.HasDelegate)
+                {
+                    await OnSubscribe.InvokeAsync(FormModel);
+                    subscriptionSubmissionResult = SubscriptionSubmissionResult.Success;
                 }
                 else
                 {
-                    // Invoke the subscribe callback for custom handling
-                    await OnSubscribe.InvokeAsync(FormModel);
-
-                    // If no explicit navigation happened, assume success
-                    subscriptionSubmissionResult = SubscriptionSubmissionResult.Success;
+                    Logger.LogWarning("Subscription submitted without an OnSubscribe handler; the address was not stored");
+                    subscriptionSubmissionResult = SubscriptionSubmissionResult.ServerError;
                 }
             }
             catch (Exception ex)

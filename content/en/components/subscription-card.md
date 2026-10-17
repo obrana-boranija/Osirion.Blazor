@@ -130,13 +130,13 @@ A card with a name field and topics, where one topic cannot be turned off:
 | `CategoriesText` | `string` | `"What would you like to receive?"` | The label above the topics. |
 | `ShowCategoriesAsDropdown` | `bool` | `false` | Whether the topics are shown in a `details` drop-down instead of a list of checkboxes. |
 | `CategoriesDropdownText` | `string` | `"Select Categories"` | The drop-down button's text. |
-| `OnSubscribe` | `EventCallback<SubscriptionModel>` | - | Event callback invoked when the subscription form is submitted with valid data. |
-| `OnValidationFailed` | `EventCallback<EditContext>` | - | Event callback invoked when form validation fails. |
-| `SuccessMessage` | `string` | `"Thank you for subscribing! Please check your email to confirm your subscription."` | Shown after the address was handed over. |
-| `ErrorMessage` | `string` | `"Sorry, there was an error processing your subscription. Please try again later."` | Shown when handling the address failed. |
+| `OnSubscribe` | `EventCallback<SubscriptionModel>` | - | Receives the validated subscription; store the address here. The card shows `SuccessMessage` when it returns and `ErrorMessage` when it throws. Without a handler the card reports an error and logs a warning, because nothing would store the address. |
+| `OnValidationFailed` | `EventCallback<EditContext>` | - | Called with the form's edit context when validation fails. |
+| `SuccessMessage` | `string` | `"Thank you for subscribing! Please check your email to confirm your subscription."` | Shown after `OnSubscribe` returned. |
+| `ErrorMessage` | `string` | `"Sorry, there was an error processing your subscription. Please try again later."` | Shown when `OnSubscribe` throws, or when nothing handles the address. |
 | `SpamMessage` | `string` | `"Your submission appears to be spam and has been blocked."` | Shown when the hidden honeypot field was filled in. |
 | `AlreadySubscribedMessage` | `string` | `"This email address is already subscribed to our newsletter."` | Shown for the `AlreadySubscribed` result, which the card does not produce itself. |
-| `UseBuiltInEmailService` | `bool` | `false` | Whether to use the built-in email service (requires service registration) |
+| `UseBuiltInEmailService` | `bool` | `false` | Not supported for subscriptions: the email service has nothing to send or store for a sign-up, so with this on the card reports an error and logs a warning. Handle `OnSubscribe` instead. |
 | `CompactLayout` | `bool` | `false` | Less padding and a smaller title and description. |
 | `UseDarkTheme` | `bool` | `false` | Adds `osirion-subscription-card-dark`, which takes input and option colours from the theme tokens. |
 | `ShowBorder` | `bool` | `true` | Whether the card has a border. |
@@ -162,6 +162,9 @@ first) and `IsRequired` (checked, disabled and always included). `SubscriptionMo
 - Validation uses data annotations: the email is required, must be a valid address and at most 255 characters.
 - The model always requires the privacy agreement. If `PrivacyPolicyText` is null or empty the checkbox is not
   rendered, and the form can never pass validation, so keep a consent text.
+- The card thanks the visitor only after `OnSubscribe` returns. Without a handler, or with `UseBuiltInEmailService`
+  on, nothing stores the address, so the card shows `ErrorMessage` and logs a warning instead. Available from the
+  release after 4.1.0; before it, both cases showed `SuccessMessage`.
 - A hidden honeypot field catches simple bots. When it is filled in, `OnSubscribe` is not called and `SpamMessage` is
   shown.
 - `Title`, `Description` and `PrivacyPolicyText` are written as raw HTML without sanitizing. Use text you wrote; never
