@@ -12,20 +12,17 @@ public partial class OsirionAccordionItem
     private OsirionAccordion? Parent { get; set; }
 
     /// <summary>
-    /// Gets or sets the title, which the visitor clicks or presses Enter on to open and close the section.
+    /// Gets or sets the title, shown in the <c>summary</c> element, which the visitor clicks or presses Enter on to
+    /// open and close the section. Required.
     /// </summary>
     [Parameter, EditorRequired]
     public string Title { get; set; } = string.Empty;
 
-    /// <summary>
-    /// Gets or sets whether the section is open when the page renders. Defaults to <see langword="false"/>.
-    /// </summary>
+    /// <summary>Gets or sets whether the section is open when the page renders.</summary>
     [Parameter]
     public bool Open { get; set; }
 
-    /// <summary>
-    /// Gets or sets the section's content.
-    /// </summary>
+    /// <summary>Gets or sets the section's content, shown while the section is open.</summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 

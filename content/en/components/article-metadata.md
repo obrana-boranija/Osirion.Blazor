@@ -2,12 +2,12 @@
 id: 'osirion-article-metadata'
 order: 1
 layout: "component"
-title: Article Metadata
+title: OsirionArticleMetdata
 permalink: /components/article-metadata
 description: "OsirionArticleMetdata shows an article's author, publish date and read time in one line with icons, and renders nothing when all three are empty."
 author: "Osirion Team"
 date: 2025-01-26
-last_modified: 2026-10-11
+last_modified: 2026-10-17
 featured_image: /assets/images/blazor-cover.png
 categories:
 - Components
@@ -29,17 +29,36 @@ redirect_from:
 custom_fields:
   group: content
 seo_properties:
-  title: "Article Metadata Component - Osirion.Blazor"
-  description: "Show an article's author, publish date and read time with OsirionArticleMetdata, a script-free Blazor component."
+  title: 'OsirionArticleMetdata: author, date and read time for Blazor'
+  description: 'OsirionArticleMetdata shows an article''s author, publish date and read time in one line with icons, and renders nothing when all three are empty.'
   image: /assets/images/blazor-cover.png
-  canonical: "https://getosirion.com/components/article-metadata"
+  canonical: 'https://getosirion.com/components/article-metadata'
+  lang: en
+  robots: index, follow
+  og_title: 'OsirionArticleMetdata - Osirion.Blazor'
+  og_description: 'Author, publish date and read time on one line, each with an icon. Renders without script.'
+  og_image_url: '/assets/images/blazor-cover.png'
+  og_type: article
+  json_ld: ''
+  type: Article
+  twitter_card: summary_large_image
+  twitter_title: 'OsirionArticleMetdata - Osirion.Blazor'
+  twitter_description: 'Author, publish date and read time on one line, each with an icon. Renders without script.'
+  twitter_image_url: '/assets/images/blazor-cover.png'
+  meta_tags: {}
 ---
 
-# Article Metadata
+# OsirionArticleMetdata
 
 `OsirionArticleMetdata` shows an article's author, publish date and read time on one line, each with a small icon.
 Use it under an article title or in a list of posts. It renders only the fields you set, and nothing at all when all
 three are empty.
+
+Package `Osirion.Blazor.Core`, namespace `Osirion.Blazor.Components`. [Source on GitHub](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Core/Components/OsirionArticleMetdata.razor).
+
+```demo
+article-metadata
+```
 
 > [!NOTE]
 > The component name is spelled `OsirionArticleMetdata` (without the second "a") in the library. Use that spelling in
@@ -74,18 +93,26 @@ A realistic case is a post header fed from your own model, with a long date form
 
 ## Parameters
 
+<!-- osirion:parameters OsirionArticleMetdata -->
+
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `Author` | `string?` | `null` | Author name. Hidden when empty or whitespace. |
-| `PublishDate` | `DateTime?` | `null` | Publication date. Hidden when `null`. |
-| `DateFormat` | `string?` | `"d"` | .NET date format string for `PublishDate`, applied with `CultureInfo.CurrentCulture`. |
-| `ReadTime` | `string?` | `null` | Read time in minutes. The component appends " min", so pass the number only (`"5"`, not `"5 min"`). |
+| `Author` | `string?` | `null` | The author's name, shown with a person icon. Hidden when empty or white space. |
+| `PublishDate` | `DateTime?` | `null` | The publication date, shown with a calendar icon in the format of `DateFormat`. Hidden when `null`. |
+| `DateFormat` | `string?` | `"d"` | The .NET date format string for `PublishDate`, applied with the current culture. |
+| `ReadTime` | `string?` | `null` | The read time in minutes, shown with a clock icon. The component appends " min", so pass the number only (`5`, not `5 min`). Hidden when empty or white space. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
+| `Style` | `string?` | `null` | An inline style for the component's root element. |
+
+<!-- /osirion:parameters -->
 
 The component inherits `Class`, `Style`, `Theme` and unmatched attributes from `OsirionComponentBase`, but its
-markup does not apply them: the root element always renders as `<div class="osirion-article-metadata">`. To restyle
-it, wrap the component in an element of your own and target `.your-wrapper .osirion-article-metadata` from your
-stylesheet. The component's own styles are scoped (a class plus an attribute), so a single class selector loses to
-them; a parent class matches their specificity, and your rule wins when your stylesheet loads after the library's.
+markup applies none of them: the root element always renders as `<div class="osirion-article-metadata">`, so the
+`Class`, `Style` and `Theme` rows above have no effect on this component. To restyle it, wrap the component in an
+element of your own and target `.your-wrapper .osirion-article-metadata` from your stylesheet. The component's own
+styles are scoped (a class plus an attribute), so a single class selector loses to them; a parent class matches their
+specificity, and your rule wins when your stylesheet loads after the library's.
 
 ## Behavior
 
@@ -94,6 +121,7 @@ them; a parent class matches their specificity, and your rule wins when your sty
   readers expect their own date format.
 - Values are written as text, so Razor encodes them; HTML in `Author` shows as text.
 - The date is plain text, not a `<time>` element.
+- The icons are inline SVG without a text alternative. The text next to each icon carries the meaning.
 - `HeroSection` uses this component when its `ShowMetadata` parameter is `true`, passing its own `Author`,
   `PublishDate` and `ReadTime`.
 
@@ -107,7 +135,10 @@ The markup is a flex row:
 | `osirion-article-metadata-author` | The author item |
 | `osirion-article-metadata-date` | The date item |
 | `osirion-article-metadata-read-time` | The read time item |
-| `osirion-article-metadata-icon` | The date and read time icons |
+| `osirion-article-metadata-icon` | The date and read time icons (no shrinking, 70% opacity) |
+
+The author's icon carries the class `osirion-article-meta-icon`, which no stylesheet defines, so it does not get the
+icon rules above. All three icons are 16 pixels square.
 
 The styles are scoped to the component and use the theme tokens `--osirion-spacing-2`, `--osirion-spacing-4`,
 `--osirion-spacing-6` and `--osirion-font-size-sm`, so a theme or framework adapter that sets them changes the spacing

@@ -2,12 +2,12 @@
 id: 'osirion-tabs'
 order: 3
 layout: docs
-title: Tabs
+title: OsirionTabs
 permalink: /components/tabs
 description: "OsirionTabs and OsirionTab show alternative content behind tabs that switch without script and work with the keyboard, under static SSR."
 author: Dejan Demonjić
 date: 2026-10-11
-last_modified: 2026-10-11
+last_modified: 2026-10-17
 featured_image: /assets/images/blazor-cover.png
 categories:
 - Components
@@ -25,15 +25,37 @@ redirect_from:
 - /docs/components/core/content/tabs
 custom_fields:
   group: content
+seo_properties:
+  title: 'OsirionTabs: tabs without JavaScript for Blazor'
+  description: 'OsirionTabs and OsirionTab show alternative content behind tabs that switch without script and work with the keyboard, under static SSR.'
+  image: /assets/images/blazor-cover.png
+  canonical: 'https://getosirion.com/components/tabs'
+  lang: en
+  robots: index, follow
+  og_title: 'OsirionTabs - Osirion.Blazor'
+  og_description: 'Tabs that switch without script, with keyboard support, under static SSR.'
+  og_image_url: '/assets/images/blazor-cover.png'
+  og_type: article
+  json_ld: ''
+  type: Article
+  twitter_card: summary_large_image
+  twitter_title: 'OsirionTabs - Osirion.Blazor'
+  twitter_description: 'Tabs that switch without script, with keyboard support, under static SSR.'
+  twitter_image_url: '/assets/images/blazor-cover.png'
+  meta_tags: {}
 ---
 
-# Tabs
+# OsirionTabs
 
 `OsirionTabs` shows one of several panels at a time, with a row of tabs to switch between them. Use it for
 alternative versions of the same content, such as one install command per package manager. The tabs switch without
 script, so they work under static server-side rendering.
 
-Available from 4.1.
+Package `Osirion.Blazor.Core`, namespace `Osirion.Blazor.Components`. [Source on GitHub](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Core/Components/Content/OsirionTabs.razor). Available from 4.0.
+
+```demo
+install-tabs
+```
 
 ## Usage
 
@@ -73,25 +95,38 @@ With `Id="install"`, the third tab's radio button is `install-2`, its label `ins
 
 ### OsirionTabs
 
+<!-- osirion:parameters OsirionTabs -->
+
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `ChildContent` | `RenderFragment?` | `null` | The `OsirionTab` components. |
-| `SelectedIndex` | `int` | `0` | Zero-based index of the tab selected when the page renders. |
-| `Id` | `string?` | generated | Radio group name and prefix of every tab's ids. Without it, a unique value is generated per instance. |
-| `AriaLabel` | `string?` | `null` | Accessible name of the tab group, for example "Package manager". |
-| `Class` | `string?` | `null` | Extra classes on the container. |
+| `ChildContent` | `RenderFragment?` | `null` | The `OsirionTab` components. Each tab takes its position from the order in which the tabs render. |
+| `SelectedIndex` | `int` | `0` | The zero-based index of the tab selected when the page renders. An index with no tab leaves every panel hidden. It sets only the starting choice: the visitor's later choices are not written back. |
+| `Id` | `string?` | `null` | The radio group name, also the prefix of each tab's ids: `{Id}-0` for the radio button, `{Id}-0-label` for the label and `{Id}-0-panel` for the panel (then `-1` and so on). Defaults to a value generated for each instance; set it for stable ids, for example to link to a tab, and use a different value for each tab set on a page. |
+| `AriaLabel` | `string?` | `null` | The accessible name of the tab group, for example "Package manager". Without it the group has no name. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
+| `Style` | `string?` | `null` | An inline style for the component's root element. |
 
-Unmatched attributes go on the container `<div>`.
+<!-- /osirion:parameters -->
+
+Unmatched attributes go on the container `<div>`. `Class` is added to the container. `Style` is accepted but the
+component does not write it.
 
 ### OsirionTab
 
+<!-- osirion:parameters OsirionTab -->
+
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `Title` | `string` | `""` | The tab's label. Marked `[EditorRequired]`. |
-| `ChildContent` | `RenderFragment?` | `null` | The panel content shown while the tab is selected. |
-| `Class` | `string?` | `null` | Extra classes on the panel. |
+| `Title` | `string` | `""` | The tab's label, shown in the tab row. Required. |
+| `ChildContent` | `RenderFragment?` | `null` | The panel content, shown while this tab is selected. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
+| `Style` | `string?` | `null` | An inline style for the component's root element. |
 
-Unmatched attributes go on the panel `<div>`.
+<!-- /osirion:parameters -->
+
+Unmatched attributes and `Class` go on the panel `<div>`. `Style` is accepted but the component does not write it.
 
 ## Behavior
 
@@ -108,6 +143,8 @@ Unmatched attributes go on the panel `<div>`.
   for each instance.
 - Printed pages show every panel under the tab row, because paper cannot switch tabs.
 - An `OsirionTab` placed outside an `OsirionTabs` throws `InvalidOperationException`.
+- The browser holds the visitor's choice. The component keeps no state of its own and never reports which tab is
+  selected: `SelectedIndex` is only the starting choice.
 
 ## Styling
 

@@ -11,16 +11,14 @@ public partial class OsirionAccordion
     // Generated once per instance so every render gives the items the same group name.
     private readonly string _generatedName = $"osirion-accordion-{Guid.NewGuid():N}";
 
-    /// <summary>
-    /// Gets or sets the <see cref="OsirionAccordionItem"/> components.
-    /// </summary>
+    /// <summary>Gets or sets the <see cref="OsirionAccordionItem"/> components.</summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
-    /// Gets or sets whether several items can be open at once. Defaults to <see langword="true"/>. When
-    /// <see langword="false"/>, the items share a <c>name</c> and the browser closes the others when one opens
-    /// (browsers without exclusive details support let several stay open).
+    /// Gets or sets whether several items can be open at once. When <see langword="false"/>, the items share a
+    /// <c>name</c> and the browser closes the others when one opens; browsers without support for exclusive
+    /// <c>details</c> elements let several stay open.
     /// </summary>
     [Parameter]
     public bool AllowMultiple { get; set; } = true;
