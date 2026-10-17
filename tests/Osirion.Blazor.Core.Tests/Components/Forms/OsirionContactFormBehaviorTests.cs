@@ -189,6 +189,28 @@ public class OsirionContactFormBehaviorTests : OsirionComponentTestBase
         Navigation.Uri.ShouldContain("SubmissionResultValue=3");
     }
 
+    // Fails before the fix: with PrivacyPolicyText empty the checkbox was not rendered but the model still required it,
+    // so a valid submission never reached OnSubmit and no message explained why.
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    public void ContactForm_NoPrivacyPolicyText_SubmitsWithoutTheCheckbox(string? text)
+    {
+        ContactFormModel? submitted = null;
+        var cut = RenderStatic<OsirionContactForm>(parameters => parameters
+            .Add(p => p.PrivacyPolicyText, text)
+            .Add(p => p.OnSubmit, (ContactFormModel model) => submitted = model));
+        cut.Find("#contact-name-contact-form").Change("Ann");
+        cut.Find("#contact-email-contact-form").Change("ann@example.com");
+        cut.Find("#contact-subject-contact-form").Change("Hello");
+        cut.Find("#contact-message-contact-form").Change("A message that is long enough");
+
+        cut.Find("form").Submit();
+
+        submitted.ShouldNotBeNull();
+        Navigation.Uri.ShouldContain("SubmissionResultValue=1");
+    }
+
     [Fact]
     public void ContactForm_BuiltInEmailServiceNotRegistered_ReportsServerError()
     {
