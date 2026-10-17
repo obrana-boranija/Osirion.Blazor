@@ -74,6 +74,24 @@ public class ShippedStylesheetTests
         css.ShouldContain(".osirion-metric-card-value{margin-bottom:0.5rem;color:color-mix(insrgb,var(--osirion-metric-card-accent)65%,var(--osirion-text-primary,#111827));");
     }
 
+    // Fails before the fix: the content of an OsirionReveal started at opacity 0 and only the script revealed it, and the
+    // Down, Left and Right rules moved it 1.25rem with !important even when the script never ran, so with script blocked,
+    // Animate off or reduced motion the content stayed invisible or offset.
+    [Fact]
+    public void Reveal_HiddenStateAppliesOnlyAfterTheScriptArmsTheElement()
+    {
+        // Act
+        var css = Squash(File.ReadAllText(ComponentCss("Rendering", "OsirionReveal.razor.css")));
+        var script = File.ReadAllText(Path.Combine(Path.GetDirectoryName(ComponentCss("Rendering", "OsirionReveal.razor.css"))!, "OsirionReveal.razor.js"));
+
+        // Assert
+        css.ShouldNotContain("data-osirion-reveal");
+        css.ShouldNotContain("!important");
+        css.ShouldContain(".osirion-reveal.osirion-reveal-armed{opacity:0;");
+        css.ShouldContain(".osirion-reveal-armed.osirion-reveal-left{transform:translateX(1.25rem);}");
+        script.ShouldContain("classList.add('osirion-reveal-armed')");
+    }
+
     private static string Squash(string css) => System.Text.RegularExpressions.Regex.Replace(
         System.Text.RegularExpressions.Regex.Replace(css, @"/\*.*?\*/", string.Empty, System.Text.RegularExpressions.RegexOptions.Singleline),
         @"\s+",
