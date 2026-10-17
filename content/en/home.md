@@ -72,7 +72,6 @@ Register it in `Program.cs`:
 using Osirion.Blazor.Extensions;
 
 builder.Services.AddOsirion(builder.Configuration);
-builder.Services.AddJSComponents();
 ```
 
 Point it at a folder of Markdown files in `appsettings.json`:

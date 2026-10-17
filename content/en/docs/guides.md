@@ -37,3 +37,7 @@ copy, and a check that it worked. For the parameters of a single component, use 
 | Guide | What it covers |
 | --- | --- |
 | [Getting started](/docs/getting-started) | A running blog from the `osirion-blog` template, or Osirion.Blazor added to an existing Blazor Web App |
+| [Install Osirion.Blazor](/docs/installation) | The packages, `AddOsirion`, the stylesheet links and the CSS framework choice for an existing Blazor Web App |
+| [Configure Osirion.Blazor](/docs/configuration) | The `Osirion` section, configuring in code, per environment, secrets and what is validated at startup |
+| [Content providers](/docs/providers) | The file system and GitHub providers: options, the default provider, locales, the GitHub token and refresh |
+| [Deploy an Osirion.Blazor site](/docs/deployment) | Publishing with content, environment settings, HTTPS behind a proxy, the public address, sitemap and feeds |
