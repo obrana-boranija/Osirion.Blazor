@@ -176,15 +176,17 @@ public static class GitHubProviderRegistrationExtensions
             return provider;
         });
 
+        var registeredOptions = new GitHubOptions();
+        providerSection.Bind(registeredOptions);
+
+        // The polling service reads EnablePolling and PollingIntervalSeconds from here, not from IOptions<GitHubOptions>.
+        services.AddSingleton(new GitHubPollingTarget(providerName, registeredOptions));
+
         // Register default setter if this provider is marked as default
-        var isDefault = providerSection.GetValue<bool>("IsDefault");
-        if (isDefault)
+        if (providerSection.GetValue<bool>("IsDefault"))
         {
             // The id the provider reports, not a second derivation: the registry matches that exact string.
-            var defaultOptions = new GitHubOptions();
-            providerSection.Bind(defaultOptions);
-
-            services.AddSingleton<IDefaultProviderSetter>(new DefaultProviderSetter(GitHubProviderId.For(defaultOptions), true));
+            services.AddSingleton<IDefaultProviderSetter>(new DefaultProviderSetter(GitHubProviderId.For(registeredOptions), true));
         }
 
         return services;
