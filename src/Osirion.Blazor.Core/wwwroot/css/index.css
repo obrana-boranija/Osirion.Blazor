@@ -1103,7 +1103,7 @@
 }
 
 .osirion-button-outlined-primary {
-  color: var(--osirion-action-primary, #2563eb);
+  color: var(--osirion-link-color, var(--osirion-action-primary, #2563eb));
   border-color: var(--osirion-action-primary, #2563eb);
 }
 
@@ -1126,7 +1126,7 @@
 .osirion-button-text {
   background-color: transparent;
   border-color: transparent;
-  color: var(--osirion-action-primary, #2563eb);
+  color: var(--osirion-link-color, var(--osirion-action-primary, #2563eb));
   padding: var(--osirion-spacing-2, 0.5rem);
 }
 

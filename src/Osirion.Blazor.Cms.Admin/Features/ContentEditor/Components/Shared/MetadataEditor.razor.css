@@ -27,7 +27,7 @@
 
         ::deep .nav-tabs .nav-link.active {
             font-weight: 500;
-            color: var(--osirion-action-primary);
+            color: var(--osirion-link-color, var(--osirion-action-primary));
             background-color: var(--osirion-background-primary);
             border-color: var(--osirion-border-color) var(--osirion-border-color) #fff;
         }

@@ -102,7 +102,7 @@
 }
 
 .osirion-markdown-preview-content a {
-    color: var(--osirion-action-primary, #2563eb);
+    color: var(--osirion-link-color, var(--osirion-action-primary, #2563eb));
     text-decoration: none;
 }
 
@@ -263,7 +263,7 @@
 :root[data-theme="dark"] .osirion-markdown-preview-content a,
 .dark-theme .osirion-markdown-preview-content a,
 .theme-dark .osirion-markdown-preview-content a {
-    color: var(--osirion-action-primary, #60a5fa);
+    color: var(--osirion-link-color, var(--osirion-action-primary, #60a5fa));
 }
 
 :root[data-theme="dark"] .osirion-markdown-preview-content blockquote,
