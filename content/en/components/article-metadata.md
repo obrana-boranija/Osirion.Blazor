@@ -107,12 +107,9 @@ A realistic case is a post header fed from your own model, with a long date form
 
 <!-- /osirion:parameters -->
 
-The component inherits `Class`, `Style`, `Theme` and unmatched attributes from `OsirionComponentBase`, but its
-markup applies none of them: the root element always renders as `<div class="osirion-article-metadata">`, so the
-`Class`, `Style` and `Theme` rows above have no effect on this component. To restyle it, wrap the component in an
-element of your own and target `.your-wrapper .osirion-article-metadata` from your stylesheet. The component's own
-styles are scoped (a class plus an attribute), so a single class selector loses to them; a parent class matches their
-specificity, and your rule wins when your stylesheet loads after the library's.
+`Class`, `Style`, `Theme` and unmatched attributes (for example `id` or `data-*`) are written on the root `<div>`.
+The component's own styles are scoped (a class plus an attribute), so a single class selector loses to them; a parent
+class matches their specificity, and your rule wins when your stylesheet loads after the library's.
 
 ## Behavior
 
@@ -135,10 +132,10 @@ The markup is a flex row:
 | `osirion-article-metadata-author` | The author item |
 | `osirion-article-metadata-date` | The date item |
 | `osirion-article-metadata-read-time` | The read time item |
-| `osirion-article-metadata-icon` | The date and read time icons (no shrinking, 70% opacity) |
+| `osirion-article-metadata-icon` | The three icons (no shrinking, 70% opacity) |
 
-The author's icon carries the class `osirion-article-meta-icon`, which no stylesheet defines, so it does not get the
-icon rules above. All three icons are 16 pixels square.
+The author's icon also keeps the earlier class `osirion-article-meta-icon`, which no stylesheet defines, so rules a site
+wrote for it still match. All three icons are 16 pixels square.
 
 The styles are scoped to the component and use the theme tokens `--osirion-spacing-2`, `--osirion-spacing-4`,
 `--osirion-spacing-6` and `--osirion-font-size-sm`, so a theme or framework adapter that sets them changes the spacing
