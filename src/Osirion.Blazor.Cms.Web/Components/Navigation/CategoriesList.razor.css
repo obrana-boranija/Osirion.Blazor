@@ -45,9 +45,11 @@
         font-weight: var(--osirion-font-weight-medium, 500);
     }
 
+        /* The active link's own color pair, which the theme holds to contrast; the ring keeps the count a badge. */
         .osirion-category-link.osirion-active .osirion-category-count {
-            background-color: rgba(var(--osirion-action-primary-rgb, 3, 105, 161), 0.2);
-            color: var(--osirion-link-color, var(--osirion-action-primary, #0369a1));
+            background-color: transparent;
+            color: inherit;
+            box-shadow: inset 0 0 0 1px currentColor;
         }
 
 .osirion-category-count {
