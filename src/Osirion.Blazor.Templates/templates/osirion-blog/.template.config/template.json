@@ -10,8 +10,12 @@
     "language": "C#",
     "type": "project"
   },
-  "sourceName": "OsirionBlog-CSharp",
+  "sourceName": "OsirionApp-CSharp",
   "preferNameDirectory": true,
+  "sources": [
+    { "source": "./" },
+    { "source": "../_shared/", "target": "./" }
+  ],
   "symbols": {
     "SiteName": {
       "type": "parameter",
@@ -47,7 +51,7 @@
     }
   },
   "primaryOutputs": [
-    { "path": "OsirionBlog-CSharp.csproj" }
+    { "path": "OsirionApp-CSharp.csproj" }
   ],
   "postActions": [
     {

@@ -32,6 +32,8 @@ mkdir -p "$work"
 work=$(cd "$work" && pwd)
 
 export NUGET_PACKAGES="$work/nuget-cache"
+# NuGet's HTTP cache too, or packages downloaded by an earlier run make this one look faster.
+export NUGET_HTTP_CACHE_PATH="$work/http-cache"
 export DOTNET_CLI_TELEMETRY_OPTOUT=1 DOTNET_NOLOGO=1
 cat > "$work/nuget.config" <<EOF
 <?xml version="1.0" encoding="utf-8"?>
