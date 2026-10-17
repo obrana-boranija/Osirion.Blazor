@@ -123,7 +123,7 @@ control crawlers reliably.
 
 | Output | Source, first match wins |
 | --- | --- |
-| `<title>` | `seo_properties.title`, then `title`; the site name follows after a vertical bar, and the whole is cut to 60 characters |
+| `<title>` | `seo_properties.title`, then `title`; the site name follows after a vertical bar; the title is never cut |
 | description | `seo_properties.description`, then `description`, cut to 160 characters |
 | canonical | `seo_properties.canonical`, then the current URL without query string and fragment, on `SiteUrl` when it is set |
 | robots | `AllowSearchIndexing`, then `seo_properties.robots` (front matter default `index, follow`) |

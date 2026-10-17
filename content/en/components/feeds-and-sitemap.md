@@ -31,7 +31,7 @@ custom_fields:
 at `/sitemap.xml`, an RSS 2.0 feed at `/feed.xml` and an Atom 1.0 feed at `/atom.xml`. Search engines read the
 sitemap; feed readers subscribe to either feed.
 
-Available from 4.1.
+Available from 4.0.
 
 ## Usage
 
@@ -80,8 +80,8 @@ the application at startup instead of producing broken feeds.
 
 ## What goes into each document
 
-- **Sitemap.** Each URL has a `lastmod` from the item's `last_modified` front matter, then the file's write time
-  (file system provider), then its `date`. Set `last_modified` when dates must survive a fresh checkout or a new
+- **Sitemap.** Each URL has a `lastmod` from the item's `last_modified` front matter, then its `date`. The
+  file's write time counts only with `UseFileWriteTimeAsLastModified` on the file system provider. Set `last_modified` when dates must survive a fresh checkout or a new
   deployment. Items whose `seo_properties.robots` contains `noindex` are left out, and duplicate URLs are written
   once. The sitemap covers all content; `FeedDirectory` and `FeedLocale` do not apply to it.
 - **RSS.** Each item has its title, link, a permalink `guid`, `pubDate` from `date` and the `description` front
