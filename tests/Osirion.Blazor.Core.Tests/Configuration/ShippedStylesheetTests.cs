@@ -74,6 +74,66 @@ public class ShippedStylesheetTests
         css.ShouldContain(".osirion-metric-card-value{margin-bottom:0.5rem;color:color-mix(insrgb,var(--osirion-metric-card-accent)65%,var(--osirion-text-primary,#111827));");
     }
 
+    // Fails before the fix: the content of an OsirionReveal started at opacity 0 and only the script revealed it, and the
+    // Down, Left and Right rules moved it 1.25rem with !important even when the script never ran, so with script blocked,
+    // Animate off or reduced motion the content stayed invisible or offset.
+    [Fact]
+    public void Reveal_HiddenStateAppliesOnlyAfterTheScriptArmsTheElement()
+    {
+        // Act
+        var css = Squash(File.ReadAllText(ComponentCss("Rendering", "OsirionReveal.razor.css")));
+        var script = File.ReadAllText(Path.Combine(Path.GetDirectoryName(ComponentCss("Rendering", "OsirionReveal.razor.css"))!, "OsirionReveal.razor.js"));
+
+        // Assert
+        css.ShouldNotContain("data-osirion-reveal");
+        css.ShouldNotContain("!important");
+        css.ShouldContain(".osirion-reveal.osirion-reveal-armed{opacity:0;");
+        css.ShouldContain(".osirion-reveal-armed.osirion-reveal-left{transform:translateX(1.25rem);}");
+        script.ShouldContain("classList.add('osirion-reveal-armed')");
+    }
+
+    // Fails before the fix: the code block header and copy button used #f8f8f2 text on a background taken from
+    // --osirion-syntax-background-color, which only the palettes define, so in the light theme the button read 1.06:1
+    // on white and under a light palette its light text sat on a light header.
+    [Theory]
+    [InlineData("osirion-html-renderer.css")]
+    [InlineData("osirion-html-renderer.min.css")]
+    public void HtmlRenderer_CodeHeaderAndCopyButton_UseOnePairOfBlockColors(string file)
+    {
+        // Act
+        var css = Squash(File.ReadAllText(CoreCss(file)));
+
+        // Assert: one pair, from the palette tokens, with a dark fallback that matches the Okaidia code theme
+        css.ShouldContain("--osirion-code-block-background:var(--osirion-code-background,var(--osirion-syntax-background-color,#151b23));");
+        css.ShouldContain("--osirion-code-block-text:var(--osirion-code-text,#f8f8f2);");
+        System.Text.RegularExpressions.Regex.Matches(css, @"osirion-code-header\{[^}]*\}")[0].Value
+            .ShouldContain("background-color:var(--osirion-code-block-background)");
+        var button = System.Text.RegularExpressions.Regex.Matches(css, @"osirion-copy-button\{[^}]*\}")[0].Value;
+        button.ShouldContain(";color:var(--osirion-code-block-text);");
+        button.ShouldNotContain("#f8f8f2");
+    }
+
+    // Fails before the fix: the renderer's text link rules also reached the links inside an embedded demo, so a
+    // component's own link color sat on the renderer's tinted link background (4.35:1 for the OsirionContentNotFound
+    // suggestions on its centered panel) and a demo did not look as the component does on a page of its own.
+    [Theory]
+    [InlineData("osirion-html-renderer.css")]
+    [InlineData("osirion-html-renderer.min.css")]
+    public void HtmlRenderer_TextLinkRules_LeaveEmbeddedDemosAlone(string file)
+    {
+        // Act
+        var css = System.Text.RegularExpressions.Regex.Replace(File.ReadAllText(CoreCss(file)), @"\s+", " ");
+        var linkSelectors = System.Text.RegularExpressions.Regex.Matches(
+                css,
+                @"\.osirion-html-renderer a(?:::?[\w-]+(?:\((?:[^()]|\([^()]*\))*\))?)+")
+            .Select(match => match.Value)
+            .ToList();
+
+        // Assert
+        linkSelectors.Count.ShouldBe(15);
+        linkSelectors.ShouldAllBe(selector => selector.Contains(":not(.osirion-content-demo-preview a)", StringComparison.Ordinal));
+    }
+
     // Fails before the fix: two seconds after a copy the script set the label to "Copy code to clipboard", so a screen
     // reader lost the language the markup gave it ("Copy C# code to clipboard").
     [Theory]
@@ -89,52 +149,6 @@ public class ShippedStylesheetTests
         script.ShouldContain("getAttribute(", Case.Sensitive);
         script.ShouldContain("aria-label", Case.Sensitive);
         script.ShouldNotContain("Copy code to clipboard");
-    // Fails before the fix: the content of an OsirionReveal started at opacity 0 and only the script revealed it, and the
-    // Down, Left and Right rules moved it 1.25rem with !important even when the script never ran, so with script blocked,
-    // Animate off or reduced motion the content stayed invisible or offset.
-    [Fact]
-    public void Reveal_HiddenStateAppliesOnlyAfterTheScriptArmsTheElement()
-        // Act
-        var css = Squash(File.ReadAllText(ComponentCss("Rendering", "OsirionReveal.razor.css")));
-        var script = File.ReadAllText(Path.Combine(Path.GetDirectoryName(ComponentCss("Rendering", "OsirionReveal.razor.css"))!, "OsirionReveal.razor.js"));
-        css.ShouldNotContain("data-osirion-reveal");
-        css.ShouldNotContain("!important");
-        css.ShouldContain(".osirion-reveal.osirion-reveal-armed{opacity:0;");
-        css.ShouldContain(".osirion-reveal-armed.osirion-reveal-left{transform:translateX(1.25rem);}");
-        script.ShouldContain("classList.add('osirion-reveal-armed')");
-    }
-    // Fails before the fix: the code block header and copy button used #f8f8f2 text on a background taken from
-    // --osirion-syntax-background-color, which only the palettes define, so in the light theme the button read 1.06:1
-    // on white and under a light palette its light text sat on a light header.
-    [InlineData("osirion-html-renderer.css")]
-    [InlineData("osirion-html-renderer.min.css")]
-    public void HtmlRenderer_CodeHeaderAndCopyButton_UseOnePairOfBlockColors(string file)
-        // Act
-        var css = Squash(File.ReadAllText(CoreCss(file)));
-        // Assert: one pair, from the palette tokens, with a dark fallback that matches the Okaidia code theme
-        css.ShouldContain("--osirion-code-block-background:var(--osirion-code-background,var(--osirion-syntax-background-color,#151b23));");
-        css.ShouldContain("--osirion-code-block-text:var(--osirion-code-text,#f8f8f2);");
-        System.Text.RegularExpressions.Regex.Matches(css, @"osirion-code-header\{[^}]*\}")[0].Value
-            .ShouldContain("background-color:var(--osirion-code-block-background)");
-        var button = System.Text.RegularExpressions.Regex.Matches(css, @"osirion-copy-button\{[^}]*\}")[0].Value;
-        button.ShouldContain(";color:var(--osirion-code-block-text);");
-        button.ShouldNotContain("#f8f8f2");
-    }
-    // Fails before the fix: the renderer's text link rules also reached the links inside an embedded demo, so a
-    // component's own link color sat on the renderer's tinted link background (4.35:1 for the OsirionContentNotFound
-    // suggestions on its centered panel) and a demo did not look as the component does on a page of its own.
-    [InlineData("osirion-html-renderer.css")]
-    [InlineData("osirion-html-renderer.min.css")]
-    public void HtmlRenderer_TextLinkRules_LeaveEmbeddedDemosAlone(string file)
-        // Act
-        var css = System.Text.RegularExpressions.Regex.Replace(File.ReadAllText(CoreCss(file)), @"\s+", " ");
-        var linkSelectors = System.Text.RegularExpressions.Regex.Matches(
-                css,
-                @"\.osirion-html-renderer a(?:::?[\w-]+(?:\((?:[^()]|\([^()]*\))*\))?)+")
-            .Select(match => match.Value)
-            .ToList();
-        linkSelectors.Count.ShouldBe(15);
-        linkSelectors.ShouldAllBe(selector => selector.Contains(":not(.osirion-content-demo-preview a)", StringComparison.Ordinal));
     }
 
     private static string Squash(string css) => System.Text.RegularExpressions.Regex.Replace(
