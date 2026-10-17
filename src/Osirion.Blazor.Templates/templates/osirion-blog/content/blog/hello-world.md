@@ -23,12 +23,12 @@ search engines and feed readers all see the same thing.
 | Posts | `content/blog`, one Markdown file each |
 | The About page | `content/about.md` |
 | Menu, footer and site name | `Osirion:Site` in `appsettings.json` |
-| Colours and dark mode | `Osirion:Theming` in `appsettings.json` |
+| Colors and dark mode | `Osirion:Theming` in `appsettings.json` |
 | Your own styles | `wwwroot/app.css` |
 
 ## A code block
 
-Code is highlighted in the colours of the site's palette:
+Code is highlighted in the colors of the site's palette:
 
 ```csharp
 builder.Services.AddOsirion(builder.Configuration);

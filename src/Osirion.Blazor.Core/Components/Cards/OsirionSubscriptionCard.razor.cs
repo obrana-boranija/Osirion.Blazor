@@ -179,7 +179,7 @@ public partial class OsirionSubscriptionCard : OsirionComponentBase
     public bool CompactLayout { get; set; } = false;
 
     /// <summary>
-    /// Adds <c>osirion-subscription-card-dark</c>, which takes input and option colours from the theme tokens.
+    /// Adds <c>osirion-subscription-card-dark</c>, which takes input and option colors from the theme tokens.
     /// </summary>
     [Parameter]
     public bool UseDarkTheme { get; set; } = false;

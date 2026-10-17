@@ -138,11 +138,11 @@ A card with a name field and topics, where one topic cannot be turned off:
 | `AlreadySubscribedMessage` | `string` | `"This email address is already subscribed to our newsletter."` | Shown for the `AlreadySubscribed` result, which the card does not produce itself. |
 | `UseBuiltInEmailService` | `bool` | `false` | Not supported for subscriptions: the email service has nothing to send or store for a sign-up, so with this on the card reports an error and logs a warning. Handle `OnSubscribe` instead. |
 | `CompactLayout` | `bool` | `false` | Less padding and a smaller title and description. |
-| `UseDarkTheme` | `bool` | `false` | Adds `osirion-subscription-card-dark`, which takes input and option colours from the theme tokens. |
+| `UseDarkTheme` | `bool` | `false` | Adds `osirion-subscription-card-dark`, which takes input and option colors from the theme tokens. |
 | `ShowBorder` | `bool` | `true` | Whether the card has a border. |
 | `ShowShadow` | `bool` | `true` | Whether the card has a shadow. |
 | `ChildContent` | `RenderFragment?` | `null` | Footer content under the form. |
-| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's colour mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
 | `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
 | `Style` | `string?` | `null` | An inline style for the component's root element. |
 

@@ -3,12 +3,12 @@ using System.Globalization;
 namespace Osirion.Blazor.Palettes;
 
 /// <summary>
-/// An opaque sRGB colour with the arithmetic the palettes need: WCAG 2 contrast, mixing in OKLab, and moving a colour
+/// An opaque sRGB color with the arithmetic the palettes need: WCAG 2 contrast, mixing in OKLab, and moving a color
 /// lighter or darker until it reaches a contrast ratio.
 /// </summary>
 internal readonly record struct Rgb(double R, double G, double B)
 {
-    /// <summary>Parses <c>#rgb</c>, <c>#rrggbb</c> or <c>#rrggbbaa</c>; a colour with alpha is composited over <paramref name="backdrop"/>.</summary>
+    /// <summary>Parses <c>#rgb</c>, <c>#rrggbb</c> or <c>#rrggbbaa</c>; a color with alpha is composited over <paramref name="backdrop"/>.</summary>
     public static Rgb Parse(string hex, Rgb? backdrop = null)
     {
         var value = hex.TrimStart('#');
@@ -19,27 +19,27 @@ internal readonly record struct Rgb(double R, double G, double B)
 
         if (value.Length is not (6 or 8))
         {
-            throw new FormatException($"'{hex}' is not a #rrggbb or #rrggbbaa colour.");
+            throw new FormatException($"'{hex}' is not a #rrggbb or #rrggbbaa color.");
         }
 
-        var colour = new Rgb(Channel(value, 0), Channel(value, 2), Channel(value, 4));
+        var color = new Rgb(Channel(value, 0), Channel(value, 2), Channel(value, 4));
         if (value.Length == 6)
         {
-            return colour;
+            return color;
         }
 
         var alpha = Channel(value, 6);
         var under = backdrop ?? throw new FormatException($"'{hex}' has alpha but no backdrop to composite it over.");
         return new Rgb(
-            colour.R * alpha + under.R * (1 - alpha),
-            colour.G * alpha + under.G * (1 - alpha),
-            colour.B * alpha + under.B * (1 - alpha));
+            color.R * alpha + under.R * (1 - alpha),
+            color.G * alpha + under.G * (1 - alpha),
+            color.B * alpha + under.B * (1 - alpha));
     }
 
     private static double Channel(string value, int start) =>
         int.Parse(value.AsSpan(start, 2), NumberStyles.HexNumber, CultureInfo.InvariantCulture) / 255.0;
 
-    /// <summary>Gets the colour as lower-case <c>#rrggbb</c>.</summary>
+    /// <summary>Gets the color as lower-case <c>#rrggbb</c>.</summary>
     public string ToHex() => $"#{Byte(R):x2}{Byte(G):x2}{Byte(B):x2}";
 
     private static int Byte(double channel) => (int)Math.Round(Math.Clamp(channel, 0, 1) * 255);
@@ -59,14 +59,14 @@ internal readonly record struct Rgb(double R, double G, double B)
 
     private static double Gamma(double c) => c <= 0.0031308 ? 12.92 * c : 1.055 * Math.Pow(c, 1 / 2.4) - 0.055;
 
-    /// <summary>Gets the WCAG 2 contrast ratio between two colours, from 1 to 21.</summary>
+    /// <summary>Gets the WCAG 2 contrast ratio between two colors, from 1 to 21.</summary>
     public static double Contrast(Rgb a, Rgb b)
     {
         var (lighter, darker) = a.Luminance >= b.Luminance ? (a.Luminance, b.Luminance) : (b.Luminance, a.Luminance);
         return (lighter + 0.05) / (darker + 0.05);
     }
 
-    /// <summary>Mixes two colours in OKLab: 0 gives <paramref name="from"/>, 1 gives <paramref name="to"/>; values outside 0 to 1 extrapolate.</summary>
+    /// <summary>Mixes two colors in OKLab: 0 gives <paramref name="from"/>, 1 gives <paramref name="to"/>; values outside 0 to 1 extrapolate.</summary>
     public static Rgb Mix(Rgb from, Rgb to, double amount)
     {
         var a = from.ToOklab();
@@ -78,7 +78,7 @@ internal readonly record struct Rgb(double R, double G, double B)
     }
 
     /// <summary>
-    /// Returns this colour when it already reaches <paramref name="minimum"/> against <paramref name="background"/>;
+    /// Returns this color when it already reaches <paramref name="minimum"/> against <paramref name="background"/>;
     /// otherwise moves its OKLab lightness away from the background, keeping the hue, until it does.
     /// </summary>
     public Rgb EnsureContrast(Rgb background, double minimum)

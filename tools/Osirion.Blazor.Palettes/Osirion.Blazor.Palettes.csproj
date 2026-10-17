@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <!-- Generates the named colour palettes (src/Osirion.Blazor.Theming/wwwroot/css/palettes.css) from PaletteDefinitions. -->
+  <!-- Generates the named color palettes (src/Osirion.Blazor.Theming/wwwroot/css/palettes.css) from PaletteDefinitions. -->
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net10.0</TargetFramework>

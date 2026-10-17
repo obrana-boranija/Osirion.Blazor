@@ -112,9 +112,9 @@ A teaser that links to an article, with the image on top and category links unde
 | `ContentAlignment` | `ContentAlignment` | `ContentAlignment.CenterLeft` | Where the text sits in the card: one of nine positions, from `TopLeft` to `BottomRight`. |
 | `ContentFontSize` | `FontSizeVariant` | `FontSizeVariant.Normal` | The text size, from `ExtraExtraSmall` to `ExtraExtraLarge`. |
 | `BorderTiming` | `EffectTiming` | `EffectTiming.Always` | When the border shows: `Never`, `Always` or `OnHover`. |
-| `BorderColor` | `ThemeColor` | `ThemeColor.Neutral` | The border colour: `Primary`, `Secondary`, `Tertiary` or `Neutral`. |
+| `BorderColor` | `ThemeColor` | `ThemeColor.Neutral` | The border color: `Primary`, `Secondary`, `Tertiary` or `Neutral`. |
 | `ShadowTiming` | `EffectTiming` | `EffectTiming.OnHover` | When the shadow shows: `Never`, `Always` or `OnHover`. |
-| `ShadowColor` | `ThemeColor` | `ThemeColor.Neutral` | The shadow colour: `Primary`, `Secondary`, `Tertiary` or `Neutral`. |
+| `ShadowColor` | `ThemeColor` | `ThemeColor.Neutral` | The shadow color: `Primary`, `Secondary`, `Tertiary` or `Neutral`. |
 | `TransformTiming` | `EffectTiming` | `EffectTiming.OnHover` | When the card lifts: `Never`, `Always` or `OnHover`. |
 | `ShowReadMoreLink` | `bool` | `false` | Whether a read more link is shown; it needs `ReadMoreHref` or `Url`. |
 | `ReadMoreText` | `string` | `"Read more"` | The read more link's text. |
@@ -122,7 +122,7 @@ A teaser that links to an article, with the image on top and category links unde
 | `ReadMoreStretched` | `bool` | `true` | With pillow buttons shown, ends the read more link's clickable area 50 pixels above the bottom of the text, so the buttons stay clickable. |
 | `ShowPillowButtons` | `bool` | `false` | Whether `PillowButtons` are shown. |
 | `PillowButtons` | `List<PillowButton>?` | `null` | Small category-style links under the text. |
-| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's colour mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
 | `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
 | `Style` | `string?` | `null` | An inline style for the component's root element. |
 

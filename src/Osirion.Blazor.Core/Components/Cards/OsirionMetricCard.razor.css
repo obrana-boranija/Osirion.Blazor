@@ -37,7 +37,7 @@
 .osirion-metric-card-shadow-mediumaccent:hover { box-shadow: 0 1rem 2.25rem color-mix(in srgb, var(--osirion-metric-card-accent) 28%, transparent); }
 .osirion-metric-card-shadow-largeaccent:hover { box-shadow: 0 1.5rem 3.75rem color-mix(in srgb, var(--osirion-metric-card-accent) 32%, transparent); }
 
-/* The accent, moved a third of the way to the text colour: darker on a light page, lighter on a dark one, so every
+/* The accent, moved a third of the way to the text color: darker on a light page, lighter on a dark one, so every
    accent keeps the 3:1 large text needs on the card in both themes and under the framework adapters. */
 .osirion-metric-card-value {
     margin-bottom: 0.5rem;
