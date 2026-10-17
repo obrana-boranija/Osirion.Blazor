@@ -89,7 +89,7 @@ configured in `appsettings.json`.
 | Posts | Add Markdown files to `content/blog`; the folder is watched, so a new post appears on reload |
 | The About page | `content/about.md` |
 | Menu, footer, social links | `Osirion:Site` in `appsettings.json` |
-| Colours | `Osirion:Theming:DefaultPalette`: one of the [palettes](/components/palettes) |
+| Colors | `Osirion:Theming:DefaultPalette`: one of the [palettes](/components/palettes) |
 | Your own styles | `wwwroot/app.css` |
 | The public address | `Feeds:SiteUrl` in `appsettings.json` and the `Sitemap` line in `wwwroot/robots.txt` |
 

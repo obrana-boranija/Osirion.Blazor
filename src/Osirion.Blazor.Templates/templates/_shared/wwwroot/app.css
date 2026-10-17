@@ -20,7 +20,7 @@ h1:focus {
     padding: 0 var(--osirion-spacing-4, 1rem);
 }
 
-/* A link that stands alone needs the theme's link colour and a 24 by 24 pixel target (WCAG 2.2, 2.5.8). page-link
+/* A link that stands alone needs the theme's link color and a 24 by 24 pixel target (WCAG 2.2, 2.5.8). page-link
    gives that without the page margins, for a paragraph inside a component that already has them. */
 .page-more a,
 .page-message a,

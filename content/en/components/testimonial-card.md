@@ -119,7 +119,7 @@ For formatted text, pass `TestimonialContent` instead of `TestimonialText`:
 | `IsHiddenFromAssistiveTech` | `bool` | `false` | Sets `tabindex="-1"` on the card's links, for copies inside an `aria-hidden` container such as a looping carousel. |
 | `ChildContent` | `RenderFragment?` | `null` | Extra content under the quote. |
 | `IsFirstVisible` | `bool` | `false` | Loads the photo eagerly with `fetchpriority="high"`, for a card above the fold; otherwise it loads lazily. |
-| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's colour mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
 | `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
 | `Style` | `string?` | `null` | An inline style for the component's root element. |
 

@@ -18,7 +18,7 @@ the folder's pages beside it, a table of contents, and links to the previous and
 | Pages | `content/docs`, one Markdown file each |
 | Their order in the navigation | `order` in each page's front matter |
 | Menu, footer and site name | `Osirion:Site` in `appsettings.json` |
-| Colours and dark mode | `Osirion:Theming` in `appsettings.json` |
+| Colors and dark mode | `Osirion:Theming` in `appsettings.json` |
 | The home page | `Components/Pages/Home.razor` |
 
 ## Next
