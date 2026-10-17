@@ -6,7 +6,8 @@ namespace Osirion.Blazor.Components;
 public partial class OsirionContextCardGrid : OsirionComponentBase
 {
     /// <summary>
-    /// The section's heading, rendered as an <c>h2</c>. It is rendered even when empty.
+    /// The section's heading, rendered as an <c>h2</c>; with an empty value no heading is rendered and the section
+    /// has no <c>aria-labelledby</c>.
     /// </summary>
     [Parameter] public string Title { get; set; } = "Context by category";
 
@@ -21,10 +22,10 @@ public partial class OsirionContextCardGrid : OsirionComponentBase
     [Parameter] public ContextCardItem[] Items { get; set; } = [];
 
     /// <summary>
-    /// The <c>id</c> of the heading, which the section's <c>aria-labelledby</c> points at. Set a unique value when
-    /// more than one grid is on a page.
+    /// The <c>id</c> of the heading, which the section's <c>aria-labelledby</c> points at. Each grid gets its own
+    /// generated value unless one is set.
     /// </summary>
-    [Parameter] public string HeadingId { get; set; } = "osirion-context-card-grid-heading";
+    [Parameter] public string HeadingId { get; set; } = $"osirion-context-card-grid-{Guid.NewGuid():N}";
 
     /// <summary>
     /// The section's <c>id</c>, for in-page links.
@@ -41,6 +42,8 @@ public partial class OsirionContextCardGrid : OsirionComponentBase
     /// frameworks.
     /// </summary>
     [Parameter] public string ContainerClass { get; set; } = "container";
+
+    private bool HasTitle => !string.IsNullOrWhiteSpace(Title);
 
     /// <summary>Describes a card label, detail, and optional accent.</summary>
     public record ContextCardItem(string Label, string Description, string Accent = "green");
