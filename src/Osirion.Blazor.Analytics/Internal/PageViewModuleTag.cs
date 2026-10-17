@@ -6,7 +6,7 @@ namespace Osirion.Blazor.Analytics.Internal;
 /// </summary>
 internal static class PageViewModuleTag
 {
-    internal const string ModulePath = "_content/Osirion.Blazor.Analytics/js/osirion-analytics.js";
+    internal const string ModulePath = "/_content/Osirion.Blazor.Analytics/js/osirion-analytics.js";
 
     /// <param name="provider">The provider key the module understands (<c>matomo</c> or <c>yandex</c>).</param>
     /// <param name="counterId">The provider specific identifier the module needs, when it needs one.</param>

@@ -32,6 +32,7 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
     private string _metaTitle = string.Empty;
     private string? _metaDescription;
     private string? _metaKeywords;
+    private IReadOnlyList<(string Name, string Value)> _extraMetaTags = [];
 
     // Open Graph
     private string? _ogTitle;
@@ -210,25 +211,25 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
     public string? AuthorUrl { get; set; }
 
     /// <summary>
-    /// Gets or sets the social image used when the item has neither <c>og_image_url</c> nor a featured image. A relative
+    /// Gets or sets the social image used when the item has no <c>og_image_url</c>, no <c>image</c> and no featured image. A relative
     /// address becomes absolute with the site address.
     /// </summary>
     [Parameter]
     public string? DefaultImageUrl { get; set; }
 
     /// <summary>
-    /// Gets or sets the width written as <c>og:image:width</c>, in pixels. A value of <c>1200</c> is replaced by the configured
-    /// width when there is one.
+    /// Gets or sets the width written as <c>og:image:width</c>, in pixels. When not set, the configured width applies,
+    /// then <c>1200</c>.
     /// </summary>
     [Parameter]
-    public int DefaultImageWidth { get; set; } = 1200;
+    public int? DefaultImageWidth { get; set; }
 
     /// <summary>
-    /// Gets or sets the height written as <c>og:image:height</c>, in pixels. A value of <c>630</c> is replaced by the configured
-    /// height when there is one.
+    /// Gets or sets the height written as <c>og:image:height</c>, in pixels. When not set, the configured height applies,
+    /// then <c>630</c>.
     /// </summary>
     [Parameter]
-    public int DefaultImageHeight { get; set; } = 630;
+    public int? DefaultImageHeight { get; set; }
 
     /// <summary>
     /// Gets or sets the publisher name in structured data. It is also the site name when no site name is set.
@@ -285,15 +286,16 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
 
     /// <summary>
     /// Gets or sets whether the viewport, theme-color and mobile web app meta tags are written. Off by default: the host
-    /// document owns these, and writing them again duplicates its tags. The configured value can also turn it on.
+    /// document owns these, and writing them again duplicates its tags. When not set, the configured value applies, then <c>false</c>;
+    /// a value set on the page wins over the configured one in both directions.
     /// </summary>
     [Parameter]
     public bool EmitMobileMetaTags { get; set; }
 
     /// <summary>
     /// Gets or sets whether FAQ structured data and answer meta tags are built from the title and description (requires
-    /// <see cref="EnableAeoOptimization"/>). Off by default because the question is derived, not authored. The configured
-    /// value can also turn it on.
+    /// <see cref="EnableAeoOptimization"/>). Off by default because the question is derived, not authored. When not set, the configured
+    /// value applies, then <c>false</c>; a value set on the page wins over the configured one in both directions.
     /// </summary>
     [Parameter]
     public bool EnableGeneratedFaq { get; set; }
@@ -305,6 +307,12 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
     /// </summary>
     private List<(string HrefLang, string Href)> _alternateLinks = [];
 
+    /// <summary>The meta names the renderer writes for every page, which front matter <c>meta_tags</c> cannot repeat.</summary>
+    private static readonly HashSet<string> RendererMetaNames = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "description", "keywords", "author", "generator", "language", "robots", "googlebot", "bingbot", "referrer"
+    };
+
     private static readonly Dictionary<string, string> OgTypesBySchemaType = new(StringComparer.OrdinalIgnoreCase)
     {
         ["Article"] = "article",
@@ -314,6 +322,11 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
         ["Product"] = "product",
         ["VideoObject"] = "video.other"
     };
+
+    /// <summary>The Open Graph image size Facebook and others recommend, written when neither a parameter nor an option sets one.</summary>
+    private const int RecommendedImageWidth = 1200;
+
+    private const int RecommendedImageHeight = 630;
 
     private readonly HashSet<string> _explicitParameters = new(StringComparer.Ordinal);
 
@@ -353,7 +366,7 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
         _currentUrl = siteUrl is null
             ? ResolvePageUrl()
             : _baseUrl + "/" + navigationManager.ToBaseRelativePath(ResolvePageUrl());
-        _locale = SeoText.ToOpenGraphLocale(Content?.Locale);
+        _locale = SeoText.ToOpenGraphLocale(SeoText.FirstNonBlank(Content?.Metadata?.SeoProperties?.Lang, Content?.Locale));
         _languageCode = Content?.Locale ?? "en";
         _alternateLinks = ParseAlternateLanguageUrls();
 
@@ -386,6 +399,7 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
         _metaTitle = string.Empty;
         _metaDescription = null;
         _metaKeywords = null;
+        _extraMetaTags = [];
         _ogTitle = null;
         _ogDescription = null;
         _ogImage = null;
@@ -490,11 +504,11 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
         BreadcrumbHomeText = string.IsNullOrWhiteSpace(BreadcrumbHomeText) ? options.BreadcrumbHomeText : BreadcrumbHomeText;
 
         // Apply default settings if not explicitly overridden
-        if (DefaultImageWidth == 1200) DefaultImageWidth = options.DefaultImageWidth;
-        if (DefaultImageHeight == 630) DefaultImageHeight = options.DefaultImageHeight;
+        DefaultImageWidth ??= options.DefaultImageWidth;
+        DefaultImageHeight ??= options.DefaultImageHeight;
 
-        EmitMobileMetaTags |= options.EmitMobileMetaTags;
-        EnableGeneratedFaq |= options.EnableGeneratedFaq;
+        if (!_explicitParameters.Contains(nameof(EmitMobileMetaTags))) EmitMobileMetaTags = options.EmitMobileMetaTags;
+        if (!_explicitParameters.Contains(nameof(EnableGeneratedFaq))) EnableGeneratedFaq = options.EnableGeneratedFaq;
 
         // The switches have defaults of their own, so a switch the page did not set takes the site's configuration;
         // reading the value alone cannot tell "left at true" from "set to true".
@@ -563,6 +577,47 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
             );
             _metaKeywords = Content?.Tags.Any() == true ? string.Join(", ", Content.Tags) : null;
         }
+
+        _extraMetaTags = BuildExtraMetaTags();
+    }
+
+    /// <summary>
+    /// The extra meta elements to write: the configured <see cref="SeoMetadataOptions.AdditionalMetaTags"/>, then the
+    /// front matter <c>meta_tags</c> of a single item, which replace a configured value of the same name. A name must
+    /// match <see cref="SeoText.IsSafeMetaName"/> and not be one the renderer writes itself, so an entry cannot repeat
+    /// <c>robots</c> or <c>description</c> with another value. Skipped entries are logged.
+    /// </summary>
+    private List<(string Name, string Value)> BuildExtraMetaTags()
+    {
+        var candidates = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var (name, value) in SeoOptions?.Value?.AdditionalMetaTags ?? [])
+        {
+            candidates[name] = value;
+        }
+
+        if (ContentItems?.Any() != true)
+        {
+            foreach (var (name, value) in Content?.Metadata?.SeoProperties?.MetaTags ?? [])
+            {
+                candidates[name] = value;
+            }
+        }
+
+        var accepted = new List<(string, string)>();
+        foreach (var (name, value) in candidates)
+        {
+            if (!SeoText.IsSafeMetaName(name) || RendererMetaNames.Contains(name))
+            {
+                Logger.LogWarning(
+                    "Skipping meta tag '{Name}'; the name is not a plain meta name or the renderer writes it itself",
+                    name);
+                continue;
+            }
+
+            accepted.Add((name, value));
+        }
+
+        return accepted;
     }
 
     private void BuildOpenGraphMetadata()
@@ -576,8 +631,8 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
             BuildContentOpenGraphMetadata();
         }
 
-        _ogImageWidth = DefaultImageWidth;
-        _ogImageHeight = DefaultImageHeight;
+        _ogImageWidth = DefaultImageWidth ?? RecommendedImageWidth;
+        _ogImageHeight = DefaultImageHeight ?? RecommendedImageHeight;
     }
 
     private void BuildCollectionOpenGraphMetadata(IReadOnlyList<ContentItem> contentItems)
@@ -594,7 +649,7 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
         var seo = Content?.Metadata?.SeoProperties;
         _ogTitle = SeoText.TruncateTitle(SeoText.FirstNonBlank(seo?.OgTitle, Content?.Title, _metaTitle), 60);
         _ogDescription = SeoText.TruncateDescription(SeoText.FirstNonBlank(seo?.OgDescription, _metaDescription), 200);
-        _ogImage = NormalizeImageUrl(SeoText.FirstNonBlank(seo?.OgImageUrl, Content?.FeaturedImageUrl, DefaultImageUrl));
+        _ogImage = NormalizeImageUrl(SeoText.FirstNonBlank(seo?.OgImageUrl, seo?.Image, Content?.FeaturedImageUrl, DefaultImageUrl));
         _ogType = SeoText.FirstNonBlank(seo?.OgType, DetermineOgType());
         _ogImageAlt = SeoText.FirstNonBlank(Content?.Title, _siteName);
     }
@@ -870,7 +925,7 @@ public partial class SeoMetadataRenderer(NavigationManager navigationManager)
         {
             schemaTypes = [.. SchemaTypes];
         }
-        else if (!string.IsNullOrWhiteSpace(declaredType) && Enum.TryParse<SchemaType>(declaredType, out var contentSchemaType))
+        else if (!string.IsNullOrWhiteSpace(declaredType) && Enum.TryParse<SchemaType>(declaredType, ignoreCase: true, out var contentSchemaType))
         {
             schemaTypes = [contentSchemaType];
         }

@@ -132,8 +132,7 @@ With the defaults and these placeholder values (not real ones), the tracker writ
 
     ym(12345678, "init", {"clickmap":true,"trackLinks":true,"accurateTrackBounce":true});
 </script>
-<noscript><div><img src="https://mc.yandex.ru/watch/12345678" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-<script src="_content/Osirion.Blazor.Analytics/js/osirion-analytics.js" defer data-osirion-analytics="yandex" data-counter="12345678"></script>
+<script src="/_content/Osirion.Blazor.Analytics/js/osirion-analytics.js" defer data-osirion-analytics="yandex" data-counter="12345678"></script>
 ```
 
 The init options list only what is on: the defaults give `clickmap`, `trackLinks` and `accurateTrackBounce`. The counter ID is written as a bare number, which is why it must be digits only. The last script is the page view module (see Behavior); its address is relative, so the document needs a `<base href="/" />`.
@@ -157,7 +156,7 @@ The keys live under `Osirion:Analytics:YandexMetrica`. Every service also has `E
 | `Params`, `UserParams` | none | Dictionaries written as `params` and `userParams` when not empty. |
 | `EcommerceEnabled`, `EcommerceContainerName` | `false`, `dataLayer` | `EcommerceEnabled` writes `ecommerce` with the container name. |
 | `AutoTrackPageViews` | `true` | Adds the page view module script; `false` leaves it out. |
-| `HashTracking` | `false` | Bound from configuration, but nothing in the tracker reads it; use `TrackHash`. |
+| `HashTracking` | `false` | The older spelling of `TrackHash`: `true` writes `trackHash: true` while `TrackHash` is not set. |
 
 `CounterId` and `AlternativeCdn` are checked at startup when the service is enabled: a non-blank `CounterId` that is not numeric, or an `AlternativeCdn` that is not an absolute http(s) address, stops the app with a message that names the key.
 
@@ -170,7 +169,7 @@ The consent gate of the package is off by default. Turn it on with `RequireConse
 closed: with the gate on and no `HttpContext`, for example inside a component that already runs interactively, the
 tracker renders nothing. That is why trackers belong in `App.razor`.
 
-Yandex Metrica has no consent API in this tracker: the gate only decides whether the script and the `noscript` pixel are written.
+Yandex Metrica has no consent API in this tracker: the gate only decides whether the script is written. The `noscript` pixel from the Yandex snippet is not written: it is valid only in the body, and the tracker belongs in the head, so visitors without JavaScript are not counted.
 
 ## Content Security Policy
 
@@ -179,7 +178,7 @@ The tracker writes an inline script and adds no nonce, so `script-src` must allo
 ## Behavior
 
 - **Rendering.** The markup is written only when `Enabled` is on, `CounterId` is numeric and, with the consent gate on, the visitor consented.
-- **Page views after enhanced navigation.** Blazor enhanced navigation patches the page without a full load, so the counter would not see the new page. The page view module (`_content/Osirion.Blazor.Analytics/js/osirion-analytics.js`) listens for Blazor's `enhancedload` event and calls `ym(counter, 'hit', url, ...)` with the new URL, title and referrer. Navigation inside a router that already runs interactively does not raise `enhancedload` and is not reported.
+- **Page views after enhanced navigation.** Blazor enhanced navigation patches the page without a full load, so the counter would not see the new page. The page view module (`/_content/Osirion.Blazor.Analytics/js/osirion-analytics.js`) listens for Blazor's `enhancedload` event and calls `ym(counter, 'hit', url, ...)` with the new URL, title and referrer. Navigation inside a router that already runs interactively does not raise `enhancedload` and is not reported.
 - **Events.** The tracker offers no custom event API; call `ym` from your own script.
 
 ## Related

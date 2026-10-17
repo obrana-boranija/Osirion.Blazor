@@ -136,7 +136,7 @@ The keys live under `Osirion:Analytics:Clarity`. Every service also has `Enabled
 | --- | --- | --- |
 | `SiteId` | none | The Clarity project ID. Without it the tracker renders nothing. |
 | `TrackerUrl` | `https://www.clarity.ms/tag/` | The address the script is loaded from, followed by the project ID. It must be an absolute http(s) address or a protocol-relative one. |
-| `TrackUserAttributes` | `true` | Bound from configuration, but nothing in the tracker reads it. |
+| `TrackUserAttributes` | `true` | Obsolete and without effect: Clarity has no install-time setting for it. Call `clarity("identify", ...)` or `clarity("set", key, value)` from your own code. |
 
 `TrackerUrl` is checked at startup when the service is enabled: a value that is not an absolute http(s) address, or protocol-relative, stops the app with a message that names the key. `AutoTrackPageViews` has no effect on Clarity, which follows history changes itself.
 

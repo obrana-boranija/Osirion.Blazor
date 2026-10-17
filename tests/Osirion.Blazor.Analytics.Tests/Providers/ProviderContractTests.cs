@@ -157,14 +157,14 @@ public class ProviderContractTests
     }
 
     [Fact]
-    public void GA4Provider_DebugModeAndNoLinkAttribution_ShapeTheScript()
+    public void GA4Provider_DebugMode_WritesDebugModeInTheConfigCall()
     {
-        var provider = GA4(new GA4Options { MeasurementId = "G-TEST1234", DebugMode = true, LinkAttribution = false });
+        var provider = GA4(new GA4Options { MeasurementId = "G-TEST1234", DebugMode = true });
 
         var script = provider.GetScript(AnalyticsScriptContext.Default);
 
-        script.ShouldContain("window.ga_debug = {debug_mode: true};");
-        script.ShouldNotContain("gtag('require', 'linkid');");
+        script.ShouldContain("\"debug_mode\":true");
+        script.ShouldNotContain("ga_debug");
     }
 
     [Theory]

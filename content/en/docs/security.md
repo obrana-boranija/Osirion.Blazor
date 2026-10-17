@@ -137,7 +137,7 @@ break:
 | Components with a `Style` parameter | `style-src` that allows inline style attributes |
 | Analytics: GA4, Clarity, Matomo, Plausible, Yandex Metrica | An inline script, and the provider's own script host |
 | Analytics: Umami | An external script tag only |
-| Matomo and Yandex Metrica with `AutoTrackPageViews` | An external script from your own site, `_content/Osirion.Blazor.Analytics/js/osirion-analytics.js` |
+| Matomo and Yandex Metrica with `AutoTrackPageViews` | An external script from your own site, `/_content/Osirion.Blazor.Analytics/js/osirion-analytics.js` |
 
 The practical policy for 4.1.0 allows inline script and style from your own origin, and adds the hosts of the services
 you use:

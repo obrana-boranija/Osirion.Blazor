@@ -98,23 +98,9 @@ public class GA4Provider : IAnalyticsProvider
         sb.AppendLine(@"
                 gtag('js', new Date());");
 
-        // Add debug mode if enabled
-        if (options.DebugMode)
-        {
-            sb.AppendLine(@"
-                window.ga_debug = {debug_mode: true};");
-        }
-
         // Add main configuration
         sb.AppendLine($@"
                 gtag('config', {measurementId}, {JsonSerializer.Serialize(config)});");
-
-        // Add enhanced link attribution if enabled
-        if (options.LinkAttribution)
-        {
-            sb.AppendLine(@"
-                gtag('require', 'linkid');");
-        }
 
         // Outbound link tracking. It only reports: the browser follows the link itself, so a blocked
         // or failing gtag can never break navigation, and target, modified clicks and non-http(s)
@@ -176,6 +162,13 @@ public class GA4Provider : IAnalyticsProvider
         if (options.RestrictDataProcessing)
         {
             config["restricted_data_processing"] = true;
+        }
+
+        // DebugView documents debug_mode in the config call. Only true is written: Google says leaving the parameter
+        // out turns debug mode off, and that false does not.
+        if (options.DebugMode)
+        {
+            config["debug_mode"] = true;
         }
 
         // Add any custom configuration parameters

@@ -66,6 +66,10 @@ public class YandexMetricaProvider : IAnalyticsProvider
     public string GetScript(AnalyticsScriptContext context) => GetScript(_options, context);
 
     /// <summary>Builds the script for <paramref name="options"/>.</summary>
+    /// <remarks>
+    /// Yandex's snippet also has a <c>noscript</c> pixel in a <c>div</c>. That is valid only in the body, and the tracker
+    /// is placed in the head, so it is not written; a visitor without JavaScript is not counted.
+    /// </remarks>
     public string GetScript(YandexMetricaOptions options, AnalyticsScriptContext context)
     {
         ArgumentNullException.ThrowIfNull(options);
@@ -85,8 +89,10 @@ public class YandexMetricaProvider : IAnalyticsProvider
         if (options.WebVisor)
             initOptions["webvisor"] = true;
 
-        if (options.TrackHash.HasValue)
-            initOptions["trackHash"] = options.TrackHash.Value;
+        // HashTracking is the older spelling of TrackHash, so only an explicit TrackHash overrides it.
+        var trackHash = options.TrackHash ?? (options.HashTracking ? true : null);
+        if (trackHash.HasValue)
+            initOptions["trackHash"] = trackHash.Value;
 
         if (options.DeferLoad)
             initOptions["defer"] = true;
@@ -117,7 +123,6 @@ public class YandexMetricaProvider : IAnalyticsProvider
 
                 ym({options.CounterId}, ""init"", {initOptionsJson});
             </script>
-            <noscript><div><img src=""https://mc.yandex.ru/watch/{ScriptLiteral.Attribute(options.CounterId)}"" style=""position:absolute; left:-9999px;"" alt="""" /></div></noscript>
             {pageViewModule}
         ";
     }

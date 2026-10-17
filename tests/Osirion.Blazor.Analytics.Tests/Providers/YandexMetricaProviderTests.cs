@@ -59,7 +59,7 @@ public class YandexMetricaProviderTests
         // Assert
         script.ShouldContain("ym(12345678, \"init\"");
         script.ShouldContain("https://mc.yandex.ru/metrika/tag.js");
-        script.ShouldContain("https://mc.yandex.ru/watch/12345678");
+        script.ShouldNotContain("https://mc.yandex.ru/watch/");
     }
 
     [Fact]

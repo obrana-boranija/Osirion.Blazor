@@ -151,7 +151,7 @@ naming the configuration key; a tracker whose values are invalid renders nothing
 
 ### Page views after enhanced navigation
 
-Matomo and Yandex Metrica trackers add a static script (`_content/Osirion.Blazor.Analytics/js/osirion-analytics.js`,
+Matomo and Yandex Metrica trackers add a static script (`/_content/Osirion.Blazor.Analytics/js/osirion-analytics.js`,
 no inline script) that listens for Blazor's `enhancedload` event and reports the new URL. GA4 relies on its
 Enhanced Measurement setting "Page changes based on browser history events". Clarity, Plausible and Umami follow
 history changes themselves. Set `AutoTrackPageViews = false` to leave the module out. Navigation inside an already interactive

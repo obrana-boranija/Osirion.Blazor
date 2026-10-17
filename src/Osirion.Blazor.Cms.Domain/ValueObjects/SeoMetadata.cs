@@ -33,9 +33,9 @@ public class SeoMetadata : ValueObject
     public string? Lang { get; set; }
 
     /// <summary>
-    /// Gets the robots meta directive
+    /// Gets the robots meta directive. Empty by default, so the renderer writes its own value.
     /// </summary>
-    public string Robots { get; set; } = "index, follow";
+    public string Robots { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets the Open Graph title
@@ -53,9 +53,9 @@ public class SeoMetadata : ValueObject
     public string OgImageUrl { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets the Open Graph type
+    /// Gets the Open Graph type. Empty by default, so the renderer computes it from the schema type.
     /// </summary>
-    public string OgType { get; set; } = "article";
+    public string OgType { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets the JSON-LD structured data
@@ -114,11 +114,11 @@ public class SeoMetadata : ValueObject
             Title = metaTitle,
             Description = metaDescription,
             Canonical = canonicalUrl ?? string.Empty,
-            Robots = robots ?? "index, follow",
+            Robots = robots ?? string.Empty,
             OgTitle = ogTitle ?? metaTitle,
             OgDescription = ogDescription ?? metaDescription,
             OgImageUrl = ogImageUrl ?? string.Empty,
-            OgType = ogType ?? "article",
+            OgType = ogType ?? string.Empty,
             JsonLd = jsonLd ?? string.Empty,
             Type = schemaType ?? "Article",
             TwitterCard = twitterCard ?? "summary_large_image",
