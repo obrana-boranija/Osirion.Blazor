@@ -62,8 +62,10 @@ content/
 Each folder becomes a directory named after the folder. A file called `_index.md` describes its folder and takes
 these keys from its front matter: `title` (the directory's display name), `description`, `order`, `lang`,
 `featured_image` and `permalink` (the address folder links use; the `_index.md` page itself stays at the folder's
-path). Like any page, an `_index.md` with front matter needs a `title`, and its `lang` is `en` unless you write it. A
-folder without an `_index.md` keeps its folder name.
+path). Without a `title` the folder keeps its folder name and the other keys still apply; in 4.1.0 an `_index.md` with
+front matter and no `title` applies none of them. Its `lang` is the locale of its folder unless you write it (in 4.1.0 it
+is `en` unless you write it). The `_index.md` is also a page, and like any page it needs a `title` when it has front
+matter, or it does not load. A folder without an `_index.md` keeps its folder name.
 
 An `_index.md` is also a page of its own, at the folder's address. A list of that folder includes it, except on the
 page it is shown on, so put real text in it or leave it out of lists you build yourself.
@@ -86,9 +88,13 @@ from loading, and the error goes to the log. An `_index.md` uses its folder's pa
 The exception is an `_index.md` with no folder above it, in the content root or, with localization on, directly in a
 language folder: it has no path to use, so its address is its slug, which is `index` unless you set one.
 
-The `permalink` key does not change the address of a page. It is read, and an `_index.md` uses it as the address of its
-folder, but a page keeps the folder path and slug. To serve a page at another address, route to it yourself, or pass a
-`ContentUrlFormatter` to the components, the feeds and the redirects.
+A page with a `permalink` is served at that address. A leading or trailing slash is optional (`/custom/place` and
+`custom/place` are the same address), the language folder is not added, and the value is used as written: placeholders
+such as `:year` are not expanded. The address of the item, the sitemap, the feeds and the redirects all come from this
+one value. An `_index.md` keeps its folder's address, and uses its `permalink` as the address folder links use. This
+arrives in the release after 4.1.0; in 4.1.0 the `permalink` of a page is read but ignored, and a page keeps the folder
+path and slug. To serve a page at another address in 4.1.0, route to it yourself, or pass a `ContentUrlFormatter` to the
+components, the feeds and the redirects.
 
 ## 3. Keep the language folder out of the address
 

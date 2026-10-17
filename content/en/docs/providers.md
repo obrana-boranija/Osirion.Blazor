@@ -183,7 +183,7 @@ these options on the provider. They have the same names and defaults for both pr
 | --- | --- | --- |
 | `EnableLocalization` | `false` | Reads the locale from the first folder below the content root. |
 | `DefaultLocale` | `en` | The locale of content whose path has no locale folder, and of all content while localization is off. |
-| `SupportedLocales` | `["en"]` | The folder names that count as locales. A first folder not in this list is not a locale. |
+| `SupportedLocales` | `["en"]` | The folder names that count as locales. A first folder not in this list is not a locale. A list you configure replaces the default. This arrives in the release after 4.1.0; 4.1.0 adds your entries to `en`, so `["en", "sr"]` gives `en`, `en`, `sr`. |
 
 ```json
 {

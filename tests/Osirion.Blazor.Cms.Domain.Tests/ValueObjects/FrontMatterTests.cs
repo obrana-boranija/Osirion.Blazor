@@ -11,8 +11,24 @@ public class FrontMatterTests
 
         Assert.Equal("Hello", frontMatter.Title);
         Assert.True(frontMatter.Published);
-        Assert.Equal("en", frontMatter.Lang);
+        Assert.Equal(string.Empty, frontMatter.Lang);
         Assert.NotNull(frontMatter.SeoProperties);
+    }
+
+    [Fact]
+    public void NewInstance_HasNoDate()
+    {
+        // Fails before the fix: the date defaulted to the day the instance was made, so a parsed page with no date key
+        // looked as if it were published on the day it was loaded.
+        Assert.Equal(string.Empty, new FrontMatter().Date);
+    }
+
+    [Fact]
+    public void Create_WithTitle_DatesNewContentToday()
+    {
+        var frontMatter = FrontMatter.Create("Hello");
+
+        Assert.Equal(DateTime.Now.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture), frontMatter.Date);
     }
 
     [Fact]

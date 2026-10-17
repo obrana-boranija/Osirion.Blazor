@@ -107,7 +107,24 @@ public abstract class ContentProviderBase : IContentProvider, IDisposable
             if (translations is null)
                 return new Dictionary<string, ContentItem>();
 
-            return translations.ToDictionary(item => item.Locale, item => item);
+            var byLocale = new Dictionary<string, ContentItem>();
+            var duplicateLocales = new SortedSet<string>(StringComparer.Ordinal);
+            foreach (var item in translations)
+            {
+                if (!byLocale.TryAdd(item.Locale, item))
+                {
+                    duplicateLocales.Add(item.Locale);
+                }
+            }
+
+            if (duplicateLocales.Count > 0)
+            {
+                Logger.LogWarning(
+                    "Several items share localization ID {LocalizationId} in the locale(s) {Locales}; keeping the first of each",
+                    localizationId, string.Join(", ", duplicateLocales));
+            }
+
+            return byLocale;
         }
         catch (Exception ex)
         {

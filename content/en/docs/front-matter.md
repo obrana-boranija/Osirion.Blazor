@@ -67,7 +67,7 @@ is the creation time of the file and every other value takes its default.
 | `title` | string | none | The page's heading, its link text in lists and the base of the `<title>`. Required once the file has a front matter block: an empty title stops the file from loading. |
 | `description` | string | empty | The meta description (cut to 160 characters), the summary in lists and the feed description. |
 | `slug` | string | from the file name | The last part of the address. Lowercase letters, digits and hyphens only; anything else stops the file from loading. |
-| `date` | date text | the day the content was loaded | The publication date: list order, the feed `pubDate`, `datePublished`. See step 3. |
+| `date` | date text | the file's creation time (the load time with a GitHub provider) | The publication date: list order, the feed `pubDate`, `datePublished`. In 4.1.0 a missing `date` is the day the content was loaded. See step 3. |
 | `last_modified` | date text | `date` | When the page last changed: `dateModified`, `article:modified_time`, sitemap `lastmod`. See step 3. |
 | `author` | string | empty | The byline, `article:author` and the author in structured data. |
 | `categories` | list of strings | empty | Category pages and lists. The first one is `article:section`. |
@@ -77,11 +77,11 @@ is the creation time of the file and every other value takes its default.
 | `published` | boolean | `true` | `false` keeps the page out of lists, the sitemap, feeds, redirects and the page components. |
 | `order` | integer | `0` | Position when a list sorts by order, and in documentation navigation. For an `_index.md`, the folder's position. |
 | `id` | string | none | Pairs translations: items with the same `id` are translations of each other. With localization on, a missing `id` is built from the path without the language folder. |
-| `lang` | string | `en` | The page's language: `og:locale`, `inLanguage`, the `Locale` filter of queries. A missing `lang` is `en`, even in a folder for another language. See the [localization guide](/docs/localization). |
+| `lang` | string | the folder's locale, or `DefaultLocale` | The page's language: `og:locale`, `inLanguage`, the `Locale` filter of queries. A missing `lang` takes the locale of the page's language folder, or `DefaultLocale`; this arrives in the release after 4.1.0, and 4.1.0 reads a missing `lang` as `en`, even in a folder for another language. See the [localization guide](/docs/localization). |
 | `redirect_from` | list of strings | empty | Earlier addresses that redirect to this page, with `UseOsirionRedirects`. |
 | `series` | string | none | Pages with the same series name are listed together by `ContentSeriesNavigation`. |
 | `series_order` | integer | none | The page's position in its series, starting at 1. |
-| `permalink` | string | none | Read, but it does not change a page's address. An `_index.md` uses it as its folder's address. |
+| `permalink` | string | none | The address the page is served at, such as `/docs/deploy`; slashes at the ends are optional, no language folder is added, and placeholders such as `:year` are not expanded. An `_index.md` uses it as its folder's address. Arrives in the release after 4.1.0; 4.1.0 reads it but does not change the page's address. |
 | `layout` | string | none | Stored on the item as `Metadata.Layout`. No library component picks a template from it; your own code can. |
 | `custom_fields` | map | empty | Your own values. See step 4. |
 | `seo_properties` | map | see step 5 | Search and social overrides. |
@@ -103,11 +103,12 @@ date: 2026-10-17
 last_modified: 2026-10-17T09:30:00Z
 ```
 
-A date without a time zone is taken as UTC. A page without a `date` key gets the day the content was loaded. A `date`
-that cannot be parsed is not an error either: the page gets the creation time of its file (the load time with a GitHub
-provider), and so does a file with no front matter block. None of these values is stable. A new day, a restart or a
-fresh checkout changes them, so an undated page jumps to the top of newest-first lists and moves its sitemap `lastmod`
-and feed date. Always write `date`.
+A date without a time zone is taken as UTC. A page without a `date` key is not an error either: it gets the creation
+time of its file (the load time with a GitHub provider), the same as a `date` that cannot be parsed and a file with no
+front matter block. This arrives in the release after 4.1.0; in 4.1.0 a page with front matter and no `date` key gets
+the day the content was loaded, so it changes on every restart. Even with the fix, a file's creation time changes with a
+fresh checkout or deployment, and the load time of a GitHub page changes on every restart, so an undated page can still
+jump to the top of newest-first lists and move its sitemap `lastmod` and feed date. Always write `date`.
 
 `last_modified` is what search engines and feed readers see as the change date. When it is missing, the page was
 last modified on its `date`. The file's write time is not used, because a fresh checkout gives every file the time of
@@ -186,7 +187,7 @@ id: 'guide-deploy'                  # pairs translations of this page
 order: 4                            # position in an order-sorted list
 layout: docs                        # stored on the item; your code may read it
 title: "Deploy the site"            # heading, link text, base of the <title>
-permalink: /docs/deploy             # read, but the address comes from folder and slug
+permalink: /docs/deploy             # the page's address (release after 4.1.0)
 description: "Publish the site to a web host."   # meta description, summaries
 author: Your Name                   # byline and structured data
 date: 2026-10-17                    # publication date
