@@ -85,7 +85,7 @@
     margin-bottom: var(--osirion-spacing-3, 0.75rem);
     font-size: var(--osirion-font-size-2xl, 1.5rem);
     line-height: 1;
-    color: var(--osirion-action-primary, #2563eb);
+    color: var(--osirion-link-color, var(--osirion-action-primary, #2563eb));
 }
 
 .osirion-landing-feature-image {
@@ -221,7 +221,8 @@
 .osirion-landing-cta-primary .osirion-landing-cta-button-primary {
     background-color: var(--osirion-action-primary-text, #ffffff);
     border-color: var(--osirion-action-primary-text, #ffffff);
-    color: var(--osirion-action-primary, #2563eb);
+    /* The swapped pair: the action color on its own text color, which the themes hold to the same contrast. */
+    color: var(--osirion-landing-cta-button-text, var(--osirion-action-primary, #2563eb));
 }
 
 .osirion-landing-cta-secondary .osirion-landing-cta-button-primary {
