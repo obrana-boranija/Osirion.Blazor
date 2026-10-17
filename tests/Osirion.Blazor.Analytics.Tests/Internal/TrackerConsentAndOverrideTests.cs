@@ -186,7 +186,7 @@ public class TrackerConsentAndOverrideTests : BunitContext
         var matomo = Render<MatomoTracker>().Markup;
         var yandex = Render<YandexMetricaTracker>().Markup;
 
-        matomo.ShouldContain("src=\"_content/Osirion.Blazor.Analytics/js/osirion-analytics.js\"");
+        matomo.ShouldContain("src=\"/_content/Osirion.Blazor.Analytics/js/osirion-analytics.js\"");
         matomo.ShouldContain("data-osirion-analytics=\"matomo\"");
         yandex.ShouldContain("data-osirion-analytics=\"yandex\"");
         yandex.ShouldContain("data-counter=\"99\"");

@@ -132,7 +132,7 @@ With the defaults and these placeholder values (not real ones), the tracker writ
         g.async = true; g.src = u + 'matomo.js'; s.parentNode.insertBefore(g, s);
     })();
 </script>
-<script src="_content/Osirion.Blazor.Analytics/js/osirion-analytics.js" defer data-osirion-analytics="matomo"></script>
+<script src="/_content/Osirion.Blazor.Analytics/js/osirion-analytics.js" defer data-osirion-analytics="matomo"></script>
 ```
 
 The second script is the page view module (see Behavior). Its address is relative, so the document needs a `<base href="/" />`, which the Blazor templates have.
@@ -172,7 +172,7 @@ The tracker writes an inline script and adds no nonce, so `script-src` must allo
 ## Behavior
 
 - **Rendering.** The markup is written only when `Enabled` is on, `SiteId` is not blank, `TrackerUrl` is valid and, with the consent gate on, the visitor consented.
-- **Page views after enhanced navigation.** Blazor enhanced navigation patches the page without a full load, so Matomo would not see the new page. The page view module (`_content/Osirion.Blazor.Analytics/js/osirion-analytics.js`) listens for Blazor's `enhancedload` event and pushes the new referrer, URL, title and a page view onto `_paq`. Navigation inside a router that already runs interactively does not raise `enhancedload` and is not reported.
+- **Page views after enhanced navigation.** Blazor enhanced navigation patches the page without a full load, so Matomo would not see the new page. The page view module (`/_content/Osirion.Blazor.Analytics/js/osirion-analytics.js`) listens for Blazor's `enhancedload` event and pushes the new referrer, URL, title and a page view onto `_paq`. Navigation inside a router that already runs interactively does not raise `enhancedload` and is not reported.
 - **Events.** The tracker offers no custom event API; push to `_paq` from your own script.
 
 ## Related
