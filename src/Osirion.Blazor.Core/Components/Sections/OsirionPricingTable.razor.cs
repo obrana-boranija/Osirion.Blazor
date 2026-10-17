@@ -9,7 +9,9 @@ namespace Osirion.Blazor.Components;
 /// </summary>
 public partial class OsirionPricingTable
 {
-    /// <summary>Gets or sets the plans, in the order they are shown.</summary>
+    /// <summary>
+    /// The plans, in the order they are shown. Required; with no plans nothing is rendered.
+    /// </summary>
     [Parameter, EditorRequired]
     public IReadOnlyList<PricingPlan> Plans { get; set; } = [];
 

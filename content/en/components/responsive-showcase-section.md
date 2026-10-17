@@ -7,7 +7,7 @@ permalink: /components/responsive-showcase-section
 description: OsirionResponsiveShowcaseSection previews content in a frame that switches between desktop, tablet and mobile widths, for demo and docs pages.
 author: Dejan Demonjić
 date: 2025-09-03
-last_modified: 2026-10-11
+last_modified: 2026-10-17
 featured_image: /assets/images/blazor-cover.png
 categories:
 - Components
@@ -29,7 +29,7 @@ redirect_from:
 custom_fields:
   group: sections
 seo_properties:
-  title: 'OsirionResponsiveShowcaseSection - Osirion.Blazor'
+  title: 'OsirionResponsiveShowcaseSection: preview for Blazor'
   description: 'Preview Blazor content in a frame that switches between desktop, tablet and mobile widths, with an optional code sample.'
   image: /assets/images/blazor-cover.png
   canonical: 'https://getosirion.com/components/responsive-showcase-section'
@@ -54,9 +54,13 @@ seo_properties:
 between desktop, tablet and mobile widths, and an optional code sample under it. It is a tool for component demos
 and design reviews, not for a production page.
 
+Package `Osirion.Blazor.Core`, namespace `Osirion.Blazor.Core.Components.Sections`. [Source on GitHub](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Core/Components/Sections/OsirionResponsiveShowcaseSection.razor).
+
+This page has no live demo. The width buttons and the code toggle are Blazor event handlers, so the component needs an interactive render mode, and this site renders its pages as static HTML, where the buttons would do nothing.
+
 ## Usage
 
-The component is in its own namespace, and switching widths needs an interactive render mode on the page:
+The component is in its own namespace, and switching widths needs an interactive render mode on the page. Without one, the frame renders in its `InitialViewport` and the buttons do nothing:
 
 ```razor
 @page "/demo/cards"
@@ -86,19 +90,23 @@ Start in the mobile width and offer the markup under the preview:
 
 ## Parameters
 
+<!-- osirion:parameters OsirionResponsiveShowcaseSection -->
+
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `ChildContent` | `RenderFragment?` | `null` | The content to preview. Without it, a placeholder is shown. |
-| `Title` | `string` | `"Component Preview"` | Heading above the frame, rendered as an `<h3>`. |
-| `InitialViewport` | `ViewportMode` | `Desktop` | The width shown first: `Desktop`, `Tablet` or `Mobile`. |
-| `ShowDimensions` | `bool` | `true` | Shows the current width under the frame. |
-| `ShowCode` | `bool` | `true` | Shows a Show Code button when `CodeSnippet` is set. |
-| `CodeSnippet` | `string?` | `null` | Code shown under the preview when the button is pressed. Written as encoded text. |
-| `Style` | `string?` | `null` | Inline style on the frame, added after its width declarations. |
+| `Title` | `string` | `"Component Preview"` | The heading above the frame, rendered as an `h3`. |
+| `ChildContent` | `RenderFragment?` | `null` | The content to preview inside the frame; without it a placeholder is shown. |
+| `ShowDimensions` | `bool` | `true` | Whether the current width is described under the frame. |
+| `ShowCode` | `bool` | `true` | Whether a Show Code button appears; it needs `CodeSnippet`. |
+| `CodeSnippet` | `string?` | `null` | The code shown under the preview when the button is pressed, rendered as encoded text. |
+| `InitialViewport` | `ViewportMode` | `ViewportMode.Desktop` | The width the frame starts in: `Desktop` (1200px), `Tablet` (768px) or `Mobile` (375px), each capped at the available width. |
+| `ShowBrowserChrome` | `bool` | `true` | Whether the frame gets the `with-chrome` class. The browser bar itself is always rendered. |
+| `Class` | `string?` | `null` | Extra CSS classes on the component's root element. |
+| `Style` | `string?` | `null` | An inline style for the frame, added after its width declarations. |
 
-`ViewportMode` is nested in the component: write `OsirionResponsiveShowcaseSection.ViewportMode.Mobile`. The
-component also declares `Class`, `ShowBrowserChrome` and unmatched attributes, but 4.0 does not apply them: the
-frame always has its browser bar, and the root element takes no extra classes or attributes.
+<!-- /osirion:parameters -->
+
+`ViewportMode` is nested in the component: write `OsirionResponsiveShowcaseSection.ViewportMode.Mobile`. `Class` and unmatched attributes are written to the root element. The component does not inherit `OsirionComponentBase`, so it has no `Theme` parameter.
 
 ## Behavior
 
@@ -110,7 +118,9 @@ frame always has its browser bar, and the root element takes no extra classes or
 - Switching widths and showing the code are Blazor event handlers. Under static SSR the component renders in its
   `InitialViewport` with the code hidden, and the buttons do nothing. Because `ChildContent` cannot cross a render
   mode boundary, make the whole page interactive rather than setting `@rendermode` on this component.
-- The width buttons report their state with `aria-pressed`, but in 4.0 they contain only icons hidden from assistive
+- The frame's address bar shows fixed text (`example.com - Desktop View`, and the same for tablet and mobile), not your page's address.
+- The browser bar is always rendered. `ShowBrowserChrome` only adds or removes the `with-chrome` class on the root; no stylesheet rule uses it. On screens 600px wide or narrower the bar is hidden by CSS.
+- The width buttons report their state with `aria-pressed`, but they contain only icons hidden from assistive
   technology and have no accessible name.
 
 ## Styling

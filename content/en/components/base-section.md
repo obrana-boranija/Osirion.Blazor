@@ -7,7 +7,7 @@ permalink: /components/base-section
 description: OsirionBaseSection renders a page section with an id, heading, description, framework container, padding and an optional background image or pattern.
 author: Dejan Demonjić
 date: 2025-09-03
-last_modified: 2026-10-11
+last_modified: 2026-10-17
 featured_image: /assets/images/blazor-cover.png
 categories:
 - Components
@@ -28,7 +28,7 @@ redirect_from:
 custom_fields:
   group: sections
 seo_properties:
-  title: 'OsirionBaseSection - Osirion.Blazor'
+  title: 'OsirionBaseSection: content section for Blazor'
   description: 'A Blazor page section with heading, description, framework container, padding and an optional background image or pattern.'
   image: /assets/images/blazor-cover.png
   canonical: 'https://getosirion.com/components/base-section'
@@ -52,6 +52,12 @@ seo_properties:
 `OsirionBaseSection` renders a `<section>` with an id, an optional heading and description, your content inside the
 CSS framework's container, and consistent vertical padding. Use it for the bands of a landing page so they share
 spacing and alignment.
+
+Package `Osirion.Blazor.Core`, namespace `Osirion.Blazor.Components`. [Source on GitHub](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Core/Components/Sections/OsirionBaseSection.razor).
+
+```demo
+base-section
+```
 
 ## Usage
 
@@ -78,26 +84,31 @@ With an image, the text turns white and a dark overlay (`ShowOverlay`, on by def
 
 ## Parameters
 
+<!-- osirion:parameters OsirionBaseSection -->
+
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `Id` | `string?` | `null` | The section's `id`, for in-page links. Required. |
-| `Title` | `string?` | `null` | Heading, rendered as an `<h2>`. Written as raw HTML; see Behavior. |
-| `TitleContent` | `RenderFragment?` | `null` | Your own heading markup in place of `Title`. |
-| `Description` | `string?` | `null` | Paragraph under the heading. Written as raw HTML. |
-| `DescriptionContent` | `RenderFragment?` | `null` | Your own markup in place of `Description`. |
-| `ChildContent` | `RenderFragment?` | `null` | The section's content. |
-| `TextAlignment` | `Alignment` | `Center` | `Left`, `Center`, `Right` or `Justify`, for the heading and content. |
-| `Padding` | `SectionPadding` | `Medium` | Vertical padding: `None`, `Small` (2rem), `Medium` (3rem) or `Large` (4rem). |
-| `ContainerClass` | `string?` | `null` | Class of the inner container. When empty, the framework's container is used. |
-| `BackgroundImageUrl` | `string?` | `null` | Background image, set as a CSS `url()`. |
-| `ShowOverlay` | `bool` | `true` | Darkens a background image. Has no effect without one. |
-| `BackgroundColor` | `string?` | `null` | A CSS color for the background. |
-| `TextColor` | `string?` | `null` | A CSS color for the text. |
-| `BackgroundPattern` | `BackgroundPatternType?` | `null` | A decorative pattern, shown when `ShowPattern` is on. |
-| `ShowPattern` | `bool` | `false` | Renders `BackgroundPattern` behind the content. |
-| `HasDivider` | `bool` | `false` | Adds a shadow under the section to separate it from the next. |
-| `Class` | `string?` | `null` | Extra CSS classes on the `<section>`. |
-| `Style` | `string?` | `null` | Inline style, added after the generated background and color declarations. |
+| `ChildContent` | `RenderFragment?` | `null` | The section's content, inside the container below the heading. |
+| `Id` | `string?` | `null` | The section's `id`, for in-page links; the section keeps a 3rem scroll margin so a link does not land under a sticky header. |
+| `Title` | `string?` | `null` | The heading, rendered as an `h2`. Written as raw HTML without sanitizing, so pass only text you control; use `TitleContent` for text you do not control. Ignored when `TitleContent` is set. |
+| `TitleContent` | `RenderFragment?` | `null` | Your own heading markup in place of `Title`. Blazor encodes any text in it. |
+| `Description` | `string?` | `null` | The paragraph under the heading. Written as raw HTML without sanitizing, so pass only text you control. Shown only together with a title, and ignored when `DescriptionContent` is set. |
+| `DescriptionContent` | `RenderFragment?` | `null` | Your own markup in place of `Description`. Shown only together with a title. |
+| `ContainerClass` | `string?` | `null` | The class of the inner container; when it is empty the configured CSS framework's container class is used. |
+| `TextAlignment` | `Alignment` | `Alignment.Center` | The alignment of the heading and the content: `Left`, `Center`, `Right` or `Justify`. |
+| `BackgroundImageUrl` | `string?` | `null` | The background image, CSS-escaped and written as a `url()` to the inline style. The text turns white while it is set. |
+| `BackgroundColor` | `string?` | `null` | A CSS color for the background, written to the inline style as given. |
+| `TextColor` | `string?` | `null` | A CSS color for the text, written to the inline style as given. |
+| `ShowOverlay` | `bool` | `true` | Whether a dark overlay is drawn over the background image so the text stays readable. Has no effect without `BackgroundImageUrl`. |
+| `BackgroundPattern` | `BackgroundPatternType?` | `null` | A decorative pattern, drawn when `ShowPattern` is on. |
+| `ShowPattern` | `bool` | `false` | Whether `BackgroundPattern` is drawn behind the content. |
+| `Padding` | `SectionPadding` | `SectionPadding.Medium` | The vertical padding: `None`, `Small` (2rem), `Medium` (3rem) or `Large` (4rem); smaller on narrow screens. |
+| `HasDivider` | `bool` | `false` | Whether a shadow under the section separates it from the next. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
+| `Style` | `string?` | `null` | An inline style for the component's root element. |
+
+<!-- /osirion:parameters -->
 
 Unmatched attributes are written to the `<section>`. The pattern values are `Dots`, `Grid`, `Diagonal`,
 `Honeycomb`, `GradientMesh`, `AnimatedGrid`, `TechWave`, `Circuit` and `DotsFade`; see

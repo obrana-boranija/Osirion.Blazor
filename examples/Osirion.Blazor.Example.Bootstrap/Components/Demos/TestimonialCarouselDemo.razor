@@ -1,0 +1,16 @@
+@using Osirion.Blazor.Components
+
+@* Sample testimonials from invented people, not customers *@
+<OsirionTestimonialCarousel SectionTitle="Sample testimonials"
+                            CustomTestimonials="testimonials"
+                            CardHeight="220"
+                            ShowRating="true" />
+
+@code {
+    private static readonly List<TestimonialItem> testimonials =
+    [
+        new("Ana Petrovic", "Lead developer", "Example Studio", "We moved our documentation site to static SSR in a weekend.", ShowRating: true, Rating: 5),
+        new("Sam Lee", "Product manager", "Example Works", "The pages read the same with and without script.", ShowRating: true, Rating: 4),
+        new("Jane Doe", "Designer", "Example Agency", "Our editors publish from Markdown files.", ShowRating: true, Rating: 5)
+    ];
+}

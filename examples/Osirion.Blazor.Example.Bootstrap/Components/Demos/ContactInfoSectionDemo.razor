@@ -1,0 +1,15 @@
+@using Osirion.Blazor.Components
+@using Osirion.Blazor.Core.Models
+
+@* Sample details, not a real address or number *@
+<OsirionContactInfoSection ContactInfo="contact" />
+
+@code {
+    private static readonly ContactInformation contact = new()
+    {
+        Address = "1 Sample Street, Sample City",
+        Phone = "+00 000 000 0000",
+        Website = "https://github.com/demonjic/Osirion.Blazor",
+        Message = "Sample contact details."
+    };
+}
