@@ -196,6 +196,15 @@ public class FileSystemDirectoryRepository : DirectoryRepositoryBase, IDirectory
         System.IO.Directory.Delete(physicalPath, recursive);
     }
 
+    // The patterns match the path under BasePath with forward slashes, so a content folder inside a bin or obj folder
+    // still loads and "**/name/**" works on Windows. The slashes on both ends let "**/name/**" match the folder itself,
+    // at the first level too.
+    private bool IsExcluded(string directoryPath)
+    {
+        var relativePath = "/" + Path.GetRelativePath(_options.BasePath, directoryPath).Replace('\\', '/') + "/";
+        return _options.ExcludePatterns.Any(pattern => PathUtils.MatchesGlobPattern(relativePath, pattern));
+    }
+
     private async Task ScanDirectoriesAsync(
         string directoryPath,
         Dictionary<string, DirectoryItem> cache,
@@ -211,8 +220,7 @@ public class FileSystemDirectoryRepository : DirectoryRepositoryBase, IDirectory
                 return;
 
             // Skip directories that match exclude patterns
-            if (_options.ExcludePatterns.Any(pattern =>
-                PathUtils.MatchesGlobPattern(dirInfo.FullName, pattern)))
+            if (IsExcluded(dirInfo.FullName))
                 return;
 
             // Get the relative path from the base path
@@ -257,8 +265,7 @@ public class FileSystemDirectoryRepository : DirectoryRepositoryBase, IDirectory
                 foreach (var subdirInfo in dirInfo.GetDirectories())
                 {
                     // Skip directories that match exclude patterns
-                    if (_options.ExcludePatterns.Any(pattern =>
-                        PathUtils.MatchesGlobPattern(subdirInfo.FullName, pattern)))
+                    if (IsExcluded(subdirInfo.FullName))
                         continue;
 
                     await ScanDirectoriesAsync(
