@@ -149,7 +149,8 @@ function Get-Severity([double] $crap) {
 
 function Get-Median([double[]] $values) {
     if ($values.Count -eq 0) { return 0 }
-    $sorted = $values | Sort-Object
+    # @() keeps one value an array: under strict mode a single number has no Count.
+    $sorted = @($values | Sort-Object)
     $middle = [int][Math]::Floor($sorted.Count / 2)
     if ($sorted.Count % 2 -eq 1) { return $sorted[$middle] }
     return ($sorted[$middle - 1] + $sorted[$middle]) / 2
@@ -169,7 +170,8 @@ function Measure-Project([System.IO.DirectoryInfo] $projectDirectory, $lineHits,
         Remove-Item $complexityFile.FullName -ErrorAction SilentlyContinue
     }
 
-    $methods = foreach ($method in $analysis.methods) {
+    # @() keeps a project without methods (the template package compiles nothing) an empty list, not $null.
+    $methods = @(foreach ($method in $analysis.methods) {
         $relativeFile = Get-PathUnderSourceRoot $method.filePath
         [pscustomobject] @{
             namespace    = $method.namespace
@@ -187,7 +189,7 @@ function Measure-Project([System.IO.DirectoryInfo] $projectDirectory, $lineHits,
             isCrappy     = $false
             severity     = ''
         }
-    }
+    })
 
     foreach ($fileGroup in ($methods | Group-Object relativeFile)) {
         $ordered = @($fileGroup.Group | Sort-Object lineNumber)

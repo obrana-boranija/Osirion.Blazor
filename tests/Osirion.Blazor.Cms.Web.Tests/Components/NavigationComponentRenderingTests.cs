@@ -325,6 +325,21 @@ public class NavigationComponentRenderingTests : CmsWebComponentTestBase
         cut.Find(".osirion-breadcrumbs-current .osirion-breadcrumbs-text").TextContent.ShouldBe("Install");
     }
 
+    // Fails before the fix: the directory links were built in code, which leaves out the scoped-style attribute the
+    // markup carries, so the component's link colours never reached them and the dark theme showed the browser's blue.
+    [Fact]
+    public void ContentBreadcrumbs_DirectoryLinks_CarryTheSameScopedStyleAttributeAsTheHomeLink()
+    {
+        var directory = DirectoryItem.Create("d", "docs", "Docs", "test");
+
+        var cut = RenderStatic<ContentBreadcrumbs>(p => p.Add(c => c.Directory, directory));
+
+        var links = cut.FindAll("a.osirion-breadcrumbs-link");
+        links.Count.ShouldBe(2);
+        var scope = links[0].Attributes.Select(a => a.Name).Single(name => name.StartsWith("b-", StringComparison.Ordinal));
+        links[1].HasAttribute(scope).ShouldBeTrue();
+    }
+
     [Fact]
     public void ContentBreadcrumbs_HomeAndCurrentHidden_WithFormatter_ListsOnlyTheFormattedDirectory()
     {

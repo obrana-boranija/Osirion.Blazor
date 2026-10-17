@@ -9,9 +9,12 @@
             </li>
         }
 
-        @if (Directory is not null)
+        @* In the markup, not built in code, so the links carry this component's scoped styles. *@
+        @foreach (var directory in DirectoryPath())
         {
-            @RenderDirectoryPath(Directory)
+            <li class="osirion-breadcrumbs-item">
+                <a href="@GetDirectoryUrl(directory)" class="osirion-breadcrumbs-link">@directory.Name</a>
+            </li>
         }
 
         @if (Content is not null && !HideCurrentItem)

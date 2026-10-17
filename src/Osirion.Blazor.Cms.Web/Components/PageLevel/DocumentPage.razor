@@ -121,7 +121,9 @@
                         }
 
                         <div class="osirion-document-body">
-                            @GetSanitizedContent(ContentHeadings.WithoutLeadingTitle(Content.Content))
+                            @* Through OsirionHtmlRenderer, as ArticlePage does: sanitised, highlighted, and with code
+                               blocks and tables that scroll and can be reached from the keyboard. *@
+                            <ContentRenderer Item="@Content" OmitLeadingTitle="true" />
                         </div>
 
                         @if (EditUrlFormatter?.Invoke(Content) is { Length: > 0 } editUrl)

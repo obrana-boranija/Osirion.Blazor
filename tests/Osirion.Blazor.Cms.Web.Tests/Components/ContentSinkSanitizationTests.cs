@@ -38,7 +38,8 @@ public class ContentSinkSanitizationTests : CmsWebComponentTestBase
         var cut = RenderStatic<DocumentPage>(parameters => parameters
             .Add(p => p.Content, CreateItem(HostileContent)));
 
-        cut.Find(".osirion-document-body").InnerHtml.MarkupMatches(SanitizedContent);
+        // The body goes through ContentRenderer, whose OsirionHtmlRenderer writes it inside an article.
+        cut.Find(".osirion-document-body article").InnerHtml.MarkupMatches(SanitizedContent);
     }
 
     [Fact]
