@@ -144,7 +144,14 @@ uses `osirion-content-header`, `osirion-content-title` and `osirion-content-meta
 `osirion-content-footer`, `osirion-content-category`, `osirion-content-tag` and `osirion-content-navigation`
 (`osirion-content-previous`, `osirion-content-next`). Tags are rendered twice, in the header
 (`osirion-content-tags-inline`) and in the footer (`osirion-content-tags-mobile`), and the library styles neither
-class, so both lists show at every width; hide one in your own CSS if you want only one. Colors and spacing
+class, so both lists show at every width; hide one in your own CSS if you want only one.
+
+The body is markup the component writes itself, outside `OsirionHtmlRenderer`, so the library gives its headings,
+paragraphs, lists and tables no typography: they take the style of your CSS framework or your own CSS (the rules
+`osirion-content-body h2`, `p` and the like that older builds carried never matched and are gone). Two rules do reach
+it, and keep a wide image or code block inside the column: `img` is at most as wide as the body, and `pre` scrolls
+sideways. For a body with the library's typography, render it with [ContentRenderer](/components/content-renderer).
+Colors and spacing
 come from theme tokens such as `--osirion-text-primary`, `--osirion-text-secondary`, `--osirion-border-color` and
 `--osirion-background-secondary`.
 

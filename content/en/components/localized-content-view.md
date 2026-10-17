@@ -158,8 +158,14 @@ The `Theme` and `Style` rows come from the base class. `LocalizedContentView` do
 The root element has the class `osirion-localized-content-view`. Inside are `osirion-translations` (the language
 links), `osirion-content-article`, `osirion-content-header` with `osirion-content-meta`, `osirion-content-body`,
 `osirion-content-footer` with `osirion-content-categories` and `osirion-content-tags`, and
-`osirion-content-navigation`. The not-found and loading states use `osirion-not-found` and `osirion-loading`. Colors
-and spacing come from theme tokens such as `--osirion-text-primary`, `--osirion-text-secondary` and
+`osirion-content-navigation`. The not-found and loading states use `osirion-not-found` and `osirion-loading`.
+
+The body is markup the component writes itself, outside `OsirionHtmlRenderer`, so the library gives its headings,
+paragraphs, lists and tables no typography: they take the style of your CSS framework or your own CSS (the rules
+`osirion-content-body h2`, `p` and the like that older builds carried never matched and are gone). Two rules do reach
+it, and keep a wide image or code block inside the column: `img` is at most as wide as the body, and `pre` scrolls
+sideways. For a body with the library's typography, render it with [ContentRenderer](/components/content-renderer).
+Colors and spacing come from theme tokens such as `--osirion-text-primary`, `--osirion-text-secondary` and
 `--osirion-action-primary`.
 
 ## Related
