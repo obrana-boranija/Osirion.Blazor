@@ -112,7 +112,7 @@ public partial class OsirionFeatureCard : OsirionComponentBase
     public EffectTiming BorderTiming { get; set; } = EffectTiming.Always;
 
     /// <summary>
-    /// The border colour: <c>Primary</c>, <c>Secondary</c>, <c>Tertiary</c> or <c>Neutral</c>.
+    /// The border color: <c>Primary</c>, <c>Secondary</c>, <c>Tertiary</c> or <c>Neutral</c>.
     /// </summary>
     [Parameter]
     public ThemeColor BorderColor { get; set; } = ThemeColor.Neutral;
@@ -124,7 +124,7 @@ public partial class OsirionFeatureCard : OsirionComponentBase
     public EffectTiming ShadowTiming { get; set; } = EffectTiming.OnHover;
 
     /// <summary>
-    /// The shadow colour: <c>Primary</c>, <c>Secondary</c>, <c>Tertiary</c> or <c>Neutral</c>.
+    /// The shadow color: <c>Primary</c>, <c>Secondary</c>, <c>Tertiary</c> or <c>Neutral</c>.
     /// </summary>
     [Parameter]
     public ThemeColor ShadowColor { get; set; } = ThemeColor.Neutral;

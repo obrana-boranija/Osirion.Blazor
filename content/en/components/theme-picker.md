@@ -4,7 +4,7 @@ order: 4
 layout: docs
 title: ThemePicker
 permalink: /components/theme-picker
-description: ThemePicker renders a labelled list from which visitors pick a colour palette; the choice applies at once and is remembered in a cookie.
+description: ThemePicker renders a labelled list from which visitors pick a color palette; the choice applies at once and is remembered in a cookie.
 author: Dejan Demonjić
 date: 2026-10-16
 last_modified: 2026-10-16
@@ -29,20 +29,20 @@ custom_fields:
   group: theming
 seo_properties:
   title: 'ThemePicker Component - Osirion.Blazor'
-  description: 'Let visitors pick a colour palette with a labelled list that works under static SSR and on static sites.'
+  description: 'Let visitors pick a color palette with a labelled list that works under static SSR and on static sites.'
   image: /assets/images/blazor-cover.png
   canonical: 'https://getosirion.com/components/theme-picker'
   lang: en
   robots: index, follow
   og_title: 'ThemePicker Component - Osirion.Blazor'
-  og_description: 'A labelled list from which visitors pick a colour palette, applied at once and remembered.'
+  og_description: 'A labelled list from which visitors pick a color palette, applied at once and remembered.'
   og_image_url: '/assets/images/blazor-cover.png'
   og_type: article
   json_ld: ''
   type: TechArticle
   twitter_card: summary_large_image
   twitter_title: 'ThemePicker Component - Osirion.Blazor'
-  twitter_description: 'A labelled list from which visitors pick a colour palette, applied at once and remembered.'
+  twitter_description: 'A labelled list from which visitors pick a color palette, applied at once and remembered.'
   twitter_image_url: '/assets/images/blazor-cover.png'
   meta_tags: {}
 ---
@@ -83,8 +83,8 @@ Offer fewer palettes, in your order, and rename the option that applies none:
 @using Osirion.Blazor.Components
 @using Osirion.Blazor.Theming.Components
 
-<ThemePicker Label="Colours"
-             FrameworkLabel="Site colours"
+<ThemePicker Label="Colors"
+             FrameworkLabel="Site colors"
              Palettes="@([ThemePalette.Framework, ThemePalette.Editor, ThemePalette.Contrast])" />
 ```
 
@@ -94,7 +94,7 @@ Offer fewer palettes, in your order, and rename the option that applies none:
 | --- | --- | --- | --- |
 | `Label` | `string` | `"Palette"` | The visible label of the list. |
 | `Palettes` | `IReadOnlyList<ThemePalette>?` | `null` (every palette) | The palettes offered, in this order. Duplicates and values outside the enum are dropped. The palette the visitor already uses is always offered, first when it is not in the list. |
-| `FrameworkLabel` | `string` | `"Default"` | The text of the `Framework` option, which applies no palette and shows the site's own colours. |
+| `FrameworkLabel` | `string` | `"Default"` | The text of the `Framework` option, which applies no palette and shows the site's own colors. |
 
 `Class`, `Style` and any extra attributes go on the outer `<label>`.
 
@@ -115,7 +115,7 @@ Offer fewer palettes, in your order, and rename the option that applies none:
 
 The list is a native `<select>` inside its `<label>`, so it has an accessible name, works with the keyboard (arrow keys
 change the palette) and needs no id, which keeps several pickers on one page valid. Its focus outline uses
-`--osirion-focus-ring-color`. The label takes the colour of its container, so it stays readable in a menu with its own
+`--osirion-focus-ring-color`. The label takes the color of its container, so it stays readable in a menu with its own
 background, such as the Studio Blue frame.
 
 ## Styling

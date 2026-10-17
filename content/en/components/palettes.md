@@ -4,7 +4,7 @@ order: 3
 layout: docs
 title: Palettes
 permalink: /components/palettes
-description: Named colour palettes for Osirion components, each with a light and a dark variant that meets WCAG 2.2 AA, chosen in configuration or by the visitor, applied before the first paint.
+description: Named color palettes for Osirion components, each with a light and a dark variant that meets WCAG 2.2 AA, chosen in configuration or by the visitor, applied before the first paint.
 author: Dejan Demonjić
 date: 2026-10-16
 last_modified: 2026-10-16
@@ -29,20 +29,20 @@ redirect_from:
 custom_fields:
   group: theming
 seo_properties:
-  title: 'Colour palettes for Blazor - Osirion.Blazor'
+  title: 'Color palettes for Blazor - Osirion.Blazor'
   description: 'Six named palettes with light and dark variants, checked for WCAG 2.2 contrast and applied before the first paint.'
   image: /assets/images/blazor-cover.png
   canonical: 'https://getosirion.com/components/palettes'
   lang: en
   robots: index, follow
-  og_title: 'Colour palettes for Blazor - Osirion.Blazor'
+  og_title: 'Color palettes for Blazor - Osirion.Blazor'
   og_description: 'Named palettes with light and dark variants for Osirion components, checked for contrast.'
   og_image_url: '/assets/images/blazor-cover.png'
   og_type: article
   json_ld: ''
   type: TechArticle
   twitter_card: summary_large_image
-  twitter_title: 'Colour palettes for Blazor - Osirion.Blazor'
+  twitter_title: 'Color palettes for Blazor - Osirion.Blazor'
   twitter_description: 'Named palettes with light and dark variants for Osirion components, checked for contrast.'
   twitter_image_url: '/assets/images/blazor-cover.png'
   meta_tags: {}
@@ -50,23 +50,23 @@ seo_properties:
 
 # Palettes
 
-A palette is a named set of colours for Osirion components. The mode (light, dark or system) stays separate: every
+A palette is a named set of colors for Osirion components. The mode (light, dark or system) stays separate: every
 palette has a light and a dark variant, and the [theme toggle](/components/theme-toggle) switches between
 them.
 
 ## The palettes
 
-| Palette | `ThemePalette` | Light and dark | Colours |
+| Palette | `ThemePalette` | Light and dark | Colors |
 | --- | --- | --- | --- |
 | Framework | `Framework` | follows the mode | No palette: the theme files and the active framework adapter decide. The default. |
-| Osirion | `Osirion` | yes | Osirion's own colours, kept even when a framework adapter is active. |
-| Commit | `Commit` | yes | Inspired by GitHub's Primer colours. |
+| Osirion | `Osirion` | yes | Osirion's own colors, kept even when a framework adapter is active. |
+| Commit | `Commit` | yes | Inspired by GitHub's Primer colors. |
 | Editor | `Editor` | yes | Inspired by Visual Studio Code's Light Modern and Dark Modern themes. |
 | Studio | `Studio` | yes | Approximates Visual Studio's Light and Dark themes. |
 | Studio Blue | `StudioBlue` | light; dark uses Studio's | Approximates Visual Studio's Blue theme: a light page in a dark blue menu frame. |
 | Contrast | `Contrast` | yes | High contrast, inspired by Visual Studio Code's High Contrast themes. |
 
-The names are neutral on purpose: "inspired by" describes where the colours come from, and none of those projects
+The names are neutral on purpose: "inspired by" describes where the colors come from, and none of those projects
 endorses Osirion.
 
 ## Setup
@@ -124,28 +124,28 @@ Every palette variant is checked in the library's tests, against WCAG 2.2:
 
 - Text and its background reach 4.5:1 (AA): body, secondary and muted text on the page and on raised surfaces, links,
   button labels on their buttons (also on hover), the active navigation item, status messages, form fields, and every
-  syntax highlighting colour on the code background.
+  syntax highlighting color on the code background.
 - The Contrast palette holds all of these to 7:1 (AAA).
 - The focus indicator reaches 3:1 against the page.
 
-Where a source colour misses its target, the palette keeps its hue and moves its lightness until it reaches it, so a
-colour can differ slightly from the theme it was taken from. Osirion's own light and dark themes are held to the same
+Where a source color misses its target, the palette keeps its hue and moves its lightness until it reaches it, so a
+color can differ slightly from the theme it was taken from. Osirion's own light and dark themes are held to the same
 checks.
 
 ## Code highlighting
 
-Code blocks follow the palette. Each palette sets `--osirion-code-background` and a colour per Prism token group
+Code blocks follow the palette. Each palette sets `--osirion-code-background` and a color per Prism token group
 (`--osirion-code-keyword`, `--osirion-code-string`, `--osirion-code-comment` and so on), and its rules outrank Prism's
 themes, including the accessible theme `OsirionHtmlRenderer` uses by default. Without a palette, code blocks keep the
 renderer's theme.
 
 ## With a CSS framework
 
-A palette recolours Osirion's components through the `--osirion-*` tokens. The framework still paints what it owns:
+A palette recolors Osirion's components through the `--osirion-*` tokens. The framework still paints what it owns:
 the page body under Bootstrap, the framework's own buttons and inputs, and the components an adapter styles with the
-framework's variables. Use `Framework` when the site's colours should come from the framework theme.
+framework's variables. Use `Framework` when the site's colors should come from the framework theme.
 
-## Your own colours
+## Your own colors
 
 To change one token of one palette, write a rule with a higher specificity in your own stylesheet:
 
@@ -161,7 +161,7 @@ yourself; `ThemePalette` only knows the palettes Osirion ships.
 
 ## Sources
 
-The colours of Commit come from Primer primitives 11.10.0 (GitHub, MIT License); those of Editor and Contrast from
+The colors of Commit come from Primer primitives 11.10.0 (GitHub, MIT License); those of Editor and Contrast from
 Visual Studio Code's default themes (Microsoft, MIT License). The notices are in `THIRD-PARTY-NOTICES.md` in the
 Osirion.Blazor.Theming package. Studio approximates Visual Studio's themes, which are not published as source.
 

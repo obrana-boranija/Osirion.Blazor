@@ -5,9 +5,9 @@
  * A palette applies while <html> carries data-osirion-palette; data-osirion-theme picks its light or dark variant.
  * Without data-osirion-palette the theme files and the active framework adapter decide, as before.
  *
- * Commit: colours inspired by GitHub's Primer primitives 11.10.0 (functional/themes/light.css and dark.css),
+ * Commit: colors inspired by GitHub's Primer primitives 11.10.0 (functional/themes/light.css and dark.css),
  * Copyright (c) 2018 GitHub Inc., MIT License.
- * Editor and Contrast: colours inspired by Visual Studio Code's default themes (extensions/theme-defaults:
+ * Editor and Contrast: colors inspired by Visual Studio Code's default themes (extensions/theme-defaults:
  * light_modern, dark_modern, light_plus, dark_plus, hc_light, hc_black; src/vs/platform/theme/common/colors),
  * Copyright (c) 2015 - present Microsoft Corporation, MIT License.
  * Studio: approximated from Visual Studio's Light, Dark and Blue themes, which are not published as source.

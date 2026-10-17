@@ -80,8 +80,8 @@ html.osirion-bootstrap-integration[data-theme="light"],
     /* Links follow the framework's link color, which it keeps legible on its own background in both modes */
     --osirion-link-color: var(--bs-link-color, #0d6efd);
     --osirion-link-hover-color: var(--bs-link-hover-color, #0a58ca);
-    /* Bootstrap's tertiary colour is 50% opaque and not meant for text (3.12:1 on white); Osirion uses tertiary text
-       for labels and metadata, so it takes the secondary colour, which reads. */
+    /* Bootstrap's tertiary color is 50% opaque and not meant for text (3.12:1 on white); Osirion uses tertiary text
+       for labels and metadata, so it takes the secondary color, which reads. */
     --osirion-text-tertiary: var(--bs-secondary-color, #6c757d);
     --osirion-text-inverted: var(--bs-white, #ffffff);
     --osirion-text-disabled: var(--bs-secondary-color, #6c757d);

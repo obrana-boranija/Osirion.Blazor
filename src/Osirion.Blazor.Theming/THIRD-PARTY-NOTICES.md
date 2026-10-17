@@ -1,6 +1,6 @@
 # Third-party notices
 
-The palettes in `wwwroot/css/palettes.css` take colour values from the projects below. The Commit palette is
+The palettes in `wwwroot/css/palettes.css` take color values from the projects below. The Commit palette is
 inspired by GitHub's Primer primitives and the Editor and Contrast palettes by Visual Studio Code's default themes;
 neither project endorses Osirion.Blazor, and the palettes carry neutral names for that reason. The Studio palette is
 approximated from Visual Studio's themes and uses no source files.

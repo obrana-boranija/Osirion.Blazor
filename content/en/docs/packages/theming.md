@@ -59,7 +59,7 @@ Fluent UI, MudBlazor or Radzen, and lets visitors switch between the themes. It 
   Render it once, in your main layout.
 - [`ThemeToggle`](/components/theme-toggle) is a button that switches between light and dark.
 
-On top of the mode, a [palette](/components/palettes) can set the colours: Osirion, Commit, Editor,
+On top of the mode, a [palette](/components/palettes) can set the colors: Osirion, Commit, Editor,
 Studio, Studio Blue or Contrast, each with a light and a dark variant.
 [`ThemePicker`](/components/theme-picker) lets visitors choose one.
 

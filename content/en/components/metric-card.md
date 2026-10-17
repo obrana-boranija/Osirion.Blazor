@@ -54,7 +54,7 @@ and counts from zero to them; the text before and after stays as written:
 <OsirionMetricCard Value="2-4 days" Label="Delivery time" Animate="true" />
 ```
 
-Pick the colour with `Accent` and the frame with `Border` and `Shadow`:
+Pick the color with `Accent` and the frame with `Border` and `Shadow`:
 
 ```razor
 <OsirionMetricCard Value="98%"
@@ -73,14 +73,14 @@ Pick the colour with `Accent` and the frame with `Border` and `Shadow`:
 | `Value` | `string` | `""` | The value as it is shown, such as `99.99%` or `18-32%`. Its number, or a range's two numbers, are what `Animate` counts up; the text around them stays. Required. |
 | `Label` | `string?` | `null` | The label under the value. |
 | `Description` | `string?` | `null` | Supporting text under the label. |
-| `Accent` | `MetricCardAccent` | `MetricCardAccent.Green` | The accent colour: a theme colour (`Primary`, `Secondary`, `Success`, `Warning`, `Danger`, `Info`) or a fixed one (`Blue`, `Teal`, `Green`, `Amber`, `Purple`, `Indigo`). |
+| `Accent` | `MetricCardAccent` | `MetricCardAccent.Green` | The accent color: a theme color (`Primary`, `Secondary`, `Success`, `Warning`, `Danger`, `Info`) or a fixed one (`Blue`, `Teal`, `Green`, `Amber`, `Purple`, `Indigo`). |
 | `Kicker` | `string?` | `null` | Short text above the value. |
 | `Border` | `MetricCardBorder` | `MetricCardBorder.Accent` | The border: `None`, `Default` (the theme border) or `Accent`. |
 | `Shadow` | `MetricCardShadow` | `MetricCardShadow.Medium` | The shadow: `None`, `Small`, `Medium` or `Large`, or the same sizes tinted with the accent (`SmallAccent`, `MediumAccent`, `LargeAccent`). A card with a shadow lifts on hover. |
 | `Elevated` | `bool` | `false` | Whether the shadow is made large: `Large`, or `LargeAccent` for an accent shadow, whatever `Shadow` says. |
 | `CssClass` | `string?` | `null` | Extra CSS classes on the card, as `Class` does. |
 | `Animate` | `bool` | `false` | Whether the numbers count up from zero, once, when the card scrolls into view. The server renders the final value, so the card reads correctly before and without script; with reduced motion requested, nothing moves. |
-| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's colour mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
 | `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
 | `Style` | `string?` | `null` | An inline style for the component's root element. |
 
@@ -101,13 +101,13 @@ Pick the colour with `Accent` and the frame with `Border` and `Shadow`:
 | --- | --- |
 | `osirion-metric-card` | The card (`article`) |
 | `osirion-metric-card-kicker` | The line above the value |
-| `osirion-metric-card-value` | The value, in the accent colour |
+| `osirion-metric-card-value` | The value, in the accent color |
 | `osirion-metric-card-label` | The label |
 | `osirion-metric-card-description` | The supporting text |
 
 The card also carries one class per setting, such as `osirion-metric-card-purple`, `osirion-metric-card-border-accent`
 and `osirion-metric-card-shadow-medium`. Each accent class sets `--osirion-metric-card-accent`; set it yourself on the
-card, through `Style` or your stylesheet, for a colour of your own. The theme accents follow the palette and the
+card, through `Style` or your stylesheet, for a color of your own. The theme accents follow the palette and the
 framework adapter; the fixed ones (`Blue` to `Indigo`) stay the same.
 
 ## Related
