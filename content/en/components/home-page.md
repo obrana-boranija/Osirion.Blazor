@@ -95,9 +95,8 @@ item with the slug `homepage` and shows a centered jumbotron hero:
 ## Parameters
 
 `HomePage` shares its hero, SEO and breadcrumb parameters with the other page components. A few parameters do
-nothing, and the table says which: `ContentPath`, `ContentUrlFormatter`, and the recent section (`ShowRecentContent`,
-`RecentSectionTitle`, `RecentCount`, `ReadMoreText`). The lookup parameters of the base class (`Item`, `ItemPath`,
-`ItemUrl`, `ItemSlug`, `Query`) find an item the page never shows.
+nothing, and the table says which: `ContentPath`. The lookup parameters of the base class (`Item`, `ItemPath`,
+`ItemUrl`, `ItemSlug`, `Query`) are not used: the page runs no lookup, and loads only its featured and recent items.
 
 <!-- osirion:parameters HomePage -->
 
@@ -105,7 +104,7 @@ nothing, and the table says which: `ContentPath`, `ContentUrlFormatter`, and the
 | --- | --- | --- | --- |
 | `ContentPath` | `string?` | `null` | Has no effect: `HomePage` does not load by path. Pass the item as `Content`. |
 | `Content` | `ContentItem?` | `null` | The item that makes the page: its title and description are the hero's, its featured image the hero's image and its body follows the hero (without its own leading `h1` while the hero is shown). With neither `Content` nor `ChildContent` the page shows the not-found state and signals 404. |
-| `ShowFeaturedContent` | `bool` | `true` | Whether to show the featured section, an `OsirionContentListSection`. As `HomePage` configures it, the section loads the newest `FeaturedCount` items from the default provider, whatever their locale, directory or featured flag. |
+| `ShowFeaturedContent` | `bool` | `true` | Whether to show the featured section, an `OsirionContentListSection` of the newest `FeaturedCount` items of the page's `Locale` that are marked `featured: true` in their front matter. Without such items the section is left out. |
 | `FeaturedSectionTitle` | `string` | `"Featured Content"` | The heading of the featured section. |
 | `FeaturedSectionDescription` | `string?` | `null` | The sentence under the featured section's heading. None when null. |
 | `FeaturedLayout` | `string` | `"grid"` | The layout of the featured items: `grid`, `list`, `carousel` or `featured-first`. |
@@ -116,9 +115,9 @@ nothing, and the table says which: `ContentPath`, `ContentUrlFormatter`, and the
 | `ShowFeaturedCategories` | `bool` | `true` | Whether each featured item shows its categories. |
 | `FeaturedViewAllUrl` | `string?` | `null` | The address of the "View all posts" link under the featured items. The link needs this and `ShowFeaturedViewAll`. |
 | `ShowFeaturedViewAll` | `bool` | `true` | Whether the "View all posts" link shows. It also needs `FeaturedViewAllUrl`. |
-| `ShowRecentContent` | `bool` | `true` | Has no effect: the recent section renders only when its items are set, and nothing sets them. |
-| `RecentSectionTitle` | `string` | `"Recent Posts"` | Has no effect: the recent section is never rendered. |
-| `RecentCount` | `int` | `6` | Has no effect: the recent section is never rendered. |
+| `ShowRecentContent` | `bool` | `true` | Whether to show the recent section: the newest `RecentCount` items of the page's `Locale`, featured or not, under `RecentSectionTitle`. Without items the section is left out. |
+| `RecentSectionTitle` | `string` | `"Recent Posts"` | The heading of the recent section. |
+| `RecentCount` | `int` | `6` | The number of items the recent section shows. |
 | `ShowCategories` | `bool` | `false` | Whether the browse section lists the categories, under the heading `CategoriesSectionTitle`. |
 | `ShowTags` | `bool` | `false` | Whether the browse section shows the tag cloud, under the heading `TagsSectionTitle`. |
 | `BrowseSectionTitle` | `string` | `"Browse Content"` | The heading of the browse section, which holds the category list and the tag cloud. |
@@ -127,8 +126,8 @@ nothing, and the table says which: `ContentPath`, `ContentUrlFormatter`, and the
 | `ShowCategoryCounts` | `bool` | `true` | Whether each listed category shows its item count. |
 | `ShowTagCounts` | `bool` | `true` | Whether each tag shows its item count. |
 | `CustomContent` | `string?` | `null` | HTML shown in a section after the other sections. It is written through `OsirionHtmlRenderer`, which sanitizes it with the registered HTML sanitizer. |
-| `ContentUrlFormatter` | `Func<ContentItem, string>?` | `null` | Has no effect: nothing in the page reads it. |
-| `ReadMoreText` | `string` | `"Read more"` | Has no effect: it belongs to the recent section, which is never rendered. |
+| `ContentUrlFormatter` | `Func<ContentItem, string>?` | `null` | Builds the link of each item in the featured and recent sections from the item. Without it a link is `/{item.Url}`. |
+| `ReadMoreText` | `string` | `"Read more"` | The text of the link under each item of the recent section. No link is shown when it is empty. |
 | `ChildContent` | `RenderFragment?` | `null` | Content shown after the body and before the featured section. Child content alone keeps the page from the not-found state. |
 | `ShowNavigation` | `bool` | `true` | Whether `ArticlePage` shows the previous and next articles under the body. The other pages do not read it. |
 | `PreviousItem` | `ContentItem?` | `null` | The item of the previous link. Read by `DocumentPage`, which looks it up when it is null and keeps a value you pass; `ArticlePage` finds its own neighbors and ignores it. |
@@ -142,7 +141,7 @@ nothing, and the table says which: `ContentPath`, `ContentUrlFormatter`, and the
 | `ItemUrl` | `string?` | `null` | The public URL of the item to find (`ContentItem.Url`, for example `articles/my-article`), without a locale folder. |
 | `ItemSlug` | `string?` | `null` | The slug of the item to find (`ContentItem.Slug`, for example `my-article`). Combine it with `DirectoryName` when slugs repeat across directories. |
 | `ItemUrlFormatter` | `Func<ContentItem, string>?` | `null` | Builds the links of the other parts of a series from the item. Passed on by `ArticlePage` to its series navigation; no other page reads it. |
-| `Locale` | `string?` | `"en"` | The locale of the content the page looks up (`en` by default): the item found with `ItemPath`, `ItemUrl` or `ItemSlug`, and the related items, must have it. Used by `ArticlePage`, `AboutPage`, `ContactPage` and `ContentListPage`. `HomePage` and `DocumentPage` show the item you pass as `Content`. |
+| `Locale` | `string?` | `"en"` | The locale of the content the page looks up (`en` by default): the item found with `ItemPath`, `ItemUrl` or `ItemSlug`, and the related items, must have it. Used by `ArticlePage`, `AboutPage`, `ContactPage` and `ContentListPage`. `HomePage` and `DocumentPage` show the item you pass as `Content`; `HomePage` lists the featured and recent items of this locale. |
 | `Query` | `ContentQuery?` | `null` | A complete content query that finds the item in place of `ItemPath`, `ItemUrl`, `ItemSlug`, `Locale` and `DirectoryName`; the first match is shown. Used by `ArticlePage`, `AboutPage` and `ContactPage`. Changing it alone does not make a displayed page load again. |
 | `SchemaTypes` | `SchemaType[]?` | `null` | The schema.org types written as the page's structured data, passed to `SeoMetadataRenderer`. When it is null, `AboutPage` uses `AboutPage`, `ContactPage` uses `ContactPage`, `DocumentPage` uses `TechArticle` and the other pages leave the choice to the renderer. `DocumentPage` also takes the first value as the article's microdata type. |
 | `GenerateMultipleSchemas` | `bool` | `true` | Whether to write more than one structured data type when it applies, for example the main type and a breadcrumb list. Used by `AboutPage`, `ContactPage` and `DocumentPage`; the other pages do not pass it on. |
@@ -165,7 +164,7 @@ nothing, and the table says which: `ContentPath`, `ContentUrlFormatter`, and the
 | `PrevPageUrl` | `string?` | `null` | The address of the previous page in a series, written as a `rel="prev"` link in the head. Used by `ArticlePage`, `HomePage` and `DocumentPage`. |
 | `NextPageUrl` | `string?` | `null` | The address of the next page in a series, written as a `rel="next"` link in the head. Used by `ArticlePage`, `HomePage` and `DocumentPage`. |
 | `AlternateLanguageUrls` | `List<string>?` | `null` | The addresses of the page's other language versions, written as `hreflang` links in the head. Used by every page component that writes head metadata except `LandingPage`. |
-| `LoadingText` | `string` | `"Loading article..."` | The text beside the spinner while an interactive render waits for the item. A statically rendered response is sent once the item has loaded, so it never contains it. Used by `ArticlePage`, `HomePage`, `DocumentPage`, `AboutPage` and `ContactPage`; `LandingPage` has its own. |
+| `LoadingText` | `string` | `"Loading article..."` | The text beside the spinner while an interactive render waits for the item (for `HomePage`, for its featured and recent items). A statically rendered response is sent once they have loaded, so it never contains it. Used by `ArticlePage`, `HomePage`, `DocumentPage`, `AboutPage` and `ContactPage`; `LandingPage` has its own. |
 | `ShowLoadingText` | `bool` | `true` | Whether the loading spinner shows `LoadingText`. |
 | `NotFoundTitle` | `string` | `"Article Not Found"` | Has no effect: the page components render the not-found state of `OsirionContentNotFound` with its own texts. |
 | `NotFoundText` | `string` | `"The requested article could not be found."` | Has no effect: the page components render the not-found state of `OsirionContentNotFound` with its own texts. `LandingPage` has a parameter of its own. |
@@ -175,7 +174,7 @@ nothing, and the table says which: `ContentPath`, `ContentUrlFormatter`, and the
 | `ShowHero` | `bool` | `true` | Whether the page's title and description appear in a `HeroSection` styled by the other `Hero` parameters. When it is off, `ArticlePage` shows no heading unless `HeaderContent` is set, while `AboutPage` and `ContactPage` show a plain `OsirionPageHeading`. `AboutPage` and `ContactPage` start with it off. `DocumentPage` never shows a hero. |
 | `UseHeroBackgroundImage` | `bool` | `false` | Whether the hero image is the hero's background instead of a picture beside the text. Used by `ArticlePage`, `HomePage`, `AboutPage` and `ContactPage` while `ShowHero` is on. |
 | `HasOverlay` | `bool` | `false` | Whether an overlay darkens the hero's background image so the text stays readable. It applies only with `UseHeroBackgroundImage`. |
-| `HeroImageUrl` | `string?` | `null` | The hero's image. `ArticlePage` falls back to the item's featured image when it is not set; `AboutPage` and `ContactPage` show no image without it; `HomePage` always uses the item's featured image and ignores this parameter. |
+| `HeroImageUrl` | `string?` | `null` | The hero's image. `ArticlePage` falls back to the item's featured image when it is not set; `AboutPage` and `ContactPage` show no image without it; `HomePage` falls back to the item's featured image, as `ArticlePage` does. |
 | `HeroTheme` | `ThemeMode` | `ThemeMode.System` | The color mode of the hero: `Light`, `Dark` or `System`. Used by `ArticlePage`, `HomePage`, `AboutPage` and `ContactPage`. |
 | `HeroAlignment` | `Alignment` | `Alignment.Left` | How the hero's text is aligned, an `Alignment` value such as `Left` or `Center`. Used by `ArticlePage`, `HomePage`, `AboutPage` and `ContactPage`. |
 | `HeroImagePosition` | `Alignment` | `Alignment.Right` | Which side of the hero text the image sits on when it is not a background, an `Alignment` value (`Left` or `Right`). Used by `ArticlePage`, `HomePage`, `AboutPage` and `ContactPage`. |
@@ -208,14 +207,22 @@ nothing, and the table says which: `ContentPath`, `ContentUrlFormatter`, and the
 
 - **Rendering.** The page renders on the server and needs no script; it does not use streaming rendering.
 - **Order.** The page writes, in this order: the head metadata, the hero (`ShowHero`), the body, `ChildContent`, the
-  featured section (`ShowFeaturedContent`), the browse section (when `ShowCategories` or `ShowTags` is on) and
-  `CustomContent`.
-- **Hero.** The hero takes the item's title, description and featured image; `HeroImageUrl` is not used. The hero
-  buttons show when both a text and an address are set. While the hero is shown, the body leaves out its own
-  leading `h1`, so the page keeps a single `h1`.
-- **Featured section.** It is an `OsirionContentListSection` that loads the newest `FeaturedCount` items from the
-  default provider, whatever their locale, directory or featured flag. `Featured` in the names does not filter by the
-  item's featured flag. When the provider has no items, the section shows a not-found block.
+  featured section (`ShowFeaturedContent`), the recent section (`ShowRecentContent`), the browse section (when
+  `ShowCategories` or `ShowTags` is on) and `CustomContent`.
+- **Hero.** The hero takes the item's title and description, and `HeroImageUrl` or, without it, the item's featured
+  image. The hero buttons show when both a text and an address are set. While the hero is shown, the body leaves out
+  its own leading `h1`, so the page keeps a single `h1`.
+- **Featured section.** It is an `OsirionContentListSection` of the newest `FeaturedCount` items of the page's `Locale`
+  (`en` by default) whose front matter says `featured: true`. With no such item the section is left out; it used to
+  list the newest items of any locale, and showed a not-found block when there were none.
+- **Recent section.** The newest `RecentCount` items of the page's `Locale`, featured or not, under
+  `RecentSectionTitle`, each with a `ReadMoreText` link. With no items, or with `ShowRecentContent` off, it is left
+  out. A featured item can appear in both sections.
+- **Links.** `ContentUrlFormatter` builds the link of each item in the featured and recent sections; without it a link
+  is `/{item.Url}`.
+- **Loading.** The page queries the default provider for the two sections, and again only when `Locale`,
+  `ShowFeaturedContent`, `FeaturedCount`, `ShowRecentContent` or `RecentCount` change. A query that fails is logged and
+  leaves its section out; the rest of the page renders.
 - **Browse section.** It lists categories and tags with `CategoriesList` and `TagCloud`, up to `MaxCategories` and
   `MaxTags`, with counts unless you turn them off. The links default to `/category/{slug}` and `/tag/{slug}`.
 - **Not found.** With neither `Content` nor `ChildContent`, the page renders the not-found state of

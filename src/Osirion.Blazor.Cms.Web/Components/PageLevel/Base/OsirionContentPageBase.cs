@@ -19,7 +19,7 @@ public abstract partial class OsirionContentPageBase : OsirionComponentBase
     /// The locale of the content the page looks up (<c>en</c> by default): the item found with <c>ItemPath</c>,
     /// <c>ItemUrl</c> or <c>ItemSlug</c>, and the related items, must have it. Used by <c>ArticlePage</c>,
     /// <c>AboutPage</c>, <c>ContactPage</c> and <c>ContentListPage</c>. <c>HomePage</c> and <c>DocumentPage</c> show
-    /// the item you pass as <c>Content</c>.
+    /// the item you pass as <c>Content</c>; <c>HomePage</c> lists the featured and recent items of this locale.
     /// </summary>
     [Parameter]
     public string? Locale { get; set; } = "en";
@@ -196,8 +196,8 @@ public abstract partial class OsirionContentPageBase : OsirionComponentBase
     protected bool IsLoading { get; set; } = false;
 
     /// <summary>
-    /// The text beside the spinner while an interactive render waits for the item. A statically rendered response is
-    /// sent once the item has loaded, so it never contains it. Used by <c>ArticlePage</c>, <c>HomePage</c>,
+    /// The text beside the spinner while an interactive render waits for the item (for <c>HomePage</c>, for its featured
+    /// and recent items). A statically rendered response is sent once they have loaded, so it never contains it. Used by <c>ArticlePage</c>, <c>HomePage</c>,
     /// <c>DocumentPage</c>, <c>AboutPage</c> and <c>ContactPage</c>; <c>LandingPage</c> has its own.
     /// </summary>
     [Parameter]
@@ -271,8 +271,8 @@ public abstract partial class OsirionContentPageBase : OsirionComponentBase
 
     /// <summary>
     /// The hero's image. <c>ArticlePage</c> falls back to the item's featured image when it is not set;
-    /// <c>AboutPage</c> and <c>ContactPage</c> show no image without it; <c>HomePage</c> always uses the item's
-    /// featured image and ignores this parameter.
+    /// <c>AboutPage</c> and <c>ContactPage</c> show no image without it; <c>HomePage</c> falls back to the item's
+    /// featured image, as <c>ArticlePage</c> does.
     /// </summary>
     [Parameter]
     public string? HeroImageUrl { get; set; }

@@ -2,7 +2,8 @@
 
 Purpose
 A home page template. It shows a hero built from a content item (title, description, featured image), the item's
-Markdown body, optional `ChildContent`, a featured posts section, optional category and tag lists, and an optional
+Markdown body, optional `ChildContent`, a featured posts section, a recent posts section, optional category and
+tag lists, and an optional
 block of custom HTML. It writes the page's SEO head tags from the item. With neither `Content` nor `ChildContent` it
 renders the 404 "content not found" component and asks the framework for a 404 response. `AboutPage` and `ContactPage`
 are the single-purpose pages in this folder; `HomePage` is the one for the site root.
@@ -12,7 +13,8 @@ Declared by `HomePage`:
 - Content: `ContentItem?`, the item shown in the hero and as the body. The markup renders `Content`, not `Item`.
 - ContentPath: `string?`, declared; the component's code does not read it.
 - ChildContent: `RenderFragment?`, shown after the body in a second `div.osirion-homepage-content`
-- ShowFeaturedContent: `bool`, default `true`. Renders an `OsirionContentListSection`.
+- ShowFeaturedContent: `bool`, default `true`. Renders an `OsirionContentListSection` of the newest items of the
+  page's `Locale` marked `featured: true`; without any the section is left out.
 - FeaturedSectionTitle: `string`, default `"Featured Content"`
 - FeaturedSectionDescription: `string?`
 - FeaturedLayout: `string`, default `"grid"`
@@ -21,10 +23,11 @@ Declared by `HomePage`:
 - ShowFeaturedExcerpt, ShowFeaturedAuthor, ShowFeaturedCategories: `bool`, default `true`
 - FeaturedViewAllUrl: `string?`
 - ShowFeaturedViewAll: `bool`, default `true`
-- ShowRecentContent: `bool`, default `true`
+- ShowRecentContent: `bool`, default `true`. The newest items of the page's `Locale`, featured or not; without any
+  items the section is left out.
 - RecentSectionTitle: `string`, default `"Recent Posts"`
-- RecentCount: `int`, default `6`; declared, the component's code does not read it
-- ReadMoreText: `string`, default `"Read more"`. Passed to the recent posts `ContentList`.
+- RecentCount: `int`, default `6`. The number of items the recent section loads and shows.
+- ReadMoreText: `string`, default `"Read more"`. The link under each recent item; none when empty.
 - ShowCategories: `bool`, default `false`. Renders a `CategoriesList` in the browse section.
 - ShowTags: `bool`, default `false`. Renders a `TagCloud` in the browse section.
 - BrowseSectionTitle: `string`, default `"Browse Content"`
@@ -32,11 +35,11 @@ Declared by `HomePage`:
 - MaxTags: `int`, default `15`
 - ShowCategoryCounts, ShowTagCounts: `bool`, default `true`
 - CustomContent: `string?`, HTML rendered in a last `ContentSection` through `OsirionHtmlRenderer`
-- ContentUrlFormatter: `Func<ContentItem, string>?`, declared; the component's code does not read it
+- ContentUrlFormatter: `Func<ContentItem, string>?`, builds the link of each item of the featured and recent sections
 
 Used by `HomePage` from its base classes (`OsirionContentPageBase`, `OsirionContentItemPageBase`):
 - Hero: `ShowHero` (default `true`), `HeroBackgroundPattern` (`BackgroundPatternType?`, default `Grid`),
-  `UseHeroBackgroundImage`, `HeroImagePosition` (`Alignment`, default `Right`), `HeroAlignment` (`Alignment`, default
+  `UseHeroBackgroundImage`, `HeroImageUrl` (falls back to the item's featured image), `HeroImagePosition` (`Alignment`, default `Right`), `HeroAlignment` (`Alignment`, default
   `Left`), `HeroVariant` (default `Hero`), `HeroTheme` (`ThemeMode`, default `System`), `HeroPrimaryButtonText`,
   `HeroPrimaryButtonUrl`, `HeroSecondaryButtonText`, `HeroSecondaryButtonUrl`
 - SEO: `SchemaTypes` (`SchemaType[]?`), `WebsiteName` (passed as the site name), `CustomBreadcrumbs`
@@ -44,15 +47,15 @@ Used by `HomePage` from its base classes (`OsirionContentPageBase`, `OsirionCont
 - Browse links: `CategoryUrlFormatter` and `TagUrlFormatter` (`Func<string, string>?`, given the category or tag
   name), `CategoriesSectionTitle` (default `"Categories"`), `TagsSectionTitle` (default `"Tags"`)
 - Loading: `LoadingText` (default `"Loading article..."`), `ShowLoadingText` (default `true`)
-- Item lookup (the base loads an `Item` from these; the markup does not render it): `Item`, `ItemPath`, `ItemUrl`,
-  `ItemSlug`, `Locale` (default `"en"`), `Query`, `DirectoryName`
+- `Locale` (default `"en"`): the locale of the featured and recent items. The item lookup parameters of the base
+  class (`Item`, `ItemPath`, `ItemUrl`, `ItemSlug`, `Query`, `DirectoryName`) are not used: the page runs no lookup.
 
 Inherited and not read by the `HomePage` markup: `ShowNavigation`, `PreviousItem`, `NextItem`, `RelatedItems`,
 `ItemUrlFormatter`, `ShowRelatedContent`, `RelatedContentTitle`, `RelatedItemsCount`, `GenerateMultipleSchemas`,
 `SiteDescription`, `SiteLogoUrl`, `TwitterSite`, `TwitterCreator`, `FacebookAppId`, `AllowAiDiscovery`,
 `AllowAiTraining`, `AllowSearchIndexing`, `EnableGeoOptimization`, `EnableAeoOptimization`, `DefaultImageUrl`,
 `DefaultImageWidth`, `DefaultImageHeight`, `OrganizationName`, `NotFoundTitle`, `NotFoundText`, `ShowBackLink`,
-`BackLinkUrl`, `BackLinkText`, `HasOverlay`, `HeroImageUrl`, `ShowHeroButtons`, `ShowBreadcrumbs`,
+`BackLinkUrl`, `BackLinkText`, `HasOverlay`, `ShowHeroButtons`, `ShowBreadcrumbs`,
 `ShowBreadcrumbHome`, `BreadcrumbHomeText`, `BreadcrumbHomeUrl`, `DirectoryUrlFormatter`, `ShowCategoriesSidebar`,
 `ShowTagsSidebar`.
 From `OsirionComponentBase`: `Class`, `Style`, `Theme` and `Attributes`; the first, second and last are rendered on the
@@ -91,11 +94,11 @@ Notes
   (`ContentSection.osirion-homepage-browse` with `div.osirion-browse-content` and one `div.osirion-browse-section`
   per list) and the custom block (`ContentSection.osirion-homepage-custom`).
 - The SEO tags are written into `HeadContent` by `SeoMetadataRenderer`, so the host needs a `HeadOutlet`.
-- While the base class loads its `Item`, the page shows `OsirionPageLoading`. When `Content` and `ChildContent` are both
-  null and loading has finished, it shows `OsirionContentNotFound` with code 404 and calls the not-found signal
+- While the page loads its featured and recent items, it shows `OsirionPageLoading`. When `Content` and `ChildContent`
+  are both null and loading has finished, it shows `OsirionContentNotFound` with code 404 and calls the not-found signal
   (`NavigationManager.NotFound()` on .NET 10, a 404 status code on the cascading `HttpContext` otherwise).
-- The recent posts section renders only when the page has recent items, and the component's code never assigns any, so
-  `ShowRecentContent`, `RecentSectionTitle` and `ReadMoreText` currently have no visible effect.
-- The featured section gets no items from this page (it passes null), so `OsirionContentListSection` loads its own.
+- The page loads the items of both sections itself, through the default provider, and again only when `Locale`,
+  `ShowFeaturedContent`, `FeaturedCount`, `ShowRecentContent` or `RecentCount` change. A failed query is logged and
+  leaves its section out.
 - Services the host must register: `IContentProviderManager` (the base class and the sections use it) and the logging
   factory. The page works in static SSR and has no render mode of its own; the tests render it statically.
