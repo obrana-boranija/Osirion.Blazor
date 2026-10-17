@@ -7,7 +7,7 @@ permalink: /components/steps
 description: OsirionSteps renders numbered how it works steps as an ordered list, side by side or stacked with a line joining the numbers.
 author: Dejan Demonjić
 date: 2026-10-11
-last_modified: 2026-10-11
+last_modified: 2026-10-17
 featured_image: /assets/images/blazor-cover.png
 categories:
 - Components
@@ -28,7 +28,7 @@ redirect_from:
 custom_fields:
   group: sections
 seo_properties:
-  title: 'OsirionSteps - Osirion.Blazor'
+  title: 'OsirionSteps: numbered steps for Blazor'
   description: 'Numbered how it works steps for Blazor as an ordered list, side by side or stacked, rendered without script under static SSR.'
   image: /assets/images/blazor-cover.png
   canonical: 'https://getosirion.com/components/steps'
@@ -53,7 +53,11 @@ seo_properties:
 "getting started" section. The steps sit side by side on wide screens and stack on narrow ones, or always stack with
 a line joining their numbers.
 
-Available from 4.1.
+Package `Osirion.Blazor.Core`, namespace `Osirion.Blazor.Components`. [Source on GitHub](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Core/Components/Sections/OsirionSteps.razor). Available from 4.1.
+
+```demo
+steps
+```
 
 ## Usage
 
@@ -83,11 +87,17 @@ For a longer process, or a narrow column, stack them:
 
 ## Parameters
 
+<!-- osirion:parameters OsirionSteps -->
+
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `Items` | `IReadOnlyList<StepItem>` | `[]` | The steps, in order. Required. With no steps, nothing is rendered. |
-| `Vertical` | `bool` | `false` | Always stacks the steps, with a line joining their numbers. |
-| `Class` | `string?` | `null` | Extra CSS classes on the list. |
+| `Items` | `IReadOnlyList<StepItem>` | `[]` | The steps, in order. Required; with no steps nothing is rendered. |
+| `Vertical` | `bool` | `false` | Whether the steps are always stacked, with a line joining their numbers; otherwise they sit side by side on wide screens. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's colour mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
+| `Style` | `string?` | `null` | An inline style for the component's root element. |
+
+<!-- /osirion:parameters -->
 
 Unmatched attributes are written to the `<ol>`.
 

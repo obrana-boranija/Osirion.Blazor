@@ -7,7 +7,7 @@ permalink: /components/hero-section
 description: HeroSection renders a page header with a title, subtitle, buttons, article metadata and a side image, background image or pattern.
 author: Dejan Demonjić
 date: 2025-09-03
-last_modified: 2026-10-11
+last_modified: 2026-10-17
 featured_image: /assets/images/blazor-cover.png
 categories:
 - Components
@@ -29,7 +29,7 @@ redirect_from:
 custom_fields:
   group: sections
 seo_properties:
-  title: 'HeroSection - Osirion.Blazor'
+  title: 'HeroSection: page header and hero for Blazor'
   description: 'A Blazor page header with title, subtitle, buttons, article metadata and a side image, background image or pattern, rendered without script.'
   image: /assets/images/blazor-cover.png
   canonical: 'https://getosirion.com/components/hero-section'
@@ -53,6 +53,12 @@ seo_properties:
 `HeroSection` renders the header of a page: a title, a subtitle, a summary, up to two buttons and an image, either
 beside the text or behind it. The CMS page components (`ArticlePage`, `HomePage`, `LandingPage`) use it for their
 headers, and you can use it on your own Razor pages.
+
+Package `Osirion.Blazor.Core`, namespace `Osirion.Blazor.Components`. [Source on GitHub](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Core/Components/Sections/HeroSection.razor).
+
+```demo
+hero-section
+```
 
 ## Usage
 
@@ -92,40 +98,44 @@ An article header with the image behind the text and the author, date and readin
 
 ## Parameters
 
+<!-- osirion:parameters HeroSection -->
+
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `Title` | `string?` | `null` | Main heading, rendered as an `<h1>`. |
-| `TitleContent` | `RenderFragment?` | `null` | Your own heading markup in place of `Title`. |
-| `Subtitle` | `string?` | `null` | Line under the title. |
+| `Title` | `string?` | `null` | The main heading, rendered as an `h1` with the class `osirion-hero-title`. Ignored when `TitleContent` is set. |
+| `TitleContent` | `RenderFragment?` | `null` | Your own heading markup in place of `Title`, for when the page needs another heading level. |
+| `Subtitle` | `string?` | `null` | The line under the title, rendered as a paragraph. Ignored when `SubtitleContent` is set. |
 | `SubtitleContent` | `RenderFragment?` | `null` | Your own markup in place of `Subtitle`. |
-| `Summary` | `string?` | `null` | A longer paragraph under the subtitle. |
+| `Summary` | `string?` | `null` | A longer paragraph under the subtitle. Ignored when `SummaryContent` is set. |
 | `SummaryContent` | `RenderFragment?` | `null` | Your own markup in place of `Summary`. |
-| `ImageUrl` | `string?` | `null` | The image, shown beside the text or, with `UseBackgroundImage`, behind it. |
-| `ImageAlt` | `string?` | `null` | Alternative text of the side image. Falls back to `Title`, then to "Hero image"; pass `""` for a decorative image. |
-| `UseBackgroundImage` | `bool` | `false` | Uses `ImageUrl` as the section's background instead of a side image. |
-| `HasOverlay` | `bool` | `false` | Darkens a background image so the text stays readable. |
-| `BackgroundPattern` | `BackgroundPatternType?` | `null` | A decorative pattern, shown when there is no background image. |
-| `Alignment` | `Alignment` | `Left` | Text alignment: `Left`, `Center` or `Right`. `Justify` is treated as `Left`. |
-| `ImagePosition` | `Alignment` | `Right` | Side of the image. In 4.0, `Left` and `Justify` are rendered as `Right`, so the image is always on the right. |
-| `Variant` | `HeroVariant` | `Hero` | `Hero`, `Jumbotron` or `Minimal`; changes spacing and the side image's size. |
-| `MinHeight` | `string` | `"60vh"` | Minimum height, as a CSS length. |
-| `PrimaryButtonText` | `string?` | `null` | Text of the primary button. |
-| `PrimaryButtonUrl` | `string?` | `null` | Address of the primary button. |
-| `ShowPrimaryButton` | `bool` | `true` | Renders the primary button when its text and address are set. |
-| `SecondaryButtonText` | `string?` | `null` | Text of the secondary (outlined) button. |
-| `SecondaryButtonUrl` | `string?` | `null` | Address of the secondary button. |
-| `ShowSecondaryButton` | `bool` | `true` | Renders the secondary button when its text and address are set. |
-| `ShowMetadata` | `bool` | `false` | Shows `Author`, `PublishDate` and `ReadTime` with the article metadata component. |
-| `Author` | `string?` | `null` | Author name for the metadata line. |
-| `PublishDate` | `DateTime?` | `null` | Publication date for the metadata line. |
-| `ReadTime` | `string?` | `null` | Reading time in minutes; "6" is shown as "6 min". |
-| `BackgroundColor` | `string?` | `null` | A CSS color for the background. |
-| `TextColor` | `string?` | `null` | A CSS color for the text. |
-| `HasDivider` | `bool` | `true` | Adds a shadow in the primary color along the top edge. |
-| `ChildContent` | `RenderFragment?` | `null` | Extra content under the buttons. |
-| `Class` | `string?` | `null` | Extra CSS classes on the `<section>`. |
-| `Style` | `string?` | `null` | Inline style, added after the generated declarations. |
-| `Theme` | `ThemeMode` | `System` | `Light` or `Dark` forces the section's color scheme. |
+| `ImageUrl` | `string?` | `null` | The image, shown beside the text or, with `UseBackgroundImage`, behind it. As a background it is CSS-escaped before it is written to the inline style. |
+| `ImageAlt` | `string?` | `null` | The side image's alternative text; when it is not set, `Title` is used, then `Hero image`. Pass an empty string for a decorative image. A background image has no alternative text. |
+| `UseBackgroundImage` | `bool` | `false` | Whether `ImageUrl` is the section's background image instead of a side image. |
+| `HasOverlay` | `bool` | `false` | Whether a 40% black overlay is drawn over a background image and the text turns white. Has no effect without `UseBackgroundImage` and `ImageUrl`. |
+| `BackgroundPattern` | `BackgroundPatternType?` | `null` | A decorative pattern behind the content, drawn unless `UseBackgroundImage` is on. |
+| `Alignment` | `Alignment` | `Alignment.Left` | The text alignment: `Left`, `Center` or `Right`. `Justify` is treated as `Left`. |
+| `ShowPrimaryButton` | `bool` | `true` | Whether the primary button is rendered; it also needs `PrimaryButtonText` and `PrimaryButtonUrl`. |
+| `ShowSecondaryButton` | `bool` | `true` | Whether the secondary (outlined) button is rendered; it also needs `SecondaryButtonText` and `SecondaryButtonUrl`. |
+| `PrimaryButtonText` | `string?` | `null` | The primary button's text. |
+| `PrimaryButtonUrl` | `string?` | `null` | The primary button's address, written as given, so pass an address your application controls. |
+| `SecondaryButtonText` | `string?` | `null` | The secondary button's text. |
+| `SecondaryButtonUrl` | `string?` | `null` | The secondary button's address, written as given, so pass an address your application controls. |
+| `BackgroundColor` | `string?` | `null` | A CSS color for the section's background, written to the inline style as given. |
+| `TextColor` | `string?` | `null` | A CSS color for the section's text, written to the inline style as given. |
+| `MinHeight` | `string` | `"60vh"` | The section's minimum height as a CSS length, written to the inline style as given. |
+| `Author` | `string?` | `null` | The author name shown in the metadata line when `ShowMetadata` is on. |
+| `PublishDate` | `DateTime?` | `null` | The publication date shown in the metadata line when `ShowMetadata` is on. |
+| `ReadTime` | `string?` | `null` | The reading time in minutes, shown in the metadata line when `ShowMetadata` is on: `6` is shown as `6 min`. |
+| `ShowMetadata` | `bool` | `false` | Whether `Author`, `PublishDate` and `ReadTime` are shown under the text. |
+| `ImagePosition` | `Alignment` | `Alignment.Right` | The side of the text the side image sits on. `Left` and `Justify` are treated as `Right`, so the image is always on the right. |
+| `Variant` | `HeroVariant` | `HeroVariant.Hero` | `Hero`, `Jumbotron` or `Minimal`: changes the spacing, the text sizes and the side image's size. |
+| `ChildContent` | `RenderFragment?` | `null` | Extra content under the buttons, in a `div` with the class `osirion-hero-additional`. |
+| `HasDivider` | `bool` | `true` | Whether a shadow in the primary color is drawn along the section's top edge. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's colour mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
+| `Style` | `string?` | `null` | An inline style for the component's root element. |
+
+<!-- /osirion:parameters -->
 
 Unmatched attributes are written to the `<section>`.
 
@@ -140,14 +150,18 @@ Unmatched attributes are written to the `<section>`.
 - The side image carries `width` and `height` attributes for its variant (600 by 315 for `Hero`, 600 by 600 for
   `Jumbotron`, 315 by 315 for `Minimal`) to avoid layout shift, and `fetchpriority="high"` because it is usually the
   largest element in view.
+- A button is rendered only when it is shown and has both its text and its address.
 - The buttons take the configured CSS framework's large primary and outlined primary button classes.
+- A background image has no alternative text, so use it for decoration only. The side image has `ImageAlt`.
+- A background pattern is drawn unless `UseBackgroundImage` is on.
 
 ## Styling
 
 The `<section>` has `osirion-hero-section`, `osirion-hero-variant-{hero|jumbotron|minimal}` and
 `osirion-hero-align-{left|center|right}`, plus `osirion-hero-with-background` and `osirion-hero-with-overlay`, or
 `osirion-hero-with-side-image`, depending on the image. Inside are `osirion-hero-title`, `osirion-hero-subtitle`,
-`osirion-hero-summary`, `osirion-hero-buttons`, `osirion-hero-additional` and `osirion-hero-image-container`.
+`osirion-hero-summary`, `osirion-hero-buttons`, `osirion-hero-additional` and `osirion-hero-image-container`. Both
+buttons carry `osirion-hero-button` and `osirion-hero-button-primary`.
 
 The text sizes scale with the window between a minimum and a maximum, set as custom properties on the section:
 `--hero-title-min`, `--hero-title-pref`, `--hero-title-max` and the same three for `subtitle` and `summary`. Set them

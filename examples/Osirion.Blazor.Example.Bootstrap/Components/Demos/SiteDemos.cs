@@ -19,6 +19,15 @@ internal static class SiteDemos
         Add<SubscriptionCardDemo>(demos, "subscription-card", "A subscription card");
         Add<AuthorCardDemo>(demos, "author-card", "An author card");
         Add<MetricCardDemo>(demos, "metric-card", "Metric cards");
+        Add<HeroSectionDemo>(demos, "hero-section", "A hero section");
+        Add<BaseSectionDemo>(demos, "base-section", "A base section");
+        Add<ContactInfoSectionDemo>(demos, "contact-info-section", "A contact info section");
+        Add<PricingTableDemo>(demos, "pricing-table", "A pricing table and feature comparison");
+        Add<StepsDemo>(demos, "steps", "Numbered steps");
+        Add<MetricGridDemo>(demos, "metric-grid", "A metric grid");
+        Add<ContextCardGridDemo>(demos, "context-card-grid", "A context card grid");
+        Add<InfiniteLogoCarouselDemo>(demos, "infinite-logo-carousel", "A logo carousel");
+        Add<TestimonialCarouselDemo>(demos, "testimonial-carousel", "A testimonial carousel");
     }
 
     private static void Add<TDemo>(ContentDemoRegistry demos, string key, string title)

@@ -1,0 +1,45 @@
+@using Osirion.Blazor.Components
+@using Osirion.Blazor.Core.Models
+
+@* Sample plans and prices, not an offer *@
+<OsirionPricingTable Plans="plans" />
+
+<div class="mt-4">
+    <OsirionFeatureComparison PlanNames="planNames" Rows="rows" ShowCaption="true" />
+</div>
+
+@code {
+    private static readonly PricingPlan[] plans =
+    [
+        new()
+        {
+            Name = "Starter",
+            Price = "Free",
+            Description = "Sample plan for a personal site.",
+            Features = ["One site", "Community support"],
+            CallToActionText = "Start",
+            CallToActionUrl = "/docs"
+        },
+        new()
+        {
+            Name = "Team",
+            Price = "$29",
+            Period = "per month",
+            Description = "Sample plan for a team.",
+            Features = ["Five sites", "Email support"],
+            CallToActionText = "Start a trial",
+            CallToActionUrl = "/docs",
+            Highlighted = true,
+            Badge = "Sample badge"
+        },
+    ];
+
+    private static readonly string[] planNames = ["Starter", "Team"];
+
+    private static readonly FeatureComparisonRow[] rows =
+    [
+        new("Sites", ["1", "5"]),
+        new("Scheduled posts", [false, true]),
+        new("Email support", [false, true]),
+    ];
+}

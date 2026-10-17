@@ -7,7 +7,7 @@ permalink: /components/pricing-table
 description: OsirionPricingTable shows plans side by side with a highlighted plan; OsirionFeatureComparison compares their features in an accessible table.
 author: Dejan Demonjić
 date: 2026-10-11
-last_modified: 2026-10-11
+last_modified: 2026-10-17
 featured_image: /assets/images/blazor-cover.png
 categories:
 - Components
@@ -28,7 +28,7 @@ redirect_from:
 custom_fields:
   group: sections
 seo_properties:
-  title: 'OsirionPricingTable and OsirionFeatureComparison - Osirion.Blazor'
+  title: 'OsirionPricingTable: pricing and plan comparison for Blazor'
   description: 'Pricing plans side by side and an accessible feature comparison table for Blazor, rendered without script under static SSR.'
   image: /assets/images/blazor-cover.png
   canonical: 'https://getosirion.com/components/pricing-table'
@@ -53,7 +53,11 @@ seo_properties:
 action, with the recommended plan set apart. `OsirionFeatureComparison` follows it with a table that compares the
 plans feature by feature. Both render without script.
 
-Available from 4.1.
+Package `Osirion.Blazor.Core`, namespace `Osirion.Blazor.Components`. [Source on GitHub](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Core/Components/Sections/OsirionPricingTable.razor). Available from 4.1.
+
+```demo
+pricing-table
+```
 
 ## Usage
 
@@ -120,10 +124,16 @@ so rows can mix both. `ComparisonCell.Yes` and `ComparisonCell.No` are the same 
 
 ### OsirionPricingTable
 
+<!-- osirion:parameters OsirionPricingTable -->
+
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `Plans` | `IReadOnlyList<PricingPlan>` | `[]` | The plans, in the order shown. Required. With no plans, nothing is rendered. |
-| `Class` | `string?` | `null` | Extra CSS classes on the list. |
+| `Plans` | `IReadOnlyList<PricingPlan>` | `[]` | The plans, in the order they are shown. Required; with no plans nothing is rendered. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's colour mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
+| `Style` | `string?` | `null` | An inline style for the component's root element. |
+
+<!-- /osirion:parameters -->
 
 `PricingPlan` is a record:
 
@@ -141,16 +151,22 @@ so rows can mix both. `ComparisonCell.Yes` and `ComparisonCell.No` are the same 
 
 ### OsirionFeatureComparison
 
+<!-- osirion:parameters OsirionFeatureComparison -->
+
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `PlanNames` | `IReadOnlyList<string>` | `[]` | One column per plan. Required. |
-| `Rows` | `IReadOnlyList<FeatureComparisonRow>` | `[]` | One row per feature. Required. With no plans or no rows, nothing is rendered. |
-| `Caption` | `string` | `"Compare plans"` | The table's caption, which also names the scrolling region. |
-| `ShowCaption` | `bool` | `false` | Shows the caption; otherwise only screen readers announce it. |
-| `FeatureColumnText` | `string` | `"Feature"` | Header of the feature column, read by screen readers only. |
+| `PlanNames` | `IReadOnlyList<string>` | `[]` | The plan names, one column each. Required; with no plan names or no rows nothing is rendered. |
+| `Rows` | `IReadOnlyList<FeatureComparisonRow>` | `[]` | The features, one row each, with a value per plan in the order of `PlanNames`. Missing values leave the cell empty. Required. |
+| `Caption` | `string` | `"Compare plans"` | The table's caption, which also names the scrollable region. |
+| `ShowCaption` | `bool` | `false` | Whether the caption is shown; otherwise only screen readers announce it. |
+| `FeatureColumnText` | `string` | `"Feature"` | The header of the feature column, read by screen readers only. |
 | `IncludedText` | `string` | `"Included"` | What screen readers say for a check mark. |
 | `NotIncludedText` | `string` | `"Not included"` | What screen readers say for a dash. |
-| `Class` | `string?` | `null` | Extra CSS classes on the wrapper. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's colour mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
+| `Style` | `string?` | `null` | An inline style for the component's root element. |
+
+<!-- /osirion:parameters -->
 
 `FeatureComparisonRow(string Feature, IReadOnlyList<ComparisonCell> Values)` holds one value per plan, in the order
 of `PlanNames`; missing values leave the cell empty.
@@ -163,7 +179,7 @@ Both components write unmatched attributes to their root element.
 - The pricing table is a `<ul>` with `role="list"`, so screen readers still announce it as a list of plans after
   its bullets are removed.
 - A plan's button is rendered only when it has `CallToActionText` and a safe `CallToActionUrl`: a path starting
-  with `/`, or an `http`, `https` or `mailto` address. Anything else, such as a `javascript:` URL or a relative path
+  with `/` (not `//` or `/\`), or an `http`, `https` or `mailto` address. Anything else, such as a `javascript:` URL or a relative path
   without the leading slash, leaves the button out.
 - Each button's accessible name includes the plan, for example "Start a trial: Team", so a list of buttons with the
   same text stays distinguishable. The highlighted plan gets the CSS framework's primary button class, the others

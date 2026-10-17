@@ -1,0 +1,13 @@
+@using Osirion.Blazor.Components
+@using Osirion.Blazor.Core.Models
+
+<OsirionSteps Items="steps" />
+
+@code {
+    private static readonly StepItem[] steps =
+    [
+        new("Install the package", "Add Osirion.Blazor.Core to your project."),
+        new("Point it at your content", "A GitHub repository or a local folder of Markdown files."),
+        new("Publish", "Static SSR pages that need no client script."),
+    ];
+}

@@ -7,7 +7,7 @@ permalink: /components/contact-info-section
 description: OsirionContactInfoSection lists an address, phone numbers, email addresses and websites as links, with labels, icons and validated URLs.
 author: Dejan Demonjić
 date: 2025-09-03
-last_modified: 2026-10-11
+last_modified: 2026-10-17
 featured_image: /assets/images/blazor-cover.png
 categories:
 - Components
@@ -28,7 +28,7 @@ redirect_from:
 custom_fields:
   group: sections
 seo_properties:
-  title: 'OsirionContactInfoSection - Osirion.Blazor'
+  title: 'OsirionContactInfoSection: contact details for Blazor'
   description: 'List an address, phone numbers, email addresses and websites as links in Blazor, with labels, icons, encoding and validated URLs.'
   image: /assets/images/blazor-cover.png
   canonical: 'https://getosirion.com/components/contact-info-section'
@@ -52,6 +52,12 @@ seo_properties:
 `OsirionContactInfoSection` shows contact details: a title, a short message, an address, and phone numbers, email
 addresses and websites as `tel:`, `mailto:` and web links, each with a label and an icon. Use it in a footer, on a
 contact page, or next to the contact form, which renders it for its own contact details.
+
+Package `Osirion.Blazor.Core`, namespace `Osirion.Blazor.Components`. [Source on GitHub](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Core/Components/Sections/OsirionContactInfoSection.razor).
+
+```demo
+contact-info-section
+```
 
 ## Usage
 
@@ -94,16 +100,21 @@ Phone, email and website take several values separated by commas. Labels can be 
 
 ## Parameters
 
+<!-- osirion:parameters OsirionContactInfoSection -->
+
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `ContactInfo` | `ContactInformation?` | `null` | The details to show. Required. |
-| `Title` | `string` | `"Contact information"` | Heading, rendered as an `<h2>`. Hidden when empty. |
-| `AddressLabel` | `string` | `"Address:"` | Label of the address. |
-| `PhoneLabel` | `string` | `"Phone:"` | Label of the phone numbers. |
-| `EmailLabel` | `string` | `"Email:"` | Label of the email addresses. |
-| `WebsiteLabel` | `string` | `"Website:"` | Label of the websites. |
-| `Class` | `string?` | `null` | Extra CSS classes on the root element. |
-| `Style` | `string?` | `null` | Inline style on the root element. |
+| `Title` | `string` | `"Contact information"` | The heading, rendered as an `h2`; nothing is rendered when it is empty. Simple markup is allowed and passes through the registered HTML sanitizer. |
+| `ContactInfo` | `ContactInformation?` | `null` | The details to show; only the fields that are filled in are rendered. Required. |
+| `AddressLabel` | `string` | `"Address:"` | The label of the address. |
+| `PhoneLabel` | `string` | `"Phone:"` | The label of the phone numbers. |
+| `EmailLabel` | `string` | `"Email:"` | The label of the email addresses. |
+| `WebsiteLabel` | `string` | `"Website:"` | The label of the websites. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's colour mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
+| `Style` | `string?` | `null` | An inline style for the component's root element. |
+
+<!-- /osirion:parameters -->
 
 Unmatched attributes are written to the root `<div>`.
 
@@ -114,7 +125,7 @@ Unmatched attributes are written to the root `<div>`.
 | `Address` | Text, sanitized HTML allowed |
 | `Phone` | One `tel:` link per comma-separated number |
 | `Email` | One `mailto:` link per comma-separated address |
-| `Website` | One link per comma-separated address, showing the host name |
+| `Website` | One link per comma-separated address, showing its host (and port, if it has one) |
 | `Message` | A paragraph under the title, sanitized HTML allowed |
 
 ## Behavior
