@@ -272,5 +272,5 @@ Open `/blog` to see the list, then select the post.
   scroll down and a footer that stays at the bottom of short pages.
 - Add analytics from the [analytics components](/docs/components/analytics).
 - Compare with the complete
-  [Bootstrap example](https://github.com/obrana-boranija/Osirion.Blazor/tree/master/examples/Osirion.Blazor.Example.Bootstrap),
+  [Bootstrap example](https://github.com/demonjic/Osirion.Blazor/tree/master/examples/Osirion.Blazor.Example.Bootstrap),
   which also adds the home page, search, tags, categories and cookie consent.

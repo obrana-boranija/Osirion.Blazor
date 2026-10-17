@@ -1,7 +1,7 @@
 # Osirion.Blazor.Analytics
 
 [![NuGet](https://img.shields.io/nuget/v/Osirion.Blazor.Analytics)](https://www.nuget.org/packages/Osirion.Blazor.Analytics)
-[![License](https://img.shields.io/github/license/obrana-boranija/Osirion.Blazor)](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/LICENSE.txt)
+[![License](https://img.shields.io/github/license/demonjic/Osirion.Blazor)](https://github.com/demonjic/Osirion.Blazor/blob/master/LICENSE.txt)
 
 Analytics integration for Blazor applications, supporting multiple providers with SSR compatibility.
 
@@ -11,7 +11,7 @@ Analytics integration for Blazor applications, supporting multiple providers wit
 - **Provider Pattern**: Easily extend with your own analytics providers
 - **SSR Compatible**: Works with Server-Side Rendering and Static SSG
 - **Configuration-Driven**: Simple setup through dependency injection
-- **Privacy-Focused**: Opt-in tracking with consent options
+- **Privacy-Focused**: An optional consent gate keeps every tracker silent until the visitor accepts the `analytics` category
 
 ## Installation
 
@@ -71,7 +71,9 @@ builder.Services.AddOsirionAnalytics(analytics => {
 
 ```csharp
 // In Program.cs
-builder.Services.AddOsirion(builder.Configuration);
+using Osirion.Blazor.Analytics.Extensions;
+
+builder.Services.AddOsirionAnalytics(builder.Configuration);
 ```
 
 ### Consent (recommended for EU sites)
@@ -158,18 +160,23 @@ router does not raise `enhancedload` and is not reported yet.
 ### Manual Tracking
 
 ```csharp
-@inject IAnalyticsService Analytics
+using Osirion.Blazor.Analytics.Services;
+
+// IAnalyticsService is registered by AddOsirionAnalytics; inject it into a component or service
 
 // Track a page view
-await Analytics.TrackPageViewAsync("/custom-path");
+await analytics.TrackPageViewAsync("/custom-path");
 
 // Track an event
-await Analytics.TrackEventAsync("category", "action", "label", value);
+await analytics.TrackEventAsync("category", "action", "label", value);
 ```
 
 ### Creating Custom Providers
 
 ```csharp
+using Osirion.Blazor.Analytics;
+using Osirion.Blazor.Analytics.Extensions;
+
 public class CustomProvider : IAnalyticsProvider
 {
     public string ProviderId => "custom";
@@ -202,8 +209,8 @@ builder.Services.AddOsirionAnalytics(analytics => {
 
 ## Documentation
 
-For more detailed documentation, see [Analytics Documentation](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/docs/ANALYTICS.md).
+For more detailed documentation, see [Analytics Documentation](https://github.com/demonjic/Osirion.Blazor/blob/master/docs/ANALYTICS.md).
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/LICENSE.txt) file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/demonjic/Osirion.Blazor/blob/master/LICENSE.txt) file for details.

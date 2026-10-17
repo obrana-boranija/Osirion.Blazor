@@ -4,7 +4,7 @@
 
 Osirion.Blazor is a modular, high-performance component library for Blazor applications that provides SSR-compatible solutions for common web application needs. Built with a focus on performance, modularity, and developer experience, Osirion.Blazor works seamlessly across all Blazor hosting models (Static Server-Side Rendering/SSG, Server Interactive, and WASM).
 
-**Repository**: https://github.com/obrana-boranija/Osirion.Blazor  
+**Repository**: https://github.com/demonjic/Osirion.Blazor  
 **NuGet Package**: https://www.nuget.org/packages/Osirion.Blazor
 
 ### Key Features

@@ -37,7 +37,7 @@ in [Osirion.Blazor 4.0: security hardening and Fluent UI v5](/blog/osirion-blazo
 ## Upgrading to 1.5
 
 Update the stylesheet link to `osirion.css` and move styling settings from `GitHubCmsOptions` to
-`OsirionStyleOptions`. The [1.5 section of the migration guide](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/docs/MIGRATION.md#upgrading-to-v150)
+`OsirionStyleOptions`. The [1.5 section of the migration guide](https://github.com/demonjic/Osirion.Blazor/blob/master/docs/MIGRATION.md#upgrading-to-v150)
 has the details.
 
 These names belong to 1.5. Later versions changed the registration API (`AddOsirion`) and the theming options, so

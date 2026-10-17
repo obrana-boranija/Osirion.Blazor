@@ -1,7 +1,7 @@
 # Osirion.Blazor.Core
 
 [![NuGet](https://img.shields.io/nuget/v/Osirion.Blazor.Core)](https://www.nuget.org/packages/Osirion.Blazor.Core)
-[![License](https://img.shields.io/github/license/obrana-boranija/Osirion.Blazor)](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/LICENSE.txt)
+[![License](https://img.shields.io/github/license/demonjic/Osirion.Blazor)](https://github.com/demonjic/Osirion.Blazor/blob/master/LICENSE.txt)
 
 Core components and utilities for Osirion.Blazor ecosystem. This package provides the foundation for building SSR-compatible Blazor components with a comprehensive set of layout, navigation, and content components.
 
@@ -47,56 +47,60 @@ A comprehensive hero section component with support for various layouts, backgro
 A comprehensive page layout component with header, footer, sidebar, and content areas.
 
 ```razor
-<OsirionPageLayout 
-    HasSidebar="true"
-    SidebarPosition="Position.Left"
-    HasFooter="true">
-    
-    <HeaderContent>
+<OsirionPageLayout StickyFooter="true">
+    <Header>
         <!-- Your header content -->
-    </HeaderContent>
-    
-    <SidebarContent>
-        <!-- Your sidebar content -->
-    </SidebarContent>
-    
-    <MainContent>
+    </Header>
+
+    <Body>
         <!-- Your main content -->
-    </MainContent>
-    
-    <FooterContent>
+    </Body>
+
+    <Footer>
         <!-- Your footer content -->
-    </FooterContent>
+    </Footer>
 </OsirionPageLayout>
 ```
+
+**Parameters:**
+- `Header`, `Body`, `Footer`: Content slots
+- `StickyFooter`: Keep the footer at the bottom of short pages
+- `EnableHeaderScrollBehavior`: Hide the header while scrolling down and show it while scrolling up (interactive render modes)
+- `MinHeightStrategy`: `"viewport"` or `"content"`
+- `ShowSkipLink`, `SkipLinkText`, `MainContentId`: The skip link to the main content
 
 #### `OsirionFooter`
 A flexible footer component with multiple sections and customizable content.
 
 ```razor
-<OsirionFooter>
-    <FooterContent>
-        <!-- Custom footer content -->
-    </FooterContent>
+<OsirionFooter CompanyName="Contoso" Description="Short description of the site">
+    <!-- Custom footer content -->
 </OsirionFooter>
 ```
+
+Other parameters include `Copyright`, `ShowCopyright`, `Logo`, `LeftContent`, `RightContent`, `Links`, `SocialLinks`, `BottomLinks` and `SocialTitle`.
 
 #### `OsirionStickySidebar`
 A sidebar component that sticks to the viewport during scrolling.
 
 ```razor
-<OsirionStickySidebar Position="Position.Left">
+<OsirionStickySidebar TopOffset="40" HideScrollbar="true">
     <!-- Sidebar content -->
 </OsirionStickySidebar>
 ```
+
+**Parameters:**
+- `TopOffset`: Distance from the top of the viewport, in pixels
+- `HideScrollbar`: Hide the scrollbar of the sidebar
+- `IsSticky`: Turn sticky positioning on or off
 
 #### `OsirionBackgroundPattern`
 A component for adding decorative background patterns to any section.
 
 ```razor
 <OsirionBackgroundPattern 
-    Pattern="BackgroundPatternType.Dots"
-    Opacity="0.1" />
+    BackgroundPattern="BackgroundPatternType.Dots"
+    MaskImage="true" />
 ```
 
 ### Navigation Components
@@ -150,7 +154,9 @@ Renders HTML content, sanitized by default (`SanitizeHtml` defaults to `true`), 
 <OsirionHtmlRenderer HtmlContent="@htmlString" />
 ```
 
-Set `SanitizeHtml="false"` only for markup your application built itself. See [HTML sanitization](#html-sanitization).
+Set `SanitizeHtml="false"` only for markup your application built itself. See the HTML Sanitization section below.
+
+Code blocks and tables get `tabindex="0"` so they can be scrolled from a keyboard; `FocusableScrollBlocks="false"` turns this off.
 
 ### State Components
 
@@ -161,9 +167,8 @@ A user-friendly 404 error page component.
 <OsirionContentNotFound 
     Title="Page Not Found"
     Message="The page you're looking for doesn't exist."
-    ShowBackButton="true"
-    BackButtonText="Go Back"
-    BackButtonUrl="/" />
+    PrimaryButtonText="Go to Homepage"
+    PrimaryButtonUrl="/" />
 ```
 
 #### `OsirionPageLoading`
@@ -171,8 +176,8 @@ A loading indicator component for page transitions.
 
 ```razor
 <OsirionPageLoading 
-    Message="Loading content..."
-    ShowSpinner="true" />
+    Text="Loading content..."
+    ShowText="true" />
 ```
 
 ### Interactive Components
@@ -224,8 +229,6 @@ Self-contained logo carousel with zero external dependencies.
     PauseOnHover="true"
     EnableGrayscale="true" />
 ```
-
-Detailed documentation: [InfiniteLogoCarousel.md](Components/InfiniteLogoCarousel.md)
 
 ## Installation
 
@@ -330,7 +333,6 @@ when none is registered, so content is never written unsanitized.
 ```csharp
 public enum Position
 {
-    Top, Bottom, Left, Right,
     TopLeft, TopRight, BottomLeft, BottomRight
 }
 ```
@@ -355,7 +357,8 @@ public enum HeroVariant
 ```csharp
 public enum BackgroundPatternType
 {
-    Dots, Grid, Lines, Waves, Geometric
+    Dots, Grid, Diagonal, Honeycomb, GradientMesh,
+    AnimatedGrid, TechWave, Circuit, DotsFade
 }
 ```
 
@@ -363,7 +366,7 @@ public enum BackgroundPatternType
 ```csharp
 public enum ScrollBehavior
 {
-    Auto, Smooth, Instant
+    Auto, Instant, Smooth
 }
 ```
 
@@ -376,9 +379,10 @@ Comprehensive button styling enums for consistent UI design.
 ```csharp
 public class BreadcrumbSegment
 {
-    public string Name { get; set; }
-    public string Url { get; set; }
-    public bool IsLast { get; set; }
+    public string Name { get; }
+    public string Path { get; }
+    public int Index { get; }
+    public bool IsLast { get; }
 }
 ```
 
@@ -386,8 +390,8 @@ public class BreadcrumbSegment
 ```csharp
 public class BreadcrumbPath
 {
-    public List<BreadcrumbSegment> Segments { get; set; }
-    public string FullPath { get; set; }
+    public IReadOnlyList<BreadcrumbSegment> Segments { get; }
+    public string FullPath { get; }
 }
 ```
 
@@ -412,7 +416,7 @@ The core components integrate seamlessly with popular CSS frameworks:
 - MudBlazor
 - Radzen
 
-Components automatically adapt their styling based on the detected framework.
+Components adapt their styling to the framework set in `ThemingOptions.Framework` (`CssFramework.None`, `Bootstrap`, `FluentUI`, `MudBlazor` or `Radzen`).
 
 ## Accessibility
 
@@ -428,9 +432,8 @@ All components include:
 
 - **SSR Optimized**: Components render efficiently on the server
 - **Minimal JavaScript**: Progressive enhancement approach
-- **Caching Support**: Built-in caching for expensive operations
-- **Lazy Loading**: Components load resources as needed
+- **Lazy Loading**: Images in the logo carousel and the author card use `loading="lazy"`
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/LICENSE.txt) file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/demonjic/Osirion.Blazor/blob/master/LICENSE.txt) file for details.

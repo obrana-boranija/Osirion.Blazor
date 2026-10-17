@@ -168,7 +168,7 @@ and without JavaScript.
         <MenuItem Text="Getting started" Href="/docs/getting-started" />
         <MenuItem Text="Components" Href="/docs/components" />
     </MenuItem>
-    <MenuItem Text="GitHub" Href="https://github.com/obrana-boranija/Osirion.Blazor" Target="_blank" />
+    <MenuItem Text="GitHub" Href="https://github.com/demonjic/Osirion.Blazor" Target="_blank" />
 </Menu>
 ```
 

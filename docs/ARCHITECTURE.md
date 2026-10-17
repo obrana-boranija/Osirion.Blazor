@@ -1,6 +1,6 @@
 # Architecture Overview
 
-[![Documentation](https://img.shields.io/badge/Documentation-Architecture-blue)](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/docs/ARCHITECTURE.md)
+[![Documentation](https://img.shields.io/badge/Documentation-Architecture-blue)](https://github.com/demonjic/Osirion.Blazor/blob/master/docs/ARCHITECTURE.md)
 [![Version](https://img.shields.io/nuget/v/Osirion.Blazor)](https://www.nuget.org/packages/Osirion.Blazor)
 
 This document provides a comprehensive overview of the Osirion.Blazor architecture, design patterns, and organizational principles.

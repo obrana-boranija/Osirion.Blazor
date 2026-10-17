@@ -1,6 +1,6 @@
 # Getting Started Guide
 
-[![Documentation](https://img.shields.io/badge/Documentation-Getting_Started-green)](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/docs/GETTING_STARTED.md)
+[![Documentation](https://img.shields.io/badge/Documentation-Getting_Started-green)](https://github.com/demonjic/Osirion.Blazor/blob/master/docs/GETTING_STARTED.md)
 [![Version](https://img.shields.io/nuget/v/Osirion.Blazor)](https://www.nuget.org/packages/Osirion.Blazor)
 
 This comprehensive guide will help you get started with Osirion.Blazor, from initial setup to building your first application.
@@ -713,7 +713,7 @@ Congratulations! You now have a basic Osirion.Blazor application up and running.
 - [Quick Reference](QUICK_REFERENCE.md) - Overview of all components
 - [API Reference](API_REFERENCE.md) - Complete API documentation
 - [Architecture Overview](ARCHITECTURE.md) - Understanding the system design
-- [Examples Repository](https://github.com/obrana-boranija/Osirion.Blazor/tree/master/examples) - Real-world examples
+- [Examples Repository](https://github.com/demonjic/Osirion.Blazor/tree/master/examples) - Real-world examples
 - [Contributing Guide](../CONTRIBUTING.md) - How to contribute to the project
 
 ## Getting Help
@@ -721,8 +721,8 @@ Congratulations! You now have a basic Osirion.Blazor application up and running.
 If you need help or have questions:
 
 1. Check the [documentation](../README.md)
-2. Browse [existing issues](https://github.com/obrana-boranija/Osirion.Blazor/issues)
-3. Create a [new issue](https://github.com/obrana-boranija/Osirion.Blazor/issues/new)
-4. Start a [discussion](https://github.com/obrana-boranija/Osirion.Blazor/discussions)
+2. Browse [existing issues](https://github.com/demonjic/Osirion.Blazor/issues)
+3. Create a [new issue](https://github.com/demonjic/Osirion.Blazor/issues/new)
+4. Start a [discussion](https://github.com/demonjic/Osirion.Blazor/discussions)
 
 Welcome to the Osirion.Blazor community! We're excited to see what you'll build.

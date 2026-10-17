@@ -1,6 +1,6 @@
 # Documentation Index
 
-[![Documentation](https://img.shields.io/badge/Documentation-Complete-green)](https://github.com/obrana-boranija/Osirion.Blazor/tree/master/docs)
+[![Documentation](https://img.shields.io/badge/Documentation-Complete-green)](https://github.com/demonjic/Osirion.Blazor/tree/master/docs)
 [![Version](https://img.shields.io/nuget/v/Osirion.Blazor)](https://www.nuget.org/packages/Osirion.Blazor)
 
 Welcome to the comprehensive documentation for Osirion.Blazor. This index provides an organized overview of all available documentation resources.
@@ -132,7 +132,7 @@ Welcome to the comprehensive documentation for Osirion.Blazor. This index provid
 ? [Styling Guide](STYLING.md) ? [CSS Variables](STYLING.md#css-variables-reference) ? [Framework Integration](STYLING.md#css-framework-integration)
 
 #### "I'm having issues"
-? [Troubleshooting](TROUBLESHOOTING.md) ? [API Reference](API_REFERENCE.md) ? [GitHub Issues](https://github.com/obrana-boranija/Osirion.Blazor/issues)
+? [Troubleshooting](TROUBLESHOOTING.md) ? [API Reference](API_REFERENCE.md) ? [GitHub Issues](https://github.com/demonjic/Osirion.Blazor/issues)
 
 ### Search Tips
 
@@ -165,13 +165,13 @@ Welcome to the comprehensive documentation for Osirion.Blazor. This index provid
 ## ??? Development Resources
 
 ### Code Examples
-- [GitHub Repository](https://github.com/obrana-boranija/Osirion.Blazor)
-- [Example Projects](https://github.com/obrana-boranija/Osirion.Blazor/tree/master/examples)
+- [GitHub Repository](https://github.com/demonjic/Osirion.Blazor)
+- [Example Projects](https://github.com/demonjic/Osirion.Blazor/tree/master/examples)
 - [Sample Configurations](EXAMPLES.md#quick-start-examples)
 
 ### Community Resources
-- [GitHub Discussions](https://github.com/obrana-boranija/Osirion.Blazor/discussions)
-- [Issue Tracker](https://github.com/obrana-boranija/Osirion.Blazor/issues)
+- [GitHub Discussions](https://github.com/demonjic/Osirion.Blazor/discussions)
+- [Issue Tracker](https://github.com/demonjic/Osirion.Blazor/issues)
 - [Release Notes](../CHANGELOG.md)
 
 ### Tools and Utilities
@@ -186,14 +186,14 @@ This documentation is actively maintained and updated with each release. Key inf
 - **Last Updated**: December 2024
 - **Current Version**: v1.5.0
 - **Next Update**: With v1.6.0 release
-- **Feedback Welcome**: [Open an issue](https://github.com/obrana-boranija/Osirion.Blazor/issues/new) for documentation improvements
+- **Feedback Welcome**: [Open an issue](https://github.com/demonjic/Osirion.Blazor/issues/new) for documentation improvements
 
 ## ?? Contributing to Documentation
 
 We welcome contributions to improve our documentation:
 
-1. **Report Issues**: Found something unclear? [Open an issue](https://github.com/obrana-boranija/Osirion.Blazor/issues/new)
-2. **Suggest Improvements**: Have ideas? [Start a discussion](https://github.com/obrana-boranija/Osirion.Blazor/discussions)
+1. **Report Issues**: Found something unclear? [Open an issue](https://github.com/demonjic/Osirion.Blazor/issues/new)
+2. **Suggest Improvements**: Have ideas? [Start a discussion](https://github.com/demonjic/Osirion.Blazor/discussions)
 3. **Submit PRs**: Direct improvements via [pull requests](../CONTRIBUTING.md)
 4. **Share Examples**: Contribute your own examples and tutorials
 
@@ -206,4 +206,4 @@ We welcome contributions to improve our documentation:
 
 ---
 
-**Need help?** Can't find what you're looking for? [Start a discussion](https://github.com/obrana-boranija/Osirion.Blazor/discussions) or [open an issue](https://github.com/obrana-boranija/Osirion.Blazor/issues/new) and we'll help you out!
+**Need help?** Can't find what you're looking for? [Start a discussion](https://github.com/demonjic/Osirion.Blazor/discussions) or [open an issue](https://github.com/demonjic/Osirion.Blazor/issues/new) and we'll help you out!

@@ -1,6 +1,6 @@
 # OsirionBreadcrumbs Component
 
-[![Component](https://img.shields.io/badge/Component-Core-blue)](https://github.com/obrana-boranija/Osirion.Blazor/tree/master/src/Osirion.Blazor.Core)
+[![Component](https://img.shields.io/badge/Component-Core-blue)](https://github.com/demonjic/Osirion.Blazor/tree/master/src/Osirion.Blazor.Core)
 [![Version](https://img.shields.io/nuget/v/Osirion.Blazor.Core)](https://www.nuget.org/packages/Osirion.Blazor.Core)
 
 The `OsirionBreadcrumbs` component automatically generates breadcrumb navigation from URL paths, providing users with clear navigation context and improving site usability. It's fully SSR-compatible and includes extensive customization options.

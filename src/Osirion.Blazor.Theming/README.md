@@ -1,7 +1,7 @@
 # Osirion.Blazor.Theming
 
 [![NuGet](https://img.shields.io/nuget/v/Osirion.Blazor.Theming)](https://www.nuget.org/packages/Osirion.Blazor.Theming)
-[![License](https://img.shields.io/github/license/obrana-boranija/Osirion.Blazor)](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/LICENSE.txt)
+[![License](https://img.shields.io/github/license/demonjic/Osirion.Blazor)](https://github.com/demonjic/Osirion.Blazor/blob/master/LICENSE.txt)
 
 Theming and styling system for Blazor applications with CSS framework integration and dark mode support.
 
@@ -12,6 +12,7 @@ Theming and styling system for Blazor applications with CSS framework integratio
 - **Palettes**: Osirion, Commit, Editor, Studio, Studio Blue and Contrast, each with a light and a dark variant that
   meets WCAG 2.2 AA (Contrast: AAA), applied before the first paint; code highlighting follows the palette.
   `ThemePicker` lets visitors choose one
+- **Palette API**: `ThemingOptions.DefaultPalette`, `UsePalette`, `IThemeService.CurrentPalette` and `SetPalette`; the visitor's choice is kept in the `osirion-preferred-palette` cookie
 - **CSS Variables**: Consistent theming across components
 - **SSR Compatible**: Works with Server-Side Rendering and Static SSG
 - **Minimal JavaScript**: Progressive enhancement for interactive features
@@ -28,6 +29,7 @@ dotnet add package Osirion.Blazor.Theming
 
 ```csharp
 // In Program.cs
+using Osirion.Blazor.Components;
 using Osirion.Blazor.Theming.Extensions;
 
 builder.Services.AddOsirionTheming(theming => {
@@ -41,11 +43,11 @@ builder.Services.AddOsirionTheming(theming => {
 ```razor
 @using Osirion.Blazor.Theming.Components
 
-<!-- In your layout -->
-<ThemeProvider>
-    <ThemeToggle />
-    <!-- Your application content -->
-</ThemeProvider>
+<!-- In the head of your layout or App.razor -->
+<OsirionStyles />
+
+<!-- Where the visitor should find the toggle -->
+<ThemeToggle />
 ```
 
 ### With Custom Variables
@@ -54,79 +56,60 @@ builder.Services.AddOsirionTheming(theming => {
 builder.Services.AddOsirionTheming(theming => {
     theming
         .UseFramework(CssFramework.Bootstrap)
-        .WithCustomVariables("--osirion-primary-color: #0077cc;");
+        .WithCustomVariables("--osirion-action-primary: #0077cc;");
 });
 ```
 
 ```razor
-<ThemeProvider CustomVariables="--osirion-primary-color: #0077cc;">
-    <!-- Your content -->
-</ThemeProvider>
+<OsirionStyles CustomVariables="--osirion-action-primary: #0077cc;" />
 ```
 
 ### Theme Toggle Component
 
+A button that switches between the light and the dark theme. `Id` sets the button's id and `OnThemeChanged` receives the new theme.
+
 ```razor
-<!-- Default with light/dark/system options -->
 <ThemeToggle />
-
-<!-- Simplified with just light/dark options -->
-<ThemeToggle ShowSystemOption="false" />
-
-<!-- Custom labels -->
-<ThemeToggle 
-    LightLabel="Day" 
-    DarkLabel="Night"
-    SystemLabel="Auto" />
-
-<!-- Custom icons -->
-<ThemeToggle>
-    <LightIconTemplate>
-        <i class="fas fa-sun"></i>
-    </LightIconTemplate>
-    <DarkIconTemplate>
-        <i class="fas fa-moon"></i>
-    </DarkIconTemplate>
-</ThemeToggle>
 ```
+
+### Palettes
+
+```csharp
+builder.Services.AddOsirionTheming(theming => {
+    theming
+        .UsePalette(ThemePalette.Studio)
+        .AllowPaletteSelection();
+});
+```
+
+```razor
+<ThemePicker Label="Palette" FrameworkLabel="Default" />
+```
+
+`Palettes` limits the choices to the palettes you list. `ThemePalette.Framework`, the default, applies no palette.
 
 ### CSS Variables
 
-Core variables available for customization:
+Some of the variables available for customization:
 
 ```css
 :root {
-    /* Colors */
-    --osirion-primary-color: #2563eb;
-    --osirion-primary-color-hover: #1d4ed8;
-    --osirion-color: #374151;
-    --osirion-color-light: #6b7280;
-    --osirion-color-border: #e5e7eb;
-    --osirion-color-background: #ffffff;
-    --osirion-color-background-light: #f3f4f6;
-    
-    /* Sizes */
-    --osirion-border-radius: 0.5rem;
-    --osirion-padding: 1.5rem;
-    --osirion-gap: 1.5rem;
-    
-    /* Effects */
-    --osirion-transition-speed: 0.2s;
-    --osirion-box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.dark-theme {
-    --osirion-primary-color: #60a5fa;
-    --osirion-color: #e5e7eb;
-    --osirion-color-background: #1f2937;
-    /* ...other dark theme overrides */
+    --osirion-action-primary: #0077cc;
+    --osirion-action-primary-hover: #005fa3;
+    --osirion-action-primary-text: #ffffff;
+    --osirion-text-primary: #1f2937;
+    --osirion-background-primary: #ffffff;
+    --osirion-border-color: #d1d5db;
 }
 ```
 
+The dark theme redefines the same variables under `[data-theme="dark"]` and `.dark-theme`. See the
+[theming guide](https://github.com/demonjic/Osirion.Blazor/blob/master/THEMING.md) for the full list.
+
 ## Documentation
 
-For more detailed documentation, see [Styling Documentation](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/docs/STYLING.md).
+For more detailed documentation, see [Styling Documentation](https://github.com/demonjic/Osirion.Blazor/blob/master/docs/STYLING.md).
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/LICENSE.txt) file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/demonjic/Osirion.Blazor/blob/master/LICENSE.txt) file for details.

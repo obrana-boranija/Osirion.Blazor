@@ -157,7 +157,7 @@ Every service has `Enabled` (default `true`) and `AutoTrackPageViews` (default `
 - **Umami**: `SiteId` (the website ID), `ScriptUrl` (default Umami Cloud; set it for a self-hosted instance),
   `HostUrl`, `Domains`, `Tag`, `ExcludeSearch`, `ExcludeHash`, `DoNotTrack`.
 
-The full list is in [ANALYTICS.md](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/docs/ANALYTICS.md).
+The full list is in [ANALYTICS.md](https://github.com/demonjic/Osirion.Blazor/blob/master/docs/ANALYTICS.md).
 
 ## Behavior
 

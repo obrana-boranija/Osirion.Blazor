@@ -74,7 +74,7 @@ link covers its nearest positioned ancestor:
 Other variants change the icon or the look:
 
 ```razor
-<OsirionReadMoreLink Href="https://github.com/obrana-boranija/Osirion.Blazor"
+<OsirionReadMoreLink Href="https://github.com/demonjic/Osirion.Blazor"
                      Text="Source on GitHub"
                      Variant="ReadMoreVariant.External"
                      Target="_blank"

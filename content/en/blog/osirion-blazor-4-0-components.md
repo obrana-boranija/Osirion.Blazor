@@ -152,7 +152,7 @@ with `rel="me"`; links with unsafe URL schemes are not rendered. `ContentList.Au
 <ContentList Directory="blog" Author="Jane Doe" />
 
 @code {
-    private readonly AuthorLink[] links = [new("GitHub", "https://github.com/obrana-boranija/Osirion.Blazor")];
+    private readonly AuthorLink[] links = [new("GitHub", "https://github.com/demonjic/Osirion.Blazor")];
 }
 ```
 
@@ -288,7 +288,7 @@ at startup and honor the consent gate from 4.0. Render `<PlausibleTracker />` or
 - Text on the primary color keeps its contrast in Bootstrap dark mode, `OsirionFooter` inside the page layout no
   longer adds a second footer landmark, and the cookie consent banner is a named region.
 
-The [changelog](https://github.com/obrana-boranija/Osirion.Blazor/blob/master/CHANGELOG.md) lists every change.
+The [changelog](https://github.com/demonjic/Osirion.Blazor/blob/master/CHANGELOG.md) lists every change.
 
 ## Related
 

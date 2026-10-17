@@ -14,7 +14,7 @@ Basic usage
     PrimaryButtonText="Get Started"
     PrimaryButtonUrl="/docs"
     SecondaryButtonText="GitHub"
-    SecondaryButtonUrl="https://github.com/obrana-boranija/Osirion.Blazor" />
+    SecondaryButtonUrl="https://github.com/demonjic/Osirion.Blazor" />
 ```
 
 Background image
