@@ -103,7 +103,7 @@ With `Id="install"`, the third tab's radio button is `install-2`, its label `ins
 | `SelectedIndex` | `int` | `0` | The zero-based index of the tab selected when the page renders. An index with no tab leaves every panel hidden. It sets only the starting choice: the visitor's later choices are not written back. |
 | `Id` | `string?` | `null` | The radio group name, also the prefix of each tab's ids: `{Id}-0` for the radio button, `{Id}-0-label` for the label and `{Id}-0-panel` for the panel (then `-1` and so on). Defaults to a value generated for each instance; set it for stable ids, for example to link to a tab, and use a different value for each tab set on a page. |
 | `AriaLabel` | `string?` | `null` | The accessible name of the tab group, for example "Package manager". Without it the group has no name. |
-| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's colour mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
 | `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
 | `Style` | `string?` | `null` | An inline style for the component's root element. |
 
@@ -120,7 +120,7 @@ component does not write it.
 | --- | --- | --- | --- |
 | `Title` | `string` | `""` | The tab's label, shown in the tab row. Required. |
 | `ChildContent` | `RenderFragment?` | `null` | The panel content, shown while this tab is selected. |
-| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's colour mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
 | `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
 | `Style` | `string?` | `null` | An inline style for the component's root element. |
 

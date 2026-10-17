@@ -101,7 +101,7 @@ The five kinds render like this:
 | `Type` | `CalloutType` | `CalloutType.Note` | The kind of callout: `Note`, `Tip`, `Important`, `Warning` or `Caution`. It sets the color, the icon and the default `Title`. |
 | `Title` | `string?` | `null` | The heading shown above the content. When empty or white space, the name of the `Type` is shown ("Note", "Warning" and so on), as Markdown alerts show it; set it for other languages or a more specific heading. |
 | `ChildContent` | `RenderFragment?` | `null` | The callout's content, rendered in the body under the title. |
-| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's colour mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
 | `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
 | `Style` | `string?` | `null` | An inline style for the component's root element. |
 

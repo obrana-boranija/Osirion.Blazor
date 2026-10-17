@@ -105,7 +105,7 @@ and copy buttons:
 | `PrismBaseUrl` | `string?` | `null` | The base address Prism is loaded from, for hosts that serve it themselves (for example `/lib/prism/1.29.0/`). When empty, the pinned cdnjs release is used and every file is verified with its Subresource Integrity hash. Files from a custom address load without an integrity check. |
 | `EnableDemos` | `bool` | `true` | Whether fenced `demo` blocks whose text is a registered demo key (see `AddOsirionContentDemos`) render the live demo instead of the code block. Only blocks at the top level of the content are replaced; a block inside a list or quote stays a code block. |
 | `FocusableScrollBlocks` | `bool` | `true` | Whether code blocks and tables take a place in the tab order (`tabindex="0"`), so a keyboard user can scroll them sideways (WCAG 2.1.1). An element that already has a `tabindex` keeps it. |
-| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's colour mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
 | `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
 | `Style` | `string?` | `null` | An inline style for the component's root element. |
 

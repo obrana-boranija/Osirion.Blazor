@@ -119,7 +119,7 @@ Without an image service, write the candidates yourself with `SrcSet`, one file 
 | `Sizes` | `string?` | `null` | The `sizes` attribute: how wide the image is shown, for example `(min-width: 768px) 50vw, 100vw`. It is written only when a `srcset` exists. When it is not set, lazily loaded images use `auto, 100vw` (the browser measures the layout where it can) and `Priority` images use `100vw`. |
 | `Priority` | `bool` | `false` | Whether this is the page's main image, typically the largest one in the first view. It then loads at once (`loading="eager"`) with `fetchpriority="high"` instead of lazily, which speeds up Largest Contentful Paint. Mark only one image per page. |
 | `Caption` | `string?` | `null` | A caption. When it is not empty, the image is wrapped in `figure` with the caption in a `figcaption`; the CSS classes and extra attributes stay on the `img`. |
-| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's colour mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
 | `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
 | `Style` | `string?` | `null` | An inline style for the component's root element. |
 

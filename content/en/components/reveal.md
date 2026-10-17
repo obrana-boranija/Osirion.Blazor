@@ -86,7 +86,7 @@ loads its script through the BlazorJSComponents package, so register its service
 | `ChildContent` | `RenderFragment?` | `null` | The content to reveal. Required. |
 | `Animate` | `bool` | `true` | Whether the content starts hidden and is revealed when it scrolls into view. When `false`, the script does nothing and the content is shown from the start. With reduced motion requested the script does not run either. |
 | `Animation` | `RevealAnimation` | `RevealAnimation.Up` | The direction the content moves in from: `Up`, `Down`, `Left`, `Right` or `Fade` (no movement). |
-| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's colour mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
 | `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
 | `Style` | `string?` | `null` | An inline style for the component's root element. |
 

@@ -99,7 +99,7 @@ A Vimeo video that starts at 30 seconds, with a thumbnail served from your own s
 | `PrivacyEnhanced` | `bool` | `true` | Whether the player is asked not to track the visitor: YouTube's `youtube-nocookie.com` domain, or Vimeo's `dnt=1`. |
 | `AspectRatio` | `VideoAspectRatio` | `VideoAspectRatio.Widescreen` | The frame's shape: `Widescreen` (16:9), `Standard` (4:3), `Square` (1:1) or `Vertical` (9:16, at most 22.5rem wide). |
 | `PlayLabelText` | `string?` | `null` | The accessible name of the play link. Defaults to "Play video: " followed by the `Title`; set it for other languages. |
-| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's colour mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
 | `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
 | `Style` | `string?` | `null` | An inline style for the component's root element. |
 

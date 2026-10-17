@@ -111,7 +111,7 @@ also works on its own, outside an accordion, as a single collapsible section.
 | --- | --- | --- | --- |
 | `ChildContent` | `RenderFragment?` | `null` | The `OsirionAccordionItem` components. |
 | `AllowMultiple` | `bool` | `true` | Whether several items can be open at once. When `false`, the items share a `name` and the browser closes the others when one opens; browsers without support for exclusive `details` elements let several stay open. |
-| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's colour mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
 | `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
 | `Style` | `string?` | `null` | An inline style for the component's root element. |
 
@@ -129,7 +129,7 @@ component does not write it.
 | `Title` | `string` | `""` | The title, shown in the `summary` element, which the visitor clicks or presses Enter on to open and close the section. Required. |
 | `Open` | `bool` | `false` | Whether the section is open when the page renders. |
 | `ChildContent` | `RenderFragment?` | `null` | The section's content, shown while the section is open. |
-| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's colour mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
 | `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
 | `Style` | `string?` | `null` | An inline style for the component's root element. |
 
@@ -147,7 +147,7 @@ it.
 | `Items` | `IReadOnlyList<FaqItem>` | `[]` | The questions and answers, in the order they are shown. Answers are plain text: markup in an answer is shown as text, and line breaks are kept. Renders nothing when empty. |
 | `IncludeStructuredData` | `bool` | `true` | Whether FAQPage structured data (JSON-LD) is written after the questions. Turn it off when the page already describes these questions in its own structured data, and use one FAQPage per page. |
 | `AllowMultiple` | `bool` | `true` | Whether several answers can be open at once. When `false`, opening one answer closes the others, in browsers that support exclusive `details` elements. |
-| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's colour mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
 | `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
 | `Style` | `string?` | `null` | An inline style for the component's root element. |
 

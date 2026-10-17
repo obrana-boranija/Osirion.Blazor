@@ -110,7 +110,7 @@ On a Razor page, name the key:
 | `EnableCopyButton` | `bool` | `true` | Whether the source code on the Code tab has a language header and a Copy button. The button needs the copy script that `OsirionHtmlRenderer` loads. |
 | `PreviewText` | `string` | `"Preview"` | The label of the preview tab. Shown only when the demo has source code. |
 | `CodeText` | `string` | `"Code"` | The label of the Code tab. Shown only when the demo has source code. |
-| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's colour mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
 | `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
 | `Style` | `string?` | `null` | An inline style for the component's root element. |
 

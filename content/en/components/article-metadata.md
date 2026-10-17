@@ -101,7 +101,7 @@ A realistic case is a post header fed from your own model, with a long date form
 | `PublishDate` | `DateTime?` | `null` | The publication date, shown with a calendar icon in the format of `DateFormat`. Hidden when `null`. |
 | `DateFormat` | `string?` | `"d"` | The .NET date format string for `PublishDate`, applied with the current culture. |
 | `ReadTime` | `string?` | `null` | The read time in minutes, shown with a clock icon. The component appends " min", so pass the number only (`5`, not `5 min`). Hidden when empty or white space. |
-| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's colour mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
 | `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
 | `Style` | `string?` | `null` | An inline style for the component's root element. |
 
