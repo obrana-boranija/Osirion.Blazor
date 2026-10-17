@@ -40,6 +40,21 @@ public class ContentListPaginationTests : CmsWebComponentTestBase
     private static string ActivePage(IRenderedComponent<ContentList> cut) =>
         cut.Find("a.osirion-pagination-link.osirion-active").TextContent.Trim();
 
+    // Fails before the fix: the previous and next links held only an icon, so they had no accessible name, and the
+    // current page was marked only by a class.
+    [Fact]
+    public void ContentList_Pagination_NamesItsLinksAndMarksTheCurrentPage()
+    {
+        var cut = RenderList("/search?q=hello&page=2");
+
+        cut.Find("nav.osirion-content-pagination").GetAttribute("aria-label").ShouldBe("Pagination");
+        var links = cut.FindAll("a.osirion-pagination-link");
+        links.First().GetAttribute("aria-label").ShouldBe("Previous page");
+        links.Last().GetAttribute("aria-label").ShouldBe("Next page");
+        cut.FindAll("a.osirion-pagination-link svg").ShouldAllBe(svg => svg.GetAttribute("aria-hidden") == "true");
+        cut.Find("a.osirion-pagination-link.osirion-active").GetAttribute("aria-current").ShouldBe("page");
+    }
+
     // Fails before the fix: the default pagination URL was "{path}?page=N" and dropped the search query.
     [Fact]
     public void ContentList_PaginationLinks_KeepOtherQueryParameters()

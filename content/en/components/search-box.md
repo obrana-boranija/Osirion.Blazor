@@ -101,9 +101,11 @@ have a `/search` page that passes the `q` query to `ContentList`.
 | `ActionUrl` | `string` | `"/search"` | The page the form submits to with GET. Defaults to `/search`. |
 | `QueryParameterName` | `string` | `"q"` | The name of the query string parameter that carries the search text, which is also the name of the input. Defaults to `q`. |
 | `SearchQuery` | `string` | `""` | The text shown in the field, usually the query of the results page, so it stays in the field after a search. |
-| `Placeholder` | `string` | `"Search content..."` | The placeholder of the field. It is also the field's `aria-label`, so screen readers announce it as the field's name. |
+| `Placeholder` | `string` | `"Search content..."` | The placeholder of the field. It is a hint only: the field's accessible name is `Label`. |
 | `SearchButtonText` | `string` | `"Search"` | The visible text of the submit button. The button's accessible name stays `Submit search`. |
 | `Title` | `string?` | `null` | The heading above the form, rendered as an `h2`. No heading when `null`. |
+| `Label` | `string` | `"Search"` | The text of the field's visually hidden label, which is its accessible name. Set it for another language. |
+| `Id` | `string?` | `null` | The `id` of the input, which the label points to. Without it, the id is derived from `ActionUrl` and `QueryParameterName`, so it is the same on every render and in every process. Set it when one page holds two boxes with the same settings. |
 | `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
 | `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
 | `Style` | `string?` | `null` | An inline style for the component's root element. |
@@ -119,10 +121,13 @@ are captured but not rendered.
 - `SearchBox` does not search. `ContentList` with a `SearchQuery` splits the text on spaces and keeps the published
   items where any word appears, ignoring case, in the title, description, rendered HTML, categories or tags. It is
   a substring match over the loaded content, not a ranked full-text index.
-- The field has a visually hidden `label` with the text "Search", and an `aria-label` set to `Placeholder`, which
-  screen readers announce instead. The button is announced as "Submit search"; its visible text is hidden from
-  screen readers. Both of these fixed texts are English, so on other languages set `Placeholder` and
-  `SearchButtonText` and expect the button name to stay "Submit search".
+- The field is named by a visually hidden `label` whose text is `Label`, "Search" by default, and `Placeholder` is
+  only a hint. The button is announced as "Submit search"; its visible text is hidden from screen readers. That
+  button name is a fixed English text, so on other languages set `Label`, `Placeholder` and `SearchButtonText` and
+  expect the button name to stay "Submit search".
+- The input's `id` is `Id` when you set it, otherwise `search-input-` and a number derived from `ActionUrl` and
+  `QueryParameterName`. It is the same on every render and in every process, so a prerendered and an interactive box
+  agree. Two boxes with the same settings on one page need different `Id` values.
 - The submitted text reaches your page through the query string. Render it with Razor (`@Query`), which encodes
   it; never write it out as raw markup.
 

@@ -73,6 +73,11 @@ public partial class TagCloud(IContentProviderManager contentProviderManager)
 
     private bool IsLoading { get; set; } = true;
 
+    // The loaded tags live here, not in the Tags parameter, so a later change of MaxTags, SortByCount or Tags is honored.
+    private IReadOnlyList<ContentTag> _loadedTags = [];
+    private (int? MaxTags, bool SortByCount)? _loadedFor;
+
+    private IReadOnlyList<ContentTag> ShownTags => Tags is { Count: > 0 } ? Tags : _loadedTags;
 
     /// <summary>Performs the OnParametersSet operation asynchronously.</summary>
     protected override async Task OnParametersSetAsync()
@@ -82,7 +87,7 @@ public partial class TagCloud(IContentProviderManager contentProviderManager)
 
     private async Task LoadTagsAsync()
     {
-        if (Tags is null || Tags.Any() == false)
+        if (Tags is not { Count: > 0 } && _loadedFor != (MaxTags, SortByCount))
         {
             IsLoading = true;
             try
@@ -101,15 +106,17 @@ public partial class TagCloud(IContentProviderManager contentProviderManager)
                         allTags = allTags.OrderBy(t => t.Name).ToList();
                     }
 
-                    Tags = MaxTags.HasValue
+                    _loadedTags = MaxTags.HasValue
                         ? allTags.Take(MaxTags.Value).ToList()
                         : allTags;
+                    _loadedFor = (MaxTags, SortByCount);
                 }
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, "Failed to load the tag cloud");
-                Tags = Array.Empty<ContentTag>();
+                _loadedTags = [];
+                _loadedFor = (MaxTags, SortByCount);
             }
             finally
             {

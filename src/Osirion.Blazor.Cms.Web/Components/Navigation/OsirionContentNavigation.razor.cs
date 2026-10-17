@@ -121,6 +121,16 @@ public partial class OsirionContentNavigation(IContentProviderManager ContentPro
     [Parameter]
     public EventCallback<ContentItem> OnNextClick { get; set; }
 
+    // The looked-up neighbours live here, not in the PreviousItem and NextItem parameters, so a new Item, or a
+    // neighbour the parent stops passing, is not shadowed by values from an earlier lookup.
+    private ContentItem? _lookedUpPrevious;
+    private ContentItem? _lookedUpNext;
+    private (string? Path, string? Locale, string? Directory)? _lookedUpFor;
+
+    private ContentItem? ShownPreviousItem => PreviousItem ?? _lookedUpPrevious;
+
+    private ContentItem? ShownNextItem => NextItem ?? _lookedUpNext;
+
     /// <summary>
     /// Gets the CSS class for the navigation
     /// </summary>
@@ -130,7 +140,7 @@ public partial class OsirionContentNavigation(IContentProviderManager ContentPro
 
         classes.Add($"osirion-content-navigation-{Variant.ToString().ToLowerInvariant()}");
 
-        if (PreviousItem is null || NextItem is null)
+        if (ShownPreviousItem is null || ShownNextItem is null)
         {
             classes.Add("osirion-content-navigation-single");
         }
@@ -232,44 +242,59 @@ public partial class OsirionContentNavigation(IContentProviderManager ContentPro
 
     private async Task LoadNavigationItemsAsync()
     {
-        if (ShowNavigation && (PreviousItem is null || NextItem is null) && Item is not null)
+        if (Item is null || !ShowNavigation || (PreviousItem is not null && NextItem is not null))
         {
-            try
+            _lookedUpPrevious = null;
+            _lookedUpNext = null;
+            _lookedUpFor = null;
+            return;
+        }
+
+        var lookupKey = (Item.Path, Item.Locale, Item.Directory?.Name);
+        if (_lookedUpFor == lookupKey)
+        {
+            return;
+        }
+
+        _lookedUpPrevious = null;
+        _lookedUpNext = null;
+        try
+        {
+            var query = new ContentQuery
             {
-                var query = new ContentQuery
-                {
-                    Locale = Item.Locale,
-                    Directory = Item.Directory?.Name,
-                    SortBy = SortField.Order,
-                    SortDirection = SortDirection.Ascending
-                };
+                Locale = Item.Locale,
+                Directory = Item.Directory?.Name,
+                SortBy = SortField.Order,
+                SortDirection = SortDirection.Ascending
+            };
 
-                var items = await ContentProviderManager.GetContentByQueryAsync(query);
+            var items = await ContentProviderManager.GetContentByQueryAsync(query);
 
-                int currentIndex = -1;
-                for (int i = 0; i < items.Count; i++)
+            int currentIndex = -1;
+            for (int i = 0; i < items.Count; i++)
+            {
+                if (items[i].Path == Item.Path)
                 {
-                    if (items[i].Path == Item.Path)
-                    {
-                        currentIndex = i;
-                        break;
-                    }
-                }
-
-                if (currentIndex > 0)
-                {
-                    PreviousItem = items[currentIndex - 1];
-                }
-
-                if (currentIndex >= 0 && currentIndex < items.Count - 1)
-                {
-                    NextItem = items[currentIndex + 1];
+                    currentIndex = i;
+                    break;
                 }
             }
-            catch (Exception ex)
+
+            if (currentIndex > 0)
             {
-                Logger.LogError(ex, "Failed to load previous and next items");
+                _lookedUpPrevious = items[currentIndex - 1];
             }
+
+            if (currentIndex >= 0 && currentIndex < items.Count - 1)
+            {
+                _lookedUpNext = items[currentIndex + 1];
+            }
+
+            _lookedUpFor = lookupKey;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to load previous and next items");
         }
     }
 }

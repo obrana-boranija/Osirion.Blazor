@@ -1,36 +1,20 @@
-@using Osirion.Blazor.Cms.Domain.Entities
 @using Osirion.Blazor.Cms.Domain.Services
 @using Osirion.Blazor.Cms.Web.Components
 @inject IContentProviderManager Content
 
-@* The English directories of this site's own content, with the pages of the docs/packages directory listed *@
+@* The English directories of this site's own content, with the pages of the docs directory listed *@
 <LocalizedNavigation Title="Documentation"
                      CurrentLocale="en"
-                     ExpandedDirectoryId="@packagesId"
-                     DirectoryUrlFormatter="DirectoryUrl"
-                     ContentUrlFormatter="@(item => "/" + item.Url.TrimStart('/'))" />
+                     ExpandedDirectoryId="@docsId" />
 
 @code {
-    private string? packagesId;
+    private string? docsId;
 
     protected override async Task OnInitializedAsync()
     {
         var directories = await Content.GetDirectoryTreeFromDefaultAsync("en");
-        packagesId = directories
-            .FirstOrDefault(directory => directory.Path.Trim('/').EndsWith("docs/packages", StringComparison.OrdinalIgnoreCase))
+        docsId = directories
+            .FirstOrDefault(directory => directory.Path.Trim('/').EndsWith("docs", StringComparison.OrdinalIgnoreCase))
             ?.Id;
-    }
-
-    // The permalink of the directory's _index.md, or its folder path without the locale folder
-    private static string DirectoryUrl(DirectoryItem directory)
-    {
-        var path = (string.IsNullOrWhiteSpace(directory.Url) ? directory.Path : directory.Url).Trim('/');
-        var localePrefix = directory.Locale + "/";
-        if (!string.IsNullOrEmpty(directory.Locale) && path.StartsWith(localePrefix, StringComparison.OrdinalIgnoreCase))
-        {
-            path = path[localePrefix.Length..];
-        }
-
-        return "/" + path;
     }
 }

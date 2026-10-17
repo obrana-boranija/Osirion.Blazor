@@ -1,11 +1,11 @@
 ﻿@namespace Osirion.Blazor.Cms.Web.Components
 
-@if (ShowNavigation && (PreviousItem is not null || NextItem is not null) && Item is not null)
+@if (ShowNavigation && (ShownPreviousItem is not null || ShownNextItem is not null) && Item is not null)
 {
     <nav class="@GetNavigationClass()" aria-label="@AriaLabel" @attributes="Attributes">
-        @if (PreviousItem is not null)
+        @if (ShownPreviousItem is not null)
         {
-            <a href="@GetNavigationUrl(PreviousItem)" class="osirion-content-previous" @onclick:preventDefault="@PreventDefault">
+            <a href="@GetNavigationUrl(ShownPreviousItem)" class="osirion-content-previous" @onclick:preventDefault="@PreventDefault">
                 <span class="osirion-content-navigation-label">
                     @if (ShowIcons && PreviousIcon is not null)
                     {
@@ -15,10 +15,10 @@
                     }
                     @PreviousLabel
                 </span>
-                <span class="osirion-content-navigation-title">@GetItemTitle(PreviousItem)</span>
-                @if (!string.IsNullOrWhiteSpace(GetItemDescription(PreviousItem)) && ShowDescription)
+                <span class="osirion-content-navigation-title">@GetItemTitle(ShownPreviousItem)</span>
+                @if (!string.IsNullOrWhiteSpace(GetItemDescription(ShownPreviousItem)) && ShowDescription)
                 {
-                    <span class="osirion-content-navigation-description">@GetItemDescription(PreviousItem)</span>
+                    <span class="osirion-content-navigation-description">@GetItemDescription(ShownPreviousItem)</span>
                 }
             </a>
         }
@@ -27,9 +27,9 @@
             <div class="osirion-content-navigation-placeholder"></div>
         }
 
-        @if (NextItem is not null)
+        @if (ShownNextItem is not null)
         {
-            <a href="@GetNavigationUrl(NextItem)" class="osirion-content-next" @onclick:preventDefault="@PreventDefault">
+            <a href="@GetNavigationUrl(ShownNextItem)" class="osirion-content-next" @onclick:preventDefault="@PreventDefault">
                 <span class="osirion-content-navigation-label">
                     @NextLabel
                     @if (ShowIcons && NextIcon is not null)
@@ -39,10 +39,10 @@
                         </span>
                     }
                 </span>
-                <span class="osirion-content-navigation-title">@GetItemTitle(NextItem)</span>
-                @if (!string.IsNullOrWhiteSpace(GetItemDescription(NextItem)) && ShowDescription)
+                <span class="osirion-content-navigation-title">@GetItemTitle(ShownNextItem)</span>
+                @if (!string.IsNullOrWhiteSpace(GetItemDescription(ShownNextItem)) && ShowDescription)
                 {
-                    <span class="osirion-content-navigation-description">@GetItemDescription(NextItem)</span>
+                    <span class="osirion-content-navigation-description">@GetItemDescription(ShownNextItem)</span>
                 }
             </a>
         }

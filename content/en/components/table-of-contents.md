@@ -116,8 +116,10 @@ captured but not rendered.
   HTML sanitizer keeps it, so the links work for CMS content. For a heading without an `id`, the component makes one
   from the text (lower case, letters and digits, spaces turned into hyphens), and the link only works if your page
   has an element with that id.
-- The heading's `id` is read only when it is the first attribute of the tag, as in the renderer's output. A heading
-  whose text runs over several lines is not found.
+- The heading's `id` is read wherever it sits among the attributes of the tag, quoted or bare. A heading whose text
+  runs over several lines is found.
+- The search for headings stops after one second. On HTML that makes it take longer, such as thousands of unclosed
+  heading tags, the outline is empty and a warning is logged.
 - Headings are nested by level: an `h3` goes under the `h2` before it. The list shows two levels, the top-level
   headings and the headings directly under them. Deeper headings are not shown.
 - Tags inside a heading are stripped and the remaining text is written as text, so it is HTML-encoded. Character

@@ -128,6 +128,8 @@ tag are added to it, `Theme` included. `Style` is accepted but not written.
   the same name as `Item.Directory`, sorted by the `order` front matter ascending. The items right before and after
   `Item` (matched by path) become the neighbours. An item without a directory is compared with all items of its
   locale. Give the items of a directory distinct `order` values so the sequence is predictable.
+- Looked-up neighbours are kept inside the component, not in `PreviousItem` and `NextItem`. When `Item` changes the
+  lookup runs again, and a neighbour you stop passing falls back to the lookup.
 - The `nav` renders only when `Item` is set and at least one neighbour exists. With one neighbour it gets the
   `osirion-content-navigation-single` class.
 - If the lookup fails, the error is logged through `ILogger` and only the neighbours you passed are shown.
