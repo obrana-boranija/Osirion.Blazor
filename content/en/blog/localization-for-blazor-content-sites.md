@@ -227,8 +227,8 @@ app.MapOsirionFeeds(feeds =>
 
 ## Related
 
-- [LocalizedContentView](/docs/components/cms-web/core/localized-content-view)
-- [LocalizedNavigation](/docs/components/cms-web/navigation/localized-navigation)
-- [SeoMetadataRenderer](/docs/components/cms-web/core/seo-metadata-renderer)
+- [LocalizedContentView](/components/localized-content-view)
+- [LocalizedNavigation](/components/localized-navigation)
+- [SeoMetadataRenderer](/components/seo-metadata-renderer)
 - [Structuring content repositories](/blog/structuring-content-repositories)
 - [Blazor SEO checklist for static SSR content sites](/blog/blazor-seo-ssr-ssg-checklist)

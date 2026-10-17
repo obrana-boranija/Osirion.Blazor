@@ -181,5 +181,5 @@ that must stay private in a branch the provider does not read, or in a private r
 
 - [Localization for Blazor content sites](/blog/localization-for-blazor-content-sites)
 - [Blazor SEO checklist for static SSR content sites](/blog/blazor-seo-ssr-ssg-checklist)
-- [ContentList](/docs/components/cms-web/core/content-list)
-- [Series navigation](/docs/components/cms-web/navigation/series-navigation)
+- [ContentList](/components/content-list)
+- [Series navigation](/components/series-navigation)

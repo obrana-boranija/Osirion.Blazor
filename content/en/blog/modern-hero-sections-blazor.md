@@ -141,6 +141,6 @@ them per variant, so an override needs a selector at least as specific as those 
 
 ## Related
 
-- [HeroSection reference](/docs/components/core/sections/hero-section)
-- [Section components](/docs/components/core/sections)
-- [Background pattern](/docs/components/core/layout/background-pattern)
+- [HeroSection reference](/components/hero-section)
+- [Section components](/components/sections)
+- [Background pattern](/components/background-pattern)

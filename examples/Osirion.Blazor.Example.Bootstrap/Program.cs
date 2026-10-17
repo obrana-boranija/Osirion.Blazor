@@ -75,6 +75,10 @@ if (!app.Environment.IsDevelopment())
     app.UseRewriter(rewriteOptions);
 }
 
+// Addresses carry no locale: the site is in English, and content URLs leave the locale folder out. Pages answered
+// under /en/... too, so those addresses move permanently to the same path without it.
+app.UseRewriter(new RewriteOptions().AddRedirect("^en(?:/(.*))?$", "/$1", StatusCodes.Status301MovedPermanently));
+
 app.UseGitHubWebhook();
 app.UseOsirionRobotsGenerator();
 app.UseResponseCompression();
@@ -93,7 +97,7 @@ app.UseOsirionRedirects();
 app.MapOsirionFeeds(feeds =>
 {
     feeds.FeedDirectory = "blog";
-    feeds.AdditionalSitemapUrls = ["/", "/blog", "/showcase"];
+    feeds.AdditionalSitemapUrls = ["/", "/blog", "/showcase", "/changelog"];
     // home.md is served at "/", not at its own slug
     feeds.ContentUrlFormatter = item => item.Url.Trim('/') == "homepage" ? "/" : "/" + item.Url.TrimStart('/');
 });

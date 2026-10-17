@@ -14,7 +14,9 @@ if (-not (Test-Path $srcPath)) {
 $docsPath = Join-Path $root 'docs\components'
 
 # gather razor and md files
-$razorFiles = Get-ChildItem -Path $srcPath -Recurse -File -Filter *.razor | Where-Object { $_.FullName -notmatch '\\obj\\' -and $_.FullName -notmatch '\\bin\\' }
+# Template content (src/Osirion.Blazor.Templates/templates) is copied into new projects by dotnet new; its pages are not
+# library components and have no page under docs/components.
+$razorFiles = Get-ChildItem -Path $srcPath -Recurse -File -Filter *.razor | Where-Object { $_.FullName -notmatch '\\obj\\' -and $_.FullName -notmatch '\\bin\\' -and $_.FullName -notmatch '[\\/]Osirion\.Blazor\.Templates[\\/]templates[\\/]' }
 $docFiles = @()
 if (Test-Path $docsPath) { $docFiles += Get-ChildItem -Path $docsPath -Recurse -File -Filter *.md }
 $docFiles += Get-ChildItem -Path $srcPath -Recurse -File -Filter *.md | Where-Object { $_.FullName -notmatch '\\obj\\' -and $_.FullName -notmatch '\\bin\\' }

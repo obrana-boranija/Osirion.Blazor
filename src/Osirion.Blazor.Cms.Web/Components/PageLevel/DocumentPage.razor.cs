@@ -41,6 +41,13 @@ public partial class DocumentPage
     public string? NavigationTitle { get; set; }
 
     /// <summary>
+    /// Gets or sets the text of the button that shows the side navigation on narrow screens, where it is folded away
+    /// so the page starts with its content. Defaults to <c>Documentation menu</c>.
+    /// </summary>
+    [Parameter]
+    public string SideNavigationToggleText { get; set; } = "Documentation menu";
+
+    /// <summary>
     /// Gets or sets the navigation items
     /// </summary>
     [Parameter]
@@ -181,6 +188,13 @@ public partial class DocumentPage
 
     private static readonly SchemaType[] DefaultSchemaTypes = [SchemaType.TechArticle];
 
+    // Ties the narrow-screen toggle to the panel it folds; unique per instance, so two pages on one screen stay apart.
+    private readonly string _sideNavigationId = "osirion-sidenav-" + Guid.NewGuid().ToString("N")[..8];
+
+    private string SideNavigationToggleId => _sideNavigationId + "-toggle";
+
+    private string SideNavigationPanelId => _sideNavigationId + "-panel";
+
     // The pages of the document's folder, listed in the side navigation when the parent gives no NavigationItems.
     private IReadOnlyList<DocumentNavigationItem>? _folderNavigation;
 
@@ -311,13 +325,6 @@ public partial class DocumentPage
     }
 
     private string GetContentUrl(ContentItem item) => ContentUrls.ItemUrl(item, ContentUrlFormatter);
-
-    private readonly SanitizedContentCache _sanitizedContent = new();
-
-    private MarkupString GetSanitizedContent(string? content)
-    {
-        return _sanitizedContent.Get(ServiceProvider, content);
-    }
 }
 
 /// <summary>

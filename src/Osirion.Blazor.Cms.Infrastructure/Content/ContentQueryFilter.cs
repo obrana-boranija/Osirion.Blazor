@@ -89,9 +89,19 @@ public class ContentQueryFilter : IContentQueryFilter
             return items.Where(item => IsInDirectoryTree(_pathUtils.NormalizePath(GetDirectoryPath(item.Path)), directory));
         }
 
-        // Only include items directly in this directory
-        return items.Where(item =>
-            item.Directory != null && item.Directory.Name.Equals(query.Directory, StringComparison.OrdinalIgnoreCase));
+        // Only include items directly in this directory, named by its folder ("guides"), its path ("docs/guides") or its
+        // display name. The display name alone failed once a folder's _index.md title replaced it.
+        var wanted = _pathUtils.NormalizePath(query.Directory).Trim('/');
+        return items.Where(item => item.Directory != null && IsDirectory(item.Directory, query.Directory, wanted));
+    }
+
+    private bool IsDirectory(DirectoryItem directory, string name, string path)
+    {
+        var directoryPath = _pathUtils.NormalizePath(directory.Path).Trim('/');
+        var folder = directoryPath[(directoryPath.LastIndexOf('/') + 1)..];
+        return directory.Name.Equals(name, StringComparison.OrdinalIgnoreCase)
+            || folder.Equals(path, StringComparison.OrdinalIgnoreCase)
+            || directoryPath.Equals(path, StringComparison.OrdinalIgnoreCase);
     }
 
     // Whole folder names only: "blog" must not take in "blog2".

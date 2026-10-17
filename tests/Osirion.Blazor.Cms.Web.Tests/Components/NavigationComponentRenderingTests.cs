@@ -325,6 +325,21 @@ public class NavigationComponentRenderingTests : CmsWebComponentTestBase
         cut.Find(".osirion-breadcrumbs-current .osirion-breadcrumbs-text").TextContent.ShouldBe("Install");
     }
 
+    // Fails before the fix: the directory links were built in code, which leaves out the scoped-style attribute the
+    // markup carries, so the component's link colours never reached them and the dark theme showed the browser's blue.
+    [Fact]
+    public void ContentBreadcrumbs_DirectoryLinks_CarryTheSameScopedStyleAttributeAsTheHomeLink()
+    {
+        var directory = DirectoryItem.Create("d", "docs", "Docs", "test");
+
+        var cut = RenderStatic<ContentBreadcrumbs>(p => p.Add(c => c.Directory, directory));
+
+        var links = cut.FindAll("a.osirion-breadcrumbs-link");
+        links.Count.ShouldBe(2);
+        var scope = links[0].Attributes.Select(a => a.Name).Single(name => name.StartsWith("b-", StringComparison.Ordinal));
+        links[1].HasAttribute(scope).ShouldBeTrue();
+    }
+
     [Fact]
     public void ContentBreadcrumbs_HomeAndCurrentHidden_WithFormatter_ListsOnlyTheFormattedDirectory()
     {
@@ -340,6 +355,39 @@ public class NavigationComponentRenderingTests : CmsWebComponentTestBase
         var link = cut.FindAll("a.osirion-breadcrumbs-link").ShouldHaveSingleItem();
         link.GetAttribute("href").ShouldBe("/section/Blog");
         cut.FindAll(".osirion-breadcrumbs-current").ShouldBeEmpty();
+    }
+
+    // Fails before the fix: with localized content the locale folder was a crumb ("Home / en / Components") and every
+    // folder linked to its path with the locale in it (/en/components), an address no page answers.
+    [Fact]
+    public void ContentBreadcrumbs_LocalizedContent_LeavesOutTheLocaleFolderAndLinksEachFolderAtItsAddress()
+    {
+        var locale = DirectoryItem.Create("l", "en", "en", "test");
+        locale.SetLocale("en");
+        var docs = DirectoryItem.Create("d", "en/docs", "Documentation", "test");
+        docs.SetUrl("/docs");
+        var packages = DirectoryItem.Create("p", "en/docs/packages", "Packages", "test");
+        locale.AddChild(docs);
+        docs.AddChild(packages);
+        var item = ContentItem.Create("i", "Core", "<p>x</p>", "en/docs/packages/core.md", "test");
+        packages.AddItem(item);
+
+        var cut = RenderStatic<ContentBreadcrumbs>(p => p.Add(c => c.Content, item));
+
+        var links = cut.FindAll("a.osirion-breadcrumbs-link");
+        links.Select(a => a.TextContent).ShouldBe(["Home", "Documentation", "Packages"]);
+        links.Select(a => a.GetAttribute("href")).ShouldBe(["/", "/docs", "/docs/packages"]);
+    }
+
+    [Fact]
+    public void ContentBreadcrumbs_TopLevelFolderNamedLikeAnotherLocale_IsKept()
+    {
+        var folder = DirectoryItem.Create("f", "en", "English", "test");
+        folder.SetLocale("de");
+
+        var cut = RenderStatic<ContentBreadcrumbs>(p => p.Add(c => c.Directory, folder));
+
+        cut.FindAll("a.osirion-breadcrumbs-link").Select(a => a.GetAttribute("href")).ShouldBe(["/", "/en"]);
     }
 
     [Fact]
@@ -372,6 +420,19 @@ public class NavigationComponentRenderingTests : CmsWebComponentTestBase
         links[0].ClassList.ShouldNotContain("osirion-active");
         cut.FindAll("ul.osirion-directory-list > li > a > .osirion-directory-count").Select(c => c.TextContent).ShouldBe(["2", "0"]);
         cut.FindAll(".osirion-subdirectory-list").ShouldBeEmpty();
+    }
+
+    // Fails before the fix: an _index.md permalink starts with a slash, so the link came out as //docs, which a browser
+    // reads as the host "docs"; a folder without one linked to the site root.
+    [Fact]
+    public void DirectoryNavigation_FolderAddresses_LinkFromTheSiteRoot()
+    {
+        var docs = Directory("docs", "Docs", url: "/docs");
+        var guides = Directory("guides", "Guides");
+
+        var cut = RenderStatic<DirectoryNavigation>(p => p.Add(c => c.Directories, [docs, guides]));
+
+        cut.FindAll("ul.osirion-directory-list > li > a").Select(a => a.GetAttribute("href")).ShouldBe(["/docs", "/guides"]);
     }
 
     [Fact]

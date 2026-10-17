@@ -1,24 +1,12 @@
 ﻿@page "/docs/{*slug}"
-@page "/{locale}/docs/{*slug}"
-@using Osirion.Blazor.Cms.Web.Components
+@using Osirion.Blazor.Examples.Shared.Docs
 
-
-@if (string.IsNullOrWhiteSpace(Slug))
-{
-    <ContentListPage Locale="@Locale" Category="Components" ItemsPerPage="24"
-                     Title="Documentation" Description="Component and module documentation for Osirion.Blazor." />
-}
-else
-{
-    <ArticlePage ItemUrl="@($"/docs/{Slug}")"
-                 Locale="@Locale"
-                 SchemaTypes="@(new[] { SchemaType.Article, SchemaType.BreadcrumbList })" />
-}
+@* /docs, the guides and the package pages, from content/en/docs. Addresses carry no locale: the site is in English,
+   and content URLs leave the locale folder out. *@
+<DocsArticle Url="@("/docs/" + Slug)" />
 
 @code {
-    [Parameter]
-    public string? Locale { get; set; } = "en";
-
+    /// <summary>The path after /docs, such as <c>getting-started</c> or <c>packages/core</c>.</summary>
     [Parameter]
     public string? Slug { get; set; }
 }

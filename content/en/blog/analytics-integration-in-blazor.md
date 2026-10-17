@@ -188,6 +188,6 @@ Matomo's own consent setting fit in.
 
 ## Related
 
-- [Analytics components](/docs/components/analytics)
+- [Analytics components](/docs/packages/analytics)
 - [Cookie consent in Blazor with Osirion.Blazor](/blog/gdpr-cookie-consent-blazor)
 - [Osirion.Blazor.Analytics on NuGet](https://www.nuget.org/packages/Osirion.Blazor.Analytics)

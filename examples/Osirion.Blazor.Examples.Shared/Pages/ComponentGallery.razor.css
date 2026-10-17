@@ -1,0 +1,86 @@
+.components-gallery {
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 2rem 1rem 4rem;
+}
+
+.components-gallery-header {
+    max-width: 48rem;
+}
+
+.components-gallery-header h1 {
+    margin-bottom: 1rem;
+}
+
+.components-gallery-index ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    margin: 1.5rem 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+/* 24px targets (WCAG 2.2, 2.5.8); underlined like every link in running text */
+.components-gallery-index a,
+.components-group-summary a,
+.components-group-see-also a {
+    display: inline-block;
+    min-height: 24px;
+    line-height: 24px;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+}
+
+.components-group {
+    margin-top: 3rem;
+}
+
+.components-group-summary {
+    max-width: 48rem;
+    color: var(--osirion-text-secondary, inherit);
+}
+
+.components-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+    gap: 1rem;
+    margin: 1.25rem 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+/* The heading's link covers the card, so the whole card is one target */
+.components-card {
+    position: relative;
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--osirion-border-color, #d0d7de);
+    border-radius: var(--osirion-radius-md, 0.5rem);
+    background: var(--osirion-background-primary, transparent);
+}
+
+.components-card:hover,
+.components-card:focus-within {
+    border-color: var(--osirion-border-color-hover, currentColor);
+}
+
+.components-card h3 {
+    margin: 0 0 0.5rem;
+    font-size: 1.0625rem;
+}
+
+.components-card h3 a::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+}
+
+.components-card p {
+    margin: 0;
+    color: var(--osirion-text-secondary, inherit);
+    font-size: 0.9375rem;
+}
+
+.components-group-see-also {
+    margin-top: 1rem;
+}

@@ -115,6 +115,41 @@ public class DocumentPageTests : CmsWebComponentTestBase
         cut.Find(".osirion-doc-nav-next").GetAttribute("href").ShouldBe("/docs/deploy");
     }
 
+    // Fails before the fix: on a phone the whole side navigation came before the page, so a reader scrolled past every
+    // link of the documentation to reach the content.
+    [Fact]
+    public void DocumentPage_SideNavigation_FoldsBehindAToggleThatControlsItsPanel()
+    {
+        var cut = RenderDocument();
+
+        var toggle = cut.Find("nav.osirion-document-sidenav > input.osirion-sidenav-toggler");
+        toggle.GetAttribute("type").ShouldBe("checkbox");
+        var label = cut.Find("nav.osirion-document-sidenav > label.osirion-sidenav-toggle");
+        label.GetAttribute("for").ShouldBe(toggle.Id);
+        label.TextContent.ShouldBe("Documentation menu");
+        var panel = cut.Find("nav.osirion-document-sidenav > .osirion-sidenav-panel");
+        toggle.GetAttribute("aria-controls").ShouldBe(panel.Id);
+        panel.QuerySelectorAll("a.osirion-sidenav-link").Length.ShouldBe(3);
+    }
+
+    [Fact]
+    public void DocumentPage_SideNavigationToggleText_LabelsTheToggleAndIdsDifferPerPage()
+    {
+        var first = RenderDocument(p => p.Add(c => c.SideNavigationToggleText, "Pages"));
+        var second = RenderDocument();
+
+        first.Find("label.osirion-sidenav-toggle").TextContent.ShouldBe("Pages");
+        first.Find("input.osirion-sidenav-toggler").Id.ShouldNotBe(second.Find("input.osirion-sidenav-toggler").Id);
+    }
+
+    [Fact]
+    public void DocumentPage_WithoutSideNavigation_HasNoToggle()
+    {
+        var cut = RenderDocument(p => p.Add(c => c.ShowSideNavigation, false));
+
+        cut.FindAll(".osirion-sidenav-toggler").ShouldBeEmpty();
+    }
+
     private IRenderedComponent<DocumentPage> RenderDocument(
         Action<ComponentParameterCollectionBuilder<DocumentPage>>? configure = null) =>
         RenderStatic<DocumentPage>(p =>

@@ -471,6 +471,36 @@ public class SeoMetadataRendererMetaTagTests : CmsWebComponentTestBase
         PageTitleText(cut).ShouldBe($"{title} | localhost");
     }
 
+    // Fails before the fix: the canonical URL always took the request's host, so a site behind a proxy or served on a
+    // preview host declared that host as the page's address.
+    [Theory]
+    [InlineData("https://example.com")]
+    [InlineData("https://example.com/")]
+    public void SeoMetadataRenderer_ConfiguredSiteUrl_CanonicalAndOpenGraphUseIt(string siteUrl)
+    {
+        Services.AddSingleton(Microsoft.Extensions.Options.Options.Create(new SeoMetadataOptions { SiteUrl = siteUrl }));
+        Services.GetRequiredService<NavigationManager>().NavigateTo(SeoTestContent.PageUrl + "?utm_source=feed#top");
+
+        var cut = RenderStatic<SeoMetadataRenderer>(p => p.Add(c => c.Content, SeoTestContent.Article()));
+
+        cut.Find("link[rel='canonical']").GetAttribute("href").ShouldBe("https://example.com/blog/guides/my-post");
+        Property(cut, "og:url").ShouldBe("https://example.com/blog/guides/my-post");
+        Property(cut, "og:image").ShouldBe("https://example.com/images/cover.png");
+    }
+
+    [Theory]
+    [InlineData("example.com")]
+    [InlineData("ftp://example.com")]
+    [InlineData("")]
+    public void SeoMetadataRenderer_ConfiguredSiteUrlNotAnAbsoluteWebAddress_FollowsTheRequest(string siteUrl)
+    {
+        Services.AddSingleton(Microsoft.Extensions.Options.Options.Create(new SeoMetadataOptions { SiteUrl = siteUrl }));
+
+        var cut = RenderPage(p => p.Add(c => c.Content, SeoTestContent.Article()));
+
+        cut.Find("link[rel='canonical']").GetAttribute("href").ShouldBe(SeoTestContent.PageUrl);
+    }
+
     [Fact]
     public void SeoMetadataRenderer_SeoOptionsDisallowAiTraining_RendersTheTrainingOptOut()
     {

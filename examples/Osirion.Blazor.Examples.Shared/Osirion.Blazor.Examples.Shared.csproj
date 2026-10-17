@@ -11,4 +11,9 @@
     <ProjectReference Include="..\..\src\Osirion.Blazor\Osirion.Blazor.csproj" />
   </ItemGroup>
 
+  <!-- /changelog renders the repository's changelog, so the page and the file cannot disagree -->
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\CHANGELOG.md" LogicalName="CHANGELOG.md" Link="CHANGELOG.md" />
+  </ItemGroup>
+
 </Project>

@@ -1,19 +1,20 @@
 ---
 id: 'getting-started'
-order: 1
+order: 2
 layout: docs
 title: "Getting started"
 permalink: /docs/getting-started
-description: "Install Osirion.Blazor, register it in Program.cs, add OsirionStyles and the content components, and serve Markdown from a folder or GitHub."
+description: "Create a Markdown blog with dotnet new osirion-blog and run it in three commands, or add Osirion.Blazor to an existing Blazor Web App."
 author: Dejan Demonjić
 date: 2026-10-11
-last_modified: 2026-10-11
+last_modified: 2026-10-17
 featured_image: /assets/images/blazor-cover.png
 categories:
 - Documentation
 - Getting Started
 tags:
 - getting-started
+- templates
 - installation
 - configuration
 - markdown
@@ -21,9 +22,11 @@ tags:
 published: true
 slug: getting-started
 lang: en
+custom_fields:
+  group: getting-started
 seo_properties:
   title: 'Getting started with Osirion.Blazor'
-  description: 'Set up Osirion.Blazor in a Blazor Web App and render Markdown from a local folder or a GitHub repository as a blog.'
+  description: 'Start a Markdown blog with the osirion-blog template in three commands, or add Osirion.Blazor to an existing Blazor Web App.'
   image: /assets/images/blazor-cover.png
   canonical: 'https://getosirion.com/docs/getting-started'
   robots: index, follow
@@ -31,12 +34,80 @@ seo_properties:
 
 # Getting started
 
+There are two ways in: start from the `osirion-blog` template, which gives you a running blog in three commands, or
+add Osirion to a Blazor app you already have.
+
+## Start from the template
+
+You need the [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0).
+
+### 1. Install the templates
+
+```bash
+dotnet new install Osirion.Blazor.Templates
+```
+
+### 2. Create the blog
+
+```bash
+dotnet new osirion-blog -n MyBlog --SiteName "My Blog" --SiteUrl "https://blog.example.com"
+cd MyBlog
+```
+
+`--SiteName` goes into the menu, the footer, the page titles and the feeds; `--SiteUrl` is the public address the feeds,
+the sitemap and `robots.txt` link to. Both can be changed later in `appsettings.json`. The packages are restored as
+the project is created.
+
+### 3. Run it
+
+```bash
+dotnet run
+```
+
+The browser opens on the home page. In a run with an empty NuGet package cache, the three steps took between 24 and
+35 seconds, most of it the first restore and build.
+
+### What you have
+
+| Address | Page |
+| --- | --- |
+| `/` | The three newest posts |
+| `/blog` | Every post, newest first, with a link to the RSS feed |
+| `/blog/hello-world` | A post: title, date, reading time, table of contents, previous and next links |
+| `/about` | `content/about.md` |
+| `/feed.xml`, `/atom.xml`, `/sitemap.xml` | RSS, Atom and the sitemap, from the same posts |
+| any other address | The not-found page, with status 404 |
+
+Every page is rendered on the server as complete HTML; no interactive render mode is used. The menu, the footer and
+the light and dark theme come from [`OsirionSiteLayout`](https://github.com/demonjic/Osirion.Blazor/blob/master/docs/components/OsirionSiteLayout.md),
+configured in `appsettings.json`.
+
+### Make it yours
+
+| To change | Edit |
+| --- | --- |
+| Posts | Add Markdown files to `content/blog`; the folder is watched, so a new post appears on reload |
+| The About page | `content/about.md` |
+| Menu, footer, social links | `Osirion:Site` in `appsettings.json` |
+| Colours | `Osirion:Theming:DefaultPalette`: one of the [palettes](/components/palettes) |
+| Your own styles | `wwwroot/app.css` |
+| The public address | `Feeds:SiteUrl` in `appsettings.json` and the `Sitemap` line in `wwwroot/robots.txt` |
+
+`dotnet publish` copies the `content` folder with the app. The post "Write your first post", which the template
+includes, shows the front matter a post needs.
+
+For documentation instead of a blog, use `dotnet new osirion-docs -n MyDocs`: pages in `content/docs` with side
+navigation, a table of contents and previous and next links. For a product or company site, use
+`dotnet new osirion-site -n MySite`: a home page with a hero, steps and the latest news, plus News, About and Contact.
+
+## Add Osirion to an existing Blazor app
+
 This guide takes a new Blazor Web App to a running blog: a list page and an article page rendered from Markdown
 files, read from a local folder or from a GitHub repository. It follows the Bootstrap example in the repository and
 is written for Osirion.Blazor 4.0.0, which targets .NET 9 and .NET 10. The steps were checked with the .NET 10
 Blazor Web App template.
 
-## 1. Create the project and add the package
+### 1. Create the project and add the package
 
 ```bash
 dotnet new blazor -n MySite
@@ -50,7 +121,7 @@ registration method. You can reference single modules instead, but `AddOsirion` 
 The content pages in this guide render with static server-side rendering, so they need no interactive render mode.
 The template's interactive setup can stay as it is.
 
-## 2. Register the services
+### 2. Register the services
 
 In `Program.cs`, add the `using` and the two `builder.Services` lines after `AddRazorComponents()`:
 
@@ -75,11 +146,11 @@ registers enhanced navigation, scroll to top and the HTML sanitizer that cleans 
 `OsirionStyles`. Without it, the first page that renders one of them fails with "There is no registered service of
 type 'BlazorJSComponents.JSComponentManager'".
 
-## 3. Point the provider at your content
+### 3. Point the provider at your content
 
 Choose a local folder or a GitHub repository. Both go in `appsettings.json` under `Osirion:Cms:Web`.
 
-### A local folder
+#### A local folder
 
 ```json
 {
@@ -111,7 +182,7 @@ The provider watches the folder for changed files (`WatchForChanges`, on by defa
 </ItemGroup>
 ```
 
-### A GitHub repository
+#### A GitHub repository
 
 ```json
 {
@@ -171,7 +242,7 @@ cannot be built and the app fails at startup in Development.
 If your files are split into language folders such as `content/en/blog`, also set `EnableLocalization` to `true`,
 `DefaultLocale` and `SupportedLocales`. The same keys work for the local folder provider.
 
-## 4. Add the styles and imports
+### 4. Add the styles and imports
 
 Add the Osirion namespaces to `Components/_Imports.razor`:
 
@@ -198,9 +269,9 @@ Render `OsirionStyles` once in `Components/Layout/MainLayout.razor`, as the exam
 `OsirionStyles` loads the Osirion stylesheets and, for the `Framework` you configured (`Bootstrap`, `FluentUI`,
 `MudBlazor` or `Radzen`), the adapter that maps the framework's colors onto Osirion's. It does not load the framework
 itself; the Blazor template already loads Bootstrap. Leave `Framework` out to use Osirion's own palette. See
-[OsirionStyles](/docs/components/theming/osirion-styles) for its parameters.
+[OsirionStyles](/components/osirion-styles) for its parameters.
 
-## 5. Add a list page and an article page
+### 5. Add a list page and an article page
 
 Create `Components/Pages/Blog.razor`:
 
@@ -233,7 +304,7 @@ and the page's SEO tags and structured data. An unknown slug answers with HTTP 4
 category. When there are none, for example while the folder holds a single post, that section shows a "Page Not
 Found" block; set `ShowRelatedContent="false"` until you have more posts.
 
-## 6. Write the first post
+### 6. Write the first post
 
 Create `content/blog/hello-world.md` (in the folder, or under `ContentPath` in the repository):
 
@@ -257,7 +328,7 @@ Front matter keys are snake_case (`featured_image`, `is_featured`, `last_modifie
 lowercase letters, digits and hyphens. A file without a `published` key is published; add `published: false` to
 keep it hidden.
 
-## 7. Run
+### 7. Run
 
 ```bash
 dotnet run
@@ -267,10 +338,12 @@ Open `/blog` to see the list, then select the post.
 
 ## Next steps
 
-- Browse the [components overview](/docs/components) and the [CMS web components](/docs/components/cms-web).
-- Wrap the site in [OsirionPageLayout](/docs/components/core/layout/page-layout) for a header that hides while you
+- Browse the [components overview](/components) and the [CMS web components](/docs/packages/cms-web).
+- Wrap the site in [OsirionPageLayout](/components/page-layout) for a header that hides while you
   scroll down and a footer that stays at the bottom of short pages.
-- Add analytics from the [analytics components](/docs/components/analytics).
+- Pick a [palette](/components/palettes) and let visitors choose one with
+  [ThemePicker](/components/theme-picker).
+- Add analytics from the [analytics components](/docs/packages/analytics).
 - Compare with the complete
   [Bootstrap example](https://github.com/demonjic/Osirion.Blazor/tree/master/examples/Osirion.Blazor.Example.Bootstrap),
   which also adds the home page, search, tags, categories and cookie consent.

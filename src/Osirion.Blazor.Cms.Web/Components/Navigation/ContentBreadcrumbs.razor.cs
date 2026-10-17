@@ -50,34 +50,24 @@ public partial class ContentBreadcrumbs
 
     private string GetDirectoryUrl(DirectoryItem directory)
     {
-        return DirectoryUrlFormatter?.Invoke(directory) ?? $"/{directory.Path}";
+        return DirectoryUrlFormatter?.Invoke(directory) ?? ContentUrls.DirectoryUrl(directory);
     }
 
-    private RenderFragment RenderDirectoryPath(DirectoryItem directory) => builder =>
+    /// <summary>
+    /// The directories from the root to <see cref="Directory"/>, in that order, without the locale folder of localized
+    /// content (<c>content/en</c>), which has no page.
+    /// </summary>
+    private List<DirectoryItem> DirectoryPath()
     {
-        // Build the directory path from root to current
         var path = new List<DirectoryItem>();
-        var current = directory;
-
-        while (current is not null)
+        for (var current = Directory; current is not null; current = current.Parent)
         {
-            path.Add(current);
-            current = current.Parent;
+            if (!ContentUrls.IsLocaleFolder(current))
+            {
+                path.Insert(0, current);
+            }
         }
 
-        // Render directories in reverse order (root to leaf)
-        foreach (var dir in path.AsEnumerable().Reverse())
-        {
-            builder.OpenElement(0, "li");
-            builder.AddAttribute(1, "class", "osirion-breadcrumbs-item");
-
-            builder.OpenElement(2, "a");
-            builder.AddAttribute(3, "href", GetDirectoryUrl(dir));
-            builder.AddAttribute(4, "class", "osirion-breadcrumbs-link");
-            builder.AddContent(5, dir.Name);
-            builder.CloseElement(); // a
-
-            builder.CloseElement(); // li
-        }
-    };
+        return path;
+    }
 }

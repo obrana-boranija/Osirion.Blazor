@@ -67,14 +67,16 @@
     }
 
 /* Document layout */
+/* minmax(0, 1fr), not 1fr: a column is otherwise at least as wide as its widest content, so a long line of code made the
+   page wider than a phone screen instead of scrolling inside its block. */
 .osirion-document-layout {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     min-height: 100vh;
 }
 
 .osirion-document-with-sidenav .osirion-document-layout {
-    grid-template-columns: 280px 1fr;
+    grid-template-columns: 280px minmax(0, 1fr);
 }
 
 /* Side navigation */
@@ -86,6 +88,12 @@
     position: sticky;
     top: 0;
     height: 100vh;
+}
+
+/* The narrow-screen toggle: gone on wide screens, where the side navigation is always shown */
+.osirion-sidenav-toggler,
+.osirion-sidenav-toggle {
+    display: none;
 }
 
 .osirion-sidenav-title {
@@ -130,9 +138,11 @@
         border-left-color: var(--osirion-action-primary, #2563eb);
     }
 
+    /* The theme's active-item pair, which both themes and every palette hold to 4.5:1; --osirion-background-active is
+       defined by no theme, so its light fallback showed in the dark theme (2.21:1). */
     .osirion-sidenav-link.osirion-sidenav-active {
-        color: var(--osirion-action-primary, #2563eb);
-        background-color: var(--osirion-background-active, #e0f2fe);
+        color: var(--osirion-nav-active-text, #1d4ed8);
+        background-color: var(--osirion-nav-active-background, #eff6ff);
         border-left-color: var(--osirion-action-primary, #2563eb);
         font-weight: var(--osirion-font-weight-semibold, 600);
     }
@@ -206,143 +216,6 @@
     line-height: var(--osirion-line-height-relaxed, 1.7);
 }
 
-    .osirion-document-body h1,
-    .osirion-document-body h2,
-    .osirion-document-body h3,
-    .osirion-document-body h4,
-    .osirion-document-body h5,
-    .osirion-document-body h6 {
-        margin-top: var(--osirion-spacing-8, 2rem);
-        margin-bottom: var(--osirion-spacing-4, 1rem);
-        color: var(--osirion-text-primary, #111827);
-        font-weight: var(--osirion-font-weight-bold, 700);
-        line-height: var(--osirion-line-height-tight, 1.25);
-        scroll-margin-top: var(--osirion-spacing-6, 1.5rem);
-    }
-
-    .osirion-document-body h1 {
-        font-size: var(--osirion-font-size-3xl, 1.875rem);
-        border-bottom: 2px solid var(--osirion-border-color, #e5e7eb);
-        padding-bottom: var(--osirion-spacing-3, 0.75rem);
-    }
-
-    .osirion-document-body h2 {
-        font-size: var(--osirion-font-size-2xl, 1.5rem);
-        border-bottom: 1px solid var(--osirion-border-color, #e5e7eb);
-        padding-bottom: var(--osirion-spacing-2, 0.5rem);
-    }
-
-    .osirion-document-body h3 {
-        font-size: var(--osirion-font-size-xl, 1.25rem);
-    }
-
-    .osirion-document-body h4 {
-        font-size: var(--osirion-font-size-lg, 1.125rem);
-    }
-
-    .osirion-document-body h5,
-    .osirion-document-body h6 {
-        font-size: var(--osirion-font-size-base, 1rem);
-    }
-
-    .osirion-document-body p {
-        margin: 0 0 var(--osirion-spacing-4, 1rem);
-    }
-
-    .osirion-document-body ul,
-    .osirion-document-body ol {
-        margin: 0 0 var(--osirion-spacing-4, 1rem);
-        padding-left: var(--osirion-spacing-6, 1.5rem);
-    }
-
-    .osirion-document-body li {
-        margin-bottom: var(--osirion-spacing-2, 0.5rem);
-    }
-
-    .osirion-document-body a {
-        color: var(--osirion-action-primary, #2563eb);
-        text-decoration: none;
-        transition: color var(--osirion-transition-duration-200, 0.2s) ease;
-    }
-
-        .osirion-document-body a:hover {
-            color: var(--osirion-action-primary-hover, #1d4ed8);
-            text-decoration: underline;
-        }
-
-    .osirion-document-body img {
-        max-width: 100%;
-        height: auto;
-        border-radius: var(--osirion-radius-md, 0.375rem);
-        margin: var(--osirion-spacing-4, 1rem) 0;
-        border: var(--osirion-border-width, 1px) solid var(--osirion-border-color, #e5e7eb);
-    }
-
-    .osirion-document-body blockquote {
-        border-left: 4px solid var(--osirion-action-primary, #2563eb);
-        padding: var(--osirion-spacing-4, 1rem) var(--osirion-spacing-6, 1.5rem);
-        margin: var(--osirion-spacing-6, 1.5rem) 0;
-        background-color: var(--osirion-background-secondary, #f9fafb);
-        border-radius: 0 var(--osirion-radius-md, 0.375rem) var(--osirion-radius-md, 0.375rem) 0;
-        font-style: italic;
-        color: var(--osirion-text-secondary, #4b5563);
-    }
-
-        .osirion-document-body blockquote p:last-child {
-            margin-bottom: 0;
-        }
-
-    .osirion-document-body pre {
-        background-color: var(--osirion-background-secondary, #f3f4f6);
-        padding: var(--osirion-spacing-4, 1rem);
-        border-radius: var(--osirion-radius-md, 0.375rem);
-        overflow-x: auto;
-        margin: var(--osirion-spacing-6, 1.5rem) 0;
-        font-family: var(--osirion-font-family-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace);
-        font-size: var(--osirion-font-size-sm, 0.875rem);
-        line-height: var(--osirion-line-height-normal, 1.5);
-        border: var(--osirion-border-width, 1px) solid var(--osirion-border-color, #e5e7eb);
-    }
-
-    .osirion-document-body code {
-        background-color: var(--osirion-background-secondary, #f3f4f6);
-        padding: 0.125rem 0.25rem;
-        border-radius: var(--osirion-radius-sm, 0.125rem);
-        font-family: var(--osirion-font-family-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace);
-        font-size: 0.9em;
-    }
-
-    .osirion-document-body pre code {
-        background-color: transparent;
-        padding: 0;
-    }
-
-    .osirion-document-body table {
-        width: 100%;
-        border-collapse: collapse;
-        margin: var(--osirion-spacing-6, 1.5rem) 0;
-        border: var(--osirion-border-width, 1px) solid var(--osirion-border-color, #e5e7eb);
-        border-radius: var(--osirion-radius-md, 0.375rem);
-        overflow: hidden;
-    }
-
-    .osirion-document-body th,
-    .osirion-document-body td {
-        padding: var(--osirion-spacing-3, 0.75rem);
-        text-align: left;
-        border-bottom: var(--osirion-border-width, 1px) solid var(--osirion-border-color, #e5e7eb);
-    }
-
-    .osirion-document-body th {
-        background-color: var(--osirion-background-secondary, #f9fafb);
-        font-weight: var(--osirion-font-weight-semibold, 600);
-        color: var(--osirion-text-primary, #374151);
-    }
-
-    .osirion-document-body tr:last-child td {
-        border-bottom: none;
-    }
-
 /* Document pagination */
 .osirion-document-pagination {
     display: grid;
@@ -407,7 +280,7 @@
 /* Responsive design */
 @media (max-width: 1024px) {
     .osirion-document-with-sidenav .osirion-document-layout {
-        grid-template-columns: 240px 1fr;
+        grid-template-columns: 240px minmax(0, 1fr);
     }
 
     .osirion-document-sidenav {
@@ -421,7 +294,7 @@
 
 @media (max-width: 768px) {
     .osirion-document-with-sidenav .osirion-document-layout {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 
     .osirion-document-sidenav {
@@ -430,6 +303,64 @@
         border-right: none;
         border-bottom: var(--osirion-border-width, 1px) solid var(--osirion-border-color, #e5e7eb);
         padding: var(--osirion-spacing-4, 1rem);
+    }
+
+    /* The side navigation folds behind a button, so the page starts with its content. The checkbox stays focusable
+       but out of sight; its label is the button readers see. */
+    .osirion-sidenav-toggler {
+        display: block;
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+    }
+
+    .osirion-sidenav-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 44px;
+        padding: var(--osirion-spacing-2, 0.5rem) var(--osirion-spacing-3, 0.75rem);
+        border: var(--osirion-border-width, 1px) solid var(--osirion-border-color, #e5e7eb);
+        border-radius: var(--osirion-radius-md, 0.375rem);
+        background-color: var(--osirion-background-primary, #ffffff);
+        color: var(--osirion-text-primary, #374151);
+        font-weight: var(--osirion-font-weight-semibold, 600);
+        cursor: pointer;
+    }
+
+        .osirion-sidenav-toggle::after {
+            content: "";
+            width: 0.5rem;
+            height: 0.5rem;
+            margin-right: var(--osirion-spacing-1, 0.25rem);
+            border-right: 2px solid currentColor;
+            border-bottom: 2px solid currentColor;
+            transform: rotate(45deg);
+            transition: transform var(--osirion-transition-duration-200, 0.2s) ease;
+        }
+
+    .osirion-sidenav-toggler:checked + .osirion-sidenav-toggle::after {
+        transform: rotate(-135deg);
+    }
+
+    .osirion-sidenav-toggler:focus-visible + .osirion-sidenav-toggle {
+        outline: 2px solid var(--osirion-border-color-focus, var(--osirion-action-primary, #2563eb));
+        outline-offset: 2px;
+    }
+
+    .osirion-sidenav-panel {
+        display: none;
+        margin-top: var(--osirion-spacing-3, 0.75rem);
+    }
+
+    .osirion-sidenav-toggler:checked ~ .osirion-sidenav-panel {
+        display: block;
     }
 
     .osirion-document-main {
@@ -456,22 +387,6 @@
 }
 
 @media (max-width: 640px) {
-    .osirion-document-body h1 {
-        font-size: var(--osirion-font-size-xl, 1.25rem);
-    }
-
-    .osirion-document-body h2 {
-        font-size: var(--osirion-font-size-lg, 1.125rem);
-    }
-
-    .osirion-document-body h3 {
-        font-size: var(--osirion-font-size-base, 1rem);
-    }
-
-    .osirion-document-body pre {
-        padding: var(--osirion-spacing-3, 0.75rem);
-        font-size: var(--osirion-font-size-xs, 0.75rem);
-    }
 
     .osirion-document-toc {
         padding: var(--osirion-spacing-3, 0.75rem);
@@ -483,9 +398,9 @@
     .osirion-spinner,
     .osirion-back-link,
     .osirion-sidenav-link,
+    .osirion-sidenav-toggle::after,
     .osirion-doc-nav-previous,
-    .osirion-doc-nav-next,
-    .osirion-document-body a {
+    .osirion-doc-nav-next {
         transition: none;
         animation: none;
     }
@@ -518,21 +433,6 @@
     .osirion-document-main {
         padding: 0;
         max-width: none;
-    }
-
-    .osirion-document-body a {
-        text-decoration: underline;
-        color: inherit;
-    }
-
-    .osirion-document-body img {
-        border: 1px solid #ccc;
-    }
-
-    .osirion-document-body pre,
-    .osirion-document-body blockquote {
-        border: 1px solid #ccc;
-        background-color: transparent;
     }
 }
 

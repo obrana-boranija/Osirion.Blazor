@@ -80,7 +80,9 @@ html.osirion-bootstrap-integration[data-theme="light"],
     /* Links follow the framework's link color, which it keeps legible on its own background in both modes */
     --osirion-link-color: var(--bs-link-color, #0d6efd);
     --osirion-link-hover-color: var(--bs-link-hover-color, #0a58ca);
-    --osirion-text-tertiary: var(--bs-tertiary-color, #6c757d);
+    /* Bootstrap's tertiary colour is 50% opaque and not meant for text (3.12:1 on white); Osirion uses tertiary text
+       for labels and metadata, so it takes the secondary colour, which reads. */
+    --osirion-text-tertiary: var(--bs-secondary-color, #6c757d);
     --osirion-text-inverted: var(--bs-white, #ffffff);
     --osirion-text-disabled: var(--bs-secondary-color, #6c757d);
     /* Border colors */
@@ -255,7 +257,7 @@ html.osirion-bootstrap-integration[data-theme="light"],
         --osirion-color-primary-400: #3a6db2; /* Derived */
         --osirion-color-primary-500: var(--bs-primary, #0d6efd);
         --osirion-color-primary-600: var(--bs-primary-text-emphasis, #6ea8fe);
-        --osirion-color-primary-700: #8ab9fe; /* Derived */
+        --osirion-color-primary-700: #9ec5fe; /* Bootstrap blue-200: the active item, on primary-200, reads 4.99:1 */
         --osirion-color-primary-800: #a7caff; /* Derived */
         --osirion-color-primary-900: #c3daff; /* Derived */
         --osirion-color-primary-950: #e0eaff; /* Derived - lightest foreground */
@@ -318,7 +320,7 @@ html.osirion-bootstrap-integration[data-theme="light"],
         /* Links follow the framework's link color, which it keeps legible on its own background in both modes */
         --osirion-link-color: var(--bs-link-color, #6ea8fe);
         --osirion-link-hover-color: var(--bs-link-hover-color, #8bb9fe);
-        --osirion-text-tertiary: var(--bs-tertiary-color, #adb5bd);
+        --osirion-text-tertiary: var(--bs-secondary-color, #adb5bd);
         --osirion-text-disabled: var(--bs-secondary-color, #adb5bd);
         --osirion-border-color: var(--bs-border-color, #495057);
         --osirion-border-color-hover: var(--bs-border-color-translucent, rgba(255, 255, 255, 0.15));

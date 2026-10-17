@@ -1,0 +1,12 @@
+@page "/contact"
+
+@* Renders content/contact.md. The form is left out on purpose: without an email service or an OnSubmit handler it
+   would report success and send nothing. To use it, register AddOsirionEmailServices in Program.cs with your mail
+   settings, remove FormContent below, and set UseBuiltInEmailService="true" on ContactPage. *@
+<ContactPage>
+    <FormContent>
+        <p class="page-link">
+            Write to <a href="mailto:hello@example.com">hello@example.com</a>.
+        </p>
+    </FormContent>
+</ContactPage>

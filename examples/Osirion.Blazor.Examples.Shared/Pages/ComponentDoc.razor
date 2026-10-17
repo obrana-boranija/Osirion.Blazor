@@ -1,0 +1,11 @@
+@page "/components/{Slug}"
+@using Osirion.Blazor.Examples.Shared.Docs
+
+@* One component, or a group of components, from content/en/components *@
+<DocsArticle Url="@($"{DocsOutline.GalleryUrl}/{Slug}")" />
+
+@code {
+    /// <summary>The page's slug, such as <c>tabs</c> or <c>cards</c>.</summary>
+    [Parameter]
+    public string Slug { get; set; } = string.Empty;
+}

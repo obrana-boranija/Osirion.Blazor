@@ -45,7 +45,7 @@ are drawn in CSS, so the HTML sanitizer can keep removing inline SVG.
 </OsirionCallout>
 ```
 
-[Callout documentation](/docs/components/core/content/callout)
+[Callout documentation](/components/callout)
 
 ## Tabs
 
@@ -62,7 +62,7 @@ are drawn in CSS, so the HTML sanitizer can keep removing inline SVG.
 </OsirionTabs>
 ```
 
-[Tabs documentation](/docs/components/core/content/tabs)
+[Tabs documentation](/components/tabs)
 
 ## Accordion and FAQ
 
@@ -89,7 +89,7 @@ time. `OsirionFaq` renders questions and answers and writes matching FAQPage str
 }
 ```
 
-[Accordion and FAQ documentation](/docs/components/core/content/accordion-and-faq)
+[Accordion and FAQ documentation](/components/accordion-and-faq)
 
 ## Responsive images
 
@@ -111,7 +111,7 @@ once with `fetchpriority="high"` when `Priority` is set.
 }
 ```
 
-[Responsive image documentation](/docs/components/core/content/responsive-image)
+[Responsive image documentation](/components/responsive-image)
 
 ## Video embeds
 
@@ -123,7 +123,7 @@ video. It needs `builder.Services.AddJSComponents()`.
 <OsirionVideoEmbed VideoId="V0Af7y7aMBE" Title="Build better web apps with Blazor in .NET 10" />
 ```
 
-[Video embed documentation](/docs/components/core/content/video-embed)
+[Video embed documentation](/components/video-embed)
 
 ## Reading progress
 
@@ -134,7 +134,7 @@ scroll-driven animation with no script, and browsers without `animation-timeline
 <OsirionReadingProgress />
 ```
 
-[Reading progress documentation](/docs/components/core/content/reading-progress)
+[Reading progress documentation](/components/reading-progress)
 
 ## Author pages
 
@@ -158,7 +158,7 @@ with `rel="me"`; links with unsafe URL schemes are not rendered. `ContentList.Au
 
 `ContentList` lives in `Osirion.Blazor.Cms.Web.Components`.
 
-[Author card documentation](/docs/components/core/cards/author-card)
+[Author card documentation](/components/author-card)
 
 ## Series
 
@@ -177,7 +177,7 @@ lives in `Osirion.Blazor.Cms.Web.Components`.
 <ContentSeriesNavigation Item="@post" />
 ```
 
-[Series navigation documentation](/docs/components/cms-web/navigation/series-navigation)
+[Series navigation documentation](/components/series-navigation)
 
 ## Pricing tables and feature comparison
 
@@ -196,7 +196,7 @@ accessible table with check marks, crosses and values.
 }
 ```
 
-[Pricing table documentation](/docs/components/core/sections/pricing-table)
+[Pricing table documentation](/components/pricing-table)
 
 ## Steps
 
@@ -215,7 +215,7 @@ accessible table with check marks, crosses and values.
 }
 ```
 
-[Steps documentation](/docs/components/core/sections/steps)
+[Steps documentation](/components/steps)
 
 ## Announcement bar
 
@@ -235,7 +235,7 @@ using Osirion.Blazor.Core.Extensions;
 app.MapOsirionAnnouncements();
 ```
 
-[Announcement bar documentation](/docs/components/core/popups/announcement-bar)
+[Announcement bar documentation](/components/announcement-bar)
 
 ## Sitemap and feeds
 
@@ -252,7 +252,7 @@ app.MapOsirionFeeds(feeds =>
 });
 ```
 
-[Sitemap and feeds documentation](/docs/components/cms-web/core/feeds-and-sitemap)
+[Sitemap and feeds documentation](/components/feeds-and-sitemap)
 
 ## Plausible and Umami
 
@@ -274,7 +274,7 @@ at startup and honor the consent gate from 4.0. Render `<PlausibleTracker />` or
 }
 ```
 
-[Analytics documentation](/docs/components/analytics)
+[Analytics documentation](/docs/packages/analytics)
 
 ## Also in 4.0
 
@@ -293,5 +293,5 @@ The [changelog](https://github.com/demonjic/Osirion.Blazor/blob/master/CHANGELOG
 ## Related
 
 - [Osirion.Blazor 4.0: security hardening and Fluent UI v5](/blog/osirion-blazor-4-0-release)
-- [Content components](/docs/components/core/content)
+- [Content components](/components/content)
 - [Osirion.Blazor on NuGet](https://www.nuget.org/packages/Osirion.Blazor)

@@ -1,0 +1,14 @@
+@page "/{*path}"
+@inject NavigationManager Navigation
+
+@* Any address no other page claims. Under static SSR the router's not-found page renders only for a request that
+   reaches a page, so this catch-all route, the weakest of all, hands every other address to it with status 404. *@
+
+@code {
+    /// <summary>The address that matched nothing else.</summary>
+    [Parameter]
+    public string? Path { get; set; }
+
+    /// <inheritdoc/>
+    protected override void OnInitialized() => Navigation.NotFound();
+}

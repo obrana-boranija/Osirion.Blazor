@@ -137,6 +137,13 @@ public abstract class BaseContentRepository : RepositoryBase<ContentItem, string
 
     private Task RequestLoadAsync(bool forceRefresh, CancellationToken cancellationToken)
     {
+        // A caller that has already given up must not start or extend a load, and must see its cancellation even when a
+        // load has just finished: WaitAsync returns a completed task without looking at the token.
+        if (cancellationToken.IsCancellationRequested)
+        {
+            return Task.FromCanceled(cancellationToken);
+        }
+
         Task flight;
         lock (_loadGate)
         {

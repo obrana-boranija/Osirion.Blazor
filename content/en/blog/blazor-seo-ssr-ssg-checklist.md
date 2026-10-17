@@ -237,7 +237,7 @@ multilingual setup.
 
 ## Related
 
-- [SeoMetadataRenderer](/docs/components/cms-web/core/seo-metadata-renderer)
-- [Sitemap and feeds](/docs/components/cms-web/core/feeds-and-sitemap)
+- [SeoMetadataRenderer](/components/seo-metadata-renderer)
+- [Sitemap and feeds](/components/feeds-and-sitemap)
 - [Structuring content repositories](/blog/structuring-content-repositories)
 - [Performance tuning for content-heavy Blazor sites](/blog/performance-tuning-content-heavy-blazor-sites)
