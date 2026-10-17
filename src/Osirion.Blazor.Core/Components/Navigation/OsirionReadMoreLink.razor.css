@@ -5,7 +5,7 @@
     align-items: center;
     gap: var(--osirion-spacing-2, 0.5rem);
     text-decoration: none;
-    color: var(--osirion-action-primary, #007b31);
+    color: var(--osirion-link-color, var(--osirion-action-primary, #007b31));
     font-weight: var(--osirion-font-weight-medium, 500);
     line-height: var(--osirion-line-height-normal, 1.5);
     border-radius: var(--osirion-radius-sm, 0.25rem);
@@ -120,7 +120,7 @@
 }
 
 .osirion-read-more-external {
-    color: var(--osirion-action-primary, #007b31);
+    color: var(--osirion-link-color, var(--osirion-action-primary, #007b31));
 }
 
 .osirion-read-more-external:hover {
@@ -128,7 +128,7 @@
 }
 
 .osirion-read-more-download {
-    color: var(--osirion-action-primary, #007b31);
+    color: var(--osirion-link-color, var(--osirion-action-primary, #007b31));
 }
 
 .osirion-read-more-download:hover {
@@ -173,7 +173,7 @@
 
 /* Bootstrap stretched link should not use icon-link classes */
 .osirion-read-more-stretched.stretched-link {
-    color: var(--osirion-action-primary, #007b31);
+    color: var(--osirion-link-color, var(--osirion-action-primary, #007b31));
     text-decoration: none;
 }
 
@@ -276,27 +276,27 @@
 /* Dark mode support */
 @media (prefers-color-scheme: dark) {
     .osirion-read-more {
-        color: var(--osirion-action-primary, #22c55e);
+        color: var(--osirion-link-color, var(--osirion-action-primary, #22c55e));
     }
     
     .osirion-read-more:hover {
-        color: var(--osirion-action-primary-hover, #4ade80);
+        color: var(--osirion-link-hover-color, var(--osirion-action-primary-hover, #4ade80));
     }
     
     .osirion-read-more-external {
-        color: var(--osirion-action-primary, #22c55e);
+        color: var(--osirion-link-color, var(--osirion-action-primary, #22c55e));
     }
     
     .osirion-read-more-external:hover {
-        color: var(--osirion-action-primary-hover, #4ade80);
+        color: var(--osirion-link-hover-color, var(--osirion-action-primary-hover, #4ade80));
     }
     
     .osirion-read-more-download {
-        color: var(--osirion-action-primary, #22c55e);
+        color: var(--osirion-link-color, var(--osirion-action-primary, #22c55e));
     }
     
     .osirion-read-more-download:hover {
-        color: var(--osirion-action-primary-hover, #4ade80);
+        color: var(--osirion-link-hover-color, var(--osirion-action-primary-hover, #4ade80));
     }
     
     .osirion-read-more-plain {
@@ -309,10 +309,10 @@
 
     /* Dark mode stretched link */
     .osirion-read-more-stretched.stretched-link {
-        color: var(--osirion-action-primary, #22c55e);
+        color: var(--osirion-link-color, var(--osirion-action-primary, #22c55e));
     }
 
     .osirion-read-more-stretched.stretched-link:hover {
-        color: var(--osirion-action-primary-hover, #4ade80);
+        color: var(--osirion-link-hover-color, var(--osirion-action-primary-hover, #4ade80));
     }
 }

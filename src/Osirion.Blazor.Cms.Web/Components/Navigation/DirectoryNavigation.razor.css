@@ -41,7 +41,7 @@
 
     .osirion-directory-link.osirion-active {
         background-color: var(--osirion-background-secondary, #e0f2fe);
-        color: var(--osirion-action-primary, #0369a1);
+        color: var(--osirion-link-color, var(--osirion-action-primary, #0369a1));
     }
 
 .osirion-directory-count {
@@ -54,7 +54,7 @@
 
 .osirion-directory-link.osirion-active .osirion-directory-count {
     background-color: rgba(var(--osirion-action-primary-rgb, 3, 105, 161), 0.2);
-    color: var(--osirion-action-primary, #0369a1);
+    color: var(--osirion-link-color, var(--osirion-action-primary, #0369a1));
 }
 
 .osirion-subdirectory-list {

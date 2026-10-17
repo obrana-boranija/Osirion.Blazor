@@ -154,7 +154,7 @@
     display: flex;
     align-items: center;
     gap: var(--osirion-spacing-2, 0.5rem);
-    /*color: var(--osirion-action-primary-hover, #2563eb);*/
+    /*color: var(--osirion-link-hover-color, var(--osirion-action-primary-hover, #2563eb));*/
     text-decoration: none;
     font-weight: var(--osirion-font-weight-semibold, 600);
     transition: color var(--osirion-transition-duration-200, 0.2s) ease;
@@ -162,7 +162,7 @@
 
     .osirion-content-read-more:hover {
         text-decoration: underline;
-        /*color: var(--osirion-action-primary-hover, #1d4ed8);*/
+        /*color: var(--osirion-link-hover-color, var(--osirion-action-primary-hover, #1d4ed8));*/
     }
 
 .osirion-content-read-more-icon {

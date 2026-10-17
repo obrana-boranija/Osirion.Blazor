@@ -58,7 +58,7 @@ html.osirion-bootstrap-integration .osirion-footer[data-osirion-component-theme=
 }
 
 [data-osirion-component-theme] .osirion-footer-link:hover {
-    color: var(--osirion-action-primary) !important;
+    color: var(--osirion-link-color, var(--osirion-action-primary)) !important;
 }
 
 [data-osirion-component-theme] .osirion-footer-divider {
@@ -186,7 +186,7 @@ html.osirion-bootstrap-integration .osirion-footer[data-osirion-component-theme=
 }
 
 .osirion-footer-link:hover {
-    color: var(--osirion-action-primary);
+    color: var(--osirion-link-color, var(--osirion-action-primary));
 }
 
 .osirion-footer-link:focus {
@@ -202,7 +202,7 @@ html.osirion-bootstrap-integration .osirion-footer[data-osirion-component-theme=
 }
 
 .osirion-footer-bottom-link:hover {
-    color: var(--osirion-action-primary);
+    color: var(--osirion-link-color, var(--osirion-action-primary));
 }
 
 .osirion-footer-bottom-link:focus {

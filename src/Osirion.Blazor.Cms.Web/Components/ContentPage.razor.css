@@ -103,7 +103,7 @@
     }
 
         .osirion-content-breadcrumbs a:hover {
-            color: var(--osirion-action-primary, #2563eb);
+            color: var(--osirion-link-color, var(--osirion-action-primary, #2563eb));
             text-decoration: underline;
         }
 
@@ -403,7 +403,7 @@
     }
 
         .osirion-content-related-item-title a:hover {
-            color: var(--osirion-action-primary, #0369a1);
+            color: var(--osirion-link-color, var(--osirion-action-primary, #0369a1));
         }
 
 .osirion-content-related-date {

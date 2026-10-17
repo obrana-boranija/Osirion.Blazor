@@ -32,7 +32,7 @@
 }
 
     .osirion-breadcrumbs-link:hover {
-        color: var(--osirion-action-primary, #2563eb);
+        color: var(--osirion-link-color, var(--osirion-action-primary, #2563eb));
     }
 
 .osirion-breadcrumbs-current {
