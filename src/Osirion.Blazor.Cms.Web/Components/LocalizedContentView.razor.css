@@ -109,16 +109,6 @@
         margin: var(--osirion-spacing-4, 1rem) 0;
     }
 
-    .osirion-content-body a {
-        color: var(--osirion-link-color, var(--osirion-action-primary, #0369a1));
-        text-decoration: none;
-        transition: color var(--osirion-transition-duration-200, 0.2s) ease;
-    }
-
-        .osirion-content-body a:hover {
-            text-decoration: underline;
-            color: var(--osirion-link-hover-color, var(--osirion-action-primary-hover, #0284c7));
-        }
 
 .osirion-content-footer {
     border-top: var(--osirion-border-width, 1px) solid var(--osirion-border-color, #e5e7eb);
@@ -251,8 +241,7 @@
     .osirion-content-category,
     .osirion-content-tag,
     .osirion-content-previous,
-    .osirion-content-next,
-    .osirion-content-body a {
+    .osirion-content-next {
         transition: none;
     }
 

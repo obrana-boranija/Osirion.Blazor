@@ -7,7 +7,7 @@ permalink: /components/cookie-consent
 description: A cookie consent banner that works without script, records the visitor's choice per category in a cookie and can gate analytics trackers.
 author: Dejan Demonjić
 date: 2025-09-03
-last_modified: 2026-10-11
+last_modified: 2026-10-17
 featured_image: /assets/images/blazor-cover.png
 categories:
 - Components
@@ -31,7 +31,7 @@ redirect_from:
 custom_fields:
   group: forms-and-feedback
 seo_properties:
-  title: 'OsirionCookieConsent: cookie banner for Blazor static SSR | Osirion.Blazor'
+  title: 'OsirionCookieConsent: cookie banner for Blazor'
   description: 'A Blazor cookie consent banner that works without script, stores consent per category and can gate analytics trackers.'
   image: /assets/images/blazor-cover.png
   canonical: 'https://getosirion.com/components/cookie-consent'
@@ -52,9 +52,18 @@ seo_properties:
 
 # OsirionCookieConsent
 
-`OsirionCookieConsent` shows a cookie banner until the visitor accepts, declines or saves their own choice. The
+`OsirionCookieConsent` shows a fixed cookie banner until the visitor accepts, declines or saves their own choice. The
 buttons post a form to an endpoint in your app, which stores the decision in a cookie and redirects back, so the
 banner works under static SSR without script. Analytics trackers can then wait for that consent.
+
+Package `Osirion.Blazor.Core`, namespace `Osirion.Blazor.Components`. [Source on GitHub](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Core/Components/Popups/OsirionCookieConsent.razor).
+
+## Working example
+
+There is no live demo on this page, because the banner posts to an endpoint of the site that serves it and sets a
+real cookie there, and a demo would change the consent state of every page. This site runs the component itself: the
+banner at the bottom of the window on a first visit is `<OsirionCookieConsent />` with its defaults. Choose Customize
+there to see the category panel.
 
 ## Setup
 
@@ -106,25 +115,32 @@ A banner with your own text and categories:
 
 ## Parameters
 
+<!-- osirion:parameters OsirionCookieConsent -->
+
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `Title` | `string` | `"Cookie Consent"` | Banner heading (`h3`) and the region's accessible name. |
-| `Message` | `string` | default notice | Banner text, rendered as encoded text. |
-| `PolicyLink` | `string?` | `null` | Address of your privacy or cookie policy; no link when empty. |
-| `PolicyLinkText` | `string` | `"Learn more"` | Text of that link. |
-| `AcceptButtonText` | `string` | `"Accept All"` | Accept button text. |
-| `DeclineButtonText` | `string` | `"Decline"` | Decline button text. |
-| `ShowDeclineButton` | `bool` | `true` | Shows the decline button. |
-| `CustomizeButtonText` | `string` | `"Customize"` | Customize button text. |
-| `ShowCustomizeButton` | `bool` | `true` | Shows the customize button. |
-| `ShowCustomizationPanel` | `bool` | `true` | Shows the category checkboxes after the visitor chose Customize. |
-| `CustomizePanelTitle` | `string` | `"Cookie Preferences"` | Heading (`h4`) of the category panel. |
-| `SavePreferencesButtonText` | `string` | `"Save Preferences"` | Button that saves the checked categories. |
-| `Categories` | `IReadOnlyList<CookieCategory>` | necessary, analytics, marketing, preferences | Categories in the panel. |
-| `Icon` | `RenderFragment?` | `null` | Icon next to the text. |
-| `Position` | `string` | `"bottom"` | Adds `osirion-cookie-consent-{Position}`; the stylesheet supports `bottom` and `top`. |
-| `ConsentExpiryDays` | `int` | `365` | Lifetime of the consent cookie, 1 to 3650 days. |
-| `ConsentEndpoint` | `string` | `"/api/cookie-consent"` | Where the form posts; match the pattern given to `MapOsirionCookieConsent`. |
+| `Title` | `string` | `"Cookie Consent"` | The banner heading (`h3`), which is also the accessible name of the banner region. |
+| `Message` | `string` | `"We use cookies to improve your experience on our website. By continuing to browse, you agree to our use of cookies."` | The banner text, rendered as encoded text. |
+| `AcceptButtonText` | `string` | `"Accept All"` | The text of the button that accepts every category. |
+| `DeclineButtonText` | `string` | `"Decline"` | The text of the button that declines every optional category. |
+| `CustomizeButtonText` | `string` | `"Customize"` | The text of the button that opens the category choices. |
+| `SavePreferencesButtonText` | `string` | `"Save Preferences"` | The text of the button that saves the ticked categories. |
+| `ShowDeclineButton` | `bool` | `true` | Whether the decline button is shown. |
+| `ShowCustomizeButton` | `bool` | `true` | Whether the customize button is shown. |
+| `ShowCustomizationPanel` | `bool` | `true` | Whether the category checkboxes are shown once the visitor chose to customize. When it is `false`, the customize button reloads the page without any choices. |
+| `CustomizePanelTitle` | `string` | `"Cookie Preferences"` | The heading (`h4`) of the category panel. |
+| `PolicyLink` | `string?` | `null` | The address of your privacy or cookie policy, shown as a link after the message. Null or empty, the default, shows no link. |
+| `PolicyLinkText` | `string` | `"Learn more"` | The text of the policy link. |
+| `Icon` | `RenderFragment?` | `null` | The markup shown beside the text. Null, the default, shows no icon. |
+| `Categories` | `IReadOnlyList<CookieCategory>` | - | The categories shown in the panel. Defaults to `necessary` (required), `analytics`, `marketing` and `preferences`. Accept All records only those four IDs, so a custom ID is recorded only when the visitor ticks it in the panel. |
+| `ConsentEndpoint` | `string` | `"/api/cookie-consent"` | Where the form posts. Defaults to `/api/cookie-consent`, the pattern `MapOsirionCookieConsent` maps; change it only together with that call. |
+| `Position` | `string` | `"bottom"` | The banner position, added as the class `osirion-cookie-consent-{Position}`. The stylesheet defines `bottom` (the default) and `top`. |
+| `ConsentExpiryDays` | `int` | `365` | The consent expiry in days. The value is posted with the form and applied to the consent cookie by the consent endpoint, which accepts 1 to 3650 days and uses 365 for anything else. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
+| `Style` | `string?` | `null` | An inline style for the component's root element. |
+
+<!-- /osirion:parameters -->
 
 `CookieCategory` has `Id`, `Name`, `Description`, `IsRequired` (always on, checkbox disabled) and `IsEnabled`
 (checked by default). `Class` goes on the banner element; unmatched attributes go on the `form`.
@@ -135,17 +151,18 @@ A banner with your own text and categories:
   same page, and the banner is no longer rendered. Customize redirects to the page with `?customize-cookies=true`,
   where the banner shows the category checkboxes; Save Preferences records the checked ones.
 - **What is recorded.** Accept sets `necessary`, `analytics`, `marketing` and `preferences` to true; Decline sets
-  `necessary` to true and the other three to false. Save Preferences records `necessary` plus each category the visitor checked; unchecked ones are left
-  out, which counts as no consent. Custom category IDs are therefore recorded only through the panel.
+  `necessary` to true and the other three to false. Save Preferences records `necessary` plus each category the
+  visitor checked; unchecked ones are left out, which counts as no consent. Custom category IDs are therefore
+  recorded only through the panel.
 - **The cookie.** `osirion_cookie_consent` holds JSON with `Version`, `ConsentDate`, `ConsentType` and
   `Categories`. It is `HttpOnly`, `Secure` and `SameSite=Lax`, so serve the site over HTTPS. Script cannot read it;
   decisions are made on the server.
 - **Security.** The form carries an antiforgery token. A post without a valid token gets 400 and records nothing,
   and the endpoint redirects only to local paths.
 - **Rendering.** The component reads the cookie from the current request. Without an HTTP request (an interactive
-  render with no `HttpContext`), it renders nothing.
-- **Accessibility.** The banner is a region named by its title, so its text is inside a landmark. Available from
-  4.1. The buttons are real `button` elements in a form, usable with the keyboard.
+  render with no `HttpContext`), it renders nothing. The banner has no interactive mode.
+- **Accessibility.** The banner is a region named by its title, so its text is inside a landmark. The buttons are
+  real `button` elements in a form, usable with the keyboard.
 
 ## Reading consent on the server
 
@@ -196,14 +213,14 @@ denied. `RequireConsent(options => options.Category = "statistics")` uses anothe
 
 The form has `osirion-cookie-consent-form`; the banner has `osirion-cookie-consent` and
 `osirion-cookie-consent-bottom` or `osirion-cookie-consent-top`, plus `osirion-cookie-consent-customizing` while the
-panel is open. Inner parts include `osirion-cookie-consent-title`, `osirion-cookie-consent-description`,
-`osirion-cookie-consent-link`, `osirion-cookie-consent-actions`, `osirion-cookie-consent-customize` and
-`osirion-cookie-consent-category`. Colors come from the theme tokens (`--osirion-text-primary`,
-`--osirion-border-color`, `--osirion-action-primary` and others), and the buttons use the active CSS framework's
-classes.
+panel is open. The banner is `position: fixed` across the full width at the chosen edge. Inner parts include
+`osirion-cookie-consent-title`, `osirion-cookie-consent-description`, `osirion-cookie-consent-link`,
+`osirion-cookie-consent-actions`, `osirion-cookie-consent-customize` and `osirion-cookie-consent-category`. Colors
+come from the theme tokens (`--osirion-text-primary`, `--osirion-border-color`, `--osirion-action-primary` and
+others), and the buttons use the active CSS framework's classes.
 
 ## Related
 
 - [OsirionAnnouncementBar](/components/announcement-bar)
-- [Popups overview](/components/forms-and-feedback)
+- [Forms and feedback](/components/forms-and-feedback)
 - [Analytics](/docs/packages/analytics)

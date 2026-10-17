@@ -7,7 +7,7 @@ permalink: /components/contact-form
 description: A contact form that validates on the server, blocks simple bots with a honeypot and sends mail through SMTP, SendGrid or Infobip, without script.
 author: Dejan Demonjić
 date: 2025-09-03
-last_modified: 2026-10-11
+last_modified: 2026-10-17
 featured_image: /assets/images/blazor-cover.png
 categories:
 - Components
@@ -29,7 +29,7 @@ redirect_from:
 custom_fields:
   group: forms-and-feedback
 seo_properties:
-  title: 'OsirionContactForm: Blazor contact form with email delivery | Osirion.Blazor'
+  title: 'OsirionContactForm: contact form for Blazor'
   description: 'A Blazor contact form for static SSR: server validation, honeypot spam check and email delivery through SMTP, SendGrid or Infobip.'
   image: /assets/images/blazor-cover.png
   canonical: 'https://getosirion.com/components/contact-form'
@@ -53,6 +53,14 @@ seo_properties:
 `OsirionContactForm` renders a name, email, subject and message form with a privacy checkbox and an optional
 newsletter checkbox. It validates on the server, posts as a normal HTML form under static SSR, and either sends the
 message through the built-in email service or hands it to your own callback.
+
+Package `Osirion.Blazor.Core`, namespace `Osirion.Blazor.Components`. [Source on GitHub](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Core/Components/Forms/OsirionContactForm.razor).
+
+```demo
+contact-form
+```
+
+The demo validates like the real form, but its `OnSubmit` handler does nothing, so nothing is sent or stored.
 
 ## Usage
 
@@ -98,6 +106,9 @@ To have the library send the message by email, register the email service (next 
 
 When `ContactInfo` is set, an [OsirionContactInfoSection](/components/contact-info-section) is
 shown next to the form (or below it with `SideBySideLayout="false"`). Without it, no contact details are rendered.
+
+A form with neither `OnSubmit` nor `UseBuiltInEmailService` has nothing to deliver the message with. It does not
+claim success: it logs a warning and shows `ErrorMessage`, so a message is never lost silently.
 
 ## Email delivery
 
@@ -160,36 +171,46 @@ seconds.
 
 ## Parameters
 
+<!-- osirion:parameters OsirionContactForm -->
+
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `Id` | `string` | `"contact-form"` | Required. Form name and element id prefix; use a unique value per form on a page. |
-| `FormTitle` | `string` | `"Write us"` | Heading (`h2`) above the form; empty hides it. |
-| `FormDescription` | `string` | empty | Text below the title. |
-| `NamePlaceholder` | `string` | `"Your name"` | Placeholder of the name field. |
-| `EmailPlaceholder` | `string` | `"Your email address"` | Placeholder of the email field. |
-| `SubjectPlaceholder` | `string` | `"Subject"` | Placeholder of the subject field. |
-| `MessagePlaceholder` | `string` | `"Your message"` | Placeholder of the message field. |
-| `MessageRows` | `int` | `6` | Rows of the message textarea. |
-| `SubmitButtonText` | `string` | `"Send Message"` | Submit button text. |
-| `ShowResetButton` | `bool` | `false` | Shows a reset button. |
-| `ResetButtonText` | `string` | `"Reset"` | Reset button text. |
-| `ShowRequiredIndicators` | `bool` | `true` | Shows `*` after required labels. |
-| `PrivacyPolicyText` | `string?` | text linking to `/privacy-policy` | Label of the privacy checkbox, rendered as HTML. |
-| `ShowSubscribeOption` | `bool` | `true` | Shows the newsletter checkbox. |
-| `SubscribeText` | `string` | `"I would like to receive updates and newsletters"` | Label of the newsletter checkbox. |
-| `ShowContactInformation` | `bool` | `true` | Shows the contact information section when `ContactInfo` is set. |
-| `ContactInfoTitle` | `string` | `"Contact information"` | Title of that section. |
-| `ContactInfo` | `ContactInformation?` | `null` | Address, phone, email, website and message to show. |
-| `UseBuiltInEmailService` | `bool` | `false` | Sends the message through the registered email service. |
-| `OnSubmit` | `EventCallback<ContactFormModel>` | none | Called with a valid, non-spam submission; with the built-in service, after a successful send. |
-| `SuccessMessage` | `string` | thank-you text | Shown after a successful submission. |
-| `ErrorMessage` | `string` | error text | Shown when sending or your callback fails. |
-| `SpamMessage` | `string` | spam text | Shown when the honeypot field was filled. |
-| `SideBySideLayout` | `bool` | `true` | Form and contact information side by side; `false` stacks them. |
-| `UseDarkTheme` | `bool` | `false` | Uses the form's dark palette instead of the theme colors. |
+| `Id` | `string` | `"contact-form"` | The form name and the prefix of every field id, such as `contact-name-contact`. Required; use a unique value for each form on a page. |
+| `FormTitle` | `string` | `"Write us"` | The heading (`h2`) above the form. An empty value hides it. |
+| `FormDescription` | `string` | `""` | The text under the heading. Empty by default, which renders nothing. |
+| `NamePlaceholder` | `string` | `"Your name"` | The placeholder of the name field. |
+| `EmailPlaceholder` | `string` | `"Your email address"` | The placeholder of the email field. |
+| `SubjectPlaceholder` | `string` | `"Subject"` | The placeholder of the subject field. |
+| `MessagePlaceholder` | `string` | `"Your message"` | The placeholder of the message field. |
+| `MessageRows` | `int` | `6` | The number of rows of the message textarea. |
+| `SubmitButtonText` | `string` | `"Send Message"` | The text of the submit button. |
+| `SubmittingText` | `string` | `"Sending..."` | A text for the submit button while sending. Not used by the current markup. |
+| `ShowResetButton` | `bool` | `false` | Whether a reset button, which clears the fields in the browser, is shown next to the submit button. |
+| `ResetButtonText` | `string` | `"Reset"` | The text of the reset button. |
+| `ShowRequiredIndicators` | `bool` | `true` | Whether a `*` follows the label of each required field and of the privacy checkbox. |
+| `PrivacyPolicyText` | `string?` | `"I agree to the <a href="/privacy-policy" target="_blank">privacy policy</a>"` | The label of the privacy checkbox, rendered as raw HTML, so pass only text you wrote. The default text links to `/privacy-policy`. The checkbox is left out when the value is null or empty, but the model still requires it to be ticked, so such a form can never pass validation. |
+| `ShowSubscribeOption` | `bool` | `true` | Whether the newsletter checkbox is shown. Its value reaches your code as `ContactFormModel.SubscribeToUpdates`. |
+| `SubscribeText` | `string` | `"I would like to receive updates and newsletters"` | The label of the newsletter checkbox. |
+| `ShowContactInformation` | `bool` | `true` | Whether the contact information section is shown when `ContactInfo` is set. |
+| `ContactInfoTitle` | `string` | `"Contact information"` | The title of the contact information section. |
+| `ContactInfo` | `ContactInformation?` | `null` | The address, phone, email, website and message shown beside or below the form. When it is `null`, which is the default, no contact information section is rendered; the form never invents placeholder details. |
+| `OnSubmit` | `EventCallback<ContactFormModel>` | - | The callback that receives the validated message. It runs for a submission that is valid and whose honeypot field is empty. With `UseBuiltInEmailService` it runs after the email was sent; without it, it is the only delivery. When it throws, `ErrorMessage` is shown. Without it, and without `UseBuiltInEmailService`, nothing can deliver the message, so the form reports an error. |
+| `OnReset` | `EventCallback` | - | A callback for a form reset. Not used by the current markup. |
+| `OnValidationFailed` | `EventCallback<EditContext>` | - | A callback for failed validation. Not used by the current markup. |
+| `SuccessMessage` | `string` | `"Thank you! Your message has been sent successfully. We'll get back to you soon."` | The message shown after a successful submission. |
+| `ErrorMessage` | `string` | `"Sorry, there was an error sending your message. Please try again later."` | The message shown when sending fails, when `OnSubmit` throws, or when nothing can deliver the message. |
+| `SpamMessage` | `string` | `"Your submission appears to be spam and has been blocked."` | The message shown when the hidden honeypot field was filled. Nothing is sent and `OnSubmit` is not called. |
+| `UseBuiltInEmailService` | `bool` | `false` | Whether the message is sent through the email service registered with `AddOsirion` or `AddOsirionEmailServices` (SMTP, SendGrid or Infobip). When the service is not registered, the form logs a warning and shows `ErrorMessage`. |
+| `SideBySideLayout` | `bool` | `true` | Whether the contact information sits beside the form (`true`, the default) or below it. |
+| `UseDarkTheme` | `bool` | `false` | Whether the form uses its dark palette instead of the theme colors. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
+| `Style` | `string?` | `null` | An inline style for the component's root element. |
 
-`Class`, `Style` and unmatched attributes from `OsirionComponentBase` go on the outer element. `SubmittingText`,
-`OnReset` and `OnValidationFailed` are declared but not used by the current markup.
+<!-- /osirion:parameters -->
+
+`ContactFormModel`, which `OnSubmit` receives, has `Name`, `Email`, `Subject`, `Message`, `AgreeToPrivacyPolicy`,
+`SubscribeToUpdates` and the honeypot field `Website`.
 
 ## Behavior
 
@@ -199,9 +220,13 @@ seconds.
 - **Validation** comes from data annotations on `ContactFormModel`: a name up to 100 characters, a valid email up to
   255, a subject up to 200, a message of 10 to 5,000 characters, and a ticked privacy checkbox.
 - **Spam.** A hidden `Website` field acts as a honeypot. When a bot fills it, nothing is sent, `OnSubmit` is not
-  called and `SpamMessage` is shown. A missing or failing email service shows `ErrorMessage`, never the spam message.
-- **Without the email service.** With `UseBuiltInEmailService="true"` and no email registration, the form logs a
-  warning and shows `ErrorMessage`.
+  called and `SpamMessage` is shown.
+- **When nothing can deliver the message.** The form reports `ErrorMessage`, never success and never the spam
+  message, in two cases: neither `OnSubmit` nor `UseBuiltInEmailService` is set, or `UseBuiltInEmailService` is
+  `true` and no email service is registered. Both log a warning. A failed send, or an exception from `OnSubmit`,
+  shows `ErrorMessage` too and is logged as an error.
+- **Both delivery paths.** With `UseBuiltInEmailService="true"`, `OnSubmit` is called only after the email was sent,
+  so you can also log or store the message.
 - **Accessibility.** Every field has a `label`, and each input points to its validation message with
   `aria-describedby`. Status icons are hidden from assistive technology; the message text carries the meaning.
 
@@ -235,6 +260,7 @@ and the status message use the active framework's classes.
 
 ## Related
 
-- [Forms overview](/components/forms-and-feedback)
+- [Forms and feedback](/components/forms-and-feedback)
 - [OsirionContactInfoSection](/components/contact-info-section)
+- [OsirionSubscriptionCard](/components/subscription-card)
 - [OsirionFooter](/components/footer)

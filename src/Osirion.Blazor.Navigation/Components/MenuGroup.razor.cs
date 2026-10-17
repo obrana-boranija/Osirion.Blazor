@@ -3,63 +3,69 @@ using Osirion.Blazor.Navigation.Internal;
 
 namespace Osirion.Blazor.Navigation.Components;
 
-/// <summary>Defines the MenuGroup type.</summary>
+/// <summary>
+/// Groups menu items in a submenu column, with an optional label, description and footer link. Use it inside a
+/// <c>Mega</c> submenu to build its columns.
+/// </summary>
 public partial class MenuGroup
 {
     /// <summary>
-    /// Gets or sets the group label.
+    /// Gets or sets the heading of the group. Without it the group has no heading and the items are not labelled.
     /// </summary>
     [Parameter]
     public string? Label { get; set; }
 
     /// <summary>
-    /// Gets or sets optional supporting text rendered below the label.
-    /// Used by mega menus to describe the column, Personio-style.
+    /// Gets or sets supporting text under the label, which describes the column in a mega submenu.
     /// </summary>
     [Parameter]
     public string? Description { get; set; }
 
     /// <summary>
-    /// Gets or sets optional footer link text (for example "Explore Core HR").
-    /// Rendered at the bottom of the group when <see cref="FooterHref"/> is also set.
+    /// Gets or sets the text of the footer link, for example <c>All features</c>. The link is rendered only when
+    /// <see cref="FooterHref"/> also gives a safe address.
     /// </summary>
     [Parameter]
     public string? FooterText { get; set; }
 
     /// <summary>
-    /// Gets or sets the destination of the footer link.
+    /// Gets or sets the address of the footer link. A scheme other than a relative URL, <c>http</c>, <c>https</c>,
+    /// <c>mailto</c> or <c>tel</c> leaves the footer link out.
     /// </summary>
     [Parameter]
     public string? FooterHref { get; set; }
 
     /// <summary>
-    /// Gets or sets how to open the footer link destination.
+    /// Gets or sets the <c>target</c> attribute of the footer link. <c>_blank</c> also adds
+    /// <c>rel="noopener noreferrer"</c>.
     /// </summary>
     [Parameter]
     public string? FooterTarget { get; set; }
 
     /// <summary>
-    /// Gets or sets whether the group is collapsible.
-    /// Only applies to vertical menus.
+    /// Gets or sets whether the group is styled as collapsible: its label gets a chevron and, with
+    /// <see cref="Expanded"/> off, its items are hidden. Nothing in the package opens a collapsed group again, so
+    /// leave it off unless your own script toggles the <c>osirion-menu-group-expanded</c> class.
     /// </summary>
     [Parameter]
     public bool Collapsible { get; set; }
 
     /// <summary>
-    /// Gets or sets whether the group is expanded by default.
-    /// Only applies when Collapsible is true.
+    /// Gets or sets whether a collapsible group shows its items. It has no effect unless <see cref="Collapsible"/> is
+    /// on.
     /// </summary>
     [Parameter]
     public bool Expanded { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the menu items to be displayed.
+    /// Gets or sets the items of the group, rendered in a <c>role="group"</c> container.
     /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
-    /// Gets or sets the group identifier.
+    /// Gets or sets the id of the group; the ids of its label and item container derive from it. Without it a unique
+    /// id is generated.
     /// </summary>
     [Parameter]
     public string? Id { get; set; }
