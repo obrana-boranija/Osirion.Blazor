@@ -5,7 +5,7 @@ permalink: /components/content-view
 description: "Render one content item as an article: title, author, date, reading time, featured image, sanitized body, categories, tags and previous and next links."
 author: "Osirion Team"
 date: 2025-01-26
-last_modified: 2026-10-11
+last_modified: 2026-10-17
 featured_image: /assets/images/blazor-cover.png
 categories:
 - Components
@@ -16,13 +16,33 @@ tags:
 - cms
 - article
 - sanitization
+- static-ssr
 slug: content-view
+lang: en
 layout: "component"
 published: true
 redirect_from:
 - /docs/components/cms-web/core/content-view
 custom_fields:
   group: cms-pages
+seo_properties:
+  title: 'ContentView: one content item as an article for Blazor'
+  description: 'ContentView renders one CMS content item as an article with a header, a sanitized body, categories, tags and previous and next links.'
+  image: /assets/images/blazor-cover.png
+  canonical: 'https://getosirion.com/components/content-view'
+  lang: en
+  robots: index, follow
+  og_title: 'ContentView - Osirion.Blazor'
+  og_description: 'One content item as an article: header, sanitized body, categories, tags and previous and next links, rendered without script.'
+  og_image_url: '/assets/images/blazor-cover.png'
+  og_type: article
+  json_ld: ''
+  type: Article
+  twitter_card: summary_large_image
+  twitter_title: 'ContentView - Osirion.Blazor'
+  twitter_description: 'One content item as an article: header, sanitized body, categories, tags and previous and next links.'
+  twitter_image_url: '/assets/images/blazor-cover.png'
+  meta_tags: {}
 ---
 
 # ContentView
@@ -30,6 +50,16 @@ custom_fields:
 `ContentView` renders one content item as an article: a header with the title, author, date, reading time, tags and
 featured image, the sanitized HTML body, and a footer with categories, tags and optional previous and next links. Use
 it when you build your own page around a single item.
+
+Package `Osirion.Blazor.Cms.Web`, namespace `Osirion.Blazor.Cms.Web.Components`. [Source on GitHub](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Cms.Web/Components/ContentView.razor).
+
+```demo
+content-view
+```
+
+The demo loads this site's own page for the 1.5 release notes and shows it in a scrolling frame. The neighbors come
+from the same folder, newest first, and the formatters point the links at this site's routes. `ContentView` writes
+the title as an `h1`, so the demo adds a second `h1` to this documentation page.
 
 ## Usage
 
@@ -53,22 +83,28 @@ Or let the component load it by the item's source path (`ContentItem.Path`, as t
 
 ## Parameters
 
+<!-- osirion:parameters ContentView -->
+
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `Item` | `ContentItem?` | `null` | The item to render. An item set by the parent is never replaced by `Path` loading. |
-| `Path` | `string` | `""` | Source path to load from the default provider when `Item` is not set. |
-| `ShowNavigationLinks` | `bool` | `false` | Shows previous and next links. When the component loads by `Path`, it looks the neighbors up with a directory query built from the folder part of `Path`, newest first. |
-| `PreviousItem` | `ContentItem?` | `null` | Item for the previous link. |
-| `NextItem` | `ContentItem?` | `null` | Item for the next link. |
-| `CategoryUrlFormatter` | `Func<string, string>?` | `null` | Builds category links; default `/category/{slug}`. |
-| `TagUrlFormatter` | `Func<string, string>?` | `null` | Builds tag links; default `/tag/{slug}`. |
-| `AuthorUrlFormatter` | `Func<string, string>?` | `null` | When set, the author's name links to the returned URL with `rel="author"`. Available from 4.1. |
-| `ContentUrlFormatter` | `Func<ContentItem, string>?` | `null` | Builds previous and next links; default `/{item.Path}`. |
-| `LoadingText` | `string` | `"Loading content..."` | Shown while loading, in interactive render modes only. |
-| `NotFoundText` | `string` | `"Content not found."` | Message when no item is found. |
-| `Class` | `string?` | `null` | Extra CSS classes on the root element. |
+| `Path` | `string` | `""` | The source path of the item to load from the default provider (`ContentItem.Path`, for example `blog/getting-started.md`) while `Item` is not set. A null or white-space path loads nothing. |
+| `LoadingText` | `string` | `"Loading content..."` | The text shown while the item loads, in interactive render modes only. A statically rendered response is sent once the item has loaded. |
+| `NotFoundText` | `string` | `"Content not found."` | The message of the not-found block, shown under a fixed `Content Not Found` heading and above a link back to `/`. The block appears when no item is found, when loading fails (the error is logged) and when neither `Item` nor `Path` is set. |
+| `CategoryUrlFormatter` | `Func<string, string>?` | `null` | Builds a category link from the category name. Without it the link is `/category/{slug}`. |
+| `TagUrlFormatter` | `Func<string, string>?` | `null` | Builds a tag link from the tag name. Without it the link is `/tag/{slug}`. |
+| `AuthorUrlFormatter` | `Func<string, string>?` | `null` | How the author's page URL is built from the author's name. When set, the author's name links there with `rel="author"`. |
+| `ContentUrlFormatter` | `Func<ContentItem, string>?` | `null` | Builds the links of the previous and next items from the item. Without it a link is `/{item.Path}`, the source path, which is usually not the public address, so set it whenever navigation links are shown. |
+| `Item` | `ContentItem?` | `null` | The item to render: header, sanitized body, categories, tags and navigation. An item the parent sets is never replaced by loading by `Path`. |
+| `PreviousItem` | `ContentItem?` | `null` | The item the previous link points to. Loading by `Path` with `ShowNavigationLinks` on fills it, and clears what it filled when the path changes; a value you set is left alone until then. |
+| `NextItem` | `ContentItem?` | `null` | The item the next link points to. See `PreviousItem`. |
+| `ShowNavigationLinks` | `bool` | `false` | Whether the footer shows previous and next links. When the component loads by `Path` it also looks the neighbors up with a directory query built from the folder part of the path, newest first. For an item you pass in `Item`, set `PreviousItem` and `NextItem` yourself. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
+| `Style` | `string?` | `null` | An inline style for the component's root element. |
 
-`Style`, `Theme` and unmatched attributes from the base class are not written to the markup.
+<!-- /osirion:parameters -->
+
+`AuthorUrlFormatter` is available from 4.1. The `Theme` and `Style` rows come from the base class. `ContentView` does not write them, or unmatched attributes, so only `Class` reaches the root element.
 
 The default previous and next link is the item's source path, which usually differs from its public URL. When you
 show navigation links, set `ContentUrlFormatter`, for example `item => "/" + item.Url`.
@@ -79,13 +115,15 @@ show navigation links, set `ContentUrlFormatter`, for example `item => "/" + ite
   in interactive render modes. When `Path` changes, the previous item and the neighbors the component loaded are
   cleared before the new one loads, so an old article never shows under a new address.
 - **Not found.** Without an item the component renders a "Content Not Found" heading, `NotFoundText` and a link
-  back to `/`.
+  back to `/`. The heading and the link text are fixed. The response keeps its status code.
 - **Security.** The body is written as HTML after it passes through the registered `IHtmlContentSanitizer` (the
   default allow-list when none is registered), even when the item comes from a custom provider or from your code.
   Script, event handler attributes, `javascript:`, `vbscript:` and `data:` URLs, forms, iframes, inline SVG and
   inline styles (apart from table cell alignment) are removed. The result is cached until the content changes. To allow a custom element, register it with
   `AddOsirionHtmlSanitizer(options => options.AllowElement("chart", "type", "data"))`. Title, author and tags are
   encoded as text.
+- **Headings.** The title is the page's `h1`. The body's own leading `h1` (the `# Title` line of the Markdown) is left
+  out, so the title appears once; a top-level heading further down is kept.
 - **Images.** The featured image uses the item title as its `alt` text. From 4.0 it loads eagerly with
   `fetchpriority="high"` and async decoding, because it is usually the largest element on an article page.
 - **Dates.** The date is `DateCreated` (the `date` front matter), formatted as `MMM d, yyyy`.
@@ -106,6 +144,7 @@ come from theme tokens such as `--osirion-text-primary`, `--osirion-text-seconda
 
 ## Related
 
+- [CMS pages](/components/cms-pages): the group overview
 - [LocalizedContentView](/components/localized-content-view): the same with translation links
 - [ContentRenderer](/components/content-renderer): the body only, with code highlighting
 - [ContentPage](/components/content-page): a full page layout around an item

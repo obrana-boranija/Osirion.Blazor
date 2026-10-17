@@ -1,0 +1,62 @@
+@using Osirion.Blazor.Cms.Domain.Entities
+@using Osirion.Blazor.Cms.Domain.Enums
+@using Osirion.Blazor.Cms.Domain.Repositories
+@using Osirion.Blazor.Cms.Domain.Services
+@using Osirion.Blazor.Cms.Web.Components
+@inject IContentProviderManager ContentProviders
+
+@* The item is a page of this site's own content. The previous and next items come from the same folder, newest first,
+   and the formatters point the links at this site's routes: the defaults build links from the source path. *@
+@if (item is not null)
+{
+    <div style="max-height: 28rem; overflow: auto; padding: 1rem; border: 1px solid var(--osirion-border-color, #d1d5db); border-radius: 0.5rem;"
+         tabindex="0" role="region" aria-label="The release notes page in a ContentView">
+        <ContentView Item="@item"
+                     PreviousItem="@previous"
+                     NextItem="@next"
+                     ShowNavigationLinks="true"
+                     ContentUrlFormatter="@(neighbor => "/" + neighbor.Url)"
+                     CategoryUrlFormatter="@(category => "/category/" + Slug(category))"
+                     TagUrlFormatter="@(tag => "/tag/" + Slug(tag))" />
+    </div>
+}
+else
+{
+    <p>The sample page was not found in the content provider.</p>
+}
+
+@code {
+    private ContentItem? item;
+    private ContentItem? previous;
+    private ContentItem? next;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var provider = ContentProviders.GetDefaultProvider();
+        if (provider is null)
+        {
+            return;
+        }
+
+        var current = await provider.GetItemByUrlAsync("blog/osirion-blazor-v1-5-release-notes");
+        item = current;
+        if (current is null)
+        {
+            return;
+        }
+
+        var siblings = await provider.GetItemsByQueryAsync(new ContentQuery
+        {
+            Directory = current.Directory?.Path,
+            Locale = current.Locale,
+            SortBy = SortField.Date,
+            SortDirection = SortDirection.Descending
+        }) ?? [];
+
+        var index = siblings.ToList().FindIndex(sibling => sibling.Path == current.Path);
+        previous = index > 0 ? siblings[index - 1] : null;
+        next = index >= 0 && index < siblings.Count - 1 ? siblings[index + 1] : null;
+    }
+
+    private static string Slug(string name) => Uri.EscapeDataString(name.Trim().ToLowerInvariant().Replace(' ', '-'));
+}
