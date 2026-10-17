@@ -134,6 +134,23 @@ public class ShippedStylesheetTests
         linkSelectors.ShouldAllBe(selector => selector.Contains(":not(.osirion-content-demo-preview a)", StringComparison.Ordinal));
     }
 
+    // Fails before the fix: two seconds after a copy the script set the label to "Copy code to clipboard", so a screen
+    // reader lost the language the markup gave it ("Copy C# code to clipboard").
+    [Theory]
+    [InlineData("osirion-copy-button.js")]
+    [InlineData("osirion-copy-button.es5.js")]
+    [InlineData("osirion-copy-button.es5.min.js")]
+    public void CopyButtonScript_RestoresTheLabelItFound(string file)
+    {
+        // Act: the renderer loads the es5 minified build, so all three builds are held to it
+        var script = File.ReadAllText(Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(CoreCss(file)))!, "js", file));
+
+        // Assert
+        script.ShouldContain("getAttribute(", Case.Sensitive);
+        script.ShouldContain("aria-label", Case.Sensitive);
+        script.ShouldNotContain("Copy code to clipboard");
+    }
+
     private static string Squash(string css) => System.Text.RegularExpressions.Regex.Replace(
         System.Text.RegularExpressions.Regex.Replace(css, @"/\*.*?\*/", string.Empty, System.Text.RegularExpressions.RegexOptions.Singleline),
         @"\s+",

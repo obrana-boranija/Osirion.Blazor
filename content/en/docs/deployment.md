@@ -98,11 +98,10 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 ```
 
-Several things in Osirion read the request's scheme and host. The theme and palette cookies and the announcement
-dismissal cookie are marked `Secure` only when `Request.IsHttps` is true. The sitemap and feeds build their addresses
-from the request when no public address is configured. Osirion does not configure forwarded headers itself, so a proxy
-that ends TLS and forwards plain HTTP makes the app see `http`: the cookies lose `Secure`, and the sitemap lists
-`http://` addresses.
+The sitemap and feeds build their addresses from the request's scheme and host when no public address is configured.
+Osirion does not configure forwarded headers itself, so a proxy that ends TLS and forwards plain HTTP makes the app
+see `http`, and the sitemap lists `http://` addresses. The cookies the server sets are always `Secure`, whatever
+scheme the app sees.
 
 If a proxy terminates TLS in front of the app, tell ASP.NET Core to trust its `X-Forwarded-Proto` header:
 

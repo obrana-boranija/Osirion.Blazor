@@ -132,7 +132,7 @@ public class ThemeServiceCookieTests
         setCookie.ShouldContain("samesite=lax");
         setCookie.ShouldContain("expires=");
         setCookie.ShouldNotContain("httponly");
-        setCookie.ShouldNotContain("secure");
+        setCookie.ShouldContain("secure");
     }
 
     [Fact]
