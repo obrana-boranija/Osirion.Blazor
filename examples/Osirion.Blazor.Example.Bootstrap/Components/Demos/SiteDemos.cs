@@ -19,6 +19,9 @@ internal static class SiteDemos
         Add<SubscriptionCardDemo>(demos, "subscription-card", "A subscription card");
         Add<AuthorCardDemo>(demos, "author-card", "An author card");
         Add<MetricCardDemo>(demos, "metric-card", "Metric cards");
+        Add<BreadcrumbsDemo>(demos, "breadcrumbs", "Breadcrumb trails");
+        Add<ReadMoreLinkDemo>(demos, "read-more-link", "Read more links");
+        Add<MenuDemo>(demos, "menu", "A menu with a submenu");
         Add<ArticleMetadataDemo>(demos, "article-metadata", "Article metadata");
         Add<CalloutDemo>(demos, "callout", "Callouts");
         Add<AccordionFaqDemo>(demos, "accordion-and-faq", "An accordion and an FAQ");
