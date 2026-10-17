@@ -105,7 +105,7 @@ When your header is taller than 2.5rem, set the offset with the custom property 
 | `TopOffset` | `int` | `40` | The intended offset from the top of the viewport, in pixels (default 40, which is 2.5rem). The value is not written to the markup, so it has no effect; set the CSS custom property `--osirion-header-height` instead. |
 | `HideScrollbar` | `bool` | `true` | Whether the scrollbar is hidden (class `osirion-no-scrollbar`). The sidebar still scrolls with the wheel, touch and keyboard. |
 | `IsSticky` | `bool` | `true` | Whether the sidebar sticks below the header. `false` adds `osirion-non-sticky`, which renders a normal, static `aside` with its natural height. |
-| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's colour mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
 | `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
 | `Style` | `string?` | `null` | An inline style for the component's root element. |
 

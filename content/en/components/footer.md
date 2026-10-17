@@ -152,7 +152,7 @@ A fuller footer passes link data from code:
 | `ChildContent` | `RenderFragment?` | `null` | Extra content rendered below the bottom row. |
 | `Docked` | `bool` | `false` | Whether the footer is docked, adding the class `osirion-footer-docked-{DockingMode}`. |
 | `DockingMode` | `string` | `"sticky"` | How a docked footer is placed: `"sticky"` adds `margin-top: auto`, which pushes the footer to the bottom of a flex column; `"fixed"` fixes it to the bottom of the viewport, where it covers the end of the page. Used only when `Docked` is `true`. |
-| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's colour mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
 | `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
 | `Style` | `string?` | `null` | An inline style for the component's root element. |
 

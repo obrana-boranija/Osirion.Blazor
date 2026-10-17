@@ -100,7 +100,7 @@ two properties yourself, as above.
 | --- | --- | --- | --- |
 | `BackgroundPattern` | `BackgroundPatternType?` | `null` | The pattern to draw, as the class `osirion-bg-{pattern}`. When it is `null`, nothing is rendered. |
 | `MaskImage` | `bool` | `true` | Whether the class `osirion-bg-image-mask` is added, a vertical gradient mask that fades the pattern out toward the bottom edge. |
-| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's colour mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
 | `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
 | `Style` | `string?` | `null` | An inline style for the component's root element. |
 

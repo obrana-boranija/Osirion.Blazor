@@ -114,7 +114,7 @@ section) use it the same way while they load content.
 | --- | --- | --- | --- |
 | `ShowText` | `bool` | `true` | Whether `Text` is shown under the spinner. |
 | `Text` | `string` | `"Loading content..."` | The text under the spinner, rendered as a paragraph. When it is empty or white space, no paragraph is rendered. |
-| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's colour mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
 | `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
 | `Style` | `string?` | `null` | An inline style for the component's root element. |
 

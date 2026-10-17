@@ -123,7 +123,7 @@ The Bootstrap example site in the repository uses the layout this way, with an
 | `ShowSkipLink` | `bool` | `true` | Whether a skip link is rendered as the first focusable element, so keyboard and screen reader users can jump past the header and menu to the main content. The link is off screen until it receives focus. |
 | `SkipLinkText` | `string` | `"Skip to main content"` | The text of the skip link. Set it for other languages. |
 | `MainContentId` | `string` | `"osirion-main-content"` | The id of the `main` element, which the skip link targets. |
-| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's colour mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
 | `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
 | `Style` | `string?` | `null` | An inline style for the component's root element. |
 
