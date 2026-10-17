@@ -10,19 +10,21 @@ namespace Osirion.Blazor.Cms.Web.Components;
 public partial class ArticlePage
 {
     /// <summary>
-    /// Gets or sets whether to show the sidebar
+    /// Whether to show the sidebar next to the article: the table of contents, the item's categories and tags and
+    /// <see cref="SidebarContent"/>. It stays in view while the article scrolls.
     /// </summary>
     [Parameter]
     public bool ShowSidebar { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets whether to show table of contents
+    /// Whether the sidebar has a table of contents built from the article's headings. It needs <see
+    /// cref="ShowSidebar"/>.
     /// </summary>
     [Parameter]
     public bool ShowTableOfContents { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the table of contents title
+    /// The heading of the table of contents.
     /// </summary>
     [Parameter]
     public string TableOfContentsTitle { get; set; } = "Table of Contents";
@@ -58,7 +60,7 @@ public partial class ArticlePage
     public RenderFragment<ContentItem>? HeaderContent { get; set; }
 
     /// <summary>
-    /// Gets or sets additional sidebar content
+    /// Content shown at the end of the sidebar, in a section of its own. It needs <see cref="ShowSidebar"/>.
     /// </summary>
     [Parameter]
     public RenderFragment? SidebarContent { get; set; }

@@ -15,19 +15,22 @@ public abstract partial class OsirionContentDetailPageBase : OsirionContentItemP
     #region Content Navigation 
 
     /// <summary>
-    /// Gets or sets whether to show navigation links
+    /// Whether <c>ArticlePage</c> shows the previous and next articles under the body. The other pages do not read
+    /// it.
     /// </summary>
     [Parameter]
     public bool ShowNavigation { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the previous content item for navigation
+    /// The item of the previous link. Read by <c>DocumentPage</c>, which looks the neighbors up when this or
+    /// <c>NextItem</c> is null; <c>ArticlePage</c> finds its own neighbors and ignores it.
     /// </summary>
     [Parameter]
     public ContentItem? PreviousItem { get; set; }
 
     /// <summary>
-    /// Gets or sets the next content item for navigation
+    /// The item of the next link. Read by <c>DocumentPage</c>, which looks the neighbors up when this or
+    /// <c>PreviousItem</c> is null; <c>ArticlePage</c> finds its own neighbors and ignores it.
     /// </summary>
     [Parameter]
     public ContentItem? NextItem { get; set; }
@@ -37,25 +40,28 @@ public abstract partial class OsirionContentDetailPageBase : OsirionContentItemP
     #region Related Items
 
     /// <summary>
-    /// Gets or sets the related content items
+    /// The items of the related section of <c>ArticlePage</c>. When it is null and <see cref="ShowRelatedContent"/>
+    /// is on, the page picks items of the same locale and directory that share a tag or a category with the article,
+    /// most shared first, up to <see cref="RelatedItemsCount"/>. An empty list shows no section.
     /// </summary>
     [Parameter]
     public IReadOnlyList<ContentItem>? RelatedItems { get; set; }
 
     /// <summary>
-    /// Gets or sets whether to show related content
+    /// Whether <c>ArticlePage</c> shows a related section. The other pages do not read it, although the page base
+    /// still loads related items for them.
     /// </summary>
     [Parameter]
     public bool ShowRelatedContent { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the related content title
+    /// The heading of the related section of <c>ArticlePage</c>.
     /// </summary>
     [Parameter]
     public string RelatedContentTitle { get; set; } = "Related Articles";
 
     /// <summary>
-    /// Gets or sets the number of related items to show
+    /// The most related items the page picks when it finds them itself.
     /// </summary>
     [Parameter]
     public int RelatedItemsCount { get; set; } = 3;
