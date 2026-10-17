@@ -98,7 +98,7 @@ have no effect.
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `ContentPath` | `string?` | `null` | The source path of the item to load from the default provider while `Content` is not set. When nothing is found, the page shows `NotFoundText` and does not signal 404. |
+| `ContentPath` | `string?` | `null` | The source path of the item to load from the default provider while `Content` is not set. When nothing is found, the page shows `NotFoundText` and signals 404. |
 | `Content` | `ContentItem?` | `null` | The item that makes the page: its title and description are the hero's, its featured image the hero's image and its body follows the hero. Without an item the page shows what the other parameters give it. |
 | `ShowHero` | `bool` | `true` | Whether to show a hero with the title, the description, the image and up to two buttons. |
 | `HeroTitle` | `string?` | `null` | The hero's title when there is no `Content`. The item's title wins when both are set. |
@@ -137,7 +137,7 @@ have no effect.
 | `CtaVariant` | `string` | `"primary"` | Has no effect: the page renders no call to action section. |
 | `CustomContent` | `string?` | `null` | HTML shown in a wide, highlighted section after the body. It is written through `OsirionHtmlRenderer`, which sanitizes it with the registered HTML sanitizer. |
 | `LoadingText` | `string` | `"Loading page..."` | The text shown while the item loads, in interactive render modes only. A statically rendered response is sent once the item has loaded. |
-| `NotFoundText` | `string` | `"Page content not found."` | The message shown when `ContentPath` finds no item. The response keeps its status code. |
+| `NotFoundText` | `string` | `"Page content not found."` | The message shown when `ContentPath` finds no item. The page also signals 404. |
 | `ChildContent` | `RenderFragment?` | `null` | Content shown in a wide section after the body and the custom content. |
 | `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
 | `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
@@ -163,9 +163,10 @@ only `Class` reaches the root element.
 - **Body section.** The body is written by `ContentSection` with `ContentWidth` (`narrow`, `normal`, `wide`, `full`),
   `ContentAlign` (`left`, `center`, `right`), `ContentVariant` (`default`, `highlight`, `bordered`, `background`) and
   `ContentPadding` (`none`, `small`, `normal`, `large`).
-- **Not found.** With a `ContentPath` that finds nothing, the page shows `NotFoundText` in a plain block. The response
-  keeps its status code, so under static SSR it is a 200; use `ArticlePage` or `DocumentPage` when a missing page must
-  answer 404.
+- **Not found.** With a `ContentPath` that finds nothing, the page shows `NotFoundText` in a plain block and signals
+  404, as `ArticlePage` does: `NavigationManager.NotFound()` on .NET 10, the status code of the request on .NET 9,
+  while the response has not started. A page built from parameters alone, without a `ContentPath`, is not a missing
+  page and answers 200.
 - **Security.** The body and `CustomContent` pass through `OsirionHtmlRenderer`, which sanitizes them.
 
 ## Styling

@@ -1,4 +1,7 @@
 using Microsoft.AspNetCore.Components;
+#if !NET10_0_OR_GREATER
+using Microsoft.AspNetCore.Http;
+#endif
 using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Enums;
@@ -15,6 +18,9 @@ public partial class ContentView(IContentProviderManager contentProviderManager)
 
     [Inject]
     private ILogger<ContentView> Logger { get; set; } = default!;
+
+    [Inject]
+    private NavigationManager NavigationManager { get; set; } = default!;
 
     /// <summary>
     /// The source path of the item to load from the default provider (<c>ContentItem.Path</c>, for example
@@ -113,6 +119,32 @@ public partial class ContentView(IContentProviderManager contentProviderManager)
         {
             IsLoading = false;
         }
+
+        SignalWhenNotFound(Item is null);
+    }
+
+#if !NET10_0_OR_GREATER
+    /// <summary>The request context; only available during static server-side rendering.</summary>
+    [CascadingParameter]
+    private HttpContext? HttpContext { get; set; }
+#endif
+
+    private readonly NotFoundSignal _notFound = new();
+
+    // The not-found block is the page's answer, so the response says 404 with it instead of a soft 404.
+    private void SignalWhenNotFound(bool notFound)
+    {
+        if (!notFound)
+        {
+            _notFound.Reset();
+            return;
+        }
+
+#if NET10_0_OR_GREATER
+        _notFound.Send(NavigationManager);
+#else
+        _notFound.Send(HttpContext);
+#endif
     }
 
     private async Task LoadContentAsync()

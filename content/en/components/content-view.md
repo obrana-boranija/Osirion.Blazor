@@ -115,7 +115,9 @@ show navigation links, set `ContentUrlFormatter`, for example `item => "/" + ite
   in interactive render modes. When `Path` changes, the previous item and the neighbors the component loaded are
   cleared before the new one loads, so an old article never shows under a new address.
 - **Not found.** Without an item the component renders a "Content Not Found" heading, `NotFoundText` and a link
-  back to `/`. The heading and the link text are fixed. The response keeps its status code.
+  back to `/`. The heading and the link text are fixed. The component also signals 404, as `ArticlePage` does:
+  `NavigationManager.NotFound()` on .NET 10, the status code of the request on .NET 9, while the response has not
+  started. A view you embed in a page that must stay at 200 without its item should not be rendered without one.
 - **Security.** The body is written as HTML after it passes through the registered `IHtmlContentSanitizer` (the
   default allow-list when none is registered), even when the item comes from a custom provider or from your code.
   Script, event handler attributes, `javascript:`, `vbscript:` and `data:` URLs, forms, iframes, inline SVG and

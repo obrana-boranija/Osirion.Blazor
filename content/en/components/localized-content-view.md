@@ -132,8 +132,9 @@ The `Theme` and `Style` rows come from the base class. `LocalizedContentView` do
 - **Default URLs.** The built-in providers drop the locale folder from an item's `Url`, so the default translation
   link is the same path for every language. Add the locale with `TranslationUrlFormatter`. The default previous and
   next link is the item's source path; set `ContentUrlFormatter` when you show navigation links.
-- **Not found.** Without an item the component renders `NotFoundText` in a plain block. The response keeps its status
-  code.
+- **Not found.** Without an item the component renders `NotFoundText` in a plain block and signals 404, as
+  `ArticlePage` does: `NavigationManager.NotFound()` on .NET 10, the status code of the request on .NET 9, while the
+  response has not started. Render it only when you have an item or a path to load.
 - **Security.** The body passes through the registered `IHtmlContentSanitizer` before it is written as HTML, the
   same allow-list `ContentView` uses. Titles, names and locale labels are encoded as text.
 - **Images.** The featured image uses the title as `alt` text and, from 4.0, loads eagerly with

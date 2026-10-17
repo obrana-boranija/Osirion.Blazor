@@ -179,8 +179,9 @@ item you pass in `ContentItem` and loads no neighbors, related items or default 
   user-supplied or content-supplied text in them.
 - **Not found.** When no item matches, or the provider fails (the error is logged), the page shows the not-found
   state: a heading, a message and a back link. Without a `Path` and without a `ContentItem` it shows the same state.
-  The response keeps its status code, 200 under static SSR, so search engines read it as a soft 404; `ArticlePage`
-  answers 404 for a missing item.
+  The page also signals 404, as `ArticlePage` does: `NavigationManager.NotFound()` on .NET 10, the status code of the
+  request on .NET 9, while the response has not started. It has no effect in an interactive render, where the not-found
+  state is all that can be shown.
 
 ## Styling
 

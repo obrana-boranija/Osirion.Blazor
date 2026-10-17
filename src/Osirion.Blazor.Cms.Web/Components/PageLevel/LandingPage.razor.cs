@@ -1,7 +1,11 @@
 using Microsoft.AspNetCore.Components;
+#if !NET10_0_OR_GREATER
+using Microsoft.AspNetCore.Http;
+#endif
 using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Services;
+using Osirion.Blazor.Cms.Web.Components;
 
 namespace Osirion.Blazor.Cms.Components;
 
@@ -16,9 +20,12 @@ public partial class LandingPage
     [Inject]
     private IContentProviderManager ContentProviderManager { get; set; } = default!;
 
+    [Inject]
+    private NavigationManager NavigationManager { get; set; } = default!;
+
     /// <summary>
     /// The source path of the item to load from the default provider while <see cref="Content"/> is not set. When
-    /// nothing is found, the page shows <see cref="NotFoundText"/> and does not signal 404.
+    /// nothing is found, the page shows <see cref="NotFoundText"/> and signals 404.
     /// </summary>
     [Parameter]
     public string? ContentPath { get; set; }
@@ -256,7 +263,7 @@ public partial class LandingPage
     public string LoadingText { get; set; } = "Loading page...";
 
     /// <summary>
-    /// The message shown when <see cref="ContentPath"/> finds no item. The response keeps its status code.
+    /// The message shown when <see cref="ContentPath"/> finds no item. The page also signals 404.
     /// </summary>
     [Parameter]
     public string NotFoundText { get; set; } = "Page content not found.";
@@ -283,6 +290,32 @@ public partial class LandingPage
         {
             IsLoading = false;
         }
+
+        SignalWhenNotFound(Content is null && !string.IsNullOrWhiteSpace(ContentPath));
+    }
+
+#if !NET10_0_OR_GREATER
+    /// <summary>The request context; only available during static server-side rendering.</summary>
+    [CascadingParameter]
+    private HttpContext? HttpContext { get; set; }
+#endif
+
+    private readonly NotFoundSignal _notFound = new();
+
+    // The not-found block is the page's answer, so the response says 404 with it instead of a soft 404.
+    private void SignalWhenNotFound(bool notFound)
+    {
+        if (!notFound)
+        {
+            _notFound.Reset();
+            return;
+        }
+
+#if NET10_0_OR_GREATER
+        _notFound.Send(NavigationManager);
+#else
+        _notFound.Send(HttpContext);
+#endif
     }
 
     private async Task LoadContentAsync()
