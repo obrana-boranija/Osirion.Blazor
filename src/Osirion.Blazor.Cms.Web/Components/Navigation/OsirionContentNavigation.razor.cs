@@ -16,116 +16,108 @@ public partial class OsirionContentNavigation(IContentProviderManager ContentPro
     private ILogger<OsirionContentNavigation> Logger { get; set; } = default!;
 
     /// <summary>
-    /// Gets or sets a default item to search for navigation items
+    /// Gets or sets the current item. Required: nothing renders without it, even when both neighbours are passed. A
+    /// missing neighbour is looked up from it.
     /// </summary>
     [Parameter]
     public ContentItem? Item { get; set; }
 
-    /// <summary>
-    /// Gets or sets the previous navigation item
-    /// </summary>
+    /// <summary>Gets or sets the previous item. When <c>null</c>, it is looked up from <see cref="Item"/>.</summary>
     [Parameter]
     public ContentItem? PreviousItem { get; set; }
 
-    /// <summary>
-    /// Gets or sets the next navigation item
-    /// </summary>
+    /// <summary>Gets or sets the next item. When <c>null</c>, it is looked up from <see cref="Item"/>.</summary>
     [Parameter]
     public ContentItem? NextItem { get; set; }
 
-    /// <summary>
-    /// Gets or sets the label for the previous link
-    /// </summary>
+    /// <summary>Gets or sets the label above the previous item's title.</summary>
     [Parameter]
     public string PreviousLabel { get; set; } = "Previous";
 
-    /// <summary>
-    /// Gets or sets the label for the next link
-    /// </summary>
+    /// <summary>Gets or sets the label above the next item's title.</summary>
     [Parameter]
     public string NextLabel { get; set; } = "Next";
 
-    /// <summary>
-    /// Gets or sets the aria-label for the navigation
-    /// </summary>
+    /// <summary>Gets or sets the accessible name of the <c>nav</c> element.</summary>
     [Parameter]
     public string AriaLabel { get; set; } = "Content navigation";
 
-    /// <summary>
-    /// Gets or sets whether to show icons
-    /// </summary>
+    /// <summary>Gets or sets whether the arrow icons are shown.</summary>
     [Parameter]
     public bool ShowIcons { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the previous icon content
+    /// Gets or sets the icon of the previous link. A left chevron when not set and <see cref="ShowIcons"/> is
+    /// <c>true</c>.
     /// </summary>
     [Parameter]
     public RenderFragment? PreviousIcon { get; set; }
 
     /// <summary>
-    /// Gets or sets the next icon content
+    /// Gets or sets the icon of the next link. A right chevron when not set and <see cref="ShowIcons"/> is
+    /// <c>true</c>.
     /// </summary>
     [Parameter]
     public RenderFragment? NextIcon { get; set; }
 
-    /// <summary>
-    /// Gets or sets whether to show descriptions
-    /// </summary>
+    /// <summary>Gets or sets whether each neighbour's description is shown under its title.</summary>
     [Parameter]
     public bool ShowDescription { get; set; } = false;
 
     /// <summary>
-    /// Gets or sets whether to show placeholders for missing items
+    /// Gets or sets whether an empty placeholder is rendered where a neighbour is missing, so the other link keeps
+    /// its side.
     /// </summary>
     [Parameter]
     public bool ShowPlaceholder { get; set; } = false;
 
     /// <summary>
-    /// Gets or sets whether to show the navigation
+    /// Gets or sets whether the navigation renders. When <c>false</c>, nothing renders and the neighbours are not
+    /// looked up.
     /// </summary>
     [Parameter]
     public bool ShowNavigation { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets whether to prevent default link behavior
+    /// Gets or sets whether the links are stopped from navigating in an interactive render mode. Leave it
+    /// <c>false</c>: the click callbacks are not raised, so a prevented link does nothing.
     /// </summary>
     [Parameter]
     public bool PreventDefault { get; set; } = false;
 
     /// <summary>
-    /// Gets or sets the navigation variant: "default", "compact", "card"
+    /// Gets or sets the layout: <c>Default</c>, <c>Compact</c> or <c>Card</c>. It is written as a class on the
+    /// <c>nav</c>.
     /// </summary>
     [Parameter]
     public ContentNavigationVariant Variant { get; set; } = ContentNavigationVariant.Default;
 
     /// <summary>
-    /// Gets or sets the URL generator function
+    /// Gets or sets a function that builds each link. Without it, the link is the item's <c>Url</c>, a path without
+    /// a leading slash that resolves against the page's address.
     /// </summary>
     [Parameter]
     public Func<ContentItem, string>? UrlGenerator { get; set; }
 
     /// <summary>
-    /// Gets or sets the title extractor function
+    /// Gets or sets a function that returns the text shown as each title. Without it, the item's <c>Title</c>, or
+    /// <c>Untitled</c>.
     /// </summary>
     [Parameter]
     public Func<ContentItem, string>? TitleExtractor { get; set; }
 
     /// <summary>
-    /// Gets or sets the description extractor function
+    /// Gets or sets a function that returns the text shown as each description. Without it, the item's
+    /// <c>Description</c>.
     /// </summary>
     [Parameter]
     public Func<ContentItem, string?>? DescriptionExtractor { get; set; }
 
-    /// <summary>
-    /// Event callback when previous item is clicked
-    /// </summary>
+    /// <summary>Gets or sets a callback for a click on the previous link. Declared but never raised in 4.0.</summary>
     [Parameter]
     public EventCallback<ContentItem> OnPreviousClick { get; set; }
 
-    /// <summary>
-    /// Event callback when next item is clicked
-    /// </summary>
+    /// <summary>Gets or sets a callback for a click on the next link. Declared but never raised in 4.0.</summary>
     [Parameter]
     public EventCallback<ContentItem> OnNextClick { get; set; }
 
