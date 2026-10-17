@@ -28,6 +28,11 @@ internal static class SiteDemos
         Add<ContextCardGridDemo>(demos, "context-card-grid", "A context card grid");
         Add<InfiniteLogoCarouselDemo>(demos, "infinite-logo-carousel", "A logo carousel");
         Add<TestimonialCarouselDemo>(demos, "testimonial-carousel", "A testimonial carousel");
+        Add<PageLayoutDemo>(demos, "page-layout", "A page layout in a frame");
+        Add<PageLoadingDemo>(demos, "page-loading", "Page loading spinners");
+        Add<FooterDemo>(demos, "footer", "A footer");
+        Add<StickySidebarDemo>(demos, "sticky-sidebar", "A sticky sidebar");
+        Add<BackgroundPatternDemo>(demos, "background-pattern", "Background patterns");
     }
 
     private static void Add<TDemo>(ContentDemoRegistry demos, string key, string title)

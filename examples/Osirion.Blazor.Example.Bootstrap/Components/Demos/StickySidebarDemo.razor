@@ -1,0 +1,38 @@
+@using Osirion.Blazor.Components
+
+@* Scroll inside the frame: the sidebar stays in view while the sample text moves. The frame stands in for the
+   viewport, so the sidebar's height is capped here instead of filling the viewport as it does on a page. *@
+<style>
+    .sticky-sidebar-demo aside.osirion-sticky-sidebar {
+        height: auto;
+        max-height: 11rem;
+    }
+</style>
+
+<div class="sticky-sidebar-demo"
+     role="region"
+     aria-label="Scrollable sample page"
+     tabindex="0"
+     style="height: 16rem; overflow-y: auto; border: 1px solid var(--osirion-border-color, #d1d5db); border-radius: 0.5rem; padding: 1rem; --osirion-header-height: 0.5rem;">
+    <div style="display: grid; grid-template-columns: 12rem 1fr; gap: 1.5rem; align-items: start;">
+        <OsirionStickySidebar>
+            <nav aria-label="Layout components">
+                <ul style="list-style: none; margin: 0; padding: 0;">
+                    <li><a href="/components/page-layout">OsirionPageLayout</a></li>
+                    <li><a href="/components/footer">OsirionFooter</a></li>
+                    <li><a href="/components/sticky-sidebar">OsirionStickySidebar</a></li>
+                    <li><a href="/components/page-loading">OsirionPageLoading</a></li>
+                    <li><a href="/components/background-pattern">OsirionBackgroundPattern</a></li>
+                </ul>
+            </nav>
+        </OsirionStickySidebar>
+
+        <article>
+            @for (var section = 1; section <= 6; section++)
+            {
+                <h3>Sample section @section</h3>
+                <p>Sample text that makes the page taller than the frame. It says nothing about any product; it only gives the sidebar something to stay beside while you scroll.</p>
+            }
+        </article>
+    </div>
+</div>

@@ -7,7 +7,7 @@ permalink: /components/background-pattern
 description: A decorative CSS background layer (dots, grid, diagonal lines, honeycomb and more) drawn in the theme's primary color behind a section.
 author: Dejan Demonjić
 date: 2025-09-03
-last_modified: 2026-10-11
+last_modified: 2026-10-17
 featured_image: /assets/images/blazor-cover.png
 categories:
 - Components
@@ -28,7 +28,7 @@ redirect_from:
 custom_fields:
   group: layout
 seo_properties:
-  title: 'OsirionBackgroundPattern: CSS background patterns for Blazor | Osirion.Blazor'
+  title: 'OsirionBackgroundPattern: CSS patterns for Blazor'
   description: 'A decorative CSS background layer for Blazor sections: dots, grid, diagonal lines, honeycomb, circuit and more, in the theme color.'
   image: /assets/images/blazor-cover.png
   canonical: 'https://getosirion.com/components/background-pattern'
@@ -51,6 +51,12 @@ seo_properties:
 
 `OsirionBackgroundPattern` renders an empty, absolutely positioned `div` that fills its parent with a decorative
 pattern made of CSS gradients. Use it behind a hero or section; it has no content and needs no images or script.
+
+Package `Osirion.Blazor.Core`, namespace `Osirion.Blazor.Components`. [Source on GitHub](https://github.com/demonjic/Osirion.Blazor/blob/master/src/Osirion.Blazor.Core/Components/Layout/OsirionBackgroundPattern.razor).
+
+```demo
+background-pattern
+```
 
 Most of the time you do not place it yourself: [HeroSection](/components/hero-section),
 [OsirionBaseSection](/components/base-section) and `OsirionContentNotFound` take a
@@ -88,40 +94,48 @@ two properties yourself, as above.
 
 ## Parameters
 
+<!-- osirion:parameters OsirionBackgroundPattern -->
+
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `BackgroundPattern` | `BackgroundPatternType?` | `null` | The pattern. When null, nothing is rendered. |
-| `MaskImage` | `bool` | `true` | Adds `osirion-bg-image-mask`, a vertical gradient mask that fades the pattern out. |
-| `Class` | `string?` | `null` | Extra CSS classes on the pattern `div`. |
+| `BackgroundPattern` | `BackgroundPatternType?` | `null` | The pattern to draw, as the class `osirion-bg-{pattern}`. When it is `null`, nothing is rendered. |
+| `MaskImage` | `bool` | `true` | Whether the class `osirion-bg-image-mask` is added, a vertical gradient mask that fades the pattern out toward the bottom edge. |
+| `Theme` | `ThemeMode` | `ThemeMode.System` | The component's color mode. `Light` or `Dark` writes it to `data-theme` (`data-bs-theme` under Bootstrap) on the root element; `System` writes nothing. |
+| `Class` | `string?` | `null` | Extra CSS classes for the component's root element. |
+| `Style` | `string?` | `null` | An inline style for the component's root element. |
+
+<!-- /osirion:parameters -->
 
 `Style`, `Theme` and unmatched attributes are not applied to the markup.
 
 ## Patterns
 
-| `BackgroundPatternType` | CSS class | Look |
-| --- | --- | --- |
-| `Dots` | `osirion-bg-dots` | Dots on a 24 px grid. |
-| `Grid` | `osirion-bg-grid` | Thin lines on a 24 px grid. |
-| `Diagonal` | `osirion-bg-diagonal` | 45 degree lines. |
-| `Honeycomb` | `osirion-bg-honeycomb` | Hexagon tiling. |
-| `GradientMesh` | `osirion-bg-gradient-mesh` | Blurred color glows in the corners. |
-| `AnimatedGrid` | `osirion-bg-grid-animated` | Grid with a slow pulse animation. |
-| `TechWave` | `osirion-bg-tech-wave` | Slowly rotating light overlay. |
-| `Circuit` | `osirion-bg-circuit` | Dots and short lines like a circuit board. |
-| `DotsFade` | `osirion-bg-dots-fade` | Dots that fade out toward the edges. |
+| `BackgroundPatternType` | CSS class | Look | Opacity |
+| --- | --- | --- | --- |
+| `Dots` | `osirion-bg-dots` | Dots on a 24 px grid. | 0.2 |
+| `Grid` | `osirion-bg-grid` | Thin lines on a 24 px grid. | 0.2 |
+| `Diagonal` | `osirion-bg-diagonal` | 45 degree lines, 24 px apart. | 0.15 |
+| `Honeycomb` | `osirion-bg-honeycomb` | A honeycomb-style tiling, 40 by 70 px. | 0.15 |
+| `GradientMesh` | `osirion-bg-gradient-mesh` | Color glows in the four corners, blurred by 60 px. | 0.1 |
+| `AnimatedGrid` | `osirion-bg-grid-animated` | Grid that pulses between 24 and 28 px over 8 seconds. | 0.15, pulsing between 0.1 and 0.2 |
+| `TechWave` | `osirion-bg-tech-wave` | Slowly rotating light overlay. | not set |
+| `Circuit` | `osirion-bg-circuit` | Dots and short lines like a circuit board. | 0.3 |
+| `DotsFade` | `osirion-bg-dots-fade` | Dots that fade out toward the edges. | 0.2 |
 
 `TechWave` and `Circuit` wrap the theme color in `rgba()`, which browsers reject when the token holds a color value
 (the default tokens do), so these two currently show little or nothing. Prefer the other patterns.
 
-Under a dark theme (`data-theme="dark"` on a parent), the stylesheet draws every pattern except `GradientMesh` and
-`TechWave` as dots at 0.15 opacity.
+Under a dark theme (`data-theme="dark"` on the root or a parent; the stylesheet does not look for Bootstrap's
+`data-bs-theme`), every pattern except `GradientMesh` and `TechWave` is drawn as dots at 0.15 opacity, and
+`GradientMesh` is drawn at 0.15.
 
 ## Behavior
 
 - **Rendering.** Pure CSS; the same markup under static SSR and interactive rendering.
+- **Mask.** With `MaskImage` the layer fades out toward its bottom edge.
 - **Accessibility.** The layer is an empty `div` with no text, so assistive technology has nothing to announce. Keep
-  enough contrast between your text and the pattern; the patterns use low opacity (0.15 to 0.2 for the line and dot
-  patterns) for that reason.
+  enough contrast between your text and the pattern; the patterns use low opacity for that reason. With
+  `prefers-contrast: more` the layer's opacity drops to 0.05.
 - **Motion.** `AnimatedGrid` and `TechWave` animate continuously, and the component's stylesheet has no
   reduced-motion rule of its own. Choose a static pattern where motion is a concern.
 

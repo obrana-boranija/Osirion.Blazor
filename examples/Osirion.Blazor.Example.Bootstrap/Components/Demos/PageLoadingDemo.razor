@@ -1,0 +1,14 @@
+@using Osirion.Blazor.Components
+
+@* The component is at least half a viewport high; the demo shrinks it to fit the page *@
+<style>
+    .page-loading-demo div.osirion-loading {
+        min-height: 0;
+        margin: 0 auto;
+    }
+</style>
+
+<div class="page-loading-demo" role="status" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 1rem;">
+    <OsirionPageLoading />
+    <OsirionPageLoading Text="Loading articles..." />
+</div>

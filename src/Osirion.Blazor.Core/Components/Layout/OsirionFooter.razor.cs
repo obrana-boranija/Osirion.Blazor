@@ -12,128 +12,141 @@ public partial class OsirionFooter
     private bool InsidePageLayoutFooter { get; set; }
 
     /// <summary>
-    /// Gets or sets the company name for the copyright notice
+    /// Gets or sets the name linked in the default copyright line (<c>&amp;copy; year name. All rights reserved.</c>).
+    /// Ignored when <see cref="Copyright"/> is set or <see cref="ShowCopyright"/> is <see langword="false"/>.
     /// </summary>
     [Parameter]
     public string CompanyName { get; set; } = "Company";
 
     /// <summary>
-    /// Gets or sets the company name for the copyright notice
+    /// Gets or sets the address the company name links to in the default copyright line. An address that starts with
+    /// <c>http</c> opens in a new tab; any other opens in the same tab.
     /// </summary>
     [Parameter]
     public string CompanyUrl { get; set; } = "/";
 
     /// <summary>
-    /// Gets or sets the company/site description shown below the logo
+    /// Gets or sets the text under the logo, rendered as raw HTML, so pass only text you control. It is shown only when
+    /// the top row renders, which needs at least one of <see cref="Logo"/>, <see cref="Links"/>,
+    /// <see cref="SocialLinks"/>, <see cref="LeftContent"/> or <see cref="RightContent"/>.
     /// </summary>
     [Parameter]
     public string? Description { get; set; }
 
     /// <summary>
-    /// Gets or sets custom copyright text. If provided, overrides the default copyright format
+    /// Gets or sets custom copyright text, rendered as raw HTML, so pass only text you control. It replaces the default
+    /// line built from <see cref="CompanyName"/>, <see cref="CompanyUrl"/> and the current year.
     /// </summary>
     [Parameter]
     public string? Copyright { get; set; }
 
     /// <summary>
-    /// Gets or sets whether to show the copyright notice
+    /// Gets or sets whether the default copyright line is shown when <see cref="Copyright"/> is empty.
     /// </summary>
     [Parameter]
     public bool ShowCopyright { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the logo content
+    /// Gets or sets the logo, shown in the top row above <see cref="Description"/>.
     /// </summary>
     [Parameter]
     public RenderFragment? Logo { get; set; }
 
     /// <summary>
-    /// Gets or sets additional content for the left section (e.g., newsletter form)
+    /// Gets or sets free content for the left column of the top row, such as contact details. It renders above the logo
+    /// and description.
     /// </summary>
     [Parameter]
     public RenderFragment? LeftContent { get; set; }
 
     /// <summary>
-    /// Gets or sets additional content for the left section (e.g., contact info)
+    /// Gets or sets free content for the right column of the top row.
     /// </summary>
     [Parameter]
     public RenderFragment? RightContent { get; set; }
 
     /// <summary>
-    /// Gets or sets the footer link sections
+    /// Gets or sets the link columns: each <c>FooterSection</c> has an optional <c>Title</c> (an <c>h2</c>) and a list of
+    /// <c>FooterLink</c>.
     /// </summary>
     [Parameter]
     public IReadOnlyList<FooterSection>? Links { get; set; }
 
     /// <summary>
-    /// Gets or sets the social media links
+    /// Gets or sets the social links. Each shows its <c>Icon</c>, or its <c>Text</c> when there is no icon, and always
+    /// opens in a new tab; set <c>AriaLabel</c> on icon-only links.
     /// </summary>
     [Parameter]
     public IReadOnlyList<FooterSocialLink>? SocialLinks { get; set; }
 
     /// <summary>
-    /// Gets or sets the bottom navigation links (Privacy Policy, Terms, etc.)
+    /// Gets or sets the links in the bottom row, such as privacy and terms. They sit in a <c>nav</c> labelled "Footer
+    /// legal navigation".
     /// </summary>
     [Parameter]
     public IReadOnlyList<FooterLink>? BottomLinks { get; set; }
 
     /// <summary>
-    /// Gets or sets whether to show social links
+    /// Gets or sets whether <see cref="SocialLinks"/> are shown.
     /// </summary>
     [Parameter]
     public bool ShowSocialLinks { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the title for the social links section
+    /// Gets or sets the <c>h2</c> above the social links. An empty value hides it.
     /// </summary>
     [Parameter]
     public string SocialTitle { get; set; } = "Follow Us";
 
     /// <summary>
-    /// Gets or sets whether to show the divider between sections
+    /// Gets or sets whether a line separates the top and bottom rows. It shows only when both rows render.
     /// </summary>
     [Parameter]
     public bool ShowDivider { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets whether to show the top section
+    /// Gets or sets whether the top row (logo, description, links, social links, left and right content) renders.
     /// </summary>
     [Parameter]
     public bool ShowTopSection { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets whether to show the bottom section
+    /// Gets or sets whether the bottom row (copyright line and <see cref="BottomLinks"/>) renders.
     /// </summary>
     [Parameter]
     public bool ShowBottomSection { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the footer variant: "default", "minimal", "centered"
+    /// Gets or sets the variant, added as the class <c>osirion-footer-{value}</c>. The stylesheet styles <c>minimal</c>
+    /// and <c>centered</c>; <c>default</c> and any other value add a class with no rules.
     /// </summary>
     [Parameter]
     public string Variant { get; set; } = "default";
 
     /// <summary>
-    /// Gets or sets the grid layout for desktop: "auto", "4-column", "3-column", "2-column"
+    /// Gets or sets the number of link columns, added as the class <c>osirion-footer-grid-{value}</c>. The stylesheet
+    /// defines <c>2-column</c>, <c>3-column</c> and <c>4-column</c>; <c>auto</c> and any other value use the default
+    /// layout.
     /// </summary>
     [Parameter]
     public string GridLayout { get; set; } = "auto";
 
     /// <summary>
-    /// Gets or sets additional child content (shown at the very bottom)
+    /// Gets or sets extra content rendered below the bottom row.
     /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
-    /// Gets or sets whether the footer should be docked to the bottom of the viewport
+    /// Gets or sets whether the footer is docked, adding the class <c>osirion-footer-docked-{DockingMode}</c>.
     /// </summary>
     [Parameter]
     public bool Docked { get; set; } = false;
 
     /// <summary>
-    /// Gets or sets the docking mode: "fixed" or "sticky"
-    /// Fixed: Always visible at bottom. Sticky: Sticks to bottom when page is short
+    /// Gets or sets how a docked footer is placed: <c>"sticky"</c> adds <c>margin-top: auto</c>, which pushes the footer to
+    /// the bottom of a flex column; <c>"fixed"</c> fixes it to the bottom of the viewport, where it covers the end of
+    /// the page. Used only when <see cref="Docked"/> is <see langword="true"/>.
     /// </summary>
     [Parameter]
     public string DockingMode { get; set; } = "sticky";
