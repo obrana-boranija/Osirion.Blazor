@@ -2,7 +2,7 @@
 @using Osirion.Blazor.Cms.Web.Components
 @inherits OsirionComponentBase
 
-<div class="@GetLandingPageClass()">
+<div class="@GetLandingPageClass()" style="@Style" @attributes="Attributes">
     @if (IsLoading && IsInteractive)
     {
         <div class="osirion-loading">
@@ -31,6 +31,9 @@
                          PrimaryButtonUrl="@HeroPrimaryButtonUrl"
                          SecondaryButtonText="@HeroSecondaryButtonText"
                          SecondaryButtonUrl="@HeroSecondaryButtonUrl"
+                         Alignment="@HeroAlignmentValue"
+                         ShowPrimaryButton="@ShowHeroButtons"
+                         ShowSecondaryButton="@ShowHeroButtons"
                          MinHeight="@HeroHeight" />
         }
 
@@ -41,6 +44,86 @@
                             TextAlign="@ContentAlign"
                             Variant="@ContentVariant"
                             Padding="@ContentPadding" />
+        }
+
+        @if (ShowFeatures && FeatureItems is { Count: > 0 })
+        {
+            <ContentSection Title="@FeaturesSectionTitle"
+                            Subtitle="@FeaturesSectionDescription"
+                            Width="wide"
+                            Class="osirion-landing-features">
+                <ul class="osirion-landing-feature-list @LayoutClass(FeaturesLayout)" style="--osirion-landing-columns: @FeatureColumnCount">
+                    @foreach (var feature in FeatureItems)
+                    {
+                        <li class="osirion-landing-feature">
+                            @if (!string.IsNullOrWhiteSpace(feature.IconUrl))
+                            {
+                                <img class="osirion-landing-feature-image" src="@feature.IconUrl" alt="" loading="lazy" />
+                            }
+                            else if (!string.IsNullOrWhiteSpace(feature.Icon))
+                            {
+                                <span class="osirion-landing-feature-icon" aria-hidden="true">@feature.Icon</span>
+                            }
+
+                            @if (!string.IsNullOrWhiteSpace(feature.Title))
+                            {
+                                <h3 class="osirion-landing-feature-title">
+                                    @if (!string.IsNullOrWhiteSpace(feature.LinkUrl))
+                                    {
+                                        <a href="@feature.LinkUrl">@feature.Title</a>
+                                    }
+                                    else
+                                    {
+                                        @feature.Title
+                                    }
+                                </h3>
+                            }
+
+                            @if (!string.IsNullOrWhiteSpace(feature.Description))
+                            {
+                                <p class="osirion-landing-feature-description">@feature.Description</p>
+                            }
+                        </li>
+                    }
+                </ul>
+            </ContentSection>
+        }
+
+        @if (ShowTestimonials && Testimonials.Count > 0)
+        {
+            <ContentSection Title="@TestimonialsSectionTitle"
+                            Width="wide"
+                            Class="osirion-landing-testimonials">
+                <ul class="osirion-landing-testimonial-list @LayoutClass(TestimonialsLayout)">
+                    @foreach (var testimonial in Testimonials)
+                    {
+                        <li class="osirion-landing-testimonial">
+                            <figure>
+                                <blockquote class="osirion-landing-testimonial-quote">
+                                    <p>@testimonial.Quote</p>
+                                </blockquote>
+                                <figcaption class="osirion-landing-testimonial-author">
+                                    @if (ShowTestimonialImages && !string.IsNullOrWhiteSpace(testimonial.ImageUrl))
+                                    {
+                                        <img class="osirion-landing-testimonial-image" src="@testimonial.ImageUrl" alt="" loading="lazy" />
+                                    }
+                                    <span>
+                                        @if (!string.IsNullOrWhiteSpace(testimonial.Name))
+                                        {
+                                            <span class="osirion-landing-testimonial-name">@testimonial.Name</span>
+                                        }
+
+                                        @if (TestimonialByline(testimonial) is { Length: > 0 } byline)
+                                        {
+                                            <span class="osirion-landing-testimonial-role">@byline</span>
+                                        }
+                                    </span>
+                                </figcaption>
+                            </figure>
+                        </li>
+                    }
+                </ul>
+            </ContentSection>
         }
 
         @if (!string.IsNullOrWhiteSpace(CustomContent))
@@ -57,6 +140,38 @@
                             Padding="normal">
                 @ChildContent
             </ContentSection>
+        }
+
+        @if (ShowCallToAction && HasCallToAction)
+        {
+            <section class="osirion-landing-cta osirion-landing-cta-@CtaVariantName" style="@CtaStyle">
+                <div class="osirion-landing-cta-inner">
+                    @if (!string.IsNullOrWhiteSpace(CtaTitle))
+                    {
+                        <h2 class="osirion-landing-cta-title">@CtaTitle</h2>
+                    }
+
+                    @if (!string.IsNullOrWhiteSpace(CtaDescription))
+                    {
+                        <p class="osirion-landing-cta-description">@CtaDescription</p>
+                    }
+
+                    @if (HasButton(CtaPrimaryButtonText, CtaPrimaryButtonUrl) || HasButton(CtaSecondaryButtonText, CtaSecondaryButtonUrl))
+                    {
+                        <div class="osirion-landing-cta-actions">
+                            @if (HasButton(CtaPrimaryButtonText, CtaPrimaryButtonUrl))
+                            {
+                                <a href="@CtaPrimaryButtonUrl" class="osirion-landing-cta-button osirion-landing-cta-button-primary">@CtaPrimaryButtonText</a>
+                            }
+
+                            @if (HasButton(CtaSecondaryButtonText, CtaSecondaryButtonUrl))
+                            {
+                                <a href="@CtaSecondaryButtonUrl" class="osirion-landing-cta-button osirion-landing-cta-button-secondary">@CtaSecondaryButtonText</a>
+                            }
+                        </div>
+                    }
+                </div>
+            </section>
         }
     }
 </div>

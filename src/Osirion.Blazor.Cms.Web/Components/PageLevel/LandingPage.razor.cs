@@ -6,6 +6,8 @@ using Microsoft.Extensions.Logging;
 using Osirion.Blazor.Cms.Domain.Entities;
 using Osirion.Blazor.Cms.Domain.Services;
 using Osirion.Blazor.Cms.Web.Components;
+using Osirion.Blazor.Components;
+using System.Text.RegularExpressions;
 
 namespace Osirion.Blazor.Cms.Components;
 
@@ -62,7 +64,8 @@ public partial class LandingPage
     public string? HeroBackgroundImage { get; set; }
 
     /// <summary>
-    /// Has no effect: the hero is not given the alignment.
+    /// The alignment of the hero's text: <c>left</c>, <c>center</c> or <c>right</c>, in any case. Any other value is
+    /// read as <c>center</c>. The string is kept in 4.x; an enum is planned for 5.0.
     /// </summary>
     [Parameter]
     public string HeroAlignment { get; set; } = "center";
@@ -74,7 +77,7 @@ public partial class LandingPage
     public string HeroHeight { get; set; } = "70vh";
 
     /// <summary>
-    /// Has no effect: a hero button shows whenever its text and address are both set.
+    /// Whether the hero shows its buttons. A button also needs its text and its address.
     /// </summary>
     [Parameter]
     public bool ShowHeroButtons { get; set; } = true;
@@ -129,121 +132,133 @@ public partial class LandingPage
     public string ContentPadding { get; set; } = "normal";
 
     /// <summary>
-    /// Has no effect: the page renders no testimonials section.
+    /// Whether to show the testimonials section, after the body and the features. It renders only when <see
+    /// cref="TestimonialItems"/> has a testimonial with a quote.
     /// </summary>
     [Parameter]
     public bool ShowTestimonials { get; set; } = false;
 
     /// <summary>
-    /// Has no effect: the page renders no testimonials section.
+    /// The heading of the testimonials section.
     /// </summary>
     [Parameter]
     public string TestimonialsSectionTitle { get; set; } = "What Our Customers Say";
 
     /// <summary>
-    /// Has no effect: the page renders no testimonials section.
+    /// The layout of the testimonials: <c>grid</c>, cards in columns, or <c>list</c>, one under the other. Any other
+    /// value is read as <c>grid</c>.
     /// </summary>
     [Parameter]
     public string TestimonialsLayout { get; set; } = "grid";
 
     /// <summary>
-    /// Has no effect: the page renders no testimonials section.
+    /// Whether each testimonial shows its <see cref="TestimonialItem.ImageUrl"/>, as a small round picture that
+    /// carries no alternative text because the author's name stands beside it.
     /// </summary>
     [Parameter]
     public bool ShowTestimonialImages { get; set; } = true;
 
     /// <summary>
-    /// Has no effect: the page renders no testimonials section.
+    /// The testimonials. One without a quote is skipped.
     /// </summary>
     [Parameter]
     public IReadOnlyList<TestimonialItem>? TestimonialItems { get; set; }
 
     /// <summary>
-    /// Has no effect: the page renders no features section.
+    /// Whether to show the features section, after the body. It renders only when <see cref="FeatureItems"/> has an
+    /// item.
     /// </summary>
     [Parameter]
     public bool ShowFeatures { get; set; } = false;
 
     /// <summary>
-    /// Has no effect: the page renders no features section.
+    /// The heading of the features section.
     /// </summary>
     [Parameter]
     public string FeaturesSectionTitle { get; set; } = "Features";
 
     /// <summary>
-    /// Has no effect: the page renders no features section.
+    /// The sentence under the features heading. None when null.
     /// </summary>
     [Parameter]
     public string? FeaturesSectionDescription { get; set; }
 
     /// <summary>
-    /// Has no effect: the page renders no features section.
+    /// The layout of the features: <c>grid</c>, cards in <see cref="FeaturesColumns"/> columns, or <c>list</c>, one
+    /// under the other. Any other value is read as <c>grid</c>.
     /// </summary>
     [Parameter]
     public string FeaturesLayout { get; set; } = "grid";
 
     /// <summary>
-    /// Has no effect: the page renders no features section.
+    /// The number of columns of the <c>grid</c> layout, 1 to 6; a value outside the range is moved to the nearest one.
+    /// Narrow screens show fewer columns.
     /// </summary>
     [Parameter]
     public int FeaturesColumns { get; set; } = 3;
 
     /// <summary>
-    /// Has no effect: the page renders no features section.
+    /// The features, each with an icon, a title that can link, and a description.
     /// </summary>
     [Parameter]
     public IReadOnlyList<FeatureItem>? FeatureItems { get; set; }
 
     /// <summary>
-    /// Has no effect: the page renders no call to action section.
+    /// Whether to show the call to action, the last section of the page. It renders only when a title, a description
+    /// or a button (text and address) is set.
     /// </summary>
     [Parameter]
     public bool ShowCallToAction { get; set; } = true;
 
     /// <summary>
-    /// Has no effect: the page renders no call to action section.
+    /// The heading of the call to action.
     /// </summary>
     [Parameter]
     public string? CtaTitle { get; set; }
 
     /// <summary>
-    /// Has no effect: the page renders no call to action section.
+    /// The sentence under the call to action's heading.
     /// </summary>
     [Parameter]
     public string? CtaDescription { get; set; }
 
     /// <summary>
-    /// Has no effect: the page renders no call to action section.
+    /// The text of the call to action's primary button. The button needs <see cref="CtaPrimaryButtonUrl"/> too.
     /// </summary>
     [Parameter]
     public string? CtaPrimaryButtonText { get; set; }
 
     /// <summary>
-    /// Has no effect: the page renders no call to action section.
+    /// The address of the call to action's primary button. It is written as given, so build it from values you
+    /// control.
     /// </summary>
     [Parameter]
     public string? CtaPrimaryButtonUrl { get; set; }
 
     /// <summary>
-    /// Has no effect: the page renders no call to action section.
+    /// The text of the call to action's secondary button. The button needs <see cref="CtaSecondaryButtonUrl"/> too.
     /// </summary>
     [Parameter]
     public string? CtaSecondaryButtonText { get; set; }
 
     /// <summary>
-    /// Has no effect: the page renders no call to action section.
+    /// The address of the call to action's secondary button. It is written as given, so build it from values you
+    /// control.
     /// </summary>
     [Parameter]
     public string? CtaSecondaryButtonUrl { get; set; }
 
     /// <summary>
-    /// Has no effect: the page renders no call to action section.
+    /// A CSS color for the call to action's background: a hex value, <c>rgb()</c>, <c>hsl()</c>, a color name or a
+    /// <c>var()</c> reference. Anything else is ignored, so the value cannot add CSS declarations. The text color
+    /// stays that of <see cref="CtaVariant"/>, so choose a color that keeps the text readable.
     /// </summary>
     [Parameter]
     public string? CtaBackgroundColor { get; set; }
 
     /// <summary>
-    /// Has no effect: the page renders no call to action section.
+    /// The look of the call to action: <c>primary</c>, the theme's action color behind light text, or
+    /// <c>secondary</c>, a quiet panel. Any other value is read as <c>primary</c>.
     /// </summary>
     [Parameter]
     public string CtaVariant { get; set; } = "primary";
@@ -344,6 +359,48 @@ public partial class LandingPage
     {
         return $"osirion-landing-page {Class}".Trim();
     }
+
+    private Alignment HeroAlignmentValue => HeroAlignment?.Trim().ToLowerInvariant() switch
+    {
+        "left" => Alignment.Left,
+        "right" => Alignment.Right,
+        _ => Alignment.Center,
+    };
+
+    private IReadOnlyList<TestimonialItem> Testimonials =>
+        TestimonialItems?.Where(testimonial => !string.IsNullOrWhiteSpace(testimonial.Quote)).ToList() ?? [];
+
+    private int FeatureColumnCount => Math.Clamp(FeaturesColumns, 1, 6);
+
+    private static string LayoutClass(string layout) =>
+        string.Equals(layout?.Trim(), "list", StringComparison.OrdinalIgnoreCase)
+            ? "osirion-landing-layout-list"
+            : "osirion-landing-layout-grid";
+
+    private static string TestimonialByline(TestimonialItem testimonial) =>
+        string.Join(", ", new[] { testimonial.Role, testimonial.Company }.Where(part => !string.IsNullOrWhiteSpace(part)));
+
+    private static bool HasButton(string? text, string? url) =>
+        !string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(url);
+
+    private bool HasCallToAction =>
+        !string.IsNullOrWhiteSpace(CtaTitle)
+        || !string.IsNullOrWhiteSpace(CtaDescription)
+        || HasButton(CtaPrimaryButtonText, CtaPrimaryButtonUrl)
+        || HasButton(CtaSecondaryButtonText, CtaSecondaryButtonUrl);
+
+    private string CtaVariantName =>
+        string.Equals(CtaVariant?.Trim(), "secondary", StringComparison.OrdinalIgnoreCase) ? "secondary" : "primary";
+
+    // The value lands in a style attribute, so only a color is accepted: a hex value, a color function, a name or a
+    // variable. A semicolon, a colon or a quote would let the value add declarations.
+    private string? CtaStyle =>
+        CtaBackgroundColor?.Trim() is { Length: > 0 } color && CssColor().IsMatch(color)
+            ? $"background-color: {color}"
+            : null;
+
+    [GeneratedRegex(@"^(#[0-9a-fA-F]{3,8}|(rgb|rgba|hsl|hsla|var)\([a-zA-Z0-9\s,.%/\-]+\)|[a-zA-Z]+)$", RegexOptions.None, matchTimeoutMilliseconds: 250)]
+    private static partial Regex CssColor();
 }
 
 /// <summary>
@@ -377,7 +434,7 @@ public class TestimonialItem
     public string? ImageUrl { get; set; }
 
     /// <summary>
-    /// Gets or sets the image alt text for accessibility
+    /// Gets or sets the rating from 1 to 5 that the testimonial's author gave. <c>LandingPage</c> does not show it.
     /// </summary>
     public int Rating { get; set; } = 5;
 }
