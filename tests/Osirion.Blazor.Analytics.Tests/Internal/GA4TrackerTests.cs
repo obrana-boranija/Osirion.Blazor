@@ -147,6 +147,6 @@ public class GA4TrackerTests : BunitContext
             .Add(p => p.DebugMode, true));
 
         // Assert
-        cut.Markup.ShouldContain("window.ga_debug = {debug_mode: true};");
+        cut.Markup.ShouldContain("\"debug_mode\":true");
     }
 }

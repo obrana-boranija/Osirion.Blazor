@@ -80,7 +80,9 @@ public class AnalyticsBuilder : IAnalyticsBuilder
             opt.Enabled = options.Enabled;
             opt.AutoTrackPageViews = options.AutoTrackPageViews;
             opt.AnonymizeIp = options.AnonymizeIp;
+#pragma warning disable CS0618 // still bound, so existing configuration keeps loading
             opt.LinkAttribution = options.LinkAttribution;
+#pragma warning restore CS0618
             opt.DebugMode = options.DebugMode;
             opt.CookieFlags = options.CookieFlags;
             opt.ConfigParameters = options.ConfigParameters;

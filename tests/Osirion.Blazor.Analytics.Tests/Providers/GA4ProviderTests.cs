@@ -4,6 +4,7 @@ using Shouldly;
 
 namespace Osirion.Blazor.Analytics.Tests.Providers;
 
+#pragma warning disable CS0618 // LinkAttribution is obsolete; the test pins that it writes nothing
 public class GA4ProviderTests
 {
     [Fact]
@@ -77,7 +78,11 @@ public class GA4ProviderTests
         var script = provider.GetScript();
 
         // Assert
-        script.ShouldContain("window.ga_debug = {debug_mode: true};");
+        // Fails before the fix: the script wrote window.ga_debug, an analytics.js mechanism, instead of debug_mode
+        // in the config call that the DebugView page documents.
+        script.IndexOf("\"debug_mode\":true", StringComparison.Ordinal)
+            .ShouldBeGreaterThan(script.IndexOf("gtag('config'", StringComparison.Ordinal));
+        script.ShouldNotContain("ga_debug");
     }
 
     [Fact]
@@ -103,7 +108,7 @@ public class GA4ProviderTests
     }
 
     [Fact]
-    public void GetScript_IncludesLinkAttribution_WhenEnabled()
+    public void GetScript_LinkAttributionEnabled_WritesNoRequireCommand()
     {
         // Arrange
         var options = Microsoft.Extensions.Options.Options.Create(new GA4Options
@@ -117,7 +122,10 @@ public class GA4ProviderTests
         var script = provider.GetScript();
 
         // Assert
-        script.ShouldContain("gtag('require', 'linkid');");
+        // Fails before the fix: gtag('require', 'linkid') is an analytics.js command, and the gtag.js command
+        // reference lists only config, get, set, event and consent.
+        script.ShouldNotContain("require");
+        script.ShouldNotContain("linkid");
     }
 
     [Fact]
