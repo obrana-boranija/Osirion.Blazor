@@ -124,7 +124,7 @@ A card with a name field and topics, where one topic cannot be turned off:
 | `SubscribeButtonText` | `string` | `"Subscribe"` | The button's text. |
 | `SubscribingText` | `string` | `"Subscribing..."` | Not rendered: the card has no busy state. |
 | `ShowRequiredIndicators` | `bool` | `true` | Whether an asterisk follows the labels of required fields. |
-| `PrivacyPolicyText` | `string?` | `"I agree to the <a class="osirion-subscribtion-link" href="/privacy-policy" target="_blank">privacy policy</a>"` | The label of the consent checkbox, by default a link to `/privacy-policy`. Rendered as HTML, not encoded. Without it the checkbox is not shown. |
+| `PrivacyPolicyText` | `string?` | `"I agree to the <a class="osirion-subscribtion-link" href="/privacy-policy" target="_blank">privacy policy</a>"` | The label of the consent checkbox, by default a link to `/privacy-policy`. Rendered as HTML, not encoded. The checkbox is left out when the value is null or empty, and the card then submits without it: `SubscriptionModel.AgreeToPrivacyPolicy` is set to true so the model validates, which means it records no consent and must not be stored as consent. |
 | `ShowSubscriptionCategories` | `bool` | `false` | Whether topics to choose from are shown. |
 | `SubscriptionCategories` | `IReadOnlyList<SubscriptionCategory>?` | `null` | The topics. With `ShowSubscriptionCategories` on and no list, three sample topics are shown. |
 | `CategoriesText` | `string` | `"What would you like to receive?"` | The label above the topics. |
@@ -160,8 +160,9 @@ first) and `IsRequired` (checked, disabled and always included). `SubscriptionMo
 - Topic choices are read from the posted form, so they arrive only under static SSR. In an interactive page the topic
   checkboxes are not bound, and `OnSubscribe` receives only the required topics.
 - Validation uses data annotations: the email is required, must be a valid address and at most 255 characters.
-- The model always requires the privacy agreement. If `PrivacyPolicyText` is null or empty the checkbox is not
-  rendered, and the form can never pass validation, so keep a consent text.
+- The model requires the privacy agreement, so the card shows the checkbox. If `PrivacyPolicyText` is null or empty
+  the checkbox is left out and the card submits without it: `AgreeToPrivacyPolicy` is set to true so the model
+  validates, which means it records no consent and `OnSubscribe` must not store it as consent.
 - The card thanks the visitor only after `OnSubscribe` returns. Without a handler, or with `UseBuiltInEmailService`
   on, nothing stores the address, so the card shows `ErrorMessage` and logs a warning instead. Available from the
   release after 4.1.0; before it, both cases showed `SuccessMessage`.
