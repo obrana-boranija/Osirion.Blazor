@@ -180,15 +180,11 @@ public static class GitHubProviderRegistrationExtensions
         var isDefault = providerSection.GetValue<bool>("IsDefault");
         if (isDefault)
         {
-            var providerId = providerSection.GetValue<string>("ProviderId");
-            if (string.IsNullOrWhiteSpace(providerId))
-            {
-                var owner = providerSection.GetValue<string>("Owner");
-                var repository = providerSection.GetValue<string>("Repository");
-                providerId = $"github-{providerName}-{owner}-{repository}";
-            }
+            // The id the provider reports, not a second derivation: the registry matches that exact string.
+            var defaultOptions = new GitHubOptions();
+            providerSection.Bind(defaultOptions);
 
-            services.AddSingleton<IDefaultProviderSetter>(new DefaultProviderSetter(providerId, true));
+            services.AddSingleton<IDefaultProviderSetter>(new DefaultProviderSetter(GitHubProviderId.For(defaultOptions), true));
         }
 
         return services;
