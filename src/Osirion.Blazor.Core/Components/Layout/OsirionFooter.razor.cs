@@ -11,6 +11,15 @@ public partial class OsirionFooter
     [CascadingParameter(Name = OsirionPageLayout.FooterSlotCascadeName)]
     private bool InsidePageLayoutFooter { get; set; }
 
+    private bool HasTopContent =>
+        Logo is not null
+        || Links?.Any() == true
+        || (ShowSocialLinks && SocialLinks?.Any() == true)
+        || LeftContent is not null
+        || RightContent is not null;
+
+    private bool CompanyIsExternal => CompanyUrl.StartsWith("http", StringComparison.Ordinal);
+
     /// <summary>
     /// Gets or sets the name linked in the default copyright line (<c>&amp;copy; year name. All rights reserved.</c>).
     /// Ignored when <see cref="Copyright"/> is set or <see cref="ShowCopyright"/> is <see langword="false"/>.
@@ -20,7 +29,7 @@ public partial class OsirionFooter
 
     /// <summary>
     /// Gets or sets the address the company name links to in the default copyright line. An address that starts with
-    /// <c>http</c> opens in a new tab; any other opens in the same tab.
+    /// <c>http</c> opens in a new tab with <c>rel="noopener noreferrer"</c>; any other opens in the same tab.
     /// </summary>
     [Parameter]
     public string CompanyUrl { get; set; } = "/";
@@ -28,7 +37,8 @@ public partial class OsirionFooter
     /// <summary>
     /// Gets or sets the text under the logo, rendered as raw HTML, so pass only text you control. It is shown only when
     /// the top row renders, which needs at least one of <see cref="Logo"/>, <see cref="Links"/>,
-    /// <see cref="SocialLinks"/>, <see cref="LeftContent"/> or <see cref="RightContent"/>.
+    /// <see cref="SocialLinks"/> (while <see cref="ShowSocialLinks"/> is on), <see cref="LeftContent"/> or
+    /// <see cref="RightContent"/>.
     /// </summary>
     [Parameter]
     public string? Description { get; set; }
