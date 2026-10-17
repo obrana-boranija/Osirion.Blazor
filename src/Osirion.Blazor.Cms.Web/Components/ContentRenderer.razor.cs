@@ -5,7 +5,11 @@ namespace Osirion.Blazor.Cms.Web.Components;
 /// <summary>Defines the ContentRenderer type.</summary>
 public partial class ContentRenderer
 {
-    /// <summary>Performs the Item operation.</summary>
+    /// <summary>
+    /// The item whose <c>Content</c> (HTML) is rendered, sanitized, with code highlighting. Only the empty wrapper
+    /// renders when the item or its content is null. The component loads nothing, so get the item from the content
+    /// provider first.
+    /// </summary>
     [Parameter]
     public ContentItem? Item { get; set; }
 
